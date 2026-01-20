@@ -96,13 +96,9 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
     try {
       const supabase = createClient()
 
-      // Best-effort cleanup: if a product is sold/out_of_stock for > 1 day,
-      // remove it from the wishlist server-side.
-      try {
-        await supabase.rpc("cleanup_sold_wishlist_items")
-      } catch {
-        // Ignore if function isn't deployed yet or RPC fails.
-      }
+      // Note: cleanup_sold_wishlist_items() is called server-side when the user
+      // visits the /account/wishlist page. We don't call it here to avoid
+      // unnecessary DB writes on every context refresh.
 
       const { data, error } = await supabase
         .from("wishlists")

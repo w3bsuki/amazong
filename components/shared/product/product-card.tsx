@@ -262,11 +262,9 @@ function ProductCard({
     return condition.slice(0, 8)
   }, [condition, t])
 
-  // Mobile quick view handler - opens drawer instead of navigating
+  // Quick view handler - opens drawer instead of navigating (both mobile & desktop)
   const handleCardClick = React.useCallback(
     (e: React.MouseEvent) => {
-      if (!isMobile) return // Desktop: let Link navigate normally
-
       e.preventDefault()
       // Build quick view data, only including defined properties
       // (exactOptionalPropertyTypes requires this pattern)
@@ -328,6 +326,7 @@ function ProductCard({
       {/* Full-card link for accessibility */}
       <Link
         href={productUrl}
+        scroll={false}
         className="absolute inset-0 z-1"
         aria-label={t("openProduct", { title })}
         onClick={handleCardClick}

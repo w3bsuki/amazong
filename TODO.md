@@ -1,12 +1,10 @@
 # TODO
 
-> **Production Plan**: See `codex/MASTER-PLAN.md` for P0 blockers and execution order
+> **Start here**: `agents.md` → `RULES.md` → `docs/README.md`
 > 
-> **Workflow**: See `docs/PRODUCTION-WORKFLOW-GUIDE.md` (comprehensive) or `docs/GPTVSOPUSFINAL.md` (agent roles)
->
 > **Execution Board (multi-session):** `codex-xhigh/EXECUTION-BOARD.md` (owners/status) + `codex-xhigh/STATUS.md` (resume fast)
 >
-> **Launch Scope:** V2 checkout/orders + Stripe credit cards + Stripe Connect (no classifieds-only mode)
+> **Scope / roadmap:** `docs/PRODUCT.md`
 > 
 > **Prefixes**: `TREIDO:` (general dev), `TAILWIND:` (UI audit), `SUPABASE:` (DB audit)
 
@@ -16,6 +14,48 @@ pnpm -s exec tsc -p tsconfig.json --noEmit
 REUSE_EXISTING_SERVER=true pnpm test:e2e:smoke
 ```
 
+## Architecture / Repo Structure — Pre-production (Audit → Fix)
+
+**Blueprint**: `codex-xhigh/frontend/opus_structure.md` (target structure)
+
+**Baseline audits**: `codex-xhigh/FOLDER-AUDIT.md`, `codex-xhigh/ARCHITECTURE-AUDIT.md`
+
+**Lane full audits**: `codex-xhigh/DOCS-INDEX.md` (index) + `codex-xhigh/*/FULL-AUDIT.md`
+
+**Derived list (not SSOT)**: `codex-xhigh/AUDIT-TASKS.md`
+
+### Phase 0 — Decide what stays (no refactors yet)
+- [ ] Decide demo strategy: delete vs keep `app/demo/*` and `app/[locale]/demo/*` → `codex-xhigh/FOLDER-AUDIT.md`, `codex-xhigh/frontend/opus_remove.md`
+- [ ] Decide docs strategy: keep vs archive `docs-site/` (separate Next.js app) → `codex-xhigh/FOLDER-AUDIT.md`
+- [ ] Decide mobile strategy: keep vs remove Capacitor (`capacitor.config.ts`, `cap:*` scripts, `@capacitor/*`) → `codex-xhigh/DEPENDENCIES-AUDIT.md`, `codex-xhigh/frontend/opus_remove.md`
+- [ ] Document “what belongs in repo root” (don’t move Next/TS/PostCSS configs that tools expect in root) → `docs/ENGINEERING.md`
+
+### Phase 1 — Delete-first cleanup (safe + measurable)
+- [ ] Run Knip and delete Tier 1 unused files (49) → `codex-xhigh/typescript/knip-2026-01-20.log`, `codex-xhigh/frontend/opus_remove.md`
+- [ ] Consolidate duplicate UI surfaces only after deletions (header/filters/sidebar) → `codex-xhigh/frontend/opus_hotspots.md`
+- [ ] Clean generated artifacts (never “reorganize” build output) → `pnpm -s clean:artifacts`
+
+### Phase 2 — Enforce boundaries (Next.js + data access)
+- [ ] Next.js: fix 2 lint errors (React Compiler memoization) → `codex-xhigh/nextjs/FULL-AUDIT.md`
+- [ ] Next.js: remove UI → server action imports (20) (pass handlers via props / keep actions server-only) → `codex-xhigh/nextjs/FULL-AUDIT.md`, `docs/FRONTEND.md`
+- [ ] SSOT per domain: centralize duplicated selects/plan logic/badge derivations → `codex-xhigh/frontend/structure.md`, `docs/FEATURES.md`
+
+### Phase 3 — TypeScript safety (reduce drift)
+- [ ] Decide `ts:gate` policy (fix vs baseline) and get drift back to 0 → `codex-xhigh/typescript/FULL-AUDIT.md`
+- [ ] Remove unsafe patterns in core flows (checkout/payments/sell) before new work → `codex-xhigh/typescript/FULL-AUDIT.md`
+
+### Phase 4 — Supabase + i18n rails (ship correctness)
+- [ ] Supabase (Dashboard): enable leaked password protection → `codex-xhigh/supabase/FULL-AUDIT.md`, `docs/PRODUCTION.md`
+- [ ] i18n: fix messages parity (7 missing keys in `en.json`) → `codex-xhigh/i18n/FULL-AUDIT.md`
+
+### Suggested parallel lanes (Opus exec + GPT review)
+- `agent/fe-nextjs`: Phase 2 items (lint + action-boundary imports)
+- `agent/ts`: Phase 1 + Phase 3 (Knip + ts:gate drift)
+- `agent/supabase`: Phase 4 Supabase dashboard-only + deferred advisor work
+- `agent/i18n`: Phase 4 i18n parity + inline locale branching removal
+- `agent/ui`: Tailwind tokenization after demo deletions → `codex-xhigh/ui/TAILWIND-V4-AUDIT.md`
+
+---
 ## UI/UX Sprint — Design System Refactor
 
 See `AGENT-ORCHESTRATION.md` for full execution plan.
@@ -129,8 +169,8 @@ See `AGENT-ORCHESTRATION.md` for full execution plan.
 
 - [ ] E2E: auto-pick free port (`playwright.config.ts`)
 - [ ] Tooling: reduce Tailwind palette/gradient scan false positives (`scripts/scan-tailwind-palette.mjs`)
-- [ ] Chat: fix mobile scroll containment + broken avatars (see `TASK-fix-chat-mobile-scroll-and-avatars.md`)
-- [ ] Supabase: resolve Security advisor warning (leaked password protection) — dashboard-only (see `TASK-enable-leaked-password-protection.md`)
+- [ ] Chat: fix mobile scroll containment + broken avatars (verify via manual QA in `docs/PRODUCTION.md`)
+- [ ] Supabase: enable leaked password protection (dashboard-only; see `docs/PRODUCTION.md`)
 - [ ] Supabase: review Performance advisors (unused indexes) and decide keep/drop (requires DB query review before any DDL)
 
 ## Blocked on Human
@@ -172,7 +212,7 @@ _(none)_
 
 ### Phase 3: Stripe Hard Gate ✅ COMPLETE (2026-01-15)
 
-> **Plan:** `docs/launch/PLAN-STRIPE.md`
+> **Plan:** `docs/PRODUCTION.md` (go-live checklist) + `docs/BACKEND.md` (Stripe rules)
 
 **Verified:**
 - ✅ Signature verification: All 3 webhook endpoints use `stripe.webhooks.constructEvent()` with secrets from env
@@ -207,7 +247,7 @@ _(none)_
 
 ### Phase 4: Core User Flows ✅ COMPLETE (2026-01-15)
 
-> **Plan:** `docs/launch/FEATURES.md`, `docs/launch/CHECKLIST-QA.md`
+> **Plan:** `docs/FEATURES.md` + manual QA checklist in `docs/PRODUCTION.md`
 
 **E2E Test Results:**
 
@@ -222,12 +262,12 @@ _(none)_
 - ✅ `e2e/reviews.spec.ts` test assertion updated (button text is "Submit" not "Submit Review", toast message pattern fixed)
 
 **Manual QA required (per CHECKLIST-QA.md):**
-- [ ] Messaging: start conversation, send message, upload image, mobile scroll (see `TASK-fix-chat-mobile-scroll-and-avatars.md`)
+- [ ] Messaging: start conversation, send message, upload image, mobile scroll (verify via manual QA in `docs/PRODUCTION.md`)
 - [ ] Cart/checkout/orders (if in-scope): full flow verification
 - [ ] Business dashboard (if in-scope): access gates
 
 **Known issues (not blockers):**
-- Chat mobile scroll + avatars need manual verification (documented in `TASK-fix-chat-mobile-scroll-and-avatars.md`)
+- Chat mobile scroll + avatars need manual verification (see manual QA in `docs/PRODUCTION.md`)
 - Seller routes tests skip when no `TEST_USER_EMAIL`/`TEST_USER_PASSWORD` configured
 
 **Gates passed:**
@@ -236,7 +276,7 @@ _(none)_
 
 ### Phase 5: i18n + UI Drift Compliance ✅ COMPLETE (2026-01-15)
 
-> **Plan:** `docs/launch/PLAN-I18N.md`, `docs/launch/PLAN-UI-DESIGN-SYSTEM.md`
+> **Plan:** `docs/FRONTEND.md` (i18n rules) + `docs/DESIGN.md` (design rails)
 
 **Tailwind Scan Results:**
 | Metric | Result | Target | Status |
@@ -250,7 +290,7 @@ _(none)_
 - ✅ **9 arbitrary values** (6 files) - well below target of 20
 - ✅ Auth forms use `useTranslations()` properly (login-form.tsx, sign-up-form.tsx)
 - ✅ Search page uses `getTranslations()` for UI strings
-- ✅ Homepage/hero uses inline locale checks (acceptable short-term per PLAN-I18N.md)
+- ✅ Homepage/hero uses inline locale checks (acceptable short-term per `docs/FRONTEND.md`)
 - ✅ Account components use inline locale checks with proper Bulgarian translations
 - ✅ All high-traffic surfaces load in both `/en` and `/bg` locales (verified via e2e)
 
@@ -266,7 +306,7 @@ _(none)_
 **i18n Audit Summary:**
 - Critical surfaces (Auth, Search, Homepage, Account) use next-intl patterns
 - Metadata strings (page titles) use inline locale checks - acceptable short-term
-- Server action errors return English strings - acceptable per PLAN-I18N.md (error codes preferred but not blocking)
+- Server action errors return English strings - acceptable per `docs/FRONTEND.md` (error codes preferred but not blocking)
 
 **Remaining (post-launch cleanup):**
 - [ ] Refactor metadata strings to use next-intl `getTranslations()` for consistency
@@ -278,7 +318,7 @@ _(none)_
 
 ### Phase 6: Release Gates + Deployment Runbook ✅ COMPLETE (2026-01-15)
 
-> **Plan:** `docs/launch/PLAN.md` (Phase 6), `docs/launch/PLAN-DEPLOYMENT.md`, `docs/launch/CHECKLIST-QA.md`
+> **Plan:** `docs/PRODUCTION.md` (release gates + deployment + manual QA)
 
 **Release Gates Summary:**
 
@@ -339,7 +379,7 @@ REVALIDATION_SECRET=<random-secret>
 - [ ] Keep a known-good deployment ready for rollback
 
 #### Post-Deploy Verification
-1. Run `docs/launch/CHECKLIST-QA.md` on staging first
+1. Run manual QA (see `docs/PRODUCTION.md`) on staging first
 2. Deploy to production
 3. Re-run QA checklist on production
 4. Verify Stripe webhook logs show 200s
@@ -366,7 +406,7 @@ REVALIDATION_SECRET=<random-secret>
 **RECOMMENDATION: GO (conditional)**
 
 All automated release gates pass. Ready for deployment pending:
-1. Manual QA checklist verification (`docs/launch/CHECKLIST-QA.md`)
+1. Manual QA checklist verification (`docs/PRODUCTION.md`)
 2. Environment variables configured in Vercel
 3. Stripe webhooks configured for production URLs
 4. Supabase auth redirect URLs configured

@@ -42,7 +42,7 @@ pnpm clean
 
 ## Project Structure
 
-See [agents.md](./agents.md) for code placement boundaries and day-to-day rules.
+See [agents.md](./agents.md) and [RULES.md](./RULES.md) for code placement boundaries and day-to-day rules.
 For production execution and the “last 5%” plan, start with [docs/README.md](./docs/README.md).
 
 ## Where does this file go?
@@ -52,7 +52,7 @@ Use these rules before adding new files (see [agents.md](./agents.md) for full d
 - `app/[locale]/(group)/.../_components/*`: UI used only by a single route group (account/admin/auth/business/chat/checkout/main/plans/sell).
 - `app/[locale]/(group)/.../_actions/*`: server actions used only by that route group.
 - `components/ui/*`: shadcn-style primitives only (buttons, inputs, dialogs). No feature composites, no route coupling.
-- `components/common/*`: shared composites (cards, tables, shared UI blocks used across multiple routes).
+- `components/shared/*`: shared composites (cards, tables, shared UI blocks used across multiple routes).
 - `components/layout/*`: shared layout shells (headers, sidebars, navigation).
 - `components/providers/*`: React providers/contexts.
 - `hooks/*`: reusable hooks (do not put hooks under `components/ui`).

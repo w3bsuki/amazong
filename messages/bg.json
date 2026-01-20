@@ -122,6 +122,8 @@
         "allIn": "Всички в {category}"
     },
     "Home": {
+        "metaTitle": "Начало",
+        "metaDescription": "Добре дошли в Treido - вашият онлайн магазин за електроника, мода, дом и много други.",
         "title": "Добре дошли в Treido",
         "hero": {
             "newArrival": "Ново пристигане",
@@ -362,6 +364,9 @@
         "increaseQuantity": "Увеличи количество",
         "total": "Общо",
         "buyerProtection": "Защита на купувача",
+        "fastDelivery": "Бърза доставка",
+        "inStockItems": "Останаха {count, plural, one {# брой} other {# броя}}",
+        "viewShop": "Магазин",
         "verifiedListing": "Потвърдена обява",
         "easyReturns": "Лесно връщане",
         "orders": "поръчки",
@@ -372,7 +377,10 @@
     "ProductModal": {
         "viewFullPage": "Виж пълната страница",
         "viewProfile": "Виж профила",
-        "closeModal": "Затвори"
+        "closeModal": "Затвори",
+        "copyLink": "Копирай линк",
+        "linkCopied": "Линкът е копиран!",
+        "copyFailed": "Неуспешно копиране на линк"
     },
     "Drawers": {
         "quickView": "Бърз преглед",
@@ -380,6 +388,7 @@
         "viewFullProfile": "Виж целия профил",
         "chatSeller": "Чат",
         "addToCart": "Добави в кошницата",
+        "addedToCart": "Добавено в количката!",
         "messages": "Съобщения",
         "viewAllMessages": "Виж всички съобщения"
     },
@@ -1677,7 +1686,10 @@
         "emailVerified": "Потвърден имейл",
         "email": "Имейл",
         "phone": "Телефон",
-        "id": "ID"
+        "id": "ID",
+        "newSeller": "Нов продавач",
+        "topSeller": "Топ продавач",
+        "business": "Бизнес"
     },
     "ProfilePage": {
         "business": "Бизнес",

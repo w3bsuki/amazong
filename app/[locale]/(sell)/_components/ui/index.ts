@@ -19,10 +19,6 @@ export { CategorySelector } from "./category-modal";
 export { BrandCombobox } from "./brand-combobox";
 export type { Brand, BrandComboboxProps } from "./brand-combobox";
 
-// iOS-style list components
-export { ListCard, ListCardHeader } from "./list-card";
-export { ListRow, ListRowGroup } from "./list-row";
-
 // Other components
 export { SellSectionSkeleton } from "./sell-section-skeleton";
 export { SellErrorBoundary } from "./sell-error-boundary";

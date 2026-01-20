@@ -1,6 +1,6 @@
 # Supabase Audit Checklist
 
-Start with: `docs/launch/PLAN-SUPABASE.md` and `codex/supabase-audit-2026-01-17.md`.
+Start with: `docs/BACKEND.md` and `docs/PRODUCTION.md`.
 
 ## Migrations
 - [ ] Production has the required migrations applied (avatars bucket, stock fix, order status fix).
@@ -16,6 +16,5 @@ Start with: `docs/launch/PLAN-SUPABASE.md` and `codex/supabase-audit-2026-01-17.
 - [ ] Order status updates create correct chat/system events (and don’t explode writes).
 
 ## Advisors
-- [ ] Security advisor warnings resolved or explicitly accepted (document in `supabase_tasks.md`).
+- [ ] Security advisor warnings resolved or explicitly accepted (record decisions in `codex-xhigh/logs/`).
 - [ ] Performance advisor changes are not applied blindly (verify query patterns first).
-

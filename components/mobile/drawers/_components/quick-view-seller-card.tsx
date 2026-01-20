@@ -1,15 +1,21 @@
 "use client"
 
-import { ShieldCheck, CaretRight } from "@phosphor-icons/react"
+import { CaretRight } from "@phosphor-icons/react"
 import { useTranslations } from "next-intl"
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { SellerVerificationBadge } from "@/components/shared/product/seller-verification-badge"
 import { cn } from "@/lib/utils"
 
 interface QuickViewSellerCardProps {
   sellerName?: string | null | undefined
   sellerAvatarUrl?: string | null | undefined
   sellerVerified?: boolean | undefined
+  /** New: granular verification levels */
+  emailVerified?: boolean | undefined
+  phoneVerified?: boolean | undefined
+  idVerified?: boolean | undefined
+  isVerifiedBusiness?: boolean | undefined
   onNavigateToProduct: () => void
 }
 
@@ -17,9 +23,16 @@ export function QuickViewSellerCard({
   sellerName,
   sellerAvatarUrl,
   sellerVerified,
+  emailVerified,
+  phoneVerified,
+  idVerified,
+  isVerifiedBusiness,
   onNavigateToProduct,
 }: QuickViewSellerCardProps) {
   const tProduct = useTranslations("Product")
+  
+  // Backwards compatibility: if only sellerVerified is passed, treat as email verified
+  const hasVerification = emailVerified || phoneVerified || idVerified || isVerifiedBusiness || sellerVerified
 
   return (
     <button
@@ -39,10 +52,20 @@ export function QuickViewSellerCard({
         </AvatarFallback>
       </Avatar>
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-semibold truncate">{sellerName ?? "Seller"}</p>
-        {sellerVerified && (
-          <span className="flex items-center gap-1 text-xs text-verified">
-            <ShieldCheck size={14} weight="fill" />
+        <div className="flex items-center gap-1.5">
+          <p className="text-sm font-semibold truncate">{sellerName ?? "Seller"}</p>
+          {hasVerification && (
+            <SellerVerificationBadge
+              emailVerified={emailVerified ?? sellerVerified}
+              phoneVerified={phoneVerified}
+              idVerified={idVerified}
+              isVerifiedBusiness={isVerifiedBusiness}
+              size="sm"
+            />
+          )}
+        </div>
+        {hasVerification && (
+          <span className="text-xs text-verified">
             {tProduct("verifiedSeller")}
           </span>
         )}

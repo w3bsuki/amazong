@@ -20,7 +20,7 @@ This doc captures the “rules of the road” for making changes without regress
   - Do not import these across route groups.
 - Shared layers:
   - `components/ui/**`: primitives only (shadcn style).
-  - `components/common/**`: shared composites used across routes.
+  - `components/shared/**`: shared composites used across routes.
   - `components/layout/**`: shells (header/nav/sidebars).
   - `components/providers/**`: thin providers/contexts.
   - `hooks/**`: reusable hooks (never from `components/ui/**`).
@@ -73,5 +73,5 @@ Performance rules:
 
 - Scope: 1–3 files/features.
 - Risk: low unless touching auth/checkout/seller flows.
-- Verification (minimum): `tsc` + `e2e:smoke` (see `docs/guides/testing.md`).
+- Verification (minimum): `tsc` + `e2e:smoke` (see `docs/TESTING.md`).
 - Notes: what changed + how verified.

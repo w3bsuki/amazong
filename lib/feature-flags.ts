@@ -153,23 +153,6 @@ export function isFeatureEnabled(flagName: FeatureFlagName): boolean {
 }
 
 /**
- * Get all feature flags and their current states.
- * Useful for debugging and admin dashboards.
- */
-export function getFeatureFlags(): Record<FeatureFlagName, { flag: FeatureFlag; isEnabled: boolean }> {
-  const result: Record<string, { flag: FeatureFlag; isEnabled: boolean }> = {}
-  
-  for (const [name, flag] of Object.entries(FEATURE_FLAGS)) {
-    result[name] = {
-      flag,
-      isEnabled: isFeatureEnabled(name as FeatureFlagName),
-    }
-  }
-  
-  return result as Record<FeatureFlagName, { flag: FeatureFlag; isEnabled: boolean }>
-}
-
-/**
  * Check if any drawer feature is enabled.
  * Shorthand for checking if drawer system should be initialized.
  */

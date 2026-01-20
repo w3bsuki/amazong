@@ -8,10 +8,12 @@ This folder exists to stop the “run back and forth” loop by giving us **one 
 It **does not replace** the existing canonical docs; it **indexes and operationalizes** them.
 
 ## Canonical sources (don’t duplicate)
+- `agents.md` + `RULES.md` — entrypoint + rails
+- `docs/README.md` — canonical docs index
+- `docs/PRODUCTION.md` — go-live checklist
+- `docs/FEATURES.md` — navigation map
 - `TODO.md` — task tracker + gates
-- `codex/MASTER-PLAN.md` — production readiness execution order + P0 blockers
-- `docs/launch/*` — feature map + hard-gate plans + QA checklist
-- `docs/ENGINEERING.md`, `docs/DESIGN.md`, `docs/PRODUCTION.md` — stack rules
+- `docs/ENGINEERING.md`, `docs/DESIGN.md`, `docs/FRONTEND.md`, `docs/BACKEND.md`, `docs/TESTING.md`, `docs/PRODUCT.md` — stack rules
 
 ## How to use this folder
 1) Pick one scope (a user flow or a tech slice).
@@ -34,4 +36,3 @@ It **does not replace** the existing canonical docs; it **indexes and operationa
 - `i18n/` — next-intl rules + drift prevention
 - `testing/` — Vitest/Playwright strategy + reliability gates
 - `product/` — onboarding/badges + monetization decisions (business rules)
-

@@ -1,7 +1,0 @@
-# hash=A94E290C447F28A3C913A48E2D9D08BA3633896773B1DF6CB127A5A5ABF3D307 count=5
-public/categories/medical-care.webp
-public/categories/natural-wellness.webp
-public/categories/specialty-health.webp
-public/categories/sports-fitness.webp
-public/categories/supplements.webp
-

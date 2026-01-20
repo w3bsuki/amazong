@@ -122,6 +122,8 @@
         "allIn": "All in {category}"
     },
     "Home": {
+        "metaTitle": "Home",
+        "metaDescription": "Welcome to Treido - your online store for electronics, fashion, home and much more.",
         "title": "Welcome to Treido",
         "hero": {
             "newArrival": "New Arrival",
@@ -362,6 +364,9 @@
         "increaseQuantity": "Increase quantity",
         "total": "Total",
         "buyerProtection": "Buyer Protection",
+        "fastDelivery": "Fast Delivery",
+        "inStockItems": "{count, plural, one {# item} other {# items}} left",
+        "viewShop": "Shop",
         "verifiedListing": "Verified Listing",
         "easyReturns": "Easy Returns",
         "orders": "orders",
@@ -372,7 +377,10 @@
     "ProductModal": {
         "viewFullPage": "View Full Page",
         "viewProfile": "View Profile",
-        "closeModal": "Close"
+        "closeModal": "Close",
+        "copyLink": "Copy Link",
+        "linkCopied": "Link copied!",
+        "copyFailed": "Failed to copy link"
     },
     "Drawers": {
         "quickView": "Quick View",
@@ -380,6 +388,7 @@
         "viewFullProfile": "View Full Profile",
         "chatSeller": "Chat",
         "addToCart": "Add to Cart",
+        "addedToCart": "Added to cart!",
         "messages": "Messages",
         "viewAllMessages": "View All Messages"
     },
@@ -1045,6 +1054,17 @@
         "stock": "Stock Quantity",
         "category": "Category",
         "selectCategory": "Select a category",
+        "condition": {
+            "new": "New",
+            "likeNew": "Like New",
+            "usedShort": "Used",
+            "refurbShort": "Refurb."
+        },
+        "b2b": {
+            "moqShort": "MOQ",
+            "samples": "Samples",
+            "verifiedShort": "Verified"
+        },
         "electronics": "Electronics",
         "books": "Books",
         "fashion": "Fashion",
@@ -1666,7 +1686,10 @@
         "emailVerified": "Email Verified",
         "email": "Email",
         "phone": "Phone",
-        "id": "ID"
+        "id": "ID",
+        "newSeller": "New Seller",
+        "topSeller": "Top Seller",
+        "business": "Business"
     },
     "ProfilePage": {
         "business": "Business",

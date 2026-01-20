@@ -1,5 +1,4 @@
 # Product — Keep
 
-- Hybrid buyer-protection monetization decision from `PLAN-monetization-strategy.md`.
+- Hybrid buyer-protection monetization decision from `docs/PRODUCT.md`.
 - Business dashboard gating model (route guard + subscription requirement).
-

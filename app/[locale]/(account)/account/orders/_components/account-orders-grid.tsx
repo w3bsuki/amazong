@@ -8,11 +8,10 @@ import { bg, enUS } from "date-fns/locale"
 import { IconChevronRight, IconPackage, IconShoppingBag, IconMessageCircle } from "@tabler/icons-react"
 
 import { Badge } from "@/components/ui/badge"
-import { BuyerOrderActions } from "./buyer-order-actions"
+import { BuyerOrderActions, type BuyerOrderActionsServerActions } from "./buyer-order-actions"
 import { Button } from "@/components/ui/button"
 import { OrderStatusBadge } from "@/components/orders/order-status-badge"
 import type { OrderItemStatus } from "@/lib/order-status"
-import { getOrderConversation } from "@/app/actions/orders"
 import {
   Card,
   CardContent,
@@ -70,12 +69,20 @@ type OrderRow = {
   order_items: OrderItemRow[]
 }
 
+export type AccountOrdersGridServerActions = BuyerOrderActionsServerActions & {
+  getOrderConversation: (
+    orderId: string,
+    sellerId: string
+  ) => Promise<{ conversationId: string | null; error?: string }>
+}
+
 interface AccountOrdersGridProps {
   orders: OrderRow[]
   locale: string
+  actions: AccountOrdersGridServerActions
 }
 
-export function AccountOrdersGrid({ orders, locale }: AccountOrdersGridProps) {
+export function AccountOrdersGrid({ orders, locale, actions }: AccountOrdersGridProps) {
   const dateLocale = locale === "bg" ? bg : enUS
   const [conversationMap, setConversationMap] = useState<Map<string, string>>(new Map())
 
@@ -85,7 +92,7 @@ export function AccountOrdersGrid({ orders, locale }: AccountOrdersGridProps) {
       const map = new Map<string, string>()
       for (const order of orders) {
         try {
-          const result = await getOrderConversation(order.id, '')
+          const result = await actions.getOrderConversation(order.id, '')
           if (result.conversationId) {
             map.set(order.id, result.conversationId)
           }
@@ -99,7 +106,7 @@ export function AccountOrdersGrid({ orders, locale }: AccountOrdersGridProps) {
     if (orders.length > 0) {
       fetchConversations()
     }
-  }, [orders])
+  }, [actions, orders])
 
   const formatCurrency = (value: number) =>
     new Intl.NumberFormat(locale, {
@@ -377,6 +384,7 @@ export function AccountOrdersGrid({ orders, locale }: AccountOrdersGridProps) {
                                     conversationId={conversationMap.get(order.id) ?? null}
                                     locale={locale}
                                     orderId={order.id}
+                                    actions={actions}
                                   />
                                 </div>
                               )}
@@ -622,6 +630,7 @@ export function AccountOrdersGrid({ orders, locale }: AccountOrdersGridProps) {
                                         conversationId={conversationMap.get(order.id) ?? null}
                                         locale={locale}
                                         orderId={order.id}
+                                        actions={actions}
                                       />
                                     </div>
                                   )}

@@ -14,10 +14,9 @@ Keep badges as **derived state** (computed from DB):
 Do not hardcode colors/icons per-page; treat badge as a variant rendered by the design system.
 
 ## Plans & fees (source of truth)
-Reference: `PLAN-monetization-strategy.md`.
+Reference: `docs/PRODUCT.md`.
 - Plans must live in DB (`subscription_plans`) and be the single source for:
   - buyer protection percent/fixed/cap
   - seller fee percent (business)
   - listing limits, boosts included, badge type
 - Stripe product/price ids map to DB plans deterministically.
-

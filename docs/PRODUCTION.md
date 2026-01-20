@@ -1,107 +1,103 @@
-# Production Plan (“Last 5%”)
+# Production Guide (Canonical)
 
-Goal: ship safely with fewer regressions and lower Vercel/Supabase cost.
+This is the canonical “how we ship” checklist: correctness, safety, and go-live steps.
 
-Execution checklist: `tasks.md`
-## 🚀 Status (2026-01-15)
-
-**READY FOR DEPLOYMENT** — All phases complete, all gates pass.
-
-See `docs/launch/PLAN.md` and `TODO.md` for full status and deployment checklist.
-
-| Gate | Status |
-|------|--------|
-| Lint | ✅ 0 errors |
-| TypeScript | ✅ No errors |
-| Unit tests | ✅ 399 passed |
-| Build | ✅ 498 pages |
-| E2E smoke | ✅ 16 passed |
+Related:
+- Engineering rails: `docs/ENGINEERING.md`
+- Backend specifics: `docs/BACKEND.md`
+- Testing gates: `docs/TESTING.md`
 
 ---
+
 ## Non-negotiables
 
-- No rewrites, no redesigns.
-- Don’t touch secrets. Don’t log keys/JWTs/full request bodies.
-- Every non-trivial batch must pass:
-  - `pnpm -s exec tsc -p tsconfig.json --noEmit`
-  - `REUSE_EXISTING_SERVER=true pnpm test:e2e:smoke`
+- Keep batches small and verifiable (no rewrites / no redesigns).
+- Never log secrets/JWTs/full request bodies or customer PII.
+- Don’t ship UI drift (no gradients, no arbitrary Tailwind values).
 
-## Execution order (practical)
+---
 
-1) **Blockers (dashboard + payments)**
-2) **Green gates (CI-style)**
-3) **Security gate (Supabase)**
-4) **Performance + Vercel cost**
-5) **UI drift (high-traffic surfaces first)**
-6) **Cleanup (post-stability)**
+## Required gates
 
-## Blockers checklist (ship-stoppers)
+Minimum for any non-trivial batch:
 
-### Stripe (payments must work) ✅ VERIFIED
+```bash
+pnpm -s exec tsc -p tsconfig.json --noEmit
+REUSE_EXISTING_SERVER=true pnpm test:e2e:smoke
+```
 
-- [x] Create Stripe products/prices for paid tiers.
-- [x] Set price IDs in Supabase `subscription_plans`.
-- [ ] Configure webhook endpoint: `https://treido.eu/api/subscriptions/webhook` *(deployment step)*
-- [ ] Set `STRIPE_SECRET_KEY`, `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`, `STRIPE_WEBHOOK_SECRET`, `STRIPE_SUBSCRIPTION_WEBHOOK_SECRET` in Vercel. *(deployment step)*
-- [ ] Verify checkout end-to-end (at least once in production env). *(post-deployment)*
+Pre-release (recommended):
 
-### Supabase security ✅ VERIFIED
+```bash
+pnpm -s lint
+pnpm test:unit
+pnpm -s build
+pnpm test:e2e
+```
 
-- [x] Supabase security advisors show **0 warnings** (or explicitly accepted + documented).
-- [ ] Dashboard-only Supabase Auth warning handled (enable later or explicitly accept + document). *(dashboard setting)*
-- [x] Confirm middleware uses `getUser()` validation for protected routes.
+---
 
-Reference: `supabase_tasks.md`
+## Deployment checklist (Vercel + domains)
 
-## Go-live checklist (domain + env) — DEPLOYMENT STEPS
+- Set `NEXT_PUBLIC_APP_URL` in Vercel production env (e.g. `https://treido.eu`).
+- Set `NEXT_PUBLIC_SITE_URL` as the same base URL (used by auth redirects + metadata/sitemaps).
+- Set Supabase env vars:
+  - `NEXT_PUBLIC_SUPABASE_URL`
+  - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+  - `SUPABASE_SERVICE_ROLE_KEY` (server-only)
+- If you use the revalidation endpoint, set `REVALIDATION_SECRET`.
+- Verify DNS + TLS for apex + www.
+- Confirm auth redirects land on the correct domain/locale.
+ 
+Next.js proxy:
+- This repo uses `proxy.ts` (do not add `middleware.ts` unless the project explicitly migrates back).
 
-- [ ] `NEXT_PUBLIC_APP_URL=https://treido.eu` in Vercel production env.
-- [ ] DNS + TLS verified for `treido.eu` and `www.treido.eu`.
-- [ ] Verify auth links (email confirmation/reset) redirect to the correct domain.
+Environment separation:
+- Local: `.env.local` (never committed)
+- Staging: Vercel preview/staging + Stripe test mode
+- Production: Vercel production + Stripe live mode
+Never reuse Stripe live keys in staging (or vice versa).
 
-## Green gates (must be boring) ✅ ALL PASS
+---
 
-- [x] `pnpm -s exec tsc -p tsconfig.json --noEmit`
-- [x] `REUSE_EXISTING_SERVER=true pnpm test:e2e:smoke`
-- [x] Pre-release: `REUSE_EXISTING_SERVER=true pnpm test:e2e` + `pnpm build`
+## Supabase go-live checklist
 
-## Manual acceptance (15 minutes)
+- Critical migrations applied in production.
+- Supabase Security Advisor: 0 warnings (or explicitly accepted + documented).
+- Storage buckets + policies match app usage (`product-images`, `avatars`).
+- Enable leaked password protection in Supabase Auth settings (dashboard setting).
+- Supabase Auth redirect URLs include:
+  - `https://<domain>/auth/confirm`
+  - `https://<domain>/auth/callback`
+- Supabase email templates link back to the production domain.
 
-- [ ] Home loads in `/en` and `/bg`.
-- [ ] Search works (query + filters).
-- [ ] Product page loads and add-to-cart works.
-- [ ] Sign up + email verification link works (or confirm the configured auth provider flow).
-- [ ] Checkout creates a Stripe session (in test mode / production as appropriate).
+---
 
-## Performance + cost sanity (highest ROI)
+## Stripe go-live checklist (if charging money)
 
-- Middleware scope: ensure matchers skip `_next/static`, `_next/image`, and assets.
-- Over-fetching: select only list-view fields; avoid deep nested joins.
-- ISR: add `generateStaticParams()` for locale + key segments where feasible.
-- Cache Components: pair `'use cache'` with `cacheLife('<profile>')`, and tag invalidation correctly (`revalidateTag(tag, profile)`).
+- `STRIPE_SECRET_KEY` and `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` set in Vercel.
+- Webhook secrets set in Vercel (`STRIPE_WEBHOOK_SECRET`, `STRIPE_SUBSCRIPTION_WEBHOOK_SECRET`).
+- Webhook endpoints configured in Stripe dashboard for the production URL(s).
+- At least one end-to-end checkout verified in the deployment environment (test/live as appropriate).
 
-## UI polish (no redesign)
+---
 
-Track work in small batches:
+## Manual QA checklist (15–45 minutes)
 
-- A1 theming/tokens alignment (remove hardcoded palette values on high-traffic surfaces)
-- A3 product surfaces polish (spacing/typography consistency without layout changes)
+Run on staging, then again on production after go-live:
 
-References:
+- Locales: `/en` and `/bg` routing works.
+- Auth: signup → confirm email → login → reset password.
+- Browse/search: home, categories, search filters.
+- Product page renders correctly (images, price, seller info).
+- Seller flow: create/edit listing with images.
+- Messaging: start chat, send message, upload image.
+- Checkout/orders (if in scope): add to cart → checkout → order appears for buyer + seller.
+- Reviews (if exposed): submit + helpful vote + delete own review.
 
-- `cleanup/palette-scan-report.txt`
-- `cleanup/arbitrary-scan-report.txt`
-- `docs/DESIGN.md`
+---
 
-## Batch template
+## Rollback
 
-**Batch name:** .  
-**Scope (1–3 files/features):** .  
-**Risk:** low / med / high  
-**Verification:** `tsc` + `e2e:smoke` (+ spec if relevant)
-
-**Done when:**
-
-- No behavior/style regressions on touched screens
-- Gates pass
-- Any dashboard tasks are recorded (what changed + date)
+- Keep a known-good Vercel deployment ready to promote back to production.
+- Avoid schema changes that can’t be safely rolled back without a data migration plan.

@@ -68,17 +68,17 @@ async function HeaderWithUser({ categories }: { categories: CategoryTreeNode[] }
  * - Complete site header with navigation, search, mega menus
  * - Site footer with links and info
  * - Cookie consent banner
- * - Product modal slot for intercepted routes (desktop quick view)
+ * 
+ * Note: Product modal slot is at [locale] level to intercept [username]/[productSlug]
+ * routes which are siblings of (main), not children.
  * 
  * Used for: Homepage, products, categories, cart, checkout, etc.
  */
 export default async function MainLayout({
     children,
-    productModal,
     params,
 }: {
     children: React.ReactNode;
-    productModal: React.ReactNode;
     params: Promise<{ locale: string }>;
 }) {
     const { locale } = await params;
@@ -102,9 +102,6 @@ export default async function MainLayout({
                     <main id="main-content" role="main" className="flex-1 pb-20 md:pb-0">
                         {children}
                     </main>
-
-                    {/* Product Modal - renders intercepted product routes as overlay */}
-                    {productModal}
 
                     <SiteFooter />
                     <MobileTabBar categories={categories} />

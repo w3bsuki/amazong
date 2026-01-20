@@ -12,11 +12,10 @@
 - `app/[locale]/*/_actions/*`: server actions (route-scoped when possible)
 - `lib/data/*` and `lib/supabase/queries/*`: reusable data access
 - `components/ui/*`: shadcn primitives only (no app hooks)
-- `components/common/*`: shared composites (cards/sections)
+- `components/shared/*`: shared composites (cards/sections)
 - `components/layout/*`: shells (headers/nav/sidebars)
 
 ## Preferred patterns
 - Data fetching: centralize queries in `lib/data/*` (with caching where safe).
 - Variants (homepage/contextual/minimal): choose via layout + context, not DOM hacks.
 - Errors: use App Router error boundaries + `notFound()` (avoid ad-hoc redirects).
-

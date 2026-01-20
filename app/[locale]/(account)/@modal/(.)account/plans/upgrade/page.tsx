@@ -7,15 +7,12 @@ import { Suspense } from "react"
 import { Loader2 } from "lucide-react"
 import { connection } from "next/server"
 import { routing } from "@/i18n/routing"
+import { getPlansForUpgrade, PROFILE_SELECT_FOR_UPGRADE } from "@/lib/data/plans"
 
 // Generate static params for all locales - required for Next.js 16 Cache Components
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }))
 }
-
-const PROFILE_SELECT_FOR_UPGRADE = 'id,tier,commission_rate,stripe_customer_id'
-const SUBSCRIPTION_PLANS_SELECT_FOR_UPGRADE =
-  'id,tier,name,price_monthly,price_yearly,commission_rate,features,is_active,account_type'
 
 async function UpgradeModalContent() {
   // Ensure this runs dynamically, not during static generation
@@ -42,20 +39,9 @@ async function UpgradeModalContent() {
     .single()
 
   // Fetch subscription plans
-  const { data: plans } = await supabase
-    .from('subscription_plans')
-    .select(SUBSCRIPTION_PLANS_SELECT_FOR_UPGRADE)
-    .eq('is_active', true)
-    .order('price_monthly', { ascending: true })
+  const plans = await getPlansForUpgrade()
 
   const currentTier = profile?.tier || 'basic'
-
-  // Transform plans to ensure proper types (database can return null for some fields)
-  const transformedPlans = (plans || []).map(plan => ({
-    ...plan,
-    is_active: plan.is_active ?? true,
-    features: plan.features ?? [],
-  }))
 
   return (
     <Modal
@@ -67,7 +53,7 @@ async function UpgradeModalContent() {
     >
       <UpgradeContent
         locale={locale}
-        plans={transformedPlans}
+        plans={plans}
         currentTier={currentTier}
         seller={profile}
       />

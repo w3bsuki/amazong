@@ -14,15 +14,6 @@
 
 export type DrawerType = "product_quick_view" | "cart" | "messages" | "account"
 export type DrawerCloseMethod = "swipe" | "backdrop" | "button" | "escape"
-export type DrawerCtaAction = 
-  | "add_to_cart" 
-  | "view_full" 
-  | "checkout" 
-  | "view_all_messages" 
-  | "view_profile" 
-  | "navigate"
-  | "chat_seller"
-  | "buy_now"
 
 interface DrawerOpenEvent {
   type: DrawerType
@@ -34,21 +25,6 @@ interface DrawerCloseEvent {
   type: DrawerType
   method: DrawerCloseMethod
   duration_ms?: number
-  metadata?: Record<string, unknown>
-}
-
-interface DrawerCtaEvent {
-  type: DrawerType
-  action: DrawerCtaAction
-  metadata?: Record<string, unknown>
-}
-
-interface DrawerConversionEvent {
-  type: DrawerType
-  conversionType: "add_to_cart" | "checkout_started" | "message_sent" | "profile_viewed"
-  value?: number
-  currency?: string
-  productId?: string
   metadata?: Record<string, unknown>
 }
 
@@ -84,7 +60,6 @@ declare global {
 function sendAnalytics(eventName: string, data: Record<string, unknown>) {
   // Always log in development
   if (isDev) {
-    // eslint-disable-next-line no-console
     console.log(`[Analytics] ${eventName}`, data)
   }
   
@@ -147,41 +122,6 @@ export function trackDrawerClose(event: DrawerCloseEvent) {
     duration_bucket: getDurationBucket(duration_ms),
     ...event.metadata,
   })
-}
-
-/**
- * Track drawer CTA click
- */
-export function trackDrawerCta(event: DrawerCtaEvent) {
-  sendAnalytics("drawer_cta_click", {
-    drawer_type: event.type,
-    action: event.action,
-    ...event.metadata,
-  })
-}
-
-/**
- * Track drawer-initiated conversion
- */
-export function trackDrawerConversion(event: DrawerConversionEvent) {
-  sendAnalytics("drawer_conversion", {
-    drawer_type: event.type,
-    conversion_type: event.conversionType,
-    value: event.value,
-    currency: event.currency || "EUR",
-    product_id: event.productId,
-    ...event.metadata,
-  })
-}
-
-/**
- * Get session drawer metrics (for debugging/admin)
- */
-export function getSessionDrawerMetrics() {
-  return {
-    viewCounts: { ...sessionDrawerViews },
-    totalInteractions: Object.values(sessionDrawerViews).reduce((a, b) => a + b, 0),
-  }
 }
 
 // =============================================================================

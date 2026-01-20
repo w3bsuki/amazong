@@ -4,10 +4,7 @@ import { setRequestLocale } from "next-intl/server"
 import { UpgradeContent } from "./upgrade-content"
 import { ArrowLeft } from "@phosphor-icons/react/dist/ssr"
 import { Link } from "@/i18n/routing"
-
-const PROFILE_SELECT_FOR_UPGRADE = 'id,tier,commission_rate,stripe_customer_id'
-const SUBSCRIPTION_PLANS_SELECT_FOR_UPGRADE =
-  'id,tier,name,price_monthly,price_yearly,commission_rate,features,is_active,account_type'
+import { getPlansForUpgrade, PROFILE_SELECT_FOR_UPGRADE } from "@/lib/data/plans"
 
 /**
  * Full Upgrade Page
@@ -44,11 +41,7 @@ export default async function UpgradePage({
     .single()
 
   // Fetch subscription plans
-  const { data: plans } = await supabase
-    .from('subscription_plans')
-    .select(SUBSCRIPTION_PLANS_SELECT_FOR_UPGRADE)
-    .eq('is_active', true)
-    .order('price_monthly', { ascending: true })
+  const plans = await getPlansForUpgrade()
 
   const currentTier = profile?.tier || 'free'
 
@@ -85,7 +78,7 @@ export default async function UpgradePage({
 
       <UpgradeContent
         locale={locale}
-        plans={(plans || []) as Parameters<typeof UpgradeContent>[0]['plans']}
+        plans={plans as Parameters<typeof UpgradeContent>[0]['plans']}
         currentTier={currentTier}
         seller={seller}
       />

@@ -11,17 +11,17 @@ When triggered, Claude:
 
 ## How Skills Get Triggered
 
-Claude matches skills based on **exact phrases** in the `description` field. The current skill triggers on:
+Claude matches skills based on **exact phrases** in the `description` field. In Treido we primarily use prefix triggers:
 
-- `"add a component"`
-- `"fix the product card"`
-- `"update a server action"`
-- `"add Supabase RLS"`
-- `"run E2E tests"`
-- `"style with Tailwind"`
-- `"fix mobile layout"`
-- `"check TypeScript errors"`
-- Mentions of: Treido, treido.eu, Next.js 16, shadcn, Bulgarian marketplace
+- `TREIDO:` (daily workflow)
+- `BACKEND:` (routes, server actions, Supabase, Stripe)
+- `FRONTEND:` (UI/components, styling, i18n)
+- `REFACTOR:` (incremental refactors)
+- `ARCH:` (architecture/design)
+- `AUDIT:` (review/audit)
+- `TEST:` (tests/e2e stabilization)
+- `SUPABASE:` (Supabase RLS/perf audit)
+- `TAILWIND:` (Tailwind v4 + shadcn token/theme audit)
 
 ## Directory Structure
 
@@ -31,13 +31,13 @@ Claude matches skills based on **exact phrases** in the `description` field. The
 ├── settings.json          # Claude settings
 ├── rules/                 # Always-on rules (loaded every session)
 └── skills/
-    └── treido-dev/        # Our development skill
-        ├── SKILL.md       # Core instructions (lean)
-        ├── frontend.md    # UI/components reference
-        ├── backend.md     # Supabase/caching reference
-        ├── styling.md     # Tailwind v4 reference
-        ├── testing.md     # Gates/tests reference
-        └── tasks.md       # Task tracking reference
+    ├── treido-dev/        # Daily workflow
+    ├── treido-backend/    # Backend tasks
+    ├── treido-frontend/   # Frontend tasks
+    ├── treido-refactor/   # Refactor workflow
+    ├── treido-architect/  # Architecture/design
+    ├── treido-audit/      # Audits/reviews
+    └── treido-testing/    # Testing workflow
 ```
 
 ## SKILL.md Structure (Anthropic's Official Pattern)
@@ -46,7 +46,6 @@ Claude matches skills based on **exact phrases** in the `description` field. The
 ---
 name: skill-name
 description: This skill should be used when the user asks to "exact phrase 1", "exact phrase 2", or mentions specific-keyword.
-version: 0.1.0
 ---
 
 # Skill Title
@@ -145,9 +144,11 @@ Hooks run **automatically** on specific events:
 claude --plugin-dir .claude
 
 # Ask questions that should trigger the skill:
-# - "How do I add a new component to Treido?"
-# - "Run the E2E tests"
-# - "Fix the product card styling"
+# - "TREIDO: pick the next TODO and do it"
+# - "BACKEND: fix this route handler"
+# - "FRONTEND: update this page styling"
+# - "REFACTOR: split this file safely"
+# - "TEST: fix failing e2e smoke"
 
 # Verify skill loads correctly from the response
 ```

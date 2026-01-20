@@ -20,12 +20,41 @@ import {
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { Loader2, Package, CheckCircle, MessageSquare, XCircle, AlertTriangle, Star } from "lucide-react"
-import { buyerConfirmDelivery, canBuyerRateSeller, requestOrderCancellation, reportOrderIssue, type IssueType } from "@/app/actions/orders"
-import { submitSellerFeedback } from "@/app/actions/seller-feedback"
 import { type OrderItemStatus } from "@/lib/order-status"
 import { toast } from "sonner"
 import { Link, useRouter } from "@/i18n/routing"
-import { StarRatingDialog } from "@/components/shared/star-rating-dialog"
+import { StarRatingDialog } from "@/components/shared/star-rating-dialog"       
+
+export type IssueType =
+  | 'not_received'
+  | 'wrong_item'
+  | 'damaged'
+  | 'not_as_described'
+  | 'missing_parts'
+  | 'other'
+
+export type BuyerOrderActionsServerActions = {
+  buyerConfirmDelivery: (orderItemId: string) => Promise<{ success: boolean; error?: string }>
+  canBuyerRateSeller: (orderItemId: string) => Promise<{ canRate: boolean; hasRated: boolean }>
+  requestOrderCancellation: (
+    orderItemId: string,
+    reason?: string
+  ) => Promise<{ success: boolean; error?: string }>
+  reportOrderIssue: (
+    orderItemId: string,
+    issueType: IssueType,
+    description: string
+  ) => Promise<{ success: boolean; error?: string; conversationId?: string }>
+  submitSellerFeedback: (input: {
+    sellerId: string
+    orderId: string
+    rating: number
+    comment?: string
+    itemAsDescribed: boolean
+    shippingSpeed: boolean
+    communication: boolean
+  }) => Promise<{ success: boolean; error?: string }>
+}
 
 interface BuyerOrderActionsProps {
   orderItemId: string
@@ -34,6 +63,7 @@ interface BuyerOrderActionsProps {
   conversationId?: string | null
   locale?: string
   orderId: string
+  actions: BuyerOrderActionsServerActions
 }
 
 export function BuyerOrderActions({
@@ -43,6 +73,7 @@ export function BuyerOrderActions({
   conversationId,
   locale = 'en',
   orderId,
+  actions,
 }: BuyerOrderActionsProps) {
   const router = useRouter()
   const [isSubmitting, startTransition] = useTransition()
@@ -65,7 +96,7 @@ export function BuyerOrderActions({
   // Check if can rate when delivered
   async function checkRatingStatus() {
     if (isDelivered) {
-      const result = await canBuyerRateSeller(orderItemId)
+      const result = await actions.canBuyerRateSeller(orderItemId)
       setCanRate(result.canRate)
       setHasRated(result.hasRated)
     }
@@ -79,7 +110,7 @@ export function BuyerOrderActions({
   async function handleConfirmDelivery() {
     startTransition(async () => {
       try {
-        const result = await buyerConfirmDelivery(orderItemId)
+        const result = await actions.buyerConfirmDelivery(orderItemId)
         if (result.success) {
           toast.success(locale === 'bg' ? 'Доставката е потвърдена!' : 'Delivery confirmed!')
           router.refresh()
@@ -99,11 +130,11 @@ export function BuyerOrderActions({
   async function handleSubmitRating(rating: number, comment: string) {
     startTransition(async () => {
       try {
-        const result = await submitSellerFeedback({
+        const result = await actions.submitSellerFeedback({
           sellerId,
           orderId,
           rating,
-          comment: comment || undefined,
+          ...(comment ? { comment } : {}),
           itemAsDescribed: true,
           shippingSpeed: true,
           communication: true,
@@ -126,7 +157,7 @@ export function BuyerOrderActions({
   async function handleCancelOrder() {
     startTransition(async () => {
       try {
-        const result = await requestOrderCancellation(orderItemId, cancelReason || undefined)
+        const result = await actions.requestOrderCancellation(orderItemId, cancelReason || undefined)
         if (result.success) {
           toast.success(locale === 'bg' ? 'Поръчката е отменена!' : 'Order cancelled!')
           setShowCancelDialog(false)
@@ -153,7 +184,7 @@ export function BuyerOrderActions({
 
     startTransition(async () => {
       try {
-        const result = await reportOrderIssue(orderItemId, issueType as IssueType, issueDescription)
+        const result = await actions.reportOrderIssue(orderItemId, issueType as IssueType, issueDescription)
         if (result.success) {
           toast.success(locale === 'bg' ? 'Проблемът е докладван!' : 'Issue reported!')
           setShowIssueDialog(false)

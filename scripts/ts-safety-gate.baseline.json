@@ -1,19 +1,7 @@
 [
   {
-    "file": "app/[locale]/(account)/account/(settings)/notifications/notifications-content.tsx",
-    "line": 179,
-    "column": 73,
-    "kind": "as-any"
-  },
-  {
-    "file": "app/[locale]/(account)/account/(settings)/notifications/notifications-content.tsx",
-    "line": 260,
-    "column": 26,
-    "kind": "as-any"
-  },
-  {
     "file": "app/[locale]/(account)/account/orders/[id]/_components/order-detail-content.tsx",
-    "line": 631,
+    "line": 634,
     "column": 52,
     "kind": "non-null"
   },
@@ -49,99 +37,93 @@
   },
   {
     "file": "app/[locale]/(business)/_components/order-detail-view.tsx",
-    "line": 237,
+    "line": 238,
     "column": 49,
     "kind": "non-null"
   },
   {
     "file": "app/[locale]/(business)/dashboard/_lib/categories.ts",
-    "line": 33,
+    "line": 34,
     "column": 18,
     "kind": "non-null"
   },
   {
     "file": "app/[locale]/(business)/dashboard/_lib/categories.ts",
-    "line": 36,
+    "line": 37,
     "column": 7,
     "kind": "non-null"
   },
   {
+    "file": "app/[locale]/(business)/dashboard/inventory/page.tsx",
+    "line": 88,
+    "column": 36,
+    "kind": "as-any"
+  },
+  {
+    "file": "app/[locale]/(business)/dashboard/inventory/page.tsx",
+    "line": 105,
+    "column": 36,
+    "kind": "as-any"
+  },
+  {
+    "file": "app/[locale]/(business)/dashboard/inventory/page.tsx",
+    "line": 107,
+    "column": 40,
+    "kind": "as-any"
+  },
+  {
     "file": "app/[locale]/(checkout)/_actions/checkout.ts",
-    "line": 187,
+    "line": 106,
+    "column": 37,
+    "kind": "non-null"
+  },
+  {
+    "file": "app/[locale]/(checkout)/_actions/checkout.ts",
+    "line": 404,
     "column": 22,
     "kind": "non-null"
   },
   {
-    "file": "app/[locale]/(main)/members/_lib/get-members-page-data.ts",
-    "line": 76,
-    "column": 36,
+    "file": "app/[locale]/(main)/categories/[slug]/page.tsx",
+    "line": 224,
+    "column": 27,
     "kind": "any"
   },
   {
-    "file": "app/[locale]/(main)/members/_lib/get-members-page-data.ts",
-    "line": 90,
-    "column": 34,
+    "file": "app/[locale]/(main)/categories/[slug]/page.tsx",
+    "line": 225,
+    "column": 26,
     "kind": "any"
   },
   {
-    "file": "app/[locale]/(main)/seller/dashboard/_components/seller-dashboard-client.tsx",
-    "line": 310,
-    "column": 89,
-    "kind": "as-any"
-  },
-  {
-    "file": "app/[locale]/(main)/wishlist/[token]/page.tsx",
-    "line": 37,
-    "column": 42,
-    "kind": "as-any"
-  },
-  {
-    "file": "app/[locale]/(main)/wishlist/[token]/page.tsx",
-    "line": 37,
-    "column": 86,
-    "kind": "as-any"
-  },
-  {
-    "file": "app/[locale]/(main)/wishlist/[token]/page.tsx",
-    "line": 38,
-    "column": 49,
-    "kind": "as-any"
-  },
-  {
-    "file": "app/[locale]/(main)/wishlist/[token]/page.tsx",
-    "line": 38,
-    "column": 100,
-    "kind": "as-any"
-  },
-  {
-    "file": "app/[locale]/(main)/wishlist/[token]/page.tsx",
-    "line": 39,
-    "column": 39,
-    "kind": "as-any"
-  },
-  {
-    "file": "app/[locale]/(main)/wishlist/[token]/page.tsx",
-    "line": 48,
-    "column": 38,
+    "file": "app/[locale]/(main)/categories/[slug]/page.tsx",
+    "line": 226,
+    "column": 18,
     "kind": "any"
   },
   {
-    "file": "app/[locale]/(sell)/_actions/sell.ts",
-    "line": 54,
-    "column": 34,
-    "kind": "as-any"
-  },
-  {
-    "file": "app/[locale]/(sell)/_actions/sell.ts",
-    "line": 112,
-    "column": 71,
-    "kind": "as-any"
-  },
-  {
-    "file": "app/[locale]/(sell)/_actions/sell.ts",
-    "line": 169,
+    "file": "app/[locale]/(main)/categories/[slug]/page.tsx",
+    "line": 244,
     "column": 25,
-    "kind": "as-any"
+    "kind": "any"
+  },
+  {
+    "file": "app/[locale]/(main)/search/_lib/search-products.ts",
+    "line": 30,
+    "column": 28,
+    "kind": "any"
+  },
+  {
+    "file": "app/[locale]/(main)/search/_lib/search-products.ts",
+    "line": 73,
+    "column": 34,
+    "kind": "any"
+  },
+  {
+    "file": "app/[locale]/(main)/search/_lib/search-products.ts",
+    "line": 108,
+    "column": 13,
+    "kind": "any"
   },
   {
     "file": "app/[locale]/(sell)/_components/ai/ai-listing-assistant.tsx",
@@ -168,94 +150,10 @@
     "kind": "non-null"
   },
   {
-    "file": "app/[locale]/(sell)/_components/fields/attributes-field.tsx",
-    "line": 196,
-    "column": 50,
-    "kind": "any"
-  },
-  {
-    "file": "app/[locale]/(sell)/_components/sell-form-unified.tsx",
-    "line": 96,
-    "column": 44,
-    "kind": "as-any"
-  },
-  {
-    "file": "app/[locale]/(sell)/_components/sell-form-unified.tsx",
-    "line": 99,
-    "column": 40,
-    "kind": "as-any"
-  },
-  {
-    "file": "app/[locale]/(sell)/_components/sell-form-unified.tsx",
-    "line": 99,
-    "column": 68,
-    "kind": "as-any"
-  },
-  {
-    "file": "app/[locale]/(sell)/_components/sell-form-unified.tsx",
-    "line": 111,
-    "column": 38,
-    "kind": "as-any"
-  },
-  {
-    "file": "app/[locale]/(sell)/_components/sell-form-unified.tsx",
-    "line": 111,
-    "column": 70,
-    "kind": "as-any"
-  },
-  {
-    "file": "app/[locale]/(sell)/_components/sell-form-unified.tsx",
-    "line": 112,
-    "column": 43,
-    "kind": "as-any"
-  },
-  {
-    "file": "app/[locale]/(sell)/_components/sell-form-unified.tsx",
-    "line": 113,
-    "column": 40,
-    "kind": "as-any"
-  },
-  {
     "file": "app/[locale]/(sell)/_components/ui/category-modal/index.tsx",
-    "line": 440,
+    "line": 550,
     "column": 58,
     "kind": "non-null"
-  },
-  {
-    "file": "app/[locale]/(sell)/PerformanceMeasureGuard.tsx",
-    "line": 7,
-    "column": 33,
-    "kind": "as-any"
-  },
-  {
-    "file": "app/[locale]/(sell)/PerformanceMeasureGuard.tsx",
-    "line": 8,
-    "column": 27,
-    "kind": "any"
-  },
-  {
-    "file": "app/[locale]/(sell)/PerformanceMeasureGuard.tsx",
-    "line": 8,
-    "column": 37,
-    "kind": "any"
-  },
-  {
-    "file": "app/[locale]/(sell)/PerformanceMeasureGuard.tsx",
-    "line": 15,
-    "column": 27,
-    "kind": "any"
-  },
-  {
-    "file": "app/[locale]/(sell)/PerformanceMeasureGuard.tsx",
-    "line": 15,
-    "column": 41,
-    "kind": "any"
-  },
-  {
-    "file": "app/[locale]/(sell)/PerformanceMeasureGuard.tsx",
-    "line": 18,
-    "column": 23,
-    "kind": "any"
   },
   {
     "file": "app/[locale]/(sell)/sell/_lib/categories.ts",
@@ -270,579 +168,267 @@
     "kind": "non-null"
   },
   {
-    "file": "app/[locale]/(sell)/sell/client.tsx",
-    "line": 167,
-    "column": 49,
-    "kind": "as-any"
+    "file": "app/[locale]/(sell)/sell/orders/_components/order-status-actions.tsx",
+    "line": 135,
+    "column": 45,
+    "kind": "non-null"
   },
   {
-    "file": "app/[locale]/[username]/profile-client.tsx",
-    "line": 58,
-    "column": 13,
+    "file": "app/[locale]/[username]/[productSlug]/page.tsx",
+    "line": 72,
+    "column": 21,
     "kind": "any"
   },
   {
-    "file": "app/[locale]/[username]/profile-client.tsx",
-    "line": 60,
-    "column": 18,
-    "kind": "any"
-  },
-  {
-    "file": "app/[locale]/[username]/profile-client.tsx",
-    "line": 62,
-    "column": 17,
-    "kind": "any"
+    "file": "app/[locale]/demo/sell5/page.tsx",
+    "line": 569,
+    "column": 54,
+    "kind": "non-null"
   },
   {
     "file": "app/actions/profile.ts",
-    "line": 441,
+    "line": 437,
     "column": 14,
-    "kind": "non-null"
-  },
-  {
-    "file": "app/api/ai/chat/route.ts",
-    "line": 207,
-    "column": 13,
-    "kind": "any"
-  },
-  {
-    "file": "app/api/ai/chat/route.ts",
-    "line": 208,
-    "column": 14,
-    "kind": "any"
-  },
-  {
-    "file": "app/api/ai/chat/route.ts",
-    "line": 232,
-    "column": 54,
-    "kind": "any"
-  },
-  {
-    "file": "app/api/ai/chat/route.ts",
-    "line": 265,
-    "column": 54,
-    "kind": "any"
-  },
-  {
-    "file": "app/api/ai/chat/route.ts",
-    "line": 299,
-    "column": 54,
-    "kind": "any"
-  },
-  {
-    "file": "app/api/ai/chat/route.ts",
-    "line": 563,
-    "column": 80,
-    "kind": "as-any"
-  },
-  {
-    "file": "app/api/ai/chat/route.ts",
-    "line": 567,
-    "column": 42,
-    "kind": "any"
-  },
-  {
-    "file": "app/api/ai/chat/route.ts",
-    "line": 572,
-    "column": 40,
-    "kind": "any"
-  },
-  {
-    "file": "app/api/ai/chat/route.ts",
-    "line": 654,
-    "column": 30,
-    "kind": "as-any"
-  },
-  {
-    "file": "app/api/ai/chat/route.ts",
-    "line": 662,
-    "column": 38,
-    "kind": "as-any"
-  },
-  {
-    "file": "app/api/ai/chat/route.ts",
-    "line": 662,
-    "column": 77,
-    "kind": "as-any"
-  },
-  {
-    "file": "app/api/ai/search/route.ts",
-    "line": 107,
-    "column": 13,
-    "kind": "any"
-  },
-  {
-    "file": "app/api/ai/search/route.ts",
-    "line": 108,
-    "column": 14,
-    "kind": "any"
-  },
-  {
-    "file": "app/api/ai/search/route.ts",
-    "line": 133,
-    "column": 54,
-    "kind": "any"
-  },
-  {
-    "file": "app/api/ai/search/route.ts",
-    "line": 212,
-    "column": 38,
-    "kind": "as-any"
-  },
-  {
-    "file": "app/api/ai/search/route.ts",
-    "line": 212,
-    "column": 77,
-    "kind": "as-any"
-  },
-  {
-    "file": "app/api/categories/[slug]/attributes/route.ts",
-    "line": 6,
-    "column": 3,
-    "kind": "non-null"
-  },
-  {
-    "file": "app/api/categories/[slug]/attributes/route.ts",
-    "line": 7,
-    "column": 3,
     "kind": "non-null"
   },
   {
     "file": "app/api/categories/attributes/route.ts",
-    "line": 103,
-    "column": 77,
+    "line": 154,
+    "column": 75,
     "kind": "non-null"
   },
   {
-    "file": "app/api/categories/attributes/route.ts",
-    "line": 130,
-    "column": 35,
-    "kind": "any"
-  },
-  {
     "file": "app/api/categories/route.ts",
-    "line": 83,
+    "line": 75,
     "column": 22,
     "kind": "non-null"
   },
   {
     "file": "app/api/categories/route.ts",
-    "line": 87,
+    "line": 79,
     "column": 22,
     "kind": "non-null"
   },
   {
     "file": "app/api/categories/route.ts",
-    "line": 247,
+    "line": 240,
     "column": 22,
     "kind": "non-null"
   },
   {
     "file": "app/api/categories/route.ts",
-    "line": 249,
+    "line": 242,
     "column": 22,
     "kind": "non-null"
   },
   {
     "file": "app/api/checkout/webhook/route.ts",
-    "line": 6,
-    "column": 27,
-    "kind": "non-null"
-  },
-  {
-    "file": "app/api/checkout/webhook/route.ts",
-    "line": 29,
-    "column": 7,
-    "kind": "non-null"
-  },
-  {
-    "file": "app/api/checkout/webhook/route.ts",
-    "line": 128,
-    "column": 26,
+    "line": 92,
+    "column": 18,
     "kind": "non-null"
   },
   {
     "file": "app/api/payments/webhook/route.ts",
-    "line": 24,
-    "column": 13,
-    "kind": "non-null"
-  },
-  {
-    "file": "app/api/products/create/route.ts",
-    "line": 212,
-    "column": 7,
-    "kind": "non-null"
-  },
-  {
-    "file": "app/api/products/create/route.ts",
-    "line": 213,
-    "column": 7,
-    "kind": "non-null"
-  },
-  {
-    "file": "app/api/products/deals/route.ts",
-    "line": 97,
+    "line": 55,
     "column": 27,
     "kind": "as-any"
   },
   {
-    "file": "app/api/products/deals/route.ts",
-    "line": 98,
-    "column": 33,
+    "file": "app/api/payments/webhook/route.ts",
+    "line": 57,
+    "column": 43,
     "kind": "as-any"
   },
   {
-    "file": "app/api/products/deals/route.ts",
-    "line": 102,
-    "column": 27,
+    "file": "app/api/payments/webhook/route.ts",
+    "line": 78,
+    "column": 59,
     "kind": "as-any"
   },
   {
-    "file": "app/api/products/feed/route.ts",
-    "line": 143,
-    "column": 27,
-    "kind": "as-any"
-  },
-  {
-    "file": "app/api/products/feed/route.ts",
-    "line": 144,
-    "column": 29,
-    "kind": "as-any"
-  },
-  {
-    "file": "app/api/products/feed/route.ts",
-    "line": 145,
-    "column": 30,
-    "kind": "as-any"
-  },
-  {
-    "file": "app/api/products/feed/route.ts",
-    "line": 151,
-    "column": 27,
-    "kind": "as-any"
-  },
-  {
-    "file": "app/api/products/feed/route.ts",
-    "line": 152,
-    "column": 33,
-    "kind": "as-any"
-  },
-  {
-    "file": "app/api/products/feed/route.ts",
-    "line": 156,
-    "column": 27,
-    "kind": "as-any"
-  },
-  {
-    "file": "app/api/products/nearby/route.ts",
-    "line": 95,
-    "column": 27,
-    "kind": "as-any"
-  },
-  {
-    "file": "app/api/products/nearby/route.ts",
-    "line": 96,
-    "column": 29,
-    "kind": "as-any"
-  },
-  {
-    "file": "app/api/products/nearby/route.ts",
-    "line": 97,
-    "column": 30,
-    "kind": "as-any"
-  },
-  {
-    "file": "app/api/products/nearby/route.ts",
+    "file": "app/api/payments/webhook/route.ts",
     "line": 103,
-    "column": 27,
+    "column": 66,
     "kind": "as-any"
   },
   {
-    "file": "app/api/products/nearby/route.ts",
-    "line": 104,
-    "column": 33,
+    "file": "app/api/payments/webhook/route.ts",
+    "line": 223,
+    "column": 49,
     "kind": "as-any"
   },
   {
-    "file": "app/api/products/nearby/route.ts",
-    "line": 108,
-    "column": 27,
+    "file": "app/api/payments/webhook/route.ts",
+    "line": 239,
+    "column": 34,
     "kind": "as-any"
   },
   {
-    "file": "app/api/products/newest/route.ts",
-    "line": 49,
-    "column": 22,
-    "kind": "any"
-  },
-  {
-    "file": "app/api/products/newest/route.ts",
-    "line": 62,
-    "column": 77,
-    "kind": "as-any"
-  },
-  {
-    "file": "app/api/products/newest/route.ts",
-    "line": 77,
-    "column": 60,
-    "kind": "as-any"
-  },
-  {
-    "file": "app/api/products/newest/route.ts",
-    "line": 86,
-    "column": 45,
-    "kind": "any"
-  },
-  {
-    "file": "app/api/products/route.ts",
-    "line": 88,
-    "column": 13,
-    "kind": "non-null"
-  },
-  {
-    "file": "app/api/products/route.ts",
-    "line": 89,
-    "column": 13,
-    "kind": "non-null"
-  },
-  {
-    "file": "app/api/products/search/route.ts",
-    "line": 63,
+    "file": "app/api/revalidate/route.ts",
+    "line": 99,
     "column": 35,
     "kind": "as-any"
   },
   {
-    "file": "app/api/stores/route.ts",
-    "line": 46,
-    "column": 13,
-    "kind": "non-null"
-  },
-  {
-    "file": "app/api/stores/route.ts",
-    "line": 47,
-    "column": 13,
-    "kind": "non-null"
-  },
-  {
-    "file": "app/api/subscriptions/webhook/route.ts",
-    "line": 6,
-    "column": 27,
-    "kind": "non-null"
-  },
-  {
-    "file": "app/api/subscriptions/webhook/route.ts",
-    "line": 28,
-    "column": 7,
-    "kind": "non-null"
-  },
-  {
-    "file": "app/api/wishlist/[token]/route.ts",
-    "line": 40,
-    "column": 32,
-    "kind": "any"
-  },
-  {
-    "file": "components/ai-elements/prompt-input.tsx",
-    "line": 877,
-    "column": 53,
-    "kind": "any"
-  },
-  {
-    "file": "components/ai-elements/prompt-input.tsx",
-    "line": 878,
-    "column": 51,
-    "kind": "any"
-  },
-  {
-    "file": "components/ai-elements/prompt-input.tsx",
-    "line": 880,
-    "column": 65,
-    "kind": "any"
-  },
-  {
-    "file": "components/ai-elements/prompt-input.tsx",
-    "line": 883,
-    "column": 70,
-    "kind": "any"
-  },
-  {
-    "file": "components/ai/ai-chatbot.tsx",
-    "line": 103,
-    "column": 54,
-    "kind": "any"
-  },
-  {
-    "file": "components/ai/ai-chatbot.tsx",
-    "line": 104,
-    "column": 16,
-    "kind": "any"
-  },
-  {
-    "file": "components/ai/ai-chatbot.tsx",
-    "line": 108,
-    "column": 23,
+    "file": "app/api/revalidate/route.ts",
+    "line": 100,
+    "column": 38,
     "kind": "as-any"
   },
   {
-    "file": "components/ai/ai-chatbot.tsx",
-    "line": 150,
-    "column": 48,
+    "file": "app/api/revalidate/route.ts",
+    "line": 101,
+    "column": 39,
     "kind": "as-any"
   },
   {
-    "file": "components/ai/ai-chatbot.tsx",
-    "line": 152,
-    "column": 24,
+    "file": "app/api/revalidate/route.ts",
+    "line": 102,
+    "column": 42,
     "kind": "as-any"
   },
   {
-    "file": "components/ai/ai-chatbot.tsx",
-    "line": 165,
-    "column": 23,
-    "kind": "as-any"
-  },
-  {
-    "file": "components/ai/ai-chatbot.tsx",
-    "line": 193,
-    "column": 23,
-    "kind": "as-any"
-  },
-  {
-    "file": "components/ai/ai-chatbot.tsx",
-    "line": 226,
-    "column": 25,
-    "kind": "as-any"
-  },
-  {
-    "file": "components/ai/ai-chatbot.tsx",
-    "line": 276,
-    "column": 31,
-    "kind": "as-any"
-  },
-  {
-    "file": "components/ai/ai-chatbot.tsx",
-    "line": 295,
-    "column": 18,
-    "kind": "any"
-  },
-  {
-    "file": "components/ai/ai-chatbot.tsx",
-    "line": 744,
-    "column": 62,
-    "kind": "as-any"
-  },
-  {
-    "file": "components/ai/ai-chatbot.tsx",
-    "line": 748,
-    "column": 60,
-    "kind": "as-any"
-  },
-  {
-    "file": "components/ai/ai-chatbot.tsx",
-    "line": 753,
-    "column": 72,
-    "kind": "as-any"
-  },
-  {
-    "file": "components/ai/ai-chatbot.tsx",
-    "line": 771,
-    "column": 52,
-    "kind": "as-any"
-  },
-  {
-    "file": "components/ai/ai-chatbot.tsx",
-    "line": 799,
-    "column": 65,
-    "kind": "as-any"
-  },
-  {
-    "file": "components/ai/ai-chatbot.tsx",
-    "line": 799,
-    "column": 106,
-    "kind": "as-any"
-  },
-  {
-    "file": "components/ai/ai-chatbot.tsx",
-    "line": 802,
-    "column": 61,
-    "kind": "as-any"
-  },
-  {
-    "file": "components/common/filters/mobile-filters.tsx",
-    "line": 426,
-    "column": 32,
-    "kind": "non-null"
-  },
-  {
-    "file": "components/dropdowns/notifications-dropdown.tsx",
-    "line": 158,
-    "column": 50,
-    "kind": "as-any"
-  },
-  {
-    "file": "components/dropdowns/notifications-dropdown.tsx",
-    "line": 358,
-    "column": 50,
-    "kind": "as-any"
-  },
-  {
-    "file": "components/dropdowns/notifications-dropdown.tsx",
-    "line": 368,
-    "column": 31,
-    "kind": "as-any"
-  },
-  {
-    "file": "components/orders/order-status-actions.tsx",
-    "line": 137,
-    "column": 45,
-    "kind": "non-null"
-  },
-  {
-    "file": "lib/ai/providers.ts",
-    "line": 94,
+    "file": "app/api/revalidate/route.ts",
+    "line": 114,
     "column": 41,
+    "kind": "as-any"
+  },
+  {
+    "file": "app/api/revalidate/route.ts",
+    "line": 115,
+    "column": 44,
+    "kind": "as-any"
+  },
+  {
+    "file": "components/mobile/horizontal-product-card.tsx",
+    "line": 31,
+    "column": 20,
+    "kind": "non-null"
+  },
+  {
+    "file": "components/mobile/horizontal-product-card.tsx",
+    "line": 31,
+    "column": 58,
+    "kind": "non-null"
+  },
+  {
+    "file": "components/mobile/horizontal-product-card.tsx",
+    "line": 108,
+    "column": 17,
+    "kind": "non-null"
+  },
+  {
+    "file": "components/mobile/mobile-category-browser.tsx",
+    "line": 311,
+    "column": 43,
+    "kind": "any"
+  },
+  {
+    "file": "components/mobile/mobile-category-browser.tsx",
+    "line": 343,
+    "column": 45,
+    "kind": "as-any"
+  },
+  {
+    "file": "components/mobile/mobile-category-browser.tsx",
+    "line": 358,
+    "column": 46,
+    "kind": "as-any"
+  },
+  {
+    "file": "components/mobile/mobile-category-browser.tsx",
+    "line": 394,
+    "column": 46,
+    "kind": "as-any"
+  },
+  {
+    "file": "hooks/use-category-attributes.ts",
+    "line": 41,
+    "column": 21,
+    "kind": "non-null"
+  },
+  {
+    "file": "lib/auth/business.ts",
+    "line": 862,
+    "column": 56,
+    "kind": "any"
+  },
+  {
+    "file": "lib/auth/business.ts",
+    "line": 869,
+    "column": 56,
+    "kind": "any"
+  },
+  {
+    "file": "lib/avatar-palettes.ts",
+    "line": 22,
+    "column": 39,
+    "kind": "non-null"
+  },
+  {
+    "file": "lib/category-icons.tsx",
+    "line": 382,
+    "column": 30,
+    "kind": "non-null"
+  },
+  {
+    "file": "lib/category-icons.tsx",
+    "line": 383,
+    "column": 10,
     "kind": "non-null"
   },
   {
     "file": "lib/data/categories.ts",
-    "line": 178,
+    "line": 184,
     "column": 22,
     "kind": "non-null"
   },
   {
     "file": "lib/data/categories.ts",
-    "line": 181,
+    "line": 187,
     "column": 22,
+    "kind": "non-null"
+  },
+  {
+    "file": "lib/data/categories.ts",
+    "line": 792,
+    "column": 68,
+    "kind": "as-any"
+  },
+  {
+    "file": "lib/data/products.ts",
+    "line": 226,
+    "column": 32,
     "kind": "non-null"
   },
   {
     "file": "lib/data/products.ts",
-    "line": 228,
-    "column": 32,
-    "kind": "non-null"
+    "line": 237,
+    "column": 20,
+    "kind": "any"
   },
   {
-    "file": "lib/supabase/middleware.ts",
-    "line": 65,
-    "column": 5,
-    "kind": "non-null"
+    "file": "lib/data/products.ts",
+    "line": 245,
+    "column": 30,
+    "kind": "any"
   },
   {
-    "file": "lib/supabase/middleware.ts",
-    "line": 66,
-    "column": 5,
-    "kind": "non-null"
+    "file": "lib/data/products.ts",
+    "line": 245,
+    "column": 38,
+    "kind": "any"
   },
   {
-    "file": "lib/supabase/server.ts",
-    "line": 19,
-    "column": 22,
-    "kind": "non-null"
+    "file": "lib/data/products.ts",
+    "line": 407,
+    "column": 35,
+    "kind": "any"
   },
   {
-    "file": "lib/supabase/server.ts",
-    "line": 20,
-    "column": 27,
+    "file": "lib/filter-priority.ts",
+    "line": 39,
+    "column": 25,
     "kind": "non-null"
   }
 ]

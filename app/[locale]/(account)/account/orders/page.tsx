@@ -1,6 +1,14 @@
 import { Suspense } from "react"
 import { createClient } from "@/lib/supabase/server"
 import { redirect } from "next/navigation"
+import {
+  buyerConfirmDelivery,
+  canBuyerRateSeller,
+  getOrderConversation,
+  reportOrderIssue,
+  requestOrderCancellation,
+} from "@/app/actions/orders"
+import { submitSellerFeedback } from "@/app/actions/seller-feedback"
 import { AccountOrdersToolbar } from "./_components/account-orders-toolbar"
 import { AccountOrdersStats } from "./_components/account-orders-stats"
 import { AccountOrdersGrid } from "./_components/account-orders-grid"
@@ -185,7 +193,18 @@ export default async function OrdersPage({ params, searchParams }: OrdersPagePro
 
       {/* Orders Grid - Wrapped in Suspense for streaming */}
       <Suspense fallback={<OrdersGridSkeleton />}>
-        <AccountOrdersGrid orders={filteredOrders} locale={locale} />
+        <AccountOrdersGrid
+          orders={filteredOrders}
+          locale={locale}
+          actions={{
+            getOrderConversation,
+            buyerConfirmDelivery,
+            canBuyerRateSeller,
+            requestOrderCancellation,
+            reportOrderIssue,
+            submitSellerFeedback,
+          }}
+        />
       </Suspense>
     </div>
   )

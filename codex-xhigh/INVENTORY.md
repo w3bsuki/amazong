@@ -3,7 +3,7 @@
 This is a **focus map** of the most production-critical surfaces + known hotspots.
 
 ## P0/P1 user flows to verify end-to-end
-Reference: `docs/launch/CHECKLIST-QA.md` and `docs/launch/FEATURES.md`.
+Reference: `docs/PRODUCTION.md` (manual QA checklist) and `docs/FEATURES.md`.
 
 1) Auth (signup/login/reset) + redirects
 2) Onboarding (account type, profile, seller intent, Stripe payouts if required)
@@ -15,14 +15,12 @@ Reference: `docs/launch/CHECKLIST-QA.md` and `docs/launch/FEATURES.md`.
 8) Plans/subscriptions + upgrades/downgrades + gating business routes
 
 ## Known hotspots (evidence already exists)
-- Production execution + P0 blockers: `codex/MASTER-PLAN.md`
-- Supabase drift/risks (functions/RLS/triggers): `codex/supabase-audit-2026-01-17.md`
-- Frontend boundary violations (components importing actions): `codex/AUDIT-core-app.md`
-- i18n bypass/hardcoded strings: `docs/launch/PLAN-I18N.md` + `codex/MASTER-PLAN.md`
-- Layout over-engineering history: `REFACTOR-LAYOUT-ARCHITECTURE.md`
+- Supabase drift/risks (functions/RLS/triggers): `codex-xhigh/supabase/FULL-AUDIT.md`
+- Frontend boundary violations (components importing actions): `codex-xhigh/nextjs/FULL-AUDIT.md`
+- i18n bypass/hardcoded strings: `codex-xhigh/i18n/FULL-AUDIT.md` + `docs/FRONTEND.md`
+- Layout/architecture hotspots: `codex-xhigh/ARCHITECTURE-AUDIT.md`
 
 ## “Don’t lose time here” rules
 - Don’t refactor for beauty unless it unblocks a P0/P1 flow.
 - Don’t add new plan files in the repo root; add notes to `TODO.md` or this folder.
 - Prefer deleting dead code over reorganizing (repo rail).
-

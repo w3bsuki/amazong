@@ -52,9 +52,17 @@
   --onboarding-modal-max-h: 85vh;
   --onboarding-modal-max-h-sm: 90vh;
 
-  /* Product form modal */
-  --product-form-modal-h: 98dvh;
-  --product-form-modal-w: 98vw;
+  /* Product page modal */
+  --product-modal-h: calc(100dvh - 2rem);
+  --product-modal-w: calc(100vw - 2rem);
+
+  /* Product form modal - now used for product quick view */
+  --product-form-modal-h: min(92dvh, 720px);
+  --product-form-modal-w: min(94vw, 1100px);
+
+  /* Product quick-view modal (desktop) - optimized to show all content */
+  --product-quickview-h: min(90dvh, 680px);
+  --product-quickview-w: min(94vw, 1000px);
 
   /* Plans */
   --plans-skeleton-card-w: calc(100vw - 3rem);

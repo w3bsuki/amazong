@@ -5,7 +5,7 @@
  * Major cities ordered by population, plus "Other" option
  */
 
-export interface BulgarianCity {
+interface BulgarianCity {
   value: string;
   label: string;
   labelBg: string;
@@ -57,36 +57,3 @@ export const BULGARIAN_CITIES: readonly BulgarianCity[] = [
   // Other option for smaller towns/villages
   { value: "other", label: "Other City/Village", labelBg: "Друг град/село", region: null },
 ] as const;
-
-/**
- * Get city by value
- */
-export function getCityByValue(value: string): BulgarianCity | undefined {
-  return BULGARIAN_CITIES.find(city => city.value === value);
-}
-
-/**
- * Get city label (localized)
- */
-export function getCityLabel(value: string, locale: string = 'en'): string {
-  const city = getCityByValue(value);
-  if (!city) return value;
-  return locale === 'bg' ? city.labelBg : city.label;
-}
-
-/**
- * City values for Zod enum validation
- */
-const CITY_VALUES = BULGARIAN_CITIES.map(c => c.value) as [string, ...string[]];
-
-/**
- * Quick lookup map for validation
- */
-export const CITY_VALUE_SET = new Set(BULGARIAN_CITIES.map(c => c.value));
-
-/**
- * Validate if a value is a valid city
- */
-function isValidCity(value: string): boolean {
-  return CITY_VALUE_SET.has(value);
-}

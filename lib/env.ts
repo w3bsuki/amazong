@@ -28,10 +28,6 @@ export function getStripeSecretKey(): string {
   return getRequiredEnvVar('STRIPE_SECRET_KEY')
 }
 
-export function getStripeWebhookSecret(): string {
-  return getRequiredEnvVar('STRIPE_WEBHOOK_SECRET')
-}
-
 export function getStripeWebhookSecrets(): string[] {
   const raw = getRequiredEnvVar('STRIPE_WEBHOOK_SECRET')
   return raw
@@ -46,8 +42,4 @@ export function getStripeSubscriptionWebhookSecret(): string {
 
 export function getStripeConnectWebhookSecret(): string {
   return getRequiredEnvVar('STRIPE_CONNECT_WEBHOOK_SECRET')
-}
-
-export function getStripePublishableKey(): string {
-  return getRequiredEnvVar('NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY')
 }

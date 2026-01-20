@@ -30,6 +30,7 @@ import { useCategoryCounts } from "@/hooks/use-category-counts"
 import { useCategoryAttributes } from "@/hooks/use-category-attributes"
 import { useViewMode } from "@/hooks/use-view-mode"
 import type { CategoryTreeNode } from "@/lib/category-tree"
+import { Fire } from "@phosphor-icons/react"
 
 // Extracted components
 import { FeedToolbar, type FeedTab, type FilterState } from "@/components/desktop/feed-toolbar"
@@ -76,6 +77,7 @@ interface DesktopHomeProps {
   locale: string
   categories: CategoryTreeNode[]
   initialProducts?: Product[]
+  promotedProducts?: Product[]
   user?: User | null
 }
 
@@ -87,6 +89,7 @@ export function DesktopHome({
   locale,
   categories,
   initialProducts = [],
+  promotedProducts = [],
   user,
 }: DesktopHomeProps) {
   const t = useTranslations("TabbedProductFeed")
@@ -248,6 +251,60 @@ export function DesktopHome({
 
           {/* MAIN CONTENT */}
           <div className="flex-1 min-w-0 @container">
+            {/* PROMOTED ROW: always first on desktop */}
+            {activeTab !== "promoted" && promotedProducts.length > 0 && (
+              <section
+                aria-label={t("tabs.promoted")}
+                className="mb-4 rounded-xl border border-border bg-muted/20 p-4 shadow-sm"
+              >
+                <div className="flex items-center gap-2 mb-3">
+                  <Fire size={16} weight="fill" className="text-fire shrink-0" />
+                  <h2 className="text-sm font-semibold text-foreground">
+                    {t("tabs.promoted")}{" "}
+                    <span className="text-muted-foreground font-normal">
+                      {t("sectionAriaLabel").toLocaleLowerCase(locale)}
+                    </span>
+                  </h2>
+                </div>
+
+                <div className="overflow-x-auto no-scrollbar">
+                  <div className="flex gap-4">
+                    {promotedProducts.slice(0, 10).map((product, index) => (
+                      <div key={product.id} className="w-56 shrink-0">
+                        <ProductCard
+                          id={product.id}
+                          title={product.title}
+                          price={product.price}
+                          originalPrice={product.listPrice ?? null}
+                          isOnSale={Boolean(product.isOnSale)}
+                          salePercent={product.salePercent ?? 0}
+                          saleEndDate={product.saleEndDate ?? null}
+                          createdAt={product.createdAt ?? null}
+                          image={product.image}
+                          rating={product.rating ?? 0}
+                          reviews={product.reviews ?? 0}
+                          slug={product.slug ?? null}
+                          username={product.storeSlug ?? null}
+                          sellerId={product.sellerId ?? null}
+                          sellerName={product.sellerName || product.storeSlug || undefined}
+                          sellerAvatarUrl={product.sellerAvatarUrl ?? null}
+                          sellerVerified={Boolean(product.sellerVerified)}
+                          {...(product.location ? { location: product.location } : {})}
+                          {...(product.condition ? { condition: product.condition } : {})}
+                          tags={product.tags ?? []}
+                          state="promoted"
+                          index={index}
+                          {...(product.categoryRootSlug ? { categoryRootSlug: product.categoryRootSlug } : {})}
+                          {...(product.categoryPath ? { categoryPath: product.categoryPath } : {})}
+                          {...(product.attributes ? { attributes: product.attributes } : {})}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </section>
+            )}
+
             {/* Feed toolbar: count + category pills (left) | sort + view toggle (right) */}
             <FeedToolbar
               locale={locale}
@@ -389,6 +446,22 @@ export function DesktopHomeSkeleton() {
 
           {/* Main skeleton */}
           <div className="flex-1 min-w-0">
+            {/* Promoted row skeleton */}
+            <div className="mb-4 rounded-xl border border-border bg-muted/20 p-4 shadow-sm">
+              <div className="flex items-center gap-2 mb-3">
+                <Skeleton className="h-4 w-40" />
+              </div>
+              <div className="flex gap-4 overflow-hidden">
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <div key={i} className="w-56 shrink-0 space-y-2">
+                    <Skeleton className="aspect-square w-full rounded-md" />
+                    <Skeleton className="h-4 w-full" />
+                    <Skeleton className="h-4 w-2/3" />
+                  </div>
+                ))}
+              </div>
+            </div>
+
             <div className="flex items-center gap-3 mb-4">
               <Skeleton className="h-9 flex-1 rounded-md" />
               <Skeleton className="h-8 w-24 rounded-md" />

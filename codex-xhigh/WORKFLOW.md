@@ -2,8 +2,9 @@
 
 ## Single source of truth (SSOT)
 - **Tasks + gates:** `TODO.md`
-- **Execution order + P0 blockers:** `codex/MASTER-PLAN.md`
-- **Launch verification:** `docs/launch/PLAN.md`, `docs/launch/CHECKLIST-QA.md`
+- **Docs index + scope:** `docs/README.md`, `docs/PRODUCT.md`
+- **Go-live checklist + manual QA:** `docs/PRODUCTION.md`
+- **Feature navigation map:** `docs/FEATURES.md`
 - **This folder:** operational scaffolding + checklists + handoffs
 
 ## Tracking that survives context limits
@@ -53,4 +54,3 @@ When ending a session, write a short entry to your log file:
 1) Open `codex-xhigh/STATUS.md`
 2) Open `codex-xhigh/EXECUTION-BOARD.md` and jump to the first unchecked item
 3) Open the newest file in `codex-xhigh/logs/` for context
-

@@ -107,7 +107,9 @@ export default async function LocaleLayout({
   return (
     <html lang={locale} className={inter.variable} suppressHydrationWarning>
       <body className="bg-background min-h-screen font-sans">
-        <LocaleProviders locale={locale}>{children}</LocaleProviders>
+        <LocaleProviders locale={locale}>
+          {children}
+        </LocaleProviders>
       </body>
     </html>
   );

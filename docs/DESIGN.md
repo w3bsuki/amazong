@@ -45,6 +45,25 @@ Engineering boundaries and production rails: see `docs/ENGINEERING.md`.
 
 ---
 
+## Implementation rules (Tailwind v4 + shadcn/ui)
+
+This repo uses Tailwind v4 (CSS-first) + shadcn/ui. Keep UI changes consistent by following these rules:
+
+- Prefer semantic tokens (`bg-background`, `text-foreground`, `border-border`, `text-muted-foreground`) over Tailwind palette classes (`text-blue-600`, `bg-zinc-100`, etc.).
+- Don’t introduce gradients. Prefer solid token surfaces + subtle borders.
+- Don’t introduce arbitrary values (`w-[…]`, `text-[…]`, `bg-[#…]`) unless there is no stable token alternative.
+- Use the existing touch target utilities from `app/globals.css` (`h-touch-xs/sm/...`) instead of inventing custom heights.
+- For forms, use `components/shared/field.tsx` (`Field`, `FieldLabel`, `FieldError`, …) and `components/ui/*` inputs/buttons.
+
+Drift scans:
+
+```bash
+pnpm -s styles:scan
+pnpm -s styles:gate
+```
+
+---
+
 ## Semantic Color System
 
 Our globals.css defines rich semantic colors. **USE THEM.**
@@ -296,7 +315,7 @@ rounded-md border border-border bg-card
 ## Component boundaries
 
 - `components/ui/**`: primitives only (shadcn-style). No feature composites, no app hooks.
-- `components/common/**`: shared composites used across routes.
+- `components/shared/**`: shared composites used across routes.
 - `components/layout/**`: shells (header/nav/sidebars).
 - Route-owned UI must live under its route group: `app/[locale]/(group)/**/_components/**`.
 

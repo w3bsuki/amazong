@@ -82,7 +82,7 @@ export function SellerPayoutSetup({ payoutStatus, sellerEmail }: Props) {
           <CardTitle className="flex items-center gap-2">
             {t("status")}
             {isComplete ? (
-              <Badge variant="default" className="bg-green-500">
+              <Badge variant="default" className="bg-success text-success-foreground">
                 <CheckCircle className="size-3 mr-1" />
                 {t("active")}
               </Badge>
@@ -169,7 +169,7 @@ function StatusItem({ label, completed }: { label: string; completed: boolean })
   return (
     <div className="flex items-center gap-2 text-sm">
       {completed ? (
-        <CheckCircle className="size-4 text-green-500" />
+        <CheckCircle className="size-4 text-success" />
       ) : (
         <AlertCircle className="size-4 text-muted-foreground" />
       )}

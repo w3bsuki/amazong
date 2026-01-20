@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import { useState, useMemo } from "react"
+import { useTranslations } from "next-intl"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -13,7 +14,6 @@ import {
   Eye,
   Star,
   Percent,
-  Fire,
   Rows,
   X,
   Check,
@@ -88,17 +88,24 @@ export function FeedToolbar({
   categoryAttributes,
   isLoadingAttributes,
 }: FeedToolbarProps) {
-  const tabs: { id: FeedTab; label: string; icon: typeof TrendUp }[] = [
-    { id: "newest", label: locale === "bg" ? "Най-нови" : "Newest", icon: TrendUp },
-    { id: "best_sellers", label: locale === "bg" ? "Топ продажби" : "Best Sellers", icon: ChartLineUp },
-    { id: "most_viewed", label: locale === "bg" ? "Най-гледани" : "Most Viewed", icon: Eye },
-    { id: "top_rated", label: locale === "bg" ? "Най-високо оценени" : "Top Rated", icon: Star },
-    { id: "deals", label: locale === "bg" ? "Намаления" : "Deals", icon: Percent },
-    { id: "promoted", label: locale === "bg" ? "Промотирани" : "Promoted", icon: Fire },
+  const t = useTranslations("TabbedProductFeed")
+  const tViewMode = useTranslations("ViewMode")
+
+  const primaryTabs: Array<{ id: FeedTab; label: string }> = [
+    { id: "newest", label: t("tabs.newest") },
+    { id: "promoted", label: t("tabs.promoted") },
   ]
 
-  const activeTabData = tabs.find((t) => t.id === activeTab) ?? tabs[0]!
-  const ActiveIcon = activeTabData.icon
+  const moreTabs: Array<{ id: FeedTab; label: string; icon: typeof TrendUp }> = [
+    { id: "best_sellers", label: t("tabs.best_sellers"), icon: ChartLineUp },
+    { id: "most_viewed", label: t("tabs.most_viewed"), icon: Eye },
+    { id: "top_rated", label: t("tabs.top_rated"), icon: Star },
+    { id: "deals", label: t("tabs.deals"), icon: Percent },
+    { id: "price_low", label: t("tabs.price_low"), icon: TrendUp },
+  ]
+
+  const activeMoreTab = moreTabs.find((tab) => tab.id === activeTab) ?? null
+  const ActiveMoreIcon = activeMoreTab?.icon ?? null
 
   // Build contextual filter pills from category attributes (max 5 for UI cleanliness)
   const categoryFilters = useMemo(() => {
@@ -168,9 +175,9 @@ export function FeedToolbar({
       {/* LEFT: Product count + Category filter pills */}
       <div className="flex items-center gap-2 flex-1 min-w-0 overflow-x-auto no-scrollbar">
         <span className="text-sm font-medium text-foreground whitespace-nowrap shrink-0">
-          {productCount.toLocaleString()}{" "}
+          {productCount.toLocaleString(locale)}{" "}
           <span className="text-muted-foreground font-normal">
-            {locale === "bg" ? "обяви" : "listings"}
+            {t("sectionAriaLabel").toLocaleLowerCase(locale)}
           </span>
         </span>
 
@@ -249,13 +256,38 @@ export function FeedToolbar({
         ))}
       </div>
 
-      {/* RIGHT: Sort + View Toggle */}
+      {/* RIGHT: Quick filter + More + View Toggle */}
       <div className="flex items-center gap-2 shrink-0">
-        {/* Sort */}
+        {/* Quick filter: Newest / Promoted */}
+        <div className="flex items-center rounded-full border border-border/50 bg-muted/30 p-0.5">
+          {primaryTabs.map((tab) => {
+            const isActive = activeTab === tab.id
+            return (
+              <Button
+                key={tab.id}
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={() => onTabChange(tab.id)}
+                className={cn(
+                  "h-8 rounded-full px-3 transition-all duration-150",
+                  isActive
+                    ? "bg-background text-foreground shadow-sm"
+                    : "text-muted-foreground hover:text-foreground bg-transparent hover:bg-transparent",
+                )}
+              >
+                {tab.label}
+              </Button>
+            )
+          })}
+        </div>
+
+        {/* More sort options */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <button
               type="button"
+              aria-label={t("sortPlaceholder")}
               className={cn(
                 "inline-flex items-center gap-1.5 rounded-md px-3 h-9",
                 "text-sm font-medium whitespace-nowrap",
@@ -263,23 +295,20 @@ export function FeedToolbar({
                 "hover:bg-muted/60 hover:border-border transition-all duration-150",
               )}
             >
-              <ActiveIcon size={14} weight="fill" />
-              <span>{activeTabData.label}</span>
+              {ActiveMoreIcon && <ActiveMoreIcon size={14} weight="fill" />}
+              <span>{activeMoreTab ? activeMoreTab.label : t("tabs.more")}</span>
               <CaretDown size={12} weight="bold" className="text-muted-foreground" />
             </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="min-w-44">
-            {tabs.map((tab) => {
+            {moreTabs.map((tab) => {
               const Icon = tab.icon
               const isActive = activeTab === tab.id
               return (
                 <DropdownMenuItem
                   key={tab.id}
                   onClick={() => onTabChange(tab.id)}
-                  className={cn(
-                    "cursor-pointer flex items-center gap-2",
-                    isActive && "bg-muted font-medium"
-                  )}
+                  className={cn("cursor-pointer flex items-center gap-2", isActive && "bg-muted font-medium")}
                 >
                   <span className="w-4 flex items-center justify-center">
                     {isActive && <Check size={14} weight="bold" />}
@@ -304,7 +333,7 @@ export function FeedToolbar({
                 ? "bg-background text-foreground shadow-sm"
                 : "text-muted-foreground hover:text-foreground bg-transparent hover:bg-transparent"
             )}
-            aria-label="Grid view"
+            aria-label={tViewMode("gridView")}
           >
             <SquaresFour size={16} weight={viewMode === "grid" ? "fill" : "regular"} />
           </Button>
@@ -318,7 +347,7 @@ export function FeedToolbar({
                 ? "bg-background text-foreground shadow-sm"
                 : "text-muted-foreground hover:text-foreground bg-transparent hover:bg-transparent"
             )}
-            aria-label="List view"
+            aria-label={tViewMode("listView")}
           >
             <Rows size={16} weight={viewMode === "list" ? "fill" : "regular"} />
           </Button>

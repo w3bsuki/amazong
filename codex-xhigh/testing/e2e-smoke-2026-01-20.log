@@ -1,0 +1,108 @@
+[WebServer] (node:26924) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `pnpm --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:17244) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:31280) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:37328) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[e2e] Warming Next.js routes (11) via http://127.0.0.1:3001
+[e2e] warm: http://127.0.0.1:3001/en
+[WebServer] (node:27548) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[e2e] warm: http://127.0.0.1:3001/en/auth/login
+[WebServer] (node:33704) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:28728) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[e2e] warm: http://127.0.0.1:3001/en/auth/sign-up
+[WebServer] (node:28336) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[e2e] warm: http://127.0.0.1:3001/en/auth/forgot-password
+[WebServer] (node:33636) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[e2e] warm: http://127.0.0.1:3001/en/search?q=warmup
+[WebServer] (node:37512) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[e2e] warm: http://127.0.0.1:3001/en/cart
+[WebServer] (node:36016) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:37160) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[e2e] warm: http://127.0.0.1:3001/en/categories
+[WebServer] (node:26352) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[e2e] warm: http://127.0.0.1:3001/en/account
+[WebServer] (node:35204) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[e2e] warm: http://127.0.0.1:3001/en/plans
+[WebServer] (node:34872) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[e2e] warm: http://127.0.0.1:3001/en/sell
+[WebServer] (node:30004) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[e2e] warm: http://127.0.0.1:3001/en/chat
+
+Running 16 tests using 1 worker
+
+(node:32152) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:32152) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:34296) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+  ok  1 [chromium] ΓÇ║ e2e\smoke.spec.ts:31:7 ΓÇ║ Smoke Tests - Critical Path ΓÇ║ homepage loads without errors @smoke @critical (3.8s)
+[WebServer] (node:36684) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+  ok  2 [chromium] ΓÇ║ e2e\smoke.spec.ts:44:7 ΓÇ║ Smoke Tests - Critical Path ΓÇ║ homepage loads in Bulgarian locale @smoke (3.7s)
+[WebServer] (node:36176) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+  ok  3 [chromium] ΓÇ║ e2e\smoke.spec.ts:59:7 ΓÇ║ Smoke Tests - Critical Path ΓÇ║ categories page loads @smoke @critical (2.7s)
+[WebServer] (node:33592) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+  ok  4 [chromium] ΓÇ║ e2e\smoke.spec.ts:70:7 ΓÇ║ Smoke Tests - Critical Path ΓÇ║ search page loads with query @smoke @critical (2.4s)
+[WebServer] (node:24520) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+  ok  5 [chromium] ΓÇ║ e2e\smoke.spec.ts:84:7 ΓÇ║ Smoke Tests - Critical Path ΓÇ║ search page loads with sort param @smoke (2.4s)
+[WebServer] (node:21956) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+  ok  6 [chromium] ΓÇ║ e2e\smoke.spec.ts:97:7 ΓÇ║ Smoke Tests - Critical Path ΓÇ║ cart page loads @smoke (3.0s)
+[WebServer] (node:27120) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+  ok  7 [chromium] ΓÇ║ e2e\smoke.spec.ts:111:7 ΓÇ║ Smoke Tests - Critical Path ΓÇ║ login page loads @smoke @critical (10.7s)
+[WebServer] (node:8752) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+  ok  8 [chromium] ΓÇ║ e2e\smoke.spec.ts:125:7 ΓÇ║ Smoke Tests - Critical Path ΓÇ║ sign-up page loads @smoke @critical (10.7s)
+[WebServer] (node:29908) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+  ok  9 [chromium] ΓÇ║ e2e\smoke.spec.ts:136:7 ΓÇ║ Smoke Tests - Critical Path ΓÇ║ forgot-password page loads @smoke (10.6s)
+[WebServer] (node:36292) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+  ok 10 [chromium] ΓÇ║ e2e\smoke.spec.ts:152:7 ΓÇ║ Smoke Tests - Critical Path ΓÇ║ account page redirects to login when unauthenticated @smoke @auth (1.5s)
+[WebServer] (node:20744) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+  ok 11 [chromium] ΓÇ║ e2e\smoke.spec.ts:160:7 ΓÇ║ Smoke Tests - Critical Path ΓÇ║ sell page redirects to login when unauthenticated @smoke @auth (1.5s)
+[WebServer] (node:7820) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+  ok 12 [chromium] ΓÇ║ e2e\smoke.spec.ts:172:7 ΓÇ║ Smoke Tests - Critical Path ΓÇ║ header search navigates with query param @smoke @search (7.1s)
+[WebServer] (node:31892) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+  ok 13 [chromium] ΓÇ║ e2e\smoke.spec.ts:201:7 ΓÇ║ Smoke Tests - Critical Path ΓÇ║ API products endpoint returns data @smoke @api (9.0s)
+  ok 14 [chromium] ΓÇ║ e2e\smoke.spec.ts:217:7 ΓÇ║ Smoke Tests - Critical Path ΓÇ║ 404 page shows error state for unknown routes @smoke (5.3s)
+[WebServer] (node:35524) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:19008) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+  ok 15 [chromium] ΓÇ║ e2e\smoke.spec.ts:246:7 ΓÇ║ Smoke Tests - Critical User Actions ΓÇ║ can navigate from homepage to category @smoke @navigation (9.1s)
+[WebServer] (node:26180) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:37352) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+  ok 16 [chromium] ΓÇ║ e2e\smoke.spec.ts:274:7 ΓÇ║ Smoke Tests - Critical User Actions ΓÇ║ search filters can be applied @smoke @search (4.2s)
+
+  16 passed (2.5m)
+
+To open last HTML report run:
+[36m[39m
+[36m  pnpm exec playwright show-report[39m
+[36m[39m

@@ -1,6 +1,6 @@
 # Stripe Audit Checklist
 
-Start with: `docs/launch/PLAN-STRIPE.md`.
+Start with: `docs/BACKEND.md` and `docs/PRODUCTION.md`.
 
 ## Webhooks
 - [ ] Exactly one canonical boost handler exists (not duplicated).
@@ -13,9 +13,8 @@ Start with: `docs/launch/PLAN-STRIPE.md`.
 - [ ] Boosts/one-time: idempotent by `stripe_checkout_session_id`.
 
 ## Connect
-- [ ] Seller payout readiness is enforced in seller flows (see `PLAN-stripe-connect-wallet.md`).
+- [ ] Seller payout readiness is enforced in seller flows (if payouts are in-scope).
 - [ ] Account type (individual/company) maps cleanly to onboarding UX.
 
 ## Pricing/fees
-- [ ] Fee calculation is driven by DB plan configuration (see `PLAN-monetization-strategy.md`).
-
+- [ ] Fee calculation is driven by DB plan configuration (see `docs/PRODUCT.md`).

@@ -1,19 +1,19 @@
 # Roadmap (Ship Without Getting Stuck)
 
 ## Phase 0 — Truth + gates (same day)
-- Use `TODO.md` + `codex/MASTER-PLAN.md` as the single execution order.
+- Use `TODO.md` + `codex-xhigh/EXECUTION-BOARD.md` as the single execution order.
 - Confirm gates run locally:
   - `pnpm -s exec tsc -p tsconfig.json --noEmit`
   - `REUSE_EXISTING_SERVER=true pnpm test:e2e:smoke`
 
 ## Phase 1 — Production hard gates (1–3 days)
 Do these before any “big cleanup”:
-- Supabase production hardening: `docs/launch/PLAN-SUPABASE.md`
-- Stripe production correctness: `docs/launch/PLAN-STRIPE.md`
-- Manual QA pass: `docs/launch/CHECKLIST-QA.md`
+- Supabase production hardening: `docs/BACKEND.md` + `docs/PRODUCTION.md`
+- Stripe production correctness: `docs/BACKEND.md` + `docs/PRODUCTION.md`
+- Manual QA pass: `docs/PRODUCTION.md`
 
 Exit criteria:
-- P0 blockers from `codex/MASTER-PLAN.md` resolved
+- P0 blockers resolved
 - All gates green
 
 ## Phase 2 — Frontend/backend alignment (3–7 days)
@@ -35,4 +35,3 @@ Goal: delete bloat without breaking flows.
 Exit criteria:
 - Reduced surface area + fewer duplicates
 - Same gates still green
-

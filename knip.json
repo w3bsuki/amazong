@@ -6,8 +6,7 @@
     "app/**/route.ts",
     "app/api/**/*.ts",
     "app/actions/**/*.ts",
-    "lib/auth/**/*.ts",
-    "middleware.entry.ts"
+    "lib/auth/**/*.ts"
   ],
   "project": ["**/*.{ts,tsx}"],
   "ignore": [
@@ -17,10 +16,14 @@
     "cleanup/**",
     "scripts/**",
     "__tests__/**",
-    "test/**"
+    "test/**",
+    "lib/supabase/database.types.ts"
   ],
   "ignoreDependencies": [
+    "@capacitor/android",
+    "@capacitor/core",
     "@capacitor/ios",
+    "jscpd",
     "tailwindcss",
     "tailwindcss-animate"
   ],

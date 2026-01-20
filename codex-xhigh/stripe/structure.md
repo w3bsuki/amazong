@@ -1,7 +1,7 @@
 # Stripe — Target Payment Surface
 
 ## What Stripe is doing here
-Reference: `docs/launch/PLAN-STRIPE.md`.
+Reference: `docs/BACKEND.md` and `docs/PRODUCTION.md`.
 
 - Goods checkout (orders)
 - Subscriptions (plans)
@@ -13,4 +13,3 @@ Reference: `docs/launch/PLAN-STRIPE.md`.
 - Idempotent DB writes (stable Stripe ids).
 - One canonical handler per concern (no double-processing across endpoints).
 - Environment variables are explicit and consistent across staging/prod.
-

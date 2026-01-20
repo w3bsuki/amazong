@@ -126,7 +126,12 @@ export function ProductCardList({
       )}
     >
       {/* Full-card link for accessibility */}
-      <Link href={productUrl} className="absolute inset-0 z-0" aria-label={t("openProduct", { title })}>
+      <Link
+        href={productUrl}
+        scroll={false}
+        className="absolute inset-0 z-0"
+        aria-label={t("openProduct", { title })}
+      >
         <span className="sr-only">{title}</span>
       </Link>
 

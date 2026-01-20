@@ -1,6 +1,6 @@
 import { Suspense } from "react"
 import type { Metadata } from "next"
-import { setRequestLocale } from "next-intl/server"
+import { getTranslations, setRequestLocale } from "next-intl/server"
 import { routing } from "@/i18n/routing"
 import { MobileHome } from "@/components/mobile/mobile-home"
 import { getNewestProducts, getBoostedProducts, toUI } from "@/lib/data/products"
@@ -17,12 +17,10 @@ export function generateStaticParams() {
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
-  setRequestLocale(locale)
+  const t = await getTranslations({ locale, namespace: "Home" })
   return {
-    title: locale === 'bg' ? 'Начало' : 'Home',
-    description: locale === 'bg'
-      ? 'Добре дошли в Treido - вашият онлайн магазин за електроника, мода, дом и много други.'
-      : 'Welcome to Treido - your online store for electronics, fashion, home and much more.',
+    title: t("metaTitle"),
+    description: t("metaDescription"),
   };
 }
 
@@ -84,6 +82,7 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
             locale={locale}
             categories={categoriesWithChildren}
             initialProducts={initialProducts}
+            promotedProducts={promotedProducts}
             user={user}
           />
         </Suspense>
