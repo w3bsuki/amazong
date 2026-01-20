@@ -1,0 +1,1028 @@
+
+J:\amazong\__tests__\shipping.test.ts
+  292:34  warning  Do not use useless `undefined`  unicorn/no-useless-undefined
+
+J:\amazong\__tests__\stripe-locale.test.ts
+   29:30  warning  Do not use useless `undefined`  unicorn/no-useless-undefined
+  137:46  warning  Do not use useless `undefined`  unicorn/no-useless-undefined
+
+J:\amazong\__tests__\supabase-middleware-session.test.ts
+  45:22  warning  Do not use useless `undefined`  unicorn/no-useless-undefined
+
+J:\amazong\app\[locale]\(account)\@modal\(.)account\plans\upgrade\page.tsx
+  5:1  warning  '@/app/[locale]/(account)/account/plans/upgrade/upgrade-content' import is restricted from being used by a pattern. Shared modules must not import from /app (route code). Move shared logic to /lib, /hooks, or /components and keep route-only code under app/**/_lib or app/**/_components  no-restricted-imports
+
+J:\amazong\app\[locale]\(account)\account-layout-content.tsx
+  38:23  warning  Unsafe argument of type `any` assigned to a parameter of type `SetStateAction<string>`  @typescript-eslint/no-unsafe-argument
+
+J:\amazong\app\[locale]\(account)\account\(settings)\notifications\notifications-content.tsx
+  141:17  warning  Refactor this function to reduce its Cognitive Complexity from 36 to the 25 allowed           sonarjs/cognitive-complexity
+  464:16  warning  This conditional operation returns the same value whether the condition is "true" or "false"  sonarjs/no-all-duplicated-branches
+
+J:\amazong\app\[locale]\(account)\account\_components\account-addresses-grid.tsx
+   76:40  warning  Move arrow function 'getLabelIcon' to the outer scope   unicorn/consistent-function-scoping
+   89:41  warning  Move arrow function 'getLabelColor' to the outer scope  unicorn/consistent-function-scoping
+  102:48  warning  Move arrow function 'formatAddress' to the outer scope  unicorn/consistent-function-scoping
+  105:50  warning  Refactor this code to not use nested template literals  sonarjs/no-nested-template-literals
+
+J:\amazong\app\[locale]\(account)\account\_components\account-chart.tsx
+  188:39  warning  Unsafe argument of type `any` assigned to a parameter of type `string | number | Date`  @typescript-eslint/no-unsafe-argument
+  201:37  warning  Unsafe argument of type `any` assigned to a parameter of type `string | number | Date`  @typescript-eslint/no-unsafe-argument
+
+J:\amazong\app\[locale]\(account)\account\_components\account-recent-activity.tsx
+  84:50  warning  Move arrow function 'getStatusColor' to the outer scope  unicorn/consistent-function-scoping
+
+J:\amazong\app\[locale]\(account)\account\_components\plans-modal.tsx
+   25:1   warning  '@/app/actions/subscriptions' import is restricted from being used by a pattern. Shared modules must not import from /app (route code). Move shared logic to /lib, /hooks, or /components and keep route-only code under app/**/_lib or app/**/_components  no-restricted-imports
+  123:20  warning  Unsafe argument of type `any` assigned to a parameter of type `SetStateAction<Plan[]>`                                                                                                                                                                      @typescript-eslint/no-unsafe-argument
+
+J:\amazong\app\[locale]\(account)\account\addresses\addresses-content.tsx
+  100:17  warning  Refactor this function to reduce its Cognitive Complexity from 32 to the 25 allowed  sonarjs/cognitive-complexity
+
+J:\amazong\app\[locale]\(account)\account\billing\billing-content.tsx
+   40:1   warning  '@/app/actions/subscriptions' import is restricted from being used by a pattern. Shared modules must not import from /app (route code). Move shared logic to /lib, /hooks, or /components and keep route-only code under app/**/_lib or app/**/_components  no-restricted-imports
+  127:17  warning  Refactor this function to reduce its Cognitive Complexity from 78 to the 25 allowed                                                                                                                                                                         sonarjs/cognitive-complexity
+  214:21  warning  Unsafe argument of type `any` assigned to a parameter of type `SetStateAction<Invoice[]>`                                                                                                                                                                   @typescript-eslint/no-unsafe-argument
+  215:20  warning  Unsafe argument of type `any` assigned to a parameter of type `SetStateAction<Charge[]>`                                                                                                                                                                    @typescript-eslint/no-unsafe-argument
+  230:19  warning  This conditional operation returns the same value whether the condition is "true" or "false"                                                                                                                                                                sonarjs/no-all-duplicated-branches
+
+J:\amazong\app\[locale]\(account)\account\following\following-content.tsx
+   18:1   warning  '@/app/actions/seller-follows' import is restricted from being used by a pattern. Shared modules must not import from /app (route code). Move shared logic to /lib, /hooks, or /components and keep route-only code under app/**/_lib or app/**/_components                              no-restricted-imports
+  133:25  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+J:\amazong\app\[locale]\(account)\account\orders\[id]\_components\order-detail-content.tsx
+   22:1   warning  '@/app/actions/seller-feedback' import is restricted from being used by a pattern. Shared modules must not import from /app (route code). Move shared logic to /lib, /hooks, or /components and keep route-only code under app/**/_lib or app/**/_components  no-restricted-imports
+   23:1   warning  '@/app/actions/orders' import is restricted from being used by a pattern. Shared modules must not import from /app (route code). Move shared logic to /lib, /hooks, or /components and keep route-only code under app/**/_lib or app/**/_components           no-restricted-imports
+  141:17  warning  Refactor this function to reduce its Cognitive Complexity from 29 to the 25 allowed                                                                                                                                                                           sonarjs/cognitive-complexity
+  324:58  warning  This conditional operation returns the same value whether the condition is "true" or "false"                                                                                                                                                                  sonarjs/no-all-duplicated-branches
+  634:52  warning  Forbidden non-null assertion                                                                                                                                                                                                                                  @typescript-eslint/no-non-null-assertion
+
+J:\amazong\app\[locale]\(account)\account\orders\[id]\_components\order-timeline.tsx
+  172:45  warning  Forbidden non-null assertion  @typescript-eslint/no-non-null-assertion
+
+J:\amazong\app\[locale]\(account)\account\orders\_components\account-orders-grid.tsx
+   15:1   warning  '@/app/actions/orders' import is restricted from being used by a pattern. Shared modules must not import from /app (route code). Move shared logic to /lib, /hooks, or /components and keep route-only code under app/**/_lib or app/**/_components  no-restricted-imports
+  111:55  warning  Move arrow function 'getStatusColor' to the outer scope                                                                                                                                                                                              unicorn/consistent-function-scoping
+
+J:\amazong\app\[locale]\(account)\account\orders\_components\buyer-order-actions.tsx
+  23:1   warning  '@/app/actions/orders' import is restricted from being used by a pattern. Shared modules must not import from /app (route code). Move shared logic to /lib, /hooks, or /components and keep route-only code under app/**/_lib or app/**/_components           no-restricted-imports
+  24:1   warning  '@/app/actions/seller-feedback' import is restricted from being used by a pattern. Shared modules must not import from /app (route code). Move shared logic to /lib, /hooks, or /components and keep route-only code under app/**/_lib or app/**/_components  no-restricted-imports
+  39:17  warning  Refactor this function to reduce its Cognitive Complexity from 35 to the 25 allowed                                                                                                                                                                           sonarjs/cognitive-complexity
+  77:6   warning  React Hook useEffect has a missing dependency: 'checkRatingStatus'. Either include it or remove the dependency array                                                                                                                                          react-hooks/exhaustive-deps
+
+J:\amazong\app\[locale]\(account)\account\orders\page.tsx
+  121:37  warning  Move arrow function 'normalize' to the outer scope     unicorn/consistent-function-scoping
+  133:53  warning  Move arrow function 'isOpenStatus' to the outer scope  unicorn/consistent-function-scoping
+
+J:\amazong\app\[locale]\(account)\account\payments\payments-content.tsx
+   28:1    warning  '@/app/actions/payments' import is restricted from being used by a pattern. Shared modules must not import from /app (route code). Move shared logic to /lib, /hooks, or /components and keep route-only code under app/**/_lib or app/**/_components  no-restricted-imports
+  140:56   warning  Move arrow function 'getCardBrandDisplay' to the outer scope                                                                                                                                                                                           unicorn/consistent-function-scoping
+  145:105  warning  Move arrow function 'getCardStyle' to the outer scope                                                                                                                                                                                                  unicorn/consistent-function-scoping
+
+J:\amazong\app\[locale]\(account)\account\plans\plans-content.tsx
+   24:1   warning  '@/app/actions/subscriptions' import is restricted from being used by a pattern. Shared modules must not import from /app (route code). Move shared logic to /lib, /hooks, or /components and keep route-only code under app/**/_lib or app/**/_components  no-restricted-imports
+  120:17  warning  Refactor this function to reduce its Cognitive Complexity from 63 to the 25 allowed                                                                                                                                                                         sonarjs/cognitive-complexity
+
+J:\amazong\app\[locale]\(account)\account\plans\upgrade\upgrade-content.tsx
+  10:1  warning  '@/app/actions/subscriptions' import is restricted from being used by a pattern. Shared modules must not import from /app (route code). Move shared logic to /lib, /hooks, or /components and keep route-only code under app/**/_lib or app/**/_components  no-restricted-imports
+
+J:\amazong\app\[locale]\(account)\account\profile\profile-content.tsx
+   41:1   warning  '@/app/actions/profile' import is restricted from being used by a pattern. Shared modules must not import from /app (route code). Move shared logic to /lib, /hooks, or /components and keep route-only code under app/**/_lib or app/**/_components                                     no-restricted-imports
+  103:5   warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+  115:17  warning  Refactor this function to reduce its Cognitive Complexity from 47 to the 25 allowed                                                                                                                                                                                                      sonarjs/cognitive-complexity
+  229:19  warning  Forbidden non-null assertion                                                                                                                                                                                                                                                             @typescript-eslint/no-non-null-assertion
+
+J:\amazong\app\[locale]\(account)\account\profile\public-profile-editor.tsx
+  45:1   warning  '@/app/actions/username' import is restricted from being used by a pattern. Shared modules must not import from /app (route code). Move shared logic to /lib, /hooks, or /components and keep route-only code under app/**/_lib or app/**/_components  no-restricted-imports
+  75:17  warning  Refactor this function to reduce its Cognitive Complexity from 74 to the 25 allowed                                                                                                                                                                    sonarjs/cognitive-complexity
+
+J:\amazong\app\[locale]\(account)\account\sales\_components\sales-chart.tsx
+  88:35  warning  Unsafe argument of type `any` assigned to a parameter of type `string | number | Date`  @typescript-eslint/no-unsafe-argument
+
+J:\amazong\app\[locale]\(account)\account\sales\page.tsx
+  32:31  warning  Refactor this function to reduce its Cognitive Complexity from 50 to the 25 allowed  sonarjs/cognitive-complexity
+
+J:\amazong\app\[locale]\(account)\account\security\security-content.tsx
+   34:17  warning  Refactor this function to reduce its Cognitive Complexity from 26 to the 25 allowed           sonarjs/cognitive-complexity
+   90:25  warning  Forbidden non-null assertion                                                                  @typescript-eslint/no-non-null-assertion
+  235:61  warning  This conditional operation returns the same value whether the condition is "true" or "false"  sonarjs/no-all-duplicated-branches
+
+J:\amazong\app\[locale]\(account)\account\selling\edit\edit-product-client.tsx
+  62:17  warning  Refactor this function to reduce its Cognitive Complexity from 50 to the 25 allowed  sonarjs/cognitive-complexity
+
+J:\amazong\app\[locale]\(account)\account\selling\page.tsx
+  48:31  warning  Refactor this function to reduce its Cognitive Complexity from 30 to the 25 allowed  sonarjs/cognitive-complexity
+
+J:\amazong\app\[locale]\(account)\account\selling\selling-products-list.tsx
+   26:1   warning  '@/app/actions/products' import is restricted from being used by a pattern. Shared modules must not import from /app (route code). Move shared logic to /lib, /hooks, or /components and keep route-only code under app/**/_lib or app/**/_components  no-restricted-imports
+  140:6   warning  React Hook useEffect has a missing dependency: 'tBoost'. Either include it or remove the dependency array                                                                                                                                              react-hooks/exhaustive-deps
+  253:44  warning  Move arrow function 'isBoostActive' to the outer scope                                                                                                                                                                                                 unicorn/consistent-function-scoping
+  259:45  warning  Move arrow function 'isBoostExpired' to the outer scope                                                                                                                                                                                                unicorn/consistent-function-scoping
+  265:47  warning  Move arrow function 'getBoostTimeLeft' to the outer scope                                                                                                                                                                                              unicorn/consistent-function-scoping
+
+J:\amazong\app\[locale]\(account)\account\wishlist\_components\account-wishlist-toolbar.tsx
+  237:37  warning  Define a constant instead of duplicating this literal 9 times  sonarjs/no-duplicate-string
+
+J:\amazong\app\[locale]\(admin)\_components\admin-recent-activity.tsx
+  46:42  warning  Move arrow function 'formatCurrency' to the outer scope  unicorn/consistent-function-scoping
+  54:50  warning  Move arrow function 'getStatusColor' to the outer scope  unicorn/consistent-function-scoping
+  73:46  warning  Move arrow function 'getRoleBadge' to the outer scope    unicorn/consistent-function-scoping
+
+J:\amazong\app\[locale]\(admin)\_components\admin-stats-cards.tsx
+  26:42  warning  Move arrow function 'formatCurrency' to the outer scope  unicorn/consistent-function-scoping
+
+J:\amazong\app\[locale]\(admin)\admin\docs\_components\docs-content.tsx
+  116:44  warning  Prefer `String#replaceAll()` over `String#replace()`  unicorn/prefer-string-replace-all
+  116:65  warning  Prefer `String#replaceAll()` over `String#replace()`  unicorn/prefer-string-replace-all
+
+J:\amazong\app\[locale]\(admin)\admin\orders\page.tsx
+  65:42  warning  Move arrow function 'formatCurrency' to the outer scope  unicorn/consistent-function-scoping
+  73:50  warning  Move arrow function 'getStatusColor' to the outer scope  unicorn/consistent-function-scoping
+
+J:\amazong\app\[locale]\(admin)\admin\products\page.tsx
+  59:42  warning  Move arrow function 'formatCurrency' to the outer scope  unicorn/consistent-function-scoping
+
+J:\amazong\app\[locale]\(admin)\admin\sellers\page.tsx
+   66:36  warning  This always evaluates to truthy. Consider refactoring this code  sonarjs/no-gratuitous-expressions
+  100:46  warning  Move arrow function 'getTierBadge' to the outer scope            unicorn/consistent-function-scoping
+
+J:\amazong\app\[locale]\(admin)\admin\users\page.tsx
+  33:46  warning  Move arrow function 'getRoleBadge' to the outer scope  unicorn/consistent-function-scoping
+
+J:\amazong\app\[locale]\(auth)\_components\sign-up-form.tsx
+  228:55  warning  Define a constant instead of duplicating this literal 5 times  sonarjs/no-duplicate-string
+  244:73  warning  Prefer `String#replaceAll()` over `String#replace()`           unicorn/prefer-string-replace-all
+
+J:\amazong\app\[locale]\(business)\_components\business-activity-feed.tsx
+  58:42  warning  Move arrow function 'formatCurrency' to the outer scope  unicorn/consistent-function-scoping
+
+J:\amazong\app\[locale]\(business)\_components\business-command-palette.tsx
+  202:52  warning  Forbidden non-null assertion  @typescript-eslint/no-non-null-assertion
+  235:52  warning  Forbidden non-null assertion  @typescript-eslint/no-non-null-assertion
+
+J:\amazong\app\[locale]\(business)\_components\business-recent-activity.tsx
+  44:42  warning  Move arrow function 'formatCurrency' to the outer scope  unicorn/consistent-function-scoping
+  52:50  warning  Move arrow function 'getStatusColor' to the outer scope  unicorn/consistent-function-scoping
+
+J:\amazong\app\[locale]\(business)\_components\business-stats-cards.tsx
+  25:42  warning  Move arrow function 'formatCurrency' to the outer scope  unicorn/consistent-function-scoping
+
+J:\amazong\app\[locale]\(business)\_components\order-detail-view.tsx
+  136:61  warning  Move arrow function 'getProduct' to the outer scope      unicorn/consistent-function-scoping
+  154:42  warning  Move arrow function 'formatCurrency' to the outer scope  unicorn/consistent-function-scoping
+  182:67  warning  Move arrow function 'formatAddress' to the outer scope   unicorn/consistent-function-scoping
+  238:49  warning  Forbidden non-null assertion                             @typescript-eslint/no-non-null-assertion
+
+J:\amazong\app\[locale]\(business)\_components\orders-table.tsx
+  161:67  warning  Move arrow function 'getCustomer' to the outer scope     unicorn/consistent-function-scoping
+  269:42  warning  Move arrow function 'formatCurrency' to the outer scope  unicorn/consistent-function-scoping
+
+J:\amazong\app\[locale]\(business)\_components\products-table.tsx
+   24:1   warning  '@/app/actions/products' import is restricted from being used by a pattern. Shared modules must not import from /app (route code). Move shared logic to /lib, /hooks, or /components and keep route-only code under app/**/_lib or app/**/_components  no-restricted-imports
+  352:39  warning  Move arrow function 'formatPrice' to the outer scope                                                                                                                                                                                                   unicorn/consistent-function-scoping
+
+J:\amazong\app\[locale]\(business)\dashboard\_lib\categories.ts
+  34:18  warning  Forbidden non-null assertion  @typescript-eslint/no-non-null-assertion
+  37:7   warning  Forbidden non-null assertion  @typescript-eslint/no-non-null-assertion
+
+J:\amazong\app\[locale]\(business)\dashboard\accounting\page.tsx
+  69:42  warning  Move arrow function 'formatCurrency' to the outer scope  unicorn/consistent-function-scoping
+
+J:\amazong\app\[locale]\(business)\dashboard\analytics\page.tsx
+  18:42  warning  Move arrow function 'formatCurrency' to the outer scope  unicorn/consistent-function-scoping
+
+J:\amazong\app\[locale]\(business)\dashboard\customers\page.tsx
+  38:42  warning  Move arrow function 'formatCurrency' to the outer scope  unicorn/consistent-function-scoping
+
+J:\amazong\app\[locale]\(business)\dashboard\discounts\page.tsx
+  59:42  warning  Move arrow function 'formatCurrency' to the outer scope  unicorn/consistent-function-scoping
+
+J:\amazong\app\[locale]\(business)\dashboard\inventory\page.tsx
+   88:36  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  105:36  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  107:40  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+J:\amazong\app\[locale]\(chat)\_actions\report-conversation.ts
+  66:49  warning  Refactor this code to not use nested template literals  sonarjs/no-nested-template-literals
+
+J:\amazong\app\[locale]\(chat)\_components\chat-interface.tsx
+   39:1   warning  '@/app/actions/blocked-users' import is restricted from being used by a pattern. Shared modules must not import from /app (route code). Move shared logic to /lib, /hooks, or /components and keep route-only code under app/**/_lib or app/**/_components                         no-restricted-imports
+   40:1   warning  '@/app/[locale]/(chat)/_actions/report-conversation' import is restricted from being used by a pattern. Route-owned (chat) code is private to the (chat) route group (do not import across route groups)                                                                           no-restricted-imports
+   40:1   warning  '@/app/[locale]/(chat)/_actions/report-conversation' import is restricted from being used by a pattern. Shared modules must not import from /app (route code). Move shared logic to /lib, /hooks, or /components and keep route-only code under app/**/_lib or app/**/_components  no-restricted-imports
+   51:17  warning  Refactor this function to reduce its Cognitive Complexity from 55 to the 25 allowed                                                                                                                                                                                                sonarjs/cognitive-complexity
+  167:25  warning  Unsafe argument of type `any` assigned to a parameter of type `string | undefined`                                                                                                                                                                                                 @typescript-eslint/no-unsafe-argument
+  173:29  warning  Unsafe argument of type `any` assigned to a parameter of type `string | undefined`                                                                                                                                                                                                 @typescript-eslint/no-unsafe-argument
+  527:55  warning  Refactor this function to reduce its Cognitive Complexity from 41 to the 25 allowed                                                                                                                                                                                                sonarjs/cognitive-complexity
+
+J:\amazong\app\[locale]\(checkout)\_actions\checkout.ts
+   16:23  warning  Refactor this function to reduce its Cognitive Complexity from 33 to the 25 allowed  sonarjs/cognitive-complexity
+  105:21  warning  Prefer the spread operator over `Array.from(ΓÇª)`                                      unicorn/prefer-spread
+  106:37  warning  Forbidden non-null assertion                                                         @typescript-eslint/no-non-null-assertion
+  279:23  warning  Refactor this function to reduce its Cognitive Complexity from 35 to the 25 allowed  sonarjs/cognitive-complexity
+  404:22  warning  Forbidden non-null assertion                                                         @typescript-eslint/no-non-null-assertion
+
+J:\amazong\app\[locale]\(checkout)\_components\checkout-page-client.tsx
+  749:56  warning  Define a constant instead of duplicating this literal 6 times  sonarjs/no-duplicate-string
+
+J:\amazong\app\[locale]\(main)\_components\post-signup-onboarding-modal.tsx
+  34:1  warning  '@/app/actions/onboarding' import is restricted from being used by a pattern. Shared modules must not import from /app (route code). Move shared logic to /lib, /hooks, or /components and keep route-only code under app/**/_lib or app/**/_components  no-restricted-imports
+
+J:\amazong\app\[locale]\(main)\categories\[slug]\_lib\search-products.ts
+  5:23  warning  Refactor this function to reduce its Cognitive Complexity from 27 to the 25 allowed  sonarjs/cognitive-complexity
+
+J:\amazong\app\[locale]\(main)\categories\[slug]\page.tsx
+  224:27  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  225:26  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  226:18  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  244:25  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+J:\amazong\app\[locale]\(main)\members\_components\members-page-client.tsx
+  130:25  warning  Refactor this function to reduce its Cognitive Complexity from 30 to the 25 allowed  sonarjs/cognitive-complexity
+
+J:\amazong\app\[locale]\(main)\search\_lib\search-products.ts
+   30:28  warning  Unexpected any. Specify a different type                                             @typescript-eslint/no-explicit-any
+   30:33  warning  Refactor this function to reduce its Cognitive Complexity from 27 to the 25 allowed  sonarjs/cognitive-complexity
+   73:34  warning  Unexpected any. Specify a different type                                             @typescript-eslint/no-explicit-any
+  108:13  warning  Unexpected any. Specify a different type                                             @typescript-eslint/no-explicit-any
+
+J:\amazong\app\[locale]\(main)\search\page.tsx
+   55:31  warning  Refactor this function to reduce its Cognitive Complexity from 64 to the 25 allowed  sonarjs/cognitive-complexity
+  102:50  warning  Do not use useless `undefined`                                                       unicorn/no-useless-undefined
+
+J:\amazong\app\[locale]\(main)\seller\settings\payouts\_components\seller-payout-setup.tsx
+  43:25  warning  Unsafe argument of type `any` assigned to a parameter of type `string | undefined`        @typescript-eslint/no-unsafe-argument
+  65:25  warning  Unsafe argument of type `any` assigned to a parameter of type `string | undefined`        @typescript-eslint/no-unsafe-argument
+  69:19  warning  Unsafe argument of type `any` assigned to a parameter of type `string | URL | undefined`  @typescript-eslint/no-unsafe-argument
+
+J:\amazong\app\[locale]\(plans)\_components\plans-page-client.tsx
+   39:1   warning  '@/app/actions/subscriptions' import is restricted from being used by a pattern. Shared modules must not import from /app (route code). Move shared logic to /lib, /hooks, or /components and keep route-only code under app/**/_lib or app/**/_components  no-restricted-imports
+  389:82  warning  Refactor this function to reduce its Cognitive Complexity from 26 to the 25 allowed                                                                                                                                                                         sonarjs/cognitive-complexity
+
+J:\amazong\app\[locale]\(sell)\_actions\sell.ts
+  25:23  warning  Refactor this function to reduce its Cognitive Complexity from 26 to the 25 allowed  sonarjs/cognitive-complexity
+
+J:\amazong\app\[locale]\(sell)\_components\ai\ai-listing-assistant.tsx
+  109:9   warning  The 'images' logical expression could make the dependencies of useCallback Hook (at line 242) change on every render. To fix this, wrap the initialization of 'images' in its own useMemo() Hook  react-hooks/exhaustive-deps
+  230:25  warning  Unsafe argument of type `any` assigned to a parameter of type `string | undefined`                                                                                                                @typescript-eslint/no-unsafe-argument
+  230:34  warning  Unexpected any. Specify a different type                                                                                                                                                          @typescript-eslint/no-explicit-any
+  347:40  warning  Forbidden non-null assertion                                                                                                                                                                      @typescript-eslint/no-non-null-assertion
+  382:44  warning  Forbidden non-null assertion                                                                                                                                                                      @typescript-eslint/no-non-null-assertion
+  399:40  warning  Forbidden non-null assertion                                                                                                                                                                      @typescript-eslint/no-non-null-assertion
+
+J:\amazong\app\[locale]\(sell)\_components\fields\attributes-field.tsx
+  145:17  warning  Refactor this function to reduce its Cognitive Complexity from 31 to the 25 allowed                                        sonarjs/cognitive-complexity
+  324:5   warning  React Hook useMemo has a missing dependency: 'EXCLUDED_ATTRIBUTE_NAMES'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  332:5   warning  React Hook useMemo has a missing dependency: 'EXCLUDED_ATTRIBUTE_NAMES'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  437:23  warning  Define a constant instead of duplicating this literal 6 times                                                              sonarjs/no-duplicate-string
+  438:23  warning  Define a constant instead of duplicating this literal 6 times                                                              sonarjs/no-duplicate-string
+
+J:\amazong\app\[locale]\(sell)\_components\fields\category-field.tsx
+  37:65  warning  Move async arrow function 'prefetchCategoryAttributes' to the outer scope  unicorn/consistent-function-scoping
+
+J:\amazong\app\[locale]\(sell)\_components\fields\condition-field.tsx
+  40:39  warning  Refactor this function to reduce its Cognitive Complexity from 28 to the 25 allowed  sonarjs/cognitive-complexity
+
+J:\amazong\app\[locale]\(sell)\_components\fields\photos-field.tsx
+   80:9   warning  The 'images' logical expression could make the dependencies of useCallback Hook (at line 185) change on every render. To fix this, wrap the initialization of 'images' in its own useMemo() Hook  react-hooks/exhaustive-deps
+   80:9   warning  The 'images' logical expression could make the dependencies of useCallback Hook (at line 209) change on every render. To fix this, wrap the initialization of 'images' in its own useMemo() Hook  react-hooks/exhaustive-deps
+   80:9   warning  The 'images' logical expression could make the dependencies of useCallback Hook (at line 219) change on every render. To fix this, wrap the initialization of 'images' in its own useMemo() Hook  react-hooks/exhaustive-deps
+   80:9   warning  The 'images' logical expression could make the dependencies of useCallback Hook (at line 247) change on every render. To fix this, wrap the initialization of 'images' in its own useMemo() Hook  react-hooks/exhaustive-deps
+  114:23  warning  Unsafe argument of type `any` assigned to a parameter of type `string | undefined`                                                                                                                @typescript-eslint/no-unsafe-argument
+
+J:\amazong\app\[locale]\(sell)\_components\fields\pricing-field.tsx
+  178:16  warning  Prefer `Number.isNaN` over `isNaN`                                                            unicorn/prefer-number-properties
+  421:13  warning  This conditional operation returns the same value whether the condition is "true" or "false"  sonarjs/no-all-duplicated-branches
+
+J:\amazong\app\[locale]\(sell)\_components\fields\review-field.tsx
+  86:17  warning  Refactor this function to reduce its Cognitive Complexity from 43 to the 25 allowed  sonarjs/cognitive-complexity
+
+J:\amazong\app\[locale]\(sell)\_components\fields\shipping-field.tsx
+  238:17  warning  Refactor this function to reduce its Cognitive Complexity from 74 to the 25 allowed  sonarjs/cognitive-complexity
+
+J:\amazong\app\[locale]\(sell)\_components\sell-form-unified.tsx
+   68:10  warning  Refactor this function to reduce its Cognitive Complexity from 28 to the 25 allowed                                                                                                                                                                                                      sonarjs/cognitive-complexity
+  218:19  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+J:\amazong\app\[locale]\(sell)\_components\steps\step-category.tsx
+  19:9  warning  The 'rawCategoryPath' logical expression could make the dependencies of useMemo Hook (at line 29) change on every render. Move it inside the useMemo callback. Alternatively, wrap the initialization of 'rawCategoryPath' in its own useMemo() Hook  react-hooks/exhaustive-deps
+
+J:\amazong\app\[locale]\(sell)\_components\steps\step-details.tsx
+  100:9   warning  The 'images' logical expression could make the dependencies of useCallback Hook (at line 199) change on every render. To fix this, wrap the initialization of 'images' in its own useMemo() Hook                                                                                         react-hooks/exhaustive-deps
+  100:9   warning  The 'images' logical expression could make the dependencies of useCallback Hook (at line 210) change on every render. To fix this, wrap the initialization of 'images' in its own useMemo() Hook                                                                                         react-hooks/exhaustive-deps
+  167:22  warning  Do not use useless `undefined`                                                                                                                                                                                                                                                           unicorn/no-useless-undefined
+  350:15  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+J:\amazong\app\[locale]\(sell)\_components\steps\step-pricing.tsx
+  69:16  warning  Prefer `Number.isNaN` over `isNaN`  unicorn/prefer-number-properties
+
+J:\amazong\app\[locale]\(sell)\_components\ui\brand-combobox.tsx
+  220:17  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+  255:7   warning  Elements with the ARIA role "combobox" must have the following attributes defined: aria-controls,aria-expanded                                                                                                                                                                           jsx-a11y/role-has-required-aria-props
+  274:13  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+J:\amazong\app\[locale]\(sell)\_components\ui\category-modal\index.tsx
+  550:58  warning  Forbidden non-null assertion  @typescript-eslint/no-non-null-assertion
+
+J:\amazong\app\[locale]\(sell)\_components\ui\image-preview-modal.tsx
+  37:7  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+J:\amazong\app\[locale]\(sell)\sell\_lib\categories.ts
+  36:18  warning  Forbidden non-null assertion  @typescript-eslint/no-non-null-assertion
+  39:7   warning  Forbidden non-null assertion  @typescript-eslint/no-non-null-assertion
+
+J:\amazong\app\[locale]\(sell)\sell\orders\_components\order-status-actions.tsx
+   23:1   warning  '@/app/actions/orders' import is restricted from being used by a pattern. Shared modules must not import from /app (route code). Move shared logic to /lib, /hooks, or /components and keep route-only code under app/**/_lib or app/**/_components  no-restricted-imports
+  135:45  warning  Forbidden non-null assertion                                                                                                                                                                                                                         @typescript-eslint/no-non-null-assertion
+
+J:\amazong\app\[locale]\(sell)\sell\orders\_components\seller-rate-buyer-actions.tsx
+  6:1  warning  '@/app/actions/orders' import is restricted from being used by a pattern. Shared modules must not import from /app (route code). Move shared logic to /lib, /hooks, or /components and keep route-only code under app/**/_lib or app/**/_components          no-restricted-imports
+  7:1  warning  '@/app/actions/buyer-feedback' import is restricted from being used by a pattern. Shared modules must not import from /app (route code). Move shared logic to /lib, /hooks, or /components and keep route-only code under app/**/_lib or app/**/_components  no-restricted-imports
+
+J:\amazong\app\[locale]\(sell)\sell\orders\client.tsx
+  14:1  warning  '@/app/actions/orders' import is restricted from being used by a pattern. Shared modules must not import from /app (route code). Move shared logic to /lib, /hooks, or /components and keep route-only code under app/**/_lib or app/**/_components  no-restricted-imports
+
+J:\amazong\app\[locale]\[username]\[productSlug]\page.tsx
+   9:1   warning  '@/app/actions/reviews' import is restricted from being used by a pattern. Shared modules must not import from /app (route code). Move shared logic to /lib, /hooks, or /components and keep route-only code under app/**/_lib or app/**/_components  no-restricted-imports
+  72:21  warning  Unexpected any. Specify a different type                                                                                                                                                                                                              @typescript-eslint/no-explicit-any
+
+J:\amazong\app\[locale]\[username]\error.tsx
+  33:11  warning  Do not use an `<a>` element to navigate to `/`. Use `<Link />` from `next/link` instead. See: https://nextjs.org/docs/messages/no-html-link-for-pages  @next/next/no-html-link-for-pages
+  33:11  warning  Do not use an `<a>` element to navigate to `/`. Use `<Link />` from `next/link` instead. See: https://nextjs.org/docs/messages/no-html-link-for-pages  @next/next/no-html-link-for-pages
+  33:11  warning  Do not use an `<a>` element to navigate to `/`. Use `<Link />` from `next/link` instead. See: https://nextjs.org/docs/messages/no-html-link-for-pages  @next/next/no-html-link-for-pages
+  33:11  warning  Do not use an `<a>` element to navigate to `/`. Use `<Link />` from `next/link` instead. See: https://nextjs.org/docs/messages/no-html-link-for-pages  @next/next/no-html-link-for-pages
+  33:11  warning  Do not use an `<a>` element to navigate to `/`. Use `<Link />` from `next/link` instead. See: https://nextjs.org/docs/messages/no-html-link-for-pages  @next/next/no-html-link-for-pages
+  33:11  warning  Do not use an `<a>` element to navigate to `/`. Use `<Link />` from `next/link` instead. See: https://nextjs.org/docs/messages/no-html-link-for-pages  @next/next/no-html-link-for-pages
+  33:11  warning  Do not use an `<a>` element to navigate to `/`. Use `<Link />` from `next/link` instead. See: https://nextjs.org/docs/messages/no-html-link-for-pages  @next/next/no-html-link-for-pages
+  33:11  warning  Do not use an `<a>` element to navigate to `/`. Use `<Link />` from `next/link` instead. See: https://nextjs.org/docs/messages/no-html-link-for-pages  @next/next/no-html-link-for-pages
+  33:11  warning  Do not use an `<a>` element to navigate to `/`. Use `<Link />` from `next/link` instead. See: https://nextjs.org/docs/messages/no-html-link-for-pages  @next/next/no-html-link-for-pages
+  33:11  warning  Do not use an `<a>` element to navigate to `/`. Use `<Link />` from `next/link` instead. See: https://nextjs.org/docs/messages/no-html-link-for-pages  @next/next/no-html-link-for-pages
+
+J:\amazong\app\[locale]\[username]\page.tsx
+    9:1   warning  '@/app/actions/seller-follows' import is restricted from being used by a pattern. Shared modules must not import from /app (route code). Move shared logic to /lib, /hooks, or /components and keep route-only code under app/**/_lib or app/**/_components  no-restricted-imports
+  136:74  warning  Refactor this code to not use nested template literals                                                                                                                                                                                                       sonarjs/no-nested-template-literals
+  137:73  warning  Refactor this code to not use nested template literals                                                                                                                                                                                                       sonarjs/no-nested-template-literals
+
+J:\amazong\app\[locale]\demo\product-adaptive\_components\product-page-desktop.tsx
+  242:43  warning  This conditional operation returns the same value whether the condition is "true" or "false"  sonarjs/no-all-duplicated-branches
+
+J:\amazong\app\[locale]\demo\product-desktop2\page.tsx
+  731:95  warning  This conditional operation returns the same value whether the condition is "true" or "false"  sonarjs/no-all-duplicated-branches
+
+J:\amazong\app\[locale]\demo\sell2\page.tsx
+    73:58  warning  Prefer `Number.isNaN` over `isNaN`                                                                                                                                                                                                                                                       unicorn/prefer-number-properties
+   260:11  warning  This conditional operation returns the same value whether the condition is "true" or "false"                                                                                                                                                                                             sonarjs/no-all-duplicated-branches
+   352:9   warning  The 'photos' logical expression could make the dependencies of useCallback Hook (at line 364) change on every render. To fix this, wrap the initialization of 'photos' in its own useMemo() Hook                                                                                         react-hooks/exhaustive-deps
+   430:15  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+   635:23  warning  Define a constant instead of duplicating this literal 5 times                                                                                                                                                                                                                            sonarjs/no-duplicate-string
+   638:27  warning  Define a constant instead of duplicating this literal 5 times                                                                                                                                                                                                                            sonarjs/no-duplicate-string
+   977:17  warning  Prefer `Number.parseFloat` over `parseFloat`                                                                                                                                                                                                                                             unicorn/prefer-number-properties
+   992:13  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+  1260:17  warning  Prefer `Number.parseFloat` over `parseFloat`                                                                                                                                                                                                                                             unicorn/prefer-number-properties
+  1290:15  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+J:\amazong\app\[locale]\demo\sell3\page.tsx
+   58:58  warning  Prefer `Number.isNaN` over `isNaN`                                                                                                                                                                                                                                                       unicorn/prefer-number-properties
+  584:13  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+  825:13  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+J:\amazong\app\[locale]\demo\sell4\page.tsx
+    78:58  warning  Prefer `Number.isNaN` over `isNaN`                                                                                                                                                                                                                                                       unicorn/prefer-number-properties
+   257:9   warning  Define a constant instead of duplicating this literal 7 times                                                                                                                                                                                                                            sonarjs/no-duplicate-string
+   338:11  warning  This conditional operation returns the same value whether the condition is "true" or "false"                                                                                                                                                                                             sonarjs/no-all-duplicated-branches
+   477:15  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+   706:27  warning  Define a constant instead of duplicating this literal 5 times                                                                                                                                                                                                                            sonarjs/no-duplicate-string
+   820:20  warning  Prefer `Number.parseFloat` over `parseFloat`                                                                                                                                                                                                                                             unicorn/prefer-number-properties
+   821:27  warning  Prefer `Number.parseFloat` over `parseFloat`                                                                                                                                                                                                                                             unicorn/prefer-number-properties
+  1134:20  warning  Prefer `Number.parseFloat` over `parseFloat`                                                                                                                                                                                                                                             unicorn/prefer-number-properties
+  1135:27  warning  Prefer `Number.parseFloat` over `parseFloat`                                                                                                                                                                                                                                             unicorn/prefer-number-properties
+  1152:13  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+  1451:20  warning  Prefer `Number.parseFloat` over `parseFloat`                                                                                                                                                                                                                                             unicorn/prefer-number-properties
+  1488:15  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+J:\amazong\app\[locale]\demo\sell5\page.tsx
+   109:58  warning  Prefer `Number.isNaN` over `isNaN`                                                                                                                                                                                                                                                       unicorn/prefer-number-properties
+   336:9   warning  Define a constant instead of duplicating this literal 6 times                                                                                                                                                                                                                            sonarjs/no-duplicate-string
+   569:54  warning  Forbidden non-null assertion                                                                                                                                                                                                                                                             @typescript-eslint/no-non-null-assertion
+  1090:17  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+  1279:20  warning  Prefer `Number.parseFloat` over `parseFloat`                                                                                                                                                                                                                                             unicorn/prefer-number-properties
+  1280:27  warning  Prefer `Number.parseFloat` over `parseFloat`                                                                                                                                                                                                                                             unicorn/prefer-number-properties
+  1511:17  warning  Immediately return this expression instead of assigning it to the temporary variable "cat"                                                                                                                                                                                               sonarjs/prefer-immediate-return
+  1516:20  warning  Prefer `Number.parseFloat` over `parseFloat`                                                                                                                                                                                                                                             unicorn/prefer-number-properties
+  1517:27  warning  Prefer `Number.parseFloat` over `parseFloat`                                                                                                                                                                                                                                             unicorn/prefer-number-properties
+  1534:13  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+  1810:20  warning  Prefer `Number.parseFloat` over `parseFloat`                                                                                                                                                                                                                                             unicorn/prefer-number-properties
+  1836:15  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+J:\amazong\app\[locale]\demo\sell7\page.tsx
+  1:1  warning  '@/app/[locale]/(sell)/sell/_lib/categories' import is restricted from being used by a pattern. Shared modules must not import from /app (route code). Move shared logic to /lib, /hooks, or /components and keep route-only code under app/**/_lib or app/**/_components  no-restricted-imports
+
+J:\amazong\app\[locale]\demo\sell\page.tsx
+   50:58  warning  Prefer `Number.isNaN` over `isNaN`                                                                                                                                                                                                                                                       unicorn/prefer-number-properties
+  146:9   warning  Define a constant instead of duplicating this literal 6 times                                                                                                                                                                                                                            sonarjs/no-duplicate-string
+  376:13  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+  429:13  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+J:\amazong\app\actions\buyer-feedback.ts
+   58:39  warning  Define a constant instead of duplicating this literal 6 times  sonarjs/no-duplicate-string
+  153:37  warning  Define a constant instead of duplicating this literal 6 times  sonarjs/no-duplicate-string
+  166:40  warning  Define a constant instead of duplicating this literal 6 times  sonarjs/no-duplicate-string
+
+J:\amazong\app\actions\onboarding.ts
+  36:23  warning  Refactor this function to reduce its Cognitive Complexity from 40 to the 25 allowed  sonarjs/cognitive-complexity
+
+J:\amazong\app\actions\orders.ts
+   72:39  warning  Define a constant instead of duplicating this literal 9 times   sonarjs/no-duplicate-string
+   78:39  warning  Define a constant instead of duplicating this literal 9 times   sonarjs/no-duplicate-string
+   90:39  warning  Define a constant instead of duplicating this literal 5 times   sonarjs/no-duplicate-string
+  139:37  warning  Define a constant instead of duplicating this literal 8 times   sonarjs/no-duplicate-string
+  312:11  warning  Either use this collection's contents or remove the collection  sonarjs/no-unused-collection
+  747:60  warning  Refactor this code to not use nested template literals          sonarjs/no-nested-template-literals
+  836:68  warning  Refactor this code to not use nested template literals          sonarjs/no-nested-template-literals
+
+J:\amazong\app\actions\products.ts
+   51:15  warning  Prefer the spread operator over `Array.from(ΓÇª)`                unicorn/prefer-spread
+   65:10  warning  Prefer the spread operator over `Array.from(ΓÇª)`                unicorn/prefer-spread
+   72:15  warning  Prefer the spread operator over `Array.from(ΓÇª)`                unicorn/prefer-spread
+  117:21  warning  Prefer the spread operator over `Array.from(ΓÇª)`                unicorn/prefer-spread
+  208:37  warning  Define a constant instead of duplicating this literal 9 times  sonarjs/no-duplicate-string
+  236:39  warning  Define a constant instead of duplicating this literal 5 times  sonarjs/no-duplicate-string
+
+J:\amazong\app\actions\profile.ts
+   62:39  warning  Define a constant instead of duplicating this literal 8 times  sonarjs/no-duplicate-string
+   67:39  warning  Define a constant instead of duplicating this literal 8 times  sonarjs/no-duplicate-string
+   83:37  warning  Define a constant instead of duplicating this literal 8 times  sonarjs/no-duplicate-string
+  437:14  warning  Forbidden non-null assertion                                   @typescript-eslint/no-non-null-assertion
+
+J:\amazong\app\actions\seller-feedback.ts
+   80:39  warning  Define a constant instead of duplicating this literal 6 times  sonarjs/no-duplicate-string
+  196:37  warning  Define a constant instead of duplicating this literal 6 times  sonarjs/no-duplicate-string
+
+J:\amazong\app\actions\username.ts
+   58:41  warning  Define a constant instead of duplicating this literal 7 times  sonarjs/no-duplicate-string
+   94:39  warning  Define a constant instead of duplicating this literal 5 times  sonarjs/no-duplicate-string
+  184:37  warning  Define a constant instead of duplicating this literal 6 times  sonarjs/no-duplicate-string
+
+J:\amazong\app\api\badges\evaluate\route.ts
+   75:17  warning  Unsafe argument of type `any` assigned to a parameter of type `string`               @typescript-eslint/no-unsafe-argument
+  138:22  warning  Unsafe argument of type `any` assigned to a parameter of type `string`               @typescript-eslint/no-unsafe-argument
+  159:24  warning  Unsafe argument of type `any` assigned to a parameter of type `string`               @typescript-eslint/no-unsafe-argument
+  169:22  warning  Unsafe argument of type `any` assigned to a parameter of type `string`               @typescript-eslint/no-unsafe-argument
+  233:10  warning  Refactor this function to reduce its Cognitive Complexity from 34 to the 25 allowed  sonarjs/cognitive-complexity
+
+J:\amazong\app\api\badges\route.ts
+  12:38  warning  Define a constant instead of duplicating this literal 7 times  sonarjs/no-duplicate-string
+
+J:\amazong\app\api\categories\attributes\route.ts
+  154:75  warning  Forbidden non-null assertion  @typescript-eslint/no-non-null-assertion
+
+J:\amazong\app\api\categories\counts\route.ts
+  45:18  warning  Immediately return this expression instead of assigning it to the temporary variable "counts"  sonarjs/prefer-immediate-return
+
+J:\amazong\app\api\categories\route.ts
+   75:22  warning  Forbidden non-null assertion  @typescript-eslint/no-non-null-assertion
+   79:22  warning  Forbidden non-null assertion  @typescript-eslint/no-non-null-assertion
+  240:22  warning  Forbidden non-null assertion  @typescript-eslint/no-non-null-assertion
+  242:22  warning  Forbidden non-null assertion  @typescript-eslint/no-non-null-assertion
+
+J:\amazong\app\api\checkout\webhook\route.ts
+   92:18  warning  Forbidden non-null assertion                                                         @typescript-eslint/no-non-null-assertion
+  111:23  warning  Refactor this function to reduce its Cognitive Complexity from 37 to the 25 allowed  sonarjs/cognitive-complexity
+
+J:\amazong\app\api\orders\[id]\ship\route.ts
+  2:1  warning  '@/app/actions/orders' import is restricted from being used by a pattern. Shared modules must not import from /app (route code). Move shared logic to /lib, /hooks, or /components and keep route-only code under app/**/_lib or app/**/_components  no-restricted-imports
+
+J:\amazong\app\api\orders\[id]\track\route.ts
+  2:1  warning  '@/app/actions/orders' import is restricted from being used by a pattern. Shared modules must not import from /app (route code). Move shared logic to /lib, /hooks, or /components and keep route-only code under app/**/_lib or app/**/_components  no-restricted-imports
+
+J:\amazong\app\api\payments\delete\route.ts
+  22:44  warning  Unsafe argument of type `any` assigned to a parameter of type `string`  @typescript-eslint/no-unsafe-argument
+  28:23  warning  Unsafe argument of type `any` assigned to a parameter of type `string`  @typescript-eslint/no-unsafe-argument
+
+J:\amazong\app\api\payments\set-default\route.ts
+  48:23  warning  Unsafe argument of type `any` assigned to a parameter of type `string`  @typescript-eslint/no-unsafe-argument
+
+J:\amazong\app\api\payments\webhook\route.ts
+   15:23  warning  Refactor this function to reduce its Cognitive Complexity from 48 to the 25 allowed  sonarjs/cognitive-complexity
+   48:20  warning  Define a constant instead of duplicating this literal 7 times                        sonarjs/no-duplicate-string
+   55:27  warning  Unexpected any. Specify a different type                                             @typescript-eslint/no-explicit-any
+   57:43  warning  Unexpected any. Specify a different type                                             @typescript-eslint/no-explicit-any
+   63:42  warning  Prefer `Number.parseInt` over `parseInt`                                             unicorn/prefer-number-properties
+   63:51  warning  Unsafe argument of type `any` assigned to a parameter of type `string`               @typescript-eslint/no-unsafe-argument
+   78:59  warning  Unexpected any. Specify a different type                                             @typescript-eslint/no-explicit-any
+  103:66  warning  Unexpected any. Specify a different type                                             @typescript-eslint/no-explicit-any
+  116:63  warning  Unsafe argument of type `any` assigned to a parameter of type `string`               @typescript-eslint/no-unsafe-argument
+  140:35  warning  Unsafe argument of type `any` assigned to a parameter of type `string`               @typescript-eslint/no-unsafe-argument
+  141:42  warning  Unsafe argument of type `any` assigned to a parameter of type `string`               @typescript-eslint/no-unsafe-argument
+  184:36  warning  Unsafe argument of type `any` assigned to a parameter of type `string`               @typescript-eslint/no-unsafe-argument
+  223:49  warning  Unexpected any. Specify a different type                                             @typescript-eslint/no-explicit-any
+  229:53  warning  Unsafe argument of type `any` assigned to a parameter of type `string`               @typescript-eslint/no-unsafe-argument
+  239:34  warning  Unexpected any. Specify a different type                                             @typescript-eslint/no-explicit-any
+
+J:\amazong\app\api\plans\route.ts
+  39:38  warning  This always evaluates to truthy. Consider refactoring this code  sonarjs/no-gratuitous-expressions
+
+J:\amazong\app\api\products\count\route.ts
+  71:23  warning  Refactor this function to reduce its Cognitive Complexity from 35 to the 25 allowed  sonarjs/cognitive-complexity
+
+J:\amazong\app\api\products\create\route.ts
+   71:12  warning  Prefer `Number.isNaN` over `isNaN`                                                   unicorn/prefer-number-properties
+   76:12  warning  Prefer `Number.isNaN` over `isNaN`                                                   unicorn/prefer-number-properties
+  117:23  warning  Refactor this function to reduce its Cognitive Complexity from 27 to the 25 allowed  sonarjs/cognitive-complexity
+
+J:\amazong\app\api\products\newest\route.ts
+  72:23  warning  Refactor this function to reduce its Cognitive Complexity from 73 to the 25 allowed  sonarjs/cognitive-complexity
+
+J:\amazong\app\api\revalidate\route.ts
+   60:10  warning  Refactor this function to reduce its Cognitive Complexity from 37 to the 25 allowed  sonarjs/cognitive-complexity
+   99:35  warning  Unexpected any. Specify a different type                                             @typescript-eslint/no-explicit-any
+  100:38  warning  Unexpected any. Specify a different type                                             @typescript-eslint/no-explicit-any
+  101:39  warning  Unexpected any. Specify a different type                                             @typescript-eslint/no-explicit-any
+  102:42  warning  Unexpected any. Specify a different type                                             @typescript-eslint/no-explicit-any
+  114:41  warning  Unexpected any. Specify a different type                                             @typescript-eslint/no-explicit-any
+  115:44  warning  Unexpected any. Specify a different type                                             @typescript-eslint/no-explicit-any
+  121:10  warning  Prefer the spread operator over `Array.from(ΓÇª)`                                      unicorn/prefer-spread
+
+J:\amazong\app\api\subscriptions\webhook\route.ts
+  40:23  warning  Refactor this function to reduce its Cognitive Complexity from 112 to the 25 allowed  sonarjs/cognitive-complexity
+
+J:\amazong\app\auth\confirm\route.ts
+  43:23  warning  Refactor this function to reduce its Cognitive Complexity from 32 to the 25 allowed  sonarjs/cognitive-complexity
+
+J:\amazong\app\demo\sell2\page.tsx
+  185:15  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+  685:13  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+  862:17  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+J:\amazong\app\global-not-found.tsx
+  41:15  warning  Do not use an `<a>` element to navigate to `/`. Use `<Link />` from `next/link` instead. See: https://nextjs.org/docs/messages/no-html-link-for-pages          @next/next/no-html-link-for-pages
+  41:15  warning  Do not use an `<a>` element to navigate to `/`. Use `<Link />` from `next/link` instead. See: https://nextjs.org/docs/messages/no-html-link-for-pages          @next/next/no-html-link-for-pages
+  41:15  warning  Do not use an `<a>` element to navigate to `/`. Use `<Link />` from `next/link` instead. See: https://nextjs.org/docs/messages/no-html-link-for-pages          @next/next/no-html-link-for-pages
+  41:15  warning  Do not use an `<a>` element to navigate to `/`. Use `<Link />` from `next/link` instead. See: https://nextjs.org/docs/messages/no-html-link-for-pages          @next/next/no-html-link-for-pages
+  41:15  warning  Do not use an `<a>` element to navigate to `/`. Use `<Link />` from `next/link` instead. See: https://nextjs.org/docs/messages/no-html-link-for-pages          @next/next/no-html-link-for-pages
+  41:15  warning  Do not use an `<a>` element to navigate to `/`. Use `<Link />` from `next/link` instead. See: https://nextjs.org/docs/messages/no-html-link-for-pages          @next/next/no-html-link-for-pages
+  41:15  warning  Do not use an `<a>` element to navigate to `/`. Use `<Link />` from `next/link` instead. See: https://nextjs.org/docs/messages/no-html-link-for-pages          @next/next/no-html-link-for-pages
+  41:15  warning  Do not use an `<a>` element to navigate to `/`. Use `<Link />` from `next/link` instead. See: https://nextjs.org/docs/messages/no-html-link-for-pages          @next/next/no-html-link-for-pages
+  41:15  warning  Do not use an `<a>` element to navigate to `/`. Use `<Link />` from `next/link` instead. See: https://nextjs.org/docs/messages/no-html-link-for-pages          @next/next/no-html-link-for-pages
+  41:15  warning  Do not use an `<a>` element to navigate to `/`. Use `<Link />` from `next/link` instead. See: https://nextjs.org/docs/messages/no-html-link-for-pages          @next/next/no-html-link-for-pages
+  51:15  warning  Do not use an `<a>` element to navigate to `/contact/`. Use `<Link />` from `next/link` instead. See: https://nextjs.org/docs/messages/no-html-link-for-pages  @next/next/no-html-link-for-pages
+  51:15  warning  Do not use an `<a>` element to navigate to `/contact/`. Use `<Link />` from `next/link` instead. See: https://nextjs.org/docs/messages/no-html-link-for-pages  @next/next/no-html-link-for-pages
+  51:15  warning  Do not use an `<a>` element to navigate to `/contact/`. Use `<Link />` from `next/link` instead. See: https://nextjs.org/docs/messages/no-html-link-for-pages  @next/next/no-html-link-for-pages
+  51:15  warning  Do not use an `<a>` element to navigate to `/contact/`. Use `<Link />` from `next/link` instead. See: https://nextjs.org/docs/messages/no-html-link-for-pages  @next/next/no-html-link-for-pages
+  51:15  warning  Do not use an `<a>` element to navigate to `/contact/`. Use `<Link />` from `next/link` instead. See: https://nextjs.org/docs/messages/no-html-link-for-pages  @next/next/no-html-link-for-pages
+  51:15  warning  Do not use an `<a>` element to navigate to `/contact/`. Use `<Link />` from `next/link` instead. See: https://nextjs.org/docs/messages/no-html-link-for-pages  @next/next/no-html-link-for-pages
+  51:15  warning  Do not use an `<a>` element to navigate to `/contact/`. Use `<Link />` from `next/link` instead. See: https://nextjs.org/docs/messages/no-html-link-for-pages  @next/next/no-html-link-for-pages
+  51:15  warning  Do not use an `<a>` element to navigate to `/contact/`. Use `<Link />` from `next/link` instead. See: https://nextjs.org/docs/messages/no-html-link-for-pages  @next/next/no-html-link-for-pages
+  51:15  warning  Do not use an `<a>` element to navigate to `/contact/`. Use `<Link />` from `next/link` instead. See: https://nextjs.org/docs/messages/no-html-link-for-pages  @next/next/no-html-link-for-pages
+  51:15  warning  Do not use an `<a>` element to navigate to `/contact/`. Use `<Link />` from `next/link` instead. See: https://nextjs.org/docs/messages/no-html-link-for-pages  @next/next/no-html-link-for-pages
+
+J:\amazong\app\sitemap.ts
+  12:31  warning  Refactor this function to reduce its Cognitive Complexity from 40 to the 25 allowed  sonarjs/cognitive-complexity
+
+J:\amazong\components\category\subcategory-circles.tsx
+  59:43  warning  Move arrow function 'isValidCategory' to the outer scope  unicorn/consistent-function-scoping
+  74:58  warning  Refactor this code to not use nested template literals    sonarjs/no-nested-template-literals
+
+J:\amazong\components\charts\chart-area-interactive.tsx
+  251:39  warning  Unsafe argument of type `any` assigned to a parameter of type `string | number | Date`  @typescript-eslint/no-unsafe-argument
+  263:37  warning  Unsafe argument of type `any` assigned to a parameter of type `string | number | Date`  @typescript-eslint/no-unsafe-argument
+
+J:\amazong\components\desktop\desktop-category-rail.tsx
+  53:12  warning  Prefer the spread operator over `Array.from(ΓÇª)`  unicorn/prefer-spread
+
+J:\amazong\components\desktop\desktop-filter-modal.tsx
+  158:39  warning  Refactor this code to not use nested template literals  sonarjs/no-nested-template-literals
+
+J:\amazong\components\desktop\desktop-home.tsx
+  176:20  warning  Unsafe argument of type `any` assigned to a parameter of type `SetStateAction<boolean>`                                                                    @typescript-eslint/no-unsafe-argument
+  193:6   warning  React Hook useEffect has missing dependencies: 'activeCategorySlug', 'activeTab', and 'fetchProducts'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+
+J:\amazong\components\desktop\desktop-search.tsx
+  96:6  warning  React Hook useCallback has unnecessary dependencies: 'locale', 'query', 'router', and 'saveSearch'. Either exclude them or remove the dependency array  react-hooks/exhaustive-deps
+
+J:\amazong\components\desktop\feed-toolbar.tsx
+  100:65  warning  Forbidden non-null assertion                                 @typescript-eslint/no-non-null-assertion
+  113:7   warning  Replace this if-then-else flow by a single return statement  sonarjs/prefer-single-boolean-return
+  131:35  warning  Prefer `String#replaceAll()` over `String#replace()`         unicorn/prefer-string-replace-all
+  138:34  warning  Prefer `String#replaceAll()` over `String#replace()`         unicorn/prefer-string-replace-all
+
+J:\amazong\components\desktop\marketplace-hero.tsx
+  76:9  warning  This conditional operation returns the same value whether the condition is "true" or "false"  sonarjs/no-all-duplicated-branches
+
+J:\amazong\components\desktop\product\desktop-buy-box-v2.tsx
+  144:27  warning  Update this function so that its implementation is not identical to the one on line 134  sonarjs/no-identical-functions
+
+J:\amazong\components\desktop\product\product-modal-wrapper.tsx
+  159:64  warning  Forbidden non-null assertion  @typescript-eslint/no-non-null-assertion
+
+J:\amazong\components\dropdowns\messages-dropdown.tsx
+  100:57  warning  Refactor this code to not use nested template literals  sonarjs/no-nested-template-literals
+
+J:\amazong\components\dropdowns\notifications-dropdown.tsx
+  220:19  warning  Refactor this function to reduce its Cognitive Complexity from 35 to the 25 allowed                                                                                                                                                                                                      sonarjs/cognitive-complexity
+  318:25  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+  376:87  warning  Refactor this code to not use nested template literals                                                                                                                                                                                                                                   sonarjs/no-nested-template-literals
+
+J:\amazong\components\dropdowns\wishlist-dropdown.tsx
+  47:75  warning  Refactor this code to not use nested template literals  sonarjs/no-nested-template-literals
+
+J:\amazong\components\layout\cookie-consent.tsx
+  36:9   warning  Remove this redundant jump                                        sonarjs/no-redundant-jump
+  55:40  warning  Move arrow function 'handleManagePreferences' to the outer scope  unicorn/consistent-function-scoping
+
+J:\amazong\components\layout\footer\site-footer.tsx
+  53:28  warning  Move arrow function 'scrollToTop' to the outer scope  unicorn/consistent-function-scoping
+
+J:\amazong\components\layout\header\cart\cart-dropdown.tsx
+  43:71  warning  Refactor this code to not use nested template literals  sonarjs/no-nested-template-literals
+
+J:\amazong\components\layout\header\dashboard-header.tsx
+  17:13  warning  Do not use an `<a>` element to navigate to `/`. Use `<Link />` from `next/link` instead. See: https://nextjs.org/docs/messages/no-html-link-for-pages  @next/next/no-html-link-for-pages
+  17:13  warning  Do not use an `<a>` element to navigate to `/`. Use `<Link />` from `next/link` instead. See: https://nextjs.org/docs/messages/no-html-link-for-pages  @next/next/no-html-link-for-pages
+  17:13  warning  Do not use an `<a>` element to navigate to `/`. Use `<Link />` from `next/link` instead. See: https://nextjs.org/docs/messages/no-html-link-for-pages  @next/next/no-html-link-for-pages
+  17:13  warning  Do not use an `<a>` element to navigate to `/`. Use `<Link />` from `next/link` instead. See: https://nextjs.org/docs/messages/no-html-link-for-pages  @next/next/no-html-link-for-pages
+  17:13  warning  Do not use an `<a>` element to navigate to `/`. Use `<Link />` from `next/link` instead. See: https://nextjs.org/docs/messages/no-html-link-for-pages  @next/next/no-html-link-for-pages
+  17:13  warning  Do not use an `<a>` element to navigate to `/`. Use `<Link />` from `next/link` instead. See: https://nextjs.org/docs/messages/no-html-link-for-pages  @next/next/no-html-link-for-pages
+  17:13  warning  Do not use an `<a>` element to navigate to `/`. Use `<Link />` from `next/link` instead. See: https://nextjs.org/docs/messages/no-html-link-for-pages  @next/next/no-html-link-for-pages
+  17:13  warning  Do not use an `<a>` element to navigate to `/`. Use `<Link />` from `next/link` instead. See: https://nextjs.org/docs/messages/no-html-link-for-pages  @next/next/no-html-link-for-pages
+  17:13  warning  Do not use an `<a>` element to navigate to `/`. Use `<Link />` from `next/link` instead. See: https://nextjs.org/docs/messages/no-html-link-for-pages  @next/next/no-html-link-for-pages
+  17:13  warning  Do not use an `<a>` element to navigate to `/`. Use `<Link />` from `next/link` instead. See: https://nextjs.org/docs/messages/no-html-link-for-pages  @next/next/no-html-link-for-pages
+
+J:\amazong\components\layout\header\mobile\product-header.tsx
+  34:32  warning  Move async arrow function 'handleShare' to the outer scope  unicorn/consistent-function-scoping
+
+J:\amazong\components\layout\header\site-header-unified.tsx
+  227:32  warning  Move async arrow function 'handleShare' to the outer scope  unicorn/consistent-function-scoping
+
+J:\amazong\components\layout\sidebar\sidebar-menu-v2.tsx
+  107:17  warning  Refactor this function to reduce its Cognitive Complexity from 73 to the 25 allowed  sonarjs/cognitive-complexity
+
+J:\amazong\components\layout\sidebar\sidebar.tsx
+  454:9  warning  Define a constant instead of duplicating this literal 5 times  sonarjs/no-duplicate-string
+
+J:\amazong\components\mobile\category-nav\quick-filter-row.tsx
+  62:17  warning  Refactor this function to reduce its Cognitive Complexity from 35 to the 25 allowed  sonarjs/cognitive-complexity
+  84:91  warning  Do not use useless `undefined`                                                       unicorn/no-useless-undefined
+
+J:\amazong\components\mobile\drawers\product-quick-view-drawer.tsx
+  109:7   error    Compilation Skipped: Existing memoization could not be preserved
+
+React Compiler has skipped optimizing this component because the existing manual memoization could not be preserved. This dependency may be mutated later, which could cause the value to change unexpectedly.
+
+J:\amazong\components\mobile\drawers\product-quick-view-drawer.tsx:109:7
+  107 |     if (image) return [image]
+  108 |     return []
+> 109 |   }, [images, image])
+      |       ^^^^^^ This dependency may be modified later
+  110 |
+  111 |   const showDiscount = checkHasDiscount(originalPrice, price)
+  112 |   const discountPercent = showDiscount ? getDiscountPercentage(originalPrice!, price) : 0          react-hooks/preserve-manual-memoization
+  109:15  error    Compilation Skipped: Existing memoization could not be preserved
+
+React Compiler has skipped optimizing this component because the existing manual memoization could not be preserved. This dependency may be mutated later, which could cause the value to change unexpectedly.
+
+J:\amazong\components\mobile\drawers\product-quick-view-drawer.tsx:109:15
+  107 |     if (image) return [image]
+  108 |     return []
+> 109 |   }, [images, image])
+      |               ^^^^^ This dependency may be modified later
+  110 |
+  111 |   const showDiscount = checkHasDiscount(originalPrice, price)
+  112 |   const discountPercent = showDiscount ? getDiscountPercentage(originalPrice!, price) : 0  react-hooks/preserve-manual-memoization
+  112:64  warning  Forbidden non-null assertion                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             @typescript-eslint/no-non-null-assertion
+
+J:\amazong\components\mobile\horizontal-product-card.tsx
+   31:20  warning  Forbidden non-null assertion  @typescript-eslint/no-non-null-assertion
+   31:58  warning  Forbidden non-null assertion  @typescript-eslint/no-non-null-assertion
+  108:17  warning  Forbidden non-null assertion  @typescript-eslint/no-non-null-assertion
+
+J:\amazong\components\mobile\mobile-category-browser.tsx
+  311:43  warning  Unexpected any. Specify a different type                                                                                                 @typescript-eslint/no-explicit-any
+  313:39  warning  Unsafe argument of type `any` assigned to a parameter of type `string`                                                                   @typescript-eslint/no-unsafe-argument
+  343:45  warning  Unexpected any. Specify a different type                                                                                                 @typescript-eslint/no-explicit-any
+  347:8   warning  React Hook useEffect has missing dependencies: 'handleBack' and 'handleCircleClick'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+  358:46  warning  Unexpected any. Specify a different type                                                                                                 @typescript-eslint/no-explicit-any
+  394:46  warning  Unexpected any. Specify a different type                                                                                                 @typescript-eslint/no-explicit-any
+
+J:\amazong\components\mobile\mobile-tab-bar.tsx
+   89:56  warning  Define a constant instead of duplicating this literal 8 times  sonarjs/no-duplicate-string
+  151:58  warning  Refactor this code to not use nested template literals         sonarjs/no-nested-template-literals
+
+J:\amazong\components\mobile\product\mobile-product-page.tsx
+  95:9  warning  The 'safeVariants' conditional could make the dependencies of useMemo Hook (at line 99) change on every render. To fix this, wrap the initialization of 'safeVariants' in its own useMemo() Hook   react-hooks/exhaustive-deps
+  95:9  warning  The 'safeVariants' conditional could make the dependencies of useMemo Hook (at line 106) change on every render. To fix this, wrap the initialization of 'safeVariants' in its own useMemo() Hook  react-hooks/exhaustive-deps
+
+J:\amazong\components\pricing\plan-card.tsx
+  115:17  warning  Refactor this function to reduce its Cognitive Complexity from 28 to the 25 allowed  sonarjs/cognitive-complexity
+
+J:\amazong\components\providers\cart-context.tsx
+  231:9  warning  Prefer `Number.isNaN` over `isNaN`  unicorn/prefer-number-properties
+
+J:\amazong\components\providers\messages\use-messages-realtime.ts
+  191:39  warning  The ref value 'typingTimeoutRef.current' will likely have changed by the time this effect cleanup function runs. If this ref points to a node rendered by React, copy 'typingTimeoutRef.current' to a variable inside the effect, and use that variable in the cleanup function  react-hooks/exhaustive-deps
+
+J:\amazong\components\shared\category\category-circle-visual.tsx
+  75:11  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+J:\amazong\components\shared\filters\color-swatches.tsx
+  65:13  warning  Prefer `Number.parseInt` over `parseInt`  unicorn/prefer-number-properties
+  66:13  warning  Prefer `Number.parseInt` over `parseInt`  unicorn/prefer-number-properties
+  67:13  warning  Prefer `Number.parseInt` over `parseInt`  unicorn/prefer-number-properties
+
+J:\amazong\components\shared\filters\desktop-filter-sidebar.tsx
+   93:45  warning  Refactor this code to not use nested template literals  sonarjs/no-nested-template-literals
+  106:45  warning  Refactor this code to not use nested template literals  sonarjs/no-nested-template-literals
+
+J:\amazong\components\shared\filters\desktop-filters.tsx
+  52:45  warning  Refactor this code to not use nested template literals  sonarjs/no-nested-template-literals
+
+J:\amazong\components\shared\filters\filter-chips.tsx
+  101:49  warning  Refactor this code to not use nested template literals  sonarjs/no-nested-template-literals
+
+J:\amazong\components\shared\filters\filter-hub.tsx
+  355:23  warning  Prefer the spread operator over `Array.from(ΓÇª)`                                      unicorn/prefer-spread
+  396:45  warning  Refactor this function to reduce its Cognitive Complexity from 28 to the 25 allowed  sonarjs/cognitive-complexity
+  563:27  warning  Define a constant instead of duplicating this literal 5 times                        sonarjs/no-duplicate-string
+  565:31  warning  Define a constant instead of duplicating this literal 6 times                        sonarjs/no-duplicate-string
+  566:31  warning  Define a constant instead of duplicating this literal 6 times                        sonarjs/no-duplicate-string
+  573:40  warning  Define a constant instead of duplicating this literal 6 times                        sonarjs/no-duplicate-string
+  573:70  warning  Define a constant instead of duplicating this literal 6 times                        sonarjs/no-duplicate-string
+
+J:\amazong\components\shared\filters\filter-modal.tsx
+  263:39  warning  Refactor this function to reduce its Cognitive Complexity from 28 to the 25 allowed  sonarjs/cognitive-complexity
+  343:27  warning  Define a constant instead of duplicating this literal 7 times                        sonarjs/no-duplicate-string
+  343:57  warning  Define a constant instead of duplicating this literal 7 times                        sonarjs/no-duplicate-string
+  421:19  warning  Define a constant instead of duplicating this literal 6 times                        sonarjs/no-duplicate-string
+  424:23  warning  Define a constant instead of duplicating this literal 6 times                        sonarjs/no-duplicate-string
+  425:23  warning  Define a constant instead of duplicating this literal 6 times                        sonarjs/no-duplicate-string
+
+J:\amazong\components\shared\filters\mobile-filters.tsx
+  159:53  warning  Refactor this code to not use nested template literals                                                               sonarjs/no-nested-template-literals
+  165:6   warning  React Hook useMemo has a missing dependency: 'getAttributeValues'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  342:31  warning  Define a constant instead of duplicating this literal 5 times                                                        sonarjs/no-duplicate-string
+  343:31  warning  Define a constant instead of duplicating this literal 5 times                                                        sonarjs/no-duplicate-string
+  429:32  warning  Forbidden non-null assertion                                                                                         @typescript-eslint/no-non-null-assertion
+
+J:\amazong\components\shared\filters\price-slider.tsx
+  87:28  warning  Prefer `String#replaceAll()` over `String#replace()`  unicorn/prefer-string-replace-all
+  93:28  warning  Prefer `String#replaceAll()` over `String#replace()`  unicorn/prefer-string-replace-all
+
+J:\amazong\components\shared\product\condition-badge.tsx
+   89:53  warning  Prefer `String#replaceAll()` over `String#replace()`  unicorn/prefer-string-replace-all
+  110:58  warning  Forbidden non-null assertion                          @typescript-eslint/no-non-null-assertion
+
+J:\amazong\components\shared\product\product-buy-box.tsx
+  127:9  warning  The 'safeVariants' conditional could make the dependencies of useMemo Hook (at line 144) change on every render. To fix this, wrap the initialization of 'safeVariants' in its own useMemo() Hook  react-hooks/exhaustive-deps
+
+J:\amazong\components\shared\product\product-card-price.tsx
+  91:13  warning  This conditional operation returns the same value whether the condition is "true" or "false"  sonarjs/no-all-duplicated-branches
+
+J:\amazong\components\shared\product\product-price.tsx
+  57:83  warning  Refactor this code to not use nested template literals  sonarjs/no-nested-template-literals
+
+J:\amazong\components\shared\search\mobile-search-overlay.tsx
+  113:5  warning  Remove this redundant jump                                                                                      sonarjs/no-redundant-jump
+  134:5  warning  Remove this redundant jump                                                                                      sonarjs/no-redundant-jump
+  150:6  warning  React Hook useEffect has a missing dependency: 'handleClose'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  154:6  warning  React Hook useCallback has a missing dependency: 'setIsOpen'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  160:6  warning  React Hook useCallback has a missing dependency: 'setIsOpen'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+J:\amazong\components\shared\search\save-search-button.tsx
+  55:16  warning  Unsafe argument of type `any` assigned to a parameter of type `SetStateAction<boolean>`  @typescript-eslint/no-unsafe-argument
+
+J:\amazong\components\shared\search\search-filters.tsx
+   88:6   warning  React Hook useEffect has missing dependencies: 'categories' and 'expandedCategories'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+  156:43  warning  Move arrow function 'isValidCategory' to the outer scope                                                                                  unicorn/consistent-function-scoping
+
+J:\amazong\components\shared\search\search-pagination.tsx
+  43:40  warning  Refactor this code to not use nested template literals  sonarjs/no-nested-template-literals
+
+J:\amazong\components\support\support-chat-widget.tsx
+  271:40  warning  Move arrow function 'formatTime' to the outer scope  unicorn/consistent-function-scoping
+
+J:\amazong\components\ui\chart.tsx
+  198:65  warning  Unsafe argument of type `any` assigned to a parameter of type `Payload<ValueType, NameType>[]`  @typescript-eslint/no-unsafe-argument
+
+J:\amazong\config\mega-menu-config.ts
+  243:14  warning  Define a constant instead of duplicating this literal 17 times  sonarjs/no-duplicate-string
+
+J:\amazong\docs-site\.next\static\chunks\polyfills.js
+  1:2       warning  Refactor this function to reduce its Cognitive Complexity from 1642 to the 25 allowed  sonarjs/cognitive-complexity
+  1:532     warning  Remove unused catch binding `t`                                                        unicorn/prefer-optional-catch-binding
+  1:2443    warning  Remove unused catch binding `t`                                                        unicorn/prefer-optional-catch-binding
+  1:2708    warning  Remove unused catch binding `r`                                                        unicorn/prefer-optional-catch-binding
+  1:4295    warning  Remove unused catch binding `t`                                                        unicorn/prefer-optional-catch-binding
+  1:4998    warning  Remove unused catch binding `t`                                                        unicorn/prefer-optional-catch-binding
+  1:6989    warning  Remove unused catch binding `t`                                                        unicorn/prefer-optional-catch-binding
+  1:7338    warning  Remove unused catch binding `t`                                                        unicorn/prefer-optional-catch-binding
+  1:7890    warning  Replace this "for" loop with a "while" loop                                            sonarjs/prefer-while
+  1:8141    warning  Replace this "for" loop with a "while" loop                                            sonarjs/prefer-while
+  1:8909    warning  Refactor this function to reduce its Cognitive Complexity from 27 to the 25 allowed    sonarjs/cognitive-complexity
+  1:9691    warning  Remove unused catch binding `t`                                                        unicorn/prefer-optional-catch-binding
+  1:10408   warning  Remove this use of the output from "Qe"; "Qe" doesn't return anything                  sonarjs/no-use-of-empty-return-value
+  1:11656   warning  Remove unused catch binding `t`                                                        unicorn/prefer-optional-catch-binding
+  1:11902   warning  Remove unused catch binding `t`                                                        unicorn/prefer-optional-catch-binding
+  1:12081   warning  Remove unused catch binding `t`                                                        unicorn/prefer-optional-catch-binding
+  1:14536   warning  Move function 't' to the outer scope                                                   unicorn/consistent-function-scoping
+  1:15485   warning  Remove unused catch binding `t`                                                        unicorn/prefer-optional-catch-binding
+  1:15781   warning  Remove unused catch binding `t`                                                        unicorn/prefer-optional-catch-binding
+  1:16477   warning  Remove this use of the output from "an"; "an" doesn't return anything                  sonarjs/no-use-of-empty-return-value
+  1:17940   warning  Remove this use of the output from "Cn"; "Cn" doesn't return anything                  sonarjs/no-use-of-empty-return-value
+  1:18050   warning  Remove this use of the output from "Cn"; "Cn" doesn't return anything                  sonarjs/no-use-of-empty-return-value
+  1:18257   warning  Remove unused catch binding `t`                                                        unicorn/prefer-optional-catch-binding
+  1:18312   warning  Remove unused catch binding `t`                                                        unicorn/prefer-optional-catch-binding
+  1:18418   warning  Remove unused catch binding `t`                                                        unicorn/prefer-optional-catch-binding
+  1:18451   warning  Prefer the spread operator over `Array.from(ΓÇª)`                                        unicorn/prefer-spread
+  1:19227   warning  Remove unused catch binding `t`                                                        unicorn/prefer-optional-catch-binding
+  1:19386   warning  Move function 't' to the outer scope                                                   unicorn/consistent-function-scoping
+  1:20131   warning  Remove unused catch binding `t`                                                        unicorn/prefer-optional-catch-binding
+  1:20355   warning  Remove unused catch binding `t`                                                        unicorn/prefer-optional-catch-binding
+  1:21043   warning  Remove this use of the output from "Ce"; "Ce" doesn't return anything                  sonarjs/no-use-of-empty-return-value
+  1:25356   warning  Remove this use of the output from "Uo"; "Uo" doesn't return anything                  sonarjs/no-use-of-empty-return-value
+  1:26576   warning  Remove unused catch binding `e`                                                        unicorn/prefer-optional-catch-binding
+  1:26664   warning  Remove unused catch binding `e`                                                        unicorn/prefer-optional-catch-binding
+  1:28805   warning  Remove this use of the output from "Ce"; "Ce" doesn't return anything                  sonarjs/no-use-of-empty-return-value
+  1:29124   warning  Remove this use of the output from "Ce"; "Ce" doesn't return anything                  sonarjs/no-use-of-empty-return-value
+  1:30165   warning  Remove this use of the output from "Ce"; "Ce" doesn't return anything                  sonarjs/no-use-of-empty-return-value
+  1:30971   warning  Remove this use of the output from "Ce"; "Ce" doesn't return anything                  sonarjs/no-use-of-empty-return-value
+  1:31840   warning  Prefer `Number.NaN` over `NaN`                                                         unicorn/prefer-number-properties
+  1:32023   warning  Prefer `Number.NaN` over `NaN`                                                         unicorn/prefer-number-properties
+  1:32034   warning  Prefer `Number.parseInt` over `parseInt`                                               unicorn/prefer-number-properties
+  1:32534   warning  Remove this use of the output from "Ce"; "Ce" doesn't return anything                  sonarjs/no-use-of-empty-return-value
+  1:32809   warning  Prefer `Number.isFinite` over `isFinite`                                               unicorn/prefer-number-properties
+  1:32878   warning  Remove this use of the output from "Ce"; "Ce" doesn't return anything                  sonarjs/no-use-of-empty-return-value
+  1:33154   warning  Remove this use of the output from "Ce"; "Ce" doesn't return anything                  sonarjs/no-use-of-empty-return-value
+  1:34234   warning  Remove this use of the output from "Ce"; "Ce" doesn't return anything                  sonarjs/no-use-of-empty-return-value
+  1:34713   warning  Remove this use of the output from "Ce"; "Ce" doesn't return anything                  sonarjs/no-use-of-empty-return-value
+  1:35591   warning  Move function 't' to the outer scope                                                   unicorn/consistent-function-scoping
+  1:36361   warning  Remove unused catch binding `t`                                                        unicorn/prefer-optional-catch-binding
+  1:37169   warning  Remove this use of the output from "Ce"; "Ce" doesn't return anything                  sonarjs/no-use-of-empty-return-value
+  1:37311   warning  Remove unused catch binding `t`                                                        unicorn/prefer-optional-catch-binding
+  1:37353   warning  Move function 't' to the outer scope                                                   unicorn/consistent-function-scoping
+  1:37927   warning  Remove unused catch binding `t`                                                        unicorn/prefer-optional-catch-binding
+  1:37972   warning  Remove this use of the output from "an"; "an" doesn't return anything                  sonarjs/no-use-of-empty-return-value
+  1:45570   warning  Remove unused catch binding `t`                                                        unicorn/prefer-optional-catch-binding
+  1:47474   warning  Remove unused catch binding `e`                                                        unicorn/prefer-optional-catch-binding
+  1:51161   warning  Remove this use of the output from "pc"; "pc" doesn't return anything                  sonarjs/no-use-of-empty-return-value
+  1:52202   warning  Refactor this function to reduce its Cognitive Complexity from 33 to the 25 allowed    sonarjs/cognitive-complexity
+  1:55443   warning  Remove unused catch binding `t`                                                        unicorn/prefer-optional-catch-binding
+  1:55462   warning  Remove unused catch binding `t`                                                        unicorn/prefer-optional-catch-binding
+  1:55807   warning  Prefer the spread operator over `Array.from(ΓÇª)`                                        unicorn/prefer-spread
+  1:57167   warning  Remove this use of the output from "Ce"; "Ce" doesn't return anything                  sonarjs/no-use-of-empty-return-value
+  1:57571   warning  Remove this use of the output from "Ce"; "Ce" doesn't return anything                  sonarjs/no-use-of-empty-return-value
+  1:58806   warning  Remove this use of the output from "Ce"; "Ce" doesn't return anything                  sonarjs/no-use-of-empty-return-value
+  1:59844   warning  Remove this use of the output from "Ce"; "Ce" doesn't return anything                  sonarjs/no-use-of-empty-return-value
+  1:60035   warning  Prefer the spread operator over `Array#concat(ΓÇª)`                                      unicorn/prefer-spread
+  1:60228   warning  Prefer the spread operator over `Array#concat(ΓÇª)`                                      unicorn/prefer-spread
+  1:60495   warning  Remove this use of the output from "Cn"; "Cn" doesn't return anything                  sonarjs/no-use-of-empty-return-value
+  1:61636   warning  Prefer the spread operator over `Array#concat(ΓÇª)`                                      unicorn/prefer-spread
+  1:65131   warning  Remove this use of the output from "bl"; "bl" doesn't return anything                  sonarjs/no-use-of-empty-return-value
+  1:65791   warning  Remove this use of the output from "Ce"; "Ce" doesn't return anything                  sonarjs/no-use-of-empty-return-value
+  1:66087   warning  Remove this use of the output from "an"; "an" doesn't return anything                  sonarjs/no-use-of-empty-return-value
+  1:66757   warning  Remove unused catch binding `t`                                                        unicorn/prefer-optional-catch-binding
+  1:67030   warning  Remove unused catch binding `t`                                                        unicorn/prefer-optional-catch-binding
+  1:67157   warning  Remove unused catch binding `t`                                                        unicorn/prefer-optional-catch-binding
+  1:67812   warning  Remove unused catch binding `r`                                                        unicorn/prefer-optional-catch-binding
+  1:67853   warning  Remove unused catch binding `t`                                                        unicorn/prefer-optional-catch-binding
+  1:71952   warning  Prefer `Number.parseInt` over `parseInt`                                               unicorn/prefer-number-properties
+  1:72185   warning  Prefer `Number.NaN` over `NaN`                                                         unicorn/prefer-number-properties
+  1:72491   warning  Refactor this function to reduce its Cognitive Complexity from 40 to the 25 allowed    sonarjs/cognitive-complexity
+  1:76499   warning  Define a constant instead of duplicating this literal 6 times                          sonarjs/no-duplicate-string
+  1:76906   warning  Remove this use of the output from "Ce"; "Ce" doesn't return anything                  sonarjs/no-use-of-empty-return-value
+  1:77472   warning  Replace this "for" loop with a "while" loop                                            sonarjs/prefer-while
+  1:78376   warning  Prefer the spread operator over `String#split('')`                                     unicorn/prefer-spread
+  1:79085   warning  Refactor this function to reduce its Cognitive Complexity from 38 to the 25 allowed    sonarjs/cognitive-complexity
+  1:81769   warning  Refactor this function to reduce its Cognitive Complexity from 338 to the 25 allowed   sonarjs/cognitive-complexity
+  1:84858   warning  Refactor the code to eliminate this nested "switch"                                    sonarjs/no-nested-switch
+  1:86133   warning  Replace this "for" loop with a "while" loop                                            sonarjs/prefer-while
+  1:86622   warning  Refactor this function to reduce its Cognitive Complexity from 91 to the 25 allowed    sonarjs/cognitive-complexity
+  1:86765   warning  Replace this "for" loop with a "while" loop                                            sonarjs/prefer-while
+  1:86991   warning  Replace this "for" loop with a "while" loop                                            sonarjs/prefer-while
+  1:87567   warning  Refactor this function to reduce its Cognitive Complexity from 31 to the 25 allowed    sonarjs/cognitive-complexity
+  1:89035   warning  Remove unused catch binding `t`                                                        unicorn/prefer-optional-catch-binding
+  1:92150   warning  Remove this use of the output from "Ce"; "Ce" doesn't return anything                  sonarjs/no-use-of-empty-return-value
+  1:92492   warning  Remove unused catch binding `t`                                                        unicorn/prefer-optional-catch-binding
+  1:92699   warning  Remove unused catch binding `t`                                                        unicorn/prefer-optional-catch-binding
+  1:92718   warning  Remove this use of the output from "Ce"; "Ce" doesn't return anything                  sonarjs/no-use-of-empty-return-value
+  1:93268   warning  Remove this use of the output from "Ce"; "Ce" doesn't return anything                  sonarjs/no-use-of-empty-return-value
+  1:94241   warning  Remove this use of the output from "Ce"; "Ce" doesn't return anything                  sonarjs/no-use-of-empty-return-value
+  1:94911   warning  Replace this "for" loop with a "while" loop                                            sonarjs/prefer-while
+  1:96587   warning  Remove this use of the output from "xy"; "xy" doesn't return anything                  sonarjs/no-use-of-empty-return-value
+  1:99400   warning  Remove unused catch binding `t`                                                        unicorn/prefer-optional-catch-binding
+  1:99912   warning  Remove this use of the output from "Rm"; "Rm" doesn't return anything                  sonarjs/no-use-of-empty-return-value
+  1:100162  warning  Remove this use of the output from "Rm"; "Rm" doesn't return anything                  sonarjs/no-use-of-empty-return-value
+  1:100994  warning  Remove unused catch binding `t`                                                        unicorn/prefer-optional-catch-binding
+  1:101087  warning  Remove this use of the output from "Uo"; "Uo" doesn't return anything                  sonarjs/no-use-of-empty-return-value
+  1:101905  warning  Remove this use of the output from "Ce"; "Ce" doesn't return anything                  sonarjs/no-use-of-empty-return-value
+  1:102234  warning  Remove this use of the output from "Ce"; "Ce" doesn't return anything                  sonarjs/no-use-of-empty-return-value
+  1:103037  warning  Remove this use of the output from "Ce"; "Ce" doesn't return anything                  sonarjs/no-use-of-empty-return-value
+  1:103236  warning  Do not add `then` to an object                                                         unicorn/no-thenable
+  1:104103  warning  Remove unused catch binding `t`                                                        unicorn/prefer-optional-catch-binding
+  1:104437  warning  Use `.includes()`, rather than `.indexOf()`, when checking for existence               unicorn/prefer-includes
+  1:105420  warning  Prefer the spread operator over `Array#slice()`                                        unicorn/prefer-spread
+  1:105558  warning  Refactor this function to reduce its Cognitive Complexity from 38 to the 25 allowed    sonarjs/cognitive-complexity
+  1:108865  warning  Use `.includes()`, rather than `.indexOf()`, when checking for existence               unicorn/prefer-includes
+  1:109249  warning  Prefer `String#replaceAll()` over `String#replace()`                                   unicorn/prefer-string-replace-all
+  1:109282  warning  Prefer `String#replaceAll()` over `String#replace()`                                   unicorn/prefer-string-replace-all
+  1:110184  warning  Remove unused catch binding `t`                                                        unicorn/prefer-optional-catch-binding
+  1:110238  warning  Use `new` when creating an error                                                       unicorn/throw-new-error
+  1:110647  warning  Prefer `String#replaceAll()` over `String#replace()`                                   unicorn/prefer-string-replace-all
+  1:112052  warning  Prefer the spread operator over `String#split('')`                                     unicorn/prefer-spread
+  1:112164  warning  Remove unused catch binding `t`                                                        unicorn/prefer-optional-catch-binding
+
+J:\amazong\hooks\use-badges.ts
+   47:17  warning  Unsafe argument of type `any` assigned to a parameter of type `SetStateAction<BadgeWithMeta[]>`  @typescript-eslint/no-unsafe-argument
+   68:25  warning  Unsafe argument of type `any` assigned to a parameter of type `string | undefined`               @typescript-eslint/no-unsafe-argument
+  153:21  warning  Unsafe argument of type `any` assigned to a parameter of type `SetStateAction<BadgeWithMeta[]>`  @typescript-eslint/no-unsafe-argument
+
+J:\amazong\hooks\use-category-attributes.ts
+  41:21  warning  Forbidden non-null assertion                                                                         @typescript-eslint/no-non-null-assertion
+  70:34  warning  Unsafe argument of type `any` assigned to a parameter of type `CategoryAttribute[]`                  @typescript-eslint/no-unsafe-argument
+  71:21  warning  Unsafe argument of type `any` assigned to a parameter of type `SetStateAction<CategoryAttribute[]>`  @typescript-eslint/no-unsafe-argument
+
+J:\amazong\hooks\use-category-counts.ts
+  84:19  warning  Unsafe argument of type `any` assigned to a parameter of type `SetStateAction<CategoryCounts>`  @typescript-eslint/no-unsafe-argument
+  85:21  warning  Unsafe argument of type `any` assigned to a parameter of type `CategoryCounts`                  @typescript-eslint/no-unsafe-argument
+
+J:\amazong\hooks\use-category-navigation.ts
+  399:38  warning  The ref value 'loadedSlugsRef.current' will likely have changed by the time this effect cleanup function runs. If this ref points to a node rendered by React, copy 'loadedSlugsRef.current' to a variable inside the effect, and use that variable in the cleanup function  react-hooks/exhaustive-deps
+
+J:\amazong\hooks\use-filter-count.ts
+   82:16  warning  Unsafe argument of type `any` assigned to a parameter of type `SetStateAction<number>`                                                    @typescript-eslint/no-unsafe-argument
+  119:6   warning  React Hook useEffect has a missing dependency: 'fetchCount'. Either include it or remove the dependency array                             react-hooks/exhaustive-deps
+  129:5   warning  React Hook useEffect has a complex expression in the dependency array. Extract it to a separate variable so it can be statically checked  react-hooks/exhaustive-deps
+
+J:\amazong\hooks\use-instant-category-browse.ts
+   37:21  warning  Prefer the spread operator over `Array.from(ΓÇª)`         unicorn/prefer-spread
+  137:79  warning  Refactor this code to not use nested template literals  sonarjs/no-nested-template-literals
+  246:7   warning  Remove this redundant jump                              sonarjs/no-redundant-jump
+
+J:\amazong\lib\analytics-drawer.ts
+  87:5  warning  Unused eslint-disable directive (no problems were reported from 'no-console')
+
+J:\amazong\lib\auth\business.ts
+  648:20  warning  Prefer the spread operator over `Array.from(ΓÇª)`  unicorn/prefer-spread
+  649:22  warning  Prefer the spread operator over `Array.from(ΓÇª)`  unicorn/prefer-spread
+  661:19  warning  Prefer the spread operator over `Array.from(ΓÇª)`  unicorn/prefer-spread
+  862:56  warning  Unexpected any. Specify a different type         @typescript-eslint/no-explicit-any
+  869:56  warning  Unexpected any. Specify a different type         @typescript-eslint/no-explicit-any
+
+J:\amazong\lib\avatar-palettes.ts
+  22:39  warning  Forbidden non-null assertion  @typescript-eslint/no-non-null-assertion
+
+J:\amazong\lib\bulgarian-cities.ts
+  22:69  warning  Define a constant instead of duplicating this literal 9 times  sonarjs/no-duplicate-string
+
+J:\amazong\lib\category-icons.tsx
+  382:30  warning  Forbidden non-null assertion  @typescript-eslint/no-non-null-assertion
+  383:10  warning  Forbidden non-null assertion  @typescript-eslint/no-non-null-assertion
+
+J:\amazong\lib\data\categories.ts
+  184:22  warning  Forbidden non-null assertion                                            @typescript-eslint/no-non-null-assertion
+  187:22  warning  Forbidden non-null assertion                                            @typescript-eslint/no-non-null-assertion
+  537:13  warning  Define a constant instead of duplicating this literal 5 times           sonarjs/no-duplicate-string
+  676:26  warning  Unsafe argument of type `any` assigned to a parameter of type `string`  @typescript-eslint/no-unsafe-argument
+  704:22  warning  Prefer the spread operator over `Array.from(ΓÇª)`                         unicorn/prefer-spread
+
+J:\amazong\lib\data\products.ts
+  226:32  warning  Forbidden non-null assertion              @typescript-eslint/no-non-null-assertion
+  237:20  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  245:30  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  245:38  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  407:35  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+J:\amazong\lib\feature-flags.ts
+  84:12  warning  Prefer `String#slice()` over `String#substring()`  unicorn/prefer-string-slice
+  91:31  warning  Prefer `String#slice()` over `String#substring()`  unicorn/prefer-string-slice
+
+J:\amazong\lib\filter-priority.ts
+  39:25  warning  Forbidden non-null assertion  @typescript-eslint/no-non-null-assertion
+
+J:\amazong\lib\sell\schema-v4.ts
+  110:21  warning  Prefer `Number.isNaN` over `isNaN`  unicorn/prefer-number-properties
+  118:30  warning  Prefer `Number.isNaN` over `isNaN`  unicorn/prefer-number-properties
+  144:30  warning  Prefer `Number.isNaN` over `isNaN`  unicorn/prefer-number-properties
+
+J:\amazong\lib\stripe-connect.ts
+  127:19  warning  Immediately return this expression instead of assigning it to the temporary variable "account"      sonarjs/prefer-immediate-return
+  155:23  warning  Immediately return this expression instead of assigning it to the temporary variable "accountLink"  sonarjs/prefer-immediate-return
+
+J:\amazong\lib\supabase\messages.ts
+  166:17  warning  Unsafe argument of type `any` assigned to a parameter of type `string`      @typescript-eslint/no-unsafe-argument
+  167:17  warning  Unsafe argument of type `any` assigned to a parameter of type `string`      @typescript-eslint/no-unsafe-argument
+  171:52  warning  Prefer the spread operator over `Array.from(ΓÇª)`                             unicorn/prefer-spread
+  205:52  warning  Unsafe argument of type `any[]` assigned to a parameter of type `string[]`  @typescript-eslint/no-unsafe-argument
+  236:51  warning  Unsafe argument of type `any[]` assigned to a parameter of type `string[]`  @typescript-eslint/no-unsafe-argument
+  239:58  warning  Unsafe argument of type `any` assigned to a parameter of type `string`      @typescript-eslint/no-unsafe-argument
+
+J:\amazong\playwright.config.ts
+  109:5  warning  Prefer `Number.parseInt` over `parseInt`                              unicorn/prefer-number-properties
+  110:5  warning  Prefer `Number.parseInt` over `parseInt`                              unicorn/prefer-number-properties
+  116:1  warning  Merge this if statement with the nested one                           sonarjs/no-collapsible-if
+  118:3  warning  Unexpected `if` as the only statement in a `if` block without `else`  unicorn/no-lonely-if
+
+J:\amazong\proxy.ts
+  32:43  warning  Move arrow function 'normalizeCountry' to the outer scope  unicorn/consistent-function-scoping
+
+Γ£û 616 problems (2 errors, 614 warnings)
+  0 errors and 121 warnings potentially fixable with the `--fix` option.
+

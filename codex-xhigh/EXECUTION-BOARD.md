@@ -33,7 +33,7 @@ Reference: `PLAN-monetization-strategy.md`.
 
 ## Phase 5 — Frontend/backend alignment (reduce drift)
 Reference: `codex/MASTER-PLAN.md`, `codex/AUDIT-core-app.md`.
-- [ ] `P5-FE-01` (Owner: FE/NEXT) Fix boundary violations (components importing app actions)
+- [x] `P5-FE-01` (Owner: FE/NEXT) Fix boundary violations (components importing app actions)
 - [ ] `P5-FE-02` (Owner: FE/NEXT) Consolidate duplicated plan selects + projections
 - [ ] `P5-FE-03` (Owner: BE/SUPABASE + FE/NEXT) Remove per-page DB write “cleanup RPC” patterns where possible
 
