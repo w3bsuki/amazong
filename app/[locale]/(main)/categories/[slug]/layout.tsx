@@ -6,7 +6,7 @@ import { validateLocale } from "@/i18n/routing"
 //
 // Simple pass-through layout for /categories/[slug] routes.
 // The parent (main)/layout.tsx already provides the full layout shell
-// (SiteHeader, SiteFooter, MobileTabBar, etc.).
+// (AppHeader, SiteFooter, MobileTabBar, etc.).
 //
 // This layout only handles locale setup - the page.tsx handles mobile/desktop
 // conditional rendering via MobileHomeTabs (contextualMode) on mobile and

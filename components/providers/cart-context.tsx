@@ -156,7 +156,10 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       })
 
       if (error) {
-        console.error("Error syncing cart item:", error)
+        // RPC may not be deployed - silently skip sync (keep localStorage)
+        if (process.env.NODE_ENV === "development") {
+          console.warn("Cart sync skipped (RPC unavailable):", error.message || error.code || "unknown")
+        }
         return
       }
     }

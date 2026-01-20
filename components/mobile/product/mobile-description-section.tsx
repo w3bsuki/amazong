@@ -44,7 +44,7 @@ export function MobileDescriptionSection({
   const needsExpand = description.length > maxLines * 80;
 
   return (
-    <div className="px-4 py-4 border-b border-border">
+    <div className="px-4 py-4">
       {/* Section Header - OLX/treido style */}
       <h3 className="text-sm font-bold text-foreground mb-2">
         {t("descriptionTitle")}

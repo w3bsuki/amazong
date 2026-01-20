@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useMemo } from "react"
+import { useState, useMemo, useEffect } from "react"
 import { Link } from "@/i18n/routing"
 import { cn } from "@/lib/utils"
 import {
@@ -12,13 +12,13 @@ import {
   Plus,
 } from "@phosphor-icons/react"
 import { ArrowUpDown } from "lucide-react"
-import { SiteHeader } from "@/components/layout/header/site-header-unified"
 import { MobileSearchOverlay } from "@/components/shared/search/mobile-search-overlay"
 import { FilterHub } from "@/components/shared/filters/filter-hub"
 import { SortModal } from "@/components/shared/filters/sort-modal"
 import { ProductFeed } from "@/components/shared/product/product-feed"
 import { SubcategoryCircles } from "@/components/mobile/subcategory-circles"
 import { HorizontalProductCard } from "@/components/mobile/horizontal-product-card"
+import { useHeader } from "@/components/providers/header-context"
 import type { UIProduct } from "@/lib/data/products"
 import type { CategoryTreeNode } from "@/lib/category-tree"
 import { useCategoryNavigation } from "@/hooks/use-category-navigation"
@@ -60,7 +60,7 @@ function PromotedListingsStrip({
       {/* Header */}
       <div className="px-inset mb-2.5 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Fire size={18} weight="fill" className="text-orange-500" />
+          <Fire size={18} weight="fill" className="text-fire" />
           <span className="text-sm font-bold text-foreground">
             {locale === "bg" ? "Промотирани обяви" : "Promoted Listings"}
           </span>
@@ -233,10 +233,16 @@ export function MobileHome({
   initialCategories,
   locale,
   user,
+  activeCategory,
+  onCategorySelect,
+  onSearchOpen,
 }: MobileHomeProps) {
   const [searchOpen, setSearchOpen] = useState(false)
   const [filterHubOpen, setFilterHubOpen] = useState(false)
   const [sortModalOpen, setSortModalOpen] = useState(false)
+  
+  // Get header context to provide dynamic state to layout's header
+  const { setHomepageHeader } = useHeader()
 
   // Use the navigation hook that handles all product loading
   const nav = useCategoryNavigation({
@@ -252,6 +258,17 @@ export function MobileHome({
     locale,
     activeAllFilter: "newest",
   })
+  
+  // Provide homepage header state to layout via context
+  useEffect(() => {
+    setHomepageHeader({
+      activeCategory: nav.activeTab,
+      onCategorySelect: nav.handleTabChange,
+      onSearchOpen: () => setSearchOpen(true),
+      categories: initialCategories,
+    })
+    return () => setHomepageHeader(null)
+  }, [nav.activeTab, nav.handleTabChange, initialCategories, setHomepageHeader])
 
   // Get category name for display
   const categoryName = useMemo(() => {
@@ -270,15 +287,7 @@ export function MobileHome({
         onOpenChange={setSearchOpen}
       />
 
-      {/* Homepage Header - inline search + category pills */}
-      <SiteHeader
-        variant="homepage"
-        user={user as any}
-        categories={initialCategories}
-        activeCategory={nav.activeTab}
-        onCategorySelect={nav.handleTabChange}
-        onSearchOpen={() => setSearchOpen(true)}
-      />
+      {/* Header is rendered by layout - passes variant="homepage" with category pills */}
 
       {/* Main Content */}
       <div className="pb-4">

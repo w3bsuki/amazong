@@ -4,6 +4,14 @@ import { NextResponse } from "next/server"
 import { getStripeWebhookSecrets } from "@/lib/env"
 import { logError } from "@/lib/structured-log"
 
+/**
+ * Canonical ownership:
+ * - Listing boosts (one-time Checkout sessions with `metadata.type=listing_boost`)
+ * - Saved card setup (Checkout `mode=setup` + `checkout.session.completed`)
+ *
+ * Orders are handled by `app/api/checkout/webhook/route.ts`.
+ * Subscriptions are handled by `app/api/subscriptions/webhook/route.ts`.
+ */
 export async function POST(request: Request) {
     // Create admin client inside handler (avoid module-level client in serverless)
     const supabase = createAdminClient()
@@ -65,23 +73,16 @@ export async function POST(request: Request) {
                         break
                     }
 
-                    // Idempotency check: skip if already processed
-                    const { data: existingBoost } = await supabase
-                        .from('listing_boosts')
-                        .select('id')
-                        .eq('stripe_checkout_session_id', sessionId)
-                        .maybeSingle()
+                    // Idempotency key: `stripe_checkout_session_id` (unique index in DB).
+                    // Use Stripe event timestamp so retries cannot extend boost duration.
+                    const eventCreatedSeconds = (event as any)?.created
+                    const startsAt = typeof eventCreatedSeconds === "number"
+                        ? new Date(eventCreatedSeconds * 1000)
+                        : new Date()
 
-                    if (existingBoost) {
-                        // Already processed, skip
-                        break
-                    }
+                    const computedExpiresAt = new Date(startsAt.getTime() + durationDays * 24 * 60 * 60 * 1000)
+                    let expiresAtIso = computedExpiresAt.toISOString()
 
-                    // Calculate expiration
-                    const now = new Date()
-                    const expiresAt = new Date(now.getTime() + durationDays * 24 * 60 * 60 * 1000)
-
-                    // Insert listing_boosts row
                     const { error: boostInsertError } = await supabase
                         .from('listing_boosts')
                         .insert({
@@ -90,19 +91,42 @@ export async function POST(request: Request) {
                             price_paid: amountTotal ? amountTotal / 100 : 0,
                             currency,
                             duration_days: durationDays,
-                            starts_at: now.toISOString(),
-                            expires_at: expiresAt.toISOString(),
+                            starts_at: startsAt.toISOString(),
+                            expires_at: expiresAtIso,
                             is_active: true,
                             stripe_checkout_session_id: sessionId,
                         })
 
                     if (boostInsertError) {
-                        logError("stripe_webhook_boost_insert_failed", boostInsertError, {
-                            route: "api/payments/webhook",
-                            productId,
-                            sellerId,
-                        })
-                        break
+                        // If this is a retry, the row may already exist; fetch it so we can still
+                        // enforce product flags without extending the boost.
+                        const isDuplicate = (boostInsertError as any)?.code === "23505"
+                        if (!isDuplicate) {
+                            logError("stripe_webhook_boost_insert_failed", boostInsertError, {
+                                route: "api/payments/webhook",
+                                productId,
+                                sellerId,
+                            })
+                            break
+                        }
+
+                        const { data: existingBoost, error: existingBoostError } = await supabase
+                            .from("listing_boosts")
+                            .select("expires_at")
+                            .eq("stripe_checkout_session_id", sessionId)
+                            .maybeSingle()
+
+                        if (existingBoostError || !existingBoost?.expires_at) {
+                            logError("stripe_webhook_boost_existing_fetch_failed", existingBoostError, {
+                                route: "api/payments/webhook",
+                                productId,
+                                sellerId,
+                                sessionId,
+                            })
+                            break
+                        }
+
+                        expiresAtIso = existingBoost.expires_at
                     }
 
                     // Update product: set is_boosted=true and boost_expires_at
@@ -110,7 +134,7 @@ export async function POST(request: Request) {
                         .from('products')
                         .update({
                             is_boosted: true,
-                            boost_expires_at: expiresAt.toISOString(),
+                            boost_expires_at: expiresAtIso,
                             listing_type: 'boosted',
                         })
                         .eq('id', productId)

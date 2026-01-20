@@ -17,6 +17,8 @@ import { cn } from "@/lib/utils"
 import { buildHeroBadgeText } from "@/lib/product-card-hero-attributes"
 import { cva, type VariantProps } from "class-variance-authority"
 import { Truck } from "@phosphor-icons/react"
+import { useIsMobile } from "@/hooks/use-mobile"
+import { useDrawer, type QuickViewProduct } from "@/components/providers/drawer-context"
 
 function formatTimeAgo(input: string, locale: string): string | null {
   const d = new Date(input)
@@ -97,7 +99,11 @@ interface ProductCardProps extends VariantProps<typeof productCardVariants> {
   // Product info - for smart badge
   categoryRootSlug?: string
   categoryPath?: Array<{ slug: string; name: string; nameBg?: string | null; icon?: string | null }>
-  attributes?: Record<string, string>
+  attributes?: Record<string, unknown>
+
+  // Additional images & description (for quick view drawer)
+  images?: string[]
+  description?: string | null
 
   // Seller
   sellerId?: string | null
@@ -170,6 +176,8 @@ function ProductCard({
   title,
   price,
   image,
+  images,
+  description,
   createdAt,
   originalPrice,
   isOnSale,
@@ -211,6 +219,8 @@ function ProductCard({
 }: ProductCardProps & { ref?: React.Ref<HTMLDivElement> }) {
   const t = useTranslations("Product")
   const locale = useLocale()
+  const isMobile = useIsMobile()
+  const { openProductQuickView } = useDrawer()
 
   // Derived values
   const hasDiscount = originalPrice && originalPrice > price
@@ -252,6 +262,64 @@ function ProductCard({
     return condition.slice(0, 8)
   }, [condition, t])
 
+  // Mobile quick view handler - opens drawer instead of navigating
+  const handleCardClick = React.useCallback(
+    (e: React.MouseEvent) => {
+      if (!isMobile) return // Desktop: let Link navigate normally
+
+      e.preventDefault()
+      // Build quick view data, only including defined properties
+      // (exactOptionalPropertyTypes requires this pattern)
+      const quickViewData: QuickViewProduct = {
+        id,
+        title,
+        price,
+        image,
+        ...(images ? { images } : {}),
+        ...(originalPrice != null ? { originalPrice } : {}),
+        ...(description != null ? { description } : {}),
+        ...(categoryPath ? { categoryPath } : {}),
+        ...(condition != null ? { condition } : {}),
+        ...(location != null ? { location } : {}),
+        ...(freeShipping !== undefined ? { freeShipping } : {}),
+        ...(rating !== undefined ? { rating } : {}),
+        ...(reviews !== undefined ? { reviews } : {}),
+        ...(inStock !== undefined ? { inStock } : {}),
+        ...(slug != null ? { slug } : {}),
+        ...(username != null ? { username } : {}),
+        ...(sellerId != null ? { sellerId } : {}),
+        ...(sellerName != null ? { sellerName } : {}),
+        ...(sellerAvatarUrl != null ? { sellerAvatarUrl } : {}),
+        ...(sellerVerified !== undefined ? { sellerVerified } : {}),
+      }
+      openProductQuickView(quickViewData)
+    },
+    [
+      isMobile,
+      id,
+      title,
+      price,
+      image,
+      images,
+      originalPrice,
+      description,
+      categoryPath,
+      condition,
+      location,
+      freeShipping,
+      rating,
+      reviews,
+      inStock,
+      slug,
+      username,
+      sellerId,
+      sellerName,
+      sellerAvatarUrl,
+      sellerVerified,
+      openProductQuickView,
+    ]
+  )
+
   return (
     <div
       ref={ref}
@@ -262,6 +330,7 @@ function ProductCard({
         href={productUrl}
         className="absolute inset-0 z-1"
         aria-label={t("openProduct", { title })}
+        onClick={handleCardClick}
       >
         <span className="sr-only">{title}</span>
       </Link>
@@ -306,6 +375,13 @@ function ProductCard({
         <p className="line-clamp-2 break-words text-compact font-medium text-foreground leading-tight">
           {title}
         </p>
+
+        {/* Smart Badge - contextual category info (e.g., "BMW 320d" for cars) */}
+        {smartBadge && (
+          <p className="text-tiny text-muted-foreground truncate mt-0.5">
+            {smartBadge}
+          </p>
+        )}
 
         {/* Price + Condition + Protection */}
         <ProductCardPrice

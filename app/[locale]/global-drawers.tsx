@@ -1,0 +1,42 @@
+"use client"
+
+import { useDrawer } from "@/components/providers/drawer-context"
+import { ProductQuickViewDrawer, CartDrawer, MessagesDrawer, AccountDrawer } from "@/components/mobile/drawers"
+
+/**
+ * Global drawer container - renders all drawer instances.
+ * Mount once at the app root (inside DrawerProvider).
+ */
+export function GlobalDrawers() {
+  const { state, closeProductQuickView, closeCart, closeMessages, closeAccount } = useDrawer()
+
+  return (
+    <>
+      <ProductQuickViewDrawer
+        open={state.productQuickView.open}
+        onOpenChange={(open) => {
+          if (!open) closeProductQuickView()
+        }}
+        product={state.productQuickView.product}
+      />
+      <CartDrawer
+        open={state.cart.open}
+        onOpenChange={(open) => {
+          if (!open) closeCart()
+        }}
+      />
+      <MessagesDrawer
+        open={state.messages.open}
+        onOpenChange={(open) => {
+          if (!open) closeMessages()
+        }}
+      />
+      <AccountDrawer
+        open={state.account.open}
+        onOpenChange={(open) => {
+          if (!open) closeAccount()
+        }}
+      />
+    </>
+  )
+}

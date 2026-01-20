@@ -6,6 +6,7 @@ import { createClient, createStaticClient } from "@/lib/supabase/server"
 import { getPublicProfileData, getProfileMetadata } from "@/lib/data/profile-page"
 import { PublicProfileClient } from "./profile-client"
 import { routing } from "@/i18n/routing"
+import { followSeller, unfollowSeller } from "@/app/actions/seller-follows"
 
 // =============================================================================
 // SEO-OPTIMIZED PROFILE PAGE - HYBRID CACHING
@@ -249,6 +250,7 @@ export default async function PublicProfilePage({ params }: ProfilePageProps) {
       isOwnProfile={isOwnProfile}
       isFollowing={isFollowing}
       locale={locale}
+      followActions={{ followSeller, unfollowSeller }}
     />
   )
 }

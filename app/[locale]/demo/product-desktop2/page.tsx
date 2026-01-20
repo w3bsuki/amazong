@@ -108,6 +108,11 @@ const MOCK_PRODUCT = {
     "/demo/headphones-4.jpg",
     "/demo/headphones-5.jpg",
   ],
+  colors: [
+    { name: "Black", value: "black", hex: "#1a1a1a", available: true },
+    { name: "Silver", value: "silver", hex: "#c0c0c0", available: true },
+    { name: "Midnight Blue", value: "blue", hex: "#1e3a5f", available: false },
+  ],
   seller: {
     id: "seller-001",
     name: "TechZone Pro",
@@ -118,10 +123,12 @@ const MOCK_PRODUCT = {
     responseTime: "< 1 hour",
     memberSince: "2021",
     location: "Sofia, Bulgaria",
+    ordersCompleted: 3420,
   },
   shipping: {
     free: true,
     estimatedDays: "2-3",
+    estimatedDate: "Jan 21 - 23",
     provider: "Speedy",
   },
   protection: {
@@ -237,8 +244,12 @@ function ProductGallery({ images }: { images: string[] }) {
 
 function ProductInfo({
   product,
+  selectedColor,
+  onColorChange,
 }: {
   product: typeof MOCK_PRODUCT
+  selectedColor: string
+  onColorChange: (color: string) => void
 }) {
   return (
     <div className="space-y-3">
@@ -297,33 +308,58 @@ function ProductInfo({
         Price includes VAT. Free shipping on this item.
       </p>
 
-      {/* Specs Grid - Compact 3-column layout */}
-      <div className="grid grid-cols-3 gap-x-4 gap-y-1.5 text-xs pt-2 border-t border-border">
-        <div className="flex items-center justify-between col-span-1">
-          <span className="text-muted-foreground">Brand</span>
-          <span className="font-medium">{product.brand}</span>
+      {/* Color Selector */}
+      <div className="space-y-2 pt-1">
+        <div className="flex items-center gap-2">
+          <span className="text-sm text-muted-foreground">Color:</span>
+          <span className="text-sm font-medium text-foreground">
+            {product.colors.find(c => c.value === selectedColor)?.name || "Black"}
+          </span>
         </div>
-        <div className="flex items-center justify-between col-span-1">
-          <span className="text-muted-foreground">Model</span>
-          <span className="font-medium">{product.model}</span>
+        <div className="flex items-center gap-2">
+          {product.colors.map((color) => (
+            <button
+              key={color.value}
+              type="button"
+              onClick={() => color.available && onColorChange(color.value)}
+              disabled={!color.available}
+              className={cn(
+                "relative size-8 rounded-full border-2 transition-all",
+                selectedColor === color.value
+                  ? "border-foreground ring-2 ring-foreground ring-offset-2 ring-offset-background"
+                  : "border-border hover:border-foreground/50",
+                !color.available && "opacity-40 cursor-not-allowed"
+              )}
+              style={{ backgroundColor: color.hex }}
+              title={color.available ? color.name : `${color.name} - Out of stock`}
+            >
+              {!color.available && (
+                <span className="absolute inset-0 flex items-center justify-center">
+                  <span className="w-full h-0.5 bg-muted-foreground rotate-45 absolute" />
+                </span>
+              )}
+            </button>
+          ))}
         </div>
-        <div className="flex items-center justify-between col-span-1">
-          <span className="text-muted-foreground">Condition</span>
-          <Badge variant="secondary" className="text-2xs px-1.5 py-0 h-5">
-            {product.condition}
-          </Badge>
+      </div>
+
+      {/* Specs Pills - Modern 2026 card pattern */}
+      <div className="grid grid-cols-4 gap-2 pt-2">
+        <div className="rounded-lg border border-border bg-muted/30 px-3 py-2 text-center">
+          <span className="block text-2xs uppercase tracking-wide text-muted-foreground">Brand</span>
+          <span className="block text-sm font-semibold text-foreground mt-0.5">{product.brand}</span>
         </div>
-        <div className="flex items-center justify-between col-span-1">
-          <span className="text-muted-foreground">Color</span>
-          <span className="font-medium">{product.color}</span>
+        <div className="rounded-lg border border-border bg-muted/30 px-3 py-2 text-center">
+          <span className="block text-2xs uppercase tracking-wide text-muted-foreground">Model</span>
+          <span className="block text-sm font-semibold text-foreground mt-0.5">{product.model}</span>
         </div>
-        <div className="flex items-center justify-between col-span-1">
-          <span className="text-muted-foreground">SKU</span>
-          <span className="font-medium">{product.sku}</span>
+        <div className="rounded-lg border border-border bg-muted/30 px-3 py-2 text-center">
+          <span className="block text-2xs uppercase tracking-wide text-muted-foreground">Condition</span>
+          <span className="block text-sm font-semibold text-foreground mt-0.5 capitalize">{product.condition}</span>
         </div>
-        <div className="flex items-center justify-between col-span-1">
-          <span className="text-muted-foreground">Warranty</span>
-          <span className="font-medium">{product.warranty}</span>
+        <div className="rounded-lg border border-border bg-muted/30 px-3 py-2 text-center">
+          <span className="block text-2xs uppercase tracking-wide text-muted-foreground">Warranty</span>
+          <span className="block text-sm font-semibold text-foreground mt-0.5">{product.warranty}</span>
         </div>
       </div>
     </div>
@@ -351,13 +387,14 @@ function BuyBox({
         <div className="flex items-center gap-1.5">
           <span className="size-1.5 rounded-full bg-success" />
           <span className="text-sm font-medium text-success">In Stock</span>
-          <span className="text-xs text-muted-foreground">({product.stock})</span>
+          <span className="text-xs text-muted-foreground">({product.stock} available)</span>
         </div>
-        <div className="flex items-center">
+        <div className="flex items-center gap-0.5">
           <button
             type="button"
             onClick={() => setIsWishlisted(!isWishlisted)}
             className="p-1.5 rounded-md hover:bg-muted transition-colors"
+            title={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
           >
             <Heart
               size={18}
@@ -368,9 +405,31 @@ function BuyBox({
           <button
             type="button"
             className="p-1.5 rounded-md hover:bg-muted transition-colors"
+            title="Share"
           >
             <Share size={18} className="text-muted-foreground" />
           </button>
+        </div>
+      </div>
+
+      {/* Shipping Info - Enhanced */}
+      <div className="rounded-md border border-border bg-muted/30 p-2.5 space-y-1.5">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2 text-sm">
+            <Truck size={16} className="text-success" />
+            <span className="font-medium text-foreground">Free Shipping</span>
+          </div>
+          <span className="text-xs text-muted-foreground">via {product.shipping.provider}</span>
+        </div>
+        <div className="flex items-center justify-between text-xs text-muted-foreground">
+          <span className="flex items-center gap-1">
+            <Clock size={12} />
+            Delivery: <span className="font-medium text-foreground">{product.shipping.estimatedDate}</span>
+          </span>
+          <span className="flex items-center gap-1">
+            <MapPin size={12} />
+            Sofia, Bulgaria
+          </span>
         </div>
       </div>
 
@@ -419,16 +478,16 @@ function BuyBox({
         </Button>
       </div>
 
-      {/* Trust Row - Inline */}
+      {/* Protection Row - Compact */}
       <div className="flex items-center justify-center gap-3 text-xs text-muted-foreground">
         <span className="flex items-center gap-1">
-          <Truck size={12} />
-          Free Shipping
+          <ShieldCheck size={12} className="text-success" />
+          {product.protection.days}-Day Buyer Protection
         </span>
         <span className="text-border">|</span>
         <span className="flex items-center gap-1">
-          <ShieldCheck size={12} />
-          14-Day Returns
+          <Package size={12} />
+          Easy Returns
         </span>
       </div>
 
@@ -454,22 +513,35 @@ function BuyBox({
               <Star size={10} weight="fill" className="text-rating" />
               <span>{product.seller.rating}</span>
               <span>•</span>
-              <span>{product.seller.reviews} reviews</span>
-              <span>•</span>
-              <Clock size={10} />
-              <span>{product.seller.responseTime}</span>
+              <span>{product.seller.reviews.toLocaleString()} reviews</span>
             </div>
           </div>
+        </div>
+        
+        {/* Seller Stats Row */}
+        <div className="flex items-center justify-between mt-2 pt-2 border-t border-border/50 text-xs text-muted-foreground">
+          <span className="flex items-center gap-1">
+            <Clock size={10} />
+            {product.seller.responseTime}
+          </span>
+          <span className="flex items-center gap-1">
+            <Package size={10} />
+            {product.seller.ordersCompleted.toLocaleString()} orders
+          </span>
+          <span className="flex items-center gap-1">
+            <Buildings size={10} />
+            Since {product.seller.memberSince}
+          </span>
         </div>
         
         {/* Seller Actions - Compact */}
         <div className="flex gap-2 mt-2.5">
           <Button variant="outline" size="sm" className="flex-1 h-8 gap-1 text-xs bg-background">
             <ChatCircle size={12} />
-            Message Seller
+            Message
           </Button>
           <Button variant="outline" size="sm" className="flex-1 h-8 text-xs bg-background">
-            View Store
+            Visit Store
           </Button>
         </div>
       </div>
@@ -487,6 +559,7 @@ function BuyBox({
 
 export default function ProductDesktop2Page() {
   const product = MOCK_PRODUCT
+  const [selectedColor, setSelectedColor] = useState("black")
 
   return (
     <div className="min-h-screen bg-muted/30">
@@ -560,18 +633,22 @@ export default function ProductDesktop2Page() {
             </div>
 
             {/* RIGHT COLUMN - Info + Buy Box (sticky) */}
-            <div className="lg:sticky lg:top-20 lg:self-start space-y-5">
-              <ProductInfo product={product} />
+            <div className="lg:sticky lg:top-20 lg:self-start space-y-4">
+              <ProductInfo 
+                product={product} 
+                selectedColor={selectedColor}
+                onColorChange={setSelectedColor}
+              />
               <BuyBox product={product} />
             </div>
           </div>
         </div>
 
         {/* ================================================================
-            BELOW THE FOLD - Description + Full Specs
+            BELOW THE FOLD - Full Specs + Reviews
             ================================================================ */}
         
-        {/* Description Section */}
+        {/* Full Description */}
         <div className="mt-8 bg-background rounded-xl border border-border p-6">
           <h3 className="font-semibold text-foreground mb-4">Product Description</h3>
           <div className="prose prose-sm prose-neutral max-w-none text-foreground leading-relaxed">
@@ -695,23 +772,77 @@ export default function ProductDesktop2Page() {
             </div>
           </div>
         </div>
+
+        {/* Similar Products Section */}
+        <div className="mt-8 bg-background rounded-xl border border-border p-6">
+          <div className="flex items-center justify-between mb-5">
+            <h3 className="font-semibold text-foreground">Similar Products</h3>
+            <Button variant="ghost" size="sm" className="text-xs gap-1">
+              View All
+              <CaretRight size={14} />
+            </Button>
+          </div>
+          
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {[
+              { name: "Bose QuietComfort Ultra", price: 329.99, rating: 4.7, image: "https://images.unsplash.com/photo-1546435770-a3e426bf472b?w=400&q=80" },
+              { name: "Apple AirPods Max", price: 549.99, rating: 4.6, image: "https://images.unsplash.com/photo-1625245488600-f03fef636a3c?w=400&q=80" },
+              { name: "Sennheiser Momentum 4", price: 299.99, rating: 4.8, image: "https://images.unsplash.com/photo-1484704849700-f032a568e944?w=400&q=80" },
+              { name: "JBL Tour One M2", price: 249.99, rating: 4.5, image: "https://images.unsplash.com/photo-1583394838336-acd977736f90?w=400&q=80" },
+            ].map((item, i) => (
+              <div key={i} className="group cursor-pointer">
+                <div className="aspect-square rounded-lg border border-border bg-muted/30 overflow-hidden mb-2">
+                  <Image
+                    src={item.image}
+                    alt={item.name}
+                    width={200}
+                    height={200}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  />
+                </div>
+                <h4 className="text-sm font-medium text-foreground line-clamp-1 group-hover:text-foreground/80">
+                  {item.name}
+                </h4>
+                <div className="flex items-center justify-between mt-1">
+                  <span className="text-sm font-semibold text-foreground">{item.price.toFixed(2)} BGN</span>
+                  <div className="flex items-center gap-0.5 text-xs text-muted-foreground">
+                    <Star size={10} weight="fill" className="text-rating" />
+                    <span>{item.rating}</span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
       </main>
 
       {/* Mobile Sticky Buy Bar (hidden on desktop) */}
-      <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-background border-t border-border p-4 safe-area-inset-bottom">
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-background border-t border-border p-3 safe-area-inset-bottom">
         <div className="flex items-center gap-3">
-          <div className="flex-1">
-            <div className="text-lg font-bold text-foreground">
-              {product.price.toFixed(2)} {product.currency}
+          <button
+            type="button"
+            className="size-11 rounded-lg border border-border flex items-center justify-center hover:bg-muted transition-colors shrink-0"
+          >
+            <Heart size={20} className="text-muted-foreground" />
+          </button>
+          <div className="flex-1 min-w-0">
+            <div className="flex items-baseline gap-2">
+              <span className="text-lg font-bold text-foreground">
+                {product.price.toFixed(2)} {product.currency}
+              </span>
+              {product.originalPrice && (
+                <span className="text-xs text-muted-foreground line-through">
+                  {product.originalPrice.toFixed(2)}
+                </span>
+              )}
             </div>
-            {product.originalPrice && (
-              <div className="text-xs text-muted-foreground line-through">
-                {product.originalPrice.toFixed(2)} {product.currency}
-              </div>
-            )}
+            <span className="text-xs text-success flex items-center gap-1">
+              <Truck size={12} />
+              Free shipping
+            </span>
           </div>
-          <Button size="lg" className="gap-2">
-            <ShoppingCart size={20} weight="bold" />
+          <Button size="lg" className="gap-2 shrink-0">
+            <ShoppingCart size={18} weight="bold" />
             Add to Cart
           </Button>
         </div>

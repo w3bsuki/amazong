@@ -1,8 +1,8 @@
-import { SiteHeader } from "@/components/layout/header/site-header-unified";
+import { AppHeader } from "@/components/layout/header/app-header";
 import type { UserListingStats } from "@/components/layout/sidebar/sidebar-menu-v2";
 import { SiteFooter } from "@/components/layout/footer/site-footer";
 import { MobileTabBar } from "@/components/mobile/mobile-tab-bar";
-// MobileSearchBar is now integrated into SiteHeader
+// MobileSearchBar is now integrated into AppHeader
 import { Suspense } from "react";
 import { createClient } from "@/lib/supabase/server";
 import { getCategoryHierarchy } from "@/lib/data/categories";
@@ -11,6 +11,7 @@ import { routing } from "@/i18n/routing";
 import type { CategoryTreeNode } from "@/lib/category-tree";
 
 import { OnboardingProvider } from "@/components/providers/onboarding-provider";
+import { HeaderProvider } from "@/components/providers/header-context";
 import { Toaster } from "@/components/providers/sonner";
 import { GeoWelcomeModal } from "@/components/shared/geo-welcome-modal";
 import { CookieConsent } from "@/components/layout/cookie-consent";
@@ -57,7 +58,7 @@ async function HeaderWithUser({ categories }: { categories: CategoryTreeNode[] }
         };
     }
 
-    return <SiteHeader user={data.user} categories={categories} {...(userStats && { userStats })} />;
+    return <AppHeader user={data.user} categories={categories} {...(userStats && { userStats })} />;
 }
 
 /**
@@ -67,14 +68,17 @@ async function HeaderWithUser({ categories }: { categories: CategoryTreeNode[] }
  * - Complete site header with navigation, search, mega menus
  * - Site footer with links and info
  * - Cookie consent banner
+ * - Product modal slot for intercepted routes (desktop quick view)
  * 
  * Used for: Homepage, products, categories, cart, checkout, etc.
  */
 export default async function MainLayout({
     children,
+    productModal,
     params,
 }: {
     children: React.ReactNode;
+    productModal: React.ReactNode;
     params: Promise<{ locale: string }>;
 }) {
     const { locale } = await params;
@@ -86,24 +90,29 @@ export default async function MainLayout({
 
     return (
         <OnboardingProvider locale={locale}>
-            <div className="bg-background min-h-screen flex flex-col">
-                {/* Skip Links - Accessibility */}
-                <SkipLinks />
+            <HeaderProvider>
+                <div className="bg-background min-h-screen flex flex-col">
+                    {/* Skip Links - Accessibility */}
+                    <SkipLinks />
 
-                <Suspense fallback={<div className="h-(--header-skeleton-h) w-full bg-header-bg md:h-(--header-skeleton-h-md)" />}>
-                    <HeaderWithUser categories={categories} />
-                </Suspense>
+                    <Suspense fallback={<div className="h-(--header-skeleton-h) w-full bg-header-bg md:h-(--header-skeleton-h-md)" />}>
+                        <HeaderWithUser categories={categories} />
+                    </Suspense>
 
-                <main id="main-content" role="main" className="flex-1 pb-20 md:pb-0">
-                    {children}
-                </main>
+                    <main id="main-content" role="main" className="flex-1 pb-20 md:pb-0">
+                        {children}
+                    </main>
 
-                <SiteFooter />
-                <MobileTabBar categories={categories} />
-                <Toaster />
-                <CookieConsent />
-                <GeoWelcomeModal locale={locale} />
-            </div>
+                    {/* Product Modal - renders intercepted product routes as overlay */}
+                    {productModal}
+
+                    <SiteFooter />
+                    <MobileTabBar categories={categories} />
+                    <Toaster />
+                    <CookieConsent />
+                    <GeoWelcomeModal locale={locale} />
+                </div>
+            </HeaderProvider>
         </OnboardingProvider>
     );
 }

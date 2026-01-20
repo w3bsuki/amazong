@@ -1,20 +1,21 @@
 import { Suspense } from "react";
 import { useTranslations } from "next-intl";
 import { RecentlyViewedTracker } from "@/components/shared/product/recently-viewed-tracker";
-import { ProductGalleryHybrid } from "@/components/shared/product/product-gallery-hybrid";
-import { ProductBuyBox } from "@/components/shared/product/product-buy-box";
 import { SellerProductsGrid } from "@/components/shared/product/seller-products-grid";
 import { CustomerReviewsHybrid } from "@/components/shared/product/customer-reviews-hybrid";
-import { ItemSpecifics } from "@/components/shared/product/item-specifics";
 
 import { CategoryBadge } from "@/components/shared/product/category-badge";
-import { SellerBanner } from "@/components/shared/product/seller-banner";
-import { SellersNote } from "@/components/shared/product/sellers-note";
 import { TrustBadges } from "@/components/shared/product/trust-badges";
 import { ProductSocialProof } from "@/components/shared/product/product-social-proof";
 import { FreshnessIndicator } from "@/components/shared/product/freshness-indicator";
 import { ViewTracker } from "@/components/shared/product/view-tracker";
 import { Skeleton } from "@/components/ui/skeleton";
+
+// V2 Desktop Components
+import { DesktopGalleryV2 } from "@/components/desktop/product/desktop-gallery-v2";
+import { DesktopBuyBoxV2 } from "@/components/desktop/product/desktop-buy-box-v2";
+import { DesktopSpecsAccordion } from "@/components/desktop/product/desktop-specs-accordion";
+import { HeroSpecs } from "@/components/shared/product/hero-specs";
 
 import type { ProductPageViewModel } from "@/lib/view-models/product-page";
 import type { Database } from "@/lib/supabase/database.types";
@@ -145,19 +146,27 @@ export function ProductPageLayout(props: ProductPageLayoutProps) {
 
   const primaryImageSrc = viewModel.galleryImages?.[0]?.src ?? null;
 
-  const storeForBuyBox = {
-    name: viewModel.sellerName || seller?.username || username || "Seller",
-    rating: product.seller_stats?.positive_feedback_pct != null
-      ? `${Math.round(Number(product.seller_stats.positive_feedback_pct))}%`
-      : "—",
-    verified: Boolean(viewModel.sellerVerified),
+  // V2: Build seller info for embedded seller card in buy box
+  const sellerInfo = {
+    id: seller.id,
+    name: viewModel.sellerName || seller?.display_name || seller?.username || username || "Seller",
+    username: seller?.username ?? null,
+    avatarUrl: (viewModel.sellerAvatarUrl || seller?.avatar_url) ?? null,
+    verified: viewModel.sellerVerified,
+    rating: product.seller_stats?.average_rating
+      ? Number(product.seller_stats.average_rating)
+      : null,
+    reviewCount: product.seller_stats?.total_reviews
+      ? Number(product.seller_stats.total_reviews)
+      : null,
+    responseTime: product.seller_stats?.response_time_hours
+      ? `${Math.round(Number(product.seller_stats.response_time_hours))}h`
+      : null,
+    ordersCompleted: product.seller_stats?.total_sales
+      ? Number(product.seller_stats.total_sales)
+      : null,
+    location: product.seller_city ?? null,
   };
-
-  const shippingText = !product.pickup_only
-    ? tProduct("freeShipping")
-    : tProduct("defaultShipping");
-
-  const returnsText = tProduct("defaultReturns");
 
   return (
     <>
@@ -178,8 +187,8 @@ export function ProductPageLayout(props: ProductPageLayoutProps) {
         {...(submitReview && { submitReview })}
       />
 
-      {/* ===== DESKTOP PRODUCT PAGE ===== */}
-      <div className="hidden lg:block min-h-screen bg-background pb-10">
+      {/* ===== DESKTOP PRODUCT PAGE (V2) ===== */}
+      <div className="hidden lg:block min-h-screen bg-muted/30 pb-10">
         {/* JSON-LD Structured Data for SEO */}
         <script
           type="application/ld+json"
@@ -206,91 +215,84 @@ export function ProductPageLayout(props: ProductPageLayoutProps) {
         <ViewTracker productId={product.id} />
 
         <div className="container px-6 py-8">
-          <div className="grid grid-cols-12 gap-6 items-start">
-            {/* Left column - Gallery & Details */}
-            <div className="col-span-7 flex flex-col gap-3">
-              <ProductGalleryHybrid images={viewModel.galleryImages} />
+          {/* Main Product Card */}
+          <div className="bg-background rounded-xl border border-border p-6 lg:p-8">
+            {/* 55/45 Split Layout */}
+            <div className="grid grid-cols-1 lg:grid-cols-[1.22fr_1fr] gap-8 lg:gap-10">
+              {/* LEFT COLUMN: Gallery + Hero Specs + Meta */}
+              <div className="space-y-4">
+                {/* V2 Gallery with horizontal thumbnails */}
+                <DesktopGalleryV2 images={viewModel.galleryImages} />
 
-              {/* Meta row: Category badge + Freshness + Social proof */}
-              <div className="flex flex-wrap items-center gap-3">
-                <CategoryBadge
-                  locale={locale}
-                  category={rootCategory}
-                  subcategory={category}
+                {/* Meta row: Category badge + Freshness */}
+                <div className="flex flex-wrap items-center gap-3">
+                  <CategoryBadge
+                    locale={locale}
+                    category={rootCategory}
+                    subcategory={category}
+                  />
+                  <FreshnessIndicator createdAt={product.created_at} variant="badge" showIcon />
+                </div>
+
+                {/* Social Proof */}
+                <ProductSocialProof
+                  viewCount={(product as { view_count?: number | null }).view_count ?? null}
+                  favoritesCount={favoritesCount ?? null}
+                  showHotIndicator
                 />
-                <FreshnessIndicator createdAt={product.created_at} variant="badge" showIcon />
+
+                {/* Category-Adaptive Hero Specs (4-pill grid) */}
+                {viewModel.heroSpecs.length > 0 && (
+                  <HeroSpecs specs={viewModel.heroSpecs} variant="desktop" />
+                )}
               </div>
 
-              {/* Social Proof - View count and favorites */}
-              <ProductSocialProof
-                viewCount={(product as { view_count?: number | null }).view_count ?? null}
-                favoritesCount={favoritesCount ?? null}
-                showHotIndicator
-              />
+              {/* RIGHT COLUMN: Product Info + Buy Box */}
+              <div className="space-y-4">
+                {/* Product Title & Price Header */}
+                <div className="space-y-2">
+                  <h1 className="text-xl font-semibold text-foreground leading-tight">
+                    {product.title}
+                  </h1>
+                  {product.condition && (
+                    <span className="inline-block px-2 py-0.5 rounded-full bg-success/10 text-success text-xs font-medium">
+                      {product.condition}
+                    </span>
+                  )}
+                </div>
 
-              <ItemSpecifics
-                attributes={viewModel.itemSpecifics.attributes ?? null}
-                condition={product.condition ?? ""}
-                categoryName={category?.name ?? ""}
-                parentCategoryName={parentCategory?.name ?? ""}
-              />
-
-              {product.description ? (
-                <SellersNote
-                  locale={locale}
-                  note={product.description}
-                />
-              ) : null}
-            </div>
-
-            {/* Right column - Buy Box & Seller */}
-            <div className="col-span-5">
-              <div className="sticky top-24 flex flex-col gap-3">
-                <SellerBanner
-                  locale={locale}
-                  seller={seller}
-                  stats={product.seller_stats ?? null}
-                />
-
-                <ProductBuyBox
+                {/* V2 Buy Box with embedded seller card */}
+                <DesktopBuyBoxV2
                   productId={product.id}
                   productSlug={productSlug}
-                  sellerUsername={username}
-                  product={{
-                    name: product.title,
-                    price: {
-                      sale: Number(product.price ?? 0),
-                      regular: product.list_price != null
-                        ? Number(product.list_price)
-                        : Number(product.price ?? 0),
-                      currency: "EUR",
-                    },
-                    store: storeForBuyBox,
-                    images: viewModel.galleryImages.map((img) => ({ src: img.src, alt: img.alt })),
-                    shipping: {
-                      text: shippingText,
-                      canShip: true,
-                    },
-                    returns: returnsText,
-                    ...(product.description ? { description: product.description } : {}),
-                    itemSpecifics: (
-                      <ItemSpecifics
-                        attributes={viewModel.itemSpecifics.attributes ?? null}
-                        condition={product.condition ?? ""}
-                        categoryName={category?.name ?? ""}
-                        parentCategoryName={parentCategory?.name ?? ""}
-                      />
-                    ),
-                  }}
-                  variants={variants ?? []}
+                  title={product.title}
+                  price={Number(product.price ?? 0)}
+                  originalPrice={product.list_price != null ? Number(product.list_price) : null}
+                  currency="EUR"
+                  condition={product.condition}
+                  stock={product.stock}
+                  seller={sellerInfo}
+                  categoryType={viewModel.categoryType}
+                  freeShipping={!product.pickup_only}
+                  location={product.seller_city}
+                  primaryImage={primaryImageSrc}
                 />
 
+                {/* Trust Badges */}
                 <TrustBadges verifiedSeller={viewModel.sellerVerified} />
               </div>
             </div>
           </div>
 
-          {/* More from Seller - Wrapped in Suspense for streaming */}
+          {/* Specifications & Description Section */}
+          <div className="mt-6">
+            <DesktopSpecsAccordion
+              specifications={viewModel.itemSpecifics.details}
+              description={product.description}
+            />
+          </div>
+
+          {/* More from Seller */}
           <Suspense fallback={<RelatedProductsSkeleton />}>
             <SellerProductsGrid
               products={relatedProducts}
@@ -298,7 +300,7 @@ export function ProductPageLayout(props: ProductPageLayoutProps) {
             />
           </Suspense>
 
-          {/* Reviews - Wrapped in Suspense for streaming */}
+          {/* Reviews */}
           <Suspense fallback={<ReviewsSkeleton />}>
             <div className="pb-8">
               <CustomerReviewsHybrid

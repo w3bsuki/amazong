@@ -36,6 +36,7 @@ import { FeedToolbar, type FeedTab, type FilterState } from "@/components/deskto
 import { CompactCategorySidebar, type CategoryPath } from "@/components/desktop/category-sidebar"
 import { FiltersSidebar } from "@/components/desktop/filters-sidebar"
 import { ProductGridSkeleton } from "@/components/shared/product/product-grid-skeleton"
+import type { UIProduct } from "@/lib/data/products"
 
 import type { User } from "@supabase/supabase-js"
 
@@ -65,6 +66,10 @@ interface Product {
   condition?: string
   isBoosted?: boolean
   tags?: string[]
+  // Category & attributes for contextual display
+  categoryRootSlug?: string
+  categoryPath?: { slug: string; name: string; nameBg?: string | null; icon?: string | null }[]
+  attributes?: Record<string, unknown>
 }
 
 interface DesktopHomeProps {
@@ -144,12 +149,23 @@ export function DesktopHome({
           sellerId: typeof p.sellerId === "string" ? p.sellerId : null,
           sellerName: typeof p.sellerName === "string" ? p.sellerName : null,
           sellerAvatarUrl: typeof p.sellerAvatarUrl === "string" ? p.sellerAvatarUrl : null,
+          sellerVerified: Boolean(p.sellerVerified),
           isBoosted: Boolean(p.isBoosted || p.is_boosted),
           listPrice: typeof p.listPrice === "number" ? p.listPrice : typeof p.list_price === "number" ? p.list_price : undefined,
           rating: typeof p.rating === "number" ? p.rating : undefined,
           reviews: typeof p.reviews === "number" ? p.reviews : undefined,
           createdAt: typeof p.createdAt === "string" ? p.createdAt : typeof p.created_at === "string" ? p.created_at : null,
           tags: Array.isArray(p.tags) ? (p.tags as string[]) : [],
+          // Category-aware data for contextual smart badges
+          categoryRootSlug: typeof p.categoryRootSlug === "string" ? p.categoryRootSlug : undefined,
+          categoryPath: Array.isArray(p.categoryPath) ? p.categoryPath as { slug: string; name: string; nameBg?: string | null }[] : undefined,
+          attributes: (p.attributes && typeof p.attributes === "object" && !Array.isArray(p.attributes)) ? p.attributes as Record<string, unknown> : undefined,
+          // Extra fields for product display
+          location: typeof p.location === "string" ? p.location : undefined,
+          condition: typeof p.condition === "string" ? p.condition : undefined,
+          isOnSale: Boolean(p.isOnSale),
+          salePercent: typeof p.salePercent === "number" ? p.salePercent : undefined,
+          saleEndDate: typeof p.saleEndDate === "string" ? p.saleEndDate : null,
         }))
 
         if (append) {
@@ -309,6 +325,10 @@ export function DesktopHome({
                               tags={product.tags ?? []}
                               state={product.isBoosted ? "promoted" : undefined}
                               index={index}
+                              // Category-aware contextual attributes
+                              {...(product.categoryRootSlug ? { categoryRootSlug: product.categoryRootSlug } : {})}
+                              {...(product.categoryPath ? { categoryPath: product.categoryPath } : {})}
+                              {...(product.attributes ? { attributes: product.attributes } : {})}
                             />
                           )}
                         </div>

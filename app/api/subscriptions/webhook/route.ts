@@ -4,6 +4,13 @@ import { stripe } from '@/lib/stripe'
 import { getStripeSubscriptionWebhookSecret } from '@/lib/env'
 import type Stripe from 'stripe'
 
+/**
+ * Canonical ownership:
+ * - Subscriptions + invoices: this route (separate webhook secret)
+ *
+ * Orders are handled by `app/api/checkout/webhook/route.ts`.
+ * Listing boosts + card setup are handled by `app/api/payments/webhook/route.ts`.
+ */
 const SUBSCRIPTION_SELECT_FOR_UPDATES = 'id,seller_id,status,expires_at'
 const SUBSCRIPTION_PLAN_SELECT_FOR_WEBHOOK =
   'id,tier,price_monthly,price_yearly,stripe_price_monthly_id,stripe_price_yearly_id,commission_rate,final_value_fee,insertion_fee,per_order_fee'

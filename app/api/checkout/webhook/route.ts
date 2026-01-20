@@ -7,6 +7,14 @@ import type Stripe from 'stripe';
 // PRODUCTION: Use centralized admin client for consistency
 const supabase = createAdminClient();
 
+/**
+ * Canonical ownership:
+ * - Orders (one-time product checkout): this route
+ * - Listing boosts: `app/api/payments/webhook/route.ts`
+ * - Subscriptions: `app/api/subscriptions/webhook/route.ts`
+ * - Connect account events: `app/api/connect/webhook/route.ts`
+ */
+
 type OrderItemPayload = {
   id: string;
   variantId?: string | null;
@@ -142,6 +150,15 @@ export async function POST(req: Request) {
     const session = event.data.object as Stripe.Checkout.Session;
 
     try {
+      // Avoid duplicate processing across webhook endpoints.
+      // Boost and subscription sessions are handled by their dedicated webhook routes.
+      if (session.metadata?.type === 'listing_boost') {
+        return NextResponse.json({ received: true });
+      }
+      if (session.mode === 'subscription' || session.mode === 'setup') {
+        return NextResponse.json({ received: true });
+      }
+
       const itemsData = parseOrderItems(session);
 
       // Idempotency: avoid creating duplicate orders for the same payment intent.

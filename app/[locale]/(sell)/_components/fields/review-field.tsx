@@ -30,7 +30,7 @@ const CURRENCY_SYMBOLS: Record<string, string> = {
   USD: "$",
 };
 
-// Section wrapper for review
+// Section wrapper for review - Premium design
 function ReviewSection({
   title,
   icon: Icon,
@@ -45,15 +45,19 @@ function ReviewSection({
   children: React.ReactNode;
 }) {
   return (
-    <div className="rounded-md border border-border overflow-hidden">
-      <div className="flex items-center justify-between px-3 py-2 bg-muted/50 border-b border-border">
-        <div className="flex items-center gap-2">
-          <Icon className={cn(
-            "size-4",
-            isComplete ? "text-success" : "text-muted-foreground"
-          )} weight="fill" />
-          <span className="text-xs font-bold uppercase tracking-wider">{title}</span>
-          {isComplete && <CheckCircle className="size-3.5 text-success" weight="fill" />}
+    <div className="rounded-2xl border border-border bg-card overflow-hidden">
+      <div className="flex items-center justify-between px-4 py-3 bg-muted/30 border-b border-border/50">
+        <div className="flex items-center gap-3">
+          <div className={cn(
+            "size-9 rounded-xl flex items-center justify-center",
+            isComplete ? "bg-success/10" : "bg-muted"
+          )}>
+            <Icon className={cn(
+              "size-4.5",
+              isComplete ? "text-success" : "text-muted-foreground"
+            )} weight="fill" />
+          </div>
+          <span className="text-sm font-bold text-foreground">{title}</span>
         </div>
         {onEdit && (
           <Button
@@ -61,14 +65,14 @@ function ReviewSection({
             variant="ghost"
             size="sm"
             onClick={onEdit}
-            className="h-7 px-2 gap-1 text-primary text-xs font-bold uppercase tracking-wider"
+            className="h-8 px-3 gap-1.5 text-primary text-sm font-semibold hover:bg-primary/10"
           >
-            <PencilSimple className="size-3" />
+            <PencilSimple className="size-4" />
             Edit
           </Button>
         )}
       </div>
-      <div className="p-3">
+      <div className="p-4">
         {children}
       </div>
     </div>
@@ -138,17 +142,19 @@ export function ReviewField({ onEditStep }: ReviewFieldProps) {
     : "";
 
   return (
-    <div className="flex flex-col gap-4">
-      {/* Validation warnings */}
+    <div className="flex flex-col gap-5">
+      {/* Validation warnings - Premium alert design */}
       {!isValid && (
-        <div className="p-4 rounded-md bg-muted/50 border border-border">
-          <div className="flex items-start gap-3">
-            <Warning className="size-5 text-muted-foreground shrink-0 mt-0.5" weight="fill" />
+        <div className="p-4 rounded-2xl bg-muted/30 border border-border">
+          <div className="flex items-start gap-3.5">
+            <div className="size-10 rounded-xl bg-warning/10 flex items-center justify-center shrink-0">
+              <Warning className="size-5 text-warning" weight="fill" />
+            </div>
             <div>
-              <p className="text-sm font-semibold text-foreground">
+              <p className="text-sm font-bold text-foreground">
                 {isBg ? "Попълнете задължителните полета" : "Complete required fields"}
               </p>
-              <ul className="text-sm text-muted-foreground mt-1 space-y-0.5">
+              <ul className="text-sm text-muted-foreground mt-2 space-y-1">
                 {!hasPhotos && <li>• {isBg ? "Добавете поне 1 снимка" : "Add at least 1 photo"}</li>}
                 {!hasTitle && <li>• {isBg ? "Добавете заглавие" : "Add a title"}</li>}
                 {!hasCategory && <li>• {isBg ? "Изберете категория" : "Select a category"}</li>}
@@ -343,14 +349,12 @@ export function ReviewField({ onEditStep }: ReviewFieldProps) {
         </div>
       </ReviewSection>
 
-      {/* Terms agreement */}
-      <div className="p-4 rounded-md bg-muted/50 border border-border">
-        <p className="text-sm text-muted-foreground">
-          {isBg
-            ? "При публикуване на обявата, Вие се съгласявате с Условията за продажба и потвърждавате, че информацията е вярна."
-            : "By publishing this listing, you agree to the Terms of Sale and confirm that all information is accurate."}
-        </p>
-      </div>
+      {/* Terms agreement - Clean design */}
+      <p className="text-xs text-muted-foreground text-center px-4 leading-relaxed">
+        {isBg
+          ? "При публикуване на обявата, Вие се съгласявате с Условията за продажба и потвърждавате, че информацията е вярна."
+          : "By publishing this listing, you agree to the Terms of Sale and confirm that all information is accurate."}
+      </p>
     </div>
   );
 }

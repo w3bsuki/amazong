@@ -5,6 +5,7 @@
 //
 // Single source of truth for all header variants across the app.
 // Auto-detects route via usePathname() and renders appropriate variant.
+// Uses HeaderContext for dynamic props from pages.
 //
 // Variants:
 // - default:    Standard pages (hamburger + logo + search below + actions)
@@ -31,6 +32,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { CategoryNavItem } from "@/components/mobile/category-nav"
 import { getCategoryIcon } from "@/lib/category-icons"
 import { getCategoryShortName } from "@/lib/category-display"
+import { useHeaderOptional } from "@/components/providers/header-context"
 import { MagnifyingGlass, CaretLeft, Camera, ArrowLeft, ShareNetwork } from "@phosphor-icons/react"
 import { cn, safeAvatarSrc } from "@/lib/utils"
 import { useEffect, useRef, useState } from "react"
@@ -97,8 +99,6 @@ export interface SiteHeaderProps {
 
 type RouteConfig = {
   variant: HeaderVariant
-  /** Skip mobile rendering - page will render its own header with context */
-  skipMobile?: boolean
 }
 
 function detectRouteConfig(pathname: string, explicitVariant?: HeaderVariant): RouteConfig {
@@ -111,15 +111,13 @@ function detectRouteConfig(pathname: string, explicitVariant?: HeaderVariant): R
   const pathWithoutLocale = pathname.replace(/^\/(en|bg)/, "") || "/"
   
   // Homepage: / or empty
-  // Skip mobile because MobileHome renders its own header with interactive category pills
   if (pathWithoutLocale === "/" || pathWithoutLocale === "") {
-    return { variant: "homepage", skipMobile: true }
+    return { variant: "homepage" }
   }
   
   // Categories: /categories or /categories/* 
-  // Skip mobile because MobileCategoryBrowser renders its own contextual header with category context
   if (pathWithoutLocale.startsWith("/categories")) {
-    return { variant: "contextual", skipMobile: true }
+    return { variant: "contextual" }
   }
   
   // Product pages: /{username}/{productSlug} (2+ segments, not a known route)
@@ -171,10 +169,24 @@ export function SiteHeader({
   const router = useRouter()
   const pathname = usePathname()
   
+  // Get dynamic header state from context (if provided by pages)
+  const headerContext = useHeaderOptional()
+  
   // Auto-detect route config from pathname
   const routeConfig = detectRouteConfig(pathname, explicitVariant)
   const variant = routeConfig.variant
-  const skipMobileHeader = routeConfig.skipMobile ?? false
+
+  // Merge props with context values (context takes precedence for dynamic state)
+  const effectiveHomepageCategory = headerContext?.homepageHeader?.activeCategory ?? activeCategory
+  const effectiveHomepageCategorySelect = headerContext?.homepageHeader?.onCategorySelect ?? onCategorySelect
+  const effectiveHomepageSearchOpen = headerContext?.homepageHeader?.onSearchOpen ?? onSearchOpen
+  const effectiveHomepageCategories = headerContext?.homepageHeader?.categories ?? categories
+  
+  const effectiveContextualTitle = headerContext?.contextualHeader?.title ?? contextualTitle
+  const effectiveContextualBackHref = headerContext?.contextualHeader?.backHref ?? contextualBackHref
+  const effectiveContextualBack = headerContext?.contextualHeader?.onBack ?? onContextualBack
+  const effectiveContextualSubcategories = headerContext?.contextualHeader?.subcategories ?? contextualSubcategories
+  const effectiveContextualSubcategoryClick = headerContext?.contextualHeader?.onSubcategoryClick ?? onSubcategoryClick
 
   const searchPlaceholder = locale === "bg" ? "Търсене..." : "Search..."
   const allLabel = locale === "bg" ? "Всички" : "All"
@@ -190,7 +202,7 @@ export function SiteHeader({
     const container = pillsRef.current
     if (!container) return
 
-    const activeEl = container.querySelector(`[data-slug="${activeCategory}"]`) as HTMLElement
+    const activeEl = container.querySelector(`[data-slug="${effectiveHomepageCategory}"]`) as HTMLElement
     if (activeEl) {
       const containerRect = container.getBoundingClientRect()
       const activeRect = activeEl.getBoundingClientRect()
@@ -198,11 +210,13 @@ export function SiteHeader({
         activeEl.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" })
       }
     }
-  }, [variant, activeCategory])
+  }, [variant, effectiveHomepageCategory])
 
   // Handle search open
   const handleSearchOpen = () => {
-    if (onSearchOpen) {
+    if (effectiveHomepageSearchOpen) {
+      effectiveHomepageSearchOpen()
+    } else if (onSearchOpen) {
       onSearchOpen()
     } else {
       setIsMobileSearchOpen(true)
@@ -308,19 +322,19 @@ export function SiteHeader({
         <div ref={pillsRef} className="overflow-x-auto no-scrollbar py-1">
           <div className="flex items-center gap-2 px-1">
             <CategoryNavItem
-              onClick={() => onCategorySelect?.("all")}
-              isActive={activeCategory === "all"}
+              onClick={() => effectiveHomepageCategorySelect?.("all")}
+              isActive={effectiveHomepageCategory === "all"}
               variant="pill"
               data-slug="all"
             >
               {getCategoryIcon("all", { size: 14 })}
               <span>{allLabel}</span>
             </CategoryNavItem>
-            {categories.map((cat) => (
+            {effectiveHomepageCategories.map((cat) => (
               <CategoryNavItem
                 key={cat.id}
-                onClick={() => onCategorySelect?.(cat.slug)}
-                isActive={activeCategory === cat.slug}
+                onClick={() => effectiveHomepageCategorySelect?.(cat.slug)}
+                isActive={effectiveHomepageCategory === cat.slug}
                 variant="pill"
                 data-slug={cat.slug}
               >
@@ -385,10 +399,10 @@ export function SiteHeader({
       <div className="md:hidden bg-background pt-safe">
         <div className="flex items-center justify-between px-3 h-12 border-b border-border/50">
           <div className="flex items-center">
-            {onContextualBack ? (
+            {effectiveContextualBack ? (
               <button
                 type="button"
-                onClick={onContextualBack}
+                onClick={effectiveContextualBack}
                 className="w-9 h-9 flex items-center justify-center rounded-full -ml-1 tap-highlight-transparent active:bg-muted transition-colors"
                 aria-label={locale === "bg" ? "Назад" : "Back"}
               >
@@ -396,7 +410,7 @@ export function SiteHeader({
               </button>
             ) : (
               <Link
-                href={contextualBackHref}
+                href={effectiveContextualBackHref}
                 className="w-9 h-9 flex items-center justify-center rounded-full -ml-1 tap-highlight-transparent active:bg-muted transition-colors"
                 aria-label={locale === "bg" ? "Назад" : "Back"}
               >
@@ -404,7 +418,7 @@ export function SiteHeader({
               </Link>
             )}
             <h1 className="text-base font-bold text-foreground ml-1 truncate max-w-48">
-              {contextualTitle}
+              {effectiveContextualTitle}
             </h1>
           </div>
           <div className="flex items-center gap-1">
@@ -420,16 +434,16 @@ export function SiteHeader({
           </div>
         </div>
         {/* Subcategory circles */}
-        {contextualSubcategories.length > 0 && (
+        {effectiveContextualSubcategories.length > 0 && (
           <div className="bg-background border-b border-border/50">
             <div className="px-4 py-3">
               <div className="flex items-start gap-3 overflow-x-auto no-scrollbar">
-                {contextualSubcategories.map((cat) => (
+                {effectiveContextualSubcategories.map((cat) => (
                   <button
                     key={cat.id}
                     type="button"
-                    onClick={() => onSubcategoryClick?.(cat)}
-                    className="flex flex-col items-center gap-1.5 shrink-0 w-[4.5rem] active:opacity-80 transition-opacity"
+                    onClick={() => effectiveContextualSubcategoryClick?.(cat)}
+                    className="flex flex-col items-center gap-1.5 shrink-0 w-category-item-mobile active:opacity-80 transition-opacity"
                   >
                     <div className="size-14 rounded-full bg-muted/50 border border-border/30 overflow-hidden flex items-center justify-center">
                       {getCategoryIcon(cat.slug, { size: 24, className: "text-muted-foreground" })}
@@ -575,16 +589,16 @@ export function SiteHeader({
         className={cn(
           "sticky top-0 z-50 w-full flex flex-col",
           variant !== "homepage" && variant !== "contextual" && "bg-header-bg",
-          (hideOnMobile || skipMobileHeader) && "hidden md:flex md:flex-col",
+          hideOnMobile && "hidden md:flex md:flex-col",
           hideOnDesktop && "md:hidden"
         )}
       >
-        {!skipMobileHeader && renderMobileHeader()}
+        {renderMobileHeader()}
         {renderDesktopHeader()}
       </header>
 
       {/* Search Overlay - for variants that use internal search state */}
-      {(variant === "default" || !onSearchOpen) && (
+      {(variant === "default" || (!effectiveHomepageSearchOpen && !onSearchOpen)) && (
         <MobileSearchOverlay
           hideDefaultTrigger
           externalOpen={isMobileSearchOpen}

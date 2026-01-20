@@ -8,6 +8,8 @@ import { CartProvider } from '@/components/providers/cart-context'
 import { WishlistProvider } from '@/components/providers/wishlist-context'
 import { MessageProvider } from '@/components/providers/message-context'
 import { CurrencyProvider } from '@/components/providers/currency-context'
+import { DrawerProvider } from '@/components/providers/drawer-context'
+import { GlobalDrawers } from './global-drawers'
 
 export default async function LocaleProviders({
   locale,
@@ -35,7 +37,12 @@ export default async function LocaleProviders({
           <MessageProvider>
             <CurrencyProvider>
               <CartProvider>
-                <WishlistProvider>{children}</WishlistProvider>
+                <WishlistProvider>
+                  <DrawerProvider>
+                    {children}
+                    <GlobalDrawers />
+                  </DrawerProvider>
+                </WishlistProvider>
               </CartProvider>
             </CurrencyProvider>
           </MessageProvider>

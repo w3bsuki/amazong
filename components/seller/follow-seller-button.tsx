@@ -3,12 +3,26 @@
 import { useOptimistic, useTransition } from "react"
 import { Button } from "@/components/ui/button"
 import { Heart, SpinnerGap, UserPlus } from "@phosphor-icons/react"
-import { followSeller, unfollowSeller } from "@/app/actions/seller-follows"
 import { toast } from "sonner"
+
+/**
+ * Action result type for follow/unfollow operations
+ */
+export type FollowActionResult = { success: boolean; error?: string }
+
+/**
+ * Handler types for follow/unfollow actions - passed from app/ layer
+ */
+export interface FollowSellerActions {
+  followSeller: (sellerId: string) => Promise<FollowActionResult>
+  unfollowSeller: (sellerId: string) => Promise<FollowActionResult>
+}
 
 interface FollowSellerButtonProps {
   sellerId: string
   initialIsFollowing: boolean
+  /** Action handlers - required, passed from app/ layer */
+  actions: FollowSellerActions
   locale?: string
   showLabel?: boolean
   onFollowChange?: (isFollowing: boolean) => void
@@ -24,6 +38,7 @@ interface FollowSellerButtonProps {
 export function FollowSellerButton({
   sellerId,
   initialIsFollowing,
+  actions,
   locale = "en",
   showLabel = true,
   onFollowChange,
@@ -53,8 +68,8 @@ export function FollowSellerButton({
 
     startTransition(async () => {
       const result = newState 
-        ? await followSeller(sellerId)
-        : await unfollowSeller(sellerId)
+        ? await actions.followSeller(sellerId)
+        : await actions.unfollowSeller(sellerId)
 
       if (result.success) {
         toast.success(newState ? t.followSuccess : t.unfollowSuccess)

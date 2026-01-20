@@ -76,49 +76,43 @@ export function TitleField({
             </div>
           )}
 
-          {/* Input with label inside */}
+          {/* Input - Premium card design */}
           <FieldContent className={cn(!compact && "p-5")}>
-            <div className={cn(
-              "relative flex items-center h-12 px-4 rounded-md border transition-all",
-              "bg-background border-border shadow-xs focus-within:border-primary/50 focus-within:ring-4 focus-within:ring-primary/5",
-              fieldState.invalid && "border-destructive bg-destructive/5"
-            )}>
-              <label
-                htmlFor={inputId}
-                className="text-2xs font-bold uppercase tracking-wider text-muted-foreground shrink-0 mr-2"
-              >
-                {isBg ? "Заглавие:" : "Title:"}
-              </label>
-              <Input
-                {...field}
-                id={inputId}
-                aria-invalid={fieldState.invalid}
-                placeholder={isBg
-                  ? "Напр. iPhone 15 Pro Max 256GB"
-                  : "e.g., iPhone 15 Pro Max 256GB"}
-                maxLength={maxLength}
-                className={cn(
-                  "h-auto p-0 border-none bg-transparent shadow-none focus-visible:ring-0 text-sm font-semibold flex-1 min-w-0",
-                  fieldState.invalid && "text-destructive"
-                )}
-              />
-              <span
-                className={cn(
-                  "ml-2 text-2xs font-bold tabular-nums uppercase tracking-widest shrink-0",
-                  charCount >= maxLength
-                    ? "text-destructive"
-                    : charCount >= minLength
-                      ? "text-muted-foreground"
-                      : "text-muted-foreground/40"
-                )}
-              >
-                {charCount}/{maxLength}
-              </span>
+            <div className="space-y-2">
+              {compact && (
+                <div className="flex items-center justify-between px-1">
+                  <label htmlFor={inputId} className="text-sm font-bold text-foreground">
+                    {isBg ? "Заглавие" : "Title"} <span className="text-destructive">*</span>
+                  </label>
+                  <span className={cn(
+                    "text-xs font-bold tabular-nums",
+                    charCount > maxLength - 10 ? "text-warning" : "text-muted-foreground"
+                  )}>
+                    {charCount}/{maxLength}
+                  </span>
+                </div>
+              )}
+              <div className={cn(
+                "relative rounded-xl border bg-card overflow-hidden transition-all",
+                "focus-within:ring-2 focus-within:ring-primary/20 focus-within:border-primary/50",
+                fieldState.invalid ? "border-destructive/50 bg-destructive/5" : "border-border"
+              )}>
+                <Input
+                  {...field}
+                  id={inputId}
+                  aria-invalid={fieldState.invalid}
+                  placeholder={isBg
+                    ? "Напр. iPhone 15 Pro Max 256GB"
+                    : "e.g., iPhone 15 Pro Max 256GB"}
+                  maxLength={maxLength}
+                  className="border-none bg-transparent h-14 px-4 text-base font-medium placeholder:text-muted-foreground/40 focus-visible:ring-0"
+                />
+              </div>
             </div>
 
             {/* Helper text - shows progress toward minimum */}
             {charCount > 0 && charCount < minLength && (
-              <p className="mt-2 text-xs font-bold text-primary uppercase tracking-wider">
+              <p className="mt-2 text-sm font-medium text-primary flex items-center gap-1.5 px-1">
                 {isBg
                   ? `Добавете още ${minLength - charCount} символа`
                   : `Add ${minLength - charCount} more characters`}

@@ -2,39 +2,33 @@
 
 import { useSellForm, useSellFormContext } from "../sell-form-provider";
 import {
-  PhotosField,
-  CategoryField,
-  ConditionField,
-  TitleField,
-  DescriptionField,
-  BrandField,
-  PricingField,
-  ShippingField,
-  AttributesField,
-  ReviewField,
-} from "../fields";
+  StepWhat,
+  StepCategory,
+  StepDetails,
+  StepPricing,
+  StepReview,
+} from "../steps";
 import { StepperWrapper } from "./stepper-wrapper";
 import type { SellFormDataV4 } from "@/lib/sell/schema-v4";
 
 // ============================================================================
-// MOBILE LAYOUT - Clean step-by-step wizard with proper mobile UX
-// Following shadcn/ui + Tailwind v4 best practices:
-// - text-sm/text-base for body, text-lg for headings
-// - h-12 (48px) touch targets minimum
-// - Consistent spacing-6 (24px) between sections
-// - No card-in-card visual noise
+// MOBILE LAYOUT - Premium 5-step wizard with Framer Motion animations
+// New flow: What → Category → Details → Pricing → Review
+// Following the PLAN-sell-form-masterpiece.md spec
 // ============================================================================
 
-// Step configuration for mobile wizard (low-friction flow)
-// 1) Basics: title + category + condition
-// 2) Photos: at least 1 photo
-// 3) Pricing: price (+ shipping)
-// 4) Review: final validation + publish
+// Step configuration for mobile wizard (5-step flow)
+// 1) What: title + 1 photo (low friction entry)
+// 2) Category: full-screen picker (determines subsequent fields)
+// 3) Details: condition + attributes + description + additional photos
+// 4) Pricing: price + shipping options
+// 5) Review: final validation + publish
 const MOBILE_STEPS = [
-  { id: 1, title: { en: "Basics", bg: "Основно" }, fields: ["title", "categoryId", "condition"] },
-  { id: 2, title: { en: "Photos", bg: "Снимки" }, fields: ["images"] },
-  { id: 3, title: { en: "Price", bg: "Цена" }, fields: ["price", "quantity", "shippingPrice", "sellerCity"] },
-  { id: 4, title: { en: "Review", bg: "Преглед" }, fields: [] },
+  { id: 1, title: { en: "What", bg: "Какво" }, fields: ["title", "images"] },
+  { id: 2, title: { en: "Category", bg: "Категория" }, fields: ["categoryId"] },
+  { id: 3, title: { en: "Details", bg: "Детайли" }, fields: ["condition"] },
+  { id: 4, title: { en: "Price", bg: "Цена" }, fields: ["price", "shippingPrice", "sellerCity"] },
+  { id: 5, title: { en: "Review", bg: "Преглед" }, fields: [] },
 ];
 
 interface MobileLayoutProps {
@@ -44,7 +38,7 @@ interface MobileLayoutProps {
 
 export function MobileLayout({ onSubmit, isSubmitting = false }: MobileLayoutProps) {
   const form = useSellForm();
-  const { currentStep, setCurrentStep, isBg } = useSellFormContext();
+  const { currentStep, setCurrentStep } = useSellFormContext();
 
   // Handle submission
   const handleSubmit = () => {
@@ -61,95 +55,19 @@ export function MobileLayout({ onSubmit, isSubmitting = false }: MobileLayoutPro
     if (currentStep < MOBILE_STEPS.length) setCurrentStep(currentStep + 1);
   };
 
-  // Render current step content - clean, consistent spacing
+  // Render current step content
   const renderStepContent = () => {
-    const categoryId = form.watch("categoryId");
-
     switch (currentStep) {
       case 1:
-        return (
-          <div className="space-y-6">
-            {/* Section header - more compact */}
-            <div className="space-y-1">
-              <h2 className="text-xl font-bold tracking-tight text-foreground">
-                {isBg ? "Какво продавате?" : "What are you selling?"}
-              </h2>
-              <p className="text-sm text-muted-foreground">
-                {isBg ? "Изберете категория и добавете основните детайли" : "Pick a category and add the basics"}
-              </p>
-            </div>
-            
-            <div className="space-y-5">
-              <TitleField compact />
-              <CategoryField compact />
-
-              {/* Item specifics should appear immediately after category on mobile */}
-              <AttributesField compact />
-
-              <ConditionField compact />
-              
-              {/* Only show BrandField if no category is selected or if it's a generic category */}
-              {!categoryId && <BrandField compact />}
-            </div>
-          </div>
-        );
-
+        return <StepWhat />;
       case 2:
-        return (
-          <div className="space-y-6">
-            <div className="space-y-1">
-              <h2 className="text-xl font-bold tracking-tight text-foreground">
-                {isBg ? "Снимки" : "Photos"}
-              </h2>
-              <p className="text-sm text-muted-foreground">
-                {isBg ? "Добавете поне 1 снимка" : "Add at least 1 photo"}
-              </p>
-            </div>
-            
-            <div className="space-y-5">
-              <PhotosField maxPhotos={12} compact />
-            </div>
-          </div>
-        );
-
+        return <StepCategory />;
       case 3:
-        return (
-          <div className="space-y-6">
-            <div className="space-y-1">
-              <h2 className="text-xl font-bold tracking-tight text-foreground">
-                {isBg ? "Цена и доставка" : "Pricing & shipping"}
-              </h2>
-              <p className="text-sm text-muted-foreground">
-                {isBg ? "Задайте цена и изберете опции за доставка" : "Set your price and choose shipping options"}
-              </p>
-            </div>
-            
-            <div className="space-y-5">
-              <PricingField compact />
-              <ShippingField compact />
-            </div>
-          </div>
-        );
-
+        return <StepDetails />;
       case 4:
-        return (
-          <div className="space-y-6">
-            <div className="space-y-1">
-              <h2 className="text-xl font-bold tracking-tight text-foreground">
-                {isBg ? "Преглед и публикуване" : "Review & publish"}
-              </h2>
-              <p className="text-sm text-muted-foreground">
-                {isBg ? "Прегледайте обявата преди публикуване" : "Review your listing before publishing"}
-              </p>
-            </div>
-            
-            <div className="space-y-5">
-              <ReviewField onEditStep={(step) => setCurrentStep(step)} />
-              <DescriptionField compact />
-            </div>
-          </div>
-        );
-
+        return <StepPricing />;
+      case 5:
+        return <StepReview />;
       default:
         return null;
     }

@@ -73,40 +73,56 @@ export function ConditionField({ className, compact = false }: ConditionFieldPro
 
             <FieldContent>
               {compact ? (
-                /* Mobile: Drawer Pattern with "Label Inside" Trigger */
+                /* Mobile: Drawer Pattern with "SelectionCard" Trigger */
                 <Drawer open={isOpen} onOpenChange={setIsOpen}>
                   <DrawerTrigger asChild>
                     <button
                       type="button"
                       className={cn(
-                        "relative w-full flex items-center h-12 px-4 rounded-md border transition-all text-left",
-                        "focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/5",
-                        "touch-action-manipulation",
-                        fieldState.invalid ? "border-destructive bg-destructive/5" : "border-border bg-background hover:border-primary/30"
+                        "w-full flex items-center gap-3.5 min-h-16 px-4 py-3 rounded-xl border text-left transition-all",
+                        "active:scale-[0.98]",
+                        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30",
+                        fieldState.invalid 
+                          ? "border-destructive/50 bg-destructive/5" 
+                          : selectedLabel 
+                            ? "border-primary/30 bg-primary/5" 
+                            : "border-border bg-card hover:bg-muted/30"
                       )}
                     >
-                      <div className="flex items-center gap-2 flex-1 min-w-0">
-                        <span className="text-2xs font-bold uppercase tracking-wider text-muted-foreground shrink-0">
-                          {isBg ? "Състояние:" : "Condition:"}
-                        </span>
+                      <div className={cn(
+                        "size-11 rounded-xl flex items-center justify-center shrink-0 transition-colors",
+                        selectedLabel ? "bg-primary/15 text-primary" : "bg-muted text-muted-foreground"
+                      )}>
+                        <Sparkle className="size-5" weight={selectedLabel ? "fill" : "regular"} />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                            {isBg ? "Състояние" : "Condition"}
+                          </span>
+                          <span className="text-destructive text-xs">*</span>
+                        </div>
                         <span className={cn(
-                          "text-sm font-semibold truncate",
+                          "text-base font-semibold truncate block mt-0.5",
                           selectedLabel ? "text-foreground" : "text-muted-foreground/50"
                         )}>
-                          {selectedLabel || (isBg ? "Изберете..." : "Select...")}
+                          {selectedLabel || (isBg ? "Изберете..." : "Select condition")}
                         </span>
                       </div>
-                      <CaretRight className="size-4 text-muted-foreground/50 shrink-0 ml-2" weight="bold" />
+                      <CaretRight className={cn(
+                        "size-5 shrink-0 transition-colors",
+                        selectedLabel ? "text-primary/50" : "text-muted-foreground/30"
+                      )} weight="bold" />
                     </button>
                   </DrawerTrigger>
-                  <DrawerContent>
-                    <DrawerHeader className="text-left border-b border-border/50 pb-4">
-                      <DrawerTitle className="text-lg font-bold">{isBg ? "Състояние" : "Condition"}</DrawerTitle>
+                  <DrawerContent className="max-h-[90vh]">
+                    <DrawerHeader className="border-b border-border/50 pb-4">
+                      <DrawerTitle className="text-xl font-bold">{isBg ? "Състояние" : "Item condition"}</DrawerTitle>
                       <DrawerDescription className="text-sm">
-                        {isBg ? "В какво състояние е артикулът?" : "What is the condition of the item?"}
+                        {isBg ? "Бъдете точни — това изгражда доверие" : "Be accurate — it builds trust with buyers"}
                       </DrawerDescription>
                     </DrawerHeader>
-                    <div className="p-4 space-y-2">
+                    <div className="p-4 space-y-3 max-h-[65vh] overflow-y-auto">
                       {conditionOptions.map((option) => {
                         const isSelected = field.value === option.value;
                         const label = isBg ? option.labelBg : option.label;
@@ -120,20 +136,43 @@ export function ConditionField({ className, compact = false }: ConditionFieldPro
                               setIsOpen(false);
                             }}
                             className={cn(
-                              "w-full flex items-center justify-between h-14 px-4 rounded-md border transition-all",
-                              "touch-action-manipulation",
+                              "w-full flex items-center gap-4 p-4 rounded-2xl border transition-all text-left",
+                              "active:scale-[0.98]",
                               isSelected
-                                ? "border-primary bg-primary/5 text-primary font-bold"
-                                : "border-transparent bg-muted/40 text-foreground hover:bg-muted/60"
+                                ? "border-primary bg-primary/5 ring-2 ring-primary/20"
+                                : "border-transparent bg-muted/40 hover:bg-muted/60"
                             )}
                           >
-                            <span className="text-base">{label}</span>
-                            {isSelected && <Check className="size-5" weight="bold" />}
+                            <div className={cn(
+                              "size-12 rounded-xl flex items-center justify-center shrink-0 transition-colors",
+                              isSelected ? "bg-primary/15" : "bg-muted"
+                            )}>
+                              <Sparkle 
+                                className={cn(
+                                  "size-6 transition-colors",
+                                  isSelected ? "text-primary" : "text-muted-foreground"
+                                )} 
+                                weight={isSelected ? "fill" : "regular"} 
+                              />
+                            </div>
+                            <div className="flex-1 min-w-0 py-0.5">
+                              <div className={cn(
+                                "text-base font-bold",
+                                isSelected ? "text-primary" : "text-foreground"
+                              )}>
+                                {label}
+                              </div>
+                            </div>
+                            {isSelected && (
+                              <div className="size-7 rounded-full bg-primary flex items-center justify-center shrink-0">
+                                <Check className="size-4 text-primary-foreground" weight="bold" />
+                              </div>
+                            )}
                           </button>
                         );
                       })}
                     </div>
-                    <div className="h-8" /> {/* Bottom spacing for safe area */}
+                    <div className="h-safe-b" />
                   </DrawerContent>
                 </Drawer>
               ) : (

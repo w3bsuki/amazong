@@ -4,6 +4,56 @@
    with Tailwind classes alone (data-state selectors, etc.)
    ============================================================ */
 
+/* ===== DRAWER (Vaul) ===== */
+/* Smooth spring animation for drawer open/close */
+[data-vaul-drawer] {
+  touch-action: none;
+}
+
+[data-vaul-drawer][data-vaul-drawer-direction="bottom"] {
+  /* iOS-style spring animation */
+  transition: transform 0.5s cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+[data-vaul-drawer][data-vaul-drawer-direction="top"] {
+  transition: transform 0.5s cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+[data-vaul-drawer][data-vaul-drawer-direction="left"],
+[data-vaul-drawer][data-vaul-drawer-direction="right"] {
+  transition: transform 0.4s cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+/* Prevent scrolling underneath drawer when open */
+[data-vaul-drawer-wrapper][data-vaul-drawer-open="true"] {
+  overflow: hidden;
+}
+
+/* Handle drag affordance styling */
+[data-slot="drawer-handle-container"] {
+  user-select: none;
+}
+
+/* Drawer body scroll containment - prevents scroll leaking to parent */
+[data-slot="drawer-body"] {
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: var(--muted-foreground) transparent;
+}
+
+[data-slot="drawer-body"]::-webkit-scrollbar {
+  width: 4px;
+}
+
+[data-slot="drawer-body"]::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+[data-slot="drawer-body"]::-webkit-scrollbar-thumb {
+  background-color: var(--muted-foreground);
+  border-radius: 2px;
+}
+
 /* Select */
 .ui-select-trigger svg {
   pointer-events: none;

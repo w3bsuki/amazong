@@ -13,7 +13,7 @@ export { QuickFilterRow } from "./quick-filter-row"
 export { StickyCategoryTabs } from "./sticky-category-tabs"
 
 // Phase 1: Contextual category navigation (Vinted-style)
-// ContextualCategoryHeader has been moved to site-header-unified.tsx
+// ContextualCategoryHeader is handled by AppHeader
 export { SubcategoryPills } from "./subcategory-pills"
 export type { SubcategoryPillsProps } from "./subcategory-pills"
 export { InlineFilterBar } from "./inline-filter-bar"

@@ -6,7 +6,7 @@ import { setRequestLocale } from "next-intl/server";
  * Minimal layout - inherits header, footer, providers from parent [username]/layout.tsx
  * The parent layout already provides:
  * - CartProvider, WishlistProvider
- * - SiteHeader, SiteFooter
+ * - AppHeader, SiteFooter
  * - MobileTabBar, Toaster, CookieConsent
  * - AuthStateListener, SkipLinks
  */

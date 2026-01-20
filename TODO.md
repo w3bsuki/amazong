@@ -3,6 +3,10 @@
 > **Production Plan**: See `codex/MASTER-PLAN.md` for P0 blockers and execution order
 > 
 > **Workflow**: See `docs/PRODUCTION-WORKFLOW-GUIDE.md` (comprehensive) or `docs/GPTVSOPUSFINAL.md` (agent roles)
+>
+> **Execution Board (multi-session):** `codex-xhigh/EXECUTION-BOARD.md` (owners/status) + `codex-xhigh/STATUS.md` (resume fast)
+>
+> **Launch Scope:** V2 checkout/orders + Stripe credit cards + Stripe Connect (no classifieds-only mode)
 > 
 > **Prefixes**: `TREIDO:` (general dev), `TAILWIND:` (UI audit), `SUPABASE:` (DB audit)
 

@@ -3,6 +3,10 @@
 import { useState, useEffect } from "react";
 import { Link } from "@/i18n/routing";
 import { createClient } from "@/lib/supabase/client";
+import { useTranslations } from "next-intl";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { WarningCircle } from "@phosphor-icons/react";
 import {
   SignInPrompt,
   SellHeader,
@@ -15,6 +19,26 @@ import {
 } from "../_components";
 import { useParams } from "next/navigation";
 
+type PayoutSetupStatus = {
+  isReady: boolean;
+  needsSetup: boolean;
+  incomplete: boolean;
+};
+
+function toPayoutSetupStatus(
+  payoutStatus: { details_submitted: boolean; charges_enabled: boolean; payouts_enabled: boolean } | null
+): PayoutSetupStatus {
+  const isReady = Boolean(
+    payoutStatus?.details_submitted && payoutStatus?.charges_enabled && payoutStatus?.payouts_enabled
+  );
+
+  return {
+    isReady,
+    needsSetup: !payoutStatus,
+    incomplete: Boolean(payoutStatus && !isReady),
+  };
+}
+
 interface SellPageClientProps {
   initialUser: { id: string; email?: string } | null;
   initialSeller: Seller | null;
@@ -23,6 +47,7 @@ interface SellPageClientProps {
   initialAccountType?: "personal" | "business";  // Always set in DB
   initialDisplayName?: string | null;
   initialBusinessName?: string | null;
+  initialPayoutStatus?: PayoutSetupStatus;
   categories: Category[];
 }
 
@@ -34,8 +59,10 @@ export function SellPageClient({
   initialAccountType = "personal",  // Default personal, but always comes from DB
   initialDisplayName = null,
   initialBusinessName = null,
+  initialPayoutStatus,
   categories // Pre-fetched from server
 }: SellPageClientProps) {
+  const t = useTranslations("Sell");
   const [user, setUser] = useState(initialUser);
   const [seller, setSeller] = useState(initialSeller);
   const [isAuthChecking, setIsAuthChecking] = useState(!initialUser);
@@ -44,6 +71,9 @@ export function SellPageClient({
   const [accountType, setAccountType] = useState<"personal" | "business">(initialAccountType);
   const [displayName, setDisplayName] = useState<string | null>(initialDisplayName);
   const [businessName, setBusinessName] = useState<string | null>(initialBusinessName);
+  const [payoutStatus, setPayoutStatus] = useState<PayoutSetupStatus>(
+    initialPayoutStatus ?? toPayoutSetupStatus(null)
+  );
 
   const params = useParams();
   const locale = typeof params?.locale === "string" ? params.locale : "en";
@@ -143,6 +173,12 @@ export function SellPageClient({
         .eq("id", user.id)
         .single();
 
+      const { data: payoutData } = await supabase
+        .from("seller_payout_status")
+        .select("details_submitted, charges_enabled, payouts_enabled")
+        .eq("seller_id", user.id)
+        .maybeSingle();
+
       if (profileData) {
         setSeller({
           id: profileData.id,
@@ -150,6 +186,8 @@ export function SellPageClient({
         });
         setNeedsOnboarding(false);
       }
+
+      setPayoutStatus(toPayoutSetupStatus(payoutData ?? null));
     };
 
     return (
@@ -191,6 +229,33 @@ export function SellPageClient({
             >
               {isBg ? "Настройки" : "Go to Settings"}
             </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Stripe Connect gating (V2): sellers must complete payout setup before listing.
+  if (!payoutStatus.isReady) {
+    return (
+      <div className="min-h-screen bg-background flex flex-col">
+        <SellHeader {...(user.email ? { user: { email: user.email } } : {})} />
+        <div className="flex-1 flex flex-col justify-center overflow-y-auto py-8">
+          <div className="container-narrow">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <WarningCircle className="size-5 text-primary" weight="fill" />
+                  {t("payoutSetupRequired")}
+                </CardTitle>
+                <CardDescription>{t("payoutSetupDescription")}</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Button asChild>
+                  <Link href="/seller/settings/payouts">{t("setupPayouts")}</Link>
+                </Button>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </div>

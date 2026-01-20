@@ -1,0 +1,243 @@
+"use client"
+
+import { useCallback } from "react"
+import { ChatCircle, User, Circle, Check } from "@phosphor-icons/react"
+import {
+  Drawer,
+  DrawerContent,
+  DrawerDescription,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerClose,
+  DrawerFooter,
+} from "@/components/ui/drawer"
+import { Button } from "@/components/ui/button"
+import { Link } from "@/i18n/routing"
+import { useTranslations, useLocale } from "next-intl"
+import { useMessages, type Conversation } from "@/components/providers/message-context"
+import Image from "next/image"
+import { cn } from "@/lib/utils"
+import { useAuth } from "@/components/providers/auth-state-manager"
+
+interface MessagesDrawerProps {
+  open: boolean
+  onOpenChange: (open: boolean) => void
+}
+
+/** Maximum conversations to show in drawer */
+const MAX_CONVERSATIONS = 5
+
+/**
+ * MessagesDrawer - Quick access to recent conversations
+ * 
+ * Shows the 5 most recent conversations with unread indicators.
+ * Tapping a conversation navigates to the chat page.
+ */
+export function MessagesDrawer({ open, onOpenChange }: MessagesDrawerProps) {
+  const { conversations, totalUnreadCount, isLoading } = useMessages()
+  const { user } = useAuth()
+  const t = useTranslations("Drawers")
+  const tMessages = useTranslations("Messages")
+  const locale = useLocale()
+
+  const handleClose = useCallback(() => onOpenChange(false), [onOpenChange])
+
+  // Get the 5 most recent conversations (already sorted by last_message_at)
+  const recentConversations = conversations.slice(0, MAX_CONVERSATIONS)
+
+  // Helper to get the other party's display info
+  const getOtherParty = useCallback(
+    (conversation: Conversation) => {
+      const isBuyer = user?.id === conversation.buyer_id
+      if (isBuyer) {
+        // Current user is buyer, show seller info
+        const seller = conversation.seller_profile
+        return {
+          name: seller?.business_name || seller?.display_name || seller?.full_name || tMessages("unknownUser"),
+          avatar: seller?.avatar_url,
+        }
+      }
+      // Current user is seller, show buyer info
+      const buyer = conversation.buyer_profile
+      return {
+        name: buyer?.display_name || buyer?.full_name || tMessages("unknownUser"),
+        avatar: buyer?.avatar_url,
+      }
+    },
+    [user?.id, tMessages]
+  )
+
+  // Helper to get unread count for current user
+  const getUnreadCount = useCallback(
+    (conversation: Conversation) => {
+      const isBuyer = user?.id === conversation.buyer_id
+      return isBuyer ? conversation.buyer_unread_count : conversation.seller_unread_count
+    },
+    [user?.id]
+  )
+
+  // Format relative time
+  const formatRelativeTime = useCallback(
+    (dateString: string | null) => {
+      if (!dateString) return ""
+      const date = new Date(dateString)
+      const now = new Date()
+      const diffMs = now.getTime() - date.getTime()
+      const diffMins = Math.floor(diffMs / 60000)
+      const diffHours = Math.floor(diffMs / 3600000)
+      const diffDays = Math.floor(diffMs / 86400000)
+
+      if (diffMins < 1) return locale === "bg" ? "сега" : "now"
+      if (diffMins < 60) return `${diffMins}${locale === "bg" ? "м" : "m"}`
+      if (diffHours < 24) return `${diffHours}${locale === "bg" ? "ч" : "h"}`
+      return `${diffDays}${locale === "bg" ? "д" : "d"}`
+    },
+    [locale]
+  )
+
+  return (
+    <Drawer open={open} onOpenChange={onOpenChange}>
+      <DrawerContent className="rounded-t-xl max-h-[70dvh]">
+        <DrawerHeader className="pb-1.5 pt-0 border-b border-border text-left">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-1.5">
+              <ChatCircle size={16} weight="regular" className="text-muted-foreground" />
+              <DrawerTitle className="text-sm font-semibold">{t("messages")}</DrawerTitle>
+              {totalUnreadCount > 0 && (
+                <span className="text-xs text-destructive font-medium">
+                  ({totalUnreadCount} {locale === "bg" ? "непрочетени" : "unread"})
+                </span>
+              )}
+            </div>
+            <DrawerClose asChild>
+              <button
+                className="text-xs text-muted-foreground hover:text-foreground h-7 px-2 rounded-md hover:bg-muted touch-action-manipulation tap-transparent"
+                aria-label="Close"
+              >
+                {locale === "bg" ? "Затвори" : "Close"}
+              </button>
+            </DrawerClose>
+          </div>
+          <DrawerDescription className="sr-only">Your recent messages</DrawerDescription>
+        </DrawerHeader>
+
+        {!user ? (
+          <div className="flex flex-col items-center justify-center px-inset py-5">
+            <div className="size-11 bg-muted rounded-lg flex items-center justify-center mb-2">
+              <ChatCircle size={22} weight="regular" className="text-muted-foreground/50" />
+            </div>
+            <p className="text-sm text-foreground font-medium">
+              {locale === "bg" ? "Влезте в акаунта си" : "Sign in to view messages"}
+            </p>
+            <p className="text-xs text-muted-foreground mt-0.5 text-center">
+              {locale === "bg" ? "Влезте, за да видите съобщенията си" : "Sign in to view your messages"}
+            </p>
+          </div>
+        ) : isLoading ? (
+          <div className="flex items-center justify-center py-8">
+            <div className="size-6 border-2 border-muted-foreground/30 border-t-foreground rounded-full animate-spin" />
+          </div>
+        ) : recentConversations.length === 0 ? (
+          <div className="flex flex-col items-center justify-center px-inset py-5">
+            <div className="size-11 bg-muted rounded-lg flex items-center justify-center mb-2">
+              <ChatCircle size={22} weight="regular" className="text-muted-foreground/50" />
+            </div>
+            <p className="text-sm text-foreground font-medium">{tMessages("noConversations")}</p>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              {locale === "bg" ? "Започнете разговор с продавач" : "Start a conversation with a seller"}
+            </p>
+          </div>
+        ) : (
+          <div className="flex-1 overflow-y-auto overscroll-contain">
+            {recentConversations.map((conversation, index) => {
+              const otherParty = getOtherParty(conversation)
+              const unread = getUnreadCount(conversation)
+              const lastMessage = conversation.last_message
+              const productTitle = conversation.product?.title
+
+              return (
+                <Link
+                  key={conversation.id}
+                  href={`/chat/${conversation.id}`}
+                  onClick={handleClose}
+                  className={cn(
+                    "flex gap-3 px-inset py-3",
+                    "hover:bg-muted/50 active:bg-muted transition-colors",
+                    "touch-action-manipulation tap-transparent",
+                    index !== recentConversations.length - 1 && "border-b border-border"
+                  )}
+                >
+                  {/* Avatar */}
+                  <div className="relative shrink-0">
+                    <div className="size-12 rounded-full bg-muted overflow-hidden border border-border">
+                      {otherParty.avatar ? (
+                        <Image
+                          src={otherParty.avatar}
+                          alt={otherParty.name}
+                          width={48}
+                          height={48}
+                          className="size-full object-cover"
+                        />
+                      ) : (
+                        <div className="size-full flex items-center justify-center text-muted-foreground">
+                          <User size={24} weight="regular" />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Content */}
+                  <div className="flex-1 min-w-0 flex flex-col justify-center">
+                    <div className="flex items-center justify-between gap-2">
+                      <span
+                        className={cn(
+                          "text-sm truncate",
+                          unread > 0 ? "font-semibold text-foreground" : "font-medium text-foreground"
+                        )}
+                      >
+                        {otherParty.name}
+                      </span>
+                      <div className="flex items-center gap-1.5 shrink-0">
+                        <span className="text-xs text-muted-foreground">
+                          {formatRelativeTime(conversation.last_message_at)}
+                        </span>
+                        {unread > 0 ? (
+                          <Circle size={8} weight="fill" className="text-destructive" aria-label="Unread" />
+                        ) : (
+                          <Check size={12} weight="bold" className="text-muted-foreground" aria-label="Read" />
+                        )}
+                      </div>
+                    </div>
+                    {lastMessage && (
+                      <p
+                        className={cn(
+                          "text-xs truncate mt-0.5",
+                          unread > 0 ? "text-foreground" : "text-muted-foreground"
+                        )}
+                      >
+                        {lastMessage.content}
+                      </p>
+                    )}
+                    {productTitle && (
+                      <p className="text-xs text-muted-foreground truncate mt-0.5">
+                        {locale === "bg" ? "Относно:" : "Re:"} {productTitle}
+                      </p>
+                    )}
+                  </div>
+                </Link>
+              )
+            })}
+          </div>
+        )}
+
+        <DrawerFooter className="border-t border-border">
+          <Link href="/chat" onClick={handleClose} className="w-full">
+            <Button variant="outline" size="default" className="w-full">
+              {t("viewAllMessages")}
+            </Button>
+          </Link>
+        </DrawerFooter>
+      </DrawerContent>
+    </Drawer>
+  )
+}

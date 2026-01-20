@@ -312,12 +312,23 @@ export function AttributesField({ className, compact = false }: AttributesFieldP
   const customAttrs = useMemo(() => attributes.filter(a => a.isCustom), [attributes]);
 
   // DB attributes split: required + optional
+  // Filter out "condition" / "състояние" as we have a dedicated ConditionField
+  const EXCLUDED_ATTRIBUTE_NAMES = ["condition", "състояние", "състояние на продукта"];
+  
   const dbRequiredAttrs = useMemo(
-    () => dbAttributes.filter((a) => a.is_required).sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0)),
+    () => dbAttributes
+      .filter((a) => a.is_required)
+      .filter((a) => !EXCLUDED_ATTRIBUTE_NAMES.includes(a.name.toLowerCase()) && 
+                     !(a.name_bg && EXCLUDED_ATTRIBUTE_NAMES.includes(a.name_bg.toLowerCase())))
+      .sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0)),
     [dbAttributes]
   );
   const dbOptionalAttrs = useMemo(
-    () => dbAttributes.filter((a) => !a.is_required).sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0)),
+    () => dbAttributes
+      .filter((a) => !a.is_required)
+      .filter((a) => !EXCLUDED_ATTRIBUTE_NAMES.includes(a.name.toLowerCase()) && 
+                     !(a.name_bg && EXCLUDED_ATTRIBUTE_NAMES.includes(a.name_bg.toLowerCase())))
+      .sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0)),
     [dbAttributes]
   );
 

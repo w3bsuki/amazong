@@ -50,6 +50,10 @@ interface SubscriptionPlanRow {
   price_yearly?: number | null
   final_value_fee?: number | null
   commission_rate?: number | null
+  seller_fee_percent?: number | null
+  buyer_protection_percent?: number | null
+  buyer_protection_fixed?: number | null
+  buyer_protection_cap?: number | null
   max_listings?: number | null
   boosts_included?: number | null
   priority_support?: boolean | null
@@ -72,7 +76,7 @@ const content = {
   en: {
     back: "Back",
     title: "Choose your plan",
-    subtitle: "Start free, upgrade when you're ready. Only pay a fee when you sell.",
+    subtitle: "Start free, upgrade when you're ready. 0% seller fees - buyers pay for protection.",
     personal: "Personal",
     business: "Business",
     monthly: "Monthly",
@@ -81,7 +85,8 @@ const content = {
     getStarted: "Get Started",
     current: "Current",
     popular: "Popular",
-    feeLabel: "fee when sold",
+    feeLabel: "seller fee",
+    buyerProtectionLabel: "buyer protection",
     period: {
       mo: "mo",
       yr: "yr",
@@ -89,7 +94,8 @@ const content = {
     planFeatures: {
       listingsPerMonth: "listings/mo",
       unlimitedListings: "∞ listings",
-      whenSoldShort: "when sold",
+      whenSoldShort: "seller fee",
+      buyerProtection: "buyer pays",
       boostsShort: "boosts",
       analytics: "Analytics",
     },
@@ -106,8 +112,8 @@ const content = {
       items: [
         {
           icon: "lightning",
-          title: "Lower fees",
-          desc: "Keep more of your earnings with reduced commission rates",
+          title: "Lower buyer fees",
+          desc: "Your buyers pay less with reduced protection rates",
         },
         {
           icon: "rocket",
@@ -130,7 +136,8 @@ const content = {
       subtitle: "See exactly what's included in each plan",
       plan: "Plan",
       price: "Price",
-      fee: "Fee when sold",
+      fee: "Seller fee",
+      buyerProtection: "Buyer protection",
       listings: "Active listings",
       boosts: "Boosts/month",
       support: "Priority support",
@@ -142,12 +149,12 @@ const content = {
       subtitle: "Everything you need to know about our plans",
       items: [
         {
-          q: "Do I pay anything upfront?",
-          a: "No. Start on the free plan and only pay when you sell. Subscriptions are optional and unlock lower fees.",
+          q: "Do I pay anything when I sell?",
+          a: "Personal accounts pay 0% seller fees - you keep 100% of every sale! Business accounts pay a small 0.5-1.5% fee.",
         },
         {
-          q: "What is the fee when sold?",
-          a: "It's a percentage of the sale price, only charged after a successful sale. No sale = no fee.",
+          q: "What is buyer protection?",
+          a: "Buyers pay a small fee (2-4% + fixed) for secure payments and protection. This makes buyers more confident to purchase.",
         },
         {
           q: "Can I switch plans anytime?",
@@ -171,7 +178,7 @@ const content = {
   bg: {
     back: "Назад",
     title: "Изберете план",
-    subtitle: "Започнете безплатно, надградете когато сте готови. Плащате само при продажба.",
+    subtitle: "Започнете безплатно, надградете когато сте готови. 0% такси за продавачи - купувачите плащат за защита.",
     personal: "Личен",
     business: "Бизнес",
     monthly: "Месечно",
@@ -180,7 +187,8 @@ const content = {
     getStarted: "Започни",
     current: "Текущ",
     popular: "Популярен",
-    feeLabel: "такса при продажба",
+    feeLabel: "такса продавач",
+    buyerProtectionLabel: "защита на купувача",
     period: {
       mo: "мес",
       yr: "год",
@@ -188,7 +196,8 @@ const content = {
     planFeatures: {
       listingsPerMonth: "обяви/месец",
       unlimitedListings: "∞ обяви",
-      whenSoldShort: "при продажба",
+      whenSoldShort: "такса продавач",
+      buyerProtection: "купувачът плаща",
       boostsShort: "буста",
       analytics: "Аналитика",
     },
@@ -205,8 +214,8 @@ const content = {
       items: [
         {
           icon: "lightning",
-          title: "По-ниски такси",
-          desc: "Запазете повече от приходите си с намалени комисиони",
+          title: "По-ниски такси за купувачи",
+          desc: "Вашите купувачи плащат по-малко за защита",
         },
         {
           icon: "rocket",
@@ -229,7 +238,8 @@ const content = {
       subtitle: "Вижте точно какво включва всеки план",
       plan: "План",
       price: "Цена",
-      fee: "Такса при продажба",
+      fee: "Такса продавач",
+      buyerProtection: "Защита на купувача",
       listings: "Активни обяви",
       boosts: "Бустове/месец",
       support: "Приоритетна поддръжка",
@@ -241,12 +251,12 @@ const content = {
       subtitle: "Всичко, което трябва да знаете за плановете",
       items: [
         {
-          q: "Плащам ли нещо предварително?",
-          a: "Не. Започнете с безплатен план и плащайте само при продажба.",
+          q: "Плащам ли нещо при продажба?",
+          a: "Личните акаунти имат 0% такси за продавачи - запазвате 100% от всяка продажба! Бизнес акаунтите плащат малка такса 0.5-1.5%.",
         },
         {
-          q: "Каква е таксата при продажба?",
-          a: "Процент от продажната цена, само след успешна продажба. Няма продажба = няма такса.",
+          q: "Какво е защитата на купувача?",
+          a: "Купувачите плащат малка такса (2-4% + фиксирана) за сигурни плащания и защита. Това ги прави по-уверени да купуват.",
         },
         {
           q: "Мога ли да сменя плана?",
@@ -292,7 +302,9 @@ function buildPlanFeatureList(
   t: (typeof content)["en"],
   plan: SubscriptionPlanRow
 ): string[] {
-  const fee = plan.final_value_fee ?? plan.commission_rate
+  const sellerFee = Number(plan.seller_fee_percent ?? 0)
+  const buyerProtection = Number(plan.buyer_protection_percent ?? 0)
+  const buyerFixed = Number(plan.buyer_protection_fixed ?? 0)
   const boosts = plan.boosts_included ?? 0
   const analytics = (plan.analytics_access || "").toLowerCase()
 
@@ -304,9 +316,11 @@ function buildPlanFeatureList(
     features.push(`${formatInt(locale, plan.max_listings)} ${t.planFeatures.listingsPerMonth}`)
   }
 
-  if (typeof fee === "number") {
-    features.push(`${fee}% ${t.planFeatures.whenSoldShort}`)
-  }
+  // Show seller fee (0% for personal, small % for business)
+  features.push(`${sellerFee}% ${t.planFeatures.whenSoldShort}`)
+  
+  // Show buyer protection rate
+  features.push(`${buyerProtection}% + €${buyerFixed.toFixed(2)} ${t.planFeatures.buyerProtection}`)
 
   if (boosts > 0) {
     const boostsLabel = boosts >= 999 ? "∞" : formatInt(locale, boosts)
@@ -518,9 +532,9 @@ export default function PlansPageClient(props: {
                   const originalPrice = yearly ? (plan.price_monthly ?? 0) * 12 : null
                   const isCurrent =
                     plan.tier === currentTier || (currentTier === "free" && plan.tier === "basic")
-                  const isPopular = plan.tier === "premium"
+                  const isPopular = plan.tier === "plus" || plan.tier === "professional"
                   const features = buildPlanFeatureList(locale, t, plan).slice(0, 5)
-                  const fee = plan.final_value_fee ?? plan.commission_rate ?? 0
+                  const sellerFee = Number(plan.seller_fee_percent ?? 0)
                   const icon =
                     planIcons[plan.tier?.toLowerCase() ?? "basic"] ?? (
                       <User weight="regular" className="size-4" />
@@ -556,7 +570,7 @@ export default function PlansPageClient(props: {
                           )}
                         </PricingCard.Price>
                         <PricingCard.Fee>
-                          {fee}% {t.feeLabel}
+                          {sellerFee}% {t.feeLabel}
                         </PricingCard.Fee>
                         <Button
                           className="mt-3 w-full"
@@ -653,6 +667,9 @@ export default function PlansPageClient(props: {
                     {t.comparison.fee}
                   </TableHead>
                   <TableHead className="h-12 text-center text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                    {t.comparison.buyerProtection}
+                  </TableHead>
+                  <TableHead className="h-12 text-center text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                     {t.comparison.listings}
                   </TableHead>
                   <TableHead className="h-12 text-center text-xs font-semibold uppercase tracking-wide text-muted-foreground">
@@ -668,7 +685,10 @@ export default function PlansPageClient(props: {
                   const price = yearly ? (plan.price_yearly ?? 0) : (plan.price_monthly ?? 0)
                   const isCurrent =
                     plan.tier === currentTier || (currentTier === "free" && plan.tier === "basic")
-                  const isPopular = plan.tier === "premium"
+                  const isPopular = plan.tier === "plus" || plan.tier === "professional"
+                  const sellerFee = Number(plan.seller_fee_percent ?? 0)
+                  const buyerProtection = Number(plan.buyer_protection_percent ?? 0)
+                  const buyerFixed = Number(plan.buyer_protection_fixed ?? 0)
 
                   return (
                     <TableRow
@@ -724,8 +744,13 @@ export default function PlansPageClient(props: {
                         )}
                       </TableCell>
                       <TableCell className="text-center">
+                        <span className={cn("font-semibold tabular-nums", sellerFee === 0 && "text-success")}>
+                          {sellerFee}%
+                        </span>
+                      </TableCell>
+                      <TableCell className="text-center">
                         <span className="font-semibold tabular-nums">
-                          {plan.final_value_fee ?? plan.commission_rate ?? 0}%
+                          {buyerProtection}% + €{buyerFixed.toFixed(2)}
                         </span>
                       </TableCell>
                       <TableCell className="text-center tabular-nums">

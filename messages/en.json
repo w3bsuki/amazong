@@ -2,6 +2,8 @@
     "Header": {
         "helloSignIn": "Hello, sign in",
         "hello": "Hello",
+            "listingType": "Listing type",
+            "auctionDuration": "Duration",
         "signOut": "Sign out",
         "accountAndLists": "Account & Lists",
         "signIn": "Sign in",
@@ -85,6 +87,7 @@
     },
     "Navigation": {
         "deliverTo": "Deliver to",
+            "auctionDurationRequired": "Please choose an auction duration",
         "searchPlaceholder": "Search products, brands, and more...",
         "clearSearch": "Clear search",
         "yourOrders": "Your",
@@ -210,6 +213,7 @@
         "ratingLabel": "{rating} out of {max} stars",
         "deal": "Deal",
         "discount": "{percent}% off",
+        "savePercent": "Save {percent}%",
         "visitStore": "Visit the {store} Store",
         "aboutItem": "About this item",
         "color": "Color",
@@ -328,6 +332,10 @@
         "share": "Share",
         "moreOptions": "More options",
         "chat": "Chat",
+        "callSeller": "Call Seller",
+        "contactSeller": "Contact Seller",
+        "scheduleVisit": "Schedule Visit",
+        "contactAgent": "Contact Agent",
         "detailsTitle": "Details",
         "descriptionTitle": "Description",
         "showMore": "More",
@@ -336,7 +344,57 @@
         "buyerProtectionBadgeSubtitle": "Inspect and test before payment. Secure delivery.",
         "buyerProtectionInline": "Protected",
         "noDescription": "No description provided",
-        "noDetails": "No details available"
+        "noSpecifications": "No specifications available",
+        "features": "Features",
+        "noDetails": "No details available",
+        "verifiedSeller": "Verified Seller",
+        "close": "Close",
+        "meetup": "Meetup",
+        "pickupOnly": "Pickup Only",
+        "shipping": "Shipping",
+        "lowStock": "Only {count} left",
+        "delivery2to3Days": "Delivery in 2-3 days",
+        "pickupAvailable": "Pickup available",
+        "shippingAvailable": "Shipping available",
+        "locationTBA": "Location TBA",
+        "testDrive": "Test Drive",
+        "decreaseQuantity": "Decrease quantity",
+        "increaseQuantity": "Increase quantity",
+        "total": "Total",
+        "buyerProtection": "Buyer Protection",
+        "verifiedListing": "Verified Listing",
+        "easyReturns": "Easy Returns",
+        "orders": "orders",
+        "message": "Message",
+        "keyFeatures": "Key Features",
+        "fullSpecifications": "Full Specifications"
+    },
+    "ProductModal": {
+        "viewFullPage": "View Full Page",
+        "viewProfile": "View Profile",
+        "closeModal": "Close"
+    },
+    "Drawers": {
+        "quickView": "Quick View",
+        "viewFullListing": "View Full Listing",
+        "viewFullProfile": "View Full Profile",
+        "chatSeller": "Chat",
+        "addToCart": "Add to Cart",
+        "messages": "Messages",
+        "viewAllMessages": "View All Messages"
+    },
+    "AccountDrawer": {
+        "title": "Account",
+        "orders": "Orders",
+        "messagesLink": "Messages",
+        "myListings": "My Listings",
+        "wishlist": "Wishlist",
+        "settings": "Settings",
+        "recentListings": "Recent Listings",
+        "pending": "{count} pending",
+        "unread": "{count} unread",
+        "active": "{count} active",
+        "items": "{count} items"
     },
     "Freshness": {
         "justNow": "Just now",
@@ -531,6 +589,7 @@
         "checkoutError": "An error occurred during checkout. Please try again.",
         "payNow": "Pay Now",
         "buyerProtection": "Buyer Protection",
+        "buyerProtectionDescription": "Secure payment and protection for order issues",
         "changeAddress": "Change address",
         "selectShippingAddress": "Select shipping address",
         "addNewAddress": "Add new address",
@@ -1830,6 +1889,171 @@
             "internal": "Internal server error. Please try again."
         }
     },
+    "DemoSell6": {
+        "nav": {
+            "back": "Back",
+            "title": "Create listing",
+            "step": "Step {step} of {total} • {label}"
+        },
+        "steps": {
+            "category": "Category",
+            "attributes": "Details",
+            "photos": "Photos",
+            "details": "Details",
+            "pricing": "Pricing",
+            "review": "Review"
+        },
+        "actions": {
+            "back": "Back",
+            "next": "Continue",
+            "publish": "Publish listing"
+        },
+        "category": {
+            "title": "Choose a category",
+            "subtitle": "Pick the best match so buyers can find you",
+            "label": "Category",
+            "placeholder": "Select category",
+            "drawerTitle": "Select category",
+            "drawerSubtitle": "Tap a category to continue",
+            "searchPlaceholder": "Search categories...",
+            "noResults": "No categories found",
+            "searchResults": "Search results",
+            "clearSearch": "Clear search",
+            "clearSelection": "Clear selection",
+            "backLevel": "Back to previous level",
+            "selectSubcategory": "Select subcategory",
+            "ready": "Category selected",
+            "select": "Select",
+            "chooseLeaf": "Choose a final category"
+        },
+        "attributes": {
+            "title": "Category details",
+            "subtitle": "Add key specs buyers expect in this category",
+            "empty": "No extra details for this category. Continue to the next step.",
+            "placeholder": "Enter {field}",
+            "selectHint": "Choose one option"
+        },
+        "photos": {
+            "title": "Add photos",
+            "subtitle": "Great photos sell faster",
+            "helper": "Add at least one photo. The first one is the cover.",
+            "count": "{count}/12 photos",
+            "add": "Add",
+            "photoAlt": "Photo {index}",
+            "cover": "Cover",
+            "remove": "Remove photo",
+            "tip": "Use natural light • Show multiple angles • Include any flaws"
+        },
+        "details": {
+            "title": "Item details",
+            "subtitle": "Clear details build buyer confidence",
+            "titleLabel": "Title",
+            "titleCount": "{count}/80",
+            "titlePlaceholder": "e.g. iPhone 15 Pro Max 256GB",
+            "conditionLabel": "Condition",
+            "descriptionLabel": "Description",
+            "descriptionCount": "{count}/4000",
+            "descriptionPlaceholder": "Brand, size, color, flaws, and why you are selling...",
+            "quantityLabel": "Quantity",
+            "decrease": "Decrease quantity",
+            "increase": "Increase quantity"
+        },
+        "pricing": {
+            "title": "Price & delivery",
+            "subtitle": "Set a competitive price and delivery options",
+            "listingTypeLabel": "Listing type",
+            "listingTypeFixed": "Fixed price",
+            "listingTypeAuction": "Auction",
+            "listingTypeFixedHint": "Buyers can purchase instantly at your price",
+            "listingTypeAuctionHint": "Bidding creates urgency and can increase price",
+            "startingBidLabel": "Starting bid",
+            "startingBidPlaceholder": "e.g. 49",
+            "auctionDurationLabel": "Auction duration",
+            "auctionDurationPlaceholder": "Select duration",
+            "auctionDurationTitle": "Auction duration",
+            "auctionDurationSubtitle": "How long should bidding stay open?",
+            "auctionDuration3": "3 days",
+            "auctionDuration5": "5 days",
+            "auctionDuration7": "7 days",
+            "priceLabel": "Price",
+            "pricePlaceholder": "e.g. 129",
+            "compareAtLabel": "Original price",
+            "compareHint": "Optional, helps show savings",
+            "comparePlaceholder": "e.g. 199",
+            "shippingLabel": "Delivery",
+            "freeShippingHint": "Free shipping increases conversion",
+            "freeShipping": "Free shipping",
+            "freeShippingDesc": "You cover the delivery cost",
+            "shippingPlaceholder": "Shipping cost",
+            "cityLabel": "Location",
+            "cityPlaceholder": "Select city",
+            "offersLabel": "Offers",
+            "offersHint": "Allow buyers to send offers",
+            "acceptOffers": "Accept offers",
+            "acceptOffersDesc": "Let buyers negotiate",
+            "currencyTitle": "Currency",
+            "currencySubtitle": "Choose the listing currency",
+            "cityTitle": "Choose city",
+            "citySubtitle": "Select your pickup location",
+            "priceHint": "Buyer sees {value} {currency}"
+        },
+        "review": {
+            "title": "Review & publish",
+            "subtitle": "Double-check your listing before publishing",
+            "missingTitle": "Add a clear title",
+            "missingCategory": "Select a category",
+            "missingCondition": "Select a condition",
+            "price": "Price",
+            "missingPrice": "Add a price",
+            "location": "Location",
+            "missingCity": "Select a city",
+            "previewNote": "Your listing will appear with your selected photos, price, and shipping info."
+        },
+        "validation": {
+            "categoryRequired": "Select a category",
+            "photosRequired": "Add at least 1 photo",
+            "titleMin": "Title must be at least 5 characters",
+            "titleMax": "Title is too long",
+            "conditionRequired": "Select a condition",
+            "priceRequired": "Enter a price",
+            "priceInvalid": "Enter a valid price",
+            "cityRequired": "Select a city",
+            "attributeRequired": "{field} is required"
+        },
+        "categories": {
+            "fashion": "Fashion",
+            "electronics": "Electronics",
+            "home": "Home & Garden",
+            "sports": "Sports",
+            "toys": "Toys & Games",
+            "books": "Books & Media",
+            "auto": "Auto Parts",
+            "beauty": "Beauty",
+            "other": "Other"
+        },
+        "conditions": {
+            "newWithTags": {
+                "label": "New with tags",
+                "desc": "Brand new, original tags attached"
+            },
+            "newWithoutTags": {
+                "label": "New without tags",
+                "desc": "Unused, no original packaging"
+            },
+            "likeNew": {
+                "label": "Like new",
+                "desc": "Used once or twice, pristine condition"
+            },
+            "good": {
+                "label": "Good",
+                "desc": "Light wear, fully functional"
+            },
+            "fair": {
+                "label": "Fair",
+                "desc": "Visible wear, works perfectly"
+            }
+        }
+    },
     "SellingProducts": {
         "deleteSuccess": "Product deleted successfully!",
         "deleteError": "Failed to delete",
@@ -1865,5 +2089,32 @@
         "newPricePlaceholder": "e.g. 49.99",
         "removeDiscountButton": "Remove discount",
         "saveButton": "Save"
+    },
+    "seller": {
+        "payouts": {
+            "title": "Payout Settings",
+            "status": "Payout Status",
+            "active": "Active",
+            "incomplete": "Incomplete",
+            "notStarted": "Not Started",
+            "statusComplete": "Your account is set up to receive payments. Funds from sales will be deposited to your bank account.",
+            "statusIncomplete": "Complete your setup to start receiving payments from sales.",
+            "statusNotStarted": "Set up your payout account to receive money from your sales.",
+            "detailsSubmitted": "Account details submitted",
+            "chargesEnabled": "Can receive payments",
+            "payoutsEnabled": "Can receive payouts",
+            "startSetup": "Set Up Payouts",
+            "continueSetup": "Continue Setup",
+            "openDashboard": "View Dashboard",
+            "howItWorks": "How Payouts Work",
+            "howItWorksDesc1": "When a buyer purchases your product, the payment is processed securely through Stripe.",
+            "howItWorksDesc2": "We take a 10% platform fee to cover payment processing and platform services. The remaining 90% goes directly to your account.",
+            "howItWorksDesc3": "Payouts are typically deposited to your bank account within 2-7 business days, depending on your country."
+        }
+    },
+    "Sell": {
+        "payoutSetupRequired": "Set up payouts first",
+        "payoutSetupDescription": "Before you can list items for sale, you need to connect your bank account to receive payments.",
+        "setupPayouts": "Set up payouts"
     }
 }

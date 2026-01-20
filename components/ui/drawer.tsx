@@ -5,10 +5,29 @@ import { Drawer as DrawerPrimitive } from "vaul"
 
 import { cn } from "@/lib/utils"
 
+/**
+ * Drawer Root - wraps vaul's Drawer.Root with sensible defaults
+ * @see https://vaul.emilkowal.ski/api
+ * 
+ * Key props:
+ * - shouldScaleBackground: scales background when drawer opens (iOS-style)
+ * - direction: "bottom" | "top" | "left" | "right"
+ * - dismissible: whether drawer can be dismissed by dragging down
+ * - handleOnly: if true, only the handle can be used to drag
+ * - modal: if false, allows interaction with background content
+ * - snapPoints: array of height values to snap to (e.g., ["148px", "355px", 1])
+ */
 function Drawer({
+  shouldScaleBackground = false,
   ...props
 }: React.ComponentProps<typeof DrawerPrimitive.Root>) {
-  return <DrawerPrimitive.Root data-slot="drawer" {...props} />
+  return (
+    <DrawerPrimitive.Root
+      data-slot="drawer"
+      shouldScaleBackground={shouldScaleBackground}
+      {...props}
+    />
+  )
 }
 
 function DrawerTrigger({
@@ -73,6 +92,27 @@ function DrawerDescription({
   )
 }
 
+/**
+ * Drag handle for drawer - the official Vaul component
+ * Place this inside DrawerContent for a proper iOS-style drag affordance
+ */
+function DrawerHandle({
+  className,
+  ...props
+}: React.ComponentProps<typeof DrawerPrimitive.Handle>) {
+  return (
+    <DrawerPrimitive.Handle
+      data-slot="drawer-handle"
+      className={cn(
+        "mx-auto mt-4 h-1.5 w-12 shrink-0 cursor-grab rounded-full bg-muted-foreground/30 active:cursor-grabbing",
+        "transition-colors hover:bg-muted-foreground/50",
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
 function containsDrawerA11yNode(
   children: React.ReactNode,
   targetTypes: Array<React.ElementType>
@@ -94,11 +134,17 @@ function containsDrawerA11yNode(
   return false
 }
 
+interface DrawerContentProps extends React.ComponentProps<typeof DrawerPrimitive.Content> {
+  /** Show the drag handle for bottom/top drawers - default true for bottom */
+  showHandle?: boolean
+}
+
 function DrawerContent({
   className,
   children,
+  showHandle,
   ...props
-}: React.ComponentProps<typeof DrawerPrimitive.Content>) {
+}: DrawerContentProps) {
   const ariaLabel = (props as { "aria-label"?: string | undefined })["aria-label"]
   const ariaDescribedBy = (props as { "aria-describedby"?: string | undefined })["aria-describedby"]
 
@@ -112,15 +158,27 @@ function DrawerContent({
         data-slot="drawer-content"
         aria-describedby={hasDescription ? ariaDescribedBy : undefined}
         className={cn(
-          "group/drawer-content bg-background fixed z-50 flex h-auto flex-col",
-          // Bottom drawer - 90dvh max for mobile, proper safe area
-          "data-[vaul-drawer-direction=bottom]:inset-x-0 data-[vaul-drawer-direction=bottom]:bottom-0 data-[vaul-drawer-direction=bottom]:mt-24 data-[vaul-drawer-direction=bottom]:max-h-dialog data-[vaul-drawer-direction=bottom]:rounded-t-2xl data-[vaul-drawer-direction=bottom]:border-t data-[vaul-drawer-direction=bottom]:border-border",
+          "group/drawer-content bg-background fixed z-50 flex h-auto flex-col outline-none",
+          // Bottom drawer - standard mobile drawer (most common)
+          "data-[vaul-drawer-direction=bottom]:inset-x-0 data-[vaul-drawer-direction=bottom]:bottom-0",
+          "data-[vaul-drawer-direction=bottom]:mt-24 data-[vaul-drawer-direction=bottom]:max-h-[96dvh]",
+          "data-[vaul-drawer-direction=bottom]:rounded-t-2xl",
+          "data-[vaul-drawer-direction=bottom]:border-t data-[vaul-drawer-direction=bottom]:border-border",
           // Top drawer
-          "data-[vaul-drawer-direction=top]:inset-x-0 data-[vaul-drawer-direction=top]:top-0 data-[vaul-drawer-direction=top]:mb-24 data-[vaul-drawer-direction=top]:max-h-dialog data-[vaul-drawer-direction=top]:rounded-b-2xl data-[vaul-drawer-direction=top]:border-b data-[vaul-drawer-direction=top]:border-border",
-          // Right drawer
-          "data-[vaul-drawer-direction=right]:inset-y-0 data-[vaul-drawer-direction=right]:right-0 data-[vaul-drawer-direction=right]:w-full data-[vaul-drawer-direction=right]:max-w-(--container-modal) data-[vaul-drawer-direction=right]:border-l data-[vaul-drawer-direction=right]:border-border",
-          // Left drawer
-          "data-[vaul-drawer-direction=left]:inset-y-0 data-[vaul-drawer-direction=left]:left-0 data-[vaul-drawer-direction=left]:w-full data-[vaul-drawer-direction=left]:max-w-(--container-modal) data-[vaul-drawer-direction=left]:border-r data-[vaul-drawer-direction=left]:border-border",
+          "data-[vaul-drawer-direction=top]:inset-x-0 data-[vaul-drawer-direction=top]:top-0",
+          "data-[vaul-drawer-direction=top]:mb-24 data-[vaul-drawer-direction=top]:max-h-[96dvh]",
+          "data-[vaul-drawer-direction=top]:rounded-b-2xl",
+          "data-[vaul-drawer-direction=top]:border-b data-[vaul-drawer-direction=top]:border-border",
+          // Right drawer (side panel)
+          "data-[vaul-drawer-direction=right]:inset-y-0 data-[vaul-drawer-direction=right]:right-0",
+          "data-[vaul-drawer-direction=right]:h-full data-[vaul-drawer-direction=right]:w-3/4 data-[vaul-drawer-direction=right]:max-w-sm",
+          "data-[vaul-drawer-direction=right]:rounded-l-2xl",
+          "data-[vaul-drawer-direction=right]:border-l data-[vaul-drawer-direction=right]:border-border",
+          // Left drawer (side panel)
+          "data-[vaul-drawer-direction=left]:inset-y-0 data-[vaul-drawer-direction=left]:left-0",
+          "data-[vaul-drawer-direction=left]:h-full data-[vaul-drawer-direction=left]:w-3/4 data-[vaul-drawer-direction=left]:max-w-sm",
+          "data-[vaul-drawer-direction=left]:rounded-r-2xl",
+          "data-[vaul-drawer-direction=left]:border-r data-[vaul-drawer-direction=left]:border-border",
           className
         )}
         {...props}
@@ -128,8 +186,23 @@ function DrawerContent({
         {!hasTitle && (
           <DrawerTitle className="sr-only">{ariaLabel ?? "Dialog"}</DrawerTitle>
         )}
-        {/* Drag handle - visible on bottom drawer */}
-        <div className="bg-muted mx-auto mt-4 hidden h-2 w-25 shrink-0 rounded-full group-data-[vaul-drawer-direction=bottom]/drawer-content:block" />
+        {/* Show handle by default for bottom drawers, can be overridden */}
+        {showHandle !== false && (
+          <div
+            data-slot="drawer-handle-container"
+            className={cn(
+              "hidden",
+              "group-data-[vaul-drawer-direction=bottom]/drawer-content:flex",
+              "group-data-[vaul-drawer-direction=top]/drawer-content:flex",
+              "justify-center pt-4 pb-2"
+            )}
+          >
+            <div
+              aria-hidden="true"
+              className="h-1.5 w-12 shrink-0 cursor-grab rounded-full bg-muted-foreground/30 transition-colors active:cursor-grabbing hover:bg-muted-foreground/50"
+            />
+          </div>
+        )}
         {children}
       </DrawerPrimitive.Content>
     </DrawerPortal>
@@ -141,7 +214,7 @@ function DrawerHeader({ className, ...props }: React.ComponentProps<"div">) {
     <div
       data-slot="drawer-header"
       className={cn(
-        "flex flex-col gap-1.5 p-4",
+        "flex flex-col gap-1.5 px-4 py-3",
         "group-data-[vaul-drawer-direction=bottom]/drawer-content:text-center",
         "group-data-[vaul-drawer-direction=top]/drawer-content:text-center",
         className
@@ -156,7 +229,28 @@ function DrawerFooter({ className, ...props }: React.ComponentProps<"div">) {
     <div
       data-slot="drawer-footer"
       className={cn(
-        "mt-auto flex flex-col gap-2 px-4 pt-3 pb-safe-max",
+        "mt-auto flex flex-col gap-2 px-4 py-4",
+        // Safe area padding for bottom drawers on iOS
+        "group-data-[vaul-drawer-direction=bottom]/drawer-content:pb-[max(1rem,env(safe-area-inset-bottom))]",
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
+/**
+ * Scrollable body container for drawer content.
+ * Use this for content that may overflow - it includes proper scroll handling
+ * and the data-vaul-no-drag attribute to prevent scroll interference with drag.
+ */
+function DrawerBody({ className, ...props }: React.ComponentProps<"div">) {
+  return (
+    <div
+      data-slot="drawer-body"
+      data-vaul-no-drag
+      className={cn(
+        "flex-1 overflow-y-auto overscroll-contain px-4",
         className
       )}
       {...props}
@@ -172,7 +266,9 @@ export {
   DrawerClose,
   DrawerContent,
   DrawerHeader,
+  DrawerBody,
   DrawerFooter,
   DrawerTitle,
   DrawerDescription,
+  DrawerHandle,
 }

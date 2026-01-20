@@ -4,8 +4,6 @@ import { memo, useState } from "react";
 import {
   Truck,
   MapPin,
-  Globe,
-  GlobeHemisphereEast,
   House,
   Package,
   CaretRight,
@@ -28,7 +26,8 @@ import { BULGARIAN_CITIES } from "@/lib/bulgarian-cities";
 import { SelectDrawer } from "../ui/select-drawer";
 
 // ============================================================================
-// Shipping Regions Configuration
+// Shipping Regions Configuration - V1: Bulgaria only (Cash on Delivery)
+// International shipping will be added when card payments are implemented
 // ============================================================================
 const SHIPPING_REGIONS = [
   {
@@ -36,67 +35,19 @@ const SHIPPING_REGIONS = [
     field: "shipsToBulgaria" as const,
     label: "Bulgaria",
     labelBg: "България",
-    description: "Ship within Bulgaria",
-    descriptionBg: "Доставка в България",
+    description: "Cash on delivery via courier",
+    descriptionBg: "Наложен платеж с куриер",
     icon: House,
     deliveryTime: "1-3 days",
     deliveryTimeBg: "1-3 дни",
-    carriers: ["Speedy", "Econt", "Bulgarian Posts"],
-  },
-  {
-    id: "uk",
-    field: "shipsToUK" as const,
-    label: "United Kingdom",
-    labelBg: "Великобритания",
-    description: "Ship to UK",
-    descriptionBg: "Доставка до Великобритания",
-    icon: GlobeHemisphereEast,
-    deliveryTime: "5-12 days",
-    deliveryTimeBg: "5-12 дни",
-    carriers: ["Royal Mail", "DPD UK"],
-  },
-  {
-    id: "europe",
-    field: "shipsToEurope" as const,
-    label: "Europe",
-    labelBg: "Европа",
-    description: "Ship to EU countries",
-    descriptionBg: "Доставка в ЕС",
-    icon: GlobeHemisphereEast,
-    deliveryTime: "5-10 days",
-    deliveryTimeBg: "5-10 дни",
-    carriers: ["DHL", "DPD", "GLS"],
-  },
-  {
-    id: "usa",
-    field: "shipsToUSA" as const,
-    label: "USA",
-    labelBg: "САЩ",
-    description: "Ship to United States",
-    descriptionBg: "Доставка до САЩ",
-    icon: Globe,
-    deliveryTime: "10-20 days",
-    deliveryTimeBg: "10-20 дни",
-    carriers: ["USPS", "UPS", "FedEx"],
-  },
-  {
-    id: "worldwide",
-    field: "shipsToWorldwide" as const,
-    label: "Worldwide",
-    labelBg: "По света",
-    description: "International shipping",
-    descriptionBg: "Международна доставка",
-    icon: Globe,
-    deliveryTime: "10-21 days",
-    deliveryTimeBg: "10-21 дни",
-    carriers: ["DHL Express", "FedEx"],
+    carriers: ["Speedy", "Econt"],
   },
   {
     id: "pickup",
     field: "pickupOnly" as const,
     label: "Local Pickup",
     labelBg: "Лично вземане",
-    description: "Buyer picks up",
+    description: "Buyer picks up in person",
     descriptionBg: "Купувачът взема лично",
     icon: MapPin,
     deliveryTime: "Arranged",
@@ -291,12 +242,8 @@ export function ShippingField({ className, compact = false }: ShippingFieldProps
   const [isCityDrawerOpen, setIsCityDrawerOpen] = useState(false);
   const [isProcessingDrawerOpen, setIsProcessingDrawerOpen] = useState(false);
 
-  // Watch shipping values
+  // Watch shipping values - V1: Bulgaria only
   const shipsToBulgaria = watch("shipsToBulgaria");
-  const shipsToUK = watch("shipsToUK");
-  const shipsToEurope = watch("shipsToEurope");
-  const shipsToUSA = watch("shipsToUSA");
-  const shipsToWorldwide = watch("shipsToWorldwide");
   const pickupOnly = watch("pickupOnly");
   const freeShipping = watch("freeShipping");
   const shippingPrice = watch("shippingPrice");
@@ -313,12 +260,9 @@ export function ShippingField({ className, compact = false }: ShippingFieldProps
     }
     : undefined;
 
+  // V1: Only Bulgaria + Local Pickup
   const regionValues = {
     shipsToBulgaria,
-    shipsToUK,
-    shipsToEurope,
-    shipsToUSA,
-    shipsToWorldwide,
     pickupOnly,
   };
 
@@ -368,20 +312,39 @@ export function ShippingField({ className, compact = false }: ShippingFieldProps
               <button
                 type="button"
                 onClick={() => setIsCityDrawerOpen(true)}
-                className="relative w-full flex items-center h-12 px-4 rounded-md border border-border bg-background hover:border-primary/30 transition-all text-left shadow-xs"
+                className={cn(
+                  "w-full flex items-center gap-3.5 min-h-16 px-4 py-3 rounded-xl border text-left transition-all",
+                  "active:scale-[0.98]",
+                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30",
+                  sellerCity 
+                    ? "border-primary/30 bg-primary/5" 
+                    : "border-border bg-card hover:bg-muted/30"
+                )}
               >
-                <div className="flex items-center gap-2 flex-1 min-w-0">
-                  <span className="text-2xs font-bold uppercase tracking-wider text-muted-foreground shrink-0">
-                    {isBg ? "Вашият град:" : "Your City:"} *
-                  </span>
+                <div className={cn(
+                  "size-11 rounded-xl flex items-center justify-center shrink-0 transition-colors",
+                  sellerCity ? "bg-primary/15 text-primary" : "bg-muted text-muted-foreground"
+                )}>
+                  <MapPin className="size-5" weight={sellerCity ? "fill" : "regular"} />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                      {isBg ? "Локация" : "Ships from"}
+                    </span>
+                    <span className="text-destructive text-xs">*</span>
+                  </div>
                   <span className={cn(
-                    "text-sm font-semibold truncate",
+                    "text-base font-semibold truncate block mt-0.5",
                     sellerCity ? "text-foreground" : "text-muted-foreground/50"
                   )}>
-                    {selectedCityLabel || (isBg ? "Изберете град..." : "Select city...")}
+                    {selectedCityLabel || (isBg ? "Изберете град..." : "Select your city")}
                   </span>
                 </div>
-                <CaretRight className="size-4 text-muted-foreground/50 shrink-0 ml-2" weight="bold" />
+                <CaretRight className={cn(
+                  "size-5 shrink-0 transition-colors",
+                  sellerCity ? "text-primary/50" : "text-muted-foreground/30"
+                )} weight="bold" />
               </button>
               <SelectDrawer
                 isOpen={isCityDrawerOpen}
@@ -424,43 +387,78 @@ export function ShippingField({ className, compact = false }: ShippingFieldProps
         </div>
       )}
 
-      {/* Shipping Price */}
-      <div className="space-y-3">
-        <div className="flex items-center justify-between">
-          <Label className="text-sm font-semibold">
-            {isBg ? "Цена за доставка" : "Shipping Price"}
-          </Label>
-          <div className="flex items-center gap-2">
-            <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
-              {isBg ? "Безплатна" : "Free"}
-            </span>
-            <Switch
-              checked={freeShipping}
-              onCheckedChange={(checked) => {
-                setValue("freeShipping", checked);
-                if (checked) {
-                  setValue("shippingPrice", "0");
-                }
-              }}
-            />
-          </div>
+      {/* Free Shipping Toggle - Premium pill design */}
+      <button
+        type="button"
+        onClick={() => {
+          setValue("freeShipping", !freeShipping);
+          if (!freeShipping) {
+            setValue("shippingPrice", "0");
+          }
+        }}
+        className={cn(
+          "w-full flex items-center gap-3.5 p-4 rounded-xl border transition-all",
+          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30",
+          "active:scale-[0.98]",
+          freeShipping 
+            ? "border-primary/40 bg-primary/5" 
+            : "border-border bg-card hover:bg-muted/30"
+        )}
+      >
+        <div className={cn(
+          "size-11 rounded-xl flex items-center justify-center shrink-0 transition-all",
+          freeShipping 
+            ? "bg-primary/15 text-primary" 
+            : "bg-muted text-muted-foreground"
+        )}>
+          <Truck className="size-5" weight={freeShipping ? "fill" : "regular"} />
         </div>
-        {!freeShipping && (
-          <div className="relative">
-            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground font-bold">
-              лв
-            </span>
+        <div className="flex-1 text-left min-w-0">
+          <span className="text-base font-semibold block">
+            {isBg ? "Безплатна доставка" : "Free shipping"}
+          </span>
+          <span className="text-sm text-muted-foreground line-clamp-1">
+            {isBg
+              ? "Привлечете повече купувачи"
+              : "Attract more buyers with free delivery"}
+          </span>
+        </div>
+        <Switch 
+          checked={freeShipping} 
+          onCheckedChange={(checked) => {
+            setValue("freeShipping", checked);
+            if (checked) {
+              setValue("shippingPrice", "0");
+            }
+          }}
+          className="shrink-0 scale-110"
+        />
+      </button>
+
+      {/* Shipping Price (if not free) */}
+      {!freeShipping && (
+        <div className="space-y-2">
+          <div className="flex items-center justify-between px-1">
+            <label className="text-sm font-bold text-foreground">
+              {isBg ? "Цена за доставка" : "Shipping price"}
+            </label>
+          </div>
+          <div className={cn(
+            "flex items-center h-14 px-4 rounded-xl border bg-card transition-all",
+            "focus-within:ring-2 focus-within:ring-primary/20 focus-within:border-primary/50"
+          )}>
+            <span className="text-base font-bold text-muted-foreground mr-2">лв</span>
             <Input
               type="text"
               inputMode="decimal"
               placeholder="0.00"
               value={shippingPrice || ""}
               onChange={(e) => setValue("shippingPrice", e.target.value)}
-              className="pl-10 h-12 rounded-md border-border font-bold text-base"
+              className="border-none bg-transparent h-full text-lg font-semibold p-0 focus-visible:ring-0 flex-1"
             />
           </div>
-        )}
-      </div>
+        </div>
+      )}
 
       {/* Package Dimensions */}
       <div className="space-y-3">

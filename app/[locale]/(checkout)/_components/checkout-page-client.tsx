@@ -10,7 +10,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sh
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { Separator } from "@/components/ui/separator"
 import { Badge } from "@/components/ui/badge"
-import { createCheckoutSession } from "../_actions/checkout"
+import { createCheckoutSession, getCheckoutFeeQuote } from "../_actions/checkout"
 import { createClient } from "@/lib/supabase/client"
 import {
   ShoppingCart,
@@ -69,6 +69,7 @@ export default function CheckoutPageClient() {
   const t = useTranslations("CheckoutPage")
 
   const [isProcessing, setIsProcessing] = useState(false)
+  const [buyerProtectionFee, setBuyerProtectionFee] = useState(0)
   const [shippingMethod, setShippingMethod] = useState<ShippingMethod>("standard")
   const [mounted, setMounted] = useState(false)
   const [savedAddresses, setSavedAddresses] = useState<SavedAddress[]>([])
@@ -133,6 +134,25 @@ export default function CheckoutPageClient() {
   }, [fetchSavedAddresses])
 
   useEffect(() => {
+    let cancelled = false
+
+    if (items.length === 0) {
+      setBuyerProtectionFee(0)
+      return
+    }
+
+    ;(async () => {
+      const quote = await getCheckoutFeeQuote(items)
+      if (cancelled) return
+      setBuyerProtectionFee(quote.ok ? quote.buyerProtectionFee : 0)
+    })()
+
+    return () => {
+      cancelled = true
+    }
+  }, [items])
+
+  useEffect(() => {
     const handleScroll = () => {
       const scrollTop = window.scrollY
       const windowHeight = window.innerHeight
@@ -147,7 +167,7 @@ export default function CheckoutPageClient() {
 
   const shippingCost = SHIPPING_COSTS[shippingMethod]
   const tax = subtotal * 0.1
-  const total = subtotal + shippingCost + tax
+  const total = subtotal + shippingCost + tax + buyerProtectionFee
 
   const formatPrice = useCallback(
     (price: number) => {
@@ -342,6 +362,10 @@ export default function CheckoutPageClient() {
             <span className="text-muted-foreground">{t("tax", { percent: 10 })}</span>
             <span>{formatPrice(tax)}</span>
           </div>
+          <div className="flex justify-between text-sm">
+            <span className="text-muted-foreground">{t("buyerProtection")}</span>
+            <span>{formatPrice(buyerProtectionFee)}</span>
+          </div>
           <div className="flex justify-between pt-1.5 border-t border-border mt-1.5">
             <span className="font-semibold">{t("total")}</span>
             <span className="font-bold text-base">{formatPrice(total)}</span>
@@ -479,11 +503,15 @@ export default function CheckoutPageClient() {
                       <span className="text-muted-foreground">{t("shipping")}</span>
                       <span className={cn("font-medium", shippingCost === 0 && "text-success")}>{shippingCost === 0 ? t("free") : formatPrice(shippingCost)}</span>
                     </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">{t("tax", { percent: 10 })}</span>
-                      <span className="font-medium">{formatPrice(tax)}</span>
-                    </div>
-                  </div>
+	                  <div className="flex justify-between">
+	                    <span className="text-muted-foreground">{t("tax", { percent: 10 })}</span>
+	                    <span className="font-medium">{formatPrice(tax)}</span>
+	                  </div>
+	                  <div className="flex justify-between">
+	                    <span className="text-muted-foreground">{t("buyerProtection")}</span>
+	                    <span className="font-medium">{formatPrice(buyerProtectionFee)}</span>
+	                  </div>
+	                </div>
 
                   <Separator />
 

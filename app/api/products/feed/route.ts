@@ -65,8 +65,14 @@ export async function GET(request: NextRequest) {
         boost_expires_at,
         created_at, 
         slug,
+        attributes,
         seller:profiles(id,username,avatar_url,tier),
-        categories!inner(id,slug,name,name_bg,icon)
+        categories!inner(
+          id,slug,name,name_bg,icon,
+          parent:categories!parent_id(id,slug,name,name_bg,icon,
+            parent:categories!parent_id(id,slug,name,name_bg,icon)
+          )
+        )
       `, { count: 'exact' })
 
     // Apply Category Filter

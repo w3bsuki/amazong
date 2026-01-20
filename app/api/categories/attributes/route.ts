@@ -125,7 +125,7 @@ async function getCategoryAttributesCached(params: {
 
   // Fetch attributes for requested category scope
   const CATEGORY_ATTRIBUTES_SELECT =
-    "id, category_id, name, name_bg, attribute_type, options, options_bg, placeholder, placeholder_bg, is_filterable, is_required, sort_order, validation_rules, created_at" as const
+    "id, category_id, name, name_bg, attribute_type, options, options_bg, placeholder, placeholder_bg, is_filterable, is_required, sort_order, validation_rules, created_at, attribute_key, is_hero_spec, hero_priority, unit_suffix" as const
 
   let query = supabase.from("category_attributes").select(CATEGORY_ATTRIBUTES_SELECT)
 

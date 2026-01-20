@@ -2,8 +2,16 @@
 
 import { stripe } from "@/lib/stripe"
 import { createClient } from "@/lib/supabase/server"
+import { getFeesForSeller, calculateTransactionFees } from "@/lib/stripe-connect"
+import { getTranslations } from "next-intl/server"
 import type { CartItem } from "@/components/providers/cart-context"
 import type Stripe from "stripe"
+
+type SellerInfo = {
+  sellerId: string
+  stripeAccountId: string | null
+  chargesEnabled: boolean
+}
 
 export async function createCheckoutSession(items: CartItem[], locale?: "en" | "bg") {
   if (!process.env.STRIPE_SECRET_KEY) {
@@ -28,62 +36,158 @@ export async function createCheckoutSession(items: CartItem[], locale?: "en" | "
     const supabase = await createClient()
     let userId: string | undefined
 
-    if (supabase) {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser()
-      userId = user?.id
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
+    userId = user?.id
 
-      if (userId && items.length > 0) {
-        const productIds = items.map((item) => item.id).filter(Boolean)
+    const productIds = items.map((item) => item.id).filter(Boolean)
 
-        if (productIds.length > 0) {
-          const { data: products } = await supabase
-            .from("products")
-            .select("id, seller_id, title")
-            .in("id", productIds)
-            .eq("seller_id", userId)
+    // Get products with seller info
+    const { data: products, error: productsError } = await supabase
+      .from("products")
+      .select("id, seller_id, title")
+      .in("id", productIds)
 
-          if (products && products.length > 0) {
-            const ownProductTitles = products.map((p) => p.title).join(", ")
-            return { error: `You cannot purchase your own products: ${ownProductTitles}` }
-          }
-        }
+    if (productsError || !products) {
+      return { error: "Failed to load product information" }
+    }
+
+    // Check for own products
+    if (userId) {
+      const ownProducts = products.filter((p) => p.seller_id === userId)
+      if (ownProducts.length > 0) {
+        const ownProductTitles = ownProducts.map((p) => p.title).join(", ")
+        return { error: `You cannot purchase your own products: ${ownProductTitles}` }
       }
     }
 
+    // Get unique seller IDs
+    const sellerIds = [...new Set(products.map((p) => p.seller_id).filter(Boolean))]
+
+    // Get seller payout status for Connect payments
+    const { data: payoutStatuses } = await supabase
+      .from("seller_payout_status")
+      .select("seller_id, stripe_connect_account_id, charges_enabled")
+      .in("seller_id", sellerIds)
+
+    const sellerMap = new Map<string, SellerInfo>()
+    for (const sellerId of sellerIds) {
+      const status = payoutStatuses?.find((s) => s.seller_id === sellerId)
+      sellerMap.set(sellerId, {
+        sellerId,
+        stripeAccountId: status?.stripe_connect_account_id ?? null,
+        chargesEnabled: status?.charges_enabled ?? false,
+      })
+    }
+
+    // Group items by seller
+    const itemsBySeller = new Map<string, CartItem[]>()
+    for (const item of items) {
+      const product = products.find((p) => p.id === item.id)
+      if (product?.seller_id) {
+        const existing = itemsBySeller.get(product.seller_id) || []
+        existing.push(item)
+        itemsBySeller.set(product.seller_id, existing)
+      }
+    }
+
+    // For now, we only support single-seller checkout with Connect
+    // Multi-seller checkout would require separate payment intents
+    if (itemsBySeller.size > 1) {
+      return { error: "Please checkout items from one seller at a time. Multi-seller checkout coming soon." }
+    }
+
+    if (itemsBySeller.size === 0) {
+      return { error: "No products found for checkout" }
+    }
+
+    const entries = Array.from(itemsBySeller.entries())
+    const [sellerId, sellerItems] = entries[0]!
+    const sellerInfo = sellerMap.get(sellerId)
+
     const baseUrl = (process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXT_PUBLIC_URL || "http://localhost:3000").replace(/\/$/, "")
     const safeLocale = locale === "bg" ? "bg" : "en"
+    const t = await getTranslations({ locale: safeLocale, namespace: "CheckoutPage" })
 
-    const sessionParams: Stripe.Checkout.SessionCreateParams = {
-      payment_method_types: ["card"],
-      line_items: items.map((item) => ({
+    // Calculate fees based on seller's subscription tier
+    const fees = await getFeesForSeller(sellerId)
+    
+    // Calculate total item price for fee calculation
+    const itemTotalEur = sellerItems.reduce((sum: number, item: CartItem) => sum + item.price * item.quantity, 0)
+    
+    // Calculate transaction fees using the new buyer protection model
+    const feeBreakdown = calculateTransactionFees(itemTotalEur, fees)
+    
+    // Convert buyer protection fee to cents for Stripe
+    const buyerProtectionFeeCents = Math.round(feeBreakdown.buyerProtectionFee * 100)
+    
+    // Calculate total application fee (seller fee + buyer protection)
+    const applicationFeeCents = Math.round(feeBreakdown.platformRevenue * 100)
+
+    const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = sellerItems.map((item: CartItem) => ({
+      price_data: {
+        currency: "eur",
+        product_data: {
+          name: item.title,
+          images: [
+            item.image.startsWith("http")
+              ? item.image
+              : `${baseUrl}${item.image}`,
+          ],
+          metadata: {
+            product_id: item.id,
+            ...(item.variantId ? { variant_id: item.variantId } : {}),
+          },
+        },
+        unit_amount: Math.round(item.price * 100),
+      },
+      quantity: item.quantity,
+    }))
+    
+    // Add buyer protection fee as a separate line item (visible to buyer)
+    if (buyerProtectionFeeCents > 0) {
+      lineItems.push({
         price_data: {
           currency: "eur",
           product_data: {
-            name: item.title,
-            images: [
-              item.image.startsWith("http")
-                ? item.image
-                : `${process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXT_PUBLIC_URL || "http://localhost:3000"}${item.image}`,
-            ],
-            metadata: {
-              product_id: item.id,
-              ...(item.variantId ? { variant_id: item.variantId } : {}),
-            },
+            name: t("buyerProtection"),
+            description: t("buyerProtectionDescription"),
           },
-          unit_amount: Math.round(item.price * 100),
+          unit_amount: buyerProtectionFeeCents,
         },
-        quantity: item.quantity,
-      })),
+        quantity: 1,
+      })
+    }
+
+    const sessionParams: Stripe.Checkout.SessionCreateParams = {
+      payment_method_types: ["card"],
+      line_items: lineItems,
       mode: "payment",
       ...(userId ? { client_reference_id: userId } : {}),
       metadata: {
         user_id: userId || "guest",
+        seller_id: sellerId,
         items_json: JSON.stringify(items.map((i) => ({ id: i.id, variantId: i.variantId ?? null, qty: i.quantity, price: i.price }))),
+        buyer_protection_fee: feeBreakdown.buyerProtectionFee.toFixed(2),
+        seller_fee: feeBreakdown.sellerFee.toFixed(2),
       },
       success_url: `${baseUrl}/${safeLocale}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${baseUrl}/${safeLocale}/cart`,
+    }
+
+    // Add Connect destination charges if seller has completed onboarding
+    if (sellerInfo?.stripeAccountId && sellerInfo.chargesEnabled) {
+      sessionParams.payment_intent_data = {
+        application_fee_amount: applicationFeeCents,
+        transfer_data: {
+          destination: sellerInfo.stripeAccountId,
+        },
+      }
+    } else {
+      // Seller hasn't set up payouts - funds go to platform
+      // TODO: Consider blocking checkout or warning buyer
+      console.warn(`Seller ${sellerId} has not completed payout setup. Funds will go to platform.`)
     }
 
     const session = await stripe.checkout.sessions.create(sessionParams)
@@ -106,6 +210,69 @@ export async function createCheckoutSession(items: CartItem[], locale?: "en" | "
       }
     }
     return { error: "Failed to create checkout session. Please try again." }
+  }
+}
+
+export type CheckoutFeeQuoteResult =
+  | { ok: true; buyerProtectionFee: number }
+  | { ok: false }
+
+export async function getCheckoutFeeQuote(items: CartItem[]): Promise<CheckoutFeeQuoteResult> {
+  // Validate items before proceeding (client may call this as items change)
+  if (!items || items.length === 0) {
+    return { ok: false }
+  }
+
+  for (const item of items) {
+    if (!item.id || !item.title || typeof item.price !== "number" || item.price <= 0) {
+      return { ok: false }
+    }
+  }
+
+  try {
+    const supabase = await createClient()
+    let userId: string | undefined
+
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
+    userId = user?.id
+
+    const productIds = items.map((item) => item.id).filter(Boolean)
+
+    const { data: products, error: productsError } = await supabase
+      .from("products")
+      .select("id, seller_id, title")
+      .in("id", productIds)
+
+    if (productsError || !products) {
+      return { ok: false }
+    }
+
+    if (userId) {
+      const ownsAny = products.some((p) => p.seller_id === userId)
+      if (ownsAny) {
+        return { ok: false }
+      }
+    }
+
+    const sellerIds = [...new Set(products.map((p) => p.seller_id).filter(Boolean))]
+    if (sellerIds.length !== 1) {
+      return { ok: false }
+    }
+
+    const sellerId = sellerIds[0]
+    if (!sellerId) {
+      return { ok: false }
+    }
+
+    const fees = await getFeesForSeller(sellerId)
+    const itemTotalEur = items.reduce((sum: number, item: CartItem) => sum + item.price * item.quantity, 0)
+    const feeBreakdown = calculateTransactionFees(itemTotalEur, fees)
+
+    return { ok: true, buyerProtectionFee: feeBreakdown.buyerProtectionFee }
+  } catch {
+    return { ok: false }
   }
 }
 

@@ -317,3 +317,52 @@ export async function fetchProductFavoritesCount(productId: string): Promise<num
   return count ?? 0
 }
 
+/**
+ * Hero spec returned from database RPC.
+ * Up to 4 key attributes shown prominently on product pages.
+ */
+export interface HeroSpec {
+  label: string
+  value: string
+  priority: number
+  unit_suffix: string | null
+}
+
+/**
+ * Fetch hero specs for a product from the database.
+ * Uses the `get_hero_specs` RPC which:
+ * 1. Looks up the product's category
+ * 2. Gets hero spec definitions from category_attributes (walking up hierarchy)
+ * 3. Extracts values from the product's attributes JSONB
+ * 
+ * CACHED: Uses 'use cache' with product and category tags.
+ */
+export async function fetchProductHeroSpecs(
+  productId: string,
+  locale: string = 'en'
+): Promise<HeroSpec[]> {
+  'use cache'
+  cacheLife('products')
+  
+  if (!isUuid(productId)) return []
+  
+  cacheTag(`product:${productId}`, `product-hero-specs:${productId}`)
+  
+  const supabase = createStaticClient()
+  
+  const { data, error } = await supabase
+    .rpc('get_hero_specs', {
+      p_product_id: productId,
+      p_locale: locale
+    })
+  
+  if (error || !Array.isArray(data)) return []
+  
+  return data.map(spec => ({
+    label: String(spec.label ?? ''),
+    value: String(spec.value ?? ''),
+    priority: Number(spec.priority ?? 0),
+    unit_suffix: spec.unit_suffix ? String(spec.unit_suffix) : null
+  }))
+}
+

@@ -38,7 +38,7 @@ export function MobileSellerCard({
   const hasRating = rating != null && rating > 0;
 
   return (
-    <div className="px-4 py-4 border-b border-border">
+    <div className="px-4 py-4">
       <div className="flex items-center gap-3">
         {/* Avatar - treido-mock: w-10 h-10 */}
         <Link href={href}>

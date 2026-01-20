@@ -30,7 +30,7 @@ import {
   ArrowRight,
 } from "@phosphor-icons/react"
 import { ProductCard } from "@/components/shared/product/product-card"
-import { FollowSellerButton } from "@/components/seller/follow-seller-button"
+import { FollowSellerButton, type FollowSellerActions } from "@/components/seller/follow-seller-button"
 import { SellerVerificationBadge } from "@/components/shared/product/seller-verification-badge"
 import { safeAvatarSrc } from "@/lib/utils"
 
@@ -112,6 +112,8 @@ interface PublicProfileClientProps {
   isOwnProfile: boolean
   isFollowing: boolean
   locale: string
+  /** Actions for follow/unfollow - passed from server component */
+  followActions?: FollowSellerActions
 }
 
 function StarRating({ rating, count, size = "sm" }: { rating: number; count: number; size?: "sm" | "md" }) {
@@ -179,6 +181,7 @@ export function PublicProfileClient({
   buyerReviewCount,
   isOwnProfile,
   isFollowing,
+  followActions,
 }: PublicProfileClientProps) {
   const locale = useLocale()
   const tProfile = useTranslations("ProfilePage")
@@ -278,11 +281,12 @@ export function PublicProfileClient({
                     {tProfile("editProfile")}
                   </Button>
                 </Link>
-              ) : profile.is_seller ? (
+              ) : profile.is_seller && followActions ? (
                 <>
                   <FollowSellerButton
                     sellerId={profile.id}
                     initialIsFollowing={isFollowing}
+                    actions={followActions}
                     locale={locale}
                     size="sm"
                   />

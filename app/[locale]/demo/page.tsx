@@ -11,6 +11,16 @@ export default function DemoIndexPage() {
         
         <div className="space-y-3">
           <Link
+            href="/demo/sell"
+            className="block p-4 rounded-md border-2 border-primary/30 bg-primary/5 hover:bg-primary/10 transition-colors"
+          >
+            <div className="font-semibold text-primary">Mobile Sell Form</div>
+            <div className="text-sm text-muted-foreground">
+              Best-practice mobile sell form with step-by-step wizard
+            </div>
+          </Link>
+          
+          <Link
             href="/demo/product-desktop"
             className="block p-4 rounded-md border border-border bg-card hover:bg-muted transition-colors"
           >

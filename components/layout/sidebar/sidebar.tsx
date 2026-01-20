@@ -1,3 +1,19 @@
+/**
+ * @fileoverview Sidebar primitives (shadcn/ui-based)
+ * 
+ * This is THE ONLY sidebar primitive file in the codebase.
+ * Based on shadcn/ui sidebar with project-specific customizations.
+ * 
+ * ARCHITECTURE:
+ * - components/layout/sidebar/sidebar.tsx   ← YOU ARE HERE (primitives)
+ * - components/layout/sidebar/sidebar-menu-v2.tsx ← Composed mobile menu (uses Drawer, not these primitives)
+ * 
+ * DO NOT:
+ * - Create duplicate sidebar primitives in components/ui/
+ * - Import sidebar from any other location
+ * 
+ * All app sidebars (account, admin, business) compose from these primitives.
+ */
 "use client"
 
 import * as React from "react"

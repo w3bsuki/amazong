@@ -1,9 +1,9 @@
 'use server'
 
 import { z } from 'zod'
-import { headers } from 'next/headers'
 import { stripe } from '@/lib/stripe'
 import { createClient } from '@/lib/supabase/server'
+import { buildLocaleUrl } from '@/lib/stripe-locale'
 
 const NOT_AUTHENTICATED = 'Not authenticated'
 
@@ -55,16 +55,16 @@ export async function createPaymentMethodSetupSession(input?: { locale?: "en" | 
     throw new Error('Stripe customer creation failed')
   }
 
-  const headersList = await headers()
-  const origin = headersList.get('origin') || process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
   const locale = input?.locale === "bg" ? "bg" : "en"
+  const successUrl = buildLocaleUrl("account/payments", locale, "setup=success")
+  const cancelUrl = buildLocaleUrl("account/payments", locale, "setup=canceled")
 
   const session = await stripe.checkout.sessions.create({
     customer: stripeCustomerId,
     mode: 'setup',
     payment_method_types: ['card'],
-    success_url: `${origin}/${locale}/account/payments?setup=success`,
-    cancel_url: `${origin}/${locale}/account/payments?setup=canceled`,
+    success_url: successUrl,
+    cancel_url: cancelUrl,
     metadata: {
       user_id: user.id,
     },

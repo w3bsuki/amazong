@@ -48,15 +48,15 @@ interface AdminTask {
 
 const COLUMNS = [
   { id: "todo", label: "To Do", color: "bg-muted" },
-  { id: "in_progress", label: "In Progress", color: "bg-blue-500/10" },
-  { id: "review", label: "Review", color: "bg-purple-500/10" },
-  { id: "done", label: "Done", color: "bg-green-500/10" },
+  { id: "in_progress", label: "In Progress", color: "bg-admin-in-progress-bg" },
+  { id: "review", label: "Review", color: "bg-admin-review-bg" },
+  { id: "done", label: "Done", color: "bg-admin-published-bg" },
 ]
 
 const PRIORITY_COLORS: Record<string, string> = {
-  urgent: "bg-red-500 text-white",
-  high: "bg-orange-500/80 text-white",
-  medium: "bg-yellow-500/80 text-black",
+  urgent: "bg-admin-urgent text-white",
+  high: "bg-admin-high text-white",
+  medium: "bg-admin-medium text-foreground",
   low: "bg-muted text-muted-foreground",
 }
 

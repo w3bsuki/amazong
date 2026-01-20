@@ -22,46 +22,15 @@ import {
 } from "@phosphor-icons/react"
 import { AppBreadcrumb, breadcrumbPresets } from "@/components/navigation/app-breadcrumb"
 import { useTranslations, useLocale } from "next-intl"
-import { useEffect, useState } from "react"
-import { cn } from "@/lib/utils"
-import { MobileCartHeader } from "./mobile-cart-header"
 import { useRecentlyViewed } from "@/hooks/use-recently-viewed"
 import { ProductCard } from "@/components/shared/product/product-card"
-
-/**
- * Hook to hide the parent SiteHeader on mobile for this page.
- * Cart page uses its own MobileCartHeader, similar to product pages.
- */
-function useHideParentHeaderOnMobile() {
-  useEffect(() => {
-    // Find the parent header element (SiteHeader is first header in layout)
-    const header = document.querySelector('header[data-hydrated]') as HTMLElement | null
-    if (!header) return
-
-    // Add class to hide on mobile
-    header.classList.add('lg:flex', 'hidden')
-    
-    return () => {
-      // Restore visibility when leaving the page
-      header.classList.remove('hidden')
-    }
-  }, [])
-}
 
 export default function CartPageClient() {
   const { items, removeFromCart, updateQuantity, subtotal, totalItems } = useCart()
   const router = useRouter()
   const t = useTranslations("CartPage")
   const locale = useLocale()
-  const [mounted, setMounted] = useState(false)
   const { products: recentlyViewed, isLoaded: recentlyViewedLoaded } = useRecentlyViewed()
-
-  // Hide the parent SiteHeader on mobile (cart has its own MobileCartHeader)
-  useHideParentHeaderOnMobile()
-
-  useEffect(() => {
-    setMounted(true)
-  }, [])
 
   const handleCheckout = () => {
     if (items.length === 0) return
@@ -73,26 +42,12 @@ export default function CartPageClient() {
       style: "currency",
       currency: "EUR",
       minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
     }).format(price)
   }
 
   const getProductUrl = (item: (typeof items)[0]) => {
     if (!item.username) return "#"
-    return `/${item.username}/${item.slug || item.id}`
-  }
-
-  if (!mounted) {
-    return (
-      <div className="min-h-(--page-section-min-h) flex items-center justify-center">
-        <div className="flex flex-col items-center gap-3" role="status" aria-live="polite">
-          <SpinnerGap className="size-8 animate-spin text-brand" />
-          <p className="text-sm text-muted-foreground">
-            {locale === "bg" ? "Зареждане на количката..." : "Loading cart..."}
-          </p>
-        </div>
-      </div>
-    )
+    return `/${item.username}/${item.slug ?? item.id}`
   }
 
   if (items.length === 0) {
@@ -102,9 +57,6 @@ export default function CartPageClient() {
 
     return (
       <div className="bg-secondary/30 min-h-(--page-section-min-h-lg) pt-14 lg:pt-0">
-        {/* Mobile Header - only visible on mobile */}
-        <MobileCartHeader />
-        
         <div className="container py-6">
           <AppBreadcrumb items={breadcrumbPresets(locale).cart} className="hidden lg:flex" />
 
@@ -161,9 +113,6 @@ export default function CartPageClient() {
 
   return (
     <div className="bg-secondary/30 min-h-screen pb-32 pt-14 lg:pb-12 lg:pt-0">
-      {/* Mobile Header - only visible on mobile */}
-      <MobileCartHeader />
-      
       <div className="container py-4 lg:py-6">
         <AppBreadcrumb items={breadcrumbPresets(locale).cart} className="hidden lg:flex" />
 

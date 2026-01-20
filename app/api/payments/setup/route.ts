@@ -1,6 +1,7 @@
 import { createRouteHandlerClient } from "@/lib/supabase/server"
 import { stripe } from "@/lib/stripe"
 import { NextResponse } from "next/server"
+import { buildLocaleUrl, inferLocaleFromRequest } from "@/lib/stripe-locale"
 
 export async function POST(request: import("next/server").NextRequest) {
     try {
@@ -42,16 +43,15 @@ export async function POST(request: import("next/server").NextRequest) {
                 return applyCookies(NextResponse.json({ error: "Stripe customer creation failed" }, { status: 500 }))
             }
 
-        // Get origin for redirect URLs
-        const origin = request.headers.get("origin") || "http://localhost:3000"
+        const locale = inferLocaleFromRequest(request)
 
         // Create a SetupIntent for adding a payment method
         const session = await stripe.checkout.sessions.create({
             customer: stripeCustomerId,
             mode: 'setup',
             payment_method_types: ['card'],
-            success_url: `${origin}/account/payments?setup=success`,
-            cancel_url: `${origin}/account/payments?setup=canceled`,
+            success_url: buildLocaleUrl("account/payments", locale, "setup=success"),
+            cancel_url: buildLocaleUrl("account/payments", locale, "setup=canceled"),
             metadata: {
                 user_id: user.id
             }

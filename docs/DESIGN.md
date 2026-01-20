@@ -59,6 +59,24 @@ Our globals.css defines rich semantic colors. **USE THEM.**
 | `--color-verified` | `text-verified`, `bg-verified` | Verified badges |
 | `--color-shipping-free` | `text-shipping-free`, `bg-shipping-free` | Free shipping |
 
+### Mobile Surfaces (Product Pages)
+| Token | Class | Use |
+|-------|-------|-----|
+| `--surface-page` | `bg-surface-page` | Page canvas (visible gray) |
+| `--surface-card` | `bg-surface-card` | Cards (pure white for contrast) |
+| `--surface-elevated` | `bg-surface-elevated` | Elevated elements (bottom bar) |
+| `--surface-gallery` | `bg-surface-gallery` | Gallery background (near black) |
+| `--surface-overlay` | `bg-surface-overlay` | Image counter overlays |
+| `--surface-floating` | `bg-surface-floating` | Floating buttons on gallery |
+
+### Mobile Text (Product Pages)
+| Token | Class | Use |
+|-------|-------|-----|
+| `--text-strong` | `text-text-strong` | Titles, prices, strong emphasis |
+| `--text-default` | `text-text-default` | Body text |
+| `--text-muted-alt` | `text-text-muted-alt` | Secondary text, meta info |
+| `--text-subtle` | `text-text-subtle` | Timestamps, hints |
+
 ### Pricing
 | Token | Class | Use |
 |-------|-------|-----|

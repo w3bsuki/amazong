@@ -4,7 +4,7 @@ import { setRequestLocale } from "next-intl/server"
 import { connection } from "next/server"
 
 import { createStaticClient } from "@/lib/supabase/server"
-import { fetchProductByUsernameAndSlug, fetchSellerProducts, fetchProductFavoritesCount, type ProductPageProduct } from "@/lib/data/product-page"
+import { fetchProductByUsernameAndSlug, fetchSellerProducts, fetchProductFavoritesCount, fetchProductHeroSpecs, type ProductPageProduct, type HeroSpec } from "@/lib/data/product-page"
 import { fetchProductReviews, type ProductReview } from "@/lib/data/product-reviews"
 import { submitReview } from "@/app/actions/reviews"
 
@@ -169,10 +169,11 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
   const rootCategory = parentCategory?.parent_id ? parentCategory : parentCategory ?? category
 
-  // Fetch related products and favorites count in parallel
-  const [relatedProductsRaw, favoritesCount] = await Promise.all([
+  // Fetch related products, favorites count, and hero specs in parallel
+  const [relatedProductsRaw, favoritesCount, heroSpecs] = await Promise.all([
     fetchSellerProducts(seller.id, productData.id, 10),
     fetchProductFavoritesCount(productData.id),
+    fetchProductHeroSpecs(productData.id, locale),
   ])
 
   const reviews: ProductReview[] = isUuid(productData.id)
@@ -188,6 +189,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
     category,
     parentCategory,
     relatedProductsRaw: relatedProductsRaw || [],
+    heroSpecs, // Pass database-driven hero specs
   })
 
   return (

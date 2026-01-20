@@ -63,8 +63,8 @@ const CATEGORIES = [
 ]
 
 const STATUS_COLORS: Record<string, string> = {
-  draft: "bg-yellow-500/10 text-yellow-600",
-  published: "bg-green-500/10 text-green-600",
+  draft: "bg-admin-draft-bg text-admin-draft",
+  published: "bg-admin-published-bg text-admin-published",
   archived: "bg-muted text-muted-foreground",
 }
 
@@ -461,13 +461,13 @@ function DocEditor({
             <SelectContent>
               <SelectItem value="draft">
                 <div className="flex items-center gap-2">
-                  <div className="size-2 rounded-full bg-yellow-500" />
+                  <div className="size-2 rounded-full bg-admin-draft" />
                   Draft
                 </div>
               </SelectItem>
               <SelectItem value="published">
                 <div className="flex items-center gap-2">
-                  <div className="size-2 rounded-full bg-green-500" />
+                  <div className="size-2 rounded-full bg-admin-published" />
                   Published
                 </div>
               </SelectItem>

@@ -2,6 +2,8 @@
     "Header": {
         "helloSignIn": "Здравей, влез",
         "hello": "Здравей",
+            "listingType": "Тип обява",
+            "auctionDuration": "Продължителност",
         "signOut": "Изход",
         "accountAndLists": "Акаунт и списъци",
         "signIn": "Влез",
@@ -85,6 +87,7 @@
     },
     "Navigation": {
         "deliverTo": "Доставка до",
+            "auctionDurationRequired": "Моля, изберете продължителност на търга",
         "searchPlaceholder": "Търсене в продукти, марки и още...",
         "clearSearch": "Изчисти търсенето",
         "yourOrders": "Моите",
@@ -210,6 +213,7 @@
         "ratingLabel": "Оценка {rating} от {max} звезди",
         "deal": "Оферта",
         "discount": "{percent}% отстъпка",
+        "savePercent": "Спести {percent}%",
         "visitStore": "Посети {store} магазина",
         "aboutItem": "За този артикул",
         "color": "Цвят",
@@ -328,6 +332,10 @@
         "share": "Сподели",
         "moreOptions": "Още опции",
         "chat": "Чат",
+        "callSeller": "Обади се",
+        "contactSeller": "Свържи се",
+        "scheduleVisit": "Уговори оглед",
+        "contactAgent": "Свържи се с агент",
         "detailsTitle": "Детайли",
         "descriptionTitle": "Описание",
         "showMore": "Още",
@@ -336,7 +344,57 @@
         "buyerProtectionBadgeSubtitle": "Преглед и тест преди плащане. Сигурна доставка.",
         "buyerProtectionInline": "Защитен",
         "noDescription": "Няма описание",
-        "noDetails": "Няма детайли"
+        "noSpecifications": "Няма спецификации",
+        "features": "Характеристики",
+        "noDetails": "Няма детайли",
+        "verifiedSeller": "Потвърден продавач",
+        "close": "Затвори",
+        "meetup": "Среща",
+        "pickupOnly": "Само на място",
+        "shipping": "Доставка",
+        "lowStock": "Остават {count} бр.",
+        "delivery2to3Days": "Доставка за 2-3 дни",
+        "pickupAvailable": "Може да се вземе на място",
+        "shippingAvailable": "Доставка възможна",
+        "locationTBA": "Местоположение предстои",
+        "testDrive": "Тест драйв",
+        "decreaseQuantity": "Намали количество",
+        "increaseQuantity": "Увеличи количество",
+        "total": "Общо",
+        "buyerProtection": "Защита на купувача",
+        "verifiedListing": "Потвърдена обява",
+        "easyReturns": "Лесно връщане",
+        "orders": "поръчки",
+        "message": "Съобщение",
+        "keyFeatures": "Ключови характеристики",
+        "fullSpecifications": "Всички спецификации"
+    },
+    "ProductModal": {
+        "viewFullPage": "Виж пълната страница",
+        "viewProfile": "Виж профила",
+        "closeModal": "Затвори"
+    },
+    "Drawers": {
+        "quickView": "Бърз преглед",
+        "viewFullListing": "Виж цялата обява",
+        "viewFullProfile": "Виж целия профил",
+        "chatSeller": "Чат",
+        "addToCart": "Добави в кошницата",
+        "messages": "Съобщения",
+        "viewAllMessages": "Виж всички съобщения"
+    },
+    "AccountDrawer": {
+        "title": "Акаунт",
+        "orders": "Поръчки",
+        "messagesLink": "Съобщения",
+        "myListings": "Моите обяви",
+        "wishlist": "Любими",
+        "settings": "Настройки",
+        "recentListings": "Скорошни обяви",
+        "pending": "{count} чакащи",
+        "unread": "{count} непрочетени",
+        "active": "{count} активни",
+        "items": "{count} артикула"
     },
     "Freshness": {
         "justNow": "Току-що",
@@ -531,6 +589,7 @@
         "checkoutError": "Възникна грешка при плащането. Моля, опитайте отново.",
         "payNow": "Плати сега",
         "buyerProtection": "Защита на купувача",
+        "buyerProtectionDescription": "Сигурно плащане и защита при проблеми с поръчката",
         "changeAddress": "Смени адреса",
         "selectShippingAddress": "Избери адрес за доставка",
         "addNewAddress": "Добави нов адрес",
@@ -1841,6 +1900,171 @@
             "internal": "Вътрешна грешка. Моля, опитайте отново."
         }
     },
+    "DemoSell6": {
+        "nav": {
+            "back": "Назад",
+            "title": "Създай обява",
+            "step": "Стъпка {step} от {total} • {label}"
+        },
+        "steps": {
+            "category": "Категория",
+            "attributes": "Детайли",
+            "photos": "Снимки",
+            "details": "Детайли",
+            "pricing": "Цена",
+            "review": "Преглед"
+        },
+        "actions": {
+            "back": "Назад",
+            "next": "Продължи",
+            "publish": "Публикувай обявата"
+        },
+        "category": {
+            "title": "Избери категория",
+            "subtitle": "Правилната категория помага на купувачите да ви открият",
+            "label": "Категория",
+            "placeholder": "Избери категория",
+            "drawerTitle": "Избери категория",
+            "drawerSubtitle": "Докосни категория, за да продължиш",
+            "searchPlaceholder": "Търси категории...",
+            "noResults": "Няма намерени категории",
+            "searchResults": "Резултати",
+            "clearSearch": "Изчисти търсенето",
+            "clearSelection": "Изчисти избора",
+            "backLevel": "Назад към предходното ниво",
+            "selectSubcategory": "Избери подкатегория",
+            "ready": "Категорията е избрана",
+            "select": "Избери",
+            "chooseLeaf": "Избери крайна категория"
+        },
+        "attributes": {
+            "title": "Детайли по категория",
+            "subtitle": "Добави спецификации, които купувачите очакват",
+            "empty": "Няма допълнителни детайли за тази категория. Продължи нататък.",
+            "placeholder": "Въведи {field}",
+            "selectHint": "Избери една опция"
+        },
+        "photos": {
+            "title": "Добави снимки",
+            "subtitle": "Добрите снимки продават по-бързо",
+            "helper": "Добави поне една снимка. Първата е корица.",
+            "count": "{count}/12 снимки",
+            "add": "Добави",
+            "photoAlt": "Снимка {index}",
+            "cover": "Корица",
+            "remove": "Премахни снимка",
+            "tip": "Естествена светлина • Покажи няколко ъгъла • Покажи дефектите"
+        },
+        "details": {
+            "title": "Детайли за продукта",
+            "subtitle": "Ясните детайли вдъхват доверие",
+            "titleLabel": "Заглавие",
+            "titleCount": "{count}/80",
+            "titlePlaceholder": "напр. iPhone 15 Pro Max 256GB",
+            "conditionLabel": "Състояние",
+            "descriptionLabel": "Описание",
+            "descriptionCount": "{count}/4000",
+            "descriptionPlaceholder": "Марка, размер, цвят, дефекти и причина за продажба...",
+            "quantityLabel": "Количество",
+            "decrease": "Намали количеството",
+            "increase": "Увеличи количеството"
+        },
+        "pricing": {
+            "title": "Цена и доставка",
+            "subtitle": "Задай добра цена и опции за доставка",
+            "listingTypeLabel": "Тип обява",
+            "listingTypeFixed": "Фиксирана цена",
+            "listingTypeAuction": "Търг",
+            "listingTypeFixedHint": "Купувачите купуват веднага на зададената цена",
+            "listingTypeAuctionHint": "Наддаването създава спешност и може да повиши цената",
+            "startingBidLabel": "Начална цена",
+            "startingBidPlaceholder": "напр. 49",
+            "auctionDurationLabel": "Продължителност на търга",
+            "auctionDurationPlaceholder": "Избери продължителност",
+            "auctionDurationTitle": "Продължителност на търга",
+            "auctionDurationSubtitle": "Колко време да бъде отворено наддаването?",
+            "auctionDuration3": "3 дни",
+            "auctionDuration5": "5 дни",
+            "auctionDuration7": "7 дни",
+            "priceLabel": "Цена",
+            "pricePlaceholder": "напр. 129",
+            "compareAtLabel": "Оригинална цена",
+            "compareHint": "По избор, показва спестяване",
+            "comparePlaceholder": "напр. 199",
+            "shippingLabel": "Доставка",
+            "freeShippingHint": "Безплатната доставка повишава конверсията",
+            "freeShipping": "Безплатна доставка",
+            "freeShippingDesc": "Ти поемаш разхода за доставка",
+            "shippingPlaceholder": "Цена за доставка",
+            "cityLabel": "Локация",
+            "cityPlaceholder": "Избери град",
+            "offersLabel": "Оферти",
+            "offersHint": "Позволи на купувачите да предлагат",
+            "acceptOffers": "Приемай оферти",
+            "acceptOffersDesc": "Позволи преговори",
+            "currencyTitle": "Валута",
+            "currencySubtitle": "Избери валутата на обявата",
+            "cityTitle": "Избери град",
+            "citySubtitle": "Избери място за предаване",
+            "priceHint": "Купувачът вижда {value} {currency}"
+        },
+        "review": {
+            "title": "Преглед и публикуване",
+            "subtitle": "Провери обявата преди публикуване",
+            "missingTitle": "Добави ясно заглавие",
+            "missingCategory": "Избери категория",
+            "missingCondition": "Избери състояние",
+            "price": "Цена",
+            "missingPrice": "Добави цена",
+            "location": "Локация",
+            "missingCity": "Избери град",
+            "previewNote": "Обявата ще се показва със снимките, цената и данните за доставка."
+        },
+        "validation": {
+            "categoryRequired": "Избери категория",
+            "photosRequired": "Добави поне 1 снимка",
+            "titleMin": "Заглавието трябва да е поне 5 символа",
+            "titleMax": "Заглавието е твърде дълго",
+            "conditionRequired": "Избери състояние",
+            "priceRequired": "Въведи цена",
+            "priceInvalid": "Въведи валидна цена",
+            "cityRequired": "Избери град",
+            "attributeRequired": "{field} е задължително"
+        },
+        "categories": {
+            "fashion": "Мода",
+            "electronics": "Електроника",
+            "home": "Дом и градина",
+            "sports": "Спорт",
+            "toys": "Играчки и игри",
+            "books": "Книги и медия",
+            "auto": "Авточасти",
+            "beauty": "Красота",
+            "other": "Друго"
+        },
+        "conditions": {
+            "newWithTags": {
+                "label": "Ново с етикет",
+                "desc": "Чисто ново, с оригинален етикет"
+            },
+            "newWithoutTags": {
+                "label": "Ново без етикет",
+                "desc": "Неизползвано, без опаковка"
+            },
+            "likeNew": {
+                "label": "Като ново",
+                "desc": "Ползвано веднъж, перфектно състояние"
+            },
+            "good": {
+                "label": "Добро",
+                "desc": "Леки следи от употреба, работи отлично"
+            },
+            "fair": {
+                "label": "Задоволително",
+                "desc": "Видими следи, работи перфектно"
+            }
+        }
+    },
     "SellingProducts": {
         "deleteSuccess": "Продуктът е изтрит успешно!",
         "deleteError": "Грешка при изтриване",
@@ -1876,5 +2100,32 @@
         "newPricePlaceholder": "напр. 49.99",
         "removeDiscountButton": "Премахни отстъпка",
         "saveButton": "Запази"
+    },
+    "seller": {
+        "payouts": {
+            "title": "Настройки за плащания",
+            "status": "Статус на плащанията",
+            "active": "Активен",
+            "incomplete": "Незавършен",
+            "notStarted": "Не е започнат",
+            "statusComplete": "Вашият акаунт е настроен да получава плащания. Средствата от продажби ще бъдат депозирани в банковата ви сметка.",
+            "statusIncomplete": "Завършете настройката, за да започнете да получавате плащания от продажби.",
+            "statusNotStarted": "Настройте акаунта си за плащания, за да получавате пари от вашите продажби.",
+            "detailsSubmitted": "Данните за акаунта са изпратени",
+            "chargesEnabled": "Може да получава плащания",
+            "payoutsEnabled": "Може да получава изплащания",
+            "startSetup": "Настройка на плащанията",
+            "continueSetup": "Продължи настройката",
+            "openDashboard": "Виж таблото",
+            "howItWorks": "Как работят плащанията",
+            "howItWorksDesc1": "Когато купувач закупи вашия продукт, плащането се обработва сигурно чрез Stripe.",
+            "howItWorksDesc2": "Ние взимаме 10% комисионна за платформата, за да покрием обработката на плащания и услугите на платформата. Останалите 90% отиват директно във вашия акаунт.",
+            "howItWorksDesc3": "Изплащанията обикновено се депозират в банковата ви сметка в рамките на 2-7 работни дни, в зависимост от държавата ви."
+        }
+    },
+    "Sell": {
+        "payoutSetupRequired": "Настройте плащанията първо",
+        "payoutSetupDescription": "Преди да можете да публикувате обяви за продажба, трябва да свържете банковата си сметка за получаване на плащания.",
+        "setupPayouts": "Настройка на плащанията"
     }
 }

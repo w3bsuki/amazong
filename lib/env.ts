@@ -44,6 +44,10 @@ export function getStripeSubscriptionWebhookSecret(): string {
   return getRequiredEnvVar('STRIPE_SUBSCRIPTION_WEBHOOK_SECRET')
 }
 
+export function getStripeConnectWebhookSecret(): string {
+  return getRequiredEnvVar('STRIPE_CONNECT_WEBHOOK_SECRET')
+}
+
 export function getStripePublishableKey(): string {
   return getRequiredEnvVar('NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY')
 }

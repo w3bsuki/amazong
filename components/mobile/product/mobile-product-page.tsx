@@ -1,32 +1,27 @@
 "use client";
 
-import { useMemo, useRef, useState } from "react";
-import { useTranslations } from "next-intl";
-import { Heart } from "lucide-react";
+import { useMemo, useRef, useState, useEffect } from "react";
+import { useTranslations, useLocale } from "next-intl";
+import Image from "next/image";
+import { MapPin, Clock, Eye, Heart, ChevronRight, Star, CheckCircle2, Shield, Truck } from "lucide-react";
+import { formatDistanceToNow } from "date-fns";
+import { bg, enUS } from "date-fns/locale";
 import { cn } from "@/lib/utils";
-import { MobileGalleryOlx } from "./mobile-gallery-olx";
-import { MobilePriceLocationBlock } from "./mobile-price-location-block";
-import { MobileUrgencyBanner } from "./mobile-urgency-banner";
-import { MobileTrustBlock } from "./mobile-trust-block";
-import { MobileBottomBar } from "./mobile-bottom-bar";
-import { MobileBuyerProtectionBadge } from "./mobile-buyer-protection-badge";
-import { MobileSellerCard } from "./mobile-seller-card";
-import { MobileDetailsSection } from "./mobile-details-section";
-import { MobileDescriptionSection } from "./mobile-description-section";
+import { Link } from "@/i18n/routing";
+// V2 Mobile Components
+import { MobileGalleryV2 } from "./mobile-gallery-v2";
+import { MobileBottomBarV2 } from "./mobile-bottom-bar-v2";
+// Shared Components
+import { MobileSpecsTabs } from "./mobile-specs-tabs";
 import { MobileAccordions } from "@/components/shared/product/mobile-accordions";
 import { SellerProductsGrid } from "@/components/shared/product/seller-products-grid";
 import { CustomerReviewsHybrid } from "@/components/shared/product/customer-reviews-hybrid";
 import { RecentlyViewedTracker } from "@/components/shared/product/recently-viewed-tracker";
 import { CategoryBadge } from "@/components/shared/product/category-badge";
+import { HeroSpecs } from "@/components/shared/product/hero-specs";
 import { useWishlist } from "@/components/providers/wishlist-context";
-
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { safeAvatarSrc } from "@/lib/utils";
 
 import type { ProductPageViewModel } from "@/lib/view-models/product-page";
 import type { Database } from "@/lib/supabase/database.types";
@@ -141,11 +136,6 @@ export function MobileProductPage(props: MobileProductPageProps) {
   const stockQuantity = safeVariants.length > 0
     ? (selectedVariant?.stock ?? null)
     : baseStockQuantity;
-  const stockStatus = stockQuantity === 0 
-    ? "out_of_stock" 
-    : (stockQuantity && stockQuantity <= 5) 
-      ? "low_stock" 
-      : "in_stock";
 
   const basePrice = Number(product.price ?? 0);
   const displayPrice = safeVariants.length > 0
@@ -154,10 +144,26 @@ export function MobileProductPage(props: MobileProductPageProps) {
 
   const displayRegularPrice = product.list_price != null ? Number(product.list_price) : null;
 
-  return (
-    <div className="min-h-screen bg-background pb-24 lg:hidden">
-      {/* Header rendered by layout - product variant auto-detected */}
+  // Get locale for date formatting
+  const currentLocale = useLocale();
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
 
+  // Time ago formatting
+  const timeAgo = mounted && product.created_at
+    ? formatDistanceToNow(new Date(product.created_at), {
+        addSuffix: false,
+        locale: currentLocale === "bg" ? bg : enUS,
+      })
+    : null;
+
+  // Product tags (from viewModel or hardcoded based on conditions)
+  const productTags: string[] = [];
+  if (!product.pickup_only) productTags.push(t("freeShipping"));
+  if (sellerInfo.verified) productTags.push(t("topRated"));
+
+  return (
+    <div className="min-h-dvh bg-surface-page pb-28 lg:hidden">
       {/* JSON-LD Structured Data for SEO */}
       <script
         type="application/ld+json"
@@ -180,127 +186,160 @@ export function MobileProductPage(props: MobileProductPageProps) {
         }}
       />
 
-      {/* ===== ABOVE THE FOLD ===== */}
-      
-      {/* Gallery - Edge to Edge - OLX Style with Category Badge Overlay */}
-      <div className="w-full">
-        <MobileGalleryOlx 
-          images={viewModel.galleryImages}
-          overlayBadge={
-            (category || rootCategory) ? (
-              <CategoryBadge
-                locale={locale}
-                category={rootCategory || category}
-                subcategory={category && rootCategory && category.slug !== rootCategory.slug ? category : null}
-                size="sm"
-                className="bg-background/90 backdrop-blur-sm shadow-sm"
-              />
-            ) : undefined
-          }
-        />
-      </div>
-
-      {/* Title + Heart Row (treido-mock style - same line) */}
-      <div className="flex items-start justify-between gap-4 px-4 pt-3">
-        <h1 className="text-base font-normal leading-snug text-foreground line-clamp-2 flex-1">
-          {product.title}
-        </h1>
-        <button
-          type="button"
-          onClick={() => toggleWishlist(cartProduct)}
-          aria-label={productInWishlist ? t("removeFromWatchlist") : t("addToWatchlist")}
-          className="text-muted-foreground active:text-destructive pt-0.5"
-        >
-          <Heart 
-            className={cn(
-              "size-6",
-              productInWishlist 
-                ? "fill-destructive text-destructive" 
-                : ""
-            )} 
-            strokeWidth={1.5} 
-          />
-        </button>
-      </div>
-
-      {/* Price + Location + Time Block */}
-      <div className="px-4 pt-2">
-        <MobilePriceLocationBlock
-          price={displayPrice}
-          currency="EUR"
-          location={product.seller_city ?? null}
-          createdAt={product.created_at ?? null}
-        />
-      </div>
-
-      {/* Buyer Protection Badge - treido-mock style (no Card wrapper, edge-to-edge) */}
-      <div className="mt-3">
-        <MobileBuyerProtectionBadge />
-      </div>
-
-      {/* Seller Card - treido-mock style (no Card wrapper) */}
-      <MobileSellerCard
-          name={sellerInfo.name}
-          username={sellerInfo.username}
-          avatarUrl={sellerInfo.avatarUrl}
-          rating={sellerInfo.rating}
-          reviewCount={product.seller_stats?.total_reviews ?? null}
-          isVerified={sellerInfo.verified}
-        />
-
-      {/* Urgency Banner (Conditional) */}
-      <div className="mx-4">
-        <MobileUrgencyBanner
-          stockQuantity={stockQuantity}
-          viewersCount={product.viewers_count ?? null}
-          soldCount={product.sold_count ?? null}
-          locale={locale}
-        />
-      </div>
-
-      {/* Variant Selector (only when variants exist) */}
-      {safeVariants.length > 0 ? (
-        <div className="px-4 pt-2">
-          <div className="text-xs font-medium text-muted-foreground mb-1">
-            {t("variant")}
-          </div>
-          <Select
-            value={selectedVariantId ?? undefined}
-            onValueChange={(v) => setSelectedVariantId(v)}
-          >
-            <SelectTrigger className="w-full">
-              <SelectValue placeholder={t("selectVariant")} />
-            </SelectTrigger>
-            <SelectContent>
-              {safeVariants.map((v) => (
-                <SelectItem key={v.id} value={v.id} disabled={(v.stock ?? 0) <= 0}>
-                  {v.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-      ) : null}
-
-      {/* ===== BELOW THE FOLD ===== */}
-
-      {/* Details Section - Clean key-value list (treido-mock style) */}
-      {/* Hide bottom border when description section follows to avoid double border */}
-      {viewModel.itemSpecifics.details && viewModel.itemSpecifics.details.length > 0 && (
-        <MobileDetailsSection
-          details={viewModel.itemSpecifics.details}
-          noBorder={Boolean(product.description)}
-        />
-      )}
-
-      {/* Description Section - Visible (not hidden in accordion) */}
-      <MobileDescriptionSection
-        description={product.description ?? null}
-        maxLines={4}
+      {/* ========== GALLERY ========== */}
+      <MobileGalleryV2 
+        images={viewModel.galleryImages}
+        product={cartProduct}
+        overlayBadge={
+          (category || rootCategory) ? (
+            <CategoryBadge
+              locale={locale}
+              category={rootCategory || category}
+              subcategory={category && rootCategory && category.slug !== rootCategory.slug ? category : null}
+              size="sm"
+              className="bg-surface-floating backdrop-blur-sm shadow-sm"
+            />
+          ) : undefined
+        }
+        {...(product.condition ? { conditionLabel: product.condition } : {})}
       />
 
-      {/* Shipping & Returns Accordion (for additional info) */}
-      <div ref={accordionRef} className="border-t border-border mt-0">
+      {/* ========== META ROW (location + time + views + saves) ========== */}
+      <div className="bg-surface-card px-4 py-2.5 flex items-center gap-4 text-xs text-text-muted-alt">
+        <span className="flex items-center gap-1.5">
+          <MapPin className="size-3.5" strokeWidth={1.5} />
+          <span className="text-text-strong font-medium">{product.seller_city || "Bulgaria"}</span>
+        </span>
+        {timeAgo && (
+          <span className="flex items-center gap-1">
+            <Clock className="size-3.5" strokeWidth={1.5} />
+            {timeAgo}
+          </span>
+        )}
+        <div className="flex-1" />
+        {product.viewers_count != null && product.viewers_count > 0 && (
+          <span className="flex items-center gap-1">
+            <Eye className="size-3.5" strokeWidth={1.5} />
+            {product.viewers_count.toLocaleString()}
+          </span>
+        )}
+        {productInWishlist && (
+          <span className="flex items-center gap-1">
+            <Heart className="size-3.5 fill-destructive text-destructive" strokeWidth={1.5} />
+          </span>
+        )}
+      </div>
+
+      {/* ========== TITLE + TAGS CARD ========== */}
+      <div className="bg-surface-card mt-1.5 px-4 py-3">
+        <h1 className="text-base font-semibold text-text-strong leading-snug">
+          {product.title}
+        </h1>
+        {productTags.length > 0 && (
+          <div className="flex items-center gap-2 mt-2 flex-wrap">
+            {productTags.map((tag) => (
+              <span
+                key={tag}
+                className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-success/10 text-success text-xs font-medium"
+              >
+                <Shield className="size-3" strokeWidth={2} />
+                {tag}
+              </span>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* ========== HERO SPECS (Category-Adaptive) ========== */}
+      {viewModel.heroSpecs.length > 0 && (
+        <div className="bg-surface-card mt-1.5 px-4 py-3">
+          <div className="grid grid-cols-2 gap-2">
+            {viewModel.heroSpecs.slice(0, 4).map((spec) => (
+              <div key={spec.label} className="flex items-center justify-between py-2 px-3 rounded-lg bg-muted">
+                <span className="text-xs text-text-muted-alt">{spec.label}</span>
+                <span className="text-sm font-semibold text-text-strong">{spec.value}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* ========== SELLER CARD ========== */}
+      <Link
+        href={sellerInfo.username ? `/${sellerInfo.username}` : "#"}
+        className="block bg-surface-card mt-1.5 px-4 py-3 active:bg-muted/50"
+      >
+        <div className="flex items-center gap-3">
+          <div className="relative flex-shrink-0">
+            <Avatar className="size-12 ring-2 ring-border">
+              <AvatarImage src={safeAvatarSrc(sellerInfo.avatarUrl)} alt={sellerInfo.name} />
+              <AvatarFallback className="text-sm font-medium bg-muted">
+                {sellerInfo.name.slice(0, 2).toUpperCase()}
+              </AvatarFallback>
+            </Avatar>
+            {sellerInfo.verified && (
+              <span className="absolute -bottom-0.5 -right-0.5 size-5 bg-verified rounded-full ring-2 ring-surface-card flex items-center justify-center">
+                <CheckCircle2 className="size-3 text-verified-foreground" fill="currentColor" />
+              </span>
+            )}
+          </div>
+          <div className="flex-1 min-w-0">
+            <span className="font-semibold text-text-strong">{sellerInfo.name}</span>
+            {sellerInfo.rating != null && sellerInfo.rating > 0 && (
+              <div className="flex items-center gap-1.5 mt-0.5">
+                <Star className="size-3.5 fill-rating text-rating" />
+                <span className="text-sm font-semibold text-text-strong">
+                  {typeof sellerInfo.rating === "number" ? sellerInfo.rating.toFixed(1) : sellerInfo.rating}
+                </span>
+                {product.seller_stats?.total_reviews != null && product.seller_stats.total_reviews > 0 && (
+                  <>
+                    <span className="text-xs text-text-muted-alt">·</span>
+                    <span className="text-xs text-text-muted-alt">
+                      {product.seller_stats.total_reviews} {t("reviews", { count: product.seller_stats.total_reviews })}
+                    </span>
+                  </>
+                )}
+              </div>
+            )}
+          </div>
+          <ChevronRight className="size-5 text-text-muted-alt" />
+        </div>
+      </Link>
+
+      {/* ========== DELIVERY CARD ========== */}
+      <div className="bg-surface-card mt-1.5 px-4 py-3">
+        <span className="text-xs font-semibold text-text-muted-alt uppercase tracking-wide">
+          {t("delivery")}
+        </span>
+        <div className="flex flex-wrap gap-2 mt-2">
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-muted text-sm">
+            <MapPin className="size-4 text-text-muted-alt" strokeWidth={1.5} />
+            {product.pickup_only ? t("pickupOnly") : t("meetup")}
+          </span>
+          {!product.pickup_only && (
+            <>
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-muted text-sm">
+                <Truck className="size-4 text-text-muted-alt" strokeWidth={1.5} />
+                {t("shipping")}
+              </span>
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-success/10 text-success text-sm font-medium">
+                {t("freeShipping")}
+              </span>
+            </>
+          )}
+        </div>
+      </div>
+
+      {/* ========== SPECS/DESCRIPTION TABS ========== */}
+      <div className="bg-surface-card mt-1.5">
+        <MobileSpecsTabs
+          specifications={viewModel.itemSpecifics.details || []}
+          description={product.description}
+        />
+      </div>
+
+      {/* ========== SHIPPING & RETURNS (Accordion) ========== */}
+      <div ref={accordionRef} className="bg-surface-card mt-1.5">
         <MobileAccordions
           description={null}
           details={null}
@@ -309,25 +348,18 @@ export function MobileProductPage(props: MobileProductPageProps) {
         />
       </div>
 
-      {/* Trust Block - After accordions */}
-      <div className="border-t border-border/50">
-        <MobileTrustBlock
-          locale={locale}
-          verifiedSeller={sellerInfo.verified}
-          freeShipping={!product.pickup_only}
-        />
-      </div>
-
-      {/* More from Seller - treido-mock style (handles its own padding) */}
+      {/* ========== MORE FROM SELLER ========== */}
       {relatedProducts.length > 0 && (
-        <SellerProductsGrid
-          products={relatedProducts}
-          sellerUsername={username}
-        />
+        <div className="bg-surface-card mt-1.5">
+          <SellerProductsGrid
+            products={relatedProducts}
+            sellerUsername={username}
+          />
+        </div>
       )}
 
-      {/* Reviews */}
-      <div className="px-4 pb-8">
+      {/* ========== REVIEWS ========== */}
+      <div className="bg-surface-card mt-1.5 px-4 py-4">
         <CustomerReviewsHybrid
           rating={Number(product.rating ?? 0)}
           reviewCount={Number(product.review_count ?? 0)}
@@ -339,14 +371,23 @@ export function MobileProductPage(props: MobileProductPageProps) {
         />
       </div>
 
-      {/* Bottom Action Bar - OLX Style (Chat + Buy Now) */}
-      <MobileBottomBar
-        product={cartProduct}
-        price={displayPrice}
-        isOutOfStock={stockStatus === "out_of_stock"}
-        sellerUsername={sellerInfo.username}
-        {...(safeVariants.length > 0 && selectedVariant?.id ? { variantId: selectedVariant.id } : {})}
-        {...(safeVariants.length > 0 && selectedVariant?.name ? { variantName: selectedVariant.name } : {})}
+      {/* ========== BOTTOM BAR ========== */}
+      <MobileBottomBarV2
+        categoryType={viewModel.categoryType}
+        product={{
+          id: cartProduct.id,
+          title: cartProduct.title,
+          price: displayPrice,
+          originalPrice: displayRegularPrice,
+          currency: "EUR",
+          image: cartProduct.image,
+          slug: cartProduct.slug,
+          username: cartProduct.username,
+        }}
+        seller={{
+          id: seller.id,
+          displayName: sellerInfo.name,
+        }}
       />
     </div>
   );

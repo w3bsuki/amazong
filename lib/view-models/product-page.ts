@@ -1,4 +1,16 @@
 import type { Metadata } from "next";
+import { getCategoryType, type CategoryType } from "@/lib/utils/category-type";
+import type { HeroSpec } from "@/lib/data/product-page";
+
+/**
+ * Resolved hero spec ready for rendering.
+ * Now sourced from database via get_hero_specs RPC.
+ */
+export interface ResolvedHeroSpec {
+  label: string;
+  value: string;
+  priority: number;
+}
 
 export interface GalleryImage {
   src: string;
@@ -45,6 +57,10 @@ export interface ProductPageViewModel {
   relatedProducts: SellerProductsGridItem[];
   jsonLd: Record<string, unknown>;
   breadcrumbJsonLd: Record<string, unknown>;
+  /** Category-adaptive hero specs (up to 4 key attributes) */
+  heroSpecs: ResolvedHeroSpec[];
+  /** Category type for CTA customization */
+  categoryType: CategoryType;
 }
 
 export type ProductPageProductLike = {
@@ -152,8 +168,10 @@ export function buildProductPageViewModel(args: {
   category: ProductPageCategoryLike | null;
   parentCategory: ProductPageCategoryLike | null;
   relatedProductsRaw: unknown[];
+  /** Database-driven hero specs (preferred). Falls back to config-based if not provided. */
+  heroSpecs?: HeroSpec[];
 }): ProductPageViewModel {
-  const { locale, username, productSlug, product, seller, category, parentCategory, relatedProductsRaw } = args;
+  const { locale, username, productSlug, product, seller, category, parentCategory, relatedProductsRaw, heroSpecs: dbHeroSpecs } = args;
 
   const sellerName = seller.display_name || seller.username || username;
   const sellerAvatarUrl = seller.avatar_url || "";
@@ -263,6 +281,18 @@ export function buildProductPageViewModel(args: {
     ],
   };
 
+  // Hero specs are database-driven via get_hero_specs RPC
+  // Returns up to 4 key attributes based on category_attributes.is_hero_spec
+  const heroSpecs: ResolvedHeroSpec[] = (dbHeroSpecs ?? []).map(spec => ({
+    label: spec.label,
+    value: spec.value,
+    priority: spec.priority,
+  }));
+  
+  const categorySlug = category?.slug ?? null;
+  const parentSlug = parentCategory?.slug ?? null;
+  const categoryType = getCategoryType(categorySlug, parentSlug);
+
   return {
     sellerName,
     sellerAvatarUrl,
@@ -272,6 +302,8 @@ export function buildProductPageViewModel(args: {
     relatedProducts,
     jsonLd,
     breadcrumbJsonLd,
+    heroSpecs,
+    categoryType,
   };
 }
 

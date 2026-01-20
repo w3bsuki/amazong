@@ -1,0 +1,302 @@
+"use client"
+
+// =============================================================================
+// MOBILE GALLERY V2 - Edge-to-Edge with Horizontal Thumbnail Strip
+// =============================================================================
+// Based on V2 demo design - the winner from our audit.
+// Key features:
+// - Full-bleed edge-to-edge hero image
+// - Horizontal thumbnail strip below (not just dots)
+// - Swipe navigation with scroll sync
+// - Floating action buttons (back, share, wishlist)
+// - Image counter overlay
+// - Fullscreen image viewer on tap
+// =============================================================================
+
+import { useState, useEffect, useRef, useCallback, type ReactNode } from "react"
+import Image from "next/image"
+import { Heart, Share2, ChevronLeft, MoreHorizontal, X } from "lucide-react"
+import { cn } from "@/lib/utils"
+import { useWishlist } from "@/components/providers/wishlist-context"
+import type { GalleryImage } from "@/lib/view-models/product-page"
+
+interface MobileGalleryV2Props {
+  images: GalleryImage[]
+  /** Product info for wishlist functionality */
+  product?: {
+    id: string
+    title: string
+    price: number
+    slug?: string
+    username?: string
+  }
+  /** Optional overlay element (e.g., condition badge) positioned bottom-left */
+  overlayBadge?: ReactNode
+  /** Category label text */
+  categoryLabel?: string
+  /** Condition label text */
+  conditionLabel?: string
+  /** Called when back button is pressed */
+  onBack?: () => void
+  className?: string
+}
+
+export function MobileGalleryV2({
+  images,
+  product,
+  overlayBadge,
+  categoryLabel,
+  conditionLabel,
+  onBack,
+  className,
+}: MobileGalleryV2Props) {
+  const [activeIndex, setActiveIndex] = useState(0)
+  const [viewerOpen, setViewerOpen] = useState(false)
+  const galleryRef = useRef<HTMLDivElement>(null)
+  
+  const { isInWishlist, toggleWishlist } = useWishlist()
+  const isWishlisted = product ? isInWishlist(product.id) : false
+
+  // Sync scroll position with active index
+  useEffect(() => {
+    const el = galleryRef.current
+    if (!el) return
+    
+    const handleScroll = () => {
+      const newIndex = Math.round(el.scrollLeft / el.offsetWidth)
+      if (newIndex !== activeIndex && newIndex >= 0 && newIndex < images.length) {
+        setActiveIndex(newIndex)
+      }
+    }
+    
+    el.addEventListener("scroll", handleScroll, { passive: true })
+    return () => el.removeEventListener("scroll", handleScroll)
+  }, [activeIndex, images.length])
+
+  // Scroll to specific image
+  const scrollToImage = useCallback((index: number) => {
+    const el = galleryRef.current
+    if (!el) return
+    el.scrollTo({ left: index * el.offsetWidth, behavior: "smooth" })
+  }, [])
+
+  // Handle wishlist toggle
+  const handleWishlistToggle = () => {
+    if (!product) return
+    toggleWishlist({
+      id: product.id,
+      title: product.title,
+      price: product.price,
+      image: images[0]?.src ?? "",
+    })
+  }
+
+  if (!images || images.length === 0) {
+    return (
+      <div className={cn(
+        "w-full aspect-square bg-muted flex items-center justify-center",
+        className
+      )}>
+        <span className="text-sm text-muted-foreground">No image</span>
+      </div>
+    )
+  }
+
+  return (
+    <>
+      <div className={cn("w-full relative", className)}>
+        {/* Main Gallery - Edge-to-Edge */}
+        <div className="relative bg-surface-gallery">
+          {/* Floating Navigation */}
+          <div className="absolute top-3 left-3 right-3 z-20 flex justify-between">
+            {/* Back Button */}
+            {onBack && (
+              <button
+                type="button"
+                onClick={onBack}
+                className="size-9 rounded-full bg-surface-floating shadow-sm flex items-center justify-center active:bg-background"
+                aria-label="Go back"
+              >
+                <ChevronLeft className="size-5 text-text-strong" />
+              </button>
+            )}
+            {!onBack && <div />}
+            
+            {/* Action Buttons */}
+            <div className="flex gap-2">
+              <button
+                type="button"
+                className="size-9 rounded-full bg-surface-floating shadow-sm flex items-center justify-center active:bg-background"
+                aria-label="Share"
+              >
+                <Share2 className="size-4 text-text-strong" />
+              </button>
+              {product && (
+                <button
+                  type="button"
+                  onClick={handleWishlistToggle}
+                  className={cn(
+                    "size-9 rounded-full shadow-sm flex items-center justify-center",
+                    isWishlisted 
+                      ? "bg-destructive text-destructive-foreground" 
+                      : "bg-surface-floating active:bg-background"
+                  )}
+                  aria-label={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
+                >
+                  <Heart 
+                    className={cn(
+                      "size-4",
+                      isWishlisted && "fill-current"
+                    )} 
+                  />
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* Bottom Badges */}
+          <div className="absolute bottom-3 left-3 z-20 flex flex-col gap-1.5 items-start">
+            {conditionLabel && (
+              <span className="px-2 py-0.5 rounded bg-success text-success-foreground text-xs font-bold">
+                {conditionLabel}
+              </span>
+            )}
+            {categoryLabel && (
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-background/90 text-xs font-medium text-foreground">
+                {categoryLabel}
+              </span>
+            )}
+            {overlayBadge}
+          </div>
+
+          {/* Image Counter */}
+          {images.length > 1 && (
+            <div className="absolute bottom-3 right-3 z-20 px-2 py-1 rounded bg-surface-overlay text-white text-xs font-medium">
+              {activeIndex + 1}/{images.length}
+            </div>
+          )}
+
+          {/* Swipeable Image Gallery */}
+          <div
+            ref={galleryRef}
+            className="flex overflow-x-auto snap-x snap-mandatory scrollbar-none"
+            onClick={() => setViewerOpen(true)}
+          >
+            {images.map((img, i) => (
+              <div key={i} className="flex-none w-full snap-center">
+                <div className="relative aspect-square">
+                  <Image
+                    src={img.src}
+                    alt={img.alt}
+                    fill
+                    className="object-cover"
+                    priority={i === 0}
+                    sizes="100vw"
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Horizontal Thumbnail Strip */}
+        {images.length > 1 && (
+          <div className="flex gap-1.5 p-2 bg-surface-card border-b border-border/50">
+            {images.map((img, i) => (
+              <button
+                key={i}
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation()
+                  scrollToImage(i)
+                }}
+                className={cn(
+                  "flex-1 aspect-square rounded-lg overflow-hidden transition-all",
+                  i === activeIndex 
+                    ? "ring-2 ring-foreground ring-offset-1 ring-offset-background" 
+                    : "opacity-50 hover:opacity-75"
+                )}
+                aria-label={`View image ${i + 1}`}
+              >
+                <Image
+                  src={img.src}
+                  alt={img.alt}
+                  width={80}
+                  height={80}
+                  className="object-cover size-full"
+                />
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Fullscreen Image Viewer */}
+      {viewerOpen && (
+        <div className="fixed inset-0 z-[60] bg-surface-gallery flex flex-col">
+          {/* Viewer Header */}
+          <div className="flex items-center justify-between p-3 relative z-10">
+            <button
+              type="button"
+              onClick={() => setViewerOpen(false)}
+              className="size-10 rounded-full bg-white/10 flex items-center justify-center"
+              aria-label="Close viewer"
+            >
+              <X className="size-6 text-white" />
+            </button>
+            <span className="absolute left-1/2 -translate-x-1/2 text-white text-sm font-medium">
+              {activeIndex + 1} / {images.length}
+            </span>
+            <button
+              type="button"
+              className="size-10 rounded-full bg-white/10 flex items-center justify-center"
+              aria-label="More options"
+            >
+              <MoreHorizontal className="size-5 text-white" />
+            </button>
+          </div>
+
+          {/* Viewer Image */}
+          <div className="flex-1 flex items-center justify-center relative">
+            {images[activeIndex] && (
+              <Image
+                src={images[activeIndex].src}
+                alt={images[activeIndex].alt}
+                fill
+                className="object-contain"
+                sizes="100vw"
+                priority
+              />
+            )}
+          </div>
+
+          {/* Viewer Thumbnails */}
+          <div className="flex gap-2 p-4 justify-center">
+            {images.map((img, i) => (
+              <button
+                key={i}
+                type="button"
+                onClick={() => setActiveIndex(i)}
+                className={cn(
+                  "size-14 rounded-lg overflow-hidden transition-all",
+                  i === activeIndex 
+                    ? "ring-2 ring-white ring-offset-2 ring-offset-black" 
+                    : "opacity-40 hover:opacity-60"
+                )}
+                aria-label={`View image ${i + 1}`}
+              >
+                <Image
+                  src={img.src}
+                  alt={img.alt}
+                  width={56}
+                  height={56}
+                  className="object-cover size-full"
+                />
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+    </>
+  )
+}

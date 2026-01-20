@@ -13,6 +13,7 @@ import { CaretRight } from "@phosphor-icons/react"
 // Import extracted components
 import { useCategoryNavigation } from "@/hooks/use-category-navigation"
 import { useInstantCategoryBrowse } from "@/hooks/use-instant-category-browse"
+import { useHeader } from "@/components/providers/header-context"
 import {
   CategoryTabs,
   CategoryQuickPills,
@@ -26,7 +27,6 @@ import {
   // Phase 3: Treido-mock Smart Anchor Navigation
   SmartAnchorNav,
 } from "./category-nav"
-import { SiteHeader } from "@/components/layout/header/site-header-unified"
 import { ContextualDoubleDeckerNav } from "./category-nav/contextual-double-decker-nav"
 import { ProductFeed } from "@/components/shared/product/product-feed"
 import { FilterHub } from "@/components/shared/filters/filter-hub"
@@ -288,31 +288,11 @@ export function MobileCategoryBrowser({
   // Contextual Mode Rendering (Vinted-style)
   // ==========================================================================
 
-  // Hide the main site header ONLY on mobile when contextual mode is active.
-  // IMPORTANT: This component may still be mounted on desktop (e.g. `lg:hidden`),
-  // so we must not blindly hide the header for all viewports.
-  useEffect(() => {
-    if (!contextualMode) return
-
-    // Find the main site header (it's the first header in body, before main)
-    const siteHeader = document.querySelector('body > div > header')
-    if (!(siteHeader instanceof HTMLElement)) return
-
-    const previousDisplay = siteHeader.style.display
-    const mql = window.matchMedia('(max-width: 767px)')
-
-    const sync = () => {
-      siteHeader.style.display = mql.matches ? 'none' : previousDisplay
-    }
-
-    sync()
-    mql.addEventListener?.('change', sync)
-
-    return () => {
-      mql.removeEventListener?.('change', sync)
-      siteHeader.style.display = previousDisplay
-    }
-  }, [contextualMode])
+  // Header is now rendered by the layout with variant="contextual"
+  // No more DOM manipulation to hide parent header - layout handles variant detection
+  
+  // Get header context to provide dynamic state
+  const { setContextualHeader } = useHeader()
 
   if (contextualMode) {
     const backHref = contextualBackHref || `/categories`
@@ -352,49 +332,24 @@ export function MobileCategoryBrowser({
     const handleClearAllFilters = async () => {
       await instant.setFilters(new URLSearchParams())
     }
+    
+    // Provide contextual header state to layout via context
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    useEffect(() => {
+      setContextualHeader({
+        title: instant.categoryTitle || contextualInitialTitle,
+        backHref,
+        onBack: handleBack,
+        subcategories: (instant.children as any) ?? contextualSubcategories,
+        onSubcategoryClick: handleCircleClick,
+      })
+      return () => setContextualHeader(null)
+    }, [instant.categoryTitle, contextualInitialTitle, backHref, instant.children, contextualSubcategories, setContextualHeader])
 
     return (
       <div className="w-full min-h-screen bg-background">
-        {/*
-          Contextual header with category name and back button.
-          This is rendered by the component because it has the category context.
-        */}
-        <SiteHeader
-          variant="contextual"
-          user={null}
-          contextualTitle={instant.categoryTitle || contextualInitialTitle}
-          contextualBackHref={backHref}
-          onContextualBack={handleBack}
-        />
-
-        {/* 2) Subcategory Circles (Contextual Mode) - Scrolls away */}
-        {/* Uses Link navigation for SEO + proper loading.tsx states */}
-        {contextualSubcategories.length > 0 && (
-          <div className="bg-background border-b border-border/50">
-            <CategoryCircles
-              circles={(instant.children as any) ?? contextualSubcategories}
-              activeL1={null}
-              activeL2={null}
-              activeL2Category={null}
-              activeCategoryName={instant.categoryTitle || contextualInitialTitle}
-              showL2Circles={false}
-              isDrilledDown={false}
-              l3Categories={[]}
-              selectedPill={null}
-              isL3Loading={false}
-              loadingSlug={instant.loadingSlug}
-              locale={locale}
-              circlesNavigateToPages={false}
-              activeTab="categories"
-              hideBackButton={true}
-              className=""
-              onCircleClick={handleCircleClick}
-              onBack={() => { }}
-              onPillClick={() => { }}
-              onAllPillClick={() => { }}
-            />
-          </div>
-        )}
+        {/* Header is rendered by layout with variant="contextual" */}
+        {/* Layout's header will show title, back button, and subcategory circles from context */}
 
         {/* 3) Inline Filter Bar (50/50 split: Filters | Sort) */}
         <InlineFilterBar

@@ -15,7 +15,7 @@ export function MobileBuyerProtectionBadge() {
   const t = useTranslations("Product");
 
   return (
-    <div className="px-4 py-3 border-t border-border bg-muted/30">
+    <div className="px-4 py-3">
       <div className="flex items-start gap-3">
         <ShieldCheck className="size-5 text-foreground mt-0.5" strokeWidth={1.5} />
         <div>

@@ -30,7 +30,7 @@ import { useSellForm, useSellFormContext } from "../sell-form-provider";
 import { SelectDrawer } from "../ui/select-drawer";
 
 // ============================================================================
-// Constants
+// Constants - V1: BGN only (Cash on Delivery in Bulgaria)
 // ============================================================================
 const CURRENCY_SYMBOLS: Record<string, string> = {
   BGN: "лв",
@@ -38,10 +38,9 @@ const CURRENCY_SYMBOLS: Record<string, string> = {
   USD: "$",
 };
 
+// V1: Only BGN for cash on delivery in Bulgaria
 const CURRENCIES = [
   { value: "BGN", label: "BGN (лв)" },
-  { value: "EUR", label: "EUR (€)" },
-  { value: "USD", label: "USD ($)" },
 ];
 
 // ============================================================================
@@ -273,76 +272,74 @@ export function PricingField({ className, categoryId, idPrefix = "sell-form", co
         })}
       </div>
 
-      {/* Price Input */}
+      {/* Price Input - Premium card design */}
       <Controller
         name="price"
         control={control}
         render={({ field, fieldState }) => (
-          <div className="space-y-2">
+          <div className="space-y-3">
+            <div className="flex items-center justify-between px-1">
+              <label htmlFor={priceInputId} className="text-sm font-bold text-foreground">
+                {isBg ? "Вашата цена" : "Your price"} <span className="text-destructive">*</span>
+              </label>
+            </div>
+            
             <div className={cn(
-              "flex items-center h-12 rounded-md border border-border bg-background shadow-xs transition-all focus-within:ring-4 focus-within:ring-primary/5 focus-within:border-primary/50 overflow-hidden",
-              fieldState.invalid && "border-destructive bg-destructive/5 focus-within:ring-destructive/5 focus-within:border-destructive/50"
+              "rounded-xl border bg-card overflow-hidden transition-all",
+              "focus-within:ring-2 focus-within:ring-primary/20 focus-within:border-primary/50",
+              fieldState.invalid ? "border-destructive/50 bg-destructive/5" : "border-border"
             )}>
-              <div className="relative flex-1 flex items-center px-4 min-w-0">
-                <label
-                  htmlFor={priceInputId}
-                  className="text-2xs font-bold uppercase tracking-wider text-muted-foreground shrink-0 mr-2"
-                >
-                  {isBg ? "Цена:" : "Price:"} *
-                </label>
-                <div className="flex items-center flex-1 min-w-0">
-                  <span className="text-muted-foreground font-bold text-sm shrink-0 mr-1">
-                    {CURRENCY_SYMBOLS[currency] || currency}
-                  </span>
-                  <Input
-                    {...field}
-                    id={priceInputId}
-                    type="text"
-                    inputMode="decimal"
-                    placeholder="0.00"
-                    className="border-none bg-transparent h-auto p-0 text-sm font-bold focus-visible:ring-0 focus-visible:ring-offset-0 shadow-none flex-1 min-w-0"
-                  />
-                </div>
-              </div>
-              <div className="h-6 w-px bg-border/50 shrink-0" />
-              {compact ? (
-                <>
-                  <button
-                    type="button"
-                    onClick={() => setIsCurrencyDrawerOpen(true)}
-                    className="w-auto min-w-24 flex items-center justify-between px-3 h-full font-bold text-sm hover:bg-muted transition-colors"
-                  >
-                    <span>{currency}</span>
-                    <CaretRight className="size-3 opacity-50" weight="bold" />
-                  </button>
-                  <SelectDrawer
-                    isOpen={isCurrencyDrawerOpen}
-                    onClose={() => setIsCurrencyDrawerOpen(false)}
-                    title={isBg ? "Изберете валута" : "Select Currency"}
-                    options={CURRENCIES.map(c => c.value)}
-                    optionsBg={CURRENCIES.map(c => c.label)}
+              <div className="flex items-center h-16 px-4">
+                <span className="text-2xl font-bold text-muted-foreground mr-2">
+                  {CURRENCY_SYMBOLS[currency] || currency}
+                </span>
+                <Input
+                  {...field}
+                  id={priceInputId}
+                  type="text"
+                  inputMode="decimal"
+                  placeholder="0.00"
+                  className="border-none bg-transparent h-full text-3xl font-bold p-0 focus-visible:ring-0 flex-1"
+                />
+                {compact ? (
+                  <>
+                    <button
+                      type="button"
+                      onClick={() => setIsCurrencyDrawerOpen(true)}
+                      className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-muted/60 hover:bg-muted transition-colors"
+                    >
+                      <span className="text-sm font-bold">{currency}</span>
+                      <CaretRight className="size-3.5 text-muted-foreground rotate-90" />
+                    </button>
+                    <SelectDrawer
+                      isOpen={isCurrencyDrawerOpen}
+                      onClose={() => setIsCurrencyDrawerOpen(false)}
+                      title={isBg ? "Изберете валута" : "Select Currency"}
+                      options={CURRENCIES.map(c => c.value)}
+                      optionsBg={CURRENCIES.map(c => c.label)}
+                      value={currency}
+                      onChange={(val) => setValue("currency", val as "BGN" | "EUR" | "USD")}
+                      locale={isBg ? "bg" : "en"}
+                    />
+                  </>
+                ) : (
+                  <Select
                     value={currency}
-                    onChange={(val) => setValue("currency", val as "BGN" | "EUR" | "USD")}
-                    locale={isBg ? "bg" : "en"}
-                  />
-                </>
-              ) : (
-                <Select
-                  value={currency}
-                  onValueChange={(val) => setValue("currency", val as "BGN" | "EUR" | "USD")}
-                >
-                  <SelectTrigger className="w-auto min-w-24 border-none bg-transparent h-full rounded-none font-bold focus:ring-0 focus:ring-offset-0 shadow-none px-3 text-sm">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {CURRENCIES.map((c) => (
-                      <SelectItem key={c.value} value={c.value} className="font-medium">
-                        {c.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              )}
+                    onValueChange={(val) => setValue("currency", val as "BGN" | "EUR" | "USD")}
+                  >
+                    <SelectTrigger className="w-auto min-w-24 border-none bg-muted/60 h-10 rounded-xl font-bold focus:ring-0 focus:ring-offset-0 shadow-none px-3 text-sm">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {CURRENCIES.map((c) => (
+                        <SelectItem key={c.value} value={c.value} className="font-medium">
+                          {c.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
+              </div>
             </div>
             {fieldState.invalid && (
               <FieldError errors={[fieldState.error]} />
@@ -361,40 +358,34 @@ export function PricingField({ className, categoryId, idPrefix = "sell-form", co
 
       {/* Compare at Price (Optional) */}
       <div className="space-y-2">
-        <div className="flex items-center h-12 rounded-md border border-border bg-background shadow-xs transition-all focus-within:ring-4 focus-within:ring-primary/5 focus-within:border-primary/50 overflow-hidden">
-          <div className="relative flex-1 flex items-center px-4 min-w-0">
-            <label
-              htmlFor={comparePriceInputId}
-              className="text-2xs font-bold uppercase tracking-wider text-muted-foreground shrink-0 mr-2"
-            >
-              {isBg ? "Стара цена:" : "Old Price:"}
-            </label>
-            <div className="flex items-center flex-1 min-w-0">
-              <span className="text-muted-foreground font-bold text-sm shrink-0 mr-1">
-                {CURRENCY_SYMBOLS[currency] || currency}
-              </span>
-              <Input
-                id={comparePriceInputId}
-                type="text"
-                inputMode="decimal"
-                placeholder="0.00"
-                value={compareAtPrice || ""}
-                onChange={(e) => setValue("compareAtPrice", e.target.value)}
-                className="border-none bg-transparent h-auto p-0 text-sm font-bold focus-visible:ring-0 focus-visible:ring-offset-0 shadow-none flex-1 min-w-0"
-              />
-            </div>
-          </div>
+        <div className="flex items-center justify-between px-1">
+          <label htmlFor={comparePriceInputId} className="text-sm font-bold text-foreground flex items-center gap-2">
+            {isBg ? "Стара цена" : "Compare at price"}
+            <span className="text-xs font-medium text-muted-foreground">{isBg ? "(по избор)" : "(optional)"}</span>
+          </label>
         </div>
-        <p className="text-xs text-muted-foreground font-medium px-1">
-          {isBg
-            ? "Ако продуктът е на промоция, въведете оригиналната цена"
-            : "If the item is on sale, enter the original price"}
-        </p>
+        <div className={cn(
+          "flex items-center h-14 px-4 rounded-xl border bg-card transition-all",
+          "focus-within:ring-2 focus-within:ring-primary/20 focus-within:border-primary/50"
+        )}>
+          <span className="text-base font-bold text-muted-foreground mr-2">
+            {CURRENCY_SYMBOLS[currency] || currency}
+          </span>
+          <Input
+            id={comparePriceInputId}
+            type="text"
+            inputMode="decimal"
+            placeholder={isBg ? "Оригинална цена" : "Original price"}
+            value={compareAtPrice || ""}
+            onChange={(e) => setValue("compareAtPrice", e.target.value)}
+            className="border-none bg-transparent h-full text-lg font-semibold p-0 focus-visible:ring-0 flex-1"
+          />
+        </div>
       </div>
 
       {/* Quantity */}
       <div className="space-y-2">
-        <Label className="text-sm font-semibold">
+        <Label className="text-sm font-bold px-1">
           {isBg ? "Количество" : "Quantity"}
         </Label>
         <QuantityStepper
@@ -403,29 +394,46 @@ export function PricingField({ className, categoryId, idPrefix = "sell-form", co
         />
       </div>
 
-      {/* Accept Offers Toggle */}
-      <div className="flex items-center justify-between p-4 rounded-md border border-border bg-muted/5 shadow-xs ring-1 ring-border/5">
-        <div className="flex items-center gap-3">
-          <div className="size-10 rounded-lg bg-background border border-border flex items-center justify-center shrink-0 shadow-sm">
-            <Handshake className="size-5 text-primary" weight="bold" />
-          </div>
-          <div>
-            <span className="text-sm font-bold text-foreground">
-              {isBg ? "Приемане на оферти" : "Accept Offers"}
-            </span>
-            <p className="text-xs text-muted-foreground font-medium leading-tight mt-0.5">
-              {isBg
-                ? "Позволете на купувачите да предлагат цена"
-                : "Allow buyers to make price offers"}
-            </p>
-          </div>
+      {/* Accept Offers Toggle - Premium pill design */}
+      <button
+        type="button"
+        onClick={() => setValue("acceptOffers", !acceptOffers)}
+        className={cn(
+          "w-full flex items-center gap-3.5 p-4 rounded-xl border transition-all",
+          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30",
+          "active:scale-[0.98]",
+          acceptOffers 
+            ? "border-primary/40 bg-primary/5" 
+            : "border-border bg-card hover:bg-muted/30"
+        )}
+      >
+        <div className={cn(
+          "size-11 rounded-xl flex items-center justify-center shrink-0 transition-all",
+          acceptOffers 
+            ? "bg-primary/15 text-primary" 
+            : "bg-muted text-muted-foreground"
+        )}>
+          <Handshake className="size-5" weight={acceptOffers ? "fill" : "regular"} />
         </div>
-        <Switch
-          checked={acceptOffers}
+        <div className="flex-1 text-left min-w-0">
+          <span className={cn(
+            "text-base font-semibold block",
+            acceptOffers ? "text-foreground" : "text-foreground"
+          )}>
+            {isBg ? "Приемане на оферти" : "Accept offers"}
+          </span>
+          <span className="text-sm text-muted-foreground line-clamp-1">
+            {isBg
+              ? "Позволете на купувачите да предлагат цена"
+              : "Let buyers negotiate the price"}
+          </span>
+        </div>
+        <Switch 
+          checked={acceptOffers} 
           onCheckedChange={(checked) => setValue("acceptOffers", checked)}
-          className="data-[state=checked]:bg-primary"
+          className="shrink-0 scale-110"
         />
-      </div>
+      </button>
     </FieldContent>
   );
 
