@@ -2,6 +2,8 @@ import { getTranslations } from "next-intl/server"
 import { redirect } from "next/navigation"
 import { createClient } from "@/lib/supabase/server"
 import { MessagesPageClient } from "../_components/messages-page-client"
+import { blockUser } from "@/app/actions/blocked-users"
+import { reportConversation } from "../_actions/report-conversation"
 
 export async function generateMetadata({
   params
@@ -37,5 +39,7 @@ export default async function MessagesPage({
     redirect(`/${locale}/auth/login?next=/${locale}/chat`)
   }
 
-  return <MessagesPageClient />
+  return (
+    <MessagesPageClient actions={{ blockUser, reportConversation }} />
+  )
 }

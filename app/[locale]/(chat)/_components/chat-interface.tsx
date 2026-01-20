@@ -36,22 +36,34 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { blockUser } from "@/app/actions/blocked-users"
-import { reportConversation } from "@/app/[locale]/(chat)/_actions/report-conversation"
 import { useToast } from "@/hooks/use-toast"
 import { Link } from "@/i18n/routing"
 import Image from "next/image"
+
+export type ChatInterfaceServerActions = {
+  blockUser: (
+    userId: string,
+    reason?: string
+  ) => Promise<{ success: boolean; error: string | null }>
+  reportConversation: (
+    conversationId: string,
+    reason: "spam" | "harassment" | "scam" | "inappropriate" | "other",
+    description?: string
+  ) => Promise<{ success: boolean; error: string | null }>
+}
 
 interface ChatInterfaceProps {
   className?: string
   onBack?: () => void
   showHeader?: boolean
+  actions: ChatInterfaceServerActions
 }
 
 export function ChatInterface({
   className,
   onBack,
   showHeader = true,
+  actions,
 }: ChatInterfaceProps) {
   const t = useTranslations("Messages")
   const locale = useLocale()
@@ -194,7 +206,7 @@ export function ChatInterface({
 
     setIsBlocking(true)
     try {
-      const result = await blockUser(userToBlock)
+      const result = await actions.blockUser(userToBlock)
       if (result.success) {
         toast({
           title: locale === "bg" ? "Потребителят е блокиран" : "User blocked",
@@ -227,7 +239,10 @@ export function ChatInterface({
 
     setIsReporting(true)
     try {
-      const result = await reportConversation(currentConversation.id, "inappropriate")
+      const result = await actions.reportConversation(
+        currentConversation.id,
+        "inappropriate"
+      )
       if (result.success) {
         toast({
           title: locale === "bg" ? "Докладът е изпратен" : "Report submitted",

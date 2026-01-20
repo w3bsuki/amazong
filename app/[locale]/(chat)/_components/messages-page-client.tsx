@@ -10,6 +10,7 @@ import { cn } from "@/lib/utils"
 import { PencilSimpleLine, MagnifyingGlass, ArrowLeft, Tray, EnvelopeSimple, ShoppingCart, Storefront, ChatCircle } from "@phosphor-icons/react"
 import { Input } from "@/components/ui/input"
 import { Link } from "@/i18n/routing"
+import type { ChatInterfaceServerActions } from "./chat-interface"
 
 // Filter types for the bottom navigation
 type MessageFilter = "all" | "unread" | "buying" | "selling"
@@ -110,7 +111,7 @@ function ChatBottomTabs({
   )
 }
 
-function MessagesContent() {
+function MessagesContent({ actions }: { actions: ChatInterfaceServerActions }) {
   const t = useTranslations("Messages")
   const searchParams = useSearchParams()
   const conversationParam = searchParams.get("conversation")
@@ -230,11 +231,15 @@ function MessagesContent() {
         "flex-1 flex flex-col overflow-hidden",
         showChat ? "flex" : "hidden lg:flex"
       )}>
-        {currentConversation ? (
-          <Suspense fallback={<ChatInterfaceSkeleton />}>
-            <ChatInterface className="h-full" onBack={() => setShowChat(false)} />
-          </Suspense>
-        ) : (
+          {currentConversation ? (
+            <Suspense fallback={<ChatInterfaceSkeleton />}>
+            <ChatInterface
+              className="h-full"
+              onBack={() => setShowChat(false)}
+              actions={actions}
+            />
+            </Suspense>
+          ) : (
           /* Empty state - Desktop only */
           <div className="hidden lg:flex flex-col items-center justify-center h-full bg-muted/30">
             <div className="flex flex-col items-center gap-4 p-4 text-center max-w-sm">
@@ -255,10 +260,10 @@ function MessagesContent() {
   )
 }
 
-export function MessagesPageClient() {
+export function MessagesPageClient({ actions }: { actions: ChatInterfaceServerActions }) {
   return (
     <MessageProvider>
-      <MessagesContent />
+      <MessagesContent actions={actions} />
     </MessageProvider>
   )
 }

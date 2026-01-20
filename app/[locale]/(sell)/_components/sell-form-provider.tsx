@@ -111,7 +111,8 @@ export function SellFormProvider({
 }: SellFormProviderProps) {
   // Form setup with react-hook-form
   const methods = useForm<SellFormDataV4>({
-    resolver: zodResolver(sellFormSchemaV4),
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    resolver: zodResolver(sellFormSchemaV4) as any,
     defaultValues: existingProduct || { ...defaultSellFormValuesV4, ...defaultValues },
     mode: "onChange", // Validate on change for real-time feedback
   });

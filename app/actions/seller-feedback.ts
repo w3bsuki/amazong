@@ -83,7 +83,7 @@ export async function submitSellerFeedback(
     // Validate input
     const validated = submitFeedbackSchema.safeParse(input)
     if (!validated.success) {
-      return { success: false, error: validated.error.errors[0]?.message || "Invalid input" }
+      return { success: false, error: validated.error.issues[0]?.message || "Invalid input" }
     }
 
     // Get current user
@@ -213,7 +213,7 @@ async function updateSellerFeedback(
     // Validate input
     const validated = updateFeedbackSchema.safeParse(input)
     if (!validated.success) {
-      return { success: false, error: validated.error.errors[0]?.message || "Invalid input" }
+      return { success: false, error: validated.error.issues[0]?.message || "Invalid input" }
     }
 
     // Get current user

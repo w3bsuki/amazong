@@ -86,7 +86,7 @@ export const sellFormSchemaV4 = z.object({
 		"used-good",
 		"used-fair",
 	], {
-		required_error: "Please select condition",
+		error: "Please select condition",
 	}),
 
 	// ========== DESCRIPTION ==========

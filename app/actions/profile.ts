@@ -114,7 +114,7 @@ export async function updateProfile(formData: FormData): Promise<{
     if (!validationResult.success) {
       return { 
         success: false, 
-        error: validationResult.error.errors[0]?.message || "Invalid input" 
+        error: validationResult.error.issues[0]?.message || "Invalid input" 
       }
     }
 
@@ -259,7 +259,7 @@ export async function setAvatarUrl(formData: FormData): Promise<{
     if (!validationResult.success) {
       return {
         success: false,
-        error: validationResult.error.errors[0]?.message || "Invalid input",
+        error: validationResult.error.issues[0]?.message || "Invalid input",
       }
     }
 
@@ -369,7 +369,7 @@ export async function updateEmail(formData: FormData): Promise<{
     if (!validationResult.success) {
       return { 
         success: false, 
-        error: validationResult.error.errors[0]?.message || "Invalid email" 
+        error: validationResult.error.issues[0]?.message || "Invalid email" 
       }
     }
 
@@ -428,7 +428,7 @@ export async function updatePassword(formData: FormData): Promise<{
     if (!validationResult.success) {
       return { 
         success: false, 
-        error: validationResult.error.errors[0]?.message || "Invalid input" 
+        error: validationResult.error.issues[0]?.message || "Invalid input" 
       }
     }
 

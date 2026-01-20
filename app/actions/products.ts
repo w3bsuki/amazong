@@ -135,7 +135,7 @@ export async function createProduct(input: ProductInput): Promise<ActionResult<{
     // Validate input
     const validated = productSchema.safeParse(input)
     if (!validated.success) {
-      return { success: false, error: validated.error.errors[0]?.message || "Invalid input" }
+      return { success: false, error: validated.error.issues[0]?.message || "Invalid input" }
     }
     
     const data = validated.data
@@ -415,7 +415,7 @@ export async function setProductDiscountPrice(
   try {
     const parsed = setDiscountSchema.safeParse({ productId, newPrice })
     if (!parsed.success) {
-      return { success: false, error: parsed.error.errors[0]?.message || "Invalid input" }
+      return { success: false, error: parsed.error.issues[0]?.message || "Invalid input" }
     }
 
     const supabase = await createClient()
@@ -494,7 +494,7 @@ export async function clearProductDiscount(
   try {
     const parsed = clearDiscountSchema.safeParse({ productId })
     if (!parsed.success) {
-      return { success: false, error: parsed.error.errors[0]?.message || "Invalid input" }
+      return { success: false, error: parsed.error.issues[0]?.message || "Invalid input" }
     }
 
     const supabase = await createClient()

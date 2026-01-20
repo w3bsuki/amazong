@@ -291,7 +291,8 @@ export function ProductFormModal({
     reset,
     formState: { errors, isDirty },
   } = useForm<ProductFormData>({
-    resolver: zodResolver(productFormSchema),
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    resolver: zodResolver(productFormSchema) as any,
     defaultValues: {
       title: "",
       description: "",

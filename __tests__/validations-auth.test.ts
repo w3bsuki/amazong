@@ -43,7 +43,7 @@ describe('lib/validations/auth', () => {
       const result = emailSchema.safeParse('')
       expect(result.success).toBe(false)
       if (!result.success) {
-        expect(result.error.errors[0].message).toBe('Email is required')
+        expect(result.error.issues[0].message).toBe('Email is required')
       }
     })
     
@@ -73,7 +73,7 @@ describe('lib/validations/auth', () => {
       const result = passwordSchema.safeParse('Pass1')
       expect(result.success).toBe(false)
       if (!result.success) {
-        expect(result.error.errors[0].message).toBe('Password must be at least 8 characters')
+        expect(result.error.issues[0].message).toBe('Password must be at least 8 characters')
       }
     })
     

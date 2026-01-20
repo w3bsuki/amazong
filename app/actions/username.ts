@@ -45,7 +45,7 @@ export async function checkUsernameAvailability(username: string): Promise<{
     // Validate format
     const validation = usernameSchema.safeParse(normalizedUsername)
     if (!validation.success) {
-      return { available: false, error: validation.error.errors[0]?.message ?? "Invalid username" }
+      return { available: false, error: validation.error.issues[0]?.message ?? "Invalid username" }
     }
     
     // Check reserved
@@ -99,7 +99,7 @@ export async function setUsername(username: string): Promise<{
     // Validate format
     const validation = usernameSchema.safeParse(normalizedUsername)
     if (!validation.success) {
-      return { success: false, error: validation.error.errors[0]?.message ?? "Invalid username" }
+      return { success: false, error: validation.error.issues[0]?.message ?? "Invalid username" }
     }
     
     // Check reserved
@@ -220,7 +220,7 @@ export async function updatePublicProfile(data: z.infer<typeof publicProfileSche
     // Validate
     const validation = publicProfileSchema.safeParse(data)
     if (!validation.success) {
-      return { success: false, error: validation.error.errors[0]?.message ?? "Invalid profile data" }
+      return { success: false, error: validation.error.issues[0]?.message ?? "Invalid profile data" }
     }
     
     const updateData: Record<string, unknown> = {
@@ -367,7 +367,7 @@ export async function upgradeToBusinessAccount(data: z.infer<typeof businessUpgr
     // Validate
     const validation = businessUpgradeSchema.safeParse(data)
     if (!validation.success) {
-      return { success: false, error: validation.error.errors[0]?.message ?? "Invalid business data" }
+      return { success: false, error: validation.error.issues[0]?.message ?? "Invalid business data" }
     }
     
     // If changing username with upgrade

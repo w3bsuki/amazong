@@ -27,7 +27,7 @@ const onboardingSchema = z.object({
   businessName: z.string().max(100).nullable(),
   website: z.string().url().nullable().or(z.literal("")).transform(v => v || null),
   location: z.string().max(100).nullable(),
-  socialLinks: z.record(z.string()).nullable(),
+  socialLinks: z.record(z.string(), z.string()).nullable(),
   avatarType: z.enum(["custom", "generated"]),
   avatarVariant: z.string().optional(),
   avatarPalette: z.number().optional(),
