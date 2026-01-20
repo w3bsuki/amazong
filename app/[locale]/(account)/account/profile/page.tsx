@@ -1,6 +1,23 @@
 import { createClient } from "@/lib/supabase/server"
 import { redirect } from "next/navigation"
 import { ProfileContent } from "./profile-content"
+import {
+  deleteAvatar,
+  setAvatarUrl,
+  updateEmail,
+  updatePassword,
+  updateProfile,
+  uploadAvatar,
+} from "@/app/actions/profile"
+import {
+  checkUsernameAvailability,
+  downgradeToPersonalAccount,
+  getUsernameChangeCooldown,
+  setUsername,
+  updatePublicProfile,
+  upgradeToBusinessAccount,
+  uploadBanner,
+} from "@/app/actions/username"
 
 interface ProfilePageProps {
   params: Promise<{
@@ -66,8 +83,8 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
   return (
     <div className="flex flex-col gap-4 md:gap-4">
       <h1 className="sr-only">{locale === "bg" ? "Профил" : "Profile"}</h1>
-      <ProfileContent 
-        locale={locale} 
+      <ProfileContent
+        locale={locale}
         profile={profileData || {
           id: user.id,
           email: user.email || "",
@@ -92,6 +109,23 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
           vat_number: null,
           last_username_change: null,
           tier: "free",
+        }}
+        profileActions={{
+          updateProfile,
+          uploadAvatar,
+          deleteAvatar,
+          setAvatarUrl,
+          updateEmail,
+          updatePassword,
+        }}
+        publicProfileActions={{
+          setUsername,
+          updatePublicProfile,
+          uploadBanner,
+          upgradeToBusinessAccount,
+          downgradeToPersonalAccount,
+          checkUsernameAvailability,
+          getUsernameChangeCooldown,
         }}
       />
     </div>

@@ -42,15 +42,38 @@ import {
   Info,
 } from "@phosphor-icons/react"
 import { toast } from "sonner"
-import {
-  setUsername,
-  updatePublicProfile,
-  uploadBanner,
-  upgradeToBusinessAccount,
-  downgradeToPersonalAccount,
-  checkUsernameAvailability,
-  getUsernameChangeCooldown,
-} from "@/app/actions/username"
+
+export type PublicProfileEditorServerActions = {
+  checkUsernameAvailability: (
+    username: string
+  ) => Promise<{ available: boolean; error?: string }>
+  setUsername: (username: string) => Promise<{ success: boolean; error?: string }>
+  updatePublicProfile: (data: {
+    display_name?: string | null
+    bio?: string | null
+    location?: string | null
+    website_url?: string | null
+    social_links?: Record<string, string | null | undefined> | null
+  }) => Promise<{ success: boolean; error?: string }>
+  uploadBanner: (formData: FormData) => Promise<{
+    success: boolean
+    bannerUrl?: string
+    error?: string
+  }>
+  upgradeToBusinessAccount: (data: {
+    business_name: string
+    vat_number?: string | null
+    business_address?: Record<string, unknown> | null
+    website_url?: string | null
+    change_username?: boolean
+    new_username?: string
+  }) => Promise<{ success: boolean; error?: string }>
+  downgradeToPersonalAccount: () => Promise<{ success: boolean; error?: string }>
+  getUsernameChangeCooldown: () => Promise<{
+    canChange: boolean
+    daysRemaining?: number
+  }>
+}
 
 interface PublicProfileEditorProps {
   locale: string
@@ -70,9 +93,14 @@ interface PublicProfileEditorProps {
     vat_number: string | null
     last_username_change: string | null
   }
+  actions: PublicProfileEditorServerActions
 }
 
-export function PublicProfileEditor({ locale, profile }: PublicProfileEditorProps) {
+export function PublicProfileEditor({
+  locale,
+  profile,
+  actions,
+}: PublicProfileEditorProps) {
   const [isPending, startTransition] = useTransition()
   const bannerInputRef = useRef<HTMLInputElement>(null)
 
@@ -114,7 +142,7 @@ export function PublicProfileEditor({ locale, profile }: PublicProfileEditorProp
   // Check username change cooldown on mount
   useEffect(() => {
     const checkCooldown = async () => {
-      const result = await getUsernameChangeCooldown()
+      const result = await actions.getUsernameChangeCooldown()
       setCanChangeUsername(result.canChange)
       setDaysUntilChange(result.daysRemaining)
     }
@@ -134,7 +162,7 @@ export function PublicProfileEditor({ locale, profile }: PublicProfileEditorProp
     }
 
     setIsCheckingUsername(true)
-    const result = await checkUsernameAvailability(username)
+    const result = await actions.checkUsernameAvailability(username)
     setUsernameAvailable(result.available)
     setIsCheckingUsername(false)
   }
@@ -144,7 +172,7 @@ export function PublicProfileEditor({ locale, profile }: PublicProfileEditorProp
     if (!newUsername || newUsername === profile.username) return
 
     startTransition(async () => {
-      const result = await setUsername(newUsername)
+      const result = await actions.setUsername(newUsername)
       if (result.success) {
         toast.success(locale === "bg" ? "Потребителското име е променено" : "Username changed successfully")
         setUsernameDialogOpen(false)
@@ -159,7 +187,7 @@ export function PublicProfileEditor({ locale, profile }: PublicProfileEditorProp
   // Handle profile update
   const handleProfileUpdate = async () => {
     startTransition(async () => {
-      const result = await updatePublicProfile({
+      const result = await actions.updatePublicProfile({
         display_name: profileData.display_name || null,
         bio: profileData.bio || null,
         location: profileData.location || null,
@@ -190,7 +218,7 @@ export function PublicProfileEditor({ locale, profile }: PublicProfileEditorProp
     const formData = new FormData()
     formData.set("banner", file)
 
-    const result = await uploadBanner(formData)
+    const result = await actions.uploadBanner(formData)
     setIsUploadingBanner(false)
 
     if (result.success) {
@@ -205,7 +233,7 @@ export function PublicProfileEditor({ locale, profile }: PublicProfileEditorProp
   // Handle business upgrade
   const handleBusinessUpgrade = async () => {
     startTransition(async () => {
-      const result = await upgradeToBusinessAccount({
+      const result = await actions.upgradeToBusinessAccount({
         business_name: businessData.business_name,
         vat_number: businessData.vat_number || null,
         change_username: businessData.change_username,
@@ -225,7 +253,7 @@ export function PublicProfileEditor({ locale, profile }: PublicProfileEditorProp
   // Handle downgrade to personal
   const handleDowngrade = async () => {
     startTransition(async () => {
-      const result = await downgradeToPersonalAccount()
+      const result = await actions.downgradeToPersonalAccount()
       if (result.success) {
         toast.success(locale === "bg" ? "Профилът е върнат до личен" : "Downgraded to personal account")
         window.location.reload()

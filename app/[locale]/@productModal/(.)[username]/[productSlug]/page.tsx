@@ -14,9 +14,6 @@ import { buildProductPageViewModel, isUuid } from "@/lib/view-models/product-pag
 import { ProductPageLayout } from "@/components/shared/product/product-page-layout"
 import { ProductModalWrapper } from "@/components/desktop/product/product-modal-wrapper"
 
-// Intercepted modal route - must be dynamic since it renders dynamically based on URL
-export const dynamic = "force-dynamic"
-
 interface ProductModalPageProps {
   params: Promise<{
     username: string
@@ -25,10 +22,9 @@ interface ProductModalPageProps {
   }>
 }
 
-// The intercepted modal route should not change document metadata.
-export async function generateMetadata(): Promise<Metadata> {
-  return {}
-}
+// Intercepted modal routes don't need to generate metadata - returning empty object
+// prevents the metadata from being changed when the modal opens
+export const metadata: Metadata = {}
 
 export default async function ProductModalPage({ params }: ProductModalPageProps) {
   const { username, productSlug, locale } = await params

@@ -21,10 +21,10 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { 
+import {
   User,
   Camera,
-  Envelope, 
+  Envelope,
   Key, 
   SpinnerGap,
   Eye,
@@ -38,16 +38,25 @@ import {
   GearSix,
 } from "@phosphor-icons/react"
 import { toast } from "sonner"
-import { 
-  updateProfile, 
-  uploadAvatar, 
-  deleteAvatar, 
-  setAvatarUrl,
-  updateEmail, 
-  updatePassword 
-} from "@/app/actions/profile"
-import { validatePassword, validateEmail } from "@/lib/validations/auth"
-import { PublicProfileEditor } from "./public-profile-editor"
+import { validatePassword, validateEmail } from "@/lib/validations/auth"        
+import { PublicProfileEditor, type PublicProfileEditorServerActions } from "./public-profile-editor"
+
+export type ProfileContentServerActions = {
+  updateProfile: (formData: FormData) => Promise<{ success: boolean; error?: string }>
+  uploadAvatar: (formData: FormData) => Promise<{
+    success: boolean
+    avatarUrl?: string
+    error?: string
+  }>
+  deleteAvatar: () => Promise<{ success: boolean; error?: string }>
+  setAvatarUrl: (formData: FormData) => Promise<{
+    success: boolean
+    avatarUrl?: string
+    error?: string
+  }>
+  updateEmail: (formData: FormData) => Promise<{ success: boolean; error?: string }>
+  updatePassword: (formData: FormData) => Promise<{ success: boolean; error?: string }>
+}
 
 interface ProfileContentProps {
   locale: string
@@ -77,6 +86,8 @@ interface ProfileContentProps {
     last_username_change: string | null
     tier?: string | null
   }
+  profileActions: ProfileContentServerActions
+  publicProfileActions: PublicProfileEditorServerActions
 }
 
 const SHIPPING_REGIONS = [
@@ -112,7 +123,12 @@ function AvatarImg({ src, alt, size, className }: { src: string; alt: string; si
   )
 }
 
-export function ProfileContent({ locale, profile }: ProfileContentProps) {
+export function ProfileContent({
+  locale,
+  profile,
+  profileActions,
+  publicProfileActions,
+}: ProfileContentProps) {
   const [isPending, startTransition] = useTransition()
   const [isChangePasswordOpen, setIsChangePasswordOpen] = useState(false)
   const [isChangeEmailOpen, setIsChangeEmailOpen] = useState(false)
@@ -149,7 +165,7 @@ export function ProfileContent({ locale, profile }: ProfileContentProps) {
     formData.set("country_code", profileData.country_code)
 
     startTransition(async () => {
-      const result = await updateProfile(formData)
+      const result = await profileActions.updateProfile(formData)
       if (result.success) {
         toast.success(locale === "bg" ? "Профилът е обновен успешно" : "Profile updated successfully")
       } else {
@@ -175,7 +191,7 @@ export function ProfileContent({ locale, profile }: ProfileContentProps) {
     const formData = new FormData()
     formData.set("avatar", file)
 
-    const result = await uploadAvatar(formData)
+    const result = await profileActions.uploadAvatar(formData)
     setIsUploadingAvatar(false)
 
     if (result.success) {
@@ -190,7 +206,7 @@ export function ProfileContent({ locale, profile }: ProfileContentProps) {
   // Handle avatar delete
   const handleDeleteAvatar = async () => {
     setIsUploadingAvatar(true)
-    const result = await deleteAvatar()
+    const result = await profileActions.deleteAvatar()
     setIsUploadingAvatar(false)
 
     if (result.success) {
@@ -209,7 +225,7 @@ export function ProfileContent({ locale, profile }: ProfileContentProps) {
     formData.set("avatar_url", url)
 
     startTransition(async () => {
-      const result = await setAvatarUrl(formData)
+      const result = await profileActions.setAvatarUrl(formData)
       setIsUploadingAvatar(false)
 
       if (result.success) {
@@ -234,7 +250,7 @@ export function ProfileContent({ locale, profile }: ProfileContentProps) {
     formData.set("email", emailData.newEmail)
 
     startTransition(async () => {
-      const result = await updateEmail(formData)
+      const result = await profileActions.updateEmail(formData)
       if (result.success) {
         toast.success(
           locale === "bg" 
@@ -268,7 +284,7 @@ export function ProfileContent({ locale, profile }: ProfileContentProps) {
     formData.set("confirmPassword", passwordData.confirmPassword)
 
     startTransition(async () => {
-      const result = await updatePassword(formData)
+      const result = await profileActions.updatePassword(formData)
       if (result.success) {
         toast.success(locale === "bg" ? "Паролата е променена успешно" : "Password changed successfully")
         setIsChangePasswordOpen(false)
@@ -321,6 +337,7 @@ export function ProfileContent({ locale, profile }: ProfileContentProps) {
       <TabsContent value="public" className="space-y-6 mt-0">
         <PublicProfileEditor 
           locale={locale} 
+          actions={publicProfileActions}
           profile={{
             id: profile.id,
             username: profile.username,
