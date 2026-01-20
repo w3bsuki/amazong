@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server"
 import { redirect } from "next/navigation"
 import { FollowingContent } from "./following-content"
+import { unfollowSeller } from "@/app/actions/seller-follows"
 
 interface FollowingPageProps {
   params: Promise<{
@@ -87,10 +88,11 @@ export default async function FollowingPage({ params }: FollowingPageProps) {
       <h1 className="sr-only">
         {locale === "bg" ? "Следвани магазини" : "Following"}
       </h1>
-      <FollowingContent 
-        locale={locale} 
+      <FollowingContent
+        locale={locale}
         sellers={transformedSellers}
         total={count || 0}
+        actions={{ unfollowSeller }}
       />
     </div>
   )

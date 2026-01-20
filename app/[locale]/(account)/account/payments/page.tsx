@@ -2,6 +2,11 @@ import { createClient } from "@/lib/supabase/server"
 import { redirect } from "next/navigation"
 import { setRequestLocale } from "next-intl/server"
 import { PaymentsContent } from "./payments-content"
+import {
+    createPaymentMethodSetupSession,
+    deletePaymentMethod,
+    setDefaultPaymentMethod,
+} from "@/app/actions/payments"
 
 const PAYMENT_METHODS_SELECT =
     'id,stripe_payment_method_id,card_brand,card_last4,card_exp_month,card_exp_year,is_default'
@@ -42,9 +47,14 @@ export default async function PaymentsPage({
     return (
         <div className="flex flex-col gap-4 md:gap-4">
             <h1 className="sr-only">{locale === 'bg' ? 'Начини на плащане' : 'Payment Methods'}</h1>
-            <PaymentsContent 
+            <PaymentsContent
                 locale={locale}
                 initialPaymentMethods={paymentMethods}
+                actions={{
+                    createPaymentMethodSetupSession,
+                    deletePaymentMethod,
+                    setDefaultPaymentMethod,
+                }}
             />
         </div>
     )

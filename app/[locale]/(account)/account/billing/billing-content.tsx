@@ -37,9 +37,14 @@ import {
 } from "@phosphor-icons/react"
 import { cn } from "@/lib/utils"
 import { toast } from "sonner"
-import { createBillingPortalSession } from "@/app/actions/subscriptions"
 import { format, formatDistanceToNow } from "date-fns"
 import { bg, enUS } from "date-fns/locale"
+
+export type BillingContentServerActions = {
+  createBillingPortalSession: (args?: {
+    locale?: "en" | "bg"
+  }) => Promise<{ url?: string; error?: string }>
+}
 
 interface SubscriptionPlan {
   id: string
@@ -122,6 +127,7 @@ interface BillingContentProps {
   boosts: Boost[]
   hasStripeCustomer: boolean
   userEmail: string
+  actions: BillingContentServerActions
 }
 
 export function BillingContent({
@@ -131,6 +137,7 @@ export function BillingContent({
   boosts,
   hasStripeCustomer,
   userEmail,
+  actions,
 }: BillingContentProps) {
   const [invoices, setInvoices] = useState<Invoice[]>([])
   const [charges, setCharges] = useState<Charge[]>([])
@@ -291,7 +298,7 @@ export function BillingContent({
   const handleManageSubscription = async () => {
     setIsPortalLoading(true)
     try {
-      const { url, error } = await createBillingPortalSession({
+      const { url, error } = await actions.createBillingPortalSession({
         locale: locale === 'bg' ? 'bg' : 'en',
       })
 

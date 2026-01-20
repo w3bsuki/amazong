@@ -14,6 +14,9 @@ import { buildProductPageViewModel, isUuid } from "@/lib/view-models/product-pag
 import { ProductPageLayout } from "@/components/shared/product/product-page-layout"
 import { ProductModalWrapper } from "@/components/desktop/product/product-modal-wrapper"
 
+// Intercepted modal route - must be dynamic since it renders dynamically based on URL
+export const dynamic = "force-dynamic"
+
 interface ProductModalPageProps {
   params: Promise<{
     username: string
@@ -23,7 +26,6 @@ interface ProductModalPageProps {
 }
 
 // The intercepted modal route should not change document metadata.
-// Keeping metadata static prevents Next.js from attempting to prerender dynamic metadata for this slot.
 export async function generateMetadata(): Promise<Metadata> {
   return {}
 }

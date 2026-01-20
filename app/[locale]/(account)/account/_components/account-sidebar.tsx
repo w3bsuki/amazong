@@ -22,7 +22,7 @@ import {
   IconLogout,
   IconSparkles,
 } from "@tabler/icons-react"
-import { PlansModal } from "./plans-modal"
+import { PlansModal, type PlansModalServerActions } from "./plans-modal"
 import { Button } from "@/components/ui/button"
 
 import {
@@ -143,6 +143,7 @@ interface AccountSidebarProps extends React.ComponentProps<typeof Sidebar> {
     email: string
     avatar?: string
   }
+  plansModalActions: PlansModalServerActions
 }
 
 function AccountNavUser({
@@ -229,7 +230,7 @@ function AccountNavUser({
   )
 }
 
-export function AccountSidebar({ user, ...props }: AccountSidebarProps) {
+export function AccountSidebar({ user, plansModalActions, ...props }: AccountSidebarProps) {
   const locale = useLocale()
   const pathname = usePathname()
 
@@ -356,10 +357,11 @@ export function AccountSidebar({ user, ...props }: AccountSidebarProps) {
             </p>
             <PlansModal
               source="sidebar"
+              actions={plansModalActions}
               trigger={
                 <Button size="sm" className="w-full h-8 text-xs">
                   <IconCrown className="size-3.5 mr-1.5" />
-                  {locale === 'bg' ? 'Виж планове' : 'View Plans'}
+                  {locale === 'bg' ? 'Виж планове' : 'View Plans'}        
                 </Button>
               }
             />

@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/client"
 import { AccountSidebar } from "./account/_components/account-sidebar"
 import { AccountHeader } from "./account/_components/account-header"
 import { AccountTabBar } from "./account/_components/account-tab-bar"
+import type { PlansModalServerActions } from "./account/_components/plans-modal"
 import {
   SidebarInset,
   SidebarProvider,
@@ -17,9 +18,15 @@ interface AccountLayoutContentProps {
     email?: string
     fullName?: string
   }
+  plansModalActions: PlansModalServerActions
 }
 
-export function AccountLayoutContent({ children, modal, initialUser }: AccountLayoutContentProps) {
+export function AccountLayoutContent({
+  children,
+  modal,
+  initialUser,
+  plansModalActions,
+}: AccountLayoutContentProps) {
   const [email, setEmail] = useState<string>(initialUser?.email ?? "")
   const [fullName, setFullName] = useState<string>(initialUser?.fullName ?? "")
 
@@ -53,12 +60,13 @@ export function AccountLayoutContent({ children, modal, initialUser }: AccountLa
         } as React.CSSProperties
       }
     >
-      <AccountSidebar 
+      <AccountSidebar
         variant="inset"
         user={{
           name: fullName,
           email: email,
         }}
+        plansModalActions={plansModalActions}
       />
       <SidebarInset>
         <AccountHeader />

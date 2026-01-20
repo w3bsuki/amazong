@@ -22,10 +22,17 @@ import {
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
-import { createSubscriptionCheckoutSession } from "@/app/actions/subscriptions"
 
 // Reuse shared components from plan-card
 import { PlansGrid, PlansGridSkeleton, type Plan } from "@/components/pricing/plan-card"
+
+export type PlansModalServerActions = {
+  createSubscriptionCheckoutSession: (args: {
+    planId: string
+    billingPeriod: "monthly" | "yearly"
+    locale?: "en" | "bg"
+  }) => Promise<{ url?: string; error?: string }>
+}
 
 interface PlansModalProps {
   /** Trigger element - if not provided, use open/onOpenChange for controlled mode */
@@ -44,6 +51,7 @@ interface PlansModalProps {
   description?: string
   /** Source for analytics (where the modal was opened from) */
   source?: "header" | "account" | "sell" | "sidebar" | "other"
+  actions: PlansModalServerActions
 }
 
 // =============================================================================
@@ -90,6 +98,7 @@ export function PlansModal({
   title,
   description,
   source: _source,
+  actions,
 }: PlansModalProps) {
   const router = useRouter()
   const locale = useLocale()
@@ -143,9 +152,9 @@ export function PlansModal({
     }
 
     setSubscribingPlan(plan.id)
-    
+
     try {
-      const { url, error } = await createSubscriptionCheckoutSession({
+      const { url, error } = await actions.createSubscriptionCheckoutSession({
         planId: plan.id,
         billingPeriod,
         locale: locale === "bg" ? "bg" : "en",

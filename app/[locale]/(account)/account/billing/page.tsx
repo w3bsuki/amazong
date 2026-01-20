@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server"
 import { redirect } from "next/navigation"
 import { BillingContent } from "./billing-content"
+import { createBillingPortalSession } from "@/app/actions/subscriptions"
 
 interface BillingPageProps {
   params: Promise<{
@@ -84,13 +85,14 @@ export default async function BillingPage({ params }: BillingPageProps) {
   return (
     <div className="flex flex-col gap-4 md:gap-4">
       <h1 className="sr-only">{locale === 'bg' ? 'Фактуриране' : 'Billing'}</h1>
-      <BillingContent 
+      <BillingContent
         locale={locale}
         seller={seller}
         subscription={subscription as Parameters<typeof BillingContent>[0]['subscription']}
         boosts={(boosts || []) as Parameters<typeof BillingContent>[0]['boosts']}
         hasStripeCustomer={hasStripeCustomer}
         userEmail={user.email || ''}
+        actions={{ createBillingPortalSession }}
       />
     </div>
   )

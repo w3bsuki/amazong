@@ -25,11 +25,20 @@ import {
     Lock
 } from "@phosphor-icons/react"
 import { toast } from "sonner"
-import {
-    createPaymentMethodSetupSession,
-    deletePaymentMethod,
-    setDefaultPaymentMethod,
-} from "@/app/actions/payments"
+
+export type PaymentsContentServerActions = {
+    createPaymentMethodSetupSession: (input?: { locale?: "en" | "bg" }) => Promise<{
+        url: string | null | undefined
+    }>
+    deletePaymentMethod: (input: {
+        paymentMethodId: string
+        dbId: string
+    }) => Promise<{ success: true }>
+    setDefaultPaymentMethod: (input: {
+        paymentMethodId: string
+        dbId: string
+    }) => Promise<{ success: true }>
+}
 
 interface PaymentMethod {
     id: string
@@ -44,6 +53,7 @@ interface PaymentMethod {
 interface PaymentsContentProps {
     locale: string
     initialPaymentMethods: PaymentMethod[]
+    actions: PaymentsContentServerActions
 }
 
 // Brand icons/colors - using semantic tokens
@@ -55,7 +65,11 @@ const cardBrandStyles = {
     default: { bg: 'bg-muted-foreground', text: 'text-background' }
 } as const
 
-export function PaymentsContent({ locale, initialPaymentMethods }: PaymentsContentProps) {
+export function PaymentsContent({
+    locale,
+    initialPaymentMethods,
+    actions,
+}: PaymentsContentProps) {
     const router = useRouter()
     const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>(initialPaymentMethods)
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
@@ -66,7 +80,7 @@ export function PaymentsContent({ locale, initialPaymentMethods }: PaymentsConte
     const handleAddCard = async () => {
         setIsAddingCard(true)
         try {
-            const { url } = await createPaymentMethodSetupSession({
+            const { url } = await actions.createPaymentMethodSetupSession({
                 locale: locale === "bg" ? "bg" : "en",
             })
 
@@ -90,7 +104,7 @@ export function PaymentsContent({ locale, initialPaymentMethods }: PaymentsConte
 
         setIsLoading(true)
         try {
-            await deletePaymentMethod({
+            await actions.deletePaymentMethod({
                 paymentMethodId: method.stripe_payment_method_id,
                 dbId: method.id,
             })
@@ -116,7 +130,7 @@ export function PaymentsContent({ locale, initialPaymentMethods }: PaymentsConte
             const method = paymentMethods.find(m => m.id === methodId)
             if (!method) return
 
-            await setDefaultPaymentMethod({
+            await actions.setDefaultPaymentMethod({
                 paymentMethodId: method.stripe_payment_method_id,
                 dbId: method.id,
             })

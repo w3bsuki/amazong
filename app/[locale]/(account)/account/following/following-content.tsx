@@ -15,7 +15,6 @@ import {
   SpinnerGap,
 } from "@phosphor-icons/react"
 import { toast } from "sonner"
-import { unfollowSeller } from "@/app/actions/seller-follows"
 import { safeAvatarSrc } from "@/lib/utils"
 
 function shouldBypassNextImage(src: string) {
@@ -46,24 +45,36 @@ interface FollowedSeller {
     average_rating: number | null
     total_listings: number | null
   } | null
+} 
+
+export type FollowingContentServerActions = {
+  unfollowSeller: (
+    sellerId: string
+  ) => Promise<{ success: boolean; error?: string }>
 }
 
 interface FollowingContentProps {
   locale: string
   sellers: FollowedSeller[]
   total: number
+  actions: FollowingContentServerActions
 }
 
-export function FollowingContent({ locale, sellers: initialSellers, total }: FollowingContentProps) {
+export function FollowingContent({
+  locale,
+  sellers: initialSellers,
+  total,
+  actions,
+}: FollowingContentProps) {
   const [sellers, setSellers] = useState(initialSellers)
   const [isPending, startTransition] = useTransition()
-  const [unfollowingId, setUnfollowingId] = useState<string | null>(null)
+  const [unfollowingId, setUnfollowingId] = useState<string | null>(null)       
 
   const handleUnfollow = async (sellerId: string) => {
     setUnfollowingId(sellerId)
 
     startTransition(async () => {
-      const result = await unfollowSeller(sellerId)
+      const result = await actions.unfollowSeller(sellerId)
 
       if (result.success) {
         setSellers(prev => prev.filter(s => s.seller_id !== sellerId))

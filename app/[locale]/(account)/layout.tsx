@@ -6,6 +6,7 @@ import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AccountLayoutContent } from "./account-layout-content";
 import { headers } from "next/headers";
+import { createSubscriptionCheckoutSession } from "@/app/actions/subscriptions";
 
 // Generate static params for all supported locales
 export function generateStaticParams() {
@@ -90,7 +91,11 @@ export default async function AccountLayout({
 
     return (
         <Suspense fallback={<AccountLayoutSkeleton>{children}</AccountLayoutSkeleton>}>
-            <AccountLayoutContent modal={modal} initialUser={{ email: userEmail, fullName: userFullName }}>
+            <AccountLayoutContent
+                modal={modal}
+                initialUser={{ email: userEmail, fullName: userFullName }}
+                plansModalActions={{ createSubscriptionCheckoutSession }}
+            >
                 {children}
             </AccountLayoutContent>
         </Suspense>
