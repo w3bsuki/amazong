@@ -10,7 +10,7 @@ import { setRequestLocale } from "next-intl/server";
 import { routing } from "@/i18n/routing";
 import type { CategoryTreeNode } from "@/lib/category-tree";
 
-import { OnboardingProvider } from "@/components/providers/onboarding-provider";
+import { OnboardingProvider } from "./_providers/onboarding-provider";
 import { HeaderProvider } from "@/components/providers/header-context";
 import { Toaster } from "@/components/providers/sonner";
 import { GeoWelcomeModal } from "@/components/shared/geo-welcome-modal";

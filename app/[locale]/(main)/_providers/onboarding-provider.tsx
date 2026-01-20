@@ -2,9 +2,9 @@
 
 import { createContext, useEffect, useState, Suspense, useRef, type ReactNode } from "react"
 import { createClient } from "@/lib/supabase/client"
-import { PostSignupOnboardingModal } from "@/components/auth/post-signup-onboarding-modal"
+import { PostSignupOnboardingModal } from "../_components/post-signup-onboarding-modal"
 import { useParams, useSearchParams } from "next/navigation"
-import { useAuthOptional } from "./auth-state-manager"
+import { useAuthOptional } from "@/components/providers/auth-state-manager"
 
 interface OnboardingContextValue {
   showOnboarding: () => void
