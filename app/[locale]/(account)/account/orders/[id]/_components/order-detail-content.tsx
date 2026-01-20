@@ -19,8 +19,6 @@ import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { Checkbox } from "@/components/ui/checkbox"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { submitSellerFeedback } from "@/app/actions/seller-feedback"
-import { requestReturn } from "@/app/actions/orders"
 import {
   ArrowLeft,
   Package,
@@ -41,6 +39,22 @@ import { formatDistanceToNow, format } from "date-fns"
 import { bg, enUS } from "date-fns/locale"
 import type { OrderItemStatus } from "@/lib/order-status"
 import { OrderTimeline } from "./order-timeline"
+
+export type OrderDetailContentServerActions = {
+  requestReturn: (
+    orderItemId: string,
+    reason: string
+  ) => Promise<{ success: boolean; error?: string }>
+  submitSellerFeedback: (input: {
+    sellerId: string
+    orderId?: string | null
+    rating: number
+    comment?: string | null
+    itemAsDescribed: boolean
+    shippingSpeed: boolean
+    communication: boolean
+  }) => Promise<{ success: boolean; data?: { id: string }; error?: string }>
+}
 
 interface OrderItem {
   id: string
@@ -98,6 +112,7 @@ interface OrderDetailContentProps {
   locale: string
   order: Order
   existingSellerFeedbackSellerIds?: string[]
+  actions: OrderDetailContentServerActions
 }
 
 const STATUS_CONFIG = {
@@ -138,7 +153,7 @@ const CARRIERS: Record<string, { name: string; trackingUrl: string }> = {
   dpd: { name: "DPD", trackingUrl: "https://www.dpd.com/bg/bg/paket-trassen/track-and-trace-system-bg/?parcelNr=" },
 }
 
-export function OrderDetailContent({ locale, order, existingSellerFeedbackSellerIds }: OrderDetailContentProps) {
+export function OrderDetailContent({ locale, order, existingSellerFeedbackSellerIds, actions }: OrderDetailContentProps) {
   const [isReturnDialogOpen, setIsReturnDialogOpen] = useState(false)
   const [returnReason, setReturnReason] = useState("")
   const [selectedItem, setSelectedItem] = useState<OrderItem | null>(null)
@@ -193,7 +208,7 @@ export function OrderDetailContent({ locale, order, existingSellerFeedbackSeller
     }
 
     setIsSubmitting(true)
-    const result = await requestReturn(selectedItem.id, returnReason)
+    const result = await actions.requestReturn(selectedItem.id, returnReason)
     setIsSubmitting(false)
 
     if (!result.success) {
@@ -281,7 +296,7 @@ export function OrderDetailContent({ locale, order, existingSellerFeedbackSeller
   const submitFeedback = () => {
     if (!feedbackSellerId) return
     startFeedbackTransition(async () => {
-      const result = await submitSellerFeedback({
+      const result = await actions.submitSellerFeedback({
         sellerId: feedbackSellerId,
         orderId: order.id,
         rating: feedbackRating,

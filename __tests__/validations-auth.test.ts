@@ -81,7 +81,7 @@ describe('lib/validations/auth', () => {
       const result = passwordSchema.safeParse('12345678')
       expect(result.success).toBe(false)
       if (!result.success) {
-        expect(result.error.errors.some(e => e.message.includes('letter'))).toBe(true)
+        expect(result.error.issues.some(e => e.message.includes('letter'))).toBe(true)
       }
     })
     
@@ -89,7 +89,7 @@ describe('lib/validations/auth', () => {
       const result = passwordSchema.safeParse('abcdefgh')
       expect(result.success).toBe(false)
       if (!result.success) {
-        expect(result.error.errors.some(e => e.message.includes('number'))).toBe(true)
+        expect(result.error.issues.some(e => e.message.includes('number'))).toBe(true)
       }
     })
   })
@@ -244,7 +244,7 @@ describe('lib/validations/auth', () => {
         })
         expect(result.success).toBe(false)
         if (!result.success) {
-          expect(result.error.errors.some(e => e.message === 'Passwords do not match')).toBe(true)
+          expect(result.error.issues.some(e => e.message === 'Passwords do not match')).toBe(true)
         }
       })
     })

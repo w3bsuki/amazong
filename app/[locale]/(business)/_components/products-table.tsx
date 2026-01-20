@@ -21,15 +21,6 @@ import {
   IconX,
   IconRefresh,
 } from "@tabler/icons-react"
-import {
-  createProduct,
-  updateProduct,
-  deleteProduct,
-  bulkDeleteProducts,
-  bulkUpdateProductStatus,
-  duplicateProduct,
-  type ProductInput,
-} from "@/app/actions/products"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -48,8 +39,42 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { ProductFormModal } from "./product-form-modal"
+import { ProductFormModal, type ProductFormData } from "./product-form-modal"
 import { cn } from "@/lib/utils"
+
+export type ProductsTableServerActions = {
+  createProduct: (input: ProductFormData) => Promise<{
+    success: boolean
+    data?: { id: string }
+    error?: string
+  }>
+  updateProduct: (productId: string, input: Partial<ProductFormData>) => Promise<{
+    success: boolean
+    error?: string
+  }>
+  deleteProduct: (productId: string) => Promise<{
+    success: boolean
+    error?: string
+  }>
+  bulkDeleteProducts: (productIds: string[]) => Promise<{
+    success: boolean
+    data?: { deleted: number }
+    error?: string
+  }>
+  bulkUpdateProductStatus: (
+    productIds: string[],
+    status: "active" | "draft" | "archived" | "out_of_stock"
+  ) => Promise<{
+    success: boolean
+    data?: { updated: number }
+    error?: string
+  }>
+  duplicateProduct: (productId: string) => Promise<{
+    success: boolean
+    data?: { id: string }
+    error?: string
+  }>
+}
 
 interface Product {
   id: string
@@ -89,6 +114,7 @@ interface ProductsTableProps {
   categories: Category[]
   total: number
   sellerId: string
+  actions: ProductsTableServerActions
 }
 
 type SortField = "title" | "price" | "stock" | "created_at" | "sku" | "status"
@@ -100,6 +126,7 @@ export function ProductsTable({
   categories,
   total,
   sellerId: _sellerId,
+  actions,
 }: ProductsTableProps) {
   const router = useRouter()
   const [products, setProducts] = React.useState<Product[]>(initialProducts)
@@ -212,11 +239,11 @@ export function ProductsTable({
     setIsModalOpen(true)
   }
 
-  const handleProductSubmit = async (data: ProductInput) => {
+  const handleProductSubmit = async (data: ProductFormData) => {
     setIsLoading(true)
     try {
       if (editingProduct) {
-        const result = await updateProduct(editingProduct.id, data)
+        const result = await actions.updateProduct(editingProduct.id, data)
         if (result.success) {
           toast.success("Product updated")
           setProducts((prev) =>
@@ -249,7 +276,7 @@ export function ProductsTable({
           throw new Error(result.error)
         }
       } else {
-        const result = await createProduct(data)
+        const result = await actions.createProduct(data)
         if (result.success && result.data) {
           toast.success("Product created")
           const newProduct: Product = {
@@ -288,10 +315,10 @@ export function ProductsTable({
     if (!confirm(`Delete ${selectedIds.size} product(s)?`)) return
     setIsLoading(true)
     try {
-      const result = await bulkDeleteProducts([...selectedIds])
+      const result = await actions.bulkDeleteProducts([...selectedIds])
       if (result.success) {
         toast.success(`${selectedIds.size} deleted`)
-        setProducts((prev) => prev.filter((p) => !selectedIds.has(p.id)))
+        setProducts((prev) => prev.filter((p) => !selectedIds.has(p.id)))  
         setSelectedIds(new Set())
         setIsAllSelected(false)
         router.refresh()
@@ -304,7 +331,7 @@ export function ProductsTable({
   const handleBulkStatusUpdate = async (newStatus: "active" | "draft" | "archived" | "out_of_stock") => {
     setIsLoading(true)
     try {
-      const result = await bulkUpdateProductStatus([...selectedIds], newStatus)
+      const result = await actions.bulkUpdateProductStatus([...selectedIds], newStatus)
       if (result.success) {
         toast.success(`${selectedIds.size} product(s) set to ${newStatus}`)
         setProducts((prev) => prev.map((p) =>
@@ -324,7 +351,7 @@ export function ProductsTable({
   const handleDuplicate = async (productId: string) => {
     setIsLoading(true)
     try {
-      const result = await duplicateProduct(productId)
+      const result = await actions.duplicateProduct(productId)
       if (result.success) {
         toast.success("Product duplicated")
         router.refresh()
@@ -338,10 +365,10 @@ export function ProductsTable({
     if (!confirm("Delete this product?")) return
     setIsLoading(true)
     try {
-      const result = await deleteProduct(productId)
+      const result = await actions.deleteProduct(productId)
       if (result.success) {
         toast.success("Product deleted")
-        setProducts((prev) => prev.filter((p) => p.id !== productId))
+        setProducts((prev) => prev.filter((p) => p.id !== productId))      
         router.refresh()
       }
     } finally {

@@ -36,10 +36,6 @@ import {
 import * as PricingCard from "./pricing-card"
 import { cn } from "@/lib/utils"
 import { toast } from "sonner"
-import {
-  createSubscriptionCheckoutSession,
-  downgradeToFreeTier,
-} from "@/app/actions/subscriptions"
 
 interface SubscriptionPlanRow {
   id: string
@@ -61,6 +57,15 @@ interface SubscriptionPlanRow {
   description_bg?: string | null
   features?: unknown
   analytics_access?: string | null
+}
+
+export type PlansPageClientServerActions = {
+  createSubscriptionCheckoutSession: (args: {
+    planId: string
+    billingPeriod: "monthly" | "yearly"
+    locale?: "en" | "bg"
+  }) => Promise<{ url?: string; error?: string }>
+  downgradeToFreeTier: () => Promise<{ tier?: "free"; error?: string }>
 }
 
 const planIcons: Record<string, React.ReactNode> = {
@@ -339,10 +344,12 @@ export default function PlansPageClient(props: {
   initialPlans: SubscriptionPlanRow[]
   initialUserId: string | null
   initialCurrentTier: string
+  actions: PlansPageClientServerActions
 }) {
   const router = useRouter()
   const locale = props.locale || "en"
   const t = content[locale as keyof typeof content] || content.en
+  const actions = props.actions
 
   const [accountType, setAccountType] = useState<"personal" | "business">("personal")
   const [yearly, setYearly] = useState(false)
@@ -398,13 +405,13 @@ export default function PlansPageClient(props: {
 
     try {
       if (price === 0) {
-        const res = await downgradeToFreeTier()
+        const res = await actions.downgradeToFreeTier()
         if (res?.error) throw new Error(res.error)
         setCurrentTier("free")
-        toast.success(locale === "bg" ? "Планът е сменен" : "Plan changed")
+        toast.success(locale === "bg" ? "Планът е сменен" : "Plan changed")     
       } else {
         const billingPeriod = yearly ? "yearly" : "monthly"
-        const res = await createSubscriptionCheckoutSession({
+        const res = await actions.createSubscriptionCheckoutSession({
           planId,
           billingPeriod,
           locale: locale === "bg" ? "bg" : "en",

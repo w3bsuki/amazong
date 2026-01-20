@@ -1,4 +1,12 @@
 import { requireDashboardAccess, getBusinessProducts } from "@/lib/auth/business"
+import {
+  bulkDeleteProducts,
+  bulkUpdateProductStatus,
+  createProduct,
+  deleteProduct,
+  duplicateProduct,
+  updateProduct,
+} from "@/app/actions/products"
 import { ProductsTable } from "../../_components/products-table"
 import { getBusinessDashboardCategories } from "../_lib/categories"
 
@@ -14,6 +22,14 @@ export default async function BusinessProductsPage() {
       categories={categories}
       total={total}
       sellerId={businessSeller.id}
+      actions={{
+        createProduct,
+        updateProduct,
+        deleteProduct,
+        bulkDeleteProducts,
+        bulkUpdateProductStatus,
+        duplicateProduct,
+      }}
     />
   )
 }

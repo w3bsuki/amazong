@@ -31,10 +31,32 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { cn } from "@/lib/utils"
-import { completePostSignupOnboarding, type OnboardingData } from "@/app/actions/onboarding"
 import Image from "next/image"
 import Avatar from "boring-avatars"
 import { AVATAR_VARIANTS, type AvatarVariant, getColorPalette } from "@/lib/avatar-palettes"
+
+export type OnboardingData = {
+  userId: string
+  intent: "sell" | "shop" | "browse"
+  accountType: "personal" | "business" | null
+  displayName: string | null
+  bio: string | null
+  businessName: string | null
+  website: string | null
+  location: string | null
+  socialLinks: Record<string, string> | null
+  avatarType: "custom" | "generated"
+  avatarVariant?: string | undefined
+  avatarPalette?: number | undefined
+}
+
+export type PostSignupOnboardingServerActions = {
+  completePostSignupOnboarding: (
+    data: OnboardingData,
+    avatarFile: File | null,
+    coverFile: File | null
+  ) => Promise<{ success: boolean; error?: string }>
+}
 
 interface PostSignupOnboardingModalProps {
   isOpen: boolean
@@ -44,6 +66,7 @@ interface PostSignupOnboardingModalProps {
   displayName?: string | null
   accountType: "personal" | "business"  // From signup - already set in profile!
   locale?: string
+  actions: PostSignupOnboardingServerActions
 }
 
 type OnboardingStep = "intent" | "profile" | "social" | "business" | "complete"
@@ -164,6 +187,7 @@ export function PostSignupOnboardingModal({
   displayName: initialDisplayName,
   accountType,  // From profile - already set at signup!
   locale = "en",
+  actions,
 }: PostSignupOnboardingModalProps) {
   const router = useRouter()
   const t = translations[locale as keyof typeof translations] || translations.en
@@ -274,7 +298,7 @@ export function PostSignupOnboardingModal({
 
     startTransition(async () => {
       try {
-        const result = await completePostSignupOnboarding(data, avatarFile, coverFile)
+        const result = await actions.completePostSignupOnboarding(data, avatarFile, coverFile)
         
         if (result.error) {
           setError(result.error)

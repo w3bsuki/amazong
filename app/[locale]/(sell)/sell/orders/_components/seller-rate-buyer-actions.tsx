@@ -3,23 +3,42 @@
 import { useState, useEffect, useTransition } from "react"
 import { Button } from "@/components/ui/button"
 import { CheckCircle, UserCheck } from "lucide-react"
-import { canSellerRateBuyer } from "@/app/actions/orders"
-import { submitBuyerFeedback } from "@/app/actions/buyer-feedback"
 import { type OrderItemStatus } from "@/lib/order-status"
 import { useRouter } from "@/i18n/routing"
 import { toast } from "sonner"
 import { StarRatingDialog } from "@/components/shared/star-rating-dialog"
 
+type SubmitBuyerFeedbackInput = {
+  buyer_id: string
+  order_id: string
+  rating: number
+  comment?: string
+  payment_promptness?: boolean
+  communication?: boolean
+  reasonable_expectations?: boolean
+}
+
+export type SellerRateBuyerActionsServerActions = {
+  canSellerRateBuyer: (
+    orderItemId: string
+  ) => Promise<{ canRate: boolean; hasRated: boolean; buyerId?: string; orderId?: string }>
+  submitBuyerFeedback: (
+    input: SubmitBuyerFeedbackInput
+  ) => Promise<{ success: boolean; error?: string }>
+}
+
 interface SellerRateBuyerActionsProps {
   orderItemId: string
   currentStatus: OrderItemStatus
   locale?: string
+  actions: SellerRateBuyerActionsServerActions
 }
 
 export function SellerRateBuyerActions({
   orderItemId,
   currentStatus,
   locale = 'en',
+  actions,
 }: SellerRateBuyerActionsProps) {
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
@@ -35,7 +54,7 @@ export function SellerRateBuyerActions({
   useEffect(() => {
     async function checkRatingStatus() {
       if (isDelivered) {
-        const result = await canSellerRateBuyer(orderItemId)
+        const result = await actions.canSellerRateBuyer(orderItemId)
         setCanRate(result.canRate)
         setHasRated(result.hasRated)
         setBuyerId(result.buyerId)
@@ -53,7 +72,7 @@ export function SellerRateBuyerActions({
 
     startTransition(async () => {
       try {
-        const result = await submitBuyerFeedback({
+        const result = await actions.submitBuyerFeedback({
           buyer_id: buyerId,
           order_id: orderId,
           rating,

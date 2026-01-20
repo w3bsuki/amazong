@@ -1,5 +1,11 @@
 import { createClient } from "@/lib/supabase/server"
 import { redirect } from "next/navigation"
+import {
+  bulkUpdateProductStatus,
+  clearProductDiscount,
+  deleteProduct,
+  setProductDiscountPrice,
+} from "@/app/actions/products"
 import { Link } from "@/i18n/routing"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
@@ -289,7 +295,16 @@ export default async function SellingPage({ params }: SellingPageProps) {
             {locale === 'bg' ? 'Вашите продукти' : 'Your Products'}
           </span>
         </div>
-        <SellingProductsList products={sellerProducts} locale={locale} />
+        <SellingProductsList
+          products={sellerProducts}
+          locale={locale}
+          actions={{
+            deleteProduct,
+            bulkUpdateProductStatus,
+            setProductDiscountPrice,
+            clearProductDiscount,
+          }}
+        />
       </div>
 
       {/* Desktop: Products in Card */}
@@ -313,7 +328,16 @@ export default async function SellingPage({ params }: SellingPageProps) {
           </div>
         </CardHeader>
         <CardContent className="p-0">
-          <SellingProductsList products={sellerProducts} locale={locale} />
+          <SellingProductsList
+            products={sellerProducts}
+            locale={locale}
+            actions={{
+              deleteProduct,
+              bulkUpdateProductStatus,
+              setProductDiscountPrice,
+              clearProductDiscount,
+            }}
+          />
         </CardContent>
       </Card>
     </div>

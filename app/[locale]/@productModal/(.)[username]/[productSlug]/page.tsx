@@ -13,6 +13,7 @@ import { fetchProductReviews, type ProductReview } from "@/lib/data/product-revi
 import { buildProductPageViewModel, isUuid } from "@/lib/view-models/product-page"
 import { ProductPageLayout } from "@/components/shared/product/product-page-layout"
 import { ProductModalWrapper } from "@/components/desktop/product/product-modal-wrapper"
+import { routing } from "@/i18n/routing"
 
 interface ProductModalPageProps {
   params: Promise<{
@@ -28,13 +29,23 @@ export const metadata: Metadata = {}
 
 // Opt out of static generation for intercepted routes
 // This prevents prerendering errors with cacheComponents
-export async function generateStaticParams() {
-  return []
+export function generateStaticParams() {
+  // In Cache Components mode, `generateStaticParams` must return at least one
+  // entry for build-time validation. We use a placeholder param so we don't
+  // prerender real product modals.
+  return routing.locales.map((locale) => ({
+    locale,
+    username: "__modal__",
+    productSlug: "__modal__",
+  }))
 }
 
 export default async function ProductModalPage({ params }: ProductModalPageProps) {
   const { username, productSlug, locale } = await params
   setRequestLocale(locale)
+
+  // Placeholder entry used only for build-time validation.
+  if (username === "__modal__" || productSlug === "__modal__") notFound()
 
   const productData = await fetchProductByUsernameAndSlug(username, productSlug)
   if (!productData) notFound()

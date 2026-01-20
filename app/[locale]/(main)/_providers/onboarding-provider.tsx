@@ -2,7 +2,7 @@
 
 import { createContext, useEffect, useState, Suspense, useRef, type ReactNode } from "react"
 import { createClient } from "@/lib/supabase/client"
-import { PostSignupOnboardingModal } from "../_components/post-signup-onboarding-modal"
+import { PostSignupOnboardingModal, type PostSignupOnboardingServerActions } from "../_components/post-signup-onboarding-modal"
 import { useParams, useSearchParams } from "next/navigation"
 import { useAuthOptional } from "@/components/providers/auth-state-manager"
 
@@ -16,6 +16,7 @@ const OnboardingContext = createContext<OnboardingContextValue | null>(null)
 interface OnboardingProviderProps {
   children: ReactNode
   locale?: string | undefined
+  actions: PostSignupOnboardingServerActions
 }
 
 interface ProfileData {
@@ -34,7 +35,7 @@ interface RawProfileData {
 }
 
 // Inner component that uses useSearchParams (requires Suspense)
-function OnboardingProviderInner({ children, locale: propLocale }: OnboardingProviderProps) {
+function OnboardingProviderInner({ children, locale: propLocale, actions }: OnboardingProviderProps) {
   const params = useParams()
   const searchParams = useSearchParams()
   const auth = useAuthOptional()
@@ -128,6 +129,7 @@ function OnboardingProviderInner({ children, locale: propLocale }: OnboardingPro
           displayName={profile.display_name}
           accountType={profile.account_type}
           locale={locale}
+          actions={actions}
         />
       )}
     </OnboardingContext.Provider>
@@ -135,10 +137,12 @@ function OnboardingProviderInner({ children, locale: propLocale }: OnboardingPro
 }
 
 // Main export wraps inner component with Suspense
-export function OnboardingProvider({ children, locale }: OnboardingProviderProps) {
+export function OnboardingProvider({ children, locale, actions }: OnboardingProviderProps) {
   return (
     <Suspense fallback={null}>
-      <OnboardingProviderInner locale={locale}>{children}</OnboardingProviderInner>
+      <OnboardingProviderInner locale={locale} actions={actions}>
+        {children}
+      </OnboardingProviderInner>
     </Suspense>
   )
 }

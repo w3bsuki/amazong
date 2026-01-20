@@ -6,6 +6,7 @@ import { MobileTabBar } from "@/components/mobile/mobile-tab-bar";
 import { Suspense } from "react";
 import { createClient } from "@/lib/supabase/server";
 import { getCategoryHierarchy } from "@/lib/data/categories";
+import { completePostSignupOnboarding } from "@/app/actions/onboarding";
 import { setRequestLocale } from "next-intl/server";
 import { routing } from "@/i18n/routing";
 import type { CategoryTreeNode } from "@/lib/category-tree";
@@ -89,9 +90,9 @@ export default async function MainLayout({
     const categories = await getCategoryHierarchy(null, 2);
 
     return (
-        <OnboardingProvider locale={locale}>
+        <OnboardingProvider locale={locale} actions={{ completePostSignupOnboarding }}>
             <HeaderProvider>
-                <div className="bg-background min-h-screen flex flex-col">
+                <div className="bg-background min-h-screen flex flex-col">      
                     {/* Skip Links - Accessibility */}
                     <SkipLinks />
 

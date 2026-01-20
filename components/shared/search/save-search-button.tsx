@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { useTranslations } from "next-intl"
 import { useSearchParams } from "next/navigation"
 import { Bell, BellRinging, Check } from "@phosphor-icons/react"
@@ -25,8 +25,8 @@ export function SaveSearchButton({ query, category, className }: SaveSearchButto
   const [isSaved, setIsSaved] = useState(false)
   const [isAnimating, setIsAnimating] = useState(false)
 
-  // Build search key from current params
-  const buildSearchKey = () => {
+  // Build search key from current params (exclude pagination/sort).
+  const searchKey = useMemo(() => {
     const params = new URLSearchParams()
     if (query) params.set("q", query)
     if (category) params.set("category", category)
@@ -45,18 +45,23 @@ export function SaveSearchButton({ query, category, className }: SaveSearchButto
     if (verified) params.set("verified", verified)
 
     return params.toString()
-  }
+  }, [query, category, searchParams])
 
-  // Check if already saved on mount
-  useState(() => {
-    if (typeof window === "undefined") return
-    const key = buildSearchKey()
-    const savedSearches = JSON.parse(localStorage.getItem("treido-saved-searches") || "[]")
-    setIsSaved(savedSearches.some((s: { key: string }) => s.key === key))
-  })
+  // Check if already saved after mount (avoid setState during render).
+  useEffect(() => {
+    if (!searchKey) return
+
+    try {
+      const raw = localStorage.getItem("treido-saved-searches")
+      const savedSearches = JSON.parse(raw || "[]") as Array<{ key: string }>
+      setIsSaved(savedSearches.some((s) => s.key === searchKey))
+    } catch {
+      setIsSaved(false)
+    }
+  }, [searchKey])
 
   const handleSaveSearch = () => {
-    const key = buildSearchKey()
+    const key = searchKey
     if (!key) {
       toast({
         title: t("emptySearchTitle"),

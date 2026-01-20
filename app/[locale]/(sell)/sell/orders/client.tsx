@@ -9,21 +9,84 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { OrderStatusBadge } from "@/components/orders/order-status-badge"
-import { OrderStatusActions } from "./_components/order-status-actions"
-import { SellerRateBuyerActions } from "./_components/seller-rate-buyer-actions"
-import { getSellerOrders, getSellerOrderStats, getOrderConversation, type OrderItem } from "@/app/actions/orders"
+import { OrderStatusActions, type OrderStatusActionsServerActions } from "./_components/order-status-actions"
+import { SellerRateBuyerActions, type SellerRateBuyerActionsServerActions } from "./_components/seller-rate-buyer-actions"
 import { type OrderItemStatus } from "@/lib/order-status"
 import { cn, safeAvatarSrc } from "@/lib/utils"
 import { formatDistanceToNow } from "date-fns"
 
+type SellerOrderItem = {
+  id: string
+  order_id: string
+  seller_id: string
+  quantity: number
+  price_at_purchase: number
+  status: OrderItemStatus
+  tracking_number: string | null
+  shipping_carrier: string | null
+  created_at: string
+  product?: {
+    id: string
+    title: string
+    images: string[]
+    slug: string
+  }
+  order?: {
+    id: string
+    user_id: string
+    total_amount: number
+    status: string
+    shipping_address: {
+      name?: string
+      email?: string
+      address?: {
+        line1?: string
+        line2?: string
+        city?: string
+        state?: string
+        postal_code?: string
+        country?: string
+      }
+    } | null
+    created_at: string
+  }
+  buyer?: {
+    id: string
+    full_name: string | null
+    email: string | null
+    avatar_url: string | null
+  }
+}
+
+export type SellerOrdersClientServerActions = OrderStatusActionsServerActions &
+  SellerRateBuyerActionsServerActions & {
+    getSellerOrders: (
+      statusFilter?: OrderItemStatus | "all"
+    ) => Promise<{ orders: SellerOrderItem[]; error?: string }>
+    getSellerOrderStats: () => Promise<{
+      pending: number
+      received: number
+      processing: number
+      shipped: number
+      delivered: number
+      cancelled: number
+      total: number
+    }>
+    getOrderConversation: (
+      orderId: string,
+      sellerId: string
+    ) => Promise<{ conversationId: string | null; error?: string }>
+  }
+
 interface SellerOrdersClientProps {
   locale: string
+  actions: SellerOrdersClientServerActions
 }
 
 type StatusFilter = OrderItemStatus | 'all' | 'active'
 
-export function SellerOrdersClient({ locale }: SellerOrdersClientProps) {
-  const [orders, setOrders] = useState<OrderItem[]>([])
+export function SellerOrdersClient({ locale, actions }: SellerOrdersClientProps) {
+  const [orders, setOrders] = useState<SellerOrderItem[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [isRefreshing, setIsRefreshing] = useState(false)
   const [activeTab, setActiveTab] = useState<StatusFilter>('all')
@@ -42,8 +105,8 @@ export function SellerOrdersClient({ locale }: SellerOrdersClientProps) {
   async function loadData() {
     try {
       const [ordersResult, statsResult] = await Promise.all([
-        getSellerOrders(),
-        getSellerOrderStats()
+        actions.getSellerOrders(),
+        actions.getSellerOrderStats()
       ])
 
       if (ordersResult.orders) {
@@ -51,7 +114,7 @@ export function SellerOrdersClient({ locale }: SellerOrdersClientProps) {
 
         // Load conversation IDs for each order
         const convPromises = ordersResult.orders.map(async (item) => {
-          const result = await getOrderConversation(item.order_id, item.seller_id)
+          const result = await actions.getOrderConversation(item.order_id, item.seller_id)
           return { key: `${item.order_id}-${item.seller_id}`, conversationId: result.conversationId }
         })
 
@@ -294,6 +357,7 @@ export function SellerOrdersClient({ locale }: SellerOrdersClientProps) {
                               isSeller={true}
                               conversationId={conversationId ?? null}
                               locale={locale}
+                              actions={{ updateOrderItemStatus: actions.updateOrderItemStatus }}
                             />
 
                             {/* Rate Buyer - only shown for delivered orders */}
@@ -301,6 +365,10 @@ export function SellerOrdersClient({ locale }: SellerOrdersClientProps) {
                               orderItemId={item.id}
                               currentStatus={item.status}
                               locale={locale}
+                              actions={{
+                                canSellerRateBuyer: actions.canSellerRateBuyer,
+                                submitBuyerFeedback: actions.submitBuyerFeedback,
+                              }}
                             />
 
                             {item.product?.slug && (

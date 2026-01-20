@@ -1,5 +1,6 @@
 ﻿import { createClient } from "@/lib/supabase/server"
 import { getActivePlans } from "@/lib/data/plans"
+import { createSubscriptionCheckoutSession, downgradeToFreeTier } from "@/app/actions/subscriptions"
 import PlansPageClient from "../_components/plans-page-client"
 
 // =============================================================================
@@ -43,6 +44,7 @@ export default async function PlansPage({ params }: PlansPageProps) {
       initialPlans={plans as Parameters<typeof PlansPageClient>[0]["initialPlans"]}
       initialUserId={initialUserId}
       initialCurrentTier={initialCurrentTier}
+      actions={{ createSubscriptionCheckoutSession, downgradeToFreeTier }}
     />
   )
 }

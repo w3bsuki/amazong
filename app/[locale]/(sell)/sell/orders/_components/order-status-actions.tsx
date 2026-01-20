@@ -20,9 +20,8 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Loader2, Package, Truck, CheckCircle, XCircle, MessageSquare } from "lucide-react"
-import { updateOrderItemStatus } from "@/app/actions/orders"
 import { 
-  ORDER_STATUS_CONFIG, 
+  ORDER_STATUS_CONFIG,
   SHIPPING_CARRIERS, 
   getNextStatusOptions,
   canSellerUpdateStatus,
@@ -32,6 +31,15 @@ import {
 import { toast } from "sonner"
 import { Link, useRouter } from "@/i18n/routing"
 
+export type OrderStatusActionsServerActions = {
+  updateOrderItemStatus: (
+    orderItemId: string,
+    newStatus: OrderItemStatus,
+    trackingNumber?: string,
+    shippingCarrier?: ShippingCarrier
+  ) => Promise<{ success: boolean; error?: string }>
+}
+
 interface OrderStatusActionsProps {
   orderItemId: string
   currentStatus: OrderItemStatus
@@ -40,6 +48,7 @@ interface OrderStatusActionsProps {
   isSeller?: boolean
   conversationId?: string | null
   locale?: string
+  actions: OrderStatusActionsServerActions
 }
 
 export function OrderStatusActions({
@@ -49,7 +58,8 @@ export function OrderStatusActions({
   sellerId: _sellerId,
   isSeller = true,
   conversationId,
-  locale = 'en'
+  locale = 'en',
+  actions,
 }: OrderStatusActionsProps) {
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
@@ -70,7 +80,7 @@ export function OrderStatusActions({
 
     startTransition(async () => {
       try {
-        const result = await updateOrderItemStatus(orderItemId, newStatus)
+        const result = await actions.updateOrderItemStatus(orderItemId, newStatus)
         if (result.success) {
           toast.success(`Order marked as ${ORDER_STATUS_CONFIG[newStatus].label}`)
           router.refresh()
@@ -86,7 +96,7 @@ export function OrderStatusActions({
   async function handleShippingSubmit() {
     startTransition(async () => {
       try {
-        const result = await updateOrderItemStatus(
+        const result = await actions.updateOrderItemStatus(
           orderItemId, 
           'shipped',
           trackingNumber || undefined,

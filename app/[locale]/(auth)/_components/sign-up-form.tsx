@@ -11,9 +11,9 @@ import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { Link } from "@/i18n/routing"
 import { cn } from "@/lib/utils"
-import { getPasswordStrength } from "@/lib/validations/auth"
+import { getPasswordStrength } from "@/lib/validations/password-strength"
 import { checkUsernameAvailability, signUp, type AuthActionState } from "../_actions/auth"
-
+ 
 function SubmitButton({
   label,
   pendingLabel,

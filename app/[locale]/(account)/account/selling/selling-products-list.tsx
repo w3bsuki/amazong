@@ -23,7 +23,6 @@ import {
 import { BoostDialog } from "./_components/boost-dialog"
 import { toast } from "sonner"
 import { useTranslations } from "next-intl"
-import { deleteProduct, bulkUpdateProductStatus, setProductDiscountPrice, clearProductDiscount } from "@/app/actions/products"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -43,6 +42,19 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
+
+export type SellingProductsListServerActions = {
+  deleteProduct: (productId: string) => Promise<{ success: boolean; error?: string }>
+  bulkUpdateProductStatus: (
+    productIds: string[],
+    status: "active" | "draft" | "archived" | "out_of_stock"
+  ) => Promise<{ success: boolean; error?: string }>
+  setProductDiscountPrice: (
+    productId: string,
+    newPrice: number
+  ) => Promise<{ success: boolean; error?: string }>
+  clearProductDiscount: (productId: string) => Promise<{ success: boolean; error?: string }>
+}
 
 
 interface Product {
@@ -71,9 +83,10 @@ interface Product {
 interface SellingProductsListProps {
   products: Product[]
   locale: string
+  actions: SellingProductsListServerActions
 }
 
-export function SellingProductsList({ products, locale }: SellingProductsListProps) {
+export function SellingProductsList({ products, locale, actions }: SellingProductsListProps) {
   const searchParams = useSearchParams()
   const router = useRouter()
   const tBoost = useTranslations("Boost")
@@ -94,7 +107,7 @@ export function SellingProductsList({ products, locale }: SellingProductsListPro
   const handleDelete = async (productId: string) => {
     setDeletingId(productId)
     startTransition(async () => {
-      const result = await deleteProduct(productId)
+      const result = await actions.deleteProduct(productId)
       if (result.success) {
         toast.success(t('deleteSuccess'))
         setProductsList(prev => prev.filter(p => p.id !== productId))
@@ -111,10 +124,10 @@ export function SellingProductsList({ products, locale }: SellingProductsListPro
     setTogglingId(productId)
     const newStatus = currentStatus === 'active' ? 'draft' : 'active'
     startTransition(async () => {
-      const result = await bulkUpdateProductStatus([productId], newStatus)
+      const result = await actions.bulkUpdateProductStatus([productId], newStatus)
       if (result.success) {
         toast.success(
-          newStatus === 'draft' ? t('pauseSuccess') : t('activateSuccess')
+          newStatus === 'draft' ? t('pauseSuccess') : t('activateSuccess')      
         )
         setProductsList(prev => prev.map(p =>
           p.id === productId ? { ...p, status: newStatus } : p
@@ -195,7 +208,7 @@ export function SellingProductsList({ products, locale }: SellingProductsListPro
 
     setDiscountingId(activeDiscountProduct.id)
     startTransition(async () => {
-      const result = await setProductDiscountPrice(activeDiscountProduct.id, newPrice)
+      const result = await actions.setProductDiscountPrice(activeDiscountProduct.id, newPrice)
       if (result.success) {
         toast.success(t('discountSaved'))
 
@@ -226,7 +239,7 @@ export function SellingProductsList({ products, locale }: SellingProductsListPro
 
     setDiscountingId(activeDiscountProduct.id)
     startTransition(async () => {
-      const result = await clearProductDiscount(activeDiscountProduct.id)
+      const result = await actions.clearProductDiscount(activeDiscountProduct.id)
       if (result.success) {
         toast.success(t('discountRemoved'))
         setProductsList((prev) =>

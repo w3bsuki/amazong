@@ -1,5 +1,7 @@
 import { createClient } from "@/lib/supabase/server"
 import { redirect, notFound } from "next/navigation"
+import { requestReturn } from "@/app/actions/orders"
+import { submitSellerFeedback } from "@/app/actions/seller-feedback"
 import { OrderDetailContent } from "./_components/order-detail-content"
 import type { OrderItemStatus } from "@/lib/order-status"
 
@@ -204,6 +206,7 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
       <OrderDetailContent 
         locale={locale} 
         order={order}
+        actions={{ requestReturn, submitSellerFeedback }}
       />
     </div>
   )
