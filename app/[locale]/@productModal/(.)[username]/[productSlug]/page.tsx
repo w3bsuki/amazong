@@ -26,6 +26,12 @@ interface ProductModalPageProps {
 // prevents the metadata from being changed when the modal opens
 export const metadata: Metadata = {}
 
+// Opt out of static generation for intercepted routes
+// This prevents prerendering errors with cacheComponents
+export async function generateStaticParams() {
+  return []
+}
+
 export default async function ProductModalPage({ params }: ProductModalPageProps) {
   const { username, productSlug, locale } = await params
   setRequestLocale(locale)
