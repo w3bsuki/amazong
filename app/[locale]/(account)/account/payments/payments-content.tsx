@@ -33,11 +33,11 @@ export type PaymentsContentServerActions = {
     deletePaymentMethod: (input: {
         paymentMethodId: string
         dbId: string
-    }) => Promise<{ success: true }>
+    }) => Promise<{ success: boolean }>
     setDefaultPaymentMethod: (input: {
         paymentMethodId: string
         dbId: string
-    }) => Promise<{ success: true }>
+    }) => Promise<{ success: boolean }>
 }
 
 interface PaymentMethod {

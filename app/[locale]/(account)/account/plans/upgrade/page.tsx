@@ -5,6 +5,7 @@ import { UpgradeContent } from "./upgrade-content"
 import { ArrowLeft } from "@phosphor-icons/react/dist/ssr"
 import { Link } from "@/i18n/routing"
 import { getPlansForUpgrade, PROFILE_SELECT_FOR_UPGRADE } from "@/lib/data/plans"
+import { createSubscriptionCheckoutSession } from "@/app/actions/subscriptions"
 
 /**
  * Full Upgrade Page
@@ -81,6 +82,7 @@ export default async function UpgradePage({
         plans={plans as Parameters<typeof UpgradeContent>[0]['plans']}
         currentTier={currentTier}
         seller={seller}
+        actions={{ createSubscriptionCheckoutSession }}
       />
     </div>
   )

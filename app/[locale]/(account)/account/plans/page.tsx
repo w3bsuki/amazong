@@ -2,6 +2,12 @@ import { createClient } from "@/lib/supabase/server"
 import { redirect } from "next/navigation"
 import { getTranslations } from "next-intl/server"
 import { PlansContent } from "./plans-content"
+import {
+  cancelSubscription,
+  createBillingPortalSession,
+  createSubscriptionCheckoutSession,
+  reactivateSubscription,
+} from "@/app/actions/subscriptions"
 
 const PROFILE_SELECT_FOR_PLANS = 'id,tier,account_type,commission_rate,stripe_customer_id'
 
@@ -69,12 +75,18 @@ export default async function PlansPage({ params }: PlansPageProps) {
   return (
     <div className="flex flex-col gap-4 md:gap-4">
       <h1 className="sr-only">{locale === 'bg' ? 'Планове' : 'Plans'}</h1>
-      <PlansContent 
+      <PlansContent
         locale={locale}
-        plans={filteredPlans as Parameters<typeof PlansContent>[0]['plans']}
+        plans={filteredPlans as Parameters<typeof PlansContent>[0]['plans']}    
         currentTier={currentTier}
         seller={seller}
         currentSubscription={currentSubscription as Parameters<typeof PlansContent>[0]['currentSubscription']}
+        actions={{
+          cancelSubscription,
+          reactivateSubscription,
+          createBillingPortalSession,
+          createSubscriptionCheckoutSession,
+        }}
       />
     </div>
   )

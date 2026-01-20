@@ -21,12 +21,19 @@ import { Lightning, User, Buildings, X, ArrowsClockwise, CalendarBlank, Warning 
 import { cn } from "@/lib/utils"
 import { toast } from "sonner"
 import { PlansGrid, type Plan } from "@/components/pricing/plan-card"
-import {
-  cancelSubscription,
-  reactivateSubscription,
-  createBillingPortalSession,
-  createSubscriptionCheckoutSession,
-} from "@/app/actions/subscriptions"
+
+export type PlansContentServerActions = {
+  cancelSubscription: () => Promise<{ success: boolean; error?: string }>
+  reactivateSubscription: () => Promise<{ success: boolean; error?: string }>
+  createBillingPortalSession: (args?: {
+    locale?: "en" | "bg"
+  }) => Promise<{ url?: string; error?: string }>
+  createSubscriptionCheckoutSession: (args: {
+    planId: string
+    billingPeriod: "monthly" | "yearly"
+    locale?: "en" | "bg"
+  }) => Promise<{ url?: string; error?: string }>
+}
 
 interface SubscriptionPlan {
   id: string
@@ -82,6 +89,7 @@ interface PlansContentProps {
   currentTier: string
   seller: Seller | null
   currentSubscription: Subscription | null
+  actions: PlansContentServerActions
 }
 
 // Convert SubscriptionPlan to Plan interface for shared component
@@ -122,7 +130,8 @@ export function PlansContent({
   plans,
   currentTier,
   seller,
-  currentSubscription
+  currentSubscription,
+  actions,
 }: PlansContentProps) {
   const [loadingPlanId, setLoadingPlanId] = useState<string | null>(null)
   const [billingPeriod, setBillingPeriod] = useState<"monthly" | "yearly">("monthly")
@@ -168,7 +177,7 @@ export function PlansContent({
   // Handle subscription cancellation
   const handleCancelSubscription = () => {
     startTransition(async () => {
-      const result = await cancelSubscription()
+      const result = await actions.cancelSubscription()
       if (result.success) {
         toast.success(
           locale === "bg"
@@ -185,7 +194,7 @@ export function PlansContent({
   // Handle subscription reactivation
   const handleReactivate = () => {
     startTransition(async () => {
-      const result = await reactivateSubscription()
+      const result = await actions.reactivateSubscription()
       if (result.success) {
         toast.success(
           locale === "bg"
@@ -207,7 +216,7 @@ export function PlansContent({
     setLoadingPlanId(plan.id)
 
     try {
-      const { url, error } = await createSubscriptionCheckoutSession({
+      const { url, error } = await actions.createSubscriptionCheckoutSession({
         planId: plan.id,
         billingPeriod,
         locale: locale === "bg" ? "bg" : "en",
@@ -234,7 +243,7 @@ export function PlansContent({
 
   const handleManageSubscription = async () => {
     try {
-      const { url, error } = await createBillingPortalSession({
+      const { url, error } = await actions.createBillingPortalSession({
         locale: locale === "bg" ? "bg" : "en",
       })
 

@@ -8,6 +8,7 @@ import { Loader2 } from "lucide-react"
 import { connection } from "next/server"
 import { routing } from "@/i18n/routing"
 import { getPlansForUpgrade, PROFILE_SELECT_FOR_UPGRADE } from "@/lib/data/plans"
+import { createSubscriptionCheckoutSession } from "@/app/actions/subscriptions"
 
 // Generate static params for all locales - required for Next.js 16 Cache Components
 export function generateStaticParams() {
@@ -56,6 +57,7 @@ async function UpgradeModalContent() {
         plans={plans}
         currentTier={currentTier}
         seller={profile}
+        actions={{ createSubscriptionCheckoutSession }}
       />
     </Modal>
   )

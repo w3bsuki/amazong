@@ -7,7 +7,14 @@ import { Badge } from "@/components/ui/badge"
 import { Check, Crown, Buildings, User, SpinnerGap } from "@phosphor-icons/react"
 import { cn } from "@/lib/utils"
 import { toast } from "sonner"
-import { createSubscriptionCheckoutSession } from "@/app/actions/subscriptions"
+
+export type UpgradeContentServerActions = {
+  createSubscriptionCheckoutSession: (args: {
+    planId: string
+    billingPeriod: "monthly" | "yearly"
+    locale?: "en" | "bg"
+  }) => Promise<{ url?: string; error?: string }>
+}
 
 type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[]
 
@@ -44,13 +51,15 @@ interface UpgradeContentProps {
   plans: SubscriptionPlan[]
   currentTier: string
   seller: Seller | null
+  actions: UpgradeContentServerActions
 }
 
-export function UpgradeContent({ 
-  locale, 
-  plans, 
-  currentTier, 
+export function UpgradeContent({
+  locale,
+  plans,
+  currentTier,
   seller: _seller,
+  actions,
 }: UpgradeContentProps) {
   const [loadingPlan, setLoadingPlan] = useState<string | null>(null)
   const [billingPeriod, setBillingPeriod] = useState<'monthly' | 'yearly'>('yearly')
@@ -86,7 +95,7 @@ export function UpgradeContent({
     setLoadingPlan(plan.id)
     
     try {
-      const { url, error } = await createSubscriptionCheckoutSession({
+      const { url, error } = await actions.createSubscriptionCheckoutSession({
         planId: plan.id,
         billingPeriod,
         locale: locale === 'bg' ? 'bg' : 'en',

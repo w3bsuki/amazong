@@ -237,7 +237,7 @@ export function PublicProfileEditor({
         business_name: businessData.business_name,
         vat_number: businessData.vat_number || null,
         change_username: businessData.change_username,
-        new_username: businessData.new_username || undefined,
+        ...(businessData.new_username ? { new_username: businessData.new_username } : {}),
       })
 
       if (result.success) {
