@@ -1,0 +1,519 @@
+   Γû▓ Next.js 16.0.7 (Turbopack, Cache Components)
+   - Environments: .env.local, .env
+   - Experiments (use with caution):
+     ┬╖ optimizePackageImports
+     ┬╖ serverActions
+     Γ£ô turbopackFileSystemCacheForDev
+
+   Creating an optimized production build ...
+ Γ£ô Compiled successfully in 20.7s
+   Running TypeScript ...
+   Collecting page data using 11 workers ...
+   Generating static pages using 11 workers (0/572) ...
+   Generating static pages using 11 workers (143/572) 
+   Generating static pages using 11 workers (286/572) 
+   Generating static pages using 11 workers (429/572) 
+ Γ£ô Generating static pages using 11 workers (572/572) in 83s
+   Finalizing page optimization ...
+
+Route (app)                                        Revalidate  Expire
+Γöî Γùï /_not-found
+Γö£ ΓùÉ /[locale]                                              1h      1d
+Γöé Γö£ /[locale]                                              1h      1d
+Γöé Γö£ /en                                                    1h      1d
+Γöé Γöö /bg                                                    1h      1d
+Γö£ ΓùÉ /[locale]/(..)[username]/[productSlug]                 1h      1d
+Γöé Γö£ /[locale]/(..)[username]/[productSlug]                 1h      1d
+Γöé Γö£ /en/(..)[username]/[productSlug]                       1h      1d
+Γöé Γöö /bg/(..)[username]/[productSlug]                       1h      1d
+Γö£ ΓùÉ /[locale]/(.)account/plans/upgrade
+Γöé Γö£ /[locale]/(.)account/plans/upgrade
+Γöé Γö£ /en/(.)account/plans/upgrade
+Γöé Γöö /bg/(.)account/plans/upgrade
+Γö£ ΓùÉ /[locale]/[username]                                   1m      5m
+Γöé Γö£ /[locale]/[username]                                   1m      5m
+Γöé Γö£ /en/[username]
+Γöé Γö£ /en/tech_haven                                         1m      5m
+Γöé Γöö [+14 more paths]
+Γö£ ΓùÉ /[locale]/[username]/[productSlug]                     5m      1h
+Γöé Γö£ /[locale]/[username]/[productSlug]                     5m      1h
+Γöé Γö£ /en/[username]/[productSlug]
+Γöé Γö£ /en/tech_haven/[productSlug]
+Γöé Γöö [+54 more paths]
+Γö£ ΓùÉ /[locale]/about                                        1h      1d
+Γöé Γö£ /[locale]/about                                        1h      1d
+Γöé Γö£ /en/about                                              1h      1d
+Γöé Γöö /bg/about                                              1h      1d
+Γö£ ΓùÉ /[locale]/accessibility                                1h      1d
+Γöé Γö£ /[locale]/accessibility                                1h      1d
+Γöé Γö£ /en/accessibility                                      1h      1d
+Γöé Γöö /bg/accessibility                                      1h      1d
+Γö£ ΓùÉ /[locale]/account
+Γöé Γö£ /[locale]/account
+Γöé Γö£ /en/account
+Γöé Γöö /bg/account
+Γö£ ΓùÉ /[locale]/account/addresses
+Γöé Γö£ /[locale]/account/addresses
+Γöé Γö£ /en/account/addresses
+Γöé Γöö /bg/account/addresses
+Γö£ ΓùÉ /[locale]/account/billing
+Γöé Γö£ /[locale]/account/billing
+Γöé Γö£ /en/account/billing
+Γöé Γöö /bg/account/billing
+Γö£ ΓùÉ /[locale]/account/following
+Γöé Γö£ /[locale]/account/following
+Γöé Γö£ /en/account/following
+Γöé Γöö /bg/account/following
+Γö£ ΓùÉ /[locale]/account/notifications
+Γöé Γö£ /[locale]/account/notifications
+Γöé Γö£ /en/account/notifications
+Γöé Γöö /bg/account/notifications
+Γö£ ΓùÉ /[locale]/account/orders
+Γöé Γö£ /[locale]/account/orders
+Γöé Γö£ /en/account/orders
+Γöé Γöö /bg/account/orders
+Γö£ ΓùÉ /[locale]/account/orders/[id]
+Γöé Γö£ /[locale]/account/orders/[id]
+Γöé Γö£ /en/account/orders/[id]
+Γöé Γöö /bg/account/orders/[id]
+Γö£ ΓùÉ /[locale]/account/payments
+Γöé Γö£ /[locale]/account/payments
+Γöé Γö£ /en/account/payments
+Γöé Γöö /bg/account/payments
+Γö£ ΓùÉ /[locale]/account/plans
+Γöé Γö£ /[locale]/account/plans
+Γöé Γö£ /en/account/plans
+Γöé Γöö /bg/account/plans
+Γö£ ΓùÉ /[locale]/account/plans/upgrade
+Γöé Γö£ /[locale]/account/plans/upgrade
+Γöé Γö£ /en/account/plans/upgrade
+Γöé Γöö /bg/account/plans/upgrade
+Γö£ ΓùÉ /[locale]/account/profile
+Γöé Γö£ /[locale]/account/profile
+Γöé Γö£ /en/account/profile
+Γöé Γöö /bg/account/profile
+Γö£ ΓùÉ /[locale]/account/sales
+Γöé Γö£ /[locale]/account/sales
+Γöé Γö£ /en/account/sales
+Γöé Γöö /bg/account/sales
+Γö£ ΓùÉ /[locale]/account/security
+Γöé Γö£ /[locale]/account/security
+Γöé Γö£ /en/account/security
+Γöé Γöö /bg/account/security
+Γö£ ΓùÉ /[locale]/account/selling
+Γöé Γö£ /[locale]/account/selling
+Γöé Γö£ /en/account/selling
+Γöé Γöö /bg/account/selling
+Γö£ ΓùÉ /[locale]/account/selling/[id]/edit
+Γöé Γö£ /[locale]/account/selling/[id]/edit
+Γöé Γö£ /en/account/selling/[id]/edit
+Γöé Γöö /bg/account/selling/[id]/edit
+Γö£ ΓùÉ /[locale]/account/selling/edit
+Γöé Γö£ /[locale]/account/selling/edit
+Γöé Γö£ /en/account/selling/edit
+Γöé Γöö /bg/account/selling/edit
+Γö£ ΓùÉ /[locale]/account/settings
+Γöé Γö£ /[locale]/account/settings
+Γöé Γö£ /en/account/settings
+Γöé Γöö /bg/account/settings
+Γö£ ΓùÉ /[locale]/account/wishlist
+Γöé Γö£ /[locale]/account/wishlist
+Γöé Γö£ /en/account/wishlist
+Γöé Γöö /bg/account/wishlist
+Γö£ ΓùÉ /[locale]/admin
+Γöé Γö£ /[locale]/admin
+Γöé Γö£ /en/admin
+Γöé Γöö /bg/admin
+Γö£ ΓùÉ /[locale]/admin/docs
+Γöé Γö£ /[locale]/admin/docs
+Γöé Γö£ /en/admin/docs
+Γöé Γöö /bg/admin/docs
+Γö£ ΓùÉ /[locale]/admin/notes
+Γöé Γö£ /[locale]/admin/notes
+Γöé Γö£ /en/admin/notes
+Γöé Γöö /bg/admin/notes
+Γö£ ΓùÉ /[locale]/admin/orders
+Γöé Γö£ /[locale]/admin/orders
+Γöé Γö£ /en/admin/orders
+Γöé Γöö /bg/admin/orders
+Γö£ ΓùÉ /[locale]/admin/products
+Γöé Γö£ /[locale]/admin/products
+Γöé Γö£ /en/admin/products
+Γöé Γöö /bg/admin/products
+Γö£ ΓùÉ /[locale]/admin/sellers
+Γöé Γö£ /[locale]/admin/sellers
+Γöé Γö£ /en/admin/sellers
+Γöé Γöö /bg/admin/sellers
+Γö£ ΓùÉ /[locale]/admin/tasks
+Γöé Γö£ /[locale]/admin/tasks
+Γöé Γö£ /en/admin/tasks
+Γöé Γöö /bg/admin/tasks
+Γö£ ΓùÉ /[locale]/admin/users
+Γöé Γö£ /[locale]/admin/users
+Γöé Γö£ /en/admin/users
+Γöé Γöö /bg/admin/users
+Γö£ ΓùÉ /[locale]/advertise                                    1h      1d
+Γöé Γö£ /[locale]/advertise                                    1h      1d
+Γöé Γö£ /en/advertise                                          1h      1d
+Γöé Γöö /bg/advertise                                          1h      1d
+Γö£ ΓùÉ /[locale]/affiliates                                   1h      1d
+Γöé Γö£ /[locale]/affiliates                                   1h      1d
+Γöé Γö£ /en/affiliates                                         1h      1d
+Γöé Γöö /bg/affiliates                                         1h      1d
+Γö£ ΓùÉ /[locale]/auth/error
+Γöé Γö£ /[locale]/auth/error
+Γöé Γö£ /en/auth/error
+Γöé Γöö /bg/auth/error
+Γö£ ΓùÉ /[locale]/auth/forgot-password
+Γöé Γö£ /[locale]/auth/forgot-password
+Γöé Γö£ /en/auth/forgot-password
+Γöé Γöö /bg/auth/forgot-password
+Γö£ ΓùÉ /[locale]/auth/login
+Γöé Γö£ /[locale]/auth/login
+Γöé Γö£ /en/auth/login
+Γöé Γöö /bg/auth/login
+Γö£ ΓùÉ /[locale]/auth/reset-password
+Γöé Γö£ /[locale]/auth/reset-password
+Γöé Γö£ /en/auth/reset-password
+Γöé Γöö /bg/auth/reset-password
+Γö£ ΓùÉ /[locale]/auth/sign-up
+Γöé Γö£ /[locale]/auth/sign-up
+Γöé Γö£ /en/auth/sign-up
+Γöé Γöö /bg/auth/sign-up
+Γö£ ΓùÉ /[locale]/auth/sign-up-success
+Γöé Γö£ /[locale]/auth/sign-up-success
+Γöé Γö£ /en/auth/sign-up-success
+Γöé Γöö /bg/auth/sign-up-success
+Γö£ ΓùÉ /[locale]/auth/welcome
+Γöé Γö£ /[locale]/auth/welcome
+Γöé Γö£ /en/auth/welcome
+Γöé Γöö /bg/auth/welcome
+Γö£ ΓùÉ /[locale]/blog                                         1h      1d
+Γöé Γö£ /[locale]/blog                                         1h      1d
+Γöé Γö£ /en/blog                                               1h      1d
+Γöé Γöö /bg/blog                                               1h      1d
+Γö£ ΓùÉ /[locale]/careers                                      1h      1d
+Γöé Γö£ /[locale]/careers                                      1h      1d
+Γöé Γö£ /en/careers                                            1h      1d
+Γöé Γöö /bg/careers                                            1h      1d
+Γö£ ΓùÉ /[locale]/cart                                         1h      1d
+Γöé Γö£ /[locale]/cart                                         1h      1d
+Γöé Γö£ /en/cart                                               1h      1d
+Γöé Γöö /bg/cart                                               1h      1d
+Γö£ ΓùÉ /[locale]/categories                                   1h      1d
+Γöé Γö£ /[locale]/categories                                   1h      1d
+Γöé Γö£ /en/categories                                         1h      1d
+Γöé Γöö /bg/categories                                         1h      1d
+Γö£ ΓùÉ /[locale]/categories/[slug]
+Γöé Γö£ /[locale]/categories/[slug]
+Γöé Γö£ /en/categories/[slug]
+Γöé Γöö /bg/categories/[slug]
+Γö£ ΓùÉ /[locale]/categories/[slug]/[subslug]                  1h      1d
+Γöé Γö£ /[locale]/categories/[slug]/[subslug]                  1h      1d
+Γöé Γö£ /en/categories/[slug]/[subslug]
+Γöé Γö£ /en/categories/combat-wrestling/[subslug]
+Γöé Γöö [+130 more paths]
+Γö£ ΓùÉ /[locale]/chat
+Γöé Γö£ /[locale]/chat
+Γöé Γö£ /en/chat
+Γöé Γöö /bg/chat
+Γö£ ΓùÉ /[locale]/checkout
+Γöé Γö£ /[locale]/checkout
+Γöé Γö£ /en/checkout
+Γöé Γöö /bg/checkout
+Γö£ ΓùÉ /[locale]/checkout/success
+Γöé Γö£ /[locale]/checkout/success
+Γöé Γö£ /en/checkout/success
+Γöé Γöö /bg/checkout/success
+Γö£ ΓùÉ /[locale]/contact                                      1h      1d
+Γöé Γö£ /[locale]/contact                                      1h      1d
+Γöé Γö£ /en/contact                                            1h      1d
+Γöé Γöö /bg/contact                                            1h      1d
+Γö£ ΓùÉ /[locale]/cookies                                      1h      1d
+Γöé Γö£ /[locale]/cookies                                      1h      1d
+Γöé Γö£ /en/cookies                                            1h      1d
+Γöé Γöö /bg/cookies                                            1h      1d
+Γö£ ΓùÉ /[locale]/customer-service                             1h      1d
+Γöé Γö£ /[locale]/customer-service                             1h      1d
+Γöé Γö£ /en/customer-service                                   1h      1d
+Γöé Γöö /bg/customer-service                                   1h      1d
+Γö£ ΓùÉ /[locale]/dashboard
+Γöé Γö£ /[locale]/dashboard
+Γöé Γö£ /en/dashboard
+Γöé Γöö /bg/dashboard
+Γö£ ΓùÉ /[locale]/dashboard/accounting
+Γöé Γö£ /[locale]/dashboard/accounting
+Γöé Γö£ /en/dashboard/accounting
+Γöé Γöö /bg/dashboard/accounting
+Γö£ ΓùÉ /[locale]/dashboard/analytics
+Γöé Γö£ /[locale]/dashboard/analytics
+Γöé Γö£ /en/dashboard/analytics
+Γöé Γöö /bg/dashboard/analytics
+Γö£ ΓùÉ /[locale]/dashboard/customers
+Γöé Γö£ /[locale]/dashboard/customers
+Γöé Γö£ /en/dashboard/customers
+Γöé Γöö /bg/dashboard/customers
+Γö£ ΓùÉ /[locale]/dashboard/discounts
+Γöé Γö£ /[locale]/dashboard/discounts
+Γöé Γö£ /en/dashboard/discounts
+Γöé Γöö /bg/dashboard/discounts
+Γö£ ΓùÉ /[locale]/dashboard/inventory
+Γöé Γö£ /[locale]/dashboard/inventory
+Γöé Γö£ /en/dashboard/inventory
+Γöé Γöö /bg/dashboard/inventory
+Γö£ ΓùÉ /[locale]/dashboard/marketing
+Γöé Γö£ /[locale]/dashboard/marketing
+Γöé Γö£ /en/dashboard/marketing
+Γöé Γöö /bg/dashboard/marketing
+Γö£ ΓùÉ /[locale]/dashboard/orders
+Γöé Γö£ /[locale]/dashboard/orders
+Γöé Γö£ /en/dashboard/orders
+Γöé Γöö /bg/dashboard/orders
+Γö£ ΓùÉ /[locale]/dashboard/orders/[orderId]
+Γöé Γö£ /[locale]/dashboard/orders/[orderId]
+Γöé Γö£ /en/dashboard/orders/[orderId]
+Γöé Γöö /bg/dashboard/orders/[orderId]
+Γö£ ΓùÉ /[locale]/dashboard/products
+Γöé Γö£ /[locale]/dashboard/products
+Γöé Γö£ /en/dashboard/products
+Γöé Γöö /bg/dashboard/products
+Γö£ ΓùÉ /[locale]/dashboard/products/[productId]/edit
+Γöé Γö£ /[locale]/dashboard/products/[productId]/edit
+Γöé Γö£ /en/dashboard/products/[productId]/edit
+Γöé Γöö /bg/dashboard/products/[productId]/edit
+Γö£ ΓùÉ /[locale]/dashboard/settings
+Γöé Γö£ /[locale]/dashboard/settings
+Γöé Γö£ /en/dashboard/settings
+Γöé Γöö /bg/dashboard/settings
+Γö£ ΓùÉ /[locale]/dashboard/upgrade
+Γöé Γö£ /[locale]/dashboard/upgrade
+Γöé Γö£ /en/dashboard/upgrade
+Γöé Γöö /bg/dashboard/upgrade
+Γö£ ΓùÉ /[locale]/demo
+Γöé Γö£ /[locale]/demo
+Γöé Γö£ /en/demo
+Γöé Γöö /bg/demo
+Γö£ ΓùÉ /[locale]/demo/product-adaptive
+Γöé Γö£ /[locale]/demo/product-adaptive
+Γöé Γö£ /en/demo/product-adaptive
+Γöé Γöö /bg/demo/product-adaptive
+Γö£ ΓùÉ /[locale]/demo/product-desktop
+Γöé Γö£ /[locale]/demo/product-desktop
+Γöé Γö£ /en/demo/product-desktop
+Γöé Γöö /bg/demo/product-desktop
+Γö£ ΓùÉ /[locale]/demo/product-desktop2
+Γöé Γö£ /[locale]/demo/product-desktop2
+Γöé Γö£ /en/demo/product-desktop2
+Γöé Γöö /bg/demo/product-desktop2
+Γö£ ΓùÉ /[locale]/demo/product-desktop3
+Γöé Γö£ /[locale]/demo/product-desktop3
+Γöé Γö£ /en/demo/product-desktop3
+Γöé Γöö /bg/demo/product-desktop3
+Γö£ ΓùÉ /[locale]/demo/product-mobile
+Γöé Γö£ /[locale]/demo/product-mobile
+Γöé Γö£ /en/demo/product-mobile
+Γöé Γöö /bg/demo/product-mobile
+Γö£ ΓùÉ /[locale]/demo/product-mobile2
+Γöé Γö£ /[locale]/demo/product-mobile2
+Γöé Γö£ /en/demo/product-mobile2
+Γöé Γöö /bg/demo/product-mobile2
+Γö£ ΓùÉ /[locale]/demo/product-mobile3
+Γöé Γö£ /[locale]/demo/product-mobile3
+Γöé Γö£ /en/demo/product-mobile3
+Γöé Γöö /bg/demo/product-mobile3
+Γö£ ΓùÉ /[locale]/demo/sell
+Γöé Γö£ /[locale]/demo/sell
+Γöé Γö£ /en/demo/sell
+Γöé Γöö /bg/demo/sell
+Γö£ ΓùÉ /[locale]/demo/sell2
+Γöé Γö£ /[locale]/demo/sell2
+Γöé Γö£ /en/demo/sell2
+Γöé Γöö /bg/demo/sell2
+Γö£ ΓùÉ /[locale]/demo/sell3
+Γöé Γö£ /[locale]/demo/sell3
+Γöé Γö£ /en/demo/sell3
+Γöé Γöö /bg/demo/sell3
+Γö£ ΓùÉ /[locale]/demo/sell4
+Γöé Γö£ /[locale]/demo/sell4
+Γöé Γö£ /en/demo/sell4
+Γöé Γöö /bg/demo/sell4
+Γö£ ΓùÉ /[locale]/demo/sell5
+Γöé Γö£ /[locale]/demo/sell5
+Γöé Γö£ /en/demo/sell5
+Γöé Γöö /bg/demo/sell5
+Γö£ ΓùÉ /[locale]/demo/sell6
+Γöé Γö£ /[locale]/demo/sell6
+Γöé Γö£ /en/demo/sell6
+Γöé Γöö /bg/demo/sell6
+Γö£ ΓùÉ /[locale]/demo/sell7                                   1h      1d
+Γöé Γö£ /[locale]/demo/sell7                                   1h      1d
+Γöé Γö£ /en/demo/sell7                                         1h      1d
+Γöé Γöö /bg/demo/sell7                                         1h      1d
+Γö£ ΓùÉ /[locale]/faq                                          1h      1d
+Γöé Γö£ /[locale]/faq                                          1h      1d
+Γöé Γö£ /en/faq                                                1h      1d
+Γöé Γöö /bg/faq                                                1h      1d
+Γö£ ΓùÉ /[locale]/feedback                                     1h      1d
+Γöé Γö£ /[locale]/feedback                                     1h      1d
+Γöé Γö£ /en/feedback                                           1h      1d
+Γöé Γöö /bg/feedback                                           1h      1d
+Γö£ ΓùÉ /[locale]/free-shipping                                1h      1d
+Γöé Γö£ /[locale]/free-shipping                                1h      1d
+Γöé Γö£ /en/free-shipping                                      1h      1d
+Γöé Γöö /bg/free-shipping                                      1h      1d
+Γö£ ΓùÉ /[locale]/gift-cards                                   1h      1d
+Γöé Γö£ /[locale]/gift-cards                                   1h      1d
+Γöé Γö£ /en/gift-cards                                         1h      1d
+Γöé Γöö /bg/gift-cards                                         1h      1d
+Γö£ ΓùÉ /[locale]/help                                         1h      1d
+Γöé Γö£ /[locale]/help                                         1h      1d
+Γöé Γö£ /en/help                                               1h      1d
+Γöé Γöö /bg/help                                               1h      1d
+Γö£ ΓùÉ /[locale]/investors                                    1h      1d
+Γöé Γö£ /[locale]/investors                                    1h      1d
+Γöé Γö£ /en/investors                                          1h      1d
+Γöé Γöö /bg/investors                                          1h      1d
+Γö£ ΓùÉ /[locale]/members                                      1h      1d
+Γöé Γö£ /[locale]/members                                      1h      1d
+Γöé Γö£ /en/members                                            1h      1d
+Γöé Γöö /bg/members                                            1h      1d
+Γö£ ΓùÉ /[locale]/plans
+Γöé Γö£ /[locale]/plans
+Γöé Γö£ /en/plans
+Γöé Γöö /bg/plans
+Γö£ ΓùÉ /[locale]/privacy                                      1h      1d
+Γöé Γö£ /[locale]/privacy                                      1h      1d
+Γöé Γö£ /en/privacy                                            1h      1d
+Γöé Γöö /bg/privacy                                            1h      1d
+Γö£ ΓùÉ /[locale]/registry                                     1h      1d
+Γöé Γö£ /[locale]/registry                                     1h      1d
+Γöé Γö£ /en/registry                                           1h      1d
+Γöé Γöö /bg/registry                                           1h      1d
+Γö£ ΓùÉ /[locale]/returns                                      1h      1d
+Γöé Γö£ /[locale]/returns                                      1h      1d
+Γöé Γö£ /en/returns                                            1h      1d
+Γöé Γöö /bg/returns                                            1h      1d
+Γö£ ΓùÉ /[locale]/search                                       1h      1d
+Γöé Γö£ /[locale]/search                                       1h      1d
+Γöé Γö£ /en/search                                             1h      1d
+Γöé Γöö /bg/search                                             1h      1d
+Γö£ ΓùÉ /[locale]/security                                     1h      1d
+Γöé Γö£ /[locale]/security                                     1h      1d
+Γöé Γö£ /en/security                                           1h      1d
+Γöé Γöö /bg/security                                           1h      1d
+Γö£ ΓùÉ /[locale]/sell
+Γöé Γö£ /[locale]/sell
+Γöé Γö£ /en/sell
+Γöé Γöö /bg/sell
+Γö£ ΓùÉ /[locale]/sell/orders
+Γöé Γö£ /[locale]/sell/orders
+Γöé Γö£ /en/sell/orders
+Γöé Γöö /bg/sell/orders
+Γö£ ΓùÉ /[locale]/seller/dashboard                             1h      1d
+Γöé Γö£ /[locale]/seller/dashboard                             1h      1d
+Γöé Γö£ /en/seller/dashboard                                   1h      1d
+Γöé Γöö /bg/seller/dashboard                                   1h      1d
+Γö£ ΓùÉ /[locale]/seller/settings/payouts                      1h      1d
+Γöé Γö£ /[locale]/seller/settings/payouts                      1h      1d
+Γöé Γö£ /en/seller/settings/payouts                            1h      1d
+Γöé Γöö /bg/seller/settings/payouts                            1h      1d
+Γö£ ΓùÉ /[locale]/sellers                                      1h      1d
+Γöé Γö£ /[locale]/sellers                                      1h      1d
+Γöé Γö£ /en/sellers                                            1h      1d
+Γöé Γöö /bg/sellers                                            1h      1d
+Γö£ ΓùÉ /[locale]/store-locator                                1h      1d
+Γöé Γö£ /[locale]/store-locator                                1h      1d
+Γöé Γö£ /en/store-locator                                      1h      1d
+Γöé Γöö /bg/store-locator                                      1h      1d
+Γö£ ΓùÉ /[locale]/suppliers                                    1h      1d
+Γöé Γö£ /[locale]/suppliers                                    1h      1d
+Γöé Γö£ /en/suppliers                                          1h      1d
+Γöé Γöö /bg/suppliers                                          1h      1d
+Γö£ ΓùÉ /[locale]/terms                                        1h      1d
+Γöé Γö£ /[locale]/terms                                        1h      1d
+Γöé Γö£ /en/terms                                              1h      1d
+Γöé Γöö /bg/terms                                              1h      1d
+Γö£ ΓùÉ /[locale]/todays-deals                                 1h      1d
+Γöé Γö£ /[locale]/todays-deals                                 1h      1d
+Γöé Γö£ /en/todays-deals                                       1h      1d
+Γöé Γöö /bg/todays-deals                                       1h      1d
+Γö£ ΓùÉ /[locale]/wishlist                                     1h      1d
+Γöé Γö£ /[locale]/wishlist                                     1h      1d
+Γöé Γö£ /en/wishlist                                           1h      1d
+Γöé Γöö /bg/wishlist                                           1h      1d
+Γö£ ΓùÉ /[locale]/wishlist/[token]
+Γöé Γö£ /[locale]/wishlist/[token]
+Γöé Γö£ /en/wishlist/[token]
+Γöé Γöö /bg/wishlist/[token]
+Γö£ ΓùÉ /[locale]/wishlist/shared/[token]
+Γöé Γö£ /[locale]/wishlist/shared/[token]
+Γöé Γö£ /en/wishlist/shared/[token]
+Γöé Γöö /bg/wishlist/shared/[token]
+Γö£ ╞Æ /api/auth/sign-out
+Γö£ ╞Æ /api/auth/signout
+Γö£ Γùï /api/badges
+Γö£ ╞Æ /api/badges/[userId]
+Γö£ ╞Æ /api/badges/evaluate
+Γö£ ╞Æ /api/badges/feature/[badgeId]
+Γö£ Γùï /api/billing/invoices
+Γö£ ╞Æ /api/boost/checkout
+Γö£ ╞Æ /api/categories
+Γö£ ╞Æ /api/categories/[slug]/attributes
+Γö£ ╞Æ /api/categories/[slug]/children
+Γö£ ╞Æ /api/categories/[slug]/context
+Γö£ ╞Æ /api/categories/attributes
+Γö£ Γùï /api/categories/counts                                 1h      1d
+Γö£ ╞Æ /api/categories/products
+Γö£ Γùï /api/categories/sell-tree                              1h      1d
+Γö£ ╞Æ /api/checkout/webhook
+Γö£ ╞Æ /api/connect/dashboard
+Γö£ ╞Æ /api/connect/onboarding
+Γö£ ╞Æ /api/connect/webhook
+Γö£ ╞Æ /api/geo
+Γö£ Γùï /api/health/env
+Γö£ ╞Æ /api/orders/[id]/ship
+Γö£ ╞Æ /api/orders/[id]/track
+Γö£ ╞Æ /api/payments/delete
+Γö£ ╞Æ /api/payments/set-default
+Γö£ ╞Æ /api/payments/setup
+Γö£ ╞Æ /api/payments/webhook
+Γö£ ╞Æ /api/plans
+Γö£ ╞Æ /api/products/[id]/view
+Γö£ ╞Æ /api/products/category/[slug]
+Γö£ ╞Æ /api/products/count
+Γö£ ╞Æ /api/products/create
+Γö£ ╞Æ /api/products/deals
+Γö£ ╞Æ /api/products/feed
+Γö£ ╞Æ /api/products/nearby
+Γö£ ╞Æ /api/products/newest
+Γö£ ╞Æ /api/products/search
+Γö£ ╞Æ /api/revalidate
+Γö£ Γùï /api/sales/export
+Γö£ Γùï /api/seller/limits
+Γö£ ╞Æ /api/stores
+Γö£ ╞Æ /api/subscriptions/checkout
+Γö£ ╞Æ /api/subscriptions/portal
+Γö£ ╞Æ /api/subscriptions/webhook
+Γö£ ╞Æ /api/upload-chat-image
+Γö£ ╞Æ /api/upload-image
+Γö£ ╞Æ /api/wishlist/[token]
+Γö£ ╞Æ /auth/callback
+Γö£ ╞Æ /auth/confirm
+Γö£ Γùï /demo
+Γö£ Γùï /demo/product-desktop
+Γö£ Γùï /demo/product-desktop2
+Γö£ Γùï /demo/product-desktop3
+Γö£ Γùï /demo/product-mobile2
+Γö£ Γùï /demo/product-mobile3
+Γö£ Γùï /demo/sell2
+Γö£ Γùï /demo/sell6
+Γö£ Γùï /robots.txt
+Γöö ╞Æ /sitemap.xml
+
+
+╞Æ Proxy (Middleware)
+
+Γùï  (Static)             prerendered as static content
+ΓùÉ  (Partial Prerender)  prerendered as static HTML with dynamic server-streamed content
+╞Æ  (Dynamic)            server-rendered on demand
+

@@ -1,0 +1,27 @@
+Top offenders (rough match counts)
+--------------------------------
+app/[locale]/demo/product-mobile2/_components/product-mobile2.tsx  ~60
+app/[locale]/demo/product-adaptive/_components/product-page-mobile.tsx  ~55
+app/[locale]/demo/sell4/page.tsx  ~49
+app/[locale]/demo/sell6/page.tsx  ~26
+app/[locale]/demo/sell5/page.tsx  ~25
+app/[locale]/demo/sell2/page.tsx  ~15
+app/[locale]/demo/sell7/_components/sell-form.tsx  ~9
+app/[locale]/demo/product-desktop/_components/demo-desktop-product-page.tsx  ~3
+--------------------------------
+Totals: files=9 palette=244 gradient=0 rawGradient=0 fill=0
+Full report: cleanup/palette-scan-report.txt
+Auth candidates found: 0
+Top offenders (rough match counts)
+--------------------------------
+app\[locale]\demo\sell2\page.tsx  ~33
+components\shared\filters\color-swatches.tsx  ~32
+app\[locale]\demo\sell7\_components\sell-form.tsx  ~23
+app\[locale]\(sell)\_components\steps\step-details.tsx  ~21
+app\[locale]\(sell)\_components\steps\step-pricing.tsx  ~10
+app\[locale]\demo\sell7\_components\category-selector.tsx  ~9
+app\[locale]\(admin)\admin\docs\_components\docs-content.tsx  ~6
+app\[locale]\demo\sell4\page.tsx  ~6
+--------------------------------
+Totals: files=44 arbitrary=166 hex=37 oklch=0
+Full report: cleanup\arbitrary-scan-report.txt
