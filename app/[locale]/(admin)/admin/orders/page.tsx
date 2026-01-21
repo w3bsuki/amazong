@@ -1,5 +1,7 @@
 import { createAdminClient } from "@/lib/supabase/server"
 import { formatDistanceToNow } from "date-fns"
+import { bg, enUS } from "date-fns/locale"
+import { getLocale, getTranslations } from "next-intl/server"
 import { connection } from "next/server"
 
 import {
@@ -61,9 +63,12 @@ export default async function AdminOrdersPage() {
   await connection()
 
   const orders = await getOrders()
+  const t = await getTranslations("AdminOrders")
+  const locale = await getLocale()
+  const dateLocale = locale === "bg" ? bg : enUS
   
   const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('en-US', {
+    return new Intl.NumberFormat(locale, {
       style: 'currency',
       currency: 'BGN',
       maximumFractionDigits: 2,
@@ -89,6 +94,25 @@ export default async function AdminOrdersPage() {
     }
   }
 
+  const getStatusLabel = (status: string | null) => {
+    switch (status) {
+      case 'paid':
+        return t('status.paid')
+      case 'pending':
+        return t('status.pending')
+      case 'processing':
+        return t('status.processing')
+      case 'shipped':
+        return t('status.shipped')
+      case 'delivered':
+        return t('status.delivered')
+      case 'cancelled':
+        return t('status.cancelled')
+      default:
+        return t('status.unknown')
+    }
+  }
+
   // Calculate totals
   const totalRevenue = orders
     .filter(o => o.status === 'paid' || o.status === 'delivered')
@@ -98,37 +122,35 @@ export default async function AdminOrdersPage() {
     <div className="flex flex-col gap-4 py-4 md:gap-4 md:py-6 px-4 lg:px-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Orders</h1>
+          <h1 className="text-2xl font-bold tracking-tight">{t('page.title')}</h1>
           <p className="text-muted-foreground">
-            All orders placed on the platform
+            {t('page.description')}
           </p>
         </div>
         <div className="flex gap-4">
           <Badge variant="outline" className="text-base">
-            {orders.length} orders
+            {t('summary.orders', { count: orders.length })}
           </Badge>
           <Badge variant="outline" className="text-base bg-success/10 text-success border-success/25">
-            {formatCurrency(totalRevenue)} revenue
+            {t('summary.revenue', { amount: formatCurrency(totalRevenue) })}
           </Badge>
         </div>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle>All Orders</CardTitle>
-          <CardDescription>
-            View all orders and their status
-          </CardDescription>
+          <CardTitle>{t('table.title')}</CardTitle>
+          <CardDescription>{t('table.description')}</CardDescription>
         </CardHeader>
         <CardContent>
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Order ID</TableHead>
-                <TableHead>Customer</TableHead>
-                <TableHead>Amount</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Date</TableHead>
+                <TableHead>{t('table.headers.orderId')}</TableHead>
+                <TableHead>{t('table.headers.customer')}</TableHead>
+                <TableHead>{t('table.headers.amount')}</TableHead>
+                <TableHead>{t('table.headers.status')}</TableHead>
+                <TableHead>{t('table.headers.date')}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -140,7 +162,7 @@ export default async function AdminOrdersPage() {
                   <TableCell>
                     <div>
                       <p className="font-medium">
-                        {order.profiles?.full_name || 'No name'}
+                        {order.profiles?.full_name || t('fallbacks.noName')}
                       </p>
                       <p className="text-sm text-muted-foreground">
                         {order.profiles?.email}
@@ -152,11 +174,11 @@ export default async function AdminOrdersPage() {
                   </TableCell>
                   <TableCell>
                     <Badge variant="outline" className={getStatusColor(order.status)}>
-                      {order.status || 'pending'}
+                      {getStatusLabel(order.status)}
                     </Badge>
                   </TableCell>
                   <TableCell className="text-muted-foreground">
-                    {formatDistanceToNow(new Date(order.created_at), { addSuffix: true })}
+                    {formatDistanceToNow(new Date(order.created_at), { addSuffix: true, locale: dateLocale })}
                   </TableCell>
                 </TableRow>
               ))}

@@ -21,7 +21,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
-import { useTranslations } from "next-intl"
+import { useLocale, useTranslations } from "next-intl"
 import { createClient } from "@/lib/supabase/client"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
@@ -37,6 +37,7 @@ interface AdminNote {
 }
 
 export function AdminNotesContent({ initialNotes }: { initialNotes: AdminNote[] }) {
+  const locale = useLocale()
   const t = useTranslations("AdminNotes")
   const [notes, setNotes] = useState(initialNotes)
   const [editingNote, setEditingNote] = useState<AdminNote | null>(null)
@@ -215,7 +216,7 @@ function NoteCard({
         )}
         <div className="flex items-center justify-between mt-3 pt-3 border-t">
           <span className="text-xs text-muted-foreground">
-            {note.updated_at ? new Date(note.updated_at).toLocaleDateString() : t("dateEmpty")}
+            {note.updated_at ? new Date(note.updated_at).toLocaleDateString(locale) : t("dateEmpty")}
           </span>
           <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
             <Button variant="ghost" size="icon" className="size-7" onClick={onEdit}>

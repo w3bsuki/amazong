@@ -2327,7 +2327,8 @@
         "viewer": {
             "srDescription": "Преглед на документ",
             "noContent": "Все още няма съдържание.",
-            "lastUpdatedLabel": "Последна актуализация:"
+            "lastUpdatedLabel": "Последна актуализация:",
+            "emptyDate": "—"
         },
         "editor": {
             "titleEdit": "Редакция на документ",
@@ -2364,5 +2365,189 @@
             "seeded": "Добавени {count} документа",
             "noNewTemplates": "Няма нови шаблони за добавяне"
         }
+    },
+    "LocaleSwitcher": {
+        "label": "Език",
+        "english": "Английски",
+        "bulgarian": "Български"
+    },
+    "AdminHeader": {
+        "title": "Админ табло",
+        "backToStore": "Обратно към магазина"
+    },
+    "AdminNav": {
+        "panel": "Админ панел",
+        "items": {
+            "dashboard": "Табло",
+            "tasks": "Задачи",
+            "docs": "Документация",
+            "notes": "Бележки",
+            "users": "Потребители",
+            "products": "Продукти",
+            "orders": "Поръчки",
+            "sellers": "Продавачи",
+            "categories": "Категории",
+            "brands": "Марки",
+            "messages": "Съобщения",
+            "subscriptions": "Абонаменти",
+            "analytics": "Анализи"
+        },
+        "secondary": {
+            "backToStore": "Към магазина",
+            "settings": "Настройки"
+        }
+    },
+    "AdminDashboard": {
+        "stats": {
+            "users": {
+                "label": "Общо потребители",
+                "badge": "Активни",
+                "footer": "Регистрирани акаунти"
+            },
+            "sellers": {
+                "label": "Продавачи",
+                "badge": "Активни",
+                "footer": "Активни продавачи"
+            },
+            "products": {
+                "label": "Продукти",
+                "badge": "Обявени",
+                "footer": "Активни обяви"
+            },
+            "orders": {
+                "label": "Поръчки",
+                "badge": "Общо",
+                "footer": "Поръчки общо"
+            },
+            "revenue": {
+                "label": "Приходи",
+                "badge": "Платени",
+                "footer": "От платени поръчки"
+            }
+        },
+        "recent": {
+            "usersTitle": "Скорошни потребители",
+            "usersDescription": "Нови регистрации тази седмица",
+            "productsTitle": "Скорошни продукти",
+            "productsDescription": "Нови обяви тази седмица",
+            "ordersTitle": "Скорошни поръчки",
+            "ordersDescription": "Последно направени поръчки",
+            "emptyUsers": "Няма скорошни потребители",
+            "emptyProducts": "Няма скорошни продукти",
+            "emptyOrders": "Няма скорошни поръчки",
+            "fallbacks": {
+                "unknown": "Неизвестен"
+            }
+        },
+        "roles": {
+            "admin": "Админ",
+            "seller": "Продавач",
+            "buyer": "Купувач"
+        },
+        "status": {
+            "paid": "Платена",
+            "pending": "Изчакване",
+            "processing": "Обработка",
+            "shipped": "Изпратена",
+            "delivered": "Доставена",
+            "cancelled": "Отменена",
+            "unknown": "Неизвестен"
+        }
+    },
+    "AdminOrders": {
+        "page": {
+            "title": "Поръчки",
+            "description": "Всички поръчки в платформата"
+        },
+        "summary": {
+            "orders": "{count} поръчки",
+            "revenue": "{amount} приходи"
+        },
+        "table": {
+            "title": "Всички поръчки",
+            "description": "Преглед на всички поръчки и техния статус",
+            "headers": {
+                "orderId": "ID на поръчка",
+                "customer": "Клиент",
+                "amount": "Сума",
+                "status": "Статус",
+                "date": "Дата"
+            }
+        },
+        "status": {
+            "paid": "Платена",
+            "pending": "Изчакване",
+            "processing": "Обработка",
+            "shipped": "Изпратена",
+            "delivered": "Доставена",
+            "cancelled": "Отменена",
+            "unknown": "Неизвестен"
+        },
+        "fallbacks": {
+            "noName": "Без име"
+        },
+        "loading": "Зареждане..."
+    },
+    "AdminSellers": {
+        "page": {
+            "title": "Продавачи",
+            "description": "Всички продавачи в платформата"
+        },
+        "summary": "{count} продавачи",
+        "table": {
+            "title": "Всички продавачи",
+            "description": "Преглед и управление на продавачи и техните магазини",
+            "headers": {
+                "store": "Магазин",
+                "owner": "Собственик",
+                "tier": "Ниво",
+                "verified": "Проверен",
+                "commission": "Комисиона",
+                "country": "Държава",
+                "joined": "Регистриран"
+            }
+        },
+        "tiers": {
+            "business": "Бизнес",
+            "premium": "Премиум",
+            "basic": "Основен"
+        },
+        "badges": {
+            "verified": "Потвърден",
+            "notVerified": "Непотвърден"
+        },
+        "fallbacks": {
+            "noName": "Без име",
+            "country": "BG"
+        },
+        "loading": "Зареждане..."
+    },
+    "AdminProducts": {
+        "page": {
+            "title": "Продукти",
+            "description": "Всички продуктови обяви в платформата"
+        },
+        "summary": "{count} обяви",
+        "table": {
+            "title": "Всички продукти",
+            "description": "Преглед и управление на всички продуктови обяви",
+            "headers": {
+                "product": "Продукт",
+                "seller": "Продавач",
+                "price": "Цена",
+                "stock": "Наличност",
+                "status": "Статус",
+                "listed": "Публикувано"
+            }
+        },
+        "badges": {
+            "boosted": "Промотиран",
+            "outOfStock": "Няма наличност",
+            "inStock": "{count} налични"
+        },
+        "fallbacks": {
+            "unknownSeller": "Неизвестен"
+        },
+        "loading": "Зареждане..."
     }
 }

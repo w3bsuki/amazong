@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import { Link } from "@/i18n/routing"
+import { useTranslations } from "next-intl"
 import {
   IconDashboard,
   IconUsers,
@@ -33,87 +34,6 @@ import {
   SidebarMenuItem,
 } from "@/components/layout/sidebar/sidebar"
 
-const adminNavItems = [
-  {
-    title: "Dashboard",
-    url: "/admin",
-    icon: IconDashboard,
-  },
-  {
-    title: "Tasks",
-    url: "/admin/tasks",
-    icon: IconChecklist,
-  },
-  {
-    title: "Docs",
-    url: "/admin/docs",
-    icon: IconFileText,
-  },
-  {
-    title: "Notes",
-    url: "/admin/notes",
-    icon: IconNote,
-  },
-  {
-    title: "Users",
-    url: "/admin/users",
-    icon: IconUsers,
-  },
-  {
-    title: "Products",
-    url: "/admin/products",
-    icon: IconBox,
-  },
-  {
-    title: "Orders",
-    url: "/admin/orders",
-    icon: IconShoppingCart,
-  },
-  {
-    title: "Sellers",
-    url: "/admin/sellers",
-    icon: IconBuildingStore,
-  },
-  {
-    title: "Categories",
-    url: "/admin/categories",
-    icon: IconCategory,
-  },
-  {
-    title: "Brands",
-    url: "/admin/brands",
-    icon: IconTags,
-  },
-  {
-    title: "Messages",
-    url: "/admin/messages",
-    icon: IconMessage,
-  },
-  {
-    title: "Subscriptions",
-    url: "/admin/subscriptions",
-    icon: IconCrown,
-  },
-  {
-    title: "Analytics",
-    url: "/admin/analytics",
-    icon: IconChartBar,
-  },
-]
-
-const adminSecondaryNav = [
-  {
-    title: "Back to Store",
-    url: "/",
-    icon: IconHome,
-  },
-  {
-    title: "Settings",
-    url: "/admin/settings",
-    icon: IconSettings,
-  },
-]
-
 interface AdminSidebarProps extends React.ComponentProps<typeof Sidebar> {
   user: {
     name: string
@@ -123,6 +43,89 @@ interface AdminSidebarProps extends React.ComponentProps<typeof Sidebar> {
 }
 
 export function AdminSidebar({ user, ...props }: AdminSidebarProps) {
+  const t = useTranslations("AdminNav")
+
+  const adminNavItems = [
+    {
+      title: t("items.dashboard"),
+      url: "/admin",
+      icon: IconDashboard,
+    },
+    {
+      title: t("items.tasks"),
+      url: "/admin/tasks",
+      icon: IconChecklist,
+    },
+    {
+      title: t("items.docs"),
+      url: "/admin/docs",
+      icon: IconFileText,
+    },
+    {
+      title: t("items.notes"),
+      url: "/admin/notes",
+      icon: IconNote,
+    },
+    {
+      title: t("items.users"),
+      url: "/admin/users",
+      icon: IconUsers,
+    },
+    {
+      title: t("items.products"),
+      url: "/admin/products",
+      icon: IconBox,
+    },
+    {
+      title: t("items.orders"),
+      url: "/admin/orders",
+      icon: IconShoppingCart,
+    },
+    {
+      title: t("items.sellers"),
+      url: "/admin/sellers",
+      icon: IconBuildingStore,
+    },
+    {
+      title: t("items.categories"),
+      url: "/admin/categories",
+      icon: IconCategory,
+    },
+    {
+      title: t("items.brands"),
+      url: "/admin/brands",
+      icon: IconTags,
+    },
+    {
+      title: t("items.messages"),
+      url: "/admin/messages",
+      icon: IconMessage,
+    },
+    {
+      title: t("items.subscriptions"),
+      url: "/admin/subscriptions",
+      icon: IconCrown,
+    },
+    {
+      title: t("items.analytics"),
+      url: "/admin/analytics",
+      icon: IconChartBar,
+    },
+  ]
+
+  const adminSecondaryNav = [
+    {
+      title: t("secondary.backToStore"),
+      url: "/",
+      icon: IconHome,
+    },
+    {
+      title: t("secondary.settings"),
+      url: "/admin/settings",
+      icon: IconSettings,
+    },
+  ]
+
   return (
     <Sidebar collapsible="offcanvas" {...props}>
       <SidebarHeader>
@@ -133,7 +136,7 @@ export function AdminSidebar({ user, ...props }: AdminSidebarProps) {
                 <div className="flex size-6 items-center justify-center rounded-md bg-primary text-primary-foreground font-bold text-sm">
                   A
                 </div>
-                <span className="text-base font-semibold">Admin Panel</span>
+                <span className="text-base font-semibold">{t("panel")}</span>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>

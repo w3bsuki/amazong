@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { useState } from "react"
-import { useTranslations } from "next-intl"
+import { useLocale, useTranslations } from "next-intl"
 import ReactMarkdown from "react-markdown"
 import remarkGfm from "remark-gfm"
 import {
@@ -72,6 +72,7 @@ const STATUS_COLORS: Record<string, string> = {
 const STATUSES = ["draft", "published", "archived"] as const
 
 export function AdminDocsContent({ initialDocs }: { initialDocs: AdminDoc[] }) {
+  const locale = useLocale()
   const [docs, setDocs] = useState(initialDocs)
   const [search, setSearch] = useState("")
   const [categoryFilter, setCategoryFilter] = useState<string>("all")
@@ -284,7 +285,9 @@ export function AdminDocsContent({ initialDocs }: { initialDocs: AdminDoc[] }) {
                     </Badge>
                   </TableCell>
                   <TableCell className="text-muted-foreground">
-                    {doc.updated_at ? new Date(doc.updated_at).toLocaleDateString() : "—"}
+                    {doc.updated_at
+                      ? new Date(doc.updated_at).toLocaleDateString(locale)
+                      : t("viewer.emptyDate")}
                   </TableCell>
                   <TableCell>
                     <div className="flex gap-1">
@@ -336,7 +339,7 @@ export function AdminDocsContent({ initialDocs }: { initialDocs: AdminDoc[] }) {
         }}
       >
         <DialogContent 
-          className="max-w-6xl w-full sm:w-11/12 lg:w-10/12 p-0 gap-0 overflow-hidden flex flex-col rounded-lg border shadow-lg max-h-screen"
+          className="w-(--width-dialog) sm:max-w-(--width-modal-lg) max-h-(--height-dialog) p-0 gap-0 flex flex-col"
           showCloseButton={false}
         >
           {(selectedDoc || isCreating) && (
@@ -419,9 +422,9 @@ function DocEditor({
   if (!isEditing && doc) {
     // View mode - full screen document viewer
     return (
-      <div className="flex flex-col h-full">
+      <div className="flex flex-col min-h-0 h-full">
         {/* Header */}
-        <div className="flex items-center justify-between px-4 sm:px-6 py-3 border-b bg-background sticky top-0 z-10">
+        <div className="flex items-center justify-between px-4 sm:px-6 py-3 border-b bg-background shrink-0">
           <div className="flex items-center gap-3">
             <Button
               variant="ghost"
@@ -457,8 +460,8 @@ function DocEditor({
         </div>
 
         {/* Content */}
-        <div className="flex-1 overflow-y-auto p-4 sm:p-8">
-          <div className="max-w-4xl mx-auto">
+        <div className="flex-1 min-h-0 overflow-y-auto p-4 sm:p-8">
+          <div className="mx-auto w-full">
             <ReactMarkdown 
               remarkPlugins={[remarkGfm]}
               components={{
@@ -535,9 +538,11 @@ function DocEditor({
         </div>
 
         {/* Footer */}
-        <div className="px-4 sm:px-6 py-3 border-t bg-muted/30 text-xs text-muted-foreground">
+        <div className="px-4 sm:px-6 py-3 border-t bg-muted/30 text-xs text-muted-foreground shrink-0">
           {t("viewer.lastUpdatedLabel")}{" "}
-          {doc.updated_at ? new Date(doc.updated_at).toLocaleString() : "—"}
+          {doc.updated_at
+            ? new Date(doc.updated_at).toLocaleString(locale)
+            : t("viewer.emptyDate")}
         </div>
       </div>
     )
@@ -545,9 +550,9 @@ function DocEditor({
 
   // Edit/Create mode - full screen editor
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col min-h-0 h-full">
       {/* Header */}
-      <div className="flex items-center justify-between px-4 sm:px-6 py-3 border-b bg-background sticky top-0 z-10">
+      <div className="flex items-center justify-between px-4 sm:px-6 py-3 border-b bg-background shrink-0">
         <div className="flex items-center gap-3">
           <Button
             variant="ghost"
@@ -604,8 +609,8 @@ function DocEditor({
       </div>
 
       {/* Editor Content */}
-      <div className="flex-1 overflow-y-auto p-4 sm:p-6">
-        <div className="max-w-4xl mx-auto space-y-6">
+      <div className="flex-1 min-h-0 overflow-y-auto p-4 sm:p-6">
+        <div className="mx-auto w-full space-y-6">
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div className="sm:col-span-2 space-y-2">
               <Label htmlFor="title">{t("editor.titleLabel")}</Label>

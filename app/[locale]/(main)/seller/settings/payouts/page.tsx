@@ -21,7 +21,7 @@ export default async function PayoutsPage() {
   // Get seller's payout status
   const { data: payoutStatus } = await supabase
     .from("seller_payout_status")
-    .select("seller_id, stripe_connect_account_id, details_submitted, charges_enabled, payouts_enabled")
+    .select("seller_id, stripe_connect_account_id, details_submitted, charges_enabled, payouts_enabled, created_at, updated_at")
     .eq("seller_id", user.id)
     .single()
 

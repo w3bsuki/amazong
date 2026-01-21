@@ -174,11 +174,12 @@ function DrawerContent({
           "data-[vaul-drawer-direction=right]:h-full data-[vaul-drawer-direction=right]:w-3/4 data-[vaul-drawer-direction=right]:max-w-sm",
           "data-[vaul-drawer-direction=right]:rounded-l-2xl",
           "data-[vaul-drawer-direction=right]:border-l data-[vaul-drawer-direction=right]:border-border",
-          // Left drawer (side panel)
+          // Left drawer (side panel) - full width on mobile for hamburger menus, constrained on tablet+
           "data-[vaul-drawer-direction=left]:inset-y-0 data-[vaul-drawer-direction=left]:left-0",
-          "data-[vaul-drawer-direction=left]:h-full data-[vaul-drawer-direction=left]:w-3/4 data-[vaul-drawer-direction=left]:max-w-sm",
-          "data-[vaul-drawer-direction=left]:rounded-r-2xl",
-          "data-[vaul-drawer-direction=left]:border-r data-[vaul-drawer-direction=left]:border-border",
+          "data-[vaul-drawer-direction=left]:h-full data-[vaul-drawer-direction=left]:w-full data-[vaul-drawer-direction=left]:max-w-xs",
+          "data-[vaul-drawer-direction=left]:sm:w-80 data-[vaul-drawer-direction=left]:sm:max-w-sm",
+          "data-[vaul-drawer-direction=left]:rounded-none data-[vaul-drawer-direction=left]:sm:rounded-r-2xl",
+          "data-[vaul-drawer-direction=left]:border-r-0 data-[vaul-drawer-direction=left]:sm:border-r data-[vaul-drawer-direction=left]:sm:border-border",
           className
         )}
         {...props}

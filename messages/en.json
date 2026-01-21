@@ -2327,7 +2327,8 @@
         "viewer": {
             "srDescription": "Document viewer",
             "noContent": "No content yet.",
-            "lastUpdatedLabel": "Last updated:"
+            "lastUpdatedLabel": "Last updated:",
+            "emptyDate": "—"
         },
         "editor": {
             "titleEdit": "Edit Document",
@@ -2364,5 +2365,189 @@
             "seeded": "Seeded {count} docs",
             "noNewTemplates": "No new templates to add"
         }
+    },
+    "LocaleSwitcher": {
+        "label": "Language",
+        "english": "English",
+        "bulgarian": "Bulgarian"
+    },
+    "AdminHeader": {
+        "title": "Admin Dashboard",
+        "backToStore": "Back to Store"
+    },
+    "AdminNav": {
+        "panel": "Admin Panel",
+        "items": {
+            "dashboard": "Dashboard",
+            "tasks": "Tasks",
+            "docs": "Docs",
+            "notes": "Notes",
+            "users": "Users",
+            "products": "Products",
+            "orders": "Orders",
+            "sellers": "Sellers",
+            "categories": "Categories",
+            "brands": "Brands",
+            "messages": "Messages",
+            "subscriptions": "Subscriptions",
+            "analytics": "Analytics"
+        },
+        "secondary": {
+            "backToStore": "Back to Store",
+            "settings": "Settings"
+        }
+    },
+    "AdminDashboard": {
+        "stats": {
+            "users": {
+                "label": "Total Users",
+                "badge": "Active",
+                "footer": "Registered accounts"
+            },
+            "sellers": {
+                "label": "Sellers",
+                "badge": "Active",
+                "footer": "Active seller accounts"
+            },
+            "products": {
+                "label": "Products",
+                "badge": "Listed",
+                "footer": "Active listings"
+            },
+            "orders": {
+                "label": "Orders",
+                "badge": "Total",
+                "footer": "Lifetime orders"
+            },
+            "revenue": {
+                "label": "Revenue",
+                "badge": "Paid",
+                "footer": "From paid orders"
+            }
+        },
+        "recent": {
+            "usersTitle": "Recent Users",
+            "usersDescription": "New registrations this week",
+            "productsTitle": "Recent Products",
+            "productsDescription": "New listings this week",
+            "ordersTitle": "Recent Orders",
+            "ordersDescription": "Latest orders placed",
+            "emptyUsers": "No recent users",
+            "emptyProducts": "No recent products",
+            "emptyOrders": "No recent orders",
+            "fallbacks": {
+                "unknown": "Unknown"
+            }
+        },
+        "roles": {
+            "admin": "Admin",
+            "seller": "Seller",
+            "buyer": "Buyer"
+        },
+        "status": {
+            "paid": "Paid",
+            "pending": "Pending",
+            "processing": "Processing",
+            "shipped": "Shipped",
+            "delivered": "Delivered",
+            "cancelled": "Cancelled",
+            "unknown": "Unknown"
+        }
+    },
+    "AdminOrders": {
+        "page": {
+            "title": "Orders",
+            "description": "All orders placed on the platform"
+        },
+        "summary": {
+            "orders": "{count} orders",
+            "revenue": "{amount} revenue"
+        },
+        "table": {
+            "title": "All Orders",
+            "description": "View all orders and their status",
+            "headers": {
+                "orderId": "Order ID",
+                "customer": "Customer",
+                "amount": "Amount",
+                "status": "Status",
+                "date": "Date"
+            }
+        },
+        "status": {
+            "paid": "Paid",
+            "pending": "Pending",
+            "processing": "Processing",
+            "shipped": "Shipped",
+            "delivered": "Delivered",
+            "cancelled": "Cancelled",
+            "unknown": "Unknown"
+        },
+        "fallbacks": {
+            "noName": "No name"
+        },
+        "loading": "Loading..."
+    },
+    "AdminSellers": {
+        "page": {
+            "title": "Sellers",
+            "description": "All seller accounts on the platform"
+        },
+        "summary": "{count} sellers",
+        "table": {
+            "title": "All Sellers",
+            "description": "View and manage seller accounts and their stores",
+            "headers": {
+                "store": "Store",
+                "owner": "Owner",
+                "tier": "Tier",
+                "verified": "Verified",
+                "commission": "Commission",
+                "country": "Country",
+                "joined": "Joined"
+            }
+        },
+        "tiers": {
+            "business": "Business",
+            "premium": "Premium",
+            "basic": "Basic"
+        },
+        "badges": {
+            "verified": "Verified",
+            "notVerified": "Not verified"
+        },
+        "fallbacks": {
+            "noName": "No name",
+            "country": "BG"
+        },
+        "loading": "Loading..."
+    },
+    "AdminProducts": {
+        "page": {
+            "title": "Products",
+            "description": "All product listings on the platform"
+        },
+        "summary": "{count} listings",
+        "table": {
+            "title": "All Products",
+            "description": "View and manage all product listings",
+            "headers": {
+                "product": "Product",
+                "seller": "Seller",
+                "price": "Price",
+                "stock": "Stock",
+                "status": "Status",
+                "listed": "Listed"
+            }
+        },
+        "badges": {
+            "boosted": "Boosted",
+            "outOfStock": "Out of stock",
+            "inStock": "{count} in stock"
+        },
+        "fallbacks": {
+            "unknownSeller": "Unknown"
+        },
+        "loading": "Loading..."
     }
 }

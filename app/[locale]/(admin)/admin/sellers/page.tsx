@@ -1,5 +1,7 @@
 import { createAdminClient, createClient } from "@/lib/supabase/server"
 import { formatDistanceToNow } from "date-fns"
+import { bg, enUS } from "date-fns/locale"
+import { getLocale, getTranslations } from "next-intl/server"
 import { Suspense } from "react"
 import { connection } from "next/server"
 import {
@@ -96,6 +98,9 @@ async function AdminSellersContent() {
   await (await createClient()).auth.getUser()
 
   const sellers = await getSellers()
+  const t = await getTranslations("AdminSellers")
+  const locale = await getLocale()
+  const dateLocale = locale === "bg" ? bg : enUS
   
   const getTierBadge = (tier: string | null) => {
     switch (tier) {
@@ -108,38 +113,49 @@ async function AdminSellersContent() {
     }
   }
 
+  const getTierLabel = (tier: string | null) => {
+    switch (tier) {
+      case 'business':
+        return t('tiers.business')
+      case 'premium':
+        return t('tiers.premium')
+      default:
+        return t('tiers.basic')
+    }
+  }
+
   return (
     <div className="flex flex-col gap-4 py-4 md:gap-4 md:py-6 px-4 lg:px-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Sellers</h1>
+          <h1 className="text-2xl font-bold tracking-tight">{t('page.title')}</h1>
           <p className="text-muted-foreground">
-            All seller accounts on the platform
+            {t('page.description')}
           </p>
         </div>
         <Badge variant="outline" className="text-base">
-          {sellers.length} sellers
+          {t('summary', { count: sellers.length })}
         </Badge>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle>All Sellers</CardTitle>
+          <CardTitle>{t('table.title')}</CardTitle>
           <CardDescription>
-            View and manage seller accounts and their stores
+            {t('table.description')}
           </CardDescription>
         </CardHeader>
         <CardContent>
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Store</TableHead>
-                <TableHead>Owner</TableHead>
-                <TableHead>Tier</TableHead>
-                <TableHead>Verified</TableHead>
-                <TableHead>Commission</TableHead>
-                <TableHead>Country</TableHead>
-                <TableHead>Joined</TableHead>
+                <TableHead>{t('table.headers.store')}</TableHead>
+                <TableHead>{t('table.headers.owner')}</TableHead>
+                <TableHead>{t('table.headers.tier')}</TableHead>
+                <TableHead>{t('table.headers.verified')}</TableHead>
+                <TableHead>{t('table.headers.commission')}</TableHead>
+                <TableHead>{t('table.headers.country')}</TableHead>
+                <TableHead>{t('table.headers.joined')}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -158,7 +174,7 @@ async function AdminSellersContent() {
                   <TableCell>
                     <div>
                       <p className="font-medium">
-                        {seller.profiles.full_name || 'No name'}
+                        {seller.profiles.full_name || t('fallbacks.noName')}
                       </p>
                       <p className="text-sm text-muted-foreground">
                         {seller.profiles.email}
@@ -167,7 +183,7 @@ async function AdminSellersContent() {
                   </TableCell>
                   <TableCell>
                     <Badge variant="outline" className={getTierBadge(seller.tier)}>
-                      {seller.tier || 'basic'}
+                      {getTierLabel(seller.tier)}
                     </Badge>
                   </TableCell>
                   <TableCell>
@@ -175,12 +191,12 @@ async function AdminSellersContent() {
                       {seller.verified ? (
                         <Badge variant="outline" className="border-success/20 bg-success/10 text-success">
                           <IconCheck className="size-3 mr-1" />
-                          Verified
+                          {t('badges.verified')}
                         </Badge>
                       ) : (
                         <Badge variant="outline" className="border-border bg-muted text-muted-foreground">
                           <IconX className="size-3 mr-1" />
-                          Not verified
+                          {t('badges.notVerified')}
                         </Badge>
                       )}
                     </div>
@@ -189,10 +205,10 @@ async function AdminSellersContent() {
                     {seller.commission_rate}%
                   </TableCell>
                   <TableCell className="text-muted-foreground">
-                    {seller.country_code || 'BG'}
+                    {seller.country_code || t('fallbacks.country')}
                   </TableCell>
                   <TableCell className="text-muted-foreground">
-                    {formatDistanceToNow(new Date(seller.created_at), { addSuffix: true })}
+                    {formatDistanceToNow(new Date(seller.created_at), { addSuffix: true, locale: dateLocale })}
                   </TableCell>
                 </TableRow>
               ))}
@@ -204,24 +220,26 @@ async function AdminSellersContent() {
   )
 }
 
-function AdminSellersFallback() {
+async function AdminSellersFallback() {
+  const t = await getTranslations("AdminSellers")
+
   return (
     <div className="flex flex-col gap-4 py-4 md:gap-4 md:py-6 px-4 lg:px-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Sellers</h1>
-          <p className="text-muted-foreground">All seller accounts on the platform</p>
+          <h1 className="text-2xl font-bold tracking-tight">{t("page.title")}</h1>
+          <p className="text-muted-foreground">{t("page.description")}</p>
         </div>
-        <Badge variant="outline" className="text-base">Loading...</Badge>
+        <Badge variant="outline" className="text-base">{t("loading")}</Badge>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle>All Sellers</CardTitle>
-          <CardDescription>View and manage seller accounts and their stores</CardDescription>
+          <CardTitle>{t("table.title")}</CardTitle>
+          <CardDescription>{t("table.description")}</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="text-sm text-muted-foreground">Loading...</div>
+          <div className="text-sm text-muted-foreground">{t("loading")}</div>
         </CardContent>
       </Card>
     </div>

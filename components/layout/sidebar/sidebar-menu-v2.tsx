@@ -170,7 +170,7 @@ export function SidebarMenuV2({ user, triggerClassName, userStats }: SidebarMenu
             </DrawerTrigger>
 
             <DrawerContent
-                className="p-0 bg-background text-foreground gap-0 flex flex-col h-full border-none rounded-none shadow-none sm:max-w-sm"
+                className="p-0 bg-background text-foreground gap-0 flex flex-col h-full shadow-none"
                 style={{ '--initial-transform': 'calc(-100% - 1px)' } as React.CSSProperties}
             >
                 <DrawerTitle className="sr-only">
@@ -301,35 +301,32 @@ export function SidebarMenuV2({ user, triggerClassName, userStats }: SidebarMenu
                                         {locale === 'bg' ? 'Моите обяви' : 'My Listings'}
                                     </span>
                                 </div>
-                                <div className="flex items-center gap-2">
-                                    {/* New Listing CTA */}
-                                    <Link
-                                        href="/sell"
-                                        onClick={() => setOpen(false)}
-                                        className="flex items-center justify-center gap-1.5 px-4 h-10 rounded-lg bg-brand text-white font-semibold hover:bg-brand/90 transition-colors"
-                                    >
-                                        <Plus size={18} weight="bold" className="shrink-0" />
-                                        <span className="text-sm">{locale === 'bg' ? 'Нова' : 'New'}</span>
-                                    </Link>
-
-                                    {/* Active Listings */}
+                                {/* New Listing CTA - full width */}
+                                <Link
+                                    href="/sell"
+                                    onClick={() => setOpen(false)}
+                                    className="flex items-center justify-center gap-1.5 w-full h-touch rounded-lg bg-brand text-white font-semibold hover:bg-brand/90 transition-colors mb-2"
+                                >
+                                    <Plus size={18} weight="bold" />
+                                    <span className="text-sm">{locale === 'bg' ? 'Нова' : 'New'}</span>
+                                </Link>
+                                {/* Stats row - 2 column grid */}
+                                <div className="grid grid-cols-2 gap-2">
                                     <Link
                                         href="/account/selling"
                                         onClick={() => setOpen(false)}
-                                        className="flex-1 flex items-center justify-center gap-2 px-3 h-10 rounded-lg bg-muted/50 border border-border/60 hover:bg-muted/80 transition-colors"
+                                        className="flex items-center justify-center gap-1.5 h-touch rounded-lg bg-muted/50 border border-border/60 hover:bg-muted/80 transition-colors"
                                     >
-                                        <Package size={18} weight="duotone" className="text-muted-foreground shrink-0" />
+                                        <Package size={18} weight="duotone" className="text-muted-foreground" />
                                         <span className="text-sm font-semibold tabular-nums">{userStats?.activeListings ?? 0}</span>
                                         <span className="text-xs text-muted-foreground">{locale === 'bg' ? 'Активни' : 'Active'}</span>
                                     </Link>
-
-                                    {/* Boosted Listings */}
                                     <Link
                                         href="/account/selling"
                                         onClick={() => setOpen(false)}
-                                        className="flex-1 flex items-center justify-center gap-2 px-3 h-10 rounded-lg bg-muted/50 border border-border/60 hover:bg-muted/80 transition-colors"
+                                        className="flex items-center justify-center gap-1.5 h-touch rounded-lg bg-muted/50 border border-border/60 hover:bg-muted/80 transition-colors"
                                     >
-                                        <RocketLaunch size={18} weight="duotone" className="text-primary shrink-0" />
+                                        <RocketLaunch size={18} weight="duotone" className="text-primary" />
                                         <span className="text-sm font-semibold tabular-nums">{userStats?.boostedListings ?? 0}</span>
                                         <span className="text-xs text-muted-foreground">{locale === 'bg' ? 'Буустнати' : 'Boosted'}</span>
                                     </Link>

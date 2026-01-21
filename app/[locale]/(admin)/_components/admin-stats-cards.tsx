@@ -1,6 +1,7 @@
 "use client"
 
 import { IconTrendingUp, IconUsers, IconBox, IconShoppingCart, IconCurrencyDollar, IconBuildingStore } from "@tabler/icons-react"
+import { useLocale, useTranslations } from "next-intl"
 
 import { Badge } from "@/components/ui/badge"
 import {
@@ -23,8 +24,11 @@ interface AdminStatsProps {
 }
 
 export function AdminStatsCards({ totals }: AdminStatsProps) {
+  const t = useTranslations("AdminDashboard")
+  const locale = useLocale()
+
   const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat("en-US", {
+    return new Intl.NumberFormat(locale, {
       style: "currency",
       currency: "BGN",
       maximumFractionDigits: 0,
@@ -37,20 +41,20 @@ export function AdminStatsCards({ totals }: AdminStatsProps) {
         <CardHeader>
           <CardDescription className="flex items-center gap-2">
             <IconUsers className="size-4" />
-            Total Users
+            {t("stats.users.label")}
           </CardDescription>
           <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-            {totals.users.toLocaleString()}
+            {totals.users.toLocaleString(locale)}
           </CardTitle>
           <CardAction>
             <Badge variant="outline" className="border-success/20 bg-success/10 text-success">
               <IconTrendingUp className="size-3" />
-              Active
+              {t("stats.users.badge")}
             </Badge>
           </CardAction>
         </CardHeader>
         <CardFooter className="flex-col items-start gap-1.5 text-sm">
-          <div className="text-muted-foreground">Registered accounts</div>
+          <div className="text-muted-foreground">{t("stats.users.footer")}</div>
         </CardFooter>
       </Card>
 
@@ -58,20 +62,20 @@ export function AdminStatsCards({ totals }: AdminStatsProps) {
         <CardHeader>
           <CardDescription className="flex items-center gap-2">
             <IconBuildingStore className="size-4" />
-            Sellers
+            {t("stats.sellers.label")}
           </CardDescription>
           <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-            {totals.sellers.toLocaleString()}
+            {totals.sellers.toLocaleString(locale)}
           </CardTitle>
           <CardAction>
             <Badge variant="outline" className="border-info/20 bg-info/10 text-info">
               <IconTrendingUp className="size-3" />
-              Active
+              {t("stats.sellers.badge")}
             </Badge>
           </CardAction>
         </CardHeader>
         <CardFooter className="flex-col items-start gap-1.5 text-sm">
-          <div className="text-muted-foreground">Active seller accounts</div>
+          <div className="text-muted-foreground">{t("stats.sellers.footer")}</div>
         </CardFooter>
       </Card>
 
@@ -79,17 +83,19 @@ export function AdminStatsCards({ totals }: AdminStatsProps) {
         <CardHeader>
           <CardDescription className="flex items-center gap-2">
             <IconBox className="size-4" />
-            Products
+            {t("stats.products.label")}
           </CardDescription>
           <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-            {totals.products.toLocaleString()}
+            {totals.products.toLocaleString(locale)}
           </CardTitle>
           <CardAction>
-            <Badge variant="outline" className="border-primary/20 bg-primary/10 text-primary">Listed</Badge>
+            <Badge variant="outline" className="border-primary/20 bg-primary/10 text-primary">
+              {t("stats.products.badge")}
+            </Badge>
           </CardAction>
         </CardHeader>
         <CardFooter className="flex-col items-start gap-1.5 text-sm">
-          <div className="text-muted-foreground">Active listings</div>
+          <div className="text-muted-foreground">{t("stats.products.footer")}</div>
         </CardFooter>
       </Card>
 
@@ -97,17 +103,19 @@ export function AdminStatsCards({ totals }: AdminStatsProps) {
         <CardHeader>
           <CardDescription className="flex items-center gap-2">
             <IconShoppingCart className="size-4" />
-            Orders
+            {t("stats.orders.label")}
           </CardDescription>
           <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-            {totals.orders.toLocaleString()}
+            {totals.orders.toLocaleString(locale)}
           </CardTitle>
           <CardAction>
-            <Badge variant="outline" className="border-warning/20 bg-warning/10 text-warning">Total</Badge>
+            <Badge variant="outline" className="border-warning/20 bg-warning/10 text-warning">
+              {t("stats.orders.badge")}
+            </Badge>
           </CardAction>
         </CardHeader>
         <CardFooter className="flex-col items-start gap-1.5 text-sm">
-          <div className="text-muted-foreground">Lifetime orders</div>
+          <div className="text-muted-foreground">{t("stats.orders.footer")}</div>
         </CardFooter>
       </Card>
 
@@ -115,7 +123,7 @@ export function AdminStatsCards({ totals }: AdminStatsProps) {
         <CardHeader>
           <CardDescription className="flex items-center gap-2">
             <IconCurrencyDollar className="size-4" />
-            Revenue
+            {t("stats.revenue.label")}
           </CardDescription>
           <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
             {formatCurrency(totals.revenue)}
@@ -123,12 +131,12 @@ export function AdminStatsCards({ totals }: AdminStatsProps) {
           <CardAction>
             <Badge variant="outline" className="border-success/20 bg-success/10 text-success">
               <IconTrendingUp className="size-3" />
-              Paid
+              {t("stats.revenue.badge")}
             </Badge>
           </CardAction>
         </CardHeader>
         <CardFooter className="flex-col items-start gap-1.5 text-sm">
-          <div className="text-muted-foreground">From paid orders</div>
+          <div className="text-muted-foreground">{t("stats.revenue.footer")}</div>
         </CardFooter>
       </Card>
     </div>

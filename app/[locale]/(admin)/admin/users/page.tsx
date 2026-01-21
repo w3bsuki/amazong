@@ -1,6 +1,8 @@
 import { createAdminClient, createClient } from "@/lib/supabase/server"
 import { getTranslations } from "next-intl/server"
 import { formatDistanceToNow } from "date-fns"
+import { bg, enUS } from "date-fns/locale"
+import { getLocale } from "next-intl/server"
 import { Suspense } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -31,6 +33,8 @@ async function AdminUsersContent() {
 
   const users = await getUsers()
   const t = await getTranslations("AdminUsers")
+  const locale = await getLocale()
+  const dateLocale = locale === "bg" ? bg : enUS
 
   const getRoleBadge = (role: string | null) => {
     switch (role) {
@@ -93,7 +97,7 @@ async function AdminUsersContent() {
                   </TableCell>
                   <TableCell className="text-muted-foreground">{user.phone || t("fallbacks.noPhone")}</TableCell>
                   <TableCell className="text-muted-foreground">
-                    {formatDistanceToNow(new Date(user.created_at), { addSuffix: true })}
+                    {formatDistanceToNow(new Date(user.created_at), { addSuffix: true, locale: dateLocale })}
                   </TableCell>
                 </TableRow>
               ))}
