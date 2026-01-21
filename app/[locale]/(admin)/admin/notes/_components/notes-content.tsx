@@ -188,6 +188,7 @@ function NoteCard({
   onDelete: () => void
 }) {
   const t = useTranslations("AdminNotes")
+  const locale = useLocale()
 
   return (
     <Card className={cn("group", note.is_pinned && "border-primary/50 bg-primary/5")}>

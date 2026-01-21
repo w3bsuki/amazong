@@ -2518,6 +2518,7 @@
         },
         "fallbacks": {
             "noName": "Без име",
+            "unknownStore": "Неизвестен",
             "country": "BG"
         },
         "loading": "Зареждане..."

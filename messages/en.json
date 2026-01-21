@@ -2518,6 +2518,7 @@
         },
         "fallbacks": {
             "noName": "No name",
+            "unknownStore": "Unknown",
             "country": "BG"
         },
         "loading": "Loading..."

@@ -25,7 +25,7 @@ import { IconCheck, IconX } from "@tabler/icons-react"
 // Define seller type to avoid 'any'
 interface Seller {
   id: string
-  store_name: string
+  store_name: string | null
   description: string | null
   verified: boolean | null
   tier: string | null
@@ -78,7 +78,7 @@ async function getSellers(): Promise<Seller[]> {
   // Map profiles to expected seller format
   return (profiles || []).map(profile => ({
     id: profile.id,
-    store_name: profile.display_name || profile.business_name || profile.username || 'Unknown',
+    store_name: profile.display_name || profile.business_name || profile.username || null,
     description: profile.bio,
     verified: profile.verified,
     tier: profile.tier,
@@ -163,7 +163,7 @@ async function AdminSellersContent() {
                 <TableRow key={seller.id}>
                   <TableCell>
                     <div>
-                      <p className="font-medium">{seller.store_name}</p>
+                      <p className="font-medium">{seller.store_name || t("fallbacks.unknownStore")}</p>
                       {seller.business_name && (
                         <p className="text-sm text-muted-foreground">
                           {seller.business_name}

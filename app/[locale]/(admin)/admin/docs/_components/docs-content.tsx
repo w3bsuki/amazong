@@ -339,7 +339,7 @@ export function AdminDocsContent({ initialDocs }: { initialDocs: AdminDoc[] }) {
         }}
       >
         <DialogContent 
-          className="w-(--width-dialog) sm:max-w-(--width-modal-lg) max-h-(--height-dialog) p-0 gap-0 flex flex-col"
+          className="w-dialog sm:max-w-(--width-modal-lg) max-h-dialog p-0 gap-0 flex flex-col"
           showCloseButton={false}
         >
           {(selectedDoc || isCreating) && (
@@ -386,6 +386,7 @@ function DocEditor({
   const [category, setCategory] = useState(doc?.category || "general")
   const [status, setStatus] = useState(doc?.status || "draft")
   const t = useTranslations("AdminDocs")
+  const locale = useLocale()
 
   const getCategoryLabel = (value: string) =>
     (CATEGORIES as readonly string[]).includes(value)
