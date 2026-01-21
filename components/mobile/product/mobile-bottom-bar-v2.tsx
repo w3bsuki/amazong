@@ -196,8 +196,8 @@ export function MobileBottomBarV2({
     <div
       className={cn(
         "fixed bottom-0 left-0 right-0 z-50",
-        "bg-surface-elevated border-t border-border shadow-[0_-2px_8px_rgba(0,0,0,0.08)]",
-        "pb-[env(safe-area-inset-bottom)]",
+        "bg-surface-elevated border-t border-border",
+        "pb-safe",
         className
       )}
     >
@@ -214,7 +214,7 @@ export function MobileBottomBarV2({
               </span>
             )}
             {discount > 0 && (
-              <span className="px-1.5 py-0.5 rounded bg-destructive/10 text-destructive text-xs font-semibold">
+              <span className="px-1.5 py-0.5 rounded bg-price-sale/10 text-price-sale text-xs font-semibold">
                 -{discount}%
               </span>
             )}

@@ -1,11 +1,20 @@
-# Amazong Marketplace Documentation
+# Treido Marketplace Documentation
 
-Welcome to the internal documentation for **Amazong Marketplace** — a Bulgarian classifieds marketplace.
+Welcome to the internal documentation for **Treido Marketplace** — a Bulgarian marketplace built for safe C2C/B2B commerce.
+
+Launch posture:
+
+- **No cash on delivery (COD)** (fraud surface area is too high)
+- **Stripe payments on-platform** with a transparent **Buyer Protection** fee
+- **Stripe Connect (Express)** for seller payouts
+- **Escrow-style release** after delivery confirmation / dispute resolution
 
 ## Quick Navigation
 
 | Section | Description |
 |---------|-------------|
+| [💳 Payments](/payments) | Stripe Connect, escrow flow, webhooks, refunds |
+| [📜 Policies](/policies) | Returns/refunds, KYC, prohibited items, privacy/terms drafts |
 | [🔧 Engineering](/engineering) | Tech stack, architecture, code standards |
 | [🎨 Design System](/design) | UI tokens, spacing, component patterns |
 | [💼 Business](/business) | Monetization, pricing, roadmap |
@@ -29,30 +38,33 @@ Welcome to the internal documentation for **Amazong Marketplace** — a Bulgaria
 # Start the main app
 pnpm dev          # localhost:3000
 
-# Run tests
-pnpm test:unit    # Unit tests with Vitest
-pnpm test:e2e     # E2E tests with Playwright
-
 # Type check
 pnpm -s exec tsc -p tsconfig.json --noEmit
 
+# Run tests
+pnpm test:unit                                    # Unit tests with Vitest
+REUSE_EXISTING_SERVER=true pnpm test:e2e:smoke    # E2E smoke (reuse dev server)
+pnpm test:e2e                                     # Full E2E suite
+
 # This docs site
-cd docs-site && pnpm dev  # localhost:3002
+pnpm docs        # localhost:3002
 ```
 
 ## Project Structure
 
 ```
-amazong/
+repo/
 ├── app/[locale]/      # Next.js App Router pages
+├── app/api/           # Route handlers
 ├── components/        # React components
 │   ├── ui/           # shadcn primitives
-│   ├── common/       # Shared composites
-│   └── layout/       # Headers, nav, sidebars
+│   ├── shared/       # Shared composites
+│   ├── layout/       # Headers, nav, sidebars
+│   └── providers/    # App providers/contexts
 ├── lib/              # Pure utilities
 ├── hooks/            # React hooks
 ├── messages/         # i18n translations
 └── docs-site/        # This documentation (Nextra 4)
 ```
 
-> **Note**: This documentation is for internal development reference. For user-facing help, see the main app's support section.
+> **Note**: This documentation is internal. For user-facing help, build a dedicated Help Center later (FAQ + dispute/returns flows).

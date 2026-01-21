@@ -49,8 +49,6 @@ type CategorySummary = {
 
 // Mobile-specific imports
 import { MobileProductPage } from "@/components/mobile/product/mobile-product-page";
-// Desktop modal layout
-import { ProductModalLayout } from "@/components/desktop/product/product-modal-layout";
 
 // Loading skeletons for Suspense boundaries
 function RelatedProductsSkeleton() {
@@ -125,8 +123,6 @@ interface ProductPageLayoutProps {
   variants?: ProductVariantRow[];
   submitReview?: SubmitReviewFn;
   favoritesCount?: number;
-  /** Render variant for full page vs intercepted modal */
-  renderMode?: "page" | "modal";
 }
 
 export function ProductPageLayout(props: ProductPageLayoutProps) {
@@ -146,7 +142,6 @@ export function ProductPageLayout(props: ProductPageLayoutProps) {
     variants,
     submitReview,
     favoritesCount,
-    renderMode = "page",
   } = props;
 
   const primaryImageSrc = viewModel.galleryImages?.[0]?.src ?? null;
@@ -154,7 +149,7 @@ export function ProductPageLayout(props: ProductPageLayoutProps) {
   // V2: Build seller info for embedded seller card in buy box
   const sellerInfo = {
     id: seller.id,
-    name: viewModel.sellerName || seller?.display_name || seller?.username || username || "Seller",
+    name: viewModel.sellerName || seller?.display_name || seller?.username || username || tProduct("seller"),
     username: seller?.username ?? null,
     avatarUrl: (viewModel.sellerAvatarUrl || seller?.avatar_url) ?? null,
     verified: viewModel.sellerVerified,
@@ -173,65 +168,38 @@ export function ProductPageLayout(props: ProductPageLayoutProps) {
     location: product.seller_city ?? null,
   };
 
-  // Modal render mode - use compact ProductModalLayout
-  if (renderMode === "modal") {
-    return (
-      <ProductModalLayout
+  return (
+    <>
+      {/* ===== MOBILE PRODUCT PAGE ===== */}
+      <MobileProductPage
         locale={locale}
         username={username}
         productSlug={productSlug}
         product={product}
         seller={seller}
         category={category}
+        parentCategory={parentCategory}
         rootCategory={rootCategory}
+        relatedProducts={relatedProducts}
+        reviews={reviews}
         viewModel={viewModel}
-        favoritesCount={favoritesCount}
+        variants={variants ?? []}
+        {...(submitReview && { submitReview })}
       />
-    );
-  }
-
-  return (
-    <>
-      {/* ===== MOBILE PRODUCT PAGE ===== */}
-      {renderMode === "page" && (
-        <MobileProductPage
-          locale={locale}
-          username={username}
-          productSlug={productSlug}
-          product={product}
-          seller={seller}
-          category={category}
-          parentCategory={parentCategory}
-          rootCategory={rootCategory}
-          relatedProducts={relatedProducts}
-          reviews={reviews}
-          viewModel={viewModel}
-          variants={variants ?? []}
-          {...(submitReview && { submitReview })}
-        />
-      )}
 
       {/* ===== DESKTOP PRODUCT PAGE (V2) ===== */}
-      <div
-        className={
-          renderMode === "page"
-            ? "hidden lg:block min-h-screen bg-muted/30 pb-10"
-            : "bg-muted/30"
-        }
-      >
-        {/* JSON-LD Structured Data for SEO (page only) */}
-        {renderMode === "page" && (
-          <>
-            <script
-              type="application/ld+json"
-              dangerouslySetInnerHTML={{ __html: JSON.stringify(viewModel.jsonLd) }}
-            />
-            <script
-              type="application/ld+json"
-              dangerouslySetInnerHTML={{ __html: JSON.stringify(viewModel.breadcrumbJsonLd) }}
-            />
-          </>
-        )}
+      <div className="hidden lg:block min-h-screen bg-muted/30 pb-10">
+        {/* JSON-LD Structured Data for SEO */}
+        <>
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(viewModel.jsonLd) }}
+          />
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(viewModel.breadcrumbJsonLd) }}
+          />
+        </>
 
         {/* Track this product as recently viewed */}
         <RecentlyViewedTracker

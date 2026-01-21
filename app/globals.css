@@ -107,6 +107,12 @@
   --text-default: oklch(0.25 0.01 255);
   --text-muted-alt: oklch(0.45 0.01 255);
   --text-subtle: oklch(0.55 0.01 255);
+
+  /* Overlay/Gallery Text (for dark backgrounds like fullscreen viewer) */
+  --overlay-text: oklch(1 0 0);
+  --overlay-text-muted: oklch(0.85 0 0);
+  --gallery-ring: oklch(1 0 0);
+  --gallery-ring-offset: oklch(0.10 0.01 255);
   --font-sans: Open Sans, sans-serif;
   --font-serif: Georgia, serif;
   --font-mono: Menlo, monospace;
@@ -196,6 +202,12 @@
   --text-default: oklch(0.90 0 0);
   --text-muted: oklch(0.65 0.01 255);
   --text-subtle: oklch(0.50 0.01 255);
+
+  /* Overlay/Gallery Text - Dark Mode (same as light, always white on dark bg) */
+  --overlay-text: oklch(1 0 0);
+  --overlay-text-muted: oklch(0.85 0 0);
+  --gallery-ring: oklch(1 0 0);
+  --gallery-ring-offset: oklch(0.10 0.01 255);
   --radius: 0.625rem;
   --font-sans: Open Sans, sans-serif;
   --font-serif: Georgia, serif;
@@ -283,6 +295,12 @@
   --color-text-default: var(--text-default);
   --color-text-muted-alt: var(--text-muted-alt);
   --color-text-subtle: var(--text-subtle);
+
+  /* Overlay/Gallery Text (for dark backgrounds) */
+  --color-overlay-text: var(--overlay-text);
+  --color-overlay-text-muted: var(--overlay-text-muted);
+  --color-gallery-ring: var(--gallery-ring);
+  --color-gallery-ring-offset: var(--gallery-ring-offset);
 
   /* Tight radius scale for marketplace */
   --radius-sm: calc(var(--radius) - 2px);

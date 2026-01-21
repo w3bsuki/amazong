@@ -352,8 +352,8 @@ export function AccountSidebar({ user, plansModalActions, ...props }: AccountSid
             </div>
             <p className="text-xs text-muted-foreground mb-3">
               {locale === 'bg'
-                ? 'По-ниски комисиони и повече възможности'
-                : 'Lower commissions & more features'}
+                ? 'По-ниски такси и повече възможности'
+                : 'Lower fees & more features'}
             </p>
             <PlansModal
               source="sidebar"

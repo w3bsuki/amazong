@@ -17,7 +17,6 @@ import { cn } from "@/lib/utils"
 import { buildHeroBadgeText } from "@/lib/product-card-hero-attributes"
 import { cva, type VariantProps } from "class-variance-authority"
 import { Truck } from "@phosphor-icons/react"
-import { useIsMobile } from "@/hooks/use-mobile"
 import { useDrawer, type QuickViewProduct } from "@/components/providers/drawer-context"
 
 function formatTimeAgo(input: string, locale: string): string | null {
@@ -219,8 +218,8 @@ function ProductCard({
 }: ProductCardProps & { ref?: React.Ref<HTMLDivElement> }) {
   const t = useTranslations("Product")
   const locale = useLocale()
-  const isMobile = useIsMobile()
-  const { openProductQuickView } = useDrawer()
+  const { openProductQuickView, enabledDrawers, isDrawerSystemEnabled } = useDrawer()
+  const isQuickViewEnabled = isDrawerSystemEnabled && enabledDrawers.productQuickView
 
   // Derived values
   const hasDiscount = originalPrice && originalPrice > price
@@ -262,9 +261,16 @@ function ProductCard({
     return condition.slice(0, 8)
   }, [condition, t])
 
-  // Quick view handler - opens drawer instead of navigating (both mobile & desktop)
+  // Quick view handler (no URL change)
+  // - Standard click: open quick view overlay
+  // - Modified click: keep normal link behavior
   const handleCardClick = React.useCallback(
     (e: React.MouseEvent) => {
+      if (!isQuickViewEnabled) return
+
+      // Allow expected link behaviors (new tab/window, copy link, etc.)
+      if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return
+
       e.preventDefault()
       // Build quick view data, only including defined properties
       // (exactOptionalPropertyTypes requires this pattern)
@@ -293,7 +299,7 @@ function ProductCard({
       openProductQuickView(quickViewData)
     },
     [
-      isMobile,
+      isQuickViewEnabled,
       id,
       title,
       price,
@@ -393,12 +399,12 @@ function ProductCard({
         />
 
         {/* Meta row: Location + Freshness indicator */}
-        <div className="flex items-center gap-1.5 text-tiny">
+        <div className="flex items-center gap-1.5 text-tiny min-w-0">
           {location && (
-            <span className="text-muted-foreground truncate max-w-[60%]">{location}</span>
+            <span className="text-muted-foreground truncate min-w-0 flex-1">{location}</span>
           )}
-          {location && createdAt && <span className="text-muted-foreground">•</span>}
-          <FreshnessIndicator createdAt={createdAt} />
+          {location && createdAt && <span className="text-muted-foreground shrink-0">·</span>}
+          <FreshnessIndicator createdAt={createdAt} className="shrink-0" />
         </div>
 
         {/* Free Shipping - Treido subtle style */}

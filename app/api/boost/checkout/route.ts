@@ -1,24 +1,55 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { stripe } from '@/lib/stripe'
-import { createRouteHandlerClient } from '@/lib/supabase/server'
+import { createRouteHandlerClient, createStaticClient } from '@/lib/supabase/server'
 import { eurToBgnApprox } from '@/lib/currency'
 import { isBoostActive } from '@/lib/boost/boost-status'
 import { getTranslations } from 'next-intl/server'
 
 const PROFILE_SELECT_FOR_STRIPE = 'id,stripe_customer_id'
 
-const BOOST_PRICING = {
-  '1': { priceEur: 0.99, durationKey: 'duration24h' },
-  '7': { priceEur: 4.99, durationKey: 'duration7d' },
-  '30': { priceEur: 14.99, durationKey: 'duration30d' },
+const DEFAULT_BOOST_PRICING = {
+  1: { priceEur: 0.99, durationKey: 'duration24h', sku: 'boost_24h' },
+  7: { priceEur: 4.99, durationKey: 'duration7d', sku: 'boost_7d' },
+  30: { priceEur: 14.99, durationKey: 'duration30d', sku: 'boost_30d' },
 } as const
 
-type BoostDuration = keyof typeof BOOST_PRICING
+type BoostDurationDays = keyof typeof DEFAULT_BOOST_PRICING
 
 type BoostLocale = 'en' | 'bg'
 
+type BoostPriceRow = {
+  duration_days: number
+  price: number
+  currency: string
+  is_active: boolean
+}
+
 function toBoostLocale(locale: string | undefined): BoostLocale {
   return locale === 'bg' ? 'bg' : 'en'
+}
+
+function parseDurationDays(input: string): BoostDurationDays | null {
+  const parsed = Number.parseInt(input, 10)
+  if (Number.isNaN(parsed)) return null
+  if (parsed === 1 || parsed === 7 || parsed === 30) return parsed
+  return null
+}
+
+async function getBoostPriceEur(
+  supabase: ReturnType<typeof createRouteHandlerClient>["supabase"],
+  durationDays: BoostDurationDays
+): Promise<number | null> {
+  const { data } = await (supabase as any)
+    .from("boost_prices")
+    .select("price,currency,is_active")
+    .eq("duration_days", durationDays)
+    .eq("is_active", true)
+    .eq("currency", "EUR")
+    .maybeSingle()
+
+  const priceEur = Number((data as BoostPriceRow | null)?.price)
+  if (!Number.isFinite(priceEur) || priceEur <= 0) return null
+  return priceEur
 }
 
 export async function POST(req: NextRequest) {
@@ -42,13 +73,14 @@ export async function POST(req: NextRequest) {
       return json({ errorKey: 'errors.missingFields' }, { status: 400 })
     }
 
-    // Validate duration
-    if (!(durationDays in BOOST_PRICING)) {
+    const parsedDuration = parseDurationDays(durationDays)
+    if (!parsedDuration) {
       return json({ errorKey: 'errors.invalidDuration' }, { status: 400 })
     }
 
-    const duration = durationDays as BoostDuration
-    const pricing = BOOST_PRICING[duration]
+    const pricingMeta = DEFAULT_BOOST_PRICING[parsedDuration]
+    const priceFromDb = await getBoostPriceEur(supabase, parsedDuration)
+    const priceEur = priceFromDb ?? pricingMeta.priceEur
 
     // Get profile info (seller fields are now on profiles)
     const { data: profile } = await supabase
@@ -109,14 +141,14 @@ export async function POST(req: NextRequest) {
           price_data: {
             currency: 'eur',
             product_data: {
-              name: t('checkoutItemName', { duration: t(pricing.durationKey) }),
+              name: t('checkoutItemName', { duration: t(pricingMeta.durationKey) }),
               description: t('checkoutItemDescription', {
                 productTitle: product.title,
-                duration: t(pricing.durationKey),
+                duration: t(pricingMeta.durationKey),
               }),
               images: [], // Could add product image here
             },
-            unit_amount: Math.round(pricing.priceEur * 100), // Stripe uses cents
+            unit_amount: Math.round(priceEur * 100), // Stripe uses cents
           },
           quantity: 1,
         },
@@ -124,7 +156,8 @@ export async function POST(req: NextRequest) {
       metadata: {
         profile_id: profile.id,
         product_id: productId,
-        duration_days: durationDays,
+        duration_days: String(parsedDuration),
+        sku: pricingMeta.sku,
         type: 'listing_boost',
       },
       success_url: `${process.env.NEXT_PUBLIC_APP_URL}/${resolvedLocale}/account/selling?boost_success=true&product_id=${productId}`,
@@ -134,9 +167,10 @@ export async function POST(req: NextRequest) {
     return json({ 
       sessionId: session.id, 
       url: session.url,
-      priceEur: pricing.priceEur,
-      priceBgn: eurToBgnApprox(pricing.priceEur),
-      durationKey: pricing.durationKey,
+      sku: pricingMeta.sku,
+      priceEur,
+      priceBgn: eurToBgnApprox(priceEur),
+      durationKey: pricingMeta.durationKey,
       locale: resolvedLocale,
     })
   } catch (error) {
@@ -152,13 +186,52 @@ export async function POST(req: NextRequest) {
 
 // Get available boost pricing
 export async function GET() {
+  const supabase = createStaticClient()
+
+  let source = {} as Partial<Record<BoostDurationDays, number>>
+
+  try {
+    const { data } = await (supabase as any)
+      .from("boost_prices")
+      .select("duration_days,price,currency,is_active")
+      .eq("is_active", true)
+      .eq("currency", "EUR")
+      .order("duration_days", { ascending: true })
+
+    const rows = ((data ?? []) as BoostPriceRow[])
+      .map((row) => ({
+        days: row.duration_days as BoostDurationDays,
+        priceEur: Number(row.price),
+      }))
+      .filter((row) =>
+        (row.days === 1 || row.days === 7 || row.days === 30) &&
+        Number.isFinite(row.priceEur) &&
+        row.priceEur > 0
+      )
+
+    if (rows.length > 0) {
+      source = Object.fromEntries(rows.map(({ days, priceEur }) => [days, priceEur])) as Partial<
+        Record<BoostDurationDays, number>
+      >
+    }
+  } catch {
+    source = {}
+  }
+
   return NextResponse.json({
-    options: Object.entries(BOOST_PRICING).map(([days, { priceEur, durationKey }]) => ({
-      days: Number.parseInt(days),
-      priceEur,
-      priceBgn: eurToBgnApprox(priceEur),
-      durationKey,
-      currency: 'EUR'
-    }))
+    options: (Object.entries(DEFAULT_BOOST_PRICING) as Array<
+      [unknown, { priceEur: number; durationKey: string; sku: string }]
+    >).map(([daysRaw, { priceEur: fallbackPriceEur, durationKey, sku }]) => {
+      const days = Number(daysRaw) as BoostDurationDays
+      const priceEur = source[days] ?? fallbackPriceEur
+      return {
+        days,
+        sku,
+        priceEur,
+        priceBgn: eurToBgnApprox(priceEur),
+        durationKey,
+        currency: "EUR",
+      }
+    }),
   })
 }

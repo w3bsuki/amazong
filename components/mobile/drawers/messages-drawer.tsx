@@ -10,10 +10,11 @@ import {
   DrawerTitle,
   DrawerClose,
   DrawerFooter,
+  DrawerBody,
 } from "@/components/ui/drawer"
 import { Button } from "@/components/ui/button"
 import { Link } from "@/i18n/routing"
-import { useTranslations, useLocale } from "next-intl"
+import { useTranslations } from "next-intl"
 import { useMessages, type Conversation } from "@/components/providers/message-context"
 import Image from "next/image"
 import { cn } from "@/lib/utils"
@@ -38,7 +39,6 @@ export function MessagesDrawer({ open, onOpenChange }: MessagesDrawerProps) {
   const { user } = useAuth()
   const t = useTranslations("Drawers")
   const tMessages = useTranslations("Messages")
-  const locale = useLocale()
 
   const handleClose = useCallback(() => onOpenChange(false), [onOpenChange])
 
@@ -87,17 +87,17 @@ export function MessagesDrawer({ open, onOpenChange }: MessagesDrawerProps) {
       const diffHours = Math.floor(diffMs / 3600000)
       const diffDays = Math.floor(diffMs / 86400000)
 
-      if (diffMins < 1) return locale === "bg" ? "сега" : "now"
-      if (diffMins < 60) return `${diffMins}${locale === "bg" ? "м" : "m"}`
-      if (diffHours < 24) return `${diffHours}${locale === "bg" ? "ч" : "h"}`
-      return `${diffDays}${locale === "bg" ? "д" : "d"}`
+      if (diffMins < 1) return tMessages("timeNow")
+      if (diffMins < 60) return tMessages("timeMinutes", { count: diffMins })
+      if (diffHours < 24) return tMessages("timeHours", { count: diffHours })
+      return tMessages("timeDays", { count: diffDays })
     },
-    [locale]
+    [tMessages]
   )
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
-      <DrawerContent className="rounded-t-xl max-h-[70dvh]">
+      <DrawerContent className="rounded-t-xl max-h-dialog-sm">
         <DrawerHeader className="pb-1.5 pt-0 border-b border-border text-left">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-1.5">
@@ -105,20 +105,20 @@ export function MessagesDrawer({ open, onOpenChange }: MessagesDrawerProps) {
               <DrawerTitle className="text-sm font-semibold">{t("messages")}</DrawerTitle>
               {totalUnreadCount > 0 && (
                 <span className="text-xs text-destructive font-medium">
-                  ({totalUnreadCount} {locale === "bg" ? "непрочетени" : "unread"})
+                  ({t("unreadCount", { count: totalUnreadCount })})
                 </span>
               )}
             </div>
             <DrawerClose asChild>
               <button
-                className="text-xs text-muted-foreground hover:text-foreground h-7 px-2 rounded-md hover:bg-muted touch-action-manipulation tap-transparent"
-                aria-label="Close"
+                className="text-xs text-muted-foreground hover:text-foreground h-touch-xs px-2 rounded-md hover:bg-muted touch-action-manipulation tap-transparent"
+                aria-label={t("close")}
               >
-                {locale === "bg" ? "Затвори" : "Close"}
+                {t("close")}
               </button>
             </DrawerClose>
           </div>
-          <DrawerDescription className="sr-only">Your recent messages</DrawerDescription>
+          <DrawerDescription className="sr-only">{t("description")}</DrawerDescription>
         </DrawerHeader>
 
         {!user ? (
@@ -127,10 +127,10 @@ export function MessagesDrawer({ open, onOpenChange }: MessagesDrawerProps) {
               <ChatCircle size={22} weight="regular" className="text-muted-foreground/50" />
             </div>
             <p className="text-sm text-foreground font-medium">
-              {locale === "bg" ? "Влезте в акаунта си" : "Sign in to view messages"}
+              {t("signInPrompt")}
             </p>
             <p className="text-xs text-muted-foreground mt-0.5 text-center">
-              {locale === "bg" ? "Влезте, за да видите съобщенията си" : "Sign in to view your messages"}
+              {t("signInDescription")}
             </p>
           </div>
         ) : isLoading ? (
@@ -144,11 +144,11 @@ export function MessagesDrawer({ open, onOpenChange }: MessagesDrawerProps) {
             </div>
             <p className="text-sm text-foreground font-medium">{tMessages("noConversations")}</p>
             <p className="text-xs text-muted-foreground mt-0.5">
-              {locale === "bg" ? "Започнете разговор с продавач" : "Start a conversation with a seller"}
+              {t("startConversationHint")}
             </p>
           </div>
         ) : (
-          <div className="flex-1 overflow-y-auto overscroll-contain">
+          <DrawerBody className="px-0">
             {recentConversations.map((conversation, index) => {
               const otherParty = getOtherParty(conversation)
               const unread = getUnreadCount(conversation)
@@ -202,9 +202,9 @@ export function MessagesDrawer({ open, onOpenChange }: MessagesDrawerProps) {
                           {formatRelativeTime(conversation.last_message_at)}
                         </span>
                         {unread > 0 ? (
-                          <Circle size={8} weight="fill" className="text-destructive" aria-label="Unread" />
+                          <Circle size={8} weight="fill" className="text-destructive" aria-label={tMessages("unread")} />
                         ) : (
-                          <Check size={12} weight="bold" className="text-muted-foreground" aria-label="Read" />
+                          <Check size={12} weight="bold" className="text-muted-foreground" aria-label={tMessages("read")} />
                         )}
                       </div>
                     </div>
@@ -220,14 +220,14 @@ export function MessagesDrawer({ open, onOpenChange }: MessagesDrawerProps) {
                     )}
                     {productTitle && (
                       <p className="text-xs text-muted-foreground truncate mt-0.5">
-                        {locale === "bg" ? "Относно:" : "Re:"} {productTitle}
+                        {t("regarding")} {productTitle}
                       </p>
                     )}
                   </div>
                 </Link>
               )
             })}
-          </div>
+          </DrawerBody>
         )}
 
         <DrawerFooter className="border-t border-border">

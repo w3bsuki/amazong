@@ -240,7 +240,7 @@ export function MobileProductPage(props: MobileProductPageProps) {
             {productTags.map((tag) => (
               <span
                 key={tag}
-                className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-success/10 text-success text-xs font-medium"
+                className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-shipping-free/10 text-shipping-free text-xs font-medium"
               >
                 <Shield className="size-3" strokeWidth={2} />
                 {tag}
@@ -255,7 +255,7 @@ export function MobileProductPage(props: MobileProductPageProps) {
         <div className="bg-surface-card mt-1.5 px-4 py-3">
           <div className="grid grid-cols-2 gap-2">
             {viewModel.heroSpecs.slice(0, 4).map((spec) => (
-              <div key={spec.label} className="flex items-center justify-between py-2 px-3 rounded-lg bg-muted">
+              <div key={spec.label} className="flex items-center justify-between py-2 px-3 rounded-lg bg-muted/30">
                 <span className="text-xs text-text-muted-alt">{spec.label}</span>
                 <span className="text-sm font-semibold text-text-strong">{spec.value}</span>
               </div>
@@ -267,7 +267,7 @@ export function MobileProductPage(props: MobileProductPageProps) {
       {/* ========== SELLER CARD ========== */}
       <Link
         href={sellerInfo.username ? `/${sellerInfo.username}` : "#"}
-        className="block bg-surface-card mt-1.5 px-4 py-3 active:bg-muted/50"
+        className="block bg-surface-card mt-1.5 px-4 py-3 active:bg-active"
       >
         <div className="flex items-center gap-3">
           <div className="relative flex-shrink-0">
@@ -279,7 +279,7 @@ export function MobileProductPage(props: MobileProductPageProps) {
             </Avatar>
             {sellerInfo.verified && (
               <span className="absolute -bottom-0.5 -right-0.5 size-5 bg-verified rounded-full ring-2 ring-surface-card flex items-center justify-center">
-                <CheckCircle2 className="size-3 text-verified-foreground" fill="currentColor" />
+                <CheckCircle2 className="size-3 text-primary-foreground" fill="currentColor" />
               </span>
             )}
           </div>
@@ -312,17 +312,17 @@ export function MobileProductPage(props: MobileProductPageProps) {
           {t("delivery")}
         </span>
         <div className="flex flex-wrap gap-2 mt-2">
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-muted text-sm">
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-muted/30 text-sm">
             <MapPin className="size-4 text-text-muted-alt" strokeWidth={1.5} />
             {product.pickup_only ? t("pickupOnly") : t("meetup")}
           </span>
           {!product.pickup_only && (
             <>
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-muted text-sm">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-muted/30 text-sm">
                 <Truck className="size-4 text-text-muted-alt" strokeWidth={1.5} />
                 {t("shipping")}
               </span>
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-success/10 text-success text-sm font-medium">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-shipping-free/10 text-shipping-free text-sm font-medium">
                 {t("freeShipping")}
               </span>
             </>

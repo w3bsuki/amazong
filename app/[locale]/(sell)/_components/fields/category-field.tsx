@@ -42,7 +42,6 @@ export function CategoryField({ onCategoryChange, className, compact = false }: 
       await fetch(`/api/categories/${encodeURIComponent(categoryId)}/attributes`, {
         method: "GET",
         credentials: "same-origin",
-        cache: "no-store",
       });
     } catch {
       // Non-blocking: it's only a prefetch.

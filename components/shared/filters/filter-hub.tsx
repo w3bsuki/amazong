@@ -440,7 +440,7 @@ export function FilterHub({
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
-      <DrawerContent className="max-h-[92dvh] flex flex-col rounded-t-2xl px-0 pb-0 bg-background lg:hidden">
+      <DrawerContent className="max-h-dialog flex flex-col rounded-t-2xl px-0 pb-0 bg-background lg:hidden">
         {/* Header */}
         <DrawerHeader
           className={cn(

@@ -10,6 +10,7 @@ import {
   DrawerTitle,
   DrawerClose,
   DrawerFooter,
+  DrawerBody,
 } from "@/components/ui/drawer"
 import { Button } from "@/components/ui/button"
 import { Link } from "@/i18n/routing"
@@ -71,14 +72,14 @@ export function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
             </div>
             <DrawerClose asChild>
               <button
-                className="text-xs text-muted-foreground hover:text-foreground h-7 px-2 rounded-md hover:bg-muted touch-action-manipulation tap-transparent"
-                aria-label="Close"
+                className="text-xs text-muted-foreground hover:text-foreground h-touch-xs px-2 rounded-md hover:bg-muted touch-action-manipulation tap-transparent"
+                aria-label={t("close")}
               >
-                {locale === "bg" ? "Затвори" : "Close"}
+                {t("close")}
               </button>
             </DrawerClose>
           </div>
-          <DrawerDescription className="sr-only">Your shopping cart contents</DrawerDescription>
+          <DrawerDescription className="sr-only">{t("description")}</DrawerDescription>
         </DrawerHeader>
 
         {items.length === 0 ? (
@@ -88,11 +89,11 @@ export function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
             </div>
             <p className="text-sm text-foreground font-medium">{t("empty")}</p>
             <p className="text-xs text-muted-foreground mt-0.5">
-              {locale === "bg" ? "Добавете продукти" : "Add items to get started"}
+              {t("emptyDescription")}
             </p>
           </div>
         ) : (
-          <div className={cn("flex-1 overflow-y-auto px-inset overscroll-contain", contentMaxHeight)}>
+          <DrawerBody className={cn("px-inset", contentMaxHeight)}>
             {items.map((item, index) => (
               <div
                 key={`${item.id}:${item.variantId ?? ""}`}
@@ -138,24 +139,24 @@ export function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
                               ? updateQuantity(item.id, item.quantity - 1, item.variantId)
                               : removeFromCart(item.id, item.variantId)
                           }
-                          className="flex items-center justify-center size-7 rounded-md hover:bg-background text-muted-foreground hover:text-foreground touch-action-manipulation tap-transparent"
-                          aria-label="Decrease quantity"
+                          className="flex items-center justify-center size-touch-xs rounded-md hover:bg-background text-muted-foreground hover:text-foreground touch-action-manipulation tap-transparent"
+                          aria-label={t("decreaseQuantity")}
                         >
                           <Minus size={14} weight="bold" />
                         </button>
                         <span className="text-xs font-medium text-foreground w-6 text-center">{item.quantity}</span>
                         <button
                           onClick={() => updateQuantity(item.id, item.quantity + 1, item.variantId)}
-                          className="flex items-center justify-center size-7 rounded-md hover:bg-background text-muted-foreground hover:text-foreground touch-action-manipulation tap-transparent"
-                          aria-label="Increase quantity"
+                          className="flex items-center justify-center size-touch-xs rounded-md hover:bg-background text-muted-foreground hover:text-foreground touch-action-manipulation tap-transparent"
+                          aria-label={t("increaseQuantity")}
                         >
                           <Plus size={14} weight="bold" />
                         </button>
                       </div>
                       <button
                         onClick={() => removeFromCart(item.id, item.variantId)}
-                        className="flex items-center justify-center size-7 rounded-md hover:bg-destructive/10 text-muted-foreground hover:text-destructive touch-action-manipulation tap-transparent"
-                        aria-label="Remove item"
+                        className="flex items-center justify-center size-touch-xs rounded-md hover:bg-destructive/10 text-muted-foreground hover:text-destructive touch-action-manipulation tap-transparent"
+                        aria-label={t("removeItem")}
                       >
                         <Trash size={14} weight="regular" />
                       </button>
@@ -164,7 +165,7 @@ export function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
                 </div>
               </div>
             ))}
-          </div>
+          </DrawerBody>
         )}
 
         <DrawerFooter className="border-t border-border gap-1.5">

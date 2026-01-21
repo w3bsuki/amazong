@@ -58,7 +58,7 @@ function SelectionRow({
       onClick={onClick}
       className={cn(
         "w-full flex items-center justify-between h-14 px-4 rounded-xl border transition-all",
-        "active:scale-[0.98] active:opacity-90",
+        "active:opacity-90",
         hasError
           ? "border-destructive/40 bg-destructive/5"
           : value
@@ -67,11 +67,11 @@ function SelectionRow({
       )}
     >
       <div className="flex-1 text-left min-w-0">
-        <span className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground block">
+        <span className="text-tiny font-semibold uppercase tracking-wide text-muted-foreground block">
           {label}{required && <span className="text-destructive ml-0.5">*</span>}
         </span>
         <span className={cn(
-          "text-[15px] font-medium truncate block -mt-0.5",
+          "text-reading font-medium truncate block -mt-0.5",
           value ? "text-foreground" : "text-muted-foreground/50"
         )}>
           {value || placeholder}
@@ -216,7 +216,7 @@ export function StepDetails() {
         <h2 className="text-2xl font-bold tracking-tight text-foreground">
           {isBg ? "Детайли за продукта" : "Product details"}
         </h2>
-        <p className="text-[15px] text-muted-foreground">
+        <p className="text-reading text-muted-foreground">
           {isBg
             ? "Добавете информация, която помага на купувачите"
             : "Add information that helps buyers find your item"}
@@ -242,7 +242,7 @@ export function StepDetails() {
       {/* Required Attributes - iOS grouped list style */}
       {!isLoading && requiredAttrs.length > 0 && (
         <div className="space-y-2">
-          <span className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground px-1">
+          <span className="text-tiny font-semibold uppercase tracking-wide text-muted-foreground px-1">
             {isBg ? "Основни характеристики" : "Main specifics"}
             <span className="ml-1.5 text-muted-foreground/60">
               {requiredAttrs.filter(a => isAttributeFilled(getAttrValue(a.id))).length}/{requiredAttrs.length}
@@ -261,10 +261,10 @@ export function StepDetails() {
                     onClick={() => setAttrDrawerOpen(attr.id)}
                     className="w-full flex items-center justify-between h-14 px-4 active:bg-muted/50 transition-colors"
                   >
-                    <span className="text-[15px] text-foreground">{name}</span>
+                    <span className="text-reading text-foreground">{name}</span>
                     <div className="flex items-center gap-2">
                       <span className={cn(
-                        "text-[15px]",
+                        "text-reading",
                         displayValue ? "text-foreground font-medium" : "text-muted-foreground/50"
                       )}>
                         {displayValue || (isBg ? "Избери" : "Select")}
@@ -278,13 +278,13 @@ export function StepDetails() {
               // Text/number input inline
               return (
                 <div key={attr.id} className="flex items-center justify-between h-14 px-4">
-                  <span className="text-[15px] text-foreground shrink-0">{name}</span>
+                  <span className="text-reading text-foreground shrink-0">{name}</span>
                   <Input
                     value={getAttrValue(attr.id)}
                     onChange={(e) => handleAttrChange(attr, e.target.value)}
                     placeholder={isBg ? "Въведи..." : "Enter..."}
                     type={attr.attribute_type === "number" ? "number" : "text"}
-                    className="border-none bg-transparent h-full p-0 text-[15px] text-right font-medium focus-visible:ring-0 w-32 placeholder:text-muted-foreground/40"
+                    className="border-none bg-transparent h-full p-0 text-reading text-right font-medium focus-visible:ring-0 w-32 placeholder:text-muted-foreground/40"
                   />
                 </div>
               );
@@ -296,10 +296,10 @@ export function StepDetails() {
       {/* Description - iOS card style */}
       <div className="space-y-2">
         <div className="flex items-center justify-between px-1">
-          <span className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+          <span className="text-tiny font-semibold uppercase tracking-wide text-muted-foreground">
             {isBg ? "Описание" : "Description"}
           </span>
-          <span className="text-[11px] font-medium tabular-nums text-muted-foreground/60">
+          <span className="text-tiny font-medium tabular-nums text-muted-foreground/60">
             {description.length}/2000
           </span>
         </div>
@@ -315,7 +315,7 @@ export function StepDetails() {
                   : "Describe your item: brand, size, why you're selling..."}
                 rows={4}
                 maxLength={2000}
-                className="border-none bg-transparent resize-none text-[15px] px-4 py-3 focus-visible:ring-0 placeholder:text-muted-foreground/40"
+                className="border-none bg-transparent resize-none text-reading px-4 py-3 focus-visible:ring-0 placeholder:text-muted-foreground/40"
               />
             </div>
           )}
@@ -325,10 +325,10 @@ export function StepDetails() {
       {/* Additional Photos - Simple grid */}
       <div className="space-y-2">
         <div className="flex items-center justify-between px-1">
-          <span className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+          <span className="text-tiny font-semibold uppercase tracking-wide text-muted-foreground">
             {isBg ? "Снимки" : "Photos"}
           </span>
-          <span className="text-[11px] font-medium tabular-nums text-muted-foreground/60">
+          <span className="text-tiny font-medium tabular-nums text-muted-foreground/60">
             {images.length}/12
           </span>
         </div>
@@ -367,13 +367,13 @@ export function StepDetails() {
 
       {/* Condition Drawer */}
       <Drawer open={conditionOpen} onOpenChange={setConditionOpen}>
-        <DrawerContent className="max-h-[85vh]">
+        <DrawerContent className="max-h-dialog flex flex-col">
           <DrawerHeader className="border-b border-border pb-4">
             <DrawerTitle className="text-lg font-bold">
               {isBg ? "Състояние на продукта" : "Item condition"}
             </DrawerTitle>
           </DrawerHeader>
-          <ScrollArea className="flex-1 max-h-[65vh]">
+          <ScrollArea className="flex-1 min-h-0">
             <div className="p-4 space-y-1.5">
               {conditionOptions.map((opt) => {
                 const isSelected = condition === opt.value;
@@ -388,14 +388,14 @@ export function StepDetails() {
                     }}
                     className={cn(
                       "w-full flex items-center justify-between h-14 px-4 rounded-xl transition-all",
-                      "active:scale-[0.98]",
+                      "active:opacity-90",
                       isSelected
                         ? "bg-selected border border-selected-border"
                         : "bg-muted/40 hover:bg-muted/60"
                     )}
                   >
                     <span className={cn(
-                      "text-[15px]",
+                      "text-reading",
                       isSelected ? "font-bold text-foreground" : "font-medium text-foreground"
                     )}>
                       {label}
@@ -419,11 +419,11 @@ export function StepDetails() {
         const currentValue = getAttrValue(attr.id);
         return (
           <Drawer key={attr.id} open={attrDrawerOpen === attr.id} onOpenChange={(open) => setAttrDrawerOpen(open ? attr.id : null)}>
-            <DrawerContent className="max-h-[85vh]">
+            <DrawerContent className="max-h-dialog flex flex-col">
               <DrawerHeader className="border-b border-border pb-4">
                 <DrawerTitle className="text-lg font-bold">{name}</DrawerTitle>
               </DrawerHeader>
-              <ScrollArea className="flex-1 max-h-[65vh]">
+              <ScrollArea className="flex-1 min-h-0">
                 <div className="p-4 space-y-1.5">
                   {attr.options?.map((opt, idx) => {
                     const isSelected = currentValue === opt;
@@ -438,14 +438,14 @@ export function StepDetails() {
                         }}
                         className={cn(
                           "w-full flex items-center justify-between h-14 px-4 rounded-xl transition-all",
-                          "active:scale-[0.98]",
+                          "active:opacity-90",
                           isSelected
                             ? "bg-selected border border-selected-border"
                             : "bg-muted/40 hover:bg-muted/60"
                         )}
                       >
                         <span className={cn(
-                          "text-[15px]",
+                          "text-reading",
                           isSelected ? "font-bold text-foreground" : "font-medium text-foreground"
                         )}>
                           {displayLabel}

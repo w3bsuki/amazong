@@ -1,0 +1,31 @@
+# Returns & Refunds
+
+## Goals
+
+- Make outcomes predictable (buyers and sellers know the rules).
+- Reduce fraud while keeping the experience simple.
+
+## Baseline rules (V1)
+
+- Payments happen **on-platform** (Stripe). COD is not supported.
+- Refunds are processed through Stripe (no off-platform refunds).
+
+## Refund eligibility (examples)
+
+- Item not shipped within the allowed window → cancel + refund
+- Item not received (tracking shows failure) → dispute → refund if confirmed
+- Item not as described / damaged / counterfeit → dispute + evidence
+
+## Process
+
+1. Buyer opens dispute (reason + evidence)
+2. Seller responds within SLA
+3. Support reviews and decides:
+   - refund buyer, or
+   - release funds to seller, or
+   - partial refund
+
+## Open decisions
+
+- Return shipping label policy (buyer-paid vs seller-paid vs platform-paid)
+- Default return window length (e.g. 48–72h after delivery)

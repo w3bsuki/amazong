@@ -28,6 +28,8 @@ interface SortModalProps {
   locale: string
   /** Override base path for sort query params */
   basePath?: string | undefined
+  /** Sort options to hide from the list (e.g., when already handled by UI tabs) */
+  excludeOptions?: string[] | undefined
 }
 
 const SORT_OPTIONS = [
@@ -43,6 +45,7 @@ export function SortModal({
   onOpenChange,
   locale,
   basePath,
+  excludeOptions = [],
 }: SortModalProps) {
   const t = useTranslations("SearchFilters")
   const router = useRouter()
@@ -50,6 +53,11 @@ export function SortModal({
   const searchParams = useSearchParams()
 
   const currentSort = searchParams.get("sort") || "featured"
+  
+  // Filter out excluded options
+  const visibleOptions = SORT_OPTIONS.filter(
+    (option) => !excludeOptions.includes(option.value)
+  )
 
   // Resolve the base path (strip locale if present)
   const resolvedBasePath = basePath || (() => {
@@ -97,7 +105,7 @@ export function SortModal({
 
         <div className="overflow-y-auto py-2 pb-safe-max">
           <div className="space-y-0.5">
-            {SORT_OPTIONS.map((option) => {
+            {visibleOptions.map((option) => {
               const isActive = currentSort === option.value
               return (
                 <DrawerClose key={option.value} asChild>

@@ -390,7 +390,14 @@
         "addToCart": "Add to Cart",
         "addedToCart": "Added to cart!",
         "messages": "Messages",
-        "viewAllMessages": "View All Messages"
+        "viewAllMessages": "View All Messages",
+        "close": "Close",
+        "description": "Your recent messages",
+        "unreadCount": "{count} unread",
+        "signInPrompt": "Sign in to view messages",
+        "signInDescription": "Sign in to view your messages",
+        "startConversationHint": "Start a conversation with a seller",
+        "regarding": "Re:"
     },
     "AccountDrawer": {
         "title": "Account",
@@ -403,7 +410,13 @@
         "pending": "{count} pending",
         "unread": "{count} unread",
         "active": "{count} active",
-        "items": "{count} items"
+        "items": "{count} items",
+        "close": "Close",
+        "description": "Quick access to your account",
+        "signInPrompt": "Sign in to your account",
+        "signInDescription": "Sign in to view your profile",
+        "signIn": "Sign In",
+        "sales": "sales"
     },
     "Freshness": {
         "justNow": "Just now",
@@ -1195,13 +1208,19 @@
     "CartDropdown": {
         "title": "Shopping Cart",
         "empty": "Your cart is empty",
+        "emptyDescription": "Add items to get started",
+        "description": "Your shopping cart contents",
+        "close": "Close",
         "startShopping": "Start shopping",
         "item": "item",
         "items": "items",
         "moreItems": "more items",
         "subtotal": "Subtotal",
         "viewCart": "View Cart",
-        "checkout": "Checkout"
+        "checkout": "Checkout",
+        "decreaseQuantity": "Decrease quantity",
+        "increaseQuantity": "Increase quantity",
+        "removeItem": "Remove item"
     },
     "MessagesDropdown": {
         "title": "Your Messages",
@@ -1621,6 +1640,9 @@
         "startShopping": "Start Shopping",
         "addedOn": "Added on",
         "moveToCart": "Move to Cart",
+        "movedToCart": "Moved to cart",
+        "add": "Add",
+        "removed": "Removed",
         "remove": "Remove",
         "addAllToCart": "Add All to Cart",
         "saved": "Saved",
@@ -1629,7 +1651,10 @@
         "copyLink": "Copy Link",
         "linkCopied": "Link copied!",
         "stopSharing": "Stop Sharing",
-        "sharingEnabled": "Sharing enabled"
+        "sharingEnabled": "Sharing enabled",
+        "close": "Close",
+        "description": "Your saved wishlist items",
+        "viewAll": "View All"
     },
     "SharedWishlist": {
         "wishlist": "Wishlist",
@@ -1758,13 +1783,16 @@
         "back": "Back",
         "replyPrefix": "Re",
         "timeNow": "now",
+        "timeMinutes": "{count}m",
         "timeHours": "{count}h",
         "timeDays": "{count}d",
         "timeWeeks": "{count}w",
         "tabAll": "All",
         "tabUnread": "Unread",
         "tabBuying": "Buying",
-        "tabSelling": "Selling"
+        "tabSelling": "Selling",
+        "unread": "Unread",
+        "read": "Read"
     },
     "ProductFeed": {
         "categoryAnnouncement": "Now showing {categoryName}",
@@ -2131,7 +2159,7 @@
             "openDashboard": "View Dashboard",
             "howItWorks": "How Payouts Work",
             "howItWorksDesc1": "When a buyer purchases your product, the payment is processed securely through Stripe.",
-            "howItWorksDesc2": "We take a 10% platform fee to cover payment processing and platform services. The remaining 90% goes directly to your account.",
+            "howItWorksDesc2": "Personal sellers keep 100% of the item price. For business accounts, we deduct a small seller fee (0.5–1.5%) at payout. Buyers pay a separate Buyer Protection fee at checkout.",
             "howItWorksDesc3": "Payouts are typically deposited to your bank account within 2-7 business days, depending on your country."
         }
     },
@@ -2139,5 +2167,81 @@
         "payoutSetupRequired": "Set up payouts first",
         "payoutSetupDescription": "Before you can list items for sale, you need to connect your bank account to receive payments.",
         "setupPayouts": "Set up payouts"
+    },
+    "AdminDocs": {
+        "page": {
+            "title": "Documentation",
+            "description": "Operational docs, policies, and guides"
+        },
+        "filters": {
+            "searchPlaceholder": "Search docs...",
+            "categoryPlaceholder": "Category",
+            "allCategories": "All Categories"
+        },
+        "buttons": {
+            "seedTemplates": "Seed templates",
+            "newDoc": "New Doc"
+        },
+        "table": {
+            "title": "Title",
+            "category": "Category",
+            "status": "Status",
+            "updated": "Updated",
+            "actions": "Actions",
+            "empty": "No documents found"
+        },
+        "categories": {
+            "policies": "Policies",
+            "payments": "Payments",
+            "plans": "Plans",
+            "roadmap": "Roadmap",
+            "guides": "Guides",
+            "general": "General"
+        },
+        "status": {
+            "draft": "Draft",
+            "published": "Published",
+            "archived": "Archived"
+        },
+        "viewer": {
+            "srDescription": "Document viewer",
+            "noContent": "No content yet.",
+            "lastUpdatedLabel": "Last updated:"
+        },
+        "editor": {
+            "titleEdit": "Edit Document",
+            "titleNew": "New Document",
+            "descriptionEdit": "Update documentation content",
+            "descriptionNew": "Create new documentation",
+            "titleLabel": "Title",
+            "titlePlaceholder": "Document title",
+            "categoryLabel": "Category",
+            "contentLabel": "Content (Markdown)",
+            "contentPlaceholder": "Write your documentation here...\\n\\nYou can use Markdown formatting:\\n- **Bold** and *italic* text\\n- Lists and headings\\n- Code blocks with ```\\n- Links [text](url)"
+        },
+        "actions": {
+            "edit": "Edit",
+            "cancel": "Cancel",
+            "save": "Save",
+            "create": "Create",
+            "confirmDelete": "Delete this document?"
+        },
+        "aria": {
+            "close": "Close",
+            "edit": "Edit document",
+            "delete": "Delete document"
+        },
+        "toasts": {
+            "updateFailed": "Failed to update document",
+            "updated": "Document updated",
+            "titleRequired": "Title is required",
+            "createFailed": "Failed to create document",
+            "created": "Document created",
+            "deleteFailed": "Failed to delete document",
+            "deleted": "Document deleted",
+            "seedFailed": "Failed to seed templates",
+            "seeded": "Seeded {count} docs",
+            "noNewTemplates": "No new templates to add"
+        }
     }
 }

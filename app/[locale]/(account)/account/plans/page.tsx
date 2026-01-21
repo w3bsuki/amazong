@@ -65,10 +65,11 @@ export default async function PlansPage({ params }: PlansPageProps) {
   )
 
   // Map profile to seller interface expected by PlansContent
+  const commissionRate = profile?.commission_rate == null ? 0 : Number(profile.commission_rate)
   const seller = profile ? {
     id: profile.id,
     tier: profile.tier || 'free',
-    commission_rate: Number(profile.commission_rate) || 12,
+    commission_rate: commissionRate,
     stripe_customer_id: profile.stripe_customer_id,
   } : null
 

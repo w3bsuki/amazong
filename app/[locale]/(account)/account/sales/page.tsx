@@ -218,7 +218,7 @@ export default async function SalesPage({ params, searchParams }: SalesPageProps
     : totalSales > 0 ? 100 : 0
 
   // Commission calculation (based on seller tier)
-  const commissionRate = Number(seller.commission_rate || 10)
+  const commissionRate = seller.commission_rate == null ? 0 : Number(seller.commission_rate)
   const netRevenue = totalRevenue * (1 - commissionRate / 100)
   const totalCommission = totalRevenue * (commissionRate / 100)
 

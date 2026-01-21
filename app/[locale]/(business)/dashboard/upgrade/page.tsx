@@ -51,27 +51,33 @@ const translations = {
       "API access",
     ],
     freeFeatures: [
-      "100 free listings",
-      "10% transaction fee",
+      "100 active listings",
+      "1.5% seller fee",
+      "Buyer Protection: 3% + €0.35 (cap €12)",
       "Basic analytics",
       "Verified Business badge",
+      "Invoice support",
     ],
     proFeatures: [
-      "3,000 free listings",
-      "5% transaction fee (save 5%)",
+      "2,000 active listings",
+      "1% seller fee",
+      "Buyer Protection: 2.5% + €0.25 (cap €10)",
       "Full analytics dashboard",
-      "All dashboard features",
-      "15 free boosts/month",
+      "/dashboard access",
+      "20 boosts/month (24h)",
       "Team accounts (up to 3)",
       "Priority support",
+      "Bulk listing tools",
     ],
     enterpriseFeatures: [
       "UNLIMITED listings",
-      "3% transaction fee (lowest!)",
+      "0.5% seller fee",
+      "Buyer Protection: 2% + €0.20 (cap €8)",
       "Enterprise analytics suite",
-      "All Pro features",
-      "100 free boosts/month",
+      "/dashboard full access",
+      "50 boosts/month (24h)",
       "Unlimited team accounts",
+      "API access",
       "Dedicated account manager",
       "Custom integrations",
     ],
@@ -105,27 +111,33 @@ const translations = {
       "API достъп",
     ],
     freeFeatures: [
-      "100 безплатни обяви",
-      "10% комисионна",
+      "100 активни обяви",
+      "1.5% такса за продавача",
+      "Защита на купувача: 3% + €0.35 (лимит €12)",
       "Базова аналитика",
-      "Бадж Верифициран бизнес",
+      "Бадж „Верифициран бизнес“",
+      "Поддръжка за фактури",
     ],
     proFeatures: [
-      "3,000 безплатни обяви",
-      "5% комисионна (спестявате 5%)",
+      "2,000 активни обяви",
+      "1% такса за продавача",
+      "Защита на купувача: 2.5% + €0.25 (лимит €10)",
       "Пълно аналитично табло",
-      "Всички функции на таблото",
-      "15 безплатни буста/месец",
+      "Достъп до /dashboard",
+      "20 промотирания/месец (24ч)",
       "Екипни акаунти (до 3)",
       "Приоритетна поддръжка",
+      "Масово качване на обяви",
     ],
     enterpriseFeatures: [
       "НЕОГРАНИЧЕНИ обяви",
-      "3% комисионна (най-ниска!)",
+      "0.5% такса за продавача",
+      "Защита на купувача: 2% + €0.20 (лимит €8)",
       "Enterprise аналитика",
-      "Всички Pro функции",
-      "100 безплатни буста/месец",
+      "Пълен достъп до /dashboard",
+      "50 промотирания/месец (24ч)",
       "Неограничени екипни акаунти",
+      "API достъп",
       "Личен мениджър",
       "Персонализирани интеграции",
     ],
@@ -221,7 +233,7 @@ export default async function DashboardUpgradePage({ params }: UpgradePageProps)
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="flex items-baseline gap-1">
-              <span className="text-4xl font-bold">40 лв</span>
+              <span className="text-4xl font-bold">€49.99</span>
               <span className="text-muted-foreground">{t.perMonth}</span>
             </div>
             <p className="text-xs text-muted-foreground">{t.saveYearly}</p>
@@ -263,7 +275,7 @@ export default async function DashboardUpgradePage({ params }: UpgradePageProps)
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="flex items-baseline gap-1">
-              <span className="text-4xl font-bold">150 лв</span>
+              <span className="text-4xl font-bold">€99.99</span>
               <span className="text-muted-foreground">{t.perMonth}</span>
             </div>
             <p className="text-xs text-muted-foreground">{t.saveYearly}</p>

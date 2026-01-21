@@ -19,6 +19,7 @@ import {
   DrawerTitle,
   DrawerClose,
   DrawerFooter,
+  DrawerBody,
 } from "@/components/ui/drawer"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -217,7 +218,7 @@ export function AccountDrawer({ open, onOpenChange }: AccountDrawerProps) {
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
-      <DrawerContent className="rounded-t-xl max-h-[85dvh]">
+      <DrawerContent className="rounded-t-xl max-h-dialog">
         <DrawerHeader className="pb-1.5 pt-0 border-b border-border text-left">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-1.5">
@@ -226,14 +227,14 @@ export function AccountDrawer({ open, onOpenChange }: AccountDrawerProps) {
             </div>
             <DrawerClose asChild>
               <button
-                className="text-xs text-muted-foreground hover:text-foreground h-7 px-2 rounded-md hover:bg-muted touch-action-manipulation tap-transparent"
-                aria-label="Close"
+                className="text-xs text-muted-foreground hover:text-foreground h-touch-xs px-2 rounded-md hover:bg-muted touch-action-manipulation tap-transparent"
+                aria-label={tAccount("close")}
               >
-                {locale === "bg" ? "Затвори" : "Close"}
+                {tAccount("close")}
               </button>
             </DrawerClose>
           </div>
-          <DrawerDescription className="sr-only">Quick access to your account</DrawerDescription>
+          <DrawerDescription className="sr-only">{tAccount("description")}</DrawerDescription>
         </DrawerHeader>
 
         {!user || authLoading ? (
@@ -242,15 +243,13 @@ export function AccountDrawer({ open, onOpenChange }: AccountDrawerProps) {
               <User size={22} weight="regular" className="text-muted-foreground/50" />
             </div>
             <p className="text-sm text-foreground font-medium">
-              {locale === "bg" ? "Влезте в акаунта си" : "Sign in to your account"}
+              {tAccount("signInPrompt")}
             </p>
             <p className="text-xs text-muted-foreground mt-0.5 text-center">
-              {locale === "bg"
-                ? "Влезте, за да видите вашия профил"
-                : "Sign in to view your profile"}
+              {tAccount("signInDescription")}
             </p>
             <Link href="/auth/login" onClick={handleClose} className="mt-3">
-              <Button size="sm">{locale === "bg" ? "Вход" : "Sign In"}</Button>
+              <Button size="sm">{tAccount("signIn")}</Button>
             </Link>
           </div>
         ) : isLoadingData ? (
@@ -258,7 +257,7 @@ export function AccountDrawer({ open, onOpenChange }: AccountDrawerProps) {
             <div className="size-6 border-2 border-muted-foreground/30 border-t-foreground rounded-full animate-spin" />
           </div>
         ) : (
-          <div className="flex-1 overflow-y-auto overscroll-contain">
+          <DrawerBody className="px-0">
             {/* Profile summary */}
             <div className="flex items-center gap-3 px-inset py-4 border-b border-border">
               <Avatar className="size-14">
@@ -278,7 +277,7 @@ export function AccountDrawer({ open, onOpenChange }: AccountDrawerProps) {
                   )}
                   {totalSales > 0 && (
                     <span>
-                      · {totalSales} {locale === "bg" ? "продажби" : "sales"}
+                      · {totalSales} {tAccount("sales")}
                     </span>
                   )}
                 </div>
@@ -367,7 +366,7 @@ export function AccountDrawer({ open, onOpenChange }: AccountDrawerProps) {
                 </div>
               </div>
             )}
-          </div>
+          </DrawerBody>
         )}
 
         <DrawerFooter className="border-t border-border">

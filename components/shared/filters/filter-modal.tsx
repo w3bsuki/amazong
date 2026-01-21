@@ -631,7 +631,7 @@ export function FilterModal({
   if (isMobile) {
     return (
       <Drawer open={open} onOpenChange={onOpenChange}>
-        <DrawerContent className="max-h-[92dvh] flex flex-col rounded-t-2xl px-0 pb-0 bg-background">
+        <DrawerContent className="max-h-dialog flex flex-col rounded-t-2xl px-0 pb-0 bg-background">
 
           <DrawerHeader className="px-inset pt-4 pb-3 border-b border-border/30">
             <div className="flex items-center justify-between min-h-touch-sm">

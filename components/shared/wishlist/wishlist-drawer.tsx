@@ -10,10 +10,11 @@ import {
   DrawerTitle,
   DrawerClose,
   DrawerFooter,
+  DrawerBody,
 } from "@/components/ui/drawer"
 import { Button } from "@/components/ui/button"
 import { Link } from "@/i18n/routing"
-import { useTranslations, useLocale } from "next-intl"
+import { useTranslations } from "next-intl"
 import { useWishlist } from "@/components/providers/wishlist-context"
 import { useCart } from "@/components/providers/cart-context"
 import Image from "next/image"
@@ -36,7 +37,6 @@ export const WishlistDrawer = forwardRef<WishlistDrawerHandle, WishlistDrawerPro
     const { items, isLoading, removeFromWishlist, totalItems } = useWishlist()
     const { addToCart } = useCart()
     const t = useTranslations("Wishlist")
-    const locale = useLocale()
 
     useEffect(() => {
       setMounted(true)
@@ -48,7 +48,7 @@ export const WishlistDrawer = forwardRef<WishlistDrawerHandle, WishlistDrawerPro
     }))
 
     const formatPrice = (price: number) => {
-      return new Intl.NumberFormat(locale === 'bg' ? 'bg-BG' : 'en-IE', {
+      return new Intl.NumberFormat('en-IE', {
         style: 'currency',
         currency: 'EUR',
       }).format(price)
@@ -63,7 +63,7 @@ export const WishlistDrawer = forwardRef<WishlistDrawerHandle, WishlistDrawerPro
         quantity: 1,
       })
       removeFromWishlist(item.product_id)
-      toast.success(locale === 'bg' ? 'Преместено в количката' : 'Moved to cart')
+      toast.success(t("movedToCart"))
     }
 
     const contentMaxHeight = items.length === 0
@@ -86,15 +86,15 @@ export const WishlistDrawer = forwardRef<WishlistDrawerHandle, WishlistDrawerPro
               </div>
               <DrawerClose asChild>
                 <button 
-                  className="text-xs text-muted-foreground hover:text-foreground h-7 px-2 rounded-md hover:bg-muted touch-action-manipulation tap-transparent"
-                  aria-label="Close"
+                  className="text-xs text-muted-foreground hover:text-foreground h-touch-xs px-2 rounded-md hover:bg-muted touch-action-manipulation tap-transparent"
+                  aria-label={t("close")}
                 >
-                  {locale === 'bg' ? 'Затвори' : 'Close'}
+                  {t("close")}
                 </button>
               </DrawerClose>
             </div>
             <DrawerDescription className="sr-only">
-              Your saved wishlist items
+              {t("description")}
             </DrawerDescription>
           </DrawerHeader>
 
@@ -118,7 +118,7 @@ export const WishlistDrawer = forwardRef<WishlistDrawerHandle, WishlistDrawerPro
             </div>
           ) : (
             <>
-              <div className={cn("overflow-y-auto overscroll-contain px-inset", contentMaxHeight)}>
+              <DrawerBody className={cn("px-inset", contentMaxHeight)}>
                 {items.map((item, index) => (
                   <div 
                     key={item.id}
@@ -158,17 +158,17 @@ export const WishlistDrawer = forwardRef<WishlistDrawerHandle, WishlistDrawerPro
                       <div className="flex items-center gap-1.5 mt-auto pt-1">
                         <button
                           onClick={() => handleMoveToCart(item)}
-                          className="flex items-center gap-1 h-6 px-2 text-xs font-medium text-brand hover:text-brand-dark bg-brand/10 hover:bg-brand/15 rounded-md touch-action-manipulation tap-transparent"
+                          className="flex items-center gap-1 h-touch-xs px-2 text-xs font-medium text-brand hover:text-brand-dark bg-brand/10 hover:bg-brand/15 rounded-md touch-action-manipulation tap-transparent"
                         >
                           <ShoppingCart size={12} />
-                          {locale === 'bg' ? 'Добави' : 'Add'}
+                          {t("add")}
                         </button>
                         <button
                           onClick={() => {
                             removeFromWishlist(item.product_id)
-                            toast.success(locale === 'bg' ? 'Премахнато' : 'Removed')
+                            toast.success(t("removed"))
                           }}
-                          className="flex items-center justify-center size-6 rounded-md text-muted-foreground hover:text-destructive hover:bg-destructive/10 touch-action-manipulation tap-transparent"
+                          className="flex items-center justify-center size-touch-xs rounded-md text-muted-foreground hover:text-destructive hover:bg-destructive/10 touch-action-manipulation tap-transparent"
                           aria-label={t("remove")}
                         >
                           <Trash size={14} />
@@ -177,7 +177,7 @@ export const WishlistDrawer = forwardRef<WishlistDrawerHandle, WishlistDrawerPro
                     </div>
                   </div>
                 ))}
-              </div>
+              </DrawerBody>
 
               <DrawerFooter className="border-t border-border gap-1.5">
                 <Button 
@@ -188,7 +188,7 @@ export const WishlistDrawer = forwardRef<WishlistDrawerHandle, WishlistDrawerPro
                   onClick={() => setOpen(false)}
                 >
                   <Link href="/account/wishlist" className="gap-1.5">
-                    {locale === 'bg' ? 'Виж всички' : 'View All'}
+                    {t("viewAll")}
                     <ArrowRight size={14} />
                   </Link>
                 </Button>

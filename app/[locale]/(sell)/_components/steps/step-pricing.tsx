@@ -114,7 +114,7 @@ export function StepPricing() {
         <h2 className="text-2xl font-bold tracking-tight text-foreground">
           {isBg ? "Цена и доставка" : "Price & shipping"}
         </h2>
-        <p className="text-[15px] text-muted-foreground">
+        <p className="text-reading text-muted-foreground">
           {isBg 
             ? "Задайте цена и изберете опции за доставка" 
             : "Set your price and choose shipping options"}
@@ -135,14 +135,14 @@ export function StepPricing() {
               onClick={() => setValue("format", option.value, { shouldValidate: true })}
               className={cn(
                 "flex items-center justify-center gap-2 h-14 rounded-xl border transition-all",
-                "active:scale-[0.98]",
+                "active:opacity-90",
                 isSelected
                   ? "bg-selected border-selected-border text-foreground font-bold"
                   : "border-border bg-card hover:bg-hover text-muted-foreground"
               )}
             >
               <Icon className="size-5" weight={isSelected ? "fill" : "regular"} />
-              <span className="text-[15px]">{label}</span>
+              <span className="text-reading">{label}</span>
             </button>
           );
         })}
@@ -155,7 +155,7 @@ export function StepPricing() {
         render={({ field, fieldState }) => (
           <div className="space-y-2">
             <div className="flex items-center justify-between px-1">
-              <span className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+              <span className="text-tiny font-semibold uppercase tracking-wide text-muted-foreground">
                 {isBg ? "Вашата цена" : "Your price"} <span className="text-destructive">*</span>
               </span>
             </div>
@@ -178,7 +178,7 @@ export function StepPricing() {
                 <button
                   type="button"
                   onClick={() => setCurrencyDrawerOpen(true)}
-                  className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-muted/60 hover:bg-muted transition-colors active:scale-[0.98]"
+                  className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-muted/60 hover:bg-muted transition-colors active:opacity-90"
                 >
                   <span className="text-sm font-bold">{currency}</span>
                   <CaretRight className="size-3.5 text-muted-foreground rotate-90" weight="bold" />
@@ -195,7 +195,7 @@ export function StepPricing() {
       {/* Compare at Price - iOS grouped list item */}
       <div className="space-y-2">
         <div className="flex items-center justify-between px-1">
-          <span className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+          <span className="text-tiny font-semibold uppercase tracking-wide text-muted-foreground">
             {isBg ? "Стара цена" : "Compare at price"}
             <span className="ml-1 font-normal opacity-60">{isBg ? "(по избор)" : "(optional)"}</span>
           </span>
@@ -222,7 +222,7 @@ export function StepPricing() {
 
       {/* Quantity */}
       <div className="space-y-2">
-        <span className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground px-1">
+        <span className="text-tiny font-semibold uppercase tracking-wide text-muted-foreground px-1">
           {isBg ? "Количество" : "Quantity"}
         </span>
         <QuantityStepper
@@ -236,8 +236,8 @@ export function StepPricing() {
         type="button"
         onClick={() => setValue("acceptOffers", !acceptOffers)}
         className={cn(
-          "w-full flex items-center gap-3.5 h-[72px] px-4 rounded-xl border transition-all",
-          "active:scale-[0.98]",
+          "w-full flex items-center gap-3.5 py-3.5 min-h-touch-lg px-4 rounded-xl border transition-all",
+          "active:opacity-90",
           acceptOffers 
             ? "bg-selected border-selected-border" 
             : "bg-card border-border hover:bg-hover"
@@ -252,7 +252,7 @@ export function StepPricing() {
           <Handshake className="size-5" weight={acceptOffers ? "fill" : "regular"} />
         </div>
         <div className="flex-1 text-left min-w-0">
-          <span className="text-[15px] font-semibold text-foreground block">
+          <span className="text-reading font-semibold text-foreground block">
             {isBg ? "Приемане на оферти" : "Accept offers"}
           </span>
           <span className="text-sm text-muted-foreground line-clamp-1">
@@ -270,13 +270,13 @@ export function StepPricing() {
 
       {/* Currency Drawer */}
       <Drawer open={currencyDrawerOpen} onOpenChange={setCurrencyDrawerOpen}>
-        <DrawerContent className="max-h-[85vh]">
+        <DrawerContent className="max-h-dialog flex flex-col">
           <DrawerHeader className="border-b border-border pb-4">
             <DrawerTitle className="text-lg font-bold">
               {isBg ? "Изберете валута" : "Select currency"}
             </DrawerTitle>
           </DrawerHeader>
-          <ScrollArea className="flex-1 max-h-[65vh]">
+          <ScrollArea className="flex-1 min-h-0">
             <div className="p-4 space-y-1.5">
               {CURRENCIES.map((curr) => {
                 const isSelected = currency === curr.value;
@@ -290,14 +290,14 @@ export function StepPricing() {
                     }}
                     className={cn(
                       "w-full flex items-center justify-between h-14 px-4 rounded-xl transition-all",
-                      "active:scale-[0.98]",
+                      "active:opacity-90",
                       isSelected
                         ? "bg-selected border border-selected-border"
                         : "bg-muted/40 hover:bg-muted/60"
                     )}
                   >
                     <span className={cn(
-                      "text-[15px]",
+                      "text-reading",
                       isSelected ? "font-bold text-foreground" : "font-medium text-foreground"
                     )}>
                       {curr.labelFull}

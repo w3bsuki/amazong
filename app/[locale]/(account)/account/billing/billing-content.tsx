@@ -442,8 +442,8 @@ export function BillingContent({
                 {!subscription && seller.tier === 'basic' && (
                   <p className="text-sm text-muted-foreground">
                     {locale === 'bg'
-                      ? 'Надградете за по-ниски комисионни и повече функции'
-                      : 'Upgrade for lower commissions and more features'}
+                      ? 'Надградете за по-ниски такси и повече функции'
+                      : 'Upgrade for lower fees and more features'}
                   </p>
                 )}
               </div>

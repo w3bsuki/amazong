@@ -157,7 +157,7 @@ export function MobileGalleryV2({
           {/* Bottom Badges */}
           <div className="absolute bottom-3 left-3 z-20 flex flex-col gap-1.5 items-start">
             {conditionLabel && (
-              <span className="px-2 py-0.5 rounded bg-success text-success-foreground text-xs font-bold">
+              <span className="px-2 py-0.5 rounded bg-condition-new text-primary-foreground text-xs font-bold">
                 {conditionLabel}
               </span>
             )}
@@ -171,7 +171,7 @@ export function MobileGalleryV2({
 
           {/* Image Counter */}
           {images.length > 1 && (
-            <div className="absolute bottom-3 right-3 z-20 px-2 py-1 rounded bg-surface-overlay text-white text-xs font-medium">
+            <div className="absolute bottom-3 right-3 z-20 px-2 py-1 rounded bg-surface-overlay text-overlay-text text-xs font-medium">
               {activeIndex + 1}/{images.length}
             </div>
           )}
@@ -239,20 +239,20 @@ export function MobileGalleryV2({
             <button
               type="button"
               onClick={() => setViewerOpen(false)}
-              className="size-10 rounded-full bg-white/10 flex items-center justify-center"
+              className="size-10 rounded-full bg-surface-floating/20 flex items-center justify-center"
               aria-label="Close viewer"
             >
-              <X className="size-6 text-white" />
+              <X className="size-6 text-overlay-text" />
             </button>
-            <span className="absolute left-1/2 -translate-x-1/2 text-white text-sm font-medium">
+            <span className="absolute left-1/2 -translate-x-1/2 text-overlay-text text-sm font-medium">
               {activeIndex + 1} / {images.length}
             </span>
             <button
               type="button"
-              className="size-10 rounded-full bg-white/10 flex items-center justify-center"
+              className="size-10 rounded-full bg-surface-floating/20 flex items-center justify-center"
               aria-label="More options"
             >
-              <MoreHorizontal className="size-5 text-white" />
+              <MoreHorizontal className="size-5 text-overlay-text" />
             </button>
           </div>
 
@@ -280,7 +280,7 @@ export function MobileGalleryV2({
                 className={cn(
                   "size-14 rounded-lg overflow-hidden transition-all",
                   i === activeIndex 
-                    ? "ring-2 ring-white ring-offset-2 ring-offset-black" 
+                    ? "ring-2 ring-gallery-ring ring-offset-2 ring-offset-gallery-ring-offset" 
                     : "opacity-40 hover:opacity-60"
                 )}
                 aria-label={`View image ${i + 1}`}

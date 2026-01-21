@@ -1,29 +1,40 @@
-# Plans & Pricing (Treido.eu)
+# Plans & Pricing
 
 Plans are split by account type:
 
 - **Personal** users live under `/account`
 - **Business** users can unlock `/dashboard` with a paid plan
 
-Pricing is displayed in **BGN** (with EUR equivalents where needed). Annual billing is 20% cheaper than monthly.
+Canonical plan prices are stored in `subscription_plans` in **EUR**. UI can display **BGN** (with conversion) later.
 
 ## Personal plans
 
-| Plan | Price | Active listings | Boosts/mo | `/dashboard` |
-|------|-------|-----------------|-----------|--------------|
-| Free | 0 BGN | 20 | 0 | ❌ |
-| Premium | 9.99 BGN/mo | 100 | 2 | ❌ |
-| Pro | 19.99 BGN/mo | 500 | 10 | ❌ |
+| Plan | Monthly | Active listings | Seller fee | Buyer protection |
+|------|---------|-----------------|-----------|------------------|
+| Free | €0 | 30 | 0% | 4% + €0.50 (cap €15) |
+| Plus | €4.99 | 150 | 0% | 3.5% + €0.40 (cap €14) |
+| Pro | €9.99 | 500 | 0% | 3% + €0.30 (cap €12) |
 
 ## Business plans
 
-| Plan | Price | Active listings | Boosts/mo | `/dashboard` |
-|------|-------|-----------------|-----------|--------------|
-| Business Starter | 49.99 BGN/mo | 2,000 | 20 | ✅ |
-| Business Pro | 99.99 BGN/mo | Unlimited | 50 | ✅ |
-| Business Enterprise | 199.99 BGN/mo | Unlimited | 200 | ✅ |
+| Plan | Monthly | Active listings | Seller fee | Buyer protection |
+|------|---------|-----------------|-----------|------------------|
+| Business Free | €0 | 100 | 1.5% | 3% + €0.35 (cap €12) |
+| Business Pro | €49.99 | 2,000 | 1% | 2.5% + €0.25 (cap €10) |
+| Business Enterprise | €99.99 | Unlimited | 0.5% | 2% + €0.20 (cap €8) |
 
 Notes:
 
-- All plans can buy extra boosts a-la-carte.
-- Do not sell “team seats” or “API access” until implemented.
+- Subscriptions are most valuable when they reduce buyer fees + improve sell-through rate.
+- Any "team seats" / "API access" must be implemented before being marketed.
+
+## Boosts
+
+- Paid plans include **monthly boost credits** (24h boosts).
+- One-time paid boosts are available as add-ons (24h / 7d / 30d).
+
+See: [Boosts & Promotions](/business/boosts)
+
+## Limits & guardrails
+
+See: [Limits & Guardrails](/business/guardrails)

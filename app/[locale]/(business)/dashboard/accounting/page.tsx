@@ -45,7 +45,7 @@ async function getAccountingData(sellerId: string) {
   const totalSales = completedOrders?.reduce((sum, item) => 
     sum + (Number(item.price_at_purchase) * item.quantity), 0) || 0
   
-  const commissionRate = seller?.commission_rate || 10
+  const commissionRate = Number(seller?.commission_rate ?? 0)
   const totalCommission = totalSales * (commissionRate / 100)
   const netEarnings = totalSales - totalCommission
   

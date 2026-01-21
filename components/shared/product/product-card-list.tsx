@@ -186,7 +186,7 @@ export function ProductCardList({
         {/* Meta row: condition, location, freshness */}
         <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground mb-2">
           {conditionLabel && (
-            <span className="inline-flex items-center rounded-full bg-muted px-2 py-0.5 text-[10px] font-medium uppercase">
+            <span className="inline-flex items-center rounded-full bg-muted px-2 py-0.5 text-2xs font-medium uppercase">
               {conditionLabel}
             </span>
           )}

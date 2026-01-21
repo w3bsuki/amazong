@@ -1,16 +1,23 @@
 import { Suspense } from "react"
+import { getTranslations } from "next-intl/server"
+import { connection } from "next/server"
 import { createClient } from "@/lib/supabase/server"
 import { AdminDocsContent } from "./_components/docs-content"
 import { Skeleton } from "@/components/ui/skeleton"
 
-export default function AdminDocsPage() {
+export default async function AdminDocsPage() {
+  // Mark route as dynamic without using route segment config (incompatible with cacheComponents).
+  await connection()
+
+  const t = await getTranslations("AdminDocs")
+
   return (
     <div className="flex flex-col gap-4 p-4 md:p-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold">Documentation</h1>
+          <h1 className="text-2xl font-bold">{t("page.title")}</h1>
           <p className="text-muted-foreground">
-            Operational docs, policies, and guides
+            {t("page.description")}
           </p>
         </div>
       </div>

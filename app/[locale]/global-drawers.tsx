@@ -2,6 +2,7 @@
 
 import { useDrawer } from "@/components/providers/drawer-context"
 import { ProductQuickViewDrawer, CartDrawer, MessagesDrawer, AccountDrawer } from "@/components/mobile/drawers"
+import { ProductQuickViewDialog } from "@/components/desktop/product/product-quick-view-dialog"
 
 /**
  * Global drawer container - renders all drawer instances.
@@ -13,6 +14,13 @@ export function GlobalDrawers() {
   return (
     <>
       <ProductQuickViewDrawer
+        open={state.productQuickView.open}
+        onOpenChange={(open) => {
+          if (!open) closeProductQuickView()
+        }}
+        product={state.productQuickView.product}
+      />
+      <ProductQuickViewDialog
         open={state.productQuickView.open}
         onOpenChange={(open) => {
           if (!open) closeProductQuickView()

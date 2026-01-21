@@ -1,5 +1,6 @@
 import { revalidateTag } from 'next/cache'
 import { NextRequest, NextResponse } from 'next/server'
+import { logger } from '@/lib/logger'
 
 // =============================================================================
 // Cache Revalidation Webhook API (Next.js 16+)
@@ -69,6 +70,8 @@ function collectTagsForRequest(body: RevalidateRequest): string[] {
 
   if (body.scope === 'categories') {
     out.add('categories:tree')
+    out.add('categories:sell')
+    out.add('categories:sell:depth:3')
 
     const categorySlug = asString(body.categorySlug)
     const previousCategorySlug = asString(body.previousCategorySlug)
@@ -93,6 +96,8 @@ function collectTagsForRequest(body: RevalidateRequest): string[] {
   const supabase = body.supabase
   if (supabase?.table === 'categories') {
     out.add('categories:tree')
+    out.add('categories:sell')
+    out.add('categories:sell:depth:3')
     const rec = supabase.record ?? {}
     const old = supabase.old_record ?? {}
 
@@ -147,7 +152,7 @@ export async function POST(request: NextRequest) {
     
     // Validate webhook secret
     if (!process.env.REVALIDATION_SECRET) {
-      console.error('REVALIDATION_SECRET not configured')
+      logger.error('[revalidate] REVALIDATION_SECRET not configured')
       return NextResponse.json(
         { error: 'Server misconfigured: revalidation secret not set' },
         { status: 500 }
@@ -177,7 +182,7 @@ export async function POST(request: NextRequest) {
         revalidateTag(t, 'max')
         revalidatedTags.push(t)
       } catch (error) {
-        console.error(`Failed to revalidate tag: ${t}`, error)
+        logger.error('[revalidate] Failed to revalidate tag', error, { tag: t })
         failedTags.push(t)
       }
     }
@@ -190,7 +195,7 @@ export async function POST(request: NextRequest) {
     })
     
   } catch (error) {
-    console.error('Revalidation error:', error)
+    logger.error('[revalidate] Unexpected error', error)
     return NextResponse.json(
       { error: 'Invalid request body' },
       { status: 400 }

@@ -1,11 +1,11 @@
 "use client"
 
 import { useActionState, useEffect, useMemo, useState } from "react"
-import { useFormStatus } from "react-dom"
-import { Eye, EyeSlash, SpinnerGap } from "@phosphor-icons/react"
+import { Eye, EyeSlash } from "@phosphor-icons/react"
 import { useTranslations } from "next-intl"
 
 import { AuthCard } from "@/components/auth/auth-card"
+import { SubmitButton } from "@/components/auth/submit-button"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
@@ -20,35 +20,6 @@ function isProbablyValidEmail(value: string) {
   if (!v) return false
   // Lightweight client-side sanity check; server remains source of truth.
   return /\S+@\S+\.[\S]+/.test(v)
-}
-
-function SubmitButton({
-  label,
-  pendingLabel,
-  disabled,
-}: {
-  label: string
-  pendingLabel: string
-  disabled?: boolean
-}) {
-  const { pending } = useFormStatus()
-  return (
-    <Button
-      type="submit"
-      size="lg"
-      className="w-full"
-      disabled={pending || disabled}
-    >
-      {pending ? (
-        <span className="inline-flex items-center gap-2">
-          <SpinnerGap className="size-5 animate-spin" weight="bold" />
-          {pendingLabel}
-        </span>
-      ) : (
-        label
-      )}
-    </Button>
-  )
 }
 
 export function LoginForm({

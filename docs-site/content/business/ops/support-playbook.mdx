@@ -1,0 +1,63 @@
+# Support Playbook (V1)
+
+This playbook defines how Treido handles refunds, disputes, and support requests during launch.
+
+## Goals
+
+- Fast, predictable outcomes (reduce uncertainty and fraud)
+- Protect Stripe standing (keep chargebacks low)
+- Treat buyers and sellers fairly with evidence-based decisions
+
+## Intake and triage
+
+Support requests should be tagged as one of:
+
+- **pre-shipment cancellation**
+- **item not received**
+- **damaged**
+- **not as described**
+- **counterfeit**
+- **harassment / abuse**
+- **account / verification**
+- **payments / technical**
+
+## SLAs (launch targets)
+
+- First response: same day for payments/disputes, otherwise within 24h
+- Dispute decision: within 48h once evidence is complete
+
+## Refund types (baseline)
+
+- **Full refund**: default for seller no-ship, confirmed INR, confirmed counterfeit
+- **Partial refund**: only with clear mutual agreement or obvious partial damage
+- **No refund**: if evidence supports seller and policy requirements are met
+
+## Evidence checklist (minimum)
+
+Depending on dispute type, request:
+
+- order timeline (paid/shipped/delivered)
+- tracking details and delivery confirmation
+- photos (damage, packaging, authenticity signals)
+- listing content (description, condition, images)
+- chat excerpts relevant to the claim
+
+## Communication rules
+
+- Be clear about timelines and next steps.
+- Do not reveal internal fraud signals.
+- Keep messages short and policy-linked.
+
+## Escalations
+
+Escalate to engineering when:
+
+- webhook/order state mismatch is suspected
+- payout release bug is suspected
+- multiple similar payment failures appear (issuer/systemic)
+
+Escalate to trust & safety when:
+
+- counterfeit indicators appear
+- repeated abuse patterns appear (same user, similar pattern)
+

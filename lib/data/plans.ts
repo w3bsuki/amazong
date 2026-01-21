@@ -14,15 +14,8 @@ export const PLANS_SELECT_FULL =
 export const PLANS_SELECT_FOR_UPGRADE =
   'id,tier,name,price_monthly,price_yearly,commission_rate,features,is_active,account_type' as const
 
-/** Select for account plans page (needs Stripe IDs + tier display fields) */
-export const PLANS_SELECT_FOR_ACCOUNT =
-  'id,name,tier,price_monthly,price_yearly,description,features,is_active,stripe_price_monthly_id,stripe_price_yearly_id,max_listings,commission_rate,account_type,final_value_fee,insertion_fee,per_order_fee,boosts_included,priority_support,analytics_access' as const
-
 /** Profile fields needed for upgrade flows */
 export const PROFILE_SELECT_FOR_UPGRADE = 'id,tier,commission_rate,stripe_customer_id' as const
-
-/** Profile fields needed for plans page (includes account_type for filtering) */
-export const PROFILE_SELECT_FOR_PLANS = 'id,tier,account_type,commission_rate,stripe_customer_id' as const
 
 // =============================================================================
 // Queries — use these instead of inline queries
@@ -90,25 +83,6 @@ export async function getActivePlans(): Promise<SubscriptionPlan[]> {
  */
 export async function getPlansForUpgrade(): Promise<UpgradePlan[]> {
   const client = await createClient()
-  const { data } = await client
-    .from('subscription_plans')
-    .select(PLANS_SELECT_FOR_UPGRADE)
-    .eq('is_active', true)
-    .order('price_monthly', { ascending: true })
-
-  return (data ?? []).map(plan => ({
-    ...plan,
-    commission_rate: plan.commission_rate ?? 12, // Default to 12% if null
-    is_active: plan.is_active ?? true,
-    features: plan.features ?? [],
-  })) as UpgradePlan[]
-}
-
-/**
- * Fetch plans for upgrade UI using static client (for cached routes)
- */
-export async function getPlansForUpgradeStatic(): Promise<UpgradePlan[]> {
-  const client = createStaticClient()
   const { data } = await client
     .from('subscription_plans')
     .select(PLANS_SELECT_FOR_UPGRADE)

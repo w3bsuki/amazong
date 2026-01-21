@@ -106,6 +106,16 @@ export interface CategoryWithChildren extends Category {
   children?: CategoryWithChildren[]
 }
 
+export interface CategoryTreeNodeLite {
+  id: string
+  name: string
+  name_bg: string | null
+  slug: string
+  parent_id: string | null
+  display_order: number | null
+  children: CategoryTreeNodeLite[]
+}
+
 export interface CategoryContext {
   current: Category
   parent: Category | null
@@ -211,6 +221,88 @@ function buildCategoryTree(rows: CategoryHierarchyRow[]): CategoryWithChildren[]
   return sortChildren(rootCategories)
 }
 
+type RawCategoryTreeNodeLite = Omit<CategoryTreeNodeLite, 'children'>
+
+function buildCategoryTreeLite(categories: RawCategoryTreeNodeLite[]): CategoryTreeNodeLite[] {
+  const categoryMap = new Map<string, CategoryTreeNodeLite>()
+  const roots: CategoryTreeNodeLite[] = []
+
+  const activeCategories = categories.filter((row) => (row.display_order ?? 0) < 9000)
+
+  for (const cat of activeCategories) {
+    categoryMap.set(cat.id, { ...cat, children: [] })
+  }
+
+  for (const cat of activeCategories) {
+    const node = categoryMap.get(cat.id)
+    if (!node) continue
+
+    if (cat.parent_id && categoryMap.has(cat.parent_id)) {
+      categoryMap.get(cat.parent_id)?.children.push(node)
+    } else if (!cat.parent_id) {
+      roots.push(node)
+    }
+  }
+
+  function sortChildren(nodes: CategoryTreeNodeLite[]) {
+    nodes.sort((a, b) => {
+      const orderA = a.display_order ?? 999
+      const orderB = b.display_order ?? 999
+      if (orderA !== orderB) return orderA - orderB
+      return a.name.localeCompare(b.name)
+    })
+
+    for (const node of nodes) {
+      if (node.children.length > 0) sortChildren(node.children)
+    }
+  }
+
+  sortChildren(roots)
+  return roots
+}
+
+async function fetchChildCategoriesLiteBatched(
+  supabase: ReturnType<typeof createStaticClient>,
+  parentIds: string[],
+  {
+    batchSize,
+    concurrency,
+    label,
+  }: { batchSize: number; concurrency: number; label: string },
+): Promise<RawCategoryTreeNodeLite[]> {
+  if (parentIds.length === 0) return []
+
+  const batches: Array<{ index: number; ids: string[] }> = []
+  for (let i = 0; i < parentIds.length; i += batchSize) {
+    batches.push({ index: i / batchSize, ids: parentIds.slice(i, i + batchSize) })
+  }
+
+  const out: RawCategoryTreeNodeLite[] = []
+  for (let start = 0; start < batches.length; start += concurrency) {
+    const chunk = batches.slice(start, start + concurrency)
+    const chunkResults = await Promise.all(
+      chunk.map(async ({ index, ids }) => {
+        const { data, error } = await supabase
+          .from("categories")
+          .select("id, name, name_bg, slug, parent_id, display_order")
+          .in("parent_id", ids)
+          .lt("display_order", 9000)
+          .order("display_order", { ascending: true })
+
+        if (error) {
+          logger.error(`[fetchChildCategoriesLiteBatched] ${label} query error (batch ${index})`, error)
+          return []
+        }
+        return data || []
+      }),
+    )
+
+    for (const part of chunkResults) out.push(...part)
+  }
+
+  return out
+}
+
 // =============================================================================
 // Data Fetching Functions with Next.js 16 Caching
 // =============================================================================
@@ -254,6 +346,8 @@ export async function getCategoryHierarchy(
     logger.error('[getCategoryHierarchy] Root query error', rootError)
     return []
   }
+
+  if (!rootCats || rootCats.length === 0) return []
 
   if (effectiveDepth === 0) {
     return (rootCats || []).map(cat => ({
@@ -314,6 +408,7 @@ export async function getCategoryHierarchy(
   const allCats = [...(rootCats || []), ...(l1Cats || []), ...l2Cats]
   
   // Create sets for efficient depth lookups
+  const rootIdSet = new Set(rootIds)
   const l1Ids = new Set((l1Cats || []).map(c => c.id))
   
   const rows: CategoryHierarchyRow[] = allCats.map(cat => {
@@ -321,7 +416,7 @@ export async function getCategoryHierarchy(
     let catDepth = 0
     if (cat.parent_id === null) {
       catDepth = 0  // Root/L0
-    } else if (rootIds.includes(cat.parent_id)) {
+    } else if (rootIdSet.has(cat.parent_id)) {
       catDepth = 1  // L1 (parent is L0)
     } else if (l1Ids.has(cat.parent_id)) {
       catDepth = 2  // L2 (parent is L1)
@@ -342,6 +437,64 @@ export async function getCategoryHierarchy(
   })
   
   return buildCategoryTree(rows)
+}
+
+/**
+ * Category tree for selector UIs that need stable client-side navigation.
+ *
+ * Used by:
+ * - Sell flow (category picker needs L0 → L3 without extra client fetching)
+ * - Business dashboard product forms (same selector requirement)
+ */
+export async function getCategoryTreeDepth3(): Promise<CategoryTreeNodeLite[]> {
+  'use cache'
+  cacheTag('categories:tree', 'categories:sell', 'categories:sell:depth:3')
+  cacheLife('categories')
+
+  const supabase = createStaticClient()
+
+  const { data: rootCats, error: rootError } = await supabase
+    .from("categories")
+    .select("id, name, name_bg, slug, parent_id, display_order")
+    .is("parent_id", null)
+    .lt("display_order", 9000)
+    .order("display_order", { ascending: true })
+
+  if (rootError) {
+    logger.error('[getCategoryTreeDepth3] Root query error', rootError)
+    return []
+  }
+
+  if (!rootCats || rootCats.length === 0) return []
+
+  const rootIds = rootCats.map((c) => c.id)
+  const { data: l1Cats, error: l1Error } = await supabase
+    .from("categories")
+    .select("id, name, name_bg, slug, parent_id, display_order")
+    .in("parent_id", rootIds)
+    .lt("display_order", 9000)
+    .order("display_order", { ascending: true })
+
+  if (l1Error) {
+    logger.error('[getCategoryTreeDepth3] L1 query error', l1Error)
+  }
+
+  const l1Ids = (l1Cats || []).map((c) => c.id)
+  const l2Cats = await fetchChildCategoriesLiteBatched(supabase, l1Ids, {
+    batchSize: 100,
+    concurrency: 4,
+    label: "L2",
+  })
+
+  const l2Ids = l2Cats.map((c) => c.id)
+  const l3Cats = await fetchChildCategoriesLiteBatched(supabase, l2Ids, {
+    batchSize: 100,
+    concurrency: 4,
+    label: "L3",
+  })
+
+  const allCats = [...rootCats, ...(l1Cats || []), ...l2Cats, ...l3Cats]
+  return buildCategoryTreeLite(allCats)
 }
 
 /**

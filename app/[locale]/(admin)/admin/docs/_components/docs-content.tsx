@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import { useState } from "react"
+import { useTranslations } from "next-intl"
 import ReactMarkdown from "react-markdown"
 import remarkGfm from "remark-gfm"
 import {
@@ -54,19 +55,21 @@ interface AdminDoc {
 }
 
 const CATEGORIES = [
-  { value: "policies", label: "Policies" },
-  { value: "payments", label: "Payments" },
-  { value: "plans", label: "Plans" },
-  { value: "roadmap", label: "Roadmap" },
-  { value: "guides", label: "Guides" },
-  { value: "general", label: "General" },
-]
+  "policies",
+  "payments",
+  "plans",
+  "roadmap",
+  "guides",
+  "general",
+] as const
 
 const STATUS_COLORS: Record<string, string> = {
   draft: "bg-admin-draft-bg text-admin-draft",
   published: "bg-admin-published-bg text-admin-published",
   archived: "bg-muted text-muted-foreground",
 }
+
+const STATUSES = ["draft", "published", "archived"] as const
 
 export function AdminDocsContent({ initialDocs }: { initialDocs: AdminDoc[] }) {
   const [docs, setDocs] = useState(initialDocs)
@@ -75,8 +78,21 @@ export function AdminDocsContent({ initialDocs }: { initialDocs: AdminDoc[] }) {
   const [selectedDoc, setSelectedDoc] = useState<AdminDoc | null>(null)
   const [isEditing, setIsEditing] = useState(false)
   const [isCreating, setIsCreating] = useState(false)
+  const [isSeeding, setIsSeeding] = useState(false)
+
+  const t = useTranslations("AdminDocs")
   
   const supabase = createClient()
+
+  const getCategoryLabel = (value: string) =>
+    (CATEGORIES as readonly string[]).includes(value)
+      ? t(`categories.${value}`)
+      : value
+
+  const getStatusLabel = (value: string) =>
+    (STATUSES as readonly string[]).includes(value)
+      ? t(`status.${value}`)
+      : value
 
   const filteredDocs = docs.filter((doc) => {
     const matchesSearch = doc.title.toLowerCase().includes(search.toLowerCase())
@@ -101,16 +117,16 @@ export function AdminDocsContent({ initialDocs }: { initialDocs: AdminDoc[] }) {
         .eq("id", doc.id)
       
       if (error) {
-        toast.error("Failed to update document")
+        toast.error(t("toasts.updateFailed"))
         return
       }
       
       setDocs(docs.map((d) => (d.id === doc.id ? { ...d, ...doc } : d)))
-      toast.success("Document updated")
+      toast.success(t("toasts.updated"))
     } else {
       // Create
       if (!doc.title) {
-        toast.error("Title is required")
+        toast.error(t("toasts.titleRequired"))
         return
       }
       const slug = doc.title.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "")
@@ -127,13 +143,13 @@ export function AdminDocsContent({ initialDocs }: { initialDocs: AdminDoc[] }) {
         .single()
       
       if (error) {
-        toast.error("Failed to create document")
+        toast.error(t("toasts.createFailed"))
         return
       }
       
       if (data) {
         setDocs([...docs, data])
-        toast.success("Document created")
+        toast.success(t("toasts.created"))
       }
     }
     
@@ -146,44 +162,82 @@ export function AdminDocsContent({ initialDocs }: { initialDocs: AdminDoc[] }) {
     const { error } = await supabase.from("admin_docs").delete().eq("id", id)
     
     if (error) {
-      toast.error("Failed to delete document")
+      toast.error(t("toasts.deleteFailed"))
       return
     }
     
     setDocs(docs.filter((d) => d.id !== id))
     setSelectedDoc(null)
-    toast.success("Document deleted")
+    toast.success(t("toasts.deleted"))
+  }
+
+  const handleSeedTemplates = async () => {
+    setIsSeeding(true)
+    try {
+      const response = await fetch("/api/admin/docs/seed", { method: "POST" })
+      const payload: unknown = await response.json()
+
+      if (!response.ok) {
+        toast.error(t("toasts.seedFailed"))
+        return
+      }
+
+      const inserted =
+        typeof payload === "object" && payload && "inserted" in payload
+          ? Number((payload as { inserted: unknown }).inserted)
+          : 0
+
+      const { data: refreshedDocs } = await supabase
+        .from("admin_docs")
+        .select("*")
+        .order("category")
+        .order("title")
+
+      setDocs(refreshedDocs || [])
+      toast.success(inserted > 0 ? t("toasts.seeded", { count: inserted }) : t("toasts.noNewTemplates"))
+    } catch {
+      toast.error(t("toasts.seedFailed"))
+    } finally {
+      setIsSeeding(false)
+    }
   }
 
   return (
     <div className="space-y-4">
       {/* Filters */}
       <div className="flex flex-wrap gap-2">
-        <div className="relative flex-1 min-w-[200px] max-w-sm">
+        <div className="relative flex-1 basis-52 min-w-0 max-w-sm">
           <IconSearch className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
           <Input
-            placeholder="Search docs..."
+            placeholder={t("filters.searchPlaceholder")}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="pl-9"
           />
         </div>
         <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-          <SelectTrigger className="w-[150px]">
-            <SelectValue placeholder="Category" />
+          <SelectTrigger className="w-40">
+            <SelectValue placeholder={t("filters.categoryPlaceholder")} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">All Categories</SelectItem>
-            {CATEGORIES.map((cat) => (
-              <SelectItem key={cat.value} value={cat.value}>
-                {cat.label}
+            <SelectItem value="all">{t("filters.allCategories")}</SelectItem>
+            {CATEGORIES.map((category) => (
+              <SelectItem key={category} value={category}>
+                {t(`categories.${category}`)}
               </SelectItem>
             ))}
           </SelectContent>
         </Select>
+        <Button
+          variant="outline"
+          onClick={handleSeedTemplates}
+          disabled={isSeeding}
+        >
+          {t("buttons.seedTemplates")}
+        </Button>
         <Button onClick={() => { setIsCreating(true); setSelectedDoc(null) }}>
           <IconPlus className="size-4 mr-2" />
-          New Doc
+          {t("buttons.newDoc")}
         </Button>
       </div>
 
@@ -192,18 +246,18 @@ export function AdminDocsContent({ initialDocs }: { initialDocs: AdminDoc[] }) {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Title</TableHead>
-              <TableHead>Category</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Updated</TableHead>
-              <TableHead className="w-[100px]">Actions</TableHead>
+              <TableHead>{t("table.title")}</TableHead>
+              <TableHead>{t("table.category")}</TableHead>
+              <TableHead>{t("table.status")}</TableHead>
+              <TableHead>{t("table.updated")}</TableHead>
+              <TableHead className="w-28">{t("table.actions")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {filteredDocs.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
-                  No documents found
+                  {t("table.empty")}
                 </TableCell>
               </TableRow>
             ) : (
@@ -221,12 +275,12 @@ export function AdminDocsContent({ initialDocs }: { initialDocs: AdminDoc[] }) {
                   </TableCell>
                   <TableCell>
                     <Badge variant="outline" className="capitalize">
-                      {doc.category}
+                      {getCategoryLabel(doc.category)}
                     </Badge>
                   </TableCell>
                   <TableCell>
                     <Badge className={STATUS_COLORS[doc.status] || ""}>
-                      {doc.status}
+                      {getStatusLabel(doc.status)}
                     </Badge>
                   </TableCell>
                   <TableCell className="text-muted-foreground">
@@ -237,6 +291,8 @@ export function AdminDocsContent({ initialDocs }: { initialDocs: AdminDoc[] }) {
                       <Button
                         variant="ghost"
                         size="icon"
+                        aria-label={t("aria.edit")}
+                        title={t("aria.edit")}
                         onClick={(e) => {
                           e.stopPropagation()
                           setSelectedDoc(doc)
@@ -248,9 +304,11 @@ export function AdminDocsContent({ initialDocs }: { initialDocs: AdminDoc[] }) {
                       <Button
                         variant="ghost"
                         size="icon"
+                        aria-label={t("aria.delete")}
+                        title={t("aria.delete")}
                         onClick={(e) => {
                           e.stopPropagation()
-                          if (confirm("Delete this document?")) {
+                          if (confirm(t("actions.confirmDelete"))) {
                             handleDelete(doc.id)
                           }
                         }}
@@ -278,7 +336,7 @@ export function AdminDocsContent({ initialDocs }: { initialDocs: AdminDoc[] }) {
         }}
       >
         <DialogContent 
-          className="max-w-full w-full h-dvh sm:h-[calc(100vh-4rem)] sm:w-[calc(100vw-4rem)] sm:max-w-5xl p-0 gap-0 overflow-hidden flex flex-col rounded-none sm:rounded-lg border-0 sm:border"
+          className="max-w-full w-full inset-0 translate-x-0 translate-y-0 sm:inset-8 p-0 gap-0 overflow-hidden flex flex-col rounded-none sm:rounded-lg border-0 sm:border"
           showCloseButton={false}
         >
           {(selectedDoc || isCreating) && (
@@ -324,6 +382,17 @@ function DocEditor({
   const [content, setContent] = useState(doc?.content || "")
   const [category, setCategory] = useState(doc?.category || "general")
   const [status, setStatus] = useState(doc?.status || "draft")
+  const t = useTranslations("AdminDocs")
+
+  const getCategoryLabel = (value: string) =>
+    (CATEGORIES as readonly string[]).includes(value)
+      ? t(`categories.${value}`)
+      : value
+
+  const getStatusLabel = (value: string) =>
+    (STATUSES as readonly string[]).includes(value)
+      ? t(`status.${value}`)
+      : value
 
   // Reset form when doc changes
   React.useEffect(() => {
@@ -335,7 +404,7 @@ function DocEditor({
 
   const handleSubmit = () => {
     if (!title.trim()) {
-      toast.error("Title is required")
+      toast.error(t("toasts.titleRequired"))
       return
     }
     onSave({
@@ -358,6 +427,8 @@ function DocEditor({
               variant="ghost"
               size="icon"
               onClick={onClose}
+              aria-label={t("aria.close")}
+              title={t("aria.close")}
               className="shrink-0 size-8"
             >
               <IconX className="size-5" />
@@ -367,20 +438,20 @@ function DocEditor({
                 {doc.title}
               </DialogTitle>
               <DialogDescription className="sr-only">
-                Document viewer
+                {t("viewer.srDescription")}
               </DialogDescription>
             </div>
           </div>
           <div className="flex items-center gap-2">
             <Badge variant="outline" className="capitalize hidden sm:inline-flex">
-              {doc.category}
+              {getCategoryLabel(doc.category)}
             </Badge>
             <Badge className={STATUS_COLORS[doc.status] || ""}>
-              {doc.status}
+              {getStatusLabel(doc.status)}
             </Badge>
             <Button variant="outline" size="sm" onClick={onEdit}>
               <IconEdit className="size-4 mr-2" />
-              Edit
+              {t("actions.edit")}
             </Button>
           </div>
         </div>
@@ -401,30 +472,72 @@ function DocEditor({
                 li: ({ children }) => <li className="text-sm">{children}</li>,
                 strong: ({ children }) => <strong className="font-semibold">{children}</strong>,
                 hr: () => <hr className="my-6 border-border" />,
-                blockquote: ({ children }) => <blockquote className="border-l-4 border-primary/30 pl-4 italic text-muted-foreground my-3">{children}</blockquote>,
-                code: ({ children }) => <code className="bg-muted px-1.5 py-0.5 rounded text-xs font-mono">{children}</code>,
-                table: ({ children }) => (
-                  <div className="overflow-x-auto my-4">
-                    <table className="w-full text-sm border-collapse border border-border rounded-lg overflow-hidden">
+                a: ({ children, href }) => (
+                  <a
+                    href={href}
+                    className="text-primary underline underline-offset-4 hover:text-primary/90"
+                    target={href?.startsWith("http") ? "_blank" : undefined}
+                    rel={href?.startsWith("http") ? "noreferrer" : undefined}
+                  >
+                    {children}
+                  </a>
+                ),
+                blockquote: ({ children }) => (
+                  <blockquote className="border-l-4 border-primary/30 pl-4 italic text-muted-foreground my-3">
+                    {children}
+                  </blockquote>
+                ),
+                pre: ({ children }) => (
+                  <pre className="my-4 overflow-x-auto rounded-md border border-border bg-muted p-3 text-xs leading-relaxed">
+                    {children}
+                  </pre>
+                ),
+                code: ({ className, children, ...props }) => {
+                  const isBlock = typeof className === "string" && className.startsWith("language-")
+
+                  if (!isBlock) {
+                    return (
+                      <code
+                        className="bg-muted px-1.5 py-0.5 rounded text-xs font-mono"
+                        {...props}
+                      >
+                        {children}
+                      </code>
+                    )
+                  }
+
+                  return (
+                    <code
+                      className={className ? `${className} block font-mono` : "block font-mono"}
+                      {...props}
+                    >
                       {children}
-                    </table>
+                    </code>
+                  )
+                },
+                table: ({ children }) => (
+                  <div className="my-4 rounded-md border border-border">
+                    <Table className="whitespace-normal">
+                      {children}
+                    </Table>
                   </div>
                 ),
-                thead: ({ children }) => <thead className="bg-muted/70">{children}</thead>,
-                tbody: ({ children }) => <tbody className="divide-y divide-border">{children}</tbody>,
-                tr: ({ children }) => <tr className="hover:bg-muted/30 transition-colors">{children}</tr>,
-                th: ({ children }) => <th className="text-left px-3 py-2 font-semibold text-xs border border-border bg-muted">{children}</th>,
-                td: ({ children }) => <td className="px-3 py-2 text-sm border border-border">{children}</td>,
+                thead: ({ children }) => <TableHeader className="bg-muted/50">{children}</TableHeader>,
+                tbody: ({ children }) => <TableBody>{children}</TableBody>,
+                tr: ({ children }) => <TableRow className="hover:bg-muted/30">{children}</TableRow>,
+                th: ({ children }) => <TableHead className="whitespace-normal align-top">{children}</TableHead>,
+                td: ({ children }) => <TableCell className="whitespace-normal align-top">{children}</TableCell>,
               }}
             >
-              {doc.content || "No content yet."}
+              {doc.content || t("viewer.noContent")}
             </ReactMarkdown>
           </div>
         </div>
 
         {/* Footer */}
         <div className="px-4 sm:px-6 py-3 border-t bg-muted/30 text-xs text-muted-foreground">
-          Last updated: {doc.updated_at ? new Date(doc.updated_at).toLocaleString() : "—"}
+          {t("viewer.lastUpdatedLabel")}{" "}
+          {doc.updated_at ? new Date(doc.updated_at).toLocaleString() : "—"}
         </div>
       </div>
     )
@@ -440,16 +553,18 @@ function DocEditor({
             variant="ghost"
             size="icon"
             onClick={onCancel}
+            aria-label={t("aria.close")}
+            title={t("aria.close")}
             className="shrink-0 size-8"
           >
             <IconX className="size-5" />
           </Button>
           <div>
             <DialogTitle className="text-base font-semibold">
-              {doc ? "Edit Document" : "New Document"}
+              {doc ? t("editor.titleEdit") : t("editor.titleNew")}
             </DialogTitle>
             <DialogDescription className="text-xs text-muted-foreground hidden sm:block">
-              {doc ? "Update documentation content" : "Create new documentation"}
+              {doc ? t("editor.descriptionEdit") : t("editor.descriptionNew")}
             </DialogDescription>
           </div>
         </div>
@@ -462,28 +577,28 @@ function DocEditor({
               <SelectItem value="draft">
                 <div className="flex items-center gap-2">
                   <div className="size-2 rounded-full bg-admin-draft" />
-                  Draft
+                  {t("status.draft")}
                 </div>
               </SelectItem>
               <SelectItem value="published">
                 <div className="flex items-center gap-2">
                   <div className="size-2 rounded-full bg-admin-published" />
-                  Published
+                  {t("status.published")}
                 </div>
               </SelectItem>
               <SelectItem value="archived">
                 <div className="flex items-center gap-2">
                   <div className="size-2 rounded-full bg-muted-foreground" />
-                  Archived
+                  {t("status.archived")}
                 </div>
               </SelectItem>
             </SelectContent>
           </Select>
           <Button variant="outline" size="sm" onClick={onCancel}>
-            Cancel
+            {t("actions.cancel")}
           </Button>
           <Button size="sm" onClick={handleSubmit}>
-            {doc ? "Save" : "Create"}
+            {doc ? t("actions.save") : t("actions.create")}
           </Button>
         </div>
       </div>
@@ -493,26 +608,26 @@ function DocEditor({
         <div className="max-w-4xl mx-auto space-y-6">
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div className="sm:col-span-2 space-y-2">
-              <Label htmlFor="title">Title</Label>
+              <Label htmlFor="title">{t("editor.titleLabel")}</Label>
               <Input
                 id="title"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                placeholder="Document title"
+                placeholder={t("editor.titlePlaceholder")}
                 className="text-lg font-medium"
               />
             </div>
             
             <div className="space-y-2">
-              <Label>Category</Label>
+              <Label>{t("editor.categoryLabel")}</Label>
               <Select value={category} onValueChange={setCategory}>
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
                   {CATEGORIES.map((cat) => (
-                    <SelectItem key={cat.value} value={cat.value}>
-                      {cat.label}
+                    <SelectItem key={cat} value={cat}>
+                      {t(`categories.${cat}`)}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -521,19 +636,13 @@ function DocEditor({
           </div>
           
           <div className="space-y-2">
-            <Label htmlFor="content">Content (Markdown)</Label>
+            <Label htmlFor="content">{t("editor.contentLabel")}</Label>
             <Textarea
               id="content"
               value={content}
               onChange={(e) => setContent(e.target.value)}
-              placeholder="Write your documentation here...
-
-You can use Markdown formatting:
-- **Bold** and *italic* text
-- Lists and headings
-- Code blocks with ```
-- Links [text](url)"
-              className="min-h-[50vh] font-mono text-sm resize-none"
+              placeholder={t("editor.contentPlaceholder")}
+              className="min-h-96 font-mono text-sm resize-none"
             />
           </div>
         </div>

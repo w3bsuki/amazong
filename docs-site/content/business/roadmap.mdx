@@ -1,34 +1,44 @@
-# Roadmap (Treido.eu)
+# Roadmap
 
-This roadmap is phase-based:
+This roadmap is scoped for a **full marketplace launch** (Vinted-style), not classifieds.
 
-- **V1:** classifieds-first + boosts (no on-platform payments)
-- **V2:** card payments + seller payouts (Stripe Connect)
+## V1 (Launch): full marketplace with Buyer Protection
 
-## V1 (Launch): classifieds-first + boosts
+Must-have (ship to production):
 
-In scope:
+- Listings: create/edit, photos, categories, search/browse
+- Chat: buyer ↔ seller (pre-sale) + order messaging (post-sale)
+- Checkout: Stripe payments on-platform + Buyer Protection fee
+- Orders: lifecycle, status tracking, receipts
+- Payouts: Stripe Connect onboarding + delayed release after delivery confirmation
+- Ratings/reviews: seller + product (minimum viable)
+- Trust & safety: reports, blocks, moderation tooling
+- Basic returns/refunds + dispute intake
+- Notifications: order updates + important account events
 
-- Listings + discovery (browse, search, categories)
-- Chat (buyer ↔ seller)
-- Paid promotions (boosts/featured/urgent)
+Hard gates (no launch without these):
 
-Out of scope:
+- Webhook correctness + idempotency (payment succeeded/failed/refund/chargeback)
+- Refund policy + support playbooks written and tested
+- Fraud prevention basics (rate limits, seller limits, monitoring)
+- KYC/KYB path defined (Stripe Connect + platform-side checks)
 
-- Card payments for goods
-- Seller payouts / Stripe Connect
-- Commissions on sales
+## V1.1–V1.3 (post-launch)
 
-## V2: payments + payouts
+- Shipping carrier integrations (tracking + delivery confirmation automation)
+- Better dispute resolution tooling + evidence uploads
+- Seller onboarding improvements and education
+- Performance + SEO polishing
 
-In scope:
+## V2: AI & growth
 
-- Card payments on-platform
-- Stripe Connect Express payouts
-- Order lifecycle + basic refunds
+- AI Listing Assistant (title/description/category suggestions)
+- AI Search/Shopping Assistant (paid add-on or plan perk)
+- More advanced analytics for businesses
+- Internationalization expansion (markets + languages)
 
-Hard gates:
+## V3: platform scale
 
-- Stripe Connect onboarding verified in production
-- Refunds + webhooks verified
-- Legal/policy coverage for payments + refunds
+- Mobile apps (Capacitor or native)
+- Internal ops automation (fraud scoring, moderation queues)
+- Partnerships and logistics options

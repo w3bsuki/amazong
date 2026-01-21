@@ -91,7 +91,7 @@ const faqCategories = {
       title: 'Selling on Treido',
       faqs: [
         { q: 'How do I start selling?', a: 'Click "Sell" in the navigation bar and follow the steps to create your seller account. You\'ll need to verify your identity and set up payment details.' },
-        { q: 'What fees does Treido charge?', a: 'We charge a small commission on each sale (varies by category, typically 5-10%). There are no listing fees or monthly subscriptions for basic sellers.' },
+        { q: 'What fees does Treido charge?', a: 'Personal sellers pay 0% seller fee. Business accounts pay a small seller fee (0.5–1.5%) depending on plan. Buyers pay a Buyer Protection fee at checkout (percent + fixed, capped).' },
         { q: 'How do I get paid for my sales?', a: 'Payments are transferred to your bank account within 3-5 business days after the buyer confirms receipt or after the protection period ends.' },
         { q: 'What items can I sell?', a: 'You can sell most new and used items. Prohibited items include weapons, drugs, counterfeit goods, and hazardous materials. See our full policy for details.' },
       ]
@@ -159,7 +159,7 @@ const faqCategories = {
       title: 'Продаване в Treido',
       faqs: [
         { q: 'Как да започна да продавам?', a: 'Кликнете "Продай" в навигацията и следвайте стъпките за създаване на продавачки акаунт.' },
-        { q: 'Какви такси начислява Treido?', a: 'Начисляваме малка комисионна за всяка продажба (обикновено 5-10%). Няма такси за обяви или месечни абонаменти.' },
+        { q: 'Какви такси начислява Treido?', a: 'Личните продавачи плащат 0% такса за продавача. Бизнес акаунти плащат малка такса (0.5–1.5%) според плана. Купувачите плащат такса „Защита на купувача“ при плащане (процент + фиксирана, с лимит).' },
         { q: 'Как получавам плащане за продажбите си?', a: 'Плащанията се превеждат по банковата ви сметка в рамките на 3-5 работни дни след потвърждение.' },
         { q: 'Какви артикули мога да продавам?', a: 'Можете да продавате повечето нови и употребявани артикули. Забранени са оръжия, наркотици, фалшификати.' },
       ]

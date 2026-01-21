@@ -161,12 +161,12 @@ function DrawerContent({
           "group/drawer-content bg-background fixed z-50 flex h-auto flex-col outline-none",
           // Bottom drawer - standard mobile drawer (most common)
           "data-[vaul-drawer-direction=bottom]:inset-x-0 data-[vaul-drawer-direction=bottom]:bottom-0",
-          "data-[vaul-drawer-direction=bottom]:mt-24 data-[vaul-drawer-direction=bottom]:max-h-[96dvh]",
+          "data-[vaul-drawer-direction=bottom]:mt-24 data-[vaul-drawer-direction=bottom]:max-h-dialog",
           "data-[vaul-drawer-direction=bottom]:rounded-t-2xl",
           "data-[vaul-drawer-direction=bottom]:border-t data-[vaul-drawer-direction=bottom]:border-border",
           // Top drawer
           "data-[vaul-drawer-direction=top]:inset-x-0 data-[vaul-drawer-direction=top]:top-0",
-          "data-[vaul-drawer-direction=top]:mb-24 data-[vaul-drawer-direction=top]:max-h-[96dvh]",
+          "data-[vaul-drawer-direction=top]:mb-24 data-[vaul-drawer-direction=top]:max-h-dialog",
           "data-[vaul-drawer-direction=top]:rounded-b-2xl",
           "data-[vaul-drawer-direction=top]:border-b data-[vaul-drawer-direction=top]:border-border",
           // Right drawer (side panel)
@@ -231,7 +231,7 @@ function DrawerFooter({ className, ...props }: React.ComponentProps<"div">) {
       className={cn(
         "mt-auto flex flex-col gap-2 px-4 py-4",
         // Safe area padding for bottom drawers on iOS
-        "group-data-[vaul-drawer-direction=bottom]/drawer-content:pb-[max(1rem,env(safe-area-inset-bottom))]",
+        "group-data-[vaul-drawer-direction=bottom]/drawer-content:pb-safe-max",
         className
       )}
       {...props}

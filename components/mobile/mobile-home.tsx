@@ -11,13 +11,13 @@ import {
   Fire,
   Plus,
 } from "@phosphor-icons/react"
-import { ArrowUpDown } from "lucide-react"
 import { MobileSearchOverlay } from "@/components/shared/search/mobile-search-overlay"
 import { FilterHub } from "@/components/shared/filters/filter-hub"
 import { SortModal } from "@/components/shared/filters/sort-modal"
 import { ProductFeed } from "@/components/shared/product/product-feed"
 import { SubcategoryCircles } from "@/components/mobile/subcategory-circles"
 import { HorizontalProductCard } from "@/components/mobile/horizontal-product-card"
+import { ExploreBanner, type ExploreTab } from "@/components/mobile/explore-banner"
 import { useHeader } from "@/components/providers/header-context"
 import type { UIProduct } from "@/lib/data/products"
 import type { CategoryTreeNode } from "@/lib/category-tree"
@@ -83,90 +83,6 @@ function PromotedListingsStrip({
         </div>
       </div>
     </section>
-  )
-}
-
-// =============================================================================
-// Offers For You (Recommendations - same style as Promoted but Tag icon)
-// For new users: shows newest listings. For returning users: personalized.
-// =============================================================================
-
-function OffersForYou({
-  products,
-  locale,
-}: {
-  products: UIProduct[]
-  locale: string
-}) {
-  if (!products || products.length === 0) return null
-
-  // Take items 4-12 from initial products (after promoted) for "offers"
-  // This simulates personalized recommendations based on browsing
-  const offerProducts = products.slice(0, 8)
-  
-  if (offerProducts.length === 0) return null
-
-  return (
-    <section className="py-3">
-      {/* Header */}
-      <div className="px-inset mb-2.5 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Tag size={18} weight="fill" className="text-primary" />
-          <span className="text-sm font-bold text-foreground">
-            {locale === "bg" ? "Оферти за теб" : "Offers for You"}
-          </span>
-        </div>
-        <Link
-          href="/deals"
-          className="flex items-center gap-0.5 text-xs font-medium text-muted-foreground active:text-foreground"
-        >
-          {locale === "bg" ? "Виж всички" : "See all"}
-          <ArrowRight size={12} weight="bold" />
-        </Link>
-      </div>
-
-      {/* Horizontal scroll - same cards as Promoted */}
-      <div className="overflow-x-auto no-scrollbar">
-        <div className="flex gap-3 px-inset">
-          {offerProducts.map((product) => (
-            <HorizontalProductCard key={product.id} product={product} />
-          ))}
-        </div>
-      </div>
-    </section>
-  )
-}
-
-// =============================================================================
-// Inline Filter/Sort Bar (demo style)
-// =============================================================================
-
-function InlineFilterSortBar({
-  locale,
-  onSortClick,
-  productCount,
-  categoryName,
-}: {
-  locale: string
-  onSortClick: () => void
-  productCount: number
-  categoryName: string
-}) {
-  return (
-    <div className="px-inset py-3 flex items-center justify-between">
-      <div className="flex items-center gap-2">
-        <h2 className="text-sm font-bold text-foreground">{categoryName}</h2>
-        <span className="text-xs text-muted-foreground">({productCount})</span>
-      </div>
-      <button
-        type="button"
-        onClick={onSortClick}
-        className="flex items-center gap-1.5 h-9 px-3 border border-border/60 rounded-full text-xs font-medium active:bg-muted transition-colors"
-      >
-        <ArrowUpDown className="size-3.5" />
-        {locale === "bg" ? "Сортирай" : "Sort"}
-      </button>
-    </div>
   )
 }
 
@@ -240,6 +156,7 @@ export function MobileHome({
   const [searchOpen, setSearchOpen] = useState(false)
   const [filterHubOpen, setFilterHubOpen] = useState(false)
   const [sortModalOpen, setSortModalOpen] = useState(false)
+  const [exploreTab, setExploreTab] = useState<ExploreTab>("newest")
   
   // Get header context to provide dynamic state to layout's header
   const { setHomepageHeader } = useHeader()
@@ -270,13 +187,10 @@ export function MobileHome({
     return () => setHomepageHeader(null)
   }, [nav.activeTab, nav.handleTabChange, initialCategories, setHomepageHeader])
 
-  // Get category name for display
+  // Get category name for display (only used when NOT on "All" tab)
   const categoryName = useMemo(() => {
-    if (nav.isAllTab) {
-      return locale === "bg" ? "Предложени за теб" : "Suggested for you"
-    }
     return nav.activeCategoryName || nav.activeTab
-  }, [nav.isAllTab, nav.activeCategoryName, nav.activeTab, locale])
+  }, [nav.activeCategoryName, nav.activeTab])
 
   return (
     <div className="min-h-screen bg-background pb-24">
@@ -306,18 +220,26 @@ export function MobileHome({
           <PromotedListingsStrip products={promotedProducts} locale={locale} />
         )}
 
-        {/* Offers For You - personalized recommendations (on "All" tab) */}
-        {nav.isAllTab && initialProducts.length > 0 && (
-          <OffersForYou products={initialProducts} locale={locale} />
+        {/* Explore Banner with Segmented Control - Only on "All" tab */}
+        {nav.isAllTab && (
+          <ExploreBanner
+            activeTab={exploreTab}
+            onTabChange={setExploreTab}
+            onSortClick={() => setSortModalOpen(true)}
+            locale={locale}
+            productCount={nav.activeFeed.products.length}
+          />
         )}
 
-        {/* Sort Bar */}
-        <InlineFilterSortBar
-          locale={locale}
-          onSortClick={() => setSortModalOpen(true)}
-          productCount={nav.activeFeed.products.length}
-          categoryName={categoryName}
-        />
+        {/* Category Header - Only when category is selected (not "All" tab) */}
+        {!nav.isAllTab && (
+          <div className="px-inset py-3 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <h2 className="text-sm font-bold text-foreground">{categoryName}</h2>
+              <span className="text-xs text-muted-foreground">({nav.activeFeed.products.length})</span>
+            </div>
+          </div>
+        )}
 
         {/* Product Feed (reuse existing component) */}
         <ProductFeed
@@ -327,7 +249,7 @@ export function MobileHome({
           activeSlug={nav.activeSlug}
           locale={locale}
           isAllTab={nav.isAllTab}
-          activeCategoryName={categoryName}
+          activeCategoryName={nav.isAllTab ? null : categoryName}
           onLoadMore={nav.loadMoreProducts}
         />
 
@@ -347,8 +269,13 @@ export function MobileHome({
         initialSection={null}
       />
 
-      {/* Sort Modal */}
-      <SortModal open={sortModalOpen} onOpenChange={setSortModalOpen} locale={locale} />
+      {/* Sort Modal - for additional sort options beyond the segmented tabs */}
+      <SortModal
+        open={sortModalOpen}
+        onOpenChange={setSortModalOpen}
+        locale={locale}
+        excludeOptions={nav.isAllTab ? ["newest"] : undefined}
+      />
     </div>
   )
 }

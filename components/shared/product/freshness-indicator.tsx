@@ -99,7 +99,7 @@ export function FreshnessIndicator({
     return (
       <span
         className={cn(
-          "inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide",
+          "inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-2xs font-medium uppercase tracking-wide",
           isToday && "bg-fresh-bg text-fresh",
           !isToday && isFresh && "bg-recent-bg text-recent",
           !isFresh && "bg-muted text-muted-foreground",

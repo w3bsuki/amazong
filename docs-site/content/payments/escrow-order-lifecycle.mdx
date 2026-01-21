@@ -1,0 +1,31 @@
+# Escrow & Order Lifecycle
+
+## High-level flow
+
+1. Buyer pays via Stripe (platform account)
+2. Order is created in DB (status `paid`)
+3. Seller ships (tracking captured)
+4. Delivery is confirmed (carrier or buyer confirmation)
+5. Platform transfers funds to seller (minus any business seller fee)
+
+## Minimal statuses
+
+- `pending_payment`
+- `paid`
+- `shipped`
+- `delivered`
+- `completed`
+- `disputed`
+- `cancelled`
+- `refunded`
+
+## Release rules (escrow-style)
+
+- No transfer to seller until:
+  - buyer confirms receipt, or
+  - auto-confirm window passes, and
+  - no open dispute exists
+
+## Related source of truth
+
+- `docs/MARKETPLACE-ESCROW-PLAN.md` (detailed plan)

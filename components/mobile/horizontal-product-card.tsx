@@ -43,7 +43,7 @@ export function HorizontalProductCard({ product }: HorizontalProductStripCardPro
       <div className="relative aspect-square rounded-(--radius-card) overflow-hidden bg-muted mb-2">
         {/* AD badge - top left for boosted listings */}
         {product.isBoosted && (
-          <div className="absolute top-1.5 left-1.5 z-10 px-1.5 py-0.5 bg-fire text-white text-2xs font-bold rounded flex items-center gap-0.5">
+          <div className="absolute top-1.5 left-1.5 z-10 px-1.5 py-0.5 bg-fire text-primary-foreground text-2xs font-bold rounded flex items-center gap-0.5">
             <SparkleIcon size={10} weight="fill" />
             <span>AD</span>
           </div>
@@ -71,7 +71,7 @@ export function HorizontalProductCard({ product }: HorizontalProductStripCardPro
         </button>
         {/* Free shipping badge - bottom left */}
         {product.freeShipping && (
-          <div className="absolute bottom-1.5 left-1.5 z-10 px-1.5 py-0.5 bg-shipping-free text-white text-2xs font-medium rounded flex items-center gap-0.5">
+          <div className="absolute bottom-1.5 left-1.5 z-10 px-1.5 py-0.5 bg-shipping-free text-primary-foreground text-2xs font-medium rounded flex items-center gap-0.5">
             <Truck size={10} weight="fill" />
             <span>Free</span>
           </div>

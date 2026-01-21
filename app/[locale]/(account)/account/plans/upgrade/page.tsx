@@ -47,10 +47,11 @@ export default async function UpgradePage({
   const currentTier = profile?.tier || 'free'
 
   // Map profile to seller interface expected by UpgradeContent
+  const commissionRate = profile?.commission_rate == null ? 0 : Number(profile.commission_rate)
   const seller = profile ? {
     id: profile.id,
     tier: profile.tier || 'free',
-    commission_rate: Number(profile.commission_rate) || 12,
+    commission_rate: commissionRate,
     stripe_customer_id: profile.stripe_customer_id,
   } : null
 
@@ -72,8 +73,8 @@ export default async function UpgradePage({
         </h1>
         <p className="text-muted-foreground">
           {locale === 'bg'
-            ? 'Изберете план с по-ниски комисиони и повече функции'
-            : 'Choose a plan with lower commissions and more features'}
+            ? 'Изберете план с по-ниски такси и повече функции'
+            : 'Choose a plan with lower fees and more features'}
         </p>
       </div>
 

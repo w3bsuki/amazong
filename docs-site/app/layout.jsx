@@ -5,30 +5,32 @@ import 'nextra-theme-docs/style.css'
 
 export const metadata = {
   title: {
-    default: 'Amazong Docs',
-    template: '%s – Amazong Docs',
+    default: 'Treido Docs',
+    template: '%s – Treido Docs',
   },
-  description: 'Internal documentation for Amazong Marketplace',
+  description: 'Internal documentation for Treido Marketplace',
 }
 
 const logo = (
   <span style={{ fontWeight: 700, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-    🛒 Amazong Docs
+    Treido Docs
   </span>
 )
 
 const navbar = (
   <Navbar
     logo={logo}
-    projectLink="https://github.com/AmazongMarketplace/amazong"
+    projectLink="https://treido.eu"
   />
 )
 
 const footer = (
   <Footer>
-    Amazong Marketplace © {new Date().getFullYear()}
+    Treido Marketplace © {new Date().getFullYear()}
   </Footer>
 )
+
+const docsRepositoryBase = process.env.NEXT_PUBLIC_DOCS_REPOSITORY_BASE
 
 export default async function RootLayout({ children }) {
   return (
@@ -51,8 +53,9 @@ export default async function RootLayout({ children }) {
         <Layout
           navbar={navbar}
           pageMap={await getPageMap()}
-          docsRepositoryBase="https://github.com/AmazongMarketplace/amazong/tree/main/docs-site"
-          editLink="Edit this page"
+          {...(docsRepositoryBase
+            ? { docsRepositoryBase, editLink: 'Edit this page' }
+            : {})}
           sidebar={{ defaultMenuCollapseLevel: 1, toggleButton: true }}
           footer={footer}
           feedback={{ content: null }}

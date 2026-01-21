@@ -37,6 +37,33 @@ async function safeRetrieveSubscription(
   }
 }
 
+async function getFreeTierFeesForProfile(
+  supabase: ReturnType<typeof createAdminClient>,
+  profileId: string
+): Promise<{ finalValueFee: number; insertionFee: number; perOrderFee: number }> {
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("account_type")
+    .eq("id", profileId)
+    .single()
+
+  const accountType = profile?.account_type === "business" ? "business" : "personal"
+
+  const { data: freePlan } = await supabase
+    .from("subscription_plans")
+    .select("final_value_fee,commission_rate,insertion_fee,per_order_fee")
+    .eq("tier", "free")
+    .eq("account_type", accountType)
+    .eq("is_active", true)
+    .single()
+
+  const finalValueFee = Number(freePlan?.final_value_fee ?? freePlan?.commission_rate ?? 0)
+  const insertionFee = Number(freePlan?.insertion_fee ?? 0)
+  const perOrderFee = Number(freePlan?.per_order_fee ?? 0)
+
+  return { finalValueFee, insertionFee, perOrderFee }
+}
+
 export async function POST(req: Request) {
   // Create admin client inside handler (not at module level)
   const supabase = createAdminClient()
@@ -202,14 +229,15 @@ export async function POST(req: Request) {
           }
 
           // Update profile tier and fee fields from plan
+          const finalValueFee = Number(plan.final_value_fee ?? plan.commission_rate ?? 0)
           const { error: profileError } = await supabase
             .from('profiles')
             .update({
               tier: plan.tier,
-              commission_rate: plan.final_value_fee || plan.commission_rate || 12.0,
-              final_value_fee: plan.final_value_fee || plan.commission_rate || 12.0,
-              insertion_fee: plan.insertion_fee || 0,
-              per_order_fee: plan.per_order_fee || 0,
+              commission_rate: finalValueFee,
+              final_value_fee: finalValueFee,
+              insertion_fee: plan.insertion_fee ?? 0,
+              per_order_fee: plan.per_order_fee ?? 0,
             })
             .eq('id', profileId)
 
@@ -258,14 +286,18 @@ export async function POST(req: Request) {
           // IMPORTANT: Only downgrade profile when subscription is ACTUALLY cancelled/expired
           // NOT when cancel_at_period_end is set (user still has access until period ends)
           if (newStatus === 'cancelled' || newStatus === 'expired') {
+            const { finalValueFee, insertionFee, perOrderFee } = await getFreeTierFeesForProfile(
+              supabase,
+              existingSub.seller_id
+            )
             await supabase
               .from('profiles')
               .update({
                 tier: 'free',
-                commission_rate: 12.00,
-                final_value_fee: 12.00,
-                insertion_fee: 0,
-                per_order_fee: 0,
+                commission_rate: finalValueFee,
+                final_value_fee: finalValueFee,
+                insertion_fee: insertionFee,
+                per_order_fee: perOrderFee,
               })
               .eq('id', existingSub.seller_id)
           }
@@ -296,14 +328,18 @@ export async function POST(req: Request) {
             .eq('id', existingSub.id)
 
           // NOW downgrade profile to free tier (subscription has actually ended)
+          const { finalValueFee, insertionFee, perOrderFee } = await getFreeTierFeesForProfile(
+            supabase,
+            existingSub.seller_id
+          )
           await supabase
             .from('profiles')
             .update({
               tier: 'free',
-              commission_rate: 12.00,
-              final_value_fee: 12.00,
-              insertion_fee: 0,
-              per_order_fee: 0,
+              commission_rate: finalValueFee,
+              final_value_fee: finalValueFee,
+              insertion_fee: insertionFee,
+              per_order_fee: perOrderFee,
             })
             .eq('id', existingSub.seller_id)
         }

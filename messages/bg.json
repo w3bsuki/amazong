@@ -390,7 +390,14 @@
         "addToCart": "Добави в кошницата",
         "addedToCart": "Добавено в количката!",
         "messages": "Съобщения",
-        "viewAllMessages": "Виж всички съобщения"
+        "viewAllMessages": "Виж всички съобщения",
+        "close": "Затвори",
+        "description": "Последните ви съобщения",
+        "unreadCount": "{count} непрочетени",
+        "signInPrompt": "Влезте, за да видите съобщенията",
+        "signInDescription": "Влезте, за да видите съобщенията си",
+        "startConversationHint": "Започнете разговор с продавач",
+        "regarding": "Относно:"
     },
     "AccountDrawer": {
         "title": "Акаунт",
@@ -403,7 +410,13 @@
         "pending": "{count} чакащи",
         "unread": "{count} непрочетени",
         "active": "{count} активни",
-        "items": "{count} артикула"
+        "items": "{count} артикула",
+        "close": "Затвори",
+        "description": "Бърз достъп до акаунта ви",
+        "signInPrompt": "Влезте в акаунта си",
+        "signInDescription": "Влезте, за да видите вашия профил",
+        "signIn": "Вход",
+        "sales": "продажби"
     },
     "Freshness": {
         "justNow": "Току-що",
@@ -1195,13 +1208,19 @@
     "CartDropdown": {
         "title": "Количка",
         "empty": "Вашата количка е празна",
+        "emptyDescription": "Добавете продукти",
+        "description": "Съдържание на количката ви",
+        "close": "Затвори",
         "startShopping": "Започнете да пазарувате",
         "item": "артикул",
         "items": "артикула",
         "moreItems": "още артикула",
         "subtotal": "Междинна сума",
         "viewCart": "Виж количката",
-        "checkout": "Към плащане"
+        "checkout": "Към плащане",
+        "decreaseQuantity": "Намали количество",
+        "increaseQuantity": "Увеличи количество",
+        "removeItem": "Премахни артикул"
     },
     "MessagesDropdown": {
         "title": "Твоите съобщения",
@@ -1621,6 +1640,9 @@
         "startShopping": "Започнете пазаруване",
         "addedOn": "Добавено на",
         "moveToCart": "Премести в кошницата",
+        "movedToCart": "Преместено в количката",
+        "add": "Добави",
+        "removed": "Премахнато",
         "remove": "Премахни",
         "addAllToCart": "Добави всички в кошницата",
         "saved": "Запазено",
@@ -1629,7 +1651,10 @@
         "copyLink": "Копирай линк",
         "linkCopied": "Линкът е копиран!",
         "stopSharing": "Спри споделянето",
-        "sharingEnabled": "Споделянето е включено"
+        "sharingEnabled": "Споделянето е включено",
+        "close": "Затвори",
+        "description": "Вашите запазени продукти",
+        "viewAll": "Виж всички"
     },
     "SharedWishlist": {
         "wishlist": "Списък с желания",
@@ -1758,13 +1783,16 @@
         "back": "Назад",
         "replyPrefix": "Относно",
         "timeNow": "сега",
+        "timeMinutes": "{count}м",
         "timeHours": "{count}ч",
         "timeDays": "{count}д",
         "timeWeeks": "{count}сд",
         "tabAll": "Всички",
         "tabUnread": "Непрочетени",
         "tabBuying": "Покупки",
-        "tabSelling": "Продажби"
+        "tabSelling": "Продажби",
+        "unread": "Непрочетено",
+        "read": "Прочетено"
     },
     "ProductFeed": {
         "categoryAnnouncement": "Показване на {categoryName}",
@@ -2131,7 +2159,7 @@
             "openDashboard": "Виж таблото",
             "howItWorks": "Как работят плащанията",
             "howItWorksDesc1": "Когато купувач закупи вашия продукт, плащането се обработва сигурно чрез Stripe.",
-            "howItWorksDesc2": "Ние взимаме 10% комисионна за платформата, за да покрием обработката на плащания и услугите на платформата. Останалите 90% отиват директно във вашия акаунт.",
+            "howItWorksDesc2": "Личните продавачи получават 100% от цената на артикула. За бизнес акаунти удържаме малка такса за продавача (0.5–1.5%) при изплащане. Купувачите плащат отделна такса „Защита на купувача“ при плащане.",
             "howItWorksDesc3": "Изплащанията обикновено се депозират в банковата ви сметка в рамките на 2-7 работни дни, в зависимост от държавата ви."
         }
     },
@@ -2139,5 +2167,81 @@
         "payoutSetupRequired": "Настройте плащанията първо",
         "payoutSetupDescription": "Преди да можете да публикувате обяви за продажба, трябва да свържете банковата си сметка за получаване на плащания.",
         "setupPayouts": "Настройка на плащанията"
+    },
+    "AdminDocs": {
+        "page": {
+            "title": "Документация",
+            "description": "Оперативни документи, политики и ръководства"
+        },
+        "filters": {
+            "searchPlaceholder": "Търси документи...",
+            "categoryPlaceholder": "Категория",
+            "allCategories": "Всички категории"
+        },
+        "buttons": {
+            "seedTemplates": "Добави шаблони",
+            "newDoc": "Нов документ"
+        },
+        "table": {
+            "title": "Заглавие",
+            "category": "Категория",
+            "status": "Статус",
+            "updated": "Обновено",
+            "actions": "Действия",
+            "empty": "Няма намерени документи"
+        },
+        "categories": {
+            "policies": "Политики",
+            "payments": "Плащания",
+            "plans": "Планове",
+            "roadmap": "Пътна карта",
+            "guides": "Ръководства",
+            "general": "Общо"
+        },
+        "status": {
+            "draft": "Чернова",
+            "published": "Публикувано",
+            "archived": "Архивирано"
+        },
+        "viewer": {
+            "srDescription": "Преглед на документ",
+            "noContent": "Все още няма съдържание.",
+            "lastUpdatedLabel": "Последна актуализация:"
+        },
+        "editor": {
+            "titleEdit": "Редакция на документ",
+            "titleNew": "Нов документ",
+            "descriptionEdit": "Актуализирай съдържанието на документацията",
+            "descriptionNew": "Създай нов документ",
+            "titleLabel": "Заглавие",
+            "titlePlaceholder": "Заглавие на документа",
+            "categoryLabel": "Категория",
+            "contentLabel": "Съдържание (Markdown)",
+            "contentPlaceholder": "Пиши документацията тук...\\n\\nМожеш да използваш Markdown:\\n- **Bold** и *italic* текст\\n- Списъци и заглавия\\n- Кодови блокове с ```\\n- Връзки [текст](url)"
+        },
+        "actions": {
+            "edit": "Редактирай",
+            "cancel": "Отказ",
+            "save": "Запази",
+            "create": "Създай",
+            "confirmDelete": "Да изтрия ли този документ?"
+        },
+        "aria": {
+            "close": "Затвори",
+            "edit": "Редактиране на документ",
+            "delete": "Изтриване на документ"
+        },
+        "toasts": {
+            "updateFailed": "Неуспешно обновяване на документа",
+            "updated": "Документът е обновен",
+            "titleRequired": "Заглавието е задължително",
+            "createFailed": "Неуспешно създаване на документ",
+            "created": "Документът е създаден",
+            "deleteFailed": "Неуспешно изтриване на документ",
+            "deleted": "Документът е изтрит",
+            "seedFailed": "Неуспешно добавяне на шаблони",
+            "seeded": "Добавени {count} документа",
+            "noNewTemplates": "Няма нови шаблони за добавяне"
+        }
     }
 }

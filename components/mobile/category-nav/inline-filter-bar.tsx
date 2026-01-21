@@ -25,7 +25,7 @@ import type { CategoryAttribute } from "@/lib/data/categories"
 /** Shared styles for filter/sort tab buttons */
 const tabButtonStyles = cn(
   // Layout
-  "flex-1 h-9",
+  "flex-1 h-touch-sm",
   "inline-flex items-center justify-center gap-1.5",
   // Typography
   "text-sm font-medium",

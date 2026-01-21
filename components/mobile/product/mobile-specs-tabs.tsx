@@ -104,7 +104,7 @@ export function MobileSpecsTabs({
         <TabsContent value="description" className="mt-0 p-0">
           {description ? (
             <div 
-              className="px-4 py-4 text-sm text-text-default leading-relaxed prose prose-sm max-w-none"
+              className="px-4 py-4 text-sm text-text-default leading-relaxed prose prose-sm dark:prose-invert max-w-none"
               dangerouslySetInnerHTML={{ __html: description }}
             />
           ) : (

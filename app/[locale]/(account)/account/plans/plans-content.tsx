@@ -278,8 +278,8 @@ export function PlansContent({
         </h1>
         <p className="text-muted-foreground">
           {locale === "bg"
-            ? "Надградете акаунта си за по-ниски комисиони и повече възможности"
-            : "Upgrade your account for lower commissions and more features"}
+            ? "Надградете акаунта си за по-ниски такси и повече възможности"
+            : "Upgrade your account for lower fees and more features"}
         </p>
       </div>
 

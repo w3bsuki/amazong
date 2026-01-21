@@ -3,6 +3,12 @@ export default {
     title: 'Home',
     type: 'page',
   },
+  payments: {
+    title: 'Payments',
+  },
+  policies: {
+    title: 'Policies',
+  },
   engineering: {
     title: 'Engineering',
   },

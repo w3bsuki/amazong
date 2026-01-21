@@ -1,0 +1,107 @@
+"use client"
+
+import { cn } from "@/lib/utils"
+import { Clock, Tag, Star, SlidersHorizontal } from "@phosphor-icons/react"
+
+// =============================================================================
+// Types
+// =============================================================================
+
+export type ExploreTab = "newest" | "offers" | "top-rated"
+
+interface ExploreBannerProps {
+  activeTab: ExploreTab
+  onTabChange: (tab: ExploreTab) => void
+  onSortClick: () => void
+  locale: string
+  productCount?: number
+}
+
+// =============================================================================
+// Tab Configuration
+// =============================================================================
+
+const EXPLORE_TABS: Array<{
+  id: ExploreTab
+  label: { en: string; bg: string }
+  icon: typeof Clock
+}> = [
+  { id: "newest", label: { en: "Newest", bg: "Най-нови" }, icon: Clock },
+  { id: "offers", label: { en: "Offers", bg: "Оферти" }, icon: Tag },
+  { id: "top-rated", label: { en: "Top Rated", bg: "Топ оценени" }, icon: Star },
+]
+
+// =============================================================================
+// Component
+// =============================================================================
+
+export function ExploreBanner({
+  activeTab,
+  onTabChange,
+  onSortClick,
+  locale,
+  productCount,
+}: ExploreBannerProps) {
+  return (
+    <div className="px-inset py-3">
+      {/* Banner Container */}
+      <div className="rounded-xl bg-muted/40 border border-border/50 p-1.5">
+        <div className="flex items-center gap-1.5">
+          {/* Segmented Control */}
+          <div className="flex-1 flex items-center rounded-lg bg-background/60 p-0.5">
+            {EXPLORE_TABS.map((tab) => {
+              const Icon = tab.icon
+              const isActive = activeTab === tab.id
+              return (
+                <button
+                  key={tab.id}
+                  type="button"
+                  onClick={() => onTabChange(tab.id)}
+                  className={cn(
+                    "flex-1 flex items-center justify-center gap-1.5",
+                    "h-touch-sm rounded-md text-xs font-medium",
+                    "transition-all duration-150",
+                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
+                    isActive
+                      ? "bg-foreground text-background shadow-sm"
+                      : "text-muted-foreground hover:text-foreground active:bg-muted/50"
+                  )}
+                  aria-pressed={isActive}
+                >
+                  <Icon size={14} weight={isActive ? "fill" : "regular"} />
+                  <span className="whitespace-nowrap">
+                    {tab.label[locale as "en" | "bg"] || tab.label.en}
+                  </span>
+                </button>
+              )
+            })}
+          </div>
+
+          {/* Sort/Settings Button */}
+          <button
+            type="button"
+            onClick={onSortClick}
+            className={cn(
+              "h-touch-sm w-touch-sm shrink-0 flex items-center justify-center",
+              "rounded-lg bg-background/60",
+              "text-muted-foreground hover:text-foreground",
+              "transition-colors active:bg-muted/50",
+              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1"
+            )}
+            aria-label={locale === "bg" ? "Сортиране" : "Sort options"}
+          >
+            <SlidersHorizontal size={16} weight="bold" />
+          </button>
+        </div>
+      </div>
+
+      {/* Product Count (subtle, below banner) */}
+      {typeof productCount === "number" && productCount > 0 && (
+        <p className="mt-2 text-xs text-muted-foreground">
+          {productCount.toLocaleString(locale === "bg" ? "bg-BG" : "en-US")}{" "}
+          {locale === "bg" ? "обяви" : "listings"}
+        </p>
+      )}
+    </div>
+  )
+}

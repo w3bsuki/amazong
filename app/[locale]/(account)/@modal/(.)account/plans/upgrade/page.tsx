@@ -48,8 +48,8 @@ async function UpgradeModalContent() {
     <Modal
       title={locale === 'bg' ? 'Надгради плана си' : 'Upgrade Your Plan'}
       description={locale === 'bg'
-        ? 'Изберете план с по-ниски комисиони и повече функции'
-        : 'Choose a plan with lower commissions and more features'
+        ? 'Изберете план с по-ниски такси и повече функции'
+        : 'Choose a plan with lower fees and more features'
       }
     >
       <UpgradeContent
@@ -67,7 +67,7 @@ function UpgradeLoadingFallback() {
   return (
     <Modal
       title="Upgrade Your Plan"
-      description="Choose a plan with lower commissions and more features"
+      description="Choose a plan with lower fees and more features"
     >
       <div className="flex items-center justify-center py-12">
         <Loader2 className="size-8 animate-spin text-muted-foreground" />

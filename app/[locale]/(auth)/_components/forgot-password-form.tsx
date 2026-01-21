@@ -1,39 +1,17 @@
 "use client"
 
 import { useActionState } from "react"
-import { useFormStatus } from "react-dom"
-import { ArrowLeft, Check, Envelope, SpinnerGap } from "@phosphor-icons/react"
+import { ArrowLeft, Check, Envelope } from "@phosphor-icons/react"
 import { useTranslations } from "next-intl"
 
 import { AuthCard } from "@/components/auth/auth-card"
+import { SubmitButton } from "@/components/auth/submit-button"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { Link } from "@/i18n/routing"
 import { cn } from "@/lib/utils"
 import { requestPasswordReset, type AuthActionState } from "../_actions/auth"
-
-function SubmitButton({ pendingLabel, label }: { pendingLabel: string; label: string }) {
-  const { pending } = useFormStatus()
-
-  return (
-    <Button
-      type="submit"
-      size="lg"
-      className="w-full h-10"
-      disabled={pending}
-    >
-      {pending ? (
-        <>
-          <SpinnerGap className="size-5 animate-spin" weight="bold" />
-          {pendingLabel}
-        </>
-      ) : (
-        label
-      )}
-    </Button>
-  )
-}
 
 export function ForgotPasswordForm({ locale }: { locale: string }) {
   const t = useTranslations("Auth")

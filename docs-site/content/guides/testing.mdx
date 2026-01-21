@@ -1,6 +1,6 @@
 # Testing Guide
 
-Writing and running tests for Amazong.
+Writing and running tests for Treido.
 
 ## Test Stack
 
@@ -102,7 +102,7 @@ import { test, expect } from '@playwright/test'
 test.describe('Smoke tests', () => {
   test('homepage loads', async ({ page }) => {
     await page.goto('/')
-    await expect(page).toHaveTitle(/Amazong/)
+    await expect(page).toHaveTitle(/Treido/)
     await expect(page.getByRole('heading', { level: 1 })).toBeVisible()
   })
 

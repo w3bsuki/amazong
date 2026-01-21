@@ -1,0 +1,47 @@
+# Limits & Guardrails (v1)
+
+This matrix defines **launch (v1)** limits and safety guardrails. Treat these as product + ops constraints: they protect trust, reduce fraud, and keep the marketplace usable.
+
+## Plan entitlements (v1)
+
+### Personal
+
+| Plan | Max active listings | Boosts / month | Analytics | Priority support |
+|------|---------------------|----------------|----------|------------------|
+| Free | 30 | 0 | None | No |
+| Plus | 150 | 2× 24h boosts | Basic | No |
+| Pro | 500 | 5× 24h boosts | Full | Yes |
+
+### Business
+
+| Plan | Max active listings | Boosts / month | `/dashboard` access | Team seats |
+|------|---------------------|----------------|---------------------|-----------|
+| Business Free | 100 | 0 | No | – |
+| Business Pro | 2,000 | 20× 24h boosts | Yes | Up to 3 |
+| Business Enterprise | Unlimited | 50× 24h boosts | Yes (full) | Unlimited |
+
+Source of truth for plan rows: `supabase/migrations/20260120000000_buyer_protection_fees.sql`
+
+## Operational guardrails matrix (v1)
+
+| Area | Rule | Applies to | Value |
+|------|------|------------|-------|
+| Verification | Email verified | Everyone | Required to transact |
+| Verification | Phone verified | Sellers | Required before selling |
+| Verification | Stripe Connect onboarding | Sellers | Required before payouts |
+| Verification | Business verification | Business accounts | Required to label as Business |
+| Shipping | Ship-by window | Sellers | If not shipped in **7 days** → buyer can cancel + refund |
+| Delivery | Auto-confirm window | Orders | **72h** after delivery if no dispute |
+| Disputes | Open dispute window | Buyers | Within **72h** of delivery |
+| Disputes | Seller response SLA | Sellers | **48h** to respond with evidence |
+| Evidence | Photo evidence window | Buyers | **48h** for “wrong item / damaged” claims |
+| Payouts | Escrow release | Platform | No transfer until confirmed/auto-confirmed and no dispute |
+| Fees | Buyer Protection fee | Buyers | Percent + fixed, capped (plan-driven) |
+| Fees | Seller fee | Business sellers | Small % on item price (plan-driven) |
+| Boosts | One active boost per listing | Sellers | Enforced |
+| Boosts | Boost label required | UI | Always show “Boosted” / “Ad” badge |
+| Refunds | Refund includes Buyer Protection fee | Seller fault / dispute win | Yes (buyer gets full amount paid) |
+| Refunds | Buyer remorse returns | Everyone | Not supported in v1 (only disputes) |
+
+Source of truth for timing defaults: `docs/MARKETPLACE-ESCROW-PLAN.md`
+

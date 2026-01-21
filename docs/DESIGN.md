@@ -51,8 +51,7 @@ This repo uses Tailwind v4 (CSS-first) + shadcn/ui. Keep UI changes consistent b
 
 - Prefer semantic tokens (`bg-background`, `text-foreground`, `border-border`, `text-muted-foreground`) over Tailwind palette classes (`text-blue-600`, `bg-zinc-100`, etc.).
 - Don’t introduce gradients. Prefer solid token surfaces + subtle borders.
-- Don’t introduce arbitrary values (`w-[…]`, `text-[…]`, `bg-[#…]`) unless there is no stable token alternative.
-- Use the existing touch target utilities from `app/globals.css` (`h-touch-xs/sm/...`) instead of inventing custom heights.
+- Don’t introduce arbitrary values (`w-[…]`, `text-[…]`, `bg-[#…]`) unless there is no stable token alternative.- **Hex color policy**: Hex values (e.g. `bg-[#AABBCC]`) are allowed **only** for real product color swatches (see `components/shared/filters/color-swatches.tsx`), not for general UI.- Use the existing touch target utilities from `app/globals.css` (`h-touch-xs/sm/...`) instead of inventing custom heights.
 - For forms, use `components/shared/field.tsx` (`Field`, `FieldLabel`, `FieldError`, …) and `components/ui/*` inputs/buttons.
 
 Drift scans:

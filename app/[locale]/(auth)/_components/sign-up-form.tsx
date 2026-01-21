@@ -1,11 +1,11 @@
 "use client"
 
 import { useActionState, useEffect, useMemo, useState } from "react"
-import { useFormStatus } from "react-dom"
 import { Check, CheckCircle, Eye, EyeSlash, SpinnerGap, X } from "@phosphor-icons/react"
 import { useTranslations } from "next-intl"
 
 import { AuthCard } from "@/components/auth/auth-card"
+import { SubmitButton } from "@/components/auth/submit-button"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
@@ -13,35 +13,6 @@ import { Link } from "@/i18n/routing"
 import { cn } from "@/lib/utils"
 import { getPasswordStrength } from "@/lib/validations/password-strength"
 import { checkUsernameAvailability, signUp, type AuthActionState } from "../_actions/auth"
- 
-function SubmitButton({
-  label,
-  pendingLabel,
-  disabled,
-}: {
-  label: string
-  pendingLabel: string
-  disabled?: boolean
-}) {
-  const { pending } = useFormStatus()
-  return (
-    <Button
-      type="submit"
-      size="lg"
-      className="w-full h-10"
-      disabled={pending || disabled}
-    >
-      {pending ? (
-        <span className="inline-flex items-center gap-2">
-          <SpinnerGap className="size-5 animate-spin" weight="bold" />
-          {pendingLabel}
-        </span>
-      ) : (
-        label
-      )}
-    </Button>
-  )
-}
 
 export function SignUpForm({ locale }: { locale: string }) {
   const t = useTranslations("Auth")
