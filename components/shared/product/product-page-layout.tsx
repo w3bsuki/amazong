@@ -10,6 +10,7 @@ import { ProductSocialProof } from "@/components/shared/product/product-social-p
 import { FreshnessIndicator } from "@/components/shared/product/freshness-indicator";
 import { ViewTracker } from "@/components/shared/product/view-tracker";
 import { Skeleton } from "@/components/ui/skeleton";
+import { ProductHeaderSync } from "@/components/shared/product/product-header-sync";
 
 // V2 Desktop Components
 import { DesktopGalleryV2 } from "@/components/desktop/product/desktop-gallery-v2";
@@ -170,6 +171,13 @@ export function ProductPageLayout(props: ProductPageLayoutProps) {
 
   return (
     <>
+      <ProductHeaderSync
+        productTitle={product.title ?? null}
+        sellerName={sellerInfo.name}
+        sellerUsername={sellerInfo.username}
+        sellerAvatarUrl={sellerInfo.avatarUrl}
+      />
+
       {/* ===== MOBILE PRODUCT PAGE ===== */}
       <MobileProductPage
         locale={locale}
@@ -188,7 +196,7 @@ export function ProductPageLayout(props: ProductPageLayoutProps) {
       />
 
       {/* ===== DESKTOP PRODUCT PAGE (V2) ===== */}
-      <div className="hidden lg:block min-h-screen bg-muted/30 pb-10">
+      <div className="hidden md:block min-h-screen bg-muted/30 pb-10">
         {/* JSON-LD Structured Data for SEO */}
         <>
           <script

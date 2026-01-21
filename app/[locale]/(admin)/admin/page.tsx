@@ -2,8 +2,12 @@ import { ChartAreaInteractive } from "@/components/charts/chart-area-interactive
 import { AdminStatsCards } from "../_components/admin-stats-cards"
 import { AdminRecentActivity } from "../_components/admin-recent-activity"
 import { getAdminStats } from "@/lib/auth/admin"
+import { connection } from "next/server"
 
 export default async function AdminPage() {
+  // Mark route as dynamic - admin routes need auth
+  await connection()
+  
   // Fetch real admin stats (uses service role to bypass RLS)
   const stats = await getAdminStats()
 

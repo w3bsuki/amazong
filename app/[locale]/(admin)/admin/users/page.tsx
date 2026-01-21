@@ -135,7 +135,11 @@ async function AdminUsersFallback() {
   )
 }
 
-export default function AdminUsersPage() {
+export default async function AdminUsersPage() {
+  const { connection } = await import("next/server")
+  // Mark route as dynamic - admin routes need auth
+  await connection()
+  
   return (
     <Suspense fallback={<AdminUsersFallback />}>
       <AdminUsersContent />

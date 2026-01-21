@@ -23,6 +23,9 @@ export interface AdminUser {
  * @throws Redirects to login or home if not authorized
  */
 export async function requireAdmin(redirectTo: string = "/"): Promise<AdminUser> {
+  // Mark as dynamic - auth check reads cookies
+  await connection()
+  
   const supabase = await createClient()
   
   // First check if user is authenticated

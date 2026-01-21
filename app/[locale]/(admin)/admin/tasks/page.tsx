@@ -1,10 +1,14 @@
 import { Suspense } from "react"
 import { getTranslations } from "next-intl/server"
+import { connection } from "next/server"
 import { createClient } from "@/lib/supabase/server"
 import { AdminTasksContent } from "./_components/tasks-content"
 import { Skeleton } from "@/components/ui/skeleton"
 
 export default async function AdminTasksPage() {
+  // Mark route as dynamic - admin routes need auth
+  await connection()
+  
   const t = await getTranslations("AdminTasks")
 
   return (

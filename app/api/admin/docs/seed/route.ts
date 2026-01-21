@@ -1,7 +1,9 @@
 import type { NextRequest } from "next/server"
 import { NextResponse } from "next/server"
 import { createRouteHandlerClient } from "@/lib/supabase/server"
-import { ADMIN_DOC_TEMPLATES } from "./templates"
+import { ADMIN_DOC_TEMPLATES, ADMIN_DOC_TEMPLATES_BG } from "./templates"
+
+const SUPPORTED_LOCALES = new Set(["en", "bg"])
 
 export async function POST(request: NextRequest) {
   const { supabase, applyCookies } = createRouteHandlerClient(request)
@@ -27,22 +29,34 @@ export async function POST(request: NextRequest) {
     return json({ error: "forbidden" }, { status: 403 })
   }
 
+  const requestBody = await request
+    .json()
+    .catch(() => ({} as { locale?: unknown }))
+  const rawLocale =
+    typeof requestBody === "object" && requestBody && "locale" in requestBody
+      ? requestBody.locale
+      : undefined
+  const locale = SUPPORTED_LOCALES.has(String(rawLocale)) ? String(rawLocale) : "en"
+
   const { data: existing, error: existingError } = await supabase
     .from("admin_docs")
     .select("slug")
+    .eq("locale", locale)
 
   if (existingError) {
     return json({ error: "failed_to_load_existing" }, { status: 500 })
   }
 
   const existingSlugs = new Set((existing ?? []).map((d) => d.slug))
-  const toInsert = ADMIN_DOC_TEMPLATES.filter((t) => !existingSlugs.has(t.slug)).map((t) => ({
+  const templates = locale === "bg" ? ADMIN_DOC_TEMPLATES_BG : ADMIN_DOC_TEMPLATES
+  const toInsert = templates.filter((t) => !existingSlugs.has(t.slug)).map((t) => ({
     title: t.title,
     slug: t.slug,
     category: t.category,
     status: t.status,
     content: t.content,
     author_id: user.id,
+    locale,
   }))
 
   if (toInsert.length === 0) {

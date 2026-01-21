@@ -184,6 +184,11 @@ export function AppHeader({
   const effectiveContextualSubcategories = headerContext?.contextualHeader?.subcategories ?? contextualSubcategories
   const effectiveContextualSubcategoryClick = headerContext?.contextualHeader?.onSubcategoryClick ?? onSubcategoryClick
 
+  const effectiveProductTitle = headerContext?.productHeader?.productTitle ?? productTitle
+  const effectiveSellerName = headerContext?.productHeader?.sellerName ?? sellerName
+  const effectiveSellerUsername = headerContext?.productHeader?.sellerUsername ?? sellerUsername
+  const effectiveSellerAvatarUrl = headerContext?.productHeader?.sellerAvatarUrl ?? sellerAvatarUrl
+
   const searchPlaceholder = locale === "bg" ? "Търсене..." : "Search..."
 
   // Mark header as hydrated for E2E tests
@@ -226,10 +231,10 @@ export function AppHeader({
             user={user}
             categories={categories}
             userStats={userStats}
-            productTitle={productTitle}
-            sellerName={sellerName}
-            sellerUsername={sellerUsername}
-            sellerAvatarUrl={sellerAvatarUrl}
+            productTitle={effectiveProductTitle}
+            sellerName={effectiveSellerName}
+            sellerUsername={effectiveSellerUsername}
+            sellerAvatarUrl={effectiveSellerAvatarUrl}
             onBack={() => router.back()}
             locale={locale}
           />
@@ -269,8 +274,6 @@ export function AppHeader({
   // ==========================================================================
 
   const renderDesktopHeader = () => {
-    // Product pages hide desktop header entirely (use page layout)
-    if (variant === "product") return null
     // Minimal shows simplified desktop header
     if (variant === "minimal") return <DesktopMinimalHeader locale={locale} />
     // Homepage, contextual, and default use standard desktop layout

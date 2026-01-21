@@ -1,10 +1,14 @@
 import { Suspense } from "react"
 import { getTranslations } from "next-intl/server"
+import { connection } from "next/server"
 import { createClient } from "@/lib/supabase/server"
 import { AdminNotesContent } from "./_components/notes-content"
 import { Skeleton } from "@/components/ui/skeleton"
 
-export default function AdminNotesPage() {
+export default async function AdminNotesPage() {
+  // Mark route as dynamic - admin routes need auth
+  await connection()
+  
   return (
     <Suspense fallback={<PageSkeleton />}>
       <AdminNotesPageContent />

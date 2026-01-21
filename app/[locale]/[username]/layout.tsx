@@ -6,6 +6,7 @@ import { Suspense } from "react";
 import { createClient } from "@/lib/supabase/server";
 import { getCategoryHierarchy } from "@/lib/data/categories";
 import { setRequestLocale } from "next-intl/server";
+import { HeaderProvider } from "@/components/providers/header-context";
 
 import { Toaster } from "@/components/providers/sonner";
 import { CookieConsent } from "@/components/layout/cookie-consent";
@@ -69,23 +70,25 @@ export default async function UsernameLayout({
     const categories = await getCategoryHierarchy(null, 2);
 
     return (
-        <div className="bg-secondary min-h-screen flex flex-col">
-            {/* Skip Links - Accessibility */}
-            <SkipLinks />
+        <HeaderProvider>
+            <div className="bg-background min-h-screen flex flex-col">
+                {/* Skip Links - Accessibility */}
+                <SkipLinks />
 
-            <Suspense fallback={<div className="h-(--header-skeleton-h) w-full bg-header-bg md:h-(--header-skeleton-h-md)" />}>
-                <AppHeader user={user} categories={categories} {...(userStats && { userStats })} />
-            </Suspense>
+                <Suspense fallback={<div className="h-(--header-skeleton-h) w-full bg-header-bg md:h-(--header-skeleton-h-md)" />}>
+                    <AppHeader user={user} categories={categories} {...(userStats && { userStats })} />
+                </Suspense>
 
-            <main id="main-content" role="main" className="flex-1 pb-20 md:pb-0">
-                {children}
-            </main>
+                <main id="main-content" role="main" className="flex-1 pb-20 md:pb-0">
+                    {children}
+                </main>
 
-            <SiteFooter />
-            <MobileTabBar categories={categories} />
-            <Toaster />
-            <CookieConsent />
-            <GeoWelcomeModal locale={locale} />
-        </div>
+                <SiteFooter />
+                <MobileTabBar categories={categories} />
+                <Toaster />
+                <CookieConsent />
+                <GeoWelcomeModal locale={locale} />
+            </div>
+        </HeaderProvider>
     );
 }

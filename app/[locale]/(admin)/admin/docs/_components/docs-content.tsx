@@ -95,6 +95,16 @@ export function AdminDocsContent({ initialDocs }: { initialDocs: AdminDoc[] }) {
       ? t(`status.${value}`)
       : value
 
+  const loadDocs = async () => {
+    const { data } = await supabase
+      .from("admin_docs")
+      .select("id, title, slug, content, category, status, author_id, created_at, updated_at")
+      .order("category")
+      .order("title")
+
+    return data || []
+  }
+
   const filteredDocs = docs.filter((doc) => {
     const matchesSearch = doc.title.toLowerCase().includes(search.toLowerCase())
     const matchesCategory = categoryFilter === "all" || doc.category === categoryFilter
@@ -175,7 +185,10 @@ export function AdminDocsContent({ initialDocs }: { initialDocs: AdminDoc[] }) {
   const handleSeedTemplates = async () => {
     setIsSeeding(true)
     try {
-      const response = await fetch("/api/admin/docs/seed", { method: "POST" })
+      const response = await fetch("/api/admin/docs/seed", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+      })
       const payload: unknown = await response.json()
 
       if (!response.ok) {
@@ -188,13 +201,8 @@ export function AdminDocsContent({ initialDocs }: { initialDocs: AdminDoc[] }) {
           ? Number((payload as { inserted: unknown }).inserted)
           : 0
 
-      const { data: refreshedDocs } = await supabase
-        .from("admin_docs")
-        .select("id, title, slug, content, category, status, author_id, created_at, updated_at")
-        .order("category")
-        .order("title")
-
-      setDocs(refreshedDocs || [])
+      const refreshedDocs = await loadDocs()
+      setDocs(refreshedDocs)
       toast.success(inserted > 0 ? t("toasts.seeded", { count: inserted }) : t("toasts.noNewTemplates"))
     } catch {
       toast.error(t("toasts.seedFailed"))

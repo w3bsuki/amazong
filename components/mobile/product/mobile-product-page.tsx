@@ -163,7 +163,7 @@ export function MobileProductPage(props: MobileProductPageProps) {
   if (sellerInfo.verified) productTags.push(t("topRated"));
 
   return (
-    <div className="min-h-dvh bg-surface-page pb-28 lg:hidden">
+    <div className="min-h-dvh bg-surface-page pb-28 md:hidden">
       {/* JSON-LD Structured Data for SEO */}
       <script
         type="application/ld+json"
