@@ -381,12 +381,12 @@ function DocEditor({
   onCancel: () => void
   onClose: () => void
 }) {
+  const activeLocale = useLocale()
   const [title, setTitle] = useState(doc?.title || "")
   const [content, setContent] = useState(doc?.content || "")
   const [category, setCategory] = useState(doc?.category || "general")
   const [status, setStatus] = useState(doc?.status || "draft")
   const t = useTranslations("AdminDocs")
-  const locale = useLocale()
 
   const getCategoryLabel = (value: string) =>
     (CATEGORIES as readonly string[]).includes(value)
@@ -542,7 +542,7 @@ function DocEditor({
         <div className="px-4 sm:px-6 py-3 border-t bg-muted/30 text-xs text-muted-foreground shrink-0">
           {t("viewer.lastUpdatedLabel")}{" "}
           {doc.updated_at
-            ? new Date(doc.updated_at).toLocaleString(locale)
+            ? new Date(doc.updated_at).toLocaleString(activeLocale)
             : t("viewer.emptyDate")}
         </div>
       </div>
