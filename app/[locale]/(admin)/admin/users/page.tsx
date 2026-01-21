@@ -1,4 +1,5 @@
 import { createAdminClient, createClient } from "@/lib/supabase/server"
+import { getTranslations } from "next-intl/server"
 import { formatDistanceToNow } from "date-fns"
 import { Suspense } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -29,6 +30,7 @@ async function AdminUsersContent() {
   await (await createClient()).auth.getUser()
 
   const users = await getUsers()
+  const t = await getTranslations("AdminUsers")
 
   const getRoleBadge = (role: string | null) => {
     switch (role) {
@@ -45,27 +47,27 @@ async function AdminUsersContent() {
     <div className="flex flex-col gap-4 py-4 md:gap-4 md:py-6 px-4 lg:px-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Users</h1>
-          <p className="text-muted-foreground">Manage all registered users on the platform</p>
+          <h1 className="text-2xl font-bold tracking-tight">{t("page.title")}</h1>
+          <p className="text-muted-foreground">{t("page.description")}</p>
         </div>
         <Badge variant="outline" className="text-base">
-          {users.length} total
+          {t("summary", { count: users.length })}
         </Badge>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle>All Users</CardTitle>
-          <CardDescription>A list of all users including their name, email, and role.</CardDescription>
+          <CardTitle>{t("table.title")}</CardTitle>
+          <CardDescription>{t("table.description")}</CardDescription>
         </CardHeader>
         <CardContent>
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>User</TableHead>
-                <TableHead>Role</TableHead>
-                <TableHead>Phone</TableHead>
-                <TableHead>Joined</TableHead>
+                <TableHead>{t("table.headers.user")}</TableHead>
+                <TableHead>{t("table.headers.role")}</TableHead>
+                <TableHead>{t("table.headers.phone")}</TableHead>
+                <TableHead>{t("table.headers.joined")}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -75,21 +77,21 @@ async function AdminUsersContent() {
                     <div className="flex items-center gap-3">
                       <Avatar className="size-8">
                         <AvatarFallback className="text-xs">
-                          {(user.email || "??").slice(0, 2).toUpperCase()}
+                          {(user.email || t("fallbacks.unknown")).slice(0, 2).toUpperCase()}
                         </AvatarFallback>
                       </Avatar>
                       <div>
-                        <p className="font-medium">{user.full_name || "No name"}</p>
+                        <p className="font-medium">{user.full_name || t("fallbacks.noName")}</p>
                         <p className="text-sm text-muted-foreground">{user.email}</p>
                       </div>
                     </div>
                   </TableCell>
                   <TableCell>
                     <Badge variant="outline" className={getRoleBadge(user.role)}>
-                      {user.role || "buyer"}
+                      {t(`roles.${user.role || "buyer"}`)}
                     </Badge>
                   </TableCell>
-                  <TableCell className="text-muted-foreground">{user.phone || "-"}</TableCell>
+                  <TableCell className="text-muted-foreground">{user.phone || t("fallbacks.noPhone")}</TableCell>
                   <TableCell className="text-muted-foreground">
                     {formatDistanceToNow(new Date(user.created_at), { addSuffix: true })}
                   </TableCell>
@@ -103,24 +105,26 @@ async function AdminUsersContent() {
   )
 }
 
-function AdminUsersFallback() {
+async function AdminUsersFallback() {
+  const t = await getTranslations("AdminUsers")
+
   return (
     <div className="flex flex-col gap-4 py-4 md:gap-4 md:py-6 px-4 lg:px-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Users</h1>
-          <p className="text-muted-foreground">Manage all registered users on the platform</p>
+          <h1 className="text-2xl font-bold tracking-tight">{t("page.title")}</h1>
+          <p className="text-muted-foreground">{t("page.description")}</p>
         </div>
-        <Badge variant="outline" className="text-base">Loading...</Badge>
+        <Badge variant="outline" className="text-base">{t("loading")}</Badge>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle>All Users</CardTitle>
-          <CardDescription>A list of all users including their name, email, and role.</CardDescription>
+          <CardTitle>{t("table.title")}</CardTitle>
+          <CardDescription>{t("table.description")}</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="text-sm text-muted-foreground">Loading...</div>
+          <div className="text-sm text-muted-foreground">{t("loading")}</div>
         </CardContent>
       </Card>
     </div>

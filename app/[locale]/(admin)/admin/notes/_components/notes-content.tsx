@@ -21,6 +21,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
+import { useTranslations } from "next-intl"
 import { createClient } from "@/lib/supabase/client"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
@@ -36,6 +37,7 @@ interface AdminNote {
 }
 
 export function AdminNotesContent({ initialNotes }: { initialNotes: AdminNote[] }) {
+  const t = useTranslations("AdminNotes")
   const [notes, setNotes] = useState(initialNotes)
   const [editingNote, setEditingNote] = useState<AdminNote | null>(null)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
@@ -54,7 +56,7 @@ export function AdminNotesContent({ initialNotes }: { initialNotes: AdminNote[] 
       .eq("id", note.id)
     
     if (error) {
-      toast.error("Failed to update note")
+      toast.error(t("toasts.updateFailed"))
       return
     }
     
@@ -76,16 +78,16 @@ export function AdminNotesContent({ initialNotes }: { initialNotes: AdminNote[] 
         .eq("id", note.id)
       
       if (error) {
-        toast.error("Failed to update note")
+        toast.error(t("toasts.updateFailed"))
         return
       }
       
       setNotes(notes.map((n) => (n.id === note.id ? { ...n, ...note } : n)))
-      toast.success("Note updated")
+      toast.success(t("toasts.updated"))
     } else {
       // Create
       if (!note.title) {
-        toast.error("Title is required")
+        toast.error(t("toasts.titleRequired"))
         return
       }
       const { data, error } = await supabase
@@ -98,13 +100,13 @@ export function AdminNotesContent({ initialNotes }: { initialNotes: AdminNote[] 
         .single()
       
       if (error) {
-        toast.error("Failed to create note")
+        toast.error(t("toasts.createFailed"))
         return
       }
       
       if (data) {
         setNotes([data, ...notes])
-        toast.success("Note created")
+        toast.success(t("toasts.created"))
       }
     }
     
@@ -116,23 +118,26 @@ export function AdminNotesContent({ initialNotes }: { initialNotes: AdminNote[] 
     const { error } = await supabase.from("admin_notes").delete().eq("id", id)
     
     if (error) {
-      toast.error("Failed to delete note")
+      toast.error(t("toasts.deleteFailed"))
       return
     }
     
     setNotes(notes.filter((n) => n.id !== id))
-    toast.success("Note deleted")
+    toast.success(t("toasts.deleted"))
   }
 
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
         <div className="text-sm text-muted-foreground">
-          {notes.length} notes • {notes.filter((n) => n.is_pinned).length} pinned
+          {t("summary", {
+            count: notes.length,
+            pinned: notes.filter((n) => n.is_pinned).length,
+          })}
         </div>
         <Button onClick={() => { setEditingNote(null); setIsDialogOpen(true) }}>
           <IconPlus className="size-4 mr-2" />
-          New Note
+          {t("buttons.newNote")}
         </Button>
       </div>
 
@@ -140,7 +145,7 @@ export function AdminNotesContent({ initialNotes }: { initialNotes: AdminNote[] 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {sortedNotes.length === 0 ? (
           <div className="col-span-full text-center py-12 text-muted-foreground">
-            No notes yet. Create your first note!
+            {t("empty")}
           </div>
         ) : (
           sortedNotes.map((note) => (
@@ -150,7 +155,7 @@ export function AdminNotesContent({ initialNotes }: { initialNotes: AdminNote[] 
               onTogglePin={() => handleTogglePin(note)}
               onEdit={() => { setEditingNote(note); setIsDialogOpen(true) }}
               onDelete={() => {
-                if (confirm("Delete this note?")) {
+                if (confirm(t("confirm.deleteNote"))) {
                   handleDelete(note.id)
                 }
               }}
@@ -181,6 +186,8 @@ function NoteCard({
   onEdit: () => void
   onDelete: () => void
 }) {
+  const t = useTranslations("AdminNotes")
+
   return (
     <Card className={cn("group", note.is_pinned && "border-primary/50 bg-primary/5")}>
       <CardHeader className="p-4 pb-2">
@@ -208,7 +215,7 @@ function NoteCard({
         )}
         <div className="flex items-center justify-between mt-3 pt-3 border-t">
           <span className="text-xs text-muted-foreground">
-            {note.updated_at ? new Date(note.updated_at).toLocaleDateString() : "—"}
+            {note.updated_at ? new Date(note.updated_at).toLocaleDateString() : t("dateEmpty")}
           </span>
           <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
             <Button variant="ghost" size="icon" className="size-7" onClick={onEdit}>
@@ -237,6 +244,7 @@ function NoteDialog({
 }) {
   const [title, setTitle] = useState(note?.title || "")
   const [content, setContent] = useState(note?.content || "")
+  const t = useTranslations("AdminNotes")
 
   React.useEffect(() => {
     if (open) {
@@ -247,7 +255,7 @@ function NoteDialog({
 
   const handleSubmit = () => {
     if (!title.trim()) {
-      toast.error("Title is required")
+      toast.error(t("toasts.titleRequired"))
       return
     }
     onSave({
@@ -261,36 +269,36 @@ function NoteDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>{note ? "Edit Note" : "New Note"}</DialogTitle>
+          <DialogTitle>{note ? t("dialog.titleEdit") : t("dialog.titleNew")}</DialogTitle>
         </DialogHeader>
         <div className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="title">Title</Label>
+            <Label htmlFor="title">{t("labels.title")}</Label>
             <Input
               id="title"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder="Note title"
+              placeholder={t("placeholders.title")}
             />
           </div>
           
           <div className="space-y-2">
-            <Label htmlFor="content">Content</Label>
+            <Label htmlFor="content">{t("labels.content")}</Label>
             <Textarea
               id="content"
               value={content}
               onChange={(e) => setContent(e.target.value)}
-              placeholder="Write your note..."
+              placeholder={t("placeholders.content")}
               rows={8}
             />
           </div>
         </div>
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>
-            Cancel
+            {t("buttons.cancel")}
           </Button>
           <Button onClick={handleSubmit}>
-            {note ? "Save Changes" : "Create Note"}
+            {note ? t("buttons.saveChanges") : t("buttons.createNote")}
           </Button>
         </DialogFooter>
       </DialogContent>

@@ -189,7 +189,7 @@ export function AdminDocsContent({ initialDocs }: { initialDocs: AdminDoc[] }) {
 
       const { data: refreshedDocs } = await supabase
         .from("admin_docs")
-        .select("*")
+        .select("id, title, slug, content, category, status, author_id, created_at, updated_at")
         .order("category")
         .order("title")
 
@@ -336,7 +336,7 @@ export function AdminDocsContent({ initialDocs }: { initialDocs: AdminDoc[] }) {
         }}
       >
         <DialogContent 
-          className="max-w-full w-full inset-0 translate-x-0 translate-y-0 sm:inset-8 p-0 gap-0 overflow-hidden flex flex-col rounded-none sm:rounded-lg border-0 sm:border"
+          className="max-w-6xl w-full sm:w-11/12 lg:w-10/12 p-0 gap-0 overflow-hidden flex flex-col rounded-lg border shadow-lg max-h-screen"
           showCloseButton={false}
         >
           {(selectedDoc || isCreating) && (

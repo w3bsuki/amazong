@@ -1752,6 +1752,9 @@
     "Messages": {
         "pageTitle": "Messages",
         "pageDescription": "Communicate with sellers about your orders and inquiries",
+        "conversationTitle": "Chat with {name}",
+        "conversationWithProductTitle": "Chat with {name} about {product}",
+        "conversationDescription": "Private conversation with {name}",
         "searchPlaceholder": "Search messages...",
         "newMessage": "New message",
         "noConversationsHint": "Messages from sellers will appear here",
@@ -2167,6 +2170,124 @@
         "payoutSetupRequired": "Set up payouts first",
         "payoutSetupDescription": "Before you can list items for sale, you need to connect your bank account to receive payments.",
         "setupPayouts": "Set up payouts"
+    },
+    "AdminTasks": {
+        "page": {
+            "title": "Tasks",
+            "description": "Internal task management"
+        },
+        "summary": "{total} tasks total • {completed} completed",
+        "buttons": {
+            "newTask": "New Task",
+            "cancel": "Cancel",
+            "saveChanges": "Save Changes",
+            "createTask": "Create Task"
+        },
+        "columns": {
+            "todo": "To Do",
+            "in_progress": "In Progress",
+            "review": "Review",
+            "done": "Done"
+        },
+        "priority": {
+            "urgent": "Urgent",
+            "high": "High",
+            "medium": "Medium",
+            "low": "Low"
+        },
+        "labels": {
+            "title": "Title",
+            "description": "Description",
+            "priority": "Priority",
+            "dueDate": "Due Date"
+        },
+        "placeholders": {
+            "title": "Task title",
+            "description": "Optional description"
+        },
+        "dialog": {
+            "titleEdit": "Edit Task",
+            "titleNew": "New Task"
+        },
+        "confirm": {
+            "deleteTask": "Delete this task?"
+        },
+        "toasts": {
+            "updateFailed": "Failed to update task",
+            "updated": "Task updated",
+            "titleRequired": "Title is required",
+            "createFailed": "Failed to create task",
+            "created": "Task created",
+            "deleteFailed": "Failed to delete task",
+            "deleted": "Task deleted"
+        }
+    },
+    "AdminNotes": {
+        "page": {
+            "title": "Notes",
+            "description": "Quick internal notes"
+        },
+        "summary": "{count} notes • {pinned} pinned",
+        "empty": "No notes yet. Create your first note!",
+        "dateEmpty": "—",
+        "buttons": {
+            "newNote": "New Note",
+            "cancel": "Cancel",
+            "saveChanges": "Save Changes",
+            "createNote": "Create Note"
+        },
+        "labels": {
+            "title": "Title",
+            "content": "Content"
+        },
+        "placeholders": {
+            "title": "Note title",
+            "content": "Write your note..."
+        },
+        "dialog": {
+            "titleEdit": "Edit Note",
+            "titleNew": "New Note"
+        },
+        "confirm": {
+            "deleteNote": "Delete this note?"
+        },
+        "toasts": {
+            "updateFailed": "Failed to update note",
+            "updated": "Note updated",
+            "titleRequired": "Title is required",
+            "createFailed": "Failed to create note",
+            "created": "Note created",
+            "deleteFailed": "Failed to delete note",
+            "deleted": "Note deleted"
+        }
+    },
+    "AdminUsers": {
+        "page": {
+            "title": "Users",
+            "description": "Manage all registered users on the platform"
+        },
+        "summary": "{count} total",
+        "table": {
+            "title": "All Users",
+            "description": "A list of all users including their name, email, and role.",
+            "headers": {
+                "user": "User",
+                "role": "Role",
+                "phone": "Phone",
+                "joined": "Joined"
+            }
+        },
+        "roles": {
+            "admin": "Admin",
+            "seller": "Seller",
+            "buyer": "Buyer"
+        },
+        "fallbacks": {
+            "unknown": "??",
+            "noName": "No name",
+            "noPhone": "-"
+        },
+        "loading": "Loading..."
     },
     "AdminDocs": {
         "page": {

@@ -33,7 +33,7 @@ async function AdminDocsContentWrapper() {
   
   const { data: docs } = await supabase
     .from("admin_docs")
-    .select("*")
+    .select("id, title, slug, content, category, status, author_id, created_at, updated_at")
     .order("category")
     .order("title")
   

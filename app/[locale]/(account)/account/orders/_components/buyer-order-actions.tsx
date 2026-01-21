@@ -192,7 +192,7 @@ export function BuyerOrderActions({
           setIssueDescription("")
           // Navigate to conversation if available
           if (result.conversationId) {
-            router.push(`/chat?conversation=${result.conversationId}`)
+            router.push(`/chat/${result.conversationId}`)
           } else {
             router.refresh()
           }
@@ -255,7 +255,7 @@ export function BuyerOrderActions({
       {/* Chat Link */}
       {conversationId && (
         <Button variant="outline" size="sm" asChild>
-          <Link href={`/chat?conversation=${conversationId}`}>
+          <Link href={`/chat/${conversationId}`}>
             <MessageSquare className="h-4 w-4 mr-1.5" />
             {t.chat}
           </Link>

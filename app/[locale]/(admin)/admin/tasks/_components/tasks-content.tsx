@@ -29,6 +29,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { useTranslations } from "next-intl"
 import { createClient } from "@/lib/supabase/client"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
@@ -46,11 +47,11 @@ interface AdminTask {
   updated_at: string | null
 }
 
-const COLUMNS = [
-  { id: "todo", label: "To Do", color: "bg-muted" },
-  { id: "in_progress", label: "In Progress", color: "bg-admin-in-progress-bg" },
-  { id: "review", label: "Review", color: "bg-admin-review-bg" },
-  { id: "done", label: "Done", color: "bg-admin-published-bg" },
+const STATUS_COLUMNS = [
+  { id: "todo", labelKey: "columns.todo", color: "bg-muted" },
+  { id: "in_progress", labelKey: "columns.in_progress", color: "bg-admin-in-progress-bg" },
+  { id: "review", labelKey: "columns.review", color: "bg-admin-review-bg" },
+  { id: "done", labelKey: "columns.done", color: "bg-admin-published-bg" },
 ]
 
 const PRIORITY_COLORS: Record<string, string> = {
@@ -68,13 +69,19 @@ const PRIORITY_ORDER: Record<string, number> = {
 }
 
 export function AdminTasksContent({ initialTasks }: { initialTasks: AdminTask[] }) {
+  const t = useTranslations("AdminTasks")
   const [tasks, setTasks] = useState(initialTasks)
   const [editingTask, setEditingTask] = useState<AdminTask | null>(null)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   
   const supabase = createClient()
 
-  const tasksByStatus = COLUMNS.reduce((acc, col) => {
+  const columns = STATUS_COLUMNS.map((col) => ({
+    ...col,
+    label: t(col.labelKey),
+  }))
+
+  const tasksByStatus = columns.reduce((acc, col) => {
     acc[col.id] = tasks
       .filter((t) => t.status === col.id)
       .sort((a, b) => (PRIORITY_ORDER[b.priority] ?? 0) - (PRIORITY_ORDER[a.priority] ?? 0))
@@ -88,7 +95,7 @@ export function AdminTasksContent({ initialTasks }: { initialTasks: AdminTask[] 
       .eq("id", taskId)
     
     if (error) {
-      toast.error("Failed to update task")
+      toast.error(t("toasts.updateFailed"))
       return
     }
     
@@ -112,16 +119,16 @@ export function AdminTasksContent({ initialTasks }: { initialTasks: AdminTask[] 
         .eq("id", task.id)
       
       if (error) {
-        toast.error("Failed to update task")
+        toast.error(t("toasts.updateFailed"))
         return
       }
       
       setTasks(tasks.map((t) => (t.id === task.id ? { ...t, ...task } : t)))
-      toast.success("Task updated")
+      toast.success(t("toasts.updated"))
     } else {
       // Create
       if (!task.title) {
-        toast.error("Title is required")
+        toast.error(t("toasts.titleRequired"))
         return
       }
       const { data, error } = await supabase
@@ -137,13 +144,13 @@ export function AdminTasksContent({ initialTasks }: { initialTasks: AdminTask[] 
         .single()
       
       if (error) {
-        toast.error("Failed to create task")
+        toast.error(t("toasts.createFailed"))
         return
       }
       
       if (data) {
         setTasks([data, ...tasks])
-        toast.success("Task created")
+        toast.success(t("toasts.created"))
       }
     }
     
@@ -155,29 +162,32 @@ export function AdminTasksContent({ initialTasks }: { initialTasks: AdminTask[] 
     const { error } = await supabase.from("admin_tasks").delete().eq("id", id)
     
     if (error) {
-      toast.error("Failed to delete task")
+      toast.error(t("toasts.deleteFailed"))
       return
     }
     
     setTasks(tasks.filter((t) => t.id !== id))
-    toast.success("Task deleted")
+    toast.success(t("toasts.deleted"))
   }
 
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
         <div className="text-sm text-muted-foreground">
-          {tasks.length} tasks total • {tasks.filter((t) => t.status === "done").length} completed
+          {t("summary", {
+            total: tasks.length,
+            completed: tasks.filter((t) => t.status === "done").length,
+          })}
         </div>
         <Button onClick={() => { setEditingTask(null); setIsDialogOpen(true) }}>
           <IconPlus className="size-4 mr-2" />
-          New Task
+          {t("buttons.newTask")}
         </Button>
       </div>
 
       {/* Kanban Board */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        {COLUMNS.map((column) => (
+        {columns.map((column) => (
           <div key={column.id} className="space-y-2">
             <div className={cn("rounded-lg px-3 py-2 font-medium text-sm", column.color)}>
               {column.label}
@@ -190,10 +200,11 @@ export function AdminTasksContent({ initialTasks }: { initialTasks: AdminTask[] 
                 <TaskCard
                   key={task.id}
                   task={task}
+                  statusOptions={columns}
                   onStatusChange={handleStatusChange}
                   onEdit={() => { setEditingTask(task); setIsDialogOpen(true) }}
                   onDelete={() => {
-                    if (confirm("Delete this task?")) {
+                    if (confirm(t("confirm.deleteTask"))) {
                       handleDelete(task.id)
                     }
                   }}
@@ -217,22 +228,26 @@ export function AdminTasksContent({ initialTasks }: { initialTasks: AdminTask[] 
 
 function TaskCard({
   task,
+  statusOptions,
   onStatusChange,
   onEdit,
   onDelete,
 }: {
   task: AdminTask
+  statusOptions: { id: string; label: string }[]
   onStatusChange: (id: string, status: string) => void
   onEdit: () => void
   onDelete: () => void
 }) {
+  const t = useTranslations("AdminTasks")
+
   return (
     <Card className="group">
       <CardHeader className="p-3 pb-0">
         <div className="flex items-start justify-between gap-2">
           <h4 className="font-medium text-sm leading-tight">{task.title}</h4>
           <Badge className={cn("text-xs shrink-0", PRIORITY_COLORS[task.priority])}>
-            {task.priority}
+            {t(`priority.${task.priority}`)}
           </Badge>
         </div>
       </CardHeader>
@@ -257,7 +272,7 @@ function TaskCard({
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              {COLUMNS.map((col) => (
+              {statusOptions.map((col) => (
                 <SelectItem key={col.id} value={col.id}>
                   {col.label}
                 </SelectItem>
@@ -293,6 +308,7 @@ function TaskDialog({
   const [description, setDescription] = useState(task?.description || "")
   const [priority, setPriority] = useState(task?.priority || "medium")
   const [dueDate, setDueDate] = useState(task?.due_date || "")
+  const t = useTranslations("AdminTasks")
 
   React.useEffect(() => {
     if (open) {
@@ -305,7 +321,7 @@ function TaskDialog({
 
   const handleSubmit = () => {
     if (!title.trim()) {
-      toast.error("Title is required")
+      toast.error(t("toasts.titleRequired"))
       return
     }
     onSave({
@@ -321,48 +337,48 @@ function TaskDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>{task ? "Edit Task" : "New Task"}</DialogTitle>
+          <DialogTitle>{task ? t("dialog.titleEdit") : t("dialog.titleNew")}</DialogTitle>
         </DialogHeader>
         <div className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="title">Title</Label>
+            <Label htmlFor="title">{t("labels.title")}</Label>
             <Input
               id="title"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder="Task title"
+              placeholder={t("placeholders.title")}
             />
           </div>
           
           <div className="space-y-2">
-            <Label htmlFor="description">Description</Label>
+            <Label htmlFor="description">{t("labels.description")}</Label>
             <Textarea
               id="description"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              placeholder="Optional description"
+              placeholder={t("placeholders.description")}
               rows={3}
             />
           </div>
           
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label>Priority</Label>
+              <Label>{t("labels.priority")}</Label>
               <Select value={priority} onValueChange={setPriority}>
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="urgent">Urgent</SelectItem>
-                  <SelectItem value="high">High</SelectItem>
-                  <SelectItem value="medium">Medium</SelectItem>
-                  <SelectItem value="low">Low</SelectItem>
+                  <SelectItem value="urgent">{t("priority.urgent")}</SelectItem>
+                  <SelectItem value="high">{t("priority.high")}</SelectItem>
+                  <SelectItem value="medium">{t("priority.medium")}</SelectItem>
+                  <SelectItem value="low">{t("priority.low")}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
             
             <div className="space-y-2">
-              <Label htmlFor="due_date">Due Date</Label>
+              <Label htmlFor="due_date">{t("labels.dueDate")}</Label>
               <Input
                 id="due_date"
                 type="date"
@@ -374,10 +390,10 @@ function TaskDialog({
         </div>
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>
-            Cancel
+            {t("buttons.cancel")}
           </Button>
           <Button onClick={handleSubmit}>
-            {task ? "Save Changes" : "Create Task"}
+            {task ? t("buttons.saveChanges") : t("buttons.createTask")}
           </Button>
         </DialogFooter>
       </DialogContent>

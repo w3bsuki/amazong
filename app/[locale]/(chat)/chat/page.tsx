@@ -21,10 +21,13 @@ export async function generateMetadata({
 
 export default async function MessagesPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ locale: string }>
+  searchParams: Promise<{ conversation?: string }>
 }) {
   const { locale } = await params
+  const { conversation } = await searchParams
   const supabase = await createClient()
 
   if (!supabase) {
@@ -37,6 +40,12 @@ export default async function MessagesPage({
 
   if (!user) {
     redirect(`/${locale}/auth/login?next=/${locale}/chat`)
+  }
+
+  // Handle legacy URL format: /chat?conversation=xxx -> /chat/xxx
+  // This ensures old links continue to work and get redirected to the new format
+  if (conversation) {
+    redirect(`/${locale}/chat/${conversation}`)
   }
 
   return (

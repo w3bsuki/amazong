@@ -1,0 +1,147 @@
+import { notFound, redirect } from "next/navigation"
+import { getTranslations, setRequestLocale } from "next-intl/server"
+import { createClient } from "@/lib/supabase/server"
+import { validateLocale, routing } from "@/i18n/routing"
+import { ConversationPageClient } from "../../_components/conversation-page-client"
+import { blockUser } from "@/app/actions/blocked-users"
+import { reportConversation } from "../../_actions/report-conversation"
+
+// Generate static params for all supported locales (conversation ID is dynamic)
+export function generateStaticParams() {
+  return routing.locales.map((locale) => ({ locale }))
+}
+
+/**
+ * Generate SEO-friendly metadata for conversation pages
+ * Title includes the other party's name for context
+ */
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string; conversationId: string }>
+}) {
+  const { locale, conversationId } = await params
+  const t = await getTranslations({ locale, namespace: "Messages" })
+  const supabase = await createClient()
+
+  if (!supabase) {
+    return {
+      title: t("pageTitle"),
+      description: t("pageDescription"),
+    }
+  }
+
+  // Fetch conversation details for metadata
+  const { data: { user } } = await supabase.auth.getUser()
+  
+  if (!user) {
+    return {
+      title: t("pageTitle"),
+      description: t("pageDescription"),
+    }
+  }
+
+  // Get conversation with product info
+  const { data: conversation } = await supabase
+    .from("conversations")
+    .select(`
+      id,
+      buyer_id,
+      seller_id,
+      product:products(title)
+    `)
+    .eq("id", conversationId)
+    .single()
+
+  if (!conversation) {
+    return {
+      title: t("pageTitle"),
+      description: t("pageDescription"),
+    }
+  }
+
+  // Get the other party's profile
+  const otherPartyId = conversation.buyer_id === user.id 
+    ? conversation.seller_id 
+    : conversation.buyer_id
+
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("display_name, full_name, business_name")
+    .eq("id", otherPartyId)
+    .single()
+
+  const otherName = profile?.business_name || profile?.display_name || profile?.full_name || t("unknownUser")
+  const productTitle = conversation.product?.title
+
+  return {
+    title: productTitle 
+      ? t("conversationWithProductTitle", { name: otherName, product: productTitle })
+      : t("conversationTitle", { name: otherName }),
+    description: t("conversationDescription", { name: otherName }),
+    robots: {
+      index: false, // Private conversations shouldn't be indexed
+      follow: false,
+    },
+  }
+}
+
+/**
+ * Conversation Page - Server Component
+ * 
+ * This page displays a specific conversation using the proper App Router
+ * dynamic segment pattern: /chat/[conversationId]
+ * 
+ * - Server-side auth validation
+ * - Server-side conversation access check
+ * - Proper metadata generation
+ * - SEO-friendly URLs
+ */
+export default async function ConversationPage({
+  params,
+}: {
+  params: Promise<{ locale: string; conversationId: string }>
+}) {
+  const { locale: localeParam, conversationId } = await params
+  const locale = validateLocale(localeParam)
+
+  // Enable static rendering
+  setRequestLocale(locale)
+
+  const supabase = await createClient()
+
+  if (!supabase) {
+    redirect(`/${locale}/auth/login?next=/${locale}/chat/${conversationId}`)
+  }
+
+  const { data: { user } } = await supabase.auth.getUser()
+
+  if (!user) {
+    redirect(`/${locale}/auth/login?next=/${locale}/chat/${conversationId}`)
+  }
+
+  // Validate conversation exists and user has access
+  const { data: conversation, error } = await supabase
+    .from("conversations")
+    .select("id, buyer_id, seller_id")
+    .eq("id", conversationId)
+    .single()
+
+  if (error || !conversation) {
+    notFound()
+  }
+
+  // Check user is part of this conversation
+  const isParticipant = conversation.buyer_id === user.id || conversation.seller_id === user.id
+
+  if (!isParticipant) {
+    notFound()
+  }
+
+  return (
+    <ConversationPageClient 
+      conversationId={conversationId}
+      actions={{ blockUser, reportConversation }}
+    />
+  )
+}

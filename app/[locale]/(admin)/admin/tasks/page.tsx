@@ -1,17 +1,18 @@
 import { Suspense } from "react"
+import { getTranslations } from "next-intl/server"
 import { createClient } from "@/lib/supabase/server"
 import { AdminTasksContent } from "./_components/tasks-content"
 import { Skeleton } from "@/components/ui/skeleton"
 
-export default function AdminTasksPage() {
+export default async function AdminTasksPage() {
+  const t = await getTranslations("AdminTasks")
+
   return (
     <div className="flex flex-col gap-4 p-4 md:p-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold">Tasks</h1>
-          <p className="text-muted-foreground">
-            Internal task management
-          </p>
+          <h1 className="text-2xl font-bold">{t("page.title")}</h1>
+          <p className="text-muted-foreground">{t("page.description")}</p>
         </div>
       </div>
       <Suspense fallback={<TasksSkeleton />}>
@@ -26,7 +27,7 @@ async function AdminTasksContentWrapper() {
   
   const { data: tasks } = await supabase
     .from("admin_tasks")
-    .select("*")
+    .select("id, title, description, status, priority, due_date, assigned_to, created_by, created_at, updated_at")
     .order("priority", { ascending: false })
     .order("created_at", { ascending: false })
   

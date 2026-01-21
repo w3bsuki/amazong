@@ -131,7 +131,7 @@ export function OrderStatusActions({
       {/* Chat Link */}
       {conversationId && (
         <Button variant="outline" size="sm" asChild>
-          <Link href={`/chat?conversation=${conversationId}`}>
+          <Link href={`/chat/${conversationId}`}>
             <MessageSquare className="h-4 w-4 mr-1.5" />
             Chat
           </Link>

@@ -9,6 +9,7 @@ import { CountBadge } from "@/components/shared/count-badge"
 import { useTranslations } from "next-intl"
 import { MobileMenuSheet, type MobileMenuSheetHandle } from "@/components/mobile/mobile-menu-sheet"
 import { useMessages } from "@/components/providers/message-context"
+import { useDrawer } from "@/components/providers/drawer-context"
 import type { CategoryTreeNode } from "@/lib/category-tree"
 
 interface MobileTabBarProps {
@@ -26,6 +27,9 @@ export function MobileTabBar({ categories }: MobileTabBarProps) {
   // Get unread message count from message context
   const { totalUnreadCount } = useMessages()
   const unreadCount = totalUnreadCount
+
+  // Get drawer actions for chat button
+  const { openMessages } = useDrawer()
 
   // Avoid SSR/hydration mismatches caused by client-only UI (drawers/portals).
   if (!mounted) return null
@@ -139,17 +143,17 @@ export function MobileTabBar({ categories }: MobileTabBarProps) {
             </span>
           </Link>
 
-          {/* Chat */}
-          <Link
-            href="/chat"
-            prefetch={true}
+          {/* Chat - Opens messages drawer */}
+          <button
+            type="button"
+            onClick={openMessages}
             className={cn(
               "flex flex-col items-center justify-center gap-0.5 w-full h-full",
               "tap-highlight-transparent active:opacity-50 transition-opacity",
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-md",
             )}
             aria-label={`${t("chat")}${unreadCount > 0 ? ` (${unreadCount} unread)` : ""}`}
-            aria-current={isActive("/chat") ? "page" : undefined}
+            aria-haspopup="dialog"
           >
             <span className="relative">
               <ChatCircle 
@@ -172,7 +176,7 @@ export function MobileTabBar({ categories }: MobileTabBarProps) {
               "text-2xs font-medium leading-none tracking-tight",
               isActive("/chat") ? "text-foreground font-semibold" : "text-muted-foreground"
             )}>{t("chat")}</span>
-          </Link>
+          </button>
 
           {/* Account */}
           <Link

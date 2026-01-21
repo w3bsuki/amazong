@@ -495,17 +495,25 @@ export function useCategoryNavigation({
 
   const handleCircleClick = useCallback(
     (category: Category) => {
-      if (!activeL1) {
+      // Determine if clicked category is L1 or L2 based on whether it exists in l1Categories
+      // This allows clicking any L1 circle to update L1 (not L2), even if L1 is already set
+      const isL1Category = l1Categories.some((c) => c.slug === category.slug)
+      
+      if (isL1Category) {
+        // Clicking an L1 category - update L1 selection
         setActiveL1(category.slug)
         setActiveL2(null)
         setSelectedPill(null)
         updateUrl(activeTab, category.slug)
       } else {
-        setActiveL2(category.slug)
-        setSelectedPill(null)
+        // Clicking an L2 category - update L2 selection (only if L1 is set)
+        if (activeL1) {
+          setActiveL2(category.slug)
+          setSelectedPill(null)
+        }
       }
     },
-    [activeL1, activeTab, updateUrl]
+    [activeL1, activeTab, updateUrl, l1Categories]
   )
 
   const handleBack = useCallback(() => {

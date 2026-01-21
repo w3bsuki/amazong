@@ -1,17 +1,18 @@
 import { Suspense } from "react"
+import { getTranslations } from "next-intl/server"
 import { createClient } from "@/lib/supabase/server"
 import { AdminNotesContent } from "./_components/notes-content"
 import { Skeleton } from "@/components/ui/skeleton"
 
-export default function AdminNotesPage() {
+export default async function AdminNotesPage() {
+  const t = await getTranslations("AdminNotes")
+
   return (
     <div className="flex flex-col gap-4 p-4 md:p-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold">Notes</h1>
-          <p className="text-muted-foreground">
-            Quick internal notes
-          </p>
+          <h1 className="text-2xl font-bold">{t("page.title")}</h1>
+          <p className="text-muted-foreground">{t("page.description")}</p>
         </div>
       </div>
       <Suspense fallback={<NotesSkeleton />}>
@@ -26,7 +27,7 @@ async function AdminNotesContentWrapper() {
   
   const { data: notes } = await supabase
     .from("admin_notes")
-    .select("*")
+    .select("id, title, content, is_pinned, author_id, created_at, updated_at")
     .order("is_pinned", { ascending: false })
     .order("created_at", { ascending: false })
   

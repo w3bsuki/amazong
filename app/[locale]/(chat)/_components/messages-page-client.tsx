@@ -1,8 +1,8 @@
 "use client"
 
-import { useState, useEffect, lazy, Suspense } from "react"
+import { useState, lazy, Suspense } from "react"
 import { useTranslations } from "next-intl"
-import { useSearchParams } from "next/navigation"
+import { useRouter } from "next/navigation"
 import { MessageProvider, useMessages } from "@/components/providers/message-context"
 import { ConversationList } from "./conversation-list"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -113,49 +113,31 @@ function ChatBottomTabs({
 
 function MessagesContent({ actions }: { actions: ChatInterfaceServerActions }) {
   const t = useTranslations("Messages")
-  const searchParams = useSearchParams()
-  const conversationParam = searchParams.get("conversation")
+  const router = useRouter()
   
   const [showChat, setShowChat] = useState(false)
   const [searchQuery, setSearchQuery] = useState("")
   const [activeFilter, setActiveFilter] = useState<MessageFilter>("all")
-  const [hasAutoSelected, setHasAutoSelected] = useState(false)
-  const { currentConversation, selectConversation, conversations, isLoading } = useMessages()
-  
-  // Update URL when conversation changes (without triggering navigation)
-  useEffect(() => {
-    if (currentConversation && currentConversation.id !== conversationParam) {
-      const newUrl = new URL(window.location.href)
-      newUrl.searchParams.set("conversation", currentConversation.id)
-      window.history.replaceState({}, "", newUrl.toString())
-    }
-  }, [currentConversation, conversationParam])
-  
-  // Auto-select conversation from URL parameter
-  useEffect(() => {
-    if (conversationParam && !hasAutoSelected) {
-      // If conversations are still loading, wait
-      if (isLoading) return
-      
-      // Try to find the conversation
-      const targetConv = conversations.find(c => c.id === conversationParam)
-      if (targetConv) {
-        selectConversation(conversationParam)
-        setShowChat(true)
-        setHasAutoSelected(true)
-      } else if (conversations.length > 0) {
-        // Conversations loaded but target not found - still mark as attempted
-        // This prevents infinite retries
-        setHasAutoSelected(true)
-      }
-    }
-  }, [conversationParam, conversations, isLoading, hasAutoSelected, selectConversation])
+  const { currentConversation } = useMessages()
 
   const labels = {
     searchPlaceholder: t("searchPlaceholder"),
     newMessage: t("newMessage"),
     title: t("pageTitle"),
     back: t("back"),
+  }
+
+  // Navigate to conversation URL when selecting (updates browser URL for sharing/refresh)
+  const handleSelectConversation = (conversationId: string) => {
+    // On mobile: navigate to dedicated conversation page with proper URL
+    // On desktop: show inline but also update URL for bookmarkability
+    router.push(`/chat/${conversationId}`)
+  }
+
+  // Handle back from inline chat view (desktop only)
+  const handleBackFromChat = () => {
+    setShowChat(false)
+    router.push("/chat")
   }
 
   return (
@@ -214,7 +196,7 @@ function MessagesContent({ actions }: { actions: ChatInterfaceServerActions }) {
         {/* Conversation list */}
         <ConversationList
           className="flex-1 min-h-0 overflow-y-auto"
-          onSelectConversation={() => setShowChat(true)}
+          onSelectConversation={handleSelectConversation}
           searchQuery={searchQuery}
           filter={activeFilter}
         />
@@ -235,7 +217,7 @@ function MessagesContent({ actions }: { actions: ChatInterfaceServerActions }) {
             <Suspense fallback={<ChatInterfaceSkeleton />}>
             <ChatInterface
               className="h-full"
-              onBack={() => setShowChat(false)}
+              onBack={handleBackFromChat}
               actions={actions}
             />
             </Suspense>

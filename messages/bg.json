@@ -1752,6 +1752,9 @@
     "Messages": {
         "pageTitle": "Съобщения",
         "pageDescription": "Комуникирайте с продавачи относно вашите поръчки и запитвания",
+        "conversationTitle": "Чат с {name}",
+        "conversationWithProductTitle": "Чат с {name} относно {product}",
+        "conversationDescription": "Личен разговор с {name}",
         "searchPlaceholder": "Търсене в съобщения...",
         "newMessage": "Ново съобщение",
         "noConversationsHint": "Съобщенията от продавачи ще се появят тук",
@@ -2167,6 +2170,124 @@
         "payoutSetupRequired": "Настройте плащанията първо",
         "payoutSetupDescription": "Преди да можете да публикувате обяви за продажба, трябва да свържете банковата си сметка за получаване на плащания.",
         "setupPayouts": "Настройка на плащанията"
+    },
+    "AdminTasks": {
+        "page": {
+            "title": "Задачи",
+            "description": "Вътрешно управление на задачи"
+        },
+        "summary": "{total} задачи общо • {completed} завършени",
+        "buttons": {
+            "newTask": "Нова задача",
+            "cancel": "Отказ",
+            "saveChanges": "Запази промените",
+            "createTask": "Създай задача"
+        },
+        "columns": {
+            "todo": "За изпълнение",
+            "in_progress": "В процес",
+            "review": "Преглед",
+            "done": "Готово"
+        },
+        "priority": {
+            "urgent": "Спешно",
+            "high": "Висок",
+            "medium": "Среден",
+            "low": "Нисък"
+        },
+        "labels": {
+            "title": "Заглавие",
+            "description": "Описание",
+            "priority": "Приоритет",
+            "dueDate": "Краен срок"
+        },
+        "placeholders": {
+            "title": "Заглавие на задача",
+            "description": "Незадължително описание"
+        },
+        "dialog": {
+            "titleEdit": "Редактиране на задача",
+            "titleNew": "Нова задача"
+        },
+        "confirm": {
+            "deleteTask": "Изтрий тази задача?"
+        },
+        "toasts": {
+            "updateFailed": "Неуспешно обновяване на задачата",
+            "updated": "Задачата е обновена",
+            "titleRequired": "Заглавието е задължително",
+            "createFailed": "Неуспешно създаване на задача",
+            "created": "Задачата е създадена",
+            "deleteFailed": "Неуспешно изтриване на задача",
+            "deleted": "Задачата е изтрита"
+        }
+    },
+    "AdminNotes": {
+        "page": {
+            "title": "Бележки",
+            "description": "Бързи вътрешни бележки"
+        },
+        "summary": "{count} бележки • {pinned} закачени",
+        "empty": "Все още няма бележки. Създай първата!",
+        "dateEmpty": "—",
+        "buttons": {
+            "newNote": "Нова бележка",
+            "cancel": "Отказ",
+            "saveChanges": "Запази промените",
+            "createNote": "Създай бележка"
+        },
+        "labels": {
+            "title": "Заглавие",
+            "content": "Съдържание"
+        },
+        "placeholders": {
+            "title": "Заглавие на бележка",
+            "content": "Напиши бележката си..."
+        },
+        "dialog": {
+            "titleEdit": "Редактиране на бележка",
+            "titleNew": "Нова бележка"
+        },
+        "confirm": {
+            "deleteNote": "Изтрий тази бележка?"
+        },
+        "toasts": {
+            "updateFailed": "Неуспешно обновяване на бележката",
+            "updated": "Бележката е обновена",
+            "titleRequired": "Заглавието е задължително",
+            "createFailed": "Неуспешно създаване на бележка",
+            "created": "Бележката е създадена",
+            "deleteFailed": "Неуспешно изтриване на бележка",
+            "deleted": "Бележката е изтрита"
+        }
+    },
+    "AdminUsers": {
+        "page": {
+            "title": "Потребители",
+            "description": "Управлявай всички регистрирани потребители"
+        },
+        "summary": "{count} общо",
+        "table": {
+            "title": "Всички потребители",
+            "description": "Списък с всички потребители, включително име, имейл и роля.",
+            "headers": {
+                "user": "Потребител",
+                "role": "Роля",
+                "phone": "Телефон",
+                "joined": "Регистриран"
+            }
+        },
+        "roles": {
+            "admin": "Админ",
+            "seller": "Продавач",
+            "buyer": "Купувач"
+        },
+        "fallbacks": {
+            "unknown": "??",
+            "noName": "Без име",
+            "noPhone": "—"
+        },
+        "loading": "Зареждане..."
     },
     "AdminDocs": {
         "page": {

@@ -97,7 +97,7 @@ const isInAppEnabled = (prefs: NotificationPreferences, type: NotificationType) 
 
 const getNotificationLink = (notification: NotificationRow): string => {
   if (notification.conversation_id) {
-    return `/chat?conversation=${notification.conversation_id}`
+    return `/chat/${notification.conversation_id}`
   }
   if (notification.order_id) {
     if (notification.type === "purchase") {
