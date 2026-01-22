@@ -1,6 +1,7 @@
 ---
 name: treido-audit
 description: Audit/checklist skill for Treido (security, perf, i18n, UI consistency, docs drift). Triggers on "AUDIT:" prefix or when asked to review/scan for issues.
+version: 1.0.0
 ---
 
 # Treido Audit
@@ -27,6 +28,15 @@ description: Audit/checklist skill for Treido (security, perf, i18n, UI consiste
 ### Deferred (backlog)
 - [ ] Issue → File/Area → Fix
 ```
+
+## Examples
+
+### Example prompt
+`AUDIT: scan seller pages for i18n and tailwind drift`
+
+### Expected behavior
+- Define scope, run targeted scans, and report findings using the output format.
+- Propose fixes in small batches.
 
 ## Quick Checks (examples)
 

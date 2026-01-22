@@ -451,6 +451,9 @@
   --color-badge-condition-bg: var(--foreground);
   --color-badge-condition-border: transparent;
   --color-badge-condition-text: var(--background);
+  --color-badge-promoted-bg: oklch(0.98 0.02 85);
+  --color-badge-promoted-border: oklch(0.88 0.08 85);
+  --color-badge-promoted-text: oklch(0.45 0.12 85);
   --color-badge-shipping-bg: oklch(0.95 0.03 145);
   --color-badge-shipping-border: oklch(0.85 0.08 145);
   --color-badge-shipping-text: oklch(0.40 0.15 145);

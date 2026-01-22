@@ -149,14 +149,24 @@ export async function login(
     return { ...prevState, error: "Invalid login credentials", success: false }
   }
 
-  const supabase = await createClient()
-  const { error } = await supabase.auth.signInWithPassword({
-    email: parsed.data.email,
-    password: parsed.data.password,
-  })
+  let supabase
+  try {
+    supabase = await createClient()
+  } catch (error) {
+    return { ...prevState, error: sanitizeAuthError(error as Error), success: false }
+  }
 
-  if (error) {
-    return { ...prevState, error: sanitizeAuthError(error), success: false }
+  try {
+    const { error } = await supabase.auth.signInWithPassword({
+      email: parsed.data.email,
+      password: parsed.data.password,
+    })
+
+    if (error) {
+      return { ...prevState, error: sanitizeAuthError(error), success: false }
+    }
+  } catch (error) {
+    return { ...prevState, error: sanitizeAuthError(error as Error), success: false }
   }
 
   const safe = safeRedirectPath(redirectPath) || "/"

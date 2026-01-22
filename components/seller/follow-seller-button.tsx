@@ -62,11 +62,11 @@ export function FollowSellerButton({
 
   const handleClick = async () => {
     const newState = !optimisticFollowing
-    // Instant UI feedback via useOptimistic
-    setOptimisticFollowing(newState)
-    onFollowChange?.(newState)
-
     startTransition(async () => {
+      // Instant UI feedback via useOptimistic (inside transition)
+      setOptimisticFollowing(newState)
+      onFollowChange?.(newState)
+
       const result = newState 
         ? await actions.followSeller(sellerId)
         : await actions.unfollowSeller(sellerId)

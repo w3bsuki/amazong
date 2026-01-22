@@ -122,17 +122,17 @@ export function SiteFooter() {
     return (
         <footer 
             id="footerHeader" 
-            className="bg-primary text-primary-foreground/80 mt-auto w-full"
+            className="bg-foreground text-background mt-auto w-full"
             role="contentinfo"
             aria-label={t('footerLabel')}
         >
             {/* Back to Top */}
             <button
-                className="hidden lg:block w-full bg-primary/90 hover:bg-primary/80 py-3.5 text-center transition-colors tap-transparent focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-primary group"
+                className="hidden lg:block w-full bg-foreground/90 hover:bg-foreground/80 py-3.5 text-center transition-colors tap-transparent focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-foreground group"
                 onClick={scrollToTop}
                 aria-label={t('backToTop')}
             >
-                <span className="text-sm font-normal text-primary-foreground inline-flex items-center gap-1.5">
+                <span className="text-sm font-normal text-background inline-flex items-center gap-1.5">
                     <CaretUp size={16} weight="regular" />
                     {t('backToTop')}
                 </span>
@@ -143,7 +143,7 @@ export function SiteFooter() {
                 <Accordion type="single" collapsible className="w-full">
                     {footerSections.map((section) => (
                         <AccordionItem key={section.id} value={section.id} className="border-border/20">
-                            <AccordionTrigger className="text-sm font-medium text-primary-foreground hover:no-underline py-4 hover:text-accent">
+                            <AccordionTrigger className="text-sm font-medium text-background hover:no-underline py-4 hover:text-background">
                                 {section.title}
                             </AccordionTrigger>
                             <AccordionContent>
@@ -153,7 +153,7 @@ export function SiteFooter() {
                                             <li key={linkIndex}>
                                                 <Link 
                                                     href={link.href} 
-                                                    className="text-sm text-primary-foreground/90 hover:text-primary-foreground transition-colors tap-transparent py-1 inline-block"
+                                                    className="text-sm text-background/90 hover:text-background transition-colors tap-transparent py-1 inline-block"
                                                 >
                                                     {link.label}
                                                 </Link>
@@ -173,7 +173,7 @@ export function SiteFooter() {
                     <div className="grid grid-cols-2 lg:grid-cols-4 gap-10">
                         {footerSections.map((section) => (
                             <div key={section.id}>
-                                <h4 className="font-medium text-primary-foreground text-sm mb-4 pb-2 border-b border-border/10">
+                                <h4 className="font-medium text-background text-sm mb-4 pb-2 border-b border-border/10">
                                     {section.title}
                                 </h4>
                                 <nav aria-label={section.title}>
@@ -182,7 +182,7 @@ export function SiteFooter() {
                                             <li key={linkIndex}>
                                                 <Link 
                                                     href={link.href} 
-                                                    className="text-sm text-primary-foreground/90 hover:text-primary-foreground hover:underline underline-offset-2 transition-colors inline-block"
+                                                    className="text-sm text-background/90 hover:text-background hover:underline underline-offset-2 transition-colors inline-block"
                                                 >
                                                     {link.label}
                                                 </Link>
@@ -201,7 +201,7 @@ export function SiteFooter() {
                 {/* Logo */}
                 <div className="flex justify-center mb-4">
                     <Link href="/" className="inline-block group" aria-label={t('homePage')}>
-                        <span className="text-3xl font-semibold text-primary-foreground tracking-tight group-hover:text-accent transition-colors">
+                        <span className="text-3xl font-semibold text-background tracking-tight group-hover:text-background transition-colors">
                             Treido
                         </span>
                     </Link>
@@ -216,7 +216,7 @@ export function SiteFooter() {
                                 href={social.href}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="size-11 rounded-full bg-primary-foreground/10 hover:bg-accent/20 flex items-center justify-center text-primary-foreground/70 hover:text-accent tap-transparent focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                                className="size-11 rounded-full bg-background/10 hover:bg-background/20 flex items-center justify-center text-background/70 hover:text-background tap-transparent focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                                 aria-label={social.name}
                             >
                                 <social.icon />
@@ -226,7 +226,7 @@ export function SiteFooter() {
                 ) : null}
 
                 {/* Legal Links */}
-                <nav aria-label={t('legalLinks')} className="flex flex-wrap justify-center gap-x-3 gap-y-1 text-xs text-primary-foreground/90 mb-3">
+                <nav aria-label={t('legalLinks')} className="flex flex-wrap justify-center gap-x-3 gap-y-1 text-xs text-background/90 mb-3">
                     {legalLinks.map((link, index) => 
                         'external' in link && link.external ? (
                             <a 
@@ -234,7 +234,7 @@ export function SiteFooter() {
                                 href={link.href}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="min-h-9 flex items-center px-2 hover:text-primary-foreground hover:underline underline-offset-2 transition-colors whitespace-nowrap"
+                                className="min-h-9 flex items-center px-2 hover:text-background hover:underline underline-offset-2 transition-colors whitespace-nowrap"
                             >
                                 {link.label}
                             </a>
@@ -242,7 +242,7 @@ export function SiteFooter() {
                             <Link 
                                 key={index}
                                 href={link.href} 
-                                className="min-h-9 flex items-center px-2 hover:text-primary-foreground hover:underline underline-offset-2 transition-colors whitespace-nowrap"
+                                className="min-h-9 flex items-center px-2 hover:text-background hover:underline underline-offset-2 transition-colors whitespace-nowrap"
                             >
                                 {link.label}
                             </Link>
@@ -251,12 +251,12 @@ export function SiteFooter() {
                 </nav>
 
                 {/* Company Info - EU Requirement */}
-                <p className="text-xs text-primary-foreground/60 text-center mb-4">
+                <p className="text-xs text-background/70 text-center mb-4">
                     {t('companyInfo')}
                 </p>
 
                 {/* Copyright */}
-                <p className="text-xs text-primary-foreground/80 text-center">
+                <p className="text-xs text-background/80 text-center">
                     {t('copyright', { year: new Date().getFullYear() })}
                 </p>
             </div>

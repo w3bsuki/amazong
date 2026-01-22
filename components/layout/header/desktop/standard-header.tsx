@@ -55,7 +55,7 @@ export function DesktopStandardHeader({
               <WishlistDropdown />
               <MessagesDropdown user={user} />
               <NotificationsDropdown user={user} />
-              <Link href="/sell" aria-label={locale === "bg" ? "Създай обява" : "Create listing"}>
+              <Link href="/sell" aria-label={t("createListing")}>
                 <Button
                   variant="ghost"
                   size="icon"
@@ -83,7 +83,7 @@ export function DesktopStandardHeader({
               >
                 {t("register")}
               </Link>
-              <Link href="/sell" aria-label={locale === "bg" ? "Създай обява" : "Create listing"}>
+              <Link href="/sell" aria-label={t("createListing")}>
                 <Button
                   variant="ghost"
                   size="icon"

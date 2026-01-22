@@ -53,6 +53,8 @@ async function main() {
     env('E2E_USER_PASSWORD') ||
     'E2ETestPassword123!'
 
+  const showSecrets = env('E2E_SHOW_SECRETS') === 'true'
+
   const makeSeller = (getArg('--seller') ?? 'true') !== 'false'
 
   const admin = createClient(supabaseUrl, serviceRoleKey, {
@@ -125,12 +127,18 @@ async function main() {
   if (profileReadError) throw profileReadError
 
   console.log('[e2e-user] OK')
-  console.log(`[e2e-user] email: ${email}`)
-  console.log(`[e2e-user] password: ${password}`)
-  console.log(`[e2e-user] profile: ${profile ? JSON.stringify(profile) : 'not found (check trigger/RLS)'}`)
+  console.log(`[e2e-user] email: ${showSecrets ? email : '[redacted]'}`)
+  console.log(`[e2e-user] password: ${showSecrets ? password : '[redacted]'}`)
+  console.log(
+    `[e2e-user] profile: ${showSecrets ? JSON.stringify(profile) : profile ? '[redacted]' : 'not found (check trigger/RLS)'}`
+  )
   console.log('')
   console.log('To run authenticated Playwright tests:')
-  console.log(`  cross-env TEST_USER_EMAIL="${email}" TEST_USER_PASSWORD="${password}" pnpm test:e2e`)
+  if (showSecrets) {
+    console.log(`  cross-env TEST_USER_EMAIL="${email}" TEST_USER_PASSWORD="${password}" pnpm test:e2e`)
+  } else {
+    console.log('  Set TEST_USER_EMAIL and TEST_USER_PASSWORD env vars, then run pnpm test:e2e')
+  }
 }
 
 main().catch((err) => {

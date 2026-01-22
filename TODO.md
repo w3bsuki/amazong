@@ -14,6 +14,76 @@ pnpm -s exec tsc -p tsconfig.json --noEmit
 REUSE_EXISTING_SERVER=true pnpm test:e2e:smoke
 ```
 
+## Production Push (V1) — Master Plan (Phased)
+
+**SSOT scope:** `docs/PRODUCT.md` (what we ship) + `docs/FEATURES.md` (routes/actions/DB map)
+
+**Work style:** pick 1 checkbox, keep batch small, run gates (`docs/TESTING.md`, `docs/PRODUCTION.md`).
+
+### P0 — Release blockers (ship stability first)
+- [ ] TREIDO: Fix Turbopack crash after sign-in (missing client manifest / `OnboardingProvider`) → `docs/desktop_uiux_audit.md`
+- [ ] TREIDO: Fix hydration mismatch on `/en` and product pages (SSR/CSR divergence) → `docs/desktop_uiux_audit.md`
+- [ ] TREIDO: Fix cart badge vs `/cart` state desync (single cart SSOT) → `docs/desktop_uiux_audit.md`
+- [ ] TREIDO: Fix `/checkout` line items render (no infinite loader / blank shell) → `docs/desktop_uiux_audit.md`
+- [ ] TREIDO: Fix Stripe Connect onboarding 500 (`/api/connect/onboarding`) → `docs/desktop_uiux_audit.md`, `docs/BACKEND.md`
+- [ ] TREIDO: Make cookie consent + region modals non-blocking (must not intercept primary CTAs) → `docs/desktop_uiux_audit.md`
+- [ ] TEST: Add/extend Playwright smoke coverage for cart → checkout → order created (happy path) → `e2e/*`
+
+### P1 — Next.js 16 full audit (App Router correctness + performance)
+- [ ] TREIDO: Remove client UI → server action imports; keep actions server-only → `docs/FRONTEND.md`, `codex-xhigh/nextjs/FULL-AUDIT.md`
+- [ ] TREIDO: Audit caching usage (`'use cache'`, `cacheLife`, `cacheTag`, `revalidateTag(tag, profile)`) → `docs/ENGINEERING.md`
+- [ ] TREIDO: Ensure no user-specific reads are cached (no `cookies()`/`headers()` inside cached functions) → `docs/ENGINEERING.md`
+- [ ] TREIDO: Reduce over-fetching in hot paths (no `select('*')`, narrow joins) → `docs/ENGINEERING.md`, `docs/BACKEND.md`
+- [ ] TREIDO: Confirm `pnpm -s build` is clean and matches Vercel runtime (no webpack-only workarounds) → `docs/PRODUCTION.md`
+
+### P2 — shadcn/ui full audit (primitives + a11y)
+- [ ] TAILWIND: Audit `components/ui/**` for boundary violations (no app hooks/imports) → `agents.md`, `docs/FRONTEND.md`
+- [ ] TAILWIND: Standardize Dialog/Drawer usage for “modal-first” UX (one pattern, consistent headers/footers) → `docs/DESIGN.md`
+- [ ] TAILWIND: Fix auth form a11y issues (duplicate “Remember me”, ambiguous labels) → `docs/desktop_uiux_audit.md`
+- [ ] TAILWIND: Verify focus/disabled states are consistent for Buttons/Inputs/Selects → `docs/DESIGN.md`
+
+### P3 — Tailwind CSS v4 full audit (tokens + drift gates)
+- [ ] TAILWIND: Run `pnpm -s styles:scan` and drive arbitrary values toward 0 (or a justified allow-list) → `docs/DESIGN.md`
+- [ ] TAILWIND: Verify 0 gradient violations in app code → `docs/DESIGN.md`
+- [ ] TAILWIND: Replace hardcoded neutrals (`bg-white`, `text-black`, `border-gray-*`) with semantic tokens → `docs/DESIGN.md`
+
+### P4 — Tailwind v4 + shadcn alignment (design system consistency)
+- [ ] TAILWIND: Ensure all forms use `components/shared/field.tsx` consistently (labels/errors/help) → `docs/FRONTEND.md`
+- [ ] TAILWIND: Normalize spacing + touch targets across key surfaces (search, PDP, cart, checkout) → `docs/DESIGN.md`
+- [ ] TREIDO: Pilot desktop modal browsing with Next.js intercepting routes (PDP quick view from search) → `docs/FRONTEND.md` *(optional for V1)*
+
+### P5 — TypeScript full audit + Supabase types
+- [ ] TREIDO: Decide TS policy (`ts:gate` baseline vs fix-now) and keep drift at 0 → `codex-xhigh/typescript/FULL-AUDIT.md`
+- [ ] SUPABASE: Regenerate `lib/supabase/database.types.ts` and remove `any` casts in hot paths → `supabase_tasks.md`
+- [ ] TREIDO: Tighten types in checkout/orders/chat actions (no silent fallthrough) → `docs/FEATURES.md`
+
+### P6 — i18n full audit (next-intl)
+- [ ] TREIDO: Enforce key parity (`messages/en.json` ↔ `messages/bg.json`) → `docs/FRONTEND.md`
+- [ ] TREIDO: Replace remaining hardcoded UI strings with `useTranslations()` / `getTranslations()` → `docs/FRONTEND.md`
+- [ ] TREIDO: Standardize localized navigation to `@/i18n/routing` everywhere → `docs/ENGINEERING.md`
+
+### P7 — Frontend ↔ Backend alignment (core feature completeness)
+- [ ] SUPABASE: Re-run advisor checks; confirm dashboard settings (leaked password protection) → `docs/PRODUCTION.md`, `supabase_tasks.md`
+- [ ] SUPABASE: Inventory “over-engineered” DB pieces (tables/RPCs/triggers) vs V1 scope; defer deletions until after launch → `docs/PRODUCT.md`
+- [ ] TREIDO: Make order lifecycle SSOT (statuses, seller actions like “sent”, buyer views) across DB + UI → `docs/FEATURES.md`
+- [ ] TREIDO: Ensure purchase creates seller notification + buyer↔seller chat thread (or on first message) → `docs/FEATURES.md`
+- [ ] TREIDO: Fix reviews refresh after submit (invalidate cache tags / refetch strategy) → `docs/desktop_uiux_audit.md`
+- [ ] TREIDO: Ensure report/dispute entry points exist for Buyer Protection (min viable) → `docs/PRODUCT.md`, `docs/FEATURES.md`
+- [ ] TREIDO: Stripe webhooks: signature verify + idempotency + env separation (staging vs prod) → `docs/BACKEND.md`, `docs/PRODUCTION.md`
+
+### P8 — Full UI/UX + QA pass (desktop-first)
+- [ ] TREIDO: Re-run `docs/PRODUCTION.md` manual QA on both `/en` and `/bg` and update `docs/desktop_uiux_audit.md`
+- [ ] TEST: Expand e2e smoke to cover selling → payouts gating → listing creation (happy path) → `e2e/*`
+- [ ] TREIDO: Verify all CTAs navigate correctly (no dead links, correct locale, correct redirects) → `docs/desktop_uiux_audit.md`
+- [ ] TREIDO: Onboarding: post-signup flow to choose Personal vs Business and persist in `profiles` → `docs/FEATURES.md`, `docs/PRODUCT.md`
+- [ ] TREIDO: Gating UX: prompt sign-in when attempting Sell/Chat/Wishlist (non-blocking, reversible) → `docs/FRONTEND.md`
+
+### Post-launch (V1.1+) — Optional / non-blockers
+- [ ] TREIDO: AI listing assistant (title/description/photos guidance) — V2 per `docs/PRODUCT.md`
+- [ ] TREIDO: AI shopping assistant (search/refine/compare) — V2 per `docs/PRODUCT.md`
+- [ ] TREIDO: Docs strategy: make `docs/` the SSOT rendered by `docs-site/` and/or `/admin/docs` (no drift) → `docs/README.md`
+- [ ] TREIDO: Legal pages in main app (`/privacy`, `/terms`, `/cookies`) + footer links (localized) → `docs/PRODUCTION.md`
+
 ## Architecture / Repo Structure — Pre-production (Audit → Fix)
 
 **Blueprint**: `codex-xhigh/frontend/opus_structure.md` (target structure)

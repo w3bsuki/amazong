@@ -1,6 +1,7 @@
 ---
 name: treido-frontend
 description: Treido frontend development (Next.js App Router UI, React, Tailwind v4 + shadcn/ui, next-intl). Triggers on "FRONTEND:" prefix or UI/components/styling/i18n tasks.
+version: 1.0.0
 ---
 
 # Treido Frontend (UI + UX)
@@ -10,7 +11,7 @@ description: Treido frontend development (Next.js App Router UI, React, Tailwind
 1. Identify the exact page/component and state/data requirements.
 2. Respect code boundaries:
    - `components/ui/` shadcn primitives only (no app hooks)
-   - `components/common/` shared composites
+   - `components/shared/` shared composites
    - `components/layout/` shells
    - `hooks/` reusable hooks
    - `lib/` pure utilities (no React)
@@ -33,6 +34,15 @@ REUSE_EXISTING_SERVER=true pnpm test:e2e:smoke
 |------|------|
 | Frontend guide | `docs/FRONTEND.md` |
 | Design tokens | `docs/DESIGN.md` |
-| Styling system | `docs/styling/README.md` |
 | Engineering rules | `docs/ENGINEERING.md` |
+
+## Examples
+
+### Example prompt
+`FRONTEND: add an empty state for the orders list`
+
+### Expected behavior
+- Identify the page/component and data/state needs.
+- Use `next-intl` for new strings and follow styling rails.
+- Run the gates listed above.
 

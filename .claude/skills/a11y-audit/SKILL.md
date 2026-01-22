@@ -1,6 +1,7 @@
 ---
 name: a11y-audit
 description: Accessibility audit for this repo (labels, focus, keyboard, Playwright a11y project). Triggers on "A11Y:" prefix and accessibility verification work.
+version: 1.0.0
 ---
 
 # Accessibility Audit (A11Y)
@@ -34,3 +35,13 @@ Use this skill to prevent regressions in keyboard/focus/labels and to verify a11
 ### High
 - [ ] Issue → Route/File → Fix
 ```
+
+## Examples
+
+### Example prompt
+`A11Y: audit the account settings form`
+
+### Expected behavior
+- Apply the checklist for labels, focus, and keyboard support.
+- Run `pnpm test:a11y` when relevant.
+- Report findings using the output format.

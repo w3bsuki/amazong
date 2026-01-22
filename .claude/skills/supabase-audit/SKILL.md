@@ -1,6 +1,7 @@
 ---
 name: supabase-audit
 description: Supabase RLS/perf audit. Triggers on "SUPABASE:" prefix.
+version: 1.0.0
 ---
 
 # Supabase Audit Skill
@@ -69,6 +70,15 @@ REUSE_EXISTING_SERVER=true pnpm test:e2e:smoke
 
 | Topic | File |
 |-------|------|
-| Backend guide | `docs/guides/backend.md` |
+| Backend guide | `docs/BACKEND.md` |
 | Engineering | `docs/ENGINEERING.md` |
 | Supabase patterns | `lib/supabase/` |
+
+## Examples
+
+### Example prompt
+`SUPABASE: audit RLS coverage for orders`
+
+### Expected behavior
+- Run advisors, check tables for RLS, and scan for `select('*')`.
+- Report findings using the Phase 1 audit format.

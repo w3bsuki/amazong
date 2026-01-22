@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { useRef, useCallback, useEffect } from "react"
+import { useRef, useCallback, useEffect, useId } from "react"
 import Image from "next/image"
 import { MagnifyingGlass, Clock, TrendUp, Package, X, ArrowRight, Eye, Sparkle } from "@phosphor-icons/react"
 import { Button } from "@/components/ui/button"
@@ -19,9 +19,11 @@ import { useProductSearch } from "@/hooks/use-product-search"
 export function DesktopSearch() {
   const router = useRouter()
   const locale = useLocale()
-  const t = useTranslations("Navigation")
+  const tNav = useTranslations("Navigation")
+  const tSearch = useTranslations("SearchOverlay")
   const inputRef = useRef<HTMLInputElement>(null)
   const formRef = useRef<HTMLFormElement>(null)
+  const searchInputId = useId()
 
   const buildSearchHref = useCallback((q: string) => {
     const trimmed = q.trim()
@@ -93,7 +95,7 @@ export function DesktopSearch() {
       setIsOpen(false)
       inputRef.current?.blur()
     }
-  }, [query, saveSearch, router, locale])
+  }, [])
 
   const handleClearInput = useCallback(() => {
     setQuery("")
@@ -131,13 +133,17 @@ export function DesktopSearch() {
               className="absolute left-4 text-search-placeholder pointer-events-none"
             />
 
-            <Input
+              <label htmlFor={searchInputId} className="sr-only">
+                {tNav("search")}
+              </label>
+              <Input
+                id={searchInputId}
               ref={inputRef}
               type="search"
               inputMode="search"
               enterKeyHint="search"
               name="q"
-              placeholder={t("searchPlaceholder")}
+                placeholder={tNav("searchPlaceholder")}
               className="h-full w-full rounded-full border-0 bg-transparent pl-11 pr-24 text-sm text-search-text placeholder:text-search-placeholder focus-visible:border-0 focus-visible:ring-0"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
@@ -145,13 +151,14 @@ export function DesktopSearch() {
               onClick={() => setIsOpen(true)}
               onKeyDown={handleKeyDown}
               autoComplete="off"
+                aria-label={tNav("search")}
             />
 
             {query && (
-              <button
+                <button
                 type="button"
                 onClick={handleClearInput}
-                aria-label={t("clearSearch")}
+                  aria-label={tNav("clearSearch")}
                 className="absolute right-12 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
               >
                 <X size={16} weight="regular" />
@@ -162,7 +169,7 @@ export function DesktopSearch() {
               type="submit"
               variant="black"
               size="icon-sm"
-              aria-label={t("search")}
+              aria-label={tNav("search")}
               className="absolute right-1 top-1/2 -translate-y-1/2 rounded-full focus-visible:outline-none"
             >
               <MagnifyingGlass size={16} weight="bold" />
@@ -184,14 +191,14 @@ export function DesktopSearch() {
                 <div className="flex items-center justify-between px-4 py-2.5 bg-muted/50">
                   <span className="flex items-center gap-2 text-xs font-medium text-muted-foreground uppercase tracking-wide">
                     <Package size={14} weight="regular" />
-                    {locale === "bg" ? "Продукти" : "Products"}
+                    {tSearch("products")}
                   </span>
                   <Link 
                     href={buildSearchHref(query)}
                     className="text-xs text-brand flex items-center gap-1"
                     onClick={() => setIsOpen(false)}
                   >
-                    {locale === "bg" ? "Виж всички" : "View all"}
+                    {tSearch("viewAll")}
                     <ArrowRight size={12} weight="regular" />
                   </Link>
                 </div>
@@ -238,13 +245,13 @@ export function DesktopSearch() {
                 <div className="flex items-center justify-between px-4 py-2.5 bg-muted/50">
                   <span className="flex items-center gap-2 text-xs font-medium text-muted-foreground uppercase tracking-wide">
                     <Eye size={14} weight="regular" />
-                    {locale === "bg" ? "Наскоро разгледани" : "Recently Viewed"}
+                    {tSearch("recentlyViewed")}
                   </span>
                   <button
                     onClick={clearRecentlyViewed}
                     className="text-xs text-muted-foreground hover:text-foreground"
                   >
-                    {locale === "bg" ? "Изчисти" : "Clear"}
+                    {tSearch("clear")}
                   </button>
                 </div>
                 <div className="p-2">
@@ -290,13 +297,13 @@ export function DesktopSearch() {
                 <div className="flex items-center justify-between px-4 py-2.5 bg-muted/50">
                   <span className="flex items-center gap-2 text-xs font-medium text-muted-foreground uppercase tracking-wide">
                     <Clock size={14} weight="regular" />
-                    {locale === "bg" ? "Скорошни търсения" : "Recent Searches"}
+                    {tSearch("recentSearches")}
                   </span>
                   <button
                     onClick={clearRecentProducts}
                     className="text-xs text-muted-foreground hover:text-foreground"
                   >
-                    {locale === "bg" ? "Изчисти" : "Clear"}
+                    {tSearch("clear")}
                   </button>
                 </div>
                 <div className="p-2">
@@ -342,7 +349,7 @@ export function DesktopSearch() {
                 <div className="flex items-center gap-2 px-4 py-2.5 bg-muted/50">
                   <span className="flex items-center gap-2 text-xs font-medium text-muted-foreground uppercase tracking-wide">
                     <TrendUp size={14} weight="regular" />
-                    {locale === "bg" ? "Популярни търсения" : "Trending Now"}
+                    {tSearch("trending")}
                   </span>
                   <Sparkle size={12} weight="fill" className="text-deal" />
                 </div>
@@ -371,7 +378,7 @@ export function DesktopSearch() {
               <div className="px-4 py-8 text-center">
                 <div className="inline-flex items-center gap-2 text-sm text-muted-foreground">
                   <div className="size-4 border-2 border-brand/30 border-t-brand rounded-full" />
-                  {locale === "bg" ? "Търсене..." : "Searching..."}
+                  {tSearch("searching")}
                 </div>
               </div>
             )}
@@ -381,14 +388,10 @@ export function DesktopSearch() {
               <div className="px-4 py-8 text-center">
                 <Package size={40} weight="regular" className="text-muted-foreground/30 mx-auto mb-2" />
                 <p className="text-sm text-muted-foreground">
-                  {locale === "bg"
-                    ? `Няма резултати за "${query}"`
-                    : `No results for "${query}"`}
+                  {tSearch("noResultsFor", { query })}
                 </p>
                 <p className="text-xs text-muted-foreground mt-1">
-                  {locale === "bg"
-                    ? "Опитай с различни ключови думи"
-                    : "Try different keywords"}
+                  {tSearch("tryDifferent")}
                 </p>
               </div>
             )}
@@ -397,17 +400,17 @@ export function DesktopSearch() {
           {/* Keyboard Hint */}
           <div className="px-4 py-2 bg-muted/50 border-t border-border flex items-center justify-between text-xs text-muted-foreground">
             <span>
-              {locale === "bg" ? "Натисни" : "Press"}{" "}
+              {tSearch("press")} {" "}
               <kbd className="px-1.5 py-0.5 bg-background rounded border text-xs font-mono">
                 Enter
               </kbd>{" "}
-              {locale === "bg" ? "за търсене" : "to search"}
+              {tSearch("toSearch")}
             </span>
             <span>
               <kbd className="px-1.5 py-0.5 bg-background rounded border text-xs font-mono">
                 Esc
               </kbd>{" "}
-              {locale === "bg" ? "за затваряне" : "to close"}
+              {tSearch("toClose")}
             </span>
           </div>
         </PopoverContent>

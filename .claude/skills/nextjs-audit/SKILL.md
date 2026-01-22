@@ -1,6 +1,7 @@
 ---
 name: nextjs-audit
 description: Next.js 16 App Router audit (server/client boundaries, caching correctness, build cost). Triggers on "NEXTJS:" prefix and Next.js caching/routing issues.
+version: 1.0.0
 ---
 
 # Next.js Audit (App Router + Cache Components)
@@ -50,3 +51,13 @@ rg -n '\"use client\"' app components -S
 ### High
 - [ ] Issue → File → Fix
 ```
+
+## Examples
+
+### Example prompt
+`NEXTJS: review caching for the product details route`
+
+### Expected behavior
+- Check boundaries, cache usage, and invalidation rules.
+- Flag any per-user data inside cached functions.
+- Report findings using the output format.

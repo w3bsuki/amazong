@@ -1,6 +1,7 @@
 ---
 name: tailwind-audit
 description: Tailwind v4 + shadcn token/theme audit. Triggers on "TAILWIND:" prefix.
+version: 1.0.0
 ---
 
 # Tailwind Audit Skill
@@ -57,5 +58,14 @@ REUSE_EXISTING_SERVER=true pnpm test:e2e:smoke
 | Topic | File |
 |-------|------|
 | Design tokens | `docs/DESIGN.md` |
-| Styling guide | `docs/styling/README.md` |
+| Styling guide | `docs/DESIGN.md` |
 | Globals CSS | `app/globals.css` |
+
+## Examples
+
+### Example prompt
+`TAILWIND: scan for gradients and arbitrary values in components`
+
+### Expected behavior
+- Run the palette scan and grep for arbitrary values.
+- Cross-reference tokens and report findings using the Phase 1 audit format.

@@ -1,6 +1,7 @@
 ---
 name: treido-coordinator
 description: Project coordinator skill (triage TODO/board, choose next task, generate subagent prompts). Triggers on "COORD:" prefix and prioritization/orchestration requests.
+version: 1.0.0
 ---
 
 # Treido Coordinator (Orchestration)
@@ -52,3 +53,12 @@ Use this skill when you feel stuck, overwhelmed, or context keeps getting lost. 
 FRONTEND: …
 BACKEND: …
 ```
+
+## Examples
+
+### Example prompt
+`COORD: pick the best 45-minute task to unblock shipping`
+
+### Expected behavior
+- Choose the single best next task and provide an execution card.
+- Output copy/paste prompts for the right roles.

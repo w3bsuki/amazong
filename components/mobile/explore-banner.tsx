@@ -44,12 +44,12 @@ export function ExploreBanner({
   const t = useTranslations("Home")
 
   return (
-    <div className="px-inset py-3">
+    <div className="px-inset py-2">
       {/* Banner Container */}
-      <div className="rounded-xl bg-muted/40 border border-border/50 p-1.5">
-        <div className="flex items-center gap-1.5">
+      <div className="rounded-lg border border-border/60 bg-background">
+        <div className="flex items-center gap-1.5 p-1">
           {/* Segmented Control */}
-          <div className="flex-1 flex items-center rounded-lg bg-background/60 p-0.5">
+          <div className="flex-1 flex items-center rounded-md bg-muted/30 p-0.5">
             {EXPLORE_TABS.map((tab) => {
               const Icon = tab.icon
               const isActive = activeTab === tab.id
@@ -60,12 +60,12 @@ export function ExploreBanner({
                   onClick={() => onTabChange(tab.id)}
                   className={cn(
                     "flex-1 flex items-center justify-center gap-1.5",
-                    "h-touch-sm rounded-md text-xs font-medium",
+                    "h-touch-xs rounded-md text-xs font-medium",
                     "transition-all duration-150",
                     "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
                     isActive
-                      ? "bg-foreground text-background shadow-sm"
-                      : "text-muted-foreground hover:text-foreground active:bg-muted/50"
+                      ? "bg-background text-foreground shadow-sm"
+                      : "text-muted-foreground hover:text-foreground"
                   )}
                   aria-pressed={isActive}
                 >
@@ -83,10 +83,10 @@ export function ExploreBanner({
             type="button"
             onClick={onSortClick}
             className={cn(
-              "h-touch-sm w-touch-sm shrink-0 flex items-center justify-center",
-              "rounded-lg bg-background/60",
+              "h-touch-xs w-touch-xs shrink-0 flex items-center justify-center",
+              "rounded-md border border-border/60",
               "text-muted-foreground hover:text-foreground",
-              "transition-colors active:bg-muted/50",
+              "transition-colors",
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1"
             )}
             aria-label={t("mobile.sortOptions")}

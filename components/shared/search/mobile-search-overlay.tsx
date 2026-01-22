@@ -13,7 +13,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { useRouter } from "@/i18n/routing"
-import { useLocale } from "next-intl"
+import { useTranslations } from "next-intl"
 import Image from "next/image"
 import { cn } from "@/lib/utils"
 import { useProductSearch } from "@/hooks/use-product-search"
@@ -69,7 +69,8 @@ export function MobileSearchOverlay({
 
   // Hooks
   const router = useRouter()
-  const locale = useLocale()
+  const tNav = useTranslations("Navigation")
+  const tSearch = useTranslations("SearchOverlay")
 
   // Use shared search hook
   const {
@@ -85,21 +86,6 @@ export function MobileSearchOverlay({
     clearQuery,
     minSearchLength,
   } = useProductSearch(8)
-
-  // Localized strings
-  const strings = {
-    search: locale === "bg" ? "Търсене" : "Search",
-    searchProducts: locale === "bg" ? "Търсене..." : "Search essentials...",
-    close: locale === "bg" ? "Затвори" : "Close",
-    clear: locale === "bg" ? "Изчисти" : "Clear",
-    searching: locale === "bg" ? "Търсене..." : "Searching...",
-    products: locale === "bg" ? "Продукти" : "Products",
-    viewAll: locale === "bg" ? "Виж всички" : "View all",
-    noResults: locale === "bg" ? "Няма резултати за" : "No results for",
-    tryDifferent: locale === "bg" ? "Опитай с други ключови думи" : "Try different keywords",
-    recentSearches: locale === "bg" ? "Скорошни търсения" : "Recent Searches",
-    trending: locale === "bg" ? "Популярни търсения" : "Trending",
-  }
 
   // Focus input when opened
   useEffect(() => {
@@ -217,7 +203,7 @@ export function MobileSearchOverlay({
             "md:hidden touch-action-manipulation",
             className
           )}
-          aria-label={strings.search}
+          aria-label={tSearch("search")}
           aria-haspopup="dialog"
           aria-expanded={isOpen}
         >
@@ -233,17 +219,17 @@ export function MobileSearchOverlay({
           aria-labelledby={overlayTitleId}
           aria-describedby={overlayDescId}
           className={cn(
-            "fixed inset-0 z-[100]",
+            "fixed inset-0 z-50",
             "flex flex-col",
             "bg-background"
           )}
         >
           {/* Visually hidden title for screen readers */}
           <h2 id={overlayTitleId} className="sr-only">
-            {strings.search}
+            {tSearch("search")}
           </h2>
           <p id={overlayDescId} className="sr-only">
-            {strings.searchProducts}
+            {tSearch("searchDescription")}
           </p>
 
           {/* Search Header - Close above, full-width search below */}
@@ -255,7 +241,7 @@ export function MobileSearchOverlay({
                 onClick={handleClose}
                 className="h-8 px-2 text-primary font-medium hover:bg-transparent hover:text-primary/80"
               >
-                {strings.close}
+                {tSearch("close")}
               </Button>
             </div>
 
@@ -264,7 +250,7 @@ export function MobileSearchOverlay({
               onSubmit={handleSubmit}
               className="relative"
               role="search"
-              aria-label={strings.search}
+              aria-label={tSearch("search")}
             >
               <MagnifyingGlass
                 size={18}
@@ -278,7 +264,7 @@ export function MobileSearchOverlay({
                 type="search"
                 inputMode="search"
                 enterKeyHint="search"
-                placeholder={strings.searchProducts}
+                placeholder={tNav("searchPlaceholder")}
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 className="h-9 w-full pl-9 pr-10 text-base bg-background rounded-full border border-border focus-visible:ring-0"
@@ -286,14 +272,14 @@ export function MobileSearchOverlay({
                 autoCapitalize="off"
                 autoCorrect="off"
                 spellCheck={false}
-                aria-label={strings.searchProducts}
+                aria-label={tSearch("searchFieldLabel")}
               />
               {query && (
                 <button
                   type="button"
                   onClick={handleClearInput}
                   className="absolute right-2 top-1/2 -translate-y-1/2 size-6 rounded-full flex items-center justify-center bg-muted text-muted-foreground hover:bg-muted/80 hover:text-foreground"
-                  aria-label={strings.clear}
+                  aria-label={tSearch("clear")}
                 >
                   <X size={12} weight="bold" aria-hidden="true" />
                 </button>
@@ -302,13 +288,13 @@ export function MobileSearchOverlay({
           </header>
 
           {/* Search Content */}
-          <main className="flex-1 overflow-y-auto overscroll-contain" role="region" aria-label={strings.search}>
+          <main className="flex-1 overflow-y-auto overscroll-contain" role="region" aria-label={tSearch("search")}>
             {/* Loading State */}
             {isSearching && (
               <div role="status" aria-live="polite" className="px-4 py-8 text-center">
                 <div className="inline-flex items-center gap-2 text-sm text-muted-foreground">
                   <div className="size-5 border-2 border-primary/30 border-t-primary rounded-full animate-spin" aria-hidden="true" />
-                  <span>{strings.searching}</span>
+                  <span>{tSearch("searching")}</span>
                 </div>
               </div>
             )}
@@ -319,19 +305,19 @@ export function MobileSearchOverlay({
                 <div className="flex items-center justify-between px-inset py-2 bg-muted">
                   <h3 id="products-heading" className="flex items-center gap-2 text-xs font-semibold text-muted-foreground uppercase tracking-wide">
                     <Package size={14} weight="regular" aria-hidden="true" />
-                    {strings.products}
+                    {tSearch("products")}
                   </h3>
                   <button
                     type="button"
                     onClick={() => handleSearch(query)}
                     className="text-xs text-primary font-medium flex items-center gap-1 hover:text-primary/80"
                   >
-                    {strings.viewAll}
+                    {tSearch("viewAll")}
                     <ArrowRight size={12} weight="regular" aria-hidden="true" />
                   </button>
                 </div>
 
-                <ul className="divide-y divide-border" role="listbox" aria-label={strings.products}>
+                <ul className="divide-y divide-border" role="listbox" aria-label={tSearch("products")}>
                   {products.map((product) => (
                     <li key={product.id} role="option" aria-selected="false">
                       <button
@@ -343,7 +329,7 @@ export function MobileSearchOverlay({
                           {product.images?.[0] ? (
                             <Image
                               src={product.images[0]}
-                              alt=""
+                              alt={product.title}
                               width={56}
                               height={56}
                               className="w-full h-full object-cover"
@@ -372,9 +358,9 @@ export function MobileSearchOverlay({
               <div role="status" aria-live="polite" className="px-inset py-10 text-center">
                 <Package size={48} weight="regular" className="text-muted-foreground/50 mx-auto mb-3" aria-hidden="true" />
                 <p className="text-base font-medium text-foreground">
-                  {strings.noResults} &ldquo;{query}&rdquo;
+                  {tSearch("noResultsFor", { query })}
                 </p>
-                <p className="text-sm text-muted-foreground mt-1">{strings.tryDifferent}</p>
+                <p className="text-sm text-muted-foreground mt-1">{tSearch("tryDifferent")}</p>
               </div>
             )}
 
@@ -387,17 +373,17 @@ export function MobileSearchOverlay({
                     <div className="flex items-center justify-between px-inset py-2 bg-muted">
                       <h3 id="recent-searches-heading" className="flex items-center gap-2 text-xs font-semibold text-muted-foreground uppercase tracking-wide">
                         <Clock size={14} weight="regular" aria-hidden="true" />
-                        {strings.recentSearches}
+                        {tSearch("recentSearches")}
                       </h3>
                       <button
                         type="button"
                         onClick={clearRecentSearches}
                         className="text-xs text-muted-foreground font-medium hover:text-foreground"
                       >
-                        {strings.clear}
+                        {tSearch("clear")}
                       </button>
                     </div>
-                    <ul className="divide-y divide-border" role="list" aria-label={strings.recentSearches}>
+                    <ul className="divide-y divide-border" role="list" aria-label={tSearch("recentSearches")}>
                       {recentSearches.map((search, index) => (
                         <li key={`recent-${index}`}>
                           <button
@@ -420,10 +406,10 @@ export function MobileSearchOverlay({
                   <div className="flex items-center gap-2 px-inset py-2 bg-muted">
                     <h3 id="trending-searches-heading" className="flex items-center gap-2 text-xs font-semibold text-muted-foreground uppercase tracking-wide">
                       <TrendUp size={14} weight="regular" aria-hidden="true" />
-                      {strings.trending}
+                      {tSearch("trending")}
                     </h3>
                   </div>
-                  <ol className="divide-y divide-border" role="list" aria-label={strings.trending}>
+                  <ol className="divide-y divide-border" role="list" aria-label={tSearch("trending")}>
                     {trendingSearches.map((search, index) => (
                       <li key={`trending-${index}`}>
                         <button

@@ -1,6 +1,7 @@
 ---
 name: treido-backend
 description: Treido backend development (Next.js route handlers, server actions, Supabase, Stripe). Triggers on "BACKEND:" prefix or when editing app/api/**/route.ts, server actions, Supabase RLS/policies, or Stripe webhooks.
+version: 1.0.0
 ---
 
 # Treido Backend
@@ -37,3 +38,13 @@ REUSE_EXISTING_SERVER=true pnpm test:e2e:smoke
 | Engineering rules | `docs/ENGINEERING.md` |
 | Testing | `docs/TESTING.md` |
 | Production checklist | `docs/PRODUCTION.md` |
+
+## Examples
+
+### Example prompt
+`BACKEND: add a route handler to fetch seller payouts`
+
+### Expected behavior
+- Identify the exact entrypoint and request/response shape.
+- Implement a minimal change within boundaries and add tests if needed.
+- Run the listed gates.

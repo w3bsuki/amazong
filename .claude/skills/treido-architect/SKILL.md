@@ -1,6 +1,7 @@
 ---
 name: treido-architect
 description: Architecture/design support for Treido (feature design, module boundaries, data flow, caching, Supabase/Stripe integration). Triggers on "ARCH:" prefix or when asked to propose an architecture or migration plan.
+version: 1.0.0
 ---
 
 # Treido Architect
@@ -47,3 +48,12 @@ description: Architecture/design support for Treido (feature design, module boun
 | Backend guide | `docs/BACKEND.md` |
 | Frontend guide | `docs/FRONTEND.md` |
 | Production checklist | `docs/PRODUCTION.md` |
+
+## Examples
+
+### Example prompt
+`ARCH: design caching for seller analytics dashboards`
+
+### Expected behavior
+- Provide options with tradeoffs, pick one, and outline a rollout plan.
+- Call out risks and mitigations.

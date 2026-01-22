@@ -1,6 +1,7 @@
 ---
 name: treido-spec
 description: Spec-driven development skill (one-page spec + task breakdown + acceptance criteria). Triggers on "SPEC:" prefix and feature planning requests.
+version: 1.0.0
 ---
 
 # Treido Spec (Spec-Driven Development)
@@ -97,3 +98,12 @@ BACKEND: …
 ### SUPABASE
 SUPABASE: …
 ```
+
+## Examples
+
+### Example prompt
+`SPEC: plan saved searches for buyers`
+
+### Expected behavior
+- Produce a one-page spec, task breakdown, and role prompts.
+- Include verification gates and acceptance criteria.

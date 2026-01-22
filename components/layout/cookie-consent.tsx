@@ -63,13 +63,13 @@ export function CookieConsent() {
 
     return (
         <div 
-            className="fixed bottom-0 left-0 right-0 z-50 animate-in slide-in-from-bottom duration-300"
+            className="fixed bottom-0 left-0 right-0 z-50 animate-in slide-in-from-bottom duration-300 pointer-events-none"
             role="dialog"
             aria-labelledby="cookie-consent-title"
             aria-describedby="cookie-consent-description"
         >
             {/* Mobile-optimized bottom sheet */}
-            <div className="md:hidden bg-card border-t border-border pb-safe">
+            <div className="md:hidden pointer-events-auto bg-card border border-border pb-safe mx-3 mb-3 rounded-lg shadow-lg">
                 <div className="p-4">
                     <div className="flex items-start justify-between mb-3">
                         <h2 id="cookie-consent-title" className="text-base font-semibold text-foreground flex items-center gap-2">
@@ -115,7 +115,7 @@ export function CookieConsent() {
             </div>
 
             {/* Desktop banner */}
-            <div className="hidden md:block bg-primary text-primary-foreground border-t border-border/30">
+            <div className="hidden md:block pointer-events-auto bg-primary text-primary-foreground border-t border-border/30">
                 <div className="container py-4">
                     <div className="flex items-center justify-between gap-4">
                         <div className="flex-1 flex items-center gap-3">

@@ -33,6 +33,9 @@ const badgeVariants = cva(
         // Solid dark bg + white text - maximum legibility like eBay
         condition:
           "border-transparent bg-foreground/90 text-background font-semibold uppercase tracking-wide text-2xs",
+        // Promoted/Ad badge: warm but subtle
+        promoted:
+          "border-badge-promoted-border bg-badge-promoted-bg text-badge-promoted-text font-semibold uppercase tracking-wider text-2xs rounded-full px-2",
         // Neutral outline for secondary condition display
         "condition-outline":
           "border-border bg-background text-foreground font-medium",

@@ -1,6 +1,7 @@
 ---
 name: i18n-audit
 description: next-intl audit for this repo (no hardcoded strings, locale routing correctness, messages parity). Triggers on "I18N:" prefix and i18n cleanup work.
+version: 1.0.0
 ---
 
 # i18n Audit (next-intl)
@@ -49,3 +50,13 @@ node -e \"const en=require('./messages/en.json'); const bg=require('./messages/b
 ### High
 - [ ] Issue → File → Fix
 ```
+
+## Examples
+
+### Example prompt
+`I18N: audit the checkout page for hardcoded strings`
+
+### Expected behavior
+- Load the canonical docs, scan for hardcoded user strings, and check locale routing usage.
+- Ensure new keys exist in both locale files.
+- Report findings using the output format.

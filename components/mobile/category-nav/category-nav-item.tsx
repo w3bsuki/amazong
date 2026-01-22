@@ -67,8 +67,9 @@ export const CategoryNavItem = forwardRef<
       <Link
         ref={ref as React.Ref<HTMLAnchorElement>}
         href={href}
-        role="tab"
-        aria-selected={isActive}
+        {...(variant === "tab"
+          ? { role: "tab", "aria-selected": isActive }
+          : { "aria-current": isActive ? "page" : undefined })}
         className={cn(styles, className)}
         {...props}
       >
@@ -81,9 +82,10 @@ export const CategoryNavItem = forwardRef<
     <button
       ref={ref as React.Ref<HTMLButtonElement>}
       type="button"
-      role="tab"
       onClick={onClick}
-      aria-selected={isActive}
+      {...(variant === "tab"
+        ? { role: "tab", "aria-selected": isActive }
+        : { "aria-pressed": isActive })}
       className={cn(styles, className)}
       {...props}
     >

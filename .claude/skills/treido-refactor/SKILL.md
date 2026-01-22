@@ -1,6 +1,7 @@
 ---
 name: treido-refactor
 description: Safe, incremental refactoring for Treido. Triggers on "REFACTOR:" prefix, tech debt cleanup, splitting large files, or restructuring modules without changing behavior.
+version: 1.0.0
 ---
 
 # Treido Refactor
@@ -26,3 +27,12 @@ pnpm -s exec tsc -p tsconfig.json --noEmit
 pnpm test:unit
 REUSE_EXISTING_SERVER=true pnpm test:e2e:smoke
 ```
+
+## Examples
+
+### Example prompt
+`REFACTOR: split the mega product card component`
+
+### Expected behavior
+- Break the work into small, shippable steps (1–3 files each).
+- Preserve behavior and boundaries, then run the gates.

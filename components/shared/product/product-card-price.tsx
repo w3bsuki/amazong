@@ -105,7 +105,7 @@ function ProductCardPrice({
           </span>
         )}
         {hasDiscount && discountPercent >= 5 && (
-          <span className="text-2xs font-bold text-deal bg-deal/10 px-1 py-px rounded-sm">
+          <span className="text-2xs font-semibold text-background bg-deal px-1 py-px rounded-sm">
             -{discountPercent}%
           </span>
         )}

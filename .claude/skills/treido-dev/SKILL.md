@@ -1,6 +1,7 @@
 ---
 name: treido-dev
 description: Treido development workflow. Triggers on "TREIDO:" prefix. Use for daily tasks, picking next item from TODO, executing small changes (1-3 files), and running verification gates.
+version: 1.0.0
 ---
 
 # Treido Dev
@@ -46,7 +47,16 @@ REUSE_EXISTING_SERVER=true pnpm test:e2e:smoke
 | Production checklist | `docs/PRODUCTION.md` |
 | Engineering rules | `docs/ENGINEERING.md` |
 | Design tokens | `docs/DESIGN.md` |
-| Full workflow guide | `docs/PRODUCTION-WORKFLOW-GUIDE.md` |
+| Docs index | `docs/README.md` |
+
+## Examples
+
+### Example prompt
+`TREIDO: pick the next TODO and complete it`
+
+### Expected behavior
+- Read `TODO.md`, pick one small item, and complete it within 1–3 files.
+- Run the listed gates, check it off, and log what changed.
 
 ## Stack
 

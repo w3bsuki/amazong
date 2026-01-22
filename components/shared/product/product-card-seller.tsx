@@ -34,7 +34,7 @@ function ProductCardSeller({
   return (
     <div className="flex min-w-0 items-center gap-1.5">
       <Avatar className="size-5 shrink-0 ring-1 ring-border/50">
-        <AvatarImage src={safeAvatarSrc(avatarUrl)} />
+        <AvatarImage src={safeAvatarSrc(avatarUrl)} alt={name} />
         <AvatarFallback className="bg-muted text-2xs font-medium">
           {name.slice(0, 2).toUpperCase()}
         </AvatarFallback>

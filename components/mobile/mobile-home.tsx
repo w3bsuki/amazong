@@ -221,10 +221,32 @@ export function MobileHome({
         )}
 
         {/* For You - Only on "All" tab */}
-        {nav.isAllTab && (
-          <div className="px-inset pt-3 pb-1">
-            <h2 className="text-sm font-semibold text-foreground">{t("mobile.forYouTitle")}</h2>
-          </div>
+        {nav.isAllTab && nav.activeFeed.products.length > 0 && (
+          <section className="pt-3 pb-1">
+            <div className="px-inset mb-2.5 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Tag size={18} weight="fill" className="text-muted-foreground" />
+                <span className="text-sm font-semibold text-foreground">
+                  {t("mobile.forYouTitle")}
+                </span>
+              </div>
+              <Link
+                href="/todays-deals"
+                className="flex items-center gap-0.5 text-xs font-medium text-muted-foreground active:text-foreground"
+              >
+                {t("mobile.seeAll")}
+                <ArrowRight size={12} weight="bold" />
+              </Link>
+            </div>
+
+            <div className="overflow-x-auto no-scrollbar">
+              <div className="flex gap-3 px-inset">
+                {nav.activeFeed.products.slice(0, 8).map((product) => (
+                  <HorizontalProductCard key={product.id} product={product} />
+                ))}
+              </div>
+            </div>
+          </section>
         )}
 
         {/* Explore Banner with Segmented Control - Only on "All" tab */}

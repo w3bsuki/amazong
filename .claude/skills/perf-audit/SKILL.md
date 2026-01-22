@@ -1,6 +1,7 @@
 ---
 name: perf-audit
 description: Performance audit for this repo (Lighthouse, build/SSG cost, bundle hygiene, image/layout shift). Triggers on "PERF:" prefix and performance optimization work.
+version: 1.0.0
 ---
 
 # Performance Audit (Perf + Cost)
@@ -37,3 +38,13 @@ Use this skill when you’re worried about speed, Core Web Vitals, or build/SSG 
 ### High
 - [ ] Issue → Route/File → Fix
 ```
+
+## Examples
+
+### Example prompt
+`PERF: investigate CLS on the product gallery`
+
+### Expected behavior
+- Check layout stability and image sizing.
+- Identify heavy client JS or over-fetching.
+- Report findings using the output format.

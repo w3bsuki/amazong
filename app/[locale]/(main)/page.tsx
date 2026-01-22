@@ -33,8 +33,14 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
   setRequestLocale(locale)
 
   // Fetch user for wishlist/notifications
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  let user = null
+  try {
+    const supabase = await createClient()
+    const { data } = await supabase.auth.getUser()
+    user = data.user
+  } catch {
+    user = null
+  }
 
   // Fetch categories with children for mobile subcategory circles.
   // L0 + L1 + L2 only (~3,400 categories, ~60KB gzipped).

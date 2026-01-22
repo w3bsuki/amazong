@@ -1,6 +1,7 @@
 ---
 name: stripe-audit
 description: Stripe payments audit (webhooks, idempotency, Connect onboarding, server-only secrets). Triggers on "STRIPE:" prefix and Stripe/payments work.
+version: 1.0.0
 ---
 
 # Stripe Audit (Payments)
@@ -39,3 +40,13 @@ Use this skill for anything involving Checkout, webhooks, pricing/fees, or Strip
 ### High
 - [ ] Issue → File/Endpoint → Fix
 ```
+
+## Examples
+
+### Example prompt
+`STRIPE: review webhook idempotency for checkout.session.completed`
+
+### Expected behavior
+- Confirm signatures, idempotency, and server-only secrets.
+- Identify double-handling or duplicated fee logic.
+- Report findings using the output format.

@@ -71,13 +71,8 @@ export default async function AccountLayout({
     let user: unknown = null;
     try {
         const supabase = await createClient();
-        const authResult = await Promise.race([
-            supabase.auth.getUser(),
-            new Promise<{ data: { user: null } }>((resolve) =>
-                setTimeout(() => resolve({ data: { user: null } }), 1500)
-            ),
-        ]);
-        user = authResult.data.user;
+        const { data, error } = await supabase.auth.getUser();
+        user = error ? null : data.user;
     } catch {
         user = null;
     }

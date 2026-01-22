@@ -3,13 +3,14 @@
 import Image from "next/image"
 import { Link } from "@/i18n/routing"
 import { cn } from "@/lib/utils"
+import { Badge } from "@/components/ui/badge"
 import {
-  Sparkle as SparkleIcon,
   Package,
   Truck,
   Heart,
   Star,
 } from "@phosphor-icons/react"
+import { useTranslations } from "next-intl"
 import type { UIProduct } from "@/lib/data/products"
 
 // =============================================================================
@@ -26,6 +27,7 @@ export interface HorizontalProductStripCardProps {
 // =============================================================================
 
 export function HorizontalProductCard({ product }: HorizontalProductStripCardProps) {
+  const tProduct = useTranslations("Product")
   const hasDiscount = product.listPrice && product.listPrice > product.price
   const discountPercent = hasDiscount
     ? Math.round(((product.listPrice! - product.price) / product.listPrice!) * 100)
@@ -43,19 +45,24 @@ export function HorizontalProductCard({ product }: HorizontalProductStripCardPro
       <div className="relative aspect-square rounded-(--radius-card) overflow-hidden bg-muted mb-2">
         {/* AD badge - top left for boosted listings */}
         {product.isBoosted && (
-          <div className="absolute top-1.5 left-1.5 z-10 px-1.5 py-0.5 bg-fire text-primary-foreground text-2xs font-bold rounded flex items-center gap-0.5">
-            <SparkleIcon size={10} weight="fill" />
-            <span>AD</span>
-          </div>
+          <Badge
+            variant="promoted"
+            className="absolute top-1.5 left-1.5 z-10"
+          >
+            <span>{tProduct("adBadge")}</span>
+          </Badge>
         )}
         {/* Discount badge - below AD badge or at top if not boosted */}
         {hasDiscount && (
-          <div className={cn(
-            "absolute left-1.5 z-10 px-1.5 py-0.5 bg-destructive text-destructive-foreground text-2xs font-bold rounded",
-            product.isBoosted ? "top-8" : "top-1.5"
-          )}>
+          <Badge
+            variant="deal"
+            className={cn(
+              "absolute left-1.5 z-10 text-2xs font-bold",
+              product.isBoosted ? "top-8" : "top-1.5"
+            )}
+          >
             -{discountPercent}%
-          </div>
+          </Badge>
         )}
         {/* Wishlist button */}
         <button
@@ -65,16 +72,19 @@ export function HorizontalProductCard({ product }: HorizontalProductStripCardPro
             e.stopPropagation()
           }}
           className="absolute top-1.5 right-1.5 z-10 size-8 bg-background/80 backdrop-blur-sm rounded-full flex items-center justify-center active:bg-background transition-colors"
-          aria-label="Add to wishlist"
+          aria-label={tProduct("addToWishlist")}
         >
           <Heart size={16} className="text-foreground" />
         </button>
         {/* Free shipping badge - bottom left */}
         {product.freeShipping && (
-          <div className="absolute bottom-1.5 left-1.5 z-10 px-1.5 py-0.5 bg-shipping-free text-primary-foreground text-2xs font-medium rounded flex items-center gap-0.5">
+          <Badge
+            variant="shipping"
+            className="absolute bottom-1.5 left-1.5 z-10 gap-0.5 text-2xs font-semibold"
+          >
             <Truck size={10} weight="fill" />
-            <span>Free</span>
-          </div>
+            <span>{tProduct("freeDeliveryShort")}</span>
+          </Badge>
         )}
         {/* Product Image */}
         {product.image && product.image !== "/placeholder.svg" ? (
@@ -118,7 +128,7 @@ export function HorizontalProductCard({ product }: HorizontalProductStripCardPro
             <Star size={11} weight="fill" className="text-rating" />
             <span className="text-2xs text-muted-foreground">
               {product.rating.toFixed(1)}{" "}
-              <span className="opacity-60">({product.reviews?.toLocaleString()})</span>
+              <span>({product.reviews?.toLocaleString()})</span>
             </span>
           </div>
         )}

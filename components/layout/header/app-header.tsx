@@ -32,7 +32,7 @@ import { useHeaderOptional } from "@/components/providers/header-context"
 import { cn } from "@/lib/utils"
 import { useEffect, useRef, useState } from "react"
 import { useRouter, usePathname } from "@/i18n/routing"
-import { useLocale } from "next-intl"
+import { useLocale, useTranslations } from "next-intl"
 import type { User } from "@supabase/supabase-js"
 import type { CategoryTreeNode } from "@/lib/category-tree"
 import type { UserListingStats } from "@/components/layout/sidebar/sidebar-menu-v2"
@@ -162,6 +162,7 @@ export function AppHeader({
   const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false)
   const headerRef = useRef<HTMLElement>(null)
   const locale = useLocale()
+  const tNav = useTranslations("Navigation")
   const router = useRouter()
   const pathname = usePathname()
   
@@ -189,7 +190,7 @@ export function AppHeader({
   const effectiveSellerUsername = headerContext?.productHeader?.sellerUsername ?? sellerUsername
   const effectiveSellerAvatarUrl = headerContext?.productHeader?.sellerAvatarUrl ?? sellerAvatarUrl
 
-  const searchPlaceholder = locale === "bg" ? "Търсене..." : "Search..."
+  const searchPlaceholder = tNav("searchPlaceholderShort")
 
   // Mark header as hydrated for E2E tests
   useEffect(() => {

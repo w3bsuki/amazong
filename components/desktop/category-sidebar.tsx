@@ -46,7 +46,12 @@ export function CompactCategorySidebar({
   const [currentL0, setCurrentL0] = useState<CategoryTreeNode | null>(null)
   const [currentL1, setCurrentL1] = useState<CategoryTreeNode | null>(null)
   const [isExpanded, setIsExpanded] = useState(false)
+  const [isMounted, setIsMounted] = useState(false)
   const initialVisibleCount = 12
+
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
 
   // Sync with selected path
   useEffect(() => {
@@ -167,7 +172,9 @@ export function CompactCategorySidebar({
           >
             <SquaresFour size={20} weight={selectedPath.length === 0 ? "fill" : "regular"} className="shrink-0" />
             <span className="flex-1">{locale === "bg" ? "Всички" : "All"}</span>
-            <span className="text-xs tabular-nums opacity-70">{totalCount || "—"}</span>
+            <span className="text-xs tabular-nums opacity-70">
+              {isMounted && totalCount > 0 ? totalCount : "—"}
+            </span>
           </button>
         )}
 
@@ -179,7 +186,7 @@ export function CompactCategorySidebar({
               {locale === "bg" ? "Всички в " : "All in "}
               {getCategoryName(headerCategory, locale)}
             </span>
-            {categoryCounts[headerCategory.slug] !== undefined && (
+            {isMounted && categoryCounts[headerCategory.slug] !== undefined && (
               <span className="text-xs tabular-nums opacity-70">{categoryCounts[headerCategory.slug]}</span>
             )}
           </button>
@@ -205,7 +212,7 @@ export function CompactCategorySidebar({
                 </span>
               )}
               <span className="flex-1 truncate">{name}</span>
-              {typeof count === "number" && (
+              {isMounted && typeof count === "number" && (
                 <span className="text-xs tabular-nums opacity-70">{count}</span>
               )}
               {hasChildren && (

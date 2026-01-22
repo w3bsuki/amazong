@@ -10,6 +10,7 @@ import { MagnifyingGlass } from "@phosphor-icons/react"
 import { cn } from "@/lib/utils"
 import { Link } from "@/i18n/routing"
 import { useRef, useEffect } from "react"
+import { useTranslations } from "next-intl"
 import type { HomepageHeaderProps } from "../types"
 
 /**
@@ -31,9 +32,10 @@ export function MobileHomepageHeader({
   locale,
 }: HomepageHeaderProps) {
   const pillsRef = useRef<HTMLDivElement>(null)
-  
-  const searchPlaceholder = locale === "bg" ? "Търсене..." : "Search..."
-  const allLabel = locale === "bg" ? "Всички" : "All"
+  const tNav = useTranslations("Navigation")
+  const tCategories = useTranslations("Categories")
+  const searchPlaceholder = tNav("searchPlaceholderShort")
+  const allLabel = tCategories("all")
 
   // Scroll active pill into view
   useEffect(() => {

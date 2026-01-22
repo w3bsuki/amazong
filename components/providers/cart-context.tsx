@@ -34,6 +34,7 @@ interface CartContextType {
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined)
+const MAX_CART_QUANTITY = 99
 
 function toRecord(value: unknown): Record<string, unknown> | null {
   return value && typeof value === "object" ? (value as Record<string, unknown>) : null
@@ -60,6 +61,36 @@ function asStringArray(value: unknown): string[] | null {
     out.push(item)
   }
   return out
+}
+
+function normalizeQuantity(value: unknown): number | null {
+  const numeric = asNumber(value)
+  if (numeric === null) return null
+  const rounded = Math.floor(numeric)
+  if (!Number.isSafeInteger(rounded) || rounded <= 0) return null
+  return Math.min(rounded, MAX_CART_QUANTITY)
+}
+
+function normalizePrice(value: unknown): number | null {
+  const numeric = asNumber(value)
+  if (numeric === null || numeric < 0) return null
+  return numeric
+}
+
+function sanitizeCartItems(rawItems: CartItem[]): CartItem[] {
+  const sanitized: CartItem[] = []
+  for (const item of rawItems) {
+    if (!item?.id) continue
+    const price = normalizePrice(item.price)
+    const quantity = normalizeQuantity(item.quantity)
+    if (price === null || quantity === null) continue
+    sanitized.push({
+      ...item,
+      price,
+      quantity,
+    })
+  }
+  return sanitized
 }
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
@@ -98,15 +129,15 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     }
 
     const rows: unknown[] = Array.isArray(data) ? data : []
-    const nextItems: CartItem[] = rows.map((row) => {
+    const nextItems = rows.map((row) => {
       const record = toRecord(row)
       const productId = asString(record?.product_id) ?? ""
       const variantId = asString(record?.variant_id) ?? undefined
-      const quantity = asNumber(record?.quantity) ?? 1
+      const quantity = normalizeQuantity(record?.quantity)
 
       const products = toRecord(record?.products)
       const title = asString(products?.title) ?? "Unknown Product"
-      const price = asNumber(products?.price) ?? 0
+      const price = normalizePrice(products?.price)
 
       const images = asStringArray(products?.images)
       const image = images?.[0] ?? "/placeholder.svg"
@@ -117,6 +148,10 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
       const variant = toRecord(record?.variant)
       const variantName = asString(variant?.name) ?? undefined
+
+      if (!productId || quantity === null || price === null) {
+        return null
+      }
 
       return {
         id: productId,
@@ -130,7 +165,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         ...(username ? { username } : {}),
       }
     })
-    .filter((item) => Boolean(item.id))
+    .filter((item): item is CartItem => Boolean(item))
 
     setItems((prev) => (nextItems.length > 0 ? nextItems : prev))
   }, [])
@@ -138,16 +173,26 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const syncLocalCartToServer = useCallback(async (activeUserId: string) => {
     const savedCart = localStorage.getItem("cart")
     const localItems = safeJsonParse<CartItem[]>(savedCart) || []
+    const sanitizedItems = sanitizeCartItems(localItems)
 
-    if (localItems.length === 0) return
+    if (sanitizedItems.length === 0) {
+      if (localItems.length > 0) {
+        localStorage.removeItem("cart")
+      }
+      return
+    }
+
+    if (sanitizedItems.length !== localItems.length) {
+      localStorage.setItem("cart", JSON.stringify(sanitizedItems))
+    }
 
     const supabase = createClient()
 
     // Best-effort merge: add/increment each item via RPC.
     // If the RPC isn't deployed yet, we keep localStorage as-is.
-    for (const item of localItems) {
-      const qty = typeof item.quantity === "number" ? item.quantity : Number(item.quantity) || 1
-      if (!item.id || qty <= 0) continue
+    for (const item of sanitizedItems) {
+      const qty = normalizeQuantity(item.quantity)
+      if (!item.id || qty === null) continue
 
       const { error } = await supabase.rpc("cart_add_item", {
         p_product_id: item.id,
@@ -174,7 +219,14 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     try {
       const parsed = safeJsonParse<CartItem[]>(savedCart)
       if (parsed) {
-        setItems(parsed)
+        const sanitized = sanitizeCartItems(parsed)
+        if (sanitized.length > 0) {
+          setItems(sanitized)
+          localStorage.setItem("cart", JSON.stringify(sanitized))
+        } else if (savedCart) {
+          // Corrupt/partial data: clear it so it can't break the app or tests.
+          localStorage.removeItem("cart")
+        }
       } else if (savedCart) {
         // Corrupt/partial data: clear it so it can't break the app or tests.
         localStorage.removeItem("cart")
@@ -220,19 +272,20 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   }, [items])
 
   const addToCart = (newItem: CartItem) => {
-    // Ensure price is a valid number
+    const normalizedPrice = normalizePrice(newItem.price)
+    const normalizedQuantity = normalizeQuantity(newItem.quantity ?? 1)
+
+    if (!newItem.id || normalizedPrice === null || normalizedQuantity === null) {
+      console.error("Invalid cart item:", newItem)
+      return
+    }
+
     const itemWithValidPrice = {
       ...newItem,
-      price: typeof newItem.price === 'string' ? Number.parseFloat(newItem.price) : newItem.price,
-      quantity: newItem.quantity || 1
+      price: normalizedPrice,
+      quantity: normalizedQuantity,
     }
-    
-    // Guard against NaN
-    if (isNaN(itemWithValidPrice.price)) {
-      console.error('Invalid price for cart item:', newItem)
-      itemWithValidPrice.price = 0
-    }
-    
+
     setItems((prevItems) => {
       const existingItem = prevItems.find((item) =>
         item.id === itemWithValidPrice.id && (item.variantId ?? null) === (itemWithValidPrice.variantId ?? null)
@@ -325,10 +378,13 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
-  const totalItems = items.reduce((total, item) => total + item.quantity, 0)
+  const totalItems = items.reduce((total, item) => {
+    const quantity = normalizeQuantity(item.quantity) ?? 0
+    return total + quantity
+  }, 0)
   const subtotal = items.reduce((total, item) => {
-    const price = typeof item.price === 'number' ? item.price : Number.parseFloat(String(item.price)) || 0
-    const quantity = typeof item.quantity === 'number' ? item.quantity : Number.parseInt(String(item.quantity)) || 0
+    const price = normalizePrice(item.price) ?? 0
+    const quantity = normalizeQuantity(item.quantity) ?? 0
     return total + price * quantity
   }, 0)
 

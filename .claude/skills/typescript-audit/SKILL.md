@@ -1,6 +1,7 @@
 ---
 name: typescript-audit
 description: TypeScript safety gate + drift control (no new any/as any/non-null assertions). Triggers on "TS:" prefix and TypeScript safety work.
+version: 1.0.0
 ---
 
 # TypeScript Audit (TS Safety Gate)
@@ -41,3 +42,13 @@ Use this skill to keep TypeScript safety from regressing. This repo enforces a â
 - [ ] `pnpm -s ts:gate`
 - [ ] `pnpm -s exec tsc -p tsconfig.json --noEmit`
 ```
+
+## Examples
+
+### Example prompt
+`TS: address new any usage in lib/data`
+
+### Expected behavior
+- Run `pnpm -s ts:gate` and fix new findings without refactors.
+- Update the baseline only with explicit approval.
+- Report fixes and verification steps.

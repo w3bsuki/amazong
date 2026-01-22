@@ -2,6 +2,7 @@
 
 import { Star, PencilLine } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { useRouter } from "@/i18n/routing";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -53,6 +54,7 @@ export function CustomerReviewsHybrid({
   locale = "en",
   submitReview,
 }: CustomerReviewsHybridProps) {
+  const router = useRouter();
   const safeRating = Number.isFinite(rating) ? rating : 0;
   const safeCount = Number.isFinite(reviewCount) ? reviewCount : 0;
 
@@ -71,6 +73,7 @@ export function CustomerReviewsHybrid({
               {...(productTitle ? { productTitle } : {})}
               locale={locale}
               submitReview={submitReview}
+              onReviewSubmitted={() => router.refresh()}
               trigger={
                 <Button variant="default" size="sm" className="gap-2">
                   <PencilLine className="h-4 w-4" />
@@ -133,6 +136,7 @@ export function CustomerReviewsHybrid({
                   {...(productTitle ? { productTitle } : {})}
                   locale={locale}
                   submitReview={submitReview}
+                  onReviewSubmitted={() => router.refresh()}
                   trigger={
                     <Button variant="outline" size="sm">
                       {t("beFirst")}

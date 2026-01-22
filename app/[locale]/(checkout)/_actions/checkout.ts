@@ -13,6 +13,16 @@ type SellerInfo = {
   chargesEnabled: boolean
 }
 
+const MAX_CHECKOUT_QUANTITY = 99
+
+function isValidQuantity(value: unknown): value is number {
+  return typeof value === "number"
+    && Number.isFinite(value)
+    && Number.isSafeInteger(value)
+    && value > 0
+    && value <= MAX_CHECKOUT_QUANTITY
+}
+
 export async function createCheckoutSession(items: CartItem[], locale?: "en" | "bg") {
   if (!process.env.STRIPE_SECRET_KEY) {
     console.error("STRIPE_SECRET_KEY is missing")
@@ -26,7 +36,7 @@ export async function createCheckoutSession(items: CartItem[], locale?: "en" | "
 
   // Validate each item has required fields
   for (const item of items) {
-    if (!item.id || !item.title || typeof item.price !== "number" || item.price <= 0) {
+    if (!item.id || !item.title || typeof item.price !== "number" || !Number.isFinite(item.price) || item.price <= 0 || !isValidQuantity(item.quantity)) {
       console.error("Invalid cart item:", item)
       return { error: "Invalid cart item data. Please refresh and try again." }
     }
@@ -224,7 +234,7 @@ export async function getCheckoutFeeQuote(items: CartItem[]): Promise<CheckoutFe
   }
 
   for (const item of items) {
-    if (!item.id || !item.title || typeof item.price !== "number" || item.price <= 0) {
+    if (!item.id || !item.title || typeof item.price !== "number" || !Number.isFinite(item.price) || item.price <= 0 || !isValidQuantity(item.quantity)) {
       return { ok: false }
     }
   }

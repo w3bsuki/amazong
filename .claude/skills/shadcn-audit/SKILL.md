@@ -1,6 +1,7 @@
 ---
 name: shadcn-audit
 description: shadcn/ui audit for this repo (components/ui primitives, Radix usage, token discipline). Triggers on "SHADCN:" prefix and shadcn-related hygiene work.
+version: 1.0.0
 ---
 
 # shadcn/ui Audit (Primitives + Tokens)
@@ -46,3 +47,13 @@ rg -n \"\\b(bg|text|border)-(zinc|slate|gray|red|green|blue|yellow)-\" component
 ### High
 - [ ] Issue → File → Fix
 ```
+
+## Examples
+
+### Example prompt
+`SHADCN: audit components/ui/button for token usage`
+
+### Expected behavior
+- Verify primitives-only usage in components/ui.
+- Check token usage and styling rails.
+- Report findings using the output format.
