@@ -50,13 +50,11 @@ export type OnboardingData = {
   avatarPalette?: number | undefined
 }
 
-export type PostSignupOnboardingServerActions = {
-  completePostSignupOnboarding: (
-    data: OnboardingData,
-    avatarFile: File | null,
-    coverFile: File | null
-  ) => Promise<{ success: boolean; error?: string }>
-}
+export type CompletePostSignupOnboardingAction = (
+  data: OnboardingData,
+  avatarFile: File | null,
+  coverFile: File | null
+) => Promise<{ success: boolean; error?: string }>
 
 interface PostSignupOnboardingModalProps {
   isOpen: boolean
@@ -66,7 +64,7 @@ interface PostSignupOnboardingModalProps {
   displayName?: string | null
   accountType: "personal" | "business"  // From signup - already set in profile!
   locale?: string
-  actions: PostSignupOnboardingServerActions
+  completePostSignupOnboarding: CompletePostSignupOnboardingAction
 }
 
 type OnboardingStep = "intent" | "profile" | "social" | "business" | "complete"
@@ -187,7 +185,7 @@ export function PostSignupOnboardingModal({
   displayName: initialDisplayName,
   accountType,  // From profile - already set at signup!
   locale = "en",
-  actions,
+  completePostSignupOnboarding,
 }: PostSignupOnboardingModalProps) {
   const router = useRouter()
   const t = translations[locale as keyof typeof translations] || translations.en
@@ -298,7 +296,7 @@ export function PostSignupOnboardingModal({
 
     startTransition(async () => {
       try {
-        const result = await actions.completePostSignupOnboarding(data, avatarFile, coverFile)
+        const result = await completePostSignupOnboarding(data, avatarFile, coverFile)
         
         if (result.error) {
           setError(result.error)

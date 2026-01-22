@@ -1,9 +1,11 @@
 "use client"
 
-import { createContext, useEffect, useState, Suspense, useRef, type ReactNode } from "react"
+import { createContext, useEffect, useState, useRef, type ReactNode } from "react"
 import { createClient } from "@/lib/supabase/client"
-import { PostSignupOnboardingModal, type PostSignupOnboardingServerActions } from "../_components/post-signup-onboarding-modal"
-import { useParams, useSearchParams } from "next/navigation"
+import {
+  PostSignupOnboardingModal,
+  type CompletePostSignupOnboardingAction,
+} from "../_components/post-signup-onboarding-modal"
 import { useAuthOptional } from "@/components/providers/auth-state-manager"
 
 interface OnboardingContextValue {
@@ -15,8 +17,8 @@ const OnboardingContext = createContext<OnboardingContextValue | null>(null)
 
 interface OnboardingProviderProps {
   children: ReactNode
-  locale?: string | undefined
-  actions: PostSignupOnboardingServerActions
+  locale: string
+  completePostSignupOnboarding: CompletePostSignupOnboardingAction
 }
 
 interface ProfileData {
@@ -34,21 +36,44 @@ interface RawProfileData {
   account_type?: string | null
 }
 
-// Inner component that uses useSearchParams (requires Suspense)
-function OnboardingProviderInner({ children, locale: propLocale, actions }: OnboardingProviderProps) {
-  const params = useParams()
-  const searchParams = useSearchParams()
+export function OnboardingProvider({
+  children,
+  locale,
+  completePostSignupOnboarding,
+}: OnboardingProviderProps) {
   const auth = useAuthOptional()
-  const locale = propLocale ?? (typeof params?.locale === "string" ? params.locale : "en")
   
   const [profile, setProfile] = useState<ProfileData | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [_isChecking, setIsChecking] = useState(true)
   const hasCheckedRef = useRef<string | null>(null)
+  const pendingOpenRef = useRef(false)
+  const [isDialogSafe, setIsDialogSafe] = useState(false)
 
   // Get user from auth context
   const user = auth?.user ?? null
   const authLoading = auth?.isLoading ?? true
+
+  // Avoid Radix Dialog opening before the header boundary hydrates.
+  useEffect(() => {
+    let cancelled = false
+    const deadline = Date.now() + 2_000
+
+    const poll = () => {
+      if (cancelled) return
+      const headerHydrated = document.querySelector('header[data-hydrated="true"]')
+      if (headerHydrated || Date.now() > deadline) {
+        setIsDialogSafe(true)
+        return
+      }
+      setTimeout(poll, 50)
+    }
+
+    poll()
+    return () => {
+      cancelled = true
+    }
+  }, [])
 
   // Check if we should show onboarding when user changes
   useEffect(() => {
@@ -59,6 +84,7 @@ function OnboardingProviderInner({ children, locale: propLocale, actions }: Onbo
         setProfile(null)
         setIsModalOpen(false)
         hasCheckedRef.current = null
+        pendingOpenRef.current = false
         setIsChecking(false)
         return
       }
@@ -89,12 +115,16 @@ function OnboardingProviderInner({ children, locale: propLocale, actions }: Onbo
         // Check if onboarding is needed
         // Show modal if onboarding not completed AND user has a username (meaning they've signed up)
         // OR if there's an onboarding query param
-        const forceOnboarding = searchParams?.get("onboarding") === "true"
+        let forceOnboarding = false
+        try {
+          forceOnboarding = new URLSearchParams(window.location.search).get("onboarding") === "true"
+        } catch {
+          forceOnboarding = false
+        }
         const needsOnboarding = !profileData.onboarding_completed && profileData.username
 
         if (forceOnboarding || needsOnboarding) {
-          // Small delay to let the page render first
-          setTimeout(() => setIsModalOpen(true), 300)
+          pendingOpenRef.current = true
         }
       }
 
@@ -102,7 +132,18 @@ function OnboardingProviderInner({ children, locale: propLocale, actions }: Onbo
     }
 
     checkOnboarding()
-  }, [user, authLoading, searchParams])
+  }, [user, authLoading])
+
+  // Open onboarding after the app is safe to open dialogs.
+  useEffect(() => {
+    if (!user) return
+    if (!isDialogSafe) return
+    if (!pendingOpenRef.current) return
+
+    pendingOpenRef.current = false
+    const timer = window.setTimeout(() => setIsModalOpen(true), 300)
+    return () => window.clearTimeout(timer)
+  }, [user, isDialogSafe])
 
   const showOnboarding = () => setIsModalOpen(true)
   const hideOnboarding = () => setIsModalOpen(false)
@@ -110,11 +151,12 @@ function OnboardingProviderInner({ children, locale: propLocale, actions }: Onbo
   const handleClose = () => {
     setIsModalOpen(false)
     // Remove the query param if present
-    if (typeof window !== "undefined" && searchParams?.get("onboarding")) {
-      const url = new URL(window.location.href)
-      url.searchParams.delete("onboarding")
-      window.history.replaceState({}, "", url.toString())
-    }
+    if (typeof window === "undefined") return
+    const url = new URL(window.location.href)
+    if (!url.searchParams.has("onboarding")) return
+
+    url.searchParams.delete("onboarding")
+    window.history.replaceState({}, "", url.toString())
   }
 
   return (
@@ -129,20 +171,9 @@ function OnboardingProviderInner({ children, locale: propLocale, actions }: Onbo
           displayName={profile.display_name}
           accountType={profile.account_type}
           locale={locale}
-          actions={actions}
+          completePostSignupOnboarding={completePostSignupOnboarding}
         />
       )}
     </OnboardingContext.Provider>
-  )
-}
-
-// Main export wraps inner component with Suspense
-export function OnboardingProvider({ children, locale, actions }: OnboardingProviderProps) {
-  return (
-    <Suspense fallback={null}>
-      <OnboardingProviderInner locale={locale} actions={actions}>
-        {children}
-      </OnboardingProviderInner>
-    </Suspense>
   )
 }

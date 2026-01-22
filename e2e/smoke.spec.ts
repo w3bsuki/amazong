@@ -94,6 +94,27 @@ test.describe('Smoke Tests - Critical Path', () => {
     app.assertNoConsoleErrors()
   })
 
+  test('product page loads without errors @smoke @critical', async ({ page, app, request }) => {
+    const response = await request.get('/api/products/newest')
+    expect(response.status()).toBe(200)
+
+    const data = await response.json()
+    const products: unknown[] = Array.isArray(data?.products) ? data.products : []
+
+    const first = products.find((p: any) => p?.storeSlug && (p?.slug || p?.id)) as any | undefined
+    test.skip(!first, 'No products returned from /api/products/newest')
+
+    const seller = String(first.storeSlug)
+    const productSlug = String(first.slug || first.id)
+
+    await app.goto(`/en/${seller}/${productSlug}`)
+    await app.waitForHydration()
+
+    await assertVisible(page.locator('main, #main-content').first())
+    await assertNoErrorBoundary(page)
+    app.assertNoConsoleErrors()
+  })
+
   test('cart page loads @smoke', async ({ page, app }) => {
     await app.goto('/en/cart')
     await app.waitForHydration()

@@ -2,12 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogTitle,
-} from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
 import {
   Select,
   SelectContent,
@@ -18,7 +13,7 @@ import {
 import { useGeoWelcome } from '@/hooks/use-geo-welcome';
 import { getCountryName } from '@/lib/geolocation';
 import type { ShippingRegion } from '@/lib/shipping';
-import { Globe } from '@phosphor-icons/react';
+import { Globe, X } from '@phosphor-icons/react';
 
 // Region flag emojis
 const REGION_FLAGS: Record<ShippingRegion, string> = {
@@ -27,42 +22,6 @@ const REGION_FLAGS: Record<ShippingRegion, string> = {
   EU: '🇪🇺',
   US: '🇺🇸',
   WW: '🌍',
-};
-
-// Country code to flag emoji
-const COUNTRY_FLAGS: Record<string, string> = {
-  BG: '🇧🇬',
-  GB: '🇬🇧',
-  UK: '🇬🇧',
-  US: '🇺🇸',
-  DE: '🇩🇪',
-  FR: '🇫🇷',
-  ES: '🇪🇸',
-  IT: '🇮🇹',
-  NL: '🇳🇱',
-  PL: '🇵🇱',
-  RO: '🇷🇴',
-  GR: '🇬🇷',
-  AT: '🇦🇹',
-  BE: '🇧🇪',
-  PT: '🇵🇹',
-  SE: '🇸🇪',
-  CZ: '🇨🇿',
-  HU: '🇭🇺',
-  DK: '🇩🇰',
-  FI: '🇫🇮',
-  IE: '🇮🇪',
-  NO: '🇳🇴',
-  CH: '🇨🇭',
-  CA: '🇨🇦',
-  AU: '🇦🇺',
-  JP: '🇯🇵',
-  CN: '🇨🇳',
-  IN: '🇮🇳',
-  BR: '🇧🇷',
-  MX: '🇲🇽',
-  RU: '🇷🇺',
-  ZA: '🇿🇦',
 };
 
 interface GeoWelcomeModalProps {
@@ -88,8 +47,25 @@ export function GeoWelcomeModal({ locale }: GeoWelcomeModalProps) {
     //
     // Waiting until the browser is idle (or a short fallback timeout) keeps hydration stable.
     let cancelled = false;
+
     const markReady = () => {
-      if (!cancelled) setSafeToOpen(true);
+      if (cancelled) return;
+
+      // IMPORTANT: Wait until the SiteHeader is hydrated before rendering any
+      // prompt that can open Radix portals. This avoids aria-hidden mutations
+      // on unhydrated boundaries (a common source of hydration mismatch warnings).
+      const deadline = Date.now() + 2_000;
+      const poll = () => {
+        if (cancelled) return;
+        const headerHydrated = document.querySelector('header[data-hydrated="true"]');
+        if (headerHydrated || Date.now() > deadline) {
+          setSafeToOpen(true);
+          return;
+        }
+        setTimeout(poll, 50);
+      };
+
+      poll();
     };
 
     // Prefer requestIdleCallback when available.
@@ -150,97 +126,74 @@ export function GeoWelcomeModal({ locale }: GeoWelcomeModalProps) {
   }
 
   const countryName = getCountryName(detectedCountry, locale);
-  const _countryFlag = COUNTRY_FLAGS[detectedCountry.toUpperCase()] || '🌍';
+  const regionLabel = t(`regions.${selectedRegion}`);
 
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => !open && closeModal()}>
-      <DialogContent
-        className="w-full max-w-sm rounded-lg border border-border bg-background p-0"
-        showCloseButton={true}
-      >
-        <DialogTitle className="sr-only">
-          {locale === 'bg' ? 'Избор на регион' : 'Choose your region'}
-        </DialogTitle>
-        <DialogDescription className="sr-only">
-          {t('title', { country: countryName })}
-        </DialogDescription>
+    <div className="fixed bottom-24 left-0 right-0 z-50 pointer-events-none md:bottom-4 md:left-auto md:right-4">
+      <div className="pointer-events-auto mx-3 md:mx-0 w-auto max-w-sm rounded-lg border border-border bg-card p-4 shadow-lg">
+        <div className="flex items-start gap-3">
+          <div className="mt-0.5 flex size-10 items-center justify-center rounded-full bg-muted">
+            <Globe size={18} weight="duotone" className="text-foreground" />
+          </div>
 
-        <div className="p-5">
-          {/* Header */}
-          <div className="flex flex-col gap-1.5 mb-5 text-center">
-            <div className="mx-auto mb-2 size-12 rounded-full bg-brand/10 flex items-center justify-center">
-              <Globe size={24} weight="duotone" className="text-brand" />
-            </div>
-            <h1 className="text-base font-semibold text-foreground">
-              {locale === 'bg' ? 'Добре дошли!' : 'Welcome!'}
-            </h1>
-            <p className="text-sm text-muted-foreground">
+          <div className="min-w-0 flex-1">
+            <p className="text-sm font-semibold text-foreground">
               {t('title', { country: countryName })}
             </p>
-          </div>
-
-          {/* Region Selection */}
-          <div className="space-y-3">
-            <div className="space-y-1.5">
-              <label className="text-sm font-medium text-foreground">
-                {t('selectRegion')}
-              </label>
-
-              <Select
-                value={selectedRegion}
-                onValueChange={(value) => setSelectedRegion(value as ShippingRegion)}
-              >
-                <SelectTrigger
-                  className="w-full h-10 rounded-lg"
-                  aria-label={t('selectRegion')}
-                >
-                  <SelectValue>
-                    <span className="flex items-center gap-2">
-                      <span className="text-base">{REGION_FLAGS[selectedRegion]}</span>
-                      <span className="text-sm text-foreground">{t(`regions.${selectedRegion}`)}</span>
-                    </span>
-                  </SelectValue>
-                </SelectTrigger>
-                <SelectContent className="rounded-lg border border-border">
-                  {(['BG', 'UK', 'EU', 'US', 'WW'] as ShippingRegion[]).map((region) => (
-                    <SelectItem
-                      key={region}
-                      value={region}
-                      className="py-2.5 cursor-pointer"
-                    >
-                      <span className="flex items-center gap-2">
-                        <span className="text-base">{REGION_FLAGS[region]}</span>
-                        <span className="text-sm">{t(`regions.${region}`)}</span>
-                      </span>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            {/* Confirm Button */}
-            <button
-              onClick={confirmRegion}
-              className="w-full h-10 bg-cta-trust-blue text-cta-trust-blue-text text-sm font-semibold rounded-lg transition-colors hover:bg-cta-trust-blue-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-            >
-              {t('confirmButton', { region: t(`regions.${selectedRegion}`) })}
-            </button>
-
-            {/* Secondary - Show all */}
-            <button
-              onClick={declineAndShowAll}
-              className="w-full h-9 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-lg transition-colors"
-            >
-              {t('declineButton')}
-            </button>
-
-            {/* Footer note */}
-            <p className="text-xs text-muted-foreground text-center pt-1">
-              {t('changeAnytime')}
+            <p className="mt-0.5 text-xs text-muted-foreground">
+              {t('description', { region: regionLabel })}
             </p>
           </div>
+
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8"
+            onClick={closeModal}
+            aria-label={t('close')}
+          >
+            <X size={16} weight="regular" />
+          </Button>
         </div>
-      </DialogContent>
-    </Dialog>
+
+        <div className="mt-3 space-y-3">
+          <div className="space-y-1.5">
+            <label className="text-sm font-medium text-foreground">{t('selectRegion')}</label>
+
+            <Select value={selectedRegion} onValueChange={(value) => setSelectedRegion(value as ShippingRegion)}>
+              <SelectTrigger className="h-10 w-full rounded-lg" aria-label={t('selectRegion')}>
+                <SelectValue>
+                  <span className="flex items-center gap-2">
+                    <span className="text-base">{REGION_FLAGS[selectedRegion]}</span>
+                    <span className="text-sm text-foreground">{regionLabel}</span>
+                  </span>
+                </SelectValue>
+              </SelectTrigger>
+              <SelectContent className="rounded-lg border border-border">
+                {(['BG', 'UK', 'EU', 'US', 'WW'] as ShippingRegion[]).map((region) => (
+                  <SelectItem key={region} value={region} className="cursor-pointer py-2.5">
+                    <span className="flex items-center gap-2">
+                      <span className="text-base">{REGION_FLAGS[region]}</span>
+                      <span className="text-sm">{t(`regions.${region}`)}</span>
+                    </span>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <Button type="button" className="w-full" onClick={confirmRegion}>
+            {t('confirmButton', { region: regionLabel })}
+          </Button>
+
+          <Button type="button" variant="ghost" className="w-full" onClick={declineAndShowAll}>
+            {t('declineButton')}
+          </Button>
+
+          <p className="pt-1 text-center text-xs text-muted-foreground">{t('changeAnytime')}</p>
+        </div>
+      </div>
+    </div>
   );
 }

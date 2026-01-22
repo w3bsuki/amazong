@@ -46,6 +46,7 @@ export default async function globalSetup(config: FullConfig) {
     '/en/auth/forgot-password',
     '/en/search?q=warmup',
     '/en/cart',
+    '/en/checkout',
     '/en/categories',
     '/en/account',
     '/en/plans',

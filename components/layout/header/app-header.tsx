@@ -160,6 +160,7 @@ export function AppHeader({
   hideOnDesktop = false,
 }: AppHeaderProps) {
   const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false)
+  const [isHydrated, setIsHydrated] = useState(false)
   const headerRef = useRef<HTMLElement>(null)
   const locale = useLocale()
   const tNav = useTranslations("Navigation")
@@ -185,16 +186,20 @@ export function AppHeader({
   const effectiveContextualSubcategories = headerContext?.contextualHeader?.subcategories ?? contextualSubcategories
   const effectiveContextualSubcategoryClick = headerContext?.contextualHeader?.onSubcategoryClick ?? onSubcategoryClick
 
-  const effectiveProductTitle = headerContext?.productHeader?.productTitle ?? productTitle
-  const effectiveSellerName = headerContext?.productHeader?.sellerName ?? sellerName
-  const effectiveSellerUsername = headerContext?.productHeader?.sellerUsername ?? sellerUsername
-  const effectiveSellerAvatarUrl = headerContext?.productHeader?.sellerAvatarUrl ?? sellerAvatarUrl
+  // Avoid hydration mismatch when other client boundaries update HeaderProvider state
+  // before the header boundary itself hydrates (e.g., ProductHeaderSync on PDP).
+  const hydratedProductHeader = isHydrated ? headerContext?.productHeader : null
+  const effectiveProductTitle = hydratedProductHeader?.productTitle ?? productTitle
+  const effectiveSellerName = hydratedProductHeader?.sellerName ?? sellerName
+  const effectiveSellerUsername = hydratedProductHeader?.sellerUsername ?? sellerUsername
+  const effectiveSellerAvatarUrl = hydratedProductHeader?.sellerAvatarUrl ?? sellerAvatarUrl
 
   const searchPlaceholder = tNav("searchPlaceholderShort")
 
   // Mark header as hydrated for E2E tests
   useEffect(() => {
     headerRef.current?.setAttribute("data-hydrated", "true")
+    setIsHydrated(true)
   }, [])
 
   // Handle search open

@@ -1912,6 +1912,7 @@
         "selectRegion": "Select region",
         "confirmButton": "Continue with {region}",
         "declineButton": "Show all products",
+        "close": "Close",
         "changeAnytime": "You can change this anytime in settings",
         "regions": {
             "BG": "Bulgaria",

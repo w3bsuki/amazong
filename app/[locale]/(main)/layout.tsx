@@ -90,7 +90,7 @@ export default async function MainLayout({
     const categories = await getCategoryHierarchy(null, 2);
 
     return (
-        <OnboardingProvider locale={locale} actions={{ completePostSignupOnboarding }}>
+        <OnboardingProvider locale={locale} completePostSignupOnboarding={completePostSignupOnboarding}>
             <HeaderProvider>
                 <div className="bg-background min-h-screen flex flex-col">      
                     {/* Skip Links - Accessibility */}

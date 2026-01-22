@@ -22,12 +22,12 @@ REUSE_EXISTING_SERVER=true pnpm test:e2e:smoke
 
 ### P0 — Release blockers (ship stability first)
 - [ ] TREIDO: Fix Turbopack crash after sign-in (missing client manifest / `OnboardingProvider`) → `docs/desktop_uiux_audit.md`
-- [ ] TREIDO: Fix hydration mismatch on `/en` and product pages (SSR/CSR divergence) → `docs/desktop_uiux_audit.md`
-- [ ] TREIDO: Fix cart badge vs `/cart` state desync (single cart SSOT) → `docs/desktop_uiux_audit.md`
-- [ ] TREIDO: Fix `/checkout` line items render (no infinite loader / blank shell) → `docs/desktop_uiux_audit.md`
-- [ ] TREIDO: Fix Stripe Connect onboarding 500 (`/api/connect/onboarding`) → `docs/desktop_uiux_audit.md`, `docs/BACKEND.md`
-- [ ] TREIDO: Make cookie consent + region modals non-blocking (must not intercept primary CTAs) → `docs/desktop_uiux_audit.md`
-- [ ] TEST: Add/extend Playwright smoke coverage for cart → checkout → order created (happy path) → `e2e/*`
+- [x] TREIDO: Fix hydration mismatch on `/en` and product pages (SSR/CSR divergence) → `docs/desktop_uiux_audit.md`
+- [x] TREIDO: Fix cart badge vs `/cart` state desync (single cart SSOT) → `docs/desktop_uiux_audit.md`
+- [x] TREIDO: Fix `/checkout` line items render (no infinite loader / blank shell) → `docs/desktop_uiux_audit.md`
+- [ ] TREIDO: Fix Stripe Connect onboarding 500 (`/api/connect/onboarding`) → `docs/desktop_uiux_audit.md`, `docs/BACKEND.md` *(needs prod verification)*
+- [x] TREIDO: Make cookie consent + region modals non-blocking (must not intercept primary CTAs) → `docs/desktop_uiux_audit.md`
+- [ ] TEST: Add/extend Playwright smoke coverage for cart → checkout → order created (happy path) → `e2e/*` *(cart → checkout covered; order creation pending)*
 
 ### P1 — Next.js 16 full audit (App Router correctness + performance)
 - [ ] TREIDO: Remove client UI → server action imports; keep actions server-only → `docs/FRONTEND.md`, `codex-xhigh/nextjs/FULL-AUDIT.md`
