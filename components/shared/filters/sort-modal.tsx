@@ -91,12 +91,7 @@ export function SortModal({
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
-      <DrawerContent className="max-h-dialog-sm rounded-t-3xl lg:hidden">
-        {/* Drag handle */}
-        <div className="flex justify-center pt-2">
-          <div className="h-1.5 w-12 rounded-full bg-muted-foreground/25" />
-        </div>
-
+      <DrawerContent className="max-h-dialog-sm rounded-t-2xl lg:hidden">
         <DrawerHeader className="px-inset pt-4 pb-3 border-b border-border/50">
           <DrawerTitle className="text-base font-semibold text-center">
             {t("sortBy")}

@@ -11,7 +11,9 @@ import { useIsMobile } from "@/hooks/use-mobile"
 import { Button } from "@/components/ui/button"
 import {
   Drawer,
+  DrawerBody,
   DrawerContent,
+  DrawerFooter,
   DrawerHeader,
   DrawerTitle,
 } from "@/components/ui/drawer"
@@ -635,7 +637,7 @@ export function FilterModal({
 
           <DrawerHeader className="px-inset pt-4 pb-3 border-b border-border/30">
             <div className="flex items-center justify-between min-h-touch-sm">
-              <span className="text-base font-semibold">{sectionLabel}</span>
+              <DrawerTitle className="text-base font-semibold">{sectionLabel}</DrawerTitle>
               <div className="flex items-center gap-2">
                 {hasPendingFilters && (
                   <button
@@ -658,11 +660,11 @@ export function FilterModal({
             </div>
           </DrawerHeader>
 
-          <div className="flex-1 overflow-y-auto overscroll-contain bg-background">
+          <DrawerBody className="px-0 bg-background">
             <div className={contentPaddingClass}>{body}</div>
-          </div>
+          </DrawerBody>
 
-          <div className="p-4 bg-background border-t border-border/30 shrink-0 pb-[calc(1rem+env(safe-area-inset-bottom))]">
+          <DrawerFooter className="px-inset border-t border-border/30 bg-background">
             <Button
               className="w-full h-11 rounded-full text-sm font-bold"
               onClick={applyFilters}
@@ -676,7 +678,7 @@ export function FilterModal({
                 tHub("showResults", { count: displayCount.toLocaleString() })
               )}
             </Button>
-          </div>
+          </DrawerFooter>
         </DrawerContent>
       </Drawer>
     )

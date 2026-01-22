@@ -38,7 +38,7 @@ REUSE_EXISTING_SERVER=true pnpm test:e2e:smoke
 
 ### P2 — shadcn/ui full audit (primitives + a11y)
 - [x] TAILWIND: Audit `components/ui/**` for boundary violations (no app hooks/imports) → `agents.md`, `docs/FRONTEND.md`
-- [ ] TAILWIND: Standardize Dialog/Drawer usage for “modal-first” UX (one pattern, consistent headers/footers) → `docs/DESIGN.md`
+- [x] TAILWIND: Standardize Dialog/Drawer usage for “modal-first” UX (one pattern, consistent headers/footers) → `docs/DESIGN.md`
 - [ ] TAILWIND: Fix auth form a11y issues (duplicate “Remember me”, ambiguous labels) → `docs/desktop_uiux_audit.md`
 - [ ] TAILWIND: Verify focus/disabled states are consistent for Buttons/Inputs/Selects → `docs/DESIGN.md`
 

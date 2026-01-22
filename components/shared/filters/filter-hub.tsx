@@ -16,7 +16,9 @@ import { useFilterCount } from "@/hooks/use-filter-count"
 import { Button } from "@/components/ui/button"
 import {
   Drawer,
+  DrawerBody,
   DrawerContent,
+  DrawerFooter,
   DrawerHeader,
   DrawerTitle,
 } from "@/components/ui/drawer"
@@ -440,7 +442,10 @@ export function FilterHub({
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
-      <DrawerContent className="max-h-dialog flex flex-col rounded-t-2xl px-0 pb-0 bg-background lg:hidden">
+      <DrawerContent
+        aria-label={tHub("refineSearch")}
+        className="max-h-dialog flex flex-col rounded-t-2xl px-0 pb-0 bg-background lg:hidden"
+      >
         {/* Header */}
         <DrawerHeader
           className={cn(
@@ -508,7 +513,7 @@ export function FilterHub({
         </DrawerHeader>
 
         {/* Filter Content */}
-        <div className="flex-1 overflow-y-auto overscroll-contain bg-background">
+        <DrawerBody className="px-0 bg-background">
           {/* In single mode, always show the section content directly */}
           {/* In full mode, show list view when no section is active */}
           {!activeSection && !isSingleMode ? (
@@ -850,10 +855,10 @@ export function FilterHub({
               })()}
             </div>
           )}
-        </div>
+        </DrawerBody>
 
         {/* Footer with Apply CTA + Live Count */}
-        <div className="p-4 bg-background border-t border-border/30 shrink-0 pb-[calc(1rem+env(safe-area-inset-bottom))]">
+        <DrawerFooter className="px-inset border-t border-border/30 bg-background">
           <Button
             className="w-full h-11 rounded-full text-sm font-bold"
             onClick={applyFilters}
@@ -867,7 +872,7 @@ export function FilterHub({
               tHub("showResults", { count: displayCount.toLocaleString() })
             )}
           </Button>
-        </div>
+        </DrawerFooter>
       </DrawerContent>
     </Drawer>
   )
