@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { useTranslations } from "next-intl"
+import { useLocale, useTranslations } from "next-intl"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -24,6 +24,7 @@ type Props = {
 
 export function SellerPayoutSetup({ payoutStatus, sellerEmail }: Props) {
   const t = useTranslations("seller.payouts")
+  const locale = useLocale()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -36,6 +37,9 @@ export function SellerPayoutSetup({ payoutStatus, sellerEmail }: Props) {
     try {
       const response = await fetch("/api/connect/onboarding", {
         method: "POST",
+        headers: {
+          "x-next-intl-locale": locale,
+        },
       })
       const data = await response.json()
 
@@ -58,6 +62,9 @@ export function SellerPayoutSetup({ payoutStatus, sellerEmail }: Props) {
     try {
       const response = await fetch("/api/connect/dashboard", {
         method: "POST",
+        headers: {
+          "x-next-intl-locale": locale,
+        },
       })
       const data = await response.json()
 

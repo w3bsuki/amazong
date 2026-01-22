@@ -27,6 +27,33 @@ export function getAppUrl(): string {
   ).replace(/\/$/, '')
 }
 
+function getOriginFromRequest(req: Request): string | null {
+  try {
+    return new URL(req.url).origin
+  } catch {
+    return null
+  }
+}
+
+/**
+ * Build an absolute locale-prefixed URL using the incoming request origin as the base.
+ *
+ * This is safer than relying on env vars for Stripe return/refresh URLs, especially on Vercel,
+ * where missing/incorrect `NEXT_PUBLIC_SITE_URL` can break Connect onboarding flows.
+ */
+export function buildLocaleUrlFromRequest(
+  req: Request,
+  path: string,
+  locale: unknown,
+  query?: string,
+): string {
+  const base = getOriginFromRequest(req) ?? getAppUrl()
+  const safeLocale = normalizeLocale(locale)
+  const cleanPath = path.replace(/^\//, '')
+  const url = `${base}/${safeLocale}/${cleanPath}`
+  return query ? `${url}?${query}` : url
+}
+
 /**
  * Build an absolute locale-prefixed URL.
  *

@@ -2,7 +2,7 @@ import { NextResponse } from "next/server"
 import { createClient } from "@/lib/supabase/server"
 import { createAdminClient } from "@/lib/supabase/server"
 import { createConnectAccount, createAccountLink } from "@/lib/stripe-connect"
-import { buildLocaleUrl, inferLocaleFromRequest } from "@/lib/stripe-locale"
+import { buildLocaleUrlFromRequest, inferLocaleFromRequest } from "@/lib/stripe-locale"
 
 /**
  * POST /api/connect/onboarding
@@ -44,8 +44,8 @@ export async function POST(req: Request) {
       .single()
 
     const locale = inferLocaleFromRequest(req)
-    const refreshUrl = buildLocaleUrl("seller/settings/payouts", locale, "refresh=true")
-    const returnUrl = buildLocaleUrl("seller/settings/payouts", locale, "onboarding=complete")
+    const refreshUrl = buildLocaleUrlFromRequest(req, "seller/settings/payouts", locale, "refresh=true")
+    const returnUrl = buildLocaleUrlFromRequest(req, "seller/settings/payouts", locale, "onboarding=complete")
     let accountId = payoutStatus?.stripe_connect_account_id
 
     // Create new account if none exists
