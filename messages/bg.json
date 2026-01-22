@@ -180,6 +180,23 @@
             "sports": "Спорт",
             "books": "Книги",
             "automotive": "Автомобили"
+        },
+        "mobile": {
+            "promotedListings": "Промотирани обяви",
+            "seeAll": "Виж всички",
+            "trustProtected": "Защитени",
+            "trustFastShip": "Бърза доставка",
+            "trustBestPrices": "Топ цени",
+            "sellBannerTitle": "Имаш нещо за продан?",
+            "sellBannerSubtitle": "Безплатно публикуване • Достигни хиляди",
+            "forYouTitle": "За теб",
+            "exploreTabs": {
+                "newest": "Най-нови",
+                "offers": "Оферти",
+                "topRated": "Топ оценени"
+            },
+            "sortOptions": "Сортиране",
+            "listingsCount": "{count, plural, one {# обява} other {# обяви}}"
         }
     },
     "Product": {

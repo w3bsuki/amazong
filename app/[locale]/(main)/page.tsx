@@ -50,7 +50,7 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
   const promotedProducts = boostedProducts.map(p => toUI(p))
 
   return (
-    <main className="flex min-h-screen flex-col bg-background md:pb-0">
+    <div className="flex min-h-screen flex-col bg-background md:pb-0">
       {/* 
         MOBILE LAYOUT (Demo-style unified header):
         - Unified sticky header: Hamburger + Logo + Search + Category Pills
@@ -87,6 +87,6 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
           />
         </Suspense>
       </div>
-    </main>
+    </div>
   )
 }

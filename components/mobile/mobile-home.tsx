@@ -48,11 +48,10 @@ interface MobileHomeProps {
 
 function PromotedListingsStrip({
   products,
-  locale,
 }: {
   products: UIProduct[]
-  locale: string
 }) {
+  const t = useTranslations("Home")
   if (!products || products.length === 0) return null
 
   return (
@@ -62,14 +61,14 @@ function PromotedListingsStrip({
         <div className="flex items-center gap-2">
           <Fire size={18} weight="fill" className="text-fire" />
           <span className="text-sm font-bold text-foreground">
-            {locale === "bg" ? "Промотирани обяви" : "Promoted Listings"}
+            {t("mobile.promotedListings")}
           </span>
         </div>
         <Link
           href="/todays-deals"
           className="flex items-center gap-0.5 text-xs font-medium text-muted-foreground active:text-foreground"
         >
-          {locale === "bg" ? "Виж всички" : "See all"}
+          {t("mobile.seeAll")}
           <ArrowRight size={12} weight="bold" />
         </Link>
       </div>
@@ -90,15 +89,16 @@ function PromotedListingsStrip({
 // Trust Badges (demo style)
 // =============================================================================
 
-function TrustBadgesInline({ locale }: { locale: string }) {
+function TrustBadgesInline() {
+  const t = useTranslations("Home")
   const badges = [
-    { icon: ShieldCheck, label: locale === "bg" ? "Защитени" : "Protected" },
-    { icon: Truck, label: locale === "bg" ? "Бърза доставка" : "Fast Ship" },
-    { icon: Tag, label: locale === "bg" ? "Топ цени" : "Best Prices" },
+    { icon: ShieldCheck, label: t("mobile.trustProtected") },
+    { icon: Truck, label: t("mobile.trustFastShip") },
+    { icon: Tag, label: t("mobile.trustBestPrices") },
   ]
 
   return (
-    <div className="mx-inset my-3 flex items-center justify-between py-2.5 px-3 bg-muted/30 rounded-lg border border-border/30">
+    <div className="mx-inset my-3 flex items-center justify-between py-2.5 px-3 bg-muted/30 rounded-md border border-border/30">
       {badges.map(({ icon: Icon, label }, i) => (
         <div
           key={label}
@@ -116,20 +116,19 @@ function TrustBadgesInline({ locale }: { locale: string }) {
 // Sell Promo Banner (demo style)
 // =============================================================================
 
-function SellPromoBanner({ locale }: { locale: string }) {
+function SellPromoBanner() {
+  const t = useTranslations("Home")
   return (
     <Link
       href="/sell"
-      className="mx-inset mb-4 flex items-center justify-between gap-3 rounded-lg bg-foreground text-background p-3.5 active:opacity-90 transition-opacity"
+      className="mx-inset mb-4 flex items-center justify-between gap-3 rounded-md bg-foreground text-background p-3 active:opacity-90 transition-opacity"
     >
       <div className="space-y-0.5 min-w-0">
         <p className="text-sm font-bold leading-tight">
-          {locale === "bg" ? "Имаш нещо за продан?" : "Have something to sell?"}
+          {t("mobile.sellBannerTitle")}
         </p>
         <p className="text-xs text-background/70 leading-tight">
-          {locale === "bg"
-            ? "Безплатно публикуване • Достигни хиляди"
-            : "Free to list • Reach thousands"}
+          {t("mobile.sellBannerSubtitle")}
         </p>
       </div>
       <div className="size-9 shrink-0 bg-background text-foreground rounded-full flex items-center justify-center">
@@ -153,6 +152,7 @@ export function MobileHome({
   onCategorySelect,
   onSearchOpen,
 }: MobileHomeProps) {
+  const t = useTranslations("Home")
   const [searchOpen, setSearchOpen] = useState(false)
   const [filterHubOpen, setFilterHubOpen] = useState(false)
   const [sortModalOpen, setSortModalOpen] = useState(false)
@@ -217,7 +217,14 @@ export function MobileHome({
 
         {/* Promoted Listings - Only on "All" tab */}
         {nav.isAllTab && promotedProducts && promotedProducts.length > 0 && (
-          <PromotedListingsStrip products={promotedProducts} locale={locale} />
+          <PromotedListingsStrip products={promotedProducts} />
+        )}
+
+        {/* For You - Only on "All" tab */}
+        {nav.isAllTab && (
+          <div className="px-inset pt-3 pb-1">
+            <h2 className="text-sm font-semibold text-foreground">{t("mobile.forYouTitle")}</h2>
+          </div>
         )}
 
         {/* Explore Banner with Segmented Control - Only on "All" tab */}
@@ -226,7 +233,6 @@ export function MobileHome({
             activeTab={exploreTab}
             onTabChange={setExploreTab}
             onSortClick={() => setSortModalOpen(true)}
-            locale={locale}
             productCount={nav.activeFeed.products.length}
           />
         )}
@@ -254,11 +260,11 @@ export function MobileHome({
         />
 
         {/* Trust Badges after first batch */}
-        {nav.activeFeed.products.length >= 4 && <TrustBadgesInline locale={locale} />}
+        {nav.activeFeed.products.length >= 4 && <TrustBadgesInline />}
       </div>
 
       {/* Sell CTA */}
-      <SellPromoBanner locale={locale} />
+      <SellPromoBanner />
 
       {/* FilterHub Drawer (reuse existing, uses shadcn Drawer) */}
       <FilterHub

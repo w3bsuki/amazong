@@ -3,7 +3,7 @@ name: treido-frontend
 description: Treido frontend development (Next.js App Router UI, React, Tailwind v4 + shadcn/ui, next-intl). Triggers on "FRONTEND:" prefix or UI/components/styling/i18n tasks.
 ---
 
-# Treido Frontend
+# Treido Frontend (UI + UX)
 
 ## On Any "FRONTEND:" Prompt
 

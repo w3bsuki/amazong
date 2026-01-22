@@ -180,6 +180,23 @@
             "sports": "Sports",
             "books": "Books",
             "automotive": "Automotive"
+        },
+        "mobile": {
+            "promotedListings": "Promoted Listings",
+            "seeAll": "See all",
+            "trustProtected": "Protected",
+            "trustFastShip": "Fast Ship",
+            "trustBestPrices": "Best Prices",
+            "sellBannerTitle": "Have something to sell?",
+            "sellBannerSubtitle": "Free to list • Reach thousands",
+            "forYouTitle": "For you",
+            "exploreTabs": {
+                "newest": "Newest",
+                "offers": "Offers",
+                "topRated": "Top Rated"
+            },
+            "sortOptions": "Sort options",
+            "listingsCount": "{count, plural, one {# listing} other {# listings}}"
         }
     },
     "Product": {

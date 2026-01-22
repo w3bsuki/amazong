@@ -2,6 +2,7 @@
 
 import { cn } from "@/lib/utils"
 import { Clock, Tag, Star, SlidersHorizontal } from "@phosphor-icons/react"
+import { useTranslations } from "next-intl"
 
 // =============================================================================
 // Types
@@ -13,7 +14,6 @@ interface ExploreBannerProps {
   activeTab: ExploreTab
   onTabChange: (tab: ExploreTab) => void
   onSortClick: () => void
-  locale: string
   productCount?: number
 }
 
@@ -23,12 +23,12 @@ interface ExploreBannerProps {
 
 const EXPLORE_TABS: Array<{
   id: ExploreTab
-  label: { en: string; bg: string }
+  labelKey: string
   icon: typeof Clock
 }> = [
-  { id: "newest", label: { en: "Newest", bg: "Най-нови" }, icon: Clock },
-  { id: "offers", label: { en: "Offers", bg: "Оферти" }, icon: Tag },
-  { id: "top-rated", label: { en: "Top Rated", bg: "Топ оценени" }, icon: Star },
+  { id: "newest", labelKey: "mobile.exploreTabs.newest", icon: Clock },
+  { id: "offers", labelKey: "mobile.exploreTabs.offers", icon: Tag },
+  { id: "top-rated", labelKey: "mobile.exploreTabs.topRated", icon: Star },
 ]
 
 // =============================================================================
@@ -39,9 +39,10 @@ export function ExploreBanner({
   activeTab,
   onTabChange,
   onSortClick,
-  locale,
   productCount,
 }: ExploreBannerProps) {
+  const t = useTranslations("Home")
+
   return (
     <div className="px-inset py-3">
       {/* Banner Container */}
@@ -70,7 +71,7 @@ export function ExploreBanner({
                 >
                   <Icon size={14} weight={isActive ? "fill" : "regular"} />
                   <span className="whitespace-nowrap">
-                    {tab.label[locale as "en" | "bg"] || tab.label.en}
+                    {t(tab.labelKey)}
                   </span>
                 </button>
               )
@@ -88,7 +89,7 @@ export function ExploreBanner({
               "transition-colors active:bg-muted/50",
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1"
             )}
-            aria-label={locale === "bg" ? "Сортиране" : "Sort options"}
+            aria-label={t("mobile.sortOptions")}
           >
             <SlidersHorizontal size={16} weight="bold" />
           </button>
@@ -98,8 +99,7 @@ export function ExploreBanner({
       {/* Product Count (subtle, below banner) */}
       {typeof productCount === "number" && productCount > 0 && (
         <p className="mt-2 text-xs text-muted-foreground">
-          {productCount.toLocaleString(locale === "bg" ? "bg-BG" : "en-US")}{" "}
-          {locale === "bg" ? "обяви" : "listings"}
+          {t("mobile.listingsCount", { count: productCount })}
         </p>
       )}
     </div>
