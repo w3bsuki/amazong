@@ -82,7 +82,7 @@ export function ForgotPasswordForm({
             type="email"
             autoComplete="email"
             required
-            placeholder="you@example.com"
+            placeholder={t("emailPlaceholder")}
             aria-invalid={!!state?.fieldErrors?.email}
             className={cn(state?.fieldErrors?.email && "border-destructive focus-visible:ring-destructive/20")}
           />

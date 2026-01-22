@@ -90,24 +90,24 @@ export function SignUpForm({
     if (!username || username.trim().length < 3) return null
     if (isCheckingUsername) {
       return (
-        <span data-testid="username-availability" aria-label="Checking username availability">
-          <span className="sr-only">Checking username availability</span>
+        <span data-testid="username-availability" role="status" aria-live="polite">
+          <span className="sr-only">{t("usernameAvailabilityChecking")}</span>
           <SpinnerGap className="size-4 animate-spin text-muted-foreground" weight="bold" />
         </span>
       )
     }
     if (usernameAvailable === true) {
       return (
-        <span data-testid="username-availability" aria-label="Username available">
-          <span className="sr-only">Username available</span>
+        <span data-testid="username-availability" role="status" aria-live="polite">
+          <span className="sr-only">{t("usernameAvailabilityAvailable")}</span>
           <CheckCircle className="size-4 text-success" weight="fill" />
         </span>
       )
     }
     if (usernameAvailable === false) {
       return (
-        <span data-testid="username-availability" aria-label="Username unavailable">
-          <span className="sr-only">Username unavailable</span>
+        <span data-testid="username-availability" role="status" aria-live="polite">
+          <span className="sr-only">{t("usernameAvailabilityUnavailable")}</span>
           <X className="size-4 text-destructive" />
         </span>
       )

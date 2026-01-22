@@ -104,78 +104,88 @@ export function LoginForm({
       description={t("signInDescription")}
       footer={footer}
     >
-      <form action={formAction} onSubmit={onSubmit} className="space-y-4">
+      <div className="flex flex-col gap-4">
         {state?.error && (
           <div className="p-3 text-sm text-destructive bg-destructive/10 border border-destructive/20 rounded-md">
             {state.error}
           </div>
         )}
 
-        {/* Email Field */}
-        <div className="space-y-1">
-          <Label htmlFor="email">{t("emailOrPhone")}</Label>
-          <Input
-            id="email"
-            name="email"
-            type="email"
-            autoComplete="email"
-            required
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder={t("emailPlaceholder")}
-            aria-invalid={showClientEmailError || !!state?.fieldErrors?.email}
-            aria-describedby={showClientEmailError || state?.fieldErrors?.email ? "email-error" : undefined}
-            className={cn(
-              (showClientEmailError || state?.fieldErrors?.email) && "border-destructive focus-visible:ring-destructive/20"
-            )}
-          />
-          {(showClientEmailError || state?.fieldErrors?.email) && (
-            <p id="email-error" className="text-xs text-destructive" role="alert">
-              {state?.fieldErrors?.email ?? t("invalidEmail")}
-            </p>
-          )}
-        </div>
-
-        {/* Password Field */}
-        <div className="space-y-1">
-          <div className="flex justify-between items-center">
-            <Label htmlFor="password">{t("password")}</Label>
-            <Link href="/auth/forgot-password" className="text-xs text-primary hover:underline min-h-7 flex items-center">
-              {t("forgotPassword")}
-            </Link>
-          </div>
-          <div className="relative">
+        <form action={formAction} onSubmit={onSubmit} className="contents">
+          {/* Email Field */}
+          <div className="space-y-1 order-1">
+            <Label htmlFor="email">{t("emailOrPhone")}</Label>
             <Input
-              id="password"
-              name="password"
-              type={showPassword ? "text" : "password"}
-              autoComplete="current-password"
+              id="email"
+              name="email"
+              type="email"
+              autoComplete="email"
               required
-              value={password}
-              placeholder={t("passwordPlaceholder")}
-              aria-invalid={!!state?.fieldErrors?.password}
-              onChange={(e) => setPassword(e.target.value)}
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder={t("emailPlaceholder")}
+              aria-invalid={showClientEmailError || !!state?.fieldErrors?.email}
+              aria-describedby={showClientEmailError || state?.fieldErrors?.email ? "email-error" : undefined}
               className={cn(
-                "pr-10",
-                state?.fieldErrors?.password && "border-destructive focus-visible:ring-destructive/20"
+                (showClientEmailError || state?.fieldErrors?.email) && "border-destructive focus-visible:ring-destructive/20"
               )}
             />
-            <button
-              type="button"
-              onClick={() => setShowPassword((v) => !v)}
-              className="absolute right-1 top-1/2 -translate-y-1/2 size-8 flex items-center justify-center text-muted-foreground hover:text-foreground rounded-md transition-colors"
-              aria-label={showPassword ? t("hidePassword") : t("showPassword")}
-            >
-              {showPassword ? <EyeSlash className="size-4" /> : <Eye className="size-4" />}
-            </button>
+            {(showClientEmailError || state?.fieldErrors?.email) && (
+              <p id="email-error" className="text-xs text-destructive" role="alert">
+                {state?.fieldErrors?.email ?? t("invalidEmail")}
+              </p>
+            )}
           </div>
-          {state?.fieldErrors?.password && (
-            <p className="text-xs text-destructive">{state.fieldErrors.password}</p>
-          )}
-        </div>
+
+          {/* Password Field */}
+          <div className="space-y-1 order-2">
+            <div className="flex justify-between items-center">
+              <Label htmlFor="password">{t("password")}</Label>
+              <Link href="/auth/forgot-password" className="text-xs text-primary hover:underline min-h-7 flex items-center">
+                {t("forgotPassword")}
+              </Link>
+            </div>
+            <div className="relative">
+              <Input
+                id="password"
+                name="password"
+                type={showPassword ? "text" : "password"}
+                autoComplete="current-password"
+                required
+                value={password}
+                placeholder={t("passwordPlaceholder")}
+                aria-invalid={!!state?.fieldErrors?.password}
+                onChange={(e) => setPassword(e.target.value)}
+                className={cn(
+                  "pr-10",
+                  state?.fieldErrors?.password && "border-destructive focus-visible:ring-destructive/20"
+                )}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword((v) => !v)}
+                className="absolute right-1 top-1/2 -translate-y-1/2 size-8 flex items-center justify-center text-muted-foreground hover:text-foreground rounded-md transition-colors"
+                aria-label={showPassword ? t("hidePassword") : t("showPassword")}
+              >
+                {showPassword ? <EyeSlash className="size-4" /> : <Eye className="size-4" />}
+              </button>
+            </div>
+            {state?.fieldErrors?.password && (
+              <p className="text-xs text-destructive">{state.fieldErrors.password}</p>
+            )}
+          </div>
+
+          <div className="pt-1 order-4">
+            <SubmitButton
+              label={t("signIn")}
+              pendingLabel={t("signingIn")}
+              disabled={!isSubmittable}
+            />
+          </div>
+        </form>
 
         {/* Remember Me */}
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between order-3">
           <div className="flex items-center gap-2 min-h-9">
             <Checkbox
               id="remember-me"
@@ -190,15 +200,7 @@ export function LoginForm({
             </Label>
           </div>
         </div>
-
-        <div className="pt-1">
-          <SubmitButton
-            label={t("signIn")}
-            pendingLabel={t("signingIn")}
-            disabled={!isSubmittable}
-          />
-        </div>
-      </form>
+      </div>
 
       <p className="text-xs text-muted-foreground mt-4 leading-relaxed">
         {t("byContinuing")}{" "}
