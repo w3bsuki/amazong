@@ -200,16 +200,15 @@ const config = [
             {
               group: ["@/hooks/**"],
               message:
-                "components/ui must not depend on app hooks. Move logic to /hooks or build a composite in components/common or app-owned _components.",
+                "components/ui must not depend on app hooks. Move logic to /hooks or build a composite in components/shared or route-owned _components.",
             },
             {
               group: ["@/app/**"],
               message:
-                "components/ui must not depend on route code (move UI to components/common or app-owned _components).",
+                "components/ui must not depend on route code (move UI to components/shared or route-owned _components).",
             },
             {
               group: [
-                "@/components/common/**",
                 "@/components/layout/**",
                 "@/components/providers/**",
                 "@/components/ai-elements/**",
@@ -217,26 +216,9 @@ const config = [
                 "@/components/product/**",
               ],
               message:
-                "components/ui should be primitives-only; composites belong in components/common or route-owned _components.",
+                "components/ui should be primitives-only; composites belong in components/shared or route-owned _components.",
             },
           ],
-        },
-      ],
-    },
-  },
-
-  // Existing compatibility re-export shims (temporary): don't warn on these.
-  {
-    files: [
-      "components/ui/modal.{js,jsx,ts,tsx}",
-      "components/ui/page-container.{js,jsx,ts,tsx}",
-      "components/ui/pricing-card.{js,jsx,ts,tsx}",
-    ],
-    rules: {
-      "no-restricted-imports": [
-        "warn",
-        {
-          patterns: [...baseRestrictedImportPatterns],
         },
       ],
     },
