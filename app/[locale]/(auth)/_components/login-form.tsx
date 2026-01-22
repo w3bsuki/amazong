@@ -12,8 +12,19 @@ import { Label } from "@/components/ui/label"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Link } from "@/i18n/routing"
 import { cn } from "@/lib/utils"
-import { login } from "../_actions/auth"
-import type { AuthActionState } from "../_actions/auth"
+
+type AuthActionState = {
+  error?: string
+  fieldErrors?: Record<string, string>
+  success?: boolean
+}
+
+type LoginAction = (
+  locale: string,
+  redirectPath: string | null | undefined,
+  prevState: AuthActionState,
+  formData: FormData
+) => Promise<AuthActionState>
 
 function isProbablyValidEmail(value: string) {
   const v = value.trim()
@@ -25,9 +36,11 @@ function isProbablyValidEmail(value: string) {
 export function LoginForm({
   locale,
   redirectPath,
+  loginAction,
 }: {
   locale: string
   redirectPath?: string | null
+  loginAction: LoginAction
 }) {
   const t = useTranslations("Auth")
   const [showPassword, setShowPassword] = useState(false)
@@ -39,7 +52,7 @@ export function LoginForm({
     (): AuthActionState => ({ fieldErrors: {}, success: false }),
     [],
   )
-  const [state, formAction] = useActionState(login.bind(null, locale, redirectPath), initialState)
+  const [state, formAction] = useActionState(loginAction.bind(null, locale, redirectPath), initialState)
 
   const emailHasValue = email.trim().length > 0
   const passwordHasValue = password.length > 0

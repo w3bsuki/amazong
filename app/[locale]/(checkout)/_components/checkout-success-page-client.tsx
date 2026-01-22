@@ -5,7 +5,6 @@ import { useSearchParams } from "next/navigation"
 import { Link } from "@/i18n/routing"
 import { useTranslations } from "next-intl"
 import { Button } from "@/components/ui/button"
-import { verifyAndCreateOrder } from "../_actions/checkout"
 import {
   CheckCircle,
   XCircle,
@@ -21,7 +20,14 @@ type SuccessState =
   | { status: "success"; orderId: string | null }
   | { status: "error"; message: string }
 
-export default function CheckoutSuccessPageClient() {
+type VerifyAndCreateOrderResult = { success?: boolean; orderId?: string | null; error?: string }
+type VerifyAndCreateOrderAction = (sessionId: string) => Promise<VerifyAndCreateOrderResult>
+
+export default function CheckoutSuccessPageClient({
+  verifyAndCreateOrderAction,
+}: {
+  verifyAndCreateOrderAction: VerifyAndCreateOrderAction
+}) {
   const searchParams = useSearchParams()
   const t = useTranslations("CheckoutSuccessPage")
 
@@ -36,15 +42,15 @@ export default function CheckoutSuccessPageClient() {
 
     let cancelled = false
 
-    ;(async () => {
-      setState({ status: "loading" })
-      try {
-        const result = await verifyAndCreateOrder(sessionId)
-        if (cancelled) return
+      ;(async () => {
+        setState({ status: "loading" })
+        try {
+          const result = await verifyAndCreateOrderAction(sessionId)
+          if (cancelled) return
 
-        if (result?.error) {
-          setState({ status: "error", message: result.error })
-          return
+          if (result?.error) {
+            setState({ status: "error", message: result.error })
+            return
         }
 
         setState({ status: "success", orderId: result?.orderId ?? null })

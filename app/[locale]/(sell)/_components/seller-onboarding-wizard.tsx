@@ -14,7 +14,15 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { cn } from "@/lib/utils"
-import { completeSellerOnboarding } from "../_actions/sell"
+
+type CompleteSellerOnboardingAction = (args: {
+  userId: string
+  accountType: "personal" | "business"
+  username: string
+  displayName: string
+  bio: string
+  businessName?: string
+}) => Promise<{ success: true; error?: undefined } | { error: string; success?: undefined }>
 
 interface SellerOnboardingWizardProps {
   userId: string
@@ -22,6 +30,7 @@ interface SellerOnboardingWizardProps {
   displayName?: string | null
   initialBusinessName?: string | null
   initialAccountType: "personal" | "business"  // Required - from profile!
+  completeSellerOnboardingAction: CompleteSellerOnboardingAction
   onComplete: () => void
 }
 
@@ -84,6 +93,7 @@ export function SellerOnboardingWizard({
   displayName: initialDisplayName,
   initialBusinessName,
   initialAccountType,
+  completeSellerOnboardingAction,
   onComplete,
 }: SellerOnboardingWizardProps) {
   const params = useParams()
@@ -108,7 +118,7 @@ export function SellerOnboardingWizard({
     setError(null)
     startTransition(async () => {
       try {
-        const res = await completeSellerOnboarding({
+        const res = await completeSellerOnboardingAction({
           userId,
           accountType,
           username,

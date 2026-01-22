@@ -20,7 +20,26 @@ import { SellFormProvider, useSellForm, useSellFormContext, defaultSellFormValue
 import { DesktopLayout, MobileLayout } from "./layouts";
 import type { Category } from "../_lib/types";
 import type { SellFormDataV4 } from "@/lib/sell/schema-v4";
-import { createListing, type CreateListingResult } from "../_actions/sell";
+
+type CreateListingResult =
+  | {
+      success: true;
+      id: string;
+      sellerUsername: string;
+      product: {
+        id: string;
+        slug: string | null;
+      };
+    }
+  | {
+      success: false;
+      error: string;
+      message?: string;
+      issues?: Array<{ path: string[]; message: string }>;
+      upgradeRequired?: boolean;
+    };
+
+type CreateListingAction = (args: { sellerId: string; data: unknown }) => Promise<CreateListingResult>;
 
 // ============================================================================
 // UNIFIED SELL FORM - Phase 4: Responsive Unification
@@ -32,6 +51,7 @@ interface UnifiedSellFormProps {
   existingProduct?: SellFormDataV4 & { id: string };
   sellerId: string;
   categories?: Category[];
+  createListingAction: CreateListingAction;
 }
 
 /**
@@ -48,6 +68,7 @@ export function UnifiedSellForm({
   existingProduct,
   sellerId,
   categories = [],
+  createListingAction,
 }: UnifiedSellFormProps) {
   return (
     <SellFormProvider
@@ -57,7 +78,7 @@ export function UnifiedSellForm({
       {...(existingProduct ? { existingProduct } : {})}
       totalSteps={4}
     >
-      <SellFormContent sellerId={sellerId} />
+      <SellFormContent sellerId={sellerId} createListingAction={createListingAction} />
     </SellFormProvider>
   );
 }
@@ -65,7 +86,13 @@ export function UnifiedSellForm({
 /**
  * SellFormContent - Inner component that has access to form context
  */
-function SellFormContent({ sellerId }: { sellerId: string }) {
+function SellFormContent({
+  sellerId,
+  createListingAction,
+}: {
+  sellerId: string;
+  createListingAction: CreateListingAction;
+}) {
   const _router = useRouter();
   const form = useSellForm();
   const { isBg, clearDraft } = useSellFormContext();
@@ -90,7 +117,7 @@ function SellFormContent({ sellerId }: { sellerId: string }) {
           return;
         }
 
-        const result: CreateListingResult = await createListing({ sellerId, data });
+        const result: CreateListingResult = await createListingAction({ sellerId, data });
 
         if (!result.success) {
           const issueMessages = result.issues

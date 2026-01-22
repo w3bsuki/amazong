@@ -11,12 +11,25 @@ import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { Link } from "@/i18n/routing"
 import { cn } from "@/lib/utils"
-import { requestPasswordReset, type AuthActionState } from "../_actions/auth"
 
-export function ForgotPasswordForm({ locale }: { locale: string }) {
+type AuthActionState = {
+  error?: string
+  fieldErrors?: Record<string, string>
+  success?: boolean
+}
+
+type RequestPasswordResetAction = (locale: string, prevState: AuthActionState, formData: FormData) => Promise<AuthActionState>
+
+export function ForgotPasswordForm({
+  locale,
+  requestPasswordResetAction,
+}: {
+  locale: string
+  requestPasswordResetAction: RequestPasswordResetAction
+}) {
   const t = useTranslations("Auth")
   const initialState: AuthActionState = { fieldErrors: {}, success: false }
-  const [state, formAction] = useActionState(requestPasswordReset.bind(null, locale), initialState)
+  const [state, formAction] = useActionState(requestPasswordResetAction.bind(null, locale), initialState)
 
   if (state?.success) {
     return (

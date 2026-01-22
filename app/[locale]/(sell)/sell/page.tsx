@@ -4,6 +4,7 @@ import { routing } from "@/i18n/routing";
 import { SellPageClient } from "./client";
 import { redirect } from "next/navigation";
 import { getSellCategories } from "./_lib/categories";
+import { createListing, completeSellerOnboarding } from "../_actions/sell";
 
 // Generate static params for all supported locales
 export function generateStaticParams() {
@@ -106,6 +107,8 @@ export default async function SellPage({
         incomplete: Boolean(payoutStatus && !isPayoutReady),
       }}
       categories={categories}
+      createListingAction={createListing}
+      completeSellerOnboardingAction={completeSellerOnboarding}
     />
   );
 }

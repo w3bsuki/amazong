@@ -49,6 +49,15 @@ interface SellPageClientProps {
   initialBusinessName?: string | null;
   initialPayoutStatus?: PayoutSetupStatus;
   categories: Category[];
+  createListingAction: (args: { sellerId: string; data: unknown }) => Promise<any>;
+  completeSellerOnboardingAction: (args: {
+    userId: string;
+    accountType: "personal" | "business";
+    username: string;
+    displayName: string;
+    bio: string;
+    businessName?: string;
+  }) => Promise<any>;
 }
 
 export function SellPageClient({
@@ -60,7 +69,9 @@ export function SellPageClient({
   initialDisplayName = null,
   initialBusinessName = null,
   initialPayoutStatus,
-  categories // Pre-fetched from server
+  categories, // Pre-fetched from server
+  createListingAction,
+  completeSellerOnboardingAction,
 }: SellPageClientProps) {
   const t = useTranslations("Sell");
   const [user, setUser] = useState(initialUser);
@@ -200,6 +211,7 @@ export function SellPageClient({
             initialAccountType={accountType}
             displayName={displayName}
             initialBusinessName={businessName}
+            completeSellerOnboardingAction={completeSellerOnboardingAction}
             onComplete={handleOnboardingComplete}
           />
         </div>
@@ -273,6 +285,7 @@ export function SellPageClient({
         sellerId={seller.id}
         locale={locale}
         categories={categories}
+        createListingAction={createListingAction}
       />
     </SellErrorBoundary>
   );

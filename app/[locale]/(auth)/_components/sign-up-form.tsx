@@ -12,9 +12,25 @@ import { Label } from "@/components/ui/label"
 import { Link } from "@/i18n/routing"
 import { cn } from "@/lib/utils"
 import { getPasswordStrength } from "@/lib/validations/password-strength"
-import { checkUsernameAvailability, signUp, type AuthActionState } from "../_actions/auth"
 
-export function SignUpForm({ locale }: { locale: string }) {
+type AuthActionState = {
+  error?: string
+  fieldErrors?: Record<string, string>
+  success?: boolean
+}
+
+type SignUpAction = (locale: string, prevState: AuthActionState, formData: FormData) => Promise<AuthActionState>
+type CheckUsernameAvailabilityAction = (username: string) => Promise<{ available: boolean }>
+
+export function SignUpForm({
+  locale,
+  signUpAction,
+  checkUsernameAvailabilityAction,
+}: {
+  locale: string
+  signUpAction: SignUpAction
+  checkUsernameAvailabilityAction: CheckUsernameAvailabilityAction
+}) {
   const t = useTranslations("Auth")
 
   const [name, setName] = useState("")
@@ -32,7 +48,7 @@ export function SignUpForm({ locale }: { locale: string }) {
   const [accountType, setAccountType] = useState<"personal" | "business">("personal")
 
   const initialState = useMemo<AuthActionState>(() => ({ fieldErrors: {}, success: false }), [])
-  const [state, formAction] = useActionState(signUp.bind(null, locale), initialState)
+  const [state, formAction] = useActionState(signUpAction.bind(null, locale), initialState)
 
   useEffect(() => {
     let cancelled = false
@@ -45,7 +61,7 @@ export function SignUpForm({ locale }: { locale: string }) {
 
       if (!cancelled) setIsCheckingUsername(true)
       try {
-        const res = await checkUsernameAvailability(cleaned)
+        const res = await checkUsernameAvailabilityAction(cleaned)
         if (!cancelled) setUsernameAvailable(res.available)
       } finally {
         if (!cancelled) setIsCheckingUsername(false)

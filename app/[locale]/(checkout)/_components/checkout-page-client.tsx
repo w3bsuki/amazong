@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState, useCallback } from "react"
-import { useCart } from "@/components/providers/cart-context"
+import { useCart, type CartItem } from "@/components/providers/cart-context"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -10,7 +10,6 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sh
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { Separator } from "@/components/ui/separator"
 import { Badge } from "@/components/ui/badge"
-import { createCheckoutSession, getCheckoutFeeQuote } from "../_actions/checkout"
 import { createClient } from "@/lib/supabase/client"
 import {
   ShoppingCart,
@@ -63,7 +62,19 @@ const SHIPPING_COSTS = {
 
 type ShippingMethod = keyof typeof SHIPPING_COSTS
 
-export default function CheckoutPageClient() {
+type CreateCheckoutSessionResult = { url?: string | null; error?: string }
+type CreateCheckoutSessionAction = (items: CartItem[], locale?: "en" | "bg") => Promise<CreateCheckoutSessionResult>
+
+type CheckoutFeeQuoteResult = { ok: true; buyerProtectionFee: number } | { ok: false }
+type GetCheckoutFeeQuoteAction = (items: CartItem[]) => Promise<CheckoutFeeQuoteResult>
+
+export default function CheckoutPageClient({
+  createCheckoutSessionAction,
+  getCheckoutFeeQuoteAction,
+}: {
+  createCheckoutSessionAction: CreateCheckoutSessionAction
+  getCheckoutFeeQuoteAction: GetCheckoutFeeQuoteAction
+}) {
   const { items, totalItems, subtotal } = useCart()
   const locale = useLocale()
   const t = useTranslations("CheckoutPage")
@@ -142,7 +153,7 @@ export default function CheckoutPageClient() {
     }
 
     ;(async () => {
-      const quote = await getCheckoutFeeQuote(items)
+      const quote = await getCheckoutFeeQuoteAction(items)
       if (cancelled) return
       setBuyerProtectionFee(quote.ok ? quote.buyerProtectionFee : 0)
     })()
@@ -184,7 +195,7 @@ export default function CheckoutPageClient() {
 
     setIsProcessing(true)
     try {
-      const { url, error } = await createCheckoutSession(items, locale === "bg" ? "bg" : "en")
+      const { url, error } = await createCheckoutSessionAction(items, locale === "bg" ? "bg" : "en")
       if (error) {
         alert(error)
         return

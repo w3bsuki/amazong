@@ -1,4 +1,5 @@
 import { LoginForm } from "../../_components/login-form"
+import { login } from "../../_actions/auth"
 import { setRequestLocale } from "next-intl/server"
 import { validateLocale } from "@/i18n/routing"
 import type { Metadata } from "next"
@@ -27,5 +28,5 @@ export default async function LoginPage({
   const { locale } = await params
   const sp = await searchParams
   const redirectPath = sp.redirect ?? sp.next ?? null
-  return <LoginForm locale={locale} redirectPath={redirectPath} />
+  return <LoginForm locale={locale} redirectPath={redirectPath} loginAction={login} />
 }

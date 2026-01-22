@@ -1,4 +1,5 @@
 import { SignUpForm } from "../../_components/sign-up-form"
+import { checkUsernameAvailability, signUp } from "../../_actions/auth"
 import { setRequestLocale } from "next-intl/server"
 import { validateLocale } from "@/i18n/routing"
 import type { Metadata } from "next"
@@ -23,5 +24,11 @@ export default async function SignUpPage({
   params: Promise<{ locale: string }>
 }) {
   const { locale } = await params
-  return <SignUpForm locale={locale} />
+  return (
+    <SignUpForm
+      locale={locale}
+      signUpAction={signUp}
+      checkUsernameAvailabilityAction={checkUsernameAvailability}
+    />
+  )
 }
