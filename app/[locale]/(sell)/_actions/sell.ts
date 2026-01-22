@@ -68,7 +68,7 @@ export async function createListing(args: { sellerId: string; data: unknown }): 
   const [{ count: currentListings }, { data: subscription }] = await Promise.all([
     supabase
       .from("products")
-      .select("*", { count: "exact", head: true })
+      .select("id", { count: "exact", head: true })
       .eq("seller_id", user.id)
       .eq("status", "active"),
     supabase
@@ -137,7 +137,7 @@ export async function createListing(args: { sellerId: string; data: unknown }): 
   const { data: product, error } = await supabase
     .from("products")
     .insert(productData)
-    .select()
+    .select("id, slug")
     .single()
 
   if (error) {

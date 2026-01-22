@@ -148,7 +148,7 @@ export async function POST(request: NextRequest) {
     const [productCountResult, planResult] = await Promise.all([
       supabaseUser
         .from("products")
-        .select("*", { count: "exact", head: true })
+        .select("id", { count: "exact", head: true })
         .eq("seller_id", user.id)
         .eq("status", "active"),
       // Get plan limits based on profile tier (free/premium/business)

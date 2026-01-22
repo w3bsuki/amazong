@@ -33,7 +33,7 @@ REUSE_EXISTING_SERVER=true pnpm test:e2e:smoke
 - [x] TREIDO: Remove client UI → server action imports; keep actions server-only → `docs/FRONTEND.md`, `codex-xhigh/nextjs/FULL-AUDIT.md`
 - [x] TREIDO: Audit caching usage (`'use cache'`, `cacheLife`, `cacheTag`, `revalidateTag(tag, profile)`) → `docs/ENGINEERING.md`
 - [x] TREIDO: Ensure no user-specific reads are cached (no `cookies()`/`headers()` inside cached functions) → `docs/ENGINEERING.md`
-- [ ] TREIDO: Reduce over-fetching in hot paths (no `select('*')`, narrow joins) → `docs/ENGINEERING.md`, `docs/BACKEND.md`
+- [x] TREIDO: Reduce over-fetching in hot paths (no `select('*')`, narrow joins) → `docs/ENGINEERING.md`, `docs/BACKEND.md`
 - [ ] TREIDO: Confirm `pnpm -s build` is clean and matches Vercel runtime (no webpack-only workarounds) → `docs/PRODUCTION.md`
 
 ### P2 — shadcn/ui full audit (primitives + a11y)

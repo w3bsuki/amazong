@@ -374,7 +374,7 @@ export async function verifyAndCreateOrder(sessionId: string) {
       stripe_payment_intent_id: session.payment_intent as string,
     }
 
-    const { data: order, error: orderError } = await supabase.from("orders").insert(orderData).select().single()
+    const { data: order, error: orderError } = await supabase.from("orders").insert(orderData).select("id, user_id").single()
 
     if (orderError) {
       // If the webhook won the race and created the order first, we try to fetch it.

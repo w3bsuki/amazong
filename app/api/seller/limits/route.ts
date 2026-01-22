@@ -45,7 +45,7 @@ export async function GET(request: NextRequest) {
     const [{ count: currentListings }, { data: subscription }] = await Promise.all([
       supabase
         .from("products")
-        .select("*", { count: "exact", head: true })
+        .select("id", { count: "exact", head: true })
         .eq("seller_id", user.id)
         .eq("status", "active"),
       supabase

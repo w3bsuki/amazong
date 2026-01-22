@@ -310,7 +310,7 @@ export async function fetchProductFavoritesCount(productId: string): Promise<num
   
   const { count, error } = await supabase
     .from("wishlists")
-    .select("*", { count: "exact", head: true })
+    .select("id", { count: "exact", head: true })
     .eq("product_id", productId)
   
   if (error) return 0

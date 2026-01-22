@@ -218,7 +218,7 @@ export async function POST(req: Request) {
           // Store Stripe payment intent for reference
           stripe_payment_intent_id: session.payment_intent as string,
         })
-        .select()
+        .select("id")
         .single();
 
       if (orderError) {
