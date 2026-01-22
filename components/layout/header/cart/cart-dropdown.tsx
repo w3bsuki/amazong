@@ -23,8 +23,9 @@ export function CartDropdown() {
   const displayItems = mounted ? totalItems : 0
 
   const buildProductUrl = useCallback((item: CartItem) => {
-    if (!item.storeSlug) return "#"
-    return `/${item.storeSlug}/${item.slug || item.id}`
+    const sellerSlug = item.username ?? item.storeSlug
+    if (!sellerSlug) return "#"
+    return `/${sellerSlug}/${item.slug || item.id}`
   }, [])
 
   const formatPrice = (price: number) => {

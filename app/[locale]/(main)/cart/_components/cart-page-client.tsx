@@ -46,8 +46,9 @@ export default function CartPageClient() {
   }
 
   const getProductUrl = (item: (typeof items)[0]) => {
-    if (!item.username) return "#"
-    return `/${item.username}/${item.slug ?? item.id}`
+    const sellerSlug = item.username ?? item.storeSlug
+    if (!sellerSlug) return "#"
+    return `/${sellerSlug}/${item.slug ?? item.id}`
   }
 
   if (items.length === 0) {

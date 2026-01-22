@@ -77,6 +77,16 @@ function normalizePrice(value: unknown): number | null {
   return numeric
 }
 
+function normalizeSellerSlugs(item: { username?: string | undefined; storeSlug?: string | null | undefined }): Pick<CartItem, "username" | "storeSlug"> {
+  const username = item.username ?? (item.storeSlug || undefined)
+  const storeSlug = item.storeSlug || item.username || undefined
+
+  return {
+    ...(username ? { username } : {}),
+    ...(storeSlug ? { storeSlug } : {}),
+  }
+}
+
 function sanitizeCartItems(rawItems: CartItem[]): CartItem[] {
   const sanitized: CartItem[] = []
   for (const item of rawItems) {
@@ -84,8 +94,13 @@ function sanitizeCartItems(rawItems: CartItem[]): CartItem[] {
     const price = normalizePrice(item.price)
     const quantity = normalizeQuantity(item.quantity)
     if (price === null || quantity === null) continue
+    const sellerSlugs = normalizeSellerSlugs({
+      username: item.username,
+      storeSlug: item.storeSlug ?? null,
+    })
     sanitized.push({
       ...item,
+      ...sellerSlugs,
       price,
       quantity,
     })
@@ -129,7 +144,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     }
 
     const rows: unknown[] = Array.isArray(data) ? data : []
-    const nextItems = rows.map((row) => {
+    const nextItems = rows.map((row): CartItem | null => {
       const record = toRecord(row)
       const productId = asString(record?.product_id) ?? ""
       const variantId = asString(record?.variant_id) ?? undefined
@@ -162,7 +177,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         image,
         quantity,
         ...(slug ? { slug } : {}),
-        ...(username ? { username } : {}),
+        ...(username ? { username, storeSlug: username } : {}),
       }
     })
     .filter((item): item is CartItem => Boolean(item))
@@ -282,6 +297,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
     const itemWithValidPrice = {
       ...newItem,
+      ...normalizeSellerSlugs({ username: newItem.username, storeSlug: newItem.storeSlug ?? null }),
       price: normalizedPrice,
       quantity: normalizedQuantity,
     }

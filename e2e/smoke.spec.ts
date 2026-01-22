@@ -271,6 +271,50 @@ test.describe('Smoke Tests - Critical User Actions', () => {
     app.assertNoConsoleErrors()
   })
 
+  test('cart items persist to checkout @smoke @critical', async ({ page, app }) => {
+    await app.clearAuthSession()
+
+    const seededCart = [
+      {
+        id: 'e2e-cart-item',
+        title: 'E2E Cart Item',
+        price: 12.34,
+        image: '/placeholder.svg',
+        quantity: 1,
+        slug: 'e2e-cart-item',
+        username: 'e2e_seller',
+        storeSlug: 'e2e_seller',
+      },
+    ]
+
+    await page.addInitScript((items) => {
+      try {
+        localStorage.setItem('cart', JSON.stringify(items))
+      } catch {
+        // Ignore storage errors
+      }
+    }, seededCart)
+
+    await app.goto('/en/cart')
+    await app.waitForHydration()
+
+    await assertVisible(page.getByText('E2E Cart Item').first())
+
+    const proceedToCheckout = page.getByRole('button', { name: /checkout/i }).first()
+    await assertVisible(proceedToCheckout)
+    await proceedToCheckout.click()
+
+    await assertNavigatedTo(page, /\/en\/checkout/)
+    await app.waitForHydration()
+
+    // Assert the seeded item is present on the checkout page (order items section).
+    // Use the image alt since the title can be rendered in multiple places (some hidden).
+    await assertVisible(page.getByRole('img', { name: 'E2E Cart Item' }).first())
+    await assertNoErrorBoundary(page)
+
+    app.assertNoConsoleErrors()
+  })
+
   test('search filters can be applied @smoke @search', async ({ page, app }) => {
     await app.goto('/en/search?q=phone')
     await app.waitForHydration()
