@@ -328,115 +328,119 @@ export async function getCategoryHierarchy(
   'use cache'
   cacheTag('categories:tree')
   cacheLife('categories')
-  
-  const supabase = createStaticClient()
-  
-  // Clamp depth to max 2 (L3 is always lazy-loaded)
-  const effectiveDepth = Math.min(depth, 2)
-  
-  // Fetch L0 categories (root)
-  const { data: rootCats, error: rootError } = await supabase
-    .from("categories")
-    .select("id, name, name_bg, slug, parent_id, icon, image_url, display_order")
-    .is("parent_id", null)
-    .lt("display_order", 9000)
-    .order("display_order", { ascending: true })
-
-  if (rootError) {
-    logger.error('[getCategoryHierarchy] Root query error', rootError)
-    return []
-  }
-
-  if (!rootCats || rootCats.length === 0) return []
-
-  if (effectiveDepth === 0) {
-    return (rootCats || []).map(cat => ({
-      ...cat,
-      image_url: normalizeOptionalImageUrl(cat.image_url),
-      children: []
-    }))
-  }
-
-  // Fetch L1 categories
-  const rootIds = (rootCats || []).map(c => c.id)
-  const { data: l1Cats, error: l1Error } = await supabase
-    .from("categories")
-    .select("id, name, name_bg, slug, parent_id, icon, image_url, display_order")
-    .in("parent_id", rootIds)
-    .lt("display_order", 9000)
-    .order("display_order", { ascending: true })
-
-  if (l1Error) {
-    logger.error('[getCategoryHierarchy] L1 query error', l1Error)
-  }
-
-  // Fetch L2 categories if depth >= 2 (batched to avoid large IN clauses)
-  let l2Cats: typeof l1Cats = []
-  if (effectiveDepth >= 2 && l1Cats && l1Cats.length > 0) {
-    const l1Ids = l1Cats.map(c => c.id)
-    const BATCH_SIZE = 50
+  try {
+    const supabase = createStaticClient()
     
-    // Use Promise.all for parallel fetching
-    const batches = []
-    for (let i = 0; i < l1Ids.length; i += BATCH_SIZE) {
-      batches.push(l1Ids.slice(i, i + BATCH_SIZE))
+    // Clamp depth to max 2 (L3 is always lazy-loaded)
+    const effectiveDepth = Math.min(depth, 2)
+    
+    // Fetch L0 categories (root)
+    const { data: rootCats, error: rootError } = await supabase
+      .from("categories")
+      .select("id, name, name_bg, slug, parent_id, icon, image_url, display_order")
+      .is("parent_id", null)
+      .lt("display_order", 9000)
+      .order("display_order", { ascending: true })
+
+    if (rootError) {
+      logger.error('[getCategoryHierarchy] Root query error', rootError)
+      return []
     }
-    
-    const results = await Promise.all(
-      batches.map(batchIds => 
-        supabase
-          .from("categories")
-          .select("id, name, name_bg, slug, parent_id, icon, image_url, display_order")
-          .in("parent_id", batchIds)
-          .lt("display_order", 9000)
-          .order("display_order", { ascending: true })
+
+    if (!rootCats || rootCats.length === 0) return []
+
+    if (effectiveDepth === 0) {
+      return (rootCats || []).map(cat => ({
+        ...cat,
+        image_url: normalizeOptionalImageUrl(cat.image_url),
+        children: []
+      }))
+    }
+
+    // Fetch L1 categories
+    const rootIds = (rootCats || []).map(c => c.id)
+    const { data: l1Cats, error: l1Error } = await supabase
+      .from("categories")
+      .select("id, name, name_bg, slug, parent_id, icon, image_url, display_order")
+      .in("parent_id", rootIds)
+      .lt("display_order", 9000)
+      .order("display_order", { ascending: true })
+
+    if (l1Error) {
+      logger.error('[getCategoryHierarchy] L1 query error', l1Error)
+    }
+
+    // Fetch L2 categories if depth >= 2 (batched to avoid large IN clauses)
+    let l2Cats: typeof l1Cats = []
+    if (effectiveDepth >= 2 && l1Cats && l1Cats.length > 0) {
+      const l1Ids = l1Cats.map(c => c.id)
+      const BATCH_SIZE = 50
+      
+      // Use Promise.all for parallel fetching
+      const batches = []
+      for (let i = 0; i < l1Ids.length; i += BATCH_SIZE) {
+        batches.push(l1Ids.slice(i, i + BATCH_SIZE))
+      }
+      
+      const results = await Promise.all(
+        batches.map(batchIds => 
+          supabase
+            .from("categories")
+            .select("id, name, name_bg, slug, parent_id, icon, image_url, display_order")
+            .in("parent_id", batchIds)
+            .lt("display_order", 9000)
+            .order("display_order", { ascending: true })
+        )
       )
-    )
-    
-    for (const result of results) {
-      if (result.data) {
-        l2Cats.push(...result.data)
+      
+      for (const result of results) {
+        if (result.data) {
+          l2Cats.push(...result.data)
+        }
       }
     }
-  }
 
-  // NOTE: L3 categories are NOT fetched here.
-  // They are lazy-loaded via /api/categories/[parentId]/children when L2 is clicked.
-  // This reduces initial payload from ~400KB to ~60KB (13K → 3.4K categories).
+    // NOTE: L3 categories are NOT fetched here.
+    // They are lazy-loaded via /api/categories/[parentId]/children when L2 is clicked.
+    // This reduces initial payload from ~400KB to ~60KB (13K → 3.4K categories).
 
-  // Combine and build tree (L0 + L1 + L2 only)
-  const allCats = [...(rootCats || []), ...(l1Cats || []), ...l2Cats]
-  
-  // Create sets for efficient depth lookups
-  const rootIdSet = new Set(rootIds)
-  const l1Ids = new Set((l1Cats || []).map(c => c.id))
-  
-  const rows: CategoryHierarchyRow[] = allCats.map(cat => {
-    // Calculate depth based on parent membership
-    let catDepth = 0
-    if (cat.parent_id === null) {
-      catDepth = 0  // Root/L0
-    } else if (rootIdSet.has(cat.parent_id)) {
-      catDepth = 1  // L1 (parent is L0)
-    } else if (l1Ids.has(cat.parent_id)) {
-      catDepth = 2  // L2 (parent is L1)
-    }
+    // Combine and build tree (L0 + L1 + L2 only)
+    const allCats = [...(rootCats || []), ...(l1Cats || []), ...l2Cats]
     
-    return {
-      id: cat.id,
-      name: cat.name,
-      name_bg: cat.name_bg,
-      slug: cat.slug,
-      parent_id: cat.parent_id,
-      icon: cat.icon,
-      image_url: normalizeOptionalImageUrl(cat.image_url),
-      display_order: cat.display_order,
-      depth: catDepth,
-      path: []
-    }
-  })
-  
-  return buildCategoryTree(rows)
+    // Create sets for efficient depth lookups
+    const rootIdSet = new Set(rootIds)
+    const l1Ids = new Set((l1Cats || []).map(c => c.id))
+    
+    const rows: CategoryHierarchyRow[] = allCats.map(cat => {
+      // Calculate depth based on parent membership
+      let catDepth = 0
+      if (cat.parent_id === null) {
+        catDepth = 0  // Root/L0
+      } else if (rootIdSet.has(cat.parent_id)) {
+        catDepth = 1  // L1 (parent is L0)
+      } else if (l1Ids.has(cat.parent_id)) {
+        catDepth = 2  // L2 (parent is L1)
+      }
+      
+      return {
+        id: cat.id,
+        name: cat.name,
+        name_bg: cat.name_bg,
+        slug: cat.slug,
+        parent_id: cat.parent_id,
+        icon: cat.icon,
+        image_url: normalizeOptionalImageUrl(cat.image_url),
+        display_order: cat.display_order,
+        depth: catDepth,
+        path: []
+      }
+    })
+    
+    return buildCategoryTree(rows)
+  } catch (error) {
+    logger.error('[getCategoryHierarchy] Unexpected error', error)
+    return []
+  }
 }
 
 /**
