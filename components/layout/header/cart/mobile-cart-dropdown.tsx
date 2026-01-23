@@ -99,7 +99,7 @@ export function MobileCartDropdown() {
                         </div>
                         <DrawerClose asChild>
                             <button
-                                className="text-xs text-muted-foreground hover:text-foreground h-7 px-2 rounded-md hover:bg-muted touch-action-manipulation tap-transparent"
+                                className="text-xs text-muted-foreground hover:text-foreground h-touch-xs px-2 rounded-md hover:bg-muted touch-action-manipulation tap-transparent"
                                 aria-label="Close"
                             >
                                 {locale === 'bg' ? 'Затвори' : 'Close'}
@@ -179,7 +179,7 @@ export function MobileCartDropdown() {
                                                             removeFromCart(item.id, item.variantId)
                                                         }
                                                     }}
-                                                    className="flex items-center justify-center size-7 rounded-md hover:bg-background text-muted-foreground hover:text-foreground touch-action-manipulation tap-transparent"
+                                                    className="flex items-center justify-center size-touch-xs rounded-md hover:bg-background text-muted-foreground hover:text-foreground touch-action-manipulation tap-transparent"
                                                     aria-label="Decrease quantity"
                                                 >
                                                     <Minus size={14} weight="bold" />
@@ -189,7 +189,7 @@ export function MobileCartDropdown() {
                                                 </span>
                                                 <button
                                                     onClick={() => updateQuantity(item.id, item.quantity + 1, item.variantId)}
-                                                    className="flex items-center justify-center size-7 rounded-md hover:bg-background text-muted-foreground hover:text-foreground touch-action-manipulation tap-transparent"
+                                                    className="flex items-center justify-center size-touch-xs rounded-md hover:bg-background text-muted-foreground hover:text-foreground touch-action-manipulation tap-transparent"
                                                     aria-label="Increase quantity"
                                                 >
                                                     <Plus size={14} weight="bold" />
@@ -197,7 +197,7 @@ export function MobileCartDropdown() {
                                             </div>
                                             <button
                                                 onClick={() => removeFromCart(item.id, item.variantId)}
-                                                className="flex items-center justify-center size-7 rounded-md hover:bg-destructive/10 text-muted-foreground hover:text-destructive touch-action-manipulation tap-transparent"
+                                                className="flex items-center justify-center size-touch-xs rounded-md hover:bg-destructive/10 text-muted-foreground hover:text-destructive touch-action-manipulation tap-transparent"
                                                 aria-label="Remove item"
                                             >
                                                 <Trash size={14} weight="regular" />

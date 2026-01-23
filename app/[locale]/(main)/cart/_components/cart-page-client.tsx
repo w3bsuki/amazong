@@ -190,29 +190,29 @@ export default function CartPageClient() {
                     {/* Delete */}
                     <button
                       onClick={() => removeFromCart(item.id, item.variantId)}
-                      className="size-7 flex items-center justify-center rounded text-muted-foreground/50 hover:text-destructive transition-colors"
+                      className="size-touch-xs flex items-center justify-center rounded text-muted-foreground/50 hover:text-destructive transition-colors"
                       aria-label={t("delete")}
                     >
                       <Trash className="size-4" />
                     </button>
 
                     {/* Quantity selector */}
-                    <div className="flex items-center h-8 rounded-md border border-border bg-muted/30">
+                    <div className="flex items-center h-touch-xs rounded-md border border-border bg-muted/30">
                       <button
                         onClick={() =>
                           item.quantity > 1 && updateQuantity(item.id, item.quantity - 1, item.variantId)
                         }
                         disabled={item.quantity <= 1}
-                        className="w-8 h-8 flex items-center justify-center hover:bg-muted disabled:opacity-30 transition-colors rounded-l-md"
+                        className="size-touch-xs flex items-center justify-center hover:bg-muted disabled:opacity-30 transition-colors rounded-l-md"
                         aria-label="Decrease quantity"
                       >
                         <Minus className="size-3.5" weight="bold" />
                       </button>
-                      <span className="w-8 text-center text-sm font-semibold tabular-nums">{item.quantity}</span>
+                      <span className="w-touch-xs text-center text-sm font-semibold tabular-nums">{item.quantity}</span>
                       <button
                         onClick={() => updateQuantity(item.id, item.quantity + 1, item.variantId)}
                         disabled={item.quantity >= 10}
-                        className="w-8 h-8 flex items-center justify-center hover:bg-muted disabled:opacity-30 transition-colors rounded-r-md"
+                        className="size-touch-xs flex items-center justify-center hover:bg-muted disabled:opacity-30 transition-colors rounded-r-md"
                         aria-label="Increase quantity"
                       >
                         <Plus className="size-3.5" weight="bold" />
@@ -221,7 +221,7 @@ export default function CartPageClient() {
 
                     {/* Wishlist */}
                     <button
-                      className="size-7 flex items-center justify-center rounded text-muted-foreground/50 hover:text-brand transition-colors"
+                      className="size-touch-xs flex items-center justify-center rounded text-muted-foreground/50 hover:text-brand transition-colors"
                       aria-label={t("saveForLater")}
                     >
                       <Heart className="size-4" />
@@ -301,7 +301,7 @@ export default function CartPageClient() {
           <Button
             onClick={handleCheckout}
             size="lg"
-            className="rounded-full px-8 font-semibold shadow-sm h-11"
+            className="rounded-full px-8 font-semibold shadow-sm"
           >
             {locale === "bg" ? "Плащане" : "Checkout"}
             <ArrowRight className="size-4 ml-1.5" />

@@ -51,9 +51,9 @@ export function SortSelect() {
   return (
     <Select value={currentSort} onValueChange={handleSortChange}>
       <SelectTrigger 
-        size="sm"
+        size="default"
         className={cn(
-          "!h-8 !py-0 px-3 w-full rounded-lg gap-2",
+          "px-3 w-full rounded-lg gap-2",
           "bg-muted/50 hover:bg-muted/70 hover:text-foreground border border-border/40",
           "active:bg-muted/70",
           isSorted && "bg-primary/10 text-primary border-primary/20",

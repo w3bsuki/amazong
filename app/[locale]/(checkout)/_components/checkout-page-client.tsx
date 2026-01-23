@@ -282,7 +282,7 @@ export default function CheckoutPageClient({
           </div>
           <p className="text-sm font-medium mb-1">{t("emptyCart")}</p>
           <p className="text-xs text-muted-foreground mb-3">{t("emptyCartDescription")}</p>
-          <Button asChild size="sm" className="h-8">
+          <Button asChild size="sm">
             <Link href="/">{t("continueShopping")}</Link>
           </Button>
         </div>
@@ -406,7 +406,8 @@ export default function CheckoutPageClient({
           <Button 
             onClick={handleCheckout} 
             disabled={isProcessing || !isFormValid()} 
-            className="w-full h-10 font-semibold text-sm"
+            size="lg"
+            className="w-full font-semibold"
           >
             {isProcessing ? (
               <>
@@ -537,7 +538,7 @@ export default function CheckoutPageClient({
                     onClick={handleCheckout} 
                     disabled={isProcessing || !isFormValid()} 
                     size="lg"
-                    className="w-full h-10 font-semibold text-sm"
+                    className="w-full font-semibold"
                   >
                     {isProcessing ? (
                       <>
@@ -651,7 +652,7 @@ function AddressSection({
                 variant="outline"
                 size="sm"
                 onClick={() => setShowAddressSelector(true)}
-                className="w-full mt-3 h-9"
+                className="w-full mt-3"
               >
                 {t("changeAddress") || "Change address"}
               </Button>

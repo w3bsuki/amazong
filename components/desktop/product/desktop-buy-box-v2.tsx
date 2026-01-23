@@ -203,8 +203,7 @@ export function DesktopBuyBoxV2({
           <Button
             type="button"
             variant="ghost"
-            size="icon"
-            className="size-8"
+            size="icon-sm"
             onClick={() => toggleWishlist(cartProduct)}
             aria-label={
               productInWishlist ? t("removeFromWatchlist") : t("addToWatchlist")
@@ -222,8 +221,7 @@ export function DesktopBuyBoxV2({
           <Button
             type="button"
             variant="ghost"
-            size="icon"
-            className="size-8"
+            size="icon-sm"
             aria-label={t("share")}
           >
             <Share2 className="size-4 text-muted-foreground" />
@@ -317,7 +315,7 @@ export function DesktopBuyBoxV2({
               <button
                 type="button"
                 onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                className="p-1.5 hover:bg-muted transition-colors disabled:opacity-40"
+                className="size-touch-xs flex items-center justify-center hover:bg-muted transition-colors disabled:opacity-40"
                 disabled={quantity <= 1}
                 aria-label={t("decreaseQuantity")}
               >
@@ -336,7 +334,7 @@ export function DesktopBuyBoxV2({
               <button
                 type="button"
                 onClick={() => setQuantity(Math.min(99, quantity + 1))}
-                className="p-1.5 hover:bg-muted transition-colors"
+                className="size-touch-xs flex items-center justify-center hover:bg-muted transition-colors"
                 aria-label={t("increaseQuantity")}
               >
                 <Plus className="size-3.5 text-foreground" />
@@ -357,20 +355,22 @@ export function DesktopBuyBoxV2({
         {isRealEstate || isAutomotive ? (
           <>
             <Button
-              className="flex-1 h-11 text-sm font-semibold gap-2"
+              size="lg"
+              className="flex-1 font-semibold"
               disabled={isOutOfStock}
             >
               <primaryCTA.icon className="size-4" />
               {primaryCTA.label}
             </Button>
-            <Button variant="outline" className="h-11 px-4">
+            <Button variant="outline" size="lg" className="px-4">
               {getSecondaryCTA()}
             </Button>
           </>
         ) : (
           <>
             <Button
-              className="flex-1 h-11 text-sm font-semibold gap-2"
+              size="lg"
+              className="flex-1 font-semibold"
               onClick={handleAddToCart}
               disabled={isOutOfStock}
             >
@@ -379,12 +379,13 @@ export function DesktopBuyBoxV2({
             </Button>
             <Button
               variant="outline"
-              className="h-11 px-4"
+              size="icon-lg"
               onClick={handleBuyNow}
               disabled={isOutOfStock}
               title={t("buyNow")}
+              aria-label={t("buyNow")}
             >
-              <Zap className="size-4" />
+              <Zap />
             </Button>
           </>
         )}
@@ -467,7 +468,7 @@ export function DesktopBuyBoxV2({
           <Button
             variant="outline"
             size="sm"
-            className="flex-1 h-8 gap-1 text-xs bg-background"
+            className="flex-1 gap-1 text-xs bg-background"
           >
             <MessageCircle className="size-3" />
             {t("message")}
@@ -476,7 +477,7 @@ export function DesktopBuyBoxV2({
             <Button
               variant="outline"
               size="sm"
-              className="flex-1 h-8 text-xs bg-background"
+              className="flex-1 text-xs bg-background"
               asChild
             >
               <Link href={`/${locale}/${seller.username}`}>

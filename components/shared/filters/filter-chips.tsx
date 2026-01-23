@@ -11,7 +11,7 @@ import { useTranslations } from "next-intl"
 // ACTIVE FILTER CHIPS — Removable pills showing applied filters
 //
 // Design system compliance (DESIGN.md):
-// - Consistent chip height (h-7 = 28px, compact but touchable)
+// - Consistent chip height (h-touch-sm = 36px)
 // - rounded-full for pill shape (per token reference)
 // - Semantic tokens (bg-secondary, text-muted-foreground)
 // - lucide-react icons (repo standard)
@@ -228,7 +228,7 @@ export function FilterChips({
           onClick={() => removeParam(chip.key, chip.key2)}
           className={cn(
             // Layout
-            "inline-flex items-center gap-1 h-7 pl-2.5 pr-1.5 shrink-0",
+            "inline-flex items-center gap-1 h-touch-sm pl-2.5 pr-1.5 shrink-0",
             // Shape (pill per DESIGN.md)
             "rounded-full",
             // Colors (neutral, inverted on hover)
@@ -266,7 +266,7 @@ export function FilterChips({
           type="button"
           onClick={handleClearAll}
           className={cn(
-            "inline-flex items-center gap-1 h-7 px-2.5 shrink-0",
+            "inline-flex items-center gap-1 h-touch-sm px-2.5 shrink-0",
             "rounded-full",
             "text-xs font-medium whitespace-nowrap",
             "text-muted-foreground hover:text-destructive",
