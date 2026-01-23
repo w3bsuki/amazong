@@ -58,7 +58,7 @@ REUSE_EXISTING_SERVER=true pnpm test:e2e:smoke
 - [ ] TREIDO: Tighten types in checkout/orders/chat actions (no silent fallthrough) → `docs/FEATURES.md`
 
 ### P6 — i18n full audit (next-intl)
-- [ ] TREIDO: Enforce key parity (`messages/en.json` ↔ `messages/bg.json`) → `docs/FRONTEND.md`
+- [x] TREIDO: Enforce key parity (`messages/en.json` ↔ `messages/bg.json`) → `docs/FRONTEND.md`
 - [ ] TREIDO: Replace remaining hardcoded UI strings with `useTranslations()` / `getTranslations()` → `docs/FRONTEND.md`
 - [ ] TREIDO: Standardize localized navigation to `@/i18n/routing` everywhere → `docs/ENGINEERING.md`
 
