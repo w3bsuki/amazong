@@ -23,6 +23,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
+import { FieldLabel } from "@/components/shared/field"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
@@ -204,7 +205,11 @@ export default function MembersPageClient({
           <form onSubmit={handleSearch} className="flex-1">
             <div className="relative">
               <MagnifyingGlass className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+              <FieldLabel htmlFor="members-search" className="sr-only">
+                {locale === "bg" ? "Търси по име" : "Search by name"}
+              </FieldLabel>
               <Input
+                id="members-search"
                 placeholder={locale === "bg" ? "Търси по име..." : "Search by name..."}
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}

@@ -3,6 +3,7 @@
 import { Link } from "@/i18n/routing"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
+import { FieldLabel } from "@/components/shared/field"
 import { Input } from "@/components/ui/input"
 import { 
   RocketLaunch, Bell, ArrowLeft, CheckCircle
@@ -25,6 +26,7 @@ interface ComingSoonPageProps {
   labels: {
     backToHome: string
     notifyMe: string
+    emailLabel: string
     emailPlaceholder: string
     subscribing: string
     subscribed: string
@@ -94,8 +96,12 @@ export function ComingSoonPage({
               {!isSubscribed ? (
                 <form action={handleSubmit} className="space-y-4">
                   <p className="font-medium">{labels.notifyMe}</p>
+                  <FieldLabel htmlFor="coming-soon-email" className="sr-only">
+                    {labels.emailLabel}
+                  </FieldLabel>
                   <div className="flex gap-2">
                     <Input
+                      id="coming-soon-email"
                       type="email"
                       name="email"
                       placeholder={labels.emailPlaceholder}

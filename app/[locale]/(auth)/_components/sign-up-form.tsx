@@ -6,9 +6,17 @@ import { useTranslations } from "next-intl"
 
 import { AuthCard } from "@/components/auth/auth-card"
 import { SubmitButton } from "@/components/auth/submit-button"
+import {
+  Field,
+  FieldContent,
+  FieldDescription,
+  FieldError,
+  FieldLabel,
+  FieldLegend,
+  FieldSet,
+} from "@/components/shared/field"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { Label } from "@/components/ui/label"
 import { Link } from "@/i18n/routing"
 import { cn } from "@/lib/utils"
 import { getPasswordStrength } from "@/lib/validations/password-strength"
@@ -165,8 +173,8 @@ export function SignUpForm({
         )}
 
         {/* Account Type Selection */}
-        <div className="space-y-2">
-          <Label>{t("accountTypeLabel")}</Label>
+        <FieldSet>
+          <FieldLegend variant="label">{t("accountTypeLabel")}</FieldLegend>
           <input type="hidden" name="accountType" value={accountType} />
 
           <div className="grid grid-cols-2 gap-2">
@@ -197,101 +205,132 @@ export function SignUpForm({
               {t("accountTypeBusiness")}
             </Button>
           </div>
-          <p className="text-xs text-muted-foreground">{t("accountTypeHint")}</p>
-        </div>
+          <FieldDescription className="text-xs">
+            {t("accountTypeHint")}
+          </FieldDescription>
+        </FieldSet>
 
         {/* Name Field */}
-        <div className="space-y-1">
-          <Label htmlFor="name">{t("yourName")}</Label>
-          <Input
-            id="name"
-            name="name"
-            type="text"
-            autoComplete="name"
-            required
-            placeholder={t("namePlaceholder")}
-            onChange={(e) => setName(e.target.value)}
-            aria-invalid={!!state?.fieldErrors?.name}
-            className={cn(state?.fieldErrors?.name && "border-destructive focus-visible:ring-destructive/20")}
-          />
-          {state?.fieldErrors?.name && (
-            <p className="text-xs text-destructive">{state.fieldErrors.name}</p>
-          )}
-        </div>
+        <Field data-invalid={!!state?.fieldErrors?.name}>
+          <FieldContent>
+            <FieldLabel htmlFor="name">{t("yourName")}</FieldLabel>
+            <Input
+              id="name"
+              name="name"
+              type="text"
+              autoComplete="name"
+              required
+              placeholder={t("namePlaceholder")}
+              onChange={(e) => setName(e.target.value)}
+              aria-invalid={!!state?.fieldErrors?.name}
+              aria-describedby={state?.fieldErrors?.name ? "name-error" : undefined}
+              className={cn(
+                state?.fieldErrors?.name &&
+                  "border-destructive focus-visible:ring-destructive/20",
+              )}
+            />
+            <FieldError id="name-error">{state?.fieldErrors?.name}</FieldError>
+          </FieldContent>
+        </Field>
 
         {/* Username Field */}
-        <div className="space-y-1">
-          <Label htmlFor="username">{t("username")}</Label>
-          <div className="relative">
-            <Input
-              id="username"
-              name="username"
-              type="text"
-              value={username}
-              onChange={(e) => setUsername(e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, ''))}
-              autoComplete="username"
-              required
-              placeholder={t("usernamePlaceholder")}
-              aria-invalid={!!state?.fieldErrors?.username}
-              className={cn(
-                "pr-10",
-                state?.fieldErrors?.username && "border-destructive focus-visible:ring-destructive/20"
-              )}
-            />
-            <div className="absolute right-3 top-1/2 -translate-y-1/2">{usernameIndicator}</div>
-          </div>
-          {state?.fieldErrors?.username && (
-            <p className="text-xs text-destructive">{state.fieldErrors.username}</p>
-          )}
-        </div>
+        <Field data-invalid={!!state?.fieldErrors?.username}>
+          <FieldContent>
+            <FieldLabel htmlFor="username">{t("username")}</FieldLabel>
+            <div className="relative">
+              <Input
+                id="username"
+                name="username"
+                type="text"
+                value={username}
+                onChange={(e) =>
+                  setUsername(
+                    e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, ""),
+                  )
+                }
+                autoComplete="username"
+                required
+                placeholder={t("usernamePlaceholder")}
+                aria-invalid={!!state?.fieldErrors?.username}
+                aria-describedby={
+                  state?.fieldErrors?.username ? "username-error" : undefined
+                }
+                className={cn(
+                  "pr-10",
+                  state?.fieldErrors?.username &&
+                    "border-destructive focus-visible:ring-destructive/20",
+                )}
+              />
+              <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                {usernameIndicator}
+              </div>
+            </div>
+            <FieldError id="username-error">
+              {state?.fieldErrors?.username}
+            </FieldError>
+          </FieldContent>
+        </Field>
 
         {/* Email Field */}
-        <div className="space-y-1">
-          <Label htmlFor="email">{t("email")}</Label>
-          <Input
-            id="email"
-            name="email"
-            type="email"
-            autoComplete="email"
-            required
-            placeholder={t("emailPlaceholder")}
-            onChange={(e) => setEmail(e.target.value)}
-            aria-invalid={!!state?.fieldErrors?.email}
-            className={cn(state?.fieldErrors?.email && "border-destructive focus-visible:ring-destructive/20")}
-          />
-          {state?.fieldErrors?.email && (
-            <p className="text-xs text-destructive">{state.fieldErrors.email}</p>
-          )}
-        </div>
-
-        {/* Password Field */}
-        <div className="space-y-1">
-          <Label htmlFor="password">{t("password")}</Label>
-          <div className="relative">
+        <Field data-invalid={!!state?.fieldErrors?.email}>
+          <FieldContent>
+            <FieldLabel htmlFor="email">{t("email")}</FieldLabel>
             <Input
-              id="password"
-              name="password"
-              type={showPassword ? "text" : "password"}
-              autoComplete="new-password"
+              id="email"
+              name="email"
+              type="email"
+              autoComplete="email"
               required
-              placeholder={t("createPasswordPlaceholder")}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              aria-invalid={!!state?.fieldErrors?.password}
+              placeholder={t("emailPlaceholder")}
+              onChange={(e) => setEmail(e.target.value)}
+              aria-invalid={!!state?.fieldErrors?.email}
+              aria-describedby={state?.fieldErrors?.email ? "email-error" : undefined}
               className={cn(
-                "pr-10",
-                state?.fieldErrors?.password && "border-destructive focus-visible:ring-destructive/20"
+                state?.fieldErrors?.email &&
+                  "border-destructive focus-visible:ring-destructive/20",
               )}
             />
-            <button
-              type="button"
-              onClick={() => setShowPassword((v) => !v)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-              aria-label={showPassword ? t("hidePassword") : t("showPassword")}
-            >
-              {showPassword ? <EyeSlash className="size-5" /> : <Eye className="size-5" />}
-            </button>
-          </div>
+            <FieldError id="email-error">{state?.fieldErrors?.email}</FieldError>
+          </FieldContent>
+        </Field>
+
+        {/* Password Field */}
+        <Field data-invalid={!!state?.fieldErrors?.password}>
+          <FieldContent>
+            <FieldLabel htmlFor="password">{t("password")}</FieldLabel>
+            <div className="relative">
+              <Input
+                id="password"
+                name="password"
+                type={showPassword ? "text" : "password"}
+                autoComplete="new-password"
+                required
+                placeholder={t("createPasswordPlaceholder")}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                aria-invalid={!!state?.fieldErrors?.password}
+                aria-describedby={
+                  state?.fieldErrors?.password ? "password-error" : undefined
+                }
+                className={cn(
+                  "pr-10",
+                  state?.fieldErrors?.password &&
+                    "border-destructive focus-visible:ring-destructive/20",
+                )}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword((v) => !v)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                aria-label={showPassword ? t("hidePassword") : t("showPassword")}
+              >
+                {showPassword ? (
+                  <EyeSlash className="size-5" />
+                ) : (
+                  <Eye className="size-5" />
+                )}
+              </button>
+            </div>
           {password && (
             <div className="mt-1.5 space-y-1">
               <div className="h-1 w-full bg-muted rounded-full overflow-hidden">
@@ -315,42 +354,55 @@ export function SignUpForm({
               ))}
             </div>
           )}
-          {state?.fieldErrors?.password && (
-            <p className="text-xs text-destructive mt-1">{state.fieldErrors.password}</p>
-          )}
-        </div>
+            <FieldError id="password-error" className="mt-1">
+              {state?.fieldErrors?.password}
+            </FieldError>
+          </FieldContent>
+        </Field>
 
         {/* Confirm Password Field */}
-        <div className="space-y-1">
-          <Label htmlFor="confirmPassword">{t("confirmPassword")}</Label>
-          <div className="relative">
-            <Input
-              id="confirmPassword"
-              name="confirmPassword"
-              type={showConfirmPassword ? "text" : "password"}
-              autoComplete="new-password"
-              required
-              placeholder={t("confirmPasswordPlaceholder")}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              aria-invalid={!!state?.fieldErrors?.confirmPassword}
-              className={cn(
-                "pr-10",
-                state?.fieldErrors?.confirmPassword && "border-destructive focus-visible:ring-destructive/20"
-              )}
-            />
-            <button
-              type="button"
-              onClick={() => setShowConfirmPassword((v) => !v)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-              aria-label={showConfirmPassword ? t("hidePassword") : t("showPassword")}
-            >
-              {showConfirmPassword ? <EyeSlash className="size-5" /> : <Eye className="size-5" />}
-            </button>
-          </div>
-          {state?.fieldErrors?.confirmPassword && (
-            <p className="text-xs text-destructive">{state.fieldErrors.confirmPassword}</p>
-          )}
-        </div>
+        <Field data-invalid={!!state?.fieldErrors?.confirmPassword}>
+          <FieldContent>
+            <FieldLabel htmlFor="confirmPassword">{t("confirmPassword")}</FieldLabel>
+            <div className="relative">
+              <Input
+                id="confirmPassword"
+                name="confirmPassword"
+                type={showConfirmPassword ? "text" : "password"}
+                autoComplete="new-password"
+                required
+                placeholder={t("confirmPasswordPlaceholder")}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                aria-invalid={!!state?.fieldErrors?.confirmPassword}
+                aria-describedby={
+                  state?.fieldErrors?.confirmPassword
+                    ? "confirmPassword-error"
+                    : undefined
+                }
+                className={cn(
+                  "pr-10",
+                  state?.fieldErrors?.confirmPassword &&
+                    "border-destructive focus-visible:ring-destructive/20",
+                )}
+              />
+              <button
+                type="button"
+                onClick={() => setShowConfirmPassword((v) => !v)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                aria-label={showConfirmPassword ? t("hidePassword") : t("showPassword")}
+              >
+                {showConfirmPassword ? (
+                  <EyeSlash className="size-5" />
+                ) : (
+                  <Eye className="size-5" />
+                )}
+              </button>
+            </div>
+            <FieldError id="confirmPassword-error">
+              {state?.fieldErrors?.confirmPassword}
+            </FieldError>
+          </FieldContent>
+        </Field>
 
         <SubmitButton label={t("createYourAccount")} pendingLabel={t("creatingAccount")} disabled={!canSubmit} />
       </form>

@@ -10,6 +10,7 @@ import {
   Package,
   ArrowRight,
 } from "@phosphor-icons/react"
+import { FieldLabel } from "@/components/shared/field"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { useRouter } from "@/i18n/routing"
@@ -258,6 +259,9 @@ export function MobileSearchOverlay({
                 className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground/60 pointer-events-none"
                 aria-hidden="true"
               />
+              <FieldLabel htmlFor={searchInputId} className="sr-only">
+                {tSearch("searchFieldLabel")}
+              </FieldLabel>
               <Input
                 ref={inputRef}
                 id={searchInputId}

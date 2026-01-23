@@ -2,8 +2,9 @@ import { getTranslations, setRequestLocale } from "next-intl/server"
 import { AppBreadcrumb } from "@/components/navigation/app-breadcrumb"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
+import { Field, FieldContent, FieldDescription, FieldLabel } from "@/components/shared/field"
+import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
-import { Label } from "@/components/ui/label"
 import { 
   ChatCircleDots, Star, Lightbulb, Bug, Heart,
   PaperPlaneTilt, CheckCircle
@@ -108,26 +109,31 @@ export default async function FeedbackPage({
               </div>
 
               <form className="space-y-6">
-                <div className="space-y-2">
-                  <Label htmlFor="feedback">{t('feedbackLabel')}</Label>
-                  <Textarea
-                    id="feedback"
-                    placeholder={t('feedbackPlaceholder')}
-                    className="min-h-(--textarea-min-h) resize-none"
-                  />
-                  <p className="text-xs text-muted-foreground">{t('feedbackHint')}</p>
-                </div>
+                <Field>
+                  <FieldContent>
+                    <FieldLabel htmlFor="feedback">{t('feedbackLabel')}</FieldLabel>
+                    <Textarea
+                      id="feedback"
+                      name="feedback"
+                      placeholder={t('feedbackPlaceholder')}
+                      className="min-h-(--textarea-min-h) resize-none"
+                    />
+                    <FieldDescription className="text-xs">{t('feedbackHint')}</FieldDescription>
+                  </FieldContent>
+                </Field>
 
-                <div className="space-y-2">
-                  <Label htmlFor="email">{t('emailLabel')}</Label>
-                  <input
-                    type="email"
-                    id="email"
-                    placeholder={t('emailPlaceholder')}
-                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                  />
-                  <p className="text-xs text-muted-foreground">{t('emailHint')}</p>
-                </div>
+                <Field>
+                  <FieldContent>
+                    <FieldLabel htmlFor="email">{t('emailLabel')}</FieldLabel>
+                    <Input
+                      id="email"
+                      name="email"
+                      type="email"
+                      placeholder={t('emailPlaceholder')}
+                    />
+                    <FieldDescription className="text-xs">{t('emailHint')}</FieldDescription>
+                  </FieldContent>
+                </Field>
 
                 <Button type="submit" className="w-full sm:w-auto">
                   <PaperPlaneTilt className="size-4 mr-2" />

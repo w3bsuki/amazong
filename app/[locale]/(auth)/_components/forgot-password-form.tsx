@@ -6,9 +6,9 @@ import { useTranslations } from "next-intl"
 
 import { AuthCard } from "@/components/auth/auth-card"
 import { SubmitButton } from "@/components/auth/submit-button"
+import { Field, FieldContent, FieldError, FieldLabel } from "@/components/shared/field"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { Label } from "@/components/ui/label"
 import { Link } from "@/i18n/routing"
 import { cn } from "@/lib/utils"
 
@@ -74,22 +74,26 @@ export function ForgotPasswordForm({
           </div>
         )}
 
-        <div className="space-y-1">
-          <Label htmlFor="email">{t("emailAddress")}</Label>
-          <Input
-            id="email"
-            name="email"
-            type="email"
-            autoComplete="email"
-            required
-            placeholder={t("emailPlaceholder")}
-            aria-invalid={!!state?.fieldErrors?.email}
-            className={cn(state?.fieldErrors?.email && "border-destructive focus-visible:ring-destructive/20")}
-          />
-          {state?.fieldErrors?.email && (
-            <p className="text-xs text-destructive">{state.fieldErrors.email}</p>
-          )}
-        </div>
+        <Field data-invalid={!!state?.fieldErrors?.email}>
+          <FieldContent>
+            <FieldLabel htmlFor="email">{t("emailAddress")}</FieldLabel>
+            <Input
+              id="email"
+              name="email"
+              type="email"
+              autoComplete="email"
+              required
+              placeholder={t("emailPlaceholder")}
+              aria-invalid={!!state?.fieldErrors?.email}
+              aria-describedby={state?.fieldErrors?.email ? "email-error" : undefined}
+              className={cn(
+                state?.fieldErrors?.email &&
+                  "border-destructive focus-visible:ring-destructive/20",
+              )}
+            />
+            <FieldError id="email-error">{state?.fieldErrors?.email}</FieldError>
+          </FieldContent>
+        </Field>
 
         <SubmitButton label={t("sendResetLink")} pendingLabel={t("sending")} />
       </form>

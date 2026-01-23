@@ -48,7 +48,7 @@ REUSE_EXISTING_SERVER=true pnpm test:e2e:smoke
 - [x] TAILWIND: Replace hardcoded neutrals (`bg-white`, `text-black`, `border-gray-*`) with semantic tokens → `docs/DESIGN.md`
 
 ### P4 — Tailwind v4 + shadcn alignment (design system consistency)
-- [ ] TAILWIND: Ensure all forms use `components/shared/field.tsx` consistently (labels/errors/help) → `docs/FRONTEND.md`
+- [x] TAILWIND: Ensure all forms use `components/shared/field.tsx` consistently (labels/errors/help) → `docs/FRONTEND.md`
 - [ ] TAILWIND: Normalize spacing + touch targets across key surfaces (search, PDP, cart, checkout) → `docs/DESIGN.md`
 - [ ] TREIDO: Pilot desktop modal browsing with Next.js intercepting routes (PDP quick view from search) → `docs/FRONTEND.md` *(optional for V1)*
 

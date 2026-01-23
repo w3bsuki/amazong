@@ -2,36 +2,22 @@
 
 import { createClient } from "@/lib/supabase/client"
 import { Link } from "@/i18n/routing"
-import { useLocale, useTranslations } from "next-intl"
-import { useState, useTransition, useEffect } from "react"
+import { useTranslations } from "next-intl"
+import { useMemo, useState, useTransition, useEffect } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 import { AuthCard } from "@/components/auth/auth-card"
-import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form"
+import { Field, FieldContent, FieldError, FieldLabel } from "@/components/shared/field"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { Label } from "@/components/ui/label"
 import { SpinnerGap, Check, Lock, ArrowLeft, Eye, EyeSlash } from "@phosphor-icons/react"
-import { useRouter } from "next/navigation"
-import { cn } from "@/lib/utils"
+import { useRouter } from "@/i18n/routing"
 
-const resetPasswordSchema = z
-  .object({
-    password: z
-      .string()
-      .min(8, "Password must be at least 8 characters")
-      .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
-      .regex(/[a-z]/, "Password must contain at least one lowercase letter")
-      .regex(/[0-9]/, "Password must contain at least one number"),
-    confirmPassword: z.string(),
-  })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: "Passwords don't match",
-    path: ["confirmPassword"],
-  })
-
-type ResetPasswordFormData = z.infer<typeof resetPasswordSchema>
+type ResetPasswordFormData = {
+  password: string
+  confirmPassword: string
+}
 
 export default function ResetPasswordPage() {
   const t = useTranslations("Auth")
@@ -41,8 +27,26 @@ export default function ResetPasswordPage() {
   const [isValidSession, setIsValidSession] = useState<boolean | null>(null)
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
-  const locale = useLocale()
   const router = useRouter()
+
+  const resetPasswordSchema = useMemo(
+    () =>
+      z
+        .object({
+          password: z
+            .string()
+            .min(8, t("reqMinChars"))
+            .regex(/[A-Z]/, t("reqUppercase"))
+            .regex(/[a-z]/, t("reqLowercase"))
+            .regex(/[0-9]/, t("reqNumber")),
+          confirmPassword: z.string(),
+        })
+        .refine((data) => data.password === data.confirmPassword, {
+          message: t("passwordsDoNotMatch"),
+          path: ["confirmPassword"],
+        }),
+    [t],
+  )
 
   const form = useForm<ResetPasswordFormData>({
     resolver: zodResolver(resetPasswordSchema),
@@ -104,7 +108,7 @@ export default function ResetPasswordPage() {
 
         // Redirect to login after 3 seconds
         setTimeout(() => {
-          router.push(`/${locale}/auth/login`)
+          router.push("/auth/login")
         }, 3000)
       } catch {
         setServerError(t("somethingWentWrong"))
@@ -184,75 +188,88 @@ export default function ResetPasswordPage() {
       footer={footer}
       showLogo={true}
     >
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-          {serverError && (
-            <div className="p-3 text-sm text-destructive bg-destructive/10 border border-destructive/20 rounded-md">
-              {serverError}
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        {serverError && (
+          <div className="p-3 text-sm text-destructive bg-destructive/10 border border-destructive/20 rounded-md">
+            {serverError}
+          </div>
+        )}
+
+        <Field data-invalid={!!form.formState.errors.password}>
+          <FieldContent>
+            <FieldLabel htmlFor="password">{t("newPassword")}</FieldLabel>
+            <div className="relative">
+              <Input
+                {...form.register("password")}
+                id="password"
+                type={showPassword ? "text" : "password"}
+                autoComplete="new-password"
+                placeholder="••••••••"
+                className="pr-10"
+                aria-invalid={!!form.formState.errors.password}
+                aria-describedby={
+                  form.formState.errors.password ? "password-error" : undefined
+                }
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                aria-label={showPassword ? t("hidePassword") : t("showPassword")}
+              >
+                {showPassword ? (
+                  <EyeSlash className="size-5" />
+                ) : (
+                  <Eye className="size-5" />
+                )}
+              </button>
             </div>
-          )}
+            <FieldError
+              id="password-error"
+              errors={[form.formState.errors.password]}
+              className="text-xs"
+            />
+          </FieldContent>
+        </Field>
 
-          <FormField
-            control={form.control}
-            name="password"
-            render={({ field }) => (
-              <FormItem className="space-y-1">
-                <Label htmlFor="password">{t("newPassword")}</Label>
-                <FormControl>
-                  <div className="relative">
-                    <Input
-                      {...field}
-                      id="password"
-                      type={showPassword ? "text" : "password"}
-                      autoComplete="new-password"
-                      placeholder="••••••••"
-                      className="pr-10"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                      aria-label={showPassword ? t("hidePassword") : t("showPassword")}
-                    >
-                      {showPassword ? <EyeSlash className="size-5" /> : <Eye className="size-5" />}
-                    </button>
-                  </div>
-                </FormControl>
-                <FormMessage className="text-xs text-destructive" />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="confirmPassword"
-            render={({ field }) => (
-              <FormItem className="space-y-1">
-                <Label htmlFor="confirmPassword">{t("confirmPassword")}</Label>
-                <FormControl>
-                  <div className="relative">
-                    <Input
-                      {...field}
-                      id="confirmPassword"
-                      type={showConfirmPassword ? "text" : "password"}
-                      autoComplete="new-password"
-                      placeholder="••••••••"
-                      className="pr-10"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                      aria-label={showConfirmPassword ? t("hidePassword") : t("showPassword")}
-                    >
-                      {showConfirmPassword ? <EyeSlash className="size-5" /> : <Eye className="size-5" />}
-                    </button>
-                  </div>
-                </FormControl>
-                <FormMessage className="text-xs text-destructive" />
-              </FormItem>
-            )}
-          />
+        <Field data-invalid={!!form.formState.errors.confirmPassword}>
+          <FieldContent>
+            <FieldLabel htmlFor="confirmPassword">{t("confirmPassword")}</FieldLabel>
+            <div className="relative">
+              <Input
+                {...form.register("confirmPassword")}
+                id="confirmPassword"
+                type={showConfirmPassword ? "text" : "password"}
+                autoComplete="new-password"
+                placeholder="••••••••"
+                className="pr-10"
+                aria-invalid={!!form.formState.errors.confirmPassword}
+                aria-describedby={
+                  form.formState.errors.confirmPassword
+                    ? "confirmPassword-error"
+                    : undefined
+                }
+              />
+              <button
+                type="button"
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                aria-label={showConfirmPassword ? t("hidePassword") : t("showPassword")}
+              >
+                {showConfirmPassword ? (
+                  <EyeSlash className="size-5" />
+                ) : (
+                  <Eye className="size-5" />
+                )}
+              </button>
+            </div>
+            <FieldError
+              id="confirmPassword-error"
+              errors={[form.formState.errors.confirmPassword]}
+              className="text-xs"
+            />
+          </FieldContent>
+        </Field>
 
           {/* Password requirements hint */}
           <div className="text-xs text-muted-foreground space-y-1">
@@ -280,8 +297,7 @@ export default function ResetPasswordPage() {
               t("updatePassword")
             )}
           </Button>
-        </form>
-      </Form>
+      </form>
     </AuthCard>
   )
 }

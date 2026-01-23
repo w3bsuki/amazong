@@ -6,6 +6,7 @@ import Image from "next/image"
 import { MagnifyingGlass, Clock, TrendUp, Package, X, ArrowRight, Eye, Sparkle } from "@phosphor-icons/react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { FieldLabel } from "@/components/shared/field"
 import {
   Popover,
   PopoverContent,
@@ -133,9 +134,9 @@ export function DesktopSearch() {
               className="absolute left-4 text-search-placeholder pointer-events-none"
             />
 
-              <label htmlFor={searchInputId} className="sr-only">
+              <FieldLabel htmlFor={searchInputId} className="sr-only">
                 {tNav("search")}
-              </label>
+              </FieldLabel>
               <Input
                 id={searchInputId}
               ref={inputRef}

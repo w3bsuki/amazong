@@ -6,9 +6,9 @@ import { useTranslations } from "next-intl"
 
 import { AuthCard } from "@/components/auth/auth-card"
 import { SubmitButton } from "@/components/auth/submit-button"
+import { Field, FieldContent, FieldError, FieldLabel } from "@/components/shared/field"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { Label } from "@/components/ui/label"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Link } from "@/i18n/routing"
 import { cn } from "@/lib/utils"
@@ -113,67 +113,90 @@ export function LoginForm({
 
         <form action={formAction} onSubmit={onSubmit} className="contents">
           {/* Email Field */}
-          <div className="space-y-1 order-1">
-            <Label htmlFor="email">{t("emailOrPhone")}</Label>
-            <Input
-              id="email"
-              name="email"
-              type="email"
-              autoComplete="email"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder={t("emailPlaceholder")}
-              aria-invalid={showClientEmailError || !!state?.fieldErrors?.email}
-              aria-describedby={showClientEmailError || state?.fieldErrors?.email ? "email-error" : undefined}
-              className={cn(
-                (showClientEmailError || state?.fieldErrors?.email) && "border-destructive focus-visible:ring-destructive/20"
-              )}
-            />
-            {(showClientEmailError || state?.fieldErrors?.email) && (
-              <p id="email-error" className="text-xs text-destructive" role="alert">
-                {state?.fieldErrors?.email ?? t("invalidEmail")}
-              </p>
-            )}
-          </div>
-
-          {/* Password Field */}
-          <div className="space-y-1 order-2">
-            <div className="flex justify-between items-center">
-              <Label htmlFor="password">{t("password")}</Label>
-              <Link href="/auth/forgot-password" className="text-xs text-primary hover:underline min-h-7 flex items-center">
-                {t("forgotPassword")}
-              </Link>
-            </div>
-            <div className="relative">
+          <Field
+            className="order-1"
+            data-invalid={showClientEmailError || !!state?.fieldErrors?.email}
+          >
+            <FieldContent>
+              <FieldLabel htmlFor="email">{t("emailOrPhone")}</FieldLabel>
               <Input
-                id="password"
-                name="password"
-                type={showPassword ? "text" : "password"}
-                autoComplete="current-password"
+                id="email"
+                name="email"
+                type="email"
+                autoComplete="email"
                 required
-                value={password}
-                placeholder={t("passwordPlaceholder")}
-                aria-invalid={!!state?.fieldErrors?.password}
-                onChange={(e) => setPassword(e.target.value)}
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder={t("emailPlaceholder")}
+                aria-invalid={showClientEmailError || !!state?.fieldErrors?.email}
+                aria-describedby={
+                  showClientEmailError || state?.fieldErrors?.email
+                    ? "email-error"
+                    : undefined
+                }
                 className={cn(
-                  "pr-10",
-                  state?.fieldErrors?.password && "border-destructive focus-visible:ring-destructive/20"
+                  (showClientEmailError || state?.fieldErrors?.email) &&
+                    "border-destructive focus-visible:ring-destructive/20",
                 )}
               />
-              <button
-                type="button"
-                onClick={() => setShowPassword((v) => !v)}
-                className="absolute right-1 top-1/2 -translate-y-1/2 size-8 flex items-center justify-center text-muted-foreground hover:text-foreground rounded-md transition-colors"
-                aria-label={showPassword ? t("hidePassword") : t("showPassword")}
-              >
-                {showPassword ? <EyeSlash className="size-4" /> : <Eye className="size-4" />}
-              </button>
-            </div>
-            {state?.fieldErrors?.password && (
-              <p className="text-xs text-destructive">{state.fieldErrors.password}</p>
-            )}
-          </div>
+              <FieldError id="email-error">
+                {showClientEmailError
+                  ? t("invalidEmail")
+                  : state?.fieldErrors?.email}
+              </FieldError>
+            </FieldContent>
+          </Field>
+
+          {/* Password Field */}
+          <Field className="order-2" data-invalid={!!state?.fieldErrors?.password}>
+            <FieldContent>
+              <div className="flex items-center justify-between gap-2">
+                <FieldLabel htmlFor="password">{t("password")}</FieldLabel>
+                <Link
+                  href="/auth/forgot-password"
+                  className="text-xs text-primary hover:underline min-h-7 flex items-center"
+                >
+                  {t("forgotPassword")}
+                </Link>
+              </div>
+              <div className="relative">
+                <Input
+                  id="password"
+                  name="password"
+                  type={showPassword ? "text" : "password"}
+                  autoComplete="current-password"
+                  required
+                  value={password}
+                  placeholder={t("passwordPlaceholder")}
+                  aria-invalid={!!state?.fieldErrors?.password}
+                  aria-describedby={
+                    state?.fieldErrors?.password ? "password-error" : undefined
+                  }
+                  onChange={(e) => setPassword(e.target.value)}
+                  className={cn(
+                    "pr-10",
+                    state?.fieldErrors?.password &&
+                      "border-destructive focus-visible:ring-destructive/20",
+                  )}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((v) => !v)}
+                  className="absolute right-1 top-1/2 -translate-y-1/2 size-8 flex items-center justify-center text-muted-foreground hover:text-foreground rounded-md transition-colors"
+                  aria-label={showPassword ? t("hidePassword") : t("showPassword")}
+                >
+                  {showPassword ? (
+                    <EyeSlash className="size-4" />
+                  ) : (
+                    <Eye className="size-4" />
+                  )}
+                </button>
+              </div>
+              <FieldError id="password-error">
+                {state?.fieldErrors?.password}
+              </FieldError>
+            </FieldContent>
+          </Field>
 
           <div className="pt-1 order-4">
             <SubmitButton
@@ -192,12 +215,12 @@ export function LoginForm({
               checked={rememberMe}
               onCheckedChange={(checked) => setRememberMe(checked === true)}
             />
-            <Label
+            <FieldLabel
               htmlFor="remember-me"
               className="text-sm text-muted-foreground cursor-pointer font-normal"
             >
               {t("rememberMe")}
-            </Label>
+            </FieldLabel>
           </div>
         </div>
       </div>

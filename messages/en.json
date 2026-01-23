@@ -772,6 +772,7 @@
     "ComingSoon": {
         "backToHome": "Back to Home",
         "notifyMe": "Notify Me",
+        "emailLabel": "Email address",
         "emailPlaceholder": "your@email.com",
         "subscribing": "Subscribing...",
         "subscribed": "You'll be notified when we launch!",
@@ -973,6 +974,7 @@
         "signInArrow": "Sign in ›",
         "emailAlreadyRegistered": "An account with this email already exists. Try signing in instead.",
         "rateLimitError": "Too many attempts. Please try again later.",
+        "passwordsDoNotMatch": "Passwords don't match",
         "passwordsMatch": "Passwords match",
         "passwordStrength": "Password strength",
         "strengthWeak": "Weak",

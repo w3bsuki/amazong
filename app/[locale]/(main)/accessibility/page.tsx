@@ -42,6 +42,7 @@ export default async function AccessibilityPage({
       labels={{
         backToHome: tCommon('backToHome'),
         notifyMe: tCommon('notifyMe'),
+        emailLabel: tCommon('emailLabel'),
         emailPlaceholder: tCommon('emailPlaceholder'),
         subscribing: tCommon('subscribing'),
         subscribed: tCommon('subscribed'),

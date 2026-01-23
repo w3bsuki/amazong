@@ -2,9 +2,9 @@ import { getTranslations, setRequestLocale } from "next-intl/server"
 import { AppBreadcrumb, breadcrumbPresets } from "@/components/navigation/app-breadcrumb"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
+import { Field, FieldContent, FieldDescription, FieldLabel } from "@/components/shared/field"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
-import { Label } from "@/components/ui/label"
 import { 
   Envelope, Phone, MapPin, Clock, 
   Headphones, Package, CreditCard, Question,
@@ -107,54 +107,76 @@ export default async function ContactPage({
                 
                 <form className="space-y-5">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                    <div className="space-y-2">
-                      <Label htmlFor="name">{t('name')} <span className="text-brand-deal">*</span></Label>
-                      <Input id="name" placeholder={t('namePlaceholder')} required />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="email">{t('email')} <span className="text-brand-deal">*</span></Label>
-                      <Input id="email" type="email" placeholder={t('emailPlaceholder')} required />
-                    </div>
+                    <Field>
+                      <FieldContent>
+                        <FieldLabel htmlFor="name">
+                          {t('name')} <span className="text-brand-deal">*</span>
+                        </FieldLabel>
+                        <Input id="name" name="name" placeholder={t('namePlaceholder')} required />
+                      </FieldContent>
+                    </Field>
+                    <Field>
+                      <FieldContent>
+                        <FieldLabel htmlFor="email">
+                          {t('email')} <span className="text-brand-deal">*</span>
+                        </FieldLabel>
+                        <Input id="email" name="email" type="email" placeholder={t('emailPlaceholder')} required />
+                      </FieldContent>
+                    </Field>
                   </div>
                   
-                  <div className="space-y-2">
-                    <Label htmlFor="phone">{t('phone')}</Label>
-                    <Input id="phone" type="tel" placeholder={t('phonePlaceholder')} />
-                  </div>
+                  <Field>
+                    <FieldContent>
+                      <FieldLabel htmlFor="phone">{t('phone')}</FieldLabel>
+                      <Input id="phone" name="phone" type="tel" placeholder={t('phonePlaceholder')} />
+                    </FieldContent>
+                  </Field>
                   
-                  <div className="space-y-2">
-                    <Label htmlFor="orderNumber">{t('orderNumber')}</Label>
-                    <Input id="orderNumber" placeholder={t('orderNumberPlaceholder')} />
-                    <p className="text-xs text-muted-foreground">{t('orderNumberHint')}</p>
-                  </div>
+                  <Field>
+                    <FieldContent>
+                      <FieldLabel htmlFor="orderNumber">{t('orderNumber')}</FieldLabel>
+                      <Input id="orderNumber" name="orderNumber" placeholder={t('orderNumberPlaceholder')} />
+                      <FieldDescription className="text-xs">{t('orderNumberHint')}</FieldDescription>
+                    </FieldContent>
+                  </Field>
                   
-                  <div className="space-y-2">
-                    <Label htmlFor="subject">{t('subject')} <span className="text-brand-deal">*</span></Label>
-                    <select 
-                      id="subject" 
-                      className="flex h-10 w-full border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                      required
-                    >
-                      <option value="">{t('selectSubject')}</option>
-                      <option value="order">{t('subjectOrder')}</option>
-                      <option value="return">{t('subjectReturn')}</option>
-                      <option value="payment">{t('subjectPayment')}</option>
-                      <option value="product">{t('subjectProduct')}</option>
-                      <option value="account">{t('subjectAccount')}</option>
-                      <option value="other">{t('subjectOther')}</option>
-                    </select>
-                  </div>
+                  <Field>
+                    <FieldContent>
+                      <FieldLabel htmlFor="subject">
+                        {t('subject')} <span className="text-brand-deal">*</span>
+                      </FieldLabel>
+                      <select 
+                        id="subject" 
+                        name="subject"
+                        className="flex h-10 w-full border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                        required
+                      >
+                        <option value="">{t('selectSubject')}</option>
+                        <option value="order">{t('subjectOrder')}</option>
+                        <option value="return">{t('subjectReturn')}</option>
+                        <option value="payment">{t('subjectPayment')}</option>
+                        <option value="product">{t('subjectProduct')}</option>
+                        <option value="account">{t('subjectAccount')}</option>
+                        <option value="other">{t('subjectOther')}</option>
+                      </select>
+                    </FieldContent>
+                  </Field>
                   
-                  <div className="space-y-2">
-                    <Label htmlFor="message">{t('message')} <span className="text-brand-deal">*</span></Label>
-                    <Textarea 
-                      id="message" 
-                      placeholder={t('messagePlaceholder')} 
-                      className="min-h-(--textarea-min-h) resize-none" 
-                      required 
-                    />
-                    <p className="text-xs text-muted-foreground">{t('messageHint')}</p>
-                  </div>
+                  <Field>
+                    <FieldContent>
+                      <FieldLabel htmlFor="message">
+                        {t('message')} <span className="text-brand-deal">*</span>
+                      </FieldLabel>
+                      <Textarea 
+                        id="message" 
+                        name="message"
+                        placeholder={t('messagePlaceholder')} 
+                        className="min-h-(--textarea-min-h) resize-none" 
+                        required 
+                      />
+                      <FieldDescription className="text-xs">{t('messageHint')}</FieldDescription>
+                    </FieldContent>
+                  </Field>
                   
                   <div className="flex items-start gap-3 p-4 bg-muted">
                     <ShieldCheck className="size-5 text-brand-success shrink-0 mt-0.5" />

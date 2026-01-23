@@ -3,7 +3,7 @@
 import { useState, useRef, useTransition } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
+import { Field, FieldContent, FieldError, FieldLabel } from "@/components/shared/field"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import {
   Select,
@@ -456,68 +456,97 @@ export function ProfileContent({
         <CardContent>
           <form onSubmit={handleProfileUpdate} className="space-y-4">
             <div className="grid gap-4 sm:grid-cols-2">
-              <div className="space-y-2">
-                <Label htmlFor="full_name">
-                  <User className="size-4 inline mr-1.5" />
-                  {locale === "bg" ? "Име" : "Full Name"}
-                </Label>
-                <Input
-                  id="full_name"
-                  value={profileData.full_name}
-                  onChange={(e) => setProfileData(prev => ({ ...prev, full_name: e.target.value }))}
-                  placeholder={locale === "bg" ? "Вашето име" : "Your name"}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="phone">
-                  <Phone className="size-4 inline mr-1.5" />
-                  {locale === "bg" ? "Телефон" : "Phone"}
-                </Label>
-                <Input
-                  id="phone"
-                  type="tel"
-                  value={profileData.phone}
-                  onChange={(e) => setProfileData(prev => ({ ...prev, phone: e.target.value }))}
-                  placeholder="+359 888 123 456"
-                />
-              </div>
+              <Field>
+                <FieldContent>
+                  <FieldLabel htmlFor="full_name">
+                    <User className="size-4 inline mr-1.5" />
+                    {locale === "bg" ? "Име" : "Full Name"}
+                  </FieldLabel>
+                  <Input
+                    id="full_name"
+                    name="full_name"
+                    value={profileData.full_name}
+                    onChange={(e) =>
+                      setProfileData((prev) => ({
+                        ...prev,
+                        full_name: e.target.value,
+                      }))
+                    }
+                    placeholder={locale === "bg" ? "Вашето име" : "Your name"}
+                  />
+                </FieldContent>
+              </Field>
+              <Field>
+                <FieldContent>
+                  <FieldLabel htmlFor="phone">
+                    <Phone className="size-4 inline mr-1.5" />
+                    {locale === "bg" ? "Телефон" : "Phone"}
+                  </FieldLabel>
+                  <Input
+                    id="phone"
+                    name="phone"
+                    type="tel"
+                    value={profileData.phone}
+                    onChange={(e) =>
+                      setProfileData((prev) => ({ ...prev, phone: e.target.value }))
+                    }
+                    placeholder="+359 888 123 456"
+                  />
+                </FieldContent>
+              </Field>
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2">
-              <div className="space-y-2">
-                <Label htmlFor="shipping_region">
-                  <MapPin className="size-4 inline mr-1.5" />
-                  {locale === "bg" ? "Регион за доставка" : "Shipping Region"}
-                </Label>
-                <Select
-                  value={profileData.shipping_region}
-                  onValueChange={(value) => setProfileData(prev => ({ ...prev, shipping_region: value }))}
-                >
-                  <SelectTrigger id="shipping_region">
-                    <SelectValue placeholder={locale === "bg" ? "Изберете регион" : "Select region"} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {SHIPPING_REGIONS.map((region) => (
-                      <SelectItem key={region.value} value={region.value}>
-                        {locale === "bg" ? region.labelBg : region.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="country_code">
-                  <Globe className="size-4 inline mr-1.5" />
-                  {locale === "bg" ? "Държава" : "Country Code"}
-                </Label>
-                <Input
-                  id="country_code"
-                  value={profileData.country_code}
-                  onChange={(e) => setProfileData(prev => ({ ...prev, country_code: e.target.value.toUpperCase().slice(0, 2) }))}
-                  placeholder="BG"
-                  maxLength={2}
-                />
-              </div>
+              <Field>
+                <FieldContent>
+                  <FieldLabel htmlFor="shipping_region">
+                    <MapPin className="size-4 inline mr-1.5" />
+                    {locale === "bg" ? "Регион за доставка" : "Shipping Region"}
+                  </FieldLabel>
+                  <Select
+                    value={profileData.shipping_region}
+                    onValueChange={(value) =>
+                      setProfileData((prev) => ({ ...prev, shipping_region: value }))
+                    }
+                  >
+                    <SelectTrigger id="shipping_region">
+                      <SelectValue
+                        placeholder={
+                          locale === "bg" ? "Изберете регион" : "Select region"
+                        }
+                      />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {SHIPPING_REGIONS.map((region) => (
+                        <SelectItem key={region.value} value={region.value}>
+                          {locale === "bg" ? region.labelBg : region.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </FieldContent>
+              </Field>
+              <Field>
+                <FieldContent>
+                  <FieldLabel htmlFor="country_code">
+                    <Globe className="size-4 inline mr-1.5" />
+                    {locale === "bg" ? "Държава" : "Country Code"}
+                  </FieldLabel>
+                  <Input
+                    id="country_code"
+                    name="country_code"
+                    value={profileData.country_code}
+                    onChange={(e) =>
+                      setProfileData((prev) => ({
+                        ...prev,
+                        country_code: e.target.value.toUpperCase().slice(0, 2),
+                      }))
+                    }
+                    placeholder="BG"
+                    maxLength={2}
+                  />
+                </FieldContent>
+              </Field>
             </div>
 
             <Button type="submit" disabled={isPending} className="w-full sm:w-auto">
@@ -595,16 +624,21 @@ export function ProfileContent({
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="newEmail">{locale === "bg" ? "Нов имейл" : "New Email"}</Label>
-              <Input
-                id="newEmail"
-                type="email"
-                value={emailData.newEmail}
-                onChange={(e) => setEmailData({ newEmail: e.target.value })}
-                placeholder="new@example.com"
-              />
-            </div>
+            <Field>
+              <FieldContent>
+                <FieldLabel htmlFor="newEmail">
+                  {locale === "bg" ? "Нов имейл" : "New Email"}
+                </FieldLabel>
+                <Input
+                  id="newEmail"
+                  name="newEmail"
+                  type="email"
+                  value={emailData.newEmail}
+                  onChange={(e) => setEmailData({ newEmail: e.target.value })}
+                  placeholder="new@example.com"
+                />
+              </FieldContent>
+            </Field>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setIsChangeEmailOpen(false)}>
@@ -632,55 +666,101 @@ export function ProfileContent({
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="currentPassword">{locale === "bg" ? "Текуща парола" : "Current Password"}</Label>
-              <Input
-                id="currentPassword"
-                type="password"
-                value={passwordData.currentPassword}
-                onChange={(e) => setPasswordData(prev => ({ ...prev, currentPassword: e.target.value }))}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="newPassword">{locale === "bg" ? "Нова парола" : "New Password"}</Label>
-              <div className="relative">
+            <Field>
+              <FieldContent>
+                <FieldLabel htmlFor="currentPassword">
+                  {locale === "bg" ? "Текуща парола" : "Current Password"}
+                </FieldLabel>
                 <Input
-                  id="newPassword"
-                  type={showNewPassword ? "text" : "password"}
-                  value={passwordData.newPassword}
-                  onChange={(e) => setPasswordData(prev => ({ ...prev, newPassword: e.target.value }))}
+                  id="currentPassword"
+                  name="currentPassword"
+                  type="password"
+                  value={passwordData.currentPassword}
+                  onChange={(e) =>
+                    setPasswordData((prev) => ({
+                      ...prev,
+                      currentPassword: e.target.value,
+                    }))
+                  }
                 />
-                <button
-                  type="button"
-                  onClick={() => setShowNewPassword(!showNewPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                >
-                  {showNewPassword ? <EyeSlash className="size-4" /> : <Eye className="size-4" />}
-                </button>
-              </div>
-              {passwordStrength && (
-                <div className="space-y-1">
-                  <div className="h-1 w-full bg-muted rounded-full overflow-hidden">
-                    <div className={`h-full ${passwordStrength.color} ${passwordStrength.width} transition-all`} />
-                  </div>
-                  <p className="text-xs text-muted-foreground">{passwordStrength.label}</p>
+              </FieldContent>
+            </Field>
+            <Field>
+              <FieldContent>
+                <FieldLabel htmlFor="newPassword">
+                  {locale === "bg" ? "Нова парола" : "New Password"}
+                </FieldLabel>
+                <div className="relative">
+                  <Input
+                    id="newPassword"
+                    name="newPassword"
+                    type={showNewPassword ? "text" : "password"}
+                    value={passwordData.newPassword}
+                    onChange={(e) =>
+                      setPasswordData((prev) => ({
+                        ...prev,
+                        newPassword: e.target.value,
+                      }))
+                    }
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowNewPassword(!showNewPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                  >
+                    {showNewPassword ? (
+                      <EyeSlash className="size-4" />
+                    ) : (
+                      <Eye className="size-4" />
+                    )}
+                  </button>
                 </div>
-              )}
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="confirmPassword">{locale === "bg" ? "Потвърди паролата" : "Confirm Password"}</Label>
-              <Input
-                id="confirmPassword"
-                type="password"
-                value={passwordData.confirmPassword}
-                onChange={(e) => setPasswordData(prev => ({ ...prev, confirmPassword: e.target.value }))}
-              />
-              {passwordData.confirmPassword && passwordData.newPassword !== passwordData.confirmPassword && (
-                <p className="text-xs text-destructive">
-                  {locale === "bg" ? "Паролите не съвпадат" : "Passwords do not match"}
-                </p>
-              )}
-            </div>
+                {passwordStrength && (
+                  <div className="space-y-1">
+                    <div className="h-1 w-full bg-muted rounded-full overflow-hidden">
+                      <div
+                        className={`h-full ${passwordStrength.color} ${passwordStrength.width} transition-all`}
+                      />
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      {passwordStrength.label}
+                    </p>
+                  </div>
+                )}
+              </FieldContent>
+            </Field>
+            <Field
+              data-invalid={
+                !!passwordData.confirmPassword &&
+                passwordData.newPassword !== passwordData.confirmPassword
+              }
+            >
+              <FieldContent>
+                <FieldLabel htmlFor="confirmPassword">
+                  {locale === "bg" ? "Потвърди паролата" : "Confirm Password"}
+                </FieldLabel>
+                <Input
+                  id="confirmPassword"
+                  name="confirmPassword"
+                  type="password"
+                  value={passwordData.confirmPassword}
+                  onChange={(e) =>
+                    setPasswordData((prev) => ({
+                      ...prev,
+                      confirmPassword: e.target.value,
+                    }))
+                  }
+                />
+                <FieldError className="text-xs">
+                  {passwordData.confirmPassword &&
+                  passwordData.newPassword !== passwordData.confirmPassword
+                    ? locale === "bg"
+                      ? "Паролите не съвпадат"
+                      : "Passwords do not match"
+                    : null}
+                </FieldError>
+              </FieldContent>
+            </Field>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setIsChangePasswordOpen(false)}>

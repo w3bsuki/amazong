@@ -772,6 +772,7 @@
     "ComingSoon": {
         "backToHome": "Обратно към начало",
         "notifyMe": "Уведоми ме",
+        "emailLabel": "Имейл адрес",
         "emailPlaceholder": "your@email.com",
         "subscribing": "Абониране...",
         "subscribed": "Ще бъдете уведомени при стартиране!",
@@ -973,6 +974,7 @@
         "signInArrow": "Влез ›",
         "emailAlreadyRegistered": "Акаунт с този имейл вече съществува. Опитай да влезеш.",
         "rateLimitError": "Твърде много опити. Моля, опитай по-късно.",
+        "passwordsDoNotMatch": "Паролите не съвпадат",
         "passwordsMatch": "Паролите съвпадат",
         "passwordStrength": "Сила на паролата",
         "strengthWeak": "Слаба",
