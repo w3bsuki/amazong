@@ -1,7 +1,7 @@
 [
   {
     "file": "app/[locale]/(account)/account/orders/[id]/_components/order-detail-content.tsx",
-    "line": 634,
+    "line": 649,
     "column": 52,
     "kind": "non-null"
   },
@@ -13,7 +13,7 @@
   },
   {
     "file": "app/[locale]/(account)/account/profile/profile-content.tsx",
-    "line": 229,
+    "line": 245,
     "column": 19,
     "kind": "non-null"
   },
@@ -42,16 +42,10 @@
     "kind": "non-null"
   },
   {
-    "file": "app/[locale]/(business)/dashboard/_lib/categories.ts",
-    "line": 34,
-    "column": 18,
-    "kind": "non-null"
-  },
-  {
-    "file": "app/[locale]/(business)/dashboard/_lib/categories.ts",
-    "line": 37,
-    "column": 7,
-    "kind": "non-null"
+    "file": "app/[locale]/(business)/_components/product-form-modal.tsx",
+    "line": 295,
+    "column": 49,
+    "kind": "as-any"
   },
   {
     "file": "app/[locale]/(business)/dashboard/inventory/page.tsx",
@@ -73,13 +67,13 @@
   },
   {
     "file": "app/[locale]/(checkout)/_actions/checkout.ts",
-    "line": 106,
+    "line": 116,
     "column": 37,
     "kind": "non-null"
   },
   {
     "file": "app/[locale]/(checkout)/_actions/checkout.ts",
-    "line": 404,
+    "line": 414,
     "column": 22,
     "kind": "non-null"
   },
@@ -150,26 +144,32 @@
     "kind": "non-null"
   },
   {
+    "file": "app/[locale]/(sell)/_components/sell-form-provider.tsx",
+    "line": 115,
+    "column": 48,
+    "kind": "as-any"
+  },
+  {
     "file": "app/[locale]/(sell)/_components/ui/category-modal/index.tsx",
     "line": 550,
     "column": 58,
     "kind": "non-null"
   },
   {
-    "file": "app/[locale]/(sell)/sell/_lib/categories.ts",
-    "line": 36,
-    "column": 18,
-    "kind": "non-null"
+    "file": "app/[locale]/(sell)/sell/client.tsx",
+    "line": 52,
+    "column": 79,
+    "kind": "any"
   },
   {
-    "file": "app/[locale]/(sell)/sell/_lib/categories.ts",
-    "line": 39,
-    "column": 7,
-    "kind": "non-null"
+    "file": "app/[locale]/(sell)/sell/client.tsx",
+    "line": 60,
+    "column": 17,
+    "kind": "any"
   },
   {
     "file": "app/[locale]/(sell)/sell/orders/_components/order-status-actions.tsx",
-    "line": 135,
+    "line": 145,
     "column": 45,
     "kind": "non-null"
   },
@@ -180,16 +180,22 @@
     "kind": "any"
   },
   {
-    "file": "app/[locale]/demo/sell5/page.tsx",
-    "line": 569,
-    "column": 54,
-    "kind": "non-null"
-  },
-  {
     "file": "app/actions/profile.ts",
     "line": 437,
     "column": 14,
     "kind": "non-null"
+  },
+  {
+    "file": "app/api/boost/checkout/route.ts",
+    "line": 42,
+    "column": 39,
+    "kind": "as-any"
+  },
+  {
+    "file": "app/api/boost/checkout/route.ts",
+    "line": 194,
+    "column": 41,
+    "kind": "as-any"
   },
   {
     "file": "app/api/categories/attributes/route.ts",
@@ -265,55 +271,55 @@
   },
   {
     "file": "app/api/revalidate/route.ts",
-    "line": 99,
+    "line": 104,
     "column": 35,
     "kind": "as-any"
   },
   {
     "file": "app/api/revalidate/route.ts",
-    "line": 100,
+    "line": 105,
     "column": 38,
     "kind": "as-any"
   },
   {
     "file": "app/api/revalidate/route.ts",
-    "line": 101,
+    "line": 106,
     "column": 39,
     "kind": "as-any"
   },
   {
     "file": "app/api/revalidate/route.ts",
-    "line": 102,
+    "line": 107,
     "column": 42,
     "kind": "as-any"
   },
   {
     "file": "app/api/revalidate/route.ts",
-    "line": 114,
+    "line": 119,
     "column": 41,
     "kind": "as-any"
   },
   {
     "file": "app/api/revalidate/route.ts",
-    "line": 115,
+    "line": 120,
     "column": 44,
     "kind": "as-any"
   },
   {
     "file": "components/mobile/horizontal-product-card.tsx",
-    "line": 31,
+    "line": 33,
     "column": 20,
     "kind": "non-null"
   },
   {
     "file": "components/mobile/horizontal-product-card.tsx",
-    "line": 31,
+    "line": 33,
     "column": 58,
     "kind": "non-null"
   },
   {
     "file": "components/mobile/horizontal-product-card.tsx",
-    "line": 108,
+    "line": 118,
     "column": 17,
     "kind": "non-null"
   },
@@ -340,6 +346,48 @@
     "line": 394,
     "column": 46,
     "kind": "as-any"
+  },
+  {
+    "file": "components/ui/chart.tsx",
+    "line": 143,
+    "column": 30,
+    "kind": "any"
+  },
+  {
+    "file": "components/ui/chart.tsx",
+    "line": 143,
+    "column": 44,
+    "kind": "any"
+  },
+  {
+    "file": "components/ui/chart.tsx",
+    "line": 145,
+    "column": 25,
+    "kind": "any"
+  },
+  {
+    "file": "components/ui/chart.tsx",
+    "line": 145,
+    "column": 36,
+    "kind": "any"
+  },
+  {
+    "file": "components/ui/chart.tsx",
+    "line": 145,
+    "column": 47,
+    "kind": "any"
+  },
+  {
+    "file": "components/ui/chart.tsx",
+    "line": 145,
+    "column": 59,
+    "kind": "any"
+  },
+  {
+    "file": "components/ui/chart.tsx",
+    "line": 145,
+    "column": 73,
+    "kind": "any"
   },
   {
     "file": "hooks/use-category-attributes.ts",
@@ -379,19 +427,19 @@
   },
   {
     "file": "lib/data/categories.ts",
-    "line": 184,
+    "line": 194,
     "column": 22,
     "kind": "non-null"
   },
   {
     "file": "lib/data/categories.ts",
-    "line": 187,
+    "line": 197,
     "column": 22,
     "kind": "non-null"
   },
   {
     "file": "lib/data/categories.ts",
-    "line": 792,
+    "line": 945,
     "column": 68,
     "kind": "as-any"
   },

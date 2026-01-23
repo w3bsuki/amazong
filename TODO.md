@@ -53,7 +53,7 @@ REUSE_EXISTING_SERVER=true pnpm test:e2e:smoke
 - [x] TREIDO: Pilot desktop modal browsing with Next.js intercepting routes (PDP quick view from search) → `docs/FRONTEND.md` *(optional for V1)*
 
 ### P5 — TypeScript full audit + Supabase types
-- [ ] TREIDO: Decide TS policy (`ts:gate` baseline vs fix-now) and keep drift at 0 → `codex-xhigh/typescript/FULL-AUDIT.md`
+- [x] TREIDO: Decide TS policy (`ts:gate` baseline vs fix-now) and keep drift at 0 → `codex-xhigh/typescript/FULL-AUDIT.md`
 - [ ] SUPABASE: Regenerate `lib/supabase/database.types.ts` and remove `any` casts in hot paths → `supabase_tasks.md`
 - [ ] TREIDO: Tighten types in checkout/orders/chat actions (no silent fallthrough) → `docs/FEATURES.md`
 

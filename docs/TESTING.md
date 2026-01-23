@@ -22,6 +22,20 @@ Notes:
 
 ---
 
+## TypeScript safety gate (`ts:gate`)
+
+This repo enforces 0 drift for unsafe TypeScript patterns (new `any`, `as any`, non-null assertions, etc.).
+
+```bash
+pnpm -s ts:gate
+```
+
+Notes:
+- Baseline file: `scripts/ts-safety-gate.baseline.json`
+- Update baseline only when intentional: `pnpm -s ts:gate:baseline` (prefer fixing patterns in touched files)
+
+---
+
 ## Unit tests (Vitest)
 
 ```bash
@@ -57,4 +71,3 @@ pnpm -s exec playwright test e2e/smoke.spec.ts --ui
 # Show HTML report
 pnpm exec playwright show-report playwright-report
 ```
-
