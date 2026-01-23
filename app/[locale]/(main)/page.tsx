@@ -5,7 +5,6 @@ import { routing } from "@/i18n/routing"
 import { MobileHome } from "@/components/mobile/mobile-home"
 import { getNewestProducts, getBoostedProducts, toUI } from "@/lib/data/products"
 import { getCategoryHierarchy } from "@/lib/data/categories"
-import { createClient } from "@/lib/supabase/server"
 import { 
   DesktopHome, 
   DesktopHomeSkeleton 
@@ -31,16 +30,6 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 export default async function Home({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params
   setRequestLocale(locale)
-
-  // Fetch user for wishlist/notifications
-  let user = null
-  try {
-    const supabase = await createClient()
-    const { data } = await supabase.auth.getUser()
-    user = data.user
-  } catch {
-    user = null
-  }
 
   // Fetch categories with children for mobile subcategory circles.
   // L0 + L1 + L2 only (~3,400 categories, ~60KB gzipped).
@@ -71,7 +60,6 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
             promotedProducts={promotedProducts}
             initialCategories={categoriesWithChildren}
             locale={locale}
-            user={user ? { id: user.id } : null}
           />
         </Suspense>
       </div>
@@ -89,7 +77,6 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
             categories={categoriesWithChildren}
             initialProducts={initialProducts}
             promotedProducts={promotedProducts}
-            user={user}
           />
         </Suspense>
       </div>
