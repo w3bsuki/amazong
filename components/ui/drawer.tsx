@@ -5,6 +5,15 @@ import { Drawer as DrawerPrimitive } from "vaul"
 
 import { cn } from "@/lib/utils"
 
+function isIOSDevice(): boolean {
+  if (typeof navigator === "undefined") return false
+
+  const ua = navigator.userAgent
+  const isiOS = /iPad|iPhone|iPod/.test(ua)
+  const isIPadOS = navigator.platform === "MacIntel" && (navigator.maxTouchPoints ?? 0) > 1
+  return isiOS || isIPadOS
+}
+
 /**
  * Drawer Root - wraps vaul's Drawer.Root with sensible defaults
  * @see https://vaul.emilkowal.ski/api
@@ -19,12 +28,19 @@ import { cn } from "@/lib/utils"
  */
 function Drawer({
   shouldScaleBackground = false,
+  noBodyStyles,
   ...props
 }: React.ComponentProps<typeof DrawerPrimitive.Root>) {
+  // Vaul uses `body { position: fixed }` on iOS to work around Safari bugs.
+  // That breaks `position: sticky` headers and can cause visible layout jank.
+  // Default to no body style injection on iOS (callers can override).
+  const resolvedNoBodyStyles = noBodyStyles ?? isIOSDevice()
+
   return (
     <DrawerPrimitive.Root
       data-slot="drawer"
       shouldScaleBackground={shouldScaleBackground}
+      noBodyStyles={resolvedNoBodyStyles}
       {...props}
     />
   )
@@ -87,27 +103,6 @@ function DrawerDescription({
     <DrawerPrimitive.Description
       data-slot="drawer-description"
       className={cn("text-muted-foreground text-sm", className)}
-      {...props}
-    />
-  )
-}
-
-/**
- * Drag handle for drawer - the official Vaul component
- * Place this inside DrawerContent for a proper iOS-style drag affordance
- */
-function DrawerHandle({
-  className,
-  ...props
-}: React.ComponentProps<typeof DrawerPrimitive.Handle>) {
-  return (
-    <DrawerPrimitive.Handle
-      data-slot="drawer-handle"
-      className={cn(
-        "mx-auto mt-4 h-1.5 w-12 shrink-0 cursor-grab rounded-full bg-muted-foreground/30 active:cursor-grabbing",
-        "transition-colors hover:bg-muted-foreground/50",
-        className
-      )}
       {...props}
     />
   )
@@ -271,5 +266,4 @@ export {
   DrawerFooter,
   DrawerTitle,
   DrawerDescription,
-  DrawerHandle,
 }

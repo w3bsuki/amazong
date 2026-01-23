@@ -25,7 +25,7 @@ const badgeVariants = cva(
         secondary:
           "border-transparent bg-secondary text-secondary-foreground [a&]:hover:bg-secondary/90",
         destructive:
-          "border-transparent bg-destructive text-white [a&]:hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60",
+          "border-transparent bg-destructive text-destructive-foreground [a&]:hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60",
         outline:
           "text-foreground [a&]:hover:bg-accent [a&]:hover:text-accent-foreground",
         
@@ -62,7 +62,7 @@ const badgeVariants = cva(
         // === MARKETPLACE: DEAL/SALE BADGES ===
         // Deal: semantic deal token
         deal:
-          "border-transparent bg-deal text-white font-semibold",
+          "border-transparent bg-deal text-deal-foreground font-semibold",
         // Sale: lighter deal tint
         sale:
           "border-deal/20 bg-deal/10 text-deal",
@@ -121,17 +121,4 @@ function Badge({
   )
 }
 
-/**
- * Dot indicator for badge status
- * Use inside a badge for status indication
- */
-function BadgeDot({ className }: { className?: string }) {
-  return (
-    <span 
-      className={cn("size-1.5 rounded-full bg-current", className)} 
-      aria-hidden="true" 
-    />
-  )
-}
-
-export { Badge, BadgeDot, badgeVariants }
+export { Badge, badgeVariants }

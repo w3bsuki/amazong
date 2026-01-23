@@ -1,12 +1,10 @@
 "use client";
 
-import { useMemo, useRef, useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useTranslations, useLocale } from "next-intl";
-import Image from "next/image";
 import { MapPin, Clock, Eye, Heart, ChevronRight, Star, CheckCircle2, Shield, Truck } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { bg, enUS } from "date-fns/locale";
-import { cn } from "@/lib/utils";
 import { Link } from "@/i18n/routing";
 // V2 Mobile Components
 import { MobileGalleryV2 } from "./mobile-gallery-v2";
@@ -19,9 +17,9 @@ import { CustomerReviewsHybrid } from "@/components/shared/product/customer-revi
 import { RecentlyViewedTracker } from "@/components/shared/product/recently-viewed-tracker";
 import { CategoryBadge } from "@/components/shared/product/category-badge";
 import { HeroSpecs } from "@/components/shared/product/hero-specs";
+import { Badge } from "@/components/ui/badge";
 import { useWishlist } from "@/components/providers/wishlist-context";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { safeAvatarSrc } from "@/lib/utils";
+import { UserAvatar } from "@/components/shared/user-avatar";
 
 import type { ProductPageViewModel } from "@/lib/view-models/product-page";
 import type { Database } from "@/lib/supabase/database.types";
@@ -77,7 +75,6 @@ export function MobileProductPage(props: MobileProductPageProps) {
   const {
     locale,
     username,
-    productSlug,
     product,
     seller,
     category,
@@ -90,25 +87,13 @@ export function MobileProductPage(props: MobileProductPageProps) {
     submitReview,
   } = props;
 
-  const accordionRef = useRef<HTMLDivElement>(null);
-
   const safeVariants = Array.isArray(variants) ? variants : [];
-  const defaultVariantId = useMemo(() => {
-    const defaultVariant = safeVariants.find((v) => v.is_default) ?? safeVariants[0];
-    return defaultVariant?.id ?? null;
-  }, [safeVariants]);
-
-  const [selectedVariantId, setSelectedVariantId] = useState<string | null>(defaultVariantId);
-
-  const selectedVariant = useMemo(() => {
-    if (!selectedVariantId) return null;
-    return safeVariants.find((v) => v.id === selectedVariantId) ?? null;
-  }, [safeVariants, selectedVariantId]);
+  const defaultVariant = safeVariants.find((v) => v.is_default) ?? safeVariants[0] ?? null;
 
   const primaryImageSrc = viewModel.galleryImages?.[0]?.src ?? null;
 
   // Wishlist integration
-  const { isInWishlist, toggleWishlist } = useWishlist();
+  const { isInWishlist } = useWishlist();
   const productInWishlist = isInWishlist(product.id);
 
   // Cart/wishlist product info
@@ -131,15 +116,9 @@ export function MobileProductPage(props: MobileProductPageProps) {
     verified: Boolean(viewModel.sellerVerified),
   };
 
-  // Stock info
-  const baseStockQuantity = product.stock ?? null;
-  const stockQuantity = safeVariants.length > 0
-    ? (selectedVariant?.stock ?? null)
-    : baseStockQuantity;
-
   const basePrice = Number(product.price ?? 0);
   const displayPrice = safeVariants.length > 0
-    ? basePrice + Number(selectedVariant?.price_adjustment ?? 0)
+    ? basePrice + Number(defaultVariant?.price_adjustment ?? 0)
     : basePrice;
 
   const displayRegularPrice = product.list_price != null ? Number(product.list_price) : null;
@@ -156,11 +135,6 @@ export function MobileProductPage(props: MobileProductPageProps) {
         locale: currentLocale === "bg" ? bg : enUS,
       })
     : null;
-
-  // Product tags (from viewModel or hardcoded based on conditions)
-  const productTags: string[] = [];
-  if (!product.pickup_only) productTags.push(t("freeShipping"));
-  if (sellerInfo.verified) productTags.push(t("topRated"));
 
   return (
     <div className="min-h-dvh bg-surface-page pb-28 md:hidden">
@@ -206,10 +180,12 @@ export function MobileProductPage(props: MobileProductPageProps) {
 
       {/* ========== META ROW (location + time + views + saves) ========== */}
       <div className="bg-surface-card px-4 py-2.5 flex items-center gap-4 text-xs text-text-muted-alt">
-        <span className="flex items-center gap-1.5">
-          <MapPin className="size-3.5" strokeWidth={1.5} />
-          <span className="text-text-strong font-medium">{product.seller_city || "Bulgaria"}</span>
-        </span>
+        {product.seller_city && (
+          <span className="flex items-center gap-1.5">
+            <MapPin className="size-3.5" strokeWidth={1.5} />
+            <span className="text-text-strong font-medium">{product.seller_city}</span>
+          </span>
+        )}
         {timeAgo && (
           <span className="flex items-center gap-1">
             <Clock className="size-3.5" strokeWidth={1.5} />
@@ -235,17 +211,20 @@ export function MobileProductPage(props: MobileProductPageProps) {
         <h1 className="text-base font-semibold text-text-strong leading-snug">
           {product.title}
         </h1>
-        {productTags.length > 0 && (
+        {(!product.pickup_only || sellerInfo.verified) && (
           <div className="flex items-center gap-2 mt-2 flex-wrap">
-            {productTags.map((tag) => (
-              <span
-                key={tag}
-                className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-shipping-free/10 text-shipping-free text-xs font-medium"
-              >
+            {!product.pickup_only && (
+              <Badge variant="shipping">
+                <Truck className="size-3" strokeWidth={2} />
+                {t("freeShipping")}
+              </Badge>
+            )}
+            {sellerInfo.verified && (
+              <Badge variant="top-rated">
                 <Shield className="size-3" strokeWidth={2} />
-                {tag}
-              </span>
-            ))}
+                {t("topRated")}
+              </Badge>
+            )}
           </div>
         )}
       </div>
@@ -253,14 +232,7 @@ export function MobileProductPage(props: MobileProductPageProps) {
       {/* ========== HERO SPECS (Category-Adaptive) ========== */}
       {viewModel.heroSpecs.length > 0 && (
         <div className="bg-surface-card mt-1.5 px-4 py-3">
-          <div className="grid grid-cols-2 gap-2">
-            {viewModel.heroSpecs.slice(0, 4).map((spec) => (
-              <div key={spec.label} className="flex items-center justify-between py-2 px-3 rounded-lg bg-muted/30">
-                <span className="text-xs text-text-muted-alt">{spec.label}</span>
-                <span className="text-sm font-semibold text-text-strong">{spec.value}</span>
-              </div>
-            ))}
-          </div>
+          <HeroSpecs specs={viewModel.heroSpecs.slice(0, 4)} variant="mobile" />
         </div>
       )}
 
@@ -271,12 +243,12 @@ export function MobileProductPage(props: MobileProductPageProps) {
       >
         <div className="flex items-center gap-3">
           <div className="relative flex-shrink-0">
-            <Avatar className="size-12 ring-2 ring-border">
-              <AvatarImage src={safeAvatarSrc(sellerInfo.avatarUrl)} alt={sellerInfo.name} />
-              <AvatarFallback className="text-sm font-medium bg-muted">
-                {sellerInfo.name.slice(0, 2).toUpperCase()}
-              </AvatarFallback>
-            </Avatar>
+            <UserAvatar
+              name={sellerInfo.name}
+              avatarUrl={sellerInfo.avatarUrl ?? null}
+              className="size-12 ring-2 ring-border bg-muted"
+              fallbackClassName="text-sm font-medium bg-muted"
+            />
             {sellerInfo.verified && (
               <span className="absolute -bottom-0.5 -right-0.5 size-5 bg-verified rounded-full ring-2 ring-surface-card flex items-center justify-center">
                 <CheckCircle2 className="size-3 text-primary-foreground" fill="currentColor" />
@@ -339,7 +311,7 @@ export function MobileProductPage(props: MobileProductPageProps) {
       </div>
 
       {/* ========== SHIPPING & RETURNS (Accordion) ========== */}
-      <div ref={accordionRef} className="bg-surface-card mt-1.5">
+      <div className="bg-surface-card mt-1.5">
         <MobileAccordions
           description={null}
           details={null}

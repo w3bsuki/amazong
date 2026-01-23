@@ -299,6 +299,7 @@ export function AppHeader({
     <>
       <header
         ref={headerRef}
+        data-slot="app-header"
         className={cn(
           "sticky top-0 z-50 w-full flex flex-col",
           variant !== "homepage" && variant !== "contextual" && "bg-header-bg",

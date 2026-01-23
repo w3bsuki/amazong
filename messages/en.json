@@ -83,7 +83,10 @@
         "deliverTo": "Deliver to",
         "customerService": "Customer Service",
         "signIn": "Sign In",
-        "account": "Account"
+        "account": "Account",
+        "title": "Menu",
+        "mobileDescription": "Navigation menu",
+        "toggleSidebar": "Toggle sidebar"
     },
     "Navigation": {
         "deliverTo": "Deliver to",
@@ -113,14 +116,23 @@
         "search": "Search",
         "wishlist": "Wishlist",
         "chat": "Chat",
-        "categories": "Categories"
+        "categories": "Categories",
+        "mobileNavigation": "Mobile navigation"
     },
     "Categories": {
+        "title": "Categories",
+        "metaDescription": "Browse all product categories at Treido. Find electronics, fashion, home & garden, and more.",
         "bannerDescription": "Browse products in this category",
         "all": "All",
+        "navigationAriaLabel": "Category navigation",
+        "subcategoriesAriaLabel": "Subcategories",
+        "goToParentCategoryAriaLabel": "Go to parent category",
+        "clearAndGoBackAriaLabel": "Clear and go back",
         "viewAll": "View all categories",
         "showMore": "Show more categories",
         "showLess": "Show fewer categories",
+        "showLessShort": "Show less",
+        "moreCount": "{count} more",
         "allIn": "All in {category}"
     },
     "Home": {
@@ -225,6 +237,8 @@
         "inCart": "In cart",
         "buyNow": "Buy Now",
         "addToWishlist": "Add to wishlist",
+        "removeFromWishlist": "Remove from wishlist",
+        "noImage": "No image",
         "adBadge": "Promo",
         "inStock": "In Stock",
         "outOfStock": "Out of Stock",
@@ -338,6 +352,7 @@
         "viewProfile": "View Profile",
         "makeOffer": "Make Offer",
         "moreFromSeller": "More from this seller",
+        "moreFromSellerName": "More from {name}",
         "viewAll": "View all",
         "proSeller": "Pro Seller",
         "topRated": "Top Rated",
@@ -471,6 +486,8 @@
     },
     "CustomerService": {
         "title": "Welcome to Treido Customer Service",
+        "metaTitle": "Customer Service | Treido",
+        "metaDescription": "Get help with orders, shipping, returns, payments, and account issues.",
         "helpTitle": "What would you like help with today?",
         "searchTitle": "Search our help library",
         "searchPlaceholder": "Type something like, 'question about a charge'",
@@ -499,12 +516,28 @@
     },
     "TodaysDeals": {
         "title": "Today's Deals",
+        "metaDescription": "Shop today's best deals and limited-time offers on Treido.",
+        "heroSubtitle": "Limited-time deals updated daily.",
         "allDeals": "All Deals",
         "available": "Available",
         "upcoming": "Upcoming",
         "watchlist": "Watchlist",
         "digitalDeals": "Digital Deals",
-        "limitedTime": "Limited time deal"
+        "limitedTime": "Limited time deal",
+        "filterByCategory": "Filter by category",
+        "dealsFound": "deals found",
+        "endsIn": "Ends in",
+        "noDealsInCategory": "No deals in this category",
+        "checkBackLater": "Check back later for new deals",
+        "categories": {
+            "all": "All Deals",
+            "electronics": "Electronics",
+            "home": "Home",
+            "fashion": "Fashion",
+            "beauty": "Beauty",
+            "toys": "Toys",
+            "sports": "Sports"
+        }
     },
     "GiftCards": {
         "title": "Treido Gift Cards",
@@ -569,7 +602,14 @@
         "qualifiesForFreeShipping": "Your order qualifies for FREE Shipping. Choose this option at checkout.",
         "seeDetails": "See details",
         "giftOption": "This order contains a gift",
-        "proceedToCheckout": "Proceed to checkout"
+        "proceedToCheckout": "Proceed to checkout",
+        "orderSummaryTitle": "Order Summary",
+        "shippingLabel": "Shipping",
+        "freeLabel": "FREE",
+        "totalLabel": "Total",
+        "secureCheckout": "Secure checkout",
+        "returns30Day": "30-day returns",
+        "checkout": "Checkout"
     },
     "CheckoutHeader": {
         "backToHome": "Back to home",
@@ -739,7 +779,8 @@
     },
     "MembersPage": {
         "metaTitle": "Members",
-        "metaDescription": "Discover members of the Treido community. Browse sellers and buyers, filter by ratings and activity."
+        "metaDescription": "Discover members of the Treido community. Browse sellers and buyers, filter by ratings and activity.",
+        "loading": "Loading members..."
     },
     "Common": {
         "search": "Search",
@@ -747,6 +788,8 @@
         "error": "Error",
         "success": "Success",
         "save": "Save",
+        "saving": "Saving...",
+        "saved": "Saved",
         "cancel": "Cancel",
         "close": "Close",
         "edit": "Edit",
@@ -755,10 +798,16 @@
         "submit": "Submit",
         "next": "Next",
         "previous": "Previous",
+        "back": "Back",
+        "backTo": "Back to {label}",
+        "goToHomepage": "Go to homepage",
         "morePages": "More pages",
         "goToNextPage": "Go to next page",
         "goToPreviousPage": "Go to previous page",
+        "pagination": "Pagination",
         "all": "All",
+        "allLower": "All",
+        "viewAll": "View all",
         "allCategories": "All Categories",
         "filter": "Filter",
         "clear": "Clear",
@@ -1052,6 +1101,7 @@
             "overview": "Account Overview",
             "orders": "Orders",
             "wishlist": "Wishlist",
+            "following": "Following",
             "security": "Security",
             "addresses": "Addresses",
             "notifications": "Notifications",
@@ -1177,6 +1227,7 @@
     "SearchFilters": {
         "department": "Department",
         "allDepartments": "All Departments",
+        "condition": "Condition",
         "customerReviews": "Customer Reviews",
         "andUp": "& Up",
         "clearRating": "Clear rating filter",
@@ -1248,7 +1299,14 @@
         "product": "product",
         "products": "products",
         "noResultsInCategory": "We couldn't find any products in this category. Try adjusting your filters or browse other categories.",
-        "browseAllCategories": "Browse All Categories"
+        "browseAllCategories": "Browse All Categories",
+        "filterProductsByAttributes": "Filter products by attributes",
+        "noMatchesFound": "No matches found",
+        "customizeSearchResults": "Customize your search results",
+        "closeFilters": "Close filters",
+        "searchAttributePlaceholder": "Search {attribute}...",
+        "showLess": "Show less",
+        "showAllCount": "Show all ({count})"
     },
     "CartDropdown": {
         "title": "Shopping Cart",
@@ -1291,7 +1349,14 @@
         "loading": "Loading...",
         "noNotifications": "No updates yet",
         "markAllRead": "Mark all read",
-        "viewAll": "View all"
+        "viewAll": "View all",
+        "purchaseToast": {
+            "buyerPlacedOrder": "{name} placed an order",
+            "newOrder": "New order",
+            "amount": "Amount:",
+            "viewSale": "View sale",
+            "productAlt": "Product"
+        }
     },
     "WishlistDropdown": {
         "title": "Wishlist",
@@ -1390,6 +1455,8 @@
     },
     "Privacy": {
         "title": "Privacy Policy",
+        "metaTitle": "Privacy Policy | Treido",
+        "metaDescription": "Learn how Treido collects, uses, and protects your personal data.",
         "lastUpdated": "Last Updated",
         "lastUpdatedDate": "November 2025",
         "tableOfContents": "Table of Contents",
@@ -1464,6 +1531,8 @@
     },
     "Terms": {
         "title": "Terms of Service",
+        "metaTitle": "Terms of Service | Treido",
+        "metaDescription": "Read Treido's terms of service, including user accounts, orders, payments, and policies.",
         "lastUpdated": "Last Updated",
         "lastUpdatedDate": "November 2025",
         "tableOfContents": "Table of Contents",
@@ -1505,6 +1574,7 @@
     },
     "Contact": {
         "title": "Contact Us",
+        "metaDescription": "Contact Treido support for help with orders, payments, returns, and more.",
         "heroTitle": "We're Here to Help",
         "heroSubtitle": "Have a question or need assistance? Our customer service team is available 7 days a week to ensure you have the best shopping experience.",
         "quickHelp": "Quick Help",
@@ -1606,6 +1676,8 @@
     },
     "Returns": {
         "title": "Returns & Refunds",
+        "metaTitle": "Returns & Refunds | Treido",
+        "metaDescription": "Start a return and learn about Treido's returns and refunds policy.",
         "heroTitle": "Easy Returns, Hassle-Free Refunds",
         "heroSubtitle": "Changed your mind? No problem. We make returns simple with free shipping labels and fast refunds.",
         "startReturn": "Start a Return",
@@ -1684,8 +1756,17 @@
         "emptyDescription": "Save items you love by clicking the heart icon on any product.",
         "startShopping": "Start Shopping",
         "addedOn": "Added on",
+        "unknownProduct": "Unknown product",
         "moveToCart": "Move to Cart",
         "movedToCart": "Moved to cart",
+        "allAddedToCart": "All items added to cart",
+        "removedFromWishlist": "Removed from wishlist",
+        "signInRequired": "Please sign in to add items to your wishlist",
+        "alreadyInWishlist": "Already in your wishlist",
+        "addedToWishlist": "Added to wishlist",
+        "addToWishlistFailed": "Failed to add to wishlist",
+        "removeFromWishlistFailed": "Failed to remove from wishlist",
+        "loading": "Loading wishlist...",
         "add": "Add",
         "removed": "Removed",
         "remove": "Remove",
@@ -1721,6 +1802,12 @@
         "respondsWithin": "Usually responds within {hours} hours",
         "visitStore": "Visit store",
         "saveSeller": "Save seller",
+        "follow": "Follow",
+        "unfollow": "Unfollow",
+        "following": "Following",
+        "followSuccess": "Now following this store",
+        "unfollowSuccess": "Unfollowed store",
+        "loginRequired": "Sign in to follow stores",
         "sellersOtherItems": "Seller's other items",
         "detailedRatings": "Detailed seller ratings",
         "averageLast12Months": "Average for the last 12 months",
@@ -1781,11 +1868,16 @@
         "accurate": "Accurate",
         "fastShipping": "Fast shipping",
         "goodComms": "Good comms",
-        "promptPayment": "Prompt payment"
+        "promptPayment": "Prompt payment",
+        "metadataDescriptionSeller": "View {name}'s profile on Treido. {sales, plural, one {# sale} other {# sales}}, ⭐ {rating}",
+        "metadataDescriptionMember": "View {name}'s profile on Treido. Treido member"
     },
     "SellersDirectory": {
         "title": "Top sellers | Treido",
         "description": "Discover top-rated sellers on Treido. Shop from verified merchants with great reviews.",
+        "breadcrumbLabel": "Top sellers",
+        "heroTitle": "Top sellers",
+        "heroSubtitle": "Shop from trusted sellers with great reviews.",
         "count": "{count, plural, one {# seller} other {# sellers}}",
         "productsCount": "{count, plural, one {# product} other {# products}}",
         "searchPlaceholder": "Search sellers",
@@ -2215,7 +2307,52 @@
     "Sell": {
         "payoutSetupRequired": "Set up payouts first",
         "payoutSetupDescription": "Before you can list items for sale, you need to connect your bank account to receive payments.",
-        "setupPayouts": "Set up payouts"
+        "setupPayouts": "Set up payouts",
+        "startSellingBanner": {
+            "trust": {
+                "buyerProtection": "Buyer protection",
+                "securePayment": "Secure payment",
+                "support247": "24/7 support"
+            },
+            "fullBleed": {
+                "title": "Sell in minutes",
+                "subtitle": "Clear space and earn."
+            },
+            "compact": {
+                "title": "Sign up to start selling",
+                "subtitle": "List in minutes. Reach buyers faster."
+            }
+        },
+        "uploadZone": {
+            "uploading": "Uploading...",
+            "dropHere": "Drop here",
+            "tapToAddPhotos": "Tap to add photos",
+            "fileHint": "JPG, PNG or WebP up to 10MB",
+            "remaining": "Up to {count} more",
+            "maxReached": "Maximum reached"
+        },
+        "selectDrawer": {
+            "description": "Search or type a value",
+            "searchPlaceholder": "Search...",
+            "useCustomValue": "Use \"{value}\""
+        },
+        "progressHeader": {
+            "formProgressAriaLabel": "Form progress: {percent}%"
+        },
+        "checklistSidebar": {
+            "title": "Checklist"
+        },
+        "brandCombobox": {
+            "defaultPlaceholder": "Select brand...",
+            "searchPlaceholder": "Search brand...",
+            "addCustom": "Add \"{name}\"",
+            "noBrandFound": "No brand found",
+            "skipNoBrand": "Skip - No brand / Unbranded",
+            "label": "Brand",
+            "customIndicator": "Custom",
+            "clear": "Clear",
+            "mobileTitle": "Select Brand"
+        }
     },
     "AdminTasks": {
         "page": {
@@ -2423,6 +2560,8 @@
     },
     "AdminNav": {
         "panel": "Admin Panel",
+        "quickCreate": "Quick create",
+        "inbox": "Inbox",
         "items": {
             "dashboard": "Dashboard",
             "tasks": "Tasks",
@@ -2596,5 +2735,314 @@
             "unknownSeller": "Unknown"
         },
         "loading": "Loading..."
+    },
+    "NavUser": {
+        "account": "Account",
+        "billing": "Billing",
+        "notifications": "Notifications",
+        "logOut": "Log out"
+    },
+    "SidebarMenuV2": {
+        "newListing": "New",
+        "active": "Active",
+        "boosted": "Boosted",
+        "activity": "Activity",
+        "sales": "Sales",
+        "profile": "Profile",
+        "myStore": "My Store",
+        "addresses": "Addresses",
+        "payments": "Payments",
+        "browseCategories": "Browse categories",
+        "signInBenefits": "Save favorites, track orders, and start selling",
+        "signOutTitle": "Sign out",
+        "signOutDescription": "You will be signed out.",
+        "confirmSignOut": "Yes, sign out"
+    },
+    "Breadcrumbs": {
+        "ariaLabel": "Breadcrumb",
+        "homeLabel": "Treido",
+        "todaysDeals": "Today's Deals",
+        "customerService": "Customer Service",
+        "giftCards": "Gift Cards",
+        "registry": "Registry",
+        "sell": "Sell",
+        "account": "Account",
+        "cart": "Cart",
+        "checkout": "Checkout",
+        "wishlist": "Wishlist",
+        "about": "About",
+        "contact": "Contact",
+        "privacy": "Privacy",
+        "terms": "Terms",
+        "cookies": "Cookies",
+        "returns": "Returns"
+    },
+    "Errors": {
+        "common": {
+            "goToHomepage": "Go to homepage",
+            "continueShopping": "Continue shopping",
+            "browseCategories": "Browse categories",
+            "goToSell": "Go to Sell"
+        },
+        "generic": {
+            "title": "Something went wrong",
+            "description": "Please try again later."
+        },
+        "cart": {
+            "title": "Couldn't load cart",
+            "description": "Please try again. If the problem persists, continue shopping."
+        },
+        "search": {
+            "title": "Couldn't load search",
+            "description": "Please try again later."
+        },
+        "wishlist": {
+            "title": "Couldn't load wishlist",
+            "description": "Please try again later."
+        },
+        "categories": {
+            "title": "Couldn't load categories",
+            "description": "Please try again later."
+        },
+        "category": {
+            "title": "Couldn't load category",
+            "description": "Please try again later."
+        },
+        "members": {
+            "title": "Couldn't load members",
+            "description": "Please try again later."
+        },
+        "sellerDashboard": {
+            "title": "Couldn't load seller dashboard",
+            "description": "Please try again later."
+        },
+        "deals": {
+            "title": "Couldn't load today's deals",
+            "description": "Please try again later."
+        },
+        "checkout": {
+            "title": "Couldn't load checkout",
+            "description": "Please try again later."
+        },
+        "account": {
+            "title": "Couldn't load account",
+            "description": "Please try again later."
+        },
+        "sell": {
+            "title": "Couldn't load sell",
+            "description": "Please try again later."
+        },
+        "product": {
+            "title": "Couldn't load product",
+            "description": "Please try again later."
+        }
+    },
+    "BusinessCommandPalette": {
+        "trigger": "Search...",
+        "dialogTitle": "Search",
+        "dialogDescription": "Quickly navigate your store and create new items.",
+        "searchPlaceholder": "Search {storeName}...",
+        "yourStore": "your store",
+        "noResults": "No results found",
+        "groups": {
+            "actions": "Actions",
+            "navigation": "Navigation"
+        },
+        "nav": {
+            "home": "Dashboard",
+            "orders": "Orders",
+            "products": "Products",
+            "inventory": "Inventory",
+            "analytics": "Analytics",
+            "finances": "Finances",
+            "customers": "Customers",
+            "discounts": "Discounts",
+            "settings": "Settings"
+        },
+        "actions": {
+            "addProduct": "Add product",
+            "addProductDesc": "Create a new product listing",
+            "createOrder": "Create order",
+            "createOrderDesc": "Create a manual order",
+            "createDiscount": "Create discount",
+            "createDiscountDesc": "Add a new discount campaign",
+            "viewStorefront": "View storefront",
+            "viewStorefrontDesc": "Open your store in a new tab"
+        }
+    },
+    "MobileMenu": {
+        "categories": "Categories",
+        "closeMenu": "Close menu",
+        "browseByCategory": "Browse by category",
+        "shopByCategory": "Shop by category",
+        "seeAll": "See all",
+        "categoryShort": {
+            "electronics": "Electronics",
+            "home": "Home",
+            "fashion": "Fashion"
+        }
+    },
+    "Charts": {
+        "visitors": "Visitors",
+        "desktop": "Desktop",
+        "mobile": "Mobile",
+        "totalVisitors": "Total visitors",
+        "totalForLast3Months": "Total for the last 3 months",
+        "last3Months": "Last 3 months",
+        "last30Days": "Last 30 days",
+        "last7Days": "Last 7 days",
+        "selectTimeRange": "Select time range"
+    },
+    "NotFound": {
+        "metaTitle": "Page not found",
+        "heroTitle": "404",
+        "title": "Page not found",
+        "description": "Sorry, we couldn't find that page.",
+        "goToHomepage": "Go to homepage",
+        "searchProducts": "Search products",
+        "linksTitle": "Popular links",
+        "todaysDeals": "Today's Deals",
+        "customerService": "Customer Service",
+        "contactUs": "Contact us"
+    },
+    "ProfileNotFound": {
+        "title": "Profile not found",
+        "description": "This profile doesn't exist or is unavailable.",
+        "goToHomepage": "Go to homepage",
+        "searchProducts": "Search products"
+    },
+    "ProfileError": {
+        "title": "Couldn't load profile",
+        "description": "Please try again later.",
+        "errorId": "Error ID",
+        "tryAgain": "Try again",
+        "goToHomepage": "Go to homepage"
+    },
+    "Plans": {
+        "free": "Free",
+        "perMonth": "/mo",
+        "perYear": "/yr",
+        "currentPlan": "Current",
+        "upgrade": "Upgrade",
+        "getStarted": "Get Started",
+        "downgrade": "Downgrade",
+        "popular": "Popular",
+        "bestValue": "Best Value",
+        "listings": "listings",
+        "unlimited": "Unlimited",
+        "fvf": "when sold",
+        "boosts": "boosts/mo",
+        "included": "Included:",
+        "moreFeatures": "more",
+        "noPlansAvailable": "No plans available",
+        "errors": {
+            "checkoutSessionFailed": "Couldn't start checkout. Please try again."
+        },
+        "toast": {
+            "planChanged": "Plan updated"
+        },
+        "page": {
+            "title": "Plans & Pricing",
+            "subtitle": "Choose the plan that fits your selling goals.",
+            "personal": "Personal",
+            "business": "Business",
+            "monthly": "Monthly",
+            "yearly": "Yearly",
+            "saveLabel": "Save 20%",
+            "getStarted": "Get Started",
+            "current": "Current",
+            "popular": "Popular",
+            "mostPopular": "Most popular",
+            "feeLabel": "Seller fee",
+            "period": {
+                "mo": "/mo",
+                "yr": "/yr"
+            },
+            "planFeatures": {
+                "listingsPerMonth": "listings/mo",
+                "unlimitedListings": "Unlimited listings",
+                "whenSoldShort": "when sold",
+                "buyerProtection": "buyer protection",
+                "boostsShort": "boosts/mo",
+                "analytics": "Analytics"
+            },
+            "nav": {
+                "pricing": "Pricing",
+                "comparison": "Comparison",
+                "features": "Features",
+                "faq": "FAQ",
+                "guarantee": "Guarantee"
+            },
+            "features": {
+                "title": "Everything you need to sell",
+                "subtitle": "Lower fees, more exposure, and better tools as you grow.",
+                "items": [
+                    {
+                        "icon": "lightning",
+                        "title": "Lower fees",
+                        "desc": "Pay less when you sell and keep more of your earnings."
+                    },
+                    {
+                        "icon": "rocket",
+                        "title": "More visibility",
+                        "desc": "Get boosts and priority placement to sell faster."
+                    },
+                    {
+                        "icon": "sparkle",
+                        "title": "Better tools",
+                        "desc": "Unlock analytics and seller tools to grow your store."
+                    }
+                ]
+            },
+            "guarantee": {
+                "title": "Buyer Protection included",
+                "desc": "Every purchase is covered with buyer protection for peace of mind."
+            },
+            "comparison": {
+                "title": "Compare plans",
+                "subtitle": "See what each tier includes.",
+                "plan": "Plan",
+                "price": "Price",
+                "fee": "Seller fee",
+                "buyerProtection": "Buyer protection",
+                "listings": "Listings",
+                "boosts": "Boosts",
+                "support": "Support",
+                "unlimited": "Unlimited",
+                "free": "Free"
+            },
+            "faq": {
+                "title": "Frequently asked questions",
+                "subtitle": "Answers to common questions about plans.",
+                "items": [
+                    {
+                        "q": "Can I cancel anytime?",
+                        "a": "Yes. You can change or cancel your plan at any time."
+                    },
+                    {
+                        "q": "Do plans apply to all listings?",
+                        "a": "Your plan applies to your seller account and all active listings."
+                    },
+                    {
+                        "q": "What happens if I downgrade?",
+                        "a": "Your current plan remains active until the end of the billing period."
+                    }
+                ]
+            }
+        }
+    },
+    "AccountPlansUpgrade": {
+        "backToPlans": "Back to plans",
+        "title": "Upgrade your plan",
+        "description": "Choose a plan with lower fees and more features"
+    },
+    "CategoryNotFound": {
+        "title": "Category not found",
+        "description": "This category doesn't exist or was removed.",
+        "browseCategories": "Browse categories",
+        "goToHomepage": "Go to homepage"
+    },
+    "ProductNotFound": {
+        "metaTitle": "Product not found"
     }
 }

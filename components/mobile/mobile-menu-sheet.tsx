@@ -8,6 +8,7 @@ import {
   DrawerTitle,
   DrawerClose,
   DrawerDescription,
+  DrawerBody,
 } from "@/components/ui/drawer"
 import { Link } from "@/i18n/routing"
 import {
@@ -15,7 +16,7 @@ import {
   CaretRight,
   SquaresFour
 } from "@phosphor-icons/react"
-import { useLocale } from "next-intl"
+import { useLocale, useTranslations } from "next-intl"
 import { getCategoryName } from "@/lib/category-display"
 import { CategoryCircle } from "@/components/shared/category/category-circle"
 import type { CategoryTreeNode } from "@/lib/category-tree"
@@ -33,6 +34,7 @@ export const MobileMenuSheet = forwardRef<MobileMenuSheetHandle, MobileMenuSheet
   function MobileMenuSheet({ categories }, ref) {
     const [open, setOpen] = useState(false)
     const locale = useLocale()
+    const t = useTranslations("MobileMenu")
 
     useImperativeHandle(ref, () => ({
       open: () => setOpen(true),
@@ -41,10 +43,11 @@ export const MobileMenuSheet = forwardRef<MobileMenuSheetHandle, MobileMenuSheet
 
     const getShortName = (cat: (typeof categories)[number]) => {
       const name = getCategoryName(cat, locale)
+      const englishName = getCategoryName(cat, "en")
       // Shorten common long names for mobile
-      if (name === "Electronics & Technology") return locale === 'bg' ? "Електроника" : "Electronics"
-      if (name === "Home, Kitchen & Garden") return locale === 'bg' ? "Дом и градина" : "Home"
-      if (name === "Clothing, Shoes & Accessories") return locale === 'bg' ? "Мода" : "Fashion"
+      if (englishName === "Electronics & Technology") return t("categoryShort.electronics")
+      if (englishName === "Home, Kitchen & Garden") return t("categoryShort.home")
+      if (englishName === "Clothing, Shoes & Accessories") return t("categoryShort.fashion")
       return name
     }
 
@@ -61,38 +64,38 @@ export const MobileMenuSheet = forwardRef<MobileMenuSheetHandle, MobileMenuSheet
               <div className="flex items-center gap-2">
                 <SquaresFour size={18} weight="regular" className="text-muted-foreground" />
                 <DrawerTitle>
-                  {locale === 'bg' ? 'Категории' : 'Categories'}
+                  {t("categories")}
                 </DrawerTitle>
               </div>
               <DrawerClose asChild>
                 <button
                   className="flex items-center justify-center size-touch -mr-1 rounded-full text-muted-foreground hover:text-foreground hover:bg-muted active:bg-muted/70 transition-colors touch-action-manipulation tap-transparent"
-                  aria-label="Close menu"
+                  aria-label={t("closeMenu")}
                 >
                   <X size={20} weight="regular" />
                 </button>
               </DrawerClose>
             </div>
             <DrawerDescription className="sr-only">
-              Browse products by category
+              {t("browseByCategory")}
             </DrawerDescription>
           </DrawerHeader>
 
           {/* Scrollable Content with safe area */}
-          <div className="flex-1 overflow-y-auto overscroll-contain px-inset pb-safe-max">
+          <DrawerBody className="px-inset pb-safe-max">
 
             {/* Categories Section - circles grid */}
             <section className="py-3">
               <div className="flex items-center justify-between mb-3">
                 <h3 className="text-sm font-semibold text-foreground">
-                  {locale === 'bg' ? 'Пазарувай по категория' : 'Shop by Category'}
+                  {t("shopByCategory")}
                 </h3>
                 <Link
                   href="/categories"
                   onClick={() => setOpen(false)}
                   className="text-xs text-primary font-medium hover:underline underline-offset-2 flex items-center gap-0.5 min-h-touch-xs px-1 -mr-1 rounded-md transition-colors active:bg-muted/50"
                 >
-                  {locale === 'bg' ? 'Виж всички' : 'See all'}
+                  {t("seeAll")}
                   <CaretRight size={12} weight="bold" />
                 </Link>
               </div>
@@ -119,7 +122,7 @@ export const MobileMenuSheet = forwardRef<MobileMenuSheetHandle, MobileMenuSheet
                 })}
               </div>
             </section>
-          </div>
+          </DrawerBody>
         </DrawerContent>
       </Drawer>
     )

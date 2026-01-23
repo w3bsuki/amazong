@@ -83,7 +83,10 @@
         "country": "България",
         "deliverTo": "Доставка до",
         "customerService": "Обслужване на клиенти",
-        "signIn": "Влез"
+        "signIn": "Влез",
+        "title": "Меню",
+        "mobileDescription": "Навигационно меню",
+        "toggleSidebar": "Превключи страничното меню"
     },
     "Navigation": {
         "deliverTo": "Доставка до",
@@ -113,14 +116,23 @@
         "search": "Търсене",
         "wishlist": "Любими",
         "chat": "Чат",
-        "categories": "Обяви"
+        "categories": "Обяви",
+        "mobileNavigation": "Мобилна навигация"
     },
     "Categories": {
+        "title": "Категории",
+        "metaDescription": "Разгледайте всички категории продукти в Treido. Намерете електроника, мода, дом и градина и още.",
         "bannerDescription": "Разгледай продуктите в тази категория",
         "all": "Всички",
+        "navigationAriaLabel": "Навигация по категории",
+        "subcategoriesAriaLabel": "Подкатегории",
+        "goToParentCategoryAriaLabel": "Към родителска категория",
+        "clearAndGoBackAriaLabel": "Изчисти и върни назад",
         "viewAll": "Виж всички категории",
         "showMore": "Покажи още категории",
         "showLess": "Покажи по-малко категории",
+        "showLessShort": "По-малко",
+        "moreCount": "Още {count}",
         "allIn": "Всички в {category}"
     },
     "Home": {
@@ -225,6 +237,8 @@
         "inCart": "В количката",
         "buyNow": "Купи сега",
         "addToWishlist": "Добави в любими",
+        "removeFromWishlist": "Премахни от любими",
+        "noImage": "Няма изображение",
         "adBadge": "Промо",
         "inStock": "В наличност",
         "outOfStock": "Изчерпан",
@@ -338,6 +352,7 @@
         "viewProfile": "Профил",
         "makeOffer": "Направи оферта",
         "moreFromSeller": "Още от този продавач",
+        "moreFromSellerName": "Още от {name}",
         "viewAll": "Виж всички",
         "proSeller": "Про продавач",
         "topRated": "Топ оценен",
@@ -471,6 +486,8 @@
     },
     "CustomerService": {
         "title": "Добре дошли в обслужването на клиенти на Treido",
+        "metaTitle": "Обслужване на клиенти | Treido",
+        "metaDescription": "Получете помощ за поръчки, доставка, връщания, плащания и профил.",
         "helpTitle": "С какво можем да ви помогнем днес?",
         "searchTitle": "Търсене в библиотеката за помощ",
         "searchPlaceholder": "Напишете нещо като 'въпрос относно такса'",
@@ -499,12 +516,28 @@
     },
     "TodaysDeals": {
         "title": "Днешни оферти",
+        "metaDescription": "Пазарувайте най-добрите оферти за днес и предложения с ограничено време в Treido.",
+        "heroSubtitle": "Оферти с ограничено време, обновявани всеки ден.",
         "allDeals": "Всички оферти",
         "available": "Налични",
         "upcoming": "Предстоящи",
         "watchlist": "Списък за гледане",
         "digitalDeals": "Дигитални оферти",
-        "limitedTime": "Ограничена оферта"
+        "limitedTime": "Ограничена оферта",
+        "filterByCategory": "Филтрирай по категория",
+        "dealsFound": "оферти намерени",
+        "endsIn": "Приключва след",
+        "noDealsInCategory": "Няма оферти в тази категория",
+        "checkBackLater": "Проверете отново по-късно",
+        "categories": {
+            "all": "Всички оферти",
+            "electronics": "Електроника",
+            "home": "Дом",
+            "fashion": "Мода",
+            "beauty": "Красота",
+            "toys": "Играчки",
+            "sports": "Спорт"
+        }
     },
     "GiftCards": {
         "title": "Подаръчни карти на Treido",
@@ -569,7 +602,14 @@
         "qualifiesForFreeShipping": "Вашата поръчка отговаря на условията за БЕЗПЛАТНА доставка. Изберете тази опция при плащане.",
         "seeDetails": "Виж детайли",
         "giftOption": "Тази поръчка съдържа подарък",
-        "proceedToCheckout": "Към плащане"
+        "proceedToCheckout": "Към плащане",
+        "orderSummaryTitle": "Обобщение",
+        "shippingLabel": "Доставка",
+        "freeLabel": "Безплатно",
+        "totalLabel": "Общо",
+        "secureCheckout": "Сигурно плащане",
+        "returns30Day": "30-дневно връщане",
+        "checkout": "Плащане"
     },
     "CheckoutHeader": {
         "backToHome": "Обратно към началото",
@@ -739,7 +779,8 @@
     },
     "MembersPage": {
         "metaTitle": "Членове",
-        "metaDescription": "Открийте членовете на общността на Treido. Разглеждайте продавачи и купувачи и филтрирайте по оценки и активност."
+        "metaDescription": "Открийте членовете на общността на Treido. Разглеждайте продавачи и купувачи и филтрирайте по оценки и активност.",
+        "loading": "Зареждане на членове..."
     },
     "Common": {
         "search": "Търсене",
@@ -747,6 +788,8 @@
         "error": "Грешка",
         "success": "Успех",
         "save": "Запази",
+        "saving": "Запазване...",
+        "saved": "Запазено",
         "cancel": "Отказ",
         "close": "Затвори",
         "edit": "Редактирай",
@@ -755,10 +798,16 @@
         "submit": "Изпрати",
         "next": "Напред",
         "previous": "Назад",
+        "back": "Назад",
+        "backTo": "Назад към {label}",
+        "goToHomepage": "Към началото",
         "morePages": "Още страници",
         "goToNextPage": "Към следващата страница",
         "goToPreviousPage": "Към предишната страница",
+        "pagination": "Навигация по страници",
         "all": "Всички",
+        "allLower": "всички",
+        "viewAll": "Виж всички",
         "allCategories": "Всички категории",
         "filter": "Филтрирай",
         "clear": "Изчисти",
@@ -1052,6 +1101,7 @@
             "overview": "Преглед на акаунта",
             "orders": "Поръчки",
             "wishlist": "Любими",
+            "following": "Следвани",
             "security": "Сигурност",
             "addresses": "Адреси",
             "notifications": "Известия",
@@ -1177,6 +1227,7 @@
     "SearchFilters": {
         "department": "Отдел",
         "allDepartments": "Всички отдели",
+        "condition": "Състояние",
         "customerReviews": "Клиентски отзиви",
         "andUp": "и нагоре",
         "clearRating": "Изчисти филтър за оценка",
@@ -1248,7 +1299,14 @@
         "product": "продукт",
         "products": "продукта",
         "noResultsInCategory": "Не намерихме продукти в тази категория. Опитайте да коригирате филтрите или разгледайте други категории.",
-        "browseAllCategories": "Разгледай всички категории"
+        "browseAllCategories": "Разгледай всички категории",
+        "filterProductsByAttributes": "Филтрирай продуктите по атрибути",
+        "noMatchesFound": "Няма намерени съвпадения",
+        "customizeSearchResults": "Персонализирайте резултатите от търсенето",
+        "closeFilters": "Затвори филтрите",
+        "searchAttributePlaceholder": "Търси {attribute}...",
+        "showLess": "Покажи по-малко",
+        "showAllCount": "Покажи всички ({count})"
     },
     "CartDropdown": {
         "title": "Количка",
@@ -1291,7 +1349,14 @@
         "loading": "Зареждане...",
         "noNotifications": "Все още няма нови",
         "markAllRead": "Маркирай като прочетени",
-        "viewAll": "Виж всички"
+        "viewAll": "Виж всички",
+        "purchaseToast": {
+            "buyerPlacedOrder": "{name} направи поръчка",
+            "newOrder": "Нова поръчка",
+            "amount": "Сума:",
+            "viewSale": "Виж продажбата",
+            "productAlt": "Продукт"
+        }
     },
     "WishlistDropdown": {
         "title": "Любими",
@@ -1390,6 +1455,8 @@
     },
     "Privacy": {
         "title": "Политика за поверителност",
+        "metaTitle": "Политика за поверителност | Treido",
+        "metaDescription": "Научете как Treido събира, използва и защитава личните ви данни.",
         "lastUpdated": "Последна актуализация",
         "lastUpdatedDate": "Ноември 2025",
         "tableOfContents": "Съдържание",
@@ -1464,6 +1531,8 @@
     },
     "Terms": {
         "title": "Условия за ползване",
+        "metaTitle": "Условия за ползване | Treido",
+        "metaDescription": "Прочетете условията за ползване на Treido, включително акаунти, поръчки, плащания и политики.",
         "lastUpdated": "Последна актуализация",
         "lastUpdatedDate": "Ноември 2025",
         "tableOfContents": "Съдържание",
@@ -1505,6 +1574,7 @@
     },
     "Contact": {
         "title": "Свържете се с нас",
+        "metaDescription": "Свържете се с екипа на Treido за помощ с поръчки, плащания, връщания и други.",
         "heroTitle": "Тук сме, за да помогнем",
         "heroSubtitle": "Имате въпрос или се нуждаете от помощ? Нашият екип за обслужване на клиенти е на разположение 7 дни в седмицата.",
         "quickHelp": "Бърза помощ",
@@ -1606,6 +1676,8 @@
     },
     "Returns": {
         "title": "Връщания и възстановяване",
+        "metaTitle": "Връщания и възстановяване | Treido",
+        "metaDescription": "Започнете връщане и научете повече за политиката на Treido за връщания и възстановявания.",
         "heroTitle": "Лесни връщания, безпроблемни възстановявания",
         "heroSubtitle": "Промени мнението си? Няма проблем. Правим връщанията лесни с безплатни етикети за доставка и бързи възстановявания.",
         "startReturn": "Започни връщане",
@@ -1684,8 +1756,17 @@
         "emptyDescription": "Запазете продукти, които харесвате, като кликнете върху иконата със сърце.",
         "startShopping": "Започнете пазаруване",
         "addedOn": "Добавено на",
+        "unknownProduct": "Неизвестен продукт",
         "moveToCart": "Премести в кошницата",
         "movedToCart": "Преместено в количката",
+        "allAddedToCart": "Всички продукти добавени в количката",
+        "removedFromWishlist": "Премахнато от любими",
+        "signInRequired": "Влезте, за да добавите в списъка с желания",
+        "alreadyInWishlist": "Вече е в списъка с желания",
+        "addedToWishlist": "Добавено в списъка с желания",
+        "addToWishlistFailed": "Неуспешно добавяне в списъка",
+        "removeFromWishlistFailed": "Неуспешно премахване от списъка",
+        "loading": "Зареждане на списъка с любими...",
         "add": "Добави",
         "removed": "Премахнато",
         "remove": "Премахни",
@@ -1721,6 +1802,12 @@
         "respondsWithin": "Обикновено отговаря до {hours} часа",
         "visitStore": "Посети магазина",
         "saveSeller": "Запази продавача",
+        "follow": "Следвай",
+        "unfollow": "Отследвай",
+        "following": "Следваш",
+        "followSuccess": "Започнахте да следвате магазина",
+        "unfollowSuccess": "Спряхте да следвате магазина",
+        "loginRequired": "Влезте в акаунта си, за да следвате",
         "sellersOtherItems": "Други артикули на продавача",
         "detailedRatings": "Детайлни оценки на продавача",
         "averageLast12Months": "Средно за последните 12 месеца",
@@ -1781,11 +1868,16 @@
         "accurate": "Точно описание",
         "fastShipping": "Бърза доставка",
         "goodComms": "Комуникация",
-        "promptPayment": "Бързо плащане"
+        "promptPayment": "Бързо плащане",
+        "metadataDescriptionSeller": "Вижте профила на {name} в Treido. {sales, plural, one {# продажба} other {# продажби}}, ⭐ {rating}",
+        "metadataDescriptionMember": "Вижте профила на {name} в Treido. Член на Treido"
     },
     "SellersDirectory": {
         "title": "Топ продавачи | Treido",
         "description": "Открий топ продавачи в Treido. Пазарувай от потвърдени продавачи с добри отзиви.",
+        "breadcrumbLabel": "Топ продавачи",
+        "heroTitle": "Топ продавачи",
+        "heroSubtitle": "Пазарувайте от доказани продавачи с отлични отзиви.",
         "count": "{count, plural, one {# продавач} other {# продавачи}}",
         "productsCount": "{count, plural, one {# продукт} other {# продукта}}",
         "searchPlaceholder": "Търси продавачи",
@@ -2215,7 +2307,52 @@
     "Sell": {
         "payoutSetupRequired": "Настройте плащанията първо",
         "payoutSetupDescription": "Преди да можете да публикувате обяви за продажба, трябва да свържете банковата си сметка за получаване на плащания.",
-        "setupPayouts": "Настройка на плащанията"
+        "setupPayouts": "Настройка на плащанията",
+        "startSellingBanner": {
+            "trust": {
+                "buyerProtection": "Защита на купувача",
+                "securePayment": "Сигурно плащане",
+                "support247": "Поддръжка 24/7"
+            },
+            "fullBleed": {
+                "title": "Продай за минути",
+                "subtitle": "Освободи място и спечели."
+            },
+            "compact": {
+                "title": "Регистрирай се, за да продаваш",
+                "subtitle": "Създай обява за минути. Достигни купувачи."
+            }
+        },
+        "uploadZone": {
+            "uploading": "Качване...",
+            "dropHere": "Пуснете тук",
+            "tapToAddPhotos": "Добавете снимки",
+            "fileHint": "JPG, PNG или WebP до 10MB",
+            "remaining": "Още до {count} снимки",
+            "maxReached": "Максимум"
+        },
+        "selectDrawer": {
+            "description": "Търсете или въведете стойност",
+            "searchPlaceholder": "Търсене...",
+            "useCustomValue": "Използвай \"{value}\""
+        },
+        "progressHeader": {
+            "formProgressAriaLabel": "Прогрес на формуляра: {percent}%"
+        },
+        "checklistSidebar": {
+            "title": "Списък"
+        },
+        "brandCombobox": {
+            "defaultPlaceholder": "Избери марка...",
+            "searchPlaceholder": "Търси марка...",
+            "addCustom": "Добави \"{name}\"",
+            "noBrandFound": "Няма намерени марки",
+            "skipNoBrand": "Пропусни - Без марка",
+            "label": "Марка",
+            "customIndicator": "Потребителска",
+            "clear": "Изчисти",
+            "mobileTitle": "Избери марка"
+        }
     },
     "AdminTasks": {
         "page": {
@@ -2423,6 +2560,8 @@
     },
     "AdminNav": {
         "panel": "Админ панел",
+        "quickCreate": "Бързо създаване",
+        "inbox": "Входящи",
         "items": {
             "dashboard": "Табло",
             "tasks": "Задачи",
@@ -2596,5 +2735,314 @@
             "unknownSeller": "Неизвестен"
         },
         "loading": "Зареждане..."
+    },
+    "NavUser": {
+        "account": "Профил",
+        "billing": "Фактуриране",
+        "notifications": "Известия",
+        "logOut": "Изход"
+    },
+    "SidebarMenuV2": {
+        "newListing": "Нова",
+        "active": "Активни",
+        "boosted": "Промотирани",
+        "activity": "Активност",
+        "sales": "Продажби",
+        "profile": "Профил",
+        "myStore": "Моят магазин",
+        "addresses": "Адреси",
+        "payments": "Плащания",
+        "browseCategories": "Разгледай категориите",
+        "signInBenefits": "Запазвай любими, проследявай поръчки и продавай",
+        "signOutTitle": "Изход от акаунта",
+        "signOutDescription": "Ще излезете от акаунта си.",
+        "confirmSignOut": "Да, излез"
+    },
+    "Breadcrumbs": {
+        "ariaLabel": "Навигация по пътя",
+        "homeLabel": "Treido",
+        "todaysDeals": "Днешни оферти",
+        "customerService": "Обслужване на клиенти",
+        "giftCards": "Подаръчни карти",
+        "registry": "Регистър",
+        "sell": "Продай",
+        "account": "Профил",
+        "cart": "Количка",
+        "checkout": "Плащане",
+        "wishlist": "Любими",
+        "about": "За нас",
+        "contact": "Контакт",
+        "privacy": "Поверителност",
+        "terms": "Условия",
+        "cookies": "Бисквитки",
+        "returns": "Връщания"
+    },
+    "Errors": {
+        "common": {
+            "goToHomepage": "Към началото",
+            "continueShopping": "Продължи пазаруването",
+            "browseCategories": "Разгледай категориите",
+            "goToSell": "Към Продай"
+        },
+        "generic": {
+            "title": "Възникна грешка",
+            "description": "Моля, опитайте отново по-късно."
+        },
+        "cart": {
+            "title": "Не успяхме да заредим количката",
+            "description": "Моля, опитайте отново. Ако проблемът продължава, продължете пазаруването."
+        },
+        "search": {
+            "title": "Не успяхме да заредим търсенето",
+            "description": "Моля, опитайте отново по-късно."
+        },
+        "wishlist": {
+            "title": "Не успяхме да заредим любими",
+            "description": "Моля, опитайте отново по-късно."
+        },
+        "categories": {
+            "title": "Не успяхме да заредим категориите",
+            "description": "Моля, опитайте отново по-късно."
+        },
+        "category": {
+            "title": "Не успяхме да заредим категорията",
+            "description": "Моля, опитайте отново по-късно."
+        },
+        "members": {
+            "title": "Не успяхме да заредим членовете",
+            "description": "Моля, опитайте отново по-късно."
+        },
+        "sellerDashboard": {
+            "title": "Не успяхме да заредим таблото на продавача",
+            "description": "Моля, опитайте отново по-късно."
+        },
+        "deals": {
+            "title": "Не успяхме да заредим днешните оферти",
+            "description": "Моля, опитайте отново по-късно."
+        },
+        "checkout": {
+            "title": "Не успяхме да заредим плащането",
+            "description": "Моля, опитайте отново по-късно."
+        },
+        "account": {
+            "title": "Не успяхме да заредим профила",
+            "description": "Моля, опитайте отново по-късно."
+        },
+        "sell": {
+            "title": "Не успяхме да заредим страницата за продажба",
+            "description": "Моля, опитайте отново по-късно."
+        },
+        "product": {
+            "title": "Не успяхме да заредим продукта",
+            "description": "Моля, опитайте отново по-късно."
+        }
+    },
+    "BusinessCommandPalette": {
+        "trigger": "Търсене...",
+        "dialogTitle": "Търсене",
+        "dialogDescription": "Бърза навигация и действия за вашия магазин.",
+        "searchPlaceholder": "Търси в {storeName}...",
+        "yourStore": "вашия магазин",
+        "noResults": "Няма резултати",
+        "groups": {
+            "actions": "Действия",
+            "navigation": "Навигация"
+        },
+        "nav": {
+            "home": "Табло",
+            "orders": "Поръчки",
+            "products": "Продукти",
+            "inventory": "Инвентар",
+            "analytics": "Анализи",
+            "finances": "Финанси",
+            "customers": "Клиенти",
+            "discounts": "Отстъпки",
+            "settings": "Настройки"
+        },
+        "actions": {
+            "addProduct": "Добави продукт",
+            "addProductDesc": "Създай нова продуктова обява",
+            "createOrder": "Създай поръчка",
+            "createOrderDesc": "Създай ръчна поръчка",
+            "createDiscount": "Създай отстъпка",
+            "createDiscountDesc": "Добави нова кампания с отстъпки",
+            "viewStorefront": "Отвори магазина",
+            "viewStorefrontDesc": "Отвори магазина в нов таб"
+        }
+    },
+    "MobileMenu": {
+        "categories": "Категории",
+        "closeMenu": "Затвори менюто",
+        "browseByCategory": "Разгледай по категория",
+        "shopByCategory": "Пазарувай по категория",
+        "seeAll": "Виж всички",
+        "categoryShort": {
+            "electronics": "Електроника",
+            "home": "Дом",
+            "fashion": "Мода"
+        }
+    },
+    "Charts": {
+        "visitors": "Посетители",
+        "desktop": "Десктоп",
+        "mobile": "Мобилни",
+        "totalVisitors": "Общо посетители",
+        "totalForLast3Months": "Общо за последните 3 месеца",
+        "last3Months": "Последни 3 месеца",
+        "last30Days": "Последни 30 дни",
+        "last7Days": "Последни 7 дни",
+        "selectTimeRange": "Изберете период"
+    },
+    "NotFound": {
+        "metaTitle": "Страницата не е намерена",
+        "heroTitle": "404",
+        "title": "Страницата не е намерена",
+        "description": "Съжаляваме, не открихме тази страница.",
+        "goToHomepage": "Към началото",
+        "searchProducts": "Търси продукти",
+        "linksTitle": "Популярни връзки",
+        "todaysDeals": "Днешни оферти",
+        "customerService": "Обслужване",
+        "contactUs": "Контакт"
+    },
+    "ProfileNotFound": {
+        "title": "Профилът не е намерен",
+        "description": "Този профил не съществува или не е наличен.",
+        "goToHomepage": "Към началото",
+        "searchProducts": "Търси продукти"
+    },
+    "ProfileError": {
+        "title": "Не успяхме да заредим профила",
+        "description": "Моля, опитайте отново по-късно.",
+        "errorId": "ID на грешка",
+        "tryAgain": "Опитай отново",
+        "goToHomepage": "Към началото"
+    },
+    "Plans": {
+        "free": "Безплатно",
+        "perMonth": "/мес",
+        "perYear": "/год",
+        "currentPlan": "Текущ",
+        "upgrade": "Надгради",
+        "getStarted": "Започни",
+        "downgrade": "Понижи",
+        "popular": "Популярен",
+        "bestValue": "Най-добра цена",
+        "listings": "обяви",
+        "unlimited": "Неограничено",
+        "fvf": "при продажба",
+        "boosts": "буста/мес",
+        "included": "Включено:",
+        "moreFeatures": "още",
+        "noPlansAvailable": "Няма налични планове",
+        "errors": {
+            "checkoutSessionFailed": "Не успяхме да стартираме плащането. Опитай отново."
+        },
+        "toast": {
+            "planChanged": "Планът е обновен"
+        },
+        "page": {
+            "title": "Планове и цени",
+            "subtitle": "Избери план, който пасва на целите ти за продажби.",
+            "personal": "Личен",
+            "business": "Бизнес",
+            "monthly": "Месечно",
+            "yearly": "Годишно",
+            "saveLabel": "Спести 20%",
+            "getStarted": "Започни",
+            "current": "Текущ",
+            "popular": "Популярен",
+            "mostPopular": "Най-популярен",
+            "feeLabel": "Такса при продажба",
+            "period": {
+                "mo": "/мес",
+                "yr": "/год"
+            },
+            "planFeatures": {
+                "listingsPerMonth": "обяви/мес",
+                "unlimitedListings": "Неограничени обяви",
+                "whenSoldShort": "при продажба",
+                "buyerProtection": "защита на купувача",
+                "boostsShort": "буста/мес",
+                "analytics": "Аналитика"
+            },
+            "nav": {
+                "pricing": "Цени",
+                "comparison": "Сравнение",
+                "features": "Предимства",
+                "faq": "Въпроси",
+                "guarantee": "Гаранция"
+            },
+            "features": {
+                "title": "Всичко нужно за продажби",
+                "subtitle": "По-ниски такси, повече видимост и по-добри инструменти.",
+                "items": [
+                    {
+                        "icon": "lightning",
+                        "title": "По-ниски такси",
+                        "desc": "Плащаш по-малко при продажба и запазваш повече."
+                    },
+                    {
+                        "icon": "rocket",
+                        "title": "Повече видимост",
+                        "desc": "Бустове и приоритетно показване за по-бърза продажба."
+                    },
+                    {
+                        "icon": "sparkle",
+                        "title": "По-добри инструменти",
+                        "desc": "Аналитика и инструменти за развитие на магазина ти."
+                    }
+                ]
+            },
+            "guarantee": {
+                "title": "Включена защита на купувача",
+                "desc": "Всяка покупка е защитена за повече спокойствие."
+            },
+            "comparison": {
+                "title": "Сравни плановете",
+                "subtitle": "Виж какво включва всяко ниво.",
+                "plan": "План",
+                "price": "Цена",
+                "fee": "Такса",
+                "buyerProtection": "Защита на купувача",
+                "listings": "Обяви",
+                "boosts": "Бустове",
+                "support": "Поддръжка",
+                "unlimited": "Неограничено",
+                "free": "Безплатно"
+            },
+            "faq": {
+                "title": "Често задавани въпроси",
+                "subtitle": "Отговори на най-честите въпроси за плановете.",
+                "items": [
+                    {
+                        "q": "Мога ли да прекратя по всяко време?",
+                        "a": "Да. Можеш да смениш или прекратиш плана си по всяко време."
+                    },
+                    {
+                        "q": "Планът важи ли за всички обяви?",
+                        "a": "Планът важи за профила ти като продавач и всички активни обяви."
+                    },
+                    {
+                        "q": "Какво става ако понижа плана?",
+                        "a": "Текущият план остава активен до края на периода на таксуване."
+                    }
+                ]
+            }
+        }
+    },
+    "AccountPlansUpgrade": {
+        "backToPlans": "Назад към плановете",
+        "title": "Надградете плана си",
+        "description": "Изберете план с по-ниски такси и повече функции"
+    },
+    "CategoryNotFound": {
+        "title": "Категорията не е намерена",
+        "description": "Тази категория не съществува или е премахната.",
+        "browseCategories": "Разгледай категориите",
+        "goToHomepage": "Към началото"
+    },
+    "ProductNotFound": {
+        "metaTitle": "Продукт не е намерен"
     }
 }

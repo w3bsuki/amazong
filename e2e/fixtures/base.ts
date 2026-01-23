@@ -272,8 +272,10 @@ export async function assertNoErrorBoundary(page: Page): Promise<void> {
  * Assert navigation succeeded and we're at expected URL
  */
 export async function assertNavigatedTo(page: Page, urlPattern: RegExp, timeout = 15_000): Promise<void> {
-  await page.waitForURL(urlPattern, { timeout })
-  expect(page.url()).toMatch(urlPattern)
+  // Use a URL assertion instead of waiting for a full navigation/load event.
+  // Next.js App Router often navigates client-side (no "load"), and dev-mode
+  // compilation can delay the load event long enough to flake smoke tests.
+  await expect(page).toHaveURL(urlPattern, { timeout })
 }
 
 // ============================================================================

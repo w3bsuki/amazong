@@ -470,6 +470,7 @@
   /* === COLORS: Deals/Urgency === */
   --color-deal: oklch(0.55 0.25 27);
   --color-deal-light: oklch(0.96 0.03 27);
+  --color-deal-foreground: oklch(1 0 0);
 
   /* === COLORS: Condition Badges (C2C Marketplace) === */
   --color-condition-new: oklch(0.55 0.16 155);

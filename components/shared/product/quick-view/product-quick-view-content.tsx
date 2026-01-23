@@ -5,6 +5,7 @@ import { ArrowSquareOut, Heart, LinkSimple, MapPin, ShoppingCart, Star, Tag, Tru
 import { useLocale, useTranslations } from "next-intl"
 import { toast } from "sonner"
 
+import { getPathname } from "@/i18n/routing"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import type { QuickViewProduct } from "@/components/providers/drawer-context"
@@ -43,7 +44,7 @@ export function ProductQuickViewContent({
   onNavigateToProduct,
 }: {
   product: QuickViewProduct
-  /** Full-page path including locale, e.g. `/en/{username}/{slug}` */
+  /** Full-page href without locale prefix, e.g. `/{username}/{slug}` */
   productPath: string
   onRequestClose?: () => void
   onAddToCart: () => void
@@ -92,8 +93,9 @@ export function ProductQuickViewContent({
   const shareUrl = React.useMemo(() => {
     if (!productPath || productPath === "#") return null
     if (typeof window === "undefined") return null
-    return `${window.location.origin}${productPath}`
-  }, [productPath])
+    const localizedPath = getPathname({ href: productPath, locale })
+    return `${window.location.origin}${localizedPath}`
+  }, [productPath, locale])
 
   const handleCopyLink = React.useCallback(async () => {
     if (!shareUrl) return
@@ -116,16 +118,19 @@ export function ProductQuickViewContent({
   }, [wishlistPending, toggleWishlist, id, title, price, primaryImage])
 
   return (
-    <>
-      <QuickViewImageGallery
-        images={allImages}
-        title={title}
-        discountPercent={showDiscount ? discountPercent : undefined}
-        onNavigateToProduct={onNavigateToProduct}
-        {...(onRequestClose ? { onRequestClose } : {})}
-      />
+    <div className="md:grid md:grid-cols-[1.1fr_0.9fr] md:min-h-full">
+      <div className="md:border-r md:border-border">
+        <QuickViewImageGallery
+          images={allImages}
+          title={title}
+          discountPercent={showDiscount ? discountPercent : undefined}
+          onNavigateToProduct={onNavigateToProduct}
+          {...(onRequestClose ? { onRequestClose } : {})}
+        />
+      </div>
 
-      <div className="px-4 py-4 space-y-4">
+      <div className="flex flex-col">
+        <div className="px-4 py-4 space-y-4">
         {/* Price */}
         <div className="flex items-baseline gap-2 flex-wrap">
           <span
@@ -277,28 +282,29 @@ export function ProductQuickViewContent({
         />
       </div>
 
-      <div className="border-t border-border px-4 py-4 mt-auto">
-        <div className="grid grid-cols-2 gap-3">
-          <Button
-            variant="outline"
-            size="lg"
-            className="gap-2"
-            onClick={onAddToCart}
-            disabled={!inStock}
-          >
-            <ShoppingCart size={18} weight="bold" />
-            {tDrawers("addToCart")}
-          </Button>
-          <Button
-            variant="cta"
-            size="lg"
-            onClick={onBuyNow}
-            disabled={!inStock}
-          >
-            {tProduct("buyNow")}
-          </Button>
+        <div className="border-t border-border px-4 py-4 mt-auto">
+          <div className="grid grid-cols-2 gap-3">
+            <Button
+              variant="outline"
+              size="lg"
+              className="gap-2"
+              onClick={onAddToCart}
+              disabled={!inStock}
+            >
+              <ShoppingCart size={18} weight="bold" />
+              {tDrawers("addToCart")}
+            </Button>
+            <Button
+              variant="cta"
+              size="lg"
+              onClick={onBuyNow}
+              disabled={!inStock}
+            >
+              {tProduct("buyNow")}
+            </Button>
+          </div>
         </div>
       </div>
-    </>
+    </div>
   )
 }
