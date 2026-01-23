@@ -18,8 +18,9 @@ import { RecentlyViewedTracker } from "@/components/shared/product/recently-view
 import { CategoryBadge } from "@/components/shared/product/category-badge";
 import { HeroSpecs } from "@/components/shared/product/hero-specs";
 import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useWishlist } from "@/components/providers/wishlist-context";
-import { UserAvatar } from "@/components/shared/user-avatar";
+import { safeAvatarSrc } from "@/lib/utils";
 
 import type { ProductPageViewModel } from "@/lib/view-models/product-page";
 import type { Database } from "@/lib/supabase/database.types";
@@ -243,12 +244,15 @@ export function MobileProductPage(props: MobileProductPageProps) {
       >
         <div className="flex items-center gap-3">
           <div className="relative flex-shrink-0">
-            <UserAvatar
-              name={sellerInfo.name}
-              avatarUrl={sellerInfo.avatarUrl ?? null}
-              className="size-12 ring-2 ring-border bg-muted"
-              fallbackClassName="text-sm font-medium bg-muted"
-            />
+            <Avatar className="size-12 ring-2 ring-border bg-muted">
+              <AvatarImage
+                src={safeAvatarSrc(sellerInfo.avatarUrl ?? null)}
+                alt={sellerInfo.name}
+              />
+              <AvatarFallback className="text-sm font-medium bg-muted">
+                {sellerInfo.name.slice(0, 2).toUpperCase()}
+              </AvatarFallback>
+            </Avatar>
             {sellerInfo.verified && (
               <span className="absolute -bottom-0.5 -right-0.5 size-5 bg-verified rounded-full ring-2 ring-surface-card flex items-center justify-center">
                 <CheckCircle2 className="size-3 text-primary-foreground" fill="currentColor" />

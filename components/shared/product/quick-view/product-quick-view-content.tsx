@@ -5,7 +5,6 @@ import { ArrowSquareOut, Heart, LinkSimple, MapPin, ShoppingCart, Star, Tag, Tru
 import { useLocale, useTranslations } from "next-intl"
 import { toast } from "sonner"
 
-import { getPathname } from "@/i18n/routing"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import type { QuickViewProduct } from "@/components/providers/drawer-context"
@@ -93,7 +92,8 @@ export function ProductQuickViewContent({
   const shareUrl = React.useMemo(() => {
     if (!productPath || productPath === "#") return null
     if (typeof window === "undefined") return null
-    const localizedPath = getPathname({ href: productPath, locale })
+    const safePath = productPath.startsWith("/") ? productPath : `/${productPath}`
+    const localizedPath = `/${locale}${safePath}`
     return `${window.location.origin}${localizedPath}`
   }, [productPath, locale])
 
