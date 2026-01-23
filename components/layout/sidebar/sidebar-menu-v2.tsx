@@ -109,6 +109,12 @@ export function SidebarMenuV2({ user, triggerClassName, userStats }: SidebarMenu
     const [isSigningOut, setIsSigningOut] = useState(false)
     const [mounted, setMounted] = useState(false)
     const t = useTranslations('Sidebar')
+    const tCommon = useTranslations('Common')
+    const tNav = useTranslations('Navigation')
+    const tAccountDrawer = useTranslations('AccountDrawer')
+    const tNavUser = useTranslations('NavUser')
+    const tLocaleSwitcher = useTranslations('LocaleSwitcher')
+    const tMenu = useTranslations('SidebarMenuV2')
     const locale = useLocale()
 
     useEffect(() => {
@@ -143,7 +149,7 @@ export function SidebarMenuV2({ user, triggerClassName, userStats }: SidebarMenu
                     "inline-flex items-center justify-center size-10 rounded-md text-header-text hover:bg-header-hover active:bg-header-active transition-colors touch-action-manipulation tap-transparent cursor-pointer [&_svg]:size-6",
                     triggerClassName
                 )}
-                aria-label={locale === "bg" ? "Меню" : "Menu"}
+                aria-label={t("title")}
                 data-testid="mobile-menu-trigger"
             >
                 <List weight="bold" />
@@ -162,7 +168,7 @@ export function SidebarMenuV2({ user, triggerClassName, userStats }: SidebarMenu
                         "size-10 rounded-md text-header-text hover:bg-header-hover active:bg-header-active transition-colors touch-action-manipulation tap-transparent focus-visible:ring-0 focus-visible:ring-offset-0 [&_svg]:size-6",
                         triggerClassName
                     )}
-                    aria-label={locale === "bg" ? "Меню" : "Menu"}
+                    aria-label={t("title")}
                     data-testid="mobile-menu-trigger"
                 >
                     <List weight="bold" />
@@ -171,13 +177,12 @@ export function SidebarMenuV2({ user, triggerClassName, userStats }: SidebarMenu
 
             <DrawerContent
                 className="p-0 bg-background text-foreground gap-0 flex flex-col h-full shadow-none"
-                style={{ '--initial-transform': 'calc(-100% - 1px)' } as React.CSSProperties}
             >
                 <DrawerTitle className="sr-only">
-                    {locale === 'bg' ? 'Меню' : 'Menu'}
+                    {t("title")}
                 </DrawerTitle>
                 <DrawerDescription className="sr-only">
-                    {locale === 'bg' ? 'Навигационно меню' : 'Navigation menu'}
+                    {t("mobileDescription")}
                 </DrawerDescription>
 
                 {/* ================================================================
@@ -208,14 +213,14 @@ export function SidebarMenuV2({ user, triggerClassName, userStats }: SidebarMenu
                                     className="flex items-center gap-1.5 h-9 px-4 rounded-full bg-primary-foreground text-brand text-sm font-semibold hover:bg-primary-foreground/90 transition-colors"
                                 >
                                     <SignInIcon size={20} weight="bold" />
-                                    <span>{locale === 'bg' ? 'Влез' : 'Sign In'}</span>
+                                    <span>{t("signIn")}</span>
                                 </Link>
                                 <Link
                                     href="/auth/sign-up"
                                     onClick={() => setOpen(false)}
                                     className="h-9 px-4 rounded-full text-white text-sm font-medium hover:bg-primary-foreground/10 transition-colors flex items-center"
                                 >
-                                    {locale === 'bg' ? 'Регистрация' : 'Register'}
+                                    {tNav("register")}
                                 </Link>
                             </div>
                         )}
@@ -230,7 +235,7 @@ export function SidebarMenuV2({ user, triggerClassName, userStats }: SidebarMenu
                                     href="/account/settings"
                                     onClick={() => setOpen(false)}
                                     className="size-touch rounded-full flex items-center justify-center text-white/70 hover:text-white hover:bg-primary-foreground/10 transition-colors"
-                                    aria-label={locale === 'bg' ? 'Настройки' : 'Settings'}
+                                    aria-label={tAccountDrawer("settings")}
                                 >
                                     <Gear size={24} weight="regular" />
                                 </Link>
@@ -242,7 +247,7 @@ export function SidebarMenuV2({ user, triggerClassName, userStats }: SidebarMenu
                                     <button
                                         type="button"
                                         className="size-touch rounded-full flex items-center justify-center text-white/70 hover:text-white hover:bg-primary-foreground/10 transition-colors"
-                                        aria-label="Language"
+                                        aria-label={tLocaleSwitcher('label')}
                                     >
                                         <Image
                                             src={locale === 'bg' ? "https://flagcdn.com/w40/bg.png" : "https://flagcdn.com/w40/gb.png"}
@@ -257,14 +262,14 @@ export function SidebarMenuV2({ user, triggerClassName, userStats }: SidebarMenu
                                     <DropdownMenuItem asChild>
                                         <Link href="/" locale="en" onClick={() => setOpen(false)} className="flex items-center gap-2.5 px-3 py-2 cursor-pointer rounded-md">
                                             <Image src="https://flagcdn.com/w40/gb.png" alt="" width={18} height={12} className="h-3 w-auto rounded-sm object-cover" />
-                                            <span className="text-sm font-medium">English</span>
+                                            <span className="text-sm font-medium">{tLocaleSwitcher('english')}</span>
                                             {locale === 'en' && <span className="ml-auto text-brand font-bold text-xs">✓</span>}
                                         </Link>
                                     </DropdownMenuItem>
                                     <DropdownMenuItem asChild>
                                         <Link href="/" locale="bg" onClick={() => setOpen(false)} className="flex items-center gap-2.5 px-3 py-2 cursor-pointer rounded-md">
                                             <Image src="https://flagcdn.com/w40/bg.png" alt="" width={18} height={12} className="h-3 w-auto rounded-sm object-cover" />
-                                            <span className="text-sm font-medium">Български</span>
+                                            <span className="text-sm font-medium">{tLocaleSwitcher('bulgarian')}</span>
                                             {locale === 'bg' && <span className="ml-auto text-brand font-bold text-xs">✓</span>}
                                         </Link>
                                     </DropdownMenuItem>
@@ -298,7 +303,7 @@ export function SidebarMenuV2({ user, triggerClassName, userStats }: SidebarMenu
                             <section className="px-4 py-4 border-b border-border/50">
                                 <div className="flex items-center justify-between mb-3">
                                     <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
-                                        {locale === 'bg' ? 'Моите обяви' : 'My Listings'}
+                                        {tAccountDrawer("myListings")}
                                     </span>
                                 </div>
                                 {/* New Listing CTA - full width */}
@@ -308,7 +313,7 @@ export function SidebarMenuV2({ user, triggerClassName, userStats }: SidebarMenu
                                     className="flex items-center justify-center gap-1.5 w-full h-touch rounded-lg bg-brand text-white font-semibold hover:bg-brand/90 transition-colors mb-2"
                                 >
                                     <Plus size={18} weight="bold" />
-                                    <span className="text-sm">{locale === 'bg' ? 'Нова' : 'New'}</span>
+                                    <span className="text-sm">{tMenu("newListing")}</span>
                                 </Link>
                                 {/* Stats row - 2 column grid */}
                                 <div className="grid grid-cols-2 gap-2">
@@ -319,7 +324,7 @@ export function SidebarMenuV2({ user, triggerClassName, userStats }: SidebarMenu
                                     >
                                         <Package size={18} weight="duotone" className="text-muted-foreground" />
                                         <span className="text-sm font-semibold tabular-nums">{userStats?.activeListings ?? 0}</span>
-                                        <span className="text-xs text-muted-foreground">{locale === 'bg' ? 'Активни' : 'Active'}</span>
+                                        <span className="text-xs text-muted-foreground">{tMenu("active")}</span>
                                     </Link>
                                     <Link
                                         href="/account/selling"
@@ -328,7 +333,7 @@ export function SidebarMenuV2({ user, triggerClassName, userStats }: SidebarMenu
                                     >
                                         <RocketLaunch size={18} weight="duotone" className="text-primary" />
                                         <span className="text-sm font-semibold tabular-nums">{userStats?.boostedListings ?? 0}</span>
-                                        <span className="text-xs text-muted-foreground">{locale === 'bg' ? 'Буустнати' : 'Boosted'}</span>
+                                        <span className="text-xs text-muted-foreground">{tMenu("boosted")}</span>
                                     </Link>
                                 </div>
                             </section>
@@ -336,37 +341,37 @@ export function SidebarMenuV2({ user, triggerClassName, userStats }: SidebarMenu
                             {/* Activity Section */}
                             <section className="px-4 py-3">
                                 <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-1">
-                                    {locale === 'bg' ? 'Активност' : 'Activity'}
+                                    {tMenu("activity")}
                                 </h3>
                                 <nav className="-mx-4">
                                     <NavLink
                                         href="/account/orders"
                                         icon={Receipt}
-                                        label={locale === 'bg' ? 'Поръчки' : 'Orders'}
+                                        label={tAccountDrawer("orders")}
                                         onClick={() => setOpen(false)}
                                     />
                                     <NavLink
                                         href="/account/sales"
                                         icon={ChartLineUp}
-                                        label={locale === 'bg' ? 'Продажби' : 'Sales'}
+                                        label={tMenu("sales")}
                                         onClick={() => setOpen(false)}
                                     />
                                     <NavLink
                                         href="/wishlist"
                                         icon={Heart}
-                                        label={locale === 'bg' ? 'Любими' : 'Favorites'}
+                                        label={tNav("wishlist")}
                                         onClick={() => setOpen(false)}
                                     />
                                     <NavLink
                                         href="/chat"
                                         icon={ChatCircleText}
-                                        label={locale === 'bg' ? 'Съобщения' : 'Messages'}
+                                        label={t("messages")}
                                         onClick={() => setOpen(false)}
                                     />
                                     <NavLink
                                         href="/account/notifications"
                                         icon={Bell}
-                                        label={locale === 'bg' ? 'Известия' : 'Notifications'}
+                                        label={tNavUser("notifications")}
                                         onClick={() => setOpen(false)}
                                     />
                                 </nav>
@@ -375,37 +380,37 @@ export function SidebarMenuV2({ user, triggerClassName, userStats }: SidebarMenu
                             {/* Account Section */}
                             <section className="px-4 py-3 border-t border-border/50">
                                 <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-1">
-                                    {locale === 'bg' ? 'Акаунт' : 'Account'}
+                                    {tAccountDrawer("title")}
                                 </h3>
                                 <nav className="-mx-4">
                                     <NavLink
                                         href="/account/profile"
                                         icon={User}
-                                        label={locale === 'bg' ? 'Профил' : 'Profile'}
+                                        label={tMenu("profile")}
                                         onClick={() => setOpen(false)}
                                     />
                                     <NavLink
                                         href="/account/selling"
                                         icon={Storefront}
-                                        label={locale === 'bg' ? 'Моят магазин' : 'My Store'}
+                                        label={tMenu("myStore")}
                                         onClick={() => setOpen(false)}
                                     />
                                     <NavLink
                                         href="/account/addresses"
                                         icon={MapPin}
-                                        label={locale === 'bg' ? 'Адреси' : 'Addresses'}
+                                        label={tMenu("addresses")}
                                         onClick={() => setOpen(false)}
                                     />
                                     <NavLink
                                         href="/account/payments"
                                         icon={CreditCard}
-                                        label={locale === 'bg' ? 'Плащания' : 'Payments'}
+                                        label={tMenu("payments")}
                                         onClick={() => setOpen(false)}
                                     />
                                     <NavLink
                                         href="/account/settings"
                                         icon={Gear}
-                                        label={locale === 'bg' ? 'Настройки' : 'Settings'}
+                                        label={tAccountDrawer("settings")}
                                         onClick={() => setOpen(false)}
                                     />
                                 </nav>
@@ -417,13 +422,13 @@ export function SidebarMenuV2({ user, triggerClassName, userStats }: SidebarMenu
                                     <NavLink
                                         href="/categories"
                                         icon={SquaresFour}
-                                        label={locale === 'bg' ? 'Разгледай категории' : 'Browse Categories'}
+                                        label={tMenu("browseCategories")}
                                         onClick={() => setOpen(false)}
                                     />
                                     <NavLink
                                         href="/customer-service"
                                         icon={Lifebuoy}
-                                        label={locale === 'bg' ? 'Помощ' : 'Help'}
+                                        label={t("customerService")}
                                         onClick={() => setOpen(false)}
                                     />
                                 </nav>
@@ -435,12 +440,10 @@ export function SidebarMenuV2({ user, triggerClassName, userStats }: SidebarMenu
                             <div className="text-center py-8">
                                 <UserCircle size={48} weight="duotone" className="mx-auto text-muted-foreground/50 mb-3" />
                                 <h3 className="text-base font-semibold text-foreground mb-1">
-                                    {locale === 'bg' ? 'Влез в акаунта си' : 'Sign in to your account'}
+                                    {tAccountDrawer("signInPrompt")}
                                 </h3>
                                 <p className="text-sm text-muted-foreground mb-4">
-                                    {locale === 'bg' 
-                                        ? 'Запазвай любими, проследявай поръчки и продавай' 
-                                        : 'Save favorites, track orders, and start selling'}
+                                    {tMenu("signInBenefits")}
                                 </p>
                                 <div className="flex items-center gap-2 justify-center">
                                     <Link
@@ -449,14 +452,14 @@ export function SidebarMenuV2({ user, triggerClassName, userStats }: SidebarMenu
                                         className="flex items-center justify-center gap-2 h-10 px-6 rounded-full bg-brand text-white text-sm font-semibold hover:bg-brand/90 transition-colors"
                                     >
                                         <SignInIcon size={18} weight="bold" />
-                                        <span>{locale === 'bg' ? 'Влез' : 'Sign In'}</span>
+                                        <span>{t("signIn")}</span>
                                     </Link>
                                     <Link
                                         href="/auth/sign-up"
                                         onClick={() => setOpen(false)}
                                         className="flex items-center justify-center h-10 px-6 rounded-full border border-border text-foreground text-sm font-medium hover:bg-muted/50 transition-colors"
                                     >
-                                        {locale === 'bg' ? 'Регистрация' : 'Register'}
+                                        {tNav("register")}
                                     </Link>
                                 </div>
                             </div>
@@ -466,7 +469,7 @@ export function SidebarMenuV2({ user, triggerClassName, userStats }: SidebarMenu
                                 <NavLink
                                     href="/categories"
                                     icon={SquaresFour}
-                                    label={locale === 'bg' ? 'Разгледай категории' : 'Browse Categories'}
+                                    label={tMenu("browseCategories")}
                                     onClick={() => setOpen(false)}
                                 />
                             </div>
@@ -492,24 +495,22 @@ export function SidebarMenuV2({ user, triggerClassName, userStats }: SidebarMenu
                                         ) : (
                                             <SignOut size={18} weight="regular" />
                                         )}
-                                        <span>{locale === 'bg' ? 'Изход' : 'Sign Out'}</span>
+                                        <span>{tNavUser("logOut")}</span>
                                     </button>
                                 </AlertDialogTrigger>
 
                                 <AlertDialogContent className="max-w-sm rounded-lg border-border">
                                     <AlertDialogHeader>
                                         <AlertDialogTitle className="text-base font-semibold text-foreground">
-                                            {locale === "bg" ? "Изход от акаунта" : "Sign out"}
+                                            {tMenu("signOutTitle")}
                                         </AlertDialogTitle>
                                         <AlertDialogDescription className="text-sm text-muted-foreground">
-                                            {locale === "bg"
-                                                ? "Ще излезете от акаунта си."
-                                                : "You will be signed out."}
+                                            {tMenu("signOutDescription")}
                                         </AlertDialogDescription>
                                     </AlertDialogHeader>
                                     <AlertDialogFooter className="flex-row gap-2 sm:flex-row">
                                         <AlertDialogCancel className="flex-1 h-10 text-sm font-medium">
-                                            {locale === "bg" ? "Отказ" : "Cancel"}
+                                            {tCommon("cancel")}
                                         </AlertDialogCancel>
                                         <AlertDialogAction
                                             className="flex-1 h-10 text-sm font-medium bg-cta-trust-blue hover:bg-cta-trust-blue-hover text-cta-trust-blue-text"
@@ -522,7 +523,7 @@ export function SidebarMenuV2({ user, triggerClassName, userStats }: SidebarMenu
                                                 form.submit()
                                             }}
                                         >
-                                            {locale === "bg" ? "Да, излез" : "Yes, sign out"}
+                                            {tMenu("confirmSignOut")}
                                         </AlertDialogAction>
                                     </AlertDialogFooter>
                                 </AlertDialogContent>
