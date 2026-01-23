@@ -45,7 +45,7 @@ REUSE_EXISTING_SERVER=true pnpm test:e2e:smoke
 ### P3 — Tailwind CSS v4 full audit (tokens + drift gates)
 - [x] TAILWIND: Run `pnpm -s styles:scan` and drive arbitrary values toward 0 (or a justified allow-list) → `docs/DESIGN.md`
 - [x] TAILWIND: Verify 0 gradient violations in app code → `docs/DESIGN.md`
-- [ ] TAILWIND: Replace hardcoded neutrals (`bg-white`, `text-black`, `border-gray-*`) with semantic tokens → `docs/DESIGN.md`
+- [x] TAILWIND: Replace hardcoded neutrals (`bg-white`, `text-black`, `border-gray-*`) with semantic tokens → `docs/DESIGN.md`
 
 ### P4 — Tailwind v4 + shadcn alignment (design system consistency)
 - [ ] TAILWIND: Ensure all forms use `components/shared/field.tsx` consistently (labels/errors/help) → `docs/FRONTEND.md`

@@ -133,7 +133,7 @@ export default async function SharedWishlistTokenPage({ params }: SharedWishlist
         <div className="mt-12 text-center p-4 bg-muted/50 rounded-lg">
           <h2 className="text-xl font-semibold mb-2">{t("createYourOwn")}</h2>
           <p className="text-muted-foreground mb-4">{t("signUpToCreate")}</p>
-          <Button asChild className="bg-brand-warning hover:bg-brand-warning/90 text-black font-medium">
+          <Button asChild className="bg-brand-warning hover:bg-brand-warning/90 text-foreground font-medium">
             <Link href="/auth/sign-up">{t("signUpFree")}</Link>
           </Button>
         </div>

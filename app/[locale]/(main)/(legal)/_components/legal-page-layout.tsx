@@ -91,7 +91,7 @@ export function LegalPageLayout({
             <AppBreadcrumb items={breadcrumbItems} />
           </div>
           <div className="flex items-start gap-4">
-            <div className="size-14 bg-white/10 flex items-center justify-center shrink-0">
+            <div className="size-14 bg-primary-foreground/10 flex items-center justify-center shrink-0">
               <HeroIcon className="size-7 text-white" />
             </div>
             <div>

@@ -15,7 +15,7 @@ export default function TopSellersHero({ locale }: { locale: string }) {
         </div>
 
         <div className="flex items-center gap-3 mb-2">
-          <div className="size-12 sm:size-14 bg-white/10 rounded-full flex items-center justify-center">
+          <div className="size-12 sm:size-14 bg-primary-foreground/10 rounded-full flex items-center justify-center">
             <svg className="size-6 sm:size-7 text-white" fill="currentColor" viewBox="0 0 256 256">
               <path d="M232,64H208V48a24,24,0,0,0-24-24H72A24,24,0,0,0,48,48V64H24A16,16,0,0,0,8,80v24a56.06,56.06,0,0,0,48.44,55.47A39.8,39.8,0,0,0,72,176v32H64a8,8,0,0,0,0,16H192a8,8,0,0,0,0-16h-8V176a39.8,39.8,0,0,0,15.56-16.53A56.06,56.06,0,0,0,248,104V80A16,16,0,0,0,232,64Zm-64,80a24,24,0,0,1-24,24H112a24,24,0,0,1-24-24V48a8,8,0,0,1,8-8H168a8,8,0,0,1,8,8Z" />
             </svg>

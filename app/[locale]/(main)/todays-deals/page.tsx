@@ -52,7 +52,7 @@ export default async function TodaysDealsPage({
           </div>
 
           <div className="flex items-center gap-3 mb-2">
-            <div className="size-12 sm:size-14 bg-white/10 rounded-full flex items-center justify-center">
+            <div className="size-12 sm:size-14 bg-primary-foreground/10 rounded-full flex items-center justify-center">
               <Zap className="size-6 sm:size-7 text-white" />
             </div>
             <div>

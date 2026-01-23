@@ -29,7 +29,7 @@ export function ImagePreviewModal({
       <button
         type="button"
         onClick={onClose}
-        className="absolute top-4 right-4 p-3 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors min-h-11 min-w-11"
+        className="absolute top-4 right-4 p-3 rounded-full bg-overlay-light/10 hover:bg-overlay-light/20 text-white transition-colors min-h-11 min-w-11"
         aria-label="Close preview"
       >
         <X className="size-6" weight="bold" />

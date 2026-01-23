@@ -297,7 +297,7 @@ export function SupportChatWidget({
         {/* Header */}
         <SheetHeader className="px-4 py-3 border-b bg-brand text-white">
           <div className="flex items-center gap-3">
-            <div className="size-10 bg-white/20 rounded-full flex items-center justify-center">
+            <div className="size-10 bg-primary-foreground/20 rounded-full flex items-center justify-center">
               <Headphones className="size-5" weight="fill" />
             </div>
             <div className="flex-1">

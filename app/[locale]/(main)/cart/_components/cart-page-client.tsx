@@ -145,7 +145,7 @@ export default function CartPageClient() {
                   {/* Image */}
                   <Link
                     href={getProductUrl(item)}
-                    className="relative shrink-0 size-20 bg-white rounded-md overflow-hidden border border-border/50"
+                    className="relative shrink-0 size-20 bg-background rounded-md overflow-hidden border border-border/50"
                   >
                     {item.image ? (
                       <Image

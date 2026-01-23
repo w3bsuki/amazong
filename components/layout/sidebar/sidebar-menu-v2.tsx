@@ -193,7 +193,7 @@ export function SidebarMenuV2({ user, triggerClassName, userStats }: SidebarMenu
                                 onClick={() => setOpen(false)}
                                 className="flex items-center gap-2.5 min-w-0 hover:opacity-90 transition-opacity"
                             >
-                                <div className="size-touch shrink-0 rounded-full bg-white/20 flex items-center justify-center">
+                                <div className="size-touch shrink-0 rounded-full bg-primary-foreground/20 flex items-center justify-center">
                                     <UserCircle size={26} weight="fill" className="text-white" />
                                 </div>
                                 <span className="text-white text-base font-semibold truncate max-w-32">
@@ -205,7 +205,7 @@ export function SidebarMenuV2({ user, triggerClassName, userStats }: SidebarMenu
                                 <Link
                                     href="/auth/login"
                                     onClick={() => setOpen(false)}
-                                    className="flex items-center gap-1.5 h-9 px-4 rounded-full bg-white text-brand text-sm font-semibold hover:bg-white/90 transition-colors"
+                                    className="flex items-center gap-1.5 h-9 px-4 rounded-full bg-primary-foreground text-brand text-sm font-semibold hover:bg-primary-foreground/90 transition-colors"
                                 >
                                     <SignInIcon size={20} weight="bold" />
                                     <span>{locale === 'bg' ? 'Влез' : 'Sign In'}</span>
@@ -213,7 +213,7 @@ export function SidebarMenuV2({ user, triggerClassName, userStats }: SidebarMenu
                                 <Link
                                     href="/auth/sign-up"
                                     onClick={() => setOpen(false)}
-                                    className="h-9 px-4 rounded-full text-white text-sm font-medium hover:bg-white/10 transition-colors flex items-center"
+                                    className="h-9 px-4 rounded-full text-white text-sm font-medium hover:bg-primary-foreground/10 transition-colors flex items-center"
                                 >
                                     {locale === 'bg' ? 'Регистрация' : 'Register'}
                                 </Link>
@@ -229,7 +229,7 @@ export function SidebarMenuV2({ user, triggerClassName, userStats }: SidebarMenu
                                 <Link
                                     href="/account/settings"
                                     onClick={() => setOpen(false)}
-                                    className="size-touch rounded-full flex items-center justify-center text-white/70 hover:text-white hover:bg-white/10 transition-colors"
+                                    className="size-touch rounded-full flex items-center justify-center text-white/70 hover:text-white hover:bg-primary-foreground/10 transition-colors"
                                     aria-label={locale === 'bg' ? 'Настройки' : 'Settings'}
                                 >
                                     <Gear size={24} weight="regular" />
@@ -241,7 +241,7 @@ export function SidebarMenuV2({ user, triggerClassName, userStats }: SidebarMenu
                                 <DropdownMenuTrigger asChild>
                                     <button
                                         type="button"
-                                        className="size-touch rounded-full flex items-center justify-center text-white/70 hover:text-white hover:bg-white/10 transition-colors"
+                                        className="size-touch rounded-full flex items-center justify-center text-white/70 hover:text-white hover:bg-primary-foreground/10 transition-colors"
                                         aria-label="Language"
                                     >
                                         <Image
@@ -275,7 +275,7 @@ export function SidebarMenuV2({ user, triggerClassName, userStats }: SidebarMenu
                             <DrawerClose asChild>
                                 <button
                                     type="button"
-                                    className="size-touch rounded-full flex items-center justify-center text-white/70 hover:text-white hover:bg-white/10 transition-colors"
+                                    className="size-touch rounded-full flex items-center justify-center text-white/70 hover:text-white hover:bg-primary-foreground/10 transition-colors"
                                 >
                                     <X size={24} weight="bold" />
                                     <span className="sr-only">{t('close')}</span>

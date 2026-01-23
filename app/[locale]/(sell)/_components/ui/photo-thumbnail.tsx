@@ -70,7 +70,7 @@ export function PhotoThumbnail({
       {/* Cover Badge - Top left */}
       {isCover && (
         <div className="absolute top-1.5 left-1.5 z-10">
-          <Badge variant="secondary" className="px-1.5 py-0 gap-1 font-bold text-2xs uppercase tracking-wider bg-white/90 backdrop-blur-xs text-primary border-none shadow-sm h-5">
+          <Badge variant="secondary" className="px-1.5 py-0 gap-1 font-bold text-2xs uppercase tracking-wider bg-background/90 backdrop-blur-xs text-primary border-none shadow-sm h-5">
             <Star className="size-2" weight="fill" />
             Cover
           </Badge>
@@ -81,7 +81,7 @@ export function PhotoThumbnail({
       <button
         type="button"
         onClick={(e) => { e.stopPropagation(); onRemove(); }}
-        className="absolute top-1.5 right-1.5 z-10 p-1 rounded-full bg-white/90 backdrop-blur-xs text-destructive shadow-sm hover:bg-destructive hover:text-white transition-colors"
+        className="absolute top-1.5 right-1.5 z-10 p-1 rounded-full bg-background/90 backdrop-blur-xs text-destructive shadow-sm hover:bg-destructive hover:text-white transition-colors"
         title="Remove"
       >
         <Trash className="size-3" weight="bold" />
@@ -98,7 +98,7 @@ export function PhotoThumbnail({
           <button
             type="button"
             onClick={(e) => { e.stopPropagation(); onPreview(); }}
-            className="p-2 rounded-full bg-white/95 text-foreground shadow-sm"
+            className="p-2 rounded-full bg-background/95 text-foreground shadow-sm"
           >
             <MagnifyingGlassPlus className="size-4" />
           </button>
@@ -110,7 +110,7 @@ export function PhotoThumbnail({
         <button
           type="button"
           onClick={(e) => { e.stopPropagation(); onSetCover(); }}
-          className="absolute bottom-1.5 right-1.5 z-10 p-1 rounded-full bg-white/90 backdrop-blur-xs text-primary shadow-sm hover:bg-primary hover:text-white transition-colors sm:opacity-0 sm:group-hover:opacity-100"
+          className="absolute bottom-1.5 right-1.5 z-10 p-1 rounded-full bg-background/90 backdrop-blur-xs text-primary shadow-sm hover:bg-primary hover:text-white transition-colors sm:opacity-0 sm:group-hover:opacity-100"
           title="Set as cover"
         >
           <Star className="size-3" />

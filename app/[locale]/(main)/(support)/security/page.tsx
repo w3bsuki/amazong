@@ -72,7 +72,7 @@ export default async function SecurityPage({
             <AppBreadcrumb items={breadcrumbItems} />
           </div>
           <div className="flex items-center gap-4 mb-4">
-            <div className="size-14 bg-white/10 rounded-full flex items-center justify-center">
+            <div className="size-14 bg-primary-foreground/10 rounded-full flex items-center justify-center">
               <ShieldCheck className="size-7 text-white" weight="fill" />
             </div>
             <div>

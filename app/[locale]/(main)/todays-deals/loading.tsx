@@ -8,16 +8,16 @@ export default function TodaysDealsLoading() {
         <div className="container">
           {/* Breadcrumb */}
           <div className="flex gap-2 items-center mb-2">
-            <Skeleton className="h-4 w-16 bg-white/20" />
-            <Skeleton className="h-4 w-4 bg-white/20" />
-            <Skeleton className="h-4 w-24 bg-white/20" />
+            <Skeleton className="h-4 w-16 bg-primary-foreground/20" />
+            <Skeleton className="h-4 w-4 bg-primary-foreground/20" />
+            <Skeleton className="h-4 w-24 bg-primary-foreground/20" />
           </div>
           
           <div className="flex items-center gap-3 mb-2">
-            <Skeleton className="size-12 sm:size-14 rounded-full bg-white/20" />
+            <Skeleton className="size-12 sm:size-14 rounded-full bg-primary-foreground/20" />
             <div>
-              <Skeleton className="h-8 sm:h-10 w-48 sm:w-64 bg-white/20 mb-2" />
-              <Skeleton className="h-4 w-64 bg-white/20" />
+              <Skeleton className="h-8 sm:h-10 w-48 sm:w-64 bg-primary-foreground/20 mb-2" />
+              <Skeleton className="h-4 w-64 bg-primary-foreground/20" />
             </div>
           </div>
         </div>

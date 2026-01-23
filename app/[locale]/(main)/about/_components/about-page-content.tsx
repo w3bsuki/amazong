@@ -72,30 +72,30 @@ export async function AboutPageContent() {
               </div>
             </div>
             <div className="relative">
-              <div className="aspect-video bg-brand/10 flex items-center justify-center">
-                <div className="grid grid-cols-2 gap-4 p-8">
-                  <div className="bg-white p-4 text-center shadow-sm">
-                    <Lightning className="size-8 text-brand mx-auto mb-2" />
-                    <div className="text-lg font-bold text-brand">{t("statGrowing")}</div>
-                    <div className="text-xs text-muted-foreground">{t("statGrowingDesc")}</div>
+                  <div className="aspect-video bg-brand/10 flex items-center justify-center">
+                    <div className="grid grid-cols-2 gap-4 p-8">
+                      <div className="bg-card p-4 text-center shadow-sm">
+                        <Lightning className="size-8 text-brand mx-auto mb-2" />
+                        <div className="text-lg font-bold text-brand">{t("statGrowing")}</div>
+                        <div className="text-xs text-muted-foreground">{t("statGrowingDesc")}</div>
+                      </div>
+                      <div className="bg-card p-4 text-center shadow-sm">
+                        <Shield className="size-8 text-brand mx-auto mb-2" />
+                        <div className="text-lg font-bold text-brand">{t("statSecure")}</div>
+                        <div className="text-xs text-muted-foreground">{t("statSecureDesc")}</div>
+                      </div>
+                      <div className="bg-card p-4 text-center shadow-sm">
+                        <Users className="size-8 text-brand mx-auto mb-2" />
+                        <div className="text-lg font-bold text-brand">{t("statLocal")}</div>
+                        <div className="text-xs text-muted-foreground">{t("statLocalDesc")}</div>
+                      </div>
+                      <div className="bg-card p-4 text-center shadow-sm">
+                        <Heart className="size-8 text-brand mx-auto mb-2" />
+                        <div className="text-lg font-bold text-brand">{t("statPassion")}</div>
+                        <div className="text-xs text-muted-foreground">{t("statPassionDesc")}</div>
+                      </div>
+                    </div>
                   </div>
-                  <div className="bg-white p-4 text-center shadow-sm">
-                    <Shield className="size-8 text-brand mx-auto mb-2" />
-                    <div className="text-lg font-bold text-brand">{t("statSecure")}</div>
-                    <div className="text-xs text-muted-foreground">{t("statSecureDesc")}</div>
-                  </div>
-                  <div className="bg-white p-4 text-center shadow-sm">
-                    <Users className="size-8 text-brand mx-auto mb-2" />
-                    <div className="text-lg font-bold text-brand">{t("statLocal")}</div>
-                    <div className="text-xs text-muted-foreground">{t("statLocalDesc")}</div>
-                  </div>
-                  <div className="bg-white p-4 text-center shadow-sm">
-                    <Heart className="size-8 text-brand mx-auto mb-2" />
-                    <div className="text-lg font-bold text-brand">{t("statPassion")}</div>
-                    <div className="text-xs text-muted-foreground">{t("statPassionDesc")}</div>
-                  </div>
-                </div>
-              </div>
             </div>
           </div>
         </section>

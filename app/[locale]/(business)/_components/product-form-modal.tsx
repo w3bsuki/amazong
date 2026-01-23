@@ -539,14 +539,14 @@ export function ProductFormModal({
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="size-7 bg-white/90 hover:bg-white text-black"
+                            className="size-7 bg-background/90 hover:bg-background text-foreground"
                           >
                             <IconGripVertical className="size-3.5" />
                           </Button>
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="size-7 bg-white/90 hover:bg-white text-destructive"
+                            className="size-7 bg-background/90 hover:bg-background text-destructive"
                             onClick={() => removeImage(index)}
                           >
                             <IconTrash className="size-3.5" />
