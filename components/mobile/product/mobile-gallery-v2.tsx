@@ -233,7 +233,7 @@ export function MobileGalleryV2({
 
       {/* Fullscreen Image Viewer */}
       {viewerOpen && (
-        <div className="fixed inset-0 z-[60] bg-surface-gallery flex flex-col">
+        <div className="fixed inset-0 z-60 bg-surface-gallery flex flex-col">
           {/* Viewer Header */}
           <div className="flex items-center justify-between p-3 relative z-10">
             <button

@@ -364,7 +364,7 @@ export function ChatInterface({
     <div className={cn("flex h-full flex-col bg-background overflow-hidden", className)}>
       {/* Header - Compact mobile style with safe area */}
       {showHeader && (
-        <div className="shrink-0 border-b border-border px-2 py-2 pt-[max(0.5rem,env(safe-area-inset-top))] bg-background">
+        <div className="shrink-0 border-b border-border px-2 py-2 pt-safe-max-xs bg-background">
           <div className="flex items-center gap-2">
             {/* Back button (mobile) */}
             {onBack && (
@@ -822,7 +822,7 @@ export function ChatInterface({
       </div>
 
       {/* Input area - with safe area for mobile */}
-      <div className="shrink-0 border-t border-border px-2 py-2 bg-background pb-[max(0.5rem,env(safe-area-inset-bottom))]">
+      <div className="shrink-0 border-t border-border px-2 py-2 bg-background pb-safe-max-xs">
         {isClosed ? (
           <div className="flex items-center justify-center py-2 px-4 rounded-full bg-muted">
             <p className="text-sm text-muted-foreground">{t("conversationClosed")}</p>

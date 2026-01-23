@@ -19,7 +19,7 @@ export function StepWhat() {
         <h2 className="text-2xl font-bold tracking-tight text-foreground">
           {isBg ? "Какво продавате?" : "What are you selling?"}
         </h2>
-        <p className="text-[15px] text-muted-foreground">
+        <p className="text-sm text-muted-foreground">
           {isBg 
             ? "Дайте име на артикула и добавете снимка" 
             : "Give your item a name and add a photo"}

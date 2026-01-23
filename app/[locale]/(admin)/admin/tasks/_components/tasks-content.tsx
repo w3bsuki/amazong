@@ -195,7 +195,7 @@ export function AdminTasksContent({ initialTasks }: { initialTasks: AdminTask[] 
                 ({tasksByStatus[column.id]?.length || 0})
               </span>
             </div>
-            <div className="space-y-2 min-h-[200px]">
+            <div className="space-y-2 min-h-52">
               {tasksByStatus[column.id]?.map((task) => (
                 <TaskCard
                   key={task.id}

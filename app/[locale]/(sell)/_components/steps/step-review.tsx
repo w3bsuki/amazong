@@ -30,7 +30,7 @@ export function StepReview() {
         <h2 className="text-2xl font-bold tracking-tight text-foreground">
           {isBg ? "Преглед и публикуване" : "Review & publish"}
         </h2>
-        <p className="text-[15px] text-muted-foreground">
+        <p className="text-sm text-muted-foreground">
           {isBg 
             ? "Прегледайте обявата преди публикуване" 
             : "Review your listing before publishing"}

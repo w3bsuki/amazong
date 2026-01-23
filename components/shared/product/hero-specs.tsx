@@ -69,11 +69,11 @@ export function HeroSpecs({
         >
           {isMobile ? (
             // Mobile: horizontal label-value layout
-            <>
-              <span className="text-xs text-muted-foreground">
+           <>
+              <span className="text-xs text-muted-foreground shrink-0">
                 {spec.label}
               </span>
-              <span className="text-sm font-semibold text-foreground truncate max-w-[60%] text-right">
+              <span className="text-sm font-semibold text-foreground truncate min-w-0 text-right">
                 {spec.value}
               </span>
             </>

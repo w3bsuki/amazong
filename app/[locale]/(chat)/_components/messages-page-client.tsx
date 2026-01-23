@@ -77,7 +77,7 @@ function ChatBottomTabs({
   ]
 
   return (
-    <div className="shrink-0 border-t border-border/50 bg-background/95 backdrop-blur-sm pb-[env(safe-area-inset-bottom)] lg:hidden">
+    <div className="shrink-0 border-t border-border/50 bg-background/95 backdrop-blur-sm pb-safe lg:hidden">
       <div className="flex items-center justify-around h-14">
         {tabs.map((tab) => {
           const Icon = tab.icon
@@ -150,7 +150,7 @@ function MessagesContent({ actions }: { actions: ChatInterfaceServerActions }) {
         )}
       >
         {/* Header with back button, title and search */}
-        <div className="shrink-0 p-3 lg:p-4 border-b border-border/50 pt-[max(0.75rem,env(safe-area-inset-top))]">
+        <div className="shrink-0 p-3 lg:p-4 border-b border-border/50 pt-safe-max-sm">
           {/* Title row with back button */}
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">

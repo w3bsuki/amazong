@@ -334,22 +334,22 @@ export function StepDetails() {
         </div>
         <div className="grid grid-cols-4 gap-2">
           {images.length < 12 && (
-            <button
-              type="button"
-              onClick={addDemoPhoto}
-              className="aspect-square rounded-xl border-2 border-dashed border-border flex flex-col items-center justify-center gap-1 hover:border-primary/40 hover:bg-accent/30 transition-all active:scale-95"
-            >
-              <Camera className="size-5 text-muted-foreground" />
-              <span className="text-[10px] font-medium text-muted-foreground">
-                {isBg ? "Добави" : "Add"}
-              </span>
-            </button>
+              <button
+                type="button"
+                onClick={addDemoPhoto}
+                className="aspect-square rounded-xl border-2 border-dashed border-border flex flex-col items-center justify-center gap-1 hover:border-primary/40 hover:bg-accent/30 transition-all active:scale-95"
+              >
+                <Camera className="size-5 text-muted-foreground" />
+                <span className="text-2xs font-medium text-muted-foreground">
+                  {isBg ? "Добави" : "Add"}
+                </span>
+              </button>
           )}
           {images.map((img, i) => (
             <div key={`${img.url}-${i}`} className="aspect-square rounded-xl bg-muted relative overflow-hidden group ring-1 ring-border/50">
               <img src={img.url} alt="" className="w-full h-full object-cover" />
               {i === 0 && (
-                <div className="absolute bottom-1 left-1 px-1.5 py-0.5 rounded text-[9px] font-bold bg-foreground/90 text-background">
+                <div className="absolute bottom-1 left-1 px-1.5 py-0.5 rounded text-2xs font-bold bg-foreground/90 text-background">
                   {isBg ? "Корица" : "Cover"}
                 </div>
               )}

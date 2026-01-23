@@ -330,7 +330,7 @@ export function DesktopBuyBoxV2({
                   )}
                 />
               </button>
-              <span className="px-3 py-1 text-sm font-medium min-w-[2.5rem] text-center">
+              <span className="px-3 py-1 text-sm font-medium min-w-10 text-center">
                 {quantity}
               </span>
               <button

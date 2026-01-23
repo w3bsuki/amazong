@@ -43,7 +43,7 @@ REUSE_EXISTING_SERVER=true pnpm test:e2e:smoke
 - [x] TAILWIND: Verify focus/disabled states are consistent for Buttons/Inputs/Selects → `docs/DESIGN.md`
 
 ### P3 — Tailwind CSS v4 full audit (tokens + drift gates)
-- [ ] TAILWIND: Run `pnpm -s styles:scan` and drive arbitrary values toward 0 (or a justified allow-list) → `docs/DESIGN.md`
+- [x] TAILWIND: Run `pnpm -s styles:scan` and drive arbitrary values toward 0 (or a justified allow-list) → `docs/DESIGN.md`
 - [ ] TAILWIND: Verify 0 gradient violations in app code → `docs/DESIGN.md`
 - [ ] TAILWIND: Replace hardcoded neutrals (`bg-white`, `text-black`, `border-gray-*`) with semantic tokens → `docs/DESIGN.md`
 

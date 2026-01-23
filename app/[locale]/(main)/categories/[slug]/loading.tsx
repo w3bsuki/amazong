@@ -27,7 +27,7 @@ export default function CategorySlugLoading() {
           <div className="px-inset py-3">
             <div className="flex items-start gap-3 overflow-x-auto no-scrollbar">
               {Array.from({ length: 6 }).map((_, i) => (
-                <div key={i} className="flex flex-col items-center gap-1.5 shrink-0 w-[4.5rem]">
+                <div key={i} className="flex flex-col items-center gap-1.5 shrink-0 w-18">
                   <Skeleton className="size-14 rounded-full" />
                   <Skeleton className="h-3 w-12" />
                 </div>

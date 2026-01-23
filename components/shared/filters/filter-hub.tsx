@@ -728,7 +728,7 @@ export function FilterHub({
                         setPendingAttrValues(attr.name, isChecked ? [] : ["true"])
                       }
                       className={cn(
-                        "-mx-inset w-[calc(100%+var(--spacing-inset)*2)] flex items-center gap-3 px-inset h-10 transition-colors text-left",
+                        "-mx-inset w-auto flex items-center gap-3 px-inset h-10 transition-colors text-left",
                         isChecked
                           ? "bg-muted/40 text-foreground font-medium"
                           : "text-foreground active:bg-muted/30"

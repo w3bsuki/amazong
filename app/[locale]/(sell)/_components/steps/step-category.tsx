@@ -46,15 +46,15 @@ export function StepCategory() {
     <div className="space-y-6">
       {/* Section header */}
       <div className="space-y-1">
-        <h2 className="text-2xl font-bold tracking-tight text-foreground">
-          {isBg ? "Изберете категория" : "Choose a category"}
-        </h2>
-        <p className="text-[15px] text-muted-foreground">
-          {isBg 
-            ? "Категорията определя какви детайли ще попълните" 
-            : "The category determines what details you'll fill in"}
-        </p>
-      </div>
+          <h2 className="text-2xl font-bold tracking-tight text-foreground">
+            {isBg ? "Изберете категория" : "Choose a category"}
+          </h2>
+          <p className="text-sm text-muted-foreground">
+            {isBg 
+              ? "Категорията определя какви детайли ще попълните" 
+              : "The category determines what details you'll fill in"}
+          </p>
+        </div>
 
       <div className="space-y-4">
         <CategorySelector

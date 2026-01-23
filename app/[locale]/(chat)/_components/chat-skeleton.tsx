@@ -10,7 +10,7 @@ export function ChatInterfaceSkeleton() {
   return (
     <div className="flex h-full min-h-0 flex-col bg-background">
       {/* Header skeleton */}
-      <div className="shrink-0 border-b border-border/50 px-4 py-3 pt-[max(0.75rem,env(safe-area-inset-top))]">
+      <div className="shrink-0 border-b border-border/50 px-4 py-3 pt-safe-max-sm">
         <div className="flex items-center gap-3">
           <Skeleton className="size-10 rounded-full" />
           <div className="flex-1">
@@ -37,7 +37,7 @@ export function ChatInterfaceSkeleton() {
         </div>
       </div>
       {/* Input skeleton */}
-      <div className="shrink-0 border-t border-border/50 p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+      <div className="shrink-0 border-t border-border/50 p-3 pb-safe-max-sm">
         <Skeleton className="h-11 w-full rounded-full" />
       </div>
     </div>
