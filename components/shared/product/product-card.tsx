@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { Link } from "@/i18n/routing"
+import { Link, usePathname } from "@/i18n/routing"
 import { Badge } from "@/components/ui/badge"
 import { ProductCardActions } from "./product-card-actions"
 import { ProductCardB2BBadges } from "./product-card-b2b-badges"
@@ -18,6 +18,8 @@ import { buildHeroBadgeText } from "@/lib/product-card-hero-attributes"
 import { cva, type VariantProps } from "class-variance-authority"
 import { Truck } from "@phosphor-icons/react"
 import { useDrawer, type QuickViewProduct } from "@/components/providers/drawer-context"
+import { useIsMobile } from "@/hooks/use-mobile"
+import { isFeatureEnabled } from "@/lib/feature-flags"
 
 function formatTimeAgo(input: string, locale: string): string | null {
   const d = new Date(input)
@@ -218,6 +220,8 @@ function ProductCard({
 }: ProductCardProps & { ref?: React.Ref<HTMLDivElement> }) {
   const t = useTranslations("Product")
   const locale = useLocale()
+  const pathname = usePathname()
+  const isMobile = useIsMobile()
   const { openProductQuickView, enabledDrawers, isDrawerSystemEnabled } = useDrawer()
   const isQuickViewEnabled = isDrawerSystemEnabled && enabledDrawers.productQuickView
 
@@ -234,6 +238,24 @@ function ProductCard({
   const productUrl = username ? `/${username}/${slug || id}` : "#"
   // Seller display name (prefer sellerName, fallback to username)
   const displaySellerName = showSeller ? (sellerName || username || null) : null
+
+  const isSearchRoute = React.useMemo(() => {
+    const rawSegments = pathname.split("/").filter(Boolean)
+    const segments = [...rawSegments]
+    const maybeLocale = segments[0]
+    if (maybeLocale && /^[a-z]{2}(-[A-Z]{2})?$/i.test(maybeLocale)) {
+      segments.shift()
+    }
+    return segments.at(0) === "search"
+  }, [pathname])
+
+  const isRouteModalQuickViewEnabled =
+    isFeatureEnabled("routeModalProductQuickView") &&
+    !isMobile &&
+    isSearchRoute &&
+    productUrl !== "#"
+
+  const shouldUseDrawerQuickView = isQuickViewEnabled && !isRouteModalQuickViewEnabled
 
   // Check if own product
   const isOwnProduct = !!(currentUserId && sellerId && currentUserId === sellerId)
@@ -266,7 +288,7 @@ function ProductCard({
   // - Modified click: keep normal link behavior
   const handleCardClick = React.useCallback(
     (e: React.MouseEvent) => {
-      if (!isQuickViewEnabled) return
+      if (!shouldUseDrawerQuickView) return
 
       // Allow expected link behaviors (new tab/window, copy link, etc.)
       if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return
@@ -299,7 +321,7 @@ function ProductCard({
       openProductQuickView(quickViewData)
     },
     [
-      isQuickViewEnabled,
+      shouldUseDrawerQuickView,
       id,
       title,
       price,
