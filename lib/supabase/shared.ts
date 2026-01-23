@@ -37,6 +37,15 @@ export function fetchWithTimeout(input: RequestInfo | URL, init?: RequestInit) {
   return fetch(input, { ...init, signal: controller.signal }).finally(() => clearTimeout(timeoutId))
 }
 
+/**
+ * Fetch without timeout - safe for 'use cache' functions.
+ * AbortController signals interfere with RSC streaming in Next.js cache layer.
+ * Use this for createStaticClient() queries that run inside 'use cache'.
+ */
+export function fetchWithoutTimeout(input: RequestInfo | URL, init?: RequestInit) {
+  return fetch(input, init)
+}
+
 export function withAuthCookieDomain<TOptions extends Record<string, unknown> | undefined>(
   options: TOptions,
 ): TOptions {

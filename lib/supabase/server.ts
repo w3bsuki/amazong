@@ -6,7 +6,7 @@ import type { SupabaseClient } from "@supabase/supabase-js"
 import { cookies } from "next/headers"
 import type { NextRequest, NextResponse } from "next/server"
 import type { Database } from "@/lib/supabase/database.types"
-import { fetchWithTimeout, getPublicSupabaseEnv, withAuthCookieDomain } from "@/lib/supabase/shared"
+import { fetchWithTimeout, fetchWithoutTimeout, getPublicSupabaseEnv, withAuthCookieDomain } from "@/lib/supabase/shared"
 
 // =============================================================================
 // Supabase Clients - Use the right one for your context
@@ -91,7 +91,10 @@ export function createRouteHandlerClient(request: NextRequest) {
 export function createStaticClient(): SupabaseClient<Database> {
   const { url, anonKey } = getPublicSupabaseEnv()
   return createSupabaseClient<Database>(url, anonKey, {
-    global: { fetch: fetchWithTimeout },
+    // Use fetchWithoutTimeout for cached queries - AbortController signals
+    // interfere with RSC streaming in Next.js cache layer, causing
+    // "Connection closed" errors on Vercel serverless.
+    global: { fetch: fetchWithoutTimeout },
   })
 }
 
