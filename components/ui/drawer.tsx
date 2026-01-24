@@ -29,18 +29,27 @@ function isIOSDevice(): boolean {
 function Drawer({
   shouldScaleBackground = false,
   noBodyStyles,
+  disablePreventScroll,
   ...props
 }: React.ComponentProps<typeof DrawerPrimitive.Root>) {
   // Vaul uses `body { position: fixed }` on iOS to work around Safari bugs.
   // That breaks `position: sticky` headers and can cause visible layout jank.
   // Default to no body style injection on iOS (callers can override).
-  const resolvedNoBodyStyles = noBodyStyles ?? isIOSDevice()
+  const isIOS = isIOSDevice()
+  const resolvedNoBodyStyles = noBodyStyles ?? isIOS
+
+  // Vaul's built-in scroll locking uses a Mobile Safari strategy that can cause
+  // sticky headers to jump/disappear (it manipulates scroll position + body offset).
+  // For our drawers (no inputs), prefer disabling that strategy on iOS and rely on
+  // the overlay + overscroll containment instead. Callers can override if needed.
+  const resolvedDisablePreventScroll = disablePreventScroll ?? !isIOS
 
   return (
     <DrawerPrimitive.Root
       data-slot="drawer"
       shouldScaleBackground={shouldScaleBackground}
       noBodyStyles={resolvedNoBodyStyles}
+      disablePreventScroll={resolvedDisablePreventScroll}
       {...props}
     />
   )
@@ -72,7 +81,7 @@ function DrawerOverlay({
     <DrawerPrimitive.Overlay
       data-slot="drawer-overlay"
       className={cn(
-        "fixed inset-0 z-50 bg-overlay-dark",
+        "fixed inset-0 z-50 bg-overlay-dark touch-none",
         "data-[state=open]:animate-in data-[state=closed]:animate-out",
         "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
         className
