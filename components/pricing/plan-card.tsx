@@ -4,6 +4,7 @@ import { Check, User, Crown, Buildings, Rocket, SpinnerGap } from "@phosphor-ico
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
+import { useTranslations } from "next-intl"
 
 // =============================================================================
 // Types
@@ -40,47 +41,6 @@ interface PlanCardProps {
   isLoading?: boolean
   onSelect?: (plan: Plan) => void
   variant?: "compact" | "full"
-}
-
-// =============================================================================
-// Translations
-// =============================================================================
-
-const translations = {
-  en: {
-    free: "Free",
-    perMonth: "/mo",
-    perYear: "/yr",
-    currentPlan: "Current",
-    upgrade: "Upgrade",
-    getStarted: "Get Started",
-    downgrade: "Downgrade",
-    popular: "Popular",
-    bestValue: "Best Value",
-    listings: "listings",
-    unlimited: "Unlimited",
-    fvf: "when sold",          // Simple: "X% when sold"
-    boosts: "boosts/mo",
-    included: "Included:",
-    moreFeatures: "more",
-  },
-  bg: {
-    free: "Безплатно",
-    perMonth: "/мес",
-    perYear: "/год",
-    currentPlan: "Текущ",
-    upgrade: "Надгради",
-    getStarted: "Започни",
-    downgrade: "Понижи",
-    popular: "Популярен",
-    bestValue: "Най-добра цена",
-    listings: "обяви",
-    unlimited: "Неограничено",
-    fvf: "при продажба",       // Simple: "X% при продажба"
-    boosts: "буста/мес",
-    included: "Включено:",
-    moreFeatures: "още",
-  },
 }
 
 // =============================================================================
@@ -121,13 +81,13 @@ export function PlanCard({
   onSelect,
   variant = "compact",
 }: PlanCardProps) {
-  const t = translations[locale as keyof typeof translations] || translations.en
+  const t = useTranslations("Plans")
   const isPopular = isPremiumPlan(plan) && !isBestValuePlan(plan)
   const isBest = isBestValuePlan(plan)
   const price = billingPeriod === "monthly" ? plan.price_monthly : plan.price_yearly
 
   const formatPrice = (price: number) => {
-    if (price === 0) return t.free
+    if (price === 0) return t("free")
     // Bulgaria joins Eurozone Jan 2026
     return new Intl.NumberFormat(locale, {
       style: "currency",
@@ -168,7 +128,7 @@ export function PlanCard({
             isBest && "bg-rating text-primary-foreground"
           )}
         >
-          {isBest ? t.bestValue : t.popular}
+          {isBest ? t("bestValue") : t("popular")}
         </Badge>
       )}
 
@@ -188,11 +148,11 @@ export function PlanCard({
         </div>
         <div className="min-w-0 flex-1">
           <h3 className="font-semibold text-base leading-tight truncate">{plan.name}</h3>
-          {isCurrentPlan && (
-            <Badge variant="secondary" className="text-2xs mt-0.5 px-1.5 py-0">
-              {t.currentPlan}
-            </Badge>
-          )}
+            {isCurrentPlan && (
+              <Badge variant="secondary" className="text-2xs mt-0.5 px-1.5 py-0">
+                {t("currentPlan")}
+              </Badge>
+            )}
         </div>
       </div>
 
@@ -202,7 +162,7 @@ export function PlanCard({
           <span className="text-2xl font-bold">{formatPrice(price)}</span>
           {price > 0 && (
             <span className="text-muted-foreground text-sm">
-              {billingPeriod === "monthly" ? t.perMonth : t.perYear}
+              {billingPeriod === "monthly" ? t("perMonth") : t("perYear")}
             </span>
           )}
         </div>
@@ -217,39 +177,39 @@ export function PlanCard({
       {/* Stats Row - Simple: listings + fee when sold + boosts */}
       <div className="flex items-center gap-1.5 text-xs text-muted-foreground mb-3 pb-3 border-b flex-wrap">
         {/* Free listings count */}
-        <span className="inline-flex items-center gap-1">
-          <span className="font-semibold text-foreground">
-            {plan.max_listings ?? "∞"}
+          <span className="inline-flex items-center gap-1">
+            <span className="font-semibold text-foreground">
+              {plan.max_listings ?? "∞"}
+            </span>
+            {t("listings")}
           </span>
-          {t.listings}
-        </span>
         <span className="text-border">•</span>
         {/* Final Value Fee (% per sale) - THE ONLY FEE */}
-        <span className="inline-flex items-center gap-1">
-          <span className="font-semibold text-foreground">
-            {plan.final_value_fee ?? plan.commission_rate}%
+          <span className="inline-flex items-center gap-1">
+            <span className="font-semibold text-foreground">
+              {plan.final_value_fee ?? plan.commission_rate}%
+            </span>
+            {t("fvf")}
           </span>
-          {t.fvf}
-        </span>
         {/* Boosts included */}
         {plan.boosts_included > 0 && (
           <>
             <span className="text-border">•</span>
-            <span className="inline-flex items-center gap-1">
-              <span className="font-semibold text-foreground">
-                {plan.boosts_included >= 999 ? "∞" : plan.boosts_included}
+              <span className="inline-flex items-center gap-1">
+                <span className="font-semibold text-foreground">
+                  {plan.boosts_included >= 999 ? "∞" : plan.boosts_included}
+                </span>
+                {t("boosts")}
               </span>
-              {t.boosts}
-            </span>
-          </>
-        )}
-      </div>
+            </>
+          )}
+        </div>
 
       {/* Features */}
       <div className="mb-4 flex-1">
         {variant === "full" && (
           <p className="text-2xs font-medium text-muted-foreground uppercase tracking-wide mb-2">
-            {t.included}
+            {t("included")}
           </p>
         )}
         <ul className="space-y-1.5">
@@ -268,7 +228,7 @@ export function PlanCard({
         </ul>
         {hiddenCount > 0 && (
           <p className="text-2xs text-muted-foreground mt-1.5 text-center">
-            +{hiddenCount} {t.moreFeatures}
+            +{hiddenCount} {t("moreFeatures")}
           </p>
         )}
       </div>
@@ -289,11 +249,11 @@ export function PlanCard({
         {isLoading ? (
           <SpinnerGap className="size-4 animate-spin" />
         ) : isCurrentPlan ? (
-          t.currentPlan
+          t("currentPlan")
         ) : price === 0 ? (
-          t.getStarted
+          t("getStarted")
         ) : (
-          t.upgrade
+          t("upgrade")
         )}
       </Button>
     </div>
@@ -325,10 +285,11 @@ export function PlansGrid({
   variant = "compact",
   className,
 }: PlansGridProps) {
+  const t = useTranslations("Plans")
   if (plans.length === 0) {
     return (
       <div className="text-center py-8 text-muted-foreground">
-        {locale === "bg" ? "Няма налични планове" : "No plans available"}
+        {t("noPlansAvailable")}
       </div>
     )
   }

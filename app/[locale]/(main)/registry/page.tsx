@@ -32,11 +32,16 @@ export default async function RegistryPage({
         const locale = validateLocale(localeParam)
         setRequestLocale(locale)
         const t = await getTranslations("RegistryPage")
+        const tBreadcrumbs = await getTranslations("Breadcrumbs")
 
     return (
         <div className="min-h-screen bg-background">
             <div className="container pt-4">
-                <AppBreadcrumb items={breadcrumbPresets(locale).registry} />
+                <AppBreadcrumb
+                    items={breadcrumbPresets(tBreadcrumbs).registry}
+                    ariaLabel={tBreadcrumbs("ariaLabel")}
+                    homeLabel={tBreadcrumbs("homeLabel")}
+                />
             </div>
             
             {/* Hero Section */}

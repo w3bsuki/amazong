@@ -36,6 +36,7 @@ import {
 import * as PricingCard from "./pricing-card"
 import { cn } from "@/lib/utils"
 import { toast } from "sonner"
+import { useTranslations } from "next-intl"
 
 interface SubscriptionPlanRow {
   id: string
@@ -77,211 +78,65 @@ const planIcons: Record<string, React.ReactNode> = {
   ultimate: <Rocket weight="regular" className="size-4" />,
 }
 
-const content = {
-  en: {
-    back: "Back",
-    title: "Choose your plan",
-    subtitle: "Start free, upgrade when you're ready. 0% seller fees - buyers pay for protection.",
-    personal: "Personal",
-    business: "Business",
-    monthly: "Monthly",
-    yearly: "Yearly",
-    saveLabel: "Save 20%",
-    getStarted: "Get Started",
-    current: "Current",
-    popular: "Popular",
-    feeLabel: "seller fee",
-    buyerProtectionLabel: "buyer protection",
-    period: {
-      mo: "mo",
-      yr: "yr",
-    },
-    planFeatures: {
-      listingsPerMonth: "listings/mo",
-      unlimitedListings: "∞ listings",
-      whenSoldShort: "seller fee",
-      buyerProtection: "buyer pays",
-      boostsShort: "boosts",
-      analytics: "Analytics",
-    },
-    nav: {
-      pricing: "Pricing",
-      comparison: "Compare",
-      features: "Features",
-      faq: "FAQ",
-      guarantee: "Guarantee",
-    },
-    features: {
-      title: "Why upgrade?",
-      subtitle: "Unlock powerful tools to grow your business",
-      items: [
-        {
-          icon: "lightning",
-          title: "Lower buyer fees",
-          desc: "Your buyers pay less with reduced protection rates",
-        },
-        {
-          icon: "rocket",
-          title: "More visibility",
-          desc: "Monthly boosts to get your listings seen by more buyers",
-        },
-        {
-          icon: "sparkle",
-          title: "Priority support",
-          desc: "Get help faster with dedicated support channels",
-        },
-      ],
-    },
-    guarantee: {
-      title: "30-day money-back guarantee",
-      desc: "Try any paid plan risk-free. If you're not satisfied, we'll refund your subscription - no questions asked.",
-    },
-    comparison: {
-      title: "Compare plans side by side",
-      subtitle: "See exactly what's included in each plan",
-      plan: "Plan",
-      price: "Price",
-      fee: "Seller fee",
-      buyerProtection: "Buyer protection",
-      listings: "Active listings",
-      boosts: "Boosts/month",
-      support: "Priority support",
-      unlimited: "Unlimited",
-      free: "Free",
-    },
-    faq: {
-      title: "Frequently asked questions",
-      subtitle: "Everything you need to know about our plans",
-      items: [
-        {
-          q: "Do I pay anything when I sell?",
-          a: "Personal accounts pay 0% seller fees - you keep 100% of every sale! Business accounts pay a small 0.5-1.5% fee.",
-        },
-        {
-          q: "What is buyer protection?",
-          a: "Buyers pay a small fee (2-4% + fixed) for secure payments and protection. This makes buyers more confident to purchase.",
-        },
-        {
-          q: "Can I switch plans anytime?",
-          a: "Yes. Upgrade or downgrade whenever you want. Changes apply immediately with prorated billing.",
-        },
-        {
-          q: "What payment methods do you accept?",
-          a: "We accept Visa, Mastercard, Amex, Apple Pay, and Google Pay via Stripe.",
-        },
-        {
-          q: "Is there a contract or commitment?",
-          a: "No contracts. Cancel anytime. Monthly plans renew monthly, yearly plans renew annually.",
-        },
-        {
-          q: "What happens when I cancel?",
-          a: "You keep your benefits until the end of your billing period. After that, you'll be moved to the free plan.",
-        },
-      ],
-    },
-  },
-  bg: {
-    back: "Назад",
-    title: "Изберете план",
-    subtitle: "Започнете безплатно, надградете когато сте готови. 0% такси за продавачи - купувачите плащат за защита.",
-    personal: "Личен",
-    business: "Бизнес",
-    monthly: "Месечно",
-    yearly: "Годишно",
-    saveLabel: "Спестете 20%",
-    getStarted: "Започни",
-    current: "Текущ",
-    popular: "Популярен",
-    feeLabel: "такса продавач",
-    buyerProtectionLabel: "защита на купувача",
-    period: {
-      mo: "мес",
-      yr: "год",
-    },
-    planFeatures: {
-      listingsPerMonth: "обяви/месец",
-      unlimitedListings: "∞ обяви",
-      whenSoldShort: "такса продавач",
-      buyerProtection: "купувачът плаща",
-      boostsShort: "буста",
-      analytics: "Аналитика",
-    },
-    nav: {
-      pricing: "Цени",
-      comparison: "Сравнение",
-      features: "Предимства",
-      faq: "Въпроси",
-      guarantee: "Гаранция",
-    },
-    features: {
-      title: "Защо да надградите?",
-      subtitle: "Отключете мощни инструменти за растеж",
-      items: [
-        {
-          icon: "lightning",
-          title: "По-ниски такси за купувачи",
-          desc: "Вашите купувачи плащат по-малко за защита",
-        },
-        {
-          icon: "rocket",
-          title: "Повече видимост",
-          desc: "Месечни бустове за повече гледания на обявите ви",
-        },
-        {
-          icon: "sparkle",
-          title: "Приоритетна поддръжка",
-          desc: "Получете помощ по-бързо с директна връзка",
-        },
-      ],
-    },
-    guarantee: {
-      title: "30-дневна гаранция за връщане",
-      desc: "Пробвайте всеки платен план без риск. Ако не сте доволни, ще възстановим сумата.",
-    },
-    comparison: {
-      title: "Сравнете плановете",
-      subtitle: "Вижте точно какво включва всеки план",
-      plan: "План",
-      price: "Цена",
-      fee: "Такса продавач",
-      buyerProtection: "Защита на купувача",
-      listings: "Активни обяви",
-      boosts: "Бустове/месец",
-      support: "Приоритетна поддръжка",
-      unlimited: "Неограничено",
-      free: "Безплатно",
-    },
-    faq: {
-      title: "Често задавани въпроси",
-      subtitle: "Всичко, което трябва да знаете за плановете",
-      items: [
-        {
-          q: "Плащам ли нещо при продажба?",
-          a: "Личните акаунти имат 0% такси за продавачи - запазвате 100% от всяка продажба! Бизнес акаунтите плащат малка такса 0.5-1.5%.",
-        },
-        {
-          q: "Какво е защитата на купувача?",
-          a: "Купувачите плащат малка такса (2-4% + фиксирана) за сигурни плащания и защита. Това ги прави по-уверени да купуват.",
-        },
-        {
-          q: "Мога ли да сменя плана?",
-          a: "Да. Надградете или понижете когато искате. Промените са незабавни с пропорционално фактуриране.",
-        },
-        {
-          q: "Какви методи на плащане приемате?",
-          a: "Приемаме Visa, Mastercard, Amex, Apple Pay и Google Pay чрез Stripe.",
-        },
-        {
-          q: "Има ли договор или ангажимент?",
-          a: "Без договори. Откажете по всяко време. Месечните планове се подновяват месечно, годишните - годишно.",
-        },
-        {
-          q: "Какво става при отказ?",
-          a: "Запазвате предимствата до края на периода. След това преминавате към безплатен план.",
-        },
-      ],
-    },
-  },
+type PlansFeatureIconKey = "lightning" | "rocket" | "sparkle"
+
+type PlansPageContent = {
+  title: string
+  subtitle: string
+  personal: string
+  business: string
+  monthly: string
+  yearly: string
+  saveLabel: string
+  getStarted: string
+  current: string
+  popular: string
+  mostPopular: string
+  feeLabel: string
+  period: { mo: string; yr: string }
+  planFeatures: {
+    listingsPerMonth: string
+    unlimitedListings: string
+    whenSoldShort: string
+    buyerProtection: string
+    boostsShort: string
+    analytics: string
+  }
+  nav: {
+    pricing: string
+    comparison: string
+    features: string
+    faq: string
+    guarantee: string
+  }
+  features: {
+    title: string
+    subtitle: string
+    items: Array<{
+      icon: PlansFeatureIconKey
+      title: string
+      desc: string
+    }>
+  }
+  guarantee: { title: string; desc: string }
+  comparison: {
+    title: string
+    subtitle: string
+    plan: string
+    price: string
+    fee: string
+    buyerProtection: string
+    listings: string
+    boosts: string
+    support: string
+    unlimited: string
+    free: string
+  }
+  faq: {
+    title: string
+    subtitle: string
+    items: Array<{ q: string; a: string }>
+  }
 }
 
 const navItems = [
@@ -304,7 +159,7 @@ function formatInt(locale: string, value: number) {
 
 function buildPlanFeatureList(
   locale: string,
-  t: (typeof content)["en"],
+  t: PlansPageContent,
   plan: SubscriptionPlanRow
 ): string[] {
   const sellerFee = Number(plan.seller_fee_percent ?? 0)
@@ -348,7 +203,10 @@ export default function PlansPageClient(props: {
 }) {
   const router = useRouter()
   const locale = props.locale || "en"
-  const t = content[locale as keyof typeof content] || content.en
+  const tPlans = useTranslations("Plans")
+  const tCommon = useTranslations("Common")
+  const tFooter = useTranslations("Footer")
+  const t = tPlans.raw("page") as PlansPageContent
   const actions = props.actions
 
   const [accountType, setAccountType] = useState<"personal" | "business">("personal")
@@ -408,7 +266,7 @@ export default function PlansPageClient(props: {
         const res = await actions.downgradeToFreeTier()
         if (res?.error) throw new Error(res.error)
         setCurrentTier("free")
-        toast.success(locale === "bg" ? "Планът е сменен" : "Plan changed")     
+        toast.success(tPlans("toast.planChanged"))
       } else {
         const billingPeriod = yearly ? "yearly" : "monthly"
         const res = await actions.createSubscriptionCheckoutSession({
@@ -421,11 +279,11 @@ export default function PlansPageClient(props: {
           window.location.href = res.url
         } else {
           // No URL returned but no error - unexpected state
-          throw new Error(locale === "bg" ? "Не успяхме да създадем сесия за плащане" : "Failed to create checkout session")
+          throw new Error(tPlans("errors.checkoutSessionFailed"))
         }
       }
     } catch (err) {
-      const message = err instanceof Error ? err.message : (locale === "bg" ? "Грешка" : "Error")
+      const message = err instanceof Error ? err.message : tCommon("error")
       toast.error(message)
     } finally {
       setSubscribingId(null)
@@ -727,7 +585,7 @@ export default function PlansPageClient(props: {
                                   isCurrent ? "text-primary" : "text-muted-foreground"
                                 )}
                               >
-                                {isCurrent ? t.current : "Most popular"}
+                                {isCurrent ? t.current : t.mostPopular}
                               </span>
                             )}
                           </div>
@@ -740,13 +598,7 @@ export default function PlansPageClient(props: {
                         {price > 0 && (
                           <span className="text-xs text-muted-foreground">
                             /
-                            {yearly
-                              ? locale === "bg"
-                                ? "год"
-                                : "yr"
-                              : locale === "bg"
-                                ? "мес"
-                                : "mo"}
+                            {yearly ? t.period.yr : t.period.mo}
                           </span>
                         )}
                       </TableCell>
@@ -840,20 +692,20 @@ export default function PlansPageClient(props: {
 
       <footer className="border-t">
         <div className="container flex flex-col items-center justify-between gap-4 py-8 sm:flex-row">
-          <span className="text-sm text-muted-foreground">© 2025 Treido</span>
-          <div className="flex gap-4 text-sm">
-            <Link href="/terms" className="text-muted-foreground hover:text-foreground">
-              {locale === "bg" ? "Условия" : "Terms"}
-            </Link>
-            <Link href="/privacy" className="text-muted-foreground hover:text-foreground">
-              {locale === "bg" ? "Поверителност" : "Privacy"}
-            </Link>
-            <Link href="/contact" className="text-muted-foreground hover:text-foreground">
-              {locale === "bg" ? "Контакт" : "Contact"}
-            </Link>
+            <span className="text-sm text-muted-foreground">© 2025 Treido</span>
+            <div className="flex gap-4 text-sm">
+              <Link href="/terms" className="text-muted-foreground hover:text-foreground">
+                {tFooter("terms")}
+              </Link>
+              <Link href="/privacy" className="text-muted-foreground hover:text-foreground">
+                {tFooter("privacyPolicy")}
+              </Link>
+              <Link href="/contact" className="text-muted-foreground hover:text-foreground">
+                {tFooter("contactUs")}
+              </Link>
+            </div>
           </div>
-        </div>
-      </footer>
+        </footer>
     </div>
   )
 }

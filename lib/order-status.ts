@@ -9,6 +9,14 @@ export type OrderItemStatus =
   | 'delivered' 
   | 'cancelled';
 
+export type OrderStatusKey =
+  | 'pending'
+  | 'paid'
+  | 'processing'
+  | 'shipped'
+  | 'delivered'
+  | 'cancelled'
+
 export interface OrderItemStatusConfig {
   label: string;
   description: string;
@@ -78,6 +86,23 @@ export const ORDER_STATUS_CONFIG: Record<OrderItemStatus, OrderItemStatusConfig>
     icon: '❌',
   },
 };
+
+export function getOrderStatusFromItems(
+  statuses: Array<OrderItemStatus | null | undefined>,
+  fallback?: OrderStatusKey | null
+): OrderStatusKey {
+  const normalized = statuses.filter(Boolean) as OrderItemStatus[]
+  if (normalized.length === 0) return fallback ?? 'pending'
+
+  const active = normalized.filter((s) => s !== 'cancelled')
+  if (active.length === 0) return 'cancelled'
+
+  if (active.every((s) => s === 'delivered')) return 'delivered'
+  if (active.some((s) => s === 'shipped' || s === 'delivered')) return 'shipped'
+  if (active.some((s) => s === 'processing' || s === 'received')) return 'processing'
+
+  return 'pending'
+}
 
 // Get status configuration
 export function getStatusConfig(status: OrderItemStatus): OrderItemStatusConfig {

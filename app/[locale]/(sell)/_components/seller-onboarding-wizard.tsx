@@ -2,7 +2,6 @@
 
 import { useState, useTransition } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { useParams, useRouter } from "next/navigation"
 import {
   Check,
   ArrowRight,
@@ -10,6 +9,7 @@ import {
   Storefront,
   Sparkle,
 } from "@phosphor-icons/react"
+import { useLocale } from "next-intl"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
@@ -96,10 +96,9 @@ export function SellerOnboardingWizard({
   completeSellerOnboardingAction,
   onComplete,
 }: SellerOnboardingWizardProps) {
-  const params = useParams()
-  const _router = useRouter() // Available for future navigation
-  const locale = (typeof params?.locale === "string" ? params.locale : "en") as "en" | "bg"
-  const t = translations[locale] || translations.en
+  const locale = useLocale()
+  const safeLocale = locale === "bg" ? "bg" : "en"
+  const t = translations[safeLocale]
 
   const [step, setStep] = useState(2)  // Start at step 2 - account type already set at signup!
   const [isPending, startTransition] = useTransition()

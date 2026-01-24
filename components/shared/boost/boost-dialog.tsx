@@ -1,0 +1,302 @@
+"use client"
+
+import { useState } from "react"
+import { Link } from "@/i18n/routing"
+import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+import {
+  Lightning,
+  SpinnerGap,
+  CheckCircle,
+  Rocket,
+  Eye,
+  TrendUp,
+  Clock,
+  Crown,
+  CaretRight,
+} from "@phosphor-icons/react"
+import { cn } from "@/lib/utils"
+import { toast } from "sonner"
+import { useTranslations } from "next-intl"
+import { eurToBgnApprox } from "@/lib/currency"
+
+interface BoostOption {
+  days: number
+  priceEur: number
+  popular?: boolean
+  bestValue?: boolean
+}
+
+const BOOST_OPTIONS: BoostOption[] = [
+  { days: 1, priceEur: 0.99 },
+  { days: 7, priceEur: 4.99, popular: true },
+  { days: 30, priceEur: 14.99, bestValue: true },
+]
+
+export interface BoostDialogProduct {
+  id: string
+  title: string
+  is_boosted?: boolean
+  boost_expires_at?: string | null
+}
+
+export interface BoostDialogProps {
+  product: BoostDialogProduct
+  locale: string
+  trigger?: React.ReactNode
+  onBoostSuccess?: () => void
+}
+
+export function BoostDialog({ product, locale, trigger, onBoostSuccess: _onBoostSuccess }: BoostDialogProps) {
+  const [selectedDays, setSelectedDays] = useState<number>(7)
+  const [isLoading, setIsLoading] = useState(false)
+  const [isOpen, setIsOpen] = useState(false)
+  const t = useTranslations("Boost")
+
+  const formatPriceEur = (price: number) => {
+    return new Intl.NumberFormat(locale, {
+      style: "currency",
+      currency: "EUR",
+      minimumFractionDigits: 2,
+    }).format(price)
+  }
+
+  const formatPriceBgn = (price: number) => {
+    return t("priceBgn", { price: price.toFixed(2) })
+  }
+
+  const handleBoost = async () => {
+    setIsLoading(true)
+
+    try {
+      const response = await fetch("/api/boost/checkout", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          productId: product.id,
+          durationDays: selectedDays.toString(),
+          locale,
+        }),
+      })
+
+      const data = (await response.json()) as {
+        url?: string | null
+        errorKey?: string
+        durationKey?: string
+      }
+
+      if (!response.ok || data.errorKey) {
+        toast.error(t(data.errorKey ?? "errors.internal"))
+        return
+      }
+
+      if (!data.durationKey) {
+        toast.error(t("errors.internal"))
+        return
+      }
+
+      const url = data.url
+
+      if (url) {
+        window.location.href = url
+      }
+    } catch (error) {
+      console.error("Boost error:", error)
+      toast.error(t("paymentError"))
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const isCurrentlyBoosted =
+    product.is_boosted && product.boost_expires_at ? new Date(product.boost_expires_at) > new Date() : false
+
+  const getTimeLeft = () => {
+    if (!product.boost_expires_at) return null
+    const expiresAt = new Date(product.boost_expires_at)
+    const now = new Date()
+    const diffMs = expiresAt.getTime() - now.getTime()
+    if (diffMs <= 0) return null
+    const days = Math.floor(diffMs / (1000 * 60 * 60 * 24))
+    const hours = Math.floor((diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
+    return { days, hours }
+  }
+
+  const formatDate = (dateStr: string) => {
+    return new Intl.DateTimeFormat(locale, {
+      dateStyle: "medium",
+      timeStyle: "short",
+    }).format(new Date(dateStr))
+  }
+
+  if (isCurrentlyBoosted && product.boost_expires_at) {
+    const timeLeft = getTimeLeft()
+    return (
+      <div className="flex flex-col gap-1">
+        <Badge className="bg-primary/10 text-primary border-0 gap-1">
+          <Lightning className="size-3" weight="fill" />
+          {timeLeft ? t("timeLeft", { days: timeLeft.days, hours: timeLeft.hours }) : t("boostActive")}
+        </Badge>
+        <span className="text-2xs text-muted-foreground">
+          {t("boostActiveUntil", { date: formatDate(product.boost_expires_at) })}
+        </span>
+      </div>
+    )
+  }
+
+  const wasBoostExpired =
+    product.is_boosted && product.boost_expires_at ? new Date(product.boost_expires_at) <= new Date() : false
+
+  return (
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      <DialogTrigger asChild>
+        {trigger || (
+          <Button
+            variant="outline"
+            size="sm"
+            className="gap-1.5 text-primary border-primary/30 hover:bg-primary/10 hover:text-primary"
+          >
+            <Lightning className="size-4" weight="bold" />
+            {wasBoostExpired ? t("reboost") : t("trigger")}
+          </Button>
+        )}
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2">
+            <div className="size-10 rounded-lg bg-primary/10 flex items-center justify-center">
+              <Rocket className="size-5 text-primary" weight="fill" />
+            </div>
+            {t("title")}
+          </DialogTitle>
+          <DialogDescription>{t("description")}</DialogDescription>
+        </DialogHeader>
+
+        <div className="space-y-4 pt-2">
+          <div className="p-3 bg-muted/50 rounded-lg">
+            <p className="text-sm font-medium truncate">{product.title}</p>
+          </div>
+
+          <div className="space-y-2">
+            <p className="text-sm font-medium text-muted-foreground">{t("selectDuration")}</p>
+            <div className="grid grid-cols-3 gap-2">
+              {BOOST_OPTIONS.map((option) => {
+                const isSelected = selectedDays === option.days
+                const pricePerDayEur = option.priceEur / (option.days === 1 ? 1 : option.days)
+                const priceBgn = eurToBgnApprox(option.priceEur)
+
+                return (
+                  <button
+                    key={option.days}
+                    onClick={() => setSelectedDays(option.days)}
+                    className={cn(
+                      "relative flex flex-col items-center p-3 rounded-lg border-2 transition-all",
+                      isSelected ? "border-primary bg-primary/5" : "border-border hover:border-primary/50"
+                    )}
+                  >
+                    {option.popular && (
+                      <Badge
+                        className="absolute -top-2 left-1/2 -translate-x-1/2 text-2xs px-1.5 py-0"
+                        variant="default"
+                      >
+                        {t("popular")}
+                      </Badge>
+                    )}
+                    {option.bestValue && (
+                      <Badge
+                        className="absolute -top-2 left-1/2 -translate-x-1/2 text-2xs px-1.5 py-0 bg-success"
+                        variant="default"
+                      >
+                        {t("bestValue")}
+                      </Badge>
+                    )}
+                    <span className="text-lg font-bold">{option.days === 1 ? "24" : option.days}</span>
+                    <span className="text-xs text-muted-foreground">{option.days === 1 ? t("hours") : t("days")}</span>
+                    <span className={cn("text-sm font-semibold mt-1", isSelected ? "text-primary" : "text-foreground")}>
+                      {formatPriceEur(option.priceEur)}
+                    </span>
+                    <span className="text-2xs text-muted-foreground">{formatPriceBgn(priceBgn)}</span>
+                    {option.days > 1 && (
+                      <span className="text-2xs text-muted-foreground mt-0.5">
+                        {formatPriceEur(pricePerDayEur)}
+                        {t("perDay")}
+                      </span>
+                    )}
+                  </button>
+                )
+              })}
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <p className="text-sm font-medium text-muted-foreground">{t("features")}</p>
+            <div className="grid grid-cols-2 gap-2">
+              {[
+                { icon: TrendUp, text: t("feature1") },
+                { icon: Lightning, text: t("feature2") },
+                { icon: Eye, text: t("feature3") },
+                { icon: Clock, text: t("feature4") },
+              ].map((feature, i) => (
+                <div key={i} className="flex items-center gap-2 text-sm">
+                  <CheckCircle className="size-4 text-success" weight="fill" />
+                  <span className="text-muted-foreground">{feature.text}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <Button className="w-full gap-2" size="lg" onClick={handleBoost} disabled={isLoading}>
+            {isLoading ? (
+              <>
+                <SpinnerGap className="size-4 animate-spin" />
+                {t("processing")}
+              </>
+            ) : (
+              <>
+                <Lightning className="size-4" weight="fill" />
+                {t("boostNow")} • {formatPriceEur(BOOST_OPTIONS.find((o) => o.days === selectedDays)?.priceEur || 0)}
+              </>
+            )}
+          </Button>
+
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t border-border" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-background px-2 text-muted-foreground">{t("or")}</span>
+            </div>
+          </div>
+
+          <Link
+            href="/account/plans"
+            onClick={() => setIsOpen(false)}
+            className="flex items-center justify-between w-full p-3 rounded-lg border border-primary/20 bg-primary/5 hover:bg-primary/10 transition-colors group"
+          >
+            <div className="flex items-center gap-3">
+              <div className="size-9 rounded-lg bg-primary/10 flex items-center justify-center">
+                <Crown className="size-5 text-primary" weight="fill" />
+              </div>
+              <div className="text-left">
+                <p className="text-sm font-medium">{t("upgradePlan")}</p>
+                <p className="text-xs text-muted-foreground">{t("upgradeDesc")}</p>
+              </div>
+            </div>
+            <CaretRight className="size-4 text-muted-foreground group-hover:text-primary transition-colors" />
+          </Link>
+        </div>
+      </DialogContent>
+    </Dialog>
+  )
+}
+

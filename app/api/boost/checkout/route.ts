@@ -17,13 +17,6 @@ type BoostDurationDays = keyof typeof DEFAULT_BOOST_PRICING
 
 type BoostLocale = 'en' | 'bg'
 
-type BoostPriceRow = {
-  duration_days: number
-  price: number
-  currency: string
-  is_active: boolean
-}
-
 function toBoostLocale(locale: string | undefined): BoostLocale {
   return locale === 'bg' ? 'bg' : 'en'
 }
@@ -39,7 +32,7 @@ async function getBoostPriceEur(
   supabase: ReturnType<typeof createRouteHandlerClient>["supabase"],
   durationDays: BoostDurationDays
 ): Promise<number | null> {
-  const { data } = await (supabase as any)
+  const { data, error } = await supabase
     .from("boost_prices")
     .select("price,currency,is_active")
     .eq("duration_days", durationDays)
@@ -47,7 +40,9 @@ async function getBoostPriceEur(
     .eq("currency", "EUR")
     .maybeSingle()
 
-  const priceEur = Number((data as BoostPriceRow | null)?.price)
+  if (error || !data) return null
+
+  const priceEur = Number(data.price)
   if (!Number.isFinite(priceEur) || priceEur <= 0) return null
   return priceEur
 }
@@ -191,14 +186,14 @@ export async function GET() {
   let source = {} as Partial<Record<BoostDurationDays, number>>
 
   try {
-    const { data } = await (supabase as any)
+    const { data } = await supabase
       .from("boost_prices")
       .select("duration_days,price,currency,is_active")
       .eq("is_active", true)
       .eq("currency", "EUR")
       .order("duration_days", { ascending: true })
 
-    const rows = ((data ?? []) as BoostPriceRow[])
+    const rows = (data ?? [])
       .map((row) => ({
         days: row.duration_days as BoostDurationDays,
         priceEur: Number(row.price),

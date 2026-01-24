@@ -1,7 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
-import { redirect } from "next/navigation";
+import { redirect, routing } from "@/i18n/routing";
 import { setRequestLocale } from "next-intl/server";
-import { routing } from "@/i18n/routing";
 import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AccountLayoutContent } from "./account-layout-content";
@@ -78,7 +77,7 @@ export default async function AccountLayout({
     }
 
     if (!user) {
-        redirect(`/${locale}/auth/login?next=${encodeURIComponent(pathname)}`);
+        redirect({ href: { pathname: "/auth/login", query: { next: pathname } }, locale });
     }
 
     const userEmail = (user as { email?: string } | null)?.email ?? "";

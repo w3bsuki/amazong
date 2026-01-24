@@ -22,7 +22,6 @@ import {
   DrawerBody,
 } from "@/components/ui/drawer"
 import { Button } from "@/components/ui/button"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Link } from "@/i18n/routing"
 import { useTranslations, useLocale } from "next-intl"
 import { useAuth } from "@/components/providers/auth-state-manager"
@@ -32,6 +31,7 @@ import { createClient } from "@/lib/supabase/client"
 import Image from "next/image"
 import { cn } from "@/lib/utils"
 import { normalizeImageUrl, PLACEHOLDER_IMAGE_PATH } from "@/lib/normalize-image-url"
+import { UserAvatar } from "@/components/shared/user-avatar"
 
 interface AccountDrawerProps {
   open: boolean
@@ -260,12 +260,13 @@ export function AccountDrawer({ open, onOpenChange }: AccountDrawerProps) {
           <DrawerBody className="px-0">
             {/* Profile summary */}
             <div className="flex items-center gap-3 px-inset py-4 border-b border-border">
-              <Avatar className="size-14">
-                <AvatarImage src={avatarUrl ?? undefined} alt={displayName} />
-                <AvatarFallback className="text-lg">
-                  {displayName.slice(0, 2).toUpperCase()}
-                </AvatarFallback>
-              </Avatar>
+              <UserAvatar
+                name={displayName}
+                avatarUrl={avatarUrl ?? null}
+                size="xl"
+                className="border border-border bg-muted"
+                fallbackClassName="text-lg"
+              />
               <div className="min-w-0 flex-1">
                 <p className="text-base font-semibold truncate">{displayName}</p>
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">

@@ -124,6 +124,7 @@ export function FilterModal({
 }: FilterModalProps) {
   const t = useTranslations("SearchFilters")
   const tHub = useTranslations("FilterHub")
+  const tCommon = useTranslations("Common")
   const router = useRouter()
   const pathname = usePathname()
   const searchParamsFromRouter = useSearchParams()
@@ -349,7 +350,7 @@ export function FilterModal({
               <Check size={12} weight="bold" className="text-primary-foreground" />
             )}
           </div>
-          <span className="text-sm">{locale === "bg" ? "Да" : "Yes"}</span>
+          <span className="text-sm">{tCommon("yes")}</span>
         </button>
       )
     }

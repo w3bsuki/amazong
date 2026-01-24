@@ -1,8 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { setRequestLocale } from "next-intl/server";
-import { routing } from "@/i18n/routing";
+import { redirect, routing } from "@/i18n/routing";
 import { SellPageClient } from "./client";
-import { redirect } from "next/navigation";
 import { getSellCategories } from "./_lib/categories";
 import { createListing, completeSellerOnboarding } from "../_actions/sell";
 
@@ -49,8 +48,6 @@ export default async function SellPage({
   const { locale } = await params;
   setRequestLocale(locale);
 
-  // Auth-gated: redirect logged-out users to login.
-  // Do this BEFORE any expensive DB work to keep redirects fast.
   const supabase = await createClient();
   const authResult = await (supabase
     ? supabase.auth.getUser()
@@ -58,7 +55,21 @@ export default async function SellPage({
   const user = authResult.data.user;
 
   if (!user) {
-    redirect(`/${locale}/auth/login`);
+    return (
+      <SellPageClient
+        initialUser={null}
+        initialSeller={null}
+        initialNeedsOnboarding={false}
+        initialUsername={null}
+        initialAccountType="personal"
+        initialDisplayName={null}
+        initialBusinessName={null}
+        initialPayoutStatus={{ isReady: false, needsSetup: true, incomplete: false }}
+        categories={[]}
+        createListingAction={createListing}
+        completeSellerOnboardingAction={completeSellerOnboarding}
+      />
+    )
   }
 
   // Fetch seller payout status (Stripe Connect readiness)
@@ -78,9 +89,7 @@ export default async function SellPage({
   
   // Fetch seller data only if user is authenticated
   let seller = null;
-  if (user) {
-    seller = await getSellerData(user.id);
-  }
+  seller = await getSellerData(user.id);
   
   // Determine if user needs onboarding (has username but is_seller is false)
   const needsOnboarding = seller && !seller.is_seller;

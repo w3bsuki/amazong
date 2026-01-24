@@ -68,7 +68,7 @@ export function MobileTabBar({ categories }: MobileTabBarProps) {
       <nav
         className="fixed bottom-0 left-0 right-0 z-50 bg-card/95 backdrop-blur-xl border-t border-border/60 pb-safe md:hidden"
         role="navigation"
-        aria-label="Mobile navigation"
+        aria-label={t("mobileNavigation")}
         data-testid="mobile-tab-bar"
       >
         {/* Treido: 48px height, 5-column grid */}

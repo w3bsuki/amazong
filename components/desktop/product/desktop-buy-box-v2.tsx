@@ -16,7 +16,7 @@ import { useState } from "react"
 import { useTranslations } from "next-intl"
 import { useLocale } from "next-intl"
 import Image from "next/image"
-import Link from "next/link"
+import { Link } from "@/i18n/routing"
 import {
   Heart,
   MessageCircle,
@@ -36,8 +36,8 @@ import {
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
+import { UserAvatar } from "@/components/shared/user-avatar"
 import { useCart } from "@/components/providers/cart-context"
 import { useWishlist } from "@/components/providers/wishlist-context"
 import { useToast } from "@/hooks/use-toast"
@@ -407,12 +407,12 @@ export function DesktopBuyBoxV2({
       {/* Embedded Seller Card */}
       <div className="rounded-md border border-border bg-muted/30 p-3">
         <div className="flex items-center gap-2.5">
-          <Avatar className="size-10 border border-border">
-            <AvatarImage src={seller.avatarUrl ?? undefined} />
-            <AvatarFallback className="text-xs font-medium bg-muted">
-              {seller.name.slice(0, 2).toUpperCase()}
-            </AvatarFallback>
-          </Avatar>
+          <UserAvatar
+            name={seller.name}
+            avatarUrl={seller.avatarUrl ?? null}
+            className="size-10 border border-border bg-muted"
+            fallbackClassName="text-xs font-medium bg-muted"
+          />
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-1">
               <span className="font-semibold text-foreground text-sm truncate">
@@ -480,7 +480,7 @@ export function DesktopBuyBoxV2({
               className="flex-1 text-xs bg-background"
               asChild
             >
-              <Link href={`/${locale}/${seller.username}`}>
+              <Link href={`/${seller.username}`}>
                 <Store className="size-3 mr-1" />
                 {t("viewStore")}
               </Link>

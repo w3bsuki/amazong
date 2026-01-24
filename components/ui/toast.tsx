@@ -74,8 +74,13 @@ function ToastAction({
 
 function ToastClose({
   className,
+  closeLabel,
   ...props
-}: React.ComponentProps<typeof ToastPrimitives.Close>) {
+}: React.ComponentProps<typeof ToastPrimitives.Close> & {
+  closeLabel?: string
+}) {
+  const ariaLabel = closeLabel ?? props['aria-label']
+
   return (
     <ToastPrimitives.Close
       data-slot="toast-close"
@@ -85,9 +90,10 @@ function ToastClose({
       )}
       toast-close=""
       {...props}
+      aria-label={ariaLabel}
     >
       <X className="size-4" />
-      <span className="sr-only">Close</span>
+      {ariaLabel ? <span className="sr-only">{ariaLabel}</span> : null}
     </ToastPrimitives.Close>
   )
 }

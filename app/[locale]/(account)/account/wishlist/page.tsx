@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server"
-import { redirect } from "next/navigation"
+import { redirect } from "@/i18n/routing"
+import { getTranslations } from "next-intl/server"
 import { WishlistContent } from "./wishlist-content"
 
 interface WishlistPageProps {
@@ -14,12 +15,14 @@ interface WishlistPageProps {
 }
 
 export default async function WishlistPage({ params, searchParams }: WishlistPageProps) {
-  const { locale } = await params
+  const { locale: localeParam } = await params
+  const locale = localeParam === "bg" ? "bg" : "en"
+  const t = await getTranslations({ locale, namespace: "Wishlist" })
   const { category: categoryFilter, q: searchQuery, stock: stockFilter } = await searchParams
   const supabase = await createClient()
 
   if (!supabase) {
-    redirect("/auth/login")
+    return redirect({ href: "/auth/login", locale })
   }
 
   const {
@@ -27,7 +30,7 @@ export default async function WishlistPage({ params, searchParams }: WishlistPag
   } = await supabase.auth.getUser()
 
   if (!user) {
-    redirect("/auth/login")
+    return redirect({ href: "/auth/login", locale })
   }
 
   // Best-effort cleanup of sold/out_of_stock items older than 1 day.
@@ -90,7 +93,7 @@ export default async function WishlistPage({ params, searchParams }: WishlistPag
     return {
       id: item.id,
       product_id: item.product_id,
-      title: product?.title || "Unknown Product",
+      title: product?.title || t("unknownProduct"),
       price: product?.price || 0,
       image: product?.images?.[0] || "/placeholder.svg",
       stock: product?.stock || 0,
@@ -130,7 +133,7 @@ export default async function WishlistPage({ params, searchParams }: WishlistPag
 
   return (
     <div className="flex flex-col gap-4 md:gap-4">
-      <h1 className="sr-only">{locale === "bg" ? "Любими продукти" : "Wishlist"}</h1>
+      <h1 className="sr-only">{t("title")}</h1>
       <WishlistContent 
         initialItems={items} 
         stats={stats} 

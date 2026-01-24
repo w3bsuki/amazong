@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server"
-import { redirect } from "next/navigation"
+import { redirect } from "@/i18n/routing"
+import { getTranslations } from "next-intl/server"
 import { ProfileContent } from "./profile-content"
 import {
   deleteAvatar,
@@ -26,11 +27,13 @@ interface ProfilePageProps {
 }
 
 export default async function ProfilePage({ params }: ProfilePageProps) {
-  const { locale } = await params
+  const { locale: localeParam } = await params
+  const locale = localeParam === "bg" ? "bg" : "en"
+  const t = await getTranslations({ locale, namespace: "Account" })
   const supabase = await createClient()
 
   if (!supabase) {
-    redirect("/auth/login")
+    return redirect({ href: "/auth/login", locale })
   }
 
   const {
@@ -38,7 +41,7 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
   } = await supabase.auth.getUser()
 
   if (!user) {
-    redirect("/auth/login")
+    return redirect({ href: "/auth/login", locale })
   }
 
   // Fetch profile data from unified profiles table
@@ -82,7 +85,7 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
 
   return (
     <div className="flex flex-col gap-4 md:gap-4">
-      <h1 className="sr-only">{locale === "bg" ? "Профил" : "Profile"}</h1>
+      <h1 className="sr-only">{t("header.profile")}</h1>
       <ProfileContent
         locale={locale}
         profile={profileData || {

@@ -58,7 +58,7 @@ export function WelcomeClient({ locale }: { locale: string }) {
       } = await supabase.auth.getUser()
 
       if (!user) {
-        router.push(`/${locale}/auth/login`)
+        router.push("/auth/login")
         return
       }
 

@@ -1,7 +1,8 @@
 "use client"
 
 import { useEffect, useMemo, useRef, useState, useTransition } from "react"
-import { usePathname, useRouter, useSearchParams } from "next/navigation"
+import { usePathname, useRouter } from "@/i18n/routing"
+import { useSearchParams } from "next/navigation"
 import { IconSearch, IconX, IconFilter, IconCheck, IconPackage, IconPackageOff, IconChevronDown } from "@tabler/icons-react"
 import { cn } from "@/lib/utils"
 import { Input } from "@/components/ui/input"

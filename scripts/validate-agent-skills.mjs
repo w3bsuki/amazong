@@ -2,7 +2,13 @@ import fs from "node:fs";
 import path from "node:path";
 
 const repoRoot = path.resolve(process.cwd());
-const skillsRoot = path.join(repoRoot, ".claude", "skills");
+
+const skillsRoots = [
+  path.join(repoRoot, ".claude", "skills"),
+  path.join(repoRoot, "docs-final", "archive", "folders", ".claude", "skills"),
+];
+
+const skillsRoot = skillsRoots.find((p) => fs.existsSync(p));
 
 function fail(message) {
   process.stderr.write(`\nAgent Skills validation failed: ${message}\n`);
@@ -100,8 +106,8 @@ function validateSkillDir(skillDir) {
 }
 
 function main() {
-  if (!fs.existsSync(skillsRoot)) {
-    process.stdout.write(`No skills folder found at ${path.relative(repoRoot, skillsRoot)}\n`);
+  if (!skillsRoot) {
+    process.stdout.write(`No skills folder found at ${path.relative(repoRoot, skillsRoots[0])}\n`);
     return;
   }
 

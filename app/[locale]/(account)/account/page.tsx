@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server"
-import { redirect } from "next/navigation"
+import { redirect } from "@/i18n/routing"
+import { getTranslations } from "next-intl/server"
 import { AccountHeroCard } from "./_components/account-hero-card"
 import { AccountStatsCards } from "./_components/account-stats-cards"
 import { AccountChart } from "./_components/account-chart"
@@ -13,11 +14,13 @@ interface AccountPageProps {
 }
 
 export default async function AccountPage({ params }: AccountPageProps) {
-  const { locale } = await params
+  const { locale: localeParam } = await params
+  const locale = localeParam === "bg" ? "bg" : "en"
+  const t = await getTranslations({ locale, namespace: "Account" })
   const supabase = await createClient()
 
   if (!supabase) {
-    redirect(`/${locale}/auth/login`)
+    return redirect({ href: "/auth/login", locale })
   }
 
   const {
@@ -25,7 +28,7 @@ export default async function AccountPage({ params }: AccountPageProps) {
   } = await supabase.auth.getUser()
 
   if (!user) {
-    redirect(`/${locale}/auth/login`)
+    return redirect({ href: "/auth/login", locale })
   }
 
   // Fetch all user stats in parallel (no joins)
@@ -98,7 +101,7 @@ export default async function AccountPage({ params }: AccountPageProps) {
 
   return (
     <div className="flex flex-col gap-4">
-      <h1 className="sr-only">{locale === "bg" ? "Преглед на акаунта" : "Account Overview"}</h1>
+      <h1 className="sr-only">{t("header.overview")}</h1>
       
       {/* Hero card with revenue & key stats */}
       <AccountHeroCard totals={totals} locale={locale} />
@@ -107,7 +110,7 @@ export default async function AccountPage({ params }: AccountPageProps) {
       <AccountStatsCards totals={totals} locale={locale} />
       
       {/* User badges */}
-      <AccountBadges locale={locale as "en" | "bg"} />
+      <AccountBadges locale={locale} />
       
       {/* Chart - desktop only */}
       <div className="hidden sm:block">

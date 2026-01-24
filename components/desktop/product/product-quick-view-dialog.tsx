@@ -1,8 +1,8 @@
 "use client"
 
 import * as React from "react"
-import { useRouter } from "next/navigation"
-import { useLocale, useTranslations } from "next-intl"
+import { useRouter } from "@/i18n/routing"
+import { useTranslations } from "next-intl"
 import { toast } from "sonner"
 
 import {
@@ -33,7 +33,6 @@ export function ProductQuickViewDialog({
   isLoading = false,
 }: ProductQuickViewDialogProps) {
   const tDrawers = useTranslations("Drawers")
-  const locale = useLocale()
   const router = useRouter()
   const { addToCart } = useCart()
   const isMobile = useIsMobile()
@@ -67,8 +66,8 @@ export function ProductQuickViewDialog({
     if (!resolvedProduct) return "#"
     const { id, slug, username } = resolvedProduct
     const productSlug = slug ?? id
-    return username ? `/${locale}/${username}/${productSlug}` : "#"
-  }, [resolvedProduct, locale])
+    return username ? `/${username}/${productSlug}` : "#"
+  }, [resolvedProduct])
 
   const handleNavigateToProduct = React.useCallback(() => {
     onOpenChange(false)

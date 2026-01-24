@@ -253,30 +253,30 @@ export function NotificationsDropdown({ user }: NotificationsDropdownProps) {
               const baseDescription = (
                 <div className="flex items-start gap-3">
                   <div className="flex-1 min-w-0">
-                    <div className="text-sm font-medium text-foreground line-clamp-1">
-                      {buyerName ? (locale === "bg" ? `${buyerName} направи поръчка` : `${buyerName} placed an order`) : (locale === "bg" ? "Нова поръчка" : "New order")}
-                    </div>
+                      <div className="text-sm font-medium text-foreground line-clamp-1">
+                        {buyerName ? t("purchaseToast.buyerPlacedOrder", { name: buyerName }) : t("purchaseToast.newOrder")}
+                      </div>
                     <div className="text-xs text-muted-foreground line-clamp-2 mt-0.5">
                       {productTitle ? `“${productTitle}”` : (newNotification.body ?? "")}
                     </div>
-                    {formattedPrice && (
-                      <div className="text-xs text-muted-foreground mt-1">
-                        {locale === "bg" ? "Сума:" : "Amount:"} {formattedPrice}
-                      </div>
-                    )}
+                      {formattedPrice && (
+                        <div className="text-xs text-muted-foreground mt-1">
+                          {t("purchaseToast.amount")} {formattedPrice}
+                        </div>
+                      )}
                   </div>
                 </div>
               )
 
               // Show immediately, then try to enrich with product image.
-              toast(newNotification.title, {
-                id: newNotification.id,
-                description: baseDescription,
-                action: {
-                  label: locale === "bg" ? "Виж продажбата" : "View Sale",
-                  onClick: () => router.push("/account/sales"),
-                },
-              })
+               toast(newNotification.title, {
+                 id: newNotification.id,
+                 description: baseDescription,
+                 action: {
+                   label: t("purchaseToast.viewSale"),
+                   onClick: () => router.push("/account/sales"),
+                 },
+               })
 
               // Optional: load a product image for a richer toast.
               const productId = newNotification.product_id
@@ -317,14 +317,14 @@ export function NotificationsDropdown({ user }: NotificationsDropdownProps) {
                       <div className="flex items-start gap-3">
                         <img
                           src={imageUrl ?? undefined}
-                          alt={productTitle ?? "Product"}
+                          alt={productTitle ?? t("purchaseToast.productAlt")}
                           className="h-10 w-10 rounded-md object-cover border"
                         />
                         {baseDescription}
                       </div>
                     ),
                     action: {
-                      label: locale === "bg" ? "Виж продажбата" : "View Sale",
+                      label: t("purchaseToast.viewSale"),
                       onClick: () => router.push("/account/sales"),
                     },
                   })

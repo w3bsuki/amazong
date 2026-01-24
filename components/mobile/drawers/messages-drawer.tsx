@@ -1,7 +1,7 @@
 "use client"
 
 import { useCallback } from "react"
-import { ChatCircle, User, Circle, Check } from "@phosphor-icons/react"
+import { ChatCircle, Circle, Check } from "@phosphor-icons/react"
 import {
   Drawer,
   DrawerContent,
@@ -16,9 +16,9 @@ import { Button } from "@/components/ui/button"
 import { Link } from "@/i18n/routing"
 import { useTranslations } from "next-intl"
 import { useMessages, type Conversation } from "@/components/providers/message-context"
-import Image from "next/image"
 import { cn } from "@/lib/utils"
 import { useAuth } from "@/components/providers/auth-state-manager"
+import { UserAvatar } from "@/components/shared/user-avatar"
 
 interface MessagesDrawerProps {
   open: boolean
@@ -169,21 +169,13 @@ export function MessagesDrawer({ open, onOpenChange }: MessagesDrawerProps) {
                 >
                   {/* Avatar */}
                   <div className="relative shrink-0">
-                    <div className="size-12 rounded-full bg-muted overflow-hidden border border-border">
-                      {otherParty.avatar ? (
-                        <Image
-                          src={otherParty.avatar}
-                          alt={otherParty.name}
-                          width={48}
-                          height={48}
-                          className="size-full object-cover"
-                        />
-                      ) : (
-                        <div className="size-full flex items-center justify-center text-muted-foreground">
-                          <User size={24} weight="regular" />
-                        </div>
-                      )}
-                    </div>
+                    <UserAvatar
+                      name={otherParty.name}
+                      avatarUrl={otherParty.avatar ?? null}
+                      size="lg"
+                      className="border border-border bg-muted"
+                      fallbackClassName="bg-muted text-muted-foreground"
+                    />
                   </div>
 
                   {/* Content */}

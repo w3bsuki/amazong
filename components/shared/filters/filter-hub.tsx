@@ -170,6 +170,7 @@ export function FilterHub({
 }: FilterHubProps) {
   const t = useTranslations("SearchFilters")
   const tHub = useTranslations("FilterHub")
+  const tCommon = useTranslations("Common")
   const router = useRouter()
   const pathname = usePathname()
   const searchParamsFromRouter = useSearchParams()
@@ -750,7 +751,7 @@ export function FilterHub({
                         )}
                       </div>
                       <span className="text-sm">
-                        {locale === "bg" ? "Да" : "Yes"}
+                        {tCommon("yes")}
                       </span>
                     </button>
                   )

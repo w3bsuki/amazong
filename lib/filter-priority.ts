@@ -19,6 +19,7 @@ export const FILTER_PRIORITY: Record<string, string[]> = {
     computers: ["brand", "condition", "price"],
 
     // Vehicles: Make/model are key
+    automotive: ["make", "model", "price"],
     vehicles: ["make", "model", "price"],
     cars: ["make", "model", "price"],
     motorcycles: ["make", "model", "price"],

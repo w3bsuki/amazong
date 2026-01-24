@@ -19,7 +19,6 @@ import {
 } from "@phosphor-icons/react"
 
 import { AppBreadcrumb } from "@/components/navigation/app-breadcrumb"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
@@ -27,7 +26,7 @@ import { FieldLabel } from "@/components/shared/field"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
-import { safeAvatarSrc } from "@/lib/utils"
+import { UserAvatar } from "@/components/shared/user-avatar"
 
 interface Member {
   id: string
@@ -58,7 +57,6 @@ export interface MembersPageClientProps {
 
 function MemberCard({ member, locale }: { member: Member; locale: string }) {
   const displayName = member.display_name || member.username || "Unknown"
-  const initials = displayName.slice(0, 2).toUpperCase()
 
   return (
     <Link href={`/${member.username || "unknown"}`}>
@@ -66,10 +64,12 @@ function MemberCard({ member, locale }: { member: Member; locale: string }) {
         <CardContent className="p-4">
           <div className="flex items-start gap-3">
             <div className="relative">
-              <Avatar className="size-14 border-2 border-background shadow">
-                <AvatarImage src={safeAvatarSrc(member.avatar_url)} alt={displayName} />
-                <AvatarFallback className="text-lg bg-primary/10 text-primary">{initials}</AvatarFallback>
-              </Avatar>
+              <UserAvatar
+                name={displayName}
+                avatarUrl={member.avatar_url ?? null}
+                className="size-14 border-2 border-background shadow bg-muted"
+                fallbackClassName="text-lg bg-primary/10 text-primary"
+              />
               {(member.is_verified_business || member.verified) && (
                 <div className="absolute -bottom-0.5 -right-0.5 bg-info rounded-full p-0.5 border-2 border-background">
                   <CheckCircle className="size-3 text-info-foreground" weight="fill" />

@@ -14,6 +14,7 @@ export default function WishlistPageClient() {
   const { items, isLoading, removeFromWishlist } = useWishlist()
   const { addToCart } = useCart()
   const t = useTranslations("Wishlist")
+  const tNav = useTranslations("Navigation")
   const locale = useLocale()
   const [linkCopied, setLinkCopied] = useState(false)
 
@@ -41,7 +42,7 @@ export default function WishlistPageClient() {
       ...(item.username ? { username: item.username } : {}),
     })
     removeFromWishlist(item.product_id)
-    toast.success(locale === "bg" ? "Преместено в количката" : "Moved to cart")
+    toast.success(t("movedToCart"))
   }
 
   const handleAddAllToCart = () => {
@@ -56,7 +57,7 @@ export default function WishlistPageClient() {
         ...(item.username ? { username: item.username } : {}),
       })
     })
-    toast.success(locale === "bg" ? "Всички продукти добавени в количката" : "All items added to cart")
+    toast.success(t("allAddedToCart"))
   }
 
   const handleShare = async () => {
@@ -88,7 +89,7 @@ export default function WishlistPageClient() {
             <div className="flex flex-col items-center gap-3">
               <SpinnerGap className="size-8 animate-spin text-brand" />
               <p className="text-sm text-muted-foreground">
-                {locale === "bg" ? "Зареждане на списъка с любими..." : "Loading wishlist..."}
+                {t("loading")}
               </p>
             </div>
           </div>
@@ -129,7 +130,7 @@ export default function WishlistPageClient() {
           {/* Breadcrumb */}
           <nav className="flex gap-2 items-center mb-4 text-sm text-muted-foreground">
             <Link href="/" className="hover:text-foreground transition-colors">
-              {locale === "bg" ? "Начало" : "Home"}
+              {tNav("home")}
             </Link>
             <span>/</span>
             <span className="text-foreground">{t("title")}</span>
@@ -164,7 +165,7 @@ export default function WishlistPageClient() {
         {/* Breadcrumb */}
         <nav className="flex gap-2 items-center mb-4 text-sm text-muted-foreground">
           <Link href="/" className="hover:text-foreground transition-colors">
-            {locale === "bg" ? "Начало" : "Home"}
+            {tNav("home")}
           </Link>
           <span>/</span>
           <span className="text-foreground">{t("title")}</span>
@@ -225,7 +226,7 @@ export default function WishlistPageClient() {
                       e.preventDefault()
                       e.stopPropagation()
                       removeFromWishlist(item.product_id)
-                      toast.success(locale === "bg" ? "Премахнато от любими" : "Removed from wishlist")
+                      toast.success(t("removedFromWishlist"))
                     }}
                     className="absolute top-2 right-2 p-2 rounded-full bg-background/90 hover:bg-background border border-border text-muted-foreground hover:text-destructive transition-colors"
                     aria-label={t("remove")}

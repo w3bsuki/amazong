@@ -1,7 +1,6 @@
 "use client"
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { safeAvatarSrc } from "@/lib/utils"
+import { UserAvatar } from "@/components/shared/user-avatar"
 import { SellerVerificationBadge, type VerificationLevel } from "./seller-verification-badge"
 
 // =============================================================================
@@ -33,12 +32,12 @@ function ProductCardSeller({
 
   return (
     <div className="flex min-w-0 items-center gap-1.5">
-      <Avatar className="size-5 shrink-0 ring-1 ring-border/50">
-        <AvatarImage src={safeAvatarSrc(avatarUrl)} alt={name} />
-        <AvatarFallback className="bg-muted text-2xs font-medium">
-          {name.slice(0, 2).toUpperCase()}
-        </AvatarFallback>
-      </Avatar>
+      <UserAvatar
+        name={name}
+        avatarUrl={avatarUrl ?? null}
+        className="size-5 shrink-0 ring-1 ring-border/50 bg-muted"
+        fallbackClassName="bg-muted text-2xs font-medium"
+      />
       <span className="truncate text-xs text-muted-foreground">{name}</span>
       {hasAnyVerification && (
         <SellerVerificationBadge

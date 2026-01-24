@@ -4,6 +4,7 @@ import * as React from "react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { useTranslations } from "next-intl"
 
 // =============================================================================
 // TYPES
@@ -29,15 +30,18 @@ export interface FiltersSidebarProps {
 // =============================================================================
 
 export function FiltersSidebar({
-  locale,
   filters,
   onFiltersChange,
   onApply,
 }: FiltersSidebarProps) {
+  const tCommon = useTranslations("Common")
+  const tFilters = useTranslations("SearchFilters")
+  const tProduct = useTranslations("Product")
+
   const conditions = [
-    { id: "new", label: locale === "bg" ? "Ново" : "New" },
-    { id: "like_new", label: locale === "bg" ? "Като ново" : "Like new" },
-    { id: "used", label: locale === "bg" ? "Използвано" : "Used" },
+    { id: "new", label: tProduct("condition.new") },
+    { id: "like_new", label: tProduct("condition.likeNew") },
+    { id: "used", label: tProduct("condition.usedShort") },
   ]
 
   const hasActive = filters.priceMin !== "" || filters.priceMax !== "" || filters.condition !== null
@@ -46,19 +50,19 @@ export function FiltersSidebar({
     <div className="rounded-lg border border-border bg-card shadow-sm">
       <div className="px-3 py-2.5 border-b border-border">
         <h3 className="text-sm font-semibold text-foreground">
-          {locale === "bg" ? "Филтри" : "Filters"}
+          {tFilters("filters")}
         </h3>
       </div>
       <div className="px-3 py-3 space-y-4">
         {/* Price */}
         <div>
           <label className="text-xs font-medium text-muted-foreground mb-2 block">
-            {locale === "bg" ? "Цена" : "Price"}
+            {tFilters("price")}
           </label>
           <div className="flex items-center gap-2">
             <Input
               type="number"
-              placeholder={locale === "bg" ? "Мин" : "Min"}
+              placeholder={tFilters("min")}
               value={filters.priceMin}
               onChange={(e) => onFiltersChange({ ...filters, priceMin: e.target.value })}
               className="h-9 text-sm"
@@ -66,7 +70,7 @@ export function FiltersSidebar({
             <span className="text-muted-foreground text-sm">–</span>
             <Input
               type="number"
-              placeholder={locale === "bg" ? "Макс" : "Max"}
+              placeholder={tFilters("max")}
               value={filters.priceMax}
               onChange={(e) => onFiltersChange({ ...filters, priceMax: e.target.value })}
               className="h-9 text-sm"
@@ -77,7 +81,7 @@ export function FiltersSidebar({
         {/* Condition */}
         <div>
           <label className="text-xs font-medium text-muted-foreground mb-2 block">
-            {locale === "bg" ? "Състояние" : "Condition"}
+            {tFilters("condition")}
           </label>
           <div className="flex flex-wrap gap-1.5">
             {conditions.map((c) => (
@@ -99,7 +103,7 @@ export function FiltersSidebar({
         </div>
 
         <Button size="sm" onClick={onApply} disabled={!hasActive} className="w-full h-9 text-sm font-medium">
-          {locale === "bg" ? "Приложи" : "Apply"}
+          {tCommon("apply")}
         </Button>
       </div>
     </div>

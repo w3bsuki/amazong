@@ -2,7 +2,7 @@
 
 import { useState, lazy, Suspense } from "react"
 import { useTranslations } from "next-intl"
-import { useRouter } from "next/navigation"
+import { useRouter } from "@/i18n/routing"
 import { MessageProvider, useMessages } from "@/components/providers/message-context"
 import { ConversationList } from "./conversation-list"
 import { Skeleton } from "@/components/ui/skeleton"

@@ -3,7 +3,7 @@
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card"
 import { Button } from "@/components/ui/button"
 import { Link } from "@/i18n/routing"
-import { useTranslations, useLocale } from "next-intl"
+import { useTranslations } from "next-intl"
 import { User } from "@supabase/supabase-js"
 import { SpinnerGap, UserCircle, Package, Storefront, ChatCircle, Gear, SignOut, CaretRight } from "@phosphor-icons/react"
 import { useState } from "react"
@@ -17,7 +17,8 @@ interface AccountDropdownProps {
 
 export function AccountDropdown({ user, variant = "icon", className }: AccountDropdownProps) {
   const t = useTranslations("Header")
-  const locale = useLocale()
+  const tAccount = useTranslations("Account")
+  const tAccountDrawer = useTranslations("AccountDrawer")
   const [isSigningOut, setIsSigningOut] = useState(false)
 
   // For non-authenticated users with icon variant, show a simple Sign In link
@@ -106,26 +107,26 @@ export function AccountDropdown({ user, variant = "icon", className }: AccountDr
             <nav className="py-1">
               <Link href="/account/orders" className="flex items-center gap-2.5 px-3 py-2 text-sm text-foreground hover:bg-accent">
                 <Package size={16} weight="regular" className="text-muted-foreground" />
-                {locale === "bg" ? "Поръчки" : "Orders"}
+                {tAccount("header.orders")}
               </Link>
               <Link href="/account/sales" className="flex items-center gap-2.5 px-3 py-2 text-sm text-foreground hover:bg-accent">
                 <Storefront size={16} weight="regular" className="text-muted-foreground" />
-                {locale === "bg" ? "Продажби" : "Sales"}
+                {tAccount("header.sales")}
               </Link>
               <Link href="/chat" className="flex items-center gap-2.5 px-3 py-2 text-sm text-foreground hover:bg-accent">
                 <ChatCircle size={16} weight="regular" className="text-muted-foreground" />
-                {locale === "bg" ? "Съобщения" : "Messages"}
+                {t("messages")}
               </Link>
               <Link href="/account/settings" className="flex items-center gap-2.5 px-3 py-2 text-sm text-foreground hover:bg-accent">
                 <Gear size={16} weight="regular" className="text-muted-foreground" />
-                {locale === "bg" ? "Настройки" : "Settings"}
+                {tAccountDrawer("settings")}
               </Link>
             </nav>
 
             {/* Account link */}
             <div className="border-t border-border py-1">
               <Link href="/account" className="flex items-center justify-between px-3 py-2 text-sm text-foreground hover:bg-accent">
-                <span>{locale === "bg" ? "Моят акаунт" : "My Account"}</span>
+                <span>{tAccount("header.myAccount")}</span>
                 <CaretRight size={14} weight="regular" className="text-muted-foreground" />
               </Link>
             </div>

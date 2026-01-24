@@ -13,6 +13,7 @@ import {
   ArrowLeft,
   SquaresFour,
 } from "@phosphor-icons/react"
+import { useTranslations } from "next-intl"
 
 // =============================================================================
 // TYPES
@@ -42,6 +43,9 @@ export function CompactCategorySidebar({
   onCategorySelect,
   categoryCounts,
 }: CompactCategorySidebarProps) {
+  const tCommon = useTranslations("Common")
+  const tCategories = useTranslations("Categories")
+
   const [viewLevel, setViewLevel] = useState(0)
   const [currentL0, setCurrentL0] = useState<CategoryTreeNode | null>(null)
   const [currentL1, setCurrentL1] = useState<CategoryTreeNode | null>(null)
@@ -146,7 +150,7 @@ export function CompactCategorySidebar({
     <div className="rounded-lg border border-border bg-card shadow-sm">
       <div className="px-3 py-2.5 border-b border-border">
         <h2 className="text-sm font-semibold text-foreground">
-          {locale === "bg" ? "Категории" : "Categories"}
+          {tCategories("title")}
         </h2>
       </div>
 
@@ -157,7 +161,7 @@ export function CompactCategorySidebar({
             <ArrowLeft size={18} weight="bold" className="shrink-0" />
             <span className="flex-1 truncate">
               {viewLevel === 1
-                ? locale === "bg" ? "Всички категории" : "All Categories"
+                ? tCommon("allCategories")
                 : currentL0 ? getCategoryName(currentL0, locale) : ""}
             </span>
           </button>
@@ -171,7 +175,7 @@ export function CompactCategorySidebar({
             className={selectedPath.length === 0 ? itemActive : itemInactive}
           >
             <SquaresFour size={20} weight={selectedPath.length === 0 ? "fill" : "regular"} className="shrink-0" />
-            <span className="flex-1">{locale === "bg" ? "Всички" : "All"}</span>
+            <span className="flex-1">{tCommon("all")}</span>
             <span className="text-xs tabular-nums opacity-70">
               {isMounted && totalCount > 0 ? totalCount : "—"}
             </span>
@@ -183,8 +187,7 @@ export function CompactCategorySidebar({
           <button type="button" onClick={() => {}} className={itemActive}>
             <SquaresFour size={18} weight="fill" className="shrink-0" />
             <span className="flex-1 truncate">
-              {locale === "bg" ? "Всички в " : "All in "}
-              {getCategoryName(headerCategory, locale)}
+              {tCategories("allIn", { category: getCategoryName(headerCategory, locale) })}
             </span>
             {isMounted && categoryCounts[headerCategory.slug] !== undefined && (
               <span className="text-xs tabular-nums opacity-70">{categoryCounts[headerCategory.slug]}</span>
@@ -232,12 +235,12 @@ export function CompactCategorySidebar({
             {isExpanded ? (
               <>
                 <CaretUp size={14} weight="bold" />
-                {locale === "bg" ? "По-малко" : "Show less"}
+                {tCategories("showLessShort")}
               </>
             ) : (
               <>
                 <CaretDown size={14} weight="bold" />
-                {locale === "bg" ? `Още ${hiddenCount}` : `${hiddenCount} more`}
+                {tCategories("moreCount", { count: hiddenCount })}
               </>
             )}
           </button>

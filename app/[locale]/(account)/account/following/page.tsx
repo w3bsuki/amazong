@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server"
-import { redirect } from "next/navigation"
+import { redirect } from "@/i18n/routing"
+import { getTranslations } from "next-intl/server"
 import { FollowingContent } from "./following-content"
 import { unfollowSeller } from "@/app/actions/seller-follows"
 
@@ -10,11 +11,13 @@ interface FollowingPageProps {
 }
 
 export default async function FollowingPage({ params }: FollowingPageProps) {
-  const { locale } = await params
+  const { locale: localeParam } = await params
+  const locale = localeParam === "bg" ? "bg" : "en"
+  const t = await getTranslations({ locale, namespace: "Account" })
   const supabase = await createClient()
 
   if (!supabase) {
-    redirect("/auth/login")
+    return redirect({ href: "/auth/login", locale })
   }
 
   const {
@@ -22,7 +25,7 @@ export default async function FollowingPage({ params }: FollowingPageProps) {
   } = await supabase.auth.getUser()
 
   if (!user) {
-    redirect("/auth/login")
+    return redirect({ href: "/auth/login", locale })
   }
 
   // Fetch followed sellers (without join - relations not working in types)
@@ -86,7 +89,7 @@ export default async function FollowingPage({ params }: FollowingPageProps) {
   return (
     <div className="flex flex-col gap-4 md:gap-4">
       <h1 className="sr-only">
-        {locale === "bg" ? "Следвани магазини" : "Following"}
+        {t("header.following")}
       </h1>
       <FollowingContent
         locale={locale}

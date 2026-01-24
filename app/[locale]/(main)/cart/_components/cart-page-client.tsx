@@ -29,6 +29,8 @@ export default function CartPageClient() {
   const { items, isReady, removeFromCart, updateQuantity, subtotal, totalItems } = useCart()
   const router = useRouter()
   const t = useTranslations("CartPage")
+  const tCartDropdown = useTranslations("CartDropdown")
+  const tBreadcrumbs = useTranslations("Breadcrumbs")
   const locale = useLocale()
   const { products: recentlyViewed, isLoaded: recentlyViewedLoaded } = useRecentlyViewed()
 
@@ -69,7 +71,12 @@ export default function CartPageClient() {
     return (
       <div className="bg-secondary/30 min-h-(--page-section-min-h-lg) pt-14 lg:pt-0">
         <div className="container py-6">
-          <AppBreadcrumb items={breadcrumbPresets(locale).cart} className="hidden lg:flex" />
+          <AppBreadcrumb
+            items={breadcrumbPresets(tBreadcrumbs).cart}
+            ariaLabel={tBreadcrumbs("ariaLabel")}
+            homeLabel={tBreadcrumbs("homeLabel")}
+            className="hidden lg:flex"
+          />
 
           <div className="mt-8 lg:mt-12 max-w-md mx-auto text-center">
             <div className="size-24 bg-muted/50 rounded-full flex items-center justify-center mx-auto mb-6">
@@ -125,20 +132,18 @@ export default function CartPageClient() {
   return (
     <div className="bg-secondary/30 min-h-screen pb-32 pt-14 lg:pb-12 lg:pt-0">
       <div className="container py-4 lg:py-6">
-        <AppBreadcrumb items={breadcrumbPresets(locale).cart} className="hidden lg:flex" />
+        <AppBreadcrumb
+          items={breadcrumbPresets(tBreadcrumbs).cart}
+          ariaLabel={tBreadcrumbs("ariaLabel")}
+          homeLabel={tBreadcrumbs("homeLabel")}
+          className="hidden lg:flex"
+        />
 
         <div className="mt-4 mb-6 flex items-baseline justify-between">
           <div>
             <h1 className="text-2xl lg:text-3xl font-semibold">{t("title")}</h1>
             <p className="text-muted-foreground mt-1 text-sm">
-              {totalItems}{" "}
-              {totalItems === 1
-                ? locale === "bg"
-                  ? "артикул"
-                  : "item"
-                : locale === "bg"
-                  ? "артикула"
-                  : "items"}
+              {totalItems} {tCartDropdown(totalItems === 1 ? "item" : "items")}
             </p>
           </div>
         </div>
@@ -214,7 +219,7 @@ export default function CartPageClient() {
                         }
                         disabled={item.quantity <= 1}
                         className="size-touch-xs flex items-center justify-center hover:bg-muted disabled:opacity-30 transition-colors rounded-l-md"
-                        aria-label="Decrease quantity"
+                        aria-label={tCartDropdown("decreaseQuantity")}
                       >
                         <Minus className="size-3.5" weight="bold" />
                       </button>
@@ -223,7 +228,7 @@ export default function CartPageClient() {
                         onClick={() => updateQuantity(item.id, item.quantity + 1, item.variantId)}
                         disabled={item.quantity >= 10}
                         className="size-touch-xs flex items-center justify-center hover:bg-muted disabled:opacity-30 transition-colors rounded-r-md"
-                        aria-label="Increase quantity"
+                        aria-label={tCartDropdown("increaseQuantity")}
                       >
                         <Plus className="size-3.5" weight="bold" />
                       </button>
@@ -248,7 +253,7 @@ export default function CartPageClient() {
               <Card className="border-border/50 shadow-sm">
                 <CardContent className="p-6">
                   <h2 className="font-semibold text-lg mb-4">
-                    {locale === "bg" ? "Обобщение" : "Order Summary"}
+                    {t("orderSummaryTitle")}
                   </h2>
 
                   <div className="space-y-3 mb-4">
@@ -259,9 +264,9 @@ export default function CartPageClient() {
                       <span>{formatPrice(subtotal)}</span>
                     </div>
                     <div className="flex justify-between text-sm">
-                      <span className="text-muted-foreground">{locale === "bg" ? "Доставка" : "Shipping"}</span>
+                      <span className="text-muted-foreground">{t("shippingLabel")}</span>
                       <span className="text-brand-success font-medium">
-                        {locale === "bg" ? "Безплатно" : "FREE"}
+                        {t("freeLabel")}
                       </span>
                     </div>
                   </div>
@@ -269,7 +274,7 @@ export default function CartPageClient() {
                   <Separator className="my-4" />
 
                   <div className="flex justify-between mb-6">
-                    <span className="font-semibold">{locale === "bg" ? "Общо" : "Total"}</span>
+                    <span className="font-semibold">{t("totalLabel")}</span>
                     <span className="text-xl font-bold">{formatPrice(subtotal)}</span>
                   </div>
 
@@ -285,11 +290,11 @@ export default function CartPageClient() {
                   <div className="mt-6 pt-4 border-t border-border space-y-2">
                     <div className="flex items-center gap-2 text-xs text-muted-foreground">
                       <ShieldCheck className="size-4 text-brand-success" weight="fill" />
-                      <span>{locale === "bg" ? "Сигурно плащане" : "Secure checkout"}</span>
+                      <span>{t("secureCheckout")}</span>
                     </div>
                     <div className="flex items-center gap-2 text-xs text-muted-foreground">
                       <Truck className="size-4 text-brand" weight="fill" />
-                      <span>{locale === "bg" ? "30-дневно връщане" : "30-day returns"}</span>
+                      <span>{t("returns30Day")}</span>
                     </div>
                   </div>
                 </CardContent>
@@ -304,7 +309,7 @@ export default function CartPageClient() {
         <div className="px-4 py-3 flex items-center gap-4">
           <div className="flex-1 min-w-0">
             <p className="text-xs text-muted-foreground mb-0.5">
-              {locale === "bg" ? "Общо" : "Total"}
+              {t("totalLabel")}
             </p>
             <p className="text-lg font-bold leading-none">{formatPrice(subtotal)}</p>
           </div>
@@ -313,7 +318,7 @@ export default function CartPageClient() {
             size="lg"
             className="rounded-full px-8 font-semibold shadow-sm"
           >
-            {locale === "bg" ? "Плащане" : "Checkout"}
+            {t("checkout")}
             <ArrowRight className="size-4 ml-1.5" />
           </Button>
         </div>

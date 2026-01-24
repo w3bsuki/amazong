@@ -3,7 +3,7 @@
 import { CaretRight } from "@phosphor-icons/react"
 import { useTranslations } from "next-intl"
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { UserAvatar } from "@/components/shared/user-avatar"
 import { SellerVerificationBadge } from "@/components/shared/product/seller-verification-badge"
 import { cn } from "@/lib/utils"
 
@@ -46,12 +46,12 @@ export function QuickViewSellerCard({
         "focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
       )}
     >
-      <Avatar className="size-10 shrink-0">
-        <AvatarImage src={sellerAvatarUrl ?? undefined} alt={safeSellerName} />
-        <AvatarFallback className="bg-muted text-sm font-medium">
-          {safeSellerName.slice(0, 2).toUpperCase()}
-        </AvatarFallback>
-      </Avatar>
+      <UserAvatar
+        name={safeSellerName}
+        avatarUrl={sellerAvatarUrl ?? null}
+        className="size-10 shrink-0 bg-muted"
+        fallbackClassName="bg-muted text-sm font-medium"
+      />
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-1.5">
           <p className="text-sm font-semibold truncate">{safeSellerName}</p>

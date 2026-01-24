@@ -1,5 +1,8 @@
+"use client"
+
 import { Link } from "@/i18n/routing"
 import { IconCirclePlusFilled, IconMail, type Icon } from "@tabler/icons-react"
+import { useTranslations } from "next-intl"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -19,17 +22,21 @@ export function NavMain({
     icon?: Icon
   }[]
 }) {
+  const t = useTranslations("AdminNav")
+  const quickCreateLabel = t("quickCreate")
+  const inboxLabel = t("inbox")
+
   return (
     <SidebarGroup>
       <SidebarGroupContent className="flex flex-col gap-2">
         <SidebarMenu>
           <SidebarMenuItem className="flex items-center gap-2">
             <SidebarMenuButton
-              tooltip="Quick Create"
+              tooltip={quickCreateLabel}
               className="bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground active:bg-primary/90 active:text-primary-foreground min-w-8 duration-200 ease-linear"
             >
               <IconCirclePlusFilled />
-              <span>Quick Create</span>
+              <span>{quickCreateLabel}</span>
             </SidebarMenuButton>
             <Button
               size="icon"
@@ -37,7 +44,7 @@ export function NavMain({
               variant="outline"
             >
               <IconMail />
-              <span className="sr-only">Inbox</span>
+              <span className="sr-only">{inboxLabel}</span>
             </Button>
           </SidebarMenuItem>
         </SidebarMenu>

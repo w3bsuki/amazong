@@ -1,8 +1,8 @@
 "use client"
 
 import { useState, useEffect, useMemo, useCallback, useRef } from "react"
-import { useRouter } from "@/i18n/routing"
-import { usePathname, useSearchParams } from "next/navigation"
+import { usePathname, useRouter } from "@/i18n/routing"
+import { useSearchParams } from "next/navigation"
 import type { CategoryTreeNode } from "@/lib/category-tree"
 import { getCategoryName } from "@/lib/category-display"
 import type { UIProduct } from "@/lib/data/products"

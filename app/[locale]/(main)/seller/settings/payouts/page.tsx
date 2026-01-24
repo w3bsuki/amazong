@@ -1,5 +1,5 @@
 import { getTranslations } from "next-intl/server"
-import { redirect } from "next/navigation"
+import { redirect } from "@/i18n/routing"
 import { createClient } from "@/lib/supabase/server"
 import { SellerPayoutSetup } from "./_components/seller-payout-setup"
 
@@ -10,12 +10,18 @@ export async function generateMetadata() {
   }
 }
 
-export default async function PayoutsPage() {
+export default async function PayoutsPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>
+}) {
+  const { locale: localeParam } = await params
+  const locale = localeParam === "bg" ? "bg" : "en"
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
   if (!user) {
-    redirect("/auth/login")
+    return redirect({ href: "/auth/login", locale })
   }
 
   // Get seller's payout status
@@ -33,7 +39,7 @@ export default async function PayoutsPage() {
     .single()
 
   if (profile?.role !== "seller" && profile?.role !== "admin") {
-    redirect("/")
+    return redirect({ href: "/", locale })
   }
 
   const t = await getTranslations("seller.payouts")

@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/server"
-import { redirect } from "next/navigation"
+import { redirect } from "@/i18n/routing"
 import { setRequestLocale } from "next-intl/server"
 import { SecurityContent } from "./security-content"
 
@@ -13,13 +13,13 @@ export default async function SecurityPage({
     const supabase = await createClient()
     
     if (!supabase) {
-        redirect("/auth/login")
+        return redirect({ href: "/auth/login", locale })
     }
     
     const { data: { user } } = await supabase.auth.getUser()
     
     if (!user) {
-        redirect("/auth/login")
+        return redirect({ href: "/auth/login", locale })
     }
 
     return (

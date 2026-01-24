@@ -43,7 +43,7 @@ export async function updateSession(request: NextRequest, response?: NextRespons
   if (!supabaseEnv) {
     // In E2E/local tests we still want account routes to be protected.
     // If Supabase isn't configured, treat user as unauthenticated.
-    if ((isAccountPath(pathname) || isSellPath(pathname) || isChatPath(pathname)) && !pathname.startsWith(authPrefix)) {
+    if ((isAccountPath(pathname) || isSellerOrdersPath(pathname)) && !pathname.startsWith(authPrefix)) {
       const url = request.nextUrl.clone()
       url.pathname = loginPath
       url.searchParams.set('next', `${request.nextUrl.pathname}${request.nextUrl.search}`)
@@ -100,7 +100,7 @@ export async function updateSession(request: NextRequest, response?: NextRespons
   } = await supabase.auth.getUser()
 
   // Protect /[locale]/account/* (and legacy /account/*) routes.
-  if (!user && (isAccountPath(pathname) || isSellPath(pathname) || isChatPath(pathname)) && !pathname.startsWith(authPrefix)) {
+  if (!user && (isAccountPath(pathname) || isSellerOrdersPath(pathname)) && !pathname.startsWith(authPrefix)) {
     const url = request.nextUrl.clone()
     url.pathname = loginPath
     url.searchParams.set('next', `${request.nextUrl.pathname}${request.nextUrl.search}`)

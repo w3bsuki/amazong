@@ -2,7 +2,7 @@
 
 import { Link } from "@/i18n/routing"
 import { useTranslations } from "next-intl"
-import { usePathname } from "next/navigation"
+import { usePathname } from "@/i18n/routing"
 import { Lock, ShoppingCart, Check } from "@phosphor-icons/react"
 import { cn } from "@/lib/utils"
 

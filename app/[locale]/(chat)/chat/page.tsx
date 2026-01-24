@@ -1,9 +1,10 @@
 import { getTranslations } from "next-intl/server"
-import { redirect } from "next/navigation"
+import { redirect } from "@/i18n/routing"
 import { createClient } from "@/lib/supabase/server"
 import { MessagesPageClient } from "../_components/messages-page-client"
 import { blockUser } from "@/app/actions/blocked-users"
 import { reportConversation } from "../_actions/report-conversation"
+import { AuthGateCard } from "@/components/shared/auth/auth-gate-card"
 
 export async function generateMetadata({
   params
@@ -30,22 +31,23 @@ export default async function MessagesPage({
   const { conversation } = await searchParams
   const supabase = await createClient()
 
-  if (!supabase) {
-    redirect(`/${locale}/auth/login?next=/${locale}/chat`)
-  }
-
-  const {
-    data: { user }
-  } = await supabase.auth.getUser()
+  const { data: { user } } = await (supabase
+    ? supabase.auth.getUser()
+    : Promise.resolve({ data: { user: null } }))
 
   if (!user) {
-    redirect(`/${locale}/auth/login?next=/${locale}/chat`)
+    const t = await getTranslations({ locale, namespace: "Drawers" })
+    return (
+      <div className="flex w-full flex-1 items-center justify-center px-inset py-8">
+        <AuthGateCard title={t("signInPrompt")} description={t("signInDescription")} nextPath="/chat" />
+      </div>
+    )
   }
 
   // Handle legacy URL format: /chat?conversation=xxx -> /chat/xxx
   // This ensures old links continue to work and get redirected to the new format
   if (conversation) {
-    redirect(`/${locale}/chat/${conversation}`)
+    return redirect({ href: `/chat/${conversation}`, locale })
   }
 
   return (

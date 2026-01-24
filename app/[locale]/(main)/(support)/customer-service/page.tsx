@@ -18,11 +18,10 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   const { locale: localeParam } = await params;
   const locale = validateLocale(localeParam)
   setRequestLocale(locale)
+  const t = await getTranslations({ locale, namespace: "CustomerService" })
   return {
-    title: locale === 'bg' ? 'Обслужване на клиенти' : 'Customer Service',
-    description: locale === 'bg' 
-      ? 'Получете помощ с вашите поръчки, връщания и акаунт.'
-      : 'Get help with your orders, returns, and account.',
+    title: t("metaTitle"),
+    description: t("metaDescription"),
   };
 }
 
@@ -34,6 +33,7 @@ export default async function CustomerServicePage({ params }: { params: Promise<
   setRequestLocale(locale)
   
   const t = await getTranslations('CustomerService')
+  const tBreadcrumbs = await getTranslations("Breadcrumbs")
 
     const helpTopics = [
         { icon: Package, title: t('delivery') },
@@ -48,7 +48,11 @@ export default async function CustomerServicePage({ params }: { params: Promise<
     return (
         <div className="min-h-screen bg-background pb-12 overflow-x-hidden">
             <div className="container py-8 px-4 sm:px-6">
-                <AppBreadcrumb items={breadcrumbPresets(locale).customerService} />
+                <AppBreadcrumb
+                    items={breadcrumbPresets(tBreadcrumbs).customerService}
+                    ariaLabel={tBreadcrumbs("ariaLabel")}
+                    homeLabel={tBreadcrumbs("homeLabel")}
+                />
                 
                 <h1 className="text-3xl font-bold mb-8">{t('title')}</h1>
 

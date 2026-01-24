@@ -4,12 +4,11 @@ import { Star, PencilLine } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/routing";
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { UserAvatar } from "@/components/shared/user-avatar";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Card, CardContent } from "@/components/ui/card";
 import { WriteReviewDialog, type SubmitReviewFn } from "./write-review-dialog";
-import { safeAvatarSrc } from "@/lib/utils";
 
 export interface CustomerReview {
   id: string;
@@ -167,10 +166,12 @@ export function CustomerReviewsHybrid({
                       </div>
 
                       <div className="flex items-center gap-2 mb-2">
-                        <Avatar className="h-6 w-6 border border-border">
-                          <AvatarImage src={safeAvatarSrc(review.user?.avatar_url)} alt={author} />
-                          <AvatarFallback className="text-2xs">{initials(author)}</AvatarFallback>
-                        </Avatar>
+                        <UserAvatar
+                          name={author}
+                          avatarUrl={review.user?.avatar_url ?? null}
+                          className="size-6 border border-border bg-muted"
+                          fallbackClassName="text-2xs bg-muted"
+                        />
                         <span className="font-medium text-foreground text-sm truncate">{author}</span>
                       </div>
 

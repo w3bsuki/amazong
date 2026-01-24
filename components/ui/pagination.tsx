@@ -12,7 +12,6 @@ function Pagination({ className, ...props }: React.ComponentProps<"nav">) {
   return (
     <nav
       role="navigation"
-      aria-label="pagination"
       data-slot="pagination"
       className={cn("mx-auto flex w-full justify-center", className)}
       {...props}
@@ -67,33 +66,43 @@ function PaginationLink({
 
 function PaginationPrevious({
   className,
+  label,
+  ariaLabel,
   ...props
-}: React.ComponentProps<typeof PaginationLink>) {
+}: React.ComponentProps<typeof PaginationLink> & {
+  label: string
+  ariaLabel?: string
+}) {
   return (
     <PaginationLink
-      aria-label="Go to previous page"
+      aria-label={ariaLabel ?? label}
       size="default"
       className={cn("gap-1 px-2.5 sm:pl-2.5", className)}
       {...props}
     >
       <ChevronLeftIcon />
-      <span className="hidden sm:block">Previous</span>
+      <span className="hidden sm:block">{label}</span>
     </PaginationLink>
   )
 }
 
 function PaginationNext({
   className,
+  label,
+  ariaLabel,
   ...props
-}: React.ComponentProps<typeof PaginationLink>) {
+}: React.ComponentProps<typeof PaginationLink> & {
+  label: string
+  ariaLabel?: string
+}) {
   return (
     <PaginationLink
-      aria-label="Go to next page"
+      aria-label={ariaLabel ?? label}
       size="default"
       className={cn("gap-1 px-2.5 sm:pr-2.5", className)}
       {...props}
     >
-      <span className="hidden sm:block">Next</span>
+      <span className="hidden sm:block">{label}</span>
       <ChevronRightIcon />
     </PaginationLink>
   )
@@ -101,8 +110,11 @@ function PaginationNext({
 
 function PaginationEllipsis({
   className,
+  label,
   ...props
-}: React.ComponentProps<"span">) {
+}: React.ComponentProps<"span"> & {
+  label?: string
+}) {
   return (
     <span
       aria-hidden
@@ -111,7 +123,7 @@ function PaginationEllipsis({
       {...props}
     >
       <MoreHorizontalIcon className="size-4" />
-      <span className="sr-only">More pages</span>
+      {label ? <span className="sr-only">{label}</span> : null}
     </span>
   )
 }

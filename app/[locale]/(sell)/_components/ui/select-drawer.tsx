@@ -12,6 +12,7 @@ import {
   DrawerDescription,
 } from "@/components/ui/drawer";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useTranslations } from "next-intl";
 
 interface SelectDrawerProps {
   isOpen: boolean;
@@ -42,6 +43,7 @@ export function SelectDrawer({
 }: SelectDrawerProps) {
   const isBg = locale === "bg";
   const displayOptions = isBg && optionsBg ? optionsBg : options;
+  const t = useTranslations("Sell")
 
   const [query, setQuery] = useState("");
 
@@ -73,12 +75,12 @@ export function SelectDrawer({
   return (
     <Drawer open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DrawerContent className="max-h-(--dialog-h-85vh)">
-        <DrawerHeader className="border-b border-border pb-3">
-          <DrawerTitle className="text-lg">{title}</DrawerTitle>
-          <DrawerDescription>
-            {isBg ? "Търсете или въведете стойност" : "Search or type a value"}
-          </DrawerDescription>
-        </DrawerHeader>
+          <DrawerHeader className="border-b border-border pb-3">
+            <DrawerTitle className="text-lg">{title}</DrawerTitle>
+            <DrawerDescription>
+              {t("selectDrawer.description")}
+            </DrawerDescription>
+          </DrawerHeader>
 
         <div className="px-4 pb-3">
           <div className="relative">
@@ -86,7 +88,7 @@ export function SelectDrawer({
             <Input
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder={isBg ? "Търсене..." : "Search..."}
+              placeholder={t("selectDrawer.searchPlaceholder")}
               className="h-12 rounded-md pl-10 text-base"
               autoFocus
               inputMode="search"
@@ -108,7 +110,7 @@ export function SelectDrawer({
               )}
             >
               <span className="text-sm font-medium">
-                {isBg ? "Използвай" : "Use"} &quot;{customValue}&quot;
+                {t("selectDrawer.useCustomValue", { value: customValue })}
               </span>
               <Plus className="size-4 text-muted-foreground shrink-0" />
             </button>

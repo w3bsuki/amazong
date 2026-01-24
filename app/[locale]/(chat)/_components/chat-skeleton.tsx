@@ -43,22 +43,3 @@ export function ChatInterfaceSkeleton() {
     </div>
   )
 }
-
-/**
- * Loading skeleton for conversation list
- */
-export function ConversationListSkeleton() {
-  return (
-    <div className="flex flex-col">
-      {[1, 2, 3, 4].map((i) => (
-        <div key={i} className="flex items-center gap-3 px-3 py-2.5">
-          <Skeleton className="size-12 rounded-full shrink-0" />
-          <div className="flex-1 min-w-0">
-            <Skeleton className="h-3.5 w-24 mb-1.5" />
-            <Skeleton className="h-3 w-36" />
-          </div>
-        </div>
-      ))}
-    </div>
-  )
-}

@@ -26,11 +26,10 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   const { locale: localeParam } = await params;
   const locale = validateLocale(localeParam)
   setRequestLocale(locale)
+  const t = await getTranslations({ locale, namespace: "Returns" })
   return {
-    title: locale === 'bg' ? 'Връщания и възстановявания' : 'Returns & Refunds',
-    description: locale === 'bg' 
-      ? 'Лесни връщания и бързи възстановявания. 30-дневна политика за връщане.'
-      : 'Easy returns and fast refunds. 30-day return policy.',
+    title: t("metaTitle"),
+    description: t("metaDescription"),
   };
 }
 
@@ -39,6 +38,7 @@ export default async function ReturnsPage({ params }: { params: Promise<{ locale
   const locale = validateLocale(localeParam)
   setRequestLocale(locale)
   const t = await getTranslations('Returns')
+  const tBreadcrumbs = await getTranslations("Breadcrumbs")
   
   return (
     <div className="min-h-screen bg-background pb-20 sm:pb-12">
@@ -46,7 +46,11 @@ export default async function ReturnsPage({ params }: { params: Promise<{ locale
       <div className="bg-header-bg text-white">
         <div className="container py-10 md:py-16">
           <div className="[&_nav]:border-white/20 [&_nav]:mb-4 [&_a]:text-white/80 [&_a:hover]:text-white [&_span[aria-current]]:text-white [&_svg]:text-white/50">
-            <AppBreadcrumb items={breadcrumbPresets(locale).returns} />
+            <AppBreadcrumb
+              items={breadcrumbPresets(tBreadcrumbs).returns}
+              ariaLabel={tBreadcrumbs("ariaLabel")}
+              homeLabel={tBreadcrumbs("homeLabel")}
+            />
           </div>
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div className="max-w-2xl">

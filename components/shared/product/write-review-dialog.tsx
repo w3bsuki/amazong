@@ -4,6 +4,7 @@ import { useState, useTransition } from "react";
 import { Star } from "lucide-react";
 import { toast } from "sonner";
 import { useTranslations } from "next-intl";
+import { usePathname, useRouter } from "@/i18n/routing"
 
 import { Button } from "@/components/ui/button";
 import {
@@ -17,6 +18,16 @@ import {
 } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+
+function stripLocalePrefix(pathname: string): string {
+  const segments = pathname.split("/").filter(Boolean)
+  const maybeLocale = segments[0]
+  if (maybeLocale && /^[a-z]{2}(-[A-Z]{2})?$/i.test(maybeLocale)) {
+    segments.shift()
+  }
+  const normalized = `/${segments.join("/")}`
+  return normalized === "/" ? "/" : normalized.replace(/\/+$/, "")
+}
 
 // Type for the review submission result
 export interface ReviewResult {
@@ -49,6 +60,8 @@ export function WriteReviewDialog({
   trigger,
   submitReview,
 }: WriteReviewDialogProps) {
+  const router = useRouter()
+  const pathname = usePathname()
   const [open, setOpen] = useState(false);
   const [rating, setRating] = useState(0);
   const [hoverRating, setHoverRating] = useState(0);
@@ -81,11 +94,12 @@ export function WriteReviewDialog({
         onReviewSubmitted?.();
       } else {
         if (result.error?.includes("logged in")) {
+          const next = stripLocalePrefix(pathname)
           toast.error(tReviews("signInRequired"), {
             action: {
               label: tAuth("signIn"),
               onClick: () => {
-                window.location.href = `/${locale}/auth/login`;
+                router.push({ pathname: "/auth/login", query: { next } })
               },
             },
           });

@@ -33,6 +33,10 @@ interface LegalPageLayoutProps {
   lastUpdated: string
   /** Breadcrumb items */
   breadcrumbItems: readonly BreadcrumbItemData[]
+  /** Accessible label for the breadcrumb navigation */
+  breadcrumbAriaLabel: string
+  /** Custom home label for the breadcrumb */
+  breadcrumbHomeLabel?: string
   /** Table of contents label */
   tocLabel: string
   /** Introduction notice text */
@@ -62,6 +66,8 @@ export function LegalPageLayout({
   title,
   lastUpdated,
   breadcrumbItems,
+  breadcrumbAriaLabel,
+  breadcrumbHomeLabel,
   tocLabel,
   introNotice,
   introText,
@@ -88,7 +94,11 @@ export function LegalPageLayout({
       <div className="bg-header-bg text-white">
         <div className="container py-10 md:py-14">
           <div className="[&_nav]:border-white/20 [&_nav]:mb-4 [&_a]:text-white/80 [&_a:hover]:text-white [&_span[aria-current]]:text-white [&_svg]:text-white/50">
-            <AppBreadcrumb items={breadcrumbItems} />
+            <AppBreadcrumb
+              items={breadcrumbItems}
+              ariaLabel={breadcrumbAriaLabel}
+              {...(breadcrumbHomeLabel === undefined ? {} : { homeLabel: breadcrumbHomeLabel })}
+            />
           </div>
           <div className="flex items-start gap-4">
             <div className="size-14 bg-primary-foreground/10 flex items-center justify-center shrink-0">

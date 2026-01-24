@@ -38,10 +38,10 @@ export default async function FeedbackPage({
   const locale = validateLocale(localeParam)
   setRequestLocale(locale)
   const t = await getTranslations('Feedback')
+  const tBreadcrumbs = await getTranslations("Breadcrumbs")
   
   const breadcrumbItems = [
-    { label: t('breadcrumbHome'), href: "/" },
-    { label: t('breadcrumbFeedback'), href: "/feedback", current: true },
+    { label: t('breadcrumbFeedback') },
   ]
   
   const feedbackTypes = [
@@ -57,7 +57,11 @@ export default async function FeedbackPage({
       <div className="bg-header-bg text-white">
         <div className="container py-10 md:py-16">
           <div className="[&_nav]:border-white/20 [&_nav]:mb-4 [&_a]:text-white/80 [&_a:hover]:text-white [&_span[aria-current]]:text-white [&_svg]:text-white/50">
-            <AppBreadcrumb items={breadcrumbItems} />
+            <AppBreadcrumb
+              items={breadcrumbItems}
+              ariaLabel={tBreadcrumbs("ariaLabel")}
+              homeLabel={tBreadcrumbs("homeLabel")}
+            />
           </div>
           <div className="max-w-2xl">
             <div className="flex items-center gap-3 mb-3">

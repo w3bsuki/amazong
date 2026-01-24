@@ -30,16 +30,18 @@ function Command({
 }
 
 function CommandDialog({
-  title = 'Command Palette',
-  description = 'Search for a command to run...',
+  title,
+  description,
+  closeLabel,
   children,
   className,
   showCloseButton = true,
   shouldFilter = true,
   ...props
 }: React.ComponentProps<typeof Dialog> & {
-  title?: string
-  description?: string
+  title: string
+  description: string
+  closeLabel?: string
   className?: string
   showCloseButton?: boolean
   shouldFilter?: boolean
@@ -53,6 +55,7 @@ function CommandDialog({
       <DialogContent
         className={cn('overflow-hidden p-0', className)}
         showCloseButton={showCloseButton}
+        {...(closeLabel === undefined ? {} : { closeLabel })}
       >
         <Command shouldFilter={shouldFilter} className="**:[[cmdk-group-heading]]:text-muted-foreground **:data-[slot=command-input-wrapper]:h-10 **:[[cmdk-group-heading]]:px-2 **:[[cmdk-group-heading]]:font-medium **:[[cmdk-group]]:px-2 [&_[cmdk-group]:not([hidden])_~[cmdk-group]]:pt-0 [&_[cmdk-input-wrapper]_svg]:h-5 [&_[cmdk-input-wrapper]_svg]:w-5 **:[[cmdk-input]]:h-10 **:[[cmdk-item]]:px-2 **:[[cmdk-item]]:py-2.5 [&_[cmdk-item]_svg]:h-5 [&_[cmdk-item]_svg]:w-5">
           {children}

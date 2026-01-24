@@ -8,7 +8,11 @@ const dirs = targetDirs.length ? targetDirs : ["app", "components"]; // workspac
 const includeExt = new Set([".ts", ".tsx", ".js", ".jsx", ".css", ".mjs"]);
 
 // Token source-of-truth. Intentionally contains many oklch() declarations.
-const excludeFiles = new Set(["app/globals.css"]);
+// Also allow hex colors in the dedicated product swatches file (see DESIGN.md).
+const excludeFiles = new Set([
+  "app/globals.css",
+  "components/shared/filters/color-swatches.tsx",
+]);
 
 // Focus on the most common styling-debt forms:
 // - Tailwind arbitrary values: w-[560px], text-[13px], max-w-[900px], rounded-[10px]
@@ -60,7 +64,7 @@ const byFile = [];
 let totals = { arbitrary: 0, hex: 0, oklch: 0, files: 0 };
 
 for (const abs of allFiles) {
-  const rel = path.relative(projectRoot, abs).replaceAll("\\\\", "/");
+  const rel = path.relative(projectRoot, abs).split(path.sep).join("/")
   if (excludeFiles.has(rel)) continue;
 
   let text;
@@ -122,7 +126,7 @@ console.log("--------------------------------");
 console.log(
   `Totals: files=${totals.files} arbitrary=${totals.arbitrary} hex=${totals.hex} oklch=${totals.oklch}`
 );
-console.log(`Full report: ${path.relative(projectRoot, reportPath).replaceAll("\\\\", "/")}`);
+console.log(`Full report: ${path.relative(projectRoot, reportPath).split(path.sep).join("/")}`);
 
 if (process.env.FAIL_ON_FINDINGS === "1") {
   if (totals.arbitrary > 0 || totals.hex > 0 || totals.oklch > 0) {

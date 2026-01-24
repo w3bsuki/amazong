@@ -209,7 +209,7 @@ export function DesktopFilterModal({
         className="sm:max-w-(--container-modal-lg) h-(--dialog-h-85vh) max-h-(--dialog-h-85vh) p-0 gap-0 flex flex-col overflow-hidden"
         showCloseButton={false}
       >
-        <DialogDescription className="sr-only">Filter products by attributes</DialogDescription>
+        <DialogDescription className="sr-only">{t('filterProductsByAttributes')}</DialogDescription>
         
         {/* Header - fixed at top with subtle shadow */}
         <div className="flex shrink-0 items-center justify-between px-6 py-5 border-b bg-background">
@@ -220,7 +220,7 @@ export function DesktopFilterModal({
             <div>
               <DialogTitle className="text-lg font-semibold tracking-tight">{t('filters')}</DialogTitle>
               <p className="text-xs text-muted-foreground mt-0.5">
-                {locale === 'bg' ? 'Персонализирайте вашето търсене' : 'Customize your search results'}
+                {t('customizeSearchResults')}
               </p>
             </div>
           </div>
@@ -229,7 +229,7 @@ export function DesktopFilterModal({
               variant="ghost" 
               size="icon" 
               className="rounded-full hover:bg-muted"
-              aria-label={locale === 'bg' ? 'Затвори филтрите' : 'Close filters'}
+              aria-label={t('closeFilters')}
             >
               <X size={20} weight="bold" aria-hidden="true" />
             </Button>
@@ -324,7 +324,7 @@ export function DesktopFilterModal({
                             />
                           ))}
                         </div>
-                        <span className="text-2xs font-medium text-muted-foreground">& Up</span>
+                        <span className="text-2xs font-medium text-muted-foreground">{t('andUp')}</span>
                       </button>
                     )
                   })}
@@ -403,7 +403,7 @@ export function DesktopFilterModal({
                         options={options}
                         selectedValues={currentValues}
                         onChange={(vals) => handleAttrChange(attr.name, isSingleSelect ? vals.slice(-1) : vals)}
-                        placeholder={`${locale === 'bg' ? 'Търси' : 'Search'} ${attrName.toLowerCase()}...`}
+                        placeholder={t('searchAttributePlaceholder', { attribute: attrName })}
                         isSingleSelect={isSingleSelect}
                       />
                     </div>
@@ -466,6 +466,7 @@ function FilterSearch({
   placeholder: string
   isSingleSelect: boolean
 }) {
+  const t = useTranslations('SearchFilters')
   const [search, setSearch] = React.useState('')
   const [isExpanded, setIsExpanded] = React.useState(false)
 
@@ -529,7 +530,7 @@ function FilterSearch({
           )
         })}
         {visibleOptions.length === 0 && (
-          <p className="text-sm text-muted-foreground py-3 text-center">No matches found</p>
+          <p className="text-sm text-muted-foreground py-3 text-center">{t('noMatchesFound')}</p>
         )}
       </div>
       {hasMore && !search && (
@@ -538,7 +539,7 @@ function FilterSearch({
           onClick={() => setIsExpanded(!isExpanded)}
           className="text-sm text-primary hover:text-primary/80 font-medium w-full text-center py-2 flex items-center justify-center gap-1.5 rounded-lg hover:bg-primary/5 transition-colors"
         >
-          {isExpanded ? 'Show less' : `Show all ${filteredOptions.length}`}
+          {isExpanded ? t('showLess') : t('showAllCount', { count: filteredOptions.length })}
           <CaretDown size={14} className={cn("transition-transform", isExpanded && "rotate-180")} />
         </button>
       )}

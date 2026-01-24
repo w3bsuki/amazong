@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server"
-import { redirect } from "next/navigation"
+import { redirect } from "@/i18n/routing"
+import { getTranslations } from "next-intl/server"
 import { BillingContent } from "./billing-content"
 import { createBillingPortalSession } from "@/app/actions/subscriptions"
 
@@ -10,17 +11,19 @@ interface BillingPageProps {
 }
 
 export default async function BillingPage({ params }: BillingPageProps) {
-  const { locale } = await params
+  const { locale: localeParam } = await params
+  const locale = localeParam === "bg" ? "bg" : "en"
+  const t = await getTranslations({ locale, namespace: "Account" })
   const supabase = await createClient()
 
   if (!supabase) {
-    redirect("/auth/login")
+    return redirect({ href: "/auth/login", locale })
   }
 
   const { data: { user } } = await supabase.auth.getUser()
 
   if (!user) {
-    redirect("/auth/login")
+    return redirect({ href: "/auth/login", locale })
   }
 
   // Parallel fetch for better performance
@@ -85,7 +88,7 @@ export default async function BillingPage({ params }: BillingPageProps) {
 
   return (
     <div className="flex flex-col gap-4 md:gap-4">
-      <h1 className="sr-only">{locale === 'bg' ? 'Фактуриране' : 'Billing'}</h1>
+      <h1 className="sr-only">{t("header.billing")}</h1>
       <BillingContent
         locale={locale}
         seller={seller}

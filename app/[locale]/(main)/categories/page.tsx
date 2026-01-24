@@ -28,12 +28,11 @@ export async function generateMetadata({
   const { locale: localeParam } = await params
   const locale = validateLocale(localeParam)
   setRequestLocale(locale)
+  const t = await getTranslations({ locale, namespace: "Categories" })
 
   return {
-    title: locale === "bg" ? "Категории" : "Categories",
-    description: locale === "bg" 
-      ? "Разгледайте всички категории продукти в Treido. Намерете електроника, мода, дом и градина и още."
-      : "Browse all product categories at Treido. Find electronics, fashion, home & garden, and more.",
+    title: t("title"),
+    description: t("metaDescription"),
   }
 }
 

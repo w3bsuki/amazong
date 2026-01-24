@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { Link } from "@/i18n/routing"
-import { usePathname } from "next/navigation"
+import { usePathname } from "@/i18n/routing"
 import {
   IconDashboard,
   IconBox,
@@ -176,8 +176,7 @@ export function BusinessSidebar({
 }: BusinessSidebarProps) {
   const pathname = usePathname()
 
-  // Normalize pathname by removing locale prefix
-  const normalizedPath = pathname.replace(/^\/[a-z]{2}(-[A-Z]{2})?/, '') || '/dashboard'
+  const normalizedPath = pathname || "/dashboard"
 
   const isActive = (url: string) => {
     if (url === '/dashboard') {

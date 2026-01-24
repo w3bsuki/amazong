@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { createAdminClient } from '@/lib/supabase/server';
 import { stripe } from '@/lib/stripe';
 import { getStripeWebhookSecrets } from '@/lib/env';
+import { ensureOrderConversations } from "@/lib/order-conversations"
 import type Stripe from 'stripe';
 
 // PRODUCTION: Use centralized admin client for consistency
@@ -42,33 +43,37 @@ function parseOrderItems(
   return [];
 }
 
+type OrderConversationSeed = { productId: string; sellerId: string }
+
 async function ensureOrderItems(
   orderId: string,
   itemsData: OrderItemPayload[]
-) {
-  if (itemsData.length === 0) {
-    return;
-  }
-
+): Promise<OrderConversationSeed[]> {
   // Avoid duplicate inserts if the webhook retries after order creation.
   const { data: existingItems, error: existingItemsError } = await supabase
     .from('order_items')
-    .select('id')
-    .eq('order_id', orderId)
-    .limit(1);
+    .select('product_id, seller_id')
+    .eq('order_id', orderId);
 
   if (existingItemsError) {
     console.error('Error checking order items:', existingItemsError);
-    return;
+    return [];
   }
 
   if (existingItems?.length) {
-    return;
+    return existingItems.map((item) => ({
+      productId: item.product_id,
+      sellerId: item.seller_id,
+    }))
+  }
+
+  if (itemsData.length === 0) {
+    return []
   }
 
   const productIds = itemsData.map(item => item.id).filter(Boolean);
   if (productIds.length === 0) {
-    return;
+    return [];
   }
 
   const { data: products, error: productsError } = await supabase
@@ -85,18 +90,24 @@ async function ensureOrderItems(
   );
 
   const validItems = itemsData
-    .filter((item) => item.id && productSellerMap.get(item.id))
-    .map((item) => ({
-      order_id: orderId,
-      product_id: item.id,
-      seller_id: productSellerMap.get(item.id)!,
-      quantity: item.qty || 1,
-      price_at_purchase: item.price,
-      ...(item.variantId ? { variant_id: item.variantId } : {}),
-    }));
+    .map((item) => {
+      if (!item.id) return null
+      const sellerId = productSellerMap.get(item.id)
+      if (!sellerId) return null
+
+      return {
+        order_id: orderId,
+        product_id: item.id,
+        seller_id: sellerId,
+        quantity: item.qty || 1,
+        price_at_purchase: item.price,
+        ...(item.variantId ? { variant_id: item.variantId } : {}),
+      }
+    })
+    .filter((item): item is NonNullable<typeof item> => Boolean(item));
 
   if (validItems.length === 0) {
-    return;
+    return [];
   }
 
   const { error: itemsError } = await supabase
@@ -106,6 +117,11 @@ async function ensureOrderItems(
   if (itemsError) {
     console.error('Error creating order items:', itemsError);
   }
+
+  return validItems.map((item) => ({
+    productId: item.product_id,
+    sellerId: item.seller_id,
+  }))
 }
 
 export async function POST(req: Request) {
@@ -161,6 +177,8 @@ export async function POST(req: Request) {
 
       const itemsData = parseOrderItems(session);
 
+      const sessionBuyerId = session.client_reference_id || session.metadata?.user_id
+
       // Idempotency: avoid creating duplicate orders for the same payment intent.
       if (session.payment_intent) {
         const { data: existingOrders, error: existingOrdersError } = await supabase
@@ -177,8 +195,17 @@ export async function POST(req: Request) {
         const existingOrderId = existingOrders?.[0]?.id;
 
         if (existingOrderId) {
-          if (itemsData.length > 0) {
-            await ensureOrderItems(existingOrderId, itemsData);
+          const conversationSeeds = await ensureOrderItems(existingOrderId, itemsData)
+          if (sessionBuyerId && conversationSeeds.length > 0) {
+            await ensureOrderConversations(
+              supabase,
+              conversationSeeds.map((seed) => ({
+                orderId: existingOrderId,
+                buyerId: sessionBuyerId,
+                sellerId: seed.sellerId,
+                productId: seed.productId,
+              }))
+            )
           }
 
           return NextResponse.json({ received: true });
@@ -202,7 +229,7 @@ export async function POST(req: Request) {
         },
       } : null
 
-      const userId = session.client_reference_id || session.metadata?.user_id
+      const userId = sessionBuyerId
       if (!userId) {
         console.error('No user_id found in session');
         return NextResponse.json({ error: 'No user_id' }, { status: 400 });
@@ -230,7 +257,18 @@ export async function POST(req: Request) {
 
       // Create order items from line items
       if (lineItems.data.length > 0) {
-        await ensureOrderItems(order.id, itemsData);
+        const conversationSeeds = await ensureOrderItems(order.id, itemsData);
+        if (conversationSeeds.length > 0) {
+          await ensureOrderConversations(
+            supabase,
+            conversationSeeds.map((seed) => ({
+              orderId: order.id,
+              buyerId: userId,
+              sellerId: seed.sellerId,
+              productId: seed.productId,
+            }))
+          )
+        }
       }
 
       // TODO: Send buyer confirmation email when email service is set up

@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation"
 import type { Metadata } from "next"
-import { setRequestLocale } from "next-intl/server"
+import { getTranslations, setRequestLocale } from "next-intl/server"
 import { connection } from "next/server"
 
 import { createStaticClient } from "@/lib/supabase/server"
@@ -119,11 +119,13 @@ interface ProductPageProps {
 
 export async function generateMetadata({ params }: ProductPageProps): Promise<Metadata> {
   const { username, productSlug, locale } = await params
+  setRequestLocale(locale)
   const product = await fetchProductByUsernameAndSlug(username, productSlug)
 
   if (!product) {
+    const t = await getTranslations({ locale, namespace: "ProductNotFound" })
     return {
-      title: locale === "bg" ? "Продукт не е намерен" : "Product Not Found",
+      title: t("metaTitle"),
     }
   }
 

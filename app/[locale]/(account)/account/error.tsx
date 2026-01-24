@@ -1,6 +1,7 @@
 'use client'
 
 import { ErrorBoundaryUI } from '@/components/shared/error-boundary-ui'
+import { useTranslations } from 'next-intl'
 
 export default function AccountError({
   error,
@@ -9,14 +10,16 @@ export default function AccountError({
   error: Error & { digest?: string }
   reset: () => void
 }) {
+  const t = useTranslations('Errors')
+
   return (
     <ErrorBoundaryUI
       error={error}
       reset={reset}
-      title="Account unavailable"
-      description="We couldn't load your account. Please try again or sign in again."
+      title={t('account.title')}
+      description={t('account.description')}
       ctaIcon="user"
-      ctaLabel="Go to homepage"
+      ctaLabel={t('common.goToHomepage')}
       ctaHref="/"
       logPrefix="Account page"
     />

@@ -1,10 +1,21 @@
-import { redirect } from 'next/navigation'
-import { routing, validateLocale } from '@/i18n/routing'
-import { setRequestLocale } from 'next-intl/server'
+import { redirect, routing, validateLocale } from '@/i18n/routing'
+import { getTranslations, setRequestLocale } from 'next-intl/server'
+import type { Metadata } from "next"
 
 // Generate static params for all locales
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }))
+}
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale: localeParam } = await params
+  const locale = validateLocale(localeParam)
+  setRequestLocale(locale)
+  const t = await getTranslations({ locale, namespace: "CustomerService" })
+  return {
+    title: t("metaTitle"),
+    description: t("metaDescription"),
+  }
 }
 
 export default async function HelpPage({ params }: { params: Promise<{ locale: string }> }) {
@@ -12,5 +23,5 @@ export default async function HelpPage({ params }: { params: Promise<{ locale: s
   const locale = validateLocale(localeParam)
   setRequestLocale(locale)
   // Redirect to customer-service page
-  redirect(`/${locale}/customer-service`)
+  return redirect({ href: "/customer-service", locale })
 }

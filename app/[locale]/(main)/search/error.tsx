@@ -1,6 +1,7 @@
 'use client'
 
 import { ErrorBoundaryUI } from '@/components/shared/error-boundary-ui'
+import { useTranslations } from 'next-intl'
 
 export default function SearchError({
   error,
@@ -9,14 +10,16 @@ export default function SearchError({
   error: Error & { digest?: string }
   reset: () => void
 }) {
+  const t = useTranslations('Errors')
+
   return (
     <ErrorBoundaryUI
       error={error}
       reset={reset}
-      title="Search failed"
-      description="We couldn't complete your search. Please try again or browse our categories."
+      title={t('search.title')}
+      description={t('search.description')}
       ctaIcon="search"
-      ctaLabel="Go to homepage"
+      ctaLabel={t('common.goToHomepage')}
       ctaHref="/"
       logPrefix="Search page"
     />

@@ -7,12 +7,12 @@ import { ArrowLeft, Package, Loader2, RefreshCw, ExternalLink } from "lucide-rea
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { UserAvatar } from "@/components/shared/user-avatar"
 import { OrderStatusBadge } from "@/components/orders/order-status-badge"
 import { OrderStatusActions, type OrderStatusActionsServerActions } from "./_components/order-status-actions"
 import { SellerRateBuyerActions, type SellerRateBuyerActionsServerActions } from "./_components/seller-rate-buyer-actions"
 import { type OrderItemStatus } from "@/lib/order-status"
-import { cn, safeAvatarSrc } from "@/lib/utils"
+import { cn } from "@/lib/utils"
 import { formatDistanceToNow } from "date-fns"
 
 type SellerOrderItem = {
@@ -285,12 +285,12 @@ export function SellerOrdersClient({ locale, actions }: SellerOrdersClientProps)
                             {/* Buyer Info */}
                             {item.buyer && (
                               <div className="flex items-center gap-2 mb-3 text-sm">
-                                <Avatar className="h-6 w-6">
-                                  <AvatarImage src={safeAvatarSrc(item.buyer.avatar_url)} />
-                                  <AvatarFallback>
-                                    {item.buyer.full_name?.charAt(0) || 'U'}
-                                  </AvatarFallback>
-                                </Avatar>
+                                <UserAvatar
+                                  name={item.buyer.full_name || item.buyer.email || "User"}
+                                  avatarUrl={item.buyer.avatar_url ?? null}
+                                  className="size-6 bg-muted"
+                                  fallbackClassName="bg-muted text-2xs font-semibold"
+                                />
                                 <span className="text-muted-foreground">
                                   {item.buyer.full_name || item.buyer.email}
                                 </span>

@@ -28,7 +28,14 @@ export interface HeroAttributeConfig {
  * Order matters - first matching config wins
  */
 export const HERO_ATTRIBUTE_CONFIGS: HeroAttributeConfig[] = [
-  // Vehicles: Make + Model (e.g., "BMW 320d", "Audi e-tron")
+  // Automotive: Make + Model (e.g., "BMW 320d", "Audi e-tron")
+  {
+    categoryRootSlug: "automotive",
+    attributeKeys: ["make", "brand", "model"],
+    separator: " ",
+    maxLength: 18,
+  },
+  // Legacy / L1 alias: Vehicles (older callers pass "vehicles" as the root slug)
   {
     categoryRootSlug: "vehicles",
     attributeKeys: ["make", "brand", "model"],
@@ -56,9 +63,16 @@ export const HERO_ATTRIBUTE_CONFIGS: HeroAttributeConfig[] = [
     separator: " · ",
     maxLength: 18,
   },
-  // Home & Garden: Material (e.g., "Wood", "Metal")
+  // Home & Kitchen: Material (e.g., "Wood", "Metal")
   {
-    categoryRootSlug: "home-garden",
+    categoryRootSlug: "home",
+    attributeKeys: ["material", "brand"],
+    separator: " · ",
+    maxLength: 14,
+  },
+  // Garden & Outdoor: Material (e.g., "Wood", "Metal")
+  {
+    categoryRootSlug: "garden-outdoor",
     attributeKeys: ["material", "brand"],
     separator: " · ",
     maxLength: 14,
@@ -70,10 +84,17 @@ export const HERO_ATTRIBUTE_CONFIGS: HeroAttributeConfig[] = [
     separator: " · ",
     maxLength: 14,
   },
-  // Books & Media: Author or Format
+  // Books: Author or Format
   {
-    categoryRootSlug: "books-media",
+    categoryRootSlug: "books",
     attributeKeys: ["author", "format"],
+    separator: " · ",
+    maxLength: 16,
+  },
+  // Movies & Music: Artist or Format
+  {
+    categoryRootSlug: "movies-music",
+    attributeKeys: ["artist", "format", "author"],
     separator: " · ",
     maxLength: 16,
   },

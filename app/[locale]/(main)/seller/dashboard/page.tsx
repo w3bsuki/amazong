@@ -1,5 +1,4 @@
-import { redirect } from "next/navigation"
-import { routing } from "@/i18n/routing"
+import { redirect, routing } from "@/i18n/routing"
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }))
@@ -24,5 +23,5 @@ export default async function OldSellerDashboard({
   params: Promise<{ locale: string }>
 }) {
   const { locale } = await params
-  redirect(`/${locale}/dashboard`)
+  return redirect({ href: "/dashboard", locale })
 }

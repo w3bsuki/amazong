@@ -6,6 +6,7 @@ import { Progress } from "@/components/ui/progress";
 import { PageContainer } from "@/components/shared/page-container";
 import { cn } from "@/lib/utils";
 import { Link } from "@/i18n/routing";
+import { useTranslations } from "next-intl";
 
 interface ProgressHeaderProps {
   progressPercent: number;
@@ -33,12 +34,14 @@ export function ProgressHeader({
   isSaving,
   hasUnsavedChanges,
   onSaveDraft,
-  locale,
+  locale: _locale,
   currentStep,
   totalSteps,
 }: ProgressHeaderProps) {
-  const isBg = locale === "bg";
   const isComplete = progressPercent === 100;
+  const tSell = useTranslations("Sell")
+  const tNav = useTranslations("Navigation")
+  const tCommon = useTranslations("Common")
 
   return (
     <header className="sticky top-0 z-40 bg-background border-b border-border/60">
@@ -53,18 +56,18 @@ export function ProgressHeader({
             <CaretLeft className="size-4" weight="bold" />
             <House className="size-5" />
             <span className="hidden sm:inline text-sm font-medium">
-              {isBg ? "Начало" : "Home"}
+              {tNav("home")}
             </span>
           </Link>
 
           {/* Center: Progress indicator (Desktop) */}
           <div className="flex-1 max-w-md mx-4 hidden sm:block">
             <div className="flex items-center gap-4">
-              <Progress
-                value={progressPercent}
-                className="h-1.5 flex-1"
-                aria-label={`${isBg ? "Прогрес на формуляра" : "Form progress"}: ${progressPercent}%`}
-              />
+                <Progress
+                  value={progressPercent}
+                  className="h-1.5 flex-1"
+                  aria-label={tSell("progressHeader.formProgressAriaLabel", { percent: progressPercent })}
+                />
               <span className={cn(
                 "text-sm font-semibold tabular-nums min-w-10 text-right",
                 isComplete ? "text-primary" : "text-muted-foreground"
@@ -100,14 +103,14 @@ export function ProgressHeader({
                 <>
                   <Spinner className="size-3.5 animate-spin text-muted-foreground" />
                   <span className="text-muted-foreground hidden sm:inline">
-                    {isBg ? "Запазване..." : "Saving..."}
+                    {tCommon("saving")}
                   </span>
                 </>
               ) : autoSaved ? (
                 <>
                   <CloudCheck className="size-3.5 text-primary" />
                   <span className="text-primary hidden sm:inline">
-                    {isBg ? "Запазено" : "Saved"}
+                    {tCommon("saved")}
                   </span>
                 </>
               ) : null}
@@ -124,7 +127,7 @@ export function ProgressHeader({
             >
               <FloppyDisk className="size-4" />
               <span className="hidden sm:inline">
-                {isBg ? "Запази" : "Save"}
+                {tCommon("save")}
               </span>
             </Button>
           </div>

@@ -1,6 +1,6 @@
 import { Suspense } from "react"
 import { createClient } from "@/lib/supabase/server"
-import { redirect } from "next/navigation"
+import { redirect } from "@/i18n/routing"
 import {
   buyerConfirmDelivery,
   canBuyerRateSeller,
@@ -89,14 +89,15 @@ interface OrdersPageProps {
 }
 
 export default async function OrdersPage({ params, searchParams }: OrdersPageProps) {
-  const { locale } = await params
+  const { locale: localeParam } = await params
+  const locale = localeParam === "bg" ? "bg" : "en"
   const sp = (await searchParams) || {}
   const query = (sp.q || "").trim()
   const statusFilter = (sp.status || "all").trim()
   const supabase = await createClient()
 
   if (!supabase) {
-    redirect("/auth/login")
+    return redirect({ href: "/auth/login", locale })
   }
 
   const {
@@ -104,7 +105,7 @@ export default async function OrdersPage({ params, searchParams }: OrdersPagePro
   } = await supabase.auth.getUser()
 
   if (!user) {
-    redirect("/auth/login")
+    return redirect({ href: "/auth/login", locale })
   }
 
   // Fetch orders from Supabase with full details

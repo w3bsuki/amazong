@@ -17,11 +17,10 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   const { locale: localeParam } = await params
   const locale = validateLocale(localeParam)
   setRequestLocale(locale)
+  const t = await getTranslations({ locale, namespace: "Terms" })
   return {
-    title: locale === 'bg' ? 'Условия за ползване' : 'Terms of Service',
-    description: locale === 'bg' 
-      ? 'Условия за ползване на услугите на Treido.'
-      : 'Terms of Service for using Treido services.',
+    title: t("metaTitle"),
+    description: t("metaDescription"),
   }
 }
 
@@ -30,6 +29,7 @@ export default async function TermsPage({ params }: { params: Promise<{ locale: 
   const locale = validateLocale(localeParam)
   setRequestLocale(locale)
   const t = await getTranslations('Terms')
+  const tBreadcrumbs = await getTranslations("Breadcrumbs")
   
   const sections: LegalSection[] = [
     { id: 'acceptance', icon: CheckCircle, title: t('acceptance'), desc: t('acceptanceDesc') },
@@ -57,7 +57,9 @@ export default async function TermsPage({ params }: { params: Promise<{ locale: 
       heroIcon={FileText}
       title={t('title')}
       lastUpdated={`${t('lastUpdated')}: ${t('lastUpdatedDate')}`}
-      breadcrumbItems={breadcrumbPresets(locale).terms}
+      breadcrumbItems={breadcrumbPresets(tBreadcrumbs).terms}
+      breadcrumbAriaLabel={tBreadcrumbs("ariaLabel")}
+      breadcrumbHomeLabel={tBreadcrumbs("homeLabel")}
       tocLabel={t('tableOfContents')}
       introNotice={t('importantNotice')}
       introText={t('introText')}

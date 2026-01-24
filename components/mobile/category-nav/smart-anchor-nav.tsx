@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils"
 import { getCategoryName } from "@/lib/category-display"
 import type { CategoryTreeNode } from "@/lib/category-tree"
 import { ArrowLeft } from "@phosphor-icons/react"
+import { useTranslations } from "next-intl"
 
 // =============================================================================
 // SMART ANCHOR NAVIGATION
@@ -76,6 +77,8 @@ export function SmartAnchorNav({
   className,
 }: SmartAnchorNavProps) {
   const containerRef = useRef<HTMLDivElement>(null)
+  const tCommon = useTranslations("Common")
+  const tCategories = useTranslations("Categories")
 
   // Scroll container to start when anchor changes (new drill-down)
   useEffect(() => {
@@ -171,7 +174,7 @@ export function SmartAnchorNav({
         className
       )}
       style={sticky ? { top: stickyTop } : undefined}
-      aria-label={locale === "bg" ? "Навигация по категории" : "Category navigation"}
+      aria-label={tCategories("navigationAriaLabel")}
     >
       <div
         ref={containerRef}
@@ -182,7 +185,7 @@ export function SmartAnchorNav({
           <Link
             href={anchor.href}
             className={anchorStyles}
-            aria-label={locale === "bg" ? "Назад към " + anchor.label : "Back to " + anchor.label}
+            aria-label={tCommon("backTo", { label: anchor.label })}
           >
             <ArrowLeft size={14} weight="bold" className="shrink-0" />
             <span className="max-w-28 truncate">{anchor.label}</span>

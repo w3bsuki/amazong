@@ -20,6 +20,13 @@ function getRequiredEnvVar(key: string): string {
   return value
 }
 
+function parseWebhookSecrets(raw: string): string[] {
+  return raw
+    .split(/[\n,]/g)
+    .map((s) => s.trim())
+    .filter(Boolean)
+}
+
 // =============================================================================
 // Stripe Configuration
 // =============================================================================
@@ -30,16 +37,15 @@ export function getStripeSecretKey(): string {
 
 export function getStripeWebhookSecrets(): string[] {
   const raw = getRequiredEnvVar('STRIPE_WEBHOOK_SECRET')
-  return raw
-    .split(/[\n,]/g)
-    .map((s) => s.trim())
-    .filter(Boolean)
+  return parseWebhookSecrets(raw)
 }
 
-export function getStripeSubscriptionWebhookSecret(): string {
-  return getRequiredEnvVar('STRIPE_SUBSCRIPTION_WEBHOOK_SECRET')
+export function getStripeSubscriptionWebhookSecrets(): string[] {
+  const raw = getRequiredEnvVar('STRIPE_SUBSCRIPTION_WEBHOOK_SECRET')
+  return parseWebhookSecrets(raw)
 }
 
-export function getStripeConnectWebhookSecret(): string {
-  return getRequiredEnvVar('STRIPE_CONNECT_WEBHOOK_SECRET')
+export function getStripeConnectWebhookSecrets(): string[] {
+  const raw = getRequiredEnvVar('STRIPE_CONNECT_WEBHOOK_SECRET')
+  return parseWebhookSecrets(raw)
 }

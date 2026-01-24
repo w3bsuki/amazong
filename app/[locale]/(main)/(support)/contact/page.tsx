@@ -23,11 +23,10 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   const { locale: localeParam } = await params;
   const locale = validateLocale(localeParam)
   setRequestLocale(locale)
+  const t = await getTranslations({ locale, namespace: "Contact" })
   return {
-    title: locale === 'bg' ? 'Свържете се с нас' : 'Contact Us',
-    description: locale === 'bg' 
-      ? 'Свържете се с екипа на Treido. Ние сме тук да ви помогнем 24/7.'
-      : 'Get in touch with the Treido team. We are here to help you 24/7.',
+    title: t("title"),
+    description: t("metaDescription"),
   };
 }
 
@@ -40,6 +39,7 @@ export default async function ContactPage({
   const locale = validateLocale(localeParam)
   setRequestLocale(locale)
   const t = await getTranslations('Contact')
+  const tBreadcrumbs = await getTranslations("Breadcrumbs")
   
   const quickHelp = [
     { icon: Package, title: t('trackOrder'), desc: t('trackOrderDesc'), href: "/account/orders" },
@@ -53,7 +53,11 @@ export default async function ContactPage({
       <div className="bg-header-bg text-white">
         <div className="container py-10 md:py-16">
           <div className="[&_nav]:border-white/20 [&_nav]:mb-4 [&_a]:text-white/80 [&_a:hover]:text-white [&_span[aria-current]]:text-white [&_svg]:text-white/50">
-            <AppBreadcrumb items={breadcrumbPresets(locale).contact} />
+            <AppBreadcrumb
+              items={breadcrumbPresets(tBreadcrumbs).contact}
+              ariaLabel={tBreadcrumbs("ariaLabel")}
+              homeLabel={tBreadcrumbs("homeLabel")}
+            />
           </div>
           <div className="max-w-2xl">
             <h1 className="text-2xl md:text-4xl font-bold mb-3">{t('heroTitle')}</h1>

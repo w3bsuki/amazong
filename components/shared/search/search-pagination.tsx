@@ -1,5 +1,6 @@
 "use client"
 
+import { useTranslations } from "next-intl"
 import { useSearchParams } from "next/navigation"
 import { usePathname } from "@/i18n/routing"
 import {
@@ -23,6 +24,7 @@ export function SearchPagination({
   itemsPerPage = 20, 
   currentPage 
 }: SearchPaginationProps) {
+  const tCommon = useTranslations("Common")
   const pathname = usePathname()
   const searchParams = useSearchParams()
   
@@ -89,17 +91,23 @@ export function SearchPagination({
   const hasNext = currentPage < totalPages
 
   return (
-    <Pagination className="mt-8">
+    <Pagination className="mt-8" aria-label={tCommon("pagination")}>
       <PaginationContent>
         {/* Previous */}
         <PaginationItem>
           {hasPrev ? (
-            <PaginationPrevious href={buildPageUrl(currentPage - 1)} />
+            <PaginationPrevious
+              href={buildPageUrl(currentPage - 1)}
+              label={tCommon("previous")}
+              ariaLabel={tCommon("goToPreviousPage")}
+            />
           ) : (
             <PaginationPrevious 
               href="#" 
               className="pointer-events-none opacity-50" 
               aria-disabled="true"
+              label={tCommon("previous")}
+              ariaLabel={tCommon("goToPreviousPage")}
             />
           )}
         </PaginationItem>
@@ -108,7 +116,7 @@ export function SearchPagination({
         {pageNumbers.map((page, index) => (
           <PaginationItem key={index}>
             {page === 'ellipsis' ? (
-              <PaginationEllipsis />
+              <PaginationEllipsis label={tCommon("morePages")} />
             ) : (
               <PaginationLink 
                 href={buildPageUrl(page)} 
@@ -123,12 +131,18 @@ export function SearchPagination({
         {/* Next */}
         <PaginationItem>
           {hasNext ? (
-            <PaginationNext href={buildPageUrl(currentPage + 1)} />
+            <PaginationNext
+              href={buildPageUrl(currentPage + 1)}
+              label={tCommon("next")}
+              ariaLabel={tCommon("goToNextPage")}
+            />
           ) : (
             <PaginationNext 
               href="#" 
               className="pointer-events-none opacity-50" 
               aria-disabled="true"
+              label={tCommon("next")}
+              ariaLabel={tCommon("goToNextPage")}
             />
           )}
         </PaginationItem>

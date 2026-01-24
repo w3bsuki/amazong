@@ -41,7 +41,7 @@ export function CartDropdown() {
         <Link
           href="/cart"
           className="block rounded-md outline-none focus-visible:outline-2 focus-visible:outline-ring"
-          aria-label={`${tNav("cart")}${mounted && displayItems > 0 ? ` (${displayItems} items)` : ""}`}
+          aria-label={`${tNav("cart")}${mounted && displayItems > 0 ? ` (${displayItems} ${displayItems === 1 ? t("item") : t("items")})` : ""}`}
         >
           <div className="inline-flex items-center justify-center border border-transparent hover:border-header-text/20 rounded-md text-header-text hover:bg-header-hover relative size-10 [&_svg]:size-6 cursor-pointer">
             <span className="relative" aria-hidden="true">
@@ -131,7 +131,7 @@ export function CartDropdown() {
                             }
                           }}
                           className="size-5 shrink-0 flex items-center justify-center rounded hover:bg-muted text-muted-foreground hover:text-foreground"
-                          aria-label={locale === "bg" ? "Намали количеството" : "Decrease quantity"}
+                          aria-label={t("decreaseQuantity")}
                         >
                           <Minus size={10} weight="bold" />
                         </button>
@@ -144,7 +144,7 @@ export function CartDropdown() {
                             updateQuantity(item.id, item.quantity + 1, item.variantId)
                           }}
                           className="size-5 shrink-0 flex items-center justify-center rounded hover:bg-muted text-muted-foreground hover:text-foreground"
-                          aria-label={locale === "bg" ? "Увеличи количеството" : "Increase quantity"}
+                          aria-label={t("increaseQuantity")}
                         >
                           <Plus size={10} weight="bold" />
                         </button>
@@ -155,7 +155,7 @@ export function CartDropdown() {
                           removeFromCart(item.id, item.variantId)
                         }}
                         className="size-5 shrink-0 flex items-center justify-center rounded hover:bg-destructive/10 text-muted-foreground hover:text-destructive"
-                        aria-label={locale === "bg" ? "Премахни" : "Remove"}
+                        aria-label={t("removeItem")}
                       >
                         <Trash size={12} weight="regular" />
                       </button>

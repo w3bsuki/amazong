@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { Link } from "@/i18n/routing";
 import { createClient } from "@/lib/supabase/client";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { WarningCircle } from "@phosphor-icons/react";
@@ -17,13 +17,16 @@ import {
   type Category,
   type Seller
 } from "../_components";
-import { useParams } from "next/navigation";
 
 type PayoutSetupStatus = {
   isReady: boolean;
   needsSetup: boolean;
   incomplete: boolean;
 };
+
+type CreateListingAction = Parameters<typeof UnifiedSellForm>[0]["createListingAction"]
+type CompleteSellerOnboardingAction =
+  Parameters<typeof SellerOnboardingWizard>[0]["completeSellerOnboardingAction"]
 
 function toPayoutSetupStatus(
   payoutStatus: { details_submitted: boolean; charges_enabled: boolean; payouts_enabled: boolean } | null
@@ -49,15 +52,8 @@ interface SellPageClientProps {
   initialBusinessName?: string | null;
   initialPayoutStatus?: PayoutSetupStatus;
   categories: Category[];
-  createListingAction: (args: { sellerId: string; data: unknown }) => Promise<any>;
-  completeSellerOnboardingAction: (args: {
-    userId: string;
-    accountType: "personal" | "business";
-    username: string;
-    displayName: string;
-    bio: string;
-    businessName?: string;
-  }) => Promise<any>;
+  createListingAction: CreateListingAction;
+  completeSellerOnboardingAction: CompleteSellerOnboardingAction;
 }
 
 export function SellPageClient({
@@ -74,6 +70,8 @@ export function SellPageClient({
   completeSellerOnboardingAction,
 }: SellPageClientProps) {
   const t = useTranslations("Sell");
+  const locale = useLocale();
+  const safeLocale = locale === "bg" ? "bg" : "en";
   const [user, setUser] = useState(initialUser);
   const [seller, setSeller] = useState(initialSeller);
   const [isAuthChecking, setIsAuthChecking] = useState(!initialUser);
@@ -85,10 +83,7 @@ export function SellPageClient({
   const [payoutStatus, setPayoutStatus] = useState<PayoutSetupStatus>(
     initialPayoutStatus ?? toPayoutSetupStatus(null)
   );
-
-  const params = useParams();
-  const locale = typeof params?.locale === "string" ? params.locale : "en";
-  const isBg = locale === "bg";
+  const isBg = safeLocale === "bg";
 
   // Listen for auth state changes (for client-side navigation)
   useEffect(() => {
@@ -283,7 +278,7 @@ export function SellPageClient({
       {/* UnifiedSellForm handles both desktop and mobile layouts */}
       <UnifiedSellForm
         sellerId={seller.id}
-        locale={locale}
+        locale={safeLocale}
         categories={categories}
         createListingAction={createListingAction}
       />

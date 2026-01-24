@@ -14,7 +14,7 @@
     "build": "next build",
     "dev": "next dev -H 0.0.0.0",
     "dev:webpack": "next dev -H 0.0.0.0 --webpack",
-    "lint": "eslint .",
+    "lint": "eslint . --ignore-pattern \"**/.next/**\" --ignore-pattern \"**/playwright-report/**\" --ignore-pattern \"**/test-results/**\" --ignore-pattern \"**/blob-report/**\"",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "ts:gate": "node scripts/ts-safety-gate.mjs",
     "ts:gate:baseline": "node scripts/ts-safety-gate.mjs --update-baseline",

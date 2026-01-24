@@ -1,6 +1,6 @@
 import { SignUpForm } from "../../_components/sign-up-form"
 import { checkUsernameAvailability, signUp } from "../../_actions/auth"
-import { setRequestLocale } from "next-intl/server"
+import { getTranslations, setRequestLocale } from "next-intl/server"
 import { validateLocale } from "@/i18n/routing"
 import type { Metadata } from "next"
 
@@ -12,9 +12,10 @@ export async function generateMetadata({
   const { locale: localeParam } = await params
   const locale = validateLocale(localeParam)
   setRequestLocale(locale)
+  const t = await getTranslations({ locale, namespace: "Auth" })
 
   return {
-    title: locale === "bg" ? "Създай акаунт" : "Create Account",
+    title: t("createAccountTitle"),
   }
 }
 

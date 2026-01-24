@@ -10,8 +10,7 @@ import {
 } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { safeAvatarSrc } from "@/lib/utils"
+import { UserAvatar } from "@/components/shared/user-avatar"
 import {
   Table,
   TableBody,
@@ -181,12 +180,12 @@ export default async function BusinessCustomersPage() {
                 <TableRow key={customer.id}>
                   <TableCell>
                     <div className="flex items-center gap-3">
-                      <Avatar className="size-8">
-                        <AvatarImage src={safeAvatarSrc(customer.avatar_url)} />
-                        <AvatarFallback className="text-xs">
-                          {(customer.full_name || customer.email || "?").charAt(0).toUpperCase()}
-                        </AvatarFallback>
-                      </Avatar>
+                      <UserAvatar
+                        name={customer.full_name || customer.email || "User"}
+                        avatarUrl={customer.avatar_url ?? null}
+                        className="size-8"
+                        fallbackClassName="text-xs"
+                      />
                       <div>
                         <p className="font-medium text-sm">
                           {customer.full_name || "Anonymous"}

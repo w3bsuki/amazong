@@ -9,6 +9,7 @@ import { FreshnessIndicator } from "./freshness-indicator"
 import { Truck, MapPin, ShieldCheck } from "@phosphor-icons/react"
 import Image from "next/image"
 import { normalizeImageUrl } from "@/lib/normalize-image-url"
+import { Badge } from "@/components/ui/badge"
 
 interface ProductCardListProps {
   // Required
@@ -16,6 +17,7 @@ interface ProductCardListProps {
   title: string
   price: number
   image: string
+  isBoosted?: boolean
 
   // Meta
   createdAt?: string | null | undefined
@@ -66,6 +68,7 @@ export function ProductCardList({
   title,
   price,
   image,
+  isBoosted = false,
   createdAt,
   description,
   originalPrice,
@@ -117,6 +120,10 @@ export function ProductCardList({
     : null
 
   const hasDiscount = originalPrice && originalPrice > price
+  const discountPercent = hasDiscount
+    ? Math.round(((originalPrice - price) / originalPrice) * 100)
+    : 0
+  const showDiscountBadge = hasDiscount && discountPercent >= 1
 
   return (
     <div
@@ -144,6 +151,20 @@ export function ProductCardList({
           sizes="(max-width: 640px) 128px, 160px"
           className="object-cover"
         />
+
+        {/* Status badges (Promo / Discount) */}
+        {(isBoosted || showDiscountBadge) && (
+          <div className="pointer-events-none absolute left-1.5 top-1.5 z-10 flex flex-col gap-1">
+            {isBoosted && (
+              <Badge variant="promoted">{t("adBadge")}</Badge>
+            )}
+            {showDiscountBadge && (
+              <Badge variant="deal" className="text-2xs font-bold">
+                -{discountPercent}%
+              </Badge>
+            )}
+          </div>
+        )}
 
         {/* Wishlist button overlay */}
         <div className="absolute top-1.5 right-1.5 z-10">

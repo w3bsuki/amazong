@@ -3,7 +3,7 @@
 import { type ReactNode, useRef, useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight, CaretLeft, Rocket, X, SpinnerGap } from "@phosphor-icons/react";
-import Link from "next/link";
+import { Link } from "@/i18n/routing";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useSellFormContext } from "../sell-form-provider";

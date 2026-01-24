@@ -1,6 +1,7 @@
 'use client'
 
 import { ErrorBoundaryUI } from '@/components/shared/error-boundary-ui'
+import { useTranslations } from 'next-intl'
 
 export default function WishlistError({
   error,
@@ -9,14 +10,16 @@ export default function WishlistError({
   error: Error & { digest?: string }
   reset: () => void
 }) {
+  const t = useTranslations('Errors')
+
   return (
     <ErrorBoundaryUI
       error={error}
       reset={reset}
-      title="Wishlist unavailable"
-      description="We couldn't load your wishlist. Your saved items are safe - please try again."
+      title={t('wishlist.title')}
+      description={t('wishlist.description')}
       ctaIcon="house"
-      ctaLabel="Go to homepage"
+      ctaLabel={t('common.goToHomepage')}
       ctaHref="/"
       logPrefix="Wishlist"
     />

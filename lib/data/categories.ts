@@ -941,12 +941,9 @@ export async function getSubcategoriesWithCounts(
   }
   
   // Query 2: Get counts for these category IDs from category_stats (materialized view)
-  // Note: category_stats isn't in generated types, use raw query
   const categoryIds = categories.map(c => c.id)
   
-  // Direct PostgREST query since category_stats materialized view isn't in generated types
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { data: statsRaw, error: statsError } = await (supabase as any)
+  const { data: statsRaw, error: statsError } = await supabase
     .from('category_stats')
     .select('category_id, subtree_product_count')
     .in('category_id', categoryIds)
@@ -956,13 +953,12 @@ export async function getSubcategoriesWithCounts(
     // Fallback: return categories with 0 counts rather than failing completely
   }
   
-  // Type the stats response
-  type CategoryStat = { category_id: string; subtree_product_count: number }
-  const stats: CategoryStat[] = statsRaw ?? []
+  const stats = statsRaw ?? []
   
   // Build lookup map for counts
   const countMap = new Map<string, number>()
   for (const stat of stats) {
+    if (!stat.category_id) continue
     countMap.set(stat.category_id, stat.subtree_product_count ?? 0)
   }
   

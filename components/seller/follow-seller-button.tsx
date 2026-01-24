@@ -4,6 +4,7 @@ import { useOptimistic, useTransition } from "react"
 import { Button } from "@/components/ui/button"
 import { Heart, SpinnerGap, UserPlus } from "@phosphor-icons/react"
 import { toast } from "sonner"
+import { useTranslations } from "next-intl"
 
 /**
  * Action result type for follow/unfollow operations
@@ -39,7 +40,7 @@ export function FollowSellerButton({
   sellerId,
   initialIsFollowing,
   actions,
-  locale = "en",
+  locale: _locale = "en",
   showLabel = true,
   onFollowChange,
   variant = "outline",
@@ -50,15 +51,8 @@ export function FollowSellerButton({
   // React 19: useOptimistic for instant UI feedback before server responds
   const [optimisticFollowing, setOptimisticFollowing] = useOptimistic(initialIsFollowing)
 
-  const t = {
-    follow: locale === "bg" ? "Следвай" : "Follow",
-    unfollow: locale === "bg" ? "Отследвай" : "Unfollow", 
-    following: locale === "bg" ? "Следваш" : "Following",
-    followSuccess: locale === "bg" ? "Започнахте да следвате магазина" : "Now following this store",
-    unfollowSuccess: locale === "bg" ? "Спряхте да следвате магазина" : "Unfollowed store",
-    error: locale === "bg" ? "Грешка" : "Error",
-    loginRequired: locale === "bg" ? "Влезте в акаунта си, за да следвате" : "Sign in to follow stores",
-  }
+  const tSeller = useTranslations("Seller")
+  const tCommon = useTranslations("Common")
 
   const handleClick = async () => {
     const newState = !optimisticFollowing
@@ -72,16 +66,16 @@ export function FollowSellerButton({
         : await actions.unfollowSeller(sellerId)
 
       if (result.success) {
-        toast.success(newState ? t.followSuccess : t.unfollowSuccess)
+        toast.success(newState ? tSeller("followSuccess") : tSeller("unfollowSuccess"))
       } else {
         // On error, useOptimistic automatically rolls back when transition ends
         // But we need to notify parent
         onFollowChange?.(!newState)
         
         if (result.error === "Not authenticated") {
-          toast.error(t.loginRequired)
+          toast.error(tSeller("loginRequired"))
         } else {
-          toast.error(result.error || t.error)
+          toast.error(result.error || tCommon("error"))
         }
       }
     })
@@ -104,7 +98,7 @@ export function FollowSellerButton({
       )}
       {showLabel && (
         <span className="ml-1.5">
-          {optimisticFollowing ? t.following : t.follow}
+          {optimisticFollowing ? tSeller("following") : tSeller("follow")}
         </span>
       )}
     </Button>

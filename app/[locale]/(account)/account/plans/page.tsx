@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/server"
-import { redirect } from "next/navigation"
+import { redirect } from "@/i18n/routing"
 import { getTranslations } from "next-intl/server"
 import { PlansContent } from "./plans-content"
 import {
@@ -18,18 +18,19 @@ interface PlansPageProps {
 }
 
 export default async function PlansPage({ params }: PlansPageProps) {
-  const { locale } = await params
+  const { locale: localeParam } = await params
+  const locale = localeParam === "bg" ? "bg" : "en"
   const supabase = await createClient()
-  const _t = await getTranslations({ locale, namespace: 'Account' })
+  const t = await getTranslations({ locale, namespace: "Account" })
 
   if (!supabase) {
-    redirect("/auth/login")
+    return redirect({ href: "/auth/login", locale })
   }
 
   const { data: { user } } = await supabase.auth.getUser()
 
   if (!user) {
-    redirect("/auth/login")
+    return redirect({ href: "/auth/login", locale })
   }
 
   // Fetch profile info (seller fields are now on profiles)
@@ -75,7 +76,7 @@ export default async function PlansPage({ params }: PlansPageProps) {
 
   return (
     <div className="flex flex-col gap-4 md:gap-4">
-      <h1 className="sr-only">{locale === 'bg' ? 'Планове' : 'Plans'}</h1>
+      <h1 className="sr-only">{t("header.plans")}</h1>
       <PlansContent
         locale={locale}
         plans={filteredPlans as Parameters<typeof PlansContent>[0]['plans']}    

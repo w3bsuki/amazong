@@ -1,16 +1,27 @@
 import { AppBreadcrumb } from "@/components/navigation/app-breadcrumb"
+import type { BreadcrumbItemData } from "@/components/navigation/app-breadcrumb"
 
-export default function TopSellersHero({ locale }: { locale: string }) {
+export default function TopSellersHero({
+  breadcrumbItems,
+  breadcrumbAriaLabel,
+  breadcrumbHomeLabel,
+  title,
+  subtitle,
+}: {
+  breadcrumbItems: readonly BreadcrumbItemData[]
+  breadcrumbAriaLabel: string
+  breadcrumbHomeLabel: string
+  title: string
+  subtitle: string
+}) {
   return (
     <div className="bg-rating text-rating-foreground py-6 sm:py-10">
       <div className="container">
         <div className="[&_nav]:border-white/20 [&_nav]:mb-2 [&_a]:text-white/80 [&_a:hover]:text-white [&_span[aria-current]]:text-white [&_svg]:text-white/50">
           <AppBreadcrumb
-            items={[
-              { label: locale === "bg" ? "Начало" : "Home", href: "/" },
-              { label: locale === "bg" ? "Топ продавачи" : "Top Sellers" },
-            ]}
-            homeLabel={locale === "bg" ? "Начало" : "Treido"}
+            items={breadcrumbItems}
+            ariaLabel={breadcrumbAriaLabel}
+            homeLabel={breadcrumbHomeLabel}
           />
         </div>
 
@@ -21,13 +32,9 @@ export default function TopSellersHero({ locale }: { locale: string }) {
             </svg>
           </div>
           <div>
-            <h1 className="text-2xl sm:text-4xl font-bold">
-              {locale === "bg" ? "Топ продавачи" : "Top Sellers"}
-            </h1>
+            <h1 className="text-2xl sm:text-4xl font-bold">{title}</h1>
             <p className="text-white/80 text-sm sm:text-base mt-1">
-              {locale === "bg"
-                ? "Открийте най-добрите продавачи в платформата"
-                : "Discover the best sellers on our platform"}
+              {subtitle}
             </p>
           </div>
         </div>

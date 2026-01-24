@@ -37,23 +37,15 @@ import {
 import { toast } from "sonner"
 import { formatDistanceToNow, format } from "date-fns"
 import { bg, enUS } from "date-fns/locale"
-import type { OrderItemStatus } from "@/lib/order-status"
+import { getOrderStatusFromItems, type OrderItemStatus } from "@/lib/order-status"
 import { OrderTimeline } from "./order-timeline"
+import { BuyerOrderActions, type BuyerOrderActionsServerActions } from "../../_components/buyer-order-actions"
 
-export type OrderDetailContentServerActions = {
+export type OrderDetailContentServerActions = BuyerOrderActionsServerActions & {
   requestReturn: (
     orderItemId: string,
     reason: string
   ) => Promise<{ success: boolean; error?: string }>
-  submitSellerFeedback: (input: {
-    sellerId: string
-    orderId?: string | null
-    rating: number
-    comment?: string | null
-    itemAsDescribed: boolean
-    shippingSpeed: boolean
-    communication: boolean
-  }) => Promise<{ success: boolean; data?: { id: string }; error?: string }>
 }
 
 interface OrderItem {
@@ -112,6 +104,7 @@ interface OrderDetailContentProps {
   locale: string
   order: Order
   existingSellerFeedbackSellerIds?: string[]
+  conversationId?: string | null
   actions: OrderDetailContentServerActions
 }
 
@@ -153,7 +146,7 @@ const CARRIERS: Record<string, { name: string; trackingUrl: string }> = {
   dpd: { name: "DPD", trackingUrl: "https://www.dpd.com/bg/bg/paket-trassen/track-and-trace-system-bg/?parcelNr=" },
 }
 
-export function OrderDetailContent({ locale, order, existingSellerFeedbackSellerIds, actions }: OrderDetailContentProps) {
+export function OrderDetailContent({ locale, order, existingSellerFeedbackSellerIds, conversationId, actions }: OrderDetailContentProps) {
   const [isReturnDialogOpen, setIsReturnDialogOpen] = useState(false)
   const [returnReason, setReturnReason] = useState("")
   const [selectedItem, setSelectedItem] = useState<OrderItem | null>(null)
@@ -171,10 +164,16 @@ export function OrderDetailContent({ locale, order, existingSellerFeedbackSeller
   const [isSubmittingFeedback, startFeedbackTransition] = useTransition()
 
   const dateLocale = locale === "bg" ? bg : enUS
-  const orderStatus = order.status || "pending"
-  const orderStatusKey: OrderStatusKey = isOrderStatusKey(orderStatus) ? orderStatus : "pending"
+  const fallbackStatus = order.status && isOrderStatusKey(order.status) ? order.status : "pending"
+  const derivedStatus = getOrderStatusFromItems(
+    order.order_items.map((item) => item.status),
+    fallbackStatus
+  )
+  const orderStatusKey: OrderStatusKey = isOrderStatusKey(derivedStatus) ? derivedStatus : "pending"
+  const orderStatus = orderStatusKey
   const statusConfig = STATUS_CONFIG[orderStatusKey]
   const StatusIcon = statusConfig.icon
+  const stripePaymentIntentId = order.stripe_payment_intent_id
 
   // Format currency
   const formatPrice = (price: number) => {
@@ -300,7 +299,7 @@ export function OrderDetailContent({ locale, order, existingSellerFeedbackSeller
         sellerId: feedbackSellerId,
         orderId: order.id,
         rating: feedbackRating,
-        comment: feedbackComment.trim() || null,
+        comment: feedbackComment.trim(),
         itemAsDescribed,
         shippingSpeed,
         communication,
@@ -609,6 +608,20 @@ export function OrderDetailContent({ locale, order, existingSellerFeedbackSeller
                           </Button>
                         )}
                       </div>
+                      {(itemStatus === "shipped" || itemStatus === "delivered") && (
+                        <div className="mt-2">
+                          <BuyerOrderActions
+                            orderItemId={item.id}
+                            currentStatus={itemStatus}
+                            sellerId={item.seller_id}
+                            conversationId={conversationId ?? null}
+                            locale={locale}
+                            orderId={order.id}
+                            actions={actions}
+                            mode="report-only"
+                          />
+                        </div>
+                      )}
                     </div>
                   </div>
                 )
@@ -638,15 +651,15 @@ export function OrderDetailContent({ locale, order, existingSellerFeedbackSeller
                 <span>{locale === "bg" ? "Общо" : "Total"}</span>
                 <span>{formatPrice(total)}</span>
               </div>
-              {order.stripe_payment_intent_id && (
+              {stripePaymentIntentId && (
                 <div className="flex items-center gap-2 text-xs text-muted-foreground pt-2">
                   <Receipt className="size-3.5" />
-                  <span>Stripe: {order.stripe_payment_intent_id.slice(0, 20)}...</span>
+                  <span>Stripe: {stripePaymentIntentId.slice(0, 20)}...</span>
                   <Button
                     variant="ghost"
                     size="icon"
                     className="size-5"
-                    onClick={() => copyToClipboard(order.stripe_payment_intent_id!, "Payment ID")}
+                    onClick={() => copyToClipboard(stripePaymentIntentId, "Payment ID")}
                   >
                     <Copy className="size-3" />
                   </Button>

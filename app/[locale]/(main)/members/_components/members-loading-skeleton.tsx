@@ -1,9 +1,12 @@
 import { Skeleton } from "@/components/ui/skeleton"
+import { getTranslations } from "next-intl/server"
 
-export default function MembersLoadingSkeleton() {
+export default async function MembersLoadingSkeleton() {
+  const t = await getTranslations("MembersPage")
+
   return (
     <div className="min-h-screen bg-background pb-20 sm:pb-12" role="status" aria-live="polite" aria-busy="true">
-      <p className="sr-only">Loading members…</p>
+      <p className="sr-only">{t("loading")}</p>
       <div className="bg-primary/5 py-10 sm:py-16">
         <div className="container">
           <div className="flex flex-col md:flex-row items-center gap-4">

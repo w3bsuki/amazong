@@ -53,7 +53,7 @@ function ProductCardSkeleton({ showQuickAdd = true }: ProductCardSkeletonProps) 
   return (
     <div className="overflow-hidden">
       <div className="relative overflow-hidden rounded-(--radius-card) bg-muted">
-        <AspectRatio ratio={4 / 5}>
+        <AspectRatio ratio={1}>
           <Skeleton className="h-full w-full" />
         </AspectRatio>
 

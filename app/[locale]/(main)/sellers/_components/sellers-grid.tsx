@@ -2,9 +2,8 @@
 
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Link } from "@/i18n/routing"
-import { safeAvatarSrc } from "@/lib/utils"
+import { UserAvatar } from "@/components/shared/user-avatar"
 import { useLocale, useTranslations } from "next-intl"
 
 import type { Seller } from "../_lib/top-sellers-types"
@@ -21,7 +20,6 @@ export default function SellersGrid({
   return (
     <div className="grid grid-cols-2 gap-2 sm:gap-4 lg:grid-cols-3 xl:grid-cols-4">
       {sellers.map((seller) => {
-        const avatarUrl = safeAvatarSrc(seller.avatar_url)
         const href = seller.username ? `/${seller.username}` : `/search?seller=${seller.id}`
 
         return (
@@ -29,12 +27,12 @@ export default function SellersGrid({
             <Card className="h-full cursor-pointer border-border rounded-lg overflow-hidden group">
               <CardContent className="p-4">
                 <div className="flex items-start gap-3 mb-3">
-                  <Avatar className="size-14 shrink-0">
-                    <AvatarImage src={avatarUrl} alt={seller.store_name} />
-                    <AvatarFallback className="font-semibold">
-                      {seller.store_name.charAt(0).toUpperCase()}
-                    </AvatarFallback>
-                  </Avatar>
+                  <UserAvatar
+                    name={seller.store_name}
+                    avatarUrl={seller.avatar_url ?? null}
+                    className="size-14 shrink-0"
+                    fallbackClassName="font-semibold"
+                  />
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
                     <h3 className="font-semibold text-foreground truncate group-hover:text-primary transition-colors">

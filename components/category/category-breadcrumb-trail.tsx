@@ -30,6 +30,7 @@ interface CategoryBreadcrumbTrailProps {
 export function CategoryBreadcrumbTrail({ ancestry, className }: CategoryBreadcrumbTrailProps) {
   const locale = useLocale()
   const t = useTranslations("Common")
+  const tCategories = useTranslations("Categories")
 
   const getCategoryName = (cat: BreadcrumbCategory): string => {
     if (locale === "bg" && cat.name_bg) {
@@ -52,7 +53,7 @@ export function CategoryBreadcrumbTrail({ ancestry, className }: CategoryBreadcr
 
   return (
     <nav
-      aria-label={locale === "bg" ? "Навигация по категории" : "Category navigation"}
+      aria-label={tCategories("navigationAriaLabel")}
       className={cn("text-sm", className)}
     >
       {/* All Categories link */}

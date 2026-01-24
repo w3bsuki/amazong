@@ -1,5 +1,5 @@
-import { defineRouting } from 'next-intl/routing';
-import { createNavigation } from 'next-intl/navigation';
+import { defineRouting } from 'next-intl/routing'
+import { createNavigation } from 'next-intl/navigation'
 
 /**
  * Supported locales type union
@@ -19,7 +19,7 @@ export const locales: readonly Locale[] = ['en', 'bg'] as const;
  * @returns True if the string is a valid locale
  */
 export function isValidLocale(locale: string): locale is Locale {
-    return locales.includes(locale as Locale);
+  return locales.includes(locale as Locale)
 }
 
 /**
@@ -29,13 +29,14 @@ export function isValidLocale(locale: string): locale is Locale {
  * @returns The locale with proper Locale type
  */
 export function validateLocale(locale: string): Locale {
-    if (isValidLocale(locale)) {
-        return locale;
-    }
-    // Fallback to default locale if somehow invalid
-    // This shouldn't happen with proper middleware setup
-    console.warn(`Invalid locale "${locale}", falling back to "en"`);
-    return 'en';
+  if (isValidLocale(locale)) {
+    return locale
+  }
+
+  // Fallback to default locale if somehow invalid.
+  // This shouldn't happen with proper middleware setup.
+  console.warn(`Invalid locale "${locale}", falling back to "en"`)
+  return 'en'
 }
 
 /**
@@ -72,19 +73,19 @@ export const routing = defineRouting({
      * 
      * @see https://next-intl-docs.vercel.app/docs/routing/configuration#locale-cookie
      */
-    localeCookie: {
-        // Standard cookie name recognized by next-intl
-        name: 'NEXT_LOCALE',
-        // Persist for 1 year (matches geo cookies in proxy.ts)
-        maxAge: 60 * 60 * 24 * 365,
-        // Lax same-site for security while allowing navigation
-        sameSite: 'lax',
-        // Available on all paths
-        path: '/',
-        // Secure in production (HTTPS only)
-        // Note: Automatically handled by Next.js based on environment
-    }
-});
+  localeCookie: {
+    // Standard cookie name recognized by next-intl
+    name: 'NEXT_LOCALE',
+    // Persist for 1 year (matches geo cookies in proxy.ts)
+    maxAge: 60 * 60 * 24 * 365,
+    // Lax same-site for security while allowing navigation
+    sameSite: 'lax',
+    // Available on all paths
+    path: '/',
+    // Secure in production (HTTPS only)
+    // Note: Automatically handled by Next.js based on environment
+  },
+})
 
 /**
  * Locale-aware navigation APIs
@@ -110,5 +111,4 @@ export const routing = defineRouting({
  * router.push('/products', { locale: 'bg' });
  * ```
  */
-export const { Link,  usePathname, useRouter,  } =
-    createNavigation(routing);
+export const { Link, redirect, permanentRedirect, usePathname, useRouter, getPathname } = createNavigation(routing)

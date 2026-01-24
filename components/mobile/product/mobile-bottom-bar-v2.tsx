@@ -16,7 +16,7 @@ import { MessageCircle, ShoppingCart, Phone, Calendar, User } from "lucide-react
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { useCart } from "@/components/providers/cart-context"
-import { useRouter, useParams } from "next/navigation"
+import { useRouter } from "@/i18n/routing"
 import { useTranslations, useLocale } from "next-intl"
 import type { CategoryType } from "@/lib/utils/category-type"
 
@@ -59,8 +59,6 @@ export function MobileBottomBarV2({
   const t = useTranslations("Product")
   const locale = useLocale()
   const router = useRouter()
-  const params = useParams()
-  const routeLocale = (params.locale as string) || "en"
   const { addToCart } = useCart()
 
   // Price formatting
@@ -80,7 +78,7 @@ export function MobileBottomBarV2({
   // Navigate to chat
   const handleChat = () => {
     if (!seller?.id) return
-    router.push(`/${routeLocale}/chat?seller=${seller.id}`)
+    router.push(`/chat?seller=${encodeURIComponent(seller.id)}`)
   }
 
   // Add to cart
@@ -104,13 +102,13 @@ export function MobileBottomBarV2({
   // Contact seller/agent (opens chat or contact form)
   const handleContact = () => {
     if (!seller?.id) return
-    router.push(`/${routeLocale}/chat?seller=${seller.id}`)
+    router.push(`/chat?seller=${encodeURIComponent(seller.id)}`)
   }
 
   // Schedule visit (opens contact with inquiry type)
   const handleScheduleVisit = () => {
     if (!seller?.id) return
-    router.push(`/${routeLocale}/chat?seller=${seller.id}&type=visit`)
+    router.push(`/chat?seller=${encodeURIComponent(seller.id)}&type=visit`)
   }
 
   // Render appropriate buttons based on category

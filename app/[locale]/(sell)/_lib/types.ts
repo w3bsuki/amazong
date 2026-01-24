@@ -61,19 +61,3 @@ interface ProductImage {
   position: number;
 }
 
-// ============================================================================
-// Tag Options for Product Badges
-// ============================================================================
-
-export const TAG_OPTIONS = [
-  { value: "new", label: "New", labelBg: "Ново", color: "bg-success", description: "Fresh arrival" },
-  { value: "sale", label: "Sale", labelBg: "Разпродажба", color: "bg-destructive", description: "Discounted item" },
-  { value: "limited", label: "Limited", labelBg: "Лимитирано", color: "bg-secondary-foreground", description: "Limited availability" },
-  { value: "trending", label: "Trending", labelBg: "Популярно", color: "bg-warning", description: "Hot right now" },
-  { value: "bestseller", label: "Best Seller", labelBg: "Топ продажби", color: "bg-rating", description: "Top selling item" },
-  { value: "premium", label: "Premium", labelBg: "Премиум", color: "bg-primary", description: "High quality" },
-  { value: "handmade", label: "Handmade", labelBg: "Ръчна изработка", color: "bg-warning", description: "Handcrafted item" },
-  { value: "eco-friendly", label: "Eco-Friendly", labelBg: "Еко", color: "bg-success", description: "Environmentally friendly" },
-] as const;
-
-type TagOption = typeof TAG_OPTIONS[number];

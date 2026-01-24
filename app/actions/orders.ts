@@ -393,15 +393,19 @@ export async function buyerConfirmDelivery(
         order:orders!inner(user_id)
       `)
       .eq('id', orderItemId)
-      .single()
+      .single<{
+        id: string
+        status: string
+        seller_id: string
+        order: { user_id: string }
+      }>()
 
     if (fetchError || !orderItem) {
       return { success: false, error: "Order item not found" }
     }
 
     // Verify the user owns this order
-    const order = orderItem.order as unknown as { user_id: string }
-    if (order.user_id !== user.id) {
+    if (orderItem.order.user_id !== user.id) {
       return { success: false, error: "Not authorized to update this order" }
     }
 
@@ -466,14 +470,19 @@ export async function canBuyerRateSeller(
         order:orders!inner(user_id)
       `)
       .eq('id', orderItemId)
-      .single()
+      .single<{
+        id: string
+        status: string | null
+        seller_id: string
+        order_id: string
+        order: { user_id: string }
+      }>()
 
     if (!orderItem) {
       return { canRate: false, hasRated: false }
     }
 
-    const order = orderItem.order as unknown as { user_id: string }
-    if (order.user_id !== user.id) {
+    if (orderItem.order.user_id !== user.id) {
       return { canRate: false, hasRated: false }
     }
 
@@ -530,14 +539,19 @@ export async function canSellerRateBuyer(
       `)
       .eq('id', orderItemId)
       .eq('seller_id', user.id)
-      .single()
+      .single<{
+        id: string
+        status: string | null
+        seller_id: string
+        order_id: string
+        order: { user_id: string }
+      }>()
 
     if (!orderItem) {
       return { canRate: false, hasRated: false }
     }
 
-    const order = orderItem.order as unknown as { user_id: string }
-    const buyerId = order.user_id
+    const buyerId = orderItem.order.user_id
 
     // Must be delivered to rate
     if (orderItem.status !== 'delivered') {
@@ -599,15 +613,18 @@ export async function requestReturn(
         `
       )
       .eq("id", orderItemId)
-      .single()
+      .single<{
+        id: string
+        status: string | null
+        seller_id: string
+        order: { id: string; user_id: string }
+      }>()
 
     if (fetchError || !orderItem) {
       return { success: false, error: "Order item not found" }
     }
 
-    const order = orderItem.order as unknown as { id: string; user_id: string }
-
-    if (order.user_id !== user.id) {
+    if (orderItem.order.user_id !== user.id) {
       return { success: false, error: "Not authorized to request a return for this order" }
     }
 
@@ -623,7 +640,7 @@ export async function requestReturn(
       .neq("status", "cancelled")
       .limit(1)
 
-    const existingRequest = (existingRequests?.[0] ?? null) as { id?: string; status?: string } | null
+    const existingRequest = existingRequests?.[0] ?? null
 
     if (existingError) {
       console.error("Error checking return requests:", existingError)
@@ -636,7 +653,7 @@ export async function requestReturn(
 
     const { error: insertError } = await supabase.from("return_requests").insert({
         order_item_id: orderItemId,
-        order_id: order.id,
+        order_id: orderItem.order.id,
         buyer_id: user.id,
         seller_id: orderItem.seller_id,
         reason: normalizedReason,
@@ -694,16 +711,20 @@ export async function requestOrderCancellation(
         order:orders!inner(id, user_id, status)
       `)
       .eq('id', orderItemId)
-      .single()
+      .single<{
+        id: string
+        status: string | null
+        seller_id: string
+        product: { title: string } | null
+        order: { id: string; user_id: string; status: string }
+      }>()
 
     if (fetchError || !orderItem) {
       return { success: false, error: "Order item not found" }
     }
-
-    const order = orderItem.order as unknown as { id: string; user_id: string; status: string }
     
     // Verify user owns this order
-    if (order.user_id !== user.id) {
+    if (orderItem.order.user_id !== user.id) {
       return { success: false, error: "Not authorized to cancel this order" }
     }
 
@@ -747,10 +768,10 @@ export async function requestOrderCancellation(
         body: `A buyer has cancelled their order${reason ? `: ${reason}` : ''}`,
         data: { 
           order_item_id: orderItemId, 
-          order_id: order.id,
+          order_id: orderItem.order.id,
           reason 
         },
-        order_id: order.id,
+        order_id: orderItem.order.id,
       })
 
     if (notifyError) {
@@ -809,17 +830,20 @@ export async function reportOrderIssue(
         order:orders!inner(id, user_id)
       `)
       .eq('id', orderItemId)
-      .single()
+      .single<{
+        id: string
+        status: string | null
+        seller_id: string
+        product: { id: string; title: string } | null
+        order: { id: string; user_id: string }
+      }>()
 
     if (fetchError || !orderItem) {
       return { success: false, error: "Order item not found" }
     }
-
-    const order = orderItem.order as unknown as { id: string; user_id: string }
-    const product = orderItem.product as unknown as { id: string; title: string } | null
     
     // Verify user owns this order
-    if (order.user_id !== user.id) {
+    if (orderItem.order.user_id !== user.id) {
       return { success: false, error: "Not authorized to report issues for this order" }
     }
 
@@ -833,7 +857,7 @@ export async function reportOrderIssue(
       'other': 'Order Issue',
     }
 
-    const subject = `${issueSubjects[issueType]}${product?.title ? ` - ${product.title}` : ''}`
+    const subject = `${issueSubjects[issueType]}${orderItem.product?.title ? ` - ${orderItem.product.title}` : ''}`
 
     // Create or find existing conversation with the seller
     const { data: existingConversation } = await supabase
@@ -841,7 +865,7 @@ export async function reportOrderIssue(
       .select('id')
       .eq('buyer_id', user.id)
       .eq('seller_id', orderItem.seller_id)
-      .eq('order_id', order.id)
+      .eq('order_id', orderItem.order.id)
       .single()
 
     let conversationId = existingConversation?.id
@@ -853,8 +877,8 @@ export async function reportOrderIssue(
         .insert({
           buyer_id: user.id,
           seller_id: orderItem.seller_id,
-          product_id: product?.id || null,
-          order_id: order.id,
+          product_id: orderItem.product?.id ?? null,
+          order_id: orderItem.order.id,
           subject,
           status: 'open',
           last_message_at: new Date().toISOString(),
@@ -908,11 +932,11 @@ export async function reportOrderIssue(
         body: `A buyer has reported an issue with their order`,
         data: { 
           order_item_id: orderItemId, 
-          order_id: order.id,
+          order_id: orderItem.order.id,
           issue_type: issueType,
           conversation_id: conversationId
         },
-        order_id: order.id,
+        order_id: orderItem.order.id,
         conversation_id: conversationId,
       })
 
@@ -971,7 +995,14 @@ export async function getBuyerOrderDetails(
       `)
       .eq('id', orderId)
       .eq('user_id', user.id)
-      .single()
+      .single<{
+        id: string
+        status: string | null
+        total_amount: number
+        shipping_address: Record<string, unknown> | null
+        created_at: string
+        order_items: OrderItem[]
+      }>()
 
     if (orderError || !order) {
       return { order: null, error: "Order not found" }
@@ -982,9 +1013,9 @@ export async function getBuyerOrderDetails(
         id: order.id,
         status: order.status || 'pending',
         total_amount: order.total_amount,
-        shipping_address: order.shipping_address as Record<string, unknown> | null,
+        shipping_address: order.shipping_address,
         created_at: order.created_at,
-        items: order.order_items as unknown as OrderItem[],
+        items: order.order_items,
       }
     }
   } catch (error) {

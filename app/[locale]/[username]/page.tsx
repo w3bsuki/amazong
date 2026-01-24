@@ -1,9 +1,10 @@
 import { notFound } from "next/navigation"
 import type { Metadata } from "next"
-import { setRequestLocale } from "next-intl/server"
+import { getTranslations, setRequestLocale } from "next-intl/server"
 import { Suspense } from "react"
 import { createClient, createStaticClient } from "@/lib/supabase/server"
 import { getPublicProfileData, getProfileMetadata } from "@/lib/data/profile-page"
+import { safeAvatarSrc } from "@/lib/utils"
 import { PublicProfileClient } from "./profile-client"
 import { routing } from "@/i18n/routing"
 import { followSeller, unfollowSeller } from "@/app/actions/seller-follows"
@@ -114,27 +115,39 @@ interface ProfilePageProps {
 // Generate metadata for SEO - uses CACHED data function
 export async function generateMetadata({ params }: ProfilePageProps): Promise<Metadata> {
   const { username, locale } = await params
+  setRequestLocale(locale)
 
   const data = await getProfileMetadata(username)
 
   if (!data?.profile) {
+    const tNotFound = await getTranslations({ locale, namespace: "ProfileNotFound" })
     return {
-      title: locale === "bg" ? "Профил не е намерен" : "Profile Not Found",
+      title: tNotFound("title"),
     }
   }
 
   const { profile, sellerStats } = data
-  const displayName = profile.display_name || profile.username
+  const usernameTag = profile.username || username
+  const displayName = profile.display_name || usernameTag
+  const t = await getTranslations({ locale, namespace: "ProfilePage" })
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://treido.eu"
   const canonicalUrl = `${siteUrl}/${locale}/${username}`
   
-  const title = `${displayName} (@${profile.username})`
+  const title = `${displayName} (@${usernameTag})`
   const totalSales = sellerStats?.total_sales ?? 0
   const avgRating = sellerStats?.average_rating ?? 0
-  const description = profile.bio
-    || (locale === "bg"
-      ? `Вижте профила на ${displayName} в Treido. ${profile.is_seller ? `${totalSales} продажби, ⭐ ${avgRating.toFixed(1)}` : "Член на Treido"}`
-      : `View ${displayName}'s profile on Treido. ${profile.is_seller ? `${totalSales} sales, ⭐ ${avgRating.toFixed(1)}` : "Treido member"}`)
+  const description =
+    profile.bio ||
+    (profile.is_seller
+      ? t("metadataDescriptionSeller", {
+          name: displayName,
+          sales: totalSales,
+          rating: avgRating.toFixed(1),
+        })
+      : t("metadataDescriptionMember", { name: displayName }))
+
+  const ogAvatar = safeAvatarSrc(profile.avatar_url)
+  const ogImages = ogAvatar && ogAvatar.startsWith("http") ? [ogAvatar] : undefined
 
   return {
     title,
@@ -151,7 +164,7 @@ export async function generateMetadata({ params }: ProfilePageProps): Promise<Me
       description,
       type: "profile",
       url: canonicalUrl,
-      images: profile.avatar_url ? [profile.avatar_url] : undefined,
+      images: ogImages,
     },
     twitter: {
       card: "summary",

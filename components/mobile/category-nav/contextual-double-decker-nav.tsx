@@ -55,6 +55,7 @@ export function ContextualDoubleDeckerNav({
 }: ContextualDoubleDeckerNavProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const t = useTranslations("SearchCategories")
+  const tCategories = useTranslations("Categories")
 
   // Auto-scroll active pill into view
   useEffect(() => {
@@ -99,12 +100,12 @@ export function ContextualDoubleDeckerNav({
         className
       )}
       style={sticky ? { top: stickyTop } : undefined}
-      aria-label={locale === "bg" ? "Навигация по категории" : "Category navigation"}
+      aria-label={tCategories("navigationAriaLabel")}
     >
       {/* Row 1: Context Stack (Where Am I) */}
       {showContextRow && (
         <div className="px-3 py-2 flex items-center gap-2 overflow-x-auto no-scrollbar bg-muted/50 border-b border-border/50">
-          <Link href={parentHref as string} className={chipInactiveToken} aria-label={locale === "bg" ? "Към родителска категория" : "Go to parent category"}>
+          <Link href={parentHref as string} className={chipInactiveToken} aria-label={tCategories("goToParentCategoryAriaLabel")}>
             {parentLabel}
           </Link>
           <CaretRight size={12} weight="bold" className="text-muted-foreground/50 shrink-0" aria-hidden="true" />
@@ -113,7 +114,7 @@ export function ContextualDoubleDeckerNav({
             <Link
               href={parentHref as string}
               className="-mr-1 rounded-sm p-1 active:opacity-70"
-              aria-label={locale === "bg" ? "Изчисти и върни назад" : "Clear and go back"}
+              aria-label={tCategories("clearAndGoBackAriaLabel")}
             >
               <X size={12} weight="bold" className="opacity-60" />
             </Link>

@@ -2,6 +2,7 @@
 
 import { Camera, Plus, SpinnerGap } from "@phosphor-icons/react";
 import { cn } from "@/lib/utils";
+import { useTranslations } from "next-intl";
 
 interface UploadZoneProps {
   isUploading: boolean;
@@ -28,10 +29,10 @@ export function UploadZone({
   getInputProps,
   currentCount,
   maxCount,
-  locale = "en",
+  locale: _locale = "en",
 }: UploadZoneProps) {
   const remaining = maxCount - currentCount;
-  const isBg = locale === "bg";
+  const t = useTranslations("Sell")
   
   return (
     <div
@@ -55,7 +56,7 @@ export function UploadZone({
           </div>
           <div className="text-center">
             <span className="text-base font-semibold text-foreground block">
-              {isBg ? "Качване..." : "Uploading..."}
+              {t("uploadZone.uploading")}
             </span>
           </div>
         </div>
@@ -71,19 +72,17 @@ export function UploadZone({
           <div className="text-center space-y-1">
             <span className="text-lg font-bold text-foreground block">
               {isDragActive
-                ? (isBg ? "Пуснете тук" : "Drop here")
-                : (isBg ? "Добавете снимки" : "Tap to add photos")}
+                ? t("uploadZone.dropHere")
+                : t("uploadZone.tapToAddPhotos")}
             </span>
             <span className="text-sm text-muted-foreground">
-              {isBg ? "JPG, PNG или WebP до 10MB" : "JPG, PNG or WebP up to 10MB"}
+              {t("uploadZone.fileHint")}
             </span>
           </div>
           <span className="mt-4 text-xs font-medium text-muted-foreground/60">
             {remaining > 0 
-              ? (isBg
-                  ? `Още до ${remaining} снимки`
-                  : `Up to ${remaining} more`)
-              : (isBg ? "Максимум" : "Maximum reached")}
+              ? t("uploadZone.remaining", { count: remaining })
+              : t("uploadZone.maxReached")}
           </span>
         </>
       )}

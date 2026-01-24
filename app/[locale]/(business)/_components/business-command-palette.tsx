@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import { useRouter } from "@/i18n/routing"
+import { useTranslations } from "next-intl"
 import {
   IconSearch,
   IconBox,
@@ -47,6 +48,8 @@ interface CommandOption {
 export function BusinessCommandPalette({ storeName }: CommandPaletteProps) {
   const router = useRouter()
   const [open, setOpen] = React.useState(false)
+  const t = useTranslations("BusinessCommandPalette")
+  const tCommon = useTranslations("Common")
 
   // Listen for keyboard shortcut
   React.useEffect(() => {
@@ -65,10 +68,12 @@ export function BusinessCommandPalette({ storeName }: CommandPaletteProps) {
     command()
   }, [])
 
+  const storeLabel = storeName || t("yourStore")
+
   const navigationCommands: CommandOption[] = [
     {
       id: "home",
-      title: "Go to Home",
+      title: t("nav.home"),
       href: "/dashboard",
       icon: IconHome,
       shortcut: "H",
@@ -76,7 +81,7 @@ export function BusinessCommandPalette({ storeName }: CommandPaletteProps) {
     },
     {
       id: "orders",
-      title: "Go to Orders",
+      title: t("nav.orders"),
       href: "/dashboard/orders",
       icon: IconShoppingCart,
       shortcut: "O",
@@ -84,7 +89,7 @@ export function BusinessCommandPalette({ storeName }: CommandPaletteProps) {
     },
     {
       id: "products",
-      title: "Go to Products",
+      title: t("nav.products"),
       href: "/dashboard/products",
       icon: IconBox,
       shortcut: "P",
@@ -92,14 +97,14 @@ export function BusinessCommandPalette({ storeName }: CommandPaletteProps) {
     },
     {
       id: "inventory",
-      title: "Go to Inventory",
+      title: t("nav.inventory"),
       href: "/dashboard/inventory",
       icon: IconPackage,
       group: "Navigation",
     },
     {
       id: "analytics",
-      title: "Go to Analytics",
+      title: t("nav.analytics"),
       href: "/dashboard/analytics",
       icon: IconChartBar,
       shortcut: "A",
@@ -107,28 +112,28 @@ export function BusinessCommandPalette({ storeName }: CommandPaletteProps) {
     },
     {
       id: "accounting",
-      title: "Go to Finances",
+      title: t("nav.finances"),
       href: "/dashboard/accounting",
       icon: IconReceipt,
       group: "Navigation",
     },
     {
       id: "customers",
-      title: "Go to Customers",
+      title: t("nav.customers"),
       href: "/dashboard/customers",
       icon: IconUsers,
       group: "Navigation",
     },
     {
       id: "discounts",
-      title: "Go to Discounts",
+      title: t("nav.discounts"),
       href: "/dashboard/discounts",
       icon: IconTag,
       group: "Navigation",
     },
     {
       id: "settings",
-      title: "Go to Settings",
+      title: t("nav.settings"),
       href: "/dashboard/settings",
       icon: IconSettings,
       shortcut: "S",
@@ -139,8 +144,8 @@ export function BusinessCommandPalette({ storeName }: CommandPaletteProps) {
   const actionCommands: CommandOption[] = [
     {
       id: "add-product",
-      title: "Add new product",
-      description: "Create a new product listing",
+      title: t("actions.addProduct"),
+      description: t("actions.addProductDesc"),
       href: "/dashboard/products?add=true",
       icon: IconPlus,
       shortcut: "N",
@@ -148,24 +153,24 @@ export function BusinessCommandPalette({ storeName }: CommandPaletteProps) {
     },
     {
       id: "create-order",
-      title: "Create draft order",
-      description: "Create an order manually",
+      title: t("actions.createOrder"),
+      description: t("actions.createOrderDesc"),
       action: () => router.push("/dashboard/orders/new"),
       icon: IconFileText,
       group: "Actions",
     },
     {
       id: "create-discount",
-      title: "Create discount",
-      description: "Create a discount code",
+      title: t("actions.createDiscount"),
+      description: t("actions.createDiscountDesc"),
       href: "/dashboard/discounts/new",
       icon: IconDiscount,
       group: "Actions",
     },
     {
       id: "view-store",
-      title: "View storefront",
-      description: "Open your store in a new tab",
+      title: t("actions.viewStorefront"),
+      description: t("actions.viewStorefrontDesc"),
       action: () => window.open("/", "_blank"),
       icon: IconArrowRight,
       group: "Actions",
@@ -180,26 +185,33 @@ export function BusinessCommandPalette({ storeName }: CommandPaletteProps) {
         className="flex items-center gap-2 px-3 h-8 text-sm text-muted-foreground rounded-md border bg-muted/50 hover:bg-muted transition-colors"
       >
         <IconSearch className="size-4" />
-        <span className="hidden sm:inline">Search...</span>
+        <span className="hidden sm:inline">{t("trigger")}</span>
         <kbd className="hidden sm:inline-flex pointer-events-none h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-2xs font-medium text-muted-foreground">
           <span className="text-xs">⌘</span>K
         </kbd>
       </button>
 
-      <CommandDialog open={open} onOpenChange={setOpen}>
-        <CommandInput placeholder={`Search ${storeName || "your store"}...`} />
+      <CommandDialog
+        open={open}
+        onOpenChange={setOpen}
+        title={t("dialogTitle")}
+        description={t("dialogDescription")}
+        closeLabel={tCommon("close")}
+      >
+        <CommandInput placeholder={t("searchPlaceholder", { storeName: storeLabel })} />
         <CommandList>
-          <CommandEmpty>No results found.</CommandEmpty>
+          <CommandEmpty>{t("noResults")}</CommandEmpty>
           
-          <CommandGroup heading="Actions">
+          <CommandGroup heading={t("groups.actions")}>
             {actionCommands.map((command) => {
               const Icon = command.icon
               return (
                 <CommandItem
                   key={command.id}
                   onSelect={() => {
-                    if (command.href) {
-                      runCommand(() => router.push(command.href!))
+                    const href = command.href
+                    if (href) {
+                      runCommand(() => router.push(href))
                     } else if (command.action) {
                       runCommand(command.action)
                     }
@@ -224,15 +236,16 @@ export function BusinessCommandPalette({ storeName }: CommandPaletteProps) {
 
           <CommandSeparator />
           
-          <CommandGroup heading="Navigation">
+          <CommandGroup heading={t("groups.navigation")}>
             {navigationCommands.map((command) => {
               const Icon = command.icon
               return (
                 <CommandItem
                   key={command.id}
                   onSelect={() => {
-                    if (command.href) {
-                      runCommand(() => router.push(command.href!))
+                    const href = command.href
+                    if (href) {
+                      runCommand(() => router.push(href))
                     }
                   }}
                 >

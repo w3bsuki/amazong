@@ -2,6 +2,7 @@
 
 import { Check } from "@phosphor-icons/react";
 import { cn } from "@/lib/utils";
+import { useTranslations } from "next-intl";
 
 interface ChecklistItem {
   key: string;
@@ -27,12 +28,13 @@ export function ChecklistSidebar({
 }: ChecklistSidebarProps) {
   const isBg = locale === "bg";
   const completedCount = items.filter(i => i.completed).length;
+  const t = useTranslations("Sell")
   
   return (
     <div className="p-4 rounded-md border border-border bg-background">
       <div className="flex items-center justify-between mb-5">
         <h4 className="text-sm font-semibold text-foreground">
-          {isBg ? "Списък" : "Checklist"}
+          {t("checklistSidebar.title")}
         </h4>
         <span className="text-xs font-medium text-muted-foreground tabular-nums bg-muted/30 px-2 py-0.5 rounded border border-border/50">
           {completedCount}/{items.length}

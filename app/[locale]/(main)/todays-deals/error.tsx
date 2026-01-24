@@ -1,6 +1,7 @@
 'use client'
 
 import { ErrorBoundaryUI } from '@/components/shared/error-boundary-ui'
+import { useTranslations } from 'next-intl'
 
 export default function DealsError({
   error,
@@ -9,14 +10,16 @@ export default function DealsError({
   error: Error & { digest?: string }
   reset: () => void
 }) {
+  const t = useTranslations('Errors')
+
   return (
     <ErrorBoundaryUI
       error={error}
       reset={reset}
-      title="Deals unavailable"
-      description="We couldn't load today's deals. Please try again in a moment."
+      title={t('deals.title')}
+      description={t('deals.description')}
       ctaIcon="tag"
-      ctaLabel="Go to homepage"
+      ctaLabel={t('common.goToHomepage')}
       ctaHref="/"
       logPrefix="Deals page"
     />

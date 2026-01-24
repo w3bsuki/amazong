@@ -1,5 +1,5 @@
 import { routing, validateLocale } from "@/i18n/routing"
-import { setRequestLocale } from "next-intl/server"
+import { getTranslations, setRequestLocale } from "next-intl/server"
 import CartPageClient from "./_components/cart-page-client"
 import type { Metadata } from "next"
 
@@ -15,9 +15,10 @@ export async function generateMetadata({
   const { locale: localeParam } = await params
   const locale = validateLocale(localeParam)
   setRequestLocale(locale)
+  const t = await getTranslations({ locale, namespace: "Cart" })
 
   return {
-    title: locale === "bg" ? "Количка" : "Cart",
+    title: t("title"),
   }
 }
 

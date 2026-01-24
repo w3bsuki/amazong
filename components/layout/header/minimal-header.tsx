@@ -4,7 +4,7 @@ import { Link } from "@/i18n/routing"
 import { ArrowLeft, ShoppingCart } from "@phosphor-icons/react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
-import { useLocale } from "next-intl"
+import { useTranslations } from "next-intl"
 
 interface MinimalHeaderProps {
   /** Show back button */
@@ -40,11 +40,11 @@ export function MinimalHeader({
   children,
   className 
 }: MinimalHeaderProps) {
-  const locale = useLocale()
+  const tCommon = useTranslations("Common")
 
   const homeHref = "/"
   const resolvedBackHref = backHref || homeHref
-  const resolvedBackLabel = backLabel || (locale === "bg" ? "Назад" : "Back")
+  const resolvedBackLabel = backLabel || tCommon("back")
 
   return (
     <header className={cn(
@@ -68,7 +68,7 @@ export function MinimalHeader({
             <Link 
               href={homeHref}
               className="flex items-center gap-2 hover:opacity-80 transition-opacity focus:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-sm"
-              aria-label={locale === "bg" ? "Към началната страница" : "Go to homepage"}
+              aria-label={tCommon("goToHomepage")}
             >
               <ShoppingCart className="size-6 text-brand" weight="duotone" />
               <span className="text-xl font-semibold tracking-tight">treido.</span>

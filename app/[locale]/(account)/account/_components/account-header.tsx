@@ -1,7 +1,7 @@
 "use client"
 
 import { useTranslations } from "next-intl"
-import { usePathname } from "next/navigation"
+import { usePathname } from "@/i18n/routing"
 import { Link } from "@/i18n/routing"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
@@ -26,8 +26,7 @@ export function AccountHeader() {
 
   // Get current page title based on pathname
   const getPageTitle = () => {
-    // Strip locale prefix (e.g., /en/account -> /account)
-    const path = pathname.replace(/^\/[a-z]{2}/, "")
+    const path = pathname
 
     // Prefer exact match first
     const exactKey = PATH_TO_KEY[path]

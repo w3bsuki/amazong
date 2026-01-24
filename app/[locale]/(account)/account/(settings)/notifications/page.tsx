@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/server"
-import { redirect } from "next/navigation"
-import { setRequestLocale } from "next-intl/server"
+import { redirect } from "@/i18n/routing"
+import { getTranslations, setRequestLocale } from "next-intl/server"
 import { validateLocale } from "@/i18n/routing"
 import { NotificationsContent } from "./notifications-content"
 
@@ -27,11 +27,12 @@ export default async function NotificationsPage({
   const { locale: localeParam } = await params
   const locale = validateLocale(localeParam)
   setRequestLocale(locale)
+  const t = await getTranslations({ locale, namespace: "NavUser" })
 
   const supabase = await createClient()
 
   if (!supabase) {
-    redirect("/auth/login")
+    return redirect({ href: "/auth/login", locale })
   }
 
   const {
@@ -39,7 +40,7 @@ export default async function NotificationsPage({
   } = await supabase.auth.getUser()
 
   if (!user) {
-    redirect("/auth/login")
+    return redirect({ href: "/auth/login", locale })
   }
 
   // Preload notifications server-side so the page never gets stuck in the
@@ -62,7 +63,7 @@ export default async function NotificationsPage({
 
   return (
     <div className="flex flex-col gap-4 md:gap-4">
-      <h1 className="sr-only">{locale === "bg" ? "Известия" : "Notifications"}</h1>
+      <h1 className="sr-only">{t("notifications")}</h1>
       <NotificationsContent locale={locale} initialNotifications={initialNotifications} />
     </div>
   )

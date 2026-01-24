@@ -4,10 +4,8 @@ import { useState, useEffect, useRef } from "react"
 import { format, isToday, isYesterday, isSameDay } from "date-fns"
 import { useTranslations, useLocale } from "next-intl"
 import { bg, enUS } from "date-fns/locale"
-import { cn, safeAvatarSrc } from "@/lib/utils"
-import { AVATAR_VARIANTS, COLOR_PALETTES } from "@/lib/avatar-palettes"
-import { Avatar as UiAvatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import BoringAvatar from "boring-avatars"
+import { cn } from "@/lib/utils"
+import { UserAvatar } from "@/components/shared/user-avatar"
 import { useMessages, type Message } from "@/components/providers/message-context"
 import { createClient } from "@/lib/supabase/client"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -313,28 +311,6 @@ export function ChatInterface({
   const avatarUrl = otherProfile?.avatar_url ||
     (isBuyer ? currentConversation.seller?.profile?.avatar_url : currentConversation.buyer?.avatar_url)
 
-  const parseBoringAvatar = (value?: string | null) => {
-    if (!value || !value.startsWith("boring-avatar:")) return null
-    const [, variantRaw, paletteRaw, seedRaw] = value.split(":")
-    const variant = AVATAR_VARIANTS.includes(variantRaw as (typeof AVATAR_VARIANTS)[number])
-      ? (variantRaw as (typeof AVATAR_VARIANTS)[number])
-      : AVATAR_VARIANTS[0]
-    const paletteIndex = Number.parseInt(paletteRaw || "0", 10)
-    const colors = COLOR_PALETTES[Number.isNaN(paletteIndex) ? 0 : paletteIndex] ?? COLOR_PALETTES[0]
-    const name = seedRaw || displayName || "user"
-    return { variant, colors, name }
-  }
-
-  const boringAvatar = parseBoringAvatar(avatarUrl)
-  const avatarSrc = boringAvatar ? undefined : safeAvatarSrc(avatarUrl)
-
-  const initials = (displayName || "?")
-    .split(" ")
-    .map((n: string) => n[0])
-    .join("")
-    .toUpperCase()
-    .slice(0, 2)
-
   // Check if conversation is closed
   const isClosed = currentConversation.status !== "open"
 
@@ -378,23 +354,12 @@ export function ChatInterface({
 
             {/* Avatar - smaller on mobile */}
             <Link href={`/seller/${currentConversation.seller_id}`} className="shrink-0">
-              <UiAvatar className="size-10">
-                {avatarSrc ? <AvatarImage src={avatarSrc} alt={displayName} /> : null}
-                {boringAvatar ? (
-                  <AvatarFallback className="bg-transparent p-0">
-                    <BoringAvatar
-                      size={40}
-                      name={boringAvatar.name}
-                      variant={boringAvatar.variant}
-                      {...(boringAvatar.colors ? { colors: boringAvatar.colors } : {})}
-                    />
-                  </AvatarFallback>
-                ) : (
-                  <AvatarFallback className="bg-primary text-primary-foreground text-sm font-semibold">
-                    {initials}
-                  </AvatarFallback>
-                )}
-              </UiAvatar>
+              <UserAvatar
+                name={displayName}
+                avatarUrl={avatarUrl ?? null}
+                className="size-10"
+                fallbackClassName="bg-primary text-primary-foreground text-sm font-semibold"
+              />
             </Link>
 
             {/* Name and status - tighter */}
@@ -505,23 +470,12 @@ export function ChatInterface({
           <div className="flex flex-col items-center justify-center h-full text-center">
             {/* Profile card for new conversations */}
             <div className="flex flex-col items-center gap-3 mb-6">
-              <UiAvatar className="size-24">
-                {avatarSrc ? <AvatarImage src={avatarSrc} alt={displayName} /> : null}
-                {boringAvatar ? (
-                  <AvatarFallback className="bg-transparent p-0">
-                    <BoringAvatar
-                      size={96}
-                      name={boringAvatar.name}
-                      variant={boringAvatar.variant}
-                      {...(boringAvatar.colors ? { colors: boringAvatar.colors } : {})}
-                    />
-                  </AvatarFallback>
-                ) : (
-                  <AvatarFallback className="bg-primary text-primary-foreground text-2xl font-bold">
-                    {initials}
-                  </AvatarFallback>
-                )}
-              </UiAvatar>
+              <UserAvatar
+                name={displayName}
+                avatarUrl={avatarUrl ?? null}
+                className="size-24"
+                fallbackClassName="bg-primary text-primary-foreground text-2xl font-bold"
+              />
               <div>
                 <h3 className="text-lg font-semibold text-foreground">{displayName}</h3>
                 {currentConversation.product && (
@@ -699,23 +653,12 @@ export function ChatInterface({
                   {!isOwn && (
                     <div className="shrink-0 w-7">
                       {isLastInGroup && (
-                        <UiAvatar className="size-7">
-                          {avatarSrc ? <AvatarImage src={avatarSrc} alt={displayName} /> : null}
-                          {boringAvatar ? (
-                            <AvatarFallback className="bg-transparent p-0">
-                              <BoringAvatar
-                                size={28}
-                                name={boringAvatar.name}
-                                variant={boringAvatar.variant}
-                                {...(boringAvatar.colors ? { colors: boringAvatar.colors } : {})}
-                              />
-                            </AvatarFallback>
-                          ) : (
-                            <AvatarFallback className="bg-primary text-primary-foreground text-2xs font-semibold">
-                              {initials}
-                            </AvatarFallback>
-                          )}
-                        </UiAvatar>
+                        <UserAvatar
+                          name={displayName}
+                          avatarUrl={avatarUrl ?? null}
+                          className="size-7"
+                          fallbackClassName="bg-primary text-primary-foreground text-2xs font-semibold"
+                        />
                       )}
                     </div>
                   )}

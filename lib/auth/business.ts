@@ -1,8 +1,9 @@
 import 'server-only'
 
 import { createClient } from "@/lib/supabase/server"
-import { redirect } from "next/navigation"
+import { redirect } from "@/i18n/routing"
 import { connection } from "next/server"
+import { getLocale } from "next-intl/server"
 
 export type AccountType = 'personal' | 'business'
 
@@ -109,6 +110,7 @@ async function getVariantSummaryByProductId(
  * @throws Redirects to login or account if not authorized
  */
 export async function requireBusinessSeller(redirectTo: string = "/account"): Promise<BusinessSeller> {
+  const locale = await getLocale()
   const supabase = await createClient()
   
   // Check if user is authenticated via Supabase auth
@@ -116,7 +118,7 @@ export async function requireBusinessSeller(redirectTo: string = "/account"): Pr
   
   if (authError || !user) {
     // User not authenticated - redirect to login
-    redirect("/auth/login")
+    return redirect({ href: "/auth/login", locale })
   }
   
   const userId = user.id
@@ -141,18 +143,18 @@ export async function requireBusinessSeller(redirectTo: string = "/account"): Pr
   
   if (profileError || !profile) {
     // No profile - redirect to login
-    redirect("/auth/login")
+    return redirect({ href: "/auth/login", locale })
   }
   
   if (profile.account_type !== 'business') {
     // Personal account - redirect to regular account
-    redirect(redirectTo)
+    return redirect({ href: redirectTo, locale })
   }
 
   // Must be an activated seller (completed seller onboarding) before accessing business seller routes.
   // This prevents non-sellers who selected a business intent at signup from entering dashboard flows.
   if (!profile.is_seller) {
-    redirect("/sell")
+    return redirect({ href: "/sell", locale })
   }
   
   return {
@@ -257,6 +259,7 @@ export async function requireDashboardAccess(
   upgradeRedirect: string = "/dashboard/upgrade"
 ): Promise<BusinessSellerWithSubscription> {
   await connection()
+  const locale = await getLocale()
   
   // First verify they have a business account
   const seller = await requireBusinessSeller("/account")
@@ -267,7 +270,7 @@ export async function requireDashboardAccess(
   
   if (!hasAccess) {
     // No paid subscription - redirect to upgrade page
-    redirect(upgradeRedirect)
+    redirect({ href: upgradeRedirect, locale })
   }
   
   return {
@@ -835,13 +838,6 @@ export async function getSetupProgress(sellerId: string) {
   await connection()
   
   const supabase = await createClient()
-
-  type ShippingSettingsRow = { is_configured: boolean | null }
-  type SellerPayoutStatusRow = {
-    details_submitted: boolean | null
-    charges_enabled: boolean | null
-    payouts_enabled: boolean | null
-  }
   
   const [profileResult, productsResult, shippingResult, payoutResult] = await Promise.all([
     // Get profile details for setup completion
@@ -859,18 +855,18 @@ export async function getSetupProgress(sellerId: string) {
       .limit(1),
 
     // Check if seller has configured shipping settings
-    (supabase as unknown as { from: (table: string) => any })
+    supabase
       .from('seller_shipping_settings')
       .select('is_configured')
       .eq('seller_id', sellerId)
-      .maybeSingle() as Promise<{ data: ShippingSettingsRow | null; error: unknown }>,
+      .maybeSingle(),
 
     // Check seller payout status (Stripe Connect)
-    (supabase as unknown as { from: (table: string) => any })
+    supabase
       .from('seller_payout_status')
       .select('details_submitted, charges_enabled, payouts_enabled')
       .eq('seller_id', sellerId)
-      .maybeSingle() as Promise<{ data: SellerPayoutStatusRow | null; error: unknown }>,
+      .maybeSingle(),
   ])
   
   const profile = profileResult.data

@@ -36,10 +36,10 @@ export default async function SecurityPage({
   const locale = validateLocale(localeParam)
   setRequestLocale(locale)
   const t = await getTranslations('Security')
+  const tBreadcrumbs = await getTranslations("Breadcrumbs")
   
   const breadcrumbItems = [
-    { label: t('breadcrumbHome'), href: "/" },
-    { label: t('breadcrumbSecurity'), href: "/security", current: true },
+    { label: t('breadcrumbSecurity') },
   ]
   
   const paymentFeatures = [
@@ -69,7 +69,11 @@ export default async function SecurityPage({
       <div className="bg-header-bg text-white">
         <div className="container py-10 md:py-16">
           <div className="[&_nav]:border-white/20 [&_nav]:mb-4 [&_a]:text-white/80 [&_a:hover]:text-white [&_span[aria-current]]:text-white [&_svg]:text-white/50">
-            <AppBreadcrumb items={breadcrumbItems} />
+            <AppBreadcrumb
+              items={breadcrumbItems}
+              ariaLabel={tBreadcrumbs("ariaLabel")}
+              homeLabel={tBreadcrumbs("homeLabel")}
+            />
           </div>
           <div className="flex items-center gap-4 mb-4">
             <div className="size-14 bg-primary-foreground/10 rounded-full flex items-center justify-center">

@@ -30,6 +30,7 @@ import Image from "next/image"
 import { Link } from "@/i18n/routing"
 import { useTranslations, useLocale } from "next-intl"
 import { cn } from "@/lib/utils"
+import type { CheckoutFeeQuoteResult, CreateCheckoutSessionResult } from "../_actions/checkout"
 
 interface SavedAddress {
   id: string
@@ -62,10 +63,8 @@ const SHIPPING_COSTS = {
 
 type ShippingMethod = keyof typeof SHIPPING_COSTS
 
-type CreateCheckoutSessionResult = { url?: string | null; error?: string }
 type CreateCheckoutSessionAction = (items: CartItem[], locale?: "en" | "bg") => Promise<CreateCheckoutSessionResult>
 
-type CheckoutFeeQuoteResult = { ok: true; buyerProtectionFee: number } | { ok: false }
 type GetCheckoutFeeQuoteAction = (items: CartItem[]) => Promise<CheckoutFeeQuoteResult>
 
 export default function CheckoutPageClient({
@@ -195,14 +194,12 @@ export default function CheckoutPageClient({
 
     setIsProcessing(true)
     try {
-      const { url, error } = await createCheckoutSessionAction(items, locale === "bg" ? "bg" : "en")
-      if (error) {
-        alert(error)
+      const result = await createCheckoutSessionAction(items, locale === "bg" ? "bg" : "en")
+      if (!result.ok) {
+        alert(result.error)
         return
       }
-      if (url) {
-        window.location.href = url
-      }
+      window.location.href = result.url
     } catch (error) {
       console.error("Checkout error:", error)
       alert(t("checkoutError"))

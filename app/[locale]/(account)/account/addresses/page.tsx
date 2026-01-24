@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/server"
-import { redirect } from "next/navigation"
-import { setRequestLocale } from "next-intl/server"
+import { redirect } from "@/i18n/routing"
+import { getTranslations, setRequestLocale } from "next-intl/server"
 import { AddressesContent } from "./addresses-content"
 
 const USER_ADDRESSES_SELECT =
@@ -13,16 +13,17 @@ export default async function AddressesPage({
 }) {
     const { locale } = await params
     setRequestLocale(locale)
+    const t = await getTranslations({ locale, namespace: "SidebarMenuV2" })
     const supabase = await createClient()
     
     if (!supabase) {
-        redirect("/auth/login")
+        return redirect({ href: "/auth/login", locale })
     }
     
     const { data: { user } } = await supabase.auth.getUser()
     
     if (!user) {
-        redirect("/auth/login")
+        return redirect({ href: "/auth/login", locale })
     }
 
     // Fetch user addresses
@@ -41,7 +42,7 @@ export default async function AddressesPage({
 
     return (
         <div className="flex flex-col gap-4 md:gap-4">
-            <h1 className="sr-only">{locale === "bg" ? "Адреси" : "Addresses"}</h1>
+            <h1 className="sr-only">{t("addresses")}</h1>
             <AddressesContent 
                 locale={locale}
                 initialAddresses={addresses}

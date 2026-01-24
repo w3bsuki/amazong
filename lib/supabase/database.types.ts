@@ -228,6 +228,33 @@ export type Database = {
         }
         Relationships: []
       }
+      boost_prices: {
+        Row: {
+          created_at: string | null
+          currency: string | null
+          duration_days: number
+          id: string
+          is_active: boolean | null
+          price: number
+        }
+        Insert: {
+          created_at?: string | null
+          currency?: string | null
+          duration_days: number
+          id?: string
+          is_active?: boolean | null
+          price: number
+        }
+        Update: {
+          created_at?: string | null
+          currency?: string | null
+          duration_days?: number
+          id?: string
+          is_active?: boolean | null
+          price?: number
+        }
+        Relationships: []
+      }
       brands: {
         Row: {
           country: string | null

@@ -40,6 +40,7 @@ import {
 import { toast } from "sonner"
 import { validatePassword, validateEmail } from "@/lib/validations/auth"        
 import { PublicProfileEditor, type PublicProfileEditorServerActions } from "./public-profile-editor"
+import { UserAvatar } from "@/components/shared/user-avatar"
 
 export type ProfileContentServerActions = {
   updateProfile: (formData: FormData) => Promise<{ success: boolean; error?: string }>
@@ -372,12 +373,13 @@ export function ProfileContent({
         <CardContent>
           <div className="flex items-center gap-4">
             <div className="relative">
-              <div className="size-24 rounded-full overflow-hidden bg-muted flex items-center justify-center border-2 border-muted">
-                {avatarPreview ? (
-                  <AvatarImg src={avatarPreview} alt="Avatar" size={96} className="object-cover size-full" />
-                ) : (
-                  <User className="size-12 text-muted-foreground" />
-                )}
+              <div className="size-24 rounded-full overflow-hidden border-2 border-muted">
+                <UserAvatar
+                  name={profile.full_name || profile.email || "User"}
+                  avatarUrl={avatarPreview}
+                  className="size-24 bg-muted"
+                  fallbackClassName="bg-muted text-muted-foreground text-2xl font-bold"
+                />
                 {isUploadingAvatar && (
                   <div className="absolute inset-0 bg-background/80 flex items-center justify-center rounded-full">
                     <SpinnerGap className="size-6 animate-spin" />

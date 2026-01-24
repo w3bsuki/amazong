@@ -1,6 +1,7 @@
 'use client'
 
 import { ErrorBoundaryUI } from '@/components/shared/error-boundary-ui'
+import { useTranslations } from 'next-intl'
 
 export default function MembersError({
   error,
@@ -9,14 +10,16 @@ export default function MembersError({
   error: Error & { digest?: string }
   reset: () => void
 }) {
+  const t = useTranslations('Errors')
+
   return (
     <ErrorBoundaryUI
       error={error}
       reset={reset}
-      title="Members unavailable"
-      description="We couldn't load the community members list. Please try again."
+      title={t('members.title')}
+      description={t('members.description')}
       ctaIcon="users"
-      ctaLabel="Go to homepage"
+      ctaLabel={t('common.goToHomepage')}
       ctaHref="/"
       logPrefix="Members page"
     />

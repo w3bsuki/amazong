@@ -1,7 +1,7 @@
 "use client"
 
 import { Link } from "@/i18n/routing"
-import { usePathname } from "next/navigation"
+import { usePathname } from "@/i18n/routing"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { SidebarTrigger } from "@/components/layout/sidebar/sidebar"
@@ -42,8 +42,7 @@ export function BusinessHeader({
 }: BusinessHeaderProps) {
   const pathname = usePathname()
 
-  // Normalize pathname by removing locale prefix
-  const normalizedPath = pathname.replace(/^\/[a-z]{2}(-[A-Z]{2})?/, '') || '/dashboard'
+  const normalizedPath = pathname || "/dashboard"
 
   // Get page title based on current route
   const getPageTitle = () => {

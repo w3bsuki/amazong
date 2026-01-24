@@ -1,6 +1,7 @@
 'use client'
 
 import { ErrorBoundaryUI } from '@/components/shared/error-boundary-ui'
+import { useTranslations } from 'next-intl'
 
 export default function SellerDashboardError({
   error,
@@ -9,14 +10,16 @@ export default function SellerDashboardError({
   error: Error & { digest?: string }
   reset: () => void
 }) {
+  const t = useTranslations('Errors')
+
   return (
     <ErrorBoundaryUI
       error={error}
       reset={reset}
-      title="Dashboard unavailable"
-      description="We couldn't load the seller dashboard right now. Please try again."
+      title={t('sellerDashboard.title')}
+      description={t('sellerDashboard.description')}
       ctaIcon="storefront"
-      ctaLabel="Go to Sell"
+      ctaLabel={t('common.goToSell')}
       ctaHref="/sell"
       logPrefix="Seller dashboard"
     />

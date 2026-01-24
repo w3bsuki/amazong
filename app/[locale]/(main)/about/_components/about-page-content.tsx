@@ -1,4 +1,4 @@
-import { getLocale, getTranslations } from "next-intl/server"
+import { getTranslations } from "next-intl/server"
 import { Card, CardContent } from "@/components/ui/card"
 import { AppBreadcrumb, breadcrumbPresets } from "@/components/navigation/app-breadcrumb"
 import {
@@ -18,7 +18,7 @@ import { Link } from "@/i18n/routing"
 
 export async function AboutPageContent() {
   const t = await getTranslations("About")
-  const locale = await getLocale()
+  const tBreadcrumbs = await getTranslations("Breadcrumbs")
 
   return (
     <div className="min-h-screen bg-background pb-20 sm:pb-12">
@@ -28,7 +28,11 @@ export async function AboutPageContent() {
         <div className="absolute inset-0 bg-black/20" aria-hidden="true" />
         <div className="container py-12 md:py-20 relative z-10">
           <div className="[&_nav]:border-white/20 [&_nav]:mb-4 [&_a]:text-white/80 [&_a:hover]:text-white [&_span[aria-current]]:text-white [&_svg]:text-white/50">
-            <AppBreadcrumb items={breadcrumbPresets(locale).about} />
+            <AppBreadcrumb
+              items={breadcrumbPresets(tBreadcrumbs).about}
+              ariaLabel={tBreadcrumbs("ariaLabel")}
+              homeLabel={tBreadcrumbs("homeLabel")}
+            />
           </div>
           <div className="max-w-3xl">
             <h1 className="text-3xl md:text-5xl font-bold mb-4">

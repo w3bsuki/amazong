@@ -5,6 +5,7 @@ import type { CategoryTreeNode } from "@/lib/category-tree"
 import { getCategoryName } from "@/lib/category-display"
 import { cn } from "@/lib/utils"
 import { Skeleton } from "@/components/ui/skeleton"
+import { useTranslations } from "next-intl"
 
 type Category = CategoryTreeNode
 
@@ -48,8 +49,9 @@ export function CategoryL3Pills({
   onAllClick,
 }: CategoryL3PillsProps) {
   const pillsContainerRef = useRef<HTMLDivElement>(null)
+  const tCommon = useTranslations("Common")
 
-  const allLabel = locale === "bg" ? "Всички" : "All"
+  const allLabel = tCommon("all")
 
   return (
     <div

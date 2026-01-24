@@ -151,6 +151,22 @@ export const sellFormSchemaV4 = z.object({
 
 	// ========== TAGS ==========
 	tags: z.array(z.string()).max(10, "Maximum 10 tags").default([]),
+}).superRefine((data, ctx) => {
+	// Discount sanity: compare-at price must be higher than the active price.
+	if (!data.compareAtPrice) return;
+
+	const price = Number.parseFloat(data.price);
+	const compareAt = Number.parseFloat(data.compareAtPrice);
+
+	if (!Number.isFinite(price) || !Number.isFinite(compareAt)) return;
+
+	if (compareAt <= price) {
+		ctx.addIssue({
+			code: z.ZodIssueCode.custom,
+			path: ["compareAtPrice"],
+			message: "Compare at price must be higher than your price",
+		});
+	}
 });
 
 export type SellFormDataV4 = z.infer<typeof sellFormSchemaV4>;

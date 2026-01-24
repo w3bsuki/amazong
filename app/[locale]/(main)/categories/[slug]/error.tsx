@@ -1,6 +1,7 @@
 'use client'
 
 import { ErrorBoundaryUI } from '@/components/shared/error-boundary-ui'
+import { useTranslations } from 'next-intl'
 
 export default function Error({
   error,
@@ -9,14 +10,16 @@ export default function Error({
   error: Error & { digest?: string }
   reset: () => void
 }) {
+  const t = useTranslations('Errors')
+
   return (
     <ErrorBoundaryUI
       error={error}
       reset={reset}
-      title="Category unavailable"
-      description="We couldn't load this category. This might be a temporary issue."
+      title={t('category.title')}
+      description={t('category.description')}
       ctaIcon="folder"
-      ctaLabel="Browse categories"
+      ctaLabel={t('common.browseCategories')}
       ctaHref="/categories"
       logPrefix="Category page"
     />

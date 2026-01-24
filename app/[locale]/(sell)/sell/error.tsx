@@ -1,6 +1,7 @@
 'use client'
 
 import { ErrorBoundaryUI } from '@/components/shared/error-boundary-ui'
+import { useTranslations } from 'next-intl'
 
 export default function SellError({
   error,
@@ -9,14 +10,16 @@ export default function SellError({
   error: Error & { digest?: string }
   reset: () => void
 }) {
+  const t = useTranslations('Errors')
+
   return (
     <ErrorBoundaryUI
       error={error}
       reset={reset}
-      title="Sell page unavailable"
-      description="We couldn't load the sell flow. Please try again."
+      title={t('sell.title')}
+      description={t('sell.description')}
       ctaIcon="house"
-      ctaLabel="Go to homepage"
+      ctaLabel={t('common.goToHomepage')}
       ctaHref="/"
       logPrefix="Sell"
     />

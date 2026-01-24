@@ -39,13 +39,20 @@ export default async function SellersPage({
   setRequestLocale(locale)
   const supabase = await createClient()
   const t = await getTranslations({ locale, namespace: "SellersDirectory" })
+  const tBreadcrumbs = await getTranslations("Breadcrumbs")
 
   const sellersWithStats = await getTopSellers(supabase)
 
   return (
     <div className="min-h-screen bg-background pb-20 sm:pb-12">
       {/* Hero Banner */}
-      <TopSellersHero locale={locale} />
+      <TopSellersHero
+        breadcrumbItems={[{ label: t("breadcrumbLabel") }]}
+        breadcrumbAriaLabel={tBreadcrumbs("ariaLabel")}
+        breadcrumbHomeLabel={tBreadcrumbs("homeLabel")}
+        title={t("heroTitle")}
+        subtitle={t("heroSubtitle")}
+      />
 
       <div className="container py-6">
         {/* Results count */}

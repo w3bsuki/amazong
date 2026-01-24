@@ -408,7 +408,9 @@ export async function getProducts(type: QueryType, limit = 36, zone?: ShippingRe
       return q
     }
 
-    const applySecondaryOrder = (q: any) => {
+    type ProductListQuery = ReturnType<typeof makeBaseQuery>
+
+    const applySecondaryOrder = (q: ProductListQuery) => {
       switch (type) {
         case 'newest':
           return q.order('created_at', { ascending: false })
@@ -427,8 +429,12 @@ export async function getProducts(type: QueryType, limit = 36, zone?: ShippingRe
       }
     }
 
+    // For 'featured' and 'newest', use direct queries without fetchBoostedFirst:
+    // - 'featured' shows only boosted products (handled via filter)
+    // - 'newest' should show pure chronological order (no boost priority)
+    // Other types (deals, promo, bestsellers) use fetchBoostedFirst for commercial priority
     const { data, error } =
-      type === 'featured'
+      type === 'featured' || type === 'newest'
         ? await applySecondaryOrder(makeBaseQuery()).limit(limit)
         : await fetchBoostedFirst(makeBaseQuery, {
             limit,
@@ -442,7 +448,7 @@ export async function getProducts(type: QueryType, limit = 36, zone?: ShippingRe
     }
 
     return (data || [])
-      .map((p: { is_boosted?: boolean | null; boost_expires_at?: string | null }) => {
+      .map((p) => {
         const row = p as unknown as Record<string, unknown>
         const categories = normalizeCategoryNode(row.categories)
         const seller = (row.seller && typeof row.seller === 'object') ? (row.seller as Record<string, unknown>) : null
@@ -451,9 +457,10 @@ export async function getProducts(type: QueryType, limit = 36, zone?: ShippingRe
           ? (Array.isArray(seller.user_verification) ? seller.user_verification[0] : seller.user_verification) as Record<string, unknown>
           : null
 
+        const rawProduct = p as unknown as { is_boosted?: boolean | null; boost_expires_at?: string | null }
         const activeBoost = isBoostActive({
-          is_boosted: p.is_boosted ?? null,
-          boost_expires_at: p.boost_expires_at ?? null,
+          is_boosted: rawProduct.is_boosted ?? null,
+          boost_expires_at: rawProduct.boost_expires_at ?? null,
         })
 
         return {

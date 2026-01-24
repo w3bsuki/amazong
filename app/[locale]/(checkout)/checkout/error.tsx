@@ -1,6 +1,7 @@
 'use client'
 
 import { ErrorBoundaryUI } from '@/components/shared/error-boundary-ui'
+import { useTranslations } from 'next-intl'
 
 export default function CheckoutError({
   error,
@@ -9,14 +10,16 @@ export default function CheckoutError({
   error: Error & { digest?: string }
   reset: () => void
 }) {
+  const t = useTranslations('Errors')
+
   return (
     <ErrorBoundaryUI
       error={error}
       reset={reset}
-      title="Checkout unavailable"
-      description="We couldn't load checkout. Please try again."
+      title={t('checkout.title')}
+      description={t('checkout.description')}
       ctaIcon="house"
-      ctaLabel="Go to homepage"
+      ctaLabel={t('common.goToHomepage')}
       ctaHref="/"
       logPrefix="Checkout"
     />

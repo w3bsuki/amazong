@@ -1,7 +1,6 @@
 "use client"
 
 import { useState, useTransition } from "react"
-import Image from "next/image"
 import { Link } from "@/i18n/routing"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
@@ -15,14 +14,7 @@ import {
   SpinnerGap,
 } from "@phosphor-icons/react"
 import { toast } from "sonner"
-import { safeAvatarSrc } from "@/lib/utils"
-
-function shouldBypassNextImage(src: string) {
-  // Next/Image will 400 on remote SVGs (e.g. Dicebear) unless dangerouslyAllowSVG is enabled.
-  // For avatars, use plain <img> for SVGs to keep the page console-clean.
-  const normalized = src.toLowerCase()
-  return normalized.includes("api.dicebear.com") || normalized.includes("/svg") || normalized.endsWith(".svg")
-}
+import { UserAvatar } from "@/components/shared/user-avatar"
 
 // Type matches what page.tsx fetches with joined query
 interface FollowedSeller {
@@ -131,36 +123,18 @@ export function FollowingContent({
 
           const seller = follow.seller
           const stats = follow.seller_stats
-          const avatarUrl = safeAvatarSrc(seller.profile?.avatar_url)
 
           return (
             <Card key={follow.seller_id} className="overflow-hidden">
               <CardContent className="p-4">
                 <div className="flex items-start gap-3">
                   {/* Avatar */}
-                  <div className="relative size-14 rounded-full overflow-hidden bg-muted shrink-0">
-                    {avatarUrl ? (
-                      shouldBypassNextImage(avatarUrl) ? (
-                        <img
-                          src={avatarUrl}
-                          alt={seller.store_name}
-                          className="size-full object-cover"
-                        />
-                      ) : (
-                        <Image
-                          src={avatarUrl}
-                          alt={seller.store_name}
-                          fill
-                          sizes="56px"
-                          className="object-cover"
-                        />
-                      )
-                    ) : (
-                      <div className="size-full flex items-center justify-center">
-                        <Storefront className="size-6 text-muted-foreground" />
-                      </div>
-                    )}
-                  </div>
+                  <UserAvatar
+                    name={seller.store_name}
+                    avatarUrl={seller.profile?.avatar_url ?? null}
+                    className="size-14 shrink-0 bg-muted"
+                    fallbackClassName="bg-muted text-sm font-semibold"
+                  />
 
                   {/* Info */}
                   <div className="flex-1 min-w-0">

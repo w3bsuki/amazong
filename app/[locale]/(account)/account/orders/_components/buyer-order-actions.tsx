@@ -64,6 +64,7 @@ interface BuyerOrderActionsProps {
   locale?: string
   orderId: string
   actions: BuyerOrderActionsServerActions
+  mode?: "full" | "report-only"
 }
 
 export function BuyerOrderActions({
@@ -74,8 +75,10 @@ export function BuyerOrderActions({
   locale = 'en',
   orderId,
   actions,
+  mode = "full",
 }: BuyerOrderActionsProps) {
   const router = useRouter()
+  const isReportOnly = mode === "report-only"
   const [isSubmitting, startTransition] = useTransition()
   const [showRatingDialog, setShowRatingDialog] = useState(false)
   const [showCancelDialog, setShowCancelDialog] = useState(false)
@@ -95,7 +98,7 @@ export function BuyerOrderActions({
 
   // Check if can rate when delivered
   async function checkRatingStatus() {
-    if (isDelivered) {
+    if (isDelivered && !isReportOnly) {
       const result = await actions.canBuyerRateSeller(orderItemId)
       setCanRate(result.canRate)
       setHasRated(result.hasRated)
@@ -263,7 +266,7 @@ export function BuyerOrderActions({
       )}
 
       {/* Cancel Order Button - only for pending/processing orders */}
-      {canCancel && (
+      {!isReportOnly && canCancel && (
         <Button
           size="sm"
           variant="outline"
@@ -291,7 +294,7 @@ export function BuyerOrderActions({
       )}
 
       {/* Confirm Delivery Button - only for shipped orders */}
-      {isShipped && (
+      {!isReportOnly && isShipped && (
         <Button
           size="sm"
           onClick={handleConfirmDelivery}
@@ -308,7 +311,7 @@ export function BuyerOrderActions({
       )}
 
       {/* Rate Seller Button - only for delivered orders that haven't been rated */}
-      {isDelivered && canRate && !hasRated && (
+      {!isReportOnly && isDelivered && canRate && !hasRated && (
         <Button
           size="sm"
           variant="outline"
@@ -321,7 +324,7 @@ export function BuyerOrderActions({
       )}
 
       {/* Already Rated Badge */}
-      {isDelivered && hasRated && (
+      {!isReportOnly && isDelivered && hasRated && (
         <span className="inline-flex items-center gap-1 text-sm text-status-success">
           <CheckCircle className="h-4 w-4" />
           {t.ratedSeller}
@@ -329,57 +332,59 @@ export function BuyerOrderActions({
       )}
 
       {/* Cancel Order Dialog */}
-      <Dialog open={showCancelDialog} onOpenChange={setShowCancelDialog}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-status-error">
-              <XCircle className="h-5 w-5" />
-              {t.cancelTitle}
-            </DialogTitle>
-            <DialogDescription>{t.cancelDescription}</DialogDescription>
-          </DialogHeader>
-          
-          <div className="space-y-4 py-4">
-            <div className="space-y-2">
-              <Label htmlFor="cancelReason">{t.cancelReasonLabel}</Label>
-              <Textarea
-                id="cancelReason"
-                placeholder={t.cancelReasonPlaceholder}
-                value={cancelReason}
-                onChange={(e) => setCancelReason(e.target.value)}
-                rows={3}
-              />
+      {!isReportOnly && (
+        <Dialog open={showCancelDialog} onOpenChange={setShowCancelDialog}>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2 text-status-error">
+                <XCircle className="h-5 w-5" />
+                {t.cancelTitle}
+              </DialogTitle>
+              <DialogDescription>{t.cancelDescription}</DialogDescription>
+            </DialogHeader>
+            
+            <div className="space-y-4 py-4">
+              <div className="space-y-2">
+                <Label htmlFor="cancelReason">{t.cancelReasonLabel}</Label>
+                <Textarea
+                  id="cancelReason"
+                  placeholder={t.cancelReasonPlaceholder}
+                  value={cancelReason}
+                  onChange={(e) => setCancelReason(e.target.value)}
+                  rows={3}
+                />
+              </div>
             </div>
-          </div>
 
-          <DialogFooter>
-            <Button 
-              variant="outline" 
-              onClick={() => setShowCancelDialog(false)}
-              disabled={isSubmitting}
-            >
-              {t.cancel}
-            </Button>
-            <Button 
-              variant="destructive"
-              onClick={handleCancelOrder} 
-              disabled={isSubmitting}
-            >
-              {isSubmitting ? (
-                <>
-                  <Loader2 className="h-4 w-4 mr-1.5 animate-spin" />
-                  ...
-                </>
-              ) : (
-                <>
-                  <XCircle className="h-4 w-4 mr-1.5" />
-                  {t.confirmCancel}
-                </>
-              )}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+            <DialogFooter>
+              <Button 
+                variant="outline" 
+                onClick={() => setShowCancelDialog(false)}
+                disabled={isSubmitting}
+              >
+                {t.cancel}
+              </Button>
+              <Button 
+                variant="destructive"
+                onClick={handleCancelOrder} 
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-1.5 animate-spin" />
+                    ...
+                  </>
+                ) : (
+                  <>
+                    <XCircle className="h-4 w-4 mr-1.5" />
+                    {t.confirmCancel}
+                  </>
+                )}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      )}
 
       {/* Report Issue Dialog */}
       <Dialog open={showIssueDialog} onOpenChange={setShowIssueDialog}>
@@ -450,19 +455,21 @@ export function BuyerOrderActions({
       </Dialog>
 
       {/* Rating Dialog */}
-      <StarRatingDialog
-        open={showRatingDialog}
-        onOpenChange={setShowRatingDialog}
-        onSubmit={handleSubmitRating}
-        title={t.ratingTitle}
-        description={t.ratingDescription}
-        commentLabel={t.commentLabel}
-        commentPlaceholder={t.commentPlaceholder}
-        submitLabel={t.submitRating}
-        cancelLabel={t.cancel}
-        locale={locale}
-        isLoading={isSubmitting}
-      />
+      {!isReportOnly && (
+        <StarRatingDialog
+          open={showRatingDialog}
+          onOpenChange={setShowRatingDialog}
+          onSubmit={handleSubmitRating}
+          title={t.ratingTitle}
+          description={t.ratingDescription}
+          commentLabel={t.commentLabel}
+          commentPlaceholder={t.commentPlaceholder}
+          submitLabel={t.submitRating}
+          cancelLabel={t.cancel}
+          locale={locale}
+          isLoading={isSubmitting}
+        />
+      )}
     </div>
   )
 }

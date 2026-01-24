@@ -5,6 +5,7 @@ import type { CategoryTreeNode } from "@/lib/category-tree"
 import { getCategoryShortName } from "@/lib/category-display"
 import { getCategoryIcon } from "@/lib/category-icons"
 import { CategoryNavItem } from "./category-nav-item"
+import { useTranslations } from "next-intl"
 
 type Category = CategoryTreeNode
 
@@ -34,6 +35,7 @@ export function CategoryQuickPills({
   onTabChange,
 }: CategoryQuickPillsProps) {
   const tabsContainerRef = useRef<HTMLDivElement>(null)
+  const tCommon = useTranslations("Common")
 
   // Auto-scroll selected tab to left edge
   useEffect(() => {
@@ -49,7 +51,7 @@ export function CategoryQuickPills({
     }
   }, [activeTab])
 
-  const allLabel = locale === "bg" ? "Всички" : "All"
+  const allLabel = tCommon("all")
 
   return (
     <div

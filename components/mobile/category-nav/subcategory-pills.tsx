@@ -4,6 +4,7 @@ import { useRef, useEffect } from "react"
 import { cn } from "@/lib/utils"
 import { getCategoryName } from "@/lib/category-display"
 import type { CategoryTreeNode } from "@/lib/category-tree"
+import { useTranslations } from "next-intl"
 
 // =============================================================================
 // SUBCATEGORY PILLS
@@ -42,6 +43,8 @@ export function SubcategoryPills({
   className,
 }: SubcategoryPillsProps) {
   const containerRef = useRef<HTMLDivElement>(null)
+  const tCommon = useTranslations("Common")
+  const tCategories = useTranslations("Categories")
 
   // Auto-scroll active pill into view on mount and when activeSlug changes
   useEffect(() => {
@@ -62,7 +65,7 @@ export function SubcategoryPills({
     }
   }, [activeSlug])
 
-  const allLabel = locale === "bg" ? "всички" : "All"
+  const allLabel = tCommon("allLower")
 
   // Base pill styles (shared)
   const pillBase = cn(
@@ -99,7 +102,7 @@ export function SubcategoryPills({
         ref={containerRef}
         className="flex items-center gap-1.5 px-inset py-2 overflow-x-auto no-scrollbar"
         role="tablist"
-        aria-label={locale === "bg" ? "Подкатегории" : "Subcategories"}
+        aria-label={tCategories("subcategoriesAriaLabel")}
       >
         {/* "All" pill - always first */}
         <button

@@ -26,6 +26,7 @@ import {
   DrawerTitle,
 } from "@/components/ui/drawer";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useTranslations } from "next-intl";
 
 // ============================================================================
 // BRAND COMBOBOX - shadcn/ui Combobox pattern for brand selection
@@ -71,21 +72,21 @@ export function BrandCombobox({
   allowCustom = true,
   disabled = false,
   className,
-  locale = "en",
+  locale: _locale = "en",
 }: BrandComboboxProps) {
   const [open, setOpen] = React.useState(false);
   const [searchQuery, setSearchQuery] = React.useState("");
   const isMobile = useIsMobile();
   
-  const isBg = locale === "bg";
+  const t = useTranslations("Sell")
   const selectedBrand = brands.find((b) => b.id === value);
   
   // Display text for the trigger button
   const displayText = React.useMemo(() => {
     if (selectedBrand) return selectedBrand.name;
     if (customValue) return customValue;
-    return placeholder ?? (isBg ? "Избери марка..." : "Select brand...");
-  }, [selectedBrand, customValue, placeholder, isBg]);
+    return placeholder ?? t("brandCombobox.defaultPlaceholder");
+  }, [selectedBrand, customValue, placeholder, t]);
 
   // Filter brands based on search query
   const filteredBrands = React.useMemo(() => {
@@ -158,7 +159,7 @@ export function BrandCombobox({
   const commandContent = (
     <Command shouldFilter={false} className="bg-transparent">
       <CommandInput
-        placeholder={isBg ? "Търси марка..." : "Search brand..."}
+        placeholder={t("brandCombobox.searchPlaceholder")}
         value={searchQuery}
         onValueChange={setSearchQuery}
         className="h-12 border-none focus:ring-0"
@@ -171,17 +172,17 @@ export function BrandCombobox({
               onClick={handleCustomBrand}
               className="w-full p-3 text-left hover:bg-accent rounded-sm flex items-center gap-2"
             >
-              <Plus className="size-4 text-primary" />
-              <span className="text-sm">
-                {isBg ? `Добави "${searchQuery}"` : `Add "${searchQuery}"`}
+                <Plus className="size-4 text-primary" />
+                <span className="text-sm">
+                  {t("brandCombobox.addCustom", { name: searchQuery })}
+                </span>
+              </button>
+            ) : (
+              <span className="text-sm text-muted-foreground p-3 block">
+                {t("brandCombobox.noBrandFound")}
               </span>
-            </button>
-          ) : (
-            <span className="text-sm text-muted-foreground p-3 block">
-              {isBg ? "Няма намерени марки" : "No brand found"}
-            </span>
-          )}
-        </CommandEmpty>
+            )}
+          </CommandEmpty>
         
         {/* Custom brand option when searching */}
         {showCustomOption && filteredBrands.length > 0 && (
@@ -193,7 +194,7 @@ export function BrandCombobox({
               >
                 <Plus className="size-4 text-primary" />
                 <span>
-                  {isBg ? `Добави "${searchQuery}"` : `Add "${searchQuery}"`}
+                  {t("brandCombobox.addCustom", { name: searchQuery })}
                 </span>
               </CommandItem>
             </CommandGroup>
@@ -242,7 +243,7 @@ export function BrandCombobox({
             onSelect={handleSkip}
             className="text-muted-foreground justify-center text-xs"
           >
-            {isBg ? "Пропусни - Без марка" : "Skip - No brand / Unbranded"}
+            {t("brandCombobox.skipNoBrand")}
           </CommandItem>
         </CommandGroup>
       </CommandList>
@@ -265,7 +266,7 @@ export function BrandCombobox({
       )}
     >
       <span className="text-2xs font-bold uppercase tracking-wider text-muted-foreground leading-none mb-1.5">
-        {isBg ? "Марка" : "Brand"}
+        {t("brandCombobox.label")}
       </span>
       <div className="flex items-center justify-between w-full">
         <span className="flex items-center gap-2.5 truncate pr-12">
@@ -290,7 +291,7 @@ export function BrandCombobox({
           {/* Custom brand indicator */}
           {customValue && !selectedBrand && (
             <span className="text-2xs font-bold text-muted-foreground uppercase tracking-wider shrink-0">
-              ({isBg ? "Потребителска" : "Custom"})
+              ({t("brandCombobox.customIndicator")})
             </span>
           )}
         </span>
@@ -304,7 +305,7 @@ export function BrandCombobox({
             onClick={handleClear}
             onKeyDown={(e) => e.key === "Enter" && handleClear(e as unknown as React.MouseEvent)}
             className="size-6 flex items-center justify-center rounded-lg hover:bg-muted transition-colors"
-            aria-label={isBg ? "Изчисти" : "Clear"}
+            aria-label={t("brandCombobox.clear")}
           >
             <X className="size-3.5 text-muted-foreground" />
           </span>
@@ -322,7 +323,7 @@ export function BrandCombobox({
           <DrawerContent>
             <DrawerHeader className="text-left border-b border-border/50 pb-4">
               <DrawerTitle className="text-base font-bold">
-                {isBg ? "Избери марка" : "Select Brand"}
+                {t("brandCombobox.mobileTitle")}
               </DrawerTitle>
             </DrawerHeader>
             <div className="p-2 pb-8">

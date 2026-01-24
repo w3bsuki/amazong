@@ -1,6 +1,7 @@
 import { Link } from "@/i18n/routing"
 import { Storefront, ArrowRight, ShieldCheck, CreditCard, ChatCircleDots } from "@phosphor-icons/react"
 import { cn } from "@/lib/utils"
+import { getTranslations } from "next-intl/server"
 
 interface StartSellingBannerProps {
   locale?: string
@@ -11,25 +12,19 @@ interface StartSellingBannerProps {
   showTrustRow?: boolean
 }
 
-export function StartSellingBanner({
+export async function StartSellingBanner({
   locale = "en",
   className,
   variant = "default",
   showTrustRow = false
 }: StartSellingBannerProps) {
-  const isBg = locale === "bg"
+  const t = await getTranslations({ locale, namespace: "Sell" })
 
-  const trustItems = isBg
-    ? [
-      { icon: ShieldCheck, text: "Защита на купувача" },
-      { icon: CreditCard, text: "Сигурно плащане" },
-      { icon: ChatCircleDots, text: "Поддръжка 24/7" },
-    ]
-    : [
-      { icon: ShieldCheck, text: "Buyer protection" },
-      { icon: CreditCard, text: "Secure payment" },
-      { icon: ChatCircleDots, text: "24/7 support" },
-    ]
+  const trustItems = [
+    { icon: ShieldCheck, text: t("startSellingBanner.trust.buyerProtection") },
+    { icon: CreditCard, text: t("startSellingBanner.trust.securePayment") },
+    { icon: ChatCircleDots, text: t("startSellingBanner.trust.support247") },
+  ]
 
   // Full-bleed: INVERTED banner for primary CTA emphasis
   if (variant === "full-bleed") {
@@ -50,12 +45,10 @@ export function StartSellingBanner({
             {/* Left: Text */}
             <div className="min-w-0 flex-1">
               <p className="text-base font-bold leading-snug tracking-tight">
-                {isBg ? "Продай за минути" : "Sell in minutes"}
+                {t("startSellingBanner.fullBleed.title")}
               </p>
               <p className="text-xs text-background/70">
-                {isBg
-                  ? "Освободи място и спечели."
-                  : "Clear space and earn."}
+                {t("startSellingBanner.fullBleed.subtitle")}
               </p>
             </div>
 
@@ -108,12 +101,10 @@ export function StartSellingBanner({
       {/* Content */}
       <span className="flex-1 min-w-0 text-left space-y-0.5">
         <span className="block text-sm font-semibold leading-tight">
-          {isBg ? "Регистрирай се, за да продаваш" : "Sign up to start selling"}
+          {t("startSellingBanner.compact.title")}
         </span>
         <span className="block text-xs text-muted-foreground font-medium truncate">
-          {isBg
-            ? "Създай обява за минути. Достигни купувачи."
-            : "List in minutes. Reach buyers faster."}
+          {t("startSellingBanner.compact.subtitle")}
         </span>
       </span>
 

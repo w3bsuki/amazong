@@ -16,11 +16,10 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   const { locale: localeParam } = await params
   const locale = validateLocale(localeParam)
   setRequestLocale(locale)
+  const t = await getTranslations({ locale, namespace: "Cookies" })
   return {
-    title: locale === 'bg' ? 'Политика за бисквитки' : 'Cookie Policy',
-    description: locale === 'bg' 
-      ? 'Научете как използваме бисквитки за подобряване на вашето преживяване.'
-      : 'Learn how we use cookies to improve your experience.',
+    title: t("pageTitle"),
+    description: t("descriptionShort"),
   }
 }
 
@@ -29,6 +28,7 @@ export default async function CookiesPage({ params }: { params: Promise<{ locale
   const locale = validateLocale(localeParam)
   setRequestLocale(locale)
   const t = await getTranslations('Cookies')
+  const tBreadcrumbs = await getTranslations("Breadcrumbs")
   
   const sections: LegalSection[] = [
     { id: 'what-are-cookies', icon: Cookie, title: t('whatAreCookies'), desc: t('whatAreCookiesDesc') },
@@ -52,7 +52,9 @@ export default async function CookiesPage({ params }: { params: Promise<{ locale
       heroIcon={Cookie}
       title={t('pageTitle')}
       lastUpdated={`${t('lastUpdated')}: ${t('lastUpdatedDate')}`}
-      breadcrumbItems={breadcrumbPresets(locale).cookies}
+      breadcrumbItems={breadcrumbPresets(tBreadcrumbs).cookies}
+      breadcrumbAriaLabel={tBreadcrumbs("ariaLabel")}
+      breadcrumbHomeLabel={tBreadcrumbs("homeLabel")}
       tocLabel={t('tableOfContents')}
       introNotice={t('introNotice')}
       introText={t('introText')}

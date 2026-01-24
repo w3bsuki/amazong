@@ -42,12 +42,28 @@ pnpm clean
 
 ## Project Structure
 
-See [agents.md](./agents.md) and [RULES.md](./RULES.md) for code placement boundaries and day-to-day rules.
-For production execution and the “last 5%” plan, start with [docs/README.md](./docs/README.md).
+**Agent entry point**: `CLAUDE.md` (read on every prompt)
+
+**Canonical docs (root)**:
+
+| Doc | Purpose |
+|-----|---------|
+| `WORKFLOW.md` | Process loop (Issues → Tasks → Verify) |
+| `ISSUES.md` | Issue registry |
+| `TASKS.md` | Active task list |
+| `REQUIREMENTS.md` | Launch feature checklist |
+| `ARCHITECTURE.md` | Stack, boundaries, caching |
+| `DESIGN.md` | UI tokens, patterns, anti-patterns |
+| `TESTING.md` | Gates, debugging tips |
+| `FEATURES.md` | Route/action/DB/test map |
+| `PRODUCTION.md` | Deployment checklist |
+| `PRODUCT.md` | Scope, roadmap |
+
+**Legacy docs**: `docs-final/archive/` (reference only)
 
 ## Where does this file go?
 
-Use these rules before adding new files (see [agents.md](./agents.md) for full details):
+Use these rules before adding new files (see `ARCHITECTURE.md` for full details):
 
 - `app/[locale]/(group)/.../_components/*`: UI used only by a single route group (account/admin/auth/business/chat/checkout/main/plans/sell).
 - `app/[locale]/(group)/.../_actions/*`: server actions used only by that route group.
@@ -60,13 +76,13 @@ Use these rules before adding new files (see [agents.md](./agents.md) for full d
 
 ## Documentation
 
-Docs are intentionally kept small and canonical under `docs/` (start at `docs/README.md`).
+Docs are intentionally kept small and canonical in repo root (see `WORKFLOW.md`).
 
 ## Caching (Next.js 16)
 
 - Cache Components are enabled (`cacheComponents: true`) and cache profiles live in `next.config.ts` under `cacheLife` (`categories`, `products`, `deals`, `user`).
 - Cached server data fetchers should use `'use cache'` + `cacheLife()` + `cacheTag()` for targeted invalidation.
-- Reference guide: `docs/ENGINEERING.md`.
+- Reference guide: `ARCHITECTURE.md`.
 
 ## Environment Variables
 #### AI Search (optional)

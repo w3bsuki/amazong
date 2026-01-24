@@ -5,6 +5,8 @@ import { createClient } from "@/lib/supabase/server"
 import { getFeesForSeller, calculateTransactionFees } from "@/lib/stripe-connect"
 import { getTranslations } from "next-intl/server"
 import type { CartItem } from "@/components/providers/cart-context"
+import { ensureOrderConversations } from "@/lib/order-conversations"
+import type { Json } from "@/lib/supabase/database.types"
 import type Stripe from "stripe"
 
 type SellerInfo = {
@@ -23,33 +25,79 @@ function isValidQuantity(value: unknown): value is number {
     && value <= MAX_CHECKOUT_QUANTITY
 }
 
-export async function createCheckoutSession(items: CartItem[], locale?: "en" | "bg") {
+export type CreateCheckoutSessionResult =
+  | { ok: true; url: string }
+  | { ok: false; error: string }
+
+type SessionItem = { id: string; variantId?: string | null; qty: number; price: number }
+
+function parseSessionItemsJson(itemsJson: string | undefined): SessionItem[] | null {
+  if (!itemsJson) return null
+
+  let parsed: unknown
+  try {
+    parsed = JSON.parse(itemsJson) as unknown
+  } catch {
+    return null
+  }
+
+  if (!Array.isArray(parsed) || parsed.length === 0) return null
+
+  const items: SessionItem[] = []
+
+  for (const rawItem of parsed) {
+    if (!rawItem || typeof rawItem !== "object") return null
+    const record = rawItem as Record<string, unknown>
+
+    const id = typeof record.id === "string" ? record.id : ""
+    const qty = typeof record.qty === "number" ? record.qty : Number.NaN
+    const price = typeof record.price === "number" ? record.price : Number.NaN
+
+    const variantIdRaw = record.variantId
+    const variantId =
+      typeof variantIdRaw === "string"
+        ? variantIdRaw
+        : variantIdRaw === null
+          ? null
+          : null
+
+    if (!id) return null
+    if (!Number.isFinite(qty) || !Number.isSafeInteger(qty) || qty <= 0 || qty > MAX_CHECKOUT_QUANTITY) return null
+    if (!Number.isFinite(price) || price <= 0) return null
+
+    items.push({ id, variantId, qty, price })
+  }
+
+  return items
+}
+
+export async function createCheckoutSession(
+  items: CartItem[],
+  locale?: "en" | "bg"
+): Promise<CreateCheckoutSessionResult> {
   if (!process.env.STRIPE_SECRET_KEY) {
     console.error("STRIPE_SECRET_KEY is missing")
-    return { error: "Stripe configuration is missing. Please check your server logs." }
+    return { ok: false, error: "Stripe configuration is missing. Please check your server logs." }
   }
 
   // Validate items before proceeding
   if (!items || items.length === 0) {
-    return { error: "No items in cart" }
+    return { ok: false, error: "No items in cart" }
   }
 
   // Validate each item has required fields
   for (const item of items) {
     if (!item.id || !item.title || typeof item.price !== "number" || !Number.isFinite(item.price) || item.price <= 0 || !isValidQuantity(item.quantity)) {
       console.error("Invalid cart item:", item)
-      return { error: "Invalid cart item data. Please refresh and try again." }
+      return { ok: false, error: "Invalid cart item data. Please refresh and try again." }
     }
   }
 
   try {
     const supabase = await createClient()
-    let userId: string | undefined
 
-    const {
-      data: { user },
-    } = await supabase.auth.getUser()
-    userId = user?.id
+    const { data: { user } } = await supabase.auth.getUser()
+    const userId = user?.id
 
     const productIds = items.map((item) => item.id).filter(Boolean)
 
@@ -60,7 +108,7 @@ export async function createCheckoutSession(items: CartItem[], locale?: "en" | "
       .in("id", productIds)
 
     if (productsError || !products) {
-      return { error: "Failed to load product information" }
+      return { ok: false, error: "Failed to load product information" }
     }
 
     // Check for own products
@@ -68,7 +116,7 @@ export async function createCheckoutSession(items: CartItem[], locale?: "en" | "
       const ownProducts = products.filter((p) => p.seller_id === userId)
       if (ownProducts.length > 0) {
         const ownProductTitles = ownProducts.map((p) => p.title).join(", ")
-        return { error: `You cannot purchase your own products: ${ownProductTitles}` }
+        return { ok: false, error: `You cannot purchase your own products: ${ownProductTitles}` }
       }
     }
 
@@ -105,15 +153,20 @@ export async function createCheckoutSession(items: CartItem[], locale?: "en" | "
     // For now, we only support single-seller checkout with Connect
     // Multi-seller checkout would require separate payment intents
     if (itemsBySeller.size > 1) {
-      return { error: "Please checkout items from one seller at a time. Multi-seller checkout coming soon." }
+      return { ok: false, error: "Please checkout items from one seller at a time. Multi-seller checkout coming soon." }
     }
 
     if (itemsBySeller.size === 0) {
-      return { error: "No products found for checkout" }
+      return { ok: false, error: "No products found for checkout" }
     }
 
     const entries = Array.from(itemsBySeller.entries())
-    const [sellerId, sellerItems] = entries[0]!
+    const firstEntry = entries[0]
+    if (!firstEntry) {
+      return { ok: false, error: "No products found for checkout" }
+    }
+
+    const [sellerId, sellerItems] = firstEntry
     const sellerInfo = sellerMap.get(sellerId)
 
     const baseUrl = (process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXT_PUBLIC_URL || "http://localhost:3000").replace(/\/$/, "")
@@ -202,24 +255,28 @@ export async function createCheckoutSession(items: CartItem[], locale?: "en" | "
 
     const session = await stripe.checkout.sessions.create(sessionParams)
 
-    return { url: session.url }
+    if (!session.url) {
+      return { ok: false, error: "Failed to start checkout session" }
+    }
+
+    return { ok: true, url: session.url }
   } catch (error) {
     console.error("Error creating checkout session:", error)
     // Return more specific error messages for debugging
     if (error instanceof Error) {
       // Check for common Stripe errors
       if (error.message.includes("API key")) {
-        return { error: "Stripe API key configuration error. Please contact support." }
+        return { ok: false, error: "Stripe API key configuration error. Please contact support." }
       }
       if (error.message.includes("Invalid")) {
-        return { error: `Stripe validation error: ${error.message}` }
+        return { ok: false, error: `Stripe validation error: ${error.message}` }
       }
       // In development, show the actual error; in production, show generic message
       if (process.env.NODE_ENV === "development") {
-        return { error: `Checkout error: ${error.message}` }
+        return { ok: false, error: `Checkout error: ${error.message}` }
       }
     }
-    return { error: "Failed to create checkout session. Please try again." }
+    return { ok: false, error: "Failed to create checkout session. Please try again." }
   }
 }
 
@@ -286,16 +343,20 @@ export async function getCheckoutFeeQuote(items: CartItem[]): Promise<CheckoutFe
   }
 }
 
-export async function verifyAndCreateOrder(sessionId: string) {
+export type VerifyAndCreateOrderResult =
+  | { ok: true; orderId: string; message?: string }
+  | { ok: false; error: string }
+
+export async function verifyAndCreateOrder(sessionId: string): Promise<VerifyAndCreateOrderResult> {
   if (!sessionId) {
-    return { error: "No session ID provided" }
+    return { ok: false, error: "No session ID provided" }
   }
 
   try {
     const supabase = await createClient()
     if (!supabase) {
       console.error("Supabase client creation failed")
-      return { error: "Failed to connect to database" }
+      return { ok: false, error: "Failed to connect to database" }
     }
 
     const {
@@ -305,12 +366,12 @@ export async function verifyAndCreateOrder(sessionId: string) {
 
     if (authError) {
       console.error("Auth error:", authError)
-      return { error: "Authentication error" }
+      return { ok: false, error: "Authentication error" }
     }
 
     if (!user) {
       console.error("No user found in session")
-      return { error: "User not authenticated" }
+      return { ok: false, error: "User not authenticated" }
     }
 
     const session = await stripe.checkout.sessions.retrieve(sessionId, {
@@ -318,14 +379,19 @@ export async function verifyAndCreateOrder(sessionId: string) {
     })
 
     if (session.payment_status !== "paid") {
-      return { error: "Payment not completed" }
+      return { ok: false, error: "Payment not completed" }
     }
 
-    if (session.payment_intent) {
+    const paymentIntentId = typeof session.payment_intent === "string" ? session.payment_intent : null
+    if (!paymentIntentId) {
+      return { ok: false, error: "Missing payment intent" }
+    }
+
+    {
       const { data: existingOrder, error: existingOrderError } = await supabase
         .from("orders")
         .select("id,user_id")
-        .eq("stripe_payment_intent_id", session.payment_intent as string)
+        .eq("stripe_payment_intent_id", paymentIntentId)
         .order("created_at", { ascending: false })
         .limit(1)
         .maybeSingle()
@@ -336,22 +402,18 @@ export async function verifyAndCreateOrder(sessionId: string) {
 
       if (existingOrder?.id) {
         if (existingOrder.user_id !== user.id) {
-          return { error: "Not authorized" }
+          return { ok: false, error: "Not authorized" }
         }
-        return { success: true, orderId: existingOrder.id, message: "Order already exists" }
+        return { ok: true, orderId: existingOrder.id, message: "Order already exists" }
       }
     }
 
-    let itemsData: { id: string; variantId?: string | null; qty: number; price: number }[] = []
-    try {
-      if (session.metadata?.items_json) {
-        itemsData = JSON.parse(session.metadata.items_json)
-      }
-    } catch (e) {
-      console.warn("Could not parse items_json from metadata:", e)
+    const itemsData = parseSessionItemsJson(session.metadata?.items_json)
+    if (!itemsData || itemsData.length === 0) {
+      return { ok: false, error: "Checkout session items missing" }
     }
 
-    const shippingAddress = session.customer_details?.address
+    const shippingAddress: Json = session.customer_details?.address
       ? {
           name: session.customer_details.name || null,
           email: session.customer_details.email || null,
@@ -370,67 +432,89 @@ export async function verifyAndCreateOrder(sessionId: string) {
       user_id: user.id,
       total_amount: (session.amount_total || 0) / 100,
       status: "paid",
-      shipping_address: shippingAddress as import("@/lib/supabase/database.types").Json,
-      stripe_payment_intent_id: session.payment_intent as string,
+      shipping_address: shippingAddress,
+      stripe_payment_intent_id: paymentIntentId,
     }
 
     const { data: order, error: orderError } = await supabase.from("orders").insert(orderData).select("id, user_id").single()
 
     if (orderError) {
       // If the webhook won the race and created the order first, we try to fetch it.
-      if (session.payment_intent) {
+      {
         const { data: racedOrder } = await supabase
           .from("orders")
           .select("id,user_id")
-          .eq("stripe_payment_intent_id", session.payment_intent as string)
+          .eq("stripe_payment_intent_id", paymentIntentId)
           .order("created_at", { ascending: false })
           .limit(1)
           .maybeSingle()
 
         if (racedOrder?.id) {
           if (racedOrder.user_id !== user.id) {
-            return { error: "Not authorized" }
+            return { ok: false, error: "Not authorized" }
           }
-          return { success: true, orderId: racedOrder.id, message: "Order already exists" }
+          return { ok: true, orderId: racedOrder.id, message: "Order already exists" }
         }
       }
-      return { error: `Failed to create order: ${orderError.message}` }
+      return { ok: false, error: `Failed to create order: ${orderError.message}` }
     }
 
     const productIds = itemsData.map((item) => item.id).filter(Boolean)
     if (productIds.length > 0) {
-      const { data: products } = await supabase
+      const { data: products, error: productsError } = await supabase
         .from("products")
         .select("id, seller_id")
         .in("id", productIds)
 
+      if (productsError) {
+        return { ok: false, error: "Failed to load products for order" }
+      }
+
       const productSellerMap = new Map(products?.map((p) => [p.id, p.seller_id]) || [])
 
       const validItems = itemsData
-        .filter((item) => item.id && productSellerMap.get(item.id))
-        .map((item) => ({
-          order_id: order.id,
-          product_id: item.id,
-          seller_id: productSellerMap.get(item.id)!,
-          ...(item.variantId ? { variant_id: item.variantId } : {}),
-          quantity: item.qty || 1,
-          price_at_purchase: item.price,
-        }))
+        .map((item) => {
+          const sellerId = productSellerMap.get(item.id)
+          if (!sellerId) return null
 
-      if (validItems.length > 0) {
-        // Stock decrement is enforced in the database on insert (trigger), so we don't
-        // need a service-role client here.
-        const { error: orderItemsError } = await supabase.from("order_items").insert(validItems)
-        if (orderItemsError) {
-          return { error: `Failed to create order items: ${orderItemsError.message}` }
-        }
+          return {
+            order_id: order.id,
+            product_id: item.id,
+            seller_id: sellerId,
+            ...(item.variantId ? { variant_id: item.variantId } : {}),
+            quantity: item.qty,
+            price_at_purchase: item.price,
+          }
+        })
+        .filter((item): item is NonNullable<typeof item> => Boolean(item))
+
+      if (validItems.length === 0) {
+        return { ok: false, error: "No valid order items found" }
       }
+
+      // Stock decrement is enforced in the database on insert (trigger), so we don't
+      // need a service-role client here.
+      const { error: orderItemsError } = await supabase.from("order_items").insert(validItems)
+      if (orderItemsError) {
+        return { ok: false, error: `Failed to create order items: ${orderItemsError.message}` }
+      }
+
+      await ensureOrderConversations(
+        supabase,
+        validItems.map((item) => ({
+          orderId: order.id,
+          buyerId: user.id,
+          sellerId: item.seller_id,
+          productId: item.product_id,
+        }))
+      )
     }
 
-    return { success: true, orderId: order.id }
+    return { ok: true, orderId: order.id }
   } catch (error) {
     console.error("Error verifying checkout session:", error)
     return {
+      ok: false,
       error: `Failed to verify checkout session: ${error instanceof Error ? error.message : "Unknown error"}`,
     }
   }

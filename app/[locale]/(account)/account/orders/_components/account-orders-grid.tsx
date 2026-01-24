@@ -11,7 +11,8 @@ import { Badge } from "@/components/ui/badge"
 import { BuyerOrderActions, type BuyerOrderActionsServerActions } from "./buyer-order-actions"
 import { Button } from "@/components/ui/button"
 import { OrderStatusBadge } from "@/components/orders/order-status-badge"
-import type { OrderItemStatus } from "@/lib/order-status"
+import type { OrderItemStatus, OrderStatusKey } from "@/lib/order-status"
+import { getOrderStatusFromItems } from "@/lib/order-status"
 import {
   Card,
   CardContent,
@@ -85,6 +86,9 @@ interface AccountOrdersGridProps {
 export function AccountOrdersGrid({ orders, locale, actions }: AccountOrdersGridProps) {
   const dateLocale = locale === "bg" ? bg : enUS
   const [conversationMap, setConversationMap] = useState<Map<string, string>>(new Map())
+  const isOrderStatusKey = (value: unknown): value is OrderStatusKey =>
+    typeof value === "string" &&
+    ["pending", "paid", "processing", "shipped", "delivered", "cancelled"].includes(value)
 
   // Fetch conversation IDs for each order
   useEffect(() => {
@@ -203,7 +207,15 @@ export function AccountOrdersGrid({ orders, locale, actions }: AccountOrdersGrid
       {/* Mobile: Revolut-style order cards */}
       <div className="space-y-3 md:hidden">
         {orders.map((order) => {
-          const displayStatus = (order.fulfillment_status || order.status || "pending") as OrderStatus
+          const fallbackStatus = isOrderStatusKey(order.fulfillment_status)
+            ? order.fulfillment_status
+            : isOrderStatusKey(order.status)
+              ? order.status
+              : "pending"
+          const displayStatus = getOrderStatusFromItems(
+            order.order_items.map((item) => item.status),
+            fallbackStatus
+          )
           const itemCount = order.order_items.reduce(
             (sum, i) => sum + Number(i.quantity || 0),
             0
@@ -422,7 +434,15 @@ export function AccountOrdersGrid({ orders, locale, actions }: AccountOrdersGrid
         <CardContent className="p-0">
           <div className="divide-y">
             {orders.map((order) => {
-              const status = (order.status || "pending") as OrderStatus
+              const fallbackStatus = isOrderStatusKey(order.fulfillment_status)
+                ? order.fulfillment_status
+                : isOrderStatusKey(order.status)
+                  ? order.status
+                  : "pending"
+              const status = getOrderStatusFromItems(
+                order.order_items.map((item) => item.status),
+                fallbackStatus
+              )
               const itemCount = order.order_items.reduce(
                 (sum, i) => sum + Number(i.quantity || 0),
                 0

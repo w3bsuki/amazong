@@ -16,11 +16,10 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   const { locale: localeParam } = await params
   const locale = validateLocale(localeParam)
   setRequestLocale(locale)
+  const t = await getTranslations({ locale, namespace: "Privacy" })
   return {
-    title: locale === 'bg' ? 'Политика за поверителност' : 'Privacy Policy',
-    description: locale === 'bg' 
-      ? 'Научете как защитаваме вашите лични данни и гарантираме сигурността ви.'
-      : 'Learn how we protect your personal data and ensure your privacy.',
+    title: t("metaTitle"),
+    description: t("metaDescription"),
   }
 }
 
@@ -29,6 +28,7 @@ export default async function PrivacyPage({ params }: { params: Promise<{ locale
   const locale = validateLocale(localeParam)
   setRequestLocale(locale)
   const t = await getTranslations('Privacy')
+  const tBreadcrumbs = await getTranslations("Breadcrumbs")
   
   const sections: LegalSection[] = [
     { id: 'info-collect', icon: Eye, title: t('infoCollect'), desc: t('infoCollectDesc') },
@@ -52,7 +52,9 @@ export default async function PrivacyPage({ params }: { params: Promise<{ locale
       heroIcon={Shield}
       title={t('title')}
       lastUpdated={`${t('lastUpdated')}: ${t('lastUpdatedDate')}`}
-      breadcrumbItems={breadcrumbPresets(locale).privacy}
+      breadcrumbItems={breadcrumbPresets(tBreadcrumbs).privacy}
+      breadcrumbAriaLabel={tBreadcrumbs("ariaLabel")}
+      breadcrumbHomeLabel={tBreadcrumbs("homeLabel")}
       tocLabel={t('tableOfContents')}
       introNotice={t('introNotice')}
       introText={t('introText')}

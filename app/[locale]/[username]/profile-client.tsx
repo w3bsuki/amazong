@@ -8,7 +8,6 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Separator } from "@/components/ui/separator"
 import {
   Star,
@@ -32,7 +31,7 @@ import {
 import { ProductCard } from "@/components/shared/product/product-card"
 import { FollowSellerButton, type FollowSellerActions } from "@/components/seller/follow-seller-button"
 import { SellerVerificationBadge } from "@/components/shared/product/seller-verification-badge"
-import { safeAvatarSrc } from "@/lib/utils"
+import { UserAvatar } from "@/components/shared/user-avatar"
 
 // =============================================================================
 // Types - Match the data shape from lib/data/profile-page.ts
@@ -226,12 +225,13 @@ export function PublicProfileClient({
         <div className="flex flex-col sm:flex-row sm:items-end gap-4">
           {/* Avatar */}
           <div className="relative">
-            <Avatar className="size-28 sm:size-36 border-4 border-background shadow-none">
-              <AvatarImage src={safeAvatarSrc(profile.avatar_url)} alt={displayName} />
-              <AvatarFallback className="text-3xl bg-primary text-primary-foreground">
-                {initials}
-              </AvatarFallback>
-            </Avatar>
+            <UserAvatar
+              name={displayName}
+              avatarUrl={profile.avatar_url ?? null}
+              size="lg"
+              className="size-28 sm:size-36 border-4 border-background shadow-none"
+              fallbackClassName="text-3xl bg-primary text-primary-foreground"
+            />
             {profile.is_verified_business && (
               <div className="absolute -bottom-1 -right-1 bg-primary rounded-full p-1.5 border-2 border-background">
                 <CheckCircle className="size-5 text-primary-foreground" weight="fill" />
@@ -532,12 +532,12 @@ export function PublicProfileClient({
                     <Card key={review.id}>
                       <CardContent className="p-4">
                         <div className="flex items-start gap-3">
-                          <Avatar className="size-10">
-                            <AvatarImage src={safeAvatarSrc(review.buyer?.avatar_url)} />
-                            <AvatarFallback>
-                              {(review.buyer?.display_name || review.buyer?.username || "?").slice(0, 2).toUpperCase()}
-                            </AvatarFallback>
-                          </Avatar>
+                          <UserAvatar
+                            name={review.buyer?.display_name || review.buyer?.username || "?"}
+                            avatarUrl={review.buyer?.avatar_url ?? null}
+                            className="size-10 bg-muted"
+                            fallbackClassName="bg-muted text-xs font-semibold"
+                          />
                           <div className="flex-1">
                             <div className="flex items-center justify-between">
                               {review.buyer?.username ? (
@@ -603,12 +603,12 @@ export function PublicProfileClient({
                     <Card key={review.id}>
                       <CardContent className="p-4">
                         <div className="flex items-start gap-3">
-                          <Avatar className="size-10">
-                            <AvatarImage src={safeAvatarSrc(review.seller?.avatar_url)} />
-                            <AvatarFallback>
-                              {(review.seller?.display_name || review.seller?.username || "?").slice(0, 2).toUpperCase()}
-                            </AvatarFallback>
-                          </Avatar>
+                          <UserAvatar
+                            name={review.seller?.display_name || review.seller?.username || "?"}
+                            avatarUrl={review.seller?.avatar_url ?? null}
+                            className="size-10 bg-muted"
+                            fallbackClassName="bg-muted text-xs font-semibold"
+                          />
                           <div className="flex-1">
                             <div className="flex items-center justify-between">
                               {review.seller?.username ? (

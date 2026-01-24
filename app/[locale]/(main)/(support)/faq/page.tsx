@@ -211,7 +211,6 @@ export default async function FAQPage({ params }: { params: Promise<{ locale: st
   }
 
   const breadcrumbItems = [
-    { label: locale === 'bg' ? 'Начало' : 'Home', href: `/${locale}` },
     { label: locale === 'bg' ? 'ЧЗВ' : 'FAQ' },
   ]
 

@@ -8,6 +8,7 @@ import { X, CaretLeft, SquaresFour } from "@phosphor-icons/react"
 import { cn } from "@/lib/utils"
 import { getCategoryIcon } from "@/lib/category-icons"
 import { Skeleton } from "@/components/ui/skeleton"
+import { useTranslations } from "next-intl"
 
 type Category = CategoryTreeNode
 
@@ -73,6 +74,7 @@ export function CategoryCircles({
   className,
 }: CategoryCirclesProps) {
   const containerRef = useRef<HTMLDivElement>(null)
+  const tCommon = useTranslations("Common")
 
   // When circlesNavigateToPages is true, circles become Link elements for SEO + prefetch.
   // This gives us proper loading.tsx skeleton states during navigation.
@@ -90,9 +92,9 @@ export function CategoryCircles({
 
     const backLabel = activeL2Category
       ? getCategoryName(activeL2Category, locale)
-      : (activeCategoryName || (locale === "bg" ? "Назад" : "Back"))
+      : (activeCategoryName || tCommon("back"))
 
-    const allLabel = locale === "bg" ? "Всички" : "All"
+    const allLabel = tCommon("all")
 
     return (
       <div className="px-3 py-2.5 flex items-center overflow-x-auto no-scrollbar gap-2">
@@ -106,7 +108,7 @@ export function CategoryCircles({
             "text-xs font-medium",
             "active:opacity-90 transition-opacity"
           )}
-          aria-label={locale === "bg" ? "Назад" : "Back"}
+          aria-label={tCommon("back")}
         >
           {/* Mini icon inside translucent circle */}
           <div className="w-4 h-4 bg-background/20 rounded-full flex items-center justify-center text-background">
@@ -186,7 +188,7 @@ export function CategoryCircles({
         {/* 'All' Circle (Static - Always visible) */}
         <CategoryCircle
           category={{ slug: 'all' }}
-          label={locale === 'bg' ? 'Всички' : 'All'}
+          label={tCommon("all")}
           active={!activeL2}
           onClick={() => onBack()}
           circleClassName="size-(--spacing-category-circle)"

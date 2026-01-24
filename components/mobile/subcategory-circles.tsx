@@ -6,6 +6,7 @@ import { Link } from "@/i18n/routing"
 import type { CategoryTreeNode } from "@/lib/category-tree"
 import { getCategoryName } from "@/lib/category-display"
 import { SquaresFour, Package } from "@phosphor-icons/react"
+import { useTranslations } from "next-intl"
 
 // =============================================================================
 // TYPES
@@ -30,7 +31,8 @@ export function SubcategoryCircles({
 }: SubcategoryCirclesProps) {
   if (!subcategories || subcategories.length === 0) return null
 
-  const viewAllLabel = locale === "bg" ? "Виж всички" : "View all"
+  const tCommon = useTranslations("Common")
+  const viewAllLabel = tCommon("viewAll")
 
   return (
     <div className="py-3 overflow-x-auto no-scrollbar">

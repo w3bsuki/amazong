@@ -53,7 +53,7 @@ export const CATEGORY_CONFIGS: CategoryAttributeConfig[] = [
   // VEHICLES - Cars, Motorcycles, etc.
   // -------------------------------------------------------------------------
   {
-    categoryPattern: "vehicles*",
+    categoryPattern: "automotive-vehicles*",
     displayName: { en: "Vehicle", bg: "Превозно средство" },
     brandFieldConfig: {
       label: { en: "Make", bg: "Марка" },

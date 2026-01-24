@@ -1,10 +1,11 @@
-import { notFound, redirect } from "next/navigation"
+import { notFound } from "next/navigation"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import { createClient } from "@/lib/supabase/server"
 import { validateLocale, routing } from "@/i18n/routing"
 import { ConversationPageClient } from "../../_components/conversation-page-client"
 import { blockUser } from "@/app/actions/blocked-users"
 import { reportConversation } from "../../_actions/report-conversation"
+import { AuthGateCard } from "@/components/shared/auth/auth-gate-card"
 
 // Generate static params for all supported locales (conversation ID is dynamic)
 export function generateStaticParams() {
@@ -110,14 +111,21 @@ export default async function ConversationPage({
 
   const supabase = await createClient()
 
-  if (!supabase) {
-    redirect(`/${locale}/auth/login?next=/${locale}/chat/${conversationId}`)
-  }
-
-  const { data: { user } } = await supabase.auth.getUser()
+  const { data: { user } } = await (supabase
+    ? supabase.auth.getUser()
+    : Promise.resolve({ data: { user: null } }))
 
   if (!user) {
-    redirect(`/${locale}/auth/login?next=/${locale}/chat/${conversationId}`)
+    const t = await getTranslations({ locale, namespace: "Drawers" })
+    return (
+      <div className="flex w-full flex-1 items-center justify-center px-inset py-8">
+        <AuthGateCard
+          title={t("signInPrompt")}
+          description={t("signInDescription")}
+          nextPath={`/chat/${conversationId}`}
+        />
+      </div>
+    )
   }
 
   // Validate conversation exists and user has access

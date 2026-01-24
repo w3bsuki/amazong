@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useCallback, useTransition } from "react";
-import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import {
   CheckCircle,
@@ -11,10 +10,13 @@ import {
   Eye,
   SpinnerGap,
   CloudArrowUp,
+  Lightning,
 } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/client";
 import { Link } from "@/i18n/routing";
+import { BoostDialog } from "@/components/shared/boost/boost-dialog";
+import { useTranslations } from "next-intl";
 
 import { SellFormProvider, useSellForm, useSellFormContext, defaultSellFormValuesV4 } from "./sell-form-provider";
 import { DesktopLayout, MobileLayout } from "./layouts";
@@ -93,9 +95,9 @@ function SellFormContent({
   sellerId: string;
   createListingAction: CreateListingAction;
 }) {
-  const _router = useRouter();
   const form = useSellForm();
-  const { isBg, clearDraft } = useSellFormContext();
+  const { isBg, clearDraft, locale } = useSellFormContext();
+  const tBoost = useTranslations("Boost");
   
   const [isPending, startTransition] = useTransition();
   const [submitError, setSubmitError] = useState<string | null>(null);
@@ -206,6 +208,7 @@ function SellFormContent({
     const productTitle = form.getValues().title || (isBg ? "Вашият продукт" : "Your product");
     const firstImageObj = form.getValues().images?.[0];
     const firstImageUrl = typeof firstImageObj === "string" ? firstImageObj : firstImageObj?.url;
+    const productId = createdProductId;
 
     return (
       <div className="min-h-screen bg-background flex flex-col">
@@ -266,24 +269,41 @@ function SellFormContent({
                 </Link>
               </Button>
 
+              {/* Boost CTA */}
+              {productId && (
+                <div className="space-y-2">
+                  <BoostDialog
+                    product={{ id: productId, title: productTitle, is_boosted: false, boost_expires_at: null }}
+                    locale={locale}
+                    trigger={
+                      <Button variant="outline" className="w-full h-12 gap-2 rounded-md font-semibold">
+                        <Lightning className="size-5 text-primary" weight="fill" />
+                        {tBoost("title")}
+                      </Button>
+                    }
+                  />
+                  <p className="text-xs text-muted-foreground">{tBoost("description")}</p>
+                </div>
+              )}
+
               <div className="grid grid-cols-2 gap-4">
                 <Button
                   variant="outline"
                   className="h-12 gap-2 rounded-md font-medium"
                   onClick={() => {
-                    const locale = isBg ? "bg" : "en";
+                    const shareLocale = isBg ? "bg" : "en";
                     if (navigator.share) {
                       navigator.share({
                         title: productTitle,
                         url: createdProductHref
-                          ? `${window.location.origin}/${locale}${createdProductHref}`
-                          : `${window.location.origin}/${locale}/sell`,
+                          ? `${window.location.origin}/${shareLocale}${createdProductHref}`
+                          : `${window.location.origin}/${shareLocale}/sell`,
                       });
                     } else {
                       navigator.clipboard.writeText(
                         createdProductHref
-                          ? `${window.location.origin}/${locale}${createdProductHref}`
-                          : `${window.location.origin}/${locale}/sell`
+                          ? `${window.location.origin}/${shareLocale}${createdProductHref}`
+                          : `${window.location.origin}/${shareLocale}/sell`
                       );
                       toast.success(isBg ? "Линкът е копиран" : "Link copied");
                     }

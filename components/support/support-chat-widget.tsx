@@ -17,6 +17,7 @@ import { ChatCircleDots, PaperPlaneTilt, X, Headphones } from "@phosphor-icons/r
 import { Spinner } from "@/components/shared/spinner"
 import { useTranslations } from "next-intl"
 import { cn } from "@/lib/utils"
+import { AuthGateCard } from "@/components/shared/auth/auth-gate-card"
 
 // Support chat configuration
 const SUPPORT_SUBJECT = "SUPPORT_CHAT"
@@ -47,6 +48,7 @@ export function SupportChatWidget({
   hideTrigger = false,
 }: SupportChatWidgetProps) {
   const t = useTranslations("CustomerService")
+  const tCommon = useTranslations("Common")
   const supabase = createClient()
 
   // Support both controlled and uncontrolled modes
@@ -312,19 +314,15 @@ export function SupportChatWidget({
           {!isAuthenticated ? (
             <div className="flex flex-col items-center justify-center h-full text-center py-8">
               <Headphones className="size-12 text-muted-foreground mb-4" />
-              <p className="text-muted-foreground mb-4">
-                {t("signInRequired") || "Please sign in to chat with our support team"}
-              </p>
-              <Button
-                variant="outline"
-                onClick={() => window.location.href = "/auth/login"}
-              >
-                {t("signIn") || "Sign In"}
-              </Button>
+              <AuthGateCard
+                title={t("signInRequired")}
+                showBackToHome={false}
+                className="border-0 shadow-none bg-transparent max-w-none"
+              />
             </div>
           ) : isLoading ? (
             <div className="flex items-center justify-center h-full">
-              <Spinner className="size-8 text-brand" />
+              <Spinner className="size-8 text-brand" label={tCommon("loading")} />
             </div>
           ) : messages.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full text-center py-8">
@@ -400,7 +398,7 @@ export function SupportChatWidget({
                 className="bg-brand hover:bg-brand-dark shrink-0"
               >
                 {isSending ? (
-                  <Spinner className="size-4" />
+                  <Spinner className="size-4" label={tCommon("loading")} />
                 ) : (
                   <PaperPlaneTilt className="size-4" weight="fill" />
                 )}

@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { useRouter } from "next/navigation"
+import { useRouter } from "@/i18n/routing"
 import { toast } from "sonner"
 import { ProductFormModal, type ProductFormData } from "../../../../../_components/product-form-modal"
 import { updateProduct } from "../../../../../../../actions/products"

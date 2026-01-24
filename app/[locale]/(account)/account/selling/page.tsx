@@ -1,12 +1,11 @@
 import { createClient } from "@/lib/supabase/server"
-import { redirect } from "next/navigation"
+import { Link, redirect } from "@/i18n/routing"
 import {
   bulkUpdateProductStatus,
   clearProductDiscount,
   deleteProduct,
   setProductDiscountPrice,
 } from "@/app/actions/products"
-import { Link } from "@/i18n/routing"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -56,13 +55,13 @@ export default async function SellingPage({ params }: SellingPageProps) {
   const supabase = await createClient()
 
   if (!supabase) {
-    redirect("/auth/login")
+    return redirect({ href: "/auth/login", locale })
   }
 
   const { data: { user } } = await supabase.auth.getUser()
 
   if (!user) {
-    redirect("/auth/login")
+    return redirect({ href: "/auth/login", locale })
   }
 
   // Check if user has a seller profile (has username)
@@ -74,7 +73,7 @@ export default async function SellingPage({ params }: SellingPageProps) {
 
   // If no username, redirect to sell page to set one up
   if (!profile || !profile.username) {
-    redirect(`/${locale}/sell`)
+    return redirect({ href: "/sell", locale })
   }
 
   // Map profile to seller format for compatibility

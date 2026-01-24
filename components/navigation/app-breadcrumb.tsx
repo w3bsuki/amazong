@@ -24,6 +24,8 @@ interface AppBreadcrumbProps {
   items: readonly BreadcrumbItemData[] | BreadcrumbItemData[]
   /** Additional CSS classes for the nav element */
   className?: string
+  /** Accessible label for the breadcrumb navigation */
+  ariaLabel?: string
   /** Whether to show home icon as first item. Defaults to true */
   showHome?: boolean
   /** Custom home label. Defaults to "Treido" */
@@ -43,13 +45,14 @@ interface AppBreadcrumbProps {
 export function AppBreadcrumb({ 
   items = [], 
   className,
+  ariaLabel,
   showHome = true,
   homeLabel = "Treido"
 }: AppBreadcrumbProps) {
   const safeItems = items || []
   
   return (
-    <Breadcrumb className={className}>
+    <Breadcrumb className={className} aria-label={ariaLabel}>
       <BreadcrumbList>
         {/* Home link - icon only on mobile */}
         {showHome && (
@@ -99,25 +102,24 @@ export function AppBreadcrumb({
 
 /**
  * Pre-configured breadcrumb items for common pages.
- * Use with AppBreadcrumb: `<AppBreadcrumb items={breadcrumbPresets(locale).account} />`
+ * Use with AppBreadcrumb: `<AppBreadcrumb items={breadcrumbPresets(t).account} />`
  */
-export const breadcrumbPresets = (locale: string) => {
-  const isBg = locale === "bg"
+export const breadcrumbPresets = (t: (key: string) => string) => {
   return {
-    todaysDeals: [{ label: isBg ? "Днешни оферти" : "Today's Deals" }],
-    customerService: [{ label: isBg ? "Обслужване" : "Customer Service" }],
-    giftCards: [{ label: isBg ? "Подаръчни карти" : "Gift Cards" }],
-    registry: [{ label: isBg ? "Регистър и списъци" : "Registry & Gift Lists" }],
-    sell: [{ label: isBg ? "Продай в Treido" : "Sell on Treido" }],
-    account: [{ label: isBg ? "Моят акаунт" : "Your Account" }],
-    cart: [{ label: isBg ? "Количка" : "Shopping Cart" }],
-    checkout: [{ label: isBg ? "Плащане" : "Checkout" }],
-    wishlist: [{ label: isBg ? "Любими" : "Wishlist" }],
-    about: [{ label: isBg ? "За нас" : "About Us" }],
-    contact: [{ label: isBg ? "Контакти" : "Contact Us" }],
-    privacy: [{ label: isBg ? "Политика за поверителност" : "Privacy Policy" }],
-    terms: [{ label: isBg ? "Условия за ползване" : "Terms of Service" }],
-    cookies: [{ label: isBg ? "Политика за бисквитки" : "Cookie Policy" }],
-    returns: [{ label: isBg ? "Връщания и възстановявания" : "Returns & Refunds" }],
+    todaysDeals: [{ label: t("todaysDeals") }],
+    customerService: [{ label: t("customerService") }],
+    giftCards: [{ label: t("giftCards") }],
+    registry: [{ label: t("registry") }],
+    sell: [{ label: t("sell") }],
+    account: [{ label: t("account") }],
+    cart: [{ label: t("cart") }],
+    checkout: [{ label: t("checkout") }],
+    wishlist: [{ label: t("wishlist") }],
+    about: [{ label: t("about") }],
+    contact: [{ label: t("contact") }],
+    privacy: [{ label: t("privacy") }],
+    terms: [{ label: t("terms") }],
+    cookies: [{ label: t("cookies") }],
+    returns: [{ label: t("returns") }],
   } as const
 }

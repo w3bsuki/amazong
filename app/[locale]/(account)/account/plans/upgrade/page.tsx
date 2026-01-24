@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/server"
-import { redirect } from "next/navigation"
-import { setRequestLocale } from "next-intl/server"
+import { redirect } from "@/i18n/routing"
+import { getTranslations, setRequestLocale } from "next-intl/server"
 import { UpgradeContent } from "./upgrade-content"
 import { ArrowLeft } from "@phosphor-icons/react/dist/ssr"
 import { Link } from "@/i18n/routing"
@@ -20,18 +20,20 @@ export default async function UpgradePage({
 }: {
   params: Promise<{ locale: string }>
 }) {
-  const { locale } = await params
+  const { locale: localeParam } = await params
+  const locale = localeParam === "bg" ? "bg" : "en"
   setRequestLocale(locale)
+  const t = await getTranslations({ locale, namespace: "AccountPlansUpgrade" })
   const supabase = await createClient()
 
   if (!supabase) {
-    redirect("/auth/login")
+    return redirect({ href: "/auth/login", locale })
   }
 
   const { data: { user } } = await supabase.auth.getUser()
 
   if (!user) {
-    redirect("/auth/login")
+    return redirect({ href: "/auth/login", locale })
   }
 
   // Fetch profile info (seller fields are now on profiles)
@@ -63,18 +65,16 @@ export default async function UpgradePage({
         className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mb-6 transition-colors"
       >
         <ArrowLeft className="size-4" />
-        {locale === 'bg' ? 'Обратно към плановете' : 'Back to plans'}
+        {t("backToPlans")}
       </Link>
 
       {/* Header */}
       <div className="text-center mb-8">
         <h1 className="text-2xl font-semibold mb-2">
-          {locale === 'bg' ? 'Надгради плана си' : 'Upgrade Your Plan'}
+          {t("title")}
         </h1>
         <p className="text-muted-foreground">
-          {locale === 'bg'
-            ? 'Изберете план с по-ниски такси и повече функции'
-            : 'Choose a plan with lower fees and more features'}
+          {t("description")}
         </p>
       </div>
 

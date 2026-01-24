@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/server'
 import { stripe } from '@/lib/stripe'
-import { getStripeSubscriptionWebhookSecret } from '@/lib/env'
+import { getStripeSubscriptionWebhookSecrets } from '@/lib/env'
 import type Stripe from 'stripe'
 
 /**
@@ -82,14 +82,25 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Missing signature' }, { status: 400 })
   }
 
-  let event: Stripe.Event
+  let event: Stripe.Event | undefined
 
   try {
-    event = stripe.webhooks.constructEvent(
-      body,
-      sig,
-      getStripeSubscriptionWebhookSecret()
-    )
+    const secrets = getStripeSubscriptionWebhookSecrets()
+    let lastError: unknown
+
+    for (const secret of secrets) {
+      try {
+        event = stripe.webhooks.constructEvent(body, sig, secret)
+        lastError = undefined
+        break
+      } catch (err) {
+        lastError = err
+      }
+    }
+
+    if (!event) {
+      throw lastError ?? new Error('Invalid signature')
+    }
   } catch (err) {
     logWebhookError('signature', err)
     return NextResponse.json({ error: 'Invalid signature' }, { status: 400 })

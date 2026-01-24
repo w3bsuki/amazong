@@ -3,7 +3,7 @@
 import * as React from "react"
 import Image from "next/image"
 import { Link } from "@/i18n/routing"
-import { useRouter } from "next/navigation"
+import { useRouter } from "@/i18n/routing"
 import { toast } from "sonner"
 import { format } from "date-fns"
 import {

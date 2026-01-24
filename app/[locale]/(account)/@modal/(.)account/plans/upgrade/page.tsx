@@ -1,12 +1,11 @@
 import { Modal } from "@/components/shared/modal"
 import { createClient } from "@/lib/supabase/server"
-import { redirect } from "next/navigation"
-import { getLocale } from "next-intl/server"
+import { redirect, routing } from "@/i18n/routing"
+import { getLocale, getTranslations } from "next-intl/server"
 import { UpgradeContent } from "@/app/[locale]/(account)/account/plans/upgrade/upgrade-content"
 import { Suspense } from "react"
 import { Loader2 } from "lucide-react"
 import { connection } from "next/server"
-import { routing } from "@/i18n/routing"
 import { getPlansForUpgrade, PROFILE_SELECT_FOR_UPGRADE } from "@/lib/data/plans"
 import { createSubscriptionCheckoutSession } from "@/app/actions/subscriptions"
 
@@ -20,16 +19,18 @@ async function UpgradeModalContent() {
   await connection()
 
   const locale = await getLocale()
+  const safeLocale = locale === "bg" ? "bg" : "en"
+  const t = await getTranslations({ locale: safeLocale, namespace: "AccountPlansUpgrade" })
   const supabase = await createClient()
 
   if (!supabase) {
-    redirect("/auth/login")
+    return redirect({ href: "/auth/login", locale: safeLocale })
   }
 
   const { data: { user } } = await supabase.auth.getUser()
 
   if (!user) {
-    redirect("/auth/login")
+    return redirect({ href: "/auth/login", locale: safeLocale })
   }
 
   // Fetch profile info (seller fields are now on profiles)
@@ -46,14 +47,11 @@ async function UpgradeModalContent() {
 
   return (
     <Modal
-      title={locale === 'bg' ? 'Надгради плана си' : 'Upgrade Your Plan'}
-      description={locale === 'bg'
-        ? 'Изберете план с по-ниски такси и повече функции'
-        : 'Choose a plan with lower fees and more features'
-      }
+      title={t("title")}
+      description={t("description")}
     >
       <UpgradeContent
-        locale={locale}
+        locale={safeLocale}
         plans={plans}
         currentTier={currentTier}
         seller={profile}
@@ -65,10 +63,7 @@ async function UpgradeModalContent() {
 
 function UpgradeLoadingFallback() {
   return (
-    <Modal
-      title="Upgrade Your Plan"
-      description="Choose a plan with lower fees and more features"
-    >
+    <Modal>
       <div className="flex items-center justify-center py-12">
         <Loader2 className="size-8 animate-spin text-muted-foreground" />
       </div>

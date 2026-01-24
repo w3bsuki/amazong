@@ -46,6 +46,7 @@ interface SellerProductsGridProps {
  */
 export function SellerProductsGrid({ products, totalCount, sellerUsername }: SellerProductsGridProps) {
   const t = useTranslations("Product");
+  const tCommon = useTranslations("Common");
   const locale = useLocale();
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -62,14 +63,10 @@ export function SellerProductsGrid({ products, totalCount, sellerUsername }: Sel
 
   const viewAllHref = sellerUsername ? `/${sellerUsername}` : undefined;
   
-  // Translation with fallback for "View all"
-  const viewAllText = locale === "bg" ? "Виж всички" : "View all";
+  const viewAllText = tCommon("viewAll");
   
   // Seller name for header - extract first name for treido-mock style "More from Ivan"
   const sellerFirstName = products[0]?.sellerName?.split(" ")[0] || "";
-  const moreFromText = locale === "bg" 
-    ? `Още от ${sellerFirstName}` 
-    : `More from ${sellerFirstName}`;
 
   if (!hasProducts) return null;
 
@@ -78,7 +75,7 @@ export function SellerProductsGrid({ products, totalCount, sellerUsername }: Sel
       {/* Header */}
       <div className="flex items-center justify-between px-4 mb-3">
         <h3 className="text-sm font-bold text-foreground">
-          {sellerFirstName ? moreFromText : (t("moreFromSeller") || "More from this seller")}
+          {sellerFirstName ? t("moreFromSellerName", { name: sellerFirstName }) : t("moreFromSeller")}
         </h3>
         {viewAllHref && (
           <Link 

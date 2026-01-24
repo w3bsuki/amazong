@@ -1,6 +1,7 @@
 'use client'
 
 import { ErrorBoundaryUI } from '@/components/shared/error-boundary-ui'
+import { useTranslations } from 'next-intl'
 
 export default function CartError({
   error,
@@ -9,14 +10,16 @@ export default function CartError({
   error: Error & { digest?: string }
   reset: () => void
 }) {
+  const t = useTranslations('Errors')
+
   return (
     <ErrorBoundaryUI
       error={error}
       reset={reset}
-      title="Cart unavailable"
-      description="We couldn't load your cart. Your items are safe - please try again."
+      title={t('cart.title')}
+      description={t('cart.description')}
       ctaIcon="cart"
-      ctaLabel="Continue shopping"
+      ctaLabel={t('common.continueShopping')}
       ctaHref="/"
       logPrefix="Cart page"
     />

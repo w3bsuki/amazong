@@ -33,11 +33,16 @@ export default async function GiftCardsPage({ params }: { params: Promise<{ loca
   const locale = validateLocale(localeParam)
   setRequestLocale(locale)
   const t = await getTranslations("GiftCards")
+  const tBreadcrumbs = await getTranslations("Breadcrumbs")
 
   return (
     <div className="min-h-screen bg-muted pb-12">
       <div className="container pt-4">
-        <AppBreadcrumb items={breadcrumbPresets(locale).giftCards} />
+        <AppBreadcrumb
+          items={breadcrumbPresets(tBreadcrumbs).giftCards}
+          ariaLabel={tBreadcrumbs("ariaLabel")}
+          homeLabel={tBreadcrumbs("homeLabel")}
+        />
       </div>
 
       <GiftCardsHero t={t} />

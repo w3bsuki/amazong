@@ -1,7 +1,6 @@
 "use client"
 
 import * as React from "react"
-import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
 import { useCurrencyOptional, EUR_TO_BGN_RATE } from "@/components/providers/currency-context"
 
@@ -88,7 +87,7 @@ function ProductCardPrice({
         <span
           className={cn(
             "text-reading font-bold tracking-tight tabular-nums",
-            hasDiscount ? "text-foreground" : "text-foreground"
+            hasDiscount ? "text-price-sale" : "text-price"
           )}
         >
           {formattedPrice}
@@ -100,7 +99,7 @@ function ProductCardPrice({
           </span>
         )}
         {hasDiscount && formattedOriginalPrice && (
-          <span className="text-tiny text-muted-foreground line-through">
+          <span className="text-tiny text-price-original line-through">
             {formattedOriginalPrice}
           </span>
         )}

@@ -5,26 +5,17 @@ import { createContext, useContext, useState, useEffect, useCallback, useOptimis
 import { createClient } from "@/lib/supabase/client"
 import { toast } from "sonner"
 import { useAuth } from "./auth-state-manager"
-import { useLocale } from "next-intl"
+import { useTranslations } from "next-intl"
+import { usePathname, useRouter } from "@/i18n/routing"
 
-// Wishlist toast messages (i18n)
-const messages = {
-  en: {
-    signInRequired: "Please sign in to add items to your wishlist",
-    alreadyInWishlist: "Already in your wishlist",
-    added: "Added to wishlist",
-    addFailed: "Failed to add to wishlist",
-    removed: "Removed from wishlist",
-    removeFailed: "Failed to remove from wishlist",
-  },
-  bg: {
-    signInRequired: "Влезте, за да добавите в списъка с желания",
-    alreadyInWishlist: "Вече е в списъка с желания",
-    added: "Добавено в списъка с желания",
-    addFailed: "Неуспешно добавяне в списъка",
-    removed: "Премахнато от списъка с желания",
-    removeFailed: "Неуспешно премахване от списъка",
-  },
+function stripLocalePrefix(pathname: string): string {
+  const segments = pathname.split("/").filter(Boolean)
+  const maybeLocale = segments[0]
+  if (maybeLocale && /^[a-z]{2}(-[A-Z]{2})?$/i.test(maybeLocale)) {
+    segments.shift()
+  }
+  const normalized = `/${segments.join("/")}`
+  return normalized === "/" ? "/" : normalized.replace(/\/+$/, "")
 }
 
 export interface WishlistItem {
@@ -55,8 +46,10 @@ const WishlistContext = createContext<WishlistContextType | undefined>(undefined
 
 export function WishlistProvider({ children }: { children: React.ReactNode }) {
   const { user, isLoading: authLoading } = useAuth()
-  const locale = useLocale()
-  const localeKey = locale === "bg" ? "bg" : "en"
+  const router = useRouter()
+  const pathname = usePathname()
+  const tWishlist = useTranslations("Wishlist")
+  const tAuth = useTranslations("Auth")
   const [items, setItems] = useState<WishlistItem[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const hasSyncedRef = useRef<string | null>(null)
@@ -180,14 +173,13 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
   }, [optimisticItems])
 
   const addToWishlist = async (product: { id: string; title: string; price: number; image: string }) => {
-    const t = messages[localeKey]
-    
     if (!user?.id) {
-      toast.error(t.signInRequired, {
+      const next = stripLocalePrefix(pathname)
+      toast.error(tWishlist("signInRequired"), {
         action: {
-          label: locale === "bg" ? "Вход" : "Sign In",
+          label: tAuth("signIn"),
           onClick: () => {
-            window.location.href = `/${locale}/auth/login`
+            router.push({ pathname: "/auth/login", query: { next } })
           }
         },
         duration: 5000,
@@ -212,7 +204,7 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
       if (error) {
         if (error.code === "23505") {
           // Unique constraint violation - already in wishlist
-          toast.info(t.alreadyInWishlist)
+          toast.info(tWishlist("alreadyInWishlist"))
         } else {
           throw error
         }
@@ -224,19 +216,17 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
           title: product.title,
           price: product.price,
           image: product.image,
-          created_at: data?.created_at ?? new Date().toISOString(),
+           created_at: data?.created_at ?? new Date().toISOString(),
         }, ...prev.filter(item => item.product_id !== product.id)])
-        toast.success(t.added)
+        toast.success(tWishlist("addedToWishlist"))
       }
     } catch (error) {
       console.error("Error adding to wishlist:", error)
-      toast.error(t.addFailed)
+      toast.error(tWishlist("addToWishlistFailed"))
     }
   }
 
   const removeFromWishlist = async (productId: string) => {
-    const t = messages[localeKey]
-    
     if (!user?.id) return
 
     // Apply optimistic update BEFORE server call for instant feedback
@@ -256,10 +246,10 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
 
       // Commit to real state
       setItems(prev => prev.filter(item => item.product_id !== productId))
-      toast.success(t.removed)
+      toast.success(tWishlist("removedFromWishlist"))
     } catch (error) {
       console.error("Error removing from wishlist:", error)
-      toast.error(t.removeFailed)
+      toast.error(tWishlist("removeFromWishlistFailed"))
       // On error, refresh to restore correct state
       refreshWishlist()
     }

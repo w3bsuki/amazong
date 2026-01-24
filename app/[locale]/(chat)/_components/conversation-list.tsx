@@ -4,10 +4,8 @@ import { useEffect, useMemo } from "react"
 import { formatDistanceToNow } from "date-fns"
 import { useTranslations, useLocale } from "next-intl"
 import { bg, enUS } from "date-fns/locale"
-import { cn, safeAvatarSrc } from "@/lib/utils"
-import { AVATAR_VARIANTS, COLOR_PALETTES } from "@/lib/avatar-palettes"
-import { Avatar as UiAvatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import BoringAvatar from "boring-avatars"
+import { cn } from "@/lib/utils"
+import { UserAvatar } from "@/components/shared/user-avatar"
 import { useMessages, type Conversation } from "@/components/providers/message-context"
 import { Skeleton } from "@/components/ui/skeleton"
 import { ChatCircle, Check, Checks } from "@phosphor-icons/react"
@@ -192,28 +190,6 @@ function ConversationItem({
   const avatarUrl = otherProfile?.avatar_url || 
     (isBuyer ? conversation.seller?.profile?.avatar_url : conversation.buyer?.avatar_url)
 
-  const parseBoringAvatar = (value?: string | null) => {
-    if (!value || !value.startsWith("boring-avatar:")) return null
-    const [, variantRaw, paletteRaw, seedRaw] = value.split(":")
-    const variant = AVATAR_VARIANTS.includes(variantRaw as (typeof AVATAR_VARIANTS)[number])
-      ? (variantRaw as (typeof AVATAR_VARIANTS)[number])
-      : AVATAR_VARIANTS[0]
-    const paletteIndex = Number.parseInt(paletteRaw || "0", 10)
-    const colors = COLOR_PALETTES[Number.isNaN(paletteIndex) ? 0 : paletteIndex] ?? COLOR_PALETTES[0]
-    const name = seedRaw || displayName || "user"
-    return { variant, colors, name }
-  }
-
-  const boringAvatar = parseBoringAvatar(avatarUrl)
-  const avatarSrc = boringAvatar ? undefined : safeAvatarSrc(avatarUrl)
-    
-  const initials = (displayName || "?")
-    .split(" ")
-    .map((n: string) => n[0])
-    .join("")
-    .toUpperCase()
-    .slice(0, 2)
-
   // Get unread count for current user's side
   const unreadCount = isBuyer 
     ? (conversation.buyer_unread_count || 0)
@@ -271,23 +247,12 @@ function ConversationItem({
     >
       {/* Avatar with product thumbnail overlay */}
       <div className="relative shrink-0">
-        <UiAvatar className="size-12">
-          {avatarSrc ? <AvatarImage src={avatarSrc} alt={displayName} /> : null}
-          {boringAvatar ? (
-            <AvatarFallback className="bg-transparent p-0">
-              <BoringAvatar
-                size={48}
-                name={boringAvatar.name}
-                variant={boringAvatar.variant}
-                {...(boringAvatar.colors ? { colors: boringAvatar.colors } : {})}
-              />
-            </AvatarFallback>
-          ) : (
-            <AvatarFallback className="bg-primary text-primary-foreground text-sm font-semibold">
-              {initials}
-            </AvatarFallback>
-          )}
-        </UiAvatar>
+        <UserAvatar
+          name={displayName}
+          avatarUrl={avatarUrl ?? null}
+          size="lg"
+          fallbackClassName="bg-primary text-primary-foreground text-sm font-semibold"
+        />
         {/* Product thumbnail overlay */}
         {conversation.product?.images?.[0] && (
           <div className="absolute -bottom-0.5 -right-0.5 size-5 rounded-full border-2 border-background overflow-hidden bg-muted">

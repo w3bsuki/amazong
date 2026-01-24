@@ -105,14 +105,53 @@ export async function createListing(args: { sellerId: string; data: unknown }): 
     attributesJson[attr.name.toLowerCase().replaceAll(/\s+/g, "_")] = attr.value
   }
 
-  const listPrice = form.compareAtPrice ? Number(form.compareAtPrice) : null
+  const price = Number.parseFloat(form.price)
+  if (!Number.isFinite(price) || price <= 0) {
+    return {
+      success: false,
+      error: "Validation failed",
+      issues: [
+        {
+          path: ["price"],
+          message: "Enter a valid price greater than 0",
+        },
+      ],
+    }
+  }
+  const listPrice = form.compareAtPrice ? Number.parseFloat(form.compareAtPrice) : null
+
+  const hasDiscount =
+    Number.isFinite(price) &&
+    typeof listPrice === "number" &&
+    Number.isFinite(listPrice) &&
+    listPrice > price
+
+  if (typeof listPrice === "number" && Number.isFinite(listPrice) && !hasDiscount) {
+    return {
+      success: false,
+      error: "Validation failed",
+      issues: [
+        {
+          path: ["compareAtPrice"],
+          message: "Compare at price must be higher than your price",
+        },
+      ],
+    }
+  }
+
+  const salePercent = hasDiscount && listPrice > 0
+    ? Math.round(((listPrice - price) / listPrice) * 100)
+    : 0
 
   const productData = {
     seller_id: user.id,
     title: form.title,
     description: form.description || "",
-    price: Number(form.price),
-    list_price: Number.isFinite(listPrice) ? listPrice : null,
+    price,
+    list_price: hasDiscount ? listPrice : null,
+    is_on_sale: hasDiscount,
+    sale_percent: salePercent,
+    sale_end_date: null,
     category_id: form.categoryId || null,
     brand_id: form.brandId || null,
     tags: form.tags || [],

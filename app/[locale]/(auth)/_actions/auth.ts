@@ -1,6 +1,6 @@
 "use server"
 
-import { redirect } from "next/navigation"
+import { redirect } from "@/i18n/routing"
 import { headers } from "next/headers"
 import { createClient, createStaticClient } from "@/lib/supabase/server"
 import { loginSchema, signUpSchema } from "@/lib/validations/auth"
@@ -71,13 +71,6 @@ function safeRedirectPath(input: string | null | undefined): string | null {
   if (!input.startsWith("/")) return null
   if (input.startsWith("//")) return null
   return input
-}
-
-function withLocalePrefix(locale: string, path: string): string {
-  const normalized = path.startsWith("/") ? path : `/${path}`
-  if (normalized === "/") return `/${locale}`
-  if (normalized.startsWith(`/${locale}/`) || normalized === `/${locale}`) return normalized
-  return `/${locale}${normalized}`
 }
 
 const forgotPasswordSchema = z.object({
@@ -170,7 +163,8 @@ export async function login(
   }
 
   const safe = safeRedirectPath(redirectPath) || "/"
-  redirect(withLocalePrefix(locale, safe))
+  const safeLocale = locale === "bg" ? "bg" : "en"
+  return redirect({ href: safe, locale: safeLocale })
 }
 
 export async function signUp(
@@ -233,7 +227,8 @@ export async function signUp(
   // NOTE: Do not use a service-role client here.
   // The profile trigger should hydrate initial profile fields from auth metadata.
 
-  redirect(withLocalePrefix(locale, "/auth/sign-up-success"))
+  const safeLocale = locale === "bg" ? "bg" : "en"
+  return redirect({ href: "/auth/sign-up-success", locale: safeLocale })
 }
 
 export async function requestPasswordReset(

@@ -2,8 +2,9 @@ import 'server-only'
 
 import { createClient, createAdminClient } from "@/lib/supabase/server"
 import { logger } from "@/lib/logger"
-import { redirect } from "next/navigation"
+import { redirect } from "@/i18n/routing"
 import { connection } from "next/server"
+import { getLocale } from "next-intl/server"
 
 export type UserRole = 'buyer' | 'seller' | 'admin'
 
@@ -25,6 +26,7 @@ export interface AdminUser {
 export async function requireAdmin(redirectTo: string = "/"): Promise<AdminUser> {
   // Mark as dynamic - auth check reads cookies
   await connection()
+  const locale = await getLocale()
   
   const supabase = await createClient()
   
@@ -32,7 +34,7 @@ export async function requireAdmin(redirectTo: string = "/"): Promise<AdminUser>
   const { data: { user }, error: authError } = await supabase.auth.getUser()
   
   if (authError || !user) {
-    redirect("/auth/login")
+    return redirect({ href: "/auth/login", locale })
   }
   
   // Then check their role in the profiles table
@@ -44,12 +46,12 @@ export async function requireAdmin(redirectTo: string = "/"): Promise<AdminUser>
   
   if (profileError || !profile) {
     logger.error("[Admin] Admin check failed - no profile", profileError)
-    redirect(redirectTo)
+    return redirect({ href: redirectTo, locale })
   }
   
   if (profile.role !== 'admin') {
     // Not an admin - silently redirect (don't reveal admin exists)
-    redirect(redirectTo)
+    return redirect({ href: redirectTo, locale })
   }
   
   return {

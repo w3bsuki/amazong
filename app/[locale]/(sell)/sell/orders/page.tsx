@@ -1,7 +1,6 @@
 import { createClient } from "@/lib/supabase/server"
-import { redirect } from "next/navigation"
 import { setRequestLocale } from "next-intl/server"
-import { validateLocale } from "@/i18n/routing"
+import { redirect, validateLocale } from "@/i18n/routing"
 import {
   canSellerRateBuyer,
   getOrderConversation,
@@ -32,7 +31,7 @@ export default async function SellerOrdersPage({
   } = await supabase.auth.getUser()
 
   if (!user) {
-    redirect(`/${locale}/auth/login`)
+    return redirect({ href: "/auth/login", locale })
   }
 
   return (

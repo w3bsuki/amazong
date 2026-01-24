@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server"
-import { redirect, notFound } from "next/navigation"
-import { requestReturn } from "@/app/actions/orders"
+import { notFound } from "next/navigation"
+import { redirect } from "@/i18n/routing"
+import { buyerConfirmDelivery, canBuyerRateSeller, reportOrderIssue, requestOrderCancellation, requestReturn } from "@/app/actions/orders"
 import { submitSellerFeedback } from "@/app/actions/seller-feedback"
 import { OrderDetailContent } from "./_components/order-detail-content"
 import type { OrderItemStatus } from "@/lib/order-status"
@@ -70,11 +71,12 @@ interface Order {
 }
 
 export default async function OrderDetailPage({ params }: OrderDetailPageProps) {
-  const { locale, id } = await params
+  const { locale: localeParam, id } = await params
+  const locale = localeParam === "bg" ? "bg" : "en"
   const supabase = await createClient()
 
   if (!supabase) {
-    redirect("/auth/login")
+    return redirect({ href: "/auth/login", locale })
   }
 
   const {
@@ -82,7 +84,7 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
   } = await supabase.auth.getUser()
 
   if (!user) {
-    redirect("/auth/login")
+    return redirect({ href: "/auth/login", locale })
   }
 
   // Fetch order
@@ -198,6 +200,13 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
     order_items: orderItems,
   }
 
+  const { data: conversation } = await supabase
+    .from("conversations")
+    .select("id")
+    .eq("order_id", id)
+    .or(`buyer_id.eq.${user.id},seller_id.eq.${user.id}`)
+    .maybeSingle()
+
   return (
     <div className="flex flex-col gap-4 md:gap-4">
       <h1 className="sr-only">
@@ -206,7 +215,15 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
       <OrderDetailContent 
         locale={locale} 
         order={order}
-        actions={{ requestReturn, submitSellerFeedback }}
+        conversationId={conversation?.id ?? null}
+        actions={{ 
+          requestReturn, 
+          submitSellerFeedback,
+          buyerConfirmDelivery,
+          canBuyerRateSeller,
+          requestOrderCancellation,
+          reportOrderIssue,
+        }}
       />
     </div>
   )

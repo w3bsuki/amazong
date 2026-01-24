@@ -1,7 +1,6 @@
 import { requireBusinessSeller, getActiveSubscription, DASHBOARD_ALLOWED_TIERS } from "@/lib/auth/business"
 import { createClient } from "@/lib/supabase/server"
-import { redirect } from "next/navigation"
-import { Link } from "@/i18n/routing"
+import { Link, redirect } from "@/i18n/routing"
 import {
   Card,
   CardContent,
@@ -166,7 +165,7 @@ export default async function DashboardUpgradePage({ params }: UpgradePageProps)
 
   // If they already have access, redirect to dashboard
   if (hasAccess) {
-    redirect(`/${locale}/dashboard`)
+    redirect({ href: "/dashboard", locale })
   }
 
   // Fetch business plans for display
