@@ -76,21 +76,30 @@ function DrawerClose({
 function DrawerOverlay({
   className,
   ...props
-}: React.ComponentProps<typeof DrawerPrimitive.Overlay>) {
+}: React.ComponentProps<"button">) {
   return (
-    <DrawerPrimitive.Overlay
-      data-slot="drawer-overlay"
-      className={cn(
-        "fixed inset-0 z-50 bg-overlay-dark touch-none",
-        "data-[state=open]:animate-in data-[state=closed]:animate-out",
-        "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
-        className
-      )}
-      onWheel={(e) => {
-        e.preventDefault()
-      }}
-      {...props}
-    />
+    // NOTE: We intentionally do NOT use Vaul/Radix's Overlay here.
+    // Radix Dialog's overlay wraps in react-remove-scroll, which applies
+    // `body[data-scroll-locked] { overflow: hidden }` and breaks `position: sticky`
+    // headers on iOS (the header scrolls out of view when a drawer opens).
+    // Using our own overlay preserves sticky headers while keeping the drawer modal.
+    <DrawerClose asChild>
+      <button
+        type="button"
+        tabIndex={-1}
+        aria-hidden="true"
+        data-slot="drawer-overlay"
+        className={cn(
+          "fixed inset-0 z-50 bg-overlay-dark touch-none outline-none",
+          "animate-in fade-in-0",
+          className
+        )}
+        onWheel={(e) => {
+          e.preventDefault()
+        }}
+        {...props}
+      />
+    </DrawerClose>
   )
 }
 
