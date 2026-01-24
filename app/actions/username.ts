@@ -378,21 +378,28 @@ export async function upgradeToBusinessAccount(data: z.infer<typeof businessUpgr
       }
     }
     
-    // Update to business account
-    const { error: updateError } = await supabase
-      .from("profiles")
-      .update({
-        account_type: "business",
-        business_name: data.business_name,
-        vat_number: data.vat_number || null,
-        business_address: data.business_address || null,
-        website_url: data.website_url || null,
-        updated_at: new Date().toISOString(),
-      })
-      .eq("id", user.id)
+    // Update to business account (public + private surfaces)
+    const updatedAt = new Date().toISOString()
+    const [{ error: updateError }, { error: privateError }] = await Promise.all([
+      supabase
+        .from("profiles")
+        .update({
+          account_type: "business",
+          business_name: data.business_name,
+          website_url: data.website_url || null,
+          updated_at: updatedAt,
+        })
+        .eq("id", user.id),
+      supabase
+        .from("private_profiles")
+        .upsert(
+          { id: user.id, vat_number: data.vat_number || null, updated_at: updatedAt },
+          { onConflict: "id" }
+        ),
+    ])
     
-    if (updateError) {
-      console.error("upgradeToBusinessAccount error:", updateError)
+    if (updateError || privateError) {
+      console.error("upgradeToBusinessAccount error:", updateError || privateError)
       return { success: false, error: "Failed to upgrade account" }
     }
 

@@ -27,6 +27,7 @@ import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 import { UserAvatar } from "@/components/shared/user-avatar"
+import { PageShell } from "@/components/shared/page-shell"
 
 interface Member {
   id: string
@@ -162,10 +163,10 @@ export default function MembersPageClient({
   }
 
   return (
-    <div className="min-h-screen bg-background pb-20 sm:pb-8">
-      <div className="bg-primary text-white py-6 sm:py-10">
+    <PageShell variant="muted" className="pb-20 sm:pb-8">
+      <div className="bg-brand text-primary-foreground py-6 sm:py-10">
         <div className="container">
-          <div className="[&_nav]:border-white/20 [&_nav]:mb-2 [&_a]:text-white/80 [&_a:hover]:text-white [&_span[aria-current]]:text-white [&_svg]:text-white/50">
+          <div className="[&_nav]:border-primary-foreground/20 [&_nav]:mb-2 [&_a]:text-primary-foreground/80 [&_a:hover]:text-primary-foreground [&_span[aria-current]]:text-primary-foreground [&_svg]:text-primary-foreground/50">
             <AppBreadcrumb
               items={[
                 { label: locale === "bg" ? "Начало" : "Home", href: "/" },
@@ -177,11 +178,11 @@ export default function MembersPageClient({
 
           <div className="flex items-center gap-3 mb-2">
             <div className="size-12 sm:size-14 bg-primary-foreground/10 rounded-full flex items-center justify-center">
-              <Users className="size-6 sm:size-7 text-white" weight="fill" />
+              <Users className="size-6 sm:size-7 text-primary-foreground" weight="fill" />
             </div>
             <div>
               <h1 className="text-2xl sm:text-4xl font-bold">{locale === "bg" ? "Общност" : "Community"}</h1>
-              <p className="text-white/80 text-sm sm:text-base mt-1">
+              <p className="text-primary-foreground/80 text-sm sm:text-base mt-1">
                 {locale === "bg" ? "Открий продавачи и купувачи" : "Discover sellers and buyers"}
               </p>
             </div>
@@ -190,11 +191,11 @@ export default function MembersPageClient({
           <div className="flex gap-4 mt-4 text-sm">
             <div>
               <span className="text-2xl font-bold">{totalMembers.toLocaleString()}</span>
-              <p className="text-white/70">{locale === "bg" ? "членове" : "members"}</p>
+              <p className="text-primary-foreground/70">{locale === "bg" ? "членове" : "members"}</p>
             </div>
             <div>
               <span className="text-2xl font-bold">{totalSellers.toLocaleString()}</span>
-              <p className="text-white/70">{locale === "bg" ? "продавачи" : "sellers"}</p>
+              <p className="text-primary-foreground/70">{locale === "bg" ? "продавачи" : "sellers"}</p>
             </div>
           </div>
         </div>
@@ -317,6 +318,6 @@ export default function MembersPageClient({
           </div>
         )}
       </div>
-    </div>
+    </PageShell>
   )
 }

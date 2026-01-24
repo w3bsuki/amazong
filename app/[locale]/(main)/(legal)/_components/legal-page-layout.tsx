@@ -1,4 +1,5 @@
 import { Card, CardContent } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
 import { 
   Accordion,
   AccordionContent,
@@ -9,6 +10,7 @@ import { Envelope, WarningCircle } from "@phosphor-icons/react/dist/ssr"
 import { Link } from "@/i18n/routing"
 import { AppBreadcrumb, type BreadcrumbItemData } from "@/components/navigation/app-breadcrumb"
 import type { Icon } from "@phosphor-icons/react"
+import { PageShell } from "@/components/shared/page-shell"
 
 export interface LegalSection {
   id: string
@@ -81,19 +83,19 @@ export function LegalPageLayout({
   relatedLinks,
 }: LegalPageLayoutProps) {
   const introStyles = introVariant === "warning" 
-    ? "bg-brand-warning/10 border-brand-warning" 
-    : "bg-brand/5 border-brand"
+    ? "bg-warning/10 border-warning" 
+    : "bg-info/10 border-info"
   
   const introIconColor = introVariant === "warning" 
-    ? "text-brand-warning" 
-    : "text-brand"
+    ? "text-warning" 
+    : "text-info"
 
   return (
-    <div className="min-h-screen bg-background pb-20 sm:pb-12">
+    <PageShell className="pb-20 sm:pb-12">
       {/* Hero Section */}
-      <div className="bg-header-bg text-white">
+      <div className="bg-brand text-primary-foreground">
         <div className="container py-10 md:py-14">
-          <div className="[&_nav]:border-white/20 [&_nav]:mb-4 [&_a]:text-white/80 [&_a:hover]:text-white [&_span[aria-current]]:text-white [&_svg]:text-white/50">
+          <div className="[&_nav]:border-primary-foreground/20 [&_nav]:mb-4 [&_a]:text-primary-foreground/80 [&_a:hover]:text-primary-foreground [&_span[aria-current]]:text-primary-foreground [&_svg]:text-primary-foreground/50">
             <AppBreadcrumb
               items={breadcrumbItems}
               ariaLabel={breadcrumbAriaLabel}
@@ -102,11 +104,11 @@ export function LegalPageLayout({
           </div>
           <div className="flex items-start gap-4">
             <div className="size-14 bg-primary-foreground/10 flex items-center justify-center shrink-0">
-              <HeroIcon className="size-7 text-white" />
+              <HeroIcon className="size-7 text-primary-foreground" />
             </div>
             <div>
               <h1 className="text-2xl md:text-4xl font-bold mb-2">{title}</h1>
-              <p className="text-white/70">{lastUpdated}</p>
+              <p className="text-primary-foreground/70">{lastUpdated}</p>
             </div>
           </div>
         </div>
@@ -188,12 +190,9 @@ export function LegalPageLayout({
                     <h3 className="font-bold text-lg mb-2">{questionsTitle}</h3>
                     <p className="text-muted-foreground mb-4">{questionsDesc}</p>
                     <div className="flex flex-wrap gap-3">
-                      <Link 
-                        href="/contact" 
-                        className="inline-flex items-center justify-center px-4 py-2 bg-brand text-white text-sm font-medium hover:bg-brand-dark transition-colors"
-                      >
-                        {contactButtonText}
-                      </Link>
+                      <Button asChild variant="cta" size="sm" className="px-4">
+                        <Link href="/contact">{contactButtonText}</Link>
+                      </Button>
                       <a 
                         href={`mailto:${contactEmail}`}
                         className="inline-flex items-center justify-center px-4 py-2 border border-border text-sm font-medium hover:bg-background transition-colors"
@@ -223,6 +222,6 @@ export function LegalPageLayout({
           </main>
         </div>
       </div>
-    </div>
+    </PageShell>
   )
 }

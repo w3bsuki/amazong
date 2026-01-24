@@ -14,6 +14,7 @@ import { SellerRateBuyerActions, type SellerRateBuyerActionsServerActions } from
 import { type OrderItemStatus } from "@/lib/order-status"
 import { cn } from "@/lib/utils"
 import { formatDistanceToNow } from "date-fns"
+import { PageShell } from "@/components/shared/page-shell"
 
 type SellerOrderItem = {
   id: string
@@ -160,7 +161,7 @@ export function SellerOrdersClient({ locale, actions }: SellerOrdersClientProps)
   ]
 
   return (
-    <div className="min-h-screen bg-muted/30">
+    <PageShell variant="muted" fullHeight={false} className="flex flex-1 flex-col">
       {/* Header */}
       <header className="sticky top-0 z-50 bg-background border-b">
         <div className="container mx-auto px-4 py-4 flex items-center gap-4">
@@ -389,6 +390,6 @@ export function SellerOrdersClient({ locale, actions }: SellerOrdersClientProps)
           </TabsContent>
         </Tabs>
       </div>
-    </div>
+    </PageShell>
   )
 }

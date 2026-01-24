@@ -79,8 +79,8 @@ export function AccountStatsCards({ totals, locale }: AccountStatsProps) {
               className="flex flex-col items-center gap-1.5 py-2"
             >
               {/* Circular neutral icon */}
-              <div className="relative flex size-12 items-center justify-center rounded-full bg-account-stat-icon-bg border border-border">
-                <action.icon className="size-5 text-account-stat-icon" strokeWidth={1.8} />
+              <div className="relative flex size-12 items-center justify-center rounded-full bg-muted border border-border">
+                <action.icon className="size-5 text-muted-foreground" strokeWidth={1.8} />
                 {/* Count badge */}
                 {action.count !== null && action.count > 0 && (
                   <div className="absolute -top-0.5 -right-0.5 flex min-w-(--badge-count-size) h-(--badge-count-size) items-center justify-center rounded-full bg-foreground text-background px-1 text-2xs font-bold shadow-sm">
@@ -89,7 +89,7 @@ export function AccountStatsCards({ totals, locale }: AccountStatsProps) {
                 )}
               </div>
               {/* Label */}
-              <span className="text-xs font-medium text-account-stat-label text-center leading-tight">
+              <span className="text-xs font-medium text-muted-foreground text-center leading-tight">
                 {action.label}
               </span>
             </Link>
@@ -103,14 +103,14 @@ export function AccountStatsCards({ totals, locale }: AccountStatsProps) {
           <Link
             key={action.href}
             href={action.href}
-            className="group flex items-center gap-2 px-4 py-2 rounded-full bg-account-stat-bg border border-account-stat-border hover:bg-account-card-hover transition-all shrink-0"
+            className="group flex items-center gap-2 px-4 py-2 rounded-full bg-background border border-border/60 hover:bg-muted/40 transition-colors shrink-0"
           >
-            <div className="flex size-7 items-center justify-center rounded-full bg-account-stat-icon-bg">
-              <action.icon className="size-3.5 text-account-stat-icon" strokeWidth={2} />
+            <div className="flex size-7 items-center justify-center rounded-full bg-muted">
+              <action.icon className="size-3.5 text-muted-foreground" strokeWidth={2} />
             </div>
-            <span className="text-sm font-medium text-account-stat-value">{action.label}</span>
+            <span className="text-sm font-medium text-foreground">{action.label}</span>
             {action.count !== null && action.count > 0 && (
-              <span className="text-xs font-semibold text-account-stat-label bg-account-accent-soft px-1.5 py-0.5 rounded-full">
+              <span className="text-xs font-semibold text-primary bg-primary/10 px-1.5 py-0.5 rounded-full">
                 {action.count}
               </span>
             )}

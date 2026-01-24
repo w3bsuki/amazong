@@ -9,6 +9,7 @@ import { getTopSellers } from "./_lib/get-top-sellers"
 import SellersEmptyState from "./_components/sellers-empty-state"
 import SellersDirectoryClient from "./_components/sellers-directory-client"
 import TopSellersHero from "./_components/top-sellers-hero"
+import { PageShell } from "@/components/shared/page-shell"
 
 export async function generateMetadata({
   params,
@@ -44,7 +45,7 @@ export default async function SellersPage({
   const sellersWithStats = await getTopSellers(supabase)
 
   return (
-    <div className="min-h-screen bg-background pb-20 sm:pb-12">
+    <PageShell variant="muted" className="pb-20 sm:pb-12">
       {/* Hero Banner */}
       <TopSellersHero
         breadcrumbItems={[{ label: t("breadcrumbLabel") }]}
@@ -68,6 +69,6 @@ export default async function SellersPage({
           <SellersEmptyState locale={locale} />
         )}
       </div>
-    </div>
+    </PageShell>
   )
 }

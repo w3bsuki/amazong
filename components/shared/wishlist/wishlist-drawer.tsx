@@ -69,9 +69,9 @@ export function WishlistDrawer({ className, children }: WishlistDrawerProps) {
       <DrawerTrigger asChild>{children}</DrawerTrigger>
       <DrawerContent className={cn("rounded-t-xl", className)}>
         <DrawerHeader className="pb-1.5 pt-0 border-b border-border text-left">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-1.5">
-              <Heart size={16} weight="fill" className="text-deal" />
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-1.5">
+              <Heart size={16} weight="fill" className="text-wishlist" />
               <DrawerTitle className="text-sm font-semibold">{t("title")}</DrawerTitle>
               <span className="text-xs text-muted-foreground" suppressHydrationWarning>
                 ({mounted ? totalItems : 0})
@@ -91,7 +91,7 @@ export function WishlistDrawer({ className, children }: WishlistDrawerProps) {
 
         {isLoading ? (
           <div className="flex items-center justify-center py-8">
-            <div className="size-6 border-2 border-muted border-t-brand rounded-full animate-spin" />
+            <div className="size-6 border-2 border-muted border-t-wishlist rounded-full animate-spin" />
           </div>
         ) : items.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-5 px-inset text-center">
@@ -100,7 +100,7 @@ export function WishlistDrawer({ className, children }: WishlistDrawerProps) {
             </div>
             <p className="text-sm text-foreground font-medium">{t("empty")}</p>
             <p className="text-xs text-muted-foreground mt-0.5 mb-3">{t("emptyDescription")}</p>
-            <Button asChild size="default" onClick={() => setOpen(false)}>
+            <Button asChild variant="cta" size="default" onClick={() => setOpen(false)}>
               <Link href="/search" className="gap-1.5">
                 {t("startShopping")}
                 <ArrowRight size={14} />

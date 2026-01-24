@@ -93,7 +93,7 @@ export function AccountAddressesGrid({
         return 'text-success'
       case 'work':
       case 'работа':
-        return 'text-account-info'
+        return 'text-info'
       default:
         return 'text-muted-foreground'
     }

@@ -19,7 +19,7 @@ export function AuthCard({
   showLogo = true,
 }: AuthCardProps) {
   return (
-    <div className="min-h-svh flex items-center justify-center bg-muted/30 p-4">
+    <div className="min-h-dvh flex items-center justify-center p-4">
       <Card className="w-full max-w-sm py-0 gap-0">
         <CardHeader className="text-center pt-6 pb-4 px-6 gap-3">
           {showLogo && (

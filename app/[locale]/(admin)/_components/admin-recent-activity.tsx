@@ -66,7 +66,7 @@ export function AdminRecentActivity({ users, products, orders }: AdminRecentActi
       case "processing":
         return "bg-order-processing/10 text-order-processing border-order-processing/20"
       case "shipped":
-        return "bg-account-info-soft text-account-info border-account-stat-border"
+        return "bg-order-shipped/10 text-order-shipped border-order-shipped/20"
       case "delivered":
         return "bg-success/10 text-success border-success/20"
       case "cancelled":

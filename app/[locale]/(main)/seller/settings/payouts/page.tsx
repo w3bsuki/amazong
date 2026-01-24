@@ -34,7 +34,7 @@ export default async function PayoutsPage({
   // Get seller profile for email
   const { data: profile } = await supabase
     .from("profiles")
-    .select("email, role")
+    .select("role")
     .eq("id", user.id)
     .single()
 
@@ -49,7 +49,7 @@ export default async function PayoutsPage({
       <h1 className="text-2xl font-bold mb-6">{t("title")}</h1>
       <SellerPayoutSetup
         payoutStatus={payoutStatus}
-        sellerEmail={profile?.email || user.email || ""}
+        sellerEmail={user.email || ""}
       />
     </div>
   )

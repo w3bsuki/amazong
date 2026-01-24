@@ -9,6 +9,7 @@ import { Link } from "@/i18n/routing"
 import { useTranslations, useLocale } from "next-intl"
 import { toast } from "sonner"
 import { useState } from "react"
+import { PageShell } from "@/components/shared/page-shell"
 
 export default function WishlistPageClient() {
   const { items, isLoading, removeFromWishlist } = useWishlist()
@@ -83,7 +84,7 @@ export default function WishlistPageClient() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-secondary py-4 md:py-6">
+      <PageShell variant="muted" className="py-4 md:py-6">
         <div className="container px-3 md:px-4">
           <div className="flex items-center justify-center py-8" role="status" aria-live="polite">
             <div className="flex flex-col items-center gap-3">
@@ -119,13 +120,13 @@ export default function WishlistPageClient() {
             ))}
           </div>
         </div>
-      </div>
+      </PageShell>
     )
   }
 
   if (items.length === 0) {
     return (
-      <div className="min-h-screen bg-secondary py-4 md:py-6">
+      <PageShell variant="muted" className="py-4 md:py-6">
         <div className="container px-3 md:px-4">
           {/* Breadcrumb */}
           <nav className="flex gap-2 items-center mb-4 text-sm text-muted-foreground">
@@ -147,20 +148,20 @@ export default function WishlistPageClient() {
             </div>
             <h2 className="text-lg md:text-xl font-semibold text-foreground mb-2">{t("empty")}</h2>
             <p className="text-muted-foreground mb-6 max-w-md mx-auto">{t("emptyDescription")}</p>
-            <Button asChild className="bg-brand hover:bg-brand-dark text-white">
+            <Button asChild variant="cta" className="gap-2">
               <Link href="/search">
                 {t("startShopping")}
-                <ArrowRight className="h-4 w-4 ml-2" />
+                <ArrowRight className="size-4" />
               </Link>
             </Button>
           </div>
         </div>
-      </div>
+      </PageShell>
     )
   }
 
   return (
-    <div className="min-h-screen bg-secondary py-4 md:py-6">
+    <PageShell variant="muted" className="py-4 md:py-6">
       <div className="container px-3 md:px-4">
         {/* Breadcrumb */}
         <nav className="flex gap-2 items-center mb-4 text-sm text-muted-foreground">
@@ -174,7 +175,7 @@ export default function WishlistPageClient() {
         {/* Header with title and actions */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
           <h1 className="text-xl md:text-2xl font-bold text-foreground flex items-center gap-2">
-            <Heart className="h-5 w-5 md:h-6 md:w-6 text-deal" weight="fill" />
+            <Heart className="h-5 w-5 md:h-6 md:w-6 text-wishlist" weight="fill" />
             {t("title")} <span className="text-muted-foreground font-normal">({items.length})</span>
           </h1>
 
@@ -193,9 +194,10 @@ export default function WishlistPageClient() {
               )}
             </Button>
             <Button
+              variant="cta"
               size="sm"
               onClick={handleAddAllToCart}
-              className="gap-2 bg-brand hover:bg-brand-dark"
+              className="gap-2"
             >
               <ShoppingCart className="size-4" />
               {t("addAllToCart")}
@@ -250,10 +252,12 @@ export default function WishlistPageClient() {
 
                 {/* Add to Cart Button */}
                 <Button
+                  variant="cta"
+                  size="sm"
                   onClick={() => handleMoveToCart(item)}
-                  className="w-full h-9 text-sm rounded-full bg-cta-add-to-cart hover:bg-cta-add-to-cart-hover text-cta-add-to-cart-text"
+                  className="w-full rounded-full text-sm"
                 >
-                  <ShoppingCart className="size-4 mr-1.5" />
+                  <ShoppingCart className="size-4" />
                   {t("moveToCart")}
                 </Button>
               </div>
@@ -261,6 +265,6 @@ export default function WishlistPageClient() {
           ))}
         </div>
       </div>
-    </div>
+    </PageShell>
   )
 }

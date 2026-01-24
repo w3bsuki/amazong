@@ -173,9 +173,6 @@ export async function createProduct(input: ProductInput): Promise<ActionResult<{
         description: data.description || null,
         price: data.price,
         list_price: data.compareAtPrice || null,
-        cost_price: data.costPrice || null,
-        sku: data.sku || null,
-        barcode: data.barcode || null,
         stock: data.stock,
         track_inventory: data.trackInventory,
         category_id: data.categoryId || null,
@@ -192,6 +189,22 @@ export async function createProduct(input: ProductInput): Promise<ActionResult<{
     if (insertError) {
       console.error("[createProduct] Insert error:", insertError)
       return { success: false, error: insertError.message || "Failed to create product" }
+    }
+
+    const { error: privateError } = await supabase
+      .from("product_private")
+      .insert({
+        product_id: product.id,
+        seller_id: user.id,
+        cost_price: data.costPrice ?? null,
+        sku: data.sku ?? null,
+        barcode: data.barcode ?? null,
+      })
+
+    if (privateError) {
+      console.error("[createProduct] Product private insert error:", privateError)
+      await supabase.from("products").delete().eq("id", product.id)
+      return { success: false, error: privateError.message || "Failed to save seller-only product fields" }
     }
 
     await revalidateProductCaches({
@@ -249,9 +262,6 @@ export async function updateProduct(
     if (input.description !== undefined) updateData.description = input.description
     if (input.price !== undefined) updateData.price = input.price
     if (input.compareAtPrice !== undefined) updateData.list_price = input.compareAtPrice
-    if (input.costPrice !== undefined) updateData.cost_price = input.costPrice
-    if (input.sku !== undefined) updateData.sku = input.sku
-    if (input.barcode !== undefined) updateData.barcode = input.barcode
     if (input.stock !== undefined) updateData.stock = input.stock
     if (input.trackInventory !== undefined) updateData.track_inventory = input.trackInventory
     if (input.categoryId !== undefined) updateData.category_id = input.categoryId
@@ -270,6 +280,28 @@ export async function updateProduct(
     if (updateError) {
       console.error("[updateProduct] Update error:", updateError)
       return { success: false, error: "Failed to update product" }
+    }
+
+    const privateUpdate: {
+      product_id: string
+      seller_id: string
+      cost_price?: number | null
+      sku?: string | null
+      barcode?: string | null
+    } = { product_id: productId, seller_id: user.id }
+    if (input.costPrice !== undefined) privateUpdate.cost_price = input.costPrice
+    if (input.sku !== undefined) privateUpdate.sku = input.sku
+    if (input.barcode !== undefined) privateUpdate.barcode = input.barcode
+
+    if (Object.keys(privateUpdate).length > 2) {
+      const { error: privateError } = await supabase
+        .from("product_private")
+        .upsert(privateUpdate, { onConflict: "product_id" })
+
+      if (privateError) {
+        console.error("[updateProduct] Product private upsert error:", privateError)
+        return { success: false, error: "Failed to save seller-only product fields" }
+      }
     }
 
     const categoryIdsToInvalidate: Array<string | null | undefined> = [existingProduct.category_id]
@@ -657,7 +689,7 @@ async function updateProductStock(
 /**
  * Duplicate a product
  */
-export async function duplicateProduct(productId: string): Promise<ActionResult<{ id: string }>> {
+  export async function duplicateProduct(productId: string): Promise<ActionResult<{ id: string }>> {
   try {
     const supabase = await createClient()
     
@@ -668,7 +700,7 @@ export async function duplicateProduct(productId: string): Promise<ActionResult<
     }
 
     const DUPLICATE_PRODUCT_SELECT =
-      'title,description,price,list_price,cost_price,sku,stock,track_inventory,category_id,weight,weight_unit,condition,images' as const
+      'title,description,price,list_price,stock,track_inventory,category_id,weight,weight_unit,condition,images' as const
     
     // Fetch original product
     const { data: original, error: fetchError } = await supabase
@@ -682,6 +714,13 @@ export async function duplicateProduct(productId: string): Promise<ActionResult<
       return { success: false, error: "Product not found" }
     }
     
+    const { data: originalPrivate } = await supabase
+      .from("product_private")
+      .select("cost_price, sku")
+      .eq("product_id", productId)
+      .eq("seller_id", user.id)
+      .maybeSingle()
+
     // Generate unique slug for duplicate
     const baseSlug = `${original.title}-copy`
       .toLowerCase()
@@ -698,9 +737,6 @@ export async function duplicateProduct(productId: string): Promise<ActionResult<
         description: original.description,
         price: original.price,
         list_price: original.list_price,
-        cost_price: original.cost_price,
-        sku: original.sku ? `${original.sku}-COPY` : null,
-        barcode: null, // Barcode should be unique, don't copy
         stock: original.stock,
         track_inventory: original.track_inventory,
         category_id: original.category_id,
@@ -717,6 +753,22 @@ export async function duplicateProduct(productId: string): Promise<ActionResult<
     if (insertError) {
       console.error("[duplicateProduct] Insert error:", insertError)
       return { success: false, error: "Failed to duplicate product" }
+    }
+
+    const { error: privateError } = await supabase
+      .from("product_private")
+      .insert({
+        product_id: duplicate.id,
+        seller_id: user.id,
+        cost_price: originalPrivate?.cost_price ?? null,
+        sku: originalPrivate?.sku ? `${originalPrivate.sku}-COPY` : null,
+        barcode: null, // Barcode should be unique, don't copy
+      })
+
+    if (privateError) {
+      console.error("[duplicateProduct] Product private insert error:", privateError)
+      await supabase.from("products").delete().eq("id", duplicate.id)
+      return { success: false, error: "Failed to duplicate seller-only product fields" }
     }
 
     await revalidateProductCaches({

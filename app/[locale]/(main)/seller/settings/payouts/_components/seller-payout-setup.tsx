@@ -30,6 +30,19 @@ export function SellerPayoutSetup({ payoutStatus, sellerEmail }: Props) {
 
   const isComplete = payoutStatus?.details_submitted && payoutStatus?.charges_enabled && payoutStatus?.payouts_enabled
 
+  const getErrorMessage = (action: "onboarding" | "dashboard", status: number) => {
+    if (status === 401) return t("errors.unauthorized")
+    if (status === 403) return t("errors.forbidden")
+
+    if (action === "dashboard") {
+      if (status === 404) return t("errors.noAccount")
+      if (status === 400) return t("errors.onboardingIncomplete")
+      return t("errors.dashboardFailed")
+    }
+
+    return t("errors.onboardingFailed")
+  }
+
   const handleStartOnboarding = async () => {
     setLoading(true)
     setError(null)
@@ -41,16 +54,24 @@ export function SellerPayoutSetup({ payoutStatus, sellerEmail }: Props) {
           "x-next-intl-locale": locale,
         },
       })
-      const data = await response.json()
 
       if (!response.ok) {
-        throw new Error(data.error || "Failed to start onboarding")
+        setError(getErrorMessage("onboarding", response.status))
+        setLoading(false)
+        return
+      }
+
+      const data = await response.json()
+      if (!data?.url) {
+        setError(t("errors.generic"))
+        setLoading(false)
+        return
       }
 
       // Redirect to Stripe onboarding
       window.location.href = data.url
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Something went wrong")
+      setError(t("errors.generic"))
       setLoading(false)
     }
   }
@@ -66,17 +87,25 @@ export function SellerPayoutSetup({ payoutStatus, sellerEmail }: Props) {
           "x-next-intl-locale": locale,
         },
       })
-      const data = await response.json()
 
       if (!response.ok) {
-        throw new Error(data.error || "Failed to open dashboard")
+        setError(getErrorMessage("dashboard", response.status))
+        setLoading(false)
+        return
+      }
+
+      const data = await response.json()
+      if (!data?.url) {
+        setError(t("errors.generic"))
+        setLoading(false)
+        return
       }
 
       // Open Stripe dashboard in new tab
       window.open(data.url, "_blank")
       setLoading(false)
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Something went wrong")
+      setError(t("errors.generic"))
       setLoading(false)
     }
   }

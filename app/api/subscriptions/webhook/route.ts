@@ -239,22 +239,26 @@ export async function POST(req: Request) {
             }
           }
 
-          // Update profile tier and fee fields from plan
+          // Update profile tier (public surface) and fee fields (private surface) from plan
           const finalValueFee = Number(plan.final_value_fee ?? plan.commission_rate ?? 0)
-          const { error: profileError } = await supabase
-            .from('profiles')
-            .update({
-              tier: plan.tier,
-              commission_rate: finalValueFee,
-              final_value_fee: finalValueFee,
-              insertion_fee: plan.insertion_fee ?? 0,
-              per_order_fee: plan.per_order_fee ?? 0,
-            })
-            .eq('id', profileId)
+          const [{ error: profileError }, { error: privateError }] = await Promise.all([
+            supabase
+              .from('profiles')
+              .update({ tier: plan.tier })
+              .eq('id', profileId),
+            supabase
+              .from('private_profiles')
+              .upsert({
+                id: profileId,
+                commission_rate: finalValueFee,
+                final_value_fee: finalValueFee,
+                insertion_fee: plan.insertion_fee ?? 0,
+                per_order_fee: plan.per_order_fee ?? 0,
+              }, { onConflict: 'id' }),
+          ])
 
-          if (profileError) {
-            logWebhookError('profile-update', profileError)
-          }
+          if (profileError) logWebhookError('profile-update', profileError)
+          if (privateError) logWebhookError('private-profile-update', privateError)
         }
         break
       }
@@ -301,16 +305,21 @@ export async function POST(req: Request) {
               supabase,
               existingSub.seller_id
             )
-            await supabase
-              .from('profiles')
-              .update({
-                tier: 'free',
-                commission_rate: finalValueFee,
-                final_value_fee: finalValueFee,
-                insertion_fee: insertionFee,
-                per_order_fee: perOrderFee,
-              })
-              .eq('id', existingSub.seller_id)
+            await Promise.all([
+              supabase
+                .from('profiles')
+                .update({ tier: 'free' })
+                .eq('id', existingSub.seller_id),
+              supabase
+                .from('private_profiles')
+                .upsert({
+                  id: existingSub.seller_id,
+                  commission_rate: finalValueFee,
+                  final_value_fee: finalValueFee,
+                  insertion_fee: insertionFee,
+                  per_order_fee: perOrderFee,
+                }, { onConflict: 'id' }),
+            ])
           }
         }
         break
@@ -343,16 +352,21 @@ export async function POST(req: Request) {
             supabase,
             existingSub.seller_id
           )
-          await supabase
-            .from('profiles')
-            .update({
-              tier: 'free',
-              commission_rate: finalValueFee,
-              final_value_fee: finalValueFee,
-              insertion_fee: insertionFee,
-              per_order_fee: perOrderFee,
-            })
-            .eq('id', existingSub.seller_id)
+          await Promise.all([
+            supabase
+              .from('profiles')
+              .update({ tier: 'free' })
+              .eq('id', existingSub.seller_id),
+            supabase
+              .from('private_profiles')
+              .upsert({
+                id: existingSub.seller_id,
+                commission_rate: finalValueFee,
+                final_value_fee: finalValueFee,
+                insertion_fee: insertionFee,
+                per_order_fee: perOrderFee,
+              }, { onConflict: 'id' }),
+          ])
         }
         break
       }

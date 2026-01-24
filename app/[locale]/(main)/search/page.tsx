@@ -12,6 +12,7 @@ import { FilterChips } from "@/components/shared/filters/filter-chips"
 import { SortSelect } from "@/components/shared/search/sort-select"
 import { SearchPagination } from "@/components/shared/search/search-pagination"
 import { EmptyStateCTA } from "@/components/shared/empty-state-cta"
+import { PageShell } from "@/components/shared/page-shell"
 import { Suspense } from "react"
 import { setRequestLocale, getTranslations } from "next-intl/server"
 import { cookies } from "next/headers"
@@ -229,7 +230,7 @@ export default async function SearchPage({
   const t = await getTranslations('SearchFilters')
 
   return (
-    <div className="min-h-screen bg-background overflow-x-hidden">
+    <PageShell variant="muted" className="overflow-x-hidden">
       <div className="container overflow-x-hidden">
         <div className="flex flex-col lg:flex-row gap-4">
           {/* Sidebar Filters - Hidden on mobile, uses bg-sidebar for visual differentiation */}
@@ -421,6 +422,6 @@ export default async function SearchPage({
           </div>
         </div>
       </div>
-    </div>
+    </PageShell>
   )
 }

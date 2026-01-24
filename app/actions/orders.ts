@@ -183,12 +183,12 @@ export async function getSellerOrders(
     // Get buyer profiles for each unique buyer
     const buyerIds = [...new Set(orderItems?.map(item => item.order?.user_id).filter(Boolean))]
     
-    let buyersMap = new Map<string, OrderItem['buyer']>()
+    let buyersMap = new Map<string, { id: string; full_name: string | null; avatar_url: string | null }>()
     
     if (buyerIds.length > 0) {
       const { data: buyers } = await supabase
         .from('profiles')
-        .select('id, full_name, email, avatar_url')
+        .select('id, full_name, avatar_url')
         .in('id', buyerIds)
 
       buyers?.forEach(buyer => {
@@ -200,7 +200,26 @@ export async function getSellerOrders(
     const ordersWithBuyers = (orderItems ?? []).map((item) => ({
       ...item,
       created_at: item.order?.created_at ?? new Date().toISOString(),
-      buyer: item.order?.user_id ? buyersMap.get(item.order.user_id) : undefined,
+      buyer: (() => {
+        if (!item.order?.user_id) return undefined
+
+        const base = buyersMap.get(item.order.user_id)
+        const shippingAddress = item.order?.shipping_address
+        const email =
+          shippingAddress &&
+          typeof shippingAddress === 'object' &&
+          !Array.isArray(shippingAddress) &&
+          typeof (shippingAddress as { email?: unknown }).email === 'string'
+            ? (shippingAddress as { email: string }).email
+            : null
+
+        return {
+          id: item.order.user_id,
+          full_name: base?.full_name ?? null,
+          email,
+          avatar_url: base?.avatar_url ?? null,
+        }
+      })(),
     }))
 
     return { orders: ordersWithBuyers as OrderItem[] }

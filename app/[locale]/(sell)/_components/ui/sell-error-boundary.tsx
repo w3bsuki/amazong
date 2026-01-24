@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { WarningCircle, ArrowCounterClockwise, FloppyDisk, House } from "@phosphor-icons/react";
 import { Link } from "@/i18n/routing";
+import { PageShell } from "@/components/shared/page-shell";
 
 interface SellErrorBoundaryProps {
   children: ReactNode;
@@ -62,7 +63,7 @@ export class SellErrorBoundary extends Component<SellErrorBoundaryProps, SellErr
   override render() {
     if (this.state.hasError) {
       return (
-        <div className="min-h-screen bg-muted/30 flex items-center justify-center p-4">
+        <PageShell variant="muted" fullHeight={false} className="flex flex-1 items-center justify-center p-4">
           <Card className="max-w-md w-full rounded-md">
             <CardHeader className="text-center pb-2">
               <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-destructive/10">
@@ -127,7 +128,7 @@ export class SellErrorBoundary extends Component<SellErrorBoundaryProps, SellErr
               )}
             </CardContent>
           </Card>
-        </div>
+        </PageShell>
       );
     }
 

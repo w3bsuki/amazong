@@ -41,6 +41,7 @@ export interface ContextualHeaderState {
   onBack?: () => void
   subcategories?: CategoryTreeNode[]
   onSubcategoryClick?: (cat: CategoryTreeNode) => void
+  hideActions?: boolean
 }
 
 export interface ProductHeaderState {

@@ -21,7 +21,7 @@ export async function POST(req: NextRequest) {
     // Get seller profile
     const { data: profile, error: profileError } = await supabase
       .from("profiles")
-      .select("email, role, account_type")
+      .select("role, account_type")
       .eq("id", user.id)
       .single()
 
@@ -50,7 +50,7 @@ export async function POST(req: NextRequest) {
     // Create new account if none exists
     if (!accountId) {
       const account = await createConnectAccount({
-        email: profile.email || user.email || "",
+        email: user.email || "",
         sellerId: user.id,
         accountType: profile.account_type === "business" ? "business" : "personal",
       })

@@ -6,7 +6,7 @@ import { UpgradeContent } from "@/app/[locale]/(account)/account/plans/upgrade/u
 import { Suspense } from "react"
 import { Loader2 } from "lucide-react"
 import { connection } from "next/server"
-import { getPlansForUpgrade, PROFILE_SELECT_FOR_UPGRADE } from "@/lib/data/plans"
+import { getPlansForUpgrade, PRIVATE_PROFILE_SELECT_FOR_UPGRADE, PROFILE_SELECT_FOR_UPGRADE } from "@/lib/data/plans"
 import { createSubscriptionCheckoutSession } from "@/app/actions/subscriptions"
 
 // Generate static params for all locales - required for Next.js 16 Cache Components
@@ -33,17 +33,35 @@ async function UpgradeModalContent() {
     return redirect({ href: "/auth/login", locale: safeLocale })
   }
 
-  // Fetch profile info (seller fields are now on profiles)
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select(PROFILE_SELECT_FOR_UPGRADE)
-    .eq('id', user.id)
-    .single()
+  // Fetch profile info (public surface) + private billing fields
+  const [
+    { data: profile },
+    { data: privateProfile },
+  ] = await Promise.all([
+    supabase
+      .from('profiles')
+      .select(PROFILE_SELECT_FOR_UPGRADE)
+      .eq('id', user.id)
+      .single(),
+    supabase
+      .from('private_profiles')
+      .select(PRIVATE_PROFILE_SELECT_FOR_UPGRADE)
+      .eq('id', user.id)
+      .maybeSingle(),
+  ])
 
   // Fetch subscription plans
   const plans = await getPlansForUpgrade()
 
-  const currentTier = profile?.tier || 'basic'
+  const currentTier = profile?.tier || 'free'
+
+  const commissionRate = privateProfile?.commission_rate == null ? 0 : Number(privateProfile.commission_rate)
+  const seller = profile ? {
+    id: profile.id,
+    tier: profile.tier || 'free',
+    commission_rate: commissionRate,
+    stripe_customer_id: privateProfile?.stripe_customer_id ?? null,
+  } : null
 
   return (
     <Modal
@@ -54,7 +72,7 @@ async function UpgradeModalContent() {
         locale={safeLocale}
         plans={plans}
         currentTier={currentTier}
-        seller={profile}
+        seller={seller}
         actions={{ createSubscriptionCheckoutSession }}
       />
     </Modal>

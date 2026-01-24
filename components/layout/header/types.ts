@@ -58,6 +58,8 @@ export interface ContextualHeaderProps extends BaseHeaderProps {
   subcategories?: CategoryTreeNode[] | undefined
   /** Callback when subcategory circle is clicked */
   onSubcategoryClick?: ((cat: CategoryTreeNode) => void) | undefined
+  /** Hide search/wishlist/cart actions (for assistant page) */
+  hideActions?: boolean | undefined
 }
 
 export interface DefaultHeaderProps extends BaseHeaderProps {

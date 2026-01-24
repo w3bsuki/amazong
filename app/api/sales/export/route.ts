@@ -95,9 +95,9 @@ export async function GET(req: NextRequest) {
     const { data: buyers } = buyerIds.length
       ? await supabase
           .from("profiles")
-          .select("id, email, full_name")
+          .select("id, full_name")
           .in("id", buyerIds)
-      : { data: [] as Array<{ id: string; email: string | null; full_name: string | null }> }
+      : { data: [] as Array<{ id: string; full_name: string | null }> }
 
     const buyerMap = new Map((buyers || []).map((b) => [b.id, b]))
 
@@ -112,7 +112,6 @@ export async function GET(req: NextRequest) {
       "unit_price",
       "line_total",
       "item_status",
-      "buyer_email",
       "buyer_name",
     ]
 
@@ -140,7 +139,6 @@ export async function GET(req: NextRequest) {
         unit,
         total,
         item.status || "",
-        buyer?.email || "",
         buyer?.full_name || "",
       ].map(csvEscape)
 
@@ -170,4 +168,3 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "Failed to export sales" }, { status: 500 })
   }
 }
-

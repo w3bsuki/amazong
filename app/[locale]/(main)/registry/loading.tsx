@@ -1,8 +1,9 @@
 import { Skeleton } from "@/components/ui/skeleton"
+import { PageShell } from "@/components/shared/page-shell"
 
 export default function RegistryLoading() {
   return (
-    <div className="min-h-screen bg-background pb-20 sm:pb-12">
+    <PageShell className="pb-20 sm:pb-12">
       {/* Hero */}
       <div className="bg-primary/5 py-10 sm:py-16">
         <div className="container text-center">
@@ -52,6 +53,6 @@ export default function RegistryLoading() {
           <Skeleton className="h-12 w-full rounded-full" />
         </div>
       </div>
-    </div>
+    </PageShell>
   )
 }

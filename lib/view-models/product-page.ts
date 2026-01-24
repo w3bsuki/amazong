@@ -69,7 +69,6 @@ export type ProductPageProductLike = {
   description?: string | null;
   meta_description?: string | null;
   images?: unknown;
-  sku?: string | null;
   attributes?: unknown;
   condition?: string | null;
   price?: unknown;
@@ -219,7 +218,7 @@ export function buildProductPageViewModel(args: {
     name: product.title,
     description: product.description,
     image: (Array.isArray(product.images) ? product.images : []) || [],
-    sku: product.sku || product.id,
+    sku: product.id,
     brand: productAttributes?.brand
       ? { "@type": "Brand", name: productAttributes.brand as string }
       : undefined,

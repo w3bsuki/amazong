@@ -24,6 +24,7 @@ import { AppBreadcrumb, breadcrumbPresets } from "@/components/navigation/app-br
 import { useTranslations, useLocale } from "next-intl"
 import { useRecentlyViewed } from "@/hooks/use-recently-viewed"
 import { ProductCard } from "@/components/shared/product/product-card"
+import { PageShell } from "@/components/shared/page-shell"
 
 export default function CartPageClient() {
   const { items, isReady, removeFromCart, updateQuantity, subtotal, totalItems } = useCart()
@@ -130,7 +131,7 @@ export default function CartPageClient() {
   }
 
   return (
-    <div className="bg-secondary/30 min-h-screen pb-32 pt-14 lg:pb-12 lg:pt-0">
+    <PageShell variant="muted" className="pb-32 pt-14 lg:pb-12 lg:pt-0">
       <div className="container py-4 lg:py-6">
         <AppBreadcrumb
           items={breadcrumbPresets(tBreadcrumbs).cart}
@@ -190,8 +191,8 @@ export default function CartPageClient() {
                     
                     {/* Stock badge */}
                     <div className="flex items-center gap-1 mt-1">
-                      <CheckCircle className="size-3 text-brand-success" weight="fill" />
-                      <span className="text-2xs text-brand-success">{t("inStock")}</span>
+                      <CheckCircle className="size-3 text-success" weight="fill" />
+                      <span className="text-2xs text-success">{t("inStock")}</span>
                     </div>
 
                     {/* Price */}
@@ -265,7 +266,7 @@ export default function CartPageClient() {
                     </div>
                     <div className="flex justify-between text-sm">
                       <span className="text-muted-foreground">{t("shippingLabel")}</span>
-                      <span className="text-brand-success font-medium">
+                      <span className="text-success font-medium">
                         {t("freeLabel")}
                       </span>
                     </div>
@@ -280,6 +281,7 @@ export default function CartPageClient() {
 
                   <Button
                     onClick={handleCheckout}
+                    variant="cta"
                     size="lg"
                     className="w-full rounded-full h-12 font-semibold shadow-sm"
                   >
@@ -289,7 +291,7 @@ export default function CartPageClient() {
 
                   <div className="mt-6 pt-4 border-t border-border space-y-2">
                     <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                      <ShieldCheck className="size-4 text-brand-success" weight="fill" />
+                      <ShieldCheck className="size-4 text-success" weight="fill" />
                       <span>{t("secureCheckout")}</span>
                     </div>
                     <div className="flex items-center gap-2 text-xs text-muted-foreground">
@@ -315,6 +317,7 @@ export default function CartPageClient() {
           </div>
           <Button
             onClick={handleCheckout}
+            variant="cta"
             size="lg"
             className="rounded-full px-8 font-semibold shadow-sm"
           >
@@ -323,6 +326,6 @@ export default function CartPageClient() {
           </Button>
         </div>
       </div>
-    </div>
+    </PageShell>
   )
 }

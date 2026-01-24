@@ -38,6 +38,7 @@ export function MobileTabBar({ categories }: MobileTabBarProps) {
   // Product pages use canonical format: /{locale}/{username}/{productSlug}
   // (with or without locale in usePathname(), depending on next-intl config)
   // Also hide on cart page - it has its own sticky checkout footer
+  // Also hide on assistant page - it has its own chat input
   const rawSegments = pathname.split('/').filter(Boolean)
   const pathSegments = (() => {
     const segments = [...rawSegments]
@@ -47,12 +48,14 @@ export function MobileTabBar({ categories }: MobileTabBarProps) {
     }
     return segments
   })()
-  const knownRoutes = ['categories', 'cart', 'checkout', 'account', 'chat', 'sell', 'help', 'auth', 'search', 'admin', 'dashboard', 'plans', 'wishlist', 'orders', 'settings', 'notifications']
+  const knownRoutes = ['categories', 'cart', 'checkout', 'account', 'chat', 'sell', 'help', 'auth', 'search', 'admin', 'dashboard', 'plans', 'wishlist', 'orders', 'settings', 'notifications', 'assistant']
   // /{username}/{slug-or-id} pattern: exactly 2 segments AND first segment is not a known route
   const firstSegment = pathSegments.at(0)
   const isProductPage = (pathSegments.length === 2 && !!firstSegment && !knownRoutes.includes(firstSegment))
   // Cart page has its own sticky footer
   const isCartPage = firstSegment === 'cart'
+  // Assistant page has its own chat input
+  const isAssistantPage = firstSegment === 'assistant'
 
   const isActive = (path: string) => {
     if (path === "/") return pathname === "/"
@@ -61,7 +64,8 @@ export function MobileTabBar({ categories }: MobileTabBarProps) {
 
   // Don't render on product pages - let the sticky buy box take over
   // Don't render on cart page - it has its own sticky checkout footer
-  if (isProductPage || isCartPage) return null
+  // Don't render on assistant page - it has its own chat input
+  if (isProductPage || isCartPage || isAssistantPage) return null
 
   return (
     <>

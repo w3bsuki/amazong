@@ -9,6 +9,7 @@
  */
 import { setRequestLocale } from "next-intl/server";
 import { routing } from "@/i18n/routing";
+import { PageShell } from "@/components/shared/page-shell";
 
 export default function GlobalNotFound() {
   setRequestLocale(routing.defaultLocale);
@@ -16,7 +17,7 @@ export default function GlobalNotFound() {
   return (
     <html lang="en">
       <body className="bg-background text-foreground">
-        <div className="flex min-h-screen flex-col items-center justify-center p-4">
+        <PageShell className="flex flex-col items-center justify-center p-4">
           <div className="mx-auto max-w-md text-center">
             {/* 404 Illustration */}
             <div className="mb-8">
@@ -54,7 +55,7 @@ export default function GlobalNotFound() {
               .
             </p>
           </div>
-        </div>
+        </PageShell>
       </body>
     </html>
   )

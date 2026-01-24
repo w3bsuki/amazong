@@ -8,6 +8,7 @@ import { SortSelect } from "@/components/shared/search/sort-select"
 import { SearchPagination } from "@/components/shared/search/search-pagination"
 import { SearchFilters } from "@/components/shared/search/search-filters"
 import { EmptyStateCTA } from "@/components/shared/empty-state-cta"
+import { PageShell } from "@/components/shared/page-shell"
 import { Suspense, use } from "react"
 import { setRequestLocale, getTranslations } from "next-intl/server"
 import { notFound } from "next/navigation"
@@ -359,7 +360,7 @@ function CategoryPageDynamicContent({
         />
       </div>
 
-      <div className="hidden lg:block min-h-screen bg-background">
+      <PageShell variant="muted" className="hidden lg:block">
         <div className="container px-4 xl:px-6 py-4">
           {/* Subcategory circles - full width above grid (DEC-002: curated ordering + counts) */}
           <SubcategoryTabs
@@ -465,7 +466,7 @@ function CategoryPageDynamicContent({
             </main>
           </div>
         </div>
-      </div>
+      </PageShell>
     </>
   )
 }

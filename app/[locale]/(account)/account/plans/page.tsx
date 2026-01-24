@@ -9,7 +9,8 @@ import {
   reactivateSubscription,
 } from "@/app/actions/subscriptions"
 
-const PROFILE_SELECT_FOR_PLANS = 'id,tier,account_type,commission_rate,stripe_customer_id'
+const PROFILE_SELECT_FOR_PLANS = 'id,tier,account_type'
+const PRIVATE_PROFILE_SELECT_FOR_PLANS = 'id,commission_rate,stripe_customer_id'
 
 interface PlansPageProps {
   params: Promise<{
@@ -33,12 +34,22 @@ export default async function PlansPage({ params }: PlansPageProps) {
     return redirect({ href: "/auth/login", locale })
   }
 
-  // Fetch profile info (seller fields are now on profiles)
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select(PROFILE_SELECT_FOR_PLANS)
-    .eq('id', user.id)
-    .single()
+  // Fetch profile info (public surface) + private billing fields
+  const [
+    { data: profile },
+    { data: privateProfile },
+  ] = await Promise.all([
+    supabase
+      .from('profiles')
+      .select(PROFILE_SELECT_FOR_PLANS)
+      .eq('id', user.id)
+      .single(),
+    supabase
+      .from('private_profiles')
+      .select(PRIVATE_PROFILE_SELECT_FOR_PLANS)
+      .eq('id', user.id)
+      .maybeSingle(),
+  ])
 
   // Fetch subscription plans (only valid fields)
   const { data: plans } = await supabase
@@ -66,12 +77,12 @@ export default async function PlansPage({ params }: PlansPageProps) {
   )
 
   // Map profile to seller interface expected by PlansContent
-  const commissionRate = profile?.commission_rate == null ? 0 : Number(profile.commission_rate)
+  const commissionRate = privateProfile?.commission_rate == null ? 0 : Number(privateProfile.commission_rate)
   const seller = profile ? {
     id: profile.id,
     tier: profile.tier || 'free',
     commission_rate: commissionRate,
-    stripe_customer_id: profile.stripe_customer_id,
+    stripe_customer_id: privateProfile?.stripe_customer_id ?? null,
   } : null
 
   return (

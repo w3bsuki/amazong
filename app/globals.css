@@ -6,11 +6,10 @@
    ============================================================ */
 
 @import "tailwindcss";
+@import "tw-animate-css";
 @import "./utilities.css";
 @import "./shadcn-components.css";
 @import "./legacy-vars.css";
-
-@plugin "tailwindcss-animate";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -34,68 +33,67 @@
 :root {
   /* Core palette - Twitter theme (oklch) */
   --background: oklch(1 0 0);
-  --foreground: oklch(0.21 0.02 255);
-  --card: oklch(0.97 0.005 210);
-  --card-foreground: oklch(0.21 0.02 255);
+  --foreground: oklch(0.1884 0.0128 248.5103);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.1884 0.0128 248.5103);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.21 0.02 255);
-  --primary: oklch(0.68 0.16 230);
+  --popover-foreground: oklch(0.1884 0.0128 248.5103);
+  --primary: oklch(0.6706 0.1603 243.0236);
   --primary-foreground: oklch(1 0 0);
-  /* FIX: secondary should be LIGHT bg, not dark text color */
-  --secondary: oklch(0.96 0.005 210);
-  --secondary-foreground: oklch(0.21 0.02 255);
-  --muted: oklch(0.92 0.005 210);
-  --muted-foreground: oklch(0.45 0.01 255);
-  --accent: oklch(0.94 0.02 230);
-  --accent-foreground: oklch(0.68 0.16 230);
-  --destructive: oklch(0.58 0.22 25);
+  --secondary: oklch(0.967 0.0029 264.5419);
+  --secondary-foreground: oklch(0.1884 0.0128 248.5103);
+  --muted: oklch(0.967 0.0029 264.5419);
+  --muted-foreground: oklch(0.551 0.0234 264.3637);
+  --accent: oklch(0.967 0.0029 264.5419);
+  --accent-foreground: oklch(0.6706 0.1603 243.0236);
+  --destructive: oklch(0.5771 0.2152 27.325);
   --destructive-foreground: oklch(1 0 0);
-  --border: oklch(0.92 0.01 210);
-  --input: oklch(0.98 0.005 210);
-  --ring: oklch(0.68 0.16 230);
+  --border: oklch(0.9299 0.0064 251.3283);
+  --input: oklch(0.9299 0.0064 251.3283);
+  --ring: oklch(0.6706 0.1603 243.0236);
 
   /* === INTERACTIVE STATES (professional, not blue-heavy) === */
   /* Selected/Active state - subtle gray tint, not blue bg */
   --selected: oklch(0.96 0.005 210);
-  --selected-foreground: oklch(0.21 0.02 255);
-  --selected-border: oklch(0.68 0.16 230);
+  --selected-foreground: var(--foreground);
+  --selected-border: var(--primary);
   /* Hover state */
   --hover: oklch(0.97 0.003 210);
   --hover-border: oklch(0.85 0.01 210);
   /* Active (pressed) state */
   --active: oklch(0.94 0.005 210);
   /* Focus ring - stays primary */
-  --focus-ring: oklch(0.68 0.16 230 / 30%);
+  --focus-ring: oklch(0.6706 0.1603 243.0236 / 30%);
   /* Filled/checked state - for checkmarks, radio buttons */
-  --checked: oklch(0.68 0.16 230);
+  --checked: var(--primary);
   --checked-foreground: oklch(1 0 0);
 
   /* Marketplace radius */
-  --radius: 0.625rem;
+  --radius: 0.25rem;
 
   /* Sidebar - Twitter theme */
-  --sidebar: oklch(0.97 0.005 210);
-  --sidebar-foreground: oklch(0.21 0.02 255);
-  --sidebar-primary: oklch(0.68 0.16 230);
+  --sidebar: oklch(1 0 0);
+  --sidebar-foreground: oklch(0.1884 0.0128 248.5103);
+  --sidebar-primary: oklch(0.6706 0.1603 243.0236);
   --sidebar-primary-foreground: oklch(1 0 0);
-  --sidebar-accent: oklch(0.94 0.02 230);
-  --sidebar-accent-foreground: oklch(0.68 0.16 230);
-  --sidebar-border: oklch(0.92 0.01 210);
-  --sidebar-ring: oklch(0.68 0.16 230);
+  --sidebar-accent: oklch(0.967 0.0029 264.5419);
+  --sidebar-accent-foreground: oklch(0.6706 0.1603 243.0236);
+  --sidebar-border: oklch(0.9299 0.0064 251.3283);
+  --sidebar-ring: oklch(0.6706 0.1603 243.0236);
 
   /* Charts - Twitter blue palette */
-  --chart-1: oklch(0.68 0.16 230);
-  --chart-2: oklch(0.58 0.16 230);
-  --chart-3: oklch(0.78 0.12 230);
-  --chart-4: oklch(0.48 0.14 230);
-  --chart-5: oklch(0.58 0.22 25);
+  --chart-1: oklch(0.6706 0.1603 243.0236);
+  --chart-2: oklch(0.4882 0.243 264.3763);
+  --chart-3: oklch(0.6962 0.1702 162.48);
+  --chart-4: oklch(0.6274 0.2653 303.9);
+  --chart-5: oklch(0.6451 0.246 16.4399);
 
   /* Overlays (drawer/sheet/dialog backdrops) */
   --overlay-dark: oklch(0 0 0 / 50%);
   --overlay-light: oklch(1 0 0 / 80%);
 
   /* Mobile Product Page Surfaces - Light Mode */
-  --surface-page: var(--muted);
+  --surface-page: color-mix(in oklch, var(--muted) 30%, var(--background));
   --surface-card: var(--background);
   --surface-elevated: var(--background);
   --surface-gallery: oklch(0.15 0.01 255);
@@ -137,60 +135,60 @@
 
 /* ===== DARK MODE - Twitter Dark (oklch) ===== */
 .dark {
-  --background: oklch(0.21 0.02 255);
-  --foreground: oklch(0.95 0 0);
-  --card: oklch(0.25 0.015 255);
-  --card-foreground: oklch(0.95 0 0);
-  --popover: oklch(0.21 0.02 255);
-  --popover-foreground: oklch(0.95 0 0);
-  --primary: oklch(0.68 0.16 230);
+  --background: oklch(0.1884 0.0128 248.5103);
+  --foreground: oklch(0.9791 0 0);
+  --card: oklch(0.1884 0.0128 248.5103);
+  --card-foreground: oklch(0.9791 0 0);
+  --popover: oklch(0.1884 0.0128 248.5103);
+  --popover-foreground: oklch(0.9791 0 0);
+  --primary: oklch(0.6706 0.1603 243.0236);
   --primary-foreground: oklch(1 0 0);
-  --secondary: oklch(0.30 0.015 255);
-  --secondary-foreground: oklch(0.95 0 0);
-  --muted: oklch(0.30 0.015 255);
-  --muted-foreground: oklch(0.65 0.01 255);
-  --accent: oklch(0.35 0.05 230);
-  --accent-foreground: oklch(0.68 0.16 230);
-  --destructive: oklch(0.58 0.22 25);
-  --destructive-foreground: oklch(1 0 0);
-  --border: oklch(0.35 0.015 255);
-  --input: oklch(0.35 0.015 255);
-  --ring: oklch(0.68 0.16 230);
+  --secondary: oklch(0.2784 0.0169 252.8943);
+  --secondary-foreground: oklch(0.9791 0 0);
+  --muted: oklch(0.2784 0.0169 252.8943);
+  --muted-foreground: oklch(0.6809 0.0199 252.8943);
+  --accent: oklch(0.2784 0.0169 252.8943);
+  --accent-foreground: oklch(0.6706 0.1603 243.0236);
+  --destructive: oklch(0.7036 0.1881 22.1462);
+  --destructive-foreground: oklch(0.1884 0.0128 248.5103);
+  --border: oklch(0.3717 0.0193 252.8943);
+  --input: oklch(0.3717 0.0193 252.8943);
+  --ring: oklch(0.6706 0.1603 243.0236);
 
   /* === INTERACTIVE STATES - Dark Mode === */
   --selected: oklch(0.30 0.015 255);
-  --selected-foreground: oklch(0.95 0 0);
-  --selected-border: oklch(0.68 0.16 230);
+  --selected-foreground: var(--foreground);
+  --selected-border: var(--primary);
   --hover: oklch(0.28 0.015 255);
   --hover-border: oklch(0.40 0.015 255);
   --active: oklch(0.32 0.015 255);
-  --focus-ring: oklch(0.68 0.16 230 / 40%);
-  --checked: oklch(0.68 0.16 230);
+  --focus-ring: oklch(0.6706 0.1603 243.0236 / 40%);
+  --checked: var(--primary);
   --checked-foreground: oklch(1 0 0);
 
   /* Sidebar dark - Twitter */
-  --sidebar: oklch(0.25 0.015 255);
-  --sidebar-foreground: oklch(0.95 0 0);
-  --sidebar-primary: oklch(0.68 0.16 230);
+  --sidebar: oklch(0.1884 0.0128 248.5103);
+  --sidebar-foreground: oklch(0.9791 0 0);
+  --sidebar-primary: oklch(0.6706 0.1603 243.0236);
   --sidebar-primary-foreground: oklch(1 0 0);
-  --sidebar-accent: oklch(0.35 0.05 230);
-  --sidebar-accent-foreground: oklch(0.68 0.16 230);
-  --sidebar-border: oklch(0.35 0.015 255);
-  --sidebar-ring: oklch(0.68 0.16 230);
+  --sidebar-accent: oklch(0.2784 0.0169 252.8943);
+  --sidebar-accent-foreground: oklch(0.6706 0.1603 243.0236);
+  --sidebar-border: oklch(0.3717 0.0193 252.8943);
+  --sidebar-ring: oklch(0.6706 0.1603 243.0236);
 
   /* Charts dark - Twitter blue palette */
-  --chart-1: oklch(0.68 0.16 230);
-  --chart-2: oklch(0.58 0.16 230);
-  --chart-3: oklch(0.78 0.12 230);
-  --chart-4: oklch(0.48 0.14 230);
-  --chart-5: oklch(0.58 0.22 25);
+  --chart-1: oklch(0.6706 0.1603 243.0236);
+  --chart-2: oklch(0.4882 0.243 264.3763);
+  --chart-3: oklch(0.6962 0.1702 162.48);
+  --chart-4: oklch(0.6274 0.2653 303.9);
+  --chart-5: oklch(0.6451 0.246 16.4399);
 
   /* Overlays dark */
   --overlay-dark: oklch(0 0 0 / 60%);
   --overlay-light: oklch(0.21 0.02 255 / 80%);
 
   /* Mobile Product Page Surfaces - Dark Mode */
-  --surface-page: var(--background);
+  --surface-page: color-mix(in oklch, var(--muted) 30%, var(--background));
   --surface-card: var(--card);
   --surface-elevated: var(--card);
   --surface-gallery: oklch(0.10 0.01 255);
@@ -208,7 +206,7 @@
   --overlay-text-muted: oklch(0.85 0 0);
   --gallery-ring: oklch(1 0 0);
   --gallery-ring-offset: oklch(0.10 0.01 255);
-  --radius: 0.625rem;
+  --radius: 0.25rem;
   --font-sans: Open Sans, sans-serif;
   --font-serif: Georgia, serif;
   --font-mono: Menlo, monospace;
@@ -308,7 +306,7 @@
   --radius-lg: calc(var(--radius) + 2px);
 
   /* Card-specific: tighter radius for professional e-commerce feel */
-  --radius-card: 0.75rem;
+  --radius-card: var(--radius-md);
   --radius-xl: calc(var(--radius) + 4px);
   --radius-2xl: calc(var(--radius) + 6px);
   --radius-3xl: calc(var(--radius) + 8px);
@@ -462,7 +460,7 @@
   --color-badge-stock-text: oklch(0.45 0.15 85);
 
   /* === COLORS: Prices === */
-  --color-price: var(--foreground);
+  --color-price-regular: var(--foreground);
   --color-price-sale: oklch(0.50 0.22 27);
   --color-price-original: var(--muted-foreground);
   --color-price-savings: oklch(0.50 0.18 145);

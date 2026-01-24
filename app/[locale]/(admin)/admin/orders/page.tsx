@@ -43,7 +43,6 @@ async function getOrders(): Promise<AdminOrder[]> {
       created_at,
       user_id,
       profiles (
-        email,
         full_name
       )
     `)
@@ -54,8 +53,29 @@ async function getOrders(): Promise<AdminOrder[]> {
     console.error('Failed to fetch orders:', error)
     return []
   }
-  
-  return (orders || []) as AdminOrder[]
+
+  const userIds = Array.from(new Set((orders || []).map((o) => o.user_id).filter(Boolean)))
+
+  const { data: privateProfiles } = userIds.length
+    ? await adminClient
+        .from('private_profiles')
+        .select('id, email')
+        .in('id', userIds)
+    : { data: [] as Array<{ id: string; email: string | null }> }
+
+  const emailById = new Map((privateProfiles || []).map((p) => [p.id, p.email]))
+
+  return (orders || []).map((order) => {
+    const profile = Array.isArray(order.profiles) ? (order.profiles.at(0) ?? null) : order.profiles
+
+    return {
+      ...order,
+      profiles: {
+        full_name: profile?.full_name ?? null,
+        email: emailById.get(order.user_id) ?? null,
+      },
+    }
+  }) as AdminOrder[]
 }
 
 export default async function AdminOrdersPage() {

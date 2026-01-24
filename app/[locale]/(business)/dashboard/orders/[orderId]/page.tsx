@@ -24,7 +24,6 @@ async function getOrderDetails(orderId: string, sellerId: string) {
         id,
         title,
         images,
-        sku,
         price
       )
     `)
@@ -34,6 +33,17 @@ async function getOrderDetails(orderId: string, sellerId: string) {
   if (itemsError || !orderItems?.length) {
     return null
   }
+
+  const productIds = Array.from(new Set(orderItems.map((i) => i.product?.id).filter(Boolean)))
+  const { data: privateRows } = productIds.length
+    ? await supabase
+        .from('product_private')
+        .select('product_id, sku')
+        .eq('seller_id', sellerId)
+        .in('product_id', productIds)
+    : { data: [] as Array<{ product_id: string; sku: string | null }> }
+
+  const skuByProductId = new Map((privateRows || []).map((r) => [r.product_id, r.sku]))
   
   // Get order details
   const { data: order, error: orderError } = await supabase
@@ -46,9 +56,7 @@ async function getOrderDetails(orderId: string, sellerId: string) {
       shipping_address,
       user:profiles(
         id,
-        email,
-        full_name,
-        phone
+        full_name
       )
     `)
     .eq('id', orderId)
@@ -66,18 +74,39 @@ async function getOrderDetails(orderId: string, sellerId: string) {
     status: string | null
     tracking_number: string | null
     shipping_carrier: string | null
-    product: { id: string; title: string; images: string[] | null; sku: string | null; price: number } | null
+    product: { id: string; title: string; images: string[] | null; price: number } | null
   }>
+
+  const shippingAddress = order.shipping_address as Record<string, unknown> | null
+  const email = typeof shippingAddress?.email === 'string' ? shippingAddress.email : null
+  const phone = typeof shippingAddress?.phone === 'string' ? shippingAddress.phone : null
+  const nameFromShipping = typeof shippingAddress?.name === 'string' ? shippingAddress.name : null
+
+  const baseUser = Array.isArray(order.user) ? (order.user.at(0) ?? null) : order.user
+  const typedOrderUser = baseUser
+    ? {
+        id: baseUser.id,
+        email,
+        full_name: baseUser.full_name ?? nameFromShipping,
+        phone,
+      }
+    : null
+
+  const typedOrder = {
+    ...order,
+    shipping_address: shippingAddress,
+    user: typedOrderUser,
+  } as unknown as {
+    id: string
+    status: string | null
+    created_at: string
+    total_amount: number
+    shipping_address: Record<string, unknown> | null
+    user: { id: string; email: string | null; full_name: string | null; phone: string | null } | null
+  }
   
   return {
-    order: order as unknown as {
-      id: string
-      status: string | null
-      created_at: string
-      total_amount: number
-      shipping_address: Record<string, unknown> | null
-      user: { id: string; email: string | null; full_name: string | null; phone: string | null } | null
-    },
+    order: typedOrder,
     items: typedItems.map(item => ({
       id: item.id,
       quantity: item.quantity,
@@ -85,7 +114,7 @@ async function getOrderDetails(orderId: string, sellerId: string) {
       status: item.status,
       tracking_number: item.tracking_number,
       shipping_carrier: item.shipping_carrier,
-      product: item.product,
+      product: item.product ? { ...item.product, sku: skuByProductId.get(item.product.id) ?? null } : null,
     })),
     subtotal: typedItems.reduce((sum, item) => sum + (item.price_at_purchase * item.quantity), 0),
   }

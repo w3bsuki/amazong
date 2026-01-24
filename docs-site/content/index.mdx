@@ -1,6 +1,6 @@
 # Treido Marketplace Documentation
 
-Welcome to the internal documentation for **Treido Marketplace** — a Bulgarian marketplace built for safe C2C/B2B commerce.
+Welcome to the documentation for **Treido Marketplace** — a Bulgarian-first marketplace built for safe C2C/B2B commerce.
 
 Launch posture:
 
@@ -13,6 +13,7 @@ Launch posture:
 
 | Section | Description |
 |---------|-------------|
+| [🧭 Platform](/platform) | What Treido is, core flows, and revenue model |
 | [💳 Payments](/payments) | Stripe Connect, escrow flow, webhooks, refunds |
 | [📜 Policies](/policies) | Returns/refunds, KYC, prohibited items, privacy/terms drafts |
 | [🔧 Engineering](/engineering) | Tech stack, architecture, code standards |
@@ -20,6 +21,7 @@ Launch posture:
 | [💼 Business](/business) | Monetization, pricing, roadmap |
 | [📚 Guides](/guides) | Development guides for frontend, backend, testing |
 | [🚀 Production](/production) | Deployment checklist and launch prep |
+| [🗓️ Changelog](/changelog) | Platform + docs change log |
 
 ## Tech Stack
 
@@ -67,4 +69,7 @@ repo/
 └── docs-site/        # This documentation (Nextra 4)
 ```
 
-> **Note**: This documentation is internal. For user-facing help, build a dedicated Help Center later (FAQ + dispute/returns flows).
+## What is public vs internal
+
+- This **docs-site** is written to be **public-ready** later (policies, platform explanation, etc.).
+- Internal operational docs and runbooks live in the main app at `/admin/docs` (localized EN/BG).

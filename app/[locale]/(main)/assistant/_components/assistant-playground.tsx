@@ -1,16 +1,30 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useMemo, useState, useRef, useEffect } from "react"
 import { DefaultChatTransport } from "ai"
 import { useChat } from "@ai-sdk/react"
-import { useTranslations } from "next-intl"
+import Image from "next/image"
+import {
+  CircleNotch,
+  Robot,
+  Sparkle,
+  PaperPlaneTilt,
+  Lightning,
+  ShoppingBag,
+  MagnifyingGlass,
+  Tag,
+  Package,
+  ArrowLeft,
+} from "@phosphor-icons/react"
 
 import { Button } from "@/components/ui/button"
-import { Card } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
+import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import { Card } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
 import { Link } from "@/i18n/routing"
+import { formatPrice } from "@/lib/format-price"
 
 type ListingCard = {
   id: string
@@ -19,14 +33,16 @@ type ListingCard = {
   images: string[]
   slug: string | null
   storeSlug: string | null
+  currency?: string
 }
 
-function formatPrice(value: number, locale: string): string {
-  try {
-    return new Intl.NumberFormat(locale, { maximumFractionDigits: 2 }).format(value)
-  } catch {
-    return String(value)
-  }
+type ChatPart = {
+  type: string
+  text?: string
+  state?: string
+  output?: unknown
+  input?: unknown
+  toolCallId?: string
 }
 
 function getListingHref(locale: string, item: ListingCard): string | null {
@@ -34,8 +50,279 @@ function getListingHref(locale: string, item: ListingCard): string | null {
   return `/${locale}/${item.storeSlug}/${item.slug}`
 }
 
-export function AssistantPlayground({ locale }: { locale: "en" | "bg" }) {
-  const t = useTranslations("Assistant")
+function extractListings(parts: ChatPart[]): ListingCard[] {
+  const listings: ListingCard[] = []
+  for (const part of parts) {
+    // AI SDK v6: tool parts are typed as `tool-{toolName}` with state
+    if (
+      part.type === "tool-searchListings" && 
+      part.state === "output-available" &&
+      Array.isArray(part.output)
+    ) {
+      listings.push(...(part.output as ListingCard[]))
+    }
+  }
+  return listings
+}
+
+type AssistantCopy = {
+  title: string
+  assistantIntro: string
+  chatEmpty: string
+  chatPlaceholder: string
+  quickStart: string
+  suggestionOne: string
+  suggestionTwo: string
+  suggestionThree: string
+  send: string
+  stop: string
+  results: string
+  loading: string
+}
+
+/** Assistant Avatar - consistent across the app */
+function AssistantAvatar({ size = "md" }: { size?: "sm" | "md" | "lg" }) {
+  const sizeClasses = {
+    sm: "size-7",
+    md: "size-8",
+    lg: "size-10",
+  }
+  return (
+    <Avatar className={cn(sizeClasses[size], "shrink-0")}>
+      <AvatarFallback className="bg-primary text-primary-foreground">
+        <Robot size={size === "lg" ? 20 : size === "md" ? 16 : 14} weight="fill" />
+      </AvatarFallback>
+    </Avatar>
+  )
+}
+
+/** User Avatar for chat */
+function UserChatAvatar({ size = "md" }: { size?: "sm" | "md" | "lg" }) {
+  const sizeClasses = {
+    sm: "size-7",
+    md: "size-8",
+    lg: "size-10",
+  }
+  return (
+    <Avatar className={cn(sizeClasses[size], "shrink-0")}>
+      <AvatarFallback className="bg-foreground text-background text-xs font-semibold">
+        You
+      </AvatarFallback>
+    </Avatar>
+  )
+}
+
+/** Modern Product Card for AI Results */
+function ProductCard({
+  item,
+  locale,
+  index,
+}: {
+  item: ListingCard
+  locale: string
+  index: number
+}) {
+  const href = getListingHref(locale, item)
+  const image = item.images?.[0] || "/placeholder.jpg"
+
+  const content = (
+    <Card className="group relative w-32 shrink-0 overflow-hidden border-border p-0 transition-all duration-200 hover:border-primary/30 hover:shadow-md sm:w-36">
+      {/* Product Image */}
+      <div className="relative aspect-square overflow-hidden bg-muted">
+        <Image
+          src={image}
+          alt={item.title}
+          fill
+          className="object-cover transition-transform group-hover:scale-105"
+          sizes="(max-width: 640px) 128px, 144px"
+        />
+        {/* Top Badge */}
+        {index < 3 && (
+          <Badge 
+            variant="default" 
+            className="absolute left-1.5 top-1.5 gap-0.5 px-1.5 py-0.5 text-2xs"
+          >
+            <Sparkle size={8} weight="fill" />
+            Top
+          </Badge>
+        )}
+      </div>
+      {/* Product Info */}
+      <div className="p-2">
+        <p className="line-clamp-2 text-xs font-medium leading-tight text-foreground group-hover:text-primary">
+          {item.title}
+        </p>
+        <p className="mt-1 text-sm font-bold text-price-sale">
+          {formatPrice(item.price, { locale })}
+        </p>
+      </div>
+    </Card>
+  )
+
+  if (!href) return <div key={item.id}>{content}</div>
+
+  return (
+    <Link key={item.id} href={href} className="block">
+      {content}
+    </Link>
+  )
+}
+
+/** Chat Message Bubble - clean shadcn styling */
+function MessageBubble({
+  isUser,
+  children,
+}: {
+  isUser: boolean
+  children: React.ReactNode
+}) {
+  return (
+    <div
+      className={cn(
+        "max-w-xs rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed sm:max-w-sm md:max-w-md",
+        isUser
+          ? "bg-primary text-primary-foreground rounded-br-md"
+          : "bg-muted text-foreground rounded-bl-md"
+      )}
+    >
+      {children}
+    </div>
+  )
+}
+
+/** Suggestion Chip - using Card styling */
+function SuggestionChip({
+  children,
+  icon: Icon,
+  onClick,
+}: {
+  children: React.ReactNode
+  icon: React.ComponentType<{ size?: number; weight?: "fill" | "bold" | "regular"; className?: string }>
+  onClick: () => void
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="group flex w-full items-center gap-2.5 rounded-lg border border-border bg-card px-3.5 py-3 text-left text-sm text-foreground transition-colors hover:border-primary/40 hover:bg-primary/5 active:bg-primary/10"
+    >
+      <Icon
+        size={16}
+        weight="bold"
+        className="shrink-0 text-primary"
+      />
+      <span className="line-clamp-1">{children}</span>
+    </button>
+  )
+}
+
+/** Empty State / Welcome Screen */
+function WelcomeScreen({
+  copy,
+  onSuggestionClick,
+}: {
+  copy: AssistantCopy
+  onSuggestionClick: (text: string) => void
+}) {
+  return (
+    <div className="flex flex-1 flex-col items-center justify-center px-4 py-6 text-center">
+      {/* Hero Icon - Using shadcn Avatar */}
+      <div className="relative mb-5">
+        <Avatar className="size-16 shadow-lg md:size-20">
+          <AvatarFallback className="bg-primary text-primary-foreground">
+            <Robot size={32} weight="fill" className="md:hidden" />
+            <Robot size={40} weight="fill" className="hidden md:block" />
+          </AvatarFallback>
+        </Avatar>
+        <div className="absolute -bottom-1 -right-1">
+          <Avatar className="size-7 ring-2 ring-background shadow-md">
+            <AvatarFallback className="bg-card">
+              <Sparkle size={14} weight="fill" className="text-primary" />
+            </AvatarFallback>
+          </Avatar>
+        </div>
+      </div>
+
+      {/* Welcome Text */}
+      <h2 className="mb-2 text-xl font-bold text-foreground md:text-2xl">
+        {copy.title}
+      </h2>
+      <p className="mb-6 max-w-xs text-sm text-muted-foreground md:max-w-sm md:text-base">
+        {copy.assistantIntro}
+      </p>
+
+      {/* Feature Pills - Using Badge */}
+      <div className="mb-6 flex flex-wrap justify-center gap-2">
+        {[
+          { icon: MagnifyingGlass, text: "Smart Search" },
+          { icon: Lightning, text: "Instant" },
+          { icon: ShoppingBag, text: "Best Deals" },
+        ].map(({ icon: Icon, text }) => (
+          <Badge key={text} variant="secondary" className="gap-1 px-2.5 py-1">
+            <Icon size={12} weight="bold" className="text-primary" />
+            {text}
+          </Badge>
+        ))}
+      </div>
+
+      {/* Suggestions */}
+      <div className="w-full max-w-sm">
+        <p className="mb-2.5 text-2xs font-semibold uppercase tracking-wider text-muted-foreground">
+          {copy.quickStart}
+        </p>
+        <div className="flex flex-col gap-2">
+          <SuggestionChip
+            icon={MagnifyingGlass}
+            onClick={() => onSuggestionClick(copy.suggestionOne)}
+          >
+            {copy.suggestionOne}
+          </SuggestionChip>
+          <SuggestionChip
+            icon={Tag}
+            onClick={() => onSuggestionClick(copy.suggestionTwo)}
+          >
+            {copy.suggestionTwo}
+          </SuggestionChip>
+          <SuggestionChip
+            icon={Package}
+            onClick={() => onSuggestionClick(copy.suggestionThree)}
+          >
+            {copy.suggestionThree}
+          </SuggestionChip>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+/** Typing Indicator */
+function TypingIndicator({ text }: { text: string }) {
+  return (
+    <div className="flex items-start gap-3">
+      <AssistantAvatar size="md" />
+      <div className="rounded-2xl rounded-bl-md border border-border/40 bg-muted/60 px-4 py-3">
+        <span className="flex items-center gap-2 text-sm text-muted-foreground">
+          <span className="flex gap-1">
+            <span className="size-2 animate-bounce rounded-full bg-primary/60 [animation-delay:-0.3s]" />
+            <span className="size-2 animate-bounce rounded-full bg-primary/60 [animation-delay:-0.15s]" />
+            <span className="size-2 animate-bounce rounded-full bg-primary/60" />
+          </span>
+          {text}
+        </span>
+      </div>
+    </div>
+  )
+}
+
+export function AssistantPlayground({
+  locale,
+  copy,
+}: {
+  locale: "en" | "bg"
+  copy: AssistantCopy
+}) {
+  const messagesEndRef = useRef<HTMLDivElement>(null)
+  const inputRef = useRef<HTMLTextAreaElement>(null)
 
   const transport = useMemo(() => {
     return new DefaultChatTransport({
@@ -46,296 +333,190 @@ export function AssistantPlayground({ locale }: { locale: "en" | "bg" }) {
 
   const { messages, sendMessage, status, stop, error } = useChat({ transport })
   const [input, setInput] = useState("")
+  const isLoading = status === "streaming" || status === "submitted"
 
-  const [findImageUrl, setFindImageUrl] = useState("")
-  const [findResult, setFindResult] = useState<{
-    query: string
-    results: ListingCard[]
-  } | null>(null)
-  const [findError, setFindError] = useState<string | null>(null)
-  const [findLoading, setFindLoading] = useState(false)
+  // Auto-scroll to bottom
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
+  }, [messages, isLoading])
 
-  const [sellImageUrl, setSellImageUrl] = useState("")
-  const [sellDraft, setSellDraft] = useState<unknown | null>(null)
-  const [sellError, setSellError] = useState<string | null>(null)
-  const [sellLoading, setSellLoading] = useState(false)
+  // Auto-resize textarea
+  const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setInput(e.target.value)
+    e.target.style.height = "auto"
+    e.target.style.height = Math.min(e.target.scrollHeight, 120) + "px"
+  }
 
-  async function handleSend() {
-    const text = input.trim()
-    if (!text) return
+  async function handleSubmit(text: string) {
+    const trimmed = text.trim()
+    if (!trimmed || isLoading) return
     setInput("")
-    await sendMessage({ text })
-  }
-
-  async function runFindSimilar() {
-    const url = findImageUrl.trim()
-    if (!url) return
-
-    setFindLoading(true)
-    setFindError(null)
-    setFindResult(null)
-
-    try {
-      const res = await fetch("/api/assistant/find-similar", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ imageUrl: url, limit: 8 }),
-      })
-
-      const json = (await res.json()) as unknown
-      if (!res.ok) {
-        setFindError("error" in (json as any) ? String((json as any).error) : t("requestFailed"))
-        return
-      }
-
-      const query = typeof (json as any).query === "string" ? (json as any).query : ""
-      const results = Array.isArray((json as any).results) ? (json as any).results : []
-      setFindResult({ query, results })
-    } catch (e) {
-      setFindError(e instanceof Error ? e.message : t("requestFailed"))
-    } finally {
-      setFindLoading(false)
+    if (inputRef.current) {
+      inputRef.current.style.height = "auto"
     }
-  }
-
-  async function runSellAutofill() {
-    const url = sellImageUrl.trim()
-    if (!url) return
-
-    setSellLoading(true)
-    setSellError(null)
-    setSellDraft(null)
-
-    try {
-      const res = await fetch("/api/assistant/sell-autofill", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ imageUrl: url, locale }),
-      })
-
-      const json = (await res.json()) as unknown
-      if (!res.ok) {
-        setSellError("error" in (json as any) ? String((json as any).error) : t("requestFailed"))
-        return
-      }
-
-      setSellDraft((json as any).draft ?? null)
-    } catch (e) {
-      setSellError(e instanceof Error ? e.message : t("requestFailed"))
-    } finally {
-      setSellLoading(false)
-    }
+    await sendMessage({ text: trimmed })
   }
 
   return (
-    <div className="mt-6 space-y-6">
-      <Card className="p-4">
-        <div className="flex items-center justify-between gap-3">
-          <h2 className="text-base font-semibold">{t("chatTitle")}</h2>
-          {status === "streaming" ? (
-            <Button variant="secondary" size="sm" onClick={() => void stop()}>
-              {t("stop")}
-            </Button>
-          ) : null}
+    <div className="fixed inset-0 z-50 flex flex-col bg-background">
+      {/* Header */}
+      <header className="shrink-0 flex items-center gap-2 px-3 h-14 border-b border-border bg-background pt-safe">
+        <Link
+          href="/"
+          className="size-10 flex items-center justify-center rounded-full -ml-1 tap-highlight-transparent active:bg-muted transition-colors"
+        >
+          <ArrowLeft className="size-5" weight="bold" />
+        </Link>
+        <AssistantAvatar size="md" />
+        <div className="flex-1 min-w-0">
+          <h1 className="text-sm font-semibold text-foreground truncate">
+            {copy.title}
+          </h1>
+          <p className="text-2xs text-muted-foreground">
+            {isLoading ? copy.loading : "Online"}
+          </p>
         </div>
+      </header>
 
-        <div className="mt-4 space-y-3">
-          {messages.length === 0 ? (
-            <p className="text-sm text-muted-foreground">{t("chatEmpty")}</p>
-          ) : null}
+      {/* Messages Area - Takes remaining space */}
+      <div className="flex-1 overflow-y-auto overscroll-contain">
+        {messages.length === 0 ? (
+          <WelcomeScreen copy={copy} onSuggestionClick={handleSubmit} />
+        ) : (
+          <div className="mx-auto max-w-2xl space-y-5 px-4 py-4">
+            {messages.map((message) => {
+              const isUser = message.role === "user"
+              const parts = message.parts as ChatPart[]
+              const listings = extractListings(parts)
 
-          {messages.map((m) => (
-            <div
-              key={m.id}
-              className={cn("flex", m.role === "user" ? "justify-end" : "justify-start")}
-            >
-              <div
-                className={cn(
-                  "w-full max-w-2xl rounded-(--radius-card) border px-3 py-2 text-sm",
-                  m.role === "user"
-                    ? "bg-primary text-primary-foreground border-primary/20"
-                    : "bg-muted/30 text-foreground",
-                )}
-              >
-                {m.parts.map((part, idx) => {
-                  if (part.type === "text") {
-                    return (
-                      <p key={idx} className="whitespace-pre-wrap">
-                        {part.text}
-                      </p>
-                    )
-                  }
+              return (
+                <div key={message.id} className="space-y-3">
+                  <div
+                    className={cn(
+                      "flex items-start gap-2.5",
+                      isUser ? "flex-row-reverse" : "flex-row"
+                    )}
+                  >
+                    {/* Avatar - Using shadcn Avatar */}
+                    {isUser ? (
+                      <UserChatAvatar size="md" />
+                    ) : (
+                      <AssistantAvatar size="md" />
+                    )}
 
-                  if (part.type === "tool-searchListings") {
-                    if (part.state !== "output-available") {
-                      return (
-                        <p key={idx} className="text-muted-foreground">
-                          {t("toolRunning")}
-                        </p>
-                      )
-                    }
-
-                    const output = Array.isArray((part as any).output)
-                      ? ((part as any).output as ListingCard[])
-                      : []
-
-                    return (
-                      <div key={idx} className="mt-2 space-y-2">
-                        <p className="text-xs text-muted-foreground">{t("results")}</p>
-                        <div className="grid gap-2">
-                          {output.map((item) => {
-                            const href = getListingHref(locale, item)
-                            const image = item.images?.[0] || "/placeholder.jpg"
-                            const content = (
-                              <div className="flex items-center gap-3 rounded-(--radius-card) border bg-background p-2">
-                                <img
-                                  src={image}
-                                  alt=""
-                                  className="h-12 w-12 shrink-0 rounded-(--radius-card) object-cover"
-                                  loading="lazy"
-                                />
-                                <div className="min-w-0 flex-1">
-                                  <p className="line-clamp-2 text-sm font-medium">
-                                    {item.title}
-                                  </p>
-                                  <p className="text-xs text-muted-foreground">
-                                    {formatPrice(item.price, locale)}
-                                  </p>
-                                </div>
-                              </div>
-                            )
-
-                            if (!href) return <div key={item.id}>{content}</div>
-
-                            return (
-                              <Link key={item.id} href={href} className="block">
-                                {content}
-                              </Link>
-                            )
-                          })}
-                        </div>
-                      </div>
-                    )
-                  }
-
-                  if (part.type.startsWith("tool-")) {
-                    return null
-                  }
-
-                  return null
-                })}
-              </div>
-            </div>
-          ))}
-
-          {error ? (
-            <p className="text-sm text-destructive">{error.message}</p>
-          ) : null}
-        </div>
-
-        <div className="mt-4 flex items-end gap-2">
-          <Textarea
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            placeholder={t("chatPlaceholder")}
-            className="min-h-20"
-            onKeyDown={(e) => {
-              if (e.key === "Enter" && !e.shiftKey) {
-                e.preventDefault()
-                void handleSend()
-              }
-            }}
-          />
-          <Button onClick={() => void handleSend()} disabled={status !== "ready" || !input.trim()}>
-            {t("send")}
-          </Button>
-        </div>
-      </Card>
-
-      <Card className="p-4">
-        <h2 className="text-base font-semibold">{t("findSimilarTitle")}</h2>
-        <p className="mt-1 text-sm text-muted-foreground">{t("findSimilarDesc")}</p>
-
-        <div className="mt-3 flex items-end gap-2">
-          <div className="flex-1">
-            <Input
-              value={findImageUrl}
-              onChange={(e) => setFindImageUrl(e.target.value)}
-              placeholder={t("imageUrlPlaceholder")}
-            />
-          </div>
-          <Button onClick={() => void runFindSimilar()} disabled={findLoading || !findImageUrl.trim()}>
-            {findLoading ? t("loading") : t("findSimilar")}
-          </Button>
-        </div>
-
-        {findError ? <p className="mt-3 text-sm text-destructive">{findError}</p> : null}
-
-        {findResult ? (
-          <div className="mt-4 space-y-2">
-            <p className="text-sm text-muted-foreground">
-              {t("extractedQuery")}: <span className="text-foreground">{findResult.query}</span>
-            </p>
-            <div className="grid gap-2">
-              {findResult.results.map((item) => {
-                const href = getListingHref(locale, item)
-                const image = item.images?.[0] || "/placeholder.jpg"
-                const content = (
-                  <div className="flex items-center gap-3 rounded-(--radius-card) border bg-background p-2">
-                    <img
-                      src={image}
-                      alt=""
-                      className="h-12 w-12 shrink-0 rounded-(--radius-card) object-cover"
-                      loading="lazy"
-                    />
-                    <div className="min-w-0 flex-1">
-                      <p className="line-clamp-2 text-sm font-medium">{item.title}</p>
-                      <p className="text-xs text-muted-foreground">
-                        {formatPrice(item.price, locale)}
-                      </p>
+                    {/* Message Content */}
+                    <div
+                      className={cn(
+                        "flex flex-col gap-1.5",
+                        isUser ? "items-end" : "items-start"
+                      )}
+                    >
+                      {parts.map((part, idx) => {
+                        // Only render text parts
+                        if (part.type === "text" && part.text) {
+                          return (
+                            <MessageBubble key={`${message.id}-${idx}`} isUser={isUser}>
+                              {part.text}
+                            </MessageBubble>
+                          )
+                        }
+                        // Skip tool parts, reasoning, step-start, etc - they're handled separately
+                        return null
+                      })}
                     </div>
                   </div>
-                )
 
-                if (!href) return <div key={item.id}>{content}</div>
+                  {/* Product Results */}
+                  {listings.length > 0 && (
+                    <div className="ml-10 space-y-2">
+                      <div className="flex items-center gap-1.5">
+                        <ShoppingBag size={12} className="text-primary" />
+                        <p className="text-xs font-medium text-muted-foreground">
+                          {copy.results} ({listings.length})
+                        </p>
+                      </div>
+                      <div className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 scrollbar-none">
+                        {listings.slice(0, 8).map((item, idx) => (
+                          <ProductCard
+                            key={item.id}
+                            item={item}
+                            locale={locale}
+                            index={idx}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )
+            })}
 
-                return (
-                  <Link key={item.id} href={href} className="block">
-                    {content}
-                  </Link>
-                )
-              })}
-            </div>
+            {/* Loading State */}
+            {isLoading && <TypingIndicator text={copy.loading} />}
+
+            {/* Error State */}
+            {error && (
+              <Card className="border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive">
+                {error.message}
+              </Card>
+            )}
+
+            <div ref={messagesEndRef} />
           </div>
-        ) : null}
-      </Card>
+        )}
+      </div>
 
-      <Card className="p-4">
-        <h2 className="text-base font-semibold">{t("sellAutofillTitle")}</h2>
-        <p className="mt-1 text-sm text-muted-foreground">{t("sellAutofillDesc")}</p>
-
-        <div className="mt-3 flex items-end gap-2">
-          <div className="flex-1">
-            <Input
-              value={sellImageUrl}
-              onChange={(e) => setSellImageUrl(e.target.value)}
-              placeholder={t("imageUrlPlaceholder")}
+      {/* Input Area - Fixed at bottom */}
+      <div className="shrink-0 border-t border-border bg-background px-4 pb-safe">
+        <form
+          className="mx-auto flex max-w-2xl items-end gap-2 py-3"
+          onSubmit={(e) => {
+            e.preventDefault()
+            void handleSubmit(input)
+          }}
+        >
+          <div className="relative flex-1">
+            <Textarea
+              ref={inputRef}
+              value={input}
+              onChange={handleInputChange}
+              placeholder={copy.chatPlaceholder}
+              rows={1}
+              className="min-h-11 resize-none rounded-lg py-2.5 field-sizing-content"
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !e.shiftKey) {
+                  e.preventDefault()
+                  void handleSubmit(input)
+                }
+              }}
             />
           </div>
-          <Button onClick={() => void runSellAutofill()} disabled={sellLoading || !sellImageUrl.trim()}>
-            {sellLoading ? t("loading") : t("sellAutofill")}
+          <Button
+            type="submit"
+            disabled={!input.trim() || isLoading}
+            size="icon"
+            className="size-11 shrink-0 rounded-full"
+          >
+            {isLoading ? (
+              <CircleNotch size={18} className="animate-spin" />
+            ) : (
+              <PaperPlaneTilt size={18} weight="fill" />
+            )}
           </Button>
-        </div>
-
-        {sellError ? <p className="mt-3 text-sm text-destructive">{sellError}</p> : null}
-
-        {sellDraft ? (
-          <pre className="mt-4 overflow-auto rounded-(--radius-card) border bg-muted/30 p-3 text-xs">
-            {JSON.stringify(sellDraft, null, 2)}
-          </pre>
-        ) : null}
-      </Card>
+        </form>
+        {isLoading && (
+          <div className="mx-auto max-w-2xl pb-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => void stop()}
+              className="w-full text-destructive hover:bg-destructive/10 hover:text-destructive"
+            >
+              {copy.stop}
+            </Button>
+          </div>
+        )}
+      </div>
     </div>
   )
 }
-

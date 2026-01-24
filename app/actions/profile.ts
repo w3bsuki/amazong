@@ -67,17 +67,34 @@ async function getProfile(): Promise<{
       return { success: false, error: "Not authenticated" }
     }
 
-    const { data: profile, error: profileError } = await supabase
-      .from("profiles")
-      .select("id, email, full_name, avatar_url, phone, shipping_region, country_code, role, created_at")
-      .eq("id", user.id)
-      .single()
+    const [
+      { data: profile, error: profileError },
+      { data: privateProfile },
+    ] = await Promise.all([
+      supabase
+        .from("profiles")
+        .select("id, full_name, avatar_url, shipping_region, country_code, role, created_at")
+        .eq("id", user.id)
+        .single(),
+      supabase
+        .from("private_profiles")
+        .select("phone, email")
+        .eq("id", user.id)
+        .maybeSingle(),
+    ])
 
     if (profileError) {
       return { success: false, error: "Failed to fetch profile" }
     }
 
-    return { success: true, data: profile }
+    return {
+      success: true,
+      data: {
+        ...profile,
+        email: user.email ?? privateProfile?.email ?? null,
+        phone: privateProfile?.phone ?? null,
+      },
+    }
   } catch (error) {
     console.error("getProfile error:", error)
     return { success: false, error: "An unexpected error occurred" }
@@ -120,22 +137,34 @@ export async function updateProfile(formData: FormData): Promise<{
 
     const { data: validatedData } = validationResult
 
-    const updatePayload = {
+    const updatedAt = new Date().toISOString()
+
+    const profileUpdatePayload = {
       ...(validatedData.full_name !== undefined ? { full_name: validatedData.full_name } : {}),
-      ...(validatedData.phone !== undefined ? { phone: validatedData.phone } : {}),
       ...(validatedData.shipping_region !== undefined ? { shipping_region: validatedData.shipping_region } : {}),
       ...(validatedData.country_code !== undefined ? { country_code: validatedData.country_code } : {}),
-      updated_at: new Date().toISOString(),
+      updated_at: updatedAt,
     }
 
-    // Update profile
-    const { error: updateError } = await supabase
-      .from("profiles")
-      .update(updatePayload)
-      .eq("id", user.id)
+    const privateUpdatePayload = validatedData.phone !== undefined
+      ? { phone: validatedData.phone, updated_at: updatedAt }
+      : null
 
-    if (updateError) {
-      console.error("updateProfile error:", updateError)
+    // Update public profile surface + private phone field
+    const [{ error: updateError }, { error: privateError }] = await Promise.all([
+      supabase
+        .from("profiles")
+        .update(profileUpdatePayload)
+        .eq("id", user.id),
+      privateUpdatePayload
+        ? supabase
+            .from("private_profiles")
+            .upsert({ id: user.id, ...privateUpdatePayload }, { onConflict: "id" })
+        : Promise.resolve({ error: null }),
+    ])
+
+    if (updateError || privateError) {
+      console.error("updateProfile error:", updateError || privateError)
       return { success: false, error: "Failed to update profile" }
     }
 

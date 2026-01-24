@@ -25,6 +25,7 @@ export function MobileContextualHeader({
   subcategories = [],
   onSubcategoryClick,
   locale,
+  hideActions = false,
 }: ContextualHeaderProps) {
   const tCommon = useTranslations("Common")
 
@@ -54,17 +55,19 @@ export function MobileContextualHeader({
             {title}
           </h1>
         </div>
-        <div className="flex items-center gap-1">
-          <Link
-            href="/search"
-            className="w-9 h-9 flex items-center justify-center rounded-full tap-highlight-transparent active:bg-muted transition-colors"
-            aria-label={tCommon("search")}
-          >
-            <MagnifyingGlass className="size-6" weight="regular" />
-          </Link>
-          <MobileWishlistButton />
-          <MobileCartDropdown />
-        </div>
+        {!hideActions && (
+          <div className="flex items-center gap-1">
+            <Link
+              href="/search"
+              className="w-9 h-9 flex items-center justify-center rounded-full tap-highlight-transparent active:bg-muted transition-colors"
+              aria-label={tCommon("search")}
+            >
+              <MagnifyingGlass className="size-6" weight="regular" />
+            </Link>
+            <MobileWishlistButton />
+            <MobileCartDropdown />
+          </div>
+        )}
       </div>
       {/* Subcategory circles */}
       {subcategories.length > 0 && (

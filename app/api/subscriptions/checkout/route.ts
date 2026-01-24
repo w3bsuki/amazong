@@ -45,7 +45,7 @@ export async function POST(req: NextRequest) {
 
     // Get profile info
     const { data: profile } = await supabase
-      .from('profiles')
+      .from('private_profiles')
       .select(PROFILE_SELECT_FOR_STRIPE)
       .eq('id', user.id)
       .single()
@@ -91,7 +91,7 @@ export async function POST(req: NextRequest) {
       customerId = customer.id
 
       await supabase
-        .from('profiles')
+        .from('private_profiles')
         .update({ stripe_customer_id: customerId })
         .eq('id', profile.id)
     }

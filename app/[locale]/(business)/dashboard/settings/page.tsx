@@ -20,7 +20,7 @@ import {
 } from "@tabler/icons-react"
 
 const PROFILE_SELECT_FOR_BUSINESS_SETTINGS =
-  'id,username,display_name,business_name,bio,vat_number,is_verified_business,tier,phone'
+  'id,username,display_name,business_name,bio,is_verified_business,tier'
 
 async function getSellerDetails(sellerId: string) {
   const supabase = await createClient()
@@ -30,6 +30,12 @@ async function getSellerDetails(sellerId: string) {
     .select(PROFILE_SELECT_FOR_BUSINESS_SETTINGS)
     .eq('id', sellerId)
     .single()
+
+  const { data: privateProfile } = await supabase
+    .from('private_profiles')
+    .select('vat_number, phone')
+    .eq('id', sellerId)
+    .maybeSingle()
   
   // Map profile fields to expected seller format
   if (profile) {
@@ -37,6 +43,8 @@ async function getSellerDetails(sellerId: string) {
       ...profile,
       store_name: profile.display_name || profile.business_name || profile.username,
       bio: profile.bio || '',
+      vat_number: privateProfile?.vat_number ?? null,
+      phone: privateProfile?.phone ?? null,
     }
   }
   return profile

@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server"
 import { Link, redirect } from "@/i18n/routing"
 import { AppBreadcrumb } from "@/components/navigation/app-breadcrumb"
+import { PageShell } from "@/components/shared/page-shell"
 import { SalesChart } from "./_components/sales-chart"
 import { SalesStats } from "./_components/sales-stats"
 import { SalesTable } from "./_components/sales-table"
@@ -44,11 +45,21 @@ export default async function SalesPage({ params, searchParams }: SalesPageProps
   }
 
   // Check if user has a seller profile (has username)
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("id,username,display_name,business_name,commission_rate,created_at")
-    .eq("id", user.id)
-    .single()
+  const [
+    { data: profile },
+    { data: privateProfile },
+  ] = await Promise.all([
+    supabase
+      .from("profiles")
+      .select("id,username,display_name,business_name,created_at")
+      .eq("id", user.id)
+      .single(),
+    supabase
+      .from("private_profiles")
+      .select("commission_rate")
+      .eq("id", user.id)
+      .maybeSingle(),
+  ])
 
   // If no username, redirect to sell page to set one up
   if (!profile || !profile.username) {
@@ -58,6 +69,7 @@ export default async function SalesPage({ params, searchParams }: SalesPageProps
   // Map profile to seller format for compatibility
   const seller = {
     ...profile,
+    commission_rate: privateProfile?.commission_rate ?? null,
     store_name: profile.display_name || profile.business_name || profile.username,
   }
 
@@ -129,7 +141,7 @@ export default async function SalesPage({ params, searchParams }: SalesPageProps
   const { data: buyersData } = buyerIds.length > 0
     ? await supabase
       .from("profiles")
-      .select("id, email, full_name")
+      .select("id, full_name")
       .in("id", buyerIds)
     : { data: [] }
 
@@ -153,6 +165,10 @@ export default async function SalesPage({ params, searchParams }: SalesPageProps
       const order = ordersMap.get(item.order_id)
       const product = productsMap.get(item.product_id)
       const buyer = order ? buyersMap.get(order.user_id) : null
+      const shippingAddress = order?.shipping_address as { city?: string; country?: string; email?: string } | null
+      const buyerEmail = typeof shippingAddress?.email === 'string' ? shippingAddress.email : ''
+      const buyerFullName = buyer?.full_name ?? null
+      const buyerInfo = buyerFullName || buyerEmail ? { email: buyerEmail, full_name: buyerFullName } : null
       return {
         id: item.id,
         order_id: item.order_id,
@@ -167,18 +183,15 @@ export default async function SalesPage({ params, searchParams }: SalesPageProps
           images: product.images || [],
           price: product.price,
         } : null,
-        order: order ? {
-          id: order.id,
-          status: typeof order.status === 'string' ? order.status : 'pending',
-          created_at: order.created_at,
-          shipping_address: order.shipping_address as { city?: string; country?: string } | null,
-          buyer: buyer ? {
-            email: buyer.email || '',
-            full_name: buyer.full_name,
-          } : null,
-        } : null,
-      }
-    })
+         order: order ? {
+           id: order.id,
+           status: typeof order.status === 'string' ? order.status : 'pending',
+           created_at: order.created_at,
+          shipping_address: shippingAddress,
+          buyer: buyerInfo,
+         } : null,
+       }
+     })
 
   // Calculate stats
   const totalRevenue = sales.reduce((sum, sale) => sum + (Number(sale.price_at_purchase) * sale.quantity), 0)
@@ -253,7 +266,7 @@ export default async function SalesPage({ params, searchParams }: SalesPageProps
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <PageShell>
       <div className="container py-4 sm:py-6">
         {/* Breadcrumb */}
         <AppBreadcrumb items={[
@@ -264,8 +277,8 @@ export default async function SalesPage({ params, searchParams }: SalesPageProps
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mt-4 mb-6">
           <div className="flex items-center gap-4">
-            <div className="size-14 sm:size-16 rounded-md bg-account-stat-icon-bg border border-account-stat-border flex items-center justify-center">
-              <ChartLineUp weight="fill" className="size-7 sm:size-8 text-account-stat-icon" />
+            <div className="size-14 sm:size-16 rounded-md bg-muted border border-border flex items-center justify-center">
+              <ChartLineUp weight="fill" className="size-7 sm:size-8 text-muted-foreground" />
             </div>
             <div>
               <h1 className="text-xl sm:text-2xl font-bold text-foreground">
@@ -419,6 +432,6 @@ export default async function SalesPage({ params, searchParams }: SalesPageProps
           </Card>
         )}
       </div>
-    </div>
+    </PageShell>
   )
 }

@@ -1,8 +1,9 @@
 import { Skeleton } from "@/components/ui/skeleton"
+import { PageShell } from "@/components/shared/page-shell"
 
 export default function SearchLoading() {
   return (
-    <div className="min-h-screen bg-background">
+    <PageShell variant="muted">
       <div className="flex flex-col lg:flex-row container px-0!">
         {/* Sidebar Skeleton - Hidden on mobile */}
         <aside className="w-64 hidden lg:block shrink-0 border-r border-sidebar-border bg-sidebar">
@@ -80,6 +81,6 @@ export default function SearchLoading() {
           </div>
         </div>
       </div>
-    </div>
+    </PageShell>
   )
 }

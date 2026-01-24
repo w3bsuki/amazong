@@ -28,7 +28,7 @@ export async function createPaymentMethodSetupSession(input?: { locale?: "en" | 
   }
 
   const { data: profile } = await supabase
-    .from('profiles')
+    .from('private_profiles')
     .select('stripe_customer_id')
     .eq('id', user.id)
     .single()
@@ -46,7 +46,7 @@ export async function createPaymentMethodSetupSession(input?: { locale?: "en" | 
     stripeCustomerId = customer.id
 
     await supabase
-      .from('profiles')
+      .from('private_profiles')
       .update({ stripe_customer_id: stripeCustomerId })
       .eq('id', user.id)
   }
@@ -133,7 +133,7 @@ export async function setDefaultPaymentMethod(input: { paymentMethodId: string; 
   const { paymentMethodId, dbId } = parsed.data
 
   const { data: profile } = await supabase
-    .from('profiles')
+    .from('private_profiles')
     .select('stripe_customer_id')
     .eq('id', user.id)
     .single()

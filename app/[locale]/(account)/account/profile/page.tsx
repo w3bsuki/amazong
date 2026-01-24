@@ -44,42 +44,52 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
     return redirect({ href: "/auth/login", locale })
   }
 
-  // Fetch profile data from unified profiles table
-  const { data: profileDataRaw } = await supabase
-    .from("profiles")
-    .select(`
-      id,
-      email,
-      full_name,
-      avatar_url,
-      phone,
-      shipping_region,
-      country_code,
-      role,
-      created_at,
-      username,
-      display_name,
-      bio,
-      banner_url,
-      location,
-      website_url,
-      social_links,
-      account_type,
-      is_seller,
-      is_verified_business,
-      business_name,
-      vat_number,
-      last_username_change,
-      tier
-    `)
-    .eq("id", user.id)
-    .single()
+  // Fetch profile data (public surface) + private PII fields
+  const [
+    { data: profileRaw },
+    { data: privateProfile },
+  ] = await Promise.all([
+    supabase
+      .from("profiles")
+      .select(`
+        id,
+        full_name,
+        avatar_url,
+        shipping_region,
+        country_code,
+        role,
+        created_at,
+        username,
+        display_name,
+        bio,
+        banner_url,
+        location,
+        website_url,
+        social_links,
+        account_type,
+        is_seller,
+        is_verified_business,
+        business_name,
+        last_username_change,
+        tier
+      `)
+      .eq("id", user.id)
+      .single(),
+    supabase
+      .from("private_profiles")
+      .select("email, phone, vat_number")
+      .eq("id", user.id)
+      .maybeSingle(),
+  ])
 
   // Transform social_links from Json to Record<string, string>
-  const profileData = profileDataRaw ? {
-    ...profileDataRaw,
-    social_links: profileDataRaw.social_links && typeof profileDataRaw.social_links === 'object' && !Array.isArray(profileDataRaw.social_links)
-      ? profileDataRaw.social_links as Record<string, string>
+  const profileData = profileRaw ? {
+    ...profileRaw,
+    email: privateProfile?.email ?? user.email ?? "",
+    phone: privateProfile?.phone ?? null,
+    vat_number: privateProfile?.vat_number ?? null,
+    social_links: profileRaw.social_links && typeof profileRaw.social_links === 'object' && !Array.isArray(profileRaw.social_links)
+      ? profileRaw.social_links as Record<string, string>
       : null,
   } : null
 

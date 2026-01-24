@@ -2513,11 +2513,14 @@
             "empty": "No documents found"
         },
         "categories": {
+            "product": "Product",
             "policies": "Policies",
             "payments": "Payments",
             "plans": "Plans",
             "roadmap": "Roadmap",
+            "ops": "Operations",
             "guides": "Guides",
+            "legal": "Legal",
             "general": "General"
         },
         "status": {
@@ -3050,15 +3053,20 @@
         }
     },
     "Assistant": {
-        "title": "AI Assistant",
-        "subtitle": "Dev playground for chat, find-similar, and sell autofill.",
+        "title": "Shopping Assistant",
+        "subtitle": "AI-powered shopping companion for personalized recommendations.",
+        "assistantIntro": "Tell me what you're looking for and I'll find the perfect match from thousands of listings.",
         "chatTitle": "Chat",
-        "chatEmpty": "Ask for recommendations from our catalog, compare items, or refine a search.",
-        "chatPlaceholder": "Ask for items, filters, brands, sizes…",
+        "chatEmpty": "Describe what you need — I'll search, compare, and find the best deals for you.",
+        "chatPlaceholder": "Describe what you're looking for…",
+        "quickStart": "Popular searches",
+        "suggestionOne": "Find me a phone under 500 BGN",
+        "suggestionTwo": "Show me running sneakers",
+        "suggestionThree": "Best laptop for school",
         "send": "Send",
         "stop": "Stop",
-        "toolRunning": "Running tool…",
-        "results": "Results",
+        "toolRunning": "Searching…",
+        "results": "Found for you",
         "findSimilarTitle": "Find similar from photo",
         "findSimilarDesc": "Paste an image URL (e.g. from an uploaded listing photo) and we will extract a search query and look for similar items.",
         "findSimilar": "Find similar",
@@ -3067,7 +3075,7 @@
         "sellAutofillDesc": "Paste an image URL and we will generate a draft (title/description/condition/tags/price hint).",
         "sellAutofill": "Generate draft",
         "imageUrlPlaceholder": "https://…",
-        "loading": "Loading…",
+        "loading": "Finding products…",
         "requestFailed": "Request failed"
     },
     "AccountPlansUpgrade": {

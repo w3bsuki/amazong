@@ -1,8 +1,9 @@
 import { Skeleton } from "@/components/ui/skeleton"
+import { PageShell } from "@/components/shared/page-shell"
 
 export default function CategorySlugLoading() {
   return (
-    <div className="min-h-screen bg-background">
+    <PageShell variant="muted">
       {/* MOBILE Loading State - Matches contextual mode layout */}
       <div className="lg:hidden">
         {/* Contextual Header skeleton (48px) - matches ContextualCategoryHeader */}
@@ -154,6 +155,6 @@ export default function CategorySlugLoading() {
           </div>
         </div>
       </div>
-    </div>
+    </PageShell>
   )
 }

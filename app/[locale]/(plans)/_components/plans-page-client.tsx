@@ -37,6 +37,7 @@ import * as PricingCard from "./pricing-card"
 import { cn } from "@/lib/utils"
 import { toast } from "sonner"
 import { useTranslations } from "next-intl"
+import { PageShell } from "@/components/shared/page-shell"
 
 interface SubscriptionPlanRow {
   id: string
@@ -300,7 +301,7 @@ export default function PlansPageClient(props: {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <PageShell>
       <MinimalHeader showBack={false}>
         <nav className="hidden items-center gap-1 md:flex">
           {navItems.map(({ id, icon: Icon }) => (
@@ -706,6 +707,6 @@ export default function PlansPageClient(props: {
             </div>
           </div>
         </footer>
-    </div>
+    </PageShell>
   )
 }

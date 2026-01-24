@@ -78,3 +78,33 @@ Acceptance:
 
 Linked tasks:
 - See `TASKS.md` (search for ISSUE-0002)
+
+---
+
+## ISSUE-0003 — UI duplication cleanup (headers/cards/pages) (2026-01-24)
+
+Status: [ ] Open
+
+Summary:
+- Expected: One clear “main header” system, a single ProductCard API (variants), and no demo/legacy UI shipping in production routes.
+- Actual: Header variants are visually divergent (`homepage` vs `default`), `/assistant` falls into the “old-feeling” default header, demo PDP code lives under `app/` and breaks the Tailwind style gate, and multiple “card/header” implementations create confusion.
+
+Scope:
+- In scope:
+  - Standardize header behavior across `(main)` routes (including `/assistant`)
+  - Consolidate product card entry points into one component with variants
+  - Remove/quarantine demo routes under `app/` if not production-critical
+  - Clean up unused deps/exports identified by `knip`
+  - Reduce the worst jscpd clone clusters (targeted, not a rewrite)
+- Out of scope:
+  - Major redesigns or large-scale folder reorgs in a single batch
+
+Acceptance:
+- [ ] `pnpm -s styles:gate` passes.
+- [ ] `/assistant` uses an intentional header variant (not the accidental default).
+- [ ] Product cards use a single API with explicit variants.
+- [ ] `pnpm -s knip` has no findings (or documented, intentional exceptions).
+
+Linked tasks:
+- See `UI_REFACTOR_PLAN_OPUS_2026-01-24.md`
+- See `TASKS.md` (search for ISSUE-0003)

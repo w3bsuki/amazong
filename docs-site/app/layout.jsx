@@ -5,10 +5,10 @@ import 'nextra-theme-docs/style.css'
 
 export const metadata = {
   title: {
-    default: 'Treido Docs',
-    template: '%s – Treido Docs',
+    default: 'Treido Documentation',
+    template: '%s – Treido Documentation',
   },
-  description: 'Internal documentation for Treido Marketplace',
+  description: 'Product, business, and engineering documentation for Treido Marketplace',
 }
 
 const logo = (

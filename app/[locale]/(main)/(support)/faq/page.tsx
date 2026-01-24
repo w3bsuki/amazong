@@ -20,6 +20,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion"
+import { PageShell } from "@/components/shared/page-shell"
 
 // Generate static params for all locales
 export function generateStaticParams() {
@@ -215,7 +216,7 @@ export default async function FAQPage({ params }: { params: Promise<{ locale: st
   ]
 
   return (
-    <div className="min-h-screen bg-background pb-12">
+    <PageShell className="pb-12">
       <div className="container py-8 px-4 sm:px-6">
         <AppBreadcrumb items={breadcrumbItems} />
         
@@ -282,6 +283,6 @@ export default async function FAQPage({ params }: { params: Promise<{ locale: st
           </CardContent>
         </Card>
       </div>
-    </div>
+    </PageShell>
   )
 }

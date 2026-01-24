@@ -4,7 +4,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server"
 import { UpgradeContent } from "./upgrade-content"
 import { ArrowLeft } from "@phosphor-icons/react/dist/ssr"
 import { Link } from "@/i18n/routing"
-import { getPlansForUpgrade, PROFILE_SELECT_FOR_UPGRADE } from "@/lib/data/plans"
+import { getPlansForUpgrade, PRIVATE_PROFILE_SELECT_FOR_UPGRADE, PROFILE_SELECT_FOR_UPGRADE } from "@/lib/data/plans"
 import { createSubscriptionCheckoutSession } from "@/app/actions/subscriptions"
 
 /**
@@ -36,12 +36,22 @@ export default async function UpgradePage({
     return redirect({ href: "/auth/login", locale })
   }
 
-  // Fetch profile info (seller fields are now on profiles)
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select(PROFILE_SELECT_FOR_UPGRADE)
-    .eq('id', user.id)
-    .single()
+  // Fetch profile info (public surface) + private billing fields
+  const [
+    { data: profile },
+    { data: privateProfile },
+  ] = await Promise.all([
+    supabase
+      .from('profiles')
+      .select(PROFILE_SELECT_FOR_UPGRADE)
+      .eq('id', user.id)
+      .single(),
+    supabase
+      .from('private_profiles')
+      .select(PRIVATE_PROFILE_SELECT_FOR_UPGRADE)
+      .eq('id', user.id)
+      .maybeSingle(),
+  ])
 
   // Fetch subscription plans
   const plans = await getPlansForUpgrade()
@@ -49,12 +59,12 @@ export default async function UpgradePage({
   const currentTier = profile?.tier || 'free'
 
   // Map profile to seller interface expected by UpgradeContent
-  const commissionRate = profile?.commission_rate == null ? 0 : Number(profile.commission_rate)
+  const commissionRate = privateProfile?.commission_rate == null ? 0 : Number(privateProfile.commission_rate)
   const seller = profile ? {
     id: profile.id,
     tier: profile.tier || 'free',
     commission_rate: commissionRate,
-    stripe_customer_id: profile.stripe_customer_id,
+    stripe_customer_id: privateProfile?.stripe_customer_id ?? null,
   } : null
 
   return (

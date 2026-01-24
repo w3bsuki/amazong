@@ -1,8 +1,9 @@
 import { Skeleton } from "@/components/ui/skeleton"
+import { PageShell } from "@/components/shared/page-shell"
 
 export default function ChatLoading() {
   return (
-    <div className="flex min-h-screen bg-background">
+    <PageShell className="flex">
       {/* Sidebar - Conversations List */}
       <div className="w-80 border-r bg-card hidden md:flex flex-col">
         {/* Header */}
@@ -100,6 +101,6 @@ export default function ChatLoading() {
           </div>
         </div>
       </div>
-    </div>
+    </PageShell>
   )
 }

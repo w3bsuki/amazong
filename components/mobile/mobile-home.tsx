@@ -3,6 +3,7 @@
 import { useState, useMemo, useEffect } from "react"
 import { Link } from "@/i18n/routing"
 import { cn } from "@/lib/utils"
+import { PageShell } from "@/components/shared/page-shell"
 import {
   ShieldCheck,
   Tag,
@@ -193,7 +194,7 @@ export function MobileHome({
   }, [nav.activeCategoryName, nav.activeTab])
 
   return (
-    <div className="min-h-screen bg-background pb-24">
+    <PageShell variant="muted" className="pb-24">
       {/* Search Overlay */}
       <MobileSearchOverlay
         hideDefaultTrigger
@@ -304,6 +305,6 @@ export function MobileHome({
         locale={locale}
         excludeOptions={nav.isAllTab ? ["newest"] : undefined}
       />
-    </div>
+    </PageShell>
   )
 }

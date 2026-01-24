@@ -16,6 +16,7 @@ import {
 import { Link } from "@/i18n/routing"
 import type { Metadata } from 'next'
 import { routing, validateLocale } from "@/i18n/routing"
+import { PageShell } from "@/components/shared/page-shell"
 
 // Generate static params for all locales - required for Next.js 16 Cache Components
 export function generateStaticParams() {
@@ -41,11 +42,11 @@ export default async function ReturnsPage({ params }: { params: Promise<{ locale
   const tBreadcrumbs = await getTranslations("Breadcrumbs")
   
   return (
-    <div className="min-h-screen bg-background pb-20 sm:pb-12">
+    <PageShell className="pb-20 sm:pb-12">
       {/* Hero Section */}
-      <div className="bg-header-bg text-white">
+      <div className="bg-brand text-primary-foreground">
         <div className="container py-10 md:py-16">
-          <div className="[&_nav]:border-white/20 [&_nav]:mb-4 [&_a]:text-white/80 [&_a:hover]:text-white [&_span[aria-current]]:text-white [&_svg]:text-white/50">
+          <div className="[&_nav]:border-primary-foreground/20 [&_nav]:mb-4 [&_a]:text-primary-foreground/80 [&_a:hover]:text-primary-foreground [&_span[aria-current]]:text-primary-foreground [&_svg]:text-primary-foreground/50">
             <AppBreadcrumb
               items={breadcrumbPresets(tBreadcrumbs).returns}
               ariaLabel={tBreadcrumbs("ariaLabel")}
@@ -55,14 +56,14 @@ export default async function ReturnsPage({ params }: { params: Promise<{ locale
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div className="max-w-2xl">
               <h1 className="text-2xl md:text-4xl font-bold mb-3">{t('heroTitle')}</h1>
-              <p className="text-white/80">{t('heroSubtitle')}</p>
+              <p className="text-primary-foreground/80">{t('heroSubtitle')}</p>
             </div>
-            <Link href="/account/orders">
-              <Button size="lg" className="bg-brand hover:bg-brand-dark whitespace-nowrap">
+            <Button asChild variant="cta" size="lg" className="whitespace-nowrap">
+              <Link href="/account/orders">
                 <ArrowCounterClockwise className="size-5 mr-2" />
                 {t('startReturn')}
-              </Button>
-            </Link>
+              </Link>
+            </Button>
           </div>
         </div>
       </div>
@@ -71,10 +72,10 @@ export default async function ReturnsPage({ params }: { params: Promise<{ locale
         {/* Return Policy Highlights */}
         <section className="mb-12">
           <div className="grid grid-cols-2 gap-2 sm:gap-4 md:grid-cols-4">
-            <Card className="border-brand-success/30 bg-brand-success-light/30">
+            <Card className="border-success/30 bg-success/10">
               <CardContent className="p-4 text-center">
-                <Clock className="size-8 text-brand-success mx-auto mb-3" />
-                <h3 className="font-bold text-2xl text-brand-success">30</h3>
+                <Clock className="size-8 text-success mx-auto mb-3" />
+                <h3 className="font-bold text-2xl text-success">30</h3>
                 <p className="text-sm text-muted-foreground">{t('daysToReturn')}</p>
               </CardContent>
             </Card>
@@ -109,7 +110,7 @@ export default async function ReturnsPage({ params }: { params: Promise<{ locale
             {/* Step 1 */}
             <Card className="relative">
               <CardContent className="p-6">
-                <div className="absolute -top-3 -left-3 size-8 bg-brand text-white flex items-center justify-center font-bold text-lg">
+                <div className="absolute -top-3 -left-3 size-8 bg-brand text-primary-foreground flex items-center justify-center font-bold text-lg">
                   1
                 </div>
                 <Package className="size-10 text-brand mb-4 mt-2" />
@@ -121,7 +122,7 @@ export default async function ReturnsPage({ params }: { params: Promise<{ locale
             {/* Step 2 */}
             <Card className="relative">
               <CardContent className="p-6">
-                <div className="absolute -top-3 -left-3 size-8 bg-brand text-white flex items-center justify-center font-bold text-lg">
+                <div className="absolute -top-3 -left-3 size-8 bg-brand text-primary-foreground flex items-center justify-center font-bold text-lg">
                   2
                 </div>
                 <FileText className="size-10 text-brand mb-4 mt-2" />
@@ -133,7 +134,7 @@ export default async function ReturnsPage({ params }: { params: Promise<{ locale
             {/* Step 3 */}
             <Card className="relative">
               <CardContent className="p-6">
-                <div className="absolute -top-3 -left-3 size-8 bg-brand text-white flex items-center justify-center font-bold text-lg">
+                <div className="absolute -top-3 -left-3 size-8 bg-brand text-primary-foreground flex items-center justify-center font-bold text-lg">
                   3
                 </div>
                 <Printer className="size-10 text-brand mb-4 mt-2" />
@@ -145,7 +146,7 @@ export default async function ReturnsPage({ params }: { params: Promise<{ locale
             {/* Step 4 */}
             <Card className="relative">
               <CardContent className="p-6">
-                <div className="absolute -top-3 -left-3 size-8 bg-brand text-white flex items-center justify-center font-bold text-lg">
+                <div className="absolute -top-3 -left-3 size-8 bg-brand text-primary-foreground flex items-center justify-center font-bold text-lg">
                   4
                 </div>
                 <MapPin className="size-10 text-brand mb-4 mt-2" />
@@ -164,15 +165,15 @@ export default async function ReturnsPage({ params }: { params: Promise<{ locale
             <Card>
               <CardContent className="p-6">
                 <div className="flex items-center gap-3 mb-4">
-                  <div className="size-10 bg-brand-success-light flex items-center justify-center">
-                    <CheckCircle className="size-5 text-brand-success" />
+                  <div className="size-10 bg-success/10 flex items-center justify-center">
+                    <CheckCircle className="size-5 text-success" />
                   </div>
                   <h3 className="text-lg font-bold">{t('eligibleItems')}</h3>
                 </div>
                 <ul className="space-y-3">
                   {t.raw('eligibleItemsList').map((item: string, index: number) => (
                     <li key={index} className="flex items-start gap-2 text-sm">
-                      <CheckCircle className="size-4 text-brand-success shrink-0 mt-0.5" />
+                      <CheckCircle className="size-4 text-success shrink-0 mt-0.5" />
                       <span>{item}</span>
                     </li>
                   ))}
@@ -184,15 +185,15 @@ export default async function ReturnsPage({ params }: { params: Promise<{ locale
             <Card>
               <CardContent className="p-6">
                 <div className="flex items-center gap-3 mb-4">
-                  <div className="size-10 bg-brand-deal-light flex items-center justify-center">
-                    <Prohibit className="size-5 text-brand-deal" />
+                  <div className="size-10 bg-deal-light flex items-center justify-center">
+                    <Prohibit className="size-5 text-deal" />
                   </div>
                   <h3 className="text-lg font-bold">{t('nonReturnable')}</h3>
                 </div>
                 <ul className="space-y-3">
                   {t.raw('nonReturnableList').map((item: string, index: number) => (
                     <li key={index} className="flex items-start gap-2 text-sm">
-                      <Prohibit className="size-4 text-brand-deal shrink-0 mt-0.5" />
+                      <Prohibit className="size-4 text-deal shrink-0 mt-0.5" />
                       <span>{item}</span>
                     </li>
                   ))}
@@ -235,7 +236,7 @@ export default async function ReturnsPage({ params }: { params: Promise<{ locale
                 <h3 className="font-bold text-lg mb-2">{t('readyToReturn')}</h3>
                 <p className="text-sm text-muted-foreground mb-4">{t('readyToReturnDesc')}</p>
                 <Link href="/account/orders" className="block">
-                  <Button className="w-full bg-brand hover:bg-brand-dark">
+                  <Button variant="cta" className="w-full">
                     {t('startReturn')}
                   </Button>
                 </Link>
@@ -246,7 +247,7 @@ export default async function ReturnsPage({ params }: { params: Promise<{ locale
             <Card>
               <CardContent className="p-5">
                 <div className="flex items-start gap-3">
-                  <WarningCircle className="size-5 text-brand-warning shrink-0 mt-0.5" />
+                  <WarningCircle className="size-5 text-warning shrink-0 mt-0.5" />
                   <div>
                     <h4 className="font-medium mb-1">{t('importantNotice')}</h4>
                     <p className="text-sm text-muted-foreground">{t('importantNoticeText')}</p>
@@ -310,6 +311,6 @@ export default async function ReturnsPage({ params }: { params: Promise<{ locale
           </Card>
         </section>
       </div>
-    </div>
+    </PageShell>
   )
 }

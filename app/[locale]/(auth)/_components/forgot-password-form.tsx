@@ -33,7 +33,7 @@ export function ForgotPasswordForm({
 
   if (state?.success) {
     return (
-      <div className="min-h-svh flex items-center justify-center bg-muted/30 p-4">
+      <div className="min-h-dvh flex items-center justify-center p-4">
         <div className="w-full max-w-sm text-center">
           <div className="flex flex-col items-center gap-4 mb-6">
             <div className="size-16 bg-success/10 rounded-full flex items-center justify-center">

@@ -105,7 +105,7 @@ export function MessagesDropdown({ user }: MessagesDropdownProps) {
             {unreadCount > 0 && (
               <CountBadge
                 count={unreadCount}
-                className="absolute -top-1 -right-1 bg-destructive text-white ring-2 ring-header-bg h-4.5 min-w-4.5 px-1 text-2xs shadow-sm"
+                className="absolute -top-1 -right-1 bg-destructive text-destructive-foreground ring-2 ring-header-bg h-4.5 min-w-4.5 px-1 text-2xs shadow-sm"
                 aria-hidden="true"
               />
             )}

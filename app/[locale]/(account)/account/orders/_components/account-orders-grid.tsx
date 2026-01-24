@@ -128,9 +128,9 @@ export function AccountOrdersGrid({ orders, locale, actions }: AccountOrdersGrid
       case "processing":
         return "bg-order-processing/10 text-order-processing border-order-processing/20"
       case "shipped":
-        return "bg-account-info-soft text-account-info border-account-stat-border"
+        return "bg-order-shipped/10 text-order-shipped border-order-shipped/20"
       case "partially_shipped":
-        return "bg-account-info-soft text-account-info border-account-stat-border"
+        return "bg-order-shipped/10 text-order-shipped border-order-shipped/20"
       case "delivered":
         return "bg-success/10 text-success border-success/20"
       case "cancelled":
@@ -227,7 +227,7 @@ export function AccountOrdersGrid({ orders, locale, actions }: AccountOrdersGrid
           return (
             <Sheet key={order.id}>
               <SheetTrigger asChild>
-                <button className="active-scale-99 w-full text-left rounded-md bg-account-stat-bg border border-account-stat-border p-4 transition-all">
+                <button className="active-scale-99 w-full text-left rounded-md bg-card border border-border p-4 transition-colors">
                   {/* Header: Price + Date */}
                   <div className="flex items-center justify-between mb-3">
                     <p className="text-lg font-bold text-foreground tabular-nums">
@@ -248,7 +248,7 @@ export function AccountOrdersGrid({ orders, locale, actions }: AccountOrdersGrid
                       return (
                         <div
                           key={item.id}
-                          className="relative size-14 rounded-md overflow-hidden bg-account-stat-bg border border-account-stat-border shrink-0"
+                          className="relative size-14 rounded-md overflow-hidden bg-card border border-border shrink-0"
                         >
                           {image ? (
                             <Image
@@ -264,7 +264,7 @@ export function AccountOrdersGrid({ orders, locale, actions }: AccountOrdersGrid
                             </div>
                           )}
                           {item.quantity > 1 && (
-                            <div className="absolute -bottom-0.5 -right-0.5 flex size-5 items-center justify-center rounded-full bg-account-accent text-2xs font-bold text-white shadow-sm">
+                            <div className="absolute -bottom-0.5 -right-0.5 flex size-5 items-center justify-center rounded-full bg-primary text-2xs font-bold text-primary-foreground shadow-sm">
                               x{item.quantity}
                             </div>
                           )}
@@ -288,7 +288,7 @@ export function AccountOrdersGrid({ orders, locale, actions }: AccountOrdersGrid
                         {itemCount} {itemCount === 1 ? t.item : t.items}
                       </span>
                     </div>
-                    <div className="flex items-center gap-1 text-xs font-medium text-account-accent">
+                    <div className="flex items-center gap-1 text-xs font-medium text-primary">
                       <span>{t.viewOrder}</span>
                       <IconChevronRight className="size-3.5" />
                     </div>

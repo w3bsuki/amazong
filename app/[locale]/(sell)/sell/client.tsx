@@ -7,6 +7,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { WarningCircle } from "@phosphor-icons/react";
+import { PageShell } from "@/components/shared/page-shell";
 import {
   SignInPrompt,
   SellHeader,
@@ -158,12 +159,12 @@ export function SellPageClient({
   // Not logged in - show sign in prompt (render immediately for guests)
   if (!user || (!initialUser && isAuthChecking)) {
     return (
-      <div className="min-h-screen bg-background flex flex-col">
+      <PageShell className="flex flex-col">
         <SellHeader />
         <div className="flex-1 flex flex-col justify-center overflow-y-auto">
           <SignInPrompt />
         </div>
-      </div>
+      </PageShell>
     );
   }
 
@@ -197,7 +198,7 @@ export function SellPageClient({
     };
 
     return (
-      <div className="min-h-screen bg-muted/30 flex flex-col">
+      <PageShell variant="muted" className="flex flex-col">
         <SellHeader {...(user.email ? { user: { email: user.email } } : {})} />
         <div className="flex-1 flex flex-col justify-center overflow-y-auto py-8">
           <SellerOnboardingWizard
@@ -210,7 +211,7 @@ export function SellPageClient({
             onComplete={handleOnboardingComplete}
           />
         </div>
-      </div>
+      </PageShell>
     );
   }
 
@@ -218,7 +219,7 @@ export function SellPageClient({
   // New users get username at signup, so this shouldn't happen
   if (!seller) {
     return (
-      <div className="min-h-screen bg-background flex flex-col">
+      <PageShell className="flex flex-col">
         <SellHeader {...(user.email ? { user: { email: user.email } } : {})} />
         <div className="flex-1 flex flex-col justify-center overflow-y-auto py-8">
           <div className="container-narrow text-center space-y-4">
@@ -238,14 +239,14 @@ export function SellPageClient({
             </Link>
           </div>
         </div>
-      </div>
+      </PageShell>
     );
   }
 
   // Stripe Connect gating (V2): sellers must complete payout setup before listing.
   if (!payoutStatus.isReady) {
     return (
-      <div className="min-h-screen bg-background flex flex-col">
+      <PageShell className="flex flex-col">
         <SellHeader {...(user.email ? { user: { email: user.email } } : {})} />
         <div className="flex-1 flex flex-col justify-center overflow-y-auto py-8">
           <div className="container-narrow">
@@ -265,7 +266,7 @@ export function SellPageClient({
             </Card>
           </div>
         </div>
-      </div>
+      </PageShell>
     );
   }
 

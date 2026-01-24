@@ -1,8 +1,9 @@
 import { Skeleton } from "@/components/ui/skeleton"
+import { PageShell } from "@/components/shared/page-shell"
 
 export default function ProductPageLoading() {
   return (
-    <div className="min-h-screen bg-background pb-24 lg:pb-10">
+    <PageShell variant="muted" className="pb-24 lg:pb-10">
       <div className="container mx-auto px-4 py-6 lg:py-8">
         {/* Breadcrumb skeleton */}
         <div className="hidden lg:flex items-center gap-2 mb-6">
@@ -168,6 +169,6 @@ export default function ProductPageLoading() {
           <Skeleton className="h-11 w-32 rounded-lg" />
         </div>
       </div>
-    </div>
+    </PageShell>
   )
 }

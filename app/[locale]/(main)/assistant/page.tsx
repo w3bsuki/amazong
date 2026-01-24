@@ -1,8 +1,23 @@
 import { notFound } from "next/navigation"
 import { setRequestLocale, getTranslations } from "next-intl/server"
+import type { Metadata } from "next"
 
 import { isAiAssistantEnabled } from "@/lib/ai/env"
 import { AssistantPlayground } from "./_components/assistant-playground"
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>
+}): Promise<Metadata> {
+  const { locale } = await params
+  const t = await getTranslations({ locale, namespace: "Assistant" })
+
+  return {
+    title: t("title"),
+    description: t("assistantIntro"),
+  }
+}
 
 export default async function AssistantPage({
   params,
@@ -17,12 +32,25 @@ export default async function AssistantPage({
   const t = await getTranslations("Assistant")
   const safeLocale = locale === "bg" ? "bg" : "en"
 
+  const copy = {
+    title: t("title"),
+    assistantIntro: t("assistantIntro"),
+    chatEmpty: t("chatEmpty"),
+    chatPlaceholder: t("chatPlaceholder"),
+    quickStart: t("quickStart"),
+    suggestionOne: t("suggestionOne"),
+    suggestionTwo: t("suggestionTwo"),
+    suggestionThree: t("suggestionThree"),
+    send: t("send"),
+    stop: t("stop"),
+    results: t("results"),
+    loading: t("loading"),
+  }
+
   return (
-    <div className="mx-auto w-full max-w-3xl px-4 py-6">
-      <h1 className="text-xl font-semibold">{t("title")}</h1>
-      <p className="mt-1 text-sm text-muted-foreground">{t("subtitle")}</p>
-      <AssistantPlayground locale={safeLocale} />
-    </div>
+    <>
+      <h1 className="sr-only">{copy.title}</h1>
+      <AssistantPlayground locale={safeLocale} copy={copy} />
+    </>
   )
 }
-

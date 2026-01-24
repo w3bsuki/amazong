@@ -1,8 +1,9 @@
 import { Skeleton } from "@/components/ui/skeleton"
+import { PageShell } from "@/components/shared/page-shell"
 
 export default function SellersLoadingSkeleton() {
   return (
-    <div className="min-h-screen bg-background pb-20 sm:pb-12">
+    <PageShell variant="muted" className="pb-20 sm:pb-12">
       <div className="bg-muted py-6 sm:py-10">
         <div className="container">
           <div className="flex gap-2 items-center mb-4">
@@ -68,6 +69,6 @@ export default function SellersLoadingSkeleton() {
           <Skeleton className="h-9 w-9 rounded" />
         </div>
       </div>
-    </div>
+    </PageShell>
   )
 }

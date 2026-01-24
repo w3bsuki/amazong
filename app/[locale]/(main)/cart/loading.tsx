@@ -1,8 +1,10 @@
 import { Skeleton } from "@/components/ui/skeleton"
+import { PageShell } from "@/components/shared/page-shell"
 
 export default function CartLoading() {
   return (
-    <div className="container py-4 bg-muted min-h-screen">
+    <PageShell variant="muted" className="pt-14 pb-32 lg:pt-0 lg:pb-12">
+      <div className="container py-4">
       {/* Breadcrumb */}
       <div className="flex items-center gap-2 mb-4">
         <Skeleton className="h-4 w-16" />
@@ -88,6 +90,7 @@ export default function CartLoading() {
           <Skeleton className="h-10 w-full rounded-full" />
         </div>
       </div>
-    </div>
+      </div>
+    </PageShell>
   )
 }

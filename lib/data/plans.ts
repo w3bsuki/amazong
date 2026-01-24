@@ -15,7 +15,10 @@ export const PLANS_SELECT_FOR_UPGRADE =
   'id,tier,name,price_monthly,price_yearly,commission_rate,features,is_active,account_type' as const
 
 /** Profile fields needed for upgrade flows */
-export const PROFILE_SELECT_FOR_UPGRADE = 'id,tier,commission_rate,stripe_customer_id' as const
+export const PROFILE_SELECT_FOR_UPGRADE = 'id,tier' as const
+
+/** Private profile fields needed for upgrade flows */
+export const PRIVATE_PROFILE_SELECT_FOR_UPGRADE = 'id,commission_rate,stripe_customer_id' as const
 
 // =============================================================================
 // Queries — use these instead of inline queries

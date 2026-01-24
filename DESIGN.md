@@ -88,7 +88,7 @@ Our globals.css defines rich semantic colors. **USE THEM.**
 ### Pricing
 | Token | Class | Use |
 |-------|-------|-----|
-| `--color-price` | `text-price` | Regular prices |
+| `--color-price-regular` | `text-price-regular` | Regular prices |
 | `--color-price-sale` | `text-price-sale` | Sale/reduced prices |
 | `--color-price-original` | `text-price-original` | Strikethrough prices |
 | `--color-price-savings` | `text-price-savings` | "Save X%" text |
@@ -176,6 +176,7 @@ Our globals.css defines rich semantic colors. **USE THEM.**
 | Class | Use |
 |-------|-----|
 | `bg-background` | Page/section canvas |
+| `bg-surface-page` | Muted page canvas (subtle tint) |
 | `bg-card` | Elevated surfaces (cards, modals) |
 | `bg-muted` | Subdued backgrounds, inactive states |
 | `text-foreground` | Primary text |
@@ -184,6 +185,40 @@ Our globals.css defines rich semantic colors. **USE THEM.**
 | `bg-foreground text-background` | **Active/inverted pill state** |
 
 **Rule**: Never hardcode `bg-white`, `text-black`, or `border-gray-*`. Use semantic tokens.
+
+---
+
+## Page Surfaces (PageShell)
+
+**Single source of truth for page canvases.** Use the `PageShell` component (`components/shared/page-shell.tsx`) instead of hand-coding `min-h-screen bg-*` patterns.
+
+### Variants
+| Variant | Background | Use |
+|---------|------------|-----|
+| `default` | `bg-background` | Clean white/dark canvas — most pages (auth, account, profile) |
+| `muted` | `bg-surface-page` | Subtle page tint — grid pages (home, search, PDP) |
+
+### Usage
+```tsx
+import { PageShell } from "@/components/shared/page-shell";
+
+// Default (clean background)
+<PageShell className="pb-24">
+  <YourPageContent />
+</PageShell>
+
+// Muted (grid pages, product pages)
+<PageShell variant="muted" className="pb-10">
+  <YourPageContent />
+</PageShell>
+```
+
+### Props
+- `variant`: `"default" | "muted"` (default: `"default"`)
+- `fullHeight`: `boolean` (default: `true`) — applies `min-h-dvh`
+- `className`: Additional styles (padding, responsive visibility, etc.)
+
+**Rule**: Stop using `min-h-screen bg-muted/30`, `bg-surface-page`, or `bg-background` directly. Use `PageShell`.
 
 ---
 

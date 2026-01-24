@@ -124,10 +124,15 @@ function detectRouteConfig(pathname: string, explicitVariant?: HeaderVariant): R
     return { variant: "contextual" }
   }
   
+  // Assistant: /assistant - AI shopping assistant
+  if (pathWithoutLocale.startsWith("/assistant")) {
+    return { variant: "contextual" }
+  }
+  
   // Product pages: /{username}/{productSlug} (2+ segments, not a known route)
   // Known routes start with: /search, /cart, /checkout, /account, /sell, /plans, /auth
   const segments = pathWithoutLocale.split("/").filter(Boolean)
-  const knownRoutes = ["search", "cart", "checkout", "account", "sell", "plans", "auth", "categories", "api"]
+  const knownRoutes = ["search", "cart", "checkout", "account", "sell", "plans", "auth", "categories", "api", "assistant"]
   if (segments.length >= 2 && segments[0] && !knownRoutes.includes(segments[0])) {
     return { variant: "product" }
   }
@@ -194,6 +199,7 @@ export function AppHeader({
   const effectiveContextualBack = headerContext?.contextualHeader?.onBack ?? onContextualBack
   const effectiveContextualSubcategories = headerContext?.contextualHeader?.subcategories ?? contextualSubcategories
   const effectiveContextualSubcategoryClick = headerContext?.contextualHeader?.onSubcategoryClick ?? onSubcategoryClick
+  const effectiveContextualHideActions = headerContext?.contextualHeader?.hideActions ?? false
 
   // Avoid hydration mismatch when other client boundaries update HeaderProvider state
   // before the header boundary itself hydrates (e.g., ProductHeaderSync on PDP).
@@ -271,6 +277,7 @@ export function AppHeader({
             onBack={effectiveContextualBack}
             subcategories={effectiveContextualSubcategories}
             onSubcategoryClick={effectiveContextualSubcategoryClick}
+            hideActions={effectiveContextualHideActions}
             locale={locale}
           />
         )

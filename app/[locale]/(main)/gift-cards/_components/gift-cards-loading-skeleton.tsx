@@ -1,8 +1,9 @@
 import { Skeleton } from "@/components/ui/skeleton"
+import { PageShell } from "@/components/shared/page-shell"
 
 export default function GiftCardsLoadingSkeleton() {
   return (
-    <div className="min-h-screen bg-background pb-20 sm:pb-12">
+    <PageShell variant="muted" className="pb-20 sm:pb-12">
       <div className="bg-primary/5 py-8 sm:py-12">
         <div className="container">
           <div className="flex gap-2 items-center mb-4">
@@ -61,6 +62,6 @@ export default function GiftCardsLoadingSkeleton() {
           </div>
         </div>
       </div>
-    </div>
+    </PageShell>
   )
 }

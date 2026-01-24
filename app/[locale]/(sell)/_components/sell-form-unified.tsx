@@ -17,6 +17,7 @@ import { createClient } from "@/lib/supabase/client";
 import { Link } from "@/i18n/routing";
 import { BoostDialog } from "@/components/shared/boost/boost-dialog";
 import { useTranslations } from "next-intl";
+import { PageShell } from "@/components/shared/page-shell";
 
 import { SellFormProvider, useSellForm, useSellFormContext, defaultSellFormValuesV4 } from "./sell-form-provider";
 import { DesktopLayout, MobileLayout } from "./layouts";
@@ -172,7 +173,7 @@ function SellFormContent({
   // Processing screen
   if (isPending) {
     return (
-      <div className="min-h-screen bg-background flex flex-col items-center justify-center px-4">
+      <PageShell className="flex flex-col items-center justify-center px-4">
         <div className="w-full max-w-sm text-center space-y-8">
           <div className="relative mx-auto w-24 h-24">
             {/* Outer spinning ring */}
@@ -199,7 +200,7 @@ function SellFormContent({
             <span>{isBg ? "Моля, изчакайте" : "Please wait"}</span>
           </div>
         </div>
-      </div>
+      </PageShell>
     );
   }
 
@@ -211,7 +212,7 @@ function SellFormContent({
     const productId = createdProductId;
 
     return (
-      <div className="min-h-screen bg-background flex flex-col">
+      <PageShell className="flex flex-col">
         {/* Header */}
         <header className="sticky top-0 z-40 bg-background border-b border-border">
           <div className="flex items-center justify-center h-14">
@@ -336,7 +337,7 @@ function SellFormContent({
             </div>
           </div>
         </main>
-      </div>
+      </PageShell>
     );
   }
 

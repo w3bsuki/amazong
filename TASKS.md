@@ -208,6 +208,22 @@ REUSE_EXISTING_SERVER=true pnpm test:e2e:smoke
 
 ---
 
+## ISSUE-0003 — UI duplication cleanup (2026-01-24)
+
+Reference:
+- Audit: `UI_COMPONENT_AUDIT_2026-01-24.md`
+- Execution plan (OPUS): `UI_REFACTOR_PLAN_OPUS_2026-01-24.md`
+
+Entry tasks:
+- [x] (ISSUE-0003) Delete or quarantine `app/[locale]/demo/` (unblocks `pnpm -s styles:gate`)
+- [x] (ISSUE-0003) Decide `/assistant` header variant and implement it via `AppHeader` route mapping + header context sync
+- Header matrix (2026-01-24): default=`homepage`, `/categories*`=`contextual`, `/{username}/{productSlug}`=`product`, `/assistant`=`contextual`
+- [ ] (ISSUE-0003) Consolidate ProductCard variants and delete redundant card files when unused
+- [ ] (ISSUE-0003) Remove unused deps/exports/types per `cleanup/knip-report.txt`
+
+
+---
+
 ## P4 — SUPABASE ALIGNMENT
 
 > **Goal**: Ensure database layer follows best practices.

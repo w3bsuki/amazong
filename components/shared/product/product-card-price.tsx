@@ -87,7 +87,7 @@ function ProductCardPrice({
         <span
           className={cn(
             "text-reading font-bold tracking-tight tabular-nums",
-            hasDiscount ? "text-price-sale" : "text-price"
+            hasDiscount ? "text-price-sale" : "text-price-regular"
           )}
         >
           {formattedPrice}
@@ -112,7 +112,7 @@ function ProductCardPrice({
 
       <div className="flex items-center gap-1.5 shrink-0">
         {showBuyerProtection && buyerProtectionLabel && (
-          <span className="inline-flex items-center gap-0.5 text-2xs text-trust">
+          <span className="inline-flex items-center gap-0.5 text-2xs text-verified">
             <svg className="size-2.5 shrink-0" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true">
               <path d="M208,40H48A16,16,0,0,0,32,56v58.77c0,89.61,75.82,119.34,91,124.39a15.53,15.53,0,0,0,10,0c15.2-5.05,91-34.78,91-124.39V56A16,16,0,0,0,208,40Zm-34.34,69.66-56,56a8,8,0,0,1-11.32,0l-24-24a8,8,0,0,1,11.32-11.32L112,148.69l50.34-50.35a8,8,0,0,1,11.32,11.32Z"/>
             </svg>

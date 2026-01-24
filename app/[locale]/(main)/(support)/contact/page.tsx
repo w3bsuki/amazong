@@ -10,6 +10,7 @@ import {
   Headphones, Package, CreditCard, Question,
   CaretRight, PaperPlaneTilt, ShieldCheck
 } from "@phosphor-icons/react/dist/ssr"
+import { PageShell } from "@/components/shared/page-shell"
 import { Link } from "@/i18n/routing"
 import type { Metadata } from 'next'
 import { routing, validateLocale } from "@/i18n/routing"
@@ -48,11 +49,11 @@ export default async function ContactPage({
   ]
   
   return (
-    <div className="min-h-screen bg-background pb-20 sm:pb-12">
+    <PageShell className="pb-20 sm:pb-12">
       {/* Hero Section */}
-      <div className="bg-header-bg text-white">
+      <div className="bg-brand text-primary-foreground">
         <div className="container py-10 md:py-16">
-          <div className="[&_nav]:border-white/20 [&_nav]:mb-4 [&_a]:text-white/80 [&_a:hover]:text-white [&_span[aria-current]]:text-white [&_svg]:text-white/50">
+          <div className="[&_nav]:border-primary-foreground/20 [&_nav]:mb-4 [&_a]:text-primary-foreground/80 [&_a:hover]:text-primary-foreground [&_span[aria-current]]:text-primary-foreground [&_svg]:text-primary-foreground/50">
             <AppBreadcrumb
               items={breadcrumbPresets(tBreadcrumbs).contact}
               ariaLabel={tBreadcrumbs("ariaLabel")}
@@ -61,7 +62,7 @@ export default async function ContactPage({
           </div>
           <div className="max-w-2xl">
             <h1 className="text-2xl md:text-4xl font-bold mb-3">{t('heroTitle')}</h1>
-            <p className="text-white/80 text-lg">{t('heroSubtitle')}</p>
+            <p className="text-primary-foreground/80 text-lg">{t('heroSubtitle')}</p>
           </div>
         </div>
       </div>
@@ -114,7 +115,7 @@ export default async function ContactPage({
                     <Field>
                       <FieldContent>
                         <FieldLabel htmlFor="name">
-                          {t('name')} <span className="text-brand-deal">*</span>
+                          {t('name')} <span className="text-destructive">*</span>
                         </FieldLabel>
                         <Input id="name" name="name" placeholder={t('namePlaceholder')} required />
                       </FieldContent>
@@ -122,7 +123,7 @@ export default async function ContactPage({
                     <Field>
                       <FieldContent>
                         <FieldLabel htmlFor="email">
-                          {t('email')} <span className="text-brand-deal">*</span>
+                          {t('email')} <span className="text-destructive">*</span>
                         </FieldLabel>
                         <Input id="email" name="email" type="email" placeholder={t('emailPlaceholder')} required />
                       </FieldContent>
@@ -144,10 +145,10 @@ export default async function ContactPage({
                     </FieldContent>
                   </Field>
                   
-                  <Field>
+                    <Field>
                     <FieldContent>
                       <FieldLabel htmlFor="subject">
-                        {t('subject')} <span className="text-brand-deal">*</span>
+                        {t('subject')} <span className="text-destructive">*</span>
                       </FieldLabel>
                       <select 
                         id="subject" 
@@ -169,7 +170,7 @@ export default async function ContactPage({
                   <Field>
                     <FieldContent>
                       <FieldLabel htmlFor="message">
-                        {t('message')} <span className="text-brand-deal">*</span>
+                        {t('message')} <span className="text-destructive">*</span>
                       </FieldLabel>
                       <Textarea 
                         id="message" 
@@ -183,11 +184,11 @@ export default async function ContactPage({
                   </Field>
                   
                   <div className="flex items-start gap-3 p-4 bg-muted">
-                    <ShieldCheck className="size-5 text-brand-success shrink-0 mt-0.5" />
+                    <ShieldCheck className="size-5 text-success shrink-0 mt-0.5" />
                     <p className="text-xs text-muted-foreground">{t('privacyNote')}</p>
                   </div>
                   
-                  <Button type="submit" className="w-full sm:w-auto bg-brand hover:bg-brand-dark">
+                  <Button type="submit" variant="cta" className="w-full sm:w-auto">
                     <PaperPlaneTilt className="size-4 mr-2" />
                     {t('send')}
                   </Button>
@@ -211,7 +212,7 @@ export default async function ContactPage({
                   </div>
                 </div>
                 <Link href="/customer-service">
-                  <Button variant="outline" className="w-full border-brand text-brand hover:bg-brand hover:text-white">
+                  <Button variant="outline" className="w-full border-brand text-brand hover:bg-brand hover:text-primary-foreground">
                     {t('visitHelpCenter')}
                   </Button>
                 </Link>
@@ -227,7 +228,7 @@ export default async function ContactPage({
                   </div>
                   <div>
                     <h3 className="font-bold">{t('emailUs')}</h3>
-                    <a href="mailto:help@treido.com" className="text-sm text-brand-blue hover:underline">
+                    <a href="mailto:help@treido.com" className="text-sm text-brand hover:underline">
                       help@treido.com
                     </a>
                     <p className="text-xs text-muted-foreground mt-1">{t('emailResponse')}</p>
@@ -245,7 +246,7 @@ export default async function ContactPage({
                   </div>
                   <div>
                     <h3 className="font-bold">{t('callUs')}</h3>
-                    <a href="tel:+35921234567" className="text-sm text-brand-blue hover:underline">
+                    <a href="tel:+35921234567" className="text-sm text-brand hover:underline">
                       +359 2 123 4567
                     </a>
                     <p className="text-xs text-muted-foreground mt-1">{t('callHours')}</p>
@@ -319,6 +320,6 @@ export default async function ContactPage({
           </Card>
         </section>
       </div>
-    </div>
+    </PageShell>
   )
 }

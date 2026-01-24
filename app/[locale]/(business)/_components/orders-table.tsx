@@ -51,7 +51,7 @@ import { cn } from "@/lib/utils"
 // Order type definitions
 interface OrderCustomer {
   id: string
-  email: string
+  email?: string | null
   full_name: string | null
 }
 
@@ -79,7 +79,7 @@ interface OrderItem {
   seller_id: string
   order: Order | Order[] | null
   product: OrderProduct | OrderProduct[] | null
-  user?: { id: string; email: string | null; full_name: string | null } | null
+  user?: { id: string; email?: string | null; full_name: string | null } | null
 }
 
 interface OrdersTableProps {
@@ -197,7 +197,7 @@ export function OrdersTable({
           order?.id?.toLowerCase().includes(query) ||
           product?.title?.toLowerCase().includes(query) ||
           customer?.full_name?.toLowerCase().includes(query) ||
-          customer?.email?.toLowerCase().includes(query)
+          (typeof customer?.email === "string" && customer.email.toLowerCase().includes(query))
         )
       })
     }
@@ -521,9 +521,11 @@ export function OrdersTable({
                         <span className="font-medium text-sm truncate max-w-40">
                           {customer?.full_name || "Guest"}
                         </span>
-                        <span className="text-xs text-muted-foreground truncate max-w-40">
-                          {customer?.email}
-                        </span>
+                        {customer?.email ? (
+                          <span className="text-xs text-muted-foreground truncate max-w-40">
+                            {customer.email}
+                          </span>
+                        ) : null}
                       </div>
                     </TableCell>
                     <TableCell>

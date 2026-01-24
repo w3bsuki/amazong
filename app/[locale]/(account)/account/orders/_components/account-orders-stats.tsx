@@ -50,8 +50,8 @@ export function AccountOrdersStats({ stats, locale }: OrdersStatsProps) {
     <>
       {/* Mobile: Clean minimal stats row */}
       <div className="flex items-center gap-3 text-sm sm:hidden">
-        <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-account-stat-bg border border-account-stat-border">
-          <IconPackage className="size-4 text-account-accent" />
+        <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-background border border-border/60">
+          <IconPackage className="size-4 text-primary" />
           <span className="font-semibold">{stats.total}</span>
           <span className="text-muted-foreground">{locale === 'bg' ? 'поръчки' : 'orders'}</span>
         </div>
@@ -133,7 +133,7 @@ export function AccountOrdersStats({ stats, locale }: OrdersStatsProps) {
               {formatCurrency(stats.totalSpend)}
             </CardTitle>
             <CardAction>
-              <Badge variant="outline" className="text-account-info border-account-stat-border bg-account-info-soft">
+              <Badge variant="outline" className="text-info border-border/60 bg-info/10">
                 {t.lifetime}
               </Badge>
             </CardAction>

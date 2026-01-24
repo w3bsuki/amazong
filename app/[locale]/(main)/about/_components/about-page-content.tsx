@@ -1,6 +1,7 @@
 import { getTranslations } from "next-intl/server"
 import { Card, CardContent } from "@/components/ui/card"
 import { AppBreadcrumb, breadcrumbPresets } from "@/components/navigation/app-breadcrumb"
+import { PageShell } from "@/components/shared/page-shell"
 import {
   Users,
   Heart,
@@ -21,13 +22,13 @@ export async function AboutPageContent() {
   const tBreadcrumbs = await getTranslations("Breadcrumbs")
 
   return (
-    <div className="min-h-screen bg-background pb-20 sm:pb-12">
+    <PageShell className="pb-20 sm:pb-12">
       {/* Hero Section */}
-      <div className="bg-header-bg text-white relative">
+      <div className="bg-brand text-primary-foreground relative">
         {/* Overlay for better text contrast */}
         <div className="absolute inset-0 bg-black/20" aria-hidden="true" />
         <div className="container py-12 md:py-20 relative z-10">
-          <div className="[&_nav]:border-white/20 [&_nav]:mb-4 [&_a]:text-white/80 [&_a:hover]:text-white [&_span[aria-current]]:text-white [&_svg]:text-white/50">
+          <div className="[&_nav]:border-primary-foreground/20 [&_nav]:mb-4 [&_a]:text-primary-foreground/80 [&_a:hover]:text-primary-foreground [&_span[aria-current]]:text-primary-foreground [&_svg]:text-primary-foreground/50">
             <AppBreadcrumb
               items={breadcrumbPresets(tBreadcrumbs).about}
               ariaLabel={tBreadcrumbs("ariaLabel")}
@@ -38,7 +39,7 @@ export async function AboutPageContent() {
             <h1 className="text-3xl md:text-5xl font-bold mb-4">
               {t("heroTitle")}
             </h1>
-            <p className="text-lg md:text-xl text-white/90 leading-relaxed">
+            <p className="text-lg md:text-xl text-primary-foreground/90 leading-relaxed">
               {t("heroSubtitle")}
             </p>
           </div>
@@ -56,21 +57,21 @@ export async function AboutPageContent() {
               </div>
               <h2 className="text-2xl md:text-3xl font-bold mb-4">{t("missionTitle")}</h2>
               <p className="text-muted-foreground text-lg leading-relaxed mb-6">{t("missionDesc")}</p>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="flex items-start gap-3">
-                  <CheckCircle className="size-5 text-brand-success mt-0.5 shrink-0" />
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="flex items-start gap-3">
+                  <CheckCircle className="size-5 text-success mt-0.5 shrink-0" />
                   <span className="text-sm">{t("missionPoint1")}</span>
                 </div>
                 <div className="flex items-start gap-3">
-                  <CheckCircle className="size-5 text-brand-success mt-0.5 shrink-0" />
+                  <CheckCircle className="size-5 text-success mt-0.5 shrink-0" />
                   <span className="text-sm">{t("missionPoint2")}</span>
                 </div>
                 <div className="flex items-start gap-3">
-                  <CheckCircle className="size-5 text-brand-success mt-0.5 shrink-0" />
+                  <CheckCircle className="size-5 text-success mt-0.5 shrink-0" />
                   <span className="text-sm">{t("missionPoint3")}</span>
                 </div>
                 <div className="flex items-start gap-3">
-                  <CheckCircle className="size-5 text-brand-success mt-0.5 shrink-0" />
+                  <CheckCircle className="size-5 text-success mt-0.5 shrink-0" />
                   <span className="text-sm">{t("missionPoint4")}</span>
                 </div>
               </div>
@@ -163,7 +164,7 @@ export async function AboutPageContent() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="text-center p-6">
-              <div className="size-16 bg-brand-success-light text-brand-success flex items-center justify-center mx-auto mb-4">
+              <div className="size-16 bg-success/10 text-success flex items-center justify-center mx-auto mb-4">
                 <Truck className="size-8" />
               </div>
               <h3 className="font-bold text-lg mb-2">{t("offerFastDelivery")}</h3>
@@ -179,7 +180,7 @@ export async function AboutPageContent() {
             </div>
 
             <div className="text-center p-6">
-              <div className="size-16 bg-brand-deal-light text-brand-deal flex items-center justify-center mx-auto mb-4">
+              <div className="size-16 bg-deal-light text-deal flex items-center justify-center mx-auto mb-4">
                 <Headphones className="size-8" />
               </div>
               <h3 className="font-bold text-lg mb-2">{t("offerSupport")}</h3>
@@ -250,6 +251,6 @@ export async function AboutPageContent() {
           </div>
         </section>
       </div>
-    </div>
+    </PageShell>
   )
 }

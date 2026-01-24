@@ -29,10 +29,10 @@ export function SubcategoryCircles({
   locale,
   onSubcategoryClick,
 }: SubcategoryCirclesProps) {
-  if (!subcategories || subcategories.length === 0) return null
-
   const tCommon = useTranslations("Common")
   const viewAllLabel = tCommon("viewAll")
+
+  if (!subcategories || subcategories.length === 0) return null
 
   return (
     <div className="py-3 overflow-x-auto no-scrollbar">

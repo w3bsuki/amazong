@@ -77,9 +77,9 @@ export async function POST(req: NextRequest) {
     const priceFromDb = await getBoostPriceEur(supabase, parsedDuration)
     const priceEur = priceFromDb ?? pricingMeta.priceEur
 
-    // Get profile info (seller fields are now on profiles)
+    // Get billing profile info (private surface)
     const { data: profile } = await supabase
-      .from('profiles')
+      .from('private_profiles')
       .select(PROFILE_SELECT_FOR_STRIPE)
       .eq('id', user.id)
       .single()
@@ -120,7 +120,7 @@ export async function POST(req: NextRequest) {
 
       // Save customer ID to profile
       await supabase
-        .from('profiles')
+        .from('private_profiles')
         .update({ stripe_customer_id: customerId })
         .eq('id', profile.id)
     }

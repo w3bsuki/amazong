@@ -22,7 +22,6 @@ import {
 import { BusinessEmptyState } from "../../_components/business-empty-state"
 import {
   IconUsers,
-  IconMail,
   IconMessage,
   IconTrendingUp,
   IconShoppingCart,
@@ -181,7 +180,7 @@ export default async function BusinessCustomersPage() {
                   <TableCell>
                     <div className="flex items-center gap-3">
                       <UserAvatar
-                        name={customer.full_name || customer.email || "User"}
+                        name={customer.full_name || "Customer"}
                         avatarUrl={customer.avatar_url ?? null}
                         className="size-8"
                         fallbackClassName="text-xs"
@@ -189,9 +188,6 @@ export default async function BusinessCustomersPage() {
                       <div>
                         <p className="font-medium text-sm">
                           {customer.full_name || "Anonymous"}
-                        </p>
-                        <p className="text-xs text-muted-foreground">
-                          {customer.email}
                         </p>
                       </div>
                     </div>
@@ -213,11 +209,6 @@ export default async function BusinessCustomersPage() {
                         <Link href={`/messages?user=${customer.id}`}>
                           <IconMessage className="size-4" />
                         </Link>
-                      </Button>
-                      <Button variant="ghost" size="icon" className="size-8" asChild>
-                        <a href={`mailto:${customer.email}`}>
-                          <IconMail className="size-4" />
-                        </a>
                       </Button>
                     </div>
                   </TableCell>

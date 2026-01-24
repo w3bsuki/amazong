@@ -37,12 +37,22 @@ export async function requireAdmin(redirectTo: string = "/"): Promise<AdminUser>
     return redirect({ href: "/auth/login", locale })
   }
   
-  // Then check their role in the profiles table
-  const { data: profile, error: profileError } = await supabase
-    .from('profiles')
-    .select('id, email, role, full_name')
-    .eq('id', user.id)
-    .single()
+  // Then check their role in the profiles table (public surface)
+  const [
+    { data: profile, error: profileError },
+    { data: privateProfile },
+  ] = await Promise.all([
+    supabase
+      .from('profiles')
+      .select('id, role, full_name')
+      .eq('id', user.id)
+      .single(),
+    supabase
+      .from('private_profiles')
+      .select('email')
+      .eq('id', user.id)
+      .maybeSingle(),
+  ])
   
   if (profileError || !profile) {
     logger.error("[Admin] Admin check failed - no profile", profileError)
@@ -56,7 +66,7 @@ export async function requireAdmin(redirectTo: string = "/"): Promise<AdminUser>
   
   return {
     id: profile.id,
-    email: profile.email || user.email || '',
+    email: privateProfile?.email || user.email || '',
     role: profile.role as UserRole,
     full_name: profile.full_name,
   }
@@ -94,7 +104,7 @@ export async function getAdminStats() {
     // Recent activity (last 7 days)
     adminClient
       .from('profiles')
-      .select('id, email, full_name, role, created_at')
+      .select('id, full_name, role, created_at')
       .gte('created_at', sevenDaysAgoIso)
       .order('created_at', { ascending: false })
       .limit(10),
@@ -122,6 +132,22 @@ export async function getAdminStats() {
   const totalRevenue = revenueData?.reduce((sum, order) => 
     sum + Number(order.total_amount || 0), 0
   ) || 0
+
+  const recentUsersBase = recentUsersResult.data || []
+  const recentUserIds = recentUsersBase.map((u) => u.id).filter(Boolean)
+
+  const { data: privateProfiles } = recentUserIds.length
+    ? await adminClient
+        .from('private_profiles')
+        .select('id, email')
+        .in('id', recentUserIds)
+    : { data: [] }
+
+  const emailById = new Map((privateProfiles || []).map((p) => [p.id, p.email]))
+  const recentUsers = recentUsersBase.map((u) => ({
+    ...u,
+    email: emailById.get(u.id) ?? '',
+  }))
   
   return {
     totals: {
@@ -132,7 +158,7 @@ export async function getAdminStats() {
       revenue: totalRevenue,
     },
     recent: {
-      users: recentUsersResult.data || [],
+      users: recentUsers,
       products: recentProductsResult.data || [],
       orders: recentOrdersResult.data || [],
     }

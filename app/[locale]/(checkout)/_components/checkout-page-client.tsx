@@ -288,7 +288,7 @@ export default function CheckoutPageClient({
   }
 
   return (
-    <div className="bg-muted/30 min-h-screen">
+    <div>
       {/* Mobile */}
       <div className="lg:hidden pb-24">
         {/* Accessible page title - sr-only on mobile since header shows step progress */}

@@ -1,8 +1,9 @@
 import { Skeleton } from "@/components/ui/skeleton"
+import { PageShell } from "@/components/shared/page-shell"
 
 export default function ProfileLoading() {
   return (
-    <div className="min-h-screen bg-background">
+    <PageShell>
       {/* Banner skeleton */}
       <Skeleton className="h-32 md:h-48 w-full" />
 
@@ -43,6 +44,6 @@ export default function ProfileLoading() {
           ))}
         </div>
       </div>
-    </div>
+    </PageShell>
   )
 }

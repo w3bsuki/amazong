@@ -25,7 +25,7 @@
     "@capacitor/ios",
     "jscpd",
     "tailwindcss",
-    "tailwindcss-animate"
+    "tw-animate-css"
   ],
   "ignoreExportsUsedInFile": true,
   "rules": {

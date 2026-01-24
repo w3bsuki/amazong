@@ -30,11 +30,21 @@ async function getAccountingData(sellerId: string) {
   const supabase = await createClient()
   
   // Get profile's commission rate and financial info
-  const { data: seller } = await supabase
-    .from('profiles')
-    .select('commission_rate, tier')
-    .eq('id', sellerId)
-    .single()
+  const [
+    { data: seller },
+    { data: privateProfile },
+  ] = await Promise.all([
+    supabase
+      .from('profiles')
+      .select('tier')
+      .eq('id', sellerId)
+      .single(),
+    supabase
+      .from('private_profiles')
+      .select('commission_rate')
+      .eq('id', sellerId)
+      .maybeSingle(),
+  ])
   
   // Get completed orders with revenue (order_items doesn't have created_at, join orders)
   const { data: completedOrders } = await supabase
@@ -45,7 +55,7 @@ async function getAccountingData(sellerId: string) {
   const totalSales = completedOrders?.reduce((sum, item) => 
     sum + (Number(item.price_at_purchase) * item.quantity), 0) || 0
   
-  const commissionRate = Number(seller?.commission_rate ?? 0)
+  const commissionRate = Number(privateProfile?.commission_rate ?? 0)
   const totalCommission = totalSales * (commissionRate / 100)
   const netEarnings = totalSales - totalCommission
   

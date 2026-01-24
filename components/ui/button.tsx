@@ -22,12 +22,12 @@ const buttonVariants = cva(
           "hover:bg-accent hover:text-accent-foreground active:bg-accent/80",
         link: "text-link underline-offset-4 hover:underline hover:text-link-hover",
         // Marketplace CTA variants
-        cta: "bg-cta-trust-blue text-cta-trust-blue-text hover:bg-cta-trust-blue-hover",
-        deal: "bg-deal text-background hover:bg-deal/90",
+        cta: "bg-cta-primary text-cta-primary-text hover:bg-cta-primary-hover",
+        deal: "bg-deal text-deal-foreground hover:bg-deal/90",
         // Treido black CTA (primary marketplace action)
         black: "bg-foreground text-background hover:bg-foreground/90 border border-foreground",
-        // Brand purple (legacy)
-        brand: "bg-primary text-primary-foreground hover:bg-primary/90",
+        // Brand (Twitter theme)
+        brand: "bg-brand text-primary-foreground hover:bg-brand/90",
       },
       size: {
         xs: "h-8 px-2 text-xs gap-1 [&_svg]:size-3",           /* 32px - minimum for density */

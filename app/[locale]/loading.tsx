@@ -1,8 +1,9 @@
 import { Skeleton } from "@/components/ui/skeleton"
+import { PageShell } from "@/components/shared/page-shell"
 
 export default function Loading() {
   return (
-    <div className="min-h-screen bg-background pb-20">
+    <PageShell variant="muted" className="pb-20">
       {/* Mobile skeleton */}
       <div className="w-full md:hidden space-y-3">
         <div className="px-3 pt-2">
@@ -84,6 +85,6 @@ export default function Loading() {
           <Skeleton className="h-16 w-full rounded-lg" />
         </div>
       </div>
-    </div>
+    </PageShell>
   )
 }

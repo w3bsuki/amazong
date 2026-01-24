@@ -136,8 +136,8 @@ export default async function SellingPage({ params }: SellingPageProps) {
         {/* Store info + Add button */}
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
-            <div className="size-11 rounded-full bg-account-stat-icon-bg border border-account-stat-border flex items-center justify-center">
-              <Storefront weight="fill" className="size-5 text-account-stat-icon" />
+            <div className="size-11 rounded-full bg-muted border border-border flex items-center justify-center">
+              <Storefront weight="fill" className="size-5 text-muted-foreground" />
             </div>
             <div>
               <div className="flex items-center gap-1.5">
@@ -158,8 +158,8 @@ export default async function SellingPage({ params }: SellingPageProps) {
 
         {/* Revolut-style stats pills */}
         <div className="flex items-center gap-3 text-sm">
-          <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-account-stat-bg border border-account-stat-border">
-            <Package weight="duotone" className="size-4 text-account-accent" />
+          <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-background border border-border/60">
+            <Package weight="duotone" className="size-4 text-primary" />
             <span className="font-semibold">{totalProducts}</span>
             <span className="text-muted-foreground">{t.products}</span>
           </div>
@@ -176,8 +176,8 @@ export default async function SellingPage({ params }: SellingPageProps) {
       {/* Desktop: Full header */}
       <div className="hidden sm:flex sm:flex-row sm:items-center sm:justify-between gap-4">
         <div className="flex items-center gap-4">
-          <div className="size-14 rounded-md bg-account-stat-icon-bg border border-account-stat-border flex items-center justify-center">
-            <Storefront weight="fill" className="size-7 text-account-stat-icon" />
+          <div className="size-14 rounded-md bg-muted border border-border flex items-center justify-center">
+            <Storefront weight="fill" className="size-7 text-muted-foreground" />
           </div>
           <div>
             <div className="flex items-center gap-2 flex-wrap">
@@ -215,14 +215,14 @@ export default async function SellingPage({ params }: SellingPageProps) {
         <Card className="@container/card">
           <CardHeader className="p-4">
             <CardDescription className="flex items-center gap-1.5">
-              <Package weight="duotone" className="size-4 shrink-0 text-account-stat-icon" />
+              <Package weight="duotone" className="size-4 shrink-0 text-muted-foreground" />
               <span className="truncate">{locale === 'bg' ? 'Продукти' : 'Products'}</span>
             </CardDescription>
             <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
               {totalProducts.toLocaleString()}
             </CardTitle>
             <div className="pt-1">
-              <Badge variant="outline" className="text-account-info border-account-stat-border bg-account-info-soft">
+              <Badge variant="outline" className="text-info border-border/60 bg-info/10">
                 {locale === 'bg' ? 'Активни' : 'Active'}
               </Badge>
             </div>

@@ -31,13 +31,13 @@ const Toaster = ({ ...props }: ToasterProps) => {
       // Custom icons
       icons={{
         success: (
-          <CheckCircle className="size-5 text-brand-success" weight="fill" />
+          <CheckCircle className="size-5 text-success" weight="fill" />
         ),
         error: <XCircle className="size-5 text-destructive" weight="fill" />,
         warning: (
-          <WarningCircle className="size-5 text-brand-warning" weight="fill" />
+          <WarningCircle className="size-5 text-warning" weight="fill" />
         ),
-        info: <Info className="size-5 text-brand-blue" weight="fill" />,
+        info: <Info className="size-5 text-info" weight="fill" />,
       }}
       // Toast options
       toastOptions={{
@@ -47,18 +47,18 @@ const Toaster = ({ ...props }: ToasterProps) => {
           description:
             'group-[.toast]:text-muted-foreground group-[.toast]:text-sm',
           actionButton:
-            'group-[.toast]:bg-brand group-[.toast]:text-foreground group-[.toast]:font-medium group-[.toast]:text-sm',
+            'group-[.toast]:bg-brand group-[.toast]:text-primary-foreground group-[.toast]:font-medium group-[.toast]:text-sm',
           cancelButton:
             'group-[.toast]:bg-muted group-[.toast]:text-muted-foreground group-[.toast]:font-medium group-[.toast]:text-sm',
           closeButton:
             'group-[.toast]:bg-transparent group-[.toast]:text-muted-foreground group-[.toast]:hover:text-foreground group-[.toast]:border-none',
           success:
-            'group-[.toaster]:border-brand-success/30 group-[.toaster]:bg-brand-success/10',
+            'group-[.toaster]:border-success/30 group-[.toaster]:bg-success/10',
           error:
             'group-[.toaster]:border-destructive/30 group-[.toaster]:bg-destructive/10',
           warning:
-            'group-[.toaster]:border-brand-warning/30 group-[.toaster]:bg-brand-warning/10',
-          info: 'group-[.toaster]:border-brand-blue/30 group-[.toaster]:bg-brand-blue/10',
+            'group-[.toaster]:border-warning/30 group-[.toaster]:bg-warning/10',
+          info: 'group-[.toaster]:border-info/30 group-[.toaster]:bg-info/10',
         },
       }}
       style={

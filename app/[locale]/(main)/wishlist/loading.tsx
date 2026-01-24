@@ -1,8 +1,10 @@
 import { Skeleton } from "@/components/ui/skeleton"
+import { PageShell } from "@/components/shared/page-shell"
 
 export default function WishlistLoading() {
   return (
-    <div className="container py-4 min-h-screen bg-background">
+    <PageShell variant="muted" className="py-4">
+      <div className="container">
       {/* Breadcrumb */}
       <div className="flex gap-2 items-center mb-4">
         <Skeleton className="h-4 w-16" />
@@ -43,6 +45,7 @@ export default function WishlistLoading() {
           </div>
         ))}
       </div>
-    </div>
+      </div>
+    </PageShell>
   )
 }

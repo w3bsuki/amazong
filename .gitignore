@@ -73,6 +73,9 @@ tsc.err
 /cleanup/*.txt
 /cleanup/archive/
 
+# Local scratch docs (keep SSOT in /audit)
+/supabase-codex/
+
 # Claude Code local settings (personal, not shared)
 .claude/settings.local.json
 CLAUDE.local.md

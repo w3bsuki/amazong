@@ -21,6 +21,7 @@ export type Database = {
           content: string | null
           created_at: string | null
           id: string
+          locale: string
           slug: string
           status: string
           title: string
@@ -32,6 +33,7 @@ export type Database = {
           content?: string | null
           created_at?: string | null
           id?: string
+          locale?: string
           slug: string
           status?: string
           title: string
@@ -43,6 +45,7 @@ export type Database = {
           content?: string | null
           created_at?: string | null
           id?: string
+          locale?: string
           slug?: string
           status?: string
           title?: string
@@ -1278,13 +1281,11 @@ export type Database = {
       products: {
         Row: {
           attributes: Json | null
-          barcode: string | null
           boost_expires_at: string | null
           brand_id: string | null
           category_ancestors: string[] | null
           category_id: string | null
           condition: string | null
-          cost_price: number | null
           created_at: string
           description: string | null
           featured_until: string | null
@@ -1315,7 +1316,6 @@ export type Database = {
           ships_to_uk: boolean | null
           ships_to_usa: boolean | null
           ships_to_worldwide: boolean | null
-          sku: string | null
           slug: string | null
           status: string | null
           stock: number
@@ -1330,13 +1330,11 @@ export type Database = {
         }
         Insert: {
           attributes?: Json | null
-          barcode?: string | null
           boost_expires_at?: string | null
           brand_id?: string | null
           category_ancestors?: string[] | null
           category_id?: string | null
           condition?: string | null
-          cost_price?: number | null
           created_at?: string
           description?: string | null
           featured_until?: string | null
@@ -1367,7 +1365,6 @@ export type Database = {
           ships_to_uk?: boolean | null
           ships_to_usa?: boolean | null
           ships_to_worldwide?: boolean | null
-          sku?: string | null
           slug?: string | null
           status?: string | null
           stock?: number
@@ -1382,13 +1379,11 @@ export type Database = {
         }
         Update: {
           attributes?: Json | null
-          barcode?: string | null
           boost_expires_at?: string | null
           brand_id?: string | null
           category_ancestors?: string[] | null
           category_id?: string | null
           condition?: string | null
-          cost_price?: number | null
           created_at?: string
           description?: string | null
           featured_until?: string | null
@@ -1419,7 +1414,6 @@ export type Database = {
           ships_to_uk?: boolean | null
           ships_to_usa?: boolean | null
           ships_to_worldwide?: boolean | null
-          sku?: string | null
           slug?: string | null
           status?: string | null
           stock?: number
@@ -1456,6 +1450,101 @@ export type Database = {
           },
         ]
       }
+      product_private: {
+        Row: {
+          barcode: string | null
+          cost_price: number | null
+          created_at: string
+          product_id: string
+          seller_id: string
+          sku: string | null
+          updated_at: string
+        }
+        Insert: {
+          barcode?: string | null
+          cost_price?: number | null
+          created_at?: string
+          product_id: string
+          seller_id: string
+          sku?: string | null
+          updated_at?: string
+        }
+        Update: {
+          barcode?: string | null
+          cost_price?: number | null
+          created_at?: string
+          product_id?: string
+          seller_id?: string
+          sku?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_private_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: true
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "product_private_seller_id_fkey"
+            columns: ["seller_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      private_profiles: {
+        Row: {
+          commission_rate: number | null
+          created_at: string
+          email: string | null
+          final_value_fee: number | null
+          id: string
+          insertion_fee: number | null
+          per_order_fee: number | null
+          phone: string | null
+          stripe_customer_id: string | null
+          updated_at: string
+          vat_number: string | null
+        }
+        Insert: {
+          commission_rate?: number | null
+          created_at?: string
+          email?: string | null
+          final_value_fee?: number | null
+          id: string
+          insertion_fee?: number | null
+          per_order_fee?: number | null
+          phone?: string | null
+          stripe_customer_id?: string | null
+          updated_at?: string
+          vat_number?: string | null
+        }
+        Update: {
+          commission_rate?: number | null
+          created_at?: string
+          email?: string | null
+          final_value_fee?: number | null
+          id?: string
+          insertion_fee?: number | null
+          per_order_fee?: number | null
+          phone?: string | null
+          stripe_customer_id?: string | null
+          updated_at?: string
+          vat_number?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "private_profiles_id_fkey"
+            columns: ["id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           account_type: string
@@ -1463,34 +1552,26 @@ export type Database = {
           banner_url: string | null
           bio: string | null
           business_name: string | null
-          commission_rate: number | null
           country_code: string | null
           created_at: string
           default_city: string | null
           display_name: string | null
-          email: string | null
-          final_value_fee: number | null
           full_name: string | null
           id: string
-          insertion_fee: number | null
           is_seller: boolean | null
           is_verified_business: boolean | null
           last_active: string | null
           last_username_change: string | null
           location: string | null
           onboarding_completed: boolean | null
-          per_order_fee: number | null
-          phone: string | null
           region_auto_detected: boolean | null
           region_updated_at: string | null
           role: string | null
           shipping_region: string | null
           social_links: Json | null
-          stripe_customer_id: string | null
           tier: string | null
           updated_at: string
           username: string | null
-          vat_number: string | null
           verified: boolean | null
           website_url: string | null
         }
@@ -1500,34 +1581,26 @@ export type Database = {
           banner_url?: string | null
           bio?: string | null
           business_name?: string | null
-          commission_rate?: number | null
           country_code?: string | null
           created_at?: string
           default_city?: string | null
           display_name?: string | null
-          email?: string | null
-          final_value_fee?: number | null
           full_name?: string | null
           id: string
-          insertion_fee?: number | null
           is_seller?: boolean | null
           is_verified_business?: boolean | null
           last_active?: string | null
           last_username_change?: string | null
           location?: string | null
           onboarding_completed?: boolean | null
-          per_order_fee?: number | null
-          phone?: string | null
           region_auto_detected?: boolean | null
           region_updated_at?: string | null
           role?: string | null
           shipping_region?: string | null
           social_links?: Json | null
-          stripe_customer_id?: string | null
           tier?: string | null
           updated_at?: string
           username?: string | null
-          vat_number?: string | null
           verified?: boolean | null
           website_url?: string | null
         }
@@ -1537,34 +1610,26 @@ export type Database = {
           banner_url?: string | null
           bio?: string | null
           business_name?: string | null
-          commission_rate?: number | null
           country_code?: string | null
           created_at?: string
           default_city?: string | null
           display_name?: string | null
-          email?: string | null
-          final_value_fee?: number | null
           full_name?: string | null
           id?: string
-          insertion_fee?: number | null
           is_seller?: boolean | null
           is_verified_business?: boolean | null
           last_active?: string | null
           last_username_change?: string | null
           location?: string | null
           onboarding_completed?: boolean | null
-          per_order_fee?: number | null
-          phone?: string | null
           region_auto_detected?: boolean | null
           region_updated_at?: string | null
           role?: string | null
           shipping_region?: string | null
           social_links?: Json | null
-          stripe_customer_id?: string | null
           tier?: string | null
           updated_at?: string
           username?: string | null
-          vat_number?: string | null
           verified?: boolean | null
           website_url?: string | null
         }
@@ -2465,12 +2530,11 @@ export type Database = {
       deal_products: {
         Row: {
           attributes: Json | null
-          barcode: string | null
           boost_expires_at: string | null
           brand_id: string | null
+          category_ancestors: string[] | null
           category_id: string | null
           condition: string | null
-          cost_price: number | null
           created_at: string | null
           description: string | null
           effective_discount: number | null
@@ -2501,7 +2565,6 @@ export type Database = {
           ships_to_uk: boolean | null
           ships_to_usa: boolean | null
           ships_to_worldwide: boolean | null
-          sku: string | null
           slug: string | null
           status: string | null
           stock: number | null
@@ -2515,12 +2578,11 @@ export type Database = {
         }
         Insert: {
           attributes?: Json | null
-          barcode?: string | null
           boost_expires_at?: string | null
           brand_id?: string | null
+          category_ancestors?: string[] | null
           category_id?: string | null
           condition?: string | null
-          cost_price?: number | null
           created_at?: string | null
           description?: string | null
           effective_discount?: never
@@ -2551,7 +2613,6 @@ export type Database = {
           ships_to_uk?: boolean | null
           ships_to_usa?: boolean | null
           ships_to_worldwide?: boolean | null
-          sku?: string | null
           slug?: string | null
           status?: string | null
           stock?: number | null
@@ -2565,12 +2626,11 @@ export type Database = {
         }
         Update: {
           attributes?: Json | null
-          barcode?: string | null
           boost_expires_at?: string | null
           brand_id?: string | null
+          category_ancestors?: string[] | null
           category_id?: string | null
           condition?: string | null
-          cost_price?: number | null
           created_at?: string | null
           description?: string | null
           effective_discount?: never
@@ -2601,7 +2661,6 @@ export type Database = {
           ships_to_uk?: boolean | null
           ships_to_usa?: boolean | null
           ships_to_worldwide?: boolean | null
-          sku?: string | null
           slug?: string | null
           status?: string | null
           stock?: number | null
@@ -2641,7 +2700,6 @@ export type Database = {
         Row: {
           auto_renew: boolean | null
           boosts_included: number | null
-          email: string | null
           expires_at: string | null
           final_value_fee: number | null
           full_name: string | null

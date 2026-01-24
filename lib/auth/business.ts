@@ -10,8 +10,8 @@ export type AccountType = 'personal' | 'business'
 // Internal types for order management - must match OrdersTable component expectations
 interface UserRecord {
   id: string
-  email: string
   full_name: string | null
+  email?: string | null
 }
 
 interface OrderRecord {
@@ -299,17 +299,9 @@ async function getBusinessSellerWithSubscription(
   
   const { data: profile } = await supabase
     .from('profiles')
-    .select(`
-      id, 
-      username,
-      display_name,
-      account_type, 
-      is_verified_business, 
-      business_name, 
-      tier,
-      avatar_url,
-      email
-    `)
+    .select(
+      'id, username, display_name, account_type, is_verified_business, business_name, tier, avatar_url'
+    )
     .eq('id', sellerId)
     .single()
   
@@ -322,7 +314,7 @@ async function getBusinessSellerWithSubscription(
 
   return {
     id: profile.id,
-    email: profile.email || '',
+    email: user.email || '',
     store_name: profile.display_name || profile.business_name || profile.username || 'Business',
     account_type: profile.account_type as AccountType,
     is_verified_business: profile.is_verified_business ?? false,
@@ -536,9 +528,6 @@ export async function getBusinessProducts(
       title,
       price,
       list_price,
-      cost_price,
-      sku,
-      barcode,
       stock,
       track_inventory,
       status,
@@ -553,14 +542,39 @@ export async function getBusinessProducts(
       category_id
     `, { count: 'exact' })
     .eq('seller_id', sellerId)
-  
+
   // Apply filters
   if (status && status !== 'all') {
     query = query.eq('status', status)
   }
-  
+
   if (search) {
-    query = query.or(`title.ilike.%${search}%,sku.ilike.%${search}%`)
+    const term = search.trim()
+    if (term) {
+      const [titleMatches, privateMatches] = await Promise.all([
+        supabase
+          .from('products')
+          .select('id')
+          .eq('seller_id', sellerId)
+          .ilike('title', `%${term}%`),
+        supabase
+          .from('product_private')
+          .select('product_id')
+          .eq('seller_id', sellerId)
+          .or(`sku.ilike.%${term}%,barcode.ilike.%${term}%`),
+      ])
+
+      const ids = new Set<string>()
+      for (const row of (titleMatches.data || []) as Array<{ id: string }>) ids.add(row.id)
+      for (const row of (privateMatches.data || []) as Array<{ product_id: string }>) ids.add(row.product_id)
+
+      const matchedIds = Array.from(ids)
+      if (matchedIds.length === 0) {
+        return { products: [], total: 0, page, limit, totalPages: 0, error: null }
+      }
+
+      query = query.in('id', matchedIds)
+    }
   }
   
   if (category) {
@@ -571,10 +585,20 @@ export async function getBusinessProducts(
   query = query
     .order(sortBy, { ascending: sortOrder === 'asc' })
     .range((page - 1) * limit, page * limit - 1)
-  
+
   const { data, count, error } = await query
 
   const productIds = (data || []).map((p) => p.id)
+  const privateRows = productIds.length
+    ? (await supabase
+        .from('product_private')
+        .select('product_id, cost_price, sku, barcode')
+        .eq('seller_id', sellerId)
+        .in('product_id', productIds)).data
+    : []
+  const privateMap = new Map(
+    (privateRows || []).map((r) => [r.product_id as string, r as unknown as { cost_price: number | null; sku: string | null; barcode: string | null }])
+  )
   const variantsSummary = await getVariantSummaryByProductId(supabase, productIds)
 
   // Fetch categories for products
@@ -587,6 +611,9 @@ export async function getBusinessProducts(
   const categoriesMap = new Map(categories.map(c => [c.id, c]))
   const productsWithCategories = (data || []).map(p => ({
     ...p,
+    cost_price: privateMap.get(p.id)?.cost_price ?? null,
+    sku: privateMap.get(p.id)?.sku ?? null,
+    barcode: privateMap.get(p.id)?.barcode ?? null,
     stock: (() => {
       const summary = variantsSummary.get(p.id)
       return summary && summary.variantStock > 0 ? summary.variantStock : p.stock
@@ -653,18 +680,29 @@ export async function getBusinessOrders(
   let orders: OrderRecord[] = []
   let products: ProductRecord[] = []
   if (orderIds.length) {
-    const { data: o } = await supabase.from('orders').select('id, status, created_at, user_id').in('id', orderIds)
+    const { data: o } = await supabase.from('orders').select('id, status, created_at, user_id, shipping_address').in('id', orderIds)
     orders = (o || []) as OrderRecord[]
   }
   if (productIds.length) {
-    const { data: p } = await supabase.from('products').select('id, title, images, sku').in('id', productIds)
-    products = (p || []) as ProductRecord[]
+    const { data: p } = await supabase.from('products').select('id, title, images').in('id', productIds)
+    const { data: privateRows } = await supabase
+      .from('product_private')
+      .select('product_id, sku')
+      .eq('seller_id', sellerId)
+      .in('product_id', productIds)
+
+    const privateSku = new Map((privateRows || []).map((r) => [r.product_id as string, r.sku as string | null]))
+
+    products = ((p || []) as Array<Omit<ProductRecord, 'sku'> & { sku?: string | null }>).map((row) => ({
+      ...row,
+      sku: privateSku.get(row.id) ?? null,
+    }))
   }
   // Fetch users for orders
   const userIds = Array.from(new Set((orders || []).map((o) => o.user_id).filter(Boolean)))
   let users: UserRecord[] = []
   if (userIds.length) {
-    const { data: u } = await supabase.from('profiles').select('id, email, full_name').in('id', userIds)
+    const { data: u } = await supabase.from('profiles').select('id, full_name').in('id', userIds)
     users = (u || []) as UserRecord[]
   }
   const ordersMap = new Map(orders.map(o => [o.id, o]))
@@ -674,9 +712,24 @@ export async function getBusinessOrders(
   const ordersWithDetails = (data || []).map(item => {
     const orderBase = ordersMap.get(item.order_id)
     const product = productsMap.get(item.product_id) || null
-    const user = orderBase ? usersMap.get(orderBase.user_id) || null : null
+    const shippingAddressRaw = orderBase?.shipping_address as unknown
+    const shippingAddress =
+      shippingAddressRaw && typeof shippingAddressRaw === 'object' && !Array.isArray(shippingAddressRaw)
+        ? (shippingAddressRaw as Record<string, unknown>)
+        : null
+
+    const email = typeof shippingAddress?.email === 'string' ? shippingAddress.email : null
+
+    const baseUser = orderBase ? usersMap.get(orderBase.user_id) || null : null
+    const user = orderBase
+      ? {
+          id: orderBase.user_id,
+          full_name: baseUser?.full_name ?? null,
+          email,
+        }
+      : null
     // Nest user inside order for component compatibility
-    const order = orderBase ? { ...orderBase, shipping_address: null, user } : null
+    const order = orderBase ? { ...orderBase, shipping_address: shippingAddress, user } : null
     return {
       ...item,
       order,
@@ -717,7 +770,6 @@ export async function getBusinessInventory(
     .select(`
       id,
       title,
-      sku,
       stock,
       images,
       price,
@@ -737,10 +789,18 @@ export async function getBusinessInventory(
   query = query
     .order('stock', { ascending: true })
     .range((page - 1) * limit, page * limit - 1)
-  
+
   const { data, count, error } = await query
 
   const productIds = (data || []).map((p) => p.id)
+  const privateRows = productIds.length
+    ? (await supabase
+        .from('product_private')
+        .select('product_id, sku')
+        .eq('seller_id', sellerId)
+        .in('product_id', productIds)).data
+    : []
+  const privateSku = new Map((privateRows || []).map((r) => [r.product_id as string, r.sku as string | null]))
   const variantsSummary = await getVariantSummaryByProductId(supabase, productIds)
 
   const products = (data || []).map((p) => {
@@ -748,6 +808,7 @@ export async function getBusinessInventory(
     const totalStock = summary && summary.variantStock > 0 ? summary.variantStock : p.stock
     return {
       ...p,
+      sku: privateSku.get(p.id) ?? null,
       stock: totalStock,
       variant_count: summary?.variantCount ?? 0,
     }
@@ -920,7 +981,7 @@ export async function getBusinessCustomers(
       order:orders!inner(
         user_id,
         created_at,
-        user:profiles(id, email, full_name, avatar_url, created_at)
+        user:profiles(id, full_name, avatar_url, created_at)
       )
     `)
     .eq('seller_id', sellerId)
@@ -932,7 +993,6 @@ export async function getBusinessCustomers(
   // Aggregate by customer
   const customerMap = new Map<string, {
     id: string
-    email: string
     full_name: string | null
     avatar_url: string | null
     total_orders: number
@@ -944,7 +1004,7 @@ export async function getBusinessCustomers(
   for (const item of orderItems as unknown as Array<{
     quantity: number
     price_at_purchase: number
-    order: { user_id: string; created_at: string; user: { id: string; email: string; full_name: string | null; avatar_url: string | null; created_at: string } | null }
+    order: { user_id: string; created_at: string; user: { id: string; full_name: string | null; avatar_url: string | null; created_at: string } | null }
   }>) {
     const order = item.order
     if (!order?.user) continue
@@ -968,7 +1028,6 @@ export async function getBusinessCustomers(
     } else {
       customerMap.set(user.id, {
         id: user.id,
-        email: user.email,
         full_name: user.full_name,
         avatar_url: user.avatar_url,
         total_orders: 1,
@@ -985,7 +1044,6 @@ export async function getBusinessCustomers(
   if (search) {
     const query = search.toLowerCase()
     customers = customers.filter(c => 
-      c.email?.toLowerCase().includes(query) ||
       c.full_name?.toLowerCase().includes(query)
     )
   }

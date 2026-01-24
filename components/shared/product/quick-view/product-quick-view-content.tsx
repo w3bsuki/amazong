@@ -136,7 +136,7 @@ export function ProductQuickViewContent({
           <span
             className={cn(
               "text-2xl font-bold tabular-nums",
-              showDiscount ? "text-price-sale" : "text-price",
+              showDiscount ? "text-price-sale" : "text-price-regular",
             )}
           >
             {formatPrice(price, { locale })}

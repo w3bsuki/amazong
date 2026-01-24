@@ -23,6 +23,7 @@ import type { ProductPageViewModel } from "@/lib/view-models/product-page";
 import type { Database } from "@/lib/supabase/database.types";
 import type { CustomerReview } from "@/components/shared/product/customer-reviews-hybrid";
 import type { SubmitReviewFn } from "@/components/shared/product/write-review-dialog";
+import { PageShell } from "@/components/shared/page-shell";
 
 type ProductRow = Database["public"]["Tables"]["products"]["Row"];
 type SellerStatsRow = Database["public"]["Tables"]["seller_stats"]["Row"];
@@ -201,7 +202,7 @@ export function ProductPageLayout(props: ProductPageLayoutProps) {
       />
 
       {/* ===== DESKTOP PRODUCT PAGE (V2) ===== */}
-      <div className="hidden lg:block min-h-screen bg-muted/30 pb-10">
+      <PageShell variant="muted" className="hidden lg:block pb-10">
         {/* JSON-LD Structured Data for SEO */}
         <>
           <script
@@ -343,7 +344,7 @@ export function ProductPageLayout(props: ProductPageLayoutProps) {
             </div>
           </Suspense>
         </div>
-      </div>
+      </PageShell>
     </>
   );
 }

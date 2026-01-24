@@ -70,7 +70,7 @@ export function AccountLayoutContent({
       />
       <SidebarInset>
         <AccountHeader />
-        <div className="flex flex-1 flex-col bg-account-section-bg min-h-0">
+        <div className="flex flex-1 flex-col bg-background min-h-0">
           <div className="@container/main flex flex-1 flex-col gap-4 px-4 py-4 pb-20 lg:px-6 lg:py-6 lg:pb-6">
             {children}
           </div>

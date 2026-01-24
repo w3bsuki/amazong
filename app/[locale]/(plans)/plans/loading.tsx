@@ -1,8 +1,9 @@
 import { Skeleton } from "@/components/ui/skeleton"
+import { PageShell } from "@/components/shared/page-shell"
 
 export default function PlansLoading() {
   return (
-    <div className="min-h-screen bg-background">
+    <PageShell>
       {/* Header */}
       <div className="border-b bg-card">
         <div className="container py-4 flex items-center justify-between">
@@ -97,6 +98,6 @@ export default function PlansLoading() {
           </div>
         </div>
       </div>
-    </div>
+    </PageShell>
   )
 }

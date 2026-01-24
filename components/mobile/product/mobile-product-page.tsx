@@ -20,6 +20,7 @@ import { HeroSpecs } from "@/components/shared/product/hero-specs";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { safeAvatarSrc, cn } from "@/lib/utils";
+import { PageShell } from "@/components/shared/page-shell";
 
 /** Map condition value to semantic color classes */
 function getConditionColorClass(condition: string | undefined | null): string {
@@ -165,7 +166,7 @@ export function MobileProductPage(props: MobileProductPageProps) {
   const location = product.seller_city ?? null;
 
   return (
-    <div className="min-h-dvh bg-surface-page pb-20 md:pb-28 lg:hidden">
+    <PageShell variant="muted" className="pb-20 md:pb-28 lg:hidden">
       {/* JSON-LD Structured Data for SEO */}
       <script
         type="application/ld+json"
@@ -409,6 +410,6 @@ export function MobileProductPage(props: MobileProductPageProps) {
           displayName: sellerInfo.name,
         }}
       />
-    </div>
+    </PageShell>
   );
 }

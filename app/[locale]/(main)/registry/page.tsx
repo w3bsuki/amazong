@@ -5,6 +5,7 @@ import { AppBreadcrumb, breadcrumbPresets } from "@/components/navigation/app-br
 import { routing, validateLocale } from "@/i18n/routing"
 import { setRequestLocale, getTranslations } from "next-intl/server"
 import type { Metadata } from "next"
+import { PageShell } from "@/components/shared/page-shell"
 
 export function generateStaticParams() {
     return routing.locales.map((locale) => ({ locale }))
@@ -35,7 +36,7 @@ export default async function RegistryPage({
         const tBreadcrumbs = await getTranslations("Breadcrumbs")
 
     return (
-        <div className="min-h-screen bg-background">
+        <PageShell>
             <div className="container pt-4">
                 <AppBreadcrumb
                     items={breadcrumbPresets(tBreadcrumbs).registry}
@@ -135,6 +136,6 @@ export default async function RegistryPage({
                     </div>
                 </div>
             </div>
-        </div>
+        </PageShell>
     )
 }

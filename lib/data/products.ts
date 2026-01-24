@@ -321,7 +321,7 @@ export async function getProductsByCategorySlug(
       return []
     }
 
-    return (data || []).map((p) => {
+    return (data || []).map((p: unknown) => {
       const row = p as unknown as Record<string, unknown>
       const categories = normalizeCategoryNode(row.categories)
       const seller = (row.seller && typeof row.seller === 'object') ? (row.seller as Record<string, unknown>) : null
@@ -448,7 +448,7 @@ export async function getProducts(type: QueryType, limit = 36, zone?: ShippingRe
     }
 
     return (data || [])
-      .map((p) => {
+      .map((p: unknown) => {
         const row = p as unknown as Record<string, unknown>
         const categories = normalizeCategoryNode(row.categories)
         const seller = (row.seller && typeof row.seller === 'object') ? (row.seller as Record<string, unknown>) : null
@@ -498,7 +498,7 @@ async function getProductById(id: string): Promise<Product | null> {
 
   // Note: is_featured is a legacy field - we use is_boosted + boost_expires_at for promoted listings
   const productSelect =
-    'id,title,price,seller_id,category_id,slug,description,condition,brand_id,images,is_boosted,boost_expires_at,is_on_sale,list_price,sale_percent,sale_end_date,rating,review_count,pickup_only,ships_to_bulgaria,ships_to_uk,ships_to_europe,ships_to_usa,ships_to_worldwide,free_shipping,created_at,updated_at,status,stock,tags,seller_city,listing_type,meta_title,meta_description,barcode,cost_price,sku,track_inventory,weight,weight_unit,attributes' as const
+    'id,title,price,seller_id,category_id,slug,description,condition,brand_id,images,is_boosted,boost_expires_at,is_on_sale,list_price,sale_percent,sale_end_date,rating,review_count,pickup_only,ships_to_bulgaria,ships_to_uk,ships_to_europe,ships_to_usa,ships_to_worldwide,free_shipping,created_at,updated_at,status,stock,tags,seller_city,listing_type,meta_title,meta_description,track_inventory,weight,weight_unit,attributes' as const
 
   const { data, error } = await supabase
     .from('products')

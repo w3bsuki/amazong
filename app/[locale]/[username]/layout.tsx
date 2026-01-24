@@ -7,6 +7,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getCategoryHierarchy } from "@/lib/data/categories";
 import { setRequestLocale } from "next-intl/server";
 import { HeaderProvider } from "@/components/providers/header-context";
+import { PageShell } from "@/components/shared/page-shell";
 
 import { Toaster } from "@/components/providers/sonner";
 import { CookieConsent } from "@/components/layout/cookie-consent";
@@ -71,7 +72,7 @@ export default async function UsernameLayout({
 
     return (
         <HeaderProvider>
-            <div className="bg-background min-h-screen flex flex-col">
+            <PageShell className="flex flex-col">
                 {/* Skip Links - Accessibility */}
                 <SkipLinks />
 
@@ -88,7 +89,7 @@ export default async function UsernameLayout({
                 <Toaster />
                 <CookieConsent />
                 <GeoWelcomeModal locale={locale} />
-            </div>
+            </PageShell>
         </HeaderProvider>
     );
 }

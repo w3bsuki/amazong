@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Separator } from "@/components/ui/separator"
+import { PageShell } from "@/components/shared/page-shell"
 import {
   Star,
   MapPin,
@@ -205,7 +206,7 @@ export function PublicProfileClient({
   })
 
   return (
-    <div className="min-h-screen bg-background pb-20 sm:pb-8">
+    <PageShell className="pb-20 sm:pb-8">
       {/* Banner */}
       <div className="relative h-32 sm:h-48 md:h-56 bg-primary/10">
         {profile.banner_url && (
@@ -661,6 +662,6 @@ export function PublicProfileClient({
           )}
         </Tabs>
       </div>
-    </div>
+    </PageShell>
   )
 }

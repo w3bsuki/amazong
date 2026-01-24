@@ -8,6 +8,7 @@ import { Gift, ShoppingCart } from "@phosphor-icons/react/dist/ssr"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import type { Database } from "@/lib/supabase/database.types"
 import { AddAllToCartButton } from "./add-all-to-cart"
+import { PageShell } from "@/components/shared/page-shell"
 
 type SharedWishlistItem = Database["public"]["Functions"]["get_shared_wishlist"]["Returns"][number]
 
@@ -42,12 +43,12 @@ export default async function SharedWishlistPage({ params }: SharedWishlistPageP
   const ownerName = wishlistItems[0]?.owner_name || t('anonymousUser')
 
   return (
-    <div className="min-h-screen bg-background">
+    <PageShell variant="muted">
       <div className="container py-8">
         {/* Header */}
         <div className="mb-8 text-center">
           <div className="flex items-center justify-center gap-2 mb-4">
-            <Gift className="h-8 w-8 text-brand-deal" />
+            <Gift className="h-8 w-8 text-deal" />
             <h1 className="text-3xl font-bold text-foreground">{wishlistName}</h1>
           </div>
           <p className="text-muted-foreground">
@@ -91,7 +92,7 @@ export default async function SharedWishlistPage({ params }: SharedWishlistPageP
               <CardContent className="p-3">
                 <Link 
                   href={`/product/${item.product_id}`}
-                  className="text-sm font-medium text-foreground hover:text-brand-blue line-clamp-2 min-h-10"
+                  className="text-sm font-medium text-foreground hover:text-brand line-clamp-2 min-h-10"
                 >
                   {item.product_title}
                 </Link>
@@ -102,7 +103,8 @@ export default async function SharedWishlistPage({ params }: SharedWishlistPageP
                 </div>
                 <Button 
                   size="sm" 
-                  className="w-full mt-3 bg-brand-blue hover:bg-brand-blue-dark text-white"
+                  variant="cta"
+                  className="w-full mt-3"
                   asChild
                 >
                   <Link href={`/product/${item.product_id}`}>
@@ -119,11 +121,11 @@ export default async function SharedWishlistPage({ params }: SharedWishlistPageP
         <div className="mt-12 text-center p-4 bg-muted/50 rounded-lg">
           <h2 className="text-xl font-semibold mb-2">{t('createYourOwn')}</h2>
           <p className="text-muted-foreground mb-4">{t('signUpToCreate')}</p>
-          <Button asChild className="bg-brand-warning hover:bg-brand-warning/90 text-foreground font-medium">
+          <Button asChild variant="cta" className="font-medium">
             <Link href="/auth/sign-up">{t('signUpFree')}</Link>
           </Button>
         </div>
       </div>
-    </div>
+    </PageShell>
   )
 }

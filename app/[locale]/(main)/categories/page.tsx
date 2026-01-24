@@ -4,6 +4,7 @@ import { getCategoryHierarchy } from "@/lib/data/categories"
 import { getCategoryShortName } from "@/lib/category-display"
 import { CaretRight, Storefront, Sparkle } from "@phosphor-icons/react/dist/ssr"
 import { CategoryCircleVisual } from "@/components/shared/category/category-circle-visual"
+import { PageShell } from "@/components/shared/page-shell"
 import type { Metadata } from "next"
 
 // =============================================================================
@@ -51,7 +52,7 @@ export default async function CategoriesPage({
   const categoriesWithChildren = await getCategoryHierarchy(null, 2)
 
   return (
-    <div className="min-h-screen bg-background">
+    <PageShell>
 
       {/* Header */}
       <div className="border-b border-border/30 bg-background">
@@ -139,6 +140,6 @@ export default async function CategoriesPage({
           </Link>
         </div>
       </div>
-    </div>
+    </PageShell>
   )
 }

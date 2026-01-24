@@ -29,15 +29,23 @@ export default async function BillingPage({ params }: BillingPageProps) {
   // Parallel fetch for better performance
   const [
     { data: profile },
+    { data: privateProfile },
     { data: subscription },
     { data: boostsRaw },
   ] = await Promise.all([
-    // Fetch profile info (seller fields are now on profiles)
+    // Public profile surface
     supabase
       .from('profiles')
-      .select('id, tier, commission_rate, stripe_customer_id')
+      .select('id, tier')
       .eq('id', user.id)
       .single(),
+
+    // Private billing fields
+    supabase
+      .from('private_profiles')
+      .select('id, commission_rate, stripe_customer_id')
+      .eq('id', user.id)
+      .maybeSingle(),
     
     // Fetch active subscription
     supabase
@@ -75,15 +83,15 @@ export default async function BillingPage({ params }: BillingPageProps) {
     }
   })
 
-  const hasStripeCustomer = !!profile?.stripe_customer_id
+  const hasStripeCustomer = !!privateProfile?.stripe_customer_id
 
   // Map profile to seller interface expected by BillingContent
-  const commissionRate = profile?.commission_rate == null ? 0 : Number(profile.commission_rate)
+  const commissionRate = privateProfile?.commission_rate == null ? 0 : Number(privateProfile.commission_rate)
   const seller = profile ? {
     id: profile.id,
     tier: profile.tier || 'free',
     commission_rate: commissionRate,
-    stripe_customer_id: profile.stripe_customer_id,
+    stripe_customer_id: privateProfile?.stripe_customer_id ?? null,
   } : null
 
   return (

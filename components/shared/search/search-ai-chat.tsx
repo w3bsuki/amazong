@@ -3,8 +3,10 @@
 import * as React from "react"
 import { useChat } from "@ai-sdk/react"
 import { DefaultChatTransport } from "ai"
-import { PaperPlaneRight, User, Robot, CircleNotch, Package, ArrowRight } from "@phosphor-icons/react"
+import { PaperPlaneRight, Robot, CircleNotch, Package, ArrowRight } from "@phosphor-icons/react"
 import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { useTranslations, useLocale } from "next-intl"
 import { cn } from "@/lib/utils"
 import { Link, useRouter } from "@/i18n/routing"
@@ -26,6 +28,36 @@ interface ListingCard {
   image?: string
   slug?: string
   storeSlug?: string
+}
+
+/** Assistant Avatar - consistent across the app */
+function AssistantAvatar({ size = "sm" }: { size?: "sm" | "md" }) {
+  const sizeClasses = {
+    sm: "size-7",
+    md: "size-8",
+  }
+  return (
+    <Avatar className={cn(sizeClasses[size], "shrink-0")}>
+      <AvatarFallback className="bg-primary text-primary-foreground">
+        <Robot size={size === "md" ? 16 : 14} weight="fill" />
+      </AvatarFallback>
+    </Avatar>
+  )
+}
+
+/** User Avatar for chat */
+function UserChatAvatar({ size = "sm" }: { size?: "sm" | "md" }) {
+  const sizeClasses = {
+    sm: "size-7",
+    md: "size-8",
+  }
+  return (
+    <Avatar className={cn(sizeClasses[size], "shrink-0")}>
+      <AvatarFallback className="bg-foreground text-background text-2xs font-semibold">
+        You
+      </AvatarFallback>
+    </Avatar>
+  )
 }
 
 /**
@@ -75,10 +107,16 @@ export function SearchAiChat({ className, onClose, compact = false }: SearchAiCh
   }
 
   // Extract tool results (listing cards) from messages
-  const extractListings = (parts: Array<{ type: string; toolName?: string; output?: unknown }>): ListingCard[] => {
+  const extractListings = (parts: Array<{ type: string; toolName?: string; output?: unknown; state?: string }>): ListingCard[] => {
     const listings: ListingCard[] = []
     for (const part of parts) {
-      if (part.type === "tool-searchListings" && part.output && Array.isArray(part.output)) {
+      // AI SDK v6: tool parts are typed as `tool-{toolName}` with state
+      if (
+        part.type === "tool-searchListings" && 
+        part.state === "output-available" &&
+        part.output && 
+        Array.isArray(part.output)
+      ) {
         listings.push(...(part.output as ListingCard[]))
       }
     }
@@ -97,9 +135,11 @@ export function SearchAiChat({ className, onClose, compact = false }: SearchAiCh
             "flex flex-col items-center justify-center text-center",
             compact ? "py-8 px-4" : "py-12 px-6"
           )}>
-            <div className="size-12 rounded-full bg-primary/10 flex items-center justify-center mb-4">
-              <Robot size={24} weight="fill" className="text-primary" />
-            </div>
+            <Avatar className="size-12 mb-4">
+              <AvatarFallback className="bg-primary/10 text-primary">
+                <Robot size={24} weight="fill" />
+              </AvatarFallback>
+            </Avatar>
             <h3 className="text-base font-semibold text-foreground mb-1">
               {t("aiWelcome")}
             </h3>
@@ -130,14 +170,10 @@ export function SearchAiChat({ className, onClose, compact = false }: SearchAiCh
               
               return (
                 <div key={message.id} className={cn("flex gap-3", isUser ? "justify-end" : "justify-start")}>
-                  {!isUser && (
-                    <div className="size-7 rounded-full bg-primary flex items-center justify-center shrink-0">
-                      <Robot size={14} weight="bold" className="text-primary-foreground" />
-                    </div>
-                  )}
+                  {!isUser && <AssistantAvatar size="sm" />}
                   
                   <div className={cn(
-                    "max-w-[85%] space-y-2",
+                    "max-w-(--support-chat-message-max-w) space-y-2",
                     isUser ? "items-end" : "items-start"
                   )}>
                     {/* Text parts */}
@@ -207,11 +243,7 @@ export function SearchAiChat({ className, onClose, compact = false }: SearchAiCh
                     )}
                   </div>
 
-                  {isUser && (
-                    <div className="size-7 rounded-full bg-primary flex items-center justify-center shrink-0">
-                      <User size={14} weight="bold" className="text-primary-foreground" />
-                    </div>
-                  )}
+                  {isUser && <UserChatAvatar size="sm" />}
                 </div>
               )
             })}
@@ -219,9 +251,7 @@ export function SearchAiChat({ className, onClose, compact = false }: SearchAiCh
             {/* Loading indicator */}
             {isLoading && (
               <div className="flex gap-3">
-                <div className="size-7 rounded-full bg-primary flex items-center justify-center shrink-0">
-                  <Robot size={14} weight="bold" className="text-primary-foreground" />
-                </div>
+                <AssistantAvatar size="sm" />
                 <div className="px-3 py-2 rounded-2xl rounded-bl-md bg-muted">
                   <div className="flex items-center gap-2 text-sm text-muted-foreground">
                     <CircleNotch size={14} className="animate-spin" />
@@ -239,17 +269,15 @@ export function SearchAiChat({ className, onClose, compact = false }: SearchAiCh
       {/* Input */}
       <form onSubmit={handleSubmit} className="shrink-0 p-3 border-t border-border bg-background">
         <div className="flex items-center gap-2">
-          <div className="relative flex-1">
-            <input
-              ref={inputRef}
-              type="text"
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              placeholder={t("aiPlaceholder")}
-              className="w-full h-10 px-4 text-sm rounded-full border border-border bg-muted/50 focus:outline-none focus:ring-2 focus:ring-ring/50 focus:border-transparent"
-              disabled={isLoading}
-            />
-          </div>
+          <Input
+            ref={inputRef}
+            type="text"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            placeholder={t("aiPlaceholder")}
+            className="flex-1 h-10 rounded-full"
+            disabled={isLoading}
+          />
           <Button
             type="submit"
             size="icon"

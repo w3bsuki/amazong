@@ -14,7 +14,7 @@ async function getUsers() {
 
   const { data: users, error } = await adminClient
     .from("profiles")
-    .select("id, email, full_name, role, created_at, phone")
+    .select("id, full_name, role, created_at")
     .order("created_at", { ascending: false })
     .limit(100)
 
@@ -25,7 +25,25 @@ async function getUsers() {
     return []
   }
 
-  return users
+  const ids = (users || []).map((u) => u.id).filter(Boolean)
+
+  const { data: privateProfiles } = ids.length
+    ? await adminClient
+        .from("private_profiles")
+        .select("id, email, phone")
+        .in("id", ids)
+    : { data: [] as Array<{ id: string; email: string | null; phone: string | null }> }
+
+  const privateById = new Map((privateProfiles || []).map((p) => [p.id, p]))
+
+  return (users || []).map((u) => {
+    const priv = privateById.get(u.id)
+    return {
+      ...u,
+      email: priv?.email ?? null,
+      phone: priv?.phone ?? null,
+    }
+  })
 }
 
 async function AdminUsersContent() {

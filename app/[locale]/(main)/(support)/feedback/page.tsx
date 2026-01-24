@@ -12,6 +12,7 @@ import {
 import { Link } from "@/i18n/routing"
 import type { Metadata } from 'next'
 import { routing, validateLocale } from "@/i18n/routing"
+import { PageShell } from "@/components/shared/page-shell"
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }))
@@ -52,11 +53,11 @@ export default async function FeedbackPage({
   ]
   
   return (
-    <div className="min-h-screen bg-background pb-20 sm:pb-12">
+    <PageShell className="pb-20 sm:pb-12">
       {/* Hero Section */}
-      <div className="bg-header-bg text-white">
+      <div className="bg-brand text-primary-foreground">
         <div className="container py-10 md:py-16">
-          <div className="[&_nav]:border-white/20 [&_nav]:mb-4 [&_a]:text-white/80 [&_a:hover]:text-white [&_span[aria-current]]:text-white [&_svg]:text-white/50">
+          <div className="[&_nav]:border-primary-foreground/20 [&_nav]:mb-4 [&_a]:text-primary-foreground/80 [&_a:hover]:text-primary-foreground [&_span[aria-current]]:text-primary-foreground [&_svg]:text-primary-foreground/50">
             <AppBreadcrumb
               items={breadcrumbItems}
               ariaLabel={tBreadcrumbs("ariaLabel")}
@@ -68,7 +69,7 @@ export default async function FeedbackPage({
               <ChatCircleDots className="size-8" weight="duotone" />
               <h1 className="text-2xl md:text-4xl font-bold">{t('heroTitle')}</h1>
             </div>
-            <p className="text-white/80 text-lg">{t('heroSubtitle')}</p>
+            <p className="text-primary-foreground/80 text-lg">{t('heroSubtitle')}</p>
           </div>
         </div>
       </div>
@@ -164,6 +165,6 @@ export default async function FeedbackPage({
           </p>
         </section>
       </div>
-    </div>
+    </PageShell>
   )
 }

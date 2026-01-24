@@ -8,6 +8,7 @@ import { AppBreadcrumb, breadcrumbPresets } from "@/components/navigation/app-br
 import type { Metadata } from 'next'
 import { routing, validateLocale } from "@/i18n/routing"
 import { CustomerServiceChat } from "@/components/support/customer-service-chat"
+import { PageShell } from "@/components/shared/page-shell"
 
 // Generate static params for all locales - required for Next.js 16 Cache Components
 export function generateStaticParams() {
@@ -46,7 +47,7 @@ export default async function CustomerServicePage({ params }: { params: Promise<
     ]
 
     return (
-        <div className="min-h-screen bg-background pb-12 overflow-x-hidden">
+        <PageShell className="pb-12 overflow-x-hidden">
             <div className="container py-8 px-4 sm:px-6">
                 <AppBreadcrumb
                     items={breadcrumbPresets(tBreadcrumbs).customerService}
@@ -128,6 +129,6 @@ export default async function CustomerServicePage({ params }: { params: Promise<
                     </div>
                 </div>
             </div>
-        </div>
+        </PageShell>
     )
 }

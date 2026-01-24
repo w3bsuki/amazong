@@ -3,6 +3,7 @@ import Script from 'next/script'
 import { routing } from '@/i18n/routing'
 import { PerformanceMeasureGuard } from './PerformanceMeasureGuard'
 import { IntlClientProvider } from '../intl-client-provider'
+import { PageShell } from "@/components/shared/page-shell"
 
 // Generate static params for all supported locales
 export function generateStaticParams() {
@@ -57,12 +58,12 @@ export default async function SellLayout({
 })();`}
       </Script>
       <PerformanceMeasureGuard />
-      <div className="min-h-svh bg-background flex flex-col">
+      <PageShell className="flex flex-col">
         {/* Main content - header is rendered by client component for user state */}
         <main className="flex-1 flex flex-col">
           {children}
         </main>
-      </div>
+      </PageShell>
     </IntlClientProvider>
   )
 }

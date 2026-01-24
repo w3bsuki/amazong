@@ -54,10 +54,8 @@ async function getSellers(): Promise<Seller[]> {
       tier,
       is_verified_business,
       business_name,
-      commission_rate,
       country_code,
       created_at,
-      email,
       full_name
     `)
     .eq('is_seller', true)
@@ -75,6 +73,16 @@ async function getSellers(): Promise<Seller[]> {
     return []
   }
   
+  const ids = (profiles || []).map((p) => p.id)
+  const { data: privateProfiles } = ids.length
+    ? await adminClient
+        .from('private_profiles')
+        .select('id, email, commission_rate')
+        .in('id', ids)
+    : { data: [] }
+
+  const privateById = new Map((privateProfiles || []).map((p) => [p.id, p]))
+
   // Map profiles to expected seller format
   return (profiles || []).map(profile => ({
     id: profile.id,
@@ -84,11 +92,11 @@ async function getSellers(): Promise<Seller[]> {
     tier: profile.tier,
     is_verified_business: profile.is_verified_business,
     business_name: profile.business_name,
-    commission_rate: profile.commission_rate,
+    commission_rate: privateById.get(profile.id)?.commission_rate ?? null,
     country_code: profile.country_code,
     created_at: profile.created_at,
     profiles: {
-      email: profile.email,
+      email: privateById.get(profile.id)?.email ?? null,
       full_name: profile.full_name,
     }
   }))

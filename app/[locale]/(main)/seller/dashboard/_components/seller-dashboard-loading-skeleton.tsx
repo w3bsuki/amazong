@@ -1,11 +1,12 @@
 import { Skeleton } from "@/components/ui/skeleton"
 import { getTranslations } from "next-intl/server"
+import { PageShell } from "@/components/shared/page-shell"
 
 export default async function SellerDashboardLoadingSkeleton() {
   const tCommon = await getTranslations("Common")
 
   return (
-    <div className="min-h-screen bg-background pb-20 sm:pb-12" role="status" aria-live="polite" aria-busy="true">
+    <PageShell className="pb-20 sm:pb-12" role="status" aria-live="polite" aria-busy="true">
       <p className="sr-only">{tCommon("loading")}</p>
       <div className="border-b bg-card">
         <div className="container py-4 flex items-center justify-between">
@@ -65,6 +66,6 @@ export default async function SellerDashboardLoadingSkeleton() {
           </div>
         </div>
       </div>
-    </div>
+    </PageShell>
   )
 }

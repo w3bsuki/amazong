@@ -8,6 +8,7 @@ import { Gift, ShoppingCart } from "@phosphor-icons/react/dist/ssr"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import type { Database } from "@/lib/supabase/database.types"
 import { AddAllToCartButton } from "../shared/[token]/add-all-to-cart"
+import { PageShell } from "@/components/shared/page-shell"
 
 type SharedWishlistItem = Database["public"]["Functions"]["get_shared_wishlist"]["Returns"][number]
 
@@ -71,11 +72,11 @@ export default async function SharedWishlistTokenPage({ params }: SharedWishlist
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <PageShell variant="muted">
       <div className="container py-8">
         <div className="mb-8 text-center">
           <div className="flex items-center justify-center gap-2 mb-4">
-            <Gift className="h-8 w-8 text-brand-deal" />
+            <Gift className="h-8 w-8 text-deal" />
             <h1 className="text-3xl font-bold text-foreground">{wishlistName}</h1>
           </div>
           <p className="text-muted-foreground">{t("createdBy", { name: ownerName })}</p>
@@ -112,14 +113,14 @@ export default async function SharedWishlistTokenPage({ params }: SharedWishlist
               <CardContent className="p-3">
                 <Link
                   href={getProductHref(item.product_id)}
-                  className="text-sm font-medium text-foreground hover:text-brand-blue line-clamp-2 min-h-10"
+                  className="text-sm font-medium text-foreground hover:text-brand line-clamp-2 min-h-10"
                 >
                   {item.product_title}
                 </Link>
                 <div className="mt-2 flex items-baseline gap-1">
                   <span className="text-lg font-bold text-foreground">${item.product_price?.toFixed(2)}</span>
                 </div>
-                <Button size="sm" className="w-full mt-3 bg-brand-blue hover:bg-brand-blue-dark text-white" asChild>
+                <Button size="sm" variant="cta" className="w-full mt-3" asChild>
                   <Link href={getProductHref(item.product_id)}>
                     <ShoppingCart className="h-4 w-4 mr-2" />
                     {t("viewProduct")}
@@ -133,11 +134,11 @@ export default async function SharedWishlistTokenPage({ params }: SharedWishlist
         <div className="mt-12 text-center p-4 bg-muted/50 rounded-lg">
           <h2 className="text-xl font-semibold mb-2">{t("createYourOwn")}</h2>
           <p className="text-muted-foreground mb-4">{t("signUpToCreate")}</p>
-          <Button asChild className="bg-brand-warning hover:bg-brand-warning/90 text-foreground font-medium">
+          <Button asChild variant="cta" className="font-medium">
             <Link href="/auth/sign-up">{t("signUpFree")}</Link>
           </Button>
         </div>
       </div>
-    </div>
+    </PageShell>
   )
 }

@@ -5,7 +5,7 @@ import { createClient } from "@/lib/supabase/server"
 import { AdminDocsContent } from "./_components/docs-content"
 import { Skeleton } from "@/components/ui/skeleton"
 
-export default async function AdminDocsPage() {
+export default async function AdminDocsPage({ params }: { params: { locale: string } }) {
   // Mark route as dynamic without using route segment config (incompatible with cacheComponents).
   await connection()
 
@@ -22,18 +22,19 @@ export default async function AdminDocsPage() {
         </div>
       </div>
       <Suspense fallback={<DocsTableSkeleton />}>
-        <AdminDocsContentWrapper />
+        <AdminDocsContentWrapper locale={params.locale} />
       </Suspense>
     </div>
   )
 }
 
-async function AdminDocsContentWrapper() {
+async function AdminDocsContentWrapper({ locale }: { locale: string }) {
   const supabase = await createClient()
   
   const { data: docs } = await supabase
     .from("admin_docs")
-    .select("id, title, slug, content, category, status, author_id, created_at, updated_at")
+    .select("id, title, slug, content, category, status, author_id, locale, created_at, updated_at")
+    .eq("locale", locale)
     .order("category")
     .order("title")
   

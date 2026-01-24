@@ -1,4 +1,5 @@
 import { Skeleton } from "@/components/ui/skeleton"
+import { PageShell } from "@/components/shared/page-shell"
 
 /**
  * /categories loading skeleton
@@ -10,7 +11,7 @@ import { Skeleton } from "@/components/ui/skeleton"
  */
 export default function CategoriesLoading() {
   return (
-    <div className="min-h-screen bg-background">
+    <PageShell>
       {/* Header - matches page.tsx */}
       <div className="border-b border-border/30 bg-background">
         <div className="px-inset py-1.5">
@@ -50,6 +51,6 @@ export default function CategoriesLoading() {
           <Skeleton className="h-14 w-full rounded-md" />
         </div>
       </div>
-    </div>
+    </PageShell>
   )
 }

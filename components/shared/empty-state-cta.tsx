@@ -3,6 +3,7 @@
 import { useLocale } from "next-intl"
 import { Link } from "@/i18n/routing"
 import { cn } from "@/lib/utils"
+import { Button } from "@/components/ui/button"
 import { Package, Plus, Storefront, MagnifyingGlass, ShoppingBag } from "@phosphor-icons/react"
 
 // =============================================================================
@@ -151,18 +152,12 @@ export function EmptyStateCTA({
 
       {/* CTA Button */}
       {showCTA && (
-        <Link
-          href={ctaHref || content.href}
-          className={cn(
-            "inline-flex items-center gap-2 px-5 py-2.5 rounded-full",
-            "bg-brand text-white font-medium text-sm",
-            "hover:bg-brand/90 transition-colors",
-            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2"
-          )}
-        >
-          <Plus size={18} weight="bold" />
-          {ctaLabel || content.cta[locale]}
-        </Link>
+        <Button asChild variant="cta" className="rounded-full">
+          <Link href={ctaHref || content.href}>
+            <Plus size={18} weight="bold" />
+            {ctaLabel || content.cta[locale]}
+          </Link>
+        </Button>
       )}
     </div>
   )

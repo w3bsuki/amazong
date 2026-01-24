@@ -31,6 +31,7 @@ import { ContextualDoubleDeckerNav } from "./category-nav/contextual-double-deck
 import { ProductFeed } from "@/components/shared/product/product-feed"
 import { FilterHub } from "@/components/shared/filters/filter-hub"
 import { FilterChips } from "@/components/shared/filters/filter-chips"
+import { PageShell } from "@/components/shared/page-shell"
 
 type Category = CategoryTreeNode
 
@@ -347,7 +348,7 @@ export function MobileCategoryBrowser({
     }, [instant.categoryTitle, contextualInitialTitle, backHref, instant.children, contextualSubcategories, setContextualHeader])
 
     return (
-      <div className="w-full min-h-screen bg-background">
+      <PageShell variant="muted" className="w-full">
         {/* Header is rendered by layout with variant="contextual" */}
         {/* Layout's header will show title, back button, and subcategory circles from context */}
 
@@ -397,7 +398,7 @@ export function MobileCategoryBrowser({
           mode="full"
           initialSection={null}
         />
-      </div>
+      </PageShell>
     )
   }
 
@@ -406,7 +407,7 @@ export function MobileCategoryBrowser({
   // ==========================================================================
 
   return (
-    <div className="w-full min-h-screen bg-background">
+    <PageShell variant="muted" className="w-full">
       {/* 1. Sticky Tabs Header (L0) - Two variants: tabs or pills */}
       {showL0Tabs && l0Style === "tabs" && (
         <CategoryTabs
@@ -561,6 +562,6 @@ export function MobileCategoryBrowser({
           initialSection={null}
         />
       )}
-    </div>
+    </PageShell>
   )
 }

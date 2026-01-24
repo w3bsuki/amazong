@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card"
 
 export default function CheckoutLoading() {
   return (
-    <div className="min-h-screen bg-muted/30">
+    <div className="flex flex-col">
       {/* Header */}
       <div className="border-b bg-card">
         <div className="container py-3 flex items-center justify-between">

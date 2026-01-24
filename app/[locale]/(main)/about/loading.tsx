@@ -1,8 +1,9 @@
 import { Skeleton } from "@/components/ui/skeleton"
+import { PageShell } from "@/components/shared/page-shell"
 
 export default function AboutLoading() {
   return (
-    <div className="min-h-screen bg-background pb-20 sm:pb-12">
+    <PageShell className="pb-20 sm:pb-12">
       {/* Hero */}
       <div className="bg-muted py-12 sm:py-20">
         <div className="container text-center">
@@ -65,6 +66,6 @@ export default function AboutLoading() {
           </div>
         </div>
       </div>
-    </div>
+    </PageShell>
   )
 }

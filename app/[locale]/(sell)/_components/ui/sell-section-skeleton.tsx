@@ -3,6 +3,7 @@
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
+import { PageShell } from "@/components/shared/page-shell";
 
 interface SellSectionSkeletonProps {
   /** The section type to render the appropriate skeleton structure */
@@ -168,7 +169,7 @@ function DefaultSkeleton() {
 
 export function SellFormSkeleton() {
   return (
-    <div className="min-h-screen bg-muted/30">
+    <PageShell variant="muted" fullHeight={false} className="flex flex-1 flex-col">
       {/* Header skeleton */}
       <div className="sticky top-0 z-50 h-14 border-b border-border bg-background/95 backdrop-blur-xl">
         <div className="container-content h-full flex items-center justify-between">
@@ -262,6 +263,6 @@ export function SellFormSkeleton() {
           <Skeleton className="flex-1 h-touch rounded-lg" />
         </div>
       </div>
-    </div>
+    </PageShell>
   );
 }

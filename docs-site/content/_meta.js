@@ -3,11 +3,17 @@ export default {
     title: 'Home',
     type: 'page',
   },
+  platform: {
+    title: 'Platform Overview',
+  },
   payments: {
     title: 'Payments',
   },
   policies: {
     title: 'Policies',
+  },
+  changelog: {
+    title: 'Changelog',
   },
   engineering: {
     title: 'Engineering',

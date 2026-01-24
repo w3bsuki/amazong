@@ -169,7 +169,7 @@ export function AccountWishlistGrid({ items, locale, onRemove }: WishlistGridPro
     return (
       <Card>
         <CardContent className="flex flex-col items-center justify-center py-12 text-center">
-          <div className="flex size-16 items-center justify-center rounded-full bg-account-stat-icon-bg border border-account-stat-border mb-4">
+          <div className="flex size-16 items-center justify-center rounded-full bg-muted border border-border mb-4">
             <Heart className="size-8 text-destructive" weight="fill" />
           </div>
           <h3 className="font-semibold text-lg">{t("empty")}</h3>
@@ -205,10 +205,10 @@ export function AccountWishlistGrid({ items, locale, onRemove }: WishlistGridPro
               role="button"
               tabIndex={0}
               aria-label={locale === "bg" ? `Отвори ${item.title}` : `Open ${item.title}`}
-              className="flex flex-col rounded-md bg-account-stat-bg border border-account-stat-border overflow-hidden transition-colors active:bg-account-card-hover text-left"
+              className="flex flex-col rounded-md bg-card border border-border overflow-hidden transition-colors active:bg-muted/40 text-left"
             >
               {/* Product Image */}
-              <div className="relative aspect-square w-full overflow-hidden bg-account-stat-bg">
+              <div className="relative aspect-square w-full overflow-hidden bg-card">
                 <Image
                   src={item.image}
                   alt={item.title}
@@ -222,18 +222,18 @@ export function AccountWishlistGrid({ items, locale, onRemove }: WishlistGridPro
                 {/* Stock indicator badge */}
                 {item.stock > 0 ? (
                   <div className="absolute top-2 right-2 flex size-6 items-center justify-center rounded-full bg-success">
-                    <Package weight="fill" className="size-3.5 text-white" />
+                    <Package weight="fill" className="size-3.5 text-primary-foreground" />
                   </div>
                 ) : (
                   <div className="absolute top-2 right-2 flex items-center gap-1 px-2 py-1 rounded-full bg-warning">
-                    <XCircle weight="fill" className="size-3 text-white" />
-                    <span className="text-2xs font-semibold text-white">{labels.outOfStock}</span>
+                    <XCircle weight="fill" className="size-3 text-foreground" />
+                    <span className="text-2xs font-semibold text-foreground">{labels.outOfStock}</span>
                   </div>
                 )}
                 {/* Category badge */}
                 {item.category_name && (
-                  <div className="absolute bottom-2 left-2 px-2 py-0.5 rounded-full bg-black/60">
-                    <span className="text-2xs font-medium text-white">{item.category_name}</span>
+                  <div className="absolute bottom-2 left-2 px-2 py-0.5 rounded-full bg-surface-overlay">
+                    <span className="text-2xs font-medium text-overlay-text">{item.category_name}</span>
                   </div>
                 )}
                 {/* Quick add to cart button overlay */}
@@ -245,7 +245,7 @@ export function AccountWishlistGrid({ items, locale, onRemove }: WishlistGridPro
                     }}
                     className="absolute bottom-2 right-2 flex size-8 items-center justify-center rounded-full bg-foreground"
                   >
-                    <ShoppingCart weight="fill" className="size-4 text-white" />
+                    <ShoppingCart weight="fill" className="size-4 text-overlay-text" />
                   </button>
                 )}
               </div>
@@ -379,10 +379,10 @@ export function AccountWishlistGrid({ items, locale, onRemove }: WishlistGridPro
         {items.map((item) => (
           <div
             key={item.id}
-            className="group relative flex flex-col rounded-md bg-account-stat-bg border border-account-stat-border overflow-hidden transition-colors hover:border-account-accent"
+            className="group relative flex flex-col rounded-md bg-card border border-border overflow-hidden transition-colors hover:border-primary/30"
           >
             {/* Product Image */}
-            <div className="relative aspect-square w-full overflow-hidden bg-account-stat-bg">
+            <div className="relative aspect-square w-full overflow-hidden bg-card">
               <Image
                 src={item.image}
                 alt={item.title}
@@ -407,19 +407,19 @@ export function AccountWishlistGrid({ items, locale, onRemove }: WishlistGridPro
               {/* Stock indicator */}
               {item.stock > 0 ? (
                 <div className="absolute top-3 right-3 z-20 flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-success">
-                  <Package weight="fill" className="size-3.5 text-white" />
-                  <span className="text-xs font-semibold text-white">{item.stock}</span>
+                  <Package weight="fill" className="size-3.5 text-primary-foreground" />
+                  <span className="text-xs font-semibold text-primary-foreground">{item.stock}</span>
                 </div>
               ) : (
                 <div className="absolute top-3 right-3 z-20 flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-warning">
-                  <XCircle weight="fill" className="size-3.5 text-white" />
-                  <span className="text-xs font-semibold text-white">{labels.outOfStock}</span>
+                  <XCircle weight="fill" className="size-3.5 text-foreground" />
+                  <span className="text-xs font-semibold text-foreground">{labels.outOfStock}</span>
                 </div>
               )}
               {/* Category badge */}
               {item.category_name && (
-                <div className="absolute bottom-3 left-3 z-20 px-2.5 py-1 rounded-full bg-black/60">
-                  <span className="text-xs font-medium text-white">{item.category_name}</span>
+                <div className="absolute bottom-3 left-3 z-20 px-2.5 py-1 rounded-full bg-surface-overlay">
+                  <span className="text-xs font-medium text-overlay-text">{item.category_name}</span>
                 </div>
               )}
               {/* Hover overlay with quick actions */}
@@ -511,7 +511,7 @@ export function AccountWishlistGrid({ items, locale, onRemove }: WishlistGridPro
           <Button
             variant="outline"
             onClick={handleAddAllToCart}
-            className="border-account-stat-border hover:bg-account-card-hover"
+            className="border-border/60 hover:bg-muted/40"
           >
             <ShoppingCart className="size-4 mr-2" />
             {labels.addAllToCart} ({items.filter(i => i.stock > 0).length})

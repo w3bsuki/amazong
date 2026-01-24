@@ -1,23 +1,24 @@
 import { Skeleton } from "@/components/ui/skeleton"
+import { PageShell } from "@/components/shared/page-shell"
 
 export default function TodaysDealsLoading() {
   return (
-    <div className="min-h-screen bg-background pb-20 sm:pb-12">
+    <PageShell variant="muted" className="pb-20 sm:pb-12">
       {/* Hero Banner Skeleton */}
-      <div className="bg-brand-deal text-white py-6 sm:py-10">
+      <div className="bg-deal text-deal-foreground py-6 sm:py-10">
         <div className="container">
           {/* Breadcrumb */}
           <div className="flex gap-2 items-center mb-2">
-            <Skeleton className="h-4 w-16 bg-primary-foreground/20" />
-            <Skeleton className="h-4 w-4 bg-primary-foreground/20" />
-            <Skeleton className="h-4 w-24 bg-primary-foreground/20" />
+            <Skeleton className="h-4 w-16 bg-deal-foreground/20" />
+            <Skeleton className="h-4 w-4 bg-deal-foreground/20" />
+            <Skeleton className="h-4 w-24 bg-deal-foreground/20" />
           </div>
           
           <div className="flex items-center gap-3 mb-2">
-            <Skeleton className="size-12 sm:size-14 rounded-full bg-primary-foreground/20" />
+            <Skeleton className="size-12 sm:size-14 rounded-full bg-deal-foreground/20" />
             <div>
-              <Skeleton className="h-8 sm:h-10 w-48 sm:w-64 bg-primary-foreground/20 mb-2" />
-              <Skeleton className="h-4 w-64 bg-primary-foreground/20" />
+              <Skeleton className="h-8 sm:h-10 w-48 sm:w-64 bg-deal-foreground/20 mb-2" />
+              <Skeleton className="h-4 w-64 bg-deal-foreground/20" />
             </div>
           </div>
         </div>
@@ -78,6 +79,6 @@ export default function TodaysDealsLoading() {
           ))}
         </div>
       </div>
-    </div>
+    </PageShell>
   )
 }

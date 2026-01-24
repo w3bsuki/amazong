@@ -204,9 +204,9 @@ export function SidebarMenuV2({ user, triggerClassName, userStats }: SidebarMenu
                                 className="flex items-center gap-2.5 min-w-0 hover:opacity-90 transition-opacity"
                             >
                                 <div className="size-touch shrink-0 rounded-full bg-primary-foreground/20 flex items-center justify-center">
-                                    <UserCircle size={26} weight="fill" className="text-white" />
+                                    <UserCircle size={26} weight="fill" className="text-primary-foreground" />
                                 </div>
-                                <span className="text-white text-base font-semibold truncate max-w-32">
+                                <span className="text-primary-foreground text-base font-semibold truncate max-w-32">
                                     {firstName || displayName}
                                 </span>
                             </Link>
@@ -223,7 +223,7 @@ export function SidebarMenuV2({ user, triggerClassName, userStats }: SidebarMenu
                                 <Link
                                     href="/auth/sign-up"
                                     onClick={() => setOpen(false)}
-                                    className="h-9 px-4 rounded-full text-white text-sm font-medium hover:bg-primary-foreground/10 transition-colors flex items-center"
+                                    className="h-9 px-4 rounded-full text-primary-foreground text-sm font-medium hover:bg-primary-foreground/10 transition-colors flex items-center"
                                 >
                                     {tNav("register")}
                                 </Link>
@@ -239,7 +239,7 @@ export function SidebarMenuV2({ user, triggerClassName, userStats }: SidebarMenu
                                 <Link
                                     href="/account/settings"
                                     onClick={() => setOpen(false)}
-                                    className="size-touch rounded-full flex items-center justify-center text-white/70 hover:text-white hover:bg-primary-foreground/10 transition-colors"
+                                    className="size-touch rounded-full flex items-center justify-center text-primary-foreground/70 hover:text-primary-foreground hover:bg-primary-foreground/10 transition-colors"
                                     aria-label={tAccountDrawer("settings")}
                                 >
                                     <Gear size={24} weight="regular" />
@@ -251,7 +251,7 @@ export function SidebarMenuV2({ user, triggerClassName, userStats }: SidebarMenu
                                 <DropdownMenuTrigger asChild>
                                     <button
                                         type="button"
-                                        className="size-touch rounded-full flex items-center justify-center text-white/70 hover:text-white hover:bg-primary-foreground/10 transition-colors"
+                                        className="size-touch rounded-full flex items-center justify-center text-primary-foreground/70 hover:text-primary-foreground hover:bg-primary-foreground/10 transition-colors"
                                         aria-label={tLocaleSwitcher('label')}
                                     >
                                         <Image
@@ -285,7 +285,7 @@ export function SidebarMenuV2({ user, triggerClassName, userStats }: SidebarMenu
                             <DrawerClose asChild>
                                 <button
                                     type="button"
-                                    className="size-touch rounded-full flex items-center justify-center text-white/70 hover:text-white hover:bg-primary-foreground/10 transition-colors"
+                                    className="size-touch rounded-full flex items-center justify-center text-primary-foreground/70 hover:text-primary-foreground hover:bg-primary-foreground/10 transition-colors"
                                 >
                                     <X size={24} weight="bold" />
                                     <span className="sr-only">{t('close')}</span>
@@ -315,7 +315,7 @@ export function SidebarMenuV2({ user, triggerClassName, userStats }: SidebarMenu
                                 <Link
                                     href="/sell"
                                     onClick={() => setOpen(false)}
-                                    className="flex items-center justify-center gap-1.5 w-full h-touch rounded-lg bg-brand text-white font-semibold hover:bg-brand/90 transition-colors mb-2"
+                                    className="flex items-center justify-center gap-1.5 w-full h-touch rounded-lg bg-brand text-primary-foreground font-semibold hover:bg-brand/90 transition-colors mb-2"
                                 >
                                     <Plus size={18} weight="bold" />
                                     <span className="text-sm">{tMenu("newListing")}</span>
@@ -454,7 +454,7 @@ export function SidebarMenuV2({ user, triggerClassName, userStats }: SidebarMenu
                                     <Link
                                         href="/auth/login"
                                         onClick={() => setOpen(false)}
-                                        className="flex items-center justify-center gap-2 h-10 px-6 rounded-full bg-brand text-white text-sm font-semibold hover:bg-brand/90 transition-colors"
+                                        className="flex items-center justify-center gap-2 h-10 px-6 rounded-full bg-brand text-primary-foreground text-sm font-semibold hover:bg-brand/90 transition-colors"
                                     >
                                         <SignInIcon size={18} weight="bold" />
                                         <span>{t("signIn")}</span>

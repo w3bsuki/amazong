@@ -106,7 +106,7 @@ export async function createSubscriptionCheckoutSession(args: {
     }
 
     const { data: profile } = await supabase
-      .from("profiles")
+      .from("private_profiles")
       .select(PROFILE_SELECT_FOR_BILLING)
       .eq("id", user.id)
       .single()
@@ -146,9 +146,8 @@ export async function createSubscriptionCheckoutSession(args: {
       customerId = customer.id
 
       await supabase
-        .from("profiles")
-        .update({ stripe_customer_id: customerId })
-        .eq("id", profile.id)
+        .from("private_profiles")
+        .upsert({ id: profile.id, stripe_customer_id: customerId }, { onConflict: "id" })
     }
 
     const stripePriceId =
@@ -239,7 +238,7 @@ export async function createBillingPortalSession(args?: { locale?: "en" | "bg" }
     if (!stripeCustomerId) {
       // Fallback: profile might have a customer id even if subscription row isn't present
       const { data: profile } = await supabase
-        .from("profiles")
+        .from("private_profiles")
         .select("stripe_customer_id")
         .eq("id", user.id)
         .single()

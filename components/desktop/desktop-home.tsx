@@ -37,6 +37,7 @@ import { FeedToolbar, type FeedTab, type FilterState } from "@/components/deskto
 import { CompactCategorySidebar, type CategoryPath } from "@/components/desktop/category-sidebar"
 import { FiltersSidebar } from "@/components/desktop/filters-sidebar"
 import { ProductGridSkeleton } from "@/components/shared/product/product-grid-skeleton"
+import { PageShell } from "@/components/shared/page-shell"
 import type { UIProduct } from "@/lib/data/products"
 
 import type { User } from "@supabase/supabase-js"
@@ -224,7 +225,7 @@ export function DesktopHome({
   }
 
   return (
-    <div className="min-h-screen bg-muted/40">
+    <PageShell variant="muted">
       {/* Header is rendered by layout - no duplicate here */}
 
       {/* Main content - unified container */}
@@ -413,13 +414,13 @@ export function DesktopHome({
           </div>
         </div>
       </div>
-    </div>
+    </PageShell>
   )
 }
 
 export function DesktopHomeSkeleton() {
   return (
-    <div className="min-h-screen bg-muted/40">
+    <PageShell variant="muted">
       {/* Header skeleton */}
       <div className="sticky top-0 z-50 w-full bg-background border-b border-border">
         <div className="container h-14 flex items-center justify-between gap-4">
@@ -481,6 +482,6 @@ export function DesktopHomeSkeleton() {
           </div>
         </div>
       </div>
-    </div>
+    </PageShell>
   )
 }

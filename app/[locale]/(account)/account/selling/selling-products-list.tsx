@@ -367,8 +367,8 @@ export function SellingProductsList({ products, locale, actions }: SellingProduc
   if (productsList.length === 0) {
     return (
       <div className="text-center py-12 sm:py-16">
-        <div className="size-16 sm:size-20 rounded-full mx-auto flex items-center justify-center mb-4 bg-account-stat-icon-bg border border-account-stat-border">
-          <Package weight="duotone" className="size-8 sm:size-10 text-account-stat-icon" />
+        <div className="size-16 sm:size-20 rounded-full mx-auto flex items-center justify-center mb-4 bg-muted border border-border">
+          <Package weight="duotone" className="size-8 sm:size-10 text-muted-foreground" />
         </div>
         <h3 className="text-lg font-semibold text-foreground mb-2">
           {t('noProductsTitle')}
@@ -400,11 +400,11 @@ export function SellingProductsList({ products, locale, actions }: SellingProduc
           return (
             <div
               key={product.id}
-              className={`flex items-start gap-3 p-3 rounded-md bg-account-stat-bg border border-account-stat-border ${boosted ? 'ring-2 ring-primary/20 border-primary/30' : ''
+              className={`flex items-start gap-3 p-3 rounded-md bg-card border border-border ${boosted ? 'ring-2 ring-primary/20 border-primary/30' : ''
                 }`}
             >
               {/* Product Image */}
-              <div className="relative size-20 rounded-md overflow-hidden bg-account-stat-bg border border-account-stat-border shrink-0">
+              <div className="relative size-20 rounded-md overflow-hidden bg-card border border-border shrink-0">
                 {product.images?.[0] && product.images[0].startsWith('http') ? (
                   <Image
                     src={product.images[0]}
@@ -449,7 +449,7 @@ export function SellingProductsList({ products, locale, actions }: SellingProduc
                       )}
                     </div>
                     <div className="flex items-center gap-2 mt-1.5 text-xs text-muted-foreground">
-                      <span className={product.stock < 5 && product.stock > 0 ? "text-account-warning font-medium" : product.stock === 0 ? "text-account-error font-medium" : ""}>
+                      <span className={product.stock < 5 && product.stock > 0 ? "text-warning font-medium" : product.stock === 0 ? "text-destructive font-medium" : ""}>
                         {product.stock === 0
                           ? t('outOfStock')
                           : t('inStock', { count: product.stock })
@@ -522,9 +522,9 @@ export function SellingProductsList({ products, locale, actions }: SellingProduc
                       disabled={togglingId === product.id}
                     >
                       {product.status === 'draft' ? (
-                        <Play className="size-4 text-account-success" weight="fill" />
+                        <Play className="size-4 text-success" weight="fill" />
                       ) : (
-                        <Pause className="size-4 text-account-warning" weight="fill" />
+                        <Pause className="size-4 text-warning" weight="fill" />
                       )}
                     </Button>
                     <Button asChild variant="ghost" size="icon" className="size-8">
@@ -586,11 +586,11 @@ export function SellingProductsList({ products, locale, actions }: SellingProduc
           return (
             <div
               key={product.id}
-              className={`flex items-center gap-4 p-4 hover:bg-account-card-hover transition-colors ${boosted ? 'bg-primary/5' : ''
+              className={`flex items-center gap-4 p-4 hover:bg-muted/40 transition-colors ${boosted ? 'bg-primary/5' : ''
                 }`}
             >
               {/* Product Image */}
-              <div className="relative size-16 rounded-md overflow-hidden bg-account-stat-bg border border-account-stat-border shrink-0">
+              <div className="relative size-16 rounded-md overflow-hidden bg-card border border-border shrink-0">
                 {product.images?.[0] && product.images[0].startsWith('http') ? (
                   <Image
                     src={product.images[0]}
@@ -651,7 +651,7 @@ export function SellingProductsList({ products, locale, actions }: SellingProduc
                       </span>
                     )}
                   </div>
-                  <span className={product.stock < 5 && product.stock > 0 ? "text-account-warning font-medium" : product.stock === 0 ? "text-account-error font-medium" : ""}>
+                  <span className={product.stock < 5 && product.stock > 0 ? "text-warning font-medium" : product.stock === 0 ? "text-destructive font-medium" : ""}>
                     {product.stock === 0
                       ? t('outOfStock')
                       : t('inStock', { count: product.stock })
@@ -721,9 +721,9 @@ export function SellingProductsList({ products, locale, actions }: SellingProduc
                   }
                 >
                   {product.status === 'draft' ? (
-                    <Play className="size-4 text-account-success" weight="fill" />
+                    <Play className="size-4 text-success" weight="fill" />
                   ) : (
-                    <Pause className="size-4 text-account-warning" weight="fill" />
+                    <Pause className="size-4 text-warning" weight="fill" />
                   )}
                 </Button>
                 <Button asChild variant="ghost" size="icon" className="size-9">

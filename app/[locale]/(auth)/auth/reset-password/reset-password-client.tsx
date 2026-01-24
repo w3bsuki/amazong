@@ -119,7 +119,7 @@ export default function ResetPasswordPage() {
   // Loading state while checking session
   if (isValidSession === null) {
     return (
-      <div className="min-h-svh flex items-center justify-center bg-muted/30 p-4">
+      <div className="min-h-dvh flex items-center justify-center p-4">
         <div className="w-full max-w-sm text-center">
           <SpinnerGap className="size-8 animate-spin mx-auto text-primary" />
           <p className="text-sm text-muted-foreground mt-4">{t("loading")}</p>
@@ -131,7 +131,7 @@ export default function ResetPasswordPage() {
   // Invalid session - link expired or not valid
   if (!isValidSession) {
     return (
-      <div className="min-h-svh flex items-center justify-center bg-muted/30 p-4">
+      <div className="min-h-dvh flex items-center justify-center p-4">
         <div className="w-full max-w-sm text-center">
           <div className="flex flex-col items-center gap-4 mb-6">
             <div className="size-16 bg-destructive/15 rounded-full flex items-center justify-center">
@@ -153,7 +153,7 @@ export default function ResetPasswordPage() {
   // Success state
   if (isSuccess) {
     return (
-      <div className="min-h-svh flex items-center justify-center bg-muted/30 p-4">
+      <div className="min-h-dvh flex items-center justify-center p-4">
         <div className="w-full max-w-sm text-center">
           <div className="flex flex-col items-center gap-4 mb-6">
             <div className="size-16 bg-success/15 rounded-full flex items-center justify-center">

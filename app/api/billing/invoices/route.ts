@@ -22,10 +22,9 @@ export async function GET(request: NextRequest) {
       return json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    // Get user's stripe_customer_id from profile (for buyer purchases)
-    // Get profile's stripe_customer_id (seller fields are now on profiles)
+    // Get user's stripe_customer_id from private profile (PII/billing surface)
     const { data: profile } = await supabase
-      .from('profiles')
+      .from('private_profiles')
       .select('stripe_customer_id')
       .eq('id', user.id)
       .single()

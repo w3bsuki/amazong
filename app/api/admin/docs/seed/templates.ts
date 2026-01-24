@@ -1,12 +1,239 @@
 export type AdminDocTemplate = {
   title: string
   slug: string
-  category: "policies" | "payments" | "plans" | "roadmap" | "guides" | "general"
+  category:
+    | "product"
+    | "policies"
+    | "payments"
+    | "plans"
+    | "roadmap"
+    | "ops"
+    | "guides"
+    | "legal"
+    | "general"
   status: "draft" | "published" | "archived"
   content: string
 }
 
 export const ADMIN_DOC_TEMPLATES: AdminDocTemplate[] = [
+  {
+    title: "Product: Platform PRD (Ultimate)",
+    slug: "prd-platform-ultimate",
+    category: "product",
+    status: "draft",
+    content: `# Product: Platform PRD (Ultimate)
+
+This is the internal single source of truth for what Treido is building.
+
+## Vision
+
+Treido is a Bulgarian-first marketplace for safe C2C/B2B commerce with:
+
+- on-platform payments (Stripe)
+- transparent Buyer Protection (buyer-paid)
+- Stripe Connect payouts (Express)
+- predictable disputes/refunds
+- low friction for personal sellers (0% seller fee)
+
+## Core scope (V1)
+
+- Listings: create/edit, photos, categories, browse/search
+- Chat: buyer ↔ seller
+- Checkout: Stripe payments + Buyer Protection fee
+- Orders: lifecycle statuses and receipts
+- Payouts: Connect onboarding + release rules
+- Trust & safety: reports, blocks, moderation tooling
+- Ratings/reviews: minimum viable for launch
+
+## Non-scope (V1)
+
+- Cash on delivery (COD)
+- Public community forums/groups
+- Cross-border shipping automation (unless built end-to-end)
+
+## Success metrics
+
+- paid conversion rate (checkout → paid)
+- completion rate (paid → completed)
+- dispute rate and resolution time
+- chargeback rate
+
+## Related docs
+
+- Monetization & plans
+- Payments runbooks
+- Trust & safety PRDs
+`,
+  },
+  {
+    title: "Product: Accounts, Roles & Permissions (v1)",
+    slug: "product-accounts-roles-permissions-v1",
+    category: "product",
+    status: "draft",
+    content: `# Product: Accounts, Roles & Permissions (v1)
+
+## Account types
+
+- **Personal**: default, 0% seller fee, limited listings by plan
+- **Business**: business seller fee + dashboard tooling via subscription tier
+
+## Core roles
+
+- Buyer (can purchase, dispute, rate)
+- Seller (can list, ship, respond to disputes)
+- Admin (can access /admin, moderation, operational tooling)
+
+## Verification
+
+- Phone verified (required before certain actions, if enforced)
+- Stripe Connect onboarding (required before payouts)
+- Business verification (KYB) to show “Business” label and unlock B2B tooling
+
+## Permissions (examples)
+
+- Only admins can access admin ops tables (docs/tasks/notes)
+- Only sellers can create listings and receive payouts
+- Only verified businesses can access future B2B networking features
+`,
+  },
+  {
+    title: "Product: Reputation (Ratings & Badges)",
+    slug: "prd-reputation-ratings-badges",
+    category: "product",
+    status: "draft",
+    content: `# Product: Reputation (Ratings & Badges)
+
+Goal: make the marketplace feel **trustworthy** and **alive**.
+
+## V1 (minimum viable)
+
+- Post-order ratings after successful completion
+- Display seller rating + count + completed sales
+
+## Badges (V1.1 target)
+
+Badge examples (data-driven thresholds):
+
+- Rising seller: ≥ 10 completed sales
+- Trusted seller: ≥ 50 completed sales + strong rating + low dispute rate
+- Top seller: ≥ 200 completed sales + very low disputes
+
+## Rules (anti-gaming)
+
+- Only paid + completed orders count as “sales”
+- Exclude fraud and seller-fault full refunds
+- Badges can be revoked if metrics drop (with a cooldown window)
+`,
+  },
+  {
+    title: "Product: B2B Networking (Future)",
+    slug: "prd-b2b-networking-future",
+    category: "product",
+    status: "draft",
+    content: `# Product: B2B Networking (Future)
+
+This is a future module. Default posture: **defer** until V1 is stable.
+
+## Goal
+
+Enable verified businesses/distributors to connect privately for sourcing and partnerships.
+
+## Hard requirements
+
+- Verified-only access (KYB)
+- Strong rate limiting + reporting + enforcement
+- Separate surface from consumer chat
+
+## Risks
+
+- Spam and outreach abuse
+- High moderation burden
+
+## Decision
+
+Do not build before payments + disputes + moderation are production-stable.
+`,
+  },
+  {
+    title: "Legal: Jurisdictions & Availability (Draft)",
+    slug: "legal-jurisdictions-availability",
+    category: "legal",
+    status: "draft",
+    content: `# Legal: Jurisdictions & Availability (Draft)
+
+Internal planning document. Not legal advice.
+
+## Initial launch posture
+
+- Primary launch market: Bulgaria
+- Expansion: EU/EEA countries where Stripe + operations + compliance are ready
+
+## What determines availability
+
+- Stripe availability (payments + Connect payouts)
+- consumer protection obligations
+- data protection (GDPR for EU/EEA)
+- sanctions/restricted territories (always excluded)
+- ops coverage (support, disputes, moderation language)
+
+## Enablement checklist (before turning on a country)
+
+- Legal review notes recorded
+- Terms/Privacy updated for the jurisdiction
+- Support playbooks ready and staffed
+- Monitoring and incident response ready
+`,
+  },
+  {
+    title: "Policy: Privacy (Draft)",
+    slug: "policy-privacy-draft",
+    category: "policies",
+    status: "draft",
+    content: `# Policy: Privacy (Draft)
+
+Internal outline. Not legal advice.
+
+## Data categories
+
+- account/profile data
+- listings and marketplace activity
+- messages (subject to retention rules)
+- orders and payment metadata (Stripe ids, totals)
+- dispute evidence and moderation actions
+
+## Processors
+
+- Stripe (payments, Connect onboarding)
+- Supabase (database, auth, storage)
+- email/SMS provider (notifications)
+
+## Retention (to finalize)
+
+- transaction data: accounting/legal window
+- messages: safety + disputes
+- dispute evidence: longer than dispute window
+`,
+  },
+  {
+    title: "Policy: Terms of Service (Draft)",
+    slug: "policy-terms-draft",
+    category: "policies",
+    status: "draft",
+    content: `# Policy: Terms of Service (Draft)
+
+Internal outline. Not legal advice.
+
+## Covers
+
+- accounts and eligibility
+- listings rules + prohibited items
+- fees (Buyer Protection, business seller fee, subscriptions, boosts)
+- payments (Stripe only; no COD for V1)
+- payout release conditions
+- disputes/refunds and evidence rules
+- enforcement (bans, removals)
+`,
+  },
   {
     title: "Monetization: Hybrid Buyer Protection (v1)",
     slug: "monetization-hybrid-buyer-protection-v1",
@@ -249,7 +476,7 @@ Use **Separate Charges and Transfers**:
   {
     title: "Launch Plan (v1)",
     slug: "launch-plan-v1",
-    category: "plans",
+    category: "ops",
     status: "draft",
     content: `# Launch Plan (v1)
 
@@ -380,7 +607,7 @@ contribution = buyer_fee + seller_fee
   {
     title: "Go-to-Market (Bulgaria) (v1)",
     slug: "gtm-bulgaria-v1",
-    category: "plans",
+    category: "ops",
     status: "draft",
     content: `# Go-to-Market (Bulgaria) (v1)
 
@@ -419,7 +646,7 @@ contribution = buyer_fee + seller_fee
   {
     title: "Risk Register (v1)",
     slug: "risk-register-v1",
-    category: "general",
+    category: "ops",
     status: "draft",
     content: `# Risk Register (v1)
 
@@ -439,7 +666,7 @@ This is a living register. Review weekly during launch.
   {
     title: "Governance & Operating Cadence",
     slug: "governance-operating-cadence",
-    category: "general",
+    category: "ops",
     status: "draft",
     content: `# Governance & Operating Cadence
 
@@ -541,7 +768,7 @@ Prevent fraud and meet payment-provider requirements.
   {
     title: "Admin: Security & Access Checklist",
     slug: "admin-security-access-checklist",
-    category: "guides",
+    category: "ops",
     status: "draft",
     content: `# Admin: Security & Access Checklist
 
@@ -564,7 +791,7 @@ Prevent fraud and meet payment-provider requirements.
   {
     title: "Ops: Support Playbook (v1)",
     slug: "ops-support-playbook-v1",
-    category: "guides",
+    category: "ops",
     status: "draft",
     content: `# Ops: Support Playbook (v1)
 
@@ -609,7 +836,7 @@ This is Treido’s internal playbook for refunds, disputes, and user support dur
   {
     title: "Ops: Dispute Resolution Matrix (v1)",
     slug: "ops-dispute-resolution-matrix-v1",
-    category: "guides",
+    category: "ops",
     status: "draft",
     content: `# Ops: Dispute Resolution Matrix (v1)
 
@@ -633,7 +860,7 @@ Adjust only via a documented decision (DEC).
   {
     title: "Ops: Moderation Playbook (v1)",
     slug: "ops-moderation-playbook-v1",
-    category: "guides",
+    category: "ops",
     status: "draft",
     content: `# Ops: Moderation Playbook (v1)
 
@@ -669,7 +896,7 @@ Adjust only via a documented decision (DEC).
   {
     title: "Ops: Incident Response",
     slug: "ops-incident-response",
-    category: "guides",
+    category: "ops",
     status: "draft",
     content: `# Ops: Incident Response
 
@@ -698,7 +925,7 @@ Adjust only via a documented decision (DEC).
   {
     title: "Ops: Data Governance & Retention (draft)",
     slug: "ops-data-governance-retention-draft",
-    category: "policies",
+    category: "legal",
     status: "draft",
     content: `# Ops: Data Governance & Retention (draft)
 
@@ -750,6 +977,224 @@ Treido documentation lives in three layers:
 ]
 
 export const ADMIN_DOC_TEMPLATES_BG: AdminDocTemplate[] = [
+  {
+    title: "Продукт: PRD на платформата (Ultimate)",
+    slug: "prd-platform-ultimate",
+    category: "product",
+    status: "draft",
+    content: `# Продукт: PRD на платформата (Ultimate)
+
+Това е вътрешният “single source of truth” за това какво изгражда Treido.
+
+## Визия
+
+Treido е marketplace (първо България) за безопасна C2C/B2B търговия с:
+
+- плащания в платформата (Stripe)
+- прозрачна “Защита на купувача” (плаща купувачът)
+- изплащания през Stripe Connect (Express)
+- предвидими спорове/възстановявания
+- ниско триене за лични продавачи (0% такса продавач)
+
+## Основен обхват (V1)
+
+- Обяви: създаване/редакция, снимки, категории, търсене/разглеждане
+- Чат: купувач ↔ продавач
+- Checkout: Stripe плащане + такса “Защита на купувача”
+- Поръчки: жизнен цикъл и разписки
+- Изплащания: Connect онбординг + правила за освобождаване
+- Trust & safety: сигнали, блокиране, модерация (минимум)
+- Оценки/отзиви: минимално за пускане
+
+## Извън обхват (V1)
+
+- Наложен платеж (COD)
+- Публични community форуми/групи
+- Автоматизация на международни доставки (ако не е готово край-до-край)
+
+## Метрики за успех
+
+- конверсия (checkout → paid)
+- completion rate (paid → completed)
+- % спорове и време за решение
+- chargeback rate
+
+## Свързани документи
+
+- Монетизация и планове
+- Payments runbooks
+- Trust & safety PRDs
+`,
+  },
+  {
+    title: "Продукт: Акаунти, роли и права (v1)",
+    slug: "product-accounts-roles-permissions-v1",
+    category: "product",
+    status: "draft",
+    content: `# Продукт: Акаунти, роли и права (v1)
+
+## Типове акаунти
+
+- **Личен**: по подразбиране, 0% такса продавач, лимит обяви според план
+- **Бизнес**: бизнес такса продавач + dashboard инструменти според абонамент
+
+## Роли
+
+- Купувач (може да купува, да отваря спор, да оценява)
+- Продавач (може да пуска обяви, да изпраща, да отговаря по спорове)
+- Админ (достъп до /admin, модерация и оперативни инструменти)
+
+## Верификация
+
+- Потвърден телефон (ако се изисква преди ключови действия)
+- Stripe Connect онбординг (задължително преди изплащания)
+- Бизнес верификация (KYB) за етикет “Business” и бъдещи B2B функции
+
+## Права (примери)
+
+- Само админи имат достъп до admin ops таблици (docs/tasks/notes)
+- Само продавачи могат да създават обяви и да получават изплащания
+- Само verified бизнеси имат достъп до бъдещ B2B нетуъркинг
+`,
+  },
+  {
+    title: "Продукт: Репутация (оценки и значки)",
+    slug: "prd-reputation-ratings-badges",
+    category: "product",
+    status: "draft",
+    content: `# Продукт: Репутация (оценки и значки)
+
+Цел: marketplace-ът да изглежда **безопасен** и **жив**.
+
+## V1 (минимум)
+
+- Оценки след успешно приключена поръчка
+- Показваме рейтинг + брой оценки + брой завършени продажби
+
+## Значки (цел V1.1)
+
+Примери (threshold-и, които са data-driven):
+
+- “Rising seller”: ≥ 10 завършени продажби
+- “Trusted seller”: ≥ 50 завършени продажби + силен рейтинг + нисък % спорове
+- “Top seller”: ≥ 200 завършени продажби + много нисък % спорове
+
+## Правила (anti-gaming)
+
+- Само paid + completed поръчки се броят за “sales”
+- Изключваме fraud и пълни refund-и по вина на продавача
+- Значките могат да се отнемат, ако метриките паднат (с cooldown прозорец)
+`,
+  },
+  {
+    title: "Продукт: B2B нетуъркинг (бъдещо)",
+    slug: "prd-b2b-networking-future",
+    category: "product",
+    status: "draft",
+    content: `# Продукт: B2B нетуъркинг (бъдещо)
+
+Това е future модул. Постура: **деферираме**, докато V1 стане стабилен.
+
+## Цел
+
+Verified бизнеси/дистрибутори да се свързват за sourcing и партньорства.
+
+## Hard requirements
+
+- Достъп само за verified бизнеси (KYB)
+- Силни rate limits + репорт + enforcement
+- Отделна повърхност от consumer чата
+
+## Рискове
+
+- Спам и abuse
+- Висок модераторски товар
+
+## Решение
+
+Не се изгражда преди плащания + спорове + модерация да са production-stable.
+`,
+  },
+  {
+    title: "Правно: Юрисдикции и наличност (чернова)",
+    slug: "legal-jurisdictions-availability",
+    category: "legal",
+    status: "draft",
+    content: `# Правно: Юрисдикции и наличност (чернова)
+
+Вътрешен документ за планиране. Не е правен съвет.
+
+## Пускане
+
+- Основен пазар: България
+- Разширяване: EU/EEA при готови Stripe + операции + съответствие
+
+## Какво определя наличност
+
+- Stripe наличност (плащания + Connect изплащания)
+- consumer protection изисквания
+- защита на данните (GDPR за EU/EEA)
+- санкции/забранени територии (винаги изключени)
+- ops капацитет (support, спорове, език за модерация)
+
+## Чеклист (преди да включим държава)
+
+- бележки от legal review
+- Terms/Privacy обновени за юрисдикцията
+- playbooks готови и екипът е подсигурен
+- мониторинг и incident response готови
+`,
+  },
+  {
+    title: "Политика: Поверителност (чернова)",
+    slug: "policy-privacy-draft",
+    category: "policies",
+    status: "draft",
+    content: `# Политика: Поверителност (чернова)
+
+Вътрешен outline. Не е правен съвет.
+
+## Категории данни
+
+- акаунт/профил
+- обяви и активност
+- съобщения (според retention правила)
+- поръчки и payment metadata (Stripe ids, суми)
+- доказателства за спорове и модерация
+
+## Процесори
+
+- Stripe (плащания, Connect онбординг)
+- Supabase (база, auth, storage)
+- email/SMS доставчик (нотификации)
+
+## Retention (за финализиране)
+
+- транзакции: счетоводен/правен период
+- съобщения: безопасност + спорове
+- доказателства: по-дълго от dispute прозореца
+`,
+  },
+  {
+    title: "Политика: Условия за ползване (чернова)",
+    slug: "policy-terms-draft",
+    category: "policies",
+    status: "draft",
+    content: `# Политика: Условия за ползване (чернова)
+
+Вътрешен outline. Не е правен съвет.
+
+## Покрива
+
+- акаунти и изисквания
+- правила за обяви + забранени артикули
+- такси (Защита на купувача, бизнес такса продавач, абонаменти, буустове)
+- плащания (Stripe; без COD за V1)
+- условия за освобождаване на изплащания
+- спорове/възстановявания и доказателства
+- enforcement (банове, сваляне на обяви)
+`,
+  },
   {
     title: "Монетизация: Хибридна защита на купувача (v1)",
     slug: "monetization-hybrid-buyer-protection-v1",
@@ -992,7 +1437,7 @@ buyer_fee = min(
   {
     title: "План за пускане (v1)",
     slug: "launch-plan-v1",
-    category: "plans",
+    category: "ops",
     status: "draft",
     content: `# План за пускане (v1)
 
@@ -1123,7 +1568,7 @@ contribution = buyer_fee + seller_fee
   {
     title: "Go-to-Market (България) (v1)",
     slug: "gtm-bulgaria-v1",
-    category: "plans",
+    category: "ops",
     status: "draft",
     content: `# Go-to-Market (България) (v1)
 
@@ -1162,7 +1607,7 @@ contribution = buyer_fee + seller_fee
   {
     title: "Регистър на рисковете (v1)",
     slug: "risk-register-v1",
-    category: "general",
+    category: "ops",
     status: "draft",
     content: `# Регистър на рисковете (v1)
 
@@ -1182,7 +1627,7 @@ contribution = buyer_fee + seller_fee
   {
     title: "Управление и оперативен ритъм",
     slug: "governance-operating-cadence",
-    category: "general",
+    category: "ops",
     status: "draft",
     content: `# Управление и оперативен ритъм
 
@@ -1284,7 +1729,7 @@ contribution = buyer_fee + seller_fee
   {
     title: "Админ: Чеклист сигурност и достъп",
     slug: "admin-security-access-checklist",
-    category: "guides",
+    category: "ops",
     status: "draft",
     content: `# Админ: Чеклист сигурност и достъп
 
@@ -1307,7 +1752,7 @@ contribution = buyer_fee + seller_fee
   {
     title: "Операции: Наръчник за поддръжка (v1)",
     slug: "ops-support-playbook-v1",
-    category: "guides",
+    category: "ops",
     status: "draft",
     content: `# Операции: Наръчник за поддръжка (v1)
 
@@ -1352,7 +1797,7 @@ contribution = buyer_fee + seller_fee
   {
     title: "Операции: Матрица за решаване на спорове (v1)",
     slug: "ops-dispute-resolution-matrix-v1",
-    category: "guides",
+    category: "ops",
     status: "draft",
     content: `# Операции: Матрица за решаване на спорове (v1)
 
@@ -1376,7 +1821,7 @@ contribution = buyer_fee + seller_fee
   {
     title: "Операции: Наръчник за модерация (v1)",
     slug: "ops-moderation-playbook-v1",
-    category: "guides",
+    category: "ops",
     status: "draft",
     content: `# Операции: Наръчник за модерация (v1)
 
@@ -1412,7 +1857,7 @@ contribution = buyer_fee + seller_fee
   {
     title: "Операции: Реакция при инциденти",
     slug: "ops-incident-response",
-    category: "guides",
+    category: "ops",
     status: "draft",
     content: `# Операции: Реакция при инциденти
 
@@ -1441,7 +1886,7 @@ contribution = buyer_fee + seller_fee
   {
     title: "Операции: Управление и задържане на данни (чернова)",
     slug: "ops-data-governance-retention-draft",
-    category: "policies",
+    category: "legal",
     status: "draft",
     content: `# Операции: Управление и задържане на данни (чернова)
 

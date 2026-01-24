@@ -1,8 +1,9 @@
 import { Skeleton } from "@/components/ui/skeleton"
+import { PageShell } from "@/components/shared/page-shell"
 
 export default function PrivacyLoading() {
   return (
-    <div className="min-h-screen bg-background pb-20 sm:pb-12">
+    <PageShell className="pb-20 sm:pb-12">
       {/* Hero */}
       <div className="bg-muted py-8 sm:py-12">
         <div className="container">
@@ -38,6 +39,6 @@ export default function PrivacyLoading() {
           ))}
         </div>
       </div>
-    </div>
+    </PageShell>
   )
 }

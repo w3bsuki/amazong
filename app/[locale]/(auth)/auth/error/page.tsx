@@ -24,7 +24,7 @@ export default async function AuthErrorPage({
   }
 
   return (
-    <div className="min-h-svh flex items-center justify-center bg-muted p-4">
+    <div className="min-h-dvh flex items-center justify-center p-4">
       <div className="w-full max-w-sm bg-card rounded-md border border-border relative">
         <div className="p-6">
           {/* Header */}
@@ -60,7 +60,7 @@ export default async function AuthErrorPage({
               <button className="
                 w-full h-10 
                 bg-primary hover:bg-primary/90
-                text-primary-foreground text-sm font-medium rounded-lg 
+                text-primary-foreground text-sm font-medium rounded-md 
                 transition-colors
                 flex items-center justify-center
               ">
@@ -71,7 +71,7 @@ export default async function AuthErrorPage({
               <button className="
                 w-full h-10 
                 bg-background border border-border 
-                text-foreground text-sm font-medium rounded-lg 
+                text-foreground text-sm font-medium rounded-md 
                 hover:bg-muted
                 transition-colors 
                 flex items-center justify-center gap-1.5
@@ -89,7 +89,7 @@ export default async function AuthErrorPage({
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-4 bg-muted border-t border-border rounded-b-xl">
+        <div className="px-6 py-4 bg-muted border-t border-border rounded-b-md">
           <div className="flex justify-center gap-4 text-xs text-muted-foreground">
             <Link href="/terms" className="hover:text-primary transition-colors">{t('conditionsOfUse')}</Link>
             <Link href="/privacy" className="hover:text-primary transition-colors">{t('privacyNotice')}</Link>

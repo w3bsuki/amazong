@@ -10,6 +10,7 @@ import {
 } from "@phosphor-icons/react"
 import { useState, useTransition } from "react"
 import type { ReactNode } from "react"
+import { PageShell } from "@/components/shared/page-shell"
 
 interface ComingSoonPageProps {
   /** The icon to display (Phosphor icon component) */
@@ -59,7 +60,7 @@ export function ComingSoonPage({
   }
 
   return (
-    <div className="min-h-screen bg-muted/30 flex flex-col">
+    <PageShell variant="muted" className="flex flex-col">
       {/* Header with back button */}
       <div className="container py-4">
         <Link href="/">
@@ -156,6 +157,6 @@ export function ComingSoonPage({
           )}
         </div>
       </div>
-    </div>
+    </PageShell>
   )
 }

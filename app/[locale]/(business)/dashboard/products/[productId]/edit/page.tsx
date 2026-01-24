@@ -14,20 +14,36 @@ export default async function BusinessProductEditPage({
   const seller = await requireDashboardAccess()
   const supabase = await createClient()
 
-  const { data: product } = await supabase
-    .from("products")
-    .select(
-      "id, title, description, price, list_price, cost_price, sku, barcode, stock, track_inventory, category_id, status, weight, weight_unit, condition, images"
-    )
-    .eq("id", productId)
-    .eq("seller_id", seller.id)
-    .single()
+  const [{ data: product }, { data: productPrivate }] = await Promise.all([
+    supabase
+      .from("products")
+      .select(
+        "id, title, description, price, list_price, stock, track_inventory, category_id, status, weight, weight_unit, condition, images"
+      )
+      .eq("id", productId)
+      .eq("seller_id", seller.id)
+      .single(),
+
+    supabase
+      .from("product_private")
+      .select("cost_price, sku, barcode")
+      .eq("product_id", productId)
+      .eq("seller_id", seller.id)
+      .maybeSingle(),
+  ])
 
   if (!product) {
     notFound()
   }
 
+  const productWithPrivate = {
+    ...product,
+    cost_price: productPrivate?.cost_price ?? null,
+    sku: productPrivate?.sku ?? null,
+    barcode: productPrivate?.barcode ?? null,
+  }
+
   const categories = await getBusinessDashboardCategories()
 
-  return <ProductEditClient product={product} categories={categories} />
+  return <ProductEditClient product={productWithPrivate} categories={categories} />
 }

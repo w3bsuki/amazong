@@ -153,7 +153,7 @@ export function WelcomeClient({ locale }: { locale: string }) {
 
   if (isLoading) {
     return (
-      <div className="min-h-svh flex items-center justify-center bg-background">
+      <div className="min-h-dvh flex items-center justify-center">
         <SpinnerGap className="size-8 text-primary animate-spin" weight="bold" />
       </div>
     )
@@ -162,7 +162,7 @@ export function WelcomeClient({ locale }: { locale: string }) {
   const name = profile?.display_name || profile?.username || "there"
 
   return (
-    <div className="min-h-svh flex items-center justify-center bg-background p-4 py-8">
+    <div className="min-h-dvh flex items-center justify-center p-4 py-8">
       <div className="w-full max-w-lg">
         <div className="flex items-center justify-center gap-2 mb-6">
           {[1, 2, 3, 4].map((s) => (

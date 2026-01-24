@@ -30,7 +30,7 @@ const statusColors: Record<string, string> = {
   pending: "bg-warning/10 text-warning",
   paid: "bg-brand/10 text-brand",
   processing: "bg-order-processing/10 text-order-processing",
-  shipped: "bg-account-info-soft text-account-info",
+  shipped: "bg-order-shipped/10 text-order-shipped",
   delivered: "bg-success/10 text-success",
   cancelled: "bg-destructive/10 text-destructive",
 }

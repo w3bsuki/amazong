@@ -50,18 +50,78 @@ interface AdminDoc {
   category: string
   status: string
   author_id: string | null
+  locale: string
   created_at: string | null
   updated_at: string | null
 }
 
 const CATEGORIES = [
+  "product",
   "policies",
   "payments",
   "plans",
   "roadmap",
+  "ops",
   "guides",
+  "legal",
   "general",
 ] as const
+
+const CYRILLIC_TO_LATIN: Record<string, string> = {
+  а: "a",
+  б: "b",
+  в: "v",
+  г: "g",
+  д: "d",
+  е: "e",
+  ж: "zh",
+  з: "z",
+  и: "i",
+  й: "y",
+  к: "k",
+  л: "l",
+  м: "m",
+  н: "n",
+  о: "o",
+  п: "p",
+  р: "r",
+  с: "s",
+  т: "t",
+  у: "u",
+  ф: "f",
+  х: "h",
+  ц: "ts",
+  ч: "ch",
+  ш: "sh",
+  щ: "sht",
+  ъ: "a",
+  ь: "y",
+  ю: "yu",
+  я: "ya",
+  ѝ: "i",
+}
+
+function slugifyTitle(title: string) {
+  const lowered = title.trim().toLowerCase()
+  const transliterated = lowered.replace(/[\u0400-\u04FF]/g, (char) => CYRILLIC_TO_LATIN[char] ?? char)
+  const withoutDiacritics = transliterated.normalize("NFKD").replace(/[\u0300-\u036f]/g, "")
+
+  return withoutDiacritics
+    .replace(/[^a-z0-9\s-]/g, " ")
+    .replace(/[\s_-]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+}
+
+function makeUniqueSlug(baseSlug: string, existingSlugs: Set<string>) {
+  const fallback = baseSlug || `doc-${Date.now()}`
+  let slug = fallback
+  let i = 2
+  while (existingSlugs.has(slug)) {
+    slug = `${fallback}-${i}`
+    i += 1
+  }
+  return slug
+}
 
 const STATUS_COLORS: Record<string, string> = {
   draft: "bg-admin-draft-bg text-admin-draft",
@@ -98,7 +158,8 @@ export function AdminDocsContent({ initialDocs }: { initialDocs: AdminDoc[] }) {
   const loadDocs = async () => {
     const { data } = await supabase
       .from("admin_docs")
-      .select("id, title, slug, content, category, status, author_id, created_at, updated_at")
+      .select("id, title, slug, content, category, status, author_id, locale, created_at, updated_at")
+      .eq("locale", locale)
       .order("category")
       .order("title")
 
@@ -140,7 +201,9 @@ export function AdminDocsContent({ initialDocs }: { initialDocs: AdminDoc[] }) {
         toast.error(t("toasts.titleRequired"))
         return
       }
-      const slug = doc.title.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "")
+      const baseSlug = slugifyTitle(doc.title)
+      const existingSlugs = new Set(docs.map((d) => d.slug))
+      const slug = makeUniqueSlug(baseSlug, existingSlugs)
       const { data, error } = await supabase
         .from("admin_docs")
         .insert({
@@ -149,6 +212,7 @@ export function AdminDocsContent({ initialDocs }: { initialDocs: AdminDoc[] }) {
           content: doc.content ?? null,
           category: doc.category || "general",
           status: doc.status || "draft",
+          locale,
         })
         .select()
         .single()
@@ -188,6 +252,7 @@ export function AdminDocsContent({ initialDocs }: { initialDocs: AdminDoc[] }) {
       const response = await fetch("/api/admin/docs/seed", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ locale }),
       })
       const payload: unknown = await response.json()
 

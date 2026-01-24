@@ -151,7 +151,7 @@ export function AccountWishlistToolbar({
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder={labels.searchPlaceholder}
-            className="pl-9 pr-9 h-10 rounded-full bg-account-stat-bg border-account-stat-border"
+            className="pl-9 pr-9 h-10 rounded-full bg-muted/50 border-border/40"
             aria-label={labels.search}
           />
           {query && (
@@ -178,21 +178,21 @@ export function AccountWishlistToolbar({
               setCategoryFilter(null)
               applyUrl({ q: query, category: null, stock: stockFilter })
             }}
-            className={cn(
-              "flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-all shrink-0",
-              !categoryFilter
-                ? "bg-foreground text-background shadow-sm"
-                : "bg-account-stat-bg border border-account-stat-border text-foreground hover:bg-account-card-hover"
-            )}
-          >
-            {labels.all}
-            <span className={cn(
-              "text-xs tabular-nums",
-              !categoryFilter ? "text-white/80" : "text-muted-foreground"
-            )}>
-              {totalItems}
-            </span>
-          </button>
+              className={cn(
+                "flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-all shrink-0",
+                !categoryFilter
+                  ? "bg-foreground text-background shadow-sm"
+                  : "bg-background border border-border/60 text-foreground hover:bg-muted/40"
+              )}
+            >
+              {labels.all}
+              <span className={cn(
+                "text-xs tabular-nums",
+                !categoryFilter ? "text-background/80" : "text-muted-foreground"
+              )}>
+                {totalItems}
+              </span>
+            </button>
 
           {/* Category chips */}
           {categories.map((cat) => (
@@ -207,13 +207,13 @@ export function AccountWishlistToolbar({
                 "flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-all shrink-0",
                 categoryFilter === cat.slug
                   ? "bg-foreground text-background shadow-sm"
-                  : "bg-account-stat-bg border border-account-stat-border text-foreground hover:bg-account-card-hover"
+                  : "bg-background border border-border/60 text-foreground hover:bg-muted/40"
               )}
             >
               {cat.name}
               <span className={cn(
                 "text-xs tabular-nums",
-                categoryFilter === cat.slug ? "text-white/80" : "text-muted-foreground"
+                categoryFilter === cat.slug ? "text-background/80" : "text-muted-foreground"
               )}>
                 {cat.count}
               </span>
@@ -228,9 +228,9 @@ export function AccountWishlistToolbar({
                   "flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-all shrink-0",
                   stockFilter !== "all"
                     ? stockFilter === "in-stock"
-                      ? "bg-success text-white shadow-sm"
-                      : "bg-warning text-white shadow-sm"
-                    : "bg-account-stat-bg border border-account-stat-border text-foreground hover:bg-account-card-hover"
+                      ? "bg-success text-primary-foreground shadow-sm"
+                      : "bg-warning text-foreground shadow-sm"
+                    : "bg-background border border-border/60 text-foreground hover:bg-muted/40"
                 )}
               >
                 {stockFilter === "in-stock" ? (
@@ -427,15 +427,15 @@ export function AccountWishlistToolbar({
       {hasActiveFilters && (
         <div className="flex items-center gap-2 sm:hidden flex-wrap">
           <span className="text-xs text-muted-foreground">{labels.filter}:</span>
-          {selectedCategory && (
-            <Badge
-              variant="secondary"
-              className="gap-1 bg-account-accent-soft text-account-stat-value"
-            >
-              {selectedCategory.name}
-              <button
-                onClick={() => {
-                  setCategoryFilter(null)
+            {selectedCategory && (
+              <Badge
+                variant="secondary"
+                className="gap-1 bg-primary/10 text-primary"
+              >
+                {selectedCategory.name}
+                <button
+                  onClick={() => {
+                    setCategoryFilter(null)
                   applyUrl({ q: query, category: null, stock: stockFilter })
                 }}
                 className="hover:text-foreground"

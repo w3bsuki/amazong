@@ -224,7 +224,7 @@ export function MobileSearchOverlay({
           aria-labelledby={overlayTitleId}
           aria-describedby={overlayDescId}
           className={cn(
-            "fixed inset-0 z-[60]",
+            "fixed inset-0 z-60",
             "flex flex-col",
             "bg-background"
           )}

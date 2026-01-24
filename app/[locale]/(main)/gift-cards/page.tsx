@@ -6,6 +6,7 @@ import type { Metadata } from "next"
 import GiftCardsFeaturedDesigns from "./_components/gift-cards-featured-designs"
 import GiftCardsHero from "./_components/gift-cards-hero"
 import GiftCardsQuickActions from "./_components/gift-cards-quick-actions"
+import { PageShell } from "@/components/shared/page-shell"
 
 // Generate static params for all locales - required for Next.js 16 Cache Components
 export function generateStaticParams() {
@@ -36,7 +37,7 @@ export default async function GiftCardsPage({ params }: { params: Promise<{ loca
   const tBreadcrumbs = await getTranslations("Breadcrumbs")
 
   return (
-    <div className="min-h-screen bg-muted pb-12">
+    <PageShell variant="muted" className="pb-12">
       <div className="container pt-4">
         <AppBreadcrumb
           items={breadcrumbPresets(tBreadcrumbs).giftCards}
@@ -51,6 +52,6 @@ export default async function GiftCardsPage({ params }: { params: Promise<{ loca
         <GiftCardsQuickActions t={t} />
         <GiftCardsFeaturedDesigns t={t} />
       </div>
-    </div>
+    </PageShell>
   )
 }

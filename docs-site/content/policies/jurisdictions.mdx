@@ -1,0 +1,63 @@
+# Jurisdictions & Availability (Draft)
+
+Internal planning document. Not legal advice.
+
+## Purpose
+
+Treido must only operate in jurisdictions where we can:
+
+- legally provide a marketplace service,
+- process payments via Stripe (including Connect),
+- meet consumer protection and data protection requirements (e.g. GDPR),
+- run KYC/KYB/AML where required (primarily via Stripe capabilities).
+
+## Initial launch posture
+
+- **Primary launch market:** Bulgaria
+- **Expansion posture:** EU/EEA countries with Stripe + operational coverage (support, disputes, shipping)
+
+## What determines whether a country is “supported”
+
+### Payments & payouts
+
+- Stripe availability for:
+  - card payments in the buyer’s currency,
+  - Stripe Connect payouts in the seller’s country,
+  - required compliance capabilities (identity verification, business verification).
+
+### Legal & compliance
+
+- consumer protection (returns, unfair terms, dispute rights)
+- data protection (GDPR for EU/EEA; local variants elsewhere)
+- AML obligations depending on product/payment flow (use Stripe Connect where possible)
+- sanctions and restricted territories (always excluded)
+
+### Operations
+
+- shipping coverage and tracking reliability (or clear shipping rules)
+- dispute and support capacity (SLA, evidence handling, refunds)
+- moderation language coverage (BG/EN at minimum)
+
+## Country decision matrix (template)
+
+Use this table as a checklist. “Yes” requires evidence/links stored internally.
+
+| Country | Stripe Payments | Stripe Connect payouts | Ops coverage | Legal reviewed | Status |
+|--------|------------------|------------------------|-------------|----------------|--------|
+| Bulgaria | Yes | Yes | Yes | Pending | Launch |
+| EU/EEA (target list) | Pending | Pending | Pending | Pending | Evaluate |
+| Non‑EU (future) | Unknown | Unknown | Unknown | Unknown | Not planned |
+
+## Required artifacts (before enabling a country)
+
+- Written legal opinion or counsel review notes
+- Updated Terms/Privacy that cover the jurisdiction
+- Support playbooks and moderation coverage
+- Monitoring + incident response readiness
+
+## Related docs
+
+- [Terms of Service (Draft)](/policies/terms)
+- [Privacy Policy (Draft)](/policies/privacy)
+- [KYC / KYB / AML](/policies/kyc)
+- [Launch Plan](/business/ops/launch-plan)

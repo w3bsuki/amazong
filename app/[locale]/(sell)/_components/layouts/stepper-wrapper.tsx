@@ -6,6 +6,7 @@ import { ArrowRight, CaretLeft, Rocket, X, SpinnerGap } from "@phosphor-icons/re
 import { Link } from "@/i18n/routing";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { PageShell } from "@/components/shared/page-shell";
 import { useSellFormContext } from "../sell-form-provider";
 
 // ============================================================================
@@ -104,7 +105,7 @@ export function StepperWrapper({
   };
 
   return (
-    <div className="flex min-h-dvh flex-col bg-background">
+    <PageShell fullHeight={false} className="flex flex-1 flex-col">
       {/* Header - Premium minimal with dot progress */}
       <header className="sticky top-0 z-40 bg-background/95 backdrop-blur-md border-b border-border/40 pt-safe">
         <div className="flex items-center h-14 px-4">
@@ -222,6 +223,6 @@ export function StepperWrapper({
           )}
         </div>
       </footer>
-    </div>
+    </PageShell>
   );
 }
