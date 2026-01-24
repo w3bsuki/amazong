@@ -38,11 +38,11 @@ function Drawer({
   const isIOS = isIOSDevice()
   const resolvedNoBodyStyles = noBodyStyles ?? isIOS
 
-  // Vaul's built-in scroll locking uses a Mobile Safari strategy that can cause
-  // sticky headers to jump/disappear (it manipulates scroll position + body offset).
-  // For our drawers (no inputs), prefer disabling that strategy on iOS and rely on
-  // the overlay + overscroll containment instead. Callers can override if needed.
-  const resolvedDisablePreventScroll = disablePreventScroll ?? isIOS
+  // Vaul's prop name is misleading: `disablePreventScroll` actually ENABLES the
+  // scroll lock when true. On iOS Safari that strategy offsets <body> by scrollY,
+  // which breaks `position: sticky` headers (header "disappears" after scrolling).
+  // Default to disabling that strategy on iOS and rely on overlay/overscroll instead.
+  const resolvedDisablePreventScroll = disablePreventScroll ?? !isIOS
 
   return (
     <DrawerPrimitive.Root
