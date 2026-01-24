@@ -518,7 +518,7 @@ export function SidebarMenuV2({ user, triggerClassName, userStats }: SidebarMenu
                                             {tCommon("cancel")}
                                         </AlertDialogCancel>
                                         <AlertDialogAction
-                                            className="flex-1 h-10 text-sm font-medium bg-cta-trust-blue hover:bg-cta-trust-blue-hover text-cta-trust-blue-text"
+                                            className="flex-1 h-10 text-sm font-medium"
                                             onClick={() => {
                                                 setIsSigningOut(true)
                                                 const form = document.createElement('form')

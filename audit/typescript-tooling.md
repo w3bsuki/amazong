@@ -22,7 +22,7 @@
 
 ### Tailwind scans
 
-- `pnpm -s styles:scan` → 0 palette findings, 0 arbitrary findings.
+- `pnpm -s styles:scan` → 0 palette findings, 0 arbitrary findings, 0 missing semantic color tokens.
 
 ### Knip (dead code)
 

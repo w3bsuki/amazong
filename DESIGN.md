@@ -61,6 +61,26 @@ pnpm -s styles:gate
 
 ---
 
+## Buttons
+
+Use the shadcn `Button` primitive (`components/ui/button.tsx`) for all CTAs.
+
+- **Default button = primary CTA** (Twitter blue) → use `<Button>` or `variant="cta"`.
+- Secondary actions → `variant="outline"` or `variant="secondary"`.
+- Icon-only buttons (headers, toolbars) → `variant="ghost"` + `size="icon"`.
+- Urgency (deals/sales) → `variant="deal"`.
+- Rare “inverted black” actions → `variant="black"`.
+
+Avoid nesting interactive elements. For navigation CTAs, use `asChild`:
+
+```tsx
+<Button asChild>
+  <Link href="/checkout">Checkout</Link>
+</Button>
+```
+
+---
+
 ## Semantic Color System
 
 Our globals.css defines rich semantic colors. **USE THEM.**

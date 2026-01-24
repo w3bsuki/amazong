@@ -481,7 +481,7 @@ export function NotificationsDropdown({ user }: NotificationsDropdownProps) {
         {/* Footer */}
         <div className="px-4 py-3 bg-muted border-t border-border">
           <Link href="/account/notifications" onClick={() => setIsOpen(false)}>
-            <Button className="w-full h-8 text-sm bg-cta-trust-blue hover:bg-cta-trust-blue-hover text-cta-trust-blue-text">
+            <Button variant="cta" className="w-full h-8 text-sm">
               {t("viewAll")}
               <CaretRight size={14} className="ml-1" />
             </Button>

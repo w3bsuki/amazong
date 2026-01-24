@@ -142,7 +142,7 @@ export function MessagesDropdown({ user }: MessagesDropdownProps) {
         {/* Footer */}
         <div className="p-3 bg-muted border-t border-border">
           <Link href="/chat" onClick={() => setIsOpen(false)}>
-            <Button className="w-full h-9 text-sm bg-cta-trust-blue hover:bg-cta-trust-blue-hover text-cta-trust-blue-text">
+            <Button variant="cta" className="w-full h-9 text-sm">
               {t("openInbox")}
               <CaretRight size={14} className="ml-1" />
             </Button>

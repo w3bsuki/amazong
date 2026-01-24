@@ -443,7 +443,7 @@ export function MobileSearchOverlay({
                           onClick={() => handleSearch(search)}
                           className="w-full flex items-center gap-2 px-inset py-3 hover:bg-muted active:bg-muted/80 text-left touch-action-manipulation transition-colors"
                         >
-                          <span className="size-6 rounded-full shrink-0 flex items-center justify-center text-xs font-bold text-white bg-cta-trust-blue" aria-hidden="true">
+                          <span className="size-6 rounded-full shrink-0 flex items-center justify-center text-xs font-bold text-primary-foreground bg-brand" aria-hidden="true">
                             {index + 1}
                           </span>
                           <span className="flex-1 text-base text-foreground">{search}</span>

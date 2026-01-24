@@ -539,9 +539,6 @@
   --color-search-focus-ring: var(--primary);
 
   /* === COLORS: CTA Buttons === */
-  --color-cta-trust-blue: var(--primary);
-  --color-cta-trust-blue-hover: var(--primary);
-  --color-cta-trust-blue-text: var(--primary-foreground);
   --color-cta-primary: var(--primary);
   --color-cta-primary-hover: var(--primary);
   --color-cta-primary-text: var(--primary-foreground);

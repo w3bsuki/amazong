@@ -10,8 +10,8 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        // Treido: Solid inverted default, no gradients
-        default: "bg-foreground text-background hover:bg-foreground/90 border border-foreground",
+        // shadcn-aligned default: primary CTA (Twitter blue)
+        default: "bg-primary text-primary-foreground hover:bg-primary/90",
         destructive:
           "bg-destructive text-destructive-foreground hover:bg-destructive/90 dark:bg-destructive/60",
         outline:
@@ -21,8 +21,8 @@ const buttonVariants = cva(
         ghost:
           "hover:bg-accent hover:text-accent-foreground active:bg-accent/80",
         link: "text-link underline-offset-4 hover:underline hover:text-link-hover",
-        // Marketplace CTA variants
-        cta: "bg-cta-primary text-cta-primary-text hover:bg-cta-primary-hover",
+        // Marketplace CTA alias (kept for semantic readability)
+        cta: "bg-primary text-primary-foreground hover:bg-primary/90",
         deal: "bg-deal text-deal-foreground hover:bg-deal/90",
         // Treido black CTA (primary marketplace action)
         black: "bg-foreground text-background hover:bg-foreground/90 border border-foreground",

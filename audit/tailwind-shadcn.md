@@ -28,9 +28,11 @@ Results:
 
 - Palette usage: **0 files / 0 findings**
 - Arbitrary values/hex/oklch: **0 files / 0 findings**
+- Missing semantic color tokens: **0 files / 0 missing**
 - Reports:
   - `cleanup/palette-scan-report.txt`
   - `cleanup/arbitrary-scan-report.txt`
+  - `cleanup/semantic-token-scan-report.txt`
 
 ## Findings (Phase 1)
 
