@@ -535,7 +535,7 @@ export function ProductFormModal({
                             Main
                           </Badge>
                         )}
-                        <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-1">
+                        <div className="absolute inset-0 bg-surface-overlay opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-1">
                           <Button
                             variant="ghost"
                             size="icon"

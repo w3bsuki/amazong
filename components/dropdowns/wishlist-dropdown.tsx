@@ -54,7 +54,7 @@ export function WishlistDropdown() {
               {mounted && displayItems > 0 && (
                 <CountBadge
                   count={displayItems}
-                  className="absolute -top-1 -right-1.5 bg-destructive text-destructive-foreground ring-2 ring-header-bg h-4 min-w-4 px-1 text-2xs"
+                  className="absolute -top-1 -right-1.5 bg-wishlist-active text-primary-foreground ring-2 ring-header-bg h-4 min-w-4 px-1 text-2xs"
                   aria-hidden="true"
                 />
               )}

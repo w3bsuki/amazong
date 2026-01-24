@@ -193,7 +193,7 @@ export function SidebarMenuV2({ user, triggerClassName, userStats }: SidebarMenu
                 {/* ================================================================
                     HEADER - Clean app-style header
                 ================================================================ */}
-                <header className="bg-brand shrink-0">
+                <header className="bg-background border-b border-border/50 shrink-0">
                     {/* Top row: Account left, utility icons right */}
                     <div className="h-14 px-3 flex items-center">
                         {/* LEFT: Account or Sign In */}
@@ -203,30 +203,26 @@ export function SidebarMenuV2({ user, triggerClassName, userStats }: SidebarMenu
                                 onClick={() => setOpen(false)}
                                 className="flex items-center gap-2.5 min-w-0 hover:opacity-90 transition-opacity"
                             >
-                                <div className="size-touch shrink-0 rounded-full bg-primary-foreground/20 flex items-center justify-center">
-                                    <UserCircle size={26} weight="fill" className="text-primary-foreground" />
+                                <div className="size-touch shrink-0 rounded-full bg-muted flex items-center justify-center">
+                                    <UserCircle size={26} weight="fill" className="text-brand" />
                                 </div>
-                                <span className="text-primary-foreground text-base font-semibold truncate max-w-32">
+                                <span className="text-foreground text-base font-semibold truncate max-w-32">
                                     {firstName || displayName}
                                 </span>
                             </Link>
                         ) : (
                             <div className="flex items-center gap-2">
-                                <Link
-                                    href="/auth/login"
-                                    onClick={() => setOpen(false)}
-                                    className="flex items-center gap-1.5 h-9 px-4 rounded-full bg-primary-foreground text-brand text-sm font-semibold hover:bg-primary-foreground/90 transition-colors"
-                                >
-                                    <SignInIcon size={20} weight="bold" />
-                                    <span>{t("signIn")}</span>
-                                </Link>
-                                <Link
-                                    href="/auth/sign-up"
-                                    onClick={() => setOpen(false)}
-                                    className="h-9 px-4 rounded-full text-primary-foreground text-sm font-medium hover:bg-primary-foreground/10 transition-colors flex items-center"
-                                >
-                                    {tNav("register")}
-                                </Link>
+                                <Button asChild size="sm" variant="cta">
+                                    <Link href="/auth/login" onClick={() => setOpen(false)} className="gap-1.5">
+                                        <SignInIcon size={20} weight="bold" />
+                                        <span>{t("signIn")}</span>
+                                    </Link>
+                                </Button>
+                                <Button asChild size="sm" variant="outline">
+                                    <Link href="/auth/sign-up" onClick={() => setOpen(false)}>
+                                        {tNav("register")}
+                                    </Link>
+                                </Button>
                             </div>
                         )}
 
@@ -239,7 +235,7 @@ export function SidebarMenuV2({ user, triggerClassName, userStats }: SidebarMenu
                                 <Link
                                     href="/account/settings"
                                     onClick={() => setOpen(false)}
-                                    className="size-touch rounded-full flex items-center justify-center text-primary-foreground/70 hover:text-primary-foreground hover:bg-primary-foreground/10 transition-colors"
+                                    className="size-touch rounded-full flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
                                     aria-label={tAccountDrawer("settings")}
                                 >
                                     <Gear size={24} weight="regular" />
@@ -251,7 +247,7 @@ export function SidebarMenuV2({ user, triggerClassName, userStats }: SidebarMenu
                                 <DropdownMenuTrigger asChild>
                                     <button
                                         type="button"
-                                        className="size-touch rounded-full flex items-center justify-center text-primary-foreground/70 hover:text-primary-foreground hover:bg-primary-foreground/10 transition-colors"
+                                        className="size-touch rounded-full flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
                                         aria-label={tLocaleSwitcher('label')}
                                     >
                                         <Image
@@ -285,7 +281,7 @@ export function SidebarMenuV2({ user, triggerClassName, userStats }: SidebarMenu
                             <DrawerClose asChild>
                                 <button
                                     type="button"
-                                    className="size-touch rounded-full flex items-center justify-center text-primary-foreground/70 hover:text-primary-foreground hover:bg-primary-foreground/10 transition-colors"
+                                    className="size-touch rounded-full flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
                                 >
                                     <X size={24} weight="bold" />
                                     <span className="sr-only">{t('close')}</span>

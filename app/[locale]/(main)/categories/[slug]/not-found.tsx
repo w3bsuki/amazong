@@ -1,17 +1,9 @@
 import { Button } from "@/components/ui/button"
 import { Link } from "@/i18n/routing"
-import { validateLocale } from "@/i18n/routing"
-import { getTranslations, setRequestLocale } from "next-intl/server"
+import { getTranslations } from "next-intl/server"
 
-export default async function NotFound({
-  params,
-}: {
-  params: Promise<{ locale: string }>
-}) {
-  const { locale: localeParam } = await params
-  const locale = validateLocale(localeParam)
-  setRequestLocale(locale)
-  const t = await getTranslations({ locale, namespace: "CategoryNotFound" })
+export default async function NotFound() {
+  const t = await getTranslations("CategoryNotFound")
 
   return (
     <div className="min-h-(--dialog-h-50vh) flex items-center justify-center px-4">

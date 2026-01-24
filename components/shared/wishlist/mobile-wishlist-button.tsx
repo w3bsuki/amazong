@@ -43,7 +43,7 @@ export function MobileWishlistButton() {
           {totalItems > 0 && (
             <CountBadge
               count={totalItems}
-              className="absolute -top-0.5 -right-0.5 bg-destructive text-destructive-foreground ring-2 ring-header-bg h-4 min-w-4 px-1 text-2xs shadow-sm"
+              className="absolute -top-0.5 -right-0.5 bg-wishlist-active text-primary-foreground ring-2 ring-header-bg h-4 min-w-4 px-1 text-2xs shadow-sm"
               aria-hidden="true"
             />
           )}

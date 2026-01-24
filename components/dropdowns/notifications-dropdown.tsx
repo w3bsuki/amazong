@@ -381,7 +381,7 @@ export function NotificationsDropdown({ user }: NotificationsDropdownProps) {
               {unreadCount > 0 && (
                 <CountBadge
                   count={unreadCount}
-                  className="absolute -top-0.5 -right-0.5 md:-top-1 md:-right-1 bg-destructive text-destructive-foreground ring-2 ring-header-bg h-4 min-w-4 md:h-4.5 md:min-w-4.5 px-1 text-2xs shadow-sm"
+                  className="absolute -top-0.5 -right-0.5 md:-top-1 md:-right-1 bg-notification text-primary-foreground ring-2 ring-header-bg h-4 min-w-4 md:h-4.5 md:min-w-4.5 px-1 text-2xs shadow-sm"
                   aria-hidden="true"
                 />
               )}
@@ -401,7 +401,7 @@ export function NotificationsDropdown({ user }: NotificationsDropdownProps) {
             <Bell size={18} weight="regular" className="text-muted-foreground" />
             <h3 className="font-semibold text-sm text-foreground">{t("title")}</h3>
             {unreadCount > 0 && (
-              <span className="text-2xs bg-destructive text-destructive-foreground px-1.5 py-0.5 rounded-full">
+              <span className="text-2xs bg-notification text-primary-foreground px-1.5 py-0.5 rounded-full">
                 {unreadCount}
               </span>
             )}

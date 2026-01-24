@@ -20,7 +20,7 @@ export function ImagePreviewModal({
 }: ImagePreviewModalProps) {
   return (
     <div 
-      className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center p-4 animate-in fade-in-0 duration-200"
+      className="fixed inset-0 z-50 bg-surface-gallery text-overlay-text flex items-center justify-center p-4 animate-in fade-in-0 duration-200"
       onClick={onClose}
       role="dialog"
       aria-modal="true"
@@ -29,7 +29,7 @@ export function ImagePreviewModal({
       <button
         type="button"
         onClick={onClose}
-        className="absolute top-4 right-4 p-3 rounded-full bg-overlay-light/10 hover:bg-overlay-light/20 text-white transition-colors min-h-11 min-w-11"
+        className="absolute top-4 right-4 p-3 rounded-full bg-overlay-light/10 hover:bg-overlay-light/20 text-overlay-text transition-colors min-h-11 min-w-11"
         aria-label="Close preview"
       >
         <X className="size-6" weight="bold" />

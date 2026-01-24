@@ -5,7 +5,7 @@ export function AboutPageSkeleton() {
   return (
     <PageShell className="pb-20 sm:pb-12">
       <div className="bg-brand text-primary-foreground relative">
-        <div className="absolute inset-0 bg-black/20" />
+        <div className="absolute inset-0 bg-overlay-dark/20" />
         <div className="container py-12 md:py-20 relative z-10">
           <Skeleton className="h-8 w-48 mb-4 bg-primary-foreground/20" />
           <Skeleton className="h-12 w-96 mb-4 bg-primary-foreground/20" />

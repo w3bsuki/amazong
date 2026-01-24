@@ -6,13 +6,14 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { AccountLayoutContent } from "./account-layout-content";
 import { headers } from "next/headers";
 import { createSubscriptionCheckoutSession } from "@/app/actions/subscriptions";
+import { connection } from "next/server";
 
 // Generate static params for all supported locales
 export function generateStaticParams() {
     return routing.locales.map((locale) => ({ locale }));
 }
 
-function AccountLayoutSkeleton({ children }: { children: React.ReactNode }) {
+function AccountLayoutSkeleton() {
     return (
         <div className="flex min-h-svh w-full">
             {/* Sidebar skeleton */}
@@ -32,10 +33,57 @@ function AccountLayoutSkeleton({ children }: { children: React.ReactNode }) {
                     <Skeleton className="h-4 w-32" />
                 </div>
                 <main className="flex-1 p-4">
-                    {children}
+                    <div className="space-y-4">
+                        <Skeleton className="h-8 w-64" />
+                        <Skeleton className="h-4 w-full" />
+                        <Skeleton className="h-4 w-11/12" />
+                        <Skeleton className="h-4 w-10/12" />
+                    </div>
                 </main>
             </div>
         </div>
+    );
+}
+
+async function AccountLayoutGate({
+    children,
+    modal,
+    locale,
+}: {
+    children: React.ReactNode;
+    modal: React.ReactNode;
+    locale: string;
+}) {
+    // Mark route as dynamic without using route segment config (incompatible with cacheComponents).
+    await connection();
+
+    const pathname = (await headers()).get("x-pathname") || `/${locale}/account`;
+
+    // Check auth on server side
+    let user: unknown = null;
+    try {
+        const supabase = await createClient();
+        const { data, error } = await supabase.auth.getUser();
+        user = error ? null : data.user;
+    } catch {
+        user = null;
+    }
+
+    if (!user) {
+        redirect({ href: { pathname: "/auth/login", query: { next: pathname } }, locale });
+    }
+
+    const userEmail = (user as { email?: string } | null)?.email ?? "";
+    const userFullName = (user as { user_metadata?: { full_name?: string } } | null)?.user_metadata?.full_name ?? "";
+
+    return (
+        <AccountLayoutContent
+            modal={modal}
+            initialUser={{ email: userEmail, fullName: userFullName }}
+            plansModalActions={{ createSubscriptionCheckoutSession }}
+        >
+            {children}
+        </AccountLayoutContent>
     );
 }
 
@@ -64,34 +112,11 @@ export default async function AccountLayout({
     // Enable static rendering
     setRequestLocale(locale);
 
-    const pathname = (await headers()).get("x-pathname") || `/${locale}/account`;
-    
-    // Check auth on server side
-    let user: unknown = null;
-    try {
-        const supabase = await createClient();
-        const { data, error } = await supabase.auth.getUser();
-        user = error ? null : data.user;
-    } catch {
-        user = null;
-    }
-
-    if (!user) {
-        redirect({ href: { pathname: "/auth/login", query: { next: pathname } }, locale });
-    }
-
-    const userEmail = (user as { email?: string } | null)?.email ?? "";
-    const userFullName = (user as { user_metadata?: { full_name?: string } } | null)?.user_metadata?.full_name ?? "";
-
     return (
-        <Suspense fallback={<AccountLayoutSkeleton>{children}</AccountLayoutSkeleton>}>
-            <AccountLayoutContent
-                modal={modal}
-                initialUser={{ email: userEmail, fullName: userFullName }}
-                plansModalActions={{ createSubscriptionCheckoutSession }}
-            >
+        <Suspense fallback={<AccountLayoutSkeleton />}>
+            <AccountLayoutGate modal={modal} locale={locale}>
                 {children}
-            </AccountLayoutContent>
+            </AccountLayoutGate>
         </Suspense>
     );
 }

@@ -26,7 +26,7 @@ export async function AboutPageContent() {
       {/* Hero Section */}
       <div className="bg-brand text-primary-foreground relative">
         {/* Overlay for better text contrast */}
-        <div className="absolute inset-0 bg-black/20" aria-hidden="true" />
+        <div className="absolute inset-0 bg-overlay-dark/20" aria-hidden="true" />
         <div className="container py-12 md:py-20 relative z-10">
           <div className="[&_nav]:border-primary-foreground/20 [&_nav]:mb-4 [&_a]:text-primary-foreground/80 [&_a:hover]:text-primary-foreground [&_span[aria-current]]:text-primary-foreground [&_svg]:text-primary-foreground/50">
             <AppBreadcrumb

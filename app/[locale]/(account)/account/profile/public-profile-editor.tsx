@@ -442,11 +442,11 @@ export function PublicProfileEditor({
                 <ImageIcon className="size-8 text-muted-foreground" />
               </div>
             )}
-            <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+            <div className="absolute inset-0 bg-surface-overlay opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
               {isUploadingBanner ? (
-                <SpinnerGap className="size-6 text-white animate-spin" />
+                <SpinnerGap className="size-6 text-overlay-text animate-spin" />
               ) : (
-                <Camera className="size-6 text-white" />
+                <Camera className="size-6 text-overlay-text" />
               )}
             </div>
           </div>

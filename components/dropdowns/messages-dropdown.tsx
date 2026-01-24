@@ -105,7 +105,7 @@ export function MessagesDropdown({ user }: MessagesDropdownProps) {
             {unreadCount > 0 && (
               <CountBadge
                 count={unreadCount}
-                className="absolute -top-1 -right-1 bg-destructive text-destructive-foreground ring-2 ring-header-bg h-4.5 min-w-4.5 px-1 text-2xs shadow-sm"
+                className="absolute -top-1 -right-1 bg-notification text-primary-foreground ring-2 ring-header-bg h-4.5 min-w-4.5 px-1 text-2xs shadow-sm"
                 aria-hidden="true"
               />
             )}
@@ -124,7 +124,7 @@ export function MessagesDropdown({ user }: MessagesDropdownProps) {
           <ChatCircle size={20} weight="regular" className="text-muted-foreground" />
           <h3 className="font-semibold text-base text-foreground">{t("title")}</h3>
           {unreadCount > 0 && (
-            <span className="text-xs bg-destructive text-destructive-foreground px-2 py-0.5 rounded-full">
+            <span className="text-xs bg-notification text-primary-foreground px-2 py-0.5 rounded-full">
               {unreadCount}
             </span>
           )}

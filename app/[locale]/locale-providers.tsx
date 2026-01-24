@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react'
+import { Suspense, type ReactNode } from 'react'
 import { getMessages, setRequestLocale } from 'next-intl/server'
 
 import { ThemeProvider } from '@/components/providers/theme-provider'
@@ -40,7 +40,9 @@ export default async function LocaleProviders({
                 <WishlistProvider>
                   <DrawerProvider>
                     {children}
-                    <GlobalDrawers />
+                    <Suspense fallback={null}>
+                      <GlobalDrawers />
+                    </Suspense>
                   </DrawerProvider>
                 </WishlistProvider>
               </CartProvider>

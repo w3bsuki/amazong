@@ -105,6 +105,13 @@ Our globals.css defines rich semantic colors. **USE THEM.**
 | `--surface-overlay` | `bg-surface-overlay` | Image counter overlays |
 | `--surface-floating` | `bg-surface-floating` | Floating buttons on gallery |
 
+### Overlays (no `bg-black` / `text-white`)
+| Token | Class | Use |
+|-------|-------|-----|
+| `--color-overlay-dark` | `bg-overlay-dark` | Backdrops & dark scrims |
+| `--color-overlay-text` | `text-overlay-text` | Text on dark overlays |
+| `--color-primary-foreground` | `text-primary-foreground` | Text on `bg-primary` / `bg-brand` |
+
 ### Pricing
 | Token | Class | Use |
 |-------|-------|-----|

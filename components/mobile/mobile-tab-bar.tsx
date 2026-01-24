@@ -171,7 +171,7 @@ export function MobileTabBar({ categories }: MobileTabBarProps) {
               {unreadCount > 0 && (
                 <CountBadge
                   count={unreadCount}
-                  className="absolute -top-1 -right-2 bg-destructive text-destructive-foreground text-2xs min-w-3.5 h-3.5 px-0.5"
+                  className="absolute -top-1 -right-2 bg-notification text-primary-foreground text-2xs min-w-3.5 h-3.5 px-0.5"
                   aria-hidden="true"
                 />
               )}

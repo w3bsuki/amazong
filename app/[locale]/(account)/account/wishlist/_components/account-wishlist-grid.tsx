@@ -423,7 +423,7 @@ export function AccountWishlistGrid({ items, locale, onRemove }: WishlistGridPro
                 </div>
               )}
               {/* Hover overlay with quick actions */}
-              <div className="absolute inset-0 z-20 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-end justify-center pb-4">
+              <div className="absolute inset-0 z-20 bg-surface-overlay opacity-0 group-hover:opacity-100 transition-opacity flex items-end justify-center pb-4">
                 <div className="flex items-center gap-2">
                   <Button
                     size="sm"

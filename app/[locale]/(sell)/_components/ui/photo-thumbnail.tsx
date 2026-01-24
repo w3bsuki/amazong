@@ -52,7 +52,7 @@ export function PhotoThumbnail({
       onDragOver={onDragOver}
       onDragEnd={onDragEnd}
       className={cn(
-        "relative aspect-square overflow-hidden rounded-md border bg-muted transition-colors",
+        "group relative aspect-square overflow-hidden rounded-md border bg-muted transition-colors",
         isDragging 
           ? "border-primary border-dashed opacity-50 scale-95" 
           : "border-border/40 hover:border-primary/30",
@@ -81,19 +81,19 @@ export function PhotoThumbnail({
       <button
         type="button"
         onClick={(e) => { e.stopPropagation(); onRemove(); }}
-        className="absolute top-1.5 right-1.5 z-10 p-1 rounded-full bg-background/90 backdrop-blur-xs text-destructive shadow-sm hover:bg-destructive hover:text-white transition-colors"
+        className="absolute top-1.5 right-1.5 z-10 p-1 rounded-full bg-background/90 backdrop-blur-xs text-destructive shadow-sm hover:bg-destructive hover:text-destructive-foreground transition-colors"
         title="Remove"
       >
         <Trash className="size-3" weight="bold" />
       </button>
 
       {/* Position Number - Bottom left */}
-      <div className="absolute bottom-1.5 left-1.5 bg-black/40 backdrop-blur-xs text-white text-2xs font-bold px-1 py-0.5 rounded-md">
+      <div className="absolute bottom-1.5 left-1.5 bg-surface-overlay backdrop-blur-xs text-overlay-text text-2xs font-bold px-1 py-0.5 rounded-md">
         {index + 1}
       </div>
 
       {/* Hover Overlay - Desktop only */}
-      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors hidden sm:block">
+      <div className="absolute inset-0 bg-transparent group-hover:bg-surface-overlay transition-colors hidden sm:block">
         <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200">
           <button
             type="button"
@@ -110,7 +110,7 @@ export function PhotoThumbnail({
         <button
           type="button"
           onClick={(e) => { e.stopPropagation(); onSetCover(); }}
-          className="absolute bottom-1.5 right-1.5 z-10 p-1 rounded-full bg-background/90 backdrop-blur-xs text-primary shadow-sm hover:bg-primary hover:text-white transition-colors sm:opacity-0 sm:group-hover:opacity-100"
+          className="absolute bottom-1.5 right-1.5 z-10 p-1 rounded-full bg-background/90 backdrop-blur-xs text-primary shadow-sm hover:bg-primary hover:text-primary-foreground transition-colors sm:opacity-0 sm:group-hover:opacity-100"
           title="Set as cover"
         >
           <Star className="size-3" />

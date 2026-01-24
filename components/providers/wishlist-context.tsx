@@ -6,7 +6,6 @@ import { createClient } from "@/lib/supabase/client"
 import { toast } from "sonner"
 import { useAuth } from "./auth-state-manager"
 import { useTranslations } from "next-intl"
-import { usePathname, useRouter } from "@/i18n/routing"
 
 function stripLocalePrefix(pathname: string): string {
   const segments = pathname.split("/").filter(Boolean)
@@ -46,8 +45,6 @@ const WishlistContext = createContext<WishlistContextType | undefined>(undefined
 
 export function WishlistProvider({ children }: { children: React.ReactNode }) {
   const { user, isLoading: authLoading } = useAuth()
-  const router = useRouter()
-  const pathname = usePathname()
   const tWishlist = useTranslations("Wishlist")
   const tAuth = useTranslations("Auth")
   const [items, setItems] = useState<WishlistItem[]>([])
@@ -174,12 +171,18 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
 
   const addToWishlist = async (product: { id: string; title: string; price: number; image: string }) => {
     if (!user?.id) {
-      const next = stripLocalePrefix(pathname)
       toast.error(tWishlist("signInRequired"), {
         action: {
           label: tAuth("signIn"),
           onClick: () => {
-            router.push({ pathname: "/auth/login", query: { next } })
+            if (typeof window === "undefined") return
+            const currentPathname = window.location.pathname || "/"
+            const next = stripLocalePrefix(currentPathname)
+
+            const localeMatch = currentPathname.match(/^\/([a-z]{2}(?:-[A-Z]{2})?)(?:\/|$)/i)
+            const localePrefix = localeMatch?.[1] ? `/${localeMatch[1]}` : ""
+            const query = `next=${encodeURIComponent(next)}`
+            window.location.assign(`${localePrefix}/auth/login?${query}`)
           }
         },
         duration: 5000,

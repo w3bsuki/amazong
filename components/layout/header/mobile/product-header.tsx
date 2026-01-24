@@ -94,7 +94,7 @@ export function MobileProductHeader({
             onClick={handleWishlistToggle}
           >
             <Heart 
-              className={cn("size-5", isWishlisted && "fill-destructive text-destructive")} 
+              className={cn("size-5", isWishlisted && "fill-wishlist-active text-wishlist-active")} 
               weight={isWishlisted ? "fill" : "regular"}
             />
           </Button>

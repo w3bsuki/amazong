@@ -1,5 +1,6 @@
 import { BusinessSidebar } from "../_components/business-sidebar"
 import { BusinessHeader } from "../_components/business-header"
+import { Suspense } from "react"
 import { 
   requireBusinessSeller, 
   getPendingTasksCount, 
@@ -10,12 +11,24 @@ import {
   SidebarInset,
   SidebarProvider,
 } from "@/components/layout/sidebar/sidebar"
+import { connection } from "next/server"
 
-export default async function BusinessDashboardLayout({
+export default function BusinessDashboardLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
+  return (
+    <Suspense fallback={null}>
+      <BusinessDashboardLayoutInner>{children}</BusinessDashboardLayoutInner>
+    </Suspense>
+  )
+}
+
+async function BusinessDashboardLayoutInner({ children }: { children: React.ReactNode }) {
+  // Mark route as dynamic without using route segment config (incompatible with cacheComponents).
+  await connection()
+
   // This will redirect non-business sellers to account page
   const businessSeller = await requireBusinessSeller("/account")
   
@@ -43,26 +56,30 @@ export default async function BusinessDashboardLayout({
         } as React.CSSProperties
       }
     >
-      <BusinessSidebar 
-        variant="inset" 
-        storeName={businessSeller.store_name}
-        pendingOrdersCount={tasks.unfulfilled}
-        subscriptionTier={subscriptionTier}
-        subscriptionName={subscriptionName}
-        hasDashboardAccess={hasAccess}
-        user={{
-          name: businessSeller.business_name || businessSeller.store_name,
-          email: businessSeller.email,
-          avatar: businessSeller.avatar_url || "/avatars/business.jpg",
-        }}
-      />
-      <SidebarInset>
-        <BusinessHeader 
+      <Suspense fallback={null}>
+        <BusinessSidebar 
+          variant="inset" 
           storeName={businessSeller.store_name}
-          isVerified={businessSeller.is_verified_business}
+          pendingOrdersCount={tasks.unfulfilled}
           subscriptionTier={subscriptionTier}
+          subscriptionName={subscriptionName}
           hasDashboardAccess={hasAccess}
+          user={{
+            name: businessSeller.business_name || businessSeller.store_name,
+            email: businessSeller.email,
+            avatar: businessSeller.avatar_url || "/avatars/business.jpg",
+          }}
         />
+      </Suspense>
+      <SidebarInset>
+        <Suspense fallback={null}>
+          <BusinessHeader 
+            storeName={businessSeller.store_name}
+            isVerified={businessSeller.is_verified_business}
+            subscriptionTier={subscriptionTier}
+            hasDashboardAccess={hasAccess}
+          />
+        </Suspense>
         <div className="flex flex-1 flex-col">
           <div className="@container/main flex flex-1 flex-col gap-2">
             {children}

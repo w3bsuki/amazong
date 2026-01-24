@@ -1,6 +1,8 @@
 import { requireBusinessSeller, getActiveSubscription, DASHBOARD_ALLOWED_TIERS } from "@/lib/auth/business"
 import { createClient } from "@/lib/supabase/server"
 import { Link, redirect } from "@/i18n/routing"
+import { Suspense } from "react"
+import { connection } from "next/server"
 import {
   Card,
   CardContent,
@@ -152,7 +154,18 @@ interface UpgradePageProps {
   params: Promise<{ locale: string }>
 }
 
-export default async function DashboardUpgradePage({ params }: UpgradePageProps) {
+export default function DashboardUpgradePage(props: UpgradePageProps) {
+  return (
+    <Suspense fallback={null}>
+      <DashboardUpgradePageInner {...props} />
+    </Suspense>
+  )
+}
+
+async function DashboardUpgradePageInner({ params }: UpgradePageProps) {
+  // Mark route as dynamic without using route segment config (incompatible with cacheComponents).
+  await connection()
+
   const { locale } = await params
   const t = translations[locale as keyof typeof translations] || translations.en
 
