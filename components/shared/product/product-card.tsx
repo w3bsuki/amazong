@@ -151,6 +151,9 @@ interface ProductCardProps extends VariantProps<typeof productCardVariants> {
   businessVerified?: boolean
   samplesAvailable?: boolean
 
+  // Promotion (boosted listing)
+  isBoosted?: boolean
+
   // Legacy props (accepted but ignored for backwards compat)
   brand?: string
   tags?: string[]
@@ -217,6 +220,8 @@ function ProductCard({
   minOrderQuantity,
   businessVerified,
   samplesAvailable,
+  // Promotion
+  isBoosted,
 }: ProductCardProps & { ref?: React.Ref<HTMLDivElement> }) {
   const t = useTranslations("Product")
   const locale = useLocale()
@@ -372,7 +377,12 @@ function ProductCard({
           outOfStockLabel={t("outOfStock")}
         />
 
-        {/* Category Badge removed - cleaner card design (Treido/Vinted style) */}
+        {/* Promoted badge - top left (ad disclosure) */}
+        {isBoosted && (
+          <Badge variant="promoted" className="absolute top-1.5 left-1.5 z-10">
+            {t("adBadge")}
+          </Badge>
+        )}
 
         {/* Wishlist button - using ProductCardActions */}
         <ProductCardActions

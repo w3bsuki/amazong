@@ -86,6 +86,9 @@ function DrawerOverlay({
         "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
         className
       )}
+      onWheel={(e) => {
+        e.preventDefault()
+      }}
       {...props}
     />
   )
@@ -147,6 +150,7 @@ function DrawerContent({
   className,
   children,
   showHandle,
+  onCloseAutoFocus,
   ...props
 }: DrawerContentProps) {
   const ariaLabel = (props as { "aria-label"?: string | undefined })["aria-label"]
@@ -154,6 +158,7 @@ function DrawerContent({
 
   const hasTitle = containsDrawerA11yNode(children, [DrawerTitle, DrawerPrimitive.Title])
   const hasDescription = containsDrawerA11yNode(children, [DrawerDescription, DrawerPrimitive.Description])
+  const isIOS = isIOSDevice()
 
   return (
     <DrawerPortal data-slot="drawer-portal">
@@ -186,6 +191,12 @@ function DrawerContent({
           "data-[vaul-drawer-direction=left]:border-r-0 data-[vaul-drawer-direction=left]:sm:border-r data-[vaul-drawer-direction=left]:sm:border-border",
           className
         )}
+        onCloseAutoFocus={(e) => {
+          onCloseAutoFocus?.(e)
+          if (!e.defaultPrevented && isIOS) {
+            e.preventDefault()
+          }
+        }}
         {...props}
       >
         {!hasTitle && (

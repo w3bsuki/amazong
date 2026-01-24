@@ -1,17 +1,16 @@
 "use client"
 
-import { useState, useEffect, useRef } from "react"
+import { useEffect, useState } from "react"
 import { Heart } from "@phosphor-icons/react"
 import { useWishlist } from "@/components/providers/wishlist-context"
 import { useTranslations } from "next-intl"
-import { WishlistDrawer, type WishlistDrawerHandle } from "@/components/shared/wishlist/wishlist-drawer"
+import { WishlistDrawer } from "@/components/shared/wishlist/wishlist-drawer"
 import { CountBadge } from "@/components/shared/count-badge"
 
 export function MobileWishlistButton() {
   const [mounted, setMounted] = useState(false)
   const { totalItems } = useWishlist()
   const tNav = useTranslations("Navigation")
-  const drawerRef = useRef<WishlistDrawerHandle>(null)
 
   useEffect(() => {
     setMounted(true)
@@ -34,9 +33,8 @@ export function MobileWishlistButton() {
   }
 
   return (
-    <>
+    <WishlistDrawer>
       <button
-        onClick={() => drawerRef.current?.open()}
         className="flex items-center justify-center size-10 p-0 rounded-md relative hover:bg-header-hover active:bg-header-active transition-colors touch-action-manipulation tap-transparent"
         aria-label={tNav("wishlist")}
       >
@@ -51,7 +49,6 @@ export function MobileWishlistButton() {
           )}
         </span>
       </button>
-      <WishlistDrawer ref={drawerRef} />
-    </>
+    </WishlistDrawer>
   )
 }

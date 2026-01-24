@@ -11,6 +11,7 @@ import {
     DrawerTrigger,
     DrawerClose,
     DrawerFooter,
+    DrawerBody,
 } from "@/components/ui/drawer"
 import { Button } from "@/components/ui/button"
 import { Link } from "@/i18n/routing"
@@ -68,7 +69,7 @@ export function MobileCartDropdown() {
     }
 
     return (
-        <Drawer open={open} onOpenChange={setOpen}>
+        <Drawer open={open} onOpenChange={setOpen} noBodyStyles disablePreventScroll={false}>
             <DrawerTrigger asChild>
                 <button
                     className="flex items-center justify-center size-10 rounded-md relative hover:bg-header-hover active:bg-header-active touch-action-manipulation tap-transparent"
@@ -100,14 +101,14 @@ export function MobileCartDropdown() {
                         <DrawerClose asChild>
                             <button
                                 className="text-xs text-muted-foreground hover:text-foreground h-touch-xs px-2 rounded-md hover:bg-muted touch-action-manipulation tap-transparent"
-                                aria-label="Close"
+                                aria-label={t('close')}
                             >
-                                {locale === 'bg' ? 'Затвори' : 'Close'}
+                                {t('close')}
                             </button>
                         </DrawerClose>
                     </div>
                     <DrawerDescription className="sr-only">
-                        Your shopping cart contents
+                        {t('description')}
                     </DrawerDescription>
                 </DrawerHeader>
 
@@ -118,11 +119,11 @@ export function MobileCartDropdown() {
                         </div>
                         <p className="text-sm text-foreground font-medium">{t('empty')}</p>
                         <p className="text-xs text-muted-foreground mt-0.5">
-                            {locale === 'bg' ? 'Добавете продукти' : 'Add items to get started'}
+                            {t('emptyDescription')}
                         </p>
                     </div>
                 ) : (
-                    <div className={cn("flex-1 overflow-y-auto px-inset overscroll-contain", contentMaxHeight)}>
+                    <DrawerBody className={cn("px-inset", contentMaxHeight)}>
                         {items.map((item, index) => (
                             <div
                                 key={`${item.id}:${item.variantId ?? ""}`}
@@ -175,12 +176,12 @@ export function MobileCartDropdown() {
                                                     onClick={() => {
                                                         if (item.quantity > 1) {
                                                             updateQuantity(item.id, item.quantity - 1, item.variantId)
-                                                        } else {
-                                                            removeFromCart(item.id, item.variantId)
-                                                        }
-                                                    }}
+                                                    } else {
+                                                        removeFromCart(item.id, item.variantId)
+                                                    }
+                                                }}
                                                     className="flex items-center justify-center size-touch-xs rounded-md hover:bg-background text-muted-foreground hover:text-foreground touch-action-manipulation tap-transparent"
-                                                    aria-label="Decrease quantity"
+                                                    aria-label={t('decreaseQuantity')}
                                                 >
                                                     <Minus size={14} weight="bold" />
                                                 </button>
@@ -190,7 +191,7 @@ export function MobileCartDropdown() {
                                                 <button
                                                     onClick={() => updateQuantity(item.id, item.quantity + 1, item.variantId)}
                                                     className="flex items-center justify-center size-touch-xs rounded-md hover:bg-background text-muted-foreground hover:text-foreground touch-action-manipulation tap-transparent"
-                                                    aria-label="Increase quantity"
+                                                    aria-label={t('increaseQuantity')}
                                                 >
                                                     <Plus size={14} weight="bold" />
                                                 </button>
@@ -198,7 +199,7 @@ export function MobileCartDropdown() {
                                             <button
                                                 onClick={() => removeFromCart(item.id, item.variantId)}
                                                 className="flex items-center justify-center size-touch-xs rounded-md hover:bg-destructive/10 text-muted-foreground hover:text-destructive touch-action-manipulation tap-transparent"
-                                                aria-label="Remove item"
+                                                aria-label={t('removeItem')}
                                             >
                                                 <Trash size={14} weight="regular" />
                                             </button>
@@ -207,7 +208,7 @@ export function MobileCartDropdown() {
                                 </div>
                             </div>
                         ))}
-                    </div>
+                    </DrawerBody>
                 )}
 
                 <DrawerFooter className="border-t border-border gap-1.5">

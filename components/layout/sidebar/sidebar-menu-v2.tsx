@@ -158,7 +158,14 @@ export function SidebarMenuV2({ user, triggerClassName, userStats }: SidebarMenu
     }
 
     return (
-        <Drawer open={open} onOpenChange={setOpen} direction="left" shouldScaleBackground={false}>
+        <Drawer
+            open={open}
+            onOpenChange={setOpen}
+            direction="left"
+            shouldScaleBackground={false}
+            noBodyStyles
+            disablePreventScroll={false}
+        >
             <DrawerTrigger asChild>
                 <Button
                     type="button"

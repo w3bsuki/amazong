@@ -292,7 +292,7 @@ export function DesktopHome({
                           {...(product.location ? { location: product.location } : {})}
                           {...(product.condition ? { condition: product.condition } : {})}
                           tags={product.tags ?? []}
-                          state="promoted"
+                          isBoosted
                           index={index}
                           {...(product.categoryRootSlug ? { categoryRootSlug: product.categoryRootSlug } : {})}
                           {...(product.categoryPath ? { categoryPath: product.categoryPath } : {})}
@@ -380,7 +380,7 @@ export function DesktopHome({
                               {...(product.location ? { location: product.location } : {})}
                               {...(product.condition ? { condition: product.condition } : {})}
                               tags={product.tags ?? []}
-                              state={product.isBoosted ? "promoted" : undefined}
+                              {...(product.isBoosted ? { isBoosted: true } : {})}
                               index={index}
                               // Category-aware contextual attributes
                               {...(product.categoryRootSlug ? { categoryRootSlug: product.categoryRootSlug } : {})}

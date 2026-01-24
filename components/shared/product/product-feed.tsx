@@ -133,7 +133,7 @@ export function ProductFeed({
               rating={product.rating}
               reviews={product.reviews}
               {...(product.freeShipping ? { freeShipping: true } : {})}
-              {...(product.isBoosted ? { state: "promoted" as const } : {})}
+              {...(product.isBoosted ? { isBoosted: true } : {})}
               index={index}
               slug={product.slug ?? null}
               username={product.storeSlug ?? null}

@@ -161,7 +161,7 @@ export async function POST(req: NextRequest) {
         type: 'listing_boost',
       },
       success_url: `${process.env.NEXT_PUBLIC_APP_URL}/${resolvedLocale}/account/selling?boost_success=true&product_id=${productId}`,
-      cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/${resolvedLocale}/sell?boost_canceled=true&product_id=${productId}`,
+      cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/${resolvedLocale}/account/selling?boost_canceled=true&product_id=${productId}`,
     })
 
     return json({ 

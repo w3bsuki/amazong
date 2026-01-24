@@ -250,8 +250,9 @@ export function PostSignupOnboardingModal({
   const handleIntentSelect = (selectedIntent: UserIntent) => {
     setIntent(selectedIntent)
     if (selectedIntent === "sell") {
-      // Skip account-type step - already set at signup!
-      setStep("profile")
+      // For sellers: just mark onboarding complete and redirect to /sell
+      // The /sell page has its own seller onboarding (Stripe Connect, etc.)
+      handleComplete(selectedIntent, null)
     } else {
       // For shop or browse, complete immediately
       handleComplete(selectedIntent, null)

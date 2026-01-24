@@ -1,29 +1,22 @@
-import { AppBreadcrumb, breadcrumbPresets } from "@/components/navigation/app-breadcrumb"
-import { routing, validateLocale } from "@/i18n/routing"
+import { setRequestLocale, getTranslations } from "next-intl/server"
+import { ComingSoonPage } from "@/components/shared/coming-soon-page"
 import { Lightning as Zap } from "@phosphor-icons/react/dist/ssr"
-import { getTranslations, setRequestLocale } from "next-intl/server"
-import TodaysDealsPageClient from "./_components/todays-deals-page-client"
-import type { Metadata } from "next"
+import type { Metadata } from 'next'
+import { routing, validateLocale } from "@/i18n/routing"
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }))
 }
 
-export async function generateMetadata({
-  params,
-}: {
-  params: Promise<{ locale: string }>
-}): Promise<Metadata> {
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale: localeParam } = await params
   const locale = validateLocale(localeParam)
   setRequestLocale(locale)
-  const t = await getTranslations("TodaysDeals")
-
+  const t = await getTranslations('TodaysDeals')
+  
   return {
-    title: t("title"),
-    description: locale === "bg"
-      ? "Открийте днешните най-добри оферти в Treido. Спестете до 70% на хиляди продукти."
-      : "Discover today's best deals at Treido. Save up to 70% on thousands of items.",
+    title: t('title'),
+    description: t('metaDescription'),
   }
 }
 
@@ -35,49 +28,27 @@ export default async function TodaysDealsPage({
   const { locale: localeParam } = await params
   const locale = validateLocale(localeParam)
   setRequestLocale(locale)
-  const t = await getTranslations("TodaysDeals")
-  const title = t("title")
-
+  
+  const t = await getTranslations('TodaysDeals')
+  const tCommon = await getTranslations('ComingSoon')
+  
   return (
-    <div className="min-h-screen bg-background pb-20 sm:pb-12">
-      {/* Hero Banner */}
-      <div className="bg-brand-deal text-white py-6 sm:py-10">
-        <div className="container">
-          {/* Breadcrumb */}
-          <div className="[&_nav]:border-white/20 [&_nav]:mb-2 [&_a]:text-white/80 [&_a:hover]:text-white [&_span[aria-current]]:text-white [&_svg]:text-white/50">
-            <AppBreadcrumb
-              items={breadcrumbPresets(locale).todaysDeals}
-              homeLabel={locale === "bg" ? "Начало" : "Treido"}
-            />
-          </div>
-
-          <div className="flex items-center gap-3 mb-2">
-            <div className="size-12 sm:size-14 bg-primary-foreground/10 rounded-full flex items-center justify-center">
-              <Zap className="size-6 sm:size-7 text-white" />
-            </div>
-            <div>
-              <h1 className="text-2xl sm:text-4xl font-bold">{title}</h1>
-              <p className="text-white/80 text-sm sm:text-base mt-1">
-                {locale === "bg"
-                  ? "Спести до 70% на хиляди продукти"
-                  : "Save up to 70% on thousands of items"}
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="container -mt-4 sm:-mt-6">
-        <TodaysDealsPageClient
-          locale={locale}
-          tabLabels={{
-            allDeals: t("allDeals"),
-            available: t("available"),
-            upcoming: t("upcoming"),
-            watchlist: t("watchlist"),
-          }}
-        />
-      </div>
-    </div>
+    <ComingSoonPage
+      icon={<Zap className="size-10" weight="duotone" />}
+      title={t('title')}
+      description={t('comingSoonDescription')}
+      timeline={t('comingSoonTimeline')}
+      features={t.raw('comingSoonFeatures') as string[]}
+      labels={{
+        backToHome: tCommon('backToHome'),
+        notifyMe: tCommon('notifyMe'),
+        emailLabel: tCommon('emailLabel'),
+        emailPlaceholder: tCommon('emailPlaceholder'),
+        subscribing: tCommon('subscribing'),
+        subscribed: tCommon('subscribed'),
+        expectedLaunch: tCommon('expectedLaunch'),
+        whatToExpect: tCommon('whatToExpect'),
+      }}
+    />
   )
 }

@@ -517,6 +517,14 @@
     "TodaysDeals": {
         "title": "Today's Deals",
         "metaDescription": "Shop today's best deals and limited-time offers on Treido.",
+        "comingSoonDescription": "We're preparing amazing daily deals just for you. Get exclusive discounts on top products from trusted sellers.",
+        "comingSoonTimeline": "Q2 2026",
+        "comingSoonFeatures": [
+            "Daily flash deals with up to 70% off",
+            "Personalized recommendations based on your interests",
+            "Lightning deals with countdown timers",
+            "Early access for newsletter subscribers"
+        ],
         "heroSubtitle": "Limited-time deals updated daily.",
         "allDeals": "All Deals",
         "available": "Available",
@@ -3030,6 +3038,27 @@
                 ]
             }
         }
+    },
+    "Assistant": {
+        "title": "AI Assistant",
+        "subtitle": "Dev playground for chat, find-similar, and sell autofill.",
+        "chatTitle": "Chat",
+        "chatEmpty": "Ask for recommendations from our catalog, compare items, or refine a search.",
+        "chatPlaceholder": "Ask for items, filters, brands, sizes…",
+        "send": "Send",
+        "stop": "Stop",
+        "toolRunning": "Running tool…",
+        "results": "Results",
+        "findSimilarTitle": "Find similar from photo",
+        "findSimilarDesc": "Paste an image URL (e.g. from an uploaded listing photo) and we will extract a search query and look for similar items.",
+        "findSimilar": "Find similar",
+        "extractedQuery": "Extracted query",
+        "sellAutofillTitle": "Sell autofill from photo",
+        "sellAutofillDesc": "Paste an image URL and we will generate a draft (title/description/condition/tags/price hint).",
+        "sellAutofill": "Generate draft",
+        "imageUrlPlaceholder": "https://…",
+        "loading": "Loading…",
+        "requestFailed": "Request failed"
     },
     "AccountPlansUpgrade": {
         "backToPlans": "Back to plans",
