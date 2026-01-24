@@ -3,7 +3,7 @@
 import * as React from "react"
 import { useChat } from "@ai-sdk/react"
 import { DefaultChatTransport } from "ai"
-import { Sparkle, PaperPlaneRight, User, Robot, CircleNotch, Package, ArrowRight } from "@phosphor-icons/react"
+import { PaperPlaneRight, User, Robot, CircleNotch, Package, ArrowRight } from "@phosphor-icons/react"
 import { Button } from "@/components/ui/button"
 import { useTranslations, useLocale } from "next-intl"
 import { cn } from "@/lib/utils"
@@ -97,8 +97,8 @@ export function SearchAiChat({ className, onClose, compact = false }: SearchAiCh
             "flex flex-col items-center justify-center text-center",
             compact ? "py-8 px-4" : "py-12 px-6"
           )}>
-            <div className="size-12 rounded-full bg-gradient-to-br from-violet-500/20 to-fuchsia-500/20 flex items-center justify-center mb-4">
-              <Sparkle size={24} weight="fill" className="text-violet-500" />
+            <div className="size-12 rounded-full bg-primary/10 flex items-center justify-center mb-4">
+              <Robot size={24} weight="fill" className="text-primary" />
             </div>
             <h3 className="text-base font-semibold text-foreground mb-1">
               {t("aiWelcome")}
@@ -131,8 +131,8 @@ export function SearchAiChat({ className, onClose, compact = false }: SearchAiCh
               return (
                 <div key={message.id} className={cn("flex gap-3", isUser ? "justify-end" : "justify-start")}>
                   {!isUser && (
-                    <div className="size-7 rounded-full bg-gradient-to-br from-violet-500 to-fuchsia-500 flex items-center justify-center shrink-0">
-                      <Robot size={14} weight="bold" className="text-white" />
+                    <div className="size-7 rounded-full bg-primary flex items-center justify-center shrink-0">
+                      <Robot size={14} weight="bold" className="text-primary-foreground" />
                     </div>
                   )}
                   
@@ -219,8 +219,8 @@ export function SearchAiChat({ className, onClose, compact = false }: SearchAiCh
             {/* Loading indicator */}
             {isLoading && (
               <div className="flex gap-3">
-                <div className="size-7 rounded-full bg-gradient-to-br from-violet-500 to-fuchsia-500 flex items-center justify-center shrink-0">
-                  <Robot size={14} weight="bold" className="text-white" />
+                <div className="size-7 rounded-full bg-primary flex items-center justify-center shrink-0">
+                  <Robot size={14} weight="bold" className="text-primary-foreground" />
                 </div>
                 <div className="px-3 py-2 rounded-2xl rounded-bl-md bg-muted">
                   <div className="flex items-center gap-2 text-sm text-muted-foreground">
@@ -246,20 +246,15 @@ export function SearchAiChat({ className, onClose, compact = false }: SearchAiCh
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder={t("aiPlaceholder")}
-              className="w-full h-10 px-4 pr-10 text-sm rounded-full border border-border bg-muted/50 focus:outline-none focus:ring-2 focus:ring-ring/50 focus:border-transparent"
+              className="w-full h-10 px-4 text-sm rounded-full border border-border bg-muted/50 focus:outline-none focus:ring-2 focus:ring-ring/50 focus:border-transparent"
               disabled={isLoading}
-            />
-            <Sparkle 
-              size={16} 
-              weight="fill" 
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-violet-500" 
             />
           </div>
           <Button
             type="submit"
             size="icon"
             disabled={!input.trim() || isLoading}
-            className="shrink-0 rounded-full bg-gradient-to-r from-violet-500 to-fuchsia-500 hover:from-violet-600 hover:to-fuchsia-600"
+            className="shrink-0 rounded-full"
           >
             {isLoading ? (
               <CircleNotch size={18} className="animate-spin" />

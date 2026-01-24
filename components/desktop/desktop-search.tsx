@@ -3,8 +3,9 @@
 import * as React from "react"
 import { useRef, useCallback, useEffect, useId } from "react"
 import Image from "next/image"
-import { MagnifyingGlass, Clock, TrendUp, Package, X, ArrowRight, Eye, Sparkle } from "@phosphor-icons/react"
+import { MagnifyingGlass, Clock, TrendUp, Package, X, ArrowRight, Eye, Robot } from "@phosphor-icons/react"
 import { Button } from "@/components/ui/button"
+import { Switch } from "@/components/ui/switch"
 import { Input } from "@/components/ui/input"
 import { FieldLabel } from "@/components/shared/field"
 import { SearchAiChat } from "@/components/shared/search/search-ai-chat"
@@ -163,28 +164,20 @@ export function DesktopSearch() {
                 type="button"
                 onClick={handleClearInput}
                   aria-label={tNav("clearSearch")}
-                className="absolute right-20 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                className="absolute right-24 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
               >
                 <X size={16} weight="regular" />
               </button>
             )}
 
-            <Button
-              type="button"
-              variant={aiMode ? "default" : "ghost"}
-              size="icon-sm"
-              onClick={() => { setAiMode(!aiMode); setIsOpen(true); }}
-              aria-label={tSearch("aiMode")}
-              aria-pressed={aiMode}
-              className={cn(
-                "absolute right-10 top-1/2 -translate-y-1/2 rounded-full",
-                aiMode
-                  ? "bg-primary text-primary-foreground hover:bg-primary/90"
-                  : "text-muted-foreground hover:text-foreground hover:bg-muted"
-              )}
-            >
-              <Sparkle size={16} weight={aiMode ? "fill" : "regular"} />
-            </Button>
+            <div className="absolute right-10 top-1/2 -translate-y-1/2 flex items-center gap-1.5">
+              <Robot size={14} weight={aiMode ? "fill" : "regular"} className={aiMode ? "text-primary" : "text-muted-foreground"} />
+              <Switch
+                checked={aiMode}
+                onCheckedChange={(checked) => { setAiMode(checked); setIsOpen(true); }}
+                aria-label={tSearch("aiMode")}
+              />
+            </div>
 
             <Button
               type="submit"
@@ -379,7 +372,6 @@ export function DesktopSearch() {
                     <TrendUp size={14} weight="regular" />
                     {tSearch("trending")}
                   </span>
-                  <Sparkle size={12} weight="fill" className="text-deal" />
                 </div>
                 <div className="p-1">
                   {trendingSearches.map((search, i) => (

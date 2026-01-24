@@ -9,12 +9,13 @@ import {
   TrendUp,
   Package,
   ArrowRight,
-  Sparkle,
+  Robot,
 } from "@phosphor-icons/react"
 import { SearchAiChat } from "./search-ai-chat"
 import { FieldLabel } from "@/components/shared/field"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
+import { Switch } from "@/components/ui/switch"
 import { useRouter } from "@/i18n/routing"
 import { useTranslations } from "next-intl"
 import Image from "next/image"
@@ -239,23 +240,17 @@ export function MobileSearchOverlay({
           {/* Search Header - Close above, full-width search below */}
           <header className="shrink-0 bg-background border-b border-border px-inset pt-2 pb-2">
             <div className="flex items-center justify-between">
-              <Button
-                type="button"
-                variant={aiMode ? "default" : "ghost"}
-                size="sm"
-                onClick={() => setAiMode(!aiMode)}
-                className={cn(
-                  "h-8 px-3 gap-1.5 font-medium",
-                  aiMode
-                    ? "bg-primary text-primary-foreground hover:bg-primary/90"
-                    : "text-muted-foreground hover:text-foreground hover:bg-muted"
-                )}
-                aria-label={tSearch("aiMode")}
-                aria-pressed={aiMode}
-              >
-                <Sparkle size={16} weight={aiMode ? "fill" : "regular"} />
-                {tSearch("aiMode")}
-              </Button>
+              <div className="flex items-center gap-2">
+                <Robot size={16} weight={aiMode ? "fill" : "regular"} className={aiMode ? "text-primary" : "text-muted-foreground"} />
+                <span className={cn("text-sm font-medium", aiMode ? "text-foreground" : "text-muted-foreground")}>
+                  {tSearch("aiMode")}
+                </span>
+                <Switch
+                  checked={aiMode}
+                  onCheckedChange={setAiMode}
+                  aria-label={tSearch("aiMode")}
+                />
+              </div>
               <Button
                 type="button"
                 variant="ghost"
@@ -266,49 +261,51 @@ export function MobileSearchOverlay({
               </Button>
             </div>
 
-            {/* Search Input */}
-            <form
-              onSubmit={handleSubmit}
-              className="relative"
-              role="search"
-              aria-label={tSearch("search")}
-            >
-              <MagnifyingGlass
-                size={18}
-                weight="regular"
-                className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground/60 pointer-events-none"
-                aria-hidden="true"
-              />
-              <FieldLabel htmlFor={searchInputId} className="sr-only">
-                {tSearch("searchFieldLabel")}
-              </FieldLabel>
-              <Input
-                ref={inputRef}
-                id={searchInputId}
-                type="search"
-                inputMode="search"
-                enterKeyHint="search"
-                placeholder={tNav("searchPlaceholder")}
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                className="h-9 w-full pl-9 pr-10 text-base bg-background rounded-full border border-border focus-visible:ring-0"
-                autoComplete="off"
-                autoCapitalize="off"
-                autoCorrect="off"
-                spellCheck={false}
-                aria-label={tSearch("searchFieldLabel")}
-              />
-              {query && (
-                <button
-                  type="button"
-                  onClick={handleClearInput}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 size-touch-xs rounded-full flex items-center justify-center bg-muted text-muted-foreground hover:bg-muted/80 hover:text-foreground"
-                  aria-label={tSearch("clear")}
-                >
-                  <X size={12} weight="bold" aria-hidden="true" />
-                </button>
-              )}
-            </form>
+            {/* Search Input - hidden in AI mode */}
+            {!aiMode && (
+              <form
+                onSubmit={handleSubmit}
+                className="relative"
+                role="search"
+                aria-label={tSearch("search")}
+              >
+                <MagnifyingGlass
+                  size={18}
+                  weight="regular"
+                  className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground/60 pointer-events-none"
+                  aria-hidden="true"
+                />
+                <FieldLabel htmlFor={searchInputId} className="sr-only">
+                  {tSearch("searchFieldLabel")}
+                </FieldLabel>
+                <Input
+                  ref={inputRef}
+                  id={searchInputId}
+                  type="search"
+                  inputMode="search"
+                  enterKeyHint="search"
+                  placeholder={tNav("searchPlaceholder")}
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  className="h-9 w-full pl-9 pr-10 text-base bg-background rounded-full border border-border focus-visible:ring-0"
+                  autoComplete="off"
+                  autoCapitalize="off"
+                  autoCorrect="off"
+                  spellCheck={false}
+                  aria-label={tSearch("searchFieldLabel")}
+                />
+                {query && (
+                  <button
+                    type="button"
+                    onClick={handleClearInput}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 size-touch-xs rounded-full flex items-center justify-center bg-muted text-muted-foreground hover:bg-muted/80 hover:text-foreground"
+                    aria-label={tSearch("clear")}
+                  >
+                    <X size={12} weight="bold" aria-hidden="true" />
+                  </button>
+                )}
+              </form>
+            )}
           </header>
 
           {/* Search Content */}
