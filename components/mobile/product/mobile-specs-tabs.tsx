@@ -52,24 +52,24 @@ export function MobileSpecsTabs({
 
   return (
     <div className={cn("bg-surface-card", className)}>
-      <Tabs defaultValue="specs" className="w-full">
-        <TabsList className="w-full h-12 p-1 bg-muted/50 rounded-none border-b border-border/50">
+      <Tabs defaultValue="specs" className="w-full gap-0">
+        <TabsList className="w-full h-12 p-1 bg-surface-page rounded-none border-0 border-b border-border/50">
           <TabsTrigger 
             value="specs" 
-            className="flex-1 h-full rounded-md data-[state=active]:bg-surface-card data-[state=active]:shadow-sm"
+            className="flex-1 h-full rounded-md text-text-muted-alt data-[state=active]:bg-surface-card data-[state=active]:text-text-strong border border-transparent data-[state=active]:border-border/60"
           >
             {t("specifications")}
           </TabsTrigger>
           <TabsTrigger 
             value="description" 
-            className="flex-1 h-full rounded-md data-[state=active]:bg-surface-card data-[state=active]:shadow-sm"
+            className="flex-1 h-full rounded-md text-text-muted-alt data-[state=active]:bg-surface-card data-[state=active]:text-text-strong border border-transparent data-[state=active]:border-border/60"
           >
             {t("description")}
           </TabsTrigger>
           {features && features.length > 0 && (
             <TabsTrigger 
               value="features" 
-              className="flex-1 h-full rounded-md data-[state=active]:bg-surface-card data-[state=active]:shadow-sm"
+              className="flex-1 h-full rounded-md text-text-muted-alt data-[state=active]:bg-surface-card data-[state=active]:text-text-strong border border-transparent data-[state=active]:border-border/60"
             >
               {t("features")}
             </TabsTrigger>
@@ -104,7 +104,7 @@ export function MobileSpecsTabs({
         <TabsContent value="description" className="mt-0 p-0">
           {description ? (
             <div 
-              className="px-4 py-4 text-sm text-text-default leading-relaxed prose prose-sm dark:prose-invert max-w-none"
+              className="px-4 py-4 richtext"
               dangerouslySetInnerHTML={{ __html: description }}
             />
           ) : (

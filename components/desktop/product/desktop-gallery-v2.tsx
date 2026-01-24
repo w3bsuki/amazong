@@ -76,7 +76,7 @@ export function DesktopGalleryV2({
             data-pswp-height={activeImage?.height ?? 1200}
             target="_blank"
             rel="noreferrer"
-            className="block size-full"
+            className="relative block size-full"
           >
             <Image
               src={activeImage?.src ?? "/placeholder.svg"}
@@ -131,7 +131,7 @@ export function DesktopGalleryV2({
 
       {/* Horizontal Thumbnails */}
       {images.length > 1 && (
-        <div className="flex gap-2 overflow-x-auto scrollbar-none pb-1">
+        <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1">
           {images.map((img, i) => (
             <button
               key={i}

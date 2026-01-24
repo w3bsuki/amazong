@@ -1,5 +1,5 @@
-import { NextResponse } from "next/server"
-import { createClient } from "@/lib/supabase/server"
+import { NextRequest, NextResponse } from "next/server"
+import { createRouteHandlerClient } from "@/lib/supabase/server"
 import { createLoginLink, getConnectAccount, isAccountReady } from "@/lib/stripe-connect"
 
 /**
@@ -8,9 +8,9 @@ import { createLoginLink, getConnectAccount, isAccountReady } from "@/lib/stripe
  * Creates a login link for sellers to access their Stripe Express Dashboard.
  * Only works for accounts that have completed onboarding.
  */
-export async function POST() {
+export async function POST(req: NextRequest) {
   try {
-    const supabase = await createClient()
+    const { supabase } = createRouteHandlerClient(req)
     const { data: { user }, error: authError } = await supabase.auth.getUser()
 
     if (authError || !user) {

@@ -10,7 +10,6 @@ import {
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams
   const { page, limit: safeLimit, offset } = parsePaginationParams(searchParams)
-  const nowIso = new Date().toISOString()
 
   try {
     const supabase = createStaticClient()
@@ -18,10 +17,9 @@ export async function GET(request: NextRequest) {
       return dbUnavailableResponse()
     }
 
-    // Truth semantics: "Deals" are explicitly marked as on sale.
-    // A deal is active when is_on_sale=true, sale_percent>0, and sale_end_date is null or in the future.
+    // Canonical Deals semantics live in the `deal_products` view.
     const { data, error, count } = await supabase
-      .from("products")
+      .from("deal_products")
       .select(
         `
         id,
@@ -32,21 +30,21 @@ export async function GET(request: NextRequest) {
         is_on_sale,
         sale_percent,
         sale_end_date,
+        effective_discount,
         rating,
         review_count,
         images,
         is_boosted,
         boost_expires_at,
         created_at,
+        free_shipping,
         slug,
         seller:profiles(id,username,avatar_url,tier),
         categories(id,slug,name,name_bg,icon)
       `,
         { count: "exact" }
       )
-      .eq("is_on_sale", true)
-      .gt("sale_percent", 0)
-      .or(`sale_end_date.is.null,sale_end_date.gt.${nowIso}`)
+      .order("effective_discount", { ascending: false, nullsFirst: false })
       .order("created_at", { ascending: false })
       .range(offset, offset + safeLimit - 1)
 
@@ -58,7 +56,13 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    const products = (data || []).map((p) => toUI(normalizeProductRow(p)))
+    const rows = (data || []).filter((row): row is typeof row & { id: string; title: string; price: number } => (
+      typeof row?.id === "string"
+      && typeof row?.title === "string"
+      && typeof row?.price === "number"
+    ))
+
+    const products = rows.map((p) => toUI(normalizeProductRow(p)))
 
     const totalCount = count || 0
     const hasMore = offset + products.length < totalCount

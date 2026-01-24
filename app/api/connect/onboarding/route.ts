@@ -1,6 +1,5 @@
-import { NextResponse } from "next/server"
-import { createClient } from "@/lib/supabase/server"
-import { createAdminClient } from "@/lib/supabase/server"
+import { NextRequest, NextResponse } from "next/server"
+import { createAdminClient, createRouteHandlerClient } from "@/lib/supabase/server"
 import { createConnectAccount, createAccountLink } from "@/lib/stripe-connect"
 import { buildLocaleUrlFromRequest, inferLocaleFromRequest } from "@/lib/stripe-locale"
 
@@ -10,9 +9,9 @@ import { buildLocaleUrlFromRequest, inferLocaleFromRequest } from "@/lib/stripe-
  * Creates a Stripe Express account for a seller and returns the onboarding URL.
  * If the seller already has an account, refreshes the onboarding link.
  */
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
   try {
-    const supabase = await createClient()
+    const { supabase } = createRouteHandlerClient(req)
     const { data: { user }, error: authError } = await supabase.auth.getUser()
 
     if (authError || !user) {
@@ -41,7 +40,7 @@ export async function POST(req: Request) {
       .from("seller_payout_status")
       .select("stripe_connect_account_id")
       .eq("seller_id", user.id)
-      .single()
+      .maybeSingle()
 
     const locale = inferLocaleFromRequest(req)
     const refreshUrl = buildLocaleUrlFromRequest(req, "seller/settings/payouts", locale, "refresh=true")

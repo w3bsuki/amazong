@@ -11,6 +11,7 @@ import { FreshnessIndicator } from "@/components/shared/product/freshness-indica
 import { ViewTracker } from "@/components/shared/product/view-tracker";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ProductHeaderSync } from "@/components/shared/product/product-header-sync";
+import { Star } from "lucide-react";
 
 // V2 Desktop Components
 import { DesktopGalleryV2 } from "@/components/desktop/product/desktop-gallery-v2";
@@ -176,6 +177,9 @@ export function ProductPageLayout(props: ProductPageLayoutProps) {
         sellerName={sellerInfo.name}
         sellerUsername={sellerInfo.username}
         sellerAvatarUrl={sellerInfo.avatarUrl}
+        productId={product.id}
+        productPrice={Number(product.price ?? 0)}
+        productImage={primaryImageSrc}
       />
 
       {/* ===== MOBILE PRODUCT PAGE ===== */}
@@ -192,11 +196,12 @@ export function ProductPageLayout(props: ProductPageLayoutProps) {
         reviews={reviews}
         viewModel={viewModel}
         variants={variants ?? []}
+        favoritesCount={favoritesCount ?? null}
         {...(submitReview && { submitReview })}
       />
 
       {/* ===== DESKTOP PRODUCT PAGE (V2) ===== */}
-      <div className="hidden md:block min-h-screen bg-muted/30 pb-10">
+      <div className="hidden lg:block min-h-screen bg-muted/30 pb-10">
         {/* JSON-LD Structured Data for SEO */}
         <>
           <script
@@ -227,13 +232,16 @@ export function ProductPageLayout(props: ProductPageLayoutProps) {
         <div className="container px-6 py-8">
           {/* Main Product Card */}
           <div className="bg-background rounded-xl border border-border p-6 lg:p-8">
-            {/* 55/45 Split Layout */}
-            <div className="grid grid-cols-1 lg:grid-cols-[1.22fr_1fr] gap-8 lg:gap-10">
-              {/* LEFT COLUMN: Gallery + Hero Specs + Meta */}
+            {/* Two-column layout (gallery left, info right) */}
+            <div className="grid grid-cols-1 lg:grid-cols-[1.25fr_1fr] gap-8 lg:gap-12">
+              {/* LEFT: Gallery */}
               <div className="space-y-4">
                 {/* V2 Gallery with horizontal thumbnails */}
                 <DesktopGalleryV2 images={viewModel.galleryImages} />
+              </div>
 
+              {/* RIGHT: Product Info + Buy Box */}
+              <div className="space-y-4">
                 {/* Meta row: Category badge + Freshness */}
                 <div className="flex flex-wrap items-center gap-3">
                   <CategoryBadge
@@ -244,21 +252,6 @@ export function ProductPageLayout(props: ProductPageLayoutProps) {
                   <FreshnessIndicator createdAt={product.created_at} variant="badge" showIcon />
                 </div>
 
-                {/* Social Proof */}
-                <ProductSocialProof
-                  viewCount={(product as { view_count?: number | null }).view_count ?? null}
-                  favoritesCount={favoritesCount ?? null}
-                  showHotIndicator
-                />
-
-                {/* Category-Adaptive Hero Specs (4-pill grid) */}
-                {viewModel.heroSpecs.length > 0 && (
-                  <HeroSpecs specs={viewModel.heroSpecs} variant="desktop" />
-                )}
-              </div>
-
-              {/* RIGHT COLUMN: Product Info + Buy Box */}
-              <div className="space-y-4">
                 {/* Product Title & Price Header */}
                 <div className="space-y-2">
                   <h1 className="text-xl font-semibold text-foreground leading-tight">
@@ -269,7 +262,32 @@ export function ProductPageLayout(props: ProductPageLayoutProps) {
                       {product.condition}
                     </span>
                   )}
+
+                  {/* Rating */}
+                  {Number(product.review_count ?? 0) > 0 && Number(product.rating ?? 0) > 0 && (
+                    <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
+                      <Star className="size-4 fill-rating text-rating" strokeWidth={1.5} />
+                      <span className="font-medium text-foreground">
+                        {Number(product.rating ?? 0).toFixed(1)}
+                      </span>
+                      <span className="text-muted-foreground">
+                        ({tProduct("reviews", { count: Number(product.review_count ?? 0) })})
+                      </span>
+                    </div>
+                  )}
                 </div>
+
+                {/* Social Proof */}
+                <ProductSocialProof
+                  viewCount={product.view_count ?? null}
+                  favoritesCount={favoritesCount ?? null}
+                  showHotIndicator
+                />
+
+                {/* Category-Adaptive Hero Specs (4-pill grid) */}
+                {viewModel.heroSpecs.length > 0 && (
+                  <HeroSpecs specs={viewModel.heroSpecs} variant="desktop" />
+                )}
 
                 {/* V2 Buy Box with embedded seller card */}
                 <DesktopBuyBoxV2
@@ -279,7 +297,7 @@ export function ProductPageLayout(props: ProductPageLayoutProps) {
                   price={Number(product.price ?? 0)}
                   originalPrice={product.list_price != null ? Number(product.list_price) : null}
                   currency="EUR"
-                  condition={product.condition}
+                  condition={null}
                   stock={product.stock}
                   seller={sellerInfo}
                   categoryType={viewModel.categoryType}

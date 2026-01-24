@@ -48,6 +48,9 @@ export interface ProductHeaderState {
   sellerName: string | null
   sellerUsername: string | null
   sellerAvatarUrl: string | null
+  productId?: string | null
+  productPrice?: number | null
+  productImage?: string | null
 }
 
 interface HeaderContextValue {

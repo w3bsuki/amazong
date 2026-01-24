@@ -19,8 +19,34 @@ import { CategoryBadge } from "@/components/shared/product/category-badge";
 import { HeroSpecs } from "@/components/shared/product/hero-specs";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { useWishlist } from "@/components/providers/wishlist-context";
-import { safeAvatarSrc } from "@/lib/utils";
+import { safeAvatarSrc, cn } from "@/lib/utils";
+
+/** Map condition value to semantic color classes */
+function getConditionColorClass(condition: string | undefined | null): string {
+  if (!condition) return "bg-condition-new";
+  const normalized = condition.toLowerCase().replace(/[\s_-]/g, "");
+  switch (normalized) {
+    case "new":
+    case "newwithtags":
+      return "bg-condition-new";
+    case "likenew":
+    case "usedexcellent":
+      return "bg-condition-likenew";
+    case "good":
+    case "usedgood":
+      return "bg-condition-good";
+    case "fair":
+    case "usedfair":
+      return "bg-condition-fair";
+    case "used":
+      return "bg-condition-used";
+    case "refurbished":
+    case "refurb":
+      return "bg-condition-refurb";
+    default:
+      return "bg-condition-new";
+  }
+}
 
 import type { ProductPageViewModel } from "@/lib/view-models/product-page";
 import type { Database } from "@/lib/supabase/database.types";
@@ -69,6 +95,7 @@ interface MobileProductPageProps {
   viewModel: ProductPageViewModel;
   variants?: ProductVariantRow[];
   submitReview?: SubmitReviewFn;
+  favoritesCount?: number | null;
 }
 
 export function MobileProductPage(props: MobileProductPageProps) {
@@ -86,16 +113,13 @@ export function MobileProductPage(props: MobileProductPageProps) {
     viewModel,
     variants,
     submitReview,
+    favoritesCount,
   } = props;
 
   const safeVariants = Array.isArray(variants) ? variants : [];
   const defaultVariant = safeVariants.find((v) => v.is_default) ?? safeVariants[0] ?? null;
 
   const primaryImageSrc = viewModel.galleryImages?.[0]?.src ?? null;
-
-  // Wishlist integration
-  const { isInWishlist } = useWishlist();
-  const productInWishlist = isInWishlist(product.id);
 
   // Cart/wishlist product info
   const cartProduct = {
@@ -137,8 +161,11 @@ export function MobileProductPage(props: MobileProductPageProps) {
       })
     : null;
 
+  const viewCount = product.view_count ?? product.viewers_count ?? null;
+  const location = product.seller_city ?? null;
+
   return (
-    <div className="min-h-dvh bg-surface-page pb-28 md:hidden">
+    <div className="min-h-dvh bg-surface-page pb-20 md:pb-28 lg:hidden">
       {/* JSON-LD Structured Data for SEO */}
       <script
         type="application/ld+json"
@@ -165,46 +192,56 @@ export function MobileProductPage(props: MobileProductPageProps) {
       <MobileGalleryV2 
         images={viewModel.galleryImages}
         product={cartProduct}
-        overlayBadge={
-          (category || rootCategory) ? (
+      />
+
+      {/* ========== META ROW (category + time + views) ========== */}
+      <div className="bg-surface-card px-4 py-2.5 flex items-center justify-between gap-3 text-xs text-text-muted-alt">
+        <div className="flex min-w-0 items-center gap-3">
+          {/* Category Badge */}
+          {(category || rootCategory) && (
             <CategoryBadge
               locale={locale}
               category={rootCategory || category}
               subcategory={category && rootCategory && category.slug !== rootCategory.slug ? category : null}
               size="sm"
-              className="bg-surface-floating backdrop-blur-sm shadow-sm"
+              className="bg-muted/50"
             />
-          ) : undefined
-        }
-        {...(product.condition ? { conditionLabel: product.condition } : {})}
-      />
+          )}
 
-      {/* ========== META ROW (location + time + views + saves) ========== */}
-      <div className="bg-surface-card px-4 py-2.5 flex items-center gap-4 text-xs text-text-muted-alt">
-        {product.seller_city && (
-          <span className="flex items-center gap-1.5">
-            <MapPin className="size-3.5" strokeWidth={1.5} />
-            <span className="text-text-strong font-medium">{product.seller_city}</span>
-          </span>
-        )}
-        {timeAgo && (
-          <span className="flex items-center gap-1">
-            <Clock className="size-3.5" strokeWidth={1.5} />
-            {timeAgo}
-          </span>
-        )}
-        <div className="flex-1" />
-        {product.viewers_count != null && product.viewers_count > 0 && (
-          <span className="flex items-center gap-1">
-            <Eye className="size-3.5" strokeWidth={1.5} />
-            {product.viewers_count.toLocaleString()}
-          </span>
-        )}
-        {productInWishlist && (
-          <span className="flex items-center gap-1">
-            <Heart className="size-3.5 fill-destructive text-destructive" strokeWidth={1.5} />
-          </span>
-        )}
+          {/* Location (tablet+) */}
+          {location && (
+            <span className="hidden md:flex items-center gap-1 min-w-0">
+              <MapPin className="size-3.5" strokeWidth={1.5} />
+              <span className="truncate">{location}</span>
+            </span>
+          )}
+
+          {/* Time ago */}
+          {timeAgo && (
+            <span className="flex items-center gap-1 shrink-0">
+              <Clock className="size-3.5" strokeWidth={1.5} />
+              {timeAgo}
+            </span>
+          )}
+        </div>
+
+        <div className="flex items-center gap-3 shrink-0">
+          {/* Views */}
+          {viewCount != null && viewCount > 0 && (
+            <span className="flex items-center gap-1">
+              <Eye className="size-3.5" strokeWidth={1.5} />
+              {viewCount.toLocaleString()}
+            </span>
+          )}
+
+          {/* Favorites */}
+          {favoritesCount != null && favoritesCount > 0 && (
+            <span className="flex items-center gap-1">
+              <Heart className="size-3.5 text-favorite" strokeWidth={1.5} />
+              {favoritesCount.toLocaleString()}
+            </span>
+          )}
+        </div>
       </div>
 
       {/* ========== TITLE + TAGS CARD ========== */}
@@ -212,22 +249,29 @@ export function MobileProductPage(props: MobileProductPageProps) {
         <h1 className="text-base font-semibold text-text-strong leading-snug">
           {product.title}
         </h1>
-        {(!product.pickup_only || sellerInfo.verified) && (
-          <div className="flex items-center gap-2 mt-2 flex-wrap">
-            {!product.pickup_only && (
-              <Badge variant="shipping">
-                <Truck className="size-3" strokeWidth={2} />
-                {t("freeShipping")}
-              </Badge>
-            )}
-            {sellerInfo.verified && (
-              <Badge variant="top-rated">
-                <Shield className="size-3" strokeWidth={2} />
-                {t("topRated")}
-              </Badge>
-            )}
-          </div>
-        )}
+        <div className="flex items-center gap-2 mt-2 flex-wrap">
+          {/* Condition Badge */}
+          {product.condition && (
+            <span className={cn(
+              "px-2 py-0.5 rounded text-primary-foreground text-xs font-bold",
+              getConditionColorClass(product.condition)
+            )}>
+              {product.condition}
+            </span>
+          )}
+          {!product.pickup_only && (
+            <Badge variant="shipping">
+              <Truck className="size-3" strokeWidth={2} />
+              {t("freeShipping")}
+            </Badge>
+          )}
+          {sellerInfo.verified && (
+            <Badge variant="top-rated">
+              <Shield className="size-3" strokeWidth={2} />
+              {t("topRated")}
+            </Badge>
+          )}
+        </div>
       </div>
 
       {/* ========== HERO SPECS (Category-Adaptive) ========== */}

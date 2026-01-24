@@ -25,6 +25,8 @@ export interface CartItem {
 
 interface CartContextType {
   items: CartItem[]
+  /** True once initial cart hydration + auth sync has completed. */
+  isReady: boolean
   addToCart: (item: CartItem) => void
   removeFromCart: (id: string, variantId?: string) => void
   updateQuantity: (id: string, quantity: number, variantId?: string) => void
@@ -112,6 +114,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const { user, isLoading: authLoading } = useAuth()
   const [items, setItems] = useState<CartItem[]>([])
   const hasSyncedRef = useRef<string | null>(null)
+  const [storageLoaded, setStorageLoaded] = useState(false)
+  const [serverSyncDone, setServerSyncDone] = useState(false)
 
   const loadServerCart = useCallback(async (activeUserId: string) => {
     const supabase = createClient()
@@ -248,6 +252,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       }
     } catch {
       // Ignore storage access errors
+    } finally {
+      setStorageLoaded(true)
     }
   }, [])
 
@@ -259,17 +265,26 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       if (!user) {
         // User logged out - keep localStorage cart, reset sync ref
         hasSyncedRef.current = null
+        setServerSyncDone(true)
         return
       }
 
       // Already synced for this user
-      if (hasSyncedRef.current === user.id) return
+      if (hasSyncedRef.current === user.id) {
+        setServerSyncDone(true)
+        return
+      }
       hasSyncedRef.current = user.id
+      setServerSyncDone(false)
 
-      // Sync local → server
-      await syncLocalCartToServer(user.id)
-      // Load server → state
-      await loadServerCart(user.id)
+      try {
+        // Sync local → server
+        await syncLocalCartToServer(user.id)
+        // Load server → state
+        await loadServerCart(user.id)
+      } finally {
+        setServerSyncDone(true)
+      }
     }
 
     syncCart()
@@ -404,10 +419,13 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     return total + price * quantity
   }, 0)
 
+  const isReady = storageLoaded && !authLoading && serverSyncDone
+
   return (
     <CartContext.Provider
       value={{
         items,
+        isReady,
         addToCart,
         removeFromCart,
         updateQuantity,

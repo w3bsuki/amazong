@@ -42,7 +42,7 @@ function Drawer({
   // sticky headers to jump/disappear (it manipulates scroll position + body offset).
   // For our drawers (no inputs), prefer disabling that strategy on iOS and rely on
   // the overlay + overscroll containment instead. Callers can override if needed.
-  const resolvedDisablePreventScroll = disablePreventScroll ?? !isIOS
+  const resolvedDisablePreventScroll = disablePreventScroll ?? isIOS
 
   return (
     <DrawerPrimitive.Root

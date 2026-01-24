@@ -1,11 +1,14 @@
 import { createGateway } from "ai"
 import { google } from "@ai-sdk/google"
 import { openai } from "@ai-sdk/openai"
+import { groq } from "@ai-sdk/groq"
 
 import {
   getAiChatModelSpec,
+  getAiFallbackModelSpec,
   getAiGatewayApiKey,
   getAiVisionModelSpec,
+  getGroqApiKey,
   parseAiModelSpec,
 } from "@/lib/ai/env"
 
@@ -23,10 +26,8 @@ function getGatewayClient(): ReturnType<typeof createGateway> {
   return cachedGateway
 }
 
-export function getAiChatModel() {
+function getModelFromSpec(spec: string) {
   const gatewayKey = getAiGatewayApiKey()
-  const spec = getAiChatModelSpec()
-
   if (gatewayKey) {
     return getGatewayClient()(spec)
   }
@@ -34,22 +35,25 @@ export function getAiChatModel() {
   const { provider, modelId } = parseAiModelSpec(spec)
   if (provider === "google") return google(modelId)
   if (provider === "openai") return openai(modelId)
+  if (provider === "groq") {
+    if (!getGroqApiKey()) {
+      throw new Error("GROQ_API_KEY is required for groq provider")
+    }
+    return groq(modelId)
+  }
 
-  throw new Error(`AI_CHAT_MODEL provider "${provider}" requires AI_GATEWAY_API_KEY`)
+  throw new Error(`Provider "${provider}" requires AI_GATEWAY_API_KEY`)
+}
+
+export function getAiChatModel() {
+  return getModelFromSpec(getAiChatModelSpec())
+}
+
+export function getAiFallbackModel() {
+  return getModelFromSpec(getAiFallbackModelSpec())
 }
 
 export function getAiVisionModel() {
-  const gatewayKey = getAiGatewayApiKey()
-  const spec = getAiVisionModelSpec()
-
-  if (gatewayKey) {
-    return getGatewayClient()(spec)
-  }
-
-  const { provider, modelId } = parseAiModelSpec(spec)
-  if (provider === "google") return google(modelId)
-  if (provider === "openai") return openai(modelId)
-
-  throw new Error(`AI_VISION_MODEL provider "${provider}" requires AI_GATEWAY_API_KEY`)
+  return getModelFromSpec(getAiVisionModelSpec())
 }
 

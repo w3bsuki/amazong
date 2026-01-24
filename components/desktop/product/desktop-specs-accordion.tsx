@@ -113,7 +113,7 @@ export function DesktopSpecsAccordion({
           <h3 className="font-semibold text-foreground mb-4">
             {t("description")}
           </h3>
-          <div className="prose prose-sm prose-neutral max-w-none text-foreground leading-relaxed whitespace-pre-line">
+          <div className="richtext whitespace-pre-line">
             {showFullDescription || !shouldTruncateDescription
               ? description
               : `${description.slice(0, descriptionLimit)}...`}

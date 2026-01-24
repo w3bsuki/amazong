@@ -39,6 +39,12 @@ export interface ProductHeaderProps extends BaseHeaderProps {
   sellerAvatarUrl?: string | null | undefined
   /** Router for back navigation */
   onBack: () => void
+  /** Product ID for wishlist */
+  productId?: string | null | undefined
+  /** Product price for wishlist */
+  productPrice?: number | null | undefined
+  /** Product image for wishlist */
+  productImage?: string | null | undefined
 }
 
 export interface ContextualHeaderProps extends BaseHeaderProps {

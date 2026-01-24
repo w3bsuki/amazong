@@ -75,7 +75,7 @@ export default function CheckoutPageClient({
   createCheckoutSessionAction: CreateCheckoutSessionAction
   getCheckoutFeeQuoteAction: GetCheckoutFeeQuoteAction
 }) {
-  const { items, totalItems, subtotal } = useCart()
+  const { items, isReady, totalItems, subtotal } = useCart()
   const locale = useLocale()
   const t = useTranslations("CheckoutPage")
 
@@ -264,7 +264,7 @@ export default function CheckoutPageClient({
   }, [useNewAddress, selectedAddressId, newAddress, validateField])
 
   // Loading state
-  if (!mounted) {
+  if (!mounted || !isReady) {
     return (
       <div className="min-h-96 flex items-center justify-center">
         <SpinnerGap className="size-5 animate-spin text-muted-foreground" />

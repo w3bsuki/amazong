@@ -65,7 +65,7 @@ export function WishlistDrawer({ className, children }: WishlistDrawerProps) {
         : "max-h-(--wishlist-drawer-max-h)"
 
   return (
-    <Drawer open={open} onOpenChange={setOpen} noBodyStyles disablePreventScroll={false}>
+    <Drawer open={open} onOpenChange={setOpen}>
       <DrawerTrigger asChild>{children}</DrawerTrigger>
       <DrawerContent className={cn("rounded-t-xl", className)}>
         <DrawerHeader className="pb-1.5 pt-0 border-b border-border text-left">

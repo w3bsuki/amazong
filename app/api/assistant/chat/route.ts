@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server"
-import { streamText, convertToModelMessages } from "ai"
+import { streamText, convertToModelMessages, type ModelMessage, type UIMessage } from "ai"
 import { z } from "zod"
 
 import { assistantTools } from "@/lib/ai/tools/assistant-tools"
-import { getAiChatModel } from "@/lib/ai/models"
-import { isAiAssistantEnabled } from "@/lib/ai/env"
+import { getAiChatModel, getAiFallbackModel } from "@/lib/ai/models"
+import { isAiAssistantEnabled, getGroqApiKey } from "@/lib/ai/env"
 import { isNextPrerenderInterrupted } from "@/lib/next/is-next-prerender-interrupted"
 import { logger } from "@/lib/logger"
 
@@ -32,6 +32,19 @@ function getSystemPrompt(locale: "en" | "bg") {
   ].join("\n")
 }
 
+function isRateLimitError(error: unknown): boolean {
+  if (error instanceof Error) {
+    const msg = error.message.toLowerCase()
+    return (
+      msg.includes("rate limit") ||
+      msg.includes("quota") ||
+      msg.includes("429") ||
+      msg.includes("resource exhausted")
+    )
+  }
+  return false
+}
+
 export async function POST(request: Request) {
   if (!isAiAssistantEnabled()) {
     return NextResponse.json({ error: "AI assistant disabled" }, { status: 404 })
@@ -45,22 +58,64 @@ export async function POST(request: Request) {
     }
 
     const locale = parsed.data.locale ?? "en"
-    const messages = await convertToModelMessages(parsed.data.messages, {
-      tools: assistantTools,
-    })
+    
+    // Check if messages are UIMessage format (from useChat) or simple {role, content} format
+    const rawMessages = parsed.data.messages
+    const isUIMessageFormat = rawMessages.some((m: { parts?: unknown }) => 
+      m && typeof m === 'object' && 'parts' in m
+    )
+    
+    // Convert to model messages or use directly
+    const messages: ModelMessage[] = isUIMessageFormat
+      ? await convertToModelMessages(rawMessages as UIMessage[])
+      : rawMessages.map((m: { role: string; content: string }) => ({
+          role: m.role as "user" | "assistant" | "system",
+          content: m.content,
+        }))
 
-    const result = streamText({
-      model: getAiChatModel(),
-      system: getSystemPrompt(locale),
-      messages,
-      tools: assistantTools,
-    })
+    const systemPrompt = getSystemPrompt(locale)
 
-    return result.toUIMessageStreamResponse({
-      headers: {
-        "Cache-Control": "private, no-store",
-      },
-    })
+    // Try primary model first, fallback to Groq on rate limit
+    let model = getAiChatModel()
+    let usedFallback = false
+
+    try {
+      const result = streamText({
+        model,
+        system: systemPrompt,
+        messages,
+        tools: assistantTools,
+      })
+
+      return result.toUIMessageStreamResponse({
+        headers: {
+          "Cache-Control": "private, no-store",
+        },
+      })
+    } catch (primaryError) {
+      // If rate limited and fallback is available, try fallback
+      if (isRateLimitError(primaryError) && getGroqApiKey()) {
+        logger.warn("[AI Assistant] Primary model rate limited, trying fallback")
+        usedFallback = true
+        model = getAiFallbackModel()
+
+        const result = streamText({
+          model,
+          system: systemPrompt,
+          messages,
+          tools: assistantTools,
+        })
+
+        return result.toUIMessageStreamResponse({
+          headers: {
+            "Cache-Control": "private, no-store",
+            "X-AI-Fallback": "true",
+          },
+        })
+      }
+
+      throw primaryError
+    }
   } catch (error) {
     if (isNextPrerenderInterrupted(error)) throw error
     logger.error("[AI Assistant] chat route error", error)

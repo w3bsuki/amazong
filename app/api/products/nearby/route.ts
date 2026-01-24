@@ -41,6 +41,7 @@ export async function GET(request: NextRequest) {
         is_boosted,
         boost_expires_at,
         created_at,
+        free_shipping,
         slug,
         seller:profiles(id,username,avatar_url,tier),
         categories!inner(id,slug,name,name_bg,icon)

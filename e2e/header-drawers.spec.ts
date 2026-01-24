@@ -20,39 +20,47 @@ test.describe("Header Drawers - Scroll Stability", () => {
     // Allow the browser a moment to settle layout after scrolling.
     await page.waitForTimeout(200)
 
-    const before = await page.evaluate(() => window.scrollY)
-
     // -----------------------------------------------------------------------
     // Cart drawer
     // -----------------------------------------------------------------------
     const cartTrigger = appHeader.locator('button[aria-label="Cart"]').first()
     await cartTrigger.waitFor({ state: "visible", timeout: 10_000 })
-    await cartTrigger.click()
 
-    const cartDrawer = page.locator('[data-slot="drawer-content"]').filter({ hasText: "Shopping Cart" }).first()
-    await assertVisible(cartDrawer)
+    for (let i = 0; i < 3; i++) {
+      const before = await page.evaluate(() => window.scrollY)
 
-    await cartDrawer.getByRole("button", { name: "Close" }).click()
+      await cartTrigger.click()
 
-    await page.waitForTimeout(200)
-    const afterCart = await page.evaluate(() => window.scrollY)
-    expect(Math.abs(afterCart - before)).toBeLessThan(5)
+      const cartDrawer = page.locator('[data-slot="drawer-content"]').filter({ hasText: "Shopping Cart" }).first()
+      await assertVisible(cartDrawer)
+
+      await cartDrawer.getByRole("button", { name: "Close" }).click()
+
+      await page.waitForTimeout(200)
+      const afterCart = await page.evaluate(() => window.scrollY)
+      expect(Math.abs(afterCart - before)).toBeLessThan(5)
+    }
 
     // -----------------------------------------------------------------------
     // Wishlist drawer
     // -----------------------------------------------------------------------
     const wishlistTrigger = appHeader.locator('button[aria-label="Wishlist"]').first()
     await wishlistTrigger.waitFor({ state: "visible", timeout: 10_000 })
-    await wishlistTrigger.click()
 
-    const wishlistDrawer = page.locator('[data-slot="drawer-content"]').filter({ hasText: "My Wishlist" }).first()
-    await assertVisible(wishlistDrawer)
+    for (let i = 0; i < 3; i++) {
+      const before = await page.evaluate(() => window.scrollY)
 
-    await wishlistDrawer.getByRole("button", { name: "Close" }).click()
+      await wishlistTrigger.click()
 
-    await page.waitForTimeout(200)
-    const afterWishlist = await page.evaluate(() => window.scrollY)
-    expect(Math.abs(afterWishlist - before)).toBeLessThan(5)
+      const wishlistDrawer = page.locator('[data-slot="drawer-content"]').filter({ hasText: "My Wishlist" }).first()
+      await assertVisible(wishlistDrawer)
+
+      await wishlistDrawer.getByRole("button", { name: "Close" }).click()
+
+      await page.waitForTimeout(200)
+      const afterWishlist = await page.evaluate(() => window.scrollY)
+      expect(Math.abs(afterWishlist - before)).toBeLessThan(5)
+    }
 
     await assertVisible(appHeader)
     app.assertNoConsoleErrors()

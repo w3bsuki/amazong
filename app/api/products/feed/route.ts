@@ -48,9 +48,7 @@ export async function GET(request: NextRequest) {
       return dbUnavailableResponse()
     }
 
-    let query = supabase
-      .from('products')
-      .select(`
+    const baseSelect = `
         id, 
         title, 
         price, 
@@ -64,6 +62,7 @@ export async function GET(request: NextRequest) {
         is_boosted,
         boost_expires_at,
         created_at, 
+        free_shipping,
         slug,
         attributes,
         seller:profiles(id,username,avatar_url,tier),
@@ -73,7 +72,42 @@ export async function GET(request: NextRequest) {
             parent:categories!parent_id(id,slug,name,name_bg,icon)
           )
         )
-      `, { count: 'exact' })
+      `
+
+    const dealsSelect = `
+        id, 
+        title, 
+        price, 
+        list_price, 
+        is_on_sale,
+        sale_percent,
+        sale_end_date,
+        effective_discount,
+        rating, 
+        review_count, 
+        images,
+        is_boosted,
+        boost_expires_at,
+        created_at, 
+        free_shipping,
+        slug,
+        attributes,
+        seller:profiles(id,username,avatar_url,tier),
+        categories!inner(
+          id,slug,name,name_bg,icon,
+          parent:categories!parent_id(id,slug,name,name_bg,icon,
+            parent:categories!parent_id(id,slug,name,name_bg,icon)
+          )
+        )
+      `
+
+    let query: any
+
+    if (type === 'deals') {
+      query = supabase.from('deal_products').select(dealsSelect, { count: 'exact' })
+    } else {
+      query = supabase.from('products').select(baseSelect, { count: 'exact' })
+    }
 
     // Apply Category Filter
     if (category && category !== 'all') {
@@ -90,10 +124,9 @@ export async function GET(request: NextRequest) {
         break
       
       case 'deals':
-        query = query.eq('is_on_sale', true)
-          .gt('sale_percent', 0)
-          .or(`sale_end_date.is.null,sale_end_date.gt.${nowIso}`)
-        query = query.order('created_at', { ascending: false })
+        query = query
+          .order('effective_discount', { ascending: false, nullsFirst: false })
+          .order('created_at', { ascending: false })
         break
 
       case 'top_rated':
@@ -147,8 +180,16 @@ export async function GET(request: NextRequest) {
       }, { status: 500 })
     }
 
-    // Transform to UI format using shared normalizer
-    const products = (data || []).map((p) => toUI(normalizeProductRow(p)))
+    const rows: unknown[] = Array.isArray(data) ? data : []
+
+    // Transform to UI format using shared normalizer (runtime-guarded for view nullability)
+    const products = rows
+      .filter((row) => {
+        if (!row || typeof row !== "object") return false
+        const r = row as Record<string, unknown>
+        return typeof r.id === "string" && typeof r.title === "string" && typeof r.price === "number"
+      })
+      .map((row) => toUI(normalizeProductRow(row as Parameters<typeof normalizeProductRow>[0])))
 
     const totalCount = count || 0
     const hasMore = offset + products.length < totalCount

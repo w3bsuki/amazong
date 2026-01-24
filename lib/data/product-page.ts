@@ -51,7 +51,7 @@ const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12
 const isUuid = (value: unknown): value is string => typeof value === 'string' && UUID_REGEX.test(value)
 
 const PRODUCT_SELECT =
-  'id,title,slug,price,list_price,description,condition,images,attributes,sku,meta_description,rating,review_count,stock,pickup_only,seller_id,category_id,view_count,created_at' as const
+  'id,title,slug,price,list_price,description,condition,images,attributes,sku,meta_description,rating,review_count,stock,pickup_only,seller_city,seller_id,category_id,view_count,created_at' as const
 
 const SELLER_STATS_SELECT =
   'seller_id,average_rating,total_reviews,positive_feedback_pct,follower_count,total_sales,response_time_hours,active_listings' as const

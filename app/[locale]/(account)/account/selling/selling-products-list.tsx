@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useTransition } from "react"
+import { useState, useEffect, useRef, useTransition } from "react"
 import { useSearchParams, useRouter } from "next/navigation"
 import { Link } from "@/i18n/routing"
 import Image from "next/image"
@@ -92,6 +92,9 @@ export function SellingProductsList({ products, locale, actions }: SellingProduc
   const tBoost = useTranslations("Boost")
   const t = useTranslations("SellingProducts")
   const [productsList, setProductsList] = useState(products)
+  const boostActivationTimerRef = useRef<number | null>(null)
+  const boostActivationProductIdRef = useRef<string | null>(null)
+  const boostActivationAttemptsRef = useRef(0)
   const [_isPending, startTransition] = useTransition()
   const [deletingId, setDeletingId] = useState<string | null>(null)
   const [togglingId, setTogglingId] = useState<string | null>(null)
@@ -102,6 +105,19 @@ export function SellingProductsList({ products, locale, actions }: SellingProduc
   const activeDiscountProduct = discountProductId
     ? productsList.find((p) => p.id === discountProductId) || null
     : null
+
+  useEffect(() => {
+    setProductsList(products)
+  }, [products])
+
+  useEffect(() => {
+    return () => {
+      if (boostActivationTimerRef.current != null) {
+        window.clearInterval(boostActivationTimerRef.current)
+        boostActivationTimerRef.current = null
+      }
+    }
+  }, [])
 
   // Handle delete product
   const handleDelete = async (productId: string) => {
@@ -142,15 +158,63 @@ export function SellingProductsList({ products, locale, actions }: SellingProduc
 
   // Handle boost success/cancel URL params
   useEffect(() => {
-    if (searchParams.get('boost_success') === 'true') {
+    const isSuccess = searchParams.get('boost_success') === 'true'
+    const isCanceled = searchParams.get('boost_canceled') === 'true'
+
+    if (!isSuccess && !isCanceled) return
+
+    const productId = searchParams.get("product_id")
+
+    if (isSuccess) {
       toast.success(tBoost('paymentSuccess'))
-      // Clean up URL
-      window.history.replaceState({}, '', window.location.pathname)
-    } else if (searchParams.get('boost_canceled') === 'true') {
+    } else if (isCanceled) {
       toast.info(tBoost('paymentCanceled'))
-      window.history.replaceState({}, '', window.location.pathname)
     }
-  }, [searchParams, locale])
+
+    // Clean up URL (avoid double-toasts on refresh)
+    window.history.replaceState({}, '', window.location.pathname)
+
+    if (!isSuccess || !productId) return
+
+    // Poll for webhook activation (best-effort) by refreshing server props a few times.
+    boostActivationProductIdRef.current = productId
+    boostActivationAttemptsRef.current = 0
+
+    if (boostActivationTimerRef.current != null) {
+      window.clearInterval(boostActivationTimerRef.current)
+      boostActivationTimerRef.current = null
+    }
+
+    boostActivationTimerRef.current = window.setInterval(() => {
+      boostActivationAttemptsRef.current += 1
+      router.refresh()
+
+      if (boostActivationAttemptsRef.current >= 6) {
+        window.clearInterval(boostActivationTimerRef.current as number)
+        boostActivationTimerRef.current = null
+        boostActivationProductIdRef.current = null
+        toast.info(tBoost("activationTakingLonger"))
+      }
+    }, 1500)
+  }, [searchParams, router, tBoost])
+
+  useEffect(() => {
+    const productId = boostActivationProductIdRef.current
+    if (!productId) return
+
+    const target = productsList.find((p) => p.id === productId)
+    const isActive = Boolean(target?.is_boosted) && !!target?.boost_expires_at && new Date(target.boost_expires_at).getTime() > Date.now()
+
+    if (!isActive) return
+
+    if (boostActivationTimerRef.current != null) {
+      window.clearInterval(boostActivationTimerRef.current)
+      boostActivationTimerRef.current = null
+    }
+
+    boostActivationProductIdRef.current = null
+    toast.success(tBoost("activationComplete"))
+  }, [productsList, tBoost])
 
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat(locale, {

@@ -9,7 +9,9 @@ import {
   TrendUp,
   Package,
   ArrowRight,
+  Sparkle,
 } from "@phosphor-icons/react"
+import { SearchAiChat } from "./search-ai-chat"
 import { FieldLabel } from "@/components/shared/field"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -54,6 +56,7 @@ export function MobileSearchOverlay({
 
   // State - use external control if provided
   const [internalOpen, setInternalOpen] = React.useState(false)
+  const [aiMode, setAiMode] = React.useState(false)
   const isOpen = externalOpen !== undefined ? externalOpen : internalOpen
 
   const setIsOpen = React.useCallback((open: boolean) => {
@@ -220,7 +223,7 @@ export function MobileSearchOverlay({
           aria-labelledby={overlayTitleId}
           aria-describedby={overlayDescId}
           className={cn(
-            "fixed inset-0 z-50",
+            "fixed inset-0 z-[60]",
             "flex flex-col",
             "bg-background"
           )}
@@ -235,7 +238,24 @@ export function MobileSearchOverlay({
 
           {/* Search Header - Close above, full-width search below */}
           <header className="shrink-0 bg-background border-b border-border px-inset pt-2 pb-2">
-            <div className="flex items-center justify-end">
+            <div className="flex items-center justify-between">
+              <Button
+                type="button"
+                variant={aiMode ? "default" : "ghost"}
+                size="sm"
+                onClick={() => setAiMode(!aiMode)}
+                className={cn(
+                  "h-8 px-3 gap-1.5 font-medium",
+                  aiMode
+                    ? "bg-primary text-primary-foreground hover:bg-primary/90"
+                    : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                )}
+                aria-label={tSearch("aiMode")}
+                aria-pressed={aiMode}
+              >
+                <Sparkle size={16} weight={aiMode ? "fill" : "regular"} />
+                {tSearch("aiMode")}
+              </Button>
               <Button
                 type="button"
                 variant="ghost"
@@ -293,6 +313,11 @@ export function MobileSearchOverlay({
 
           {/* Search Content */}
           <main className="flex-1 overflow-y-auto overscroll-contain" role="region" aria-label={tSearch("search")}>
+            {/* AI Chat Mode */}
+            {aiMode ? (
+              <SearchAiChat onClose={handleClose} className="h-full" />
+            ) : (
+            <>
             {/* Loading State */}
             {isSearching && (
               <div role="status" aria-live="polite" className="px-4 py-8 text-center">
@@ -432,6 +457,8 @@ export function MobileSearchOverlay({
                   </ol>
                 </section>
               </>
+            )}
+            </>
             )}
           </main>
 

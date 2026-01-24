@@ -69,7 +69,7 @@ export function MobileCartDropdown() {
     }
 
     return (
-        <Drawer open={open} onOpenChange={setOpen} noBodyStyles disablePreventScroll={false}>
+        <Drawer open={open} onOpenChange={setOpen}>
             <DrawerTrigger asChild>
                 <button
                     className="flex items-center justify-center size-10 rounded-md relative hover:bg-header-hover active:bg-header-active touch-action-manipulation tap-transparent"

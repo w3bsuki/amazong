@@ -26,7 +26,7 @@ import { useRecentlyViewed } from "@/hooks/use-recently-viewed"
 import { ProductCard } from "@/components/shared/product/product-card"
 
 export default function CartPageClient() {
-  const { items, removeFromCart, updateQuantity, subtotal, totalItems } = useCart()
+  const { items, isReady, removeFromCart, updateQuantity, subtotal, totalItems } = useCart()
   const router = useRouter()
   const t = useTranslations("CartPage")
   const locale = useLocale()
@@ -49,6 +49,16 @@ export default function CartPageClient() {
     const sellerSlug = item.username ?? item.storeSlug
     if (!sellerSlug) return "#"
     return `/${sellerSlug}/${item.slug ?? item.id}`
+  }
+
+  if (!isReady) {
+    return (
+      <div className="bg-secondary/30 min-h-(--page-section-min-h-lg) pt-14 lg:pt-0">
+        <div className="container py-6 flex items-center justify-center">
+          <SpinnerGap className="size-5 animate-spin text-muted-foreground" />
+        </div>
+      </div>
+    )
   }
 
   if (items.length === 0) {

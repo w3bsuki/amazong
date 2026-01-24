@@ -2,7 +2,7 @@
    TREIDO DESIGN SYSTEM - Tailwind v4 + shadcn/ui
    
    Theme: Twitter (via tweakcn.com)
-   Primary: #1e9df1 (Twitter Blue)
+   Primary: Twitter Blue
    ============================================================ */
 
 @import "tailwindcss";
@@ -95,18 +95,18 @@
   --overlay-light: oklch(1 0 0 / 80%);
 
   /* Mobile Product Page Surfaces - Light Mode */
-  --surface-page: oklch(0.93 0.005 210);
-  --surface-card: oklch(1 0 0);
-  --surface-elevated: oklch(1 0 0);
+  --surface-page: var(--muted);
+  --surface-card: var(--background);
+  --surface-elevated: var(--background);
   --surface-gallery: oklch(0.15 0.01 255);
   --surface-overlay: oklch(0 0 0 / 60%);
-  --surface-floating: oklch(1 0 0 / 90%);
+  --surface-floating: var(--background);
 
   /* Mobile Product Page Text - Light Mode */
-  --text-strong: oklch(0.15 0.01 255);
-  --text-default: oklch(0.25 0.01 255);
-  --text-muted-alt: oklch(0.45 0.01 255);
-  --text-subtle: oklch(0.55 0.01 255);
+  --text-strong: var(--foreground);
+  --text-default: var(--foreground);
+  --text-muted-alt: var(--muted-foreground);
+  --text-subtle: var(--muted-foreground);
 
   /* Overlay/Gallery Text (for dark backgrounds like fullscreen viewer) */
   --overlay-text: oklch(1 0 0);
@@ -190,18 +190,18 @@
   --overlay-light: oklch(0.21 0.02 255 / 80%);
 
   /* Mobile Product Page Surfaces - Dark Mode */
-  --surface-page: oklch(0.15 0.01 255);
-  --surface-card: oklch(0.20 0.015 255);
-  --surface-elevated: oklch(0.25 0.015 255);
+  --surface-page: var(--background);
+  --surface-card: var(--card);
+  --surface-elevated: var(--card);
   --surface-gallery: oklch(0.10 0.01 255);
   --surface-overlay: oklch(0 0 0 / 70%);
-  --surface-floating: oklch(0.25 0.015 255 / 90%);
+  --surface-floating: var(--card);
 
   /* Mobile Product Page Text - Dark Mode */
-  --text-strong: oklch(0.98 0 0);
-  --text-default: oklch(0.90 0 0);
-  --text-muted: oklch(0.65 0.01 255);
-  --text-subtle: oklch(0.50 0.01 255);
+  --text-strong: var(--foreground);
+  --text-default: var(--foreground);
+  --text-muted-alt: var(--muted-foreground);
+  --text-subtle: var(--muted-foreground);
 
   /* Overlay/Gallery Text - Dark Mode (same as light, always white on dark bg) */
   --overlay-text: oklch(1 0 0);
@@ -585,20 +585,9 @@
   --color-urgency-viewers-icon: oklch(0.55 0.16 250);
   --color-urgency-viewers-icon-bg: oklch(0.92 0.04 250);
 
-  /* === COLORS: Mobile Product Page Surfaces === */
-  /* These create clear visual layering for mobile product pages */
-  --color-surface-page: oklch(0.93 0.005 210);           /* Page canvas - visible gray */
-  --color-surface-card: oklch(1 0 0);                     /* Cards - pure white for contrast */
-  --color-surface-elevated: oklch(1 0 0);                 /* Elevated elements (bottom bar) */
-  --color-surface-gallery: oklch(0.15 0.01 255);          /* Gallery background - near black */
-  --color-surface-overlay: oklch(0 0 0 / 60%);            /* Image counter overlays */
-  --color-surface-floating: oklch(1 0 0 / 90%);           /* Floating buttons on gallery */
-
-  /* === COLORS: Mobile Product Page Text === */
-  --color-text-strong: oklch(0.15 0.01 255);              /* Strong text - titles, prices */
-  --color-text-default: oklch(0.25 0.01 255);             /* Default body text */
-  --color-text-muted: oklch(0.45 0.01 255);               /* Secondary text - meta info */
-  --color-text-subtle: oklch(0.55 0.01 255);              /* Subtle - timestamps, hints */
+  /* === COLORS: Mobile Product Page Surfaces & Text === */
+  /* REMOVED: Hardcoded duplicates. These tokens are now correctly derived
+     from CSS vars via @theme inline block (respects .dark mode) */
 
   /* === COLORS: Social Platforms === */
   --color-social-instagram: oklch(0.60 0.22 350);

@@ -111,6 +111,7 @@ export async function GET(request: NextRequest) {
       rating, 
       review_count, 
       images,
+      free_shipping,
       category_ancestors, 
       is_boosted,
       boost_expires_at,

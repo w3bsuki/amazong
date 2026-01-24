@@ -14,18 +14,25 @@ export async function searchProducts(
 ): Promise<{ products: Product[]; total: number }> {
   const offset = (page - 1) * limit
   const nowIso = new Date().toISOString()
+  const dealsOnly = filters.deals === "true"
 
-  const buildCountBase = () =>
-    supabase
-      .from("products")
-      .select("id, profiles!products_seller_id_fkey(is_verified_business,account_type)", { count: "exact", head: true })
+  const buildCountBase = () => {
+    const base: any = dealsOnly
+      ? supabase.from("deal_products")
+      : supabase.from("products")
 
-  const buildDbBase = () =>
-    supabase
-      .from("products")
-      .select(
-        "id,title,price,list_price,images,rating,review_count,category_id,slug,tags,is_boosted,boost_expires_at,profiles:profiles!products_seller_id_fkey(id,username,display_name,business_name,avatar_url,tier,account_type,is_verified_business),categories:categories!products_category_id_fkey(slug)"
-      )
+    return base.select("id, profiles!products_seller_id_fkey(is_verified_business,account_type)", { count: "exact", head: true })
+  }
+
+  const buildDbBase = () => {
+    const base: any = dealsOnly
+      ? supabase.from("deal_products")
+      : supabase.from("products")
+
+    return base.select(
+      "id,title,price,list_price,images,rating,review_count,category_id,slug,tags,is_boosted,boost_expires_at,profiles:profiles!products_seller_id_fkey(id,username,display_name,business_name,avatar_url,tier,account_type,is_verified_business),categories:categories!products_category_id_fkey(slug)"
+    )
+  }
 
   const applyFilters = (q: any) => {
     let next = q
@@ -38,9 +45,6 @@ export async function searchProducts(
     if (filters.maxPrice) next = next.lte("price", Number(filters.maxPrice))
     if (filters.tag) next = next.contains("tags", [filters.tag])
     if (filters.minRating) next = next.gte("rating", Number(filters.minRating))
-
-    // "Discounts" / "Deals": best-effort (list_price present)
-    if (filters.deals === "true") next = next.not("list_price", "is", null)
 
     // Verified sellers (business verification)
     if (filters.verified === "true") next = next.eq("profiles.is_verified_business", true)

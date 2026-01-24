@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/select"
 import { BULGARIAN_CITIES } from "@/lib/bulgarian-cities"
 import { useToast } from "@/hooks/use-toast"
+import { BoostDialog } from "../_components/boost-dialog"
 import {
   ArrowLeft,
   Package,
@@ -46,6 +47,7 @@ interface Product {
   stock: number
   images: string[] | null
   is_boosted: boolean | null
+  boost_expires_at: string | null
   is_featured: boolean | null
   ships_to_bulgaria: boolean | null
   ships_to_europe: boolean | null
@@ -79,8 +81,6 @@ export function EditProductClient({ productId, locale }: EditProductClientProps)
   const [saleEndDateLocal, setSaleEndDateLocal] = useState("")
 
   // Boost state
-  const [isBoosted, setIsBoosted] = useState(false)
-
   // Shipping state
   const [shipsBulgaria, setShipsBulgaria] = useState(true)
   const [shipsEurope, setShipsEurope] = useState(false)
@@ -103,7 +103,7 @@ export function EditProductClient({ productId, locale }: EditProductClientProps)
       const { data, error } = await supabase
         .from("products")
         .select(
-          "id,title,description,price,list_price,is_on_sale,sale_percent,sale_end_date,seller_city,stock,images,is_boosted,is_featured,ships_to_bulgaria,ships_to_europe,ships_to_usa,ships_to_worldwide"
+          "id,title,description,price,list_price,is_on_sale,sale_percent,sale_end_date,seller_city,stock,images,is_boosted,boost_expires_at,is_featured,ships_to_bulgaria,ships_to_europe,ships_to_usa,ships_to_worldwide"
         )
         .eq("id", productId)
         .eq("seller_id", user.id)
@@ -124,7 +124,6 @@ export function EditProductClient({ productId, locale }: EditProductClientProps)
       setDescription(data.description || "")
       setPrice(String(data.price))
       setStock(String(data.stock))
-      setIsBoosted(data.is_boosted || false)
       setShipsBulgaria(data.ships_to_bulgaria ?? true)
       setShipsEurope(data.ships_to_europe ?? false)
       setShipsUSA(data.ships_to_usa ?? false)
@@ -188,7 +187,6 @@ export function EditProductClient({ productId, locale }: EditProductClientProps)
       description: description || null,
       price: Number.parseFloat(price),
       stock: Number.parseInt(stock),
-      is_boosted: isBoosted,
       ships_to_bulgaria: shipsBulgaria,
       ships_to_europe: shipsEurope,
       ships_to_usa: shipsUSA,
@@ -526,7 +524,7 @@ export function EditProductClient({ productId, locale }: EditProductClientProps)
           </Card>
 
           {/* Boost Option */}
-          <Card className={isBoosted ? "border-primary" : ""}>
+          <Card>
             <CardHeader>
               <CardTitle className="text-base flex items-center gap-2">
                 <Lightning className="size-5 text-primary" weight="fill" />
@@ -539,19 +537,17 @@ export function EditProductClient({ productId, locale }: EditProductClientProps)
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="flex items-center justify-between">
-                <span className="text-sm">
-                  {locale === 'bg' ? 'Активирай промоция' : 'Enable boost'}
-                </span>
-                <Switch checked={isBoosted} onCheckedChange={setIsBoosted} />
-              </div>
-              {isBoosted && (
-                <p className="text-xs text-muted-foreground mt-2">
-                  {locale === 'bg'
-                    ? '✨ Продуктът ще се показва в "Препоръчани продукти"'
-                    : '✨ Product will appear in "Recommended Products"'}
-                </p>
-              )}
+              {product ? (
+                <BoostDialog
+                  product={{
+                    id: product.id,
+                    title: product.title,
+                    ...(product.is_boosted != null ? { is_boosted: product.is_boosted } : {}),
+                    boost_expires_at: product.boost_expires_at,
+                  }}
+                  locale={locale}
+                />
+              ) : null}
             </CardContent>
           </Card>
 

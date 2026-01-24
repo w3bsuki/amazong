@@ -119,9 +119,9 @@ export async function POST(request: NextRequest): Promise<NextResponse<CountResp
       countQuery = countQuery.gt("stock", 0)
     }
 
-    // Deals filter (has list_price = discounted)
+    // Deals filter (match canonical deal_products semantics: compare-at OR explicit sale)
     if (filters.deals) {
-      countQuery = countQuery.not("list_price", "is", null)
+      countQuery = countQuery.or("and(is_on_sale.eq.true,sale_percent.gt.0),list_price.not.is.null")
     }
 
     // Attribute filters

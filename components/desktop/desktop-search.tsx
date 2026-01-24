@@ -7,6 +7,8 @@ import { MagnifyingGlass, Clock, TrendUp, Package, X, ArrowRight, Eye, Sparkle }
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { FieldLabel } from "@/components/shared/field"
+import { SearchAiChat } from "@/components/shared/search/search-ai-chat"
+import { cn } from "@/lib/utils"
 import {
   Popover,
   PopoverContent,
@@ -33,6 +35,7 @@ export function DesktopSearch() {
   }, [])
   
   const [isOpen, setIsOpen] = React.useState(false)
+  const [aiMode, setAiMode] = React.useState(false)
   const [popoverWidth, setPopoverWidth] = React.useState(0)
   
   const { products: recentlyViewed, clearProducts: clearRecentlyViewed } = useRecentlyViewed()
@@ -160,11 +163,28 @@ export function DesktopSearch() {
                 type="button"
                 onClick={handleClearInput}
                   aria-label={tNav("clearSearch")}
-                className="absolute right-12 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                className="absolute right-20 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
               >
                 <X size={16} weight="regular" />
               </button>
             )}
+
+            <Button
+              type="button"
+              variant={aiMode ? "default" : "ghost"}
+              size="icon-sm"
+              onClick={() => { setAiMode(!aiMode); setIsOpen(true); }}
+              aria-label={tSearch("aiMode")}
+              aria-pressed={aiMode}
+              className={cn(
+                "absolute right-10 top-1/2 -translate-y-1/2 rounded-full",
+                aiMode
+                  ? "bg-primary text-primary-foreground hover:bg-primary/90"
+                  : "text-muted-foreground hover:text-foreground hover:bg-muted"
+              )}
+            >
+              <Sparkle size={16} weight={aiMode ? "fill" : "regular"} />
+            </Button>
 
             <Button
               type="submit"
@@ -185,6 +205,13 @@ export function DesktopSearch() {
           sideOffset={4}
           onOpenAutoFocus={(e) => e.preventDefault()}
         >
+          {aiMode ? (
+            <SearchAiChat 
+              onClose={() => setIsOpen(false)} 
+              className="h-96"
+            />
+          ) : (
+          <>
           <div className="max-h-(--spacing-scroll-xl) overflow-y-auto">
             {/* Live Product Results */}
             {products.length > 0 && (
@@ -414,6 +441,8 @@ export function DesktopSearch() {
               {tSearch("toClose")}
             </span>
           </div>
+          </>
+          )}
         </PopoverContent>
       </Popover>
     </div>

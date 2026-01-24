@@ -15,10 +15,38 @@
 
 import { useState, useEffect, useRef, useCallback, type ReactNode } from "react"
 import Image from "next/image"
-import { Heart, Share2, ChevronLeft, MoreHorizontal, X } from "lucide-react"
+import { useTranslations } from "next-intl"
+import { Heart, ChevronLeft, MoreHorizontal, X } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useWishlist } from "@/components/providers/wishlist-context"
 import type { GalleryImage } from "@/lib/view-models/product-page"
+
+/** Map condition value to semantic color classes */
+function getConditionColorClass(condition: string | undefined | null): string {
+  if (!condition) return "bg-condition-new"
+  const normalized = condition.toLowerCase().replace(/[\s_-]/g, "")
+  switch (normalized) {
+    case "new":
+    case "newwithtags":
+      return "bg-condition-new"
+    case "likenew":
+    case "usedexcellent":
+      return "bg-condition-likenew"
+    case "good":
+    case "usedgood":
+      return "bg-condition-good"
+    case "fair":
+    case "usedfair":
+      return "bg-condition-fair"
+    case "used":
+      return "bg-condition-used"
+    case "refurbished":
+    case "refurb":
+      return "bg-condition-refurb"
+    default:
+      return "bg-condition-new"
+  }
+}
 
 interface MobileGalleryV2Props {
   images: GalleryImage[]
@@ -34,8 +62,10 @@ interface MobileGalleryV2Props {
   overlayBadge?: ReactNode
   /** Category label text */
   categoryLabel?: string
-  /** Condition label text */
+  /** Condition label text (display value) */
   conditionLabel?: string
+  /** Condition value for styling (e.g., "new", "like_new", "good", "fair") */
+  condition?: string | null
   /** Called when back button is pressed */
   onBack?: () => void
   className?: string
@@ -47,9 +77,11 @@ export function MobileGalleryV2({
   overlayBadge,
   categoryLabel,
   conditionLabel,
+  condition,
   onBack,
   className,
 }: MobileGalleryV2Props) {
+  const t = useTranslations("Product")
   const [activeIndex, setActiveIndex] = useState(0)
   const [viewerOpen, setViewerOpen] = useState(false)
   const galleryRef = useRef<HTMLDivElement>(null)
@@ -97,7 +129,7 @@ export function MobileGalleryV2({
         "w-full aspect-square bg-muted flex items-center justify-center",
         className
       )}>
-        <span className="text-sm text-muted-foreground">No image</span>
+        <span className="text-sm text-muted-foreground">{t("noImage")}</span>
       </div>
     )
   }
@@ -114,8 +146,8 @@ export function MobileGalleryV2({
               <button
                 type="button"
                 onClick={onBack}
-                className="size-9 rounded-full bg-surface-floating shadow-sm flex items-center justify-center active:bg-background"
-                aria-label="Go back"
+                className="size-9 rounded-full bg-surface-floating/90 shadow-sm flex items-center justify-center active:bg-background"
+                aria-label={t("back")}
               >
                 <ChevronLeft className="size-5 text-text-strong" />
               </button>
@@ -124,13 +156,6 @@ export function MobileGalleryV2({
             
             {/* Action Buttons */}
             <div className="flex gap-2">
-              <button
-                type="button"
-                className="size-9 rounded-full bg-surface-floating shadow-sm flex items-center justify-center active:bg-background"
-                aria-label="Share"
-              >
-                <Share2 className="size-4 text-text-strong" />
-              </button>
               {product && (
                 <button
                   type="button"
@@ -139,9 +164,9 @@ export function MobileGalleryV2({
                     "size-9 rounded-full shadow-sm flex items-center justify-center",
                     isWishlisted 
                       ? "bg-destructive text-destructive-foreground" 
-                      : "bg-surface-floating active:bg-background"
+                      : "bg-surface-floating/90 active:bg-background"
                   )}
-                  aria-label={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
+                  aria-label={isWishlisted ? t("removeFromWishlist") : t("addToWishlist")}
                 >
                   <Heart 
                     className={cn(
@@ -157,7 +182,7 @@ export function MobileGalleryV2({
           {/* Bottom Badges */}
           <div className="absolute bottom-3 left-3 z-20 flex flex-col gap-1.5 items-start">
             {conditionLabel && (
-              <span className="px-2 py-0.5 rounded bg-condition-new text-primary-foreground text-xs font-bold">
+              <span className={cn("px-2 py-0.5 rounded text-primary-foreground text-xs font-bold", getConditionColorClass(condition))}>
                 {conditionLabel}
               </span>
             )}
@@ -179,7 +204,7 @@ export function MobileGalleryV2({
           {/* Swipeable Image Gallery */}
           <div
             ref={galleryRef}
-            className="flex overflow-x-auto snap-x snap-mandatory scrollbar-none"
+            className="flex overflow-x-auto snap-x snap-mandatory scrollbar-hide"
             onClick={() => setViewerOpen(true)}
           >
             {images.map((img, i) => (
@@ -216,7 +241,7 @@ export function MobileGalleryV2({
                     ? "ring-2 ring-foreground ring-offset-1 ring-offset-background" 
                     : "opacity-50 hover:opacity-75"
                 )}
-                aria-label={`View image ${i + 1}`}
+                aria-label={t("viewImageNumber", { number: i + 1 })}
               >
                 <Image
                   src={img.src}
@@ -240,7 +265,7 @@ export function MobileGalleryV2({
               type="button"
               onClick={() => setViewerOpen(false)}
               className="size-10 rounded-full bg-surface-floating/20 flex items-center justify-center"
-              aria-label="Close viewer"
+              aria-label={t("closeViewer")}
             >
               <X className="size-6 text-overlay-text" />
             </button>
@@ -250,7 +275,7 @@ export function MobileGalleryV2({
             <button
               type="button"
               className="size-10 rounded-full bg-surface-floating/20 flex items-center justify-center"
-              aria-label="More options"
+              aria-label={t("moreOptions")}
             >
               <MoreHorizontal className="size-5 text-overlay-text" />
             </button>
@@ -283,7 +308,7 @@ export function MobileGalleryV2({
                     ? "ring-2 ring-gallery-ring ring-offset-2 ring-offset-gallery-ring-offset" 
                     : "opacity-40 hover:opacity-60"
                 )}
-                aria-label={`View image ${i + 1}`}
+                aria-label={t("viewImageNumber", { number: i + 1 })}
               >
                 <Image
                   src={img.src}

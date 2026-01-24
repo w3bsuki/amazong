@@ -2,10 +2,11 @@
 
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { ArrowLeft, ShareNetwork } from "@phosphor-icons/react"
-import { safeAvatarSrc } from "@/lib/utils"
+import { ArrowLeft, ShareNetwork, Heart } from "@phosphor-icons/react"
+import { safeAvatarSrc, cn } from "@/lib/utils"
 import { Link } from "@/i18n/routing"
 import { useTranslations } from "next-intl"
+import { useWishlist } from "@/components/providers/wishlist-context"
 import type { ProductHeaderProps } from "../types"
 
 /**
@@ -14,6 +15,7 @@ import type { ProductHeaderProps } from "../types"
  * Product page header with:
  * - Back button
  * - Seller avatar + Product title
+ * - Wishlist button
  * - Share button
  * 
  * Used for: Product detail pages (mobile only)
@@ -25,10 +27,27 @@ export function MobileProductHeader({
   sellerAvatarUrl,
   locale,
   onBack,
+  productId,
+  productPrice,
+  productImage,
 }: ProductHeaderProps) {
   const tProduct = useTranslations("Product")
   const sellerInitials = (sellerName || sellerUsername || "?").slice(0, 2).toUpperCase()
   const profileHref = sellerUsername ? `/${sellerUsername}` : "#"
+
+  // Wishlist
+  const { isInWishlist, toggleWishlist } = useWishlist()
+  const isWishlisted = productId ? isInWishlist(productId) : false
+
+  const handleWishlistToggle = () => {
+    if (!productId || !productTitle) return
+    toggleWishlist({
+      id: productId,
+      title: productTitle,
+      price: productPrice ?? 0,
+      image: productImage ?? "",
+    })
+  }
 
   // Handle share
   const handleShare = async () => {
@@ -65,6 +84,21 @@ export function MobileProductHeader({
             <span className="text-sm font-medium text-foreground truncate">{productTitle}</span>
           )}
         </div>
+        {productId && (
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            className="rounded-full shrink-0"
+            aria-label={isWishlisted ? tProduct("removeFromWishlist") : tProduct("addToWishlist")}
+            onClick={handleWishlistToggle}
+          >
+            <Heart 
+              className={cn("size-5", isWishlisted && "fill-destructive text-destructive")} 
+              weight={isWishlisted ? "fill" : "regular"}
+            />
+          </Button>
+        )}
         <Button
           type="button"
           variant="ghost"

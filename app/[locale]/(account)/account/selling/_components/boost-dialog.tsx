@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Link } from "@/i18n/routing"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -26,20 +26,15 @@ import {
 import { cn } from "@/lib/utils"
 import { toast } from "sonner"
 import { useTranslations } from "next-intl"
-import { eurToBgnApprox } from "@/lib/currency"
 
-interface BoostOption {
+type PricingOption = {
   days: number
+  sku: string
   priceEur: number
-  popular?: boolean
-  bestValue?: boolean
+  priceBgn: number
+  durationKey: string
+  currency: string
 }
-
-const BOOST_OPTIONS: BoostOption[] = [
-  { days: 1, priceEur: 0.99 },
-  { days: 7, priceEur: 4.99, popular: true },
-  { days: 30, priceEur: 14.99, bestValue: true },
-]
 
 interface Product {
   id: string
@@ -59,6 +54,8 @@ export function BoostDialog({ product, locale, trigger, onBoostSuccess: _onBoost
   const [selectedDays, setSelectedDays] = useState<number>(7)
   const [isLoading, setIsLoading] = useState(false)
   const [isOpen, setIsOpen] = useState(false)
+  const [pricingStatus, setPricingStatus] = useState<"idle" | "loading" | "ready" | "error">("idle")
+  const [pricingOptions, setPricingOptions] = useState<PricingOption[] | null>(null)
   const t = useTranslations('Boost')
 
   const formatPriceEur = (price: number) => {
@@ -72,6 +69,46 @@ export function BoostDialog({ product, locale, trigger, onBoostSuccess: _onBoost
   const formatPriceBgn = (price: number) => {
     return t('priceBgn', { price: price.toFixed(2) })
   }
+
+  useEffect(() => {
+    if (!isOpen) return
+    if (pricingStatus === "loading" || pricingStatus === "ready") return
+
+    let cancelled = false
+    setPricingStatus("loading")
+
+    void (async () => {
+      try {
+        const response = await fetch("/api/boost/checkout", { method: "GET" })
+        const data = (await response.json()) as { options?: PricingOption[] }
+        const options = Array.isArray(data.options) ? data.options : []
+
+        if (cancelled) return
+
+        if (!response.ok || options.length === 0) {
+          setPricingStatus("error")
+          setPricingOptions(null)
+          return
+        }
+
+        setPricingOptions(options)
+        setPricingStatus("ready")
+
+        if (!options.some((opt) => opt.days === selectedDays)) {
+          const nextDefault = options.find((opt) => opt.days === 7)?.days ?? options[0]?.days
+          if (typeof nextDefault === "number") setSelectedDays(nextDefault)
+        }
+      } catch {
+        if (cancelled) return
+        setPricingStatus("error")
+        setPricingOptions(null)
+      }
+    })()
+
+    return () => {
+      cancelled = true
+    }
+  }, [isOpen, pricingStatus, selectedDays])
 
   const handleBoost = async () => {
     setIsLoading(true)
@@ -167,6 +204,8 @@ export function BoostDialog({ product, locale, trigger, onBoostSuccess: _onBoost
     ? new Date(product.boost_expires_at) <= new Date() 
     : false
 
+  const selectedPricing = pricingOptions?.find((opt) => opt.days === selectedDays) ?? null
+
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
@@ -197,59 +236,75 @@ export function BoostDialog({ product, locale, trigger, onBoostSuccess: _onBoost
           {/* Duration Selection */}
           <div className="space-y-2">
             <p className="text-sm font-medium text-muted-foreground">{t('selectDuration')}</p>
-            <div className="grid grid-cols-3 gap-2">
-              {BOOST_OPTIONS.map((option) => {
-                const isSelected = selectedDays === option.days
-                const pricePerDayEur = option.priceEur / (option.days === 1 ? 1 : option.days)
-                const priceBgn = eurToBgnApprox(option.priceEur)
+            {pricingStatus === "loading" ? (
+              <div className="grid grid-cols-3 gap-2">
+                {[0, 1, 2].map((i) => (
+                  <div
+                    key={i}
+                    className="h-28 rounded-lg border border-border bg-muted/30 animate-pulse"
+                  />
+                ))}
+              </div>
+            ) : pricingStatus === "error" || !pricingOptions ? (
+              <div className="rounded-lg border border-border bg-muted/30 p-3 text-xs text-muted-foreground">
+                {t("errors.internal")}
+              </div>
+            ) : (
+              <div className="grid grid-cols-3 gap-2">
+                {pricingOptions.map((option) => {
+                  const isSelected = selectedDays === option.days
+                  const isPopular = option.days === 7
+                  const isBestValue = option.days === 30
+                  const pricePerDayEur = option.priceEur / (option.days === 1 ? 1 : option.days)
 
-                return (
-                  <button
-                    key={option.days}
-                    onClick={() => setSelectedDays(option.days)}
-                    className={cn(
-                      "relative flex flex-col items-center p-3 rounded-lg border-2 transition-all",
-                      isSelected
-                        ? "border-primary bg-primary/5"
-                        : "border-border hover:border-primary/50"
-                    )}
-                  >
-                    {option.popular && (
-                      <Badge
-                        className="absolute -top-2 left-1/2 -translate-x-1/2 text-2xs px-1.5 py-0"
-                        variant="default"
-                      >
-                        {t('popular')}
-                      </Badge>
-                    )}
-                    {option.bestValue && (
-                      <Badge
-                        className="absolute -top-2 left-1/2 -translate-x-1/2 text-2xs px-1.5 py-0 bg-success"
-                        variant="default"
-                      >
-                        {t('bestValue')}
-                      </Badge>
-                    )}
-                    <span className="text-lg font-bold">{option.days === 1 ? '24' : option.days}</span>
-                    <span className="text-xs text-muted-foreground">{option.days === 1 ? t('hours') : t('days')}</span>
-                    <span className={cn(
-                      "text-sm font-semibold mt-1",
-                      isSelected ? "text-primary" : "text-foreground"
-                    )}>
-                      {formatPriceEur(option.priceEur)}
-                    </span>
-                    <span className="text-2xs text-muted-foreground">
-                      {formatPriceBgn(priceBgn)}
-                    </span>
-                    {option.days > 1 && (
-                      <span className="text-2xs text-muted-foreground mt-0.5">
-                        {formatPriceEur(pricePerDayEur)}{t('perDay')}
+                  return (
+                    <button
+                      key={option.days}
+                      onClick={() => setSelectedDays(option.days)}
+                      className={cn(
+                        "relative flex flex-col items-center p-3 rounded-lg border-2 transition-all",
+                        isSelected
+                          ? "border-primary bg-primary/5"
+                          : "border-border hover:border-primary/50"
+                      )}
+                    >
+                      {isPopular && (
+                        <Badge
+                          className="absolute -top-2 left-1/2 -translate-x-1/2 text-2xs px-1.5 py-0"
+                          variant="default"
+                        >
+                          {t('popular')}
+                        </Badge>
+                      )}
+                      {isBestValue && (
+                        <Badge
+                          className="absolute -top-2 left-1/2 -translate-x-1/2 text-2xs px-1.5 py-0 bg-success"
+                          variant="default"
+                        >
+                          {t('bestValue')}
+                        </Badge>
+                      )}
+                      <span className="text-lg font-bold">{option.days === 1 ? '24' : option.days}</span>
+                      <span className="text-xs text-muted-foreground">{option.days === 1 ? t('hours') : t('days')}</span>
+                      <span className={cn(
+                        "text-sm font-semibold mt-1",
+                        isSelected ? "text-primary" : "text-foreground"
+                      )}>
+                        {formatPriceEur(option.priceEur)}
                       </span>
-                    )}
-                  </button>
-                )
-              })}
-            </div>
+                      <span className="text-2xs text-muted-foreground">
+                        {formatPriceBgn(option.priceBgn)}
+                      </span>
+                      {option.days > 1 && (
+                        <span className="text-2xs text-muted-foreground mt-0.5">
+                          {formatPriceEur(pricePerDayEur)}{t('perDay')}
+                        </span>
+                      )}
+                    </button>
+                  )
+                })}
+              </div>
+            )}
           </div>
 
           {/* Features */}
@@ -275,7 +330,7 @@ export function BoostDialog({ product, locale, trigger, onBoostSuccess: _onBoost
             className="w-full gap-2"
             size="lg"
             onClick={handleBoost}
-            disabled={isLoading}
+            disabled={isLoading || pricingStatus !== "ready" || !selectedPricing}
           >
             {isLoading ? (
               <>
@@ -285,7 +340,7 @@ export function BoostDialog({ product, locale, trigger, onBoostSuccess: _onBoost
             ) : (
               <>
                 <Lightning className="size-4" weight="fill" />
-                {t('boostNow')} • {formatPriceEur(BOOST_OPTIONS.find(o => o.days === selectedDays)?.priceEur || 0)}
+                {t('boostNow')} • {formatPriceEur(selectedPricing?.priceEur ?? 0)}
               </>
             )}
           </Button>

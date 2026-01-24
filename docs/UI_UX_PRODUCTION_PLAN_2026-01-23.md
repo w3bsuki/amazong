@@ -1,6 +1,6 @@
 # UI/UX Production Audit & Improvement Plan (Mobile + Desktop)
 
-Date: **2026-01-23**
+Last updated: **2026-01-24**
 
 Goal: ship a production‑ready marketplace UX where **all listing signals (badges, promos, pricing, shipping flags)** are **Supabase‑backed**, and “Boost listing” reliably takes payment via Stripe and activates promotion.
 
@@ -10,10 +10,26 @@ Related audits (baseline):
 - `docs/UI_UX_AUDIT_2026-01-22.md`
 - `docs/desktop_uiux_audit.md`
 - `docs/AUDIT_DRAWERS_SHADCN_TAILWIND_V4.md`
+- `MOBILE_UI_UX_AUDIT.md`
+- `TREIDO_AUDIT_2026-01-24.md`
 
 ---
 
-## Current State (as of 2026-01-23)
+## Production UX Status (as of 2026-01-24)
+
+| Area | Status | What’s blocking |
+|---|---|---|
+| Browse/search/cards | ⚠️ Partial | Badge fields not consistently selected/mapped (`free_shipping`), deals semantics split |
+| Boost listing (paid promo) | ⚠️ Partial | Paid flow exists, but edit listing still exposes an unpaid `is_boosted` toggle |
+| Cart + checkout | ❌ Broken | Cart state desync + checkout not rendering line items (see `docs/desktop_uiux_audit.md`) |
+| Seller onboarding/payouts | ❌ Broken | Stripe Connect onboarding 500 blocks payouts + parts of selling flow (see `docs/desktop_uiux_audit.md`) |
+| Orders/sales management | ⚠️ Partial | Seller orders UI i18n drift; buyer orders overfetch and locale-branching strings |
+| Headers + drawers | ⚠️ Partial | Reported scroll/header glitches; duplicated drawer patterns; mixed Vaul config overrides |
+| i18n + a11y compliance | ❌ Not complete | Remaining hardcoded strings, missing labels, small tap targets |
+
+---
+
+## Current State (as of 2026-01-24)
 
 ### Gates / drift scans (local)
 - ✅ Typecheck: `pnpm -s exec tsc -p tsconfig.json --noEmit`
@@ -27,6 +43,8 @@ Implemented end‑to‑end:
 - Webhook: `app/api/payments/webhook/route.ts` (listens for `checkout.session.completed` and activates boost in DB)
 - Seller UI entry: `app/[locale]/(account)/account/selling/_components/boost-dialog.tsx` + `app/[locale]/(account)/account/selling/selling-products-list.tsx`
 
+⚠️ **Critical gap**: `app/[locale]/(account)/account/selling/edit/edit-product-client.tsx` currently updates `products.is_boosted` directly via a toggle. This must be removed/disabled and enforced via Stripe + webhook (and RLS must prevent direct writes).
+
 ### Badges on listing cards (intended SSOT)
 These *should* be data‑driven from Supabase:
 - **Promoted / “Ad”**: `products.is_boosted` + `products.boost_expires_at` (and `listing_boosts` history)
@@ -37,15 +55,7 @@ These *should* be data‑driven from Supabase:
 
 ## Key UX Findings (what’s not production‑ready yet)
 
-### 1) “Promoted” is not clearly labeled on the main card
-Symptoms:
-- `ProductFeed` passes `state="promoted"` into `ProductCard`, but `components/shared/product/product-card.tsx` does not visually surface a promoted marker (state variant is currently a no‑op).
-- This matches the earlier audit note: promoted vs organic is easy to miss.
-
-Impact:
-- Paid boost value is unclear; users may distrust “Boost” if it doesn’t visibly change placement/labeling.
-
-### 2) Badge/data propagation is inconsistent across endpoints
+### 1) Badge/data propagation is inconsistent across endpoints
 Findings:
 - `lib/data/products.ts` `toUI()` expects `p.free_shipping`, but `normalizeProductRow()` currently does not map `free_shipping` into the normalized `Product`.
 - Multiple API routes use `toUI(normalizeProductRow(p))` (e.g. `app/api/products/feed/route.ts`, `app/api/products/deals/route.ts`), so **free shipping can silently disappear** depending on which surface loaded the data.
@@ -53,7 +63,7 @@ Findings:
 Impact:
 - Users see “random” or inconsistent badges (or badges missing) depending on where the listings are rendered.
 
-### 3) Deals/discount semantics aren’t fully unified
+### 2) Deals/discount semantics aren’t fully unified
 Examples:
 - Search “deals” filter uses “`list_price` present” best‑effort (`app/[locale]/(main)/search/_lib/search-products.ts`).
 - `/api/products/deals` defines deals as explicit sale flags (`is_on_sale=true && sale_percent>0 && not expired`).
@@ -62,16 +72,41 @@ Examples:
 Impact:
 - “Deals” surfaces can show different products than “discount” badges imply.
 
-### 4) Boost UX loop has sharp edges
+### 3) Boost UX has conflicting paths (paid vs unpaid toggle)
 Current issues:
-- `app/api/boost/checkout/route.ts` uses `cancel_url` that returns to `/sell?...` (but the boost entrypoint is typically `/account/selling`), so cancel feedback/toasts won’t show.
-- Seller list page only shows a success toast; it doesn’t explicitly handle “boost activation pending” (webhook can be delayed), and doesn’t intentionally refresh/poll to update the boosted state.
-- Boost pricing is duplicated in UI (`BOOST_OPTIONS` in `boost-dialog.tsx`) and server (`DEFAULT_BOOST_PRICING` in `app/api/boost/checkout/route.ts`). DB‑driven pricing (`boost_prices`) is supported in the API but not surfaced in the dialog.
+- Paid boost flow exists via `BoostDialog` + Stripe Checkout + webhook.
+- Edit listing exposes an unpaid boost toggle (`app/[locale]/(account)/account/selling/edit/edit-product-client.tsx`) that updates `is_boosted` directly.
+- Boost activation is webhook-dependent; the seller UI needs a clear “activation pending” state and a refresh/poll strategy after returning from Stripe.
+- Boost pricing is duplicated in UI (`BOOST_OPTIONS` in `boost-dialog.tsx`) and server (`DEFAULT_BOOST_PRICING` in `app/api/boost/checkout/route.ts`). DB pricing (`boost_prices`) is supported in the API but not surfaced in the dialog.
 
 Impact:
-- Higher support burden (“I paid but it’s not promoted”), higher cancellation, lower trust.
+- Monetization trust issue: “Boost” must *always* mean “paid promotion”, and the UI must not imply it’s a free toggle.
 
-### 5) Seller/buyer management UX exists, but polish/consistency isn’t finished
+### 4) Cart + checkout correctness is not production‑ready
+Evidence (see `docs/desktop_uiux_audit.md`):
+- Add-to-cart does not reliably reflect in `/cart` while the cart badge shows items (state desync).
+- `/checkout` can render only shell/loader and no line items (purchase flow blocked).
+
+Impact:
+- Core marketplace loop is blocked; this must be fixed before launch.
+
+### 5) Seller payouts/onboarding blocks selling for some flows
+Evidence (see `docs/desktop_uiux_audit.md`):
+- `/api/connect/onboarding` returns 500, blocking Stripe Connect onboarding and payouts setup.
+
+Impact:
+- Sellers can’t complete payouts onboarding; listing/selling readiness is compromised.
+
+### 6) Headers + drawers: stability + duplication issues
+Findings:
+- Users report scroll/header glitches when opening/closing header drawers (cart/wishlist) after scrolling.
+- Cart/wishlist use Vaul Drawer, but they override base config (`noBodyStyles`, `disablePreventScroll={false}`) which may diverge from the wrapper defaults in `components/ui/drawer.tsx`.
+- Drawer patterns are duplicated (header cart drawer vs global cart drawer), increasing bug surface and inconsistent behavior (see `docs/AUDIT_DRAWERS_SHADCN_TAILWIND_V4.md`).
+
+Impact:
+- Perceived “cheap/janky” UI even if the underlying data is correct.
+
+### 7) Seller/buyer management UX exists, but polish/consistency isn’t finished
 Examples found in current code:
 - Many account/seller screens use `locale === 'bg' ? ... : ...` and hardcoded strings instead of `next-intl` (rail violation).
 - Seller orders UI has hardcoded English strings and emoji labels (`app/[locale]/(sell)/sell/orders/client.tsx`).
@@ -80,7 +115,7 @@ Examples found in current code:
 Impact:
 - i18n drift, inconsistent tone/terminology, and future maintainability issues.
 
-### 6) “Today’s Deals” page is demo content (not Supabase‑backed)
+### 8) “Today’s Deals” page is demo content (not Supabase‑backed)
 - `app/[locale]/(main)/todays-deals/_components/todays-deals-page-client.tsx` contains hardcoded products and strings.
 
 Impact:
@@ -110,15 +145,20 @@ Pick **one** definition for V1 and use it everywhere:
 ## UX Improvement Plan (prioritized, mobile + desktop)
 
 ### P0 — Release blockers (production correctness + monetization trust)
-- [ ] **Promoted labeling on all listing surfaces** → ensure boosted listings are clearly marked (card badge + a11y label). Start with `components/shared/product/product-card.tsx`.
-- [ ] **Fix badge propagation bugs** → ensure `free_shipping` (and any other “card flags”) survive normalization across all API routes (`lib/data/products.ts`, affected API routes).
-- [ ] **Boost checkout loop UX**:
-  - [ ] Return users to the initiating surface on cancel (likely `/[locale]/account/selling`)
+- [ ] **Cart + checkout correctness** (must be green): fix cart state desync, ensure `/cart` and `/checkout` render correct line items, and validate end-to-end purchase flow.
+- [ ] **Seller payouts onboarding**: fix `/api/connect/onboarding` 500; confirm Stripe Connect onboarding + payout readiness.
+- [ ] **Boost must be paid-only**:
+  - [ ] Remove/replace unpaid boost toggle in edit listing (`app/[locale]/(account)/account/selling/edit/edit-product-client.tsx`)
+  - [ ] Ensure RLS prevents direct writes to `products.is_boosted/boost_expires_at` from client
   - [ ] Add “activation pending” handling (poll/refresh + messaging) when returning from Stripe
   - [ ] Remove pricing duplication: load options from `GET /api/boost/checkout` (backed by `boost_prices` with safe fallback)
-- [ ] **Remove/convert demo “Today’s Deals”** → either:
-  - [ ] replace with Supabase‑backed deals feed, or
-  - [ ] convert to `ComingSoonPage` and remove links pointing to it
+- [ ] **Fix badge propagation bugs** → ensure `free_shipping` (and any other “card flags”) survive normalization across all API routes (`lib/data/products.ts`, affected API routes).
+- [ ] **Unify “Deals” semantics** (choose one definition and apply consistently across search + API + UI badges).
+- [ ] **Headers + drawers stability**:
+  - [ ] Reproduce and fix scroll/header glitch on open/close (cart + wishlist)
+  - [ ] Standardize Drawer usage (use wrapper defaults unless explicitly needed)
+  - [ ] Extend `e2e/header-drawers.spec.ts` to cover repeated open/close and catch regressions
+- [ ] **Remove/convert demo “Today’s Deals”** → either replace with Supabase‑backed deals feed or convert to a `ComingSoonPage` (and remove links pointing to it).
 
 Verification:
 - `pnpm -s exec tsc -p tsconfig.json --noEmit`
@@ -154,14 +194,19 @@ Verification:
 Keep changes small (1–3 files per batch) and always re-run gates.
 
 Suggested first batches:
-1) **Promoted badge on `ProductCard`**:
-   - Primary file: `components/shared/product/product-card.tsx`
-   - Supporting: translations under `messages/en.json` + `messages/bg.json` for a single “Ad/Promoted” label used everywhere.
-2) **Badge propagation SSOT**:
+1) **Badge propagation SSOT**:
    - Primary file: `lib/data/products.ts` (`normalizeProductRow` + `toUI` contract)
-   - Verify affected API routes: `app/api/products/feed/route.ts`, `app/api/products/deals/route.ts`
-3) **Boost UX loop**:
-   - Primary files: `app/api/boost/checkout/route.ts`, `app/[locale]/(account)/account/selling/_components/boost-dialog.tsx`, `app/[locale]/(account)/account/selling/selling-products-list.tsx`
+   - Verify affected routes: feeds/search/deals endpoints that call `normalizeProductRow`.
+2) **Boost paid-only enforcement**:
+   - Primary file: `app/[locale]/(account)/account/selling/edit/edit-product-client.tsx` (remove toggle; replace with paid BoostDialog entry or status)
+   - Verify Stripe flow: `app/api/boost/checkout/route.ts`, `app/api/payments/webhook/route.ts`
+   - Verify DB/RLS: ensure sellers cannot directly update boost flags.
+3) **Headers/drawers stability**:
+   - Primary files: cart/wishlist drawer triggers (`components/layout/header/cart/mobile-cart-dropdown.tsx`, `components/shared/wishlist/wishlist-drawer.tsx`)
+   - Test: `e2e/header-drawers.spec.ts`
+4) **Orders i18n/perf cleanup**:
+   - Buyer: `app/[locale]/(account)/account/orders/page.tsx` (select projection + i18n keys)
+   - Seller: `app/[locale]/(sell)/sell/orders/client.tsx` (next-intl + remove emojis/hardcoded strings)
 
 ---
 
@@ -171,4 +216,4 @@ Suggested first batches:
    - Compare‑at (`list_price`) vs explicit sale (`is_on_sale/sale_percent`) vs DB view (`deal_products`).
 2) Should “Boost listing” be available only from listing management (`/account/selling`), or also immediately after publish in `/sell`?
 3) Should `/todays-deals` ship in V1 at all (and if yes, as marketplace deals, not Amazon‑style demo content)?
-
+4) What should the promoted label be for V1: **“Ad”**, **“Sponsored”**, or **“Promo”** (current)? (Recommendation: “Ad” / “Sponsored”, and keep it consistent everywhere.)

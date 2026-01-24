@@ -69,6 +69,12 @@ export interface AppHeaderProps {
   sellerUsername?: string | null
   /** Seller avatar URL */
   sellerAvatarUrl?: string | null
+  /** Product ID for wishlist */
+  productId?: string | null
+  /** Product price for wishlist */
+  productPrice?: number | null
+  /** Product image for wishlist */
+  productImage?: string | null
   
   // Contextual variant props
   /** Title for contextual header (category name) */
@@ -148,6 +154,9 @@ export function AppHeader({
   sellerName,
   sellerUsername,
   sellerAvatarUrl,
+  productId,
+  productPrice,
+  productImage,
   // Contextual props
   contextualTitle,
   contextualBackHref = "/categories",
@@ -193,6 +202,9 @@ export function AppHeader({
   const effectiveSellerName = hydratedProductHeader?.sellerName ?? sellerName
   const effectiveSellerUsername = hydratedProductHeader?.sellerUsername ?? sellerUsername
   const effectiveSellerAvatarUrl = hydratedProductHeader?.sellerAvatarUrl ?? sellerAvatarUrl
+  const effectiveProductId = hydratedProductHeader?.productId ?? productId
+  const effectiveProductPrice = hydratedProductHeader?.productPrice ?? productPrice
+  const effectiveProductImage = hydratedProductHeader?.productImage ?? productImage
 
   const searchPlaceholder = tNav("searchPlaceholderShort")
 
@@ -241,6 +253,9 @@ export function AppHeader({
             sellerName={effectiveSellerName}
             sellerUsername={effectiveSellerUsername}
             sellerAvatarUrl={effectiveSellerAvatarUrl}
+            productId={effectiveProductId}
+            productPrice={effectiveProductPrice}
+            productImage={effectiveProductImage}
             onBack={() => router.back()}
             locale={locale}
           />

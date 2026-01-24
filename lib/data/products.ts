@@ -377,9 +377,10 @@ export async function getProducts(type: QueryType, limit = 36, zone?: ShippingRe
       // OPTIMIZED: Flat category join - no 4-level nesting!
       // Use getCategoryPath() separately when breadcrumbs are needed.
       // Note: user_verification joins to profiles via user_id, and we join profiles via seller_id
-      let q = supabase
-        .from('products')
-        .select(productSelect)
+      let q: any =
+        type === 'deals'
+          ? supabase.from('deal_products').select(productSelect)
+          : supabase.from('products').select(productSelect)
 
       // Apply shipping zone filter (WW = show all, so no filter)
       if (zone && zone !== 'WW') {
@@ -392,8 +393,7 @@ export async function getProducts(type: QueryType, limit = 36, zone?: ShippingRe
       // Apply type filters (but no boost ordering here)
       switch (type) {
         case 'deals':
-          // Truth semantics: deals are explicitly marked on-sale.
-          q = q.eq('is_on_sale', true).gt('sale_percent', 0)
+          // Canonical semantics live in the `deal_products` view.
           break
         case 'promo':
           // Legacy "promo" uses compare-at pricing.
@@ -414,6 +414,11 @@ export async function getProducts(type: QueryType, limit = 36, zone?: ShippingRe
           return q.order('created_at', { ascending: false })
         case 'bestsellers':
           return q.order('review_count', { ascending: false })
+        case 'deals':
+          // Prefer the biggest savings first (view computes effective_discount).
+          return q
+            .order('effective_discount', { ascending: false, nullsFirst: false })
+            .order('created_at', { ascending: false })
         case 'featured':
           // Fair rotation of active boosts
           return q.order('boost_expires_at', { ascending: true })
@@ -544,6 +549,7 @@ export function normalizeProductRow(p: {
   rating?: number | null
   review_count?: number | null
   images?: string[] | null
+  free_shipping?: boolean | null
   product_images?: Array<{
     image_url: string
     thumbnail_url?: string | null
@@ -592,6 +598,7 @@ export function normalizeProductRow(p: {
     rating: p.rating ?? null,
     review_count: p.review_count ?? null,
     images: p.images ?? null,
+    free_shipping: p.free_shipping ?? null,
     product_images: p.product_images ?? null,
     product_attributes: p.product_attributes ?? null,
     is_boosted: activeBoost,
