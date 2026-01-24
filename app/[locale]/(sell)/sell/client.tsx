@@ -5,12 +5,10 @@ import { Link } from "@/i18n/routing";
 import { createClient } from "@/lib/supabase/client";
 import { useLocale, useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { WarningCircle } from "@phosphor-icons/react";
-import { PageShell } from "@/components/shared/page-shell";
+import { SellerPayoutSetup } from "@/components/shared/seller/seller-payout-setup";
+import { ProgressHeader } from "../_components/ui";
 import {
   SignInPrompt,
-  SellHeader,
   SellFormSkeleton,
   SellErrorBoundary,
   UnifiedSellForm,
@@ -19,28 +17,21 @@ import {
   type Seller
 } from "../_components";
 
-type PayoutSetupStatus = {
-  isReady: boolean;
-  needsSetup: boolean;
-  incomplete: boolean;
-};
+type SellerPayoutStatus = {
+  stripe_connect_account_id: string | null;
+  details_submitted: boolean;
+  charges_enabled: boolean;
+  payouts_enabled: boolean;
+} | null;
 
 type CreateListingAction = Parameters<typeof UnifiedSellForm>[0]["createListingAction"]
 type CompleteSellerOnboardingAction =
   Parameters<typeof SellerOnboardingWizard>[0]["completeSellerOnboardingAction"]
 
-function toPayoutSetupStatus(
-  payoutStatus: { details_submitted: boolean; charges_enabled: boolean; payouts_enabled: boolean } | null
-): PayoutSetupStatus {
-  const isReady = Boolean(
+function isPayoutReady(payoutStatus: SellerPayoutStatus): boolean {
+  return Boolean(
     payoutStatus?.details_submitted && payoutStatus?.charges_enabled && payoutStatus?.payouts_enabled
   );
-
-  return {
-    isReady,
-    needsSetup: !payoutStatus,
-    incomplete: Boolean(payoutStatus && !isReady),
-  };
 }
 
 interface SellPageClientProps {
@@ -51,7 +42,7 @@ interface SellPageClientProps {
   initialAccountType?: "personal" | "business";  // Always set in DB
   initialDisplayName?: string | null;
   initialBusinessName?: string | null;
-  initialPayoutStatus?: PayoutSetupStatus;
+  initialPayoutStatus?: SellerPayoutStatus;
   categories: Category[];
   createListingAction: CreateListingAction;
   completeSellerOnboardingAction: CompleteSellerOnboardingAction;
@@ -81,9 +72,7 @@ export function SellPageClient({
   const [accountType, setAccountType] = useState<"personal" | "business">(initialAccountType);
   const [displayName, setDisplayName] = useState<string | null>(initialDisplayName);
   const [businessName, setBusinessName] = useState<string | null>(initialBusinessName);
-  const [payoutStatus, setPayoutStatus] = useState<PayoutSetupStatus>(
-    initialPayoutStatus ?? toPayoutSetupStatus(null)
-  );
+  const [payoutStatus, setPayoutStatus] = useState<SellerPayoutStatus>(initialPayoutStatus ?? null);
   const isBg = safeLocale === "bg";
 
   // Listen for auth state changes (for client-side navigation)
@@ -115,6 +104,14 @@ export function SellPageClient({
           .eq("id", currentUser.id)
           .single();
 
+        const { data: payoutData } = await supabase
+          .from("seller_payout_status")
+          .select("stripe_connect_account_id, details_submitted, charges_enabled, payouts_enabled")
+          .eq("seller_id", currentUser.id)
+          .maybeSingle();
+
+        setPayoutStatus(payoutData ?? null);
+
         if (profileData?.username) {
           setUsername(profileData.username);
           // account_type is always set in DB, defaults to 'personal'
@@ -135,6 +132,7 @@ export function SellPageClient({
       } else if (!currentUser) {
         setSeller(null);
         setNeedsOnboarding(false);
+        setPayoutStatus(null);
       }
 
       setIsAuthChecking(false);
@@ -159,12 +157,21 @@ export function SellPageClient({
   // Not logged in - show sign in prompt (render immediately for guests)
   if (!user || (!initialUser && isAuthChecking)) {
     return (
-      <PageShell className="flex flex-col">
-        <SellHeader />
+      <div className="flex flex-1 flex-col">
+        <ProgressHeader
+          progressPercent={0}
+          autoSaved={false}
+          isSaving={false}
+          hasUnsavedChanges={false}
+          onSaveDraft={() => {}}
+          locale={safeLocale}
+          currentStep={1}
+          totalSteps={4}
+        />
         <div className="flex-1 flex flex-col justify-center overflow-y-auto">
           <SignInPrompt />
         </div>
-      </PageShell>
+      </div>
     );
   }
 
@@ -182,7 +189,7 @@ export function SellPageClient({
 
       const { data: payoutData } = await supabase
         .from("seller_payout_status")
-        .select("details_submitted, charges_enabled, payouts_enabled")
+        .select("stripe_connect_account_id, details_submitted, charges_enabled, payouts_enabled")
         .eq("seller_id", user.id)
         .maybeSingle();
 
@@ -194,12 +201,21 @@ export function SellPageClient({
         setNeedsOnboarding(false);
       }
 
-      setPayoutStatus(toPayoutSetupStatus(payoutData ?? null));
+      setPayoutStatus(payoutData ?? null);
     };
 
     return (
-      <PageShell variant="muted" className="flex flex-col">
-        <SellHeader {...(user.email ? { user: { email: user.email } } : {})} />
+      <div className="flex flex-1 flex-col">
+        <ProgressHeader
+          progressPercent={0}
+          autoSaved={false}
+          isSaving={false}
+          hasUnsavedChanges={false}
+          onSaveDraft={() => {}}
+          locale={safeLocale}
+          currentStep={1}
+          totalSteps={4}
+        />
         <div className="flex-1 flex flex-col justify-center overflow-y-auto py-8">
           <SellerOnboardingWizard
             userId={user.id}
@@ -211,7 +227,7 @@ export function SellPageClient({
             onComplete={handleOnboardingComplete}
           />
         </div>
-      </PageShell>
+      </div>
     );
   }
 
@@ -219,8 +235,17 @@ export function SellPageClient({
   // New users get username at signup, so this shouldn't happen
   if (!seller) {
     return (
-      <PageShell className="flex flex-col">
-        <SellHeader {...(user.email ? { user: { email: user.email } } : {})} />
+      <div className="flex flex-1 flex-col">
+        <ProgressHeader
+          progressPercent={0}
+          autoSaved={false}
+          isSaving={false}
+          hasUnsavedChanges={false}
+          onSaveDraft={() => {}}
+          locale={safeLocale}
+          currentStep={1}
+          totalSteps={4}
+        />
         <div className="flex-1 flex flex-col justify-center overflow-y-auto py-8">
           <div className="container-narrow text-center space-y-4">
             <h2 className="text-2xl font-bold">
@@ -231,42 +256,46 @@ export function SellPageClient({
                 ? "Нужно ви е потребителско име, преди да започнете да продавате."
                 : "You need a username before you can start selling. Visit your account settings to set one up."}
             </p>
-            <Link
-              href="/account/profile"
-              className="inline-block px-6 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
-            >
-              {isBg ? "Настройки" : "Go to Settings"}
-            </Link>
+            <Button asChild>
+              <Link href="/account/profile">{isBg ? "Настройки" : "Go to Settings"}</Link>
+            </Button>
           </div>
         </div>
-      </PageShell>
+      </div>
     );
   }
 
   // Stripe Connect gating (V2): sellers must complete payout setup before listing.
-  if (!payoutStatus.isReady) {
+  if (!isPayoutReady(payoutStatus)) {
     return (
-      <PageShell className="flex flex-col">
-        <SellHeader {...(user.email ? { user: { email: user.email } } : {})} />
+      <div className="flex flex-1 flex-col">
+        <ProgressHeader
+          progressPercent={0}
+          autoSaved={false}
+          isSaving={false}
+          hasUnsavedChanges={false}
+          onSaveDraft={() => {}}
+          locale={safeLocale}
+          currentStep={1}
+          totalSteps={4}
+        />
         <div className="flex-1 flex flex-col justify-center overflow-y-auto py-8">
-          <div className="container-narrow">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <WarningCircle className="size-5 text-primary" weight="fill" />
-                  {t("payoutSetupRequired")}
-                </CardTitle>
-                <CardDescription>{t("payoutSetupDescription")}</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Button asChild>
-                  <Link href="/seller/settings/payouts">{t("setupPayouts")}</Link>
-                </Button>
-              </CardContent>
-            </Card>
+          <div className="container-narrow space-y-6">
+            <div className="space-y-1">
+              <h1 className="text-lg font-semibold text-foreground">{t("payoutSetupRequired")}</h1>
+              <p className="text-sm text-muted-foreground">{t("payoutSetupDescription")}</p>
+            </div>
+
+            <SellerPayoutSetup payoutStatus={payoutStatus} sellerEmail={user.email || ""} />
+
+            <div className="flex justify-center">
+              <Button asChild variant="outline" size="sm">
+                <Link href="/seller/settings/payouts">{t("setupPayouts")}</Link>
+              </Button>
+            </div>
           </div>
         </div>
-      </PageShell>
+      </div>
     );
   }
 

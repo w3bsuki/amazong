@@ -9,11 +9,10 @@ import {
   Storefront,
   Sparkle,
 } from "@phosphor-icons/react"
-import { useLocale } from "next-intl"
+import { useTranslations } from "next-intl"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
-import { cn } from "@/lib/utils"
 
 type CompleteSellerOnboardingAction = (args: {
   userId: string
@@ -34,59 +33,6 @@ interface SellerOnboardingWizardProps {
   onComplete: () => void
 }
 
-const translations = {
-  en: {
-    // Step 2 (Profile Customization - now first step since account type is already set)
-    step2Title: "Customize Your Profile",
-    step2Subtitle: "Help buyers get to know you",
-    displayNameLabel: "Display Name",
-    displayNamePlaceholder: "How should buyers call you?",
-    displayNameHint: "This will be shown on your profile and listings",
-    businessNameLabel: "Business name",
-    businessNamePlaceholder: "Your company / store name",
-    businessNameHint: "Shown on your public business profile",
-    bioLabel: "Short Bio (optional)",
-    bioPlaceholder: "Tell buyers a bit about yourself or what you sell...",
-    bioHint: "Max 160 characters",
-    // Step 3 (Success)
-    step3Title: "You're All Set! 🎉",
-    step3Subtitle: "Your seller profile is ready",
-    readyMessage: "You can now start listing items and selling on Treido",
-    profileUrl: "Your seller profile",
-    // Actions
-    continue: "Continue",
-    startSelling: "Start Selling",
-    settingUp: "Setting up...",
-    // Footer
-    freeToStart: "Free to start • Upgrade anytime",
-  },
-  bg: {
-    // Step 2 (Profile Customization - now first step)
-    step2Title: "Персонализирайте профила си",
-    step2Subtitle: "Помогнете на купувачите да ви опознаят",
-    displayNameLabel: "Показвано име",
-    displayNamePlaceholder: "Как да ви наричат купувачите?",
-    displayNameHint: "Ще се показва на вашия профил и обяви",
-    businessNameLabel: "Име на фирмата",
-    businessNamePlaceholder: "Име на фирма / магазин",
-    businessNameHint: "Показва се в публичния бизнес профил",
-    bioLabel: "Кратка биография (незадължително)",
-    bioPlaceholder: "Разкажете на купувачите малко за себе си или какво продавате...",
-    bioHint: "Максимум 160 символа",
-    // Step 3 (Success)
-    step3Title: "Готови сте! 🎉",
-    step3Subtitle: "Вашият профил на продавач е готов",
-    readyMessage: "Вече можете да добавяте артикули и да продавате в Treido",
-    profileUrl: "Вашият профил на продавач",
-    // Actions
-    continue: "Продължи",
-    startSelling: "Започнете да продавате",
-    settingUp: "Настройка...",
-    // Footer
-    freeToStart: "Безплатно начало • Надградете по всяко време",
-  },
-}
-
 export function SellerOnboardingWizard({
   userId,
   username,
@@ -96,9 +42,7 @@ export function SellerOnboardingWizard({
   completeSellerOnboardingAction,
   onComplete,
 }: SellerOnboardingWizardProps) {
-  const locale = useLocale()
-  const safeLocale = locale === "bg" ? "bg" : "en"
-  const t = translations[safeLocale]
+  const t = useTranslations("Sell")
 
   const [step, setStep] = useState(2)  // Start at step 2 - account type already set at signup!
   const [isPending, startTransition] = useTransition()
@@ -168,12 +112,12 @@ export function SellerOnboardingWizard({
                 {/* Header */}
                 <div className="text-center mb-6">
                   <div className="inline-flex items-center justify-center w-14 h-14 rounded-md bg-brand mb-4">
-                    <Sparkle weight="bold" className="w-7 h-7 text-white" />
+                    <Sparkle weight="bold" className="w-7 h-7 text-primary-foreground" />
                   </div>
                   <h1 className="text-xl sm:text-2xl font-semibold text-foreground mb-2">
-                    {t.step2Title}
+                    {t("sellerOnboardingWizard.step2Title")}
                   </h1>
-                  <p className="text-sm text-muted-foreground">{t.step2Subtitle}</p>
+                  <p className="text-sm text-muted-foreground">{t("sellerOnboardingWizard.step2Subtitle")}</p>
                 </div>
 
                 {/* Form */}
@@ -182,51 +126,51 @@ export function SellerOnboardingWizard({
                   {accountType === "business" && (
                     <div className="space-y-1.5">
                       <label className="text-sm font-medium">
-                        {t.businessNameLabel}
+                        {t("sellerOnboardingWizard.businessNameLabel")}
                       </label>
                       <Input
                         type="text"
                         value={businessName}
                         onChange={(e) => setBusinessName(e.target.value)}
-                        placeholder={t.businessNamePlaceholder}
+                        placeholder={t("sellerOnboardingWizard.businessNamePlaceholder")}
                         maxLength={80}
                         className="h-11"
                       />
-                      <p className="text-xs text-muted-foreground">{t.businessNameHint}</p>
+                      <p className="text-xs text-muted-foreground">{t("sellerOnboardingWizard.businessNameHint")}</p>
                     </div>
                   )}
 
                   {/* Display Name */}
                   <div className="space-y-1.5">
                     <label className="text-sm font-medium">
-                      {t.displayNameLabel}
+                      {t("sellerOnboardingWizard.displayNameLabel")}
                     </label>
                     <Input
                       type="text"
                       value={displayName}
                       onChange={(e) => setDisplayName(e.target.value)}
-                      placeholder={t.displayNamePlaceholder}
+                      placeholder={t("sellerOnboardingWizard.displayNamePlaceholder")}
                       maxLength={50}
                       className="h-11"
                     />
-                    <p className="text-xs text-muted-foreground">{t.displayNameHint}</p>
+                    <p className="text-xs text-muted-foreground">{t("sellerOnboardingWizard.displayNameHint")}</p>
                   </div>
 
                   {/* Bio */}
                   <div className="space-y-1.5">
                     <label className="text-sm font-medium">
-                      {t.bioLabel}
+                      {t("sellerOnboardingWizard.bioLabel")}
                     </label>
                     <Textarea
                       value={bio}
                       onChange={(e) => setBio(e.target.value.slice(0, 160))}
-                      placeholder={t.bioPlaceholder}
+                      placeholder={t("sellerOnboardingWizard.bioPlaceholder")}
                       maxLength={160}
                       rows={3}
                       className="resize-none"
                     />
                     <div className="flex justify-between">
-                      <p className="text-xs text-muted-foreground">{t.bioHint}</p>
+                      <p className="text-xs text-muted-foreground">{t("sellerOnboardingWizard.bioHint")}</p>
                       <p className="text-xs text-muted-foreground/70">{bio.length}/160</p>
                     </div>
                   </div>
@@ -234,7 +178,7 @@ export function SellerOnboardingWizard({
 
                 {/* Error */}
                 {error && (
-                  <div className="mb-4 p-3 bg-destructive/10 border border-destructive/20 rounded-lg text-sm text-destructive">
+                  <div className="mb-4 p-3 bg-destructive/10 border border-destructive/20 rounded-md text-sm text-destructive">
                     {error}
                   </div>
                 )}
@@ -248,11 +192,11 @@ export function SellerOnboardingWizard({
                   {isPending ? (
                     <>
                       <SpinnerGap className="mr-2 size-4 animate-spin" />
-                      {t.settingUp}
+                      {t("sellerOnboardingWizard.settingUp")}
                     </>
                     ) : (
                       <>
-                        {t.continue}
+                        {t("sellerOnboardingWizard.continue")}
                         <ArrowRight className="ml-2 size-4" />
                       </>
                     )}
@@ -277,23 +221,23 @@ export function SellerOnboardingWizard({
                     transition={{ type: "spring", delay: 0.1 }}
                     className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-success mb-4"
                   >
-                    <Check weight="bold" className="w-10 h-10 text-white" />
+                    <Check weight="bold" className="w-10 h-10 text-success-foreground" />
                   </motion.div>
                   <h1 className="text-2xl font-bold text-foreground mb-2">
-                    {t.step3Title}
+                    {t("sellerOnboardingWizard.step3Title")}
                   </h1>
-                  <p className="text-muted-foreground">{t.step3Subtitle}</p>
+                  <p className="text-muted-foreground">{t("sellerOnboardingWizard.step3Subtitle")}</p>
                 </div>
 
                 {/* Profile URL */}
                 <div className="mb-6 p-4 bg-muted rounded-md border border-border">
-                  <p className="text-sm text-muted-foreground mb-1">{t.profileUrl}</p>
+                  <p className="text-sm text-muted-foreground mb-1">{t("sellerOnboardingWizard.profileUrl")}</p>
                   <p className="font-medium text-foreground">treido.eu/u/{username}</p>
                 </div>
 
                 {/* What's next */}
                 <div className="mb-6">
-                  <p className="text-sm text-muted-foreground">{t.readyMessage}</p>
+                  <p className="text-sm text-muted-foreground">{t("sellerOnboardingWizard.readyMessage")}</p>
                 </div>
 
                 {/* Action */}
@@ -302,7 +246,7 @@ export function SellerOnboardingWizard({
                   className="w-full h-12 bg-warning hover:bg-warning/90 text-white font-medium"
                 >
                   <Storefront className="mr-2 size-5" weight="fill" />
-                  {t.startSelling}
+                  {t("sellerOnboardingWizard.startSelling")}
                 </Button>
               </motion.div>
             )}
@@ -312,7 +256,7 @@ export function SellerOnboardingWizard({
         {/* Footer */}
         {step < 3 && (
           <div className="px-6 py-4 bg-muted border-t border-border">
-            <p className="text-xs text-center text-muted-foreground">{t.freeToStart}</p>
+            <p className="text-xs text-center text-muted-foreground">{t("sellerOnboardingWizard.freeToStart")}</p>
           </div>
         )}
       </div>

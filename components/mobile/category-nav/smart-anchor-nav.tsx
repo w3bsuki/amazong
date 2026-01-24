@@ -199,4 +199,3 @@ export function SmartAnchorNav({
   )
 }
 
-export type { SmartAnchorNavProps as SmartAnchorNavPropsType }

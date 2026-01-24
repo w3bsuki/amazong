@@ -23,7 +23,6 @@
     "@capacitor/android",
     "@capacitor/core",
     "@capacitor/ios",
-    "jscpd",
     "tailwindcss",
     "tw-animate-css"
   ],

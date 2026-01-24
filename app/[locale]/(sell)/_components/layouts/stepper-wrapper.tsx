@@ -6,7 +6,6 @@ import { ArrowRight, CaretLeft, Rocket, X, SpinnerGap } from "@phosphor-icons/re
 import { Link } from "@/i18n/routing";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { PageShell } from "@/components/shared/page-shell";
 import { useSellFormContext } from "../sell-form-provider";
 
 // ============================================================================
@@ -105,7 +104,7 @@ export function StepperWrapper({
   };
 
   return (
-    <PageShell fullHeight={false} className="flex flex-1 flex-col">
+    <div className="flex flex-1 flex-col">
       {/* Header - Premium minimal with dot progress */}
       <header className="sticky top-0 z-40 bg-background/95 backdrop-blur-md border-b border-border/40 pt-safe">
         <div className="flex items-center h-14 px-4">
@@ -115,7 +114,7 @@ export function StepperWrapper({
               <button
                 type="button"
                 onClick={handleBack}
-                className="size-10 -ml-2 flex items-center justify-center rounded-xl hover:bg-muted transition-colors"
+                className="size-10 -ml-2 flex items-center justify-center rounded-md hover:bg-muted transition-colors"
                 aria-label={isBg ? "Назад" : "Back"}
               >
                 <CaretLeft className="size-5" weight="bold" />
@@ -150,7 +149,7 @@ export function StepperWrapper({
           <div className="w-12 flex justify-end">
             <Link 
               href="/"
-              className="size-10 flex items-center justify-center rounded-xl hover:bg-muted transition-colors"
+              className="size-10 flex items-center justify-center rounded-md hover:bg-muted transition-colors"
             >
               <X className="size-5" />
             </Link>
@@ -196,7 +195,7 @@ export function StepperWrapper({
               onClick={onSubmit}
               disabled={isSubmitting}
               size="lg"
-              className="w-full h-12 rounded-xl text-base font-bold gap-2.5"
+              className="w-full h-12 rounded-md text-base font-bold gap-2.5"
             >
               {isSubmitting ? (
                 <>
@@ -215,7 +214,7 @@ export function StepperWrapper({
               type="button"
               onClick={handleNext}
               size="lg"
-              className="w-full h-12 rounded-xl text-base font-bold gap-2.5"
+              className="w-full h-12 rounded-md text-base font-bold gap-2.5"
             >
               {isBg ? "Продължи" : "Continue"}
               <ArrowRight className="size-5" weight="bold" />
@@ -223,6 +222,6 @@ export function StepperWrapper({
           )}
         </div>
       </footer>
-    </PageShell>
+    </div>
   );
 }

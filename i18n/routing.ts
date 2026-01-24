@@ -111,4 +111,4 @@ export const routing = defineRouting({
  * router.push('/products', { locale: 'bg' });
  * ```
  */
-export const { Link, redirect, permanentRedirect, usePathname, useRouter, getPathname } = createNavigation(routing)
+export const { Link, redirect, usePathname, useRouter } = createNavigation(routing)

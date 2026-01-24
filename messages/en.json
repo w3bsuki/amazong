@@ -2326,6 +2326,27 @@
         "payoutSetupRequired": "Set up payouts first",
         "payoutSetupDescription": "Before you can list items for sale, you need to connect your bank account to receive payments.",
         "setupPayouts": "Set up payouts",
+        "sellerOnboardingWizard": {
+            "step2Title": "Customize Your Profile",
+            "step2Subtitle": "Help buyers get to know you",
+            "displayNameLabel": "Display Name",
+            "displayNamePlaceholder": "How should buyers call you?",
+            "displayNameHint": "This will be shown on your profile and listings",
+            "businessNameLabel": "Business name",
+            "businessNamePlaceholder": "Your company / store name",
+            "businessNameHint": "Shown on your public business profile",
+            "bioLabel": "Short Bio (optional)",
+            "bioPlaceholder": "Tell buyers a bit about yourself or what you sell...",
+            "bioHint": "Max 160 characters",
+            "step3Title": "You're All Set! 🎉",
+            "step3Subtitle": "Your seller profile is ready",
+            "readyMessage": "You can now start listing items and selling on Treido",
+            "profileUrl": "Your seller profile",
+            "continue": "Continue",
+            "startSelling": "Start Selling",
+            "settingUp": "Setting up...",
+            "freeToStart": "Free to start • Upgrade anytime"
+        },
         "startSellingBanner": {
             "trust": {
                 "buyerProtection": "Buyer protection",

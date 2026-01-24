@@ -53,7 +53,6 @@
     "cap:sync": "npx cap sync"
   },
   "dependencies": {
-    "@ai-sdk/gateway": "3.0.19",
     "@ai-sdk/google": "3.0.10",
     "@ai-sdk/groq": "3.0.15",
     "@ai-sdk/openai": "3.0.14",
@@ -83,7 +82,6 @@
     "@radix-ui/react-switch": "1.2.6",
     "@radix-ui/react-tabs": "1.1.13",
     "@radix-ui/react-toast": "1.2.15",
-    "@radix-ui/react-toggle": "1.1.10",
     "@radix-ui/react-toggle-group": "1.1.11",
     "@radix-ui/react-tooltip": "1.2.8",
     "@supabase/ssr": "0.8.0",

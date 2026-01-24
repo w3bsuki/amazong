@@ -16,7 +16,6 @@ export const SellAutofillRequestSchema = z.object({
   locale: z.enum(["en", "bg"]).optional(),
 })
 
-export type SellAutofillRequest = z.infer<typeof SellAutofillRequestSchema>
 
 export const SellAutofillDraftSchema = z.object({
   title: z.string().min(1).max(80).optional(),
@@ -37,5 +36,3 @@ export const SellAutofillDraftSchema = z.object({
     .max(20)
     .optional(),
 })
-
-export type SellAutofillDraft = z.infer<typeof SellAutofillDraftSchema>

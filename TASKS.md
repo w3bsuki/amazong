@@ -18,90 +18,32 @@ REUSE_EXISTING_SERVER=true pnpm test:e2e:smoke
 
 ---
 
-## P0 — DELETE DEAD CODE (49 Files + 2 Dependencies)
+## Scope Note (Important)
 
-> **Goal**: Remove 49 unused files identified by Knip. This reduces bundle size, removes confusion, and eliminates maintenance burden.
-> **Reference**: `codex-xhigh/typescript/knip-2026-01-20.log`
+- **Supabase Phase 1 security tasks completed (2026-01-24).** See `audit/supabase.md` for details and remaining manual step (leaked password protection toggle).
 
-### P0-1: Delete Dead Header (CRITICAL — 574 lines of dead code)
-- [ ] Delete `components/layout/header/site-header-unified.tsx`
-- **Verify**: `grep -r "site-header-unified" . --include="*.tsx" --include="*.ts"` returns nothing
+---
 
-### P0-2: Delete Dead Desktop Components (7 files)
-- [ ] Delete `components/desktop/desktop-category-nav.tsx`
-- [ ] Delete `components/desktop/desktop-category-rail.tsx`
-- [ ] Delete `components/desktop/desktop-filter-tabs.tsx`
-- [ ] Delete `components/desktop/desktop-hero-cta.tsx`
-- [ ] Delete `components/desktop/hero-search.tsx`
-- [ ] Delete `components/desktop/marketplace-hero.tsx`
-- [ ] Delete `components/desktop/filters-sidebar.tsx` (if exists)
-- **Verify**: Typecheck passes
+## P0 — DEAD CODE / KNIP CLEANUP (Current)
 
-### P0-3: Delete Dead Promo/Section Components (5 files)
-- [ ] Delete `components/promo/promo-card.tsx`
-- [ ] Delete `components/sections/index.ts`
-- [ ] Delete `components/sections/newest-listings-section.tsx`
-- [ ] Delete `components/sections/newest-listings.tsx`
-- [ ] Delete `components/sections/sign-in-cta.tsx`
-- [ ] Delete `components/shared/trust-bar.tsx`
-- **Verify**: Typecheck passes
+> **Status (2026-01-24)**: `pnpm -s knip` is clean ✅
 
-### P0-4: Delete Dead Mobile Product Components (15 files)
-- [ ] Delete `components/mobile/product/index.ts`
-- [ ] Delete `components/mobile/product/mobile-bottom-bar.tsx`
-- [ ] Delete `components/mobile/product/mobile-buyer-protection-badge.tsx`
-- [ ] Delete `components/mobile/product/mobile-description-section.tsx`
-- [ ] Delete `components/mobile/product/mobile-details-section.tsx`
-- [ ] Delete `components/mobile/product/mobile-gallery-olx.tsx`
-- [ ] Delete `components/mobile/product/mobile-hero-specs.tsx`
-- [ ] Delete `components/mobile/product/mobile-price-block.tsx`
-- [ ] Delete `components/mobile/product/mobile-price-location-block.tsx`
-- [ ] Delete `components/mobile/product/mobile-quick-specs.tsx`
-- [ ] Delete `components/mobile/product/mobile-seller-card.tsx`
-- [ ] Delete `components/mobile/product/mobile-seller-trust-line.tsx`
-- [ ] Delete `components/mobile/product/mobile-sticky-bar-enhanced.tsx`
-- [ ] Delete `components/mobile/product/mobile-trust-block.tsx`
-- [ ] Delete `components/mobile/product/mobile-urgency-banner.tsx`
-- **Verify**: Typecheck + smoke tests pass
+### P0-1: Remove unused deps (DONE)
+- [x] Remove `@ai-sdk/gateway`
+- [x] Remove `@radix-ui/react-toggle`
 
-### P0-5: Delete Dead Filter Components (5 files)
-- [ ] Delete `components/shared/filters/control-bar.tsx`
-- [ ] Delete `components/shared/filters/desktop-filter-sidebar.tsx` (if exists)
-- [ ] Delete `components/shared/filters/mobile-filters.tsx`
-- [ ] Delete `components/shared/filters/quick-filter-chips.tsx`
-- [ ] Delete `components/shared/filters/view-mode-toggle.tsx`
-- **Verify**: Typecheck passes
+### P0-2: Remove unused exports/types (DONE)
+- [x] Remove unused exports from `i18n/routing.ts`
+- [x] Remove unused exports from `components/layout/sidebar/sidebar.tsx`
+- [x] Remove unused exports from `components/ui/*` (table/toast/breadcrumb/sheet)
+- [x] Remove unused exported types from `lib/ai/schemas/*`
+- [x] Remove default export from `components/shared/page-shell.tsx`
 
-### P0-6: Delete Dead Shared Product Components (7 files)
-- [ ] Delete `components/shared/product/condition-badge.tsx`
-- [ ] Delete `components/shared/product/item-specifics.tsx`
-- [ ] Delete `components/shared/product/magnifier.tsx`
-- [ ] Delete `components/shared/product/product-buy-box.tsx`
-- [ ] Delete `components/shared/product/product-gallery-hybrid.tsx`
-- [ ] Delete `components/shared/product/seller-banner.tsx`
-- [ ] Delete `components/shared/product/sellers-note.tsx`
-- **Verify**: Typecheck + smoke tests pass
+### P0-3: Remove legacy middleware entrypoint (DONE)
+- [x] Delete `middleware.ts` (request hook is `proxy.ts`)
 
-### P0-7: Delete Dead Config Files (2 files)
-- [ ] Delete `config/mega-menu-config.ts`
-- [ ] Delete `config/subcategory-images.ts`
-- **Verify**: Typecheck passes
-
-### P0-8: Delete Dead App Components (4 files)
-- [ ] Delete `app/[locale]/(main)/_components/more-ways-to-shop.tsx`
-- [ ] Delete `app/[locale]/(main)/_components/promo-cards.tsx`
-- [ ] Delete `app/[locale]/(main)/_components/sign-in-cta-skeleton.tsx`
-- [ ] Delete `app/[locale]/(main)/cart/_components/mobile-cart-header.tsx`
-- **Verify**: Typecheck + smoke tests pass
-
-### P0-9: Delete Demo Routes (Entire folder)
-- [ ] Delete `app/[locale]/demo/` folder entirely
-- **Verify**: Typecheck + smoke tests pass
-
-### P0-10: Remove Unused Dependencies
-- [ ] Run `pnpm remove @capacitor/android @capacitor/core`
-- [ ] Delete `capacitor.config.ts` (if mobile is out of scope)
-- **Verify**: `pnpm install` succeeds, typecheck passes
+### P0-4: Optional — remove Capacitor (DECIDE)
+- [ ] If mobile is out of scope: remove Capacitor deps + `capacitor.config.ts`
 
 ---
 
@@ -219,8 +161,20 @@ Entry tasks:
 - [x] (ISSUE-0003) Decide `/assistant` header variant and implement it via `AppHeader` route mapping + header context sync
 - Header matrix (2026-01-24): default=`homepage`, `/categories*`=`contextual`, `/{username}/{productSlug}`=`product`, `/assistant`=`contextual`
 - [ ] (ISSUE-0003) Consolidate ProductCard variants and delete redundant card files when unused
-- [ ] (ISSUE-0003) Remove unused deps/exports/types per `cleanup/knip-report.txt`
+- [x] (ISSUE-0003) Remove unused deps/exports/types per Knip (`pnpm -s knip` clean)
 
+
+---
+
+## ISSUE-0004 — Seller flows UI consistency (2026-01-24)
+
+Entry tasks:
+- [x] Share payout setup UI (`SellerPayoutSetup`) and reuse it in `/sell` payout gating
+- [x] Use `ProgressHeader` for `/sell` gating states (remove legacy fixed header usage)
+- [x] Remove nested `PageShell` usage across `(sell)` routes (layout owns page shell)
+- [x] Move seller onboarding copy to `next-intl` (`Sell.sellerOnboardingWizard.*`)
+- [ ] Align sell-related rounding to repo defaults (`rounded-md`, avoid `rounded-xl` unless justified)
+- [ ] Move obvious inline strings in seller flows to `next-intl` (no `locale === "bg" ? … : …` in UI)
 
 ---
 
@@ -228,6 +182,7 @@ Entry tasks:
 
 > **Goal**: Ensure database layer follows best practices.
 > **Reference**: `docs/BACKEND.md`, `docs/ENGINEERING.md`
+> **Status (2026-01-24)**: `category_stats` hardening + anon privilege hardening done (see `audit/supabase.md`). Leaked password protection still pending.
 
 ### P4-1: Regenerate Supabase Types
 - [ ] Run `supabase gen types typescript --project-id <id> > lib/supabase/database.types.ts`
@@ -510,7 +465,7 @@ REUSE_EXISTING_SERVER=true pnpm test:e2e:smoke  # All pass
 
 | Phase | Tasks | Done | Blocked |
 |-------|-------|------|---------|
-| P0 | 10 | 0 | 0 |
+| P0 | 4 | 3 | 0 |
 | P1 | 6 | 0 | 0 |
 | P2 | 4 | 0 | 0 |
 | P3 | 3 | 0 | 0 |
@@ -521,4 +476,4 @@ REUSE_EXISTING_SERVER=true pnpm test:e2e:smoke  # All pass
 | P8 | 7 | 0 | 0 |
 | P9 | 4 | 0 | 0 |
 | P10 | 4 | 0 | 0 |
-| **Total** | **54** | **0** | **0** |
+| **Total** | **48** | **3** | **0** |

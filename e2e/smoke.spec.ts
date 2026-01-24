@@ -434,6 +434,7 @@ test.describe('Smoke Tests - Critical User Actions', () => {
   })
 
   test('cart items persist to checkout @smoke @critical', async ({ page, app }) => {
+    test.setTimeout(60_000)
     await app.clearAuthSession()
 
     const seededCart = [

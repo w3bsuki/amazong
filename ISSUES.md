@@ -108,3 +108,34 @@ Acceptance:
 Linked tasks:
 - See `UI_REFACTOR_PLAN_OPUS_2026-01-24.md`
 - See `TASKS.md` (search for ISSUE-0003)
+
+---
+
+## ISSUE-0004 — Seller flows UI consistency (sell/payouts/orders) (2026-01-24)
+
+Status: [~] In progress
+
+Summary:
+- Expected: Seller-facing flows (/sell, payouts setup, seller orders) use the same Treido Twitter theme, semantic tokens, and consistent header/shell patterns.
+- Actual: Sell-related routes mix multiple headers and page shells (nested `PageShell`, fixed vs sticky headers, mixed rounding), and payout setup UX is inconsistent with the nicer /account dashboard surfaces.
+
+Scope:
+- In scope:
+  - Unify sell-related pages on one page shell strategy (avoid nested `PageShell` wrappers)
+  - Standardize sell headers (prefer `ProgressHeader` pattern where possible)
+  - Align rounding to repo defaults (`rounded-md`, avoid `rounded-xl` unless justified)
+  - Ensure payout setup UI is shared and consistent between gating + settings page
+  - Move obvious user-facing strings to `next-intl` where practical
+- Out of scope:
+  - Supabase schema/RLS changes (handled separately)
+  - Major redesigns or new features
+
+Acceptance:
+- [ ] `/[locale]/sell` looks consistent in all states (guest, onboarding, payout gating, form)
+- [ ] Payout setup can be completed without “ugly” dead-end screens
+- [ ] `pnpm -s exec tsc -p tsconfig.json --noEmit` passes
+- [ ] `pnpm -s styles:gate` passes
+- [ ] `REUSE_EXISTING_SERVER=true pnpm test:e2e:smoke` passes
+
+Linked tasks:
+- See `TASKS.md` (search for ISSUE-0004)

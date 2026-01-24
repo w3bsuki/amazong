@@ -58,7 +58,7 @@ export default async function SellLayout({
 })();`}
       </Script>
       <PerformanceMeasureGuard />
-      <PageShell className="flex flex-col">
+      <PageShell variant="muted" className="flex flex-col">
         {/* Main content - header is rendered by client component for user state */}
         <main className="flex-1 flex flex-col">
           {children}

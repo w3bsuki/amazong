@@ -45,9 +45,6 @@ export { DesktopLayout, MobileLayout, StepperWrapper } from "./layouts";
 // Main Form Component - handles both desktop and mobile
 export { UnifiedSellForm } from "./sell-form-unified";
 
-// Header
-export { SellHeader } from "./sell-header";
-
 // AI Assistant
 export { AiListingAssistant } from "./ai/ai-listing-assistant";
 

@@ -8,13 +8,10 @@ import { Badge } from "@/components/ui/badge"
 import { CheckCircle, AlertCircle, ExternalLink, Loader2 } from "lucide-react"
 
 type PayoutStatus = {
-  seller_id: string
   stripe_connect_account_id: string | null
   details_submitted: boolean
   charges_enabled: boolean
   payouts_enabled: boolean
-  created_at: string
-  updated_at: string
 } | null
 
 type Props = {
@@ -70,7 +67,7 @@ export function SellerPayoutSetup({ payoutStatus, sellerEmail }: Props) {
 
       // Redirect to Stripe onboarding
       window.location.href = data.url
-    } catch (err) {
+    } catch {
       setError(t("errors.generic"))
       setLoading(false)
     }
@@ -104,7 +101,7 @@ export function SellerPayoutSetup({ payoutStatus, sellerEmail }: Props) {
       // Open Stripe dashboard in new tab
       window.open(data.url, "_blank")
       setLoading(false)
-    } catch (err) {
+    } catch {
       setError(t("errors.generic"))
       setLoading(false)
     }
@@ -143,18 +140,9 @@ export function SellerPayoutSetup({ payoutStatus, sellerEmail }: Props) {
           {/* Status Details */}
           {payoutStatus?.stripe_connect_account_id && (
             <div className="space-y-3 mb-6">
-              <StatusItem
-                label={t("detailsSubmitted")}
-                completed={payoutStatus.details_submitted}
-              />
-              <StatusItem
-                label={t("chargesEnabled")}
-                completed={payoutStatus.charges_enabled}
-              />
-              <StatusItem
-                label={t("payoutsEnabled")}
-                completed={payoutStatus.payouts_enabled}
-              />
+              <StatusItem label={t("detailsSubmitted")} completed={payoutStatus.details_submitted} />
+              <StatusItem label={t("chargesEnabled")} completed={payoutStatus.charges_enabled} />
+              <StatusItem label={t("payoutsEnabled")} completed={payoutStatus.payouts_enabled} />
             </div>
           )}
 
@@ -170,9 +158,7 @@ export function SellerPayoutSetup({ payoutStatus, sellerEmail }: Props) {
             {!isComplete && (
               <Button onClick={handleStartOnboarding} disabled={loading}>
                 {loading && <Loader2 className="size-4 mr-2 animate-spin" />}
-                {payoutStatus?.stripe_connect_account_id
-                  ? t("continueSetup")
-                  : t("startSetup")}
+                {payoutStatus?.stripe_connect_account_id ? t("continueSetup") : t("startSetup")}
               </Button>
             )}
             {isComplete && (
@@ -209,9 +195,7 @@ function StatusItem({ label, completed }: { label: string; completed: boolean })
       ) : (
         <AlertCircle className="size-4 text-muted-foreground" />
       )}
-      <span className={completed ? "text-foreground" : "text-muted-foreground"}>
-        {label}
-      </span>
+      <span className={completed ? "text-foreground" : "text-muted-foreground"}>{label}</span>
     </div>
   )
 }

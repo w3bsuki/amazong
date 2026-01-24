@@ -134,25 +134,15 @@ pnpm -s build
 ## Phase 1: Security (CRITICAL — blocks release)
 
 ### 1.1 Lock down `public.profiles`
-- [ ] Create `public_profiles` view with safe columns only:
-  ```sql
-  CREATE VIEW public_profiles AS
-  SELECT id, username, avatar_url, display_name, created_at
-  FROM profiles;
-  ```
-- [ ] Switch public reads to use view:
-  - `lib/data/profile-page.ts`
-  - `lib/data/product-page.ts`
-  - Other `.from("profiles")` usages
-- [ ] Replace broad `SELECT true` policy with:
-  - authenticated: `auth.uid() = id` (own row)
-  - admin/service role: explicit allow
+- [ ] Re-audit `profiles` vs `private_profiles` exposure (see `audit/supabase.md`)
+- [ ] If needed: create `public_profiles` view with safe columns only and switch public reads to it
+- [ ] If needed: tighten `public.profiles` SELECT policy (authenticated own-row + admin/service role)
 
 **Evidence**: Policy `SELECT true` + anon select privilege on `public.profiles`
 
 ### 1.2 Restrict `public.category_stats`
-- [ ] Revoke anon/auth privileges on materialized view
-- [ ] Expose safe alternative (view/RPC) if needed
+- [x] Revoke anon/auth privileges on materialized view (`public.category_stats_mv`)
+- [x] Expose safe alternative: `public.category_stats` (SECURITY INVOKER view) → `public.get_category_stats()` (SECURITY DEFINER)
 
 **Evidence**: Advisor `materialized_view_in_api`
 
@@ -162,6 +152,10 @@ pnpm -s build
 - [ ] Document completion
 
 **Evidence**: Advisor `auth_leaked_password_protection`
+
+### 1.4 Harden anon privileges (public schema)
+- [x] Revoke anon DML on all tables/sequences in `public`
+- [x] Revoke EXECUTE on all `public` functions from PUBLIC/anon, then allow-list only required anon RPCs
 
 ## Phase 2: Type Safety
 - [ ] Regenerate types:
@@ -194,10 +188,10 @@ pnpm -s build
 **Reference**: `supabase/schema.sql`
 
 ## Phase 5: Advisor Cleanup
-- [ ] Run Supabase security advisors
-- [ ] Run Supabase performance advisors
+- [x] Run Supabase security advisors
+- [x] Run Supabase performance advisors
 - [ ] Review unused index advisories (don't auto-delete)
-- [ ] Confirm all warnings cleared or documented
+- [x] Confirm warnings cleared or documented (remaining: leaked password protection)
 
 **Gate**:
 ```bash

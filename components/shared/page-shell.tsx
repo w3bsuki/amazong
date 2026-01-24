@@ -71,4 +71,3 @@ export function PageShell({
   );
 }
 
-export default PageShell;

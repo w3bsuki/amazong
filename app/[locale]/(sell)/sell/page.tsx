@@ -64,7 +64,6 @@ export default async function SellPage({
         initialAccountType="personal"
         initialDisplayName={null}
         initialBusinessName={null}
-        initialPayoutStatus={{ isReady: false, needsSetup: true, incomplete: false }}
         categories={[]}
         createListingAction={createListing}
         completeSellerOnboardingAction={completeSellerOnboarding}
@@ -75,15 +74,9 @@ export default async function SellPage({
   // Fetch seller payout status (Stripe Connect readiness)
   const { data: payoutStatus } = await supabase
     .from("seller_payout_status")
-    .select("details_submitted, charges_enabled, payouts_enabled")
+    .select("stripe_connect_account_id, details_submitted, charges_enabled, payouts_enabled")
     .eq("seller_id", user.id)
     .maybeSingle();
-
-  const isPayoutReady = Boolean(
-    payoutStatus?.details_submitted &&
-      payoutStatus?.charges_enabled &&
-      payoutStatus?.payouts_enabled
-  );
 
   const categories = await getSellCategories();
   
@@ -110,11 +103,7 @@ export default async function SellPage({
       initialAccountType={seller?.account_type === "business" ? "business" : "personal"}
       initialDisplayName={seller?.display_name ?? null}
       initialBusinessName={seller?.business_name ?? null}
-      initialPayoutStatus={{
-        isReady: isPayoutReady,
-        needsSetup: !payoutStatus,
-        incomplete: Boolean(payoutStatus && !isPayoutReady),
-      }}
+      initialPayoutStatus={payoutStatus ?? null}
       categories={categories}
       createListingAction={createListing}
       completeSellerOnboardingAction={completeSellerOnboarding}

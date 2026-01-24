@@ -122,10 +122,18 @@ $function$;
 ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public REVOKE ALL ON TABLES FROM anon;
 ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public REVOKE ALL ON SEQUENCES FROM anon;
 ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public REVOKE ALL ON FUNCTIONS FROM anon;
+ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public REVOKE EXECUTE ON FUNCTIONS FROM PUBLIC;
 
-ALTER DEFAULT PRIVILEGES FOR ROLE supabase_admin IN SCHEMA public REVOKE ALL ON TABLES FROM anon;
-ALTER DEFAULT PRIVILEGES FOR ROLE supabase_admin IN SCHEMA public REVOKE ALL ON SEQUENCES FROM anon;
-ALTER DEFAULT PRIVILEGES FOR ROLE supabase_admin IN SCHEMA public REVOKE ALL ON FUNCTIONS FROM anon;
+DO $$
+BEGIN
+  ALTER DEFAULT PRIVILEGES FOR ROLE supabase_admin IN SCHEMA public REVOKE ALL ON TABLES FROM anon;
+  ALTER DEFAULT PRIVILEGES FOR ROLE supabase_admin IN SCHEMA public REVOKE ALL ON SEQUENCES FROM anon;
+  ALTER DEFAULT PRIVILEGES FOR ROLE supabase_admin IN SCHEMA public REVOKE ALL ON FUNCTIONS FROM anon;
+  ALTER DEFAULT PRIVILEGES FOR ROLE supabase_admin IN SCHEMA public REVOKE EXECUTE ON FUNCTIONS FROM PUBLIC;
+EXCEPTION
+  WHEN insufficient_privilege THEN
+    RAISE NOTICE 'Skipping ALTER DEFAULT PRIVILEGES for supabase_admin (insufficient privilege in this environment).';
+END $$;
 
 -- =============================================================================
 -- 2) Existing objects: anon should not be able to mutate state
@@ -145,10 +153,15 @@ REVOKE ALL
 
 REVOKE EXECUTE
   ON ALL FUNCTIONS IN SCHEMA public
+  FROM PUBLIC;
+
+REVOKE EXECUTE
+  ON ALL FUNCTIONS IN SCHEMA public
   FROM anon;
 
 -- Public surfaces used by unauthenticated pages/routes
 GRANT EXECUTE ON FUNCTION public.get_shared_wishlist(character varying) TO anon;
 GRANT EXECUTE ON FUNCTION public.get_hero_specs(uuid, text) TO anon;
 GRANT EXECUTE ON FUNCTION public.increment_view_count(uuid) TO anon;
-
+GRANT EXECUTE ON FUNCTION public.get_category_stats() TO anon;
+GRANT EXECUTE ON FUNCTION public.increment_helpful_count(uuid) TO anon;

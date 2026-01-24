@@ -5,100 +5,56 @@
 - Client helpers: `lib/supabase/server.ts`, `lib/supabase/client.ts`, `lib/supabase/middleware.ts`
 - Migrations: `supabase/migrations/*` (long history; consider baseline strategy later)
 
-## Advisors (Supabase MCP)
+## Advisors (Supabase MCP) — 2026-01-24
 
 ### Security
 
-- Materialized View exposed via Data APIs
-  - `public.category_stats` is selectable by anon/auth roles (advisor: `materialized_view_in_api`)
-- Leaked password protection disabled (advisor: `auth_leaked_password_protection`)
+- ✅ `public.category_stats` is no longer flagged (previously: `materialized_view_in_api`, then `security_definer_view`)
+- ⚠️ Leaked password protection disabled (advisor: `auth_leaked_password_protection`) — manual dashboard toggle
 
 ### Performance
 
-- Many “unused index” advisories across admin/notifications/orders/etc. (advisor: `unused_index`)
-  - Treat as **review candidates**, not auto-delete (usage stats reset after some operations/environments).
+- INFO: many `unused_index` advisories (review candidates; don’t auto-drop)
+- WARN: duplicate index on `public.admin_docs` (advisor: `duplicate_index`) — drop one after confirming usage
 
-## Critical exposure: `public.profiles`
+## Fixes applied (migrations)
 
-### Evidence (policy + grants)
+- `supabase/migrations/20260124213000_anon_privileges_hardening.sql`
+- `supabase/migrations/20260124214000_category_stats_public_view.sql`
+- `supabase/migrations/20260124215000_category_stats_security_invoker_view.sql`
 
-- RLS policy exists:
-  - `Public profiles are viewable by everyone` → `SELECT` → `qual = true` → `roles = {public}`
+### `public.category_stats` hardening
+
+- Materialized view renamed to `public.category_stats_mv` (internal)
+- Public surface remains `public.category_stats`:
+  - `public.get_category_stats()` (SECURITY DEFINER) reads from the materialized view
+  - `public.category_stats` is a SECURITY INVOKER view selecting from the function
 - Grants:
-  - `has_table_privilege('anon', 'public.profiles', 'select') = true`
-  - `has_table_privilege('authenticated', 'public.profiles', 'select') = true`
+  - `anon`/`authenticated`: SELECT on `public.category_stats`, EXECUTE on `public.get_category_stats()`
+  - `anon`/`authenticated`: no privileges on `public.category_stats_mv`
 
-SQL used (for repeatability):
+### Anon privileges hardening
 
-```sql
-select schemaname, tablename, policyname, permissive, roles, cmd, qual, with_check
-from pg_policies
-where schemaname='public' and tablename='profiles'
-order by policyname;
+- Revoked anon DML on all tables in `public` (`INSERT/UPDATE/DELETE/...`)
+- Revoked all sequence privileges from anon
+- Revoked EXECUTE on all functions in `public` from PUBLIC and from anon, then allow-listed anon EXECUTE for:
+  - `get_shared_wishlist(character varying)`
+  - `get_hero_specs(uuid, text)`
+  - `increment_view_count(uuid)`
+  - `increment_helpful_count(uuid)`
+  - `get_category_stats()`
+- Default privileges (new objects):
+  - `postgres` in schema `public`: removed default grants to anon for tables/sequences/functions
+  - `supabase_admin` in schema `public`: may be skipped in this environment (permission denied); verify `pg_default_acl` in prod
 
-select
-  has_table_privilege('anon','public.profiles','select') as anon_select,
-  has_table_privilege('authenticated','public.profiles','select') as auth_select;
-```
+## Data exposure notes
 
-### Why this is critical
+### `public.profiles` vs `public.private_profiles`
 
-`public.profiles` includes sensitive columns (examples seen in schema metadata): `email`, `phone`, `stripe_customer_id`, plus fee/commission fields. With the current `SELECT true` policy, **anon can read them** unless you’ve applied column-level privileges elsewhere.
+- `public.profiles` contains public-facing profile fields (username/display_name/avatar/etc) and is intentionally public-readable.
+- Sensitive PII/finance fields live in `public.private_profiles` (`email`, `phone`, `stripe_customer_id`, fee/commission fields) and are protected by RLS and no anon privileges.
+- Follow-up: decide whether `profiles.role` should remain publicly readable; `requireAdmin()` already reads admin email from `private_profiles`.
 
-## Where `profiles` is queried today (impact)
+## Remaining (manual) action
 
-Public-ish reads (anon/static client) exist and will break if you simply remove broad `SELECT` access:
-
-- Public profile pages: `lib/data/profile-page.ts` (`createStaticClient().from("profiles")...`)
-- Product pages (seller info): `lib/data/product-page.ts` (`.from("profiles")...`)
-- Seller lists and other UIs: `app/[locale]/(main)/**`, `components/**` (multiple `.from("profiles")` usages)
-
-This is why a **read-only public view** is the cleanest fix: keep private columns on the base table, but serve public UI from a safe projection.
-
-## Critical exposure: `public.category_stats` (materialized view)
-
-### Evidence (grants)
-
-- `has_table_privilege('anon', 'public.category_stats', 'select') = true`
-- `has_table_privilege('authenticated', 'public.category_stats', 'select') = true`
-- Advisor reports it as exposed via Data APIs.
-
-## Findings (Phase 1)
-
-### Critical (blocks Phase 2)
-
-- [ ] **Lock down `public.profiles`** → prevent anon from reading sensitive columns → Evidence: policy `SELECT true` + anon select privilege on `public.profiles` → Fix: remove the broad public policy, grant anon reads via a `public_profiles` view (safe columns only), and restrict base-table reads to “own row” (and admin/service role).
-- [ ] **Restrict `public.category_stats` exposure** → materialized view is accessible via Data APIs → Evidence: advisor + anon/auth select privilege → Fix: revoke privileges for anon/auth and expose a safe alternative (view/RPC) if needed.
-- [ ] **Enable leaked password protection** in Supabase Auth → reduces account takeover risk → Evidence: advisor warning.
-
-### High (do in Phase 2)
-
-- [ ] **Inventory all public-readable tables/views** → ensure only intended columns are readable by anon/auth → Fix: document an “exposure map” and enforce via views/privileges.
-- [ ] **Review unused indexes** from advisors → drop only after verifying query usage in prod/stage → Fix: batch drops with rollback notes.
-
-### Deferred (Phase 3 or backlog)
-
-- [ ] **Migration strategy** → long migration chain slows onboarding/dev DB resets → Fix: create a new baseline migration for staging/dev and archive old ones.
-
-## Client/Server usage (code health check)
-
-### Good patterns present
-
-- Cookie-aware server client: `createClient()` in `lib/supabase/server.ts`
-- Route handler client uses request cookies: `createRouteHandlerClient()` in `lib/supabase/server.ts`
-- Cached reads use anon key + fetch without timeout: `createStaticClient()` in `lib/supabase/server.ts`
-- Admin client separated: `createAdminClient()` in `lib/supabase/server.ts`
-- Middleware session refresh + route gating: `lib/supabase/middleware.ts` (used by `proxy.ts`)
-
-### Guardrails to keep
-
-- Never import `createAdminClient()` into `"use client"` modules (keep it server-only).
-- Prefer explicit column selection on hot paths (avoid widening exposure by accident).
-
-## Suggested next actions (small batches)
-
-1) Add `public_profiles` view (safe columns only) and switch **public reads** to it (`lib/data/profile-page.ts`, `lib/data/product-page.ts`, etc.).
-2) Replace the broad base-table `SELECT true` policy with:
-   - authenticated: `auth.uid() = id` (own row)
-   - admin/service role: explicitly allowed as needed
-3) Re-run Supabase advisors and confirm warnings cleared.
+- Enable leaked password protection: Supabase Dashboard → Authentication → Password security (HaveIBeenPwned), then re-run security advisors.

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
-import { createClient } from "@/lib/supabase/server"
+import { createStaticClient } from "@/lib/supabase/server"
 
 /**
  * POST /api/products/[id]/view
@@ -27,7 +27,7 @@ export async function POST(
     return NextResponse.json({ success: true, already_counted: true })
   }
 
-  const supabase = await createClient()
+  const supabase = createStaticClient()
 
   // Use the RPC function to increment view count atomically
   const { error } = await supabase.rpc("increment_view_count", {

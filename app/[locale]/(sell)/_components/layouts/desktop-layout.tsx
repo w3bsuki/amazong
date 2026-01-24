@@ -13,7 +13,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { PageContainer } from "@/components/shared/page-container";
 import { cn } from "@/lib/utils";
-import { PageShell } from "@/components/shared/page-shell";
 
 import { useSellForm, useSellFormContext } from "../sell-form-provider";
 import {
@@ -106,7 +105,7 @@ export function DesktopLayout({
   ];
 
   return (
-    <PageShell variant="muted" fullHeight={false} className="flex flex-1 flex-col pb-8">
+    <div className="flex flex-1 flex-col pb-8">
       {/* Sticky Header with Progress */}
       <ProgressHeader
         progressPercent={progress}
@@ -258,6 +257,6 @@ export function DesktopLayout({
           </aside>
         </div>
       </PageContainer>
-    </PageShell>
+    </div>
   );
 }
