@@ -1,51 +1,67 @@
 # CLAUDE.md — Agent Instructions
 
-> **This file is read on every prompt.** Keep it concise and actionable.
+> **Read this file first on every prompt.**
 
 ## Project
 
-**Treido** — A modern marketplace (Next.js 16 + Supabase + Stripe). Think Vinted meets StockX.
+**Treido** — Bulgarian marketplace (eBay/Vinted meets StockX). Next.js 16 + Supabase + Stripe.
 
-## Workflow (Issues → Tasks → Verify)
+---
+
+## Core Docs (Read These)
+
+| Doc | When to Read |
+|-----|--------------|
+| **[PRD.md](PRD.md)** | What we're building, scope, roadmap |
+| **[FEATURES.md](FEATURES.md)** | Feature status (✅/🚧/⬜), what's implemented |
+| **[TASKS.md](TASKS.md)** | Current sprint tasks |
+| **[ISSUES.md](ISSUES.md)** | Bug/issue registry |
+
+## Reference Docs
+
+| Doc | When to Read |
+|-----|--------------|
+| [ARCHITECTURE.md](ARCHITECTURE.md) | Stack, boundaries, caching, Supabase, Stripe |
+| [DESIGN.md](DESIGN.md) | UI tokens, patterns, anti-patterns |
+| [TESTING.md](TESTING.md) | Gates, debugging |
+| [PRODUCTION.md](PRODUCTION.md) | Deployment, go-live |
+| [REQUIREMENTS.md](REQUIREMENTS.md) | Detailed launch requirements |
+| [WORKFLOW.md](WORKFLOW.md) | Dev process loop |
+
+---
+
+## Workflow
 
 ```
-1. Check ISSUES.md    → Is there an open issue for this work?
-2. Check TASKS.md     → Are there active tasks? Pick one or add new.
-3. Implement          → Small batch, 1-3 files max.
-4. Verify             → Run gates (below). Fix any failures.
-5. Update             → Mark task done. Update REQUIREMENTS.md if feature is "locked".
+1. Read PRD.md        → Understand what we're building
+2. Check FEATURES.md  → See what's implemented (✅) vs pending (⬜)
+3. Check TASKS.md     → Pick a task or add new
+4. Implement          → Small batch, 1-3 files max
+5. Verify             → Run gates (below)
+6. Update             → Mark task done, update FEATURES.md if feature ships
 ```
 
-**Codex verifies. Claude implements.** Don't skip verification.
+---
 
 ## Gates (Run After Every Change)
 
 ```bash
 pnpm -s exec tsc -p tsconfig.json --noEmit   # Typecheck (required)
 pnpm test:unit                                # Unit tests (if touched)
-REUSE_EXISTING_SERVER=true pnpm test:e2e:smoke  # E2E smoke (if UI/flow touched)
+REUSE_EXISTING_SERVER=true pnpm test:e2e:smoke  # E2E smoke (if UI touched)
 ```
+
+---
 
 ## Rails (Non-Negotiable)
 
-- **No secrets/PII in logs** — ever.
-- **All UI strings via next-intl** — `messages/en.json` + `messages/bg.json`.
-- **No gradients** — solid surfaces + subtle borders only.
-- **No arbitrary Tailwind** — use semantic tokens from `globals.css`.
-- **Small batches** — no rewrites, no redesigns.
+- **No secrets/PII in logs**
+- **All UI strings via next-intl** — `messages/en.json` + `messages/bg.json`
+- **No gradients** — solid surfaces + subtle borders
+- **No arbitrary Tailwind** — use semantic tokens from `globals.css`
+- **Small batches** — no rewrites, no redesigns
 
-## What Doc to Read
-
-| Task Type | Read First |
-|-----------|------------|
-| UI/styling | `DESIGN.md` |
-| Routes/data/caching | `ARCHITECTURE.md` |
-| Supabase/Stripe/backend | `ARCHITECTURE.md` → Backend section |
-| Find a route/action/DB table | `FEATURES.md` |
-| Testing/debugging | `TESTING.md` |
-| Deployment/go-live | `PRODUCTION.md` |
-| Scope/roadmap questions | `PRODUCT.md` |
-| Launch checklist | `REQUIREMENTS.md` |
+---
 
 ## Code Boundaries
 
@@ -62,22 +78,19 @@ app/actions/         → shared server actions
 
 **Rule**: Don't import route-private code across groups.
 
-## Stack Quick Reference
+---
 
-- **Framework**: Next.js 16 (App Router, Cache Components)
-- **DB**: Supabase (Postgres + RLS + Auth + Storage)
-- **Payments**: Stripe (server-side only)
-- **Styling**: Tailwind v4 + shadcn/ui
-- **i18n**: next-intl (`@/i18n/routing` for Link/useRouter)
+## Quick Reference
 
-## Caching (Next.js 16)
+### Stack
 
-- Use `'use cache'` + `cacheLife('<profile>')` + `cacheTag('<tag>')`.
-- Never read `cookies()`/`headers()` inside cached functions.
-- Invalidate with `revalidateTag(tag, profile)`.
-- Profiles: `categories`, `products`, `deals`, `user`.
+- Next.js 16 (App Router, Cache Components)
+- Supabase (Postgres + RLS + Auth + Storage)
+- Stripe (server-side only)
+- Tailwind v4 + shadcn/ui
+- next-intl (`@/i18n/routing` for Link/useRouter)
 
-## Supabase Clients
+### Supabase Clients
 
 | Use Case | Client |
 |----------|--------|
@@ -87,7 +100,14 @@ app/actions/         → shared server actions
 | Admin (bypass RLS) | `createAdminClient()` |
 | Client Components | `createBrowserClient()` |
 
-## Common Commands
+### Caching
+
+- `'use cache'` + `cacheLife('<profile>')` + `cacheTag('<tag>')`
+- Never read `cookies()`/`headers()` inside cached functions
+- Invalidate with `revalidateTag(tag, profile)`
+- Profiles: `categories`, `products`, `deals`, `user`
+
+### Common Commands
 
 ```bash
 pnpm dev                    # Dev server
@@ -95,30 +115,19 @@ pnpm build                  # Production build
 pnpm lint                   # ESLint
 pnpm test:unit              # Vitest
 pnpm test:e2e               # Playwright full
-pnpm test:e2e:smoke         # Playwright smoke only
+pnpm test:e2e:smoke         # Playwright smoke
 ```
 
-## Canonical Docs (Root)
+---
 
-| Doc | Purpose |
-|-----|---------|
-| `WORKFLOW.md` | Process loop |
-| `ISSUES.md` | Issue registry |
-| `TASKS.md` | Active task list |
-| `REQUIREMENTS.md` | Launch feature checklist |
-| `ARCHITECTURE.md` | Stack, boundaries, caching |
-| `DESIGN.md` | UI tokens, patterns, anti-patterns |
-| `TESTING.md` | Gates, debugging |
-| `FEATURES.md` | Route/action/DB/test map |
-| `PRODUCTION.md` | Deploy checklist |
-| `PRODUCT.md` | Scope, roadmap |
+## Before Starting Any Task
 
-**Legacy docs**: `docs-final/archive/` (reference only, don't update).
+1. **Read PRD.md** — understand the product
+2. **Check FEATURES.md** — is this feature built?
+3. **Check TASKS.md** — is there an existing task?
+4. **Keep scope small** — if >3 files, break it up
+5. **Run gates** after every meaningful change
 
-## Before You Start Any Task
+---
 
-1. **Read this file** (you just did).
-2. **Check TASKS.md** for active work.
-3. **Read the relevant doc** from the table above.
-4. **Keep scope small** — if it touches >3 files, break it up.
-5. **Run gates** after every meaningful change.
+*Last updated: 2026-01-25*

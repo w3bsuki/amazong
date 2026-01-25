@@ -1,50 +1,68 @@
 # Workflow (SSOT)
 
-This repo runs on a simple loop:
+Simple development loop for this repo.
 
-1. Capture the user report in `ISSUES.md`
-2. Break it into small, verifiable steps in `TASKS.md`
-3. Codex verifies the task list (scope/rails/completeness)
-4. Implement tasks in small batches
-5. Codex verifies implementation (gates + review)
-6. Mark the issue/tasks done and update `REQUIREMENTS.md` when a feature is “locked”
+## The Loop
+
+```
+1. Read PRD.md        → Understand what we're building
+2. Check FEATURES.md  → What's built (✅) vs pending (⬜)?
+3. Check TASKS.md     → Pick a task or create new
+4. Implement          → Small batch, 1-3 files max
+5. Verify             → Run gates (typecheck + e2e:smoke)
+6. Update             → Mark task done, update FEATURES.md if feature ships
+```
 
 ## Roles (Claude ↔ Codex)
 
 - **Opus/Claude**: implement, fix, create
 - **Codex**: verify, review, run gates, prevent regressions
 
-## Rails (non-negotiable)
+## Rails (Non-Negotiable)
 
-- No secrets/PII in logs.
-- All user-facing strings via `next-intl` (`messages/en.json` + `messages/bg.json`).
-- No gradients; no arbitrary Tailwind values unless unavoidable.
-- Small, verifiable batches (no rewrites / no redesigns).
+- No secrets/PII in logs
+- All user-facing strings via `next-intl` (`messages/en.json` + `messages/bg.json`)
+- No gradients; no arbitrary Tailwind values
+- Small, verifiable batches (no rewrites / no redesigns)
 
 ## Canonical Docs (Root)
 
-**Workflow layer** (frequently updated):
-- `WORKFLOW.md` — this process
-- `ISSUES.md` — issue registry
-- `TASKS.md` — execution checklist
-- `REQUIREMENTS.md` — launch feature checklist (what "done" means)
+### Core Workflow (Always Read)
 
-**Reference layer** (read as needed):
-- `ARCHITECTURE.md` — stack, boundaries, caching, Supabase/Stripe
-- `DESIGN.md` — UI tokens, patterns, anti-patterns
-- `TESTING.md` — gates, debugging tips
-- `FEATURES.md` — route/action/DB/test map
-- `PRODUCTION.md` — deployment + go-live checklists
-- `PRODUCT.md` — scope, roadmap, monetization
+| Doc | Purpose |
+|-----|---------|
+| `CLAUDE.md` | Agent entry point |
+| `PRD.md` | Product vision, scope, roadmap |
+| `FEATURES.md` | Feature checklist (✅/🚧/⬜) |
+| `TASKS.md` | Current sprint tasks |
+| `ISSUES.md` | Bug/issue registry |
 
-**Agent entry point**: `CLAUDE.md` (read on every prompt).
+### Reference (Read When Needed)
 
-Legacy/archived docs: `docs-final/archive/` (reference only).
+| Doc | Purpose |
+|-----|---------|
+| `ARCHITECTURE.md` | Stack, boundaries, caching, backend |
+| `DESIGN.md` | UI tokens, patterns |
+| `TESTING.md` | Gates, debugging |
+| `PRODUCTION.md` | Deployment checklist |
+| `REQUIREMENTS.md` | Detailed requirements |
 
-## Task writing rules
+### Detailed PRDs
 
-- Each task references exactly one issue: `(ISSUE-####)`.
-- Each task includes a quick verification note (“how we know it’s done”).
-- Keep tasks small (ideally ≤ 1 day each).
-- If a task changes product scope, update `REQUIREMENTS.md` in the same batch.
+- Located in `docs-site/content/business/specs/`
+
+### Legacy/Archive
+
+- Located in `docs-final/archive/` (reference only)
+
+## Task Writing Rules
+
+- Each task references an issue: `(ISSUE-####)` when applicable
+- Include verification note ("how we know it's done")
+- Keep tasks small (≤ 1 day)
+- If task changes scope, update `FEATURES.md` in the same batch
+
+---
+
+*Last updated: 2026-01-25*
 

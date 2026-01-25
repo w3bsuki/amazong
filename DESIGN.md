@@ -1,138 +1,189 @@
 # Design System
 
-This is the **single source of truth** for UI/UX and styling rules in this repo.
+> **One-stop reference for UI/UX and styling.** Read this before touching any component.
 
-Stack: **Next.js 16 + React 19 + Tailwind CSS v4 + shadcn/ui**.
-
-Goal: A premium, world-class marketplace UI inspired by StockX, Grailed, and modern e-commerce leaders.
-
----
-
-## Design Philosophy
-
-**Bold hierarchy, not bland minimalism.** Our design system uses semantic colors purposefully to create visual interest and clear information hierarchy. "Clean" doesn't mean boring—it means intentional.
-
-### Key Principles
-
-1. **Use semantic colors for meaning**
-   - Green (`shipping-free`, `success`) for positive signals (free shipping, verified, savings)
-   - Blue (`verified`, `info`) for trust signals and verification badges
-   - Red (`destructive`, `price-sale`) for urgency and sale prices
-   - Yellow/amber (`rating`, `warning`) for ratings and warnings
-
-2. **Create visual weight through contrast**
-   - Large, bold prices (text-4xl font-bold)
-   - Subtle backgrounds with color tints for emphasis
-   - Rounded containers with subtle borders
-   - Strategic use of shadows for elevation
-
-3. **Premium product presentations**
-   - Vertical thumbnail galleries (like StockX)
-   - Square product images with generous padding
-   - Dual CTA patterns (Buy Now / Make Offer)
-   - Trust signals with colored icon backgrounds
+| Stack | Theme | Style |
+|-------|-------|-------|
+| Next.js 16 + React 19 | Twitter (via tweakcn.com) | shadcn/ui new-york |
+| Tailwind CSS v4 | oklch colors | Semantic tokens |
 
 ---
 
-## Non-Negotiables (Repo Rails)
+## Quick Answers
 
-- **No arbitrary Tailwind values** (`h-[42px]`, `text-[13px]`) unless absolutely necessary.
-- **Use semantic tokens** from Tailwind v4 theme (see globals.css).
-- **All user-facing strings via `next-intl`**.
-- **Touch targets ≥32px minimum** (WCAG compliance).
-
----
-
-## Implementation Rules (Tailwind v4 + shadcn/ui)
-
-- Prefer semantic tokens (`bg-background`, `text-foreground`, `border-border`, `text-muted-foreground`) over Tailwind palette classes (`text-blue-600`, `bg-zinc-100`, etc.).
-- Don't introduce gradients. Prefer solid token surfaces + subtle borders.
-- Don't introduce arbitrary values (`w-[…]`, `text-[…]`, `bg-[#…]`) unless there is no stable token alternative.
-- **Hex color policy**: Hex values (e.g. `bg-[#AABBCC]`) are allowed **only** for real product color swatches (see `components/shared/filters/color-swatches.tsx`), not for general UI.
-- Use the existing touch target utilities from `app/globals.css` (`h-touch-xs/sm/...`) instead of inventing custom heights.
-- For forms, use `components/shared/field.tsx` (`Field`, `FieldLabel`, `FieldError`, …) and `components/ui/*` inputs/buttons.
-
-Drift scans:
-
-```bash
-pnpm -s styles:scan
-pnpm -s styles:gate
-```
+| Question | Answer |
+|----------|--------|
+| "What color is primary?" | Twitter Blue `oklch(0.67 0.16 243)` / `#1D9BF0` |
+| "What's the radius?" | `4px` (`--radius: 0.25rem`) — tight marketplace feel |
+| "How do I make a subtle bg?" | Use `bg-surface-subtle`, NOT `bg-muted/30` |
+| "Can I use `bg-primary/10`?" | No. Use `bg-selected` or `bg-hover` instead |
+| "What about dark mode?" | Automatic via `.dark` class — all tokens adapt |
+| "Where are theme vars?" | `app/globals.css` -> `:root` and `.dark` blocks |
 
 ---
 
-## Buttons
+## Twitter Theme Palette
 
-Use the shadcn `Button` primitive (`components/ui/button.tsx`) for all CTAs.
+Our theme comes from [tweakcn.com/editor/theme?theme=twitter](https://tweakcn.com/editor/theme?theme=twitter).
 
-- **Default button = primary CTA** (Twitter blue) → use `<Button>` or `variant="cta"`.
-- Secondary actions → `variant="outline"` or `variant="secondary"`.
-- Icon-only buttons (headers, toolbars) → `variant="ghost"` + `size="icon"`.
-- Urgency (deals/sales) → `variant="deal"`.
-- Rare “inverted black” actions → `variant="black"`.
+### Core Tokens
 
-Avoid nesting interactive elements. For navigation CTAs, use `asChild`:
+| Token | Light | Dark | Hex (Light) |
+|-------|-------|------|-------------|
+| `--primary` | `oklch(0.67 0.16 243)` | same | `#1D9BF0` |
+| `--foreground` | `oklch(0.19 0.01 249)` | `oklch(0.98 0 0)` | `#0F1419` |
+| `--background` | `oklch(1 0 0)` | `oklch(0.19 0.01 249)` | `#FFFFFF` |
+| `--muted` | `oklch(0.97 0.003 265)` | `oklch(0.28 0.02 253)` | `#F7F9FA` |
+| `--muted-foreground` | `oklch(0.55 0.02 264)` | `oklch(0.68 0.02 253)` | `#536471` |
+| `--border` | `oklch(0.93 0.006 251)` | `oklch(0.37 0.02 253)` | `#EFF3F4` |
+| `--destructive` | `oklch(0.58 0.22 27)` | `oklch(0.70 0.19 22)` | `#F4212E` |
+
+### Accent Colors
+
+| Token | Value | Use |
+|-------|-------|-----|
+| `--accent` | Same as muted | Hover backgrounds |
+| `--accent-foreground` | Twitter Blue | Accent text/icons |
+| `--ring` | Twitter Blue | Focus rings |
+
+---
+
+## Forbidden Patterns
+
+**These patterns cause inconsistent UI. Do not use them.**
+
+| Don't | Do Instead | Why |
+|-------|------------|-----|
+| `bg-muted/30` | `bg-surface-subtle` | Opacity modifiers drift across codebase |
+| `bg-primary/10` | `bg-selected` | Use semantic interactive token |
+| `bg-primary/5` | `bg-hover` | Use semantic hover token |
+| `hover:bg-accent/50` | `hover:bg-hover` | Predefined hover surface |
+| `border-primary/20` | `border-selected-border` | Use semantic border token |
+| `text-blue-600` | `text-primary` | Must use theme tokens |
+| `bg-gray-100` | `bg-muted` | Must use theme tokens |
+| `bg-white` | `bg-background` | Must respect dark mode |
+| `text-black` | `text-foreground` | Must respect dark mode |
+| `bg-[#1DA1F2]` | `bg-primary` | No hardcoded colors |
+
+### One Exception: Product Color Swatches
+
+Hex values like `bg-[#FF5733]` are **only** allowed for displaying actual product colors (the "Red", "Navy Blue" filter swatches). See `components/shared/filters/color-swatches.tsx`.
+
+---
+
+## Surface Hierarchy
+
+Use semantic surfaces. **Never invent opacity variants.**
+
+| Token | Class | Use |
+|-------|-------|-----|
+| `--background` | `bg-background` | Base page canvas |
+| `--surface-page` | `bg-surface-page` | Muted page (grids, search) — use via `<PageShell variant="muted">` |
+| `--surface-subtle` | `bg-surface-subtle` | Ultra-subtle section backgrounds |
+| `--card` | `bg-card` | Cards, elevated surfaces |
+| `--surface-elevated` | `bg-surface-elevated` | Bottom bars, sticky headers |
+| `--muted` | `bg-muted` | Input backgrounds, disabled states |
+| `--surface-gallery` | `bg-surface-gallery` | Dark image gallery backgrounds |
+
+### PageShell Component
+
+**Always use PageShell** for page backgrounds:
 
 ```tsx
-<Button asChild>
-  <Link href="/checkout">Checkout</Link>
-</Button>
+import { PageShell } from "@/components/shared/page-shell";
+
+// Clean white/dark canvas (auth, account, profile)
+<PageShell>
+  <YourContent />
+</PageShell>
+
+// Muted tinted canvas (home, search, PDP)
+<PageShell variant="muted">
+  <YourContent />
+</PageShell>
 ```
 
 ---
 
-## Semantic Color System
+## Interactive States
 
-Our globals.css defines rich semantic colors. **USE THEM.**
+These tokens handle hover/active/selected consistently:
 
-### Status & Trust
+| State | Background | Border | Text |
+|-------|------------|--------|------|
+| **Default** | `bg-background` | `border-border` | `text-foreground` |
+| **Hover** | `bg-hover` | `border-hover-border` | — |
+| **Active (pressed)** | `bg-active` | — | — |
+| **Selected** | `bg-selected` | `border-selected-border` | — |
+| **Focus** | — | `ring-2 ring-ring` | — |
+| **Checked** | `bg-checked` | — | `text-checked-foreground` |
+
+### Interactive Pill/Chip Pattern
+
+```tsx
+// Inactive (default)
+<button className="h-touch-sm px-3 rounded-full bg-background text-muted-foreground border border-border hover:bg-hover hover:text-foreground">
+  Category
+</button>
+
+// Active/selected (inverted)
+<button className="h-touch-sm px-3 rounded-full bg-foreground text-background border-foreground">
+  Category
+</button>
+```
+
+### Button Variants
+
+Use `<Button>` from `components/ui/button.tsx`:
+
+| Variant | Use |
+|---------|-----|
+| `default` | Primary CTA (Twitter blue) |
+| `secondary` | Secondary actions |
+| `outline` | Tertiary actions |
+| `ghost` | Icon buttons, minimal actions |
+| `destructive` | Delete, cancel |
+| `deal` | Urgency CTAs (sales) |
+
+```tsx
+<Button>Primary</Button>
+<Button variant="outline">Secondary</Button>
+<Button variant="ghost" size="icon"><IconHeart /></Button>
+```
+
+---
+
+## Semantic Colors
+
+Use these for status indicators and badges:
+
+### Status
+
 | Token | Class | Use |
 |-------|-------|-----|
-| `--color-success` | `text-success`, `bg-success` | Positive states |
-| `--color-warning` | `text-warning`, `bg-warning` | Warnings, attention |
-| `--color-error` | `text-error`, `bg-error` | Errors, destructive |
+| `--color-success` | `text-success`, `bg-success` | Positive states, confirmations |
+| `--color-warning` | `text-warning`, `bg-warning` | Warnings, attention needed |
+| `--color-error` | `text-error`, `bg-error` | Errors, failures |
 | `--color-info` | `text-info`, `bg-info` | Informational |
-| `--color-verified` | `text-verified`, `bg-verified` | Verified badges |
-| `--color-shipping-free` | `text-shipping-free`, `bg-shipping-free` | Free shipping |
 
-### Mobile Surfaces (Product Pages)
+### Marketplace
+
 | Token | Class | Use |
 |-------|-------|-----|
-| `--surface-page` | `bg-surface-page` | Page canvas (visible gray) |
-| `--surface-card` | `bg-surface-card` | Cards (pure white for contrast) |
-| `--surface-elevated` | `bg-surface-elevated` | Elevated elements (bottom bar) |
-| `--surface-gallery` | `bg-surface-gallery` | Gallery background (near black) |
-| `--surface-overlay` | `bg-surface-overlay` | Image counter overlays |
-| `--surface-floating` | `bg-surface-floating` | Floating buttons on gallery |
+| `--color-verified` | `text-verified` | Verified badges |
+| `--color-shipping-free` | `text-shipping-free` | Free shipping indicator |
+| `--color-rating` | `text-rating`, `fill-rating` | Star ratings |
+| `--color-wishlist` | `text-wishlist` | Heart icons |
+| `--color-deal` | `text-deal`, `bg-deal` | Sale/deal urgency |
 
-### Overlays (no `bg-black` / `text-white`)
+### Prices
+
 | Token | Class | Use |
 |-------|-------|-----|
-| `--color-overlay-dark` | `bg-overlay-dark` | Backdrops & dark scrims |
-| `--color-overlay-text` | `text-overlay-text` | Text on dark overlays |
-| `--color-primary-foreground` | `text-primary-foreground` | Text on `bg-primary` / `bg-brand` |
-
-### Pricing
-| Token | Class | Use |
-|-------|-------|-----|
-| `--color-price-regular` | `text-price-regular` | Regular prices |
-| `--color-price-sale` | `text-price-sale` | Sale/reduced prices |
+| `--color-price-regular` | `text-price-regular` | Normal prices |
+| `--color-price-sale` | `text-price-sale` | Discounted prices |
 | `--color-price-original` | `text-price-original` | Strikethrough prices |
 | `--color-price-savings` | `text-price-savings` | "Save X%" text |
-
-### Condition Badges
-| Token | Class | Use |
-|-------|-------|-----|
-| `--color-condition-new` | `text-condition-new` | New items |
-| `--color-condition-likenew` | `text-condition-likenew` | Like new |
-| `--color-condition-good` | `text-condition-good` | Good condition |
-| `--color-condition-fair` | `text-condition-fair` | Fair condition |
-
-### Ratings
-| Token | Class | Use |
-|-------|-------|-----|
-| `--color-rating` | `text-rating`, `fill-rating` | Star ratings |
-| `--color-wishlist` | `text-wishlist` | Heart/wishlist icons |
 
 ---
 
@@ -142,195 +193,117 @@ Our globals.css defines rich semantic colors. **USE THEM.**
 
 | Token | Value | Use |
 |-------|-------|-----|
-| `rounded-none` | 0 | Tables, borders |
 | `rounded-sm` | 2px | Badges, inline elements |
 | `rounded-md` | 4px | **Cards, buttons, inputs (default)** |
-| `rounded-lg` | 6px | Dialogs, sheets, modals |
-| `rounded-xl` | 8px | Hero cards (rare) |
-| `rounded-full` | 9999px | **Pills, chips, avatars, category circles** |
+| `rounded-lg` | 6px | Dialogs, sheets |
+| `rounded-full` | 9999px | **Pills, chips, avatars** |
 
-**Rule**: Cards and containers use `rounded-md`. Interactive pills/chips use `rounded-full`.
+### Spacing (4px base)
 
-### Spacing (4px grid)
-
-| Token | Pixels | Use |
-|-------|--------|-----|
-| `gap-1` | 4px | Inline items, icon + text |
-| `gap-1.5` | 6px | Tight groups |
-| `gap-2` | 8px | **Mobile default between items** |
-| `gap-3` | 12px | **Desktop default between items** |
-| `gap-4` | 16px | Between sections (mobile) |
-| `gap-6` | 24px | Between sections (desktop) |
-| `p-2` | 8px | Card internal padding (mobile) |
-| `p-3` | 12px | Card internal padding (desktop) |
-| `px-4` | 16px | Container horizontal edge padding |
-
-**Rule**: Mobile = `gap-2`, Desktop = `gap-3`. Section spacing = `py-6` (mobile) / `py-8` (desktop).
+| Use | Mobile | Desktop |
+|-----|--------|---------|
+| Between items | `gap-2` (8px) | `gap-3` (12px) |
+| Section spacing | `py-6` (24px) | `py-8` (32px) |
+| Card padding | `p-2` (8px) | `p-3` (12px) |
+| Container edge | `px-3` (12px) | `px-4` (16px) |
 
 ### Typography
 
-| Token | Size | Use |
-|-------|------|-----|
-| `text-2xs` | 10px | Tiny badges, micro labels |
-| `text-xs` | 12px | Meta text, captions, timestamps |
-| `text-sm` | 14px | **Body text (default)** |
-| `text-base` | 16px | Prices, emphasis |
-| `text-lg` | 18px | Section headings |
-| `text-xl` | 20px | Page titles, logo |
-| `text-2xl+` | 24px+ | Hero headlines only |
-
-**Weights**:
-- `font-normal` (400): Body text
-- `font-medium` (500): Labels, navigation items
-- `font-semibold` (600): Prices, CTAs, headings
-- `font-bold` (700): Hero only (rare)
-
-**Rule**: Default body = `text-sm font-normal`. Prices = `text-base font-semibold`.
+| Use | Classes |
+|-----|---------|
+| Body text | `text-sm font-normal` (14px) |
+| Labels | `text-sm font-medium` |
+| Prices | `text-base font-semibold` (16px) |
+| Section titles | `text-lg font-semibold` (18px) |
+| Meta/captions | `text-xs text-muted-foreground` (12px) |
 
 ### Touch Targets
 
 | Token | Size | Use |
 |-------|------|-----|
-| `h-touch-xs` | 32px | Minimum (inline icons, compact chips) |
-| `h-touch-sm` | 36px | **Compact buttons, chips** |
-| `h-touch` | 40px | Standard buttons, icon buttons |
-| `h-touch-lg` | 48px | Primary CTA buttons |
-
-**Rule**: All tappable elements ≥32px. Pills/chips = `h-touch-sm rounded-full`.
-
-### Semantic Colors
-
-| Class | Use |
-|-------|-----|
-| `bg-background` | Page/section canvas |
-| `bg-surface-page` | Muted page canvas (subtle tint) |
-| `bg-card` | Elevated surfaces (cards, modals) |
-| `bg-muted` | Subdued backgrounds, inactive states |
-| `text-foreground` | Primary text |
-| `text-muted-foreground` | Secondary text, placeholders |
-| `border-border` | Standard borders |
-| `bg-foreground text-background` | **Active/inverted pill state** |
-
-**Rule**: Never hardcode `bg-white`, `text-black`, or `border-gray-*`. Use semantic tokens.
+| `h-touch-xs` | 32px | Minimum (compact chips) |
+| `h-touch-sm` | 36px | Pills, chips |
+| `h-touch` | 40px | Standard buttons |
+| `h-touch-lg` | 48px | Primary CTAs |
 
 ---
 
-## Page Surfaces (PageShell)
+## Component Patterns
 
-**Single source of truth for page canvases.** Use the `PageShell` component (`components/shared/page-shell.tsx`) instead of hand-coding `min-h-screen bg-*` patterns.
+### Card
 
-### Variants
-| Variant | Background | Use |
-|---------|------------|-----|
-| `default` | `bg-background` | Clean white/dark canvas — most pages (auth, account, profile) |
-| `muted` | `bg-surface-page` | Subtle page tint — grid pages (home, search, PDP) |
-
-### Usage
 ```tsx
-import { PageShell } from "@/components/shared/page-shell";
-
-// Default (clean background)
-<PageShell className="pb-24">
-  <YourPageContent />
-</PageShell>
-
-// Muted (grid pages, product pages)
-<PageShell variant="muted" className="pb-10">
-  <YourPageContent />
-</PageShell>
+<div className="rounded-md border border-border bg-card p-3">
+  Content
+</div>
 ```
 
-### Props
-- `variant`: `"default" | "muted"` (default: `"default"`)
-- `fullHeight`: `boolean` (default: `true`) — applies `min-h-dvh`
-- `className`: Additional styles (padding, responsive visibility, etc.)
+### Sticky Header
 
-**Rule**: Stop using `min-h-screen bg-muted/30`, `bg-surface-page`, or `bg-background` directly. Use `PageShell`.
-
----
-
-## Surfaces
-
-### "Glass" sticky surfaces (headers / strips / bottom bars)
-Use *one consistent recipe*:
-- `bg-background/90 backdrop-blur-md border-b border-border/50`
-- For bottom nav: `bg-card/95 backdrop-blur-xl border-t border-border/60`
-
----
-
-## Pills / Chips (the key Treido pattern)
-
-### The canonical chip style
-- Height: `h-touch-sm`
-- Shape: `rounded-full`
-- Inactive: outlined + muted text
-- Active: **inverted** (foreground background) for instant clarity
-
-Recommended states:
-- **Active**: `bg-foreground text-background border-foreground`
-- **Inactive**: `bg-background text-muted-foreground border-border/60 hover:bg-muted/40 hover:text-foreground`
-
----
-
-## Product Cards
-
-- Image is the hero, with a subtle border
-- Wishlist icon is a small floating button with blur
-- Text block is compact; title truncates
-
-**Standard card classes**:
-```
-rounded-md border border-border bg-card
+```tsx
+<header className="sticky top-0 z-50 bg-background/90 backdrop-blur-md border-b border-border/50">
+  Content
+</header>
 ```
 
-**Typography stack**:
-- Price: `text-sm font-semibold` or `text-base font-semibold`
-- Title: `text-xs font-medium line-clamp-1`
-- Meta: `text-2xs text-muted-foreground`
+### Bottom Navigation
+
+```tsx
+<nav className="fixed bottom-0 inset-x-0 bg-card/95 backdrop-blur-xl border-t border-border/60">
+  Content
+</nav>
+```
 
 ---
 
-## Anti-Patterns to Avoid
+## Rails (Non-Negotiables)
 
-- **Hard-coded grays/whites** instead of semantic tokens
-- **Arbitrary sizes** for typography/offsets (`top-[105px]`, `text-[10px]`)
-- **Scale animations** on hover/press — use subtle background/border transitions instead
-- **Over-shadowing** — use border separation + muted backgrounds
+| Rule | Check |
+|------|-------|
+| No arbitrary values | `h-[42px]` -> use `h-touch` tokens |
+| No hardcoded colors | `bg-white` -> `bg-background` |
+| No gradients | Twitter theme is flat |
+| Touch targets >= 32px | WCAG compliance |
+| All strings via next-intl | i18n |
+| Forms use Field component | Consistent validation UX |
 
----
+### Drift Detection
 
-## Quick "Good Defaults"
-
-- Card: `rounded-md border border-border bg-card p-3`
-- Section spacing: `space-y-2` (mobile) / `space-y-3` (desktop)
-- Muted surface: `bg-muted/50 text-muted-foreground border-border`
-- Active pill: `bg-foreground text-background border-foreground`
-- Inactive pill: `bg-background text-muted-foreground border-border/60`
-- Sticky header: `bg-background/90 backdrop-blur-md border-b border-border/50`
-- Bottom nav: `bg-card/95 backdrop-blur-xl border-t border-border/60`
-
----
-
-## Accessibility Baseline
-
-- Every dialog/drawer must trap focus and restore focus on close.
-- Inputs must have labels (or accessible name) + clear error text.
+```bash
+pnpm -s styles:scan    # Find violations
+pnpm -s styles:gate    # CI enforcement
+```
 
 ---
 
 ## Component Boundaries
 
-- `components/ui/**`: primitives only (shadcn-style). No feature composites, no app hooks.
-- `components/shared/**`: shared composites used across routes.
-- `components/layout/**`: shells (header/nav/sidebars).
-- Route-owned UI must live under its route group: `app/[locale]/(group)/**/_components/**`.
+| Directory | Contains |
+|-----------|----------|
+| `components/ui/*` | Primitives only (shadcn). No app logic. |
+| `components/shared/*` | Reusable composites across routes |
+| `components/layout/*` | Shells (header, nav, sidebars) |
+| `app/[locale]/(group)/**/_components/*` | Route-specific UI |
 
 ---
 
-## Verification Gates
+## Accessibility
 
-For any non-trivial UI work:
+- All dialogs/drawers trap focus and restore on close
+- Inputs have visible labels or `aria-label`
+- Error messages linked via `aria-describedby`
+- Color contrast meets WCAG AA
+- Focus indicators always visible
+
+---
+
+## Verification
+
+Before shipping UI changes:
+
 ```bash
-pnpm -s exec tsc -p tsconfig.json --noEmit
-REUSE_EXISTING_SERVER=true pnpm test:e2e:smoke
+pnpm -s exec tsc -p tsconfig.json --noEmit   # Type check
+pnpm -s lint                                   # ESLint
+pnpm -s styles:gate                            # Style drift
+REUSE_EXISTING_SERVER=true pnpm test:e2e:smoke # Visual smoke
 ```

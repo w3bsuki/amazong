@@ -17,7 +17,15 @@
 | `app/api/products/deals/route.ts` | DELETED (no frontend calls) | -85 |
 | `app/api/products/nearby/route.ts` | DELETED (no frontend calls) | -90 |
 | `lib/data/products.ts` | REFACTORED (extracted `mapRowToProduct()` helper) | -30 (deduped) |
-| **Total** | | **~857 lines** |
+| `lib/sell-form-schema-v4.ts` | DELETED (unused barrel, imports updated to lib/sell/schema-v4) | -4 |
+| **Total** | | **~861 lines** |
+
+### lib/ Full Audit (Session 2)
+**Result**: All lib/ files actively used. Knip reports no unused exports.
+- Deleted `lib/sell-form-schema-v4.ts` (unused re-export barrel)
+- Updated `ai-listing-assistant.tsx` to import from canonical `lib/sell/schema-v4`
+- Updated `vitest.config.ts` to remove deleted file from coverage exclusions
+- Reviewed all 17 subfolders and 30+ root files — all actively imported
 
 ### Reviewed & Kept (Not Duplicates)
 - `product-card.tsx` vs `product-card-list.tsx` — Different layouts (grid vs list view)
@@ -25,6 +33,7 @@
 - `pricing-field.tsx` vs `step-pricing.tsx` — Different UX (desktop compact vs mobile wizard)
 - `plans/upgrade` page + modal — Correct Next.js intercepting routes pattern
 - `products/feed` + `products/newest` API routes — Actively used by frontend
+- `lib/data/categories.ts` internal `getCategoryAttributeKey` — Private helper, not duplicate of exported one in lib/filters/
 
 ### Commits
 - `afc967a` - Deduplicate boost-dialog, extract mapRowToProduct helper
@@ -107,77 +116,88 @@ Run these before starting cleanup to establish baseline:
 
 ### 📁 `lib/` — Core Library Code
 
+**Session 2026-01-25**: Full audit complete. Knip reports no unused exports. All files actively used.
+
 #### `lib/` root files
-- [ ] **lib/utils.ts** — Check for dead code, consolidate with lib/utils/
-- [ ] **lib/currency.ts** — Review usage
-- [ ] **lib/format-price.ts** — Review usage
-- [ ] **lib/geolocation.ts** — Review usage
-- [ ] **lib/image-utils.ts** — Check for duplicates with image-compression.ts
-- [ ] **lib/image-compression.ts** — Consolidate with image-utils.ts
-- [ ] **lib/normalize-image-url.ts** — Review usage
-- [ ] **lib/order-status.ts** — Review usage
-- [ ] **lib/safe-json.ts** — Review usage
-- [ ] **lib/shipping.ts** — Review usage
-- [ ] **lib/stripe.ts** — Review for dead code
-- [ ] **lib/stripe-locale.ts** — Has duplicated code per dupes-report
-- [ ] **lib/stripe-connect.ts** — Review usage
-- [ ] **lib/logger.ts** — Review usage across codebase
-- [ ] **lib/structured-log.ts** — Consolidate with logger.ts?
-- [ ] **lib/env.ts** — Review usage
-- [ ] **lib/feature-flags.ts** — Review active flags
-- [ ] **lib/category-*.ts files** — Multiple category files, consolidate
-- [ ] **lib/analytics-drawer.ts** — Review usage
-- [ ] **lib/avatar-palettes.ts** — Review usage
-- [ ] **lib/bulgarian-cities.ts** — Review usage
-- [ ] **lib/product-card-hero-attributes.ts** — Review usage
-- [ ] **lib/order-conversations.ts** — Review usage
-- [ ] **lib/url-utils.ts** — Review usage
-- [ ] **lib/filter-priority.ts** — Review usage
-- [ ] **lib/sell-form-schema-v4.ts** — Why v4? Any legacy versions?
+- [x] **lib/utils.ts** — ✅ KEPT (cn + safeAvatarSrc helpers, actively used)
+- [x] **lib/currency.ts** — ✅ KEPT (used by pricing components)
+- [x] **lib/format-price.ts** — ✅ KEPT (used across app, has unit tests)
+- [x] **lib/geolocation.ts** — ✅ KEPT (used by location features, has unit tests)
+- [x] **lib/image-utils.ts** — ✅ KEPT (normalizeImageUrl, distinct from compression)
+- [x] **lib/image-compression.ts** — ✅ KEPT (client-side compression for photos-field)
+- [x] **lib/normalize-image-url.ts** — ✅ KEPT (used by data layer)
+- [x] **lib/order-status.ts** — ✅ KEPT (used by order components, has unit tests)
+- [x] **lib/safe-json.ts** — ✅ KEPT (used by API routes, has unit tests)
+- [x] **lib/shipping.ts** — ✅ KEPT (used by checkout flow, has unit tests)
+- [x] **lib/stripe.ts** — ✅ KEPT (Stripe initialization)
+- [x] **lib/stripe-locale.ts** — ✅ KEPT (locale mapping for Stripe, has unit tests)
+- [x] **lib/stripe-connect.ts** — ✅ KEPT (seller onboarding flow)
+- [x] **lib/logger.ts** — ✅ KEPT (centralized logging, used by 10+ files)
+- [x] **lib/structured-log.ts** — ✅ KEPT (backing impl for logger.ts)
+- [x] **lib/env.ts** — ✅ KEPT (environment variable helpers)
+- [x] **lib/feature-flags.ts** — ✅ KEPT (feature flag management)
+- [x] **lib/category-display.ts** — ✅ KEPT (category name i18n helper)
+- [x] **lib/category-tree.ts** — ✅ KEPT (tree types used by navigation)
+- [x] **lib/category-icons.tsx** — ✅ KEPT (icon mapping for categories)
+- [x] **lib/category-attribute-config.ts** — ✅ KEPT (static config)
+- [x] **lib/analytics-drawer.ts** — ✅ KEPT (used by drawer-context)
+- [x] **lib/avatar-palettes.ts** — ✅ KEPT (boring avatar colors)
+- [x] **lib/bulgarian-cities.ts** — ✅ KEPT (geolocation data)
+- [x] **lib/product-card-hero-attributes.ts** — ✅ KEPT (hero spec extraction, has unit tests)
+- [x] **lib/order-conversations.ts** — ✅ KEPT (used by checkout webhook)
+- [x] **lib/url-utils.ts** — ✅ KEPT (URL helpers, has unit tests)
+- [x] **lib/filter-priority.ts** — ✅ KEPT (used by quick-filter-row)
+- [x] **lib/sell-form-schema-v4.ts** — ✅ DELETED (unused barrel, updated ai-listing-assistant.tsx to use canonical lib/sell/schema-v4)
 
 #### `lib/ai/`
-- [ ] Review AI model usage, remove unused schemas
-- [ ] Check if AI features are production-ready or should be feature-flagged
+- [x] ✅ KEPT — AI assistant features, used by assistant API routes, feature-flagged via isAiAssistantEnabled
 
 #### `lib/api/`
-- [ ] Review API utilities
+- [x] ✅ KEPT — response-helpers.ts used by API routes
 
 #### `lib/auth/`
-- [ ] Review auth utilities
+- [x] ✅ KEPT — admin.ts, business.ts, require-auth.ts all actively used by protected routes
 
 #### `lib/boost/`
-- [ ] Review boost utilities
+- [x] ✅ KEPT — boost-status.ts used by products.ts and search, has unit tests
 
 #### `lib/data/`
 - [x] **products.ts** — ✅ Extracted `mapRowToProduct()` helper to deduplicate mapping logic
-- [ ] Review category data fetching
+- [x] **categories.ts** — ✅ KEPT (category data fetching, internal getCategoryAttributeKey is private helper)
+- [x] **plans.ts** — ✅ KEPT (subscription plans)
+- [x] **product-page.ts** — ✅ KEPT (product page data)
+- [x] **product-reviews.ts** — ✅ KEPT (reviews fetching)
+- [x] **profile-page.ts** — ✅ KEPT (profile page data)
 
 #### `lib/filters/`
-- [ ] Review filter utilities
+- [x] ✅ KEPT — category-attribute.ts and pending-attributes.ts used by filter-modal/filter-hub
 
 #### `lib/next/`
-- [ ] Review Next.js utilities
+- [x] ✅ KEPT — is-next-prerender-interrupted.ts used by API routes
 
 #### `lib/sell/`
-- [ ] Review sell utilities
+- [x] ✅ KEPT — schema-v4.ts is canonical sell form schema, used by all sell components
 
 #### `lib/supabase/`
-- [ ] Review Supabase client setup
+- [x] ✅ KEPT — client.ts, server.ts, middleware.ts, messages.ts, database.types.ts all essential
 
 #### `lib/types/`
-- [ ] Review type definitions for dead types
+- [x] ✅ KEPT — badges.ts, messages.ts used by components and providers
 
 #### `lib/upload/`
-- [ ] Review upload utilities
+- [x] ✅ KEPT — image-upload.ts used by photos-field
 
 #### `lib/utils/`
-- [ ] Review utilities, consolidate with lib/utils.ts
+- [x] ✅ KEPT — category-type.ts used by product CTAs (automotive/real-estate specialization)
 
 #### `lib/validations/`
-- [ ] Review validation schemas
+- [x] ✅ KEPT — auth.ts, password-strength.ts used by auth forms, has unit tests
 
 #### `lib/view-models/`
-- [ ] Review view models
+- [x] ✅ KEPT — product-page.ts used by product page components
+
+#### `lib/attributes/`
+- [x] ✅ KEPT — normalize-attribute-key.ts used by categories and sell actions
 
 ---
 

@@ -62,7 +62,6 @@ export default defineConfig(async () => {
           'lib/bulgarian-cities.ts', // Static data
           'lib/category-attribute-config.ts', // Static config
           'lib/category-display.ts', // Static display utils
-          'lib/sell-form-schema-v4.ts', // Re-export
           'hooks/use-geo-welcome.ts', // Complex with Supabase + cookies
         ],
         thresholds: {

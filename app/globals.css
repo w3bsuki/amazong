@@ -94,6 +94,7 @@
 
   /* Mobile Product Page Surfaces - Light Mode */
   --surface-page: color-mix(in oklch, var(--muted) 30%, var(--background));
+  --surface-subtle: color-mix(in oklch, var(--muted) 15%, var(--background));
   --surface-card: var(--background);
   --surface-elevated: var(--background);
   --surface-gallery: oklch(0.15 0.01 255);
@@ -189,6 +190,7 @@
 
   /* Mobile Product Page Surfaces - Dark Mode */
   --surface-page: color-mix(in oklch, var(--muted) 30%, var(--background));
+  --surface-subtle: color-mix(in oklch, var(--muted) 15%, var(--background));
   --surface-card: var(--card);
   --surface-elevated: var(--card);
   --surface-gallery: oklch(0.10 0.01 255);
@@ -282,6 +284,7 @@
 
   /* Mobile Product Page Surfaces */
   --color-surface-page: var(--surface-page);
+  --color-surface-subtle: var(--surface-subtle);
   --color-surface-card: var(--surface-card);
   --color-surface-elevated: var(--surface-elevated);
   --color-surface-gallery: var(--surface-gallery);
