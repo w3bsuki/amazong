@@ -3,8 +3,7 @@
 import { CaretRight } from "@phosphor-icons/react"
 import { useTranslations } from "next-intl"
 
-import { UserAvatar } from "@/components/shared/user-avatar"
-import { SellerVerificationBadge } from "@/components/shared/product/seller-verification-badge"
+import { VerifiedAvatar } from "@/components/shared/verified-avatar"
 import { cn } from "@/lib/utils"
 
 interface QuickViewSellerCardProps {
@@ -40,33 +39,25 @@ export function QuickViewSellerCard({
       type="button"
       onClick={onNavigateToProduct}
       className={cn(
-        "w-full flex items-center gap-3 p-3 rounded-md text-left",
-        "bg-muted/50 border border-border",
-        "hover:bg-muted/80 transition-colors duration-100",
+        "w-full flex items-center gap-3 p-3 rounded-lg text-left",
+        "bg-card border border-border",
+        "hover:bg-accent/50 transition-colors duration-100",
         "focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
       )}
     >
-      <UserAvatar
+      <VerifiedAvatar
         name={safeSellerName}
         avatarUrl={sellerAvatarUrl ?? null}
-        className="size-10 shrink-0 bg-muted"
-        fallbackClassName="bg-muted text-sm font-medium"
+        size="md"
+        emailVerified={emailVerified ?? sellerVerified}
+        phoneVerified={phoneVerified}
+        idVerified={idVerified}
+        isVerifiedBusiness={isVerifiedBusiness}
       />
       <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-1.5">
-          <p className="text-sm font-semibold truncate">{safeSellerName}</p>
-          {hasVerification && (
-            <SellerVerificationBadge
-              emailVerified={emailVerified ?? sellerVerified}
-              phoneVerified={phoneVerified}
-              idVerified={idVerified}
-              isVerifiedBusiness={isVerifiedBusiness}
-              size="sm"
-            />
-          )}
-        </div>
+        <p className="text-sm font-semibold truncate">{safeSellerName}</p>
         {hasVerification && (
-          <span className="text-xs text-verified">
+          <span className="text-xs text-muted-foreground">
             {tProduct("verifiedSeller")}
           </span>
         )}

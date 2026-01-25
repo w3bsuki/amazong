@@ -1,0 +1,147 @@
+/* ============================================================
+   PRIMITIVES - Raw Color Scales
+   
+   These are the base building blocks. Semantic tokens in
+   semantic.css reference these primitives.
+   ============================================================ */
+
+@theme {
+  /* ===== NEUTRAL SCALE =====
+   * True neutral grays (0 chroma) for professional e-commerce
+   * No blue/warm tints - pure clarity
+   */
+  --color-neutral-50:  oklch(0.985 0 0);
+  --color-neutral-100: oklch(0.970 0 0);
+  --color-neutral-150: oklch(0.955 0 0);
+  --color-neutral-200: oklch(0.920 0 0);
+  --color-neutral-250: oklch(0.885 0 0);
+  --color-neutral-300: oklch(0.870 0 0);
+  --color-neutral-350: oklch(0.820 0 0);
+  --color-neutral-400: oklch(0.700 0 0);
+  --color-neutral-450: oklch(0.620 0 0);
+  --color-neutral-500: oklch(0.550 0 0);
+  --color-neutral-550: oklch(0.500 0 0);
+  --color-neutral-600: oklch(0.460 0 0);
+  --color-neutral-650: oklch(0.400 0 0);
+  --color-neutral-700: oklch(0.350 0 0);
+  --color-neutral-750: oklch(0.300 0 0);
+  --color-neutral-800: oklch(0.270 0 0);
+  --color-neutral-850: oklch(0.220 0 0);
+  --color-neutral-900: oklch(0.205 0 0);
+  --color-neutral-925: oklch(0.175 0 0);
+  --color-neutral-950: oklch(0.145 0 0);
+
+  /* ===== BRAND SCALE (Twitter Blue) =====
+   * Primary action color - use sparingly for CTAs only
+   * oklch(0.62 0.19 243) is the hero value
+   */
+  --color-brand-50:  oklch(0.97 0.02 243);
+  --color-brand-100: oklch(0.94 0.04 243);
+  --color-brand-200: oklch(0.88 0.08 243);
+  --color-brand-300: oklch(0.80 0.12 243);
+  --color-brand-400: oklch(0.70 0.16 243);
+  --color-brand-500: oklch(0.62 0.19 243);  /* Primary - Twitter Blue */
+  --color-brand-600: oklch(0.55 0.19 243);  /* Hover state */
+  --color-brand-700: oklch(0.48 0.18 243);
+  --color-brand-800: oklch(0.40 0.15 243);
+  --color-brand-900: oklch(0.32 0.12 243);
+
+  /* ===== SUCCESS SCALE (Green) =====
+   * Professional desaturated green for confirmations
+   */
+  --color-success-50:  oklch(0.97 0.02 155);
+  --color-success-100: oklch(0.94 0.04 155);
+  --color-success-200: oklch(0.88 0.06 155);
+  --color-success-300: oklch(0.78 0.10 155);
+  --color-success-400: oklch(0.65 0.13 155);
+  --color-success-500: oklch(0.52 0.14 155);  /* Primary success */
+  --color-success-600: oklch(0.45 0.13 155);
+  --color-success-700: oklch(0.38 0.12 155);
+  --color-success-800: oklch(0.32 0.10 155);
+  --color-success-900: oklch(0.28 0.08 155);
+
+  /* ===== WARNING SCALE (Amber/Gold) =====
+   * Warm amber for cautions - readable on both modes
+   */
+  --color-warning-50:  oklch(0.98 0.02 85);
+  --color-warning-100: oklch(0.95 0.04 85);
+  --color-warning-200: oklch(0.90 0.08 85);
+  --color-warning-300: oklch(0.82 0.12 85);
+  --color-warning-400: oklch(0.75 0.14 75);
+  --color-warning-500: oklch(0.68 0.14 75);   /* Primary warning */
+  --color-warning-600: oklch(0.58 0.14 70);
+  --color-warning-700: oklch(0.50 0.12 70);
+  --color-warning-800: oklch(0.42 0.10 70);
+  --color-warning-900: oklch(0.35 0.08 70);
+
+  /* ===== ERROR SCALE (Red) =====
+   * Professional red for errors and destructive actions
+   */
+  --color-error-50:  oklch(0.97 0.02 27);
+  --color-error-100: oklch(0.94 0.04 27);
+  --color-error-200: oklch(0.88 0.08 27);
+  --color-error-300: oklch(0.78 0.12 27);
+  --color-error-400: oklch(0.65 0.18 27);
+  --color-error-500: oklch(0.55 0.22 27);   /* Primary error */
+  --color-error-600: oklch(0.48 0.20 27);
+  --color-error-700: oklch(0.42 0.18 27);
+  --color-error-800: oklch(0.36 0.15 27);
+  --color-error-900: oklch(0.30 0.12 27);
+
+  /* ===== INFO SCALE (Blue - Lighter than brand) =====
+   * Informational blue - distinct from primary brand
+   */
+  --color-info-50:  oklch(0.97 0.02 255);
+  --color-info-100: oklch(0.94 0.04 255);
+  --color-info-200: oklch(0.88 0.06 255);
+  --color-info-300: oklch(0.78 0.10 255);
+  --color-info-400: oklch(0.65 0.13 255);
+  --color-info-500: oklch(0.55 0.15 255);   /* Primary info */
+  --color-info-600: oklch(0.48 0.14 255);
+  --color-info-700: oklch(0.42 0.12 255);
+  --color-info-800: oklch(0.36 0.10 255);
+  --color-info-900: oklch(0.30 0.08 255);
+
+  /* ===== ACCENT SCALES (For charts, categories, etc.) ===== */
+  
+  /* Purple */
+  --color-purple-50:  oklch(0.97 0.02 300);
+  --color-purple-100: oklch(0.94 0.04 300);
+  --color-purple-200: oklch(0.88 0.08 300);
+  --color-purple-300: oklch(0.78 0.12 300);
+  --color-purple-400: oklch(0.65 0.16 300);
+  --color-purple-500: oklch(0.58 0.20 300);
+  --color-purple-600: oklch(0.50 0.18 300);
+  --color-purple-700: oklch(0.42 0.15 300);
+  --color-purple-800: oklch(0.35 0.12 300);
+  --color-purple-900: oklch(0.28 0.10 300);
+
+  /* Teal */
+  --color-teal-50:  oklch(0.97 0.02 180);
+  --color-teal-100: oklch(0.94 0.04 180);
+  --color-teal-200: oklch(0.88 0.06 180);
+  --color-teal-300: oklch(0.78 0.10 180);
+  --color-teal-400: oklch(0.65 0.13 180);
+  --color-teal-500: oklch(0.55 0.14 180);
+  --color-teal-600: oklch(0.48 0.13 180);
+  --color-teal-700: oklch(0.42 0.11 180);
+  --color-teal-800: oklch(0.36 0.09 180);
+  --color-teal-900: oklch(0.30 0.07 180);
+
+  /* Orange */
+  --color-orange-50:  oklch(0.97 0.02 50);
+  --color-orange-100: oklch(0.94 0.04 50);
+  --color-orange-200: oklch(0.88 0.08 50);
+  --color-orange-300: oklch(0.78 0.12 50);
+  --color-orange-400: oklch(0.68 0.16 50);
+  --color-orange-500: oklch(0.60 0.18 50);
+  --color-orange-600: oklch(0.52 0.16 50);
+  --color-orange-700: oklch(0.45 0.14 50);
+  --color-orange-800: oklch(0.38 0.12 50);
+  --color-orange-900: oklch(0.32 0.10 50);
+
+  /* ===== PURE VALUES ===== */
+  --color-white: oklch(1 0 0);
+  --color-black: oklch(0 0 0);
+  --color-transparent: transparent;
+}

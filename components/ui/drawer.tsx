@@ -73,10 +73,39 @@ function DrawerClose({
   return <DrawerPrimitive.Close data-slot="drawer-close" {...props} />
 }
 
+/**
+ * Blur intensity for drawer overlay
+ * Uses design system backdrop-blur tokens:
+ * - none: 0 (no blur)
+ * - sm: 4px (subtle)
+ * - md: 12px (standard modal blur) - DEFAULT
+ * - lg: 16px (heavier)
+ * - xl: 24px (maximum focus)
+ */
+type DrawerOverlayBlur = "none" | "sm" | "md" | "lg" | "xl"
+
+interface DrawerOverlayProps extends React.ComponentProps<"button"> {
+  /**
+   * Blur intensity for the background overlay.
+   * Creates a frosted glass effect that focuses attention on the drawer.
+   * @default "md"
+   */
+  blur?: DrawerOverlayBlur
+}
+
+const blurClasses: Record<DrawerOverlayBlur, string> = {
+  none: "",
+  sm: "backdrop-blur-sm",    // 4px
+  md: "backdrop-blur-md",    // 12px - standard modal blur
+  lg: "backdrop-blur-lg",    // 16px
+  xl: "backdrop-blur-xl",    // 24px
+}
+
 function DrawerOverlay({
   className,
+  blur = "md",
   ...props
-}: React.ComponentProps<"button">) {
+}: DrawerOverlayProps) {
   return (
     // NOTE: We intentionally do NOT use Vaul/Radix's Overlay here.
     // Radix Dialog's overlay wraps in react-remove-scroll, which applies
@@ -92,6 +121,7 @@ function DrawerOverlay({
         className={cn(
           "fixed inset-0 z-50 bg-overlay-dark touch-none outline-none",
           "animate-in fade-in-0",
+          blurClasses[blur],
           className
         )}
         onWheel={(e) => {
@@ -153,12 +183,19 @@ function containsDrawerA11yNode(
 interface DrawerContentProps extends React.ComponentProps<typeof DrawerPrimitive.Content> {
   /** Show the drag handle for bottom/top drawers - default true for bottom */
   showHandle?: boolean
+  /**
+   * Blur intensity for the background overlay.
+   * Creates a frosted glass effect that focuses attention on the drawer.
+   * @default "md"
+   */
+  overlayBlur?: DrawerOverlayBlur
 }
 
 function DrawerContent({
   className,
   children,
   showHandle,
+  overlayBlur = "md",
   onCloseAutoFocus,
   ...props
 }: DrawerContentProps) {
@@ -171,7 +208,7 @@ function DrawerContent({
 
   return (
     <DrawerPortal data-slot="drawer-portal">
-      <DrawerOverlay />
+      <DrawerOverlay blur={overlayBlur} />
       <DrawerPrimitive.Content
         data-slot="drawer-content"
         aria-describedby={hasDescription ? ariaDescribedBy : undefined}

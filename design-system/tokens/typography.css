@@ -1,0 +1,132 @@
+/* ============================================================
+   TYPOGRAPHY - Font Stacks, Sizes, Weights, Tracking
+   
+   Inspired by Twitter's Chirp system - fewer sizes, more
+   weight variance, tight tracking for premium feel.
+   ============================================================ */
+
+@theme {
+  /* ===== FONT STACKS ===== */
+  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", 
+               Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-serif: "Source Serif 4", "Georgia", "Times New Roman", serif;
+  --font-mono: "JetBrains Mono", "SF Mono", "Fira Code", Consolas, 
+               "Liberation Mono", Menlo, monospace;
+  --font-display: "Inter", var(--font-sans);
+
+  /* ===== TYPE SCALE =====
+   * Marketplace-optimized sizes with proper line heights
+   * Smaller sizes for dense product grids
+   */
+  
+  /* Extra small - Labels, badges, timestamps */
+  --text-2xs: 0.625rem;
+  --text-2xs--line-height: 0.875rem;
+  
+  /* Tiny - Meta info, fine print */
+  --text-tiny: 0.6875rem;
+  --text-tiny--line-height: 1rem;
+  
+  /* Extra small standard */
+  --text-xs: 0.75rem;
+  --text-xs--line-height: 1rem;
+  
+  /* Compact - Dense UI elements */
+  --text-compact: 0.8125rem;
+  --text-compact--line-height: 1.125rem;
+  
+  /* Small - Secondary text */
+  --text-sm: 0.875rem;
+  --text-sm--line-height: 1.25rem;
+  
+  /* Body - Primary reading size */
+  --text-body: 0.875rem;
+  --text-body--line-height: 1.25rem;
+  
+  /* Reading - Comfortable reading */
+  --text-reading: 0.9375rem;
+  --text-reading--line-height: 1.375rem;
+  
+  /* Base */
+  --text-base: 1rem;
+  --text-base--line-height: 1.5rem;
+  
+  /* Price - Product prices */
+  --text-price: 1rem;
+  --text-price--line-height: 1.25rem;
+  
+  /* Large */
+  --text-lg: 1.125rem;
+  --text-lg--line-height: 1.75rem;
+  
+  /* XL */
+  --text-xl: 1.25rem;
+  --text-xl--line-height: 1.75rem;
+  
+  /* 2XL - Section headers */
+  --text-2xl: 1.5rem;
+  --text-2xl--line-height: 2rem;
+  
+  /* 3XL - Page titles (Chirp bold) */
+  --text-3xl: 1.875rem;
+  --text-3xl--line-height: 2.25rem;
+  
+  /* 4XL */
+  --text-4xl: 2.25rem;
+  --text-4xl--line-height: 2.5rem;
+  
+  /* 5XL - Hero */
+  --text-5xl: 3rem;
+  --text-5xl--line-height: 1.1;
+  
+  /* 6XL - Display */
+  --text-6xl: 3.75rem;
+  --text-6xl--line-height: 1.1;
+
+  /* ===== LINE HEIGHT TOKENS ===== */
+  --leading-none: 1;
+  --leading-tight: 1.1;
+  --leading-snug: 1.3;
+  --leading-normal: 1.5;
+  --leading-relaxed: 1.625;
+  --leading-loose: 2;
+
+  /* ===== LETTER SPACING =====
+   * Tight tracking for headings (premium feel)
+   * Normal for body text
+   */
+  --tracking-tighter: -0.05em;
+  --tracking-tight: -0.025em;
+  --tracking-normal: 0em;
+  --tracking-wide: 0.025em;
+  --tracking-wider: 0.05em;
+  --tracking-widest: 0.1em;
+  
+  /* Semantic aliases */
+  --letter-spacing-tight: -0.01em;
+  --letter-spacing-normal: 0;
+  --letter-spacing-wide: 0.01em;
+  --letter-spacing-wider: 0.02em;
+
+  /* ===== FONT WEIGHTS ===== */
+  --font-weight-thin: 100;
+  --font-weight-extralight: 200;
+  --font-weight-light: 300;
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  --font-weight-extrabold: 800;
+  --font-weight-black: 900;
+}
+
+/* ===== ROOT DEFAULTS ===== */
+:root {
+  font-family: var(--font-sans);
+  font-feature-settings: "cv11", "ss01", "ss03", "cv05", "cv08", "cv09", "cv10", "rlig" 1, "calt" 1;
+  font-optical-sizing: auto;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  letter-spacing: var(--tracking-normal);
+}

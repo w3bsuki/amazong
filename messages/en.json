@@ -3112,5 +3112,74 @@
     },
     "ProductNotFound": {
         "metaTitle": "Product not found"
+    },
+    "DemoCodex": {
+        "badge": "demo/codex",
+        "searchPlaceholder": "Search listings, brands, and sellers",
+        "searchAria": "Search",
+        "locationPill": "Near you",
+        "ctaSell": "Sell",
+        "ctaExplore": "Explore deals",
+        "ctaBrowseCategories": "Browse categories",
+        "ctaViewAll": "View all",
+        "ctaDetails": "Details",
+        "ctaBuy": "Buy",
+        "favoritesAria": "Favorites",
+        "cartAria": "Cart",
+        "favoriteItemAria": "Add to favorites",
+        "heroBadge": "Twitter theme, marketplace UX",
+        "heroTitle": "A modern eBay-class marketplace — but clean like Twitter",
+        "heroSubtitle": "Token-driven UI recipes (no hardcoded colors) with a strong primary accent and high-signal badges.",
+        "pillFreeShipping": "Free shipping",
+        "pillVerified": "Verified",
+        "pillDeals": "Deals",
+        "trustTitle": "Trust-first UX",
+        "trustSubtitle": "Badges + surfaces that read instantly.",
+        "trust": {
+            "buyerProtection": {
+                "title": "Buyer protection",
+                "description": "Pay securely and get covered."
+            },
+            "fastShipping": {
+                "title": "Fast shipping",
+                "description": "Free and tracked options."
+            },
+            "cleanSignals": {
+                "title": "Clean signals",
+                "description": "No noise — just what matters."
+            }
+        },
+        "gridTitle": "Fresh listings",
+        "gridSubtitle": "Mobile-first cards, dense but readable.",
+        "categories": {
+            "all": "All",
+            "electronics": "Electronics",
+            "fashion": "Fashion",
+            "homeGarden": "Home & Garden",
+            "sports": "Sports",
+            "collectibles": "Collectibles"
+        },
+        "products": {
+            "iphone": { "title": "iPhone 15 Pro Max 256GB" },
+            "nike": { "title": "Nike Air Max 90 — Size 10" },
+            "dualsense": { "title": "PS5 DualSense Controller" },
+            "books": { "title": "Vintage Book Collection (12pc)" }
+        },
+        "conditions": {
+            "new": "New",
+            "likenew": "Like New",
+            "good": "Good",
+            "fair": "Fair",
+            "used": "Used",
+            "refurb": "Refurb"
+        },
+        "badges": {
+            "deal": "Deal",
+            "promoted": "Promoted",
+            "hot": "Hot",
+            "lowStock": "Low stock"
+        },
+        "watching": "{count} watching",
+        "footer": "Theme: Twitter (tweakcn) • Tailwind v4 • shadcn/ui new-york"
     }
 }

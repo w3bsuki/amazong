@@ -36,7 +36,7 @@ export default function DesignSystemDemo() {
         <section className="space-y-4">
           <h2 className="text-xl font-semibold">Status Colors</h2>
           <p className="text-sm text-muted-foreground">
-            ⚠️ These currently don&apos;t adapt to dark mode — fix planned in Phase 2
+            ✅ Status tokens adapt to dark mode (via `:root`/`.dark` overrides bridged into Tailwind).
           </p>
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
             <ColorSwatch name="success" className="bg-success text-white" />

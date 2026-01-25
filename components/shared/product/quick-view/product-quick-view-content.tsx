@@ -282,10 +282,10 @@ export function ProductQuickViewContent({
         />
       </div>
 
-        <div className="border-t border-border px-4 py-4 mt-auto">
+        <div className="border-t border-border px-4 py-4 mt-auto bg-muted/30">
           <div className="grid grid-cols-2 gap-3">
             <Button
-              variant="outline"
+              variant="black"
               size="lg"
               className="gap-2"
               onClick={onAddToCart}

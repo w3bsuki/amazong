@@ -1,0 +1,73 @@
+/* ============================================================
+   TREIDO DESIGN SYSTEM - Theme Entry Point
+   
+   Import this file to get the complete design system.
+   You can also import individual token files if you prefer.
+   
+   Usage:
+     @import "tailwindcss";
+     @import "../design-system/theme.css";
+   ============================================================ */
+
+/* Core Tokens */
+@import "./tokens/primitives.css";
+@import "./tokens/semantic.css";
+@import "./tokens/typography.css";
+@import "./tokens/layout.css";
+@import "./tokens/effects.css";
+@import "./tokens/marketplace.css";
+
+/* Utility Classes */
+@import "./utilities/twitter.css";
+@import "./utilities/marketplace.css";
+@import "./utilities/animations.css";
+
+/* ===== BASE LAYER ===== */
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  ::selection {
+    background: var(--foreground);
+    color: var(--background);
+  }
+
+  :where(a, button, input, select, textarea, summary, [role="button"], [role="link"], [tabindex]:not([tabindex="-1"])):focus-visible:not(.no-focus-ring) {
+    outline: 2px solid var(--ring) !important;
+    outline-offset: 2px !important;
+  }
+
+  html {
+    overflow-x: clip;
+    -webkit-text-size-adjust: 100%;
+    font-feature-settings: "cv11", "ss01", "ss03", "cv05", "cv08", "cv09", "cv10";
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    overflow-x: clip;
+    width: 100%;
+    max-width: 100vw;
+    font-family: var(--font-sans);
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-optical-sizing: auto;
+    letter-spacing: var(--tracking-normal);
+  }
+
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+
+  a,
+  button,
+  input,
+  select,
+  textarea,
+  [role="button"] {
+    touch-action: manipulation;
+  }
+}

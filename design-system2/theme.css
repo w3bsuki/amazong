@@ -1,0 +1,36 @@
+@import "tailwindcss";
+
+@import "./tokens/colors.css";
+@import "./tokens/typography.css";
+@import "./tokens/layout.css";
+@import "./tokens/effects.css";
+
+/* 
+  Shadcn UI Base Styles 
+  Adapted for Tailwind v4 + Twitter Theme 
+*/
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+}
+
+/* 
+  Utility Classes for "Twitter" look 
+*/
+@utility btn-twitter {
+  @apply bg-primary text-primary-foreground hover:bg-primary/90 rounded-full font-bold px-6 py-2 transition-colors;
+}
+
+@utility btn-twitter-outline {
+  @apply border border-border bg-transparent hover:bg-accent hover:text-accent-foreground rounded-full font-bold px-6 py-2 transition-colors;
+}
+
+@utility card-twitter {
+  @apply bg-card text-card-foreground p-4 border border-border rounded-xl;
+}

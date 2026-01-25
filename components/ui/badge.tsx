@@ -5,90 +5,143 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 /**
- * Badge Variants - Professional E-commerce Design System
+ * Professional E-commerce Badge System
  * 
- * Design principles (eBay/Amazon inspired):
- * - Neutral gray for informational badges (condition, category)
- * - Solid dark bg + white text for high-contrast primary info
- * - Light tinted bg + dark contrasting text for status (WCAG AA compliant)
- * - Consistent 20px height, 2px border-radius
- * - No same-color text-on-tint patterns (poor contrast)
+ * Design principles (eBay/Amazon/Shopify inspired):
+ * 
+ * TWO-TIER SYSTEM for WCAG AA compliance (4.5:1 contrast):
+ * 1. SOLID badges: Dark background + white text (high emphasis)
+ * 2. SUBTLE badges: Tinted background + dark text (low emphasis)
+ * 
+ * NEVER use colored text on same-color tinted backgrounds!
+ * 
+ * Badge sizing: consistent height, proper spacing, readable text
  */
 const badgeVariants = cva(
-  "inline-flex items-center justify-center rounded-sm border px-1.5 py-0.5 text-xs font-medium w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none",
+  "inline-flex items-center justify-center gap-1 rounded-sm border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 [&>svg]:shrink-0",
   {
     variants: {
       variant: {
-        // === CORE VARIANTS ===
+        // ═══════════════════════════════════════════════════════════
+        // CORE VARIANTS (shadcn defaults)
+        // ═══════════════════════════════════════════════════════════
         default:
-          "border-transparent bg-primary text-primary-foreground [a&]:hover:bg-primary/90",
+          "border-transparent bg-primary text-primary-foreground",
         secondary:
-          "border-transparent bg-secondary text-secondary-foreground [a&]:hover:bg-secondary/90",
+          "border-transparent bg-secondary text-secondary-foreground",
         destructive:
-          "border-transparent bg-destructive text-destructive-foreground [a&]:hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60",
+          "border-transparent bg-destructive text-white",
         outline:
-          "text-foreground [a&]:hover:bg-accent [a&]:hover:text-accent-foreground",
+          "border-border bg-transparent text-foreground",
         
-        // === MARKETPLACE: CONDITION BADGES (Neutral, professional) ===
-        // Solid dark bg + white text - maximum legibility like eBay
+        // ═══════════════════════════════════════════════════════════
+        // SEMANTIC STATUS - SOLID (white text on dark bg)
+        // High emphasis for alerts, critical info
+        // ═══════════════════════════════════════════════════════════
+        success:
+          "border-transparent bg-badge-success-solid text-white",
+        warning:
+          "border-transparent bg-badge-warning-solid text-white",
+        critical:
+          "border-transparent bg-badge-critical-solid text-white",
+        info:
+          "border-transparent bg-badge-info-solid text-white",
+        
+        // ═══════════════════════════════════════════════════════════
+        // SEMANTIC STATUS - SUBTLE (dark text on tinted bg)
+        // Low emphasis for secondary info
+        // ═══════════════════════════════════════════════════════════
+        "success-subtle":
+          "border-transparent bg-badge-success-subtle-bg text-badge-success-subtle-fg",
+        "warning-subtle":
+          "border-transparent bg-badge-warning-subtle-bg text-badge-warning-subtle-fg",
+        "critical-subtle":
+          "border-transparent bg-badge-critical-subtle-bg text-badge-critical-subtle-fg",
+        "info-subtle":
+          "border-transparent bg-badge-info-subtle-bg text-badge-info-subtle-fg",
+        "neutral-subtle":
+          "border-transparent bg-badge-neutral-subtle-bg text-badge-neutral-subtle-fg",
+
+        // ═══════════════════════════════════════════════════════════
+        // CONDITION BADGES - SOLID (white text for max contrast)
+        // Professional marketplace look like eBay
+        // ═══════════════════════════════════════════════════════════
+        "condition-new":
+          "border-transparent bg-badge-condition-new text-white font-semibold uppercase tracking-wider text-[10px]",
+        "condition-likenew":
+          "border-transparent bg-badge-condition-likenew text-white font-semibold uppercase tracking-wider text-[10px]",
+        "condition-good":
+          "border-transparent bg-badge-condition-good text-white font-semibold uppercase tracking-wider text-[10px]",
+        "condition-fair":
+          "border-transparent bg-badge-condition-fair text-white font-semibold uppercase tracking-wider text-[10px]",
+        "condition-used":
+          "border-transparent bg-badge-condition-used text-white font-semibold uppercase tracking-wider text-[10px]",
+        "condition-refurb":
+          "border-transparent bg-badge-condition-refurb text-white font-semibold uppercase tracking-wider text-[10px]",
+        
+        // Generic condition (backward compat)
         condition:
-          "border-transparent bg-foreground/90 text-background font-semibold uppercase tracking-wide text-2xs",
-        // Promoted/Ad badge: warm but subtle
-        promoted:
-          "border-badge-promoted-border bg-badge-promoted-bg text-badge-promoted-text font-semibold uppercase tracking-wider text-2xs rounded-full px-2",
-        // Neutral outline for secondary condition display
+          "border-transparent bg-foreground text-background font-semibold uppercase tracking-wider text-[10px]",
         "condition-outline":
           "border-border bg-background text-foreground font-medium",
-        
-        // === MARKETPLACE: SHIPPING BADGES ===
-        // Free shipping: semantic success / badge shipping tokens
+
+        // ═══════════════════════════════════════════════════════════
+        // SHIPPING BADGES
+        // ═══════════════════════════════════════════════════════════
+        // Solid green for emphasis
         shipping:
+          "border-transparent bg-badge-success-solid text-white",
+        // Subtle for secondary
+        "shipping-subtle":
           "border-badge-shipping-border bg-badge-shipping-bg text-badge-shipping-text",
-        // Express: semantic info
+        // Express - info blue solid
         "shipping-express":
-          "border-info/20 bg-info/10 text-info",
-        
-        // === MARKETPLACE: STOCK STATUS BADGES ===
-        // In stock: semantic success
+          "border-transparent bg-badge-info-solid text-white",
+
+        // ═══════════════════════════════════════════════════════════
+        // STOCK STATUS BADGES
+        // ═══════════════════════════════════════════════════════════
+        // Solid success
         "stock-available":
-          "border-success/20 bg-success/10 text-success",
-        // Low stock: semantic warning
+          "border-transparent bg-badge-success-solid text-white",
+        // Subtle warning
         "stock-low":
-          "border-warning/20 bg-warning/10 text-warning",
-        // Out of stock: Neutral gray - disabled feel
+          "border-badge-stock-border bg-badge-stock-bg text-badge-stock-text font-medium",
+        // Solid critical for out of stock
         "stock-out":
-          "border-border bg-muted text-muted-foreground",
-        
-        // === MARKETPLACE: DEAL/SALE BADGES ===
-        // Deal: semantic deal token
+          "border-transparent bg-badge-neutral-solid text-white",
+
+        // ═══════════════════════════════════════════════════════════
+        // DEAL/SALE BADGES
+        // ═══════════════════════════════════════════════════════════
         deal:
-          "border-transparent bg-deal text-deal-foreground font-semibold",
-        // Sale: lighter deal tint
+          "border-transparent bg-deal text-white font-semibold",
         sale:
-          "border-deal/20 bg-deal/10 text-deal",
-        
-        // === MARKETPLACE: TRUST BADGES ===
+          "border-transparent bg-badge-critical-solid text-white font-semibold",
+        promoted:
+          "border-badge-promoted-border bg-badge-promoted-bg text-badge-promoted-text font-medium",
+
+        // ═══════════════════════════════════════════════════════════
+        // TRUST BADGES
+        // ═══════════════════════════════════════════════════════════
         verified:
-          "border-verified/20 bg-verified/10 text-verified",
+          "border-transparent bg-badge-info-solid text-white",
         "top-rated":
-          "border-warning/20 bg-warning/10 text-warning",
-        
-        // === MARKETPLACE: CATEGORY/INFO BADGES ===
-        // Neutral for category/attribute info
-        info:
-          "border-border bg-muted text-foreground",
-        // Category badge - NEUTRAL with high contrast (no blue-on-blue!)
+          "border-transparent bg-badge-warning-solid text-white",
+
+        // ═══════════════════════════════════════════════════════════
+        // CATEGORY/INFO BADGES (neutral, low emphasis)
+        // ═══════════════════════════════════════════════════════════
         category:
-          "border-category-badge-border bg-category-badge-bg text-category-badge-text",
+          "border-border bg-muted text-foreground",
         
-        // === PROFESSIONAL MOBILE BADGES (high contrast, no gradients) ===
-        // Condition - most important, high contrast
-        "condition-pro":
-          "border-badge-condition-border bg-badge-condition-bg text-badge-condition-text font-semibold",
-        // Shipping - secondary, subtle
+        // ═══════════════════════════════════════════════════════════
+        // LEGACY COMPAT (map to new system)
+        // ═══════════════════════════════════════════════════════════
+        "condition-pro": 
+          "border-transparent bg-foreground text-background font-semibold uppercase tracking-wider text-[10px]",
         "shipping-pro":
-          "border-badge-shipping-border bg-badge-shipping-bg text-badge-shipping-text",
-        // Stock urgency - amber attention
+          "border-transparent bg-badge-success-solid text-white",
         "stock-urgent":
           "border-badge-stock-border bg-badge-stock-bg text-badge-stock-text font-semibold",
       },
@@ -100,8 +153,7 @@ const badgeVariants = cva(
 )
 
 /**
- * Badge with optional dot indicator
- * Dot adds a small colored circle before text for status indication
+ * Badge component for marketplace use cases
  */
 function Badge({
   className,
