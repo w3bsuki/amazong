@@ -133,7 +133,7 @@ export function AccountDropdown({ user, variant = "icon", className }: AccountDr
 
             {/* Sign out */}
             <div className="border-t border-border p-2">
-              <form action="/api/auth/signout" method="post" onSubmit={() => setIsSigningOut(true)}>
+              <form action="/api/auth/sign-out" method="post" onSubmit={() => setIsSigningOut(true)}>
                 <Button
                   type="submit"
                   variant="ghost"

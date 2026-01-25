@@ -519,7 +519,7 @@ export function SidebarMenuV2({ user, triggerClassName, userStats }: SidebarMenu
                                                 setIsSigningOut(true)
                                                 const form = document.createElement('form')
                                                 form.method = 'POST'
-                                                form.action = '/api/auth/signout'
+                                                form.action = '/api/auth/sign-out'
                                                 document.body.appendChild(form)
                                                 form.submit()
                                             }}
