@@ -18,7 +18,10 @@
 | `app/api/products/nearby/route.ts` | DELETED (no frontend calls) | -90 |
 | `lib/data/products.ts` | REFACTORED (extracted `mapRowToProduct()` helper) | -30 (deduped) |
 | `lib/sell-form-schema-v4.ts` | DELETED (unused barrel, imports updated to lib/sell/schema-v4) | -4 |
-| **Total** | | **~861 lines** |
+| `app/api/auth/signout/route.ts` | DELETED (legacy re-export, usages migrated to canonical /api/auth/sign-out) | -4 |
+| `app/api/stores/route.ts` | DELETED (deprecated 410 route, not called anywhere) | -31 |
+| `app/api/geo/route.ts` | DELETED (unused, geo detection handled by proxy.ts middleware) | -61 |
+| **Total** | | **~957 lines** |
 
 ### lib/ Full Audit (Session 2)
 **Result**: All lib/ files actively used. Knip reports no unused exports.
@@ -37,6 +40,19 @@
 - TypeScript check: ✅ Pass
 - Knip: ✅ No issues
 
+### app/ Full Audit (Session 4)
+**Result**: Cleaned up 3 unused API routes, consolidated auth sign-out.
+- CSS files (`globals.css`, `legacy-vars.css`, `shadcn-components.css`, `utilities.css`) - Well organized, serve distinct purposes
+- Server actions (`app/actions/`) - All actively used, buyer-feedback vs seller-feedback are different features
+- `/api/auth/signout` → Migrated all usages to canonical `/api/auth/sign-out`, deleted re-export
+- `/api/stores` → Deleted (deprecated 410 route, not called anywhere)
+- `/api/geo` → Deleted (geo detection handled by proxy.ts middleware)
+- `/api/categories/` → KEPT (REST API for client-side, different from lib/data/categories.ts server functions)
+- `demo/` and `demo2/` pages → KEPT (internal design verification, robots: noindex)
+- `buyer-order-actions.tsx` vs `seller-rate-buyer-actions.tsx` → KEPT (different features, not duplicates)
+- TypeScript check: ✅ Pass
+- Knip: ✅ No issues
+
 ### Reviewed & Kept (Not Duplicates)
 - `product-card.tsx` vs `product-card-list.tsx` — Different layouts (grid vs list view)
 - `admin/notes` vs `admin/tasks` — Different features (pinned notes vs kanban board)  
@@ -44,11 +60,16 @@
 - `plans/upgrade` page + modal — Correct Next.js intercepting routes pattern
 - `products/feed` + `products/newest` API routes — Actively used by frontend
 - `lib/data/categories.ts` internal `getCategoryAttributeKey` — Private helper, not duplicate of exported one in lib/filters/
+- `buyer-feedback.ts` vs `seller-feedback.ts` — Different business logic (seller rates buyer vs buyer rates seller)
+- `/api/categories/` vs `lib/data/categories.ts` — Different layers (client REST vs server RSC)
+- `WishlistDrawer` vs `CartDrawer` — Similar pattern but different features
 
 ### Commits
 - `afc967a` - Deduplicate boost-dialog, extract mapRowToProduct helper
 - `5e83e52` - Delete unused API routes
 - `148b4ea` - Audit components/ folder - all kept with reasons
+- `5f59a66` - Migrate to canonical /api/auth/sign-out, delete legacy signout route
+- `c1348c4` - Delete unused /api/stores and /api/geo routes
 
 ---
 
@@ -296,7 +317,7 @@ Run these before starting cleanup to establish baseline:
 - [ ] **product/product-page-layout.tsx** — Duplicated by mobile-product-page.tsx
 - [x] **boost/boost-dialog.tsx** — ✅ DELETED (using account/selling version instead)
 - [ ] **auth/auth-gate-card.tsx** — Pattern duplicated in wishlist-context
-- [ ] **wishlist/wishlist-drawer.tsx** — Duplicates cart-drawer patterns
+- [x] **wishlist/wishlist-drawer.tsx** — ✅ KEPT (similar pattern to CartDrawer but different feature)
 - [ ] Review other shared components
 
 #### `components/support/`
@@ -307,16 +328,16 @@ Run these before starting cleanup to establish baseline:
 ### 📁 `app/` — Next.js App Router
 
 #### `app/` root files
-- [ ] **globals.css** — Token sprawl, review consolidation
-- [ ] **legacy-vars.css** — Should this be removed?
-- [ ] **shadcn-components.css** — Review consolidation with globals.css
-- [ ] **utilities.css** — Review usage
+- [x] **globals.css** — ✅ KEPT (main theme tokens, well organized)
+- [x] **legacy-vars.css** — ✅ KEPT (calc-based CSS vars that can't be Tailwind tokens)
+- [x] **shadcn-components.css** — ✅ KEPT (CSS rules for data-state selectors etc.)
+- [x] **utilities.css** — ✅ KEPT (custom utility classes)
 - [ ] **global-error.tsx** — Review
 - [ ] **global-not-found.tsx** — Review
 - [ ] **sitemap.ts** — Review
 
 #### `app/actions/`
-- [ ] Review server actions for duplication
+- [x] ✅ KEPT — All server actions actively used. buyer-feedback vs seller-feedback are different features.
 
 #### `app/api/`
 - [x] **products/create/route.ts** — ✅ DELETED (unused, sell form uses server action instead)
@@ -324,19 +345,22 @@ Run these before starting cleanup to establish baseline:
 - [x] **products/newest/route.ts** — ✅ KEPT (used by e2e tests, hooks, scripts)
 - [x] **products/deals/route.ts** — ✅ DELETED (unused, no frontend calls)
 - [x] **products/nearby/route.ts** — ✅ DELETED (unused, no frontend calls)
-- [ ] **categories/route.ts** — Duplicates lib/data/categories.ts logic
+- [x] **categories/route.ts** — ✅ KEPT (REST API for client-side lazy loading, different from lib/data/ server functions)
+- [x] **auth/signout/route.ts** — ✅ DELETED (legacy re-export, usages migrated to canonical /api/auth/sign-out)
+- [x] **stores/route.ts** — ✅ DELETED (deprecated 410 route, not called anywhere)
+- [x] **geo/route.ts** — ✅ DELETED (unused, geo detection handled by proxy.ts middleware)
 - [ ] Review other API routes
 
 #### `app/auth/`
-- [ ] Review auth routes
+- [x] ✅ Consolidated to canonical /api/auth/sign-out
 
 #### `app/[locale]/` — Locale Routes
 
 ##### `app/[locale]/(account)/`
 - [x] **account/selling/_components/boost-dialog.tsx** — ✅ KEPT (canonical version, shared one deleted)
 - [ ] **account/wishlist/_components/account-wishlist-toolbar.tsx** — Has internal duplication
-- [ ] **account/orders/_components/buyer-order-actions.tsx** — Duplicates seller-rate-buyer-actions
-- [ ] **account/orders/_components/account-orders-grid.tsx** — Has internal duplication
+- [x] **account/orders/_components/buyer-order-actions.tsx** — ✅ KEPT (buyer actions - confirm delivery, rate seller, cancel, report issues)
+- [x] **account/orders/_components/account-orders-grid.tsx** — ✅ KEPT (internal status handling could be extracted but not dead code)
 - [ ] **account/orders/[id]/page.tsx** — Duplicates order-detail-content.tsx
 - [ ] **account/(settings)/notifications/** — Has internal duplication
 - [x] **plans/upgrade/** — ✅ KEPT (correct Next.js intercepting routes pattern - page + modal share UpgradeContent)
@@ -356,7 +380,7 @@ Run these before starting cleanup to establish baseline:
 - [ ] **_components/fields/category-field.tsx** — Has internal duplication
 - [ ] **_components/fields/attributes-field.tsx** — Has internal duplication
 - [ ] **_components/ui/category-modal/index.tsx** — Has internal duplication
-- [ ] **sell/orders/_components/seller-rate-buyer-actions.tsx** — Duplicates buyer-order-actions
+- [x] **sell/orders/_components/seller-rate-buyer-actions.tsx** — ✅ KEPT (seller rates buyer - different from buyer-order-actions)
 - [ ] Review other sell components
 
 ##### `app/[locale]/(main)/`
@@ -377,9 +401,11 @@ Run these before starting cleanup to establish baseline:
 ##### `app/[locale]/(plans)/`
 - [ ] Review plans pages
 
-##### `app/[locale]/demo/`
-- [ ] **product-adaptive/_components/product-page-desktop.tsx** — Duplicates desktop-specs-accordion
-- [ ] Is demo folder needed in production?
+##### `app/[locale]/(main)/demo/`
+- [x] ✅ KEPT (design system demo, robots: noindex - useful for internal design verification)
+
+##### `app/[locale]/(main)/demo2/`
+- [x] ✅ KEPT (design tokens v2 demo, robots: noindex - useful for internal design verification)
 
 ##### `app/[locale]/[username]/`
 - [ ] Review username pages
