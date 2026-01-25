@@ -48,6 +48,7 @@
 ### Commits
 - `afc967a` - Deduplicate boost-dialog, extract mapRowToProduct helper
 - `5e83e52` - Delete unused API routes
+- `148b4ea` - Audit components/ folder - all kept with reasons
 
 ---
 
