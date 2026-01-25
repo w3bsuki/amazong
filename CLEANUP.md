@@ -260,11 +260,11 @@ Run these before starting cleanup to establish baseline:
 - [ ] Review server actions for duplication
 
 #### `app/api/`
-- [ ] **products/create/route.ts** — Duplicates actions/products.ts
-- [ ] **products/feed/route.ts** — Overlaps with other feed endpoints
-- [ ] **products/newest/route.ts** — Overlaps with feed
-- [ ] **products/deals/route.ts** — Overlaps with feed
-- [ ] **products/nearby/route.ts** — Overlaps with feed
+- [x] **products/create/route.ts** — ✅ DELETED (unused, sell form uses server action instead)
+- [x] **products/feed/route.ts** — ✅ KEPT (used by desktop-home.tsx)
+- [x] **products/newest/route.ts** — ✅ KEPT (used by e2e tests, hooks, scripts)
+- [x] **products/deals/route.ts** — ✅ DELETED (unused, no frontend calls)
+- [x] **products/nearby/route.ts** — ✅ DELETED (unused, no frontend calls)
 - [ ] **categories/route.ts** — Duplicates lib/data/categories.ts logic
 - [ ] Review other API routes
 
