@@ -1,8 +1,34 @@
 # TREIDO Production Cleanup Plan
 
 **Created**: 2026-01-25  
+**Updated**: 2026-01-25  
 **Goal**: Nuke all over-engineered stuff, duplicates, and dead code before production launch  
 **Method**: Folder-by-folder systematic cleanup with checkmarks. Each folder is a "unit of work."
+
+---
+
+## Cleanup Session Log (2026-01-25)
+
+### Completed ✅
+| Item | Action | Lines Removed |
+|------|--------|---------------|
+| `components/shared/boost/boost-dialog.tsx` | DELETED (duplicate of account/selling version) | -273 |
+| `app/api/products/create/route.ts` | DELETED (unused, sell form uses server action) | -379 |
+| `app/api/products/deals/route.ts` | DELETED (no frontend calls) | -85 |
+| `app/api/products/nearby/route.ts` | DELETED (no frontend calls) | -90 |
+| `lib/data/products.ts` | REFACTORED (extracted `mapRowToProduct()` helper) | -30 (deduped) |
+| **Total** | | **~857 lines** |
+
+### Reviewed & Kept (Not Duplicates)
+- `product-card.tsx` vs `product-card-list.tsx` — Different layouts (grid vs list view)
+- `admin/notes` vs `admin/tasks` — Different features (pinned notes vs kanban board)  
+- `pricing-field.tsx` vs `step-pricing.tsx` — Different UX (desktop compact vs mobile wizard)
+- `plans/upgrade` page + modal — Correct Next.js intercepting routes pattern
+- `products/feed` + `products/newest` API routes — Actively used by frontend
+
+### Commits
+- `afc967a` - Deduplicate boost-dialog, extract mapRowToProduct helper
+- `5e83e52` - Delete unused API routes
 
 ---
 
