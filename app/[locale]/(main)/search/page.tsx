@@ -21,6 +21,7 @@ import { getShippingFilter, parseShippingRegion } from '@/lib/shipping'
 import { ITEMS_PER_PAGE } from "../_lib/pagination"
 import { getCategoryContext } from "@/lib/data/categories"
 import type { CategoryAttribute } from "@/lib/data/categories"
+import { normalizeAttributeKey } from "@/lib/attributes/normalize-attribute-key"
 
 
 export function generateStaticParams() {
@@ -165,8 +166,16 @@ export default async function SearchPage({
           const attributeFilters: Record<string, string | string[]> = {}
           for (const [key, value] of Object.entries(searchParams)) {
             if (key.startsWith('attr_') && value) {
-              const attrName = key.replace('attr_', '')
-              attributeFilters[attrName] = value
+              const rawName = key.replace('attr_', '')
+              const attrKey = normalizeAttributeKey(rawName) || rawName
+              const nextValues = Array.isArray(value) ? value : [value]
+              const existing = attributeFilters[attrKey]
+              if (!existing) {
+                attributeFilters[attrKey] = nextValues
+              } else {
+                const existingValues = Array.isArray(existing) ? existing : [existing]
+                attributeFilters[attrKey] = Array.from(new Set([...existingValues, ...nextValues]))
+              }
             }
           }
 
@@ -191,8 +200,16 @@ export default async function SearchPage({
         const attributeFilters: Record<string, string | string[]> = {}
         for (const [key, value] of Object.entries(searchParams)) {
           if (key.startsWith('attr_') && value) {
-            const attrName = key.replace('attr_', '')
-            attributeFilters[attrName] = value
+            const rawName = key.replace('attr_', '')
+            const attrKey = normalizeAttributeKey(rawName) || rawName
+            const nextValues = Array.isArray(value) ? value : [value]
+            const existing = attributeFilters[attrKey]
+            if (!existing) {
+              attributeFilters[attrKey] = nextValues
+            } else {
+              const existingValues = Array.isArray(existing) ? existing : [existing]
+              attributeFilters[attrKey] = Array.from(new Set([...existingValues, ...nextValues]))
+            }
           }
         }
 

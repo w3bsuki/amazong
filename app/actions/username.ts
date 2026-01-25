@@ -1,6 +1,6 @@
 "use server"
 
-import { createClient } from "@/lib/supabase/server"
+import { createAdminClient, createClient } from "@/lib/supabase/server"
 import { revalidateTag } from "next/cache"
 import { z } from "zod"
 
@@ -380,8 +380,9 @@ export async function upgradeToBusinessAccount(data: z.infer<typeof businessUpgr
     
     // Update to business account (public + private surfaces)
     const updatedAt = new Date().toISOString()
+    const adminSupabase = createAdminClient()
     const [{ error: updateError }, { error: privateError }] = await Promise.all([
-      supabase
+      adminSupabase
         .from("profiles")
         .update({
           account_type: "business",
@@ -458,8 +459,11 @@ export async function downgradeToPersonalAccount(): Promise<{
       }
     }
     
-    // Update to personal account (reset business-related fields)
-    const { error: updateError } = await supabase
+    // Update to personal account (reset business-related fields).
+    // Uses service role for sensitive profile fields (account_type/tier/is_verified_business).
+    const adminSupabase = createAdminClient()
+
+    const { error: updateError } = await adminSupabase
       .from("profiles")
       .update({
         account_type: "personal",

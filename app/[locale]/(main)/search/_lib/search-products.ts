@@ -2,6 +2,7 @@ import { createStaticClient } from "@/lib/supabase/server"
 import { ITEMS_PER_PAGE } from "../../_lib/pagination"
 import type { Product, SearchProductFilters } from "./types"
 import { isBoostActive } from "@/lib/boost/boost-status"
+import { normalizeAttributeKey } from "@/lib/attributes/normalize-attribute-key"
 
 export async function searchProducts(
   supabase: ReturnType<typeof createStaticClient>,
@@ -51,8 +52,10 @@ export async function searchProducts(
     if (filters.availability === "instock") next = next.gt("stock", 0)
 
     if (filters.attributes) {
-      for (const [attrName, attrValue] of Object.entries(filters.attributes)) {
+      for (const [rawAttrName, attrValue] of Object.entries(filters.attributes)) {
         if (!attrValue) continue
+
+        const attrName = normalizeAttributeKey(rawAttrName) || rawAttrName
 
         if (Array.isArray(attrValue)) {
           const values = attrValue.filter((v): v is string => typeof v === "string" && v.length > 0)

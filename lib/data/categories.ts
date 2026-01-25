@@ -4,6 +4,7 @@ import { cacheTag, cacheLife } from 'next/cache'
 import { createStaticClient } from '@/lib/supabase/server'
 import { normalizeOptionalImageUrl } from '@/lib/normalize-image-url'
 import { logger } from '@/lib/logger'
+import { normalizeAttributeKey } from '@/lib/attributes/normalize-attribute-key'
 
 // =============================================================================
 // Type Definitions
@@ -24,7 +25,7 @@ export interface CategoryWithParent extends Category {
   parent: Category | null
 }
 
-export type AttributeType = 'select' | 'multiselect' | 'boolean' | 'number' | 'text'
+export type AttributeType = 'select' | 'multiselect' | 'boolean' | 'number' | 'text' | 'date'
 
 export interface CategoryAttribute {
   id: string
@@ -32,6 +33,8 @@ export interface CategoryAttribute {
   name: string
   name_bg: string | null
   attribute_type: AttributeType
+  /** Canonical, normalized key (preferred over name for JSONB + URL params). */
+  attribute_key: string | null
   options: string[] | null
   options_bg: string[] | null
   placeholder?: string | null
@@ -40,15 +43,18 @@ export interface CategoryAttribute {
   max_value?: number | null
   is_filterable: boolean | null
   is_required: boolean | null
+  is_hero_spec: boolean | null
+  hero_priority: number | null
+  unit_suffix: string | null
   sort_order: number | null
   validation_rules?: unknown | null
 }
 
 // Valid attribute types
-const VALID_ATTRIBUTE_TYPES: AttributeType[] = ['select', 'multiselect', 'boolean', 'number', 'text']
+const VALID_ATTRIBUTE_TYPES: AttributeType[] = ['select', 'multiselect', 'boolean', 'number', 'text', 'date']
 
 const CATEGORY_ATTRIBUTES_SELECT =
-  'id,category_id,name,name_bg,attribute_type,options,options_bg,placeholder,placeholder_bg,is_filterable,is_required,sort_order,validation_rules,created_at' as const
+  'id,category_id,name,name_bg,attribute_type,attribute_key,options,options_bg,placeholder,placeholder_bg,is_filterable,is_required,is_hero_spec,hero_priority,unit_suffix,sort_order,validation_rules,created_at' as const
 
 // Helper to transform DB row to CategoryAttribute
 function toCategoryAttribute(row: {
@@ -57,12 +63,16 @@ function toCategoryAttribute(row: {
   name: string
   name_bg: string | null
   attribute_type: string
+  attribute_key?: string | null
   options: unknown | null
   options_bg: unknown | null
   placeholder?: string | null
   placeholder_bg?: string | null
   is_filterable: boolean | null
   is_required: boolean | null
+  is_hero_spec?: boolean | null
+  hero_priority?: number | null
+  unit_suffix?: string | null
   sort_order: number | null
   validation_rules?: unknown | null
   created_at?: string | null
@@ -72,18 +82,24 @@ function toCategoryAttribute(row: {
     ? row.attribute_type as AttributeType
     : 'text'
     
+  const attributeKey = row.attribute_key ?? (normalizeAttributeKey(row.name) || null)
+
   return {
     id: row.id,
     category_id: row.category_id,
     name: row.name,
     name_bg: row.name_bg,
     attribute_type: attrType,
+    attribute_key: attributeKey,
     options: Array.isArray(row.options) ? row.options as string[] : null,
     options_bg: Array.isArray(row.options_bg) ? row.options_bg as string[] : null,
     placeholder: row.placeholder ?? null,
     placeholder_bg: row.placeholder_bg ?? null,
     is_filterable: row.is_filterable,
     is_required: row.is_required,
+    is_hero_spec: row.is_hero_spec ?? null,
+    hero_priority: row.hero_priority ?? null,
+    unit_suffix: row.unit_suffix ?? null,
     sort_order: row.sort_order,
     validation_rules: row.validation_rules ?? null,
   }
@@ -124,8 +140,14 @@ export interface CategoryContext {
   attributes: CategoryAttribute[]
 }
 
-function normalizeAttributeName(name: string): string {
-  return name.trim().toLowerCase()
+function getCategoryAttributeKey(attr: Pick<CategoryAttribute, 'attribute_key' | 'name'>): string {
+  return (attr.attribute_key ?? normalizeAttributeKey(attr.name)).trim().toLowerCase()
+}
+
+function getCategoryAttributeMapKey(
+  attr: Pick<CategoryAttribute, 'attribute_key' | 'name' | 'attribute_type'>
+): string {
+  return `${getCategoryAttributeKey(attr)}::${attr.attribute_type}`.trim().toLowerCase()
 }
 
 function hasAnyOptions(attr: CategoryAttribute): boolean {
@@ -805,50 +827,75 @@ export async function getCategoryContext(slug: string): Promise<CategoryContext 
   const currentAttributes = (attributesResult.data || []).map(toCategoryAttribute)
 
   // ---------------------------------------------------------------------------
-  // Attribute Inheritance: Always merge parent/ancestor attrs with current.
-  // This ensures universal filters (Condition, Brand, Size, Color) are inherited.
-  // Priority: current category attrs > parent attrs > grandparent (L0) attrs
+  // Attribute Inheritance: Always merge ALL ancestor attrs with current.
+  // This ensures universal filters (Condition, Brand, Size, Color) are inherited
+  // even for deep leaf categories.
+  //
+  // Priority: current category attrs > parent attrs > ... > root attrs
   // ---------------------------------------------------------------------------
-  
-  // Fetch parent attributes
-  let parentAttributes: CategoryAttribute[] = []
-  if (current.parent_id) {
-    const { data: parentAttributesRaw } = await supabase
-      .from('category_attributes')
-      .select(CATEGORY_ATTRIBUTES_SELECT)
-      .eq('category_id', current.parent_id)
-      .eq('is_filterable', true)
-      .order('sort_order')
-    parentAttributes = (parentAttributesRaw || []).map(toCategoryAttribute)
+
+  // Collect ancestor category IDs (parent -> root).
+  const ancestorIds: string[] = []
+  let cursor: string | null = current.parent_id
+
+  for (let i = 0; i < 6 && cursor; i++) {
+    ancestorIds.push(cursor)
+
+    const { data: parentRow, error: parentRowError } = await supabase
+      .from('categories')
+      .select('parent_id')
+      .eq('id', cursor)
+      .maybeSingle()
+
+    if (parentRowError) {
+      logger.error('[getCategoryContext] Ancestor lookup error', parentRowError)
+      break
+    }
+
+    cursor = (parentRow as { parent_id?: string | null } | null)?.parent_id ?? null
   }
 
-  // If parent has no attrs (e.g., fashion-womens L1), fetch grandparent (L0) attrs
-  const parentData = Array.isArray(current.parent) ? current.parent[0] : current.parent
-  let ancestorAttributes = parentAttributes
-  
-  if (parentAttributes.length === 0 && parentData?.parent_id) {
-    const { data: grandparentAttrsRaw } = await supabase
+  let inheritedAttributes: CategoryAttribute[] = []
+  if (ancestorIds.length > 0) {
+    const { data: inheritedRaw, error: inheritedError } = await supabase
       .from('category_attributes')
       .select(CATEGORY_ATTRIBUTES_SELECT)
-      .eq('category_id', parentData.parent_id)
+      .in('category_id', ancestorIds)
       .eq('is_filterable', true)
       .order('sort_order')
-    ancestorAttributes = (grandparentAttrsRaw || []).map(toCategoryAttribute)
+
+    if (inheritedError) {
+      logger.error('[getCategoryContext] Ancestor attributes query error', inheritedError)
+    } else {
+      inheritedAttributes = (inheritedRaw || []).map(toCategoryAttribute)
+    }
   }
+
+  const depthByCategoryId = new Map<string, number>()
+  for (let i = 0; i < ancestorIds.length; i++) depthByCategoryId.set(ancestorIds[i]!, i)
+
+  // Sort inherited attrs root -> parent so nearer ancestors override farther ones.
+  const inheritedSorted = [...inheritedAttributes].sort((a, b) => {
+    const da = depthByCategoryId.get(a.category_id ?? '') ?? 0
+    const db = depthByCategoryId.get(b.category_id ?? '') ?? 0
+    if (da !== db) return db - da
+    return (a.sort_order ?? 999) - (b.sort_order ?? 999)
+  })
 
   // Merge: Build map tracking which attrs are from current category vs inherited
   // Key insight: category-specific attrs should come FIRST, inherited universal attrs second
   const attrMap = new Map<string, CategoryAttribute & { isOwn: boolean }>()
   
   // Add ancestor attrs first (marked as inherited)
-  for (const attr of ancestorAttributes) {
-    attrMap.set(normalizeAttributeName(attr.name), { ...attr, isOwn: false })
+  for (const attr of inheritedSorted) {
+    attrMap.set(getCategoryAttributeMapKey(attr), { ...attr, isOwn: false })
   }
   // Current category attrs override ancestors (marked as own)
   for (const attr of currentAttributes) {
-    const existing = attrMap.get(normalizeAttributeName(attr.name))
+    const key = getCategoryAttributeMapKey(attr)
+    const existing = attrMap.get(key)
     attrMap.set(
-      normalizeAttributeName(attr.name),
+      key,
       {
         ...(existing ? withFallbackOptions(attr, existing) : attr),
         isOwn: true

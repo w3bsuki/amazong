@@ -16,6 +16,7 @@ import { FilterHub } from "@/components/shared/filters/filter-hub"
 import { FilterModal, type FilterModalSection } from "@/components/shared/filters/filter-modal"
 import { SortModal } from "@/components/shared/filters/sort-modal"
 import type { CategoryAttribute } from "@/lib/data/categories"
+import { getCategoryAttributeKey } from "@/lib/filters/category-attribute"
 
 // =============================================================================
 // QUICK FILTER ROW — eBay-style quick filter pills under category navigation
@@ -124,10 +125,10 @@ export function QuickFilterRow({
             } else {
                 // Attribute filters - find matching attribute
                 const attr = attributes.find(
-                    (a) => a.name.toLowerCase() === filterKey.toLowerCase()
+                    (a) => getCategoryAttributeKey(a) === filterKey.toLowerCase()
                 )
                 if (attr) {
-                    const paramKey = `attr_${attr.name}`
+                    const paramKey = `attr_${getCategoryAttributeKey(attr)}`
                     const isActive = searchParams.getAll(paramKey).length > 0
 
                     result.push({
@@ -178,7 +179,7 @@ export function QuickFilterRow({
         if (searchParams.get("minRating")) count++
         if (searchParams.get("availability")) count++
         for (const attr of attributes) {
-            if (searchParams.getAll(`attr_${attr.name}`).length > 0) count++
+            if (searchParams.getAll(`attr_${getCategoryAttributeKey(attr)}`).length > 0) count++
         }
         return count
     }, [searchParams, attributes])

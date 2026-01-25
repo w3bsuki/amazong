@@ -25,7 +25,7 @@ import {
   DialogClose,
 } from "@/components/ui/dialog"
 import type { CategoryAttribute } from "@/lib/data/categories"
-import { getCategoryAttributeOptions, shouldForceMultiSelectCategoryAttribute } from "@/lib/filters/category-attribute"
+import { getCategoryAttributeKey, getCategoryAttributeOptions, shouldForceMultiSelectCategoryAttribute } from "@/lib/filters/category-attribute"
 import { setPendingAttributeValues } from "@/lib/filters/pending-attributes"
 import { ColorSwatches } from "./color-swatches"
 import { SizeTiles } from "./size-tiles"
@@ -131,6 +131,15 @@ export function FilterModal({
   const searchParams = appliedSearchParams ?? searchParamsFromRouter
   const isMobile = useIsMobile()
 
+  const attributeKey = useMemo(
+    () => (attribute ? getCategoryAttributeKey(attribute) : null),
+    [attribute],
+  )
+  const attributeParamKey = useMemo(
+    () => (attributeKey ? `attr_${attributeKey}` : null),
+    [attributeKey],
+  )
+
   const appliedCategorySlug = useMemo(() => {
     if (!categoryParamKey) return null
     return searchParams.get(categoryParamKey)
@@ -198,13 +207,20 @@ export function FilterModal({
       maxPrice: searchParams.get("maxPrice"),
       minRating: searchParams.get("minRating"),
       availability: searchParams.get("availability"),
-      attributes: attribute
-        ? {
-          [attribute.name]: searchParams.getAll(`attr_${attribute.name}`),
-        }
-        : {},
+      attributes:
+        attribute && attributeKey && attributeParamKey
+          ? {
+              [attributeKey]: Array.from(
+                new Set([
+                  ...searchParams.getAll(attributeParamKey),
+                  // Backward-compat: old links used the raw name (e.g. attr_Brand).
+                  ...searchParams.getAll(`attr_${attribute.name}`),
+                ]),
+              ),
+            }
+          : {},
     })
-  }, [open, searchParams, attribute, categoryParamKey, section])
+  }, [open, searchParams, attribute, attributeKey, attributeParamKey, categoryParamKey, section])
 
   // Attribute helpers
   const shouldForceMultiSelect = useCallback((attr: CategoryAttribute) => {
@@ -242,10 +258,10 @@ export function FilterModal({
     if (section === "rating") return pending.minRating !== null
     if (section === "availability") return pending.availability !== null
     if (section.startsWith("attr_") && attribute) {
-      return (pending.attributes[attribute.name]?.length ?? 0) > 0
+      return attributeKey ? (pending.attributes[attributeKey]?.length ?? 0) > 0 : false
     }
     return false
-  }, [section, categoryParamKey, pendingCategorySlug, appliedCategorySlug, pending, attribute])
+  }, [section, categoryParamKey, pendingCategorySlug, appliedCategorySlug, pending, attribute, attributeKey])
 
   // Clear this section's pending
   const clearSection = useCallback(() => {
@@ -258,9 +274,9 @@ export function FilterModal({
     } else if (section === "availability") {
       setPending((prev) => ({ ...prev, availability: null }))
     } else if (section.startsWith("attr_") && attribute) {
-      setPendingAttrValues(attribute.name, [])
+      if (attributeKey) setPendingAttrValues(attributeKey, [])
     }
-  }, [section, attribute, setPendingAttrValues])
+  }, [section, attribute, attributeKey, setPendingAttrValues])
 
   // Apply filters
   const applyFilters = useCallback(() => {
@@ -279,10 +295,13 @@ export function FilterModal({
       params.delete("availability")
       if (pending.availability) params.set("availability", pending.availability)
     } else if (section.startsWith("attr_") && attribute) {
-      params.delete(`attr_${attribute.name}`)
-      const values = pending.attributes[attribute.name] || []
-      for (const v of values) {
-        if (v) params.append(`attr_${attribute.name}`, v)
+      if (attributeParamKey && attributeKey) {
+        params.delete(attributeParamKey)
+        params.delete(`attr_${attribute.name}`)
+        const values = pending.attributes[attributeKey] || []
+        for (const v of values) {
+          if (v) params.append(attributeParamKey, v)
+        }
       }
     }
 
@@ -313,7 +332,7 @@ export function FilterModal({
       })
     }
     onOpenChange(false)
-  }, [section, pending, pendingCategorySlug, attribute, searchParams, resolvedBasePath, router, onOpenChange, categoryParamKey, onApply])
+  }, [section, pending, pendingCategorySlug, attribute, attributeKey, attributeParamKey, searchParams, resolvedBasePath, router, onOpenChange, categoryParamKey, onApply])
 
   const displayCount = open ? liveCount : resultsCount
 
@@ -324,16 +343,17 @@ export function FilterModal({
   const renderAttributeSection = () => {
     if (!attribute) return null
 
-    const attrNameLower = attribute.name.toLowerCase()
+    const attrKey = attributeKey ?? getCategoryAttributeKey(attribute)
+    const attrNameLower = attrKey
     const options = getAttrOptions(attribute) ?? []
 
     // Boolean attribute
     if (attribute.attribute_type === "boolean") {
-      const isChecked = getPendingAttrValues(attribute.name).includes("true")
+      const isChecked = getPendingAttrValues(attrKey).includes("true")
       return (
         <button
           type="button"
-          onClick={() => setPendingAttrValues(attribute.name, isChecked ? [] : ["true"])}
+          onClick={() => setPendingAttrValues(attrKey, isChecked ? [] : ["true"])}
           className={cn(
             "w-full flex items-center gap-3 px-3 h-10 rounded-lg transition-colors",
             isChecked ? "bg-secondary text-primary font-medium" : "active:bg-muted"
@@ -360,8 +380,8 @@ export function FilterModal({
       return (
         <ColorSwatches
           options={options}
-          selected={getPendingAttrValues(attribute.name)}
-          onSelect={(values) => setPendingAttrValues(attribute.name, values)}
+          selected={getPendingAttrValues(attrKey)}
+          onSelect={(values) => setPendingAttrValues(attrKey, values)}
         />
       )
     }
@@ -371,8 +391,8 @@ export function FilterModal({
       return (
         <SizeTiles
           options={options}
-          selected={getPendingAttrValues(attribute.name)}
-          onSelect={(values) => setPendingAttrValues(attribute.name, values)}
+          selected={getPendingAttrValues(attrKey)}
+          onSelect={(values) => setPendingAttrValues(attrKey, values)}
         />
       )
     }
@@ -384,8 +404,8 @@ export function FilterModal({
       return (
         <FilterList
           options={options}
-          selected={getPendingAttrValues(attribute.name)}
-          onSelect={(values) => setPendingAttrValues(attribute.name, values)}
+          selected={getPendingAttrValues(attrKey)}
+          onSelect={(values) => setPendingAttrValues(attrKey, values)}
           multiSelect={allowMulti}
           searchThreshold={8}
         />
@@ -403,7 +423,7 @@ export function FilterModal({
       return (
         <div className={cn(listBleedClass, "divide-y divide-border/30")}>
           {options.map((option, idx) => {
-            const currentValues = getPendingAttrValues(attribute.name)
+            const currentValues = getPendingAttrValues(attrKey)
             const isActive = currentValues.includes(option)
 
             return (
@@ -412,13 +432,13 @@ export function FilterModal({
                 type="button"
                 onClick={() => {
                   if (!allowMulti) {
-                    setPendingAttrValues(attribute.name, isActive ? [] : [option])
+                    setPendingAttrValues(attrKey, isActive ? [] : [option])
                     return
                   }
                   const newValues = isActive
                     ? currentValues.filter((v) => v !== option)
                     : [...currentValues, option]
-                  setPendingAttrValues(attribute.name, newValues)
+                  setPendingAttrValues(attrKey, newValues)
                 }}
                 className={cn(
                   "w-full flex items-center gap-3 h-10 transition-colors text-left",

@@ -24,6 +24,7 @@ import {
 } from "@/components/ui/drawer"
 import type { CategoryAttribute } from "@/lib/data/categories"
 import {
+  getCategoryAttributeKey,
   getCategoryAttributeLabel,
   getCategoryAttributeOptions,
   shouldForceMultiSelectCategoryAttribute,
@@ -249,9 +250,16 @@ export function FilterHub({
       verified: searchParams.get("verified"),
       attributes: visibleAttributes.reduce(
         (acc, attr) => {
-          const values = searchParams.getAll(`attr_${attr.name}`)
+          const attrKey = getCategoryAttributeKey(attr)
+          const values = Array.from(
+            new Set([
+              ...searchParams.getAll(`attr_${attrKey}`),
+              // Backward-compat: old links used the raw name (e.g. attr_Brand).
+              ...searchParams.getAll(`attr_${attr.name}`),
+            ]),
+          )
           if (values.length > 0) {
-            acc[attr.name] = values
+            acc[attrKey] = values
           }
           return acc
         },
@@ -419,7 +427,7 @@ export function FilterHub({
         return pending.availability === "instock" ? t("inStock") : null
       }
       if ("attribute" in section && section.attribute) {
-        const values = getPendingAttrValues(section.attribute.name)
+        const values = getPendingAttrValues(getCategoryAttributeKey(section.attribute))
         if (values.length === 0) return null
         if (values.length === 1) return values[0] ?? null
         return `${values.length} ${tHub("selected")}`
@@ -716,17 +724,18 @@ export function FilterHub({
                 if (!section?.attribute) return null
 
                 const attr = section.attribute
-                const attrNameLower = attr.name.toLowerCase()
+                const attrKey = getCategoryAttributeKey(attr)
+                const attrNameLower = attrKey
                 const options = getAttrOptions(attr) ?? []
 
                 // Boolean attribute
                 if (attr.attribute_type === "boolean") {
-                  const isChecked = getPendingAttrValues(attr.name).includes("true")
+                  const isChecked = getPendingAttrValues(attrKey).includes("true")
                   return (
                     <button
                       type="button"
                       onClick={() =>
-                        setPendingAttrValues(attr.name, isChecked ? [] : ["true"])
+                        setPendingAttrValues(attrKey, isChecked ? [] : ["true"])
                       }
                       className={cn(
                         "-mx-inset w-auto flex items-center gap-3 px-inset h-10 transition-colors text-left",
@@ -762,8 +771,8 @@ export function FilterHub({
                   return (
                     <ColorSwatches
                       options={options}
-                      selected={getPendingAttrValues(attr.name)}
-                      onSelect={(values) => setPendingAttrValues(attr.name, values)}
+                      selected={getPendingAttrValues(attrKey)}
+                      onSelect={(values) => setPendingAttrValues(attrKey, values)}
                     />
                   )
                 }
@@ -773,8 +782,8 @@ export function FilterHub({
                   return (
                     <SizeTiles
                       options={options}
-                      selected={getPendingAttrValues(attr.name)}
-                      onSelect={(values) => setPendingAttrValues(attr.name, values)}
+                      selected={getPendingAttrValues(attrKey)}
+                      onSelect={(values) => setPendingAttrValues(attrKey, values)}
                     />
                   )
                 }
@@ -787,8 +796,8 @@ export function FilterHub({
                   return (
                     <FilterList
                       options={options}
-                      selected={getPendingAttrValues(attr.name)}
-                      onSelect={(values) => setPendingAttrValues(attr.name, values)}
+                      selected={getPendingAttrValues(attrKey)}
+                      onSelect={(values) => setPendingAttrValues(attrKey, values)}
                       multiSelect={allowMulti}
                       searchThreshold={8}
                     />
@@ -808,7 +817,7 @@ export function FilterHub({
                   return (
                     <div className="-mx-inset divide-y divide-border/30">
                       {options.map((option, idx) => {
-                        const currentValues = getPendingAttrValues(attr.name)
+                        const currentValues = getPendingAttrValues(attrKey)
                         const isActive = currentValues.includes(option)
 
                         return (
@@ -818,7 +827,7 @@ export function FilterHub({
                             onClick={() => {
                               if (!allowMulti) {
                                 setPendingAttrValues(
-                                  attr.name,
+                                  attrKey,
                                   isActive ? [] : [option]
                                 )
                                 return
@@ -826,7 +835,7 @@ export function FilterHub({
                               const newValues = isActive
                                 ? currentValues.filter((v) => v !== option)
                                 : [...currentValues, option]
-                              setPendingAttrValues(attr.name, newValues)
+                              setPendingAttrValues(attrKey, newValues)
                             }}
                             className={cn(
                               "w-full flex items-center gap-3 px-inset h-10 transition-colors text-left",

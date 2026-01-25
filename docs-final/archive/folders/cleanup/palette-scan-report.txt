@@ -1,8 +1,0 @@
-Top offenders (rough match counts)
---------------------------------
---------------------------------
-Totals: files=0 palette=0 gradient=0 rawGradient=0 fill=0
-
-Auth flow candidates
---------------------
-(none matched by path heuristic)

@@ -30,7 +30,7 @@ import { Switch } from '@/components/ui/switch'
 import { Slider } from '@/components/ui/slider'
 import { useFilterCount } from '@/hooks/use-filter-count'
 import type { CategoryAttribute } from '@/lib/data/categories'
-import { getCategoryAttributeLabel, getCategoryAttributeOptions } from '@/lib/filters/category-attribute'
+import { getCategoryAttributeKey, getCategoryAttributeLabel, getCategoryAttributeOptions } from '@/lib/filters/category-attribute'
 
 interface DesktopFilterModalProps {
   attributes?: CategoryAttribute[]
@@ -94,8 +94,15 @@ export function DesktopFilterModal({
   )
 
   // Get current filter values from URL
-  const getCurrentAttrValues = (attrName: string): string[] => {
-    return searchParams.getAll(`attr_${attrName}`)
+  const getCurrentAttrValues = (attr: CategoryAttribute): string[] => {
+    const attrKey = getCategoryAttributeKey(attr)
+    return Array.from(
+      new Set([
+        ...searchParams.getAll(`attr_${attrKey}`),
+        // Backward-compat: old links used the raw name (e.g. attr_Brand).
+        ...searchParams.getAll(`attr_${attr.name}`),
+      ]),
+    )
   }
 
   // Initialize pending state when modal opens
@@ -103,9 +110,10 @@ export function DesktopFilterModal({
     if (isOpen) {
       const initial: Record<string, string[]> = {}
       filterableAttributes.forEach(attr => {
-        const values = getCurrentAttrValues(attr.name)
+        const attrKey = getCategoryAttributeKey(attr)
+        const values = getCurrentAttrValues(attr)
         if (values.length > 0) {
-          initial[attr.name] = values
+          initial[attrKey] = values
         }
       })
       setPendingFilters(initial)
@@ -119,7 +127,7 @@ export function DesktopFilterModal({
   const activeFilterCount = React.useMemo(() => {
     let count = 0
     filterableAttributes.forEach(attr => {
-      if (getCurrentAttrValues(attr.name).length > 0) count++
+      if (getCurrentAttrValues(attr).length > 0) count++
     })
     if (currentMinPrice || currentMaxPrice) count++
     if (currentRating) count++
@@ -337,7 +345,8 @@ export function DesktopFilterModal({
               {filterableAttributes.map((attr) => {
                 const attrName = getCategoryAttributeLabel(attr, locale)
                 const options = getCategoryAttributeOptions(attr, locale) ?? []
-                const currentValues = pendingFilters[attr.name] || []
+                    const attrKey = getCategoryAttributeKey(attr)
+                    const currentValues = pendingFilters[attrKey] || []
                 const selectedCount = currentValues.length
 
                 // Boolean filter
@@ -349,7 +358,7 @@ export function DesktopFilterModal({
                         <h5 className="text-sm font-semibold">{attrName}</h5>
                         <Switch
                           checked={isChecked}
-                          onCheckedChange={(c) => handleBooleanAttr(attr.name, c)}
+                          onCheckedChange={(c) => handleBooleanAttr(attrKey, c)}
                         />
                       </div>
                     </div>
@@ -374,7 +383,7 @@ export function DesktopFilterModal({
                         onValueChange={(values) => {
                           const v = values[0]
                           if (v === undefined) return
-                          handleAttrChange(attr.name, [v.toString()])
+                          handleAttrChange(attrKey, [v.toString()])
                         }}
                       />
                       <div className="flex justify-between text-2xs text-muted-foreground">
@@ -402,7 +411,7 @@ export function DesktopFilterModal({
                       <FilterSearch
                         options={options}
                         selectedValues={currentValues}
-                        onChange={(vals) => handleAttrChange(attr.name, isSingleSelect ? vals.slice(-1) : vals)}
+                        onChange={(vals) => handleAttrChange(attrKey, isSingleSelect ? vals.slice(-1) : vals)}
                         placeholder={t('searchAttributePlaceholder', { attribute: attrName })}
                         isSingleSelect={isSingleSelect}
                       />

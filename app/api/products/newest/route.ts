@@ -6,6 +6,7 @@ import {
   dbUnavailableResponse, 
   parsePaginationParams 
 } from "@/lib/api/response-helpers"
+import { normalizeAttributeKey } from "@/lib/attributes/normalize-attribute-key"
 
 // Type for the nested select with relations
 interface ProductRowWithRelations {
@@ -82,14 +83,20 @@ export async function GET(request: NextRequest) {
   const availability = searchParams.get("availability")
 
   // Extract attr_* params for attribute filtering.
-  // The UI sends keys like attr_Brand=Apple (multi-select uses repeated params).
+  // Keys are stable, canonical attribute keys (e.g. attr_brand=Apple).
   const attributeFilters: Record<string, string[]> = {}
   for (const [key] of searchParams.entries()) {
     if (!key.startsWith('attr_')) continue
-    const name = key.slice('attr_'.length)
-    if (!name) continue
+    const rawName = key.slice('attr_'.length)
+    if (!rawName) continue
+
+    const name = normalizeAttributeKey(rawName) || rawName
     const values = searchParams.getAll(key).filter((v) => v && v.length > 0)
-    if (values.length > 0) attributeFilters[name] = values
+    if (values.length > 0) {
+      attributeFilters[name] = attributeFilters[name]
+        ? Array.from(new Set([...(attributeFilters[name] || []), ...values]))
+        : values
+    }
   }
   
   try {

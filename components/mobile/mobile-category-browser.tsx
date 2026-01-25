@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils"
 import type { CategoryTreeNode } from "@/lib/category-tree"
 import { StartSellingBanner } from "@/components/sections/start-selling-banner"
 import type { UIProduct } from "@/lib/data/products"
+import type { CategoryAttribute } from "@/lib/data/categories"
 import { Link } from "@/i18n/routing"
 import { useRouter } from "@/i18n/routing"
 import { CaretRight } from "@phosphor-icons/react"
@@ -76,21 +77,7 @@ interface MobileCategoryBrowserProps {
   /** Locale from server - avoids useLocale() hydration issues */
   locale?: string
   /** Filterable attributes for the current category (for filter drawer) */
-  filterableAttributes?: Array<{
-    id: string
-    category_id: string | null
-    name: string
-    name_bg: string | null
-    attribute_type: "select" | "multiselect" | "boolean" | "number" | "text"
-    options: string[] | null
-    options_bg: string[] | null
-    placeholder?: string | null
-    placeholder_bg?: string | null
-    is_filterable: boolean | null
-    is_required: boolean | null
-    sort_order: number | null
-    validation_rules?: unknown | null
-  }>
+  filterableAttributes?: CategoryAttribute[]
 
   // ==========================================================================
   // Phase 2: Contextual Mode (Vinted-style category browsing)

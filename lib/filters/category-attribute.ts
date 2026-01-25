@@ -1,4 +1,9 @@
 import type { CategoryAttribute } from '@/lib/data/categories'
+import { normalizeAttributeKey } from '@/lib/attributes/normalize-attribute-key'
+
+export function getCategoryAttributeKey(attr: Pick<CategoryAttribute, 'attribute_key' | 'name'>): string {
+  return (attr.attribute_key ?? normalizeAttributeKey(attr.name)).trim().toLowerCase()
+}
 
 export function getCategoryAttributeLabel(attr: CategoryAttribute, locale: string): string {
   return locale === 'bg' && attr.name_bg ? attr.name_bg : attr.name

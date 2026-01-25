@@ -14,6 +14,7 @@ import { setRequestLocale, getTranslations } from "next-intl/server"
 import { notFound } from "next/navigation"
 import type { Metadata } from 'next'
 import CategorySlugLoading from "./loading"
+import { normalizeAttributeKey } from "@/lib/attributes/normalize-attribute-key"
 import {
   getCategoryBySlug,
   getCategoryContext,
@@ -258,8 +259,16 @@ function CategoryPageDynamicContent({
   const attributeFilters: Record<string, string | string[]> = {}
   for (const [key, value] of Object.entries(searchParams)) {
     if (key.startsWith('attr_') && value) {
-      const attrName = key.replace('attr_', '')
-      attributeFilters[attrName] = value
+      const rawName = key.replace('attr_', '')
+      const attrKey = normalizeAttributeKey(rawName) || rawName
+      const nextValues = Array.isArray(value) ? value : [value]
+      const existing = attributeFilters[attrKey]
+      if (!existing) {
+        attributeFilters[attrKey] = nextValues
+      } else {
+        const existingValues = Array.isArray(existing) ? existing : [existing]
+        attributeFilters[attrKey] = Array.from(new Set([...existingValues, ...nextValues]))
+      }
     }
   }
 

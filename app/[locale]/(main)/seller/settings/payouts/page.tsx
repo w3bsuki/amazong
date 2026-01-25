@@ -45,11 +45,10 @@ export default async function PayoutsPage({
   const t = await getTranslations("seller.payouts")
 
   return (
-    <div className="container max-w-2xl py-8">
+      <div className="container max-w-2xl py-8">
       <h1 className="text-2xl font-bold mb-6">{t("title")}</h1>
       <SellerPayoutSetup
         payoutStatus={payoutStatus}
-        sellerEmail={user.email || ""}
       />
     </div>
   )

@@ -279,20 +279,14 @@ export function SellPageClient({
           currentStep={1}
           totalSteps={4}
         />
-        <div className="flex-1 flex flex-col justify-center overflow-y-auto py-8">
+        <div className="flex-1 overflow-y-auto py-8">
           <div className="container-narrow space-y-6">
             <div className="space-y-1">
-              <h1 className="text-lg font-semibold text-foreground">{t("payoutSetupRequired")}</h1>
-              <p className="text-sm text-muted-foreground">{t("payoutSetupDescription")}</p>
+              <h1 className="text-2xl font-semibold tracking-tight text-foreground">{t("payoutSetupRequired")}</h1>
+              <p className="text-sm text-muted-foreground mt-1">{t("payoutSetupDescription")}</p>
             </div>
 
-            <SellerPayoutSetup payoutStatus={payoutStatus} sellerEmail={user.email || ""} />
-
-            <div className="flex justify-center">
-              <Button asChild variant="outline" size="sm">
-                <Link href="/seller/settings/payouts">{t("setupPayouts")}</Link>
-              </Button>
-            </div>
+            <SellerPayoutSetup payoutStatus={payoutStatus} />
           </div>
         </div>
       </div>

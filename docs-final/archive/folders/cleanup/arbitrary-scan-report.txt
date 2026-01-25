@@ -1,4 +1,0 @@
-Top offenders (rough match counts)
---------------------------------
---------------------------------
-Totals: files=0 arbitrary=0 hex=0 oklch=0

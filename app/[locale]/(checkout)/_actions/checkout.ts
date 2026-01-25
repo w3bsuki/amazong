@@ -99,6 +99,12 @@ export async function createCheckoutSession(
     const { data: { user } } = await supabase.auth.getUser()
     const userId = user?.id
 
+    // Orders are owned by a user_id (uuid) and are created by webhook/verify flows.
+    // Prevent guest checkout sessions that would be impossible to convert into a valid order.
+    if (!userId) {
+      return { ok: false, error: "Please sign in to checkout." }
+    }
+
     const productIds = items.map((item) => item.id).filter(Boolean)
 
     // Get products with seller info
@@ -227,9 +233,9 @@ export async function createCheckoutSession(
       payment_method_types: ["card"],
       line_items: lineItems,
       mode: "payment",
-      ...(userId ? { client_reference_id: userId } : {}),
+      client_reference_id: userId,
       metadata: {
-        user_id: userId || "guest",
+        user_id: userId,
         seller_id: sellerId,
         items_json: JSON.stringify(items.map((i) => ({ id: i.id, variantId: i.variantId ?? null, qty: i.quantity, price: i.price }))),
         buyer_protection_fee: feeBreakdown.buyerProtectionFee.toFixed(2),

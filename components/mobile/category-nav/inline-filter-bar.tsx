@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils"
 import { useTranslations } from "next-intl"
 import { SortModal } from "@/components/shared/filters/sort-modal"
 import type { CategoryAttribute } from "@/lib/data/categories"
+import { getCategoryAttributeKey } from "@/lib/filters/category-attribute"
 
 // =============================================================================
 // INLINE FILTER BAR — Clean 50/50 Split Design
@@ -86,7 +87,7 @@ export function InlineFilterBar({
     if (searchParams.get("verified") === "true") count++
     // Count attribute filters
     for (const attr of attributes) {
-      if (searchParams.getAll(`attr_${attr.name}`).length > 0) count++
+      if (searchParams.getAll(`attr_${getCategoryAttributeKey(attr)}`).length > 0) count++
     }
     return count
   }, [searchParams, attributes])

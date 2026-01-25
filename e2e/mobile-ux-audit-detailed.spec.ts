@@ -1,12 +1,19 @@
 import { test, expect } from '@playwright/test';
+import { mkdirSync } from 'node:fs';
+import { join } from 'node:path';
 
 const BASE_URL = process.env.BASE_URL || 'http://localhost:3000';
+const SCREENSHOT_DIR = join('test-results', 'audit-screenshots');
 
 // Mobile viewport configuration
 test.use({ 
   viewport: { width: 390, height: 844 },
   isMobile: true,
   hasTouch: true,
+});
+
+test.beforeAll(() => {
+  mkdirSync(SCREENSHOT_DIR, { recursive: true });
 });
 
 // Store audit results
@@ -57,7 +64,7 @@ test.describe('Phase 1: Homepage & Core Navigation', () => {
     }
     
     // Screenshot
-    await page.screenshot({ path: 'docs/audit-screenshots/p1-homepage.png', fullPage: true });
+    await page.screenshot({ path: join(SCREENSHOT_DIR, 'p1-homepage.png'), fullPage: true });
   });
 
   test('1.2 Mobile menu opens and has navigation links', async ({ page }) => {
@@ -82,7 +89,7 @@ test.describe('Phase 1: Homepage & Core Navigation', () => {
       logResult('Phase 1', 'Mobile Menu', 'warning', `Menu has only ${linkCount} links`);
     }
     
-    await page.screenshot({ path: 'docs/audit-screenshots/p1-mobile-menu.png' });
+    await page.screenshot({ path: join(SCREENSHOT_DIR, 'p1-mobile-menu.png') });
   });
 
   test('1.3 Category tabs are scrollable and clickable', async ({ page }) => {
@@ -121,7 +128,7 @@ test.describe('Phase 1: Homepage & Core Navigation', () => {
     logResult('Phase 1', 'Footer', 'pass', 
       `Company: ${hasCompany}, Help: ${hasHelp}, Terms: ${hasTerms}, Privacy: ${hasPrivacy}`);
     
-    await page.screenshot({ path: 'docs/audit-screenshots/p1-footer.png' });
+    await page.screenshot({ path: join(SCREENSHOT_DIR, 'p1-footer.png') });
   });
 });
 
@@ -143,7 +150,7 @@ test.describe('Phase 2: Search Functionality', () => {
       await searchInput.fill('test product');
       await page.waitForTimeout(500);
       logResult('Phase 2', 'Search Input', 'pass', 'Search input accepts text');
-      await page.screenshot({ path: 'docs/audit-screenshots/p2-search-active.png' });
+      await page.screenshot({ path: join(SCREENSHOT_DIR, 'p2-search-active.png') });
     } else {
       logResult('Phase 2', 'Search Input', 'warning', 'Search input not visible after clicking trigger');
     }
@@ -157,7 +164,7 @@ test.describe('Phase 2: Search Functionality', () => {
     expect(url).toContain('search');
     logResult('Phase 2', 'Search Results Page', 'pass', `URL: ${url}`);
     
-    await page.screenshot({ path: 'docs/audit-screenshots/p2-search-results.png', fullPage: true });
+    await page.screenshot({ path: join(SCREENSHOT_DIR, 'p2-search-results.png'), fullPage: true });
   });
 });
 
@@ -174,7 +181,7 @@ test.describe('Phase 3: Category Browsing', () => {
     expect(count).toBeGreaterThan(0);
     logResult('Phase 3', 'Categories Page', 'pass', `${count} category links found`);
     
-    await page.screenshot({ path: 'docs/audit-screenshots/p3-categories.png', fullPage: true });
+    await page.screenshot({ path: join(SCREENSHOT_DIR, 'p3-categories.png'), fullPage: true });
   });
 
   test('3.2 Category detail page loads products', async ({ page }) => {
@@ -190,7 +197,7 @@ test.describe('Phase 3: Category Browsing', () => {
       const url = page.url();
       logResult('Phase 3', 'Category Detail', 'pass', `Navigated to: ${url}`);
       
-      await page.screenshot({ path: 'docs/audit-screenshots/p3-category-detail.png', fullPage: true });
+      await page.screenshot({ path: join(SCREENSHOT_DIR, 'p3-category-detail.png'), fullPage: true });
     }
   });
 });
@@ -220,7 +227,7 @@ test.describe('Phase 4: Product Pages', () => {
       logResult('Phase 4', 'Product Elements', hasImage && hasTitle ? 'pass' : 'warning',
         `Image: ${hasImage}, Title: ${hasTitle}, Price: ${hasPrice}`);
       
-      await page.screenshot({ path: 'docs/audit-screenshots/p4-product-detail.png', fullPage: true });
+      await page.screenshot({ path: join(SCREENSHOT_DIR, 'p4-product-detail.png'), fullPage: true });
     } else {
       logResult('Phase 4', 'Product Link', 'warning', 'No product links found on homepage');
     }
@@ -259,7 +266,7 @@ test.describe('Phase 5: Authentication', () => {
     
     logResult('Phase 5', 'Login Form', 'pass', 'All form fields visible');
     
-    await page.screenshot({ path: 'docs/audit-screenshots/p5-login.png', fullPage: true });
+    await page.screenshot({ path: join(SCREENSHOT_DIR, 'p5-login.png'), fullPage: true });
   });
 
   test('5.2 Sign-up page accessible', async ({ page }) => {
@@ -271,7 +278,7 @@ test.describe('Phase 5: Authentication', () => {
     
     logResult('Phase 5', 'Sign-up Page', 'pass', 'Sign-up form visible');
     
-    await page.screenshot({ path: 'docs/audit-screenshots/p5-signup.png', fullPage: true });
+    await page.screenshot({ path: join(SCREENSHOT_DIR, 'p5-signup.png'), fullPage: true });
   });
 
   test('5.3 Forgot password flow exists', async ({ page }) => {
@@ -287,7 +294,7 @@ test.describe('Phase 5: Authentication', () => {
       logResult('Phase 5', 'Forgot Password', 'warning', 'Forgot password form may not be visible');
     }
     
-    await page.screenshot({ path: 'docs/audit-screenshots/p5-forgot-password.png', fullPage: true });
+    await page.screenshot({ path: join(SCREENSHOT_DIR, 'p5-forgot-password.png'), fullPage: true });
   });
 });
 
@@ -301,7 +308,7 @@ test.describe('Phase 6: Cart & Checkout', () => {
     expect(page.url()).toContain('cart');
     logResult('Phase 6', 'Cart Page', 'pass', 'Cart page loads');
     
-    await page.screenshot({ path: 'docs/audit-screenshots/p6-cart.png', fullPage: true });
+    await page.screenshot({ path: join(SCREENSHOT_DIR, 'p6-cart.png'), fullPage: true });
   });
 
   test('6.2 Checkout page accessible', async ({ page }) => {
@@ -310,7 +317,7 @@ test.describe('Phase 6: Cart & Checkout', () => {
     
     logResult('Phase 6', 'Checkout Page', 'pass', `URL: ${page.url()}`);
     
-    await page.screenshot({ path: 'docs/audit-screenshots/p6-checkout.png', fullPage: true });
+    await page.screenshot({ path: join(SCREENSHOT_DIR, 'p6-checkout.png'), fullPage: true });
   });
 });
 
@@ -324,7 +331,7 @@ test.describe('Phase 7: Seller Features', () => {
     const url = page.url();
     logResult('Phase 7', 'Sell Page', 'pass', `URL: ${url}`);
     
-    await page.screenshot({ path: 'docs/audit-screenshots/p7-sell.png', fullPage: true });
+    await page.screenshot({ path: join(SCREENSHOT_DIR, 'p7-sell.png'), fullPage: true });
   });
 
   test('7.2 Seller dashboard/area exists', async ({ page }) => {
@@ -334,7 +341,7 @@ test.describe('Phase 7: Seller Features', () => {
     const url = page.url();
     logResult('Phase 7', 'Seller Dashboard', 'pass', `URL: ${url}`);
     
-    await page.screenshot({ path: 'docs/audit-screenshots/p7-seller-dashboard.png', fullPage: true });
+    await page.screenshot({ path: join(SCREENSHOT_DIR, 'p7-seller-dashboard.png'), fullPage: true });
   });
 });
 
@@ -353,7 +360,7 @@ test.describe('Phase 8: Plans & Subscriptions', () => {
     
     logResult('Phase 8', 'Plans Page', 'pass', `${cardCount} cards found`);
     
-    await page.screenshot({ path: 'docs/audit-screenshots/p8-plans.png', fullPage: true });
+    await page.screenshot({ path: join(SCREENSHOT_DIR, 'p8-plans.png'), fullPage: true });
   });
 });
 
@@ -373,7 +380,7 @@ test.describe('Phase 9: User Account', () => {
       logResult('Phase 9', 'Account Protection', 'warning', `URL: ${url}`);
     }
     
-    await page.screenshot({ path: 'docs/audit-screenshots/p9-account.png', fullPage: true });
+    await page.screenshot({ path: join(SCREENSHOT_DIR, 'p9-account.png'), fullPage: true });
   });
 
   test('9.2 Wishlist page accessible', async ({ page }) => {
@@ -382,7 +389,7 @@ test.describe('Phase 9: User Account', () => {
     
     logResult('Phase 9', 'Wishlist Page', 'pass', `URL: ${page.url()}`);
     
-    await page.screenshot({ path: 'docs/audit-screenshots/p9-wishlist.png', fullPage: true });
+    await page.screenshot({ path: join(SCREENSHOT_DIR, 'p9-wishlist.png'), fullPage: true });
   });
 });
 
@@ -412,9 +419,9 @@ test.describe('Phase 10: Static Pages', () => {
         logResult('Phase 10', `${pageInfo.name} Page`, 'fail', 'Error page displayed');
       }
       
-      await page.screenshot({ 
-        path: `docs/audit-screenshots/p10-${pageInfo.name.toLowerCase()}.png`, 
-        fullPage: true 
+      await page.screenshot({
+        path: join(SCREENSHOT_DIR, `p10-${pageInfo.name.toLowerCase()}.png`),
+        fullPage: true,
       });
     });
   }
@@ -429,7 +436,7 @@ test.describe('Phase 11: Orders', () => {
     
     logResult('Phase 11', 'Orders Page', 'pass', `URL: ${page.url()}`);
     
-    await page.screenshot({ path: 'docs/audit-screenshots/p11-orders.png', fullPage: true });
+    await page.screenshot({ path: join(SCREENSHOT_DIR, 'p11-orders.png'), fullPage: true });
   });
 });
 

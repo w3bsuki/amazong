@@ -2,7 +2,8 @@
 
 import { z } from "zod"
 import { sellFormSchemaV4 } from "@/lib/sell/schema-v4"
-import { createClient } from "@/lib/supabase/server"
+import { createAdminClient, createClient } from "@/lib/supabase/server"
+import { normalizeAttributeKey } from "@/lib/attributes/normalize-attribute-key"
 
 export type CreateListingResult =
   | {
@@ -97,13 +98,45 @@ export async function createListing(args: { sellerId: string; data: unknown }): 
 
   const imageUrls = (form.images || []).map((img) => img.url)
 
-  // Build attributes JSONB - condition goes in dedicated column, not here
+  // Build attributes JSONB (canonical keys).
+  // Keep `condition` in JSONB too, so filters/hero specs can rely on a single key.
   const attributesJson: Record<string, string> = {}
-  for (const attr of form.attributes || []) {
-    // Skip condition - it has its own column
-    if (attr.name.toLowerCase() === "condition") continue
-    attributesJson[attr.name.toLowerCase().replaceAll(/\s+/g, "_")] = attr.value
+
+  const attributeIds = Array.from(
+    new Set(
+      (form.attributes || [])
+        .map((attr) => attr.attributeId)
+        .filter((id): id is string => typeof id === "string" && id.length > 0),
+    ),
+  )
+
+  const attributeKeyById = new Map<string, string>()
+  if (attributeIds.length > 0) {
+    const { data: defs, error: defsError } = await supabase
+      .from("category_attributes")
+      .select("id, attribute_key, name")
+      .in("id", attributeIds)
+
+    if (defsError) {
+      console.error("[sell:createListing] Failed to resolve attribute_key:", defsError)
+    } else {
+      for (const def of defs || []) {
+        const key = (def.attribute_key ?? normalizeAttributeKey(def.name ?? "")).trim()
+        if (def.id && key) attributeKeyById.set(def.id, key)
+      }
+    }
   }
+
+  for (const attr of form.attributes || []) {
+    const keyFromId = attr.attributeId ? attributeKeyById.get(attr.attributeId) : null
+    const key = (keyFromId ?? normalizeAttributeKey(attr.name)).trim()
+    if (!key) continue
+    attributesJson[key] = attr.value
+  }
+
+  const conditionRaw = typeof form.condition === "string" ? form.condition.trim() : ""
+  const condition = conditionRaw || attributesJson.condition || "new"
+  attributesJson.condition = condition
 
   const price = Number.parseFloat(form.price)
   if (!Number.isFinite(price) || price <= 0) {
@@ -168,8 +201,8 @@ export async function createListing(args: { sellerId: string; data: unknown }): 
     ships_to_worldwide: form.shipsToWorldwide ?? false,
     pickup_only: form.pickupOnly ?? false,
     free_shipping: form.freeShipping ?? false,
-    // Set condition column to match attributes.condition (avoid duplicate)
-    condition: form.condition || "new",
+    // Keep condition in the dedicated column too (canonical for the DB)
+    condition,
     attributes: attributesJson,
   }
 
@@ -186,6 +219,14 @@ export async function createListing(args: { sellerId: string; data: unknown }): 
         error: "LISTING_LIMIT_REACHED",
         message: "You have reached your listing limit. Please upgrade your plan to add more listings.",
         upgradeRequired: true,
+      }
+    }
+
+    if (error.code === "23514" && error.message?.includes("Category must be a leaf category")) {
+      return {
+        success: false,
+        error: "LEAF_CATEGORY_REQUIRED",
+        message: "Please select a more specific category (leaf category)",
       }
     }
     return { success: false, error: error.message || "Failed to create product" }
@@ -287,7 +328,10 @@ export async function completeSellerOnboarding(args: {
   if (!user) return { error: "Unauthorized" as const }
   if (user.id !== userId) return { error: "Forbidden" as const }
 
-  const { error: updateError } = await supabase
+  // Use service role for sensitive profile fields (role/is_seller/account_type).
+  const adminSupabase = createAdminClient()
+
+  const { error: updateError } = await adminSupabase
     .from("profiles")
     .update({
       account_type: accountType,

@@ -3,6 +3,7 @@ import { createClient as createSupabaseClient } from "@supabase/supabase-js"
 import type { Database } from "@/lib/supabase/database.types"
 import { getPublicSupabaseEnv } from "@/lib/supabase/shared"
 import { getShippingFilter, parseShippingRegion } from "@/lib/shipping"
+import { normalizeAttributeKey } from "@/lib/attributes/normalize-attribute-key"
 
 /**
  * POST /api/products/count
@@ -126,8 +127,10 @@ export async function POST(request: NextRequest): Promise<NextResponse<CountResp
 
     // Attribute filters
     if (filters.attributes) {
-      for (const [attrName, attrValue] of Object.entries(filters.attributes)) {
+      for (const [rawAttrName, attrValue] of Object.entries(filters.attributes)) {
         if (!attrValue) continue
+
+        const attrName = normalizeAttributeKey(rawAttrName) || rawAttrName
 
         if (Array.isArray(attrValue)) {
           const values = attrValue.filter((v): v is string => typeof v === "string" && v.length > 0)

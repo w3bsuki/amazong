@@ -3,6 +3,7 @@ import { createStaticClient } from "@/lib/supabase/server";
 import type { Database } from "@/lib/supabase/database.types";
 import { cacheLife, cacheTag } from "next/cache";
 import { isNextPrerenderInterrupted } from "@/lib/next/is-next-prerender-interrupted";
+import { normalizeAttributeKey } from "@/lib/attributes/normalize-attribute-key";
 
 // Public endpoint: use anon key so RLS is still enforced
 
@@ -67,7 +68,13 @@ async function getCategoryAttributesCached(slugOrId: string) {
     .single()
 
   const inheritedAttributes: CategoryAttributeRow[] = []
-  const seenAttributeNames = new Set(attributes?.map((a) => a.name) || [])
+
+  const getAttrKey = (attr: Pick<CategoryAttributeRow, "attribute_key" | "name" | "id">) => {
+    const key = attr.attribute_key ?? normalizeAttributeKey(attr.name)
+    return key || attr.id
+  }
+
+  const seenAttributeKeys = new Set((attributes || []).map((a) => getAttrKey(a)))
 
   // Walk up the parent chain
   let currentParentId = category?.parent_id
@@ -83,9 +90,10 @@ async function getCategoryAttributesCached(slugOrId: string) {
     // Add parent attrs that we haven't seen yet (child takes precedence)
     if (parentAttrs) {
       for (const attr of parentAttrs) {
-        if (!seenAttributeNames.has(attr.name)) {
+        const key = getAttrKey(attr)
+        if (!seenAttributeKeys.has(key)) {
           inheritedAttributes.push(attr)
-          seenAttributeNames.add(attr.name)
+          seenAttributeKeys.add(key)
         }
       }
     }
@@ -112,8 +120,12 @@ async function getCategoryAttributesCached(slugOrId: string) {
     name: attr.name,
     nameBg: attr.name_bg,
     type: attr.attribute_type,
+    attributeKey: attr.attribute_key ?? (normalizeAttributeKey(attr.name) || null),
     required: attr.is_required,
     filterable: attr.is_filterable,
+    isHeroSpec: attr.is_hero_spec,
+    heroPriority: attr.hero_priority,
+    unitSuffix: attr.unit_suffix,
     options: attr.options as string[] | null,
     optionsBg: attr.options_bg as string[] | null,
     placeholder: attr.placeholder,

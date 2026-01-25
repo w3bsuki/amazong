@@ -44,6 +44,12 @@ const clearDiscountSchema = z.object({
 
 type ProductFeedType = "deals" | "newest" | "bestsellers" | "featured" | "promo"
 
+const LEAF_CATEGORY_ERROR_MESSAGE = "Please select a more specific category (leaf category)"
+
+function isLeafCategoryError(error: { code?: string | null; message?: string | null } | null | undefined): boolean {
+  return error?.code === "23514" && typeof error.message === "string" && error.message.includes("Category must be a leaf category")
+}
+
 async function getCategorySlugsByIds(
   supabase: SupabaseClient<Database>,
   categoryIds: Array<string | null | undefined>
@@ -187,6 +193,9 @@ export async function createProduct(input: ProductInput): Promise<ActionResult<{
       .single()
     
     if (insertError) {
+      if (isLeafCategoryError(insertError)) {
+        return { success: false, error: LEAF_CATEGORY_ERROR_MESSAGE }
+      }
       console.error("[createProduct] Insert error:", insertError)
       return { success: false, error: insertError.message || "Failed to create product" }
     }
@@ -278,6 +287,9 @@ export async function updateProduct(
       .eq("id", productId)
     
     if (updateError) {
+      if (isLeafCategoryError(updateError)) {
+        return { success: false, error: LEAF_CATEGORY_ERROR_MESSAGE }
+      }
       console.error("[updateProduct] Update error:", updateError)
       return { success: false, error: "Failed to update product" }
     }
@@ -728,10 +740,7 @@ async function updateProductStock(
       .replaceAll(/^-|-$/g, "")
     const newSlug = `${baseSlug}-${Date.now().toString(36)}`
     
-    // Create duplicate with all business fields
-    const { data: duplicate, error: insertError } = await supabase
-      .from("products")
-      .insert({
+    const duplicateInsert = await supabase.from("products").insert({
         seller_id: user.id,
         title: `${original.title} (Copy)`,
         description: original.description,
@@ -749,8 +758,39 @@ async function updateProductStock(
       })
       .select("id")
       .single()
-    
-    if (insertError) {
+
+    let duplicate = duplicateInsert.data
+    let insertError = duplicateInsert.error
+
+    // If the original product has a non-leaf category, duplication should still succeed
+    // (draft listing can be re-categorized later).
+    if (insertError && isLeafCategoryError(insertError)) {
+      const fallbackInsert = await supabase
+        .from("products")
+        .insert({
+          seller_id: user.id,
+          title: `${original.title} (Copy)`,
+          description: original.description,
+          price: original.price,
+          list_price: original.list_price,
+          stock: original.stock,
+          track_inventory: original.track_inventory,
+          category_id: null,
+          status: "draft",
+          weight: original.weight,
+          weight_unit: original.weight_unit,
+          condition: original.condition,
+          images: original.images,
+          slug: newSlug,
+        })
+        .select("id")
+        .single()
+
+      duplicate = fallbackInsert.data
+      insertError = fallbackInsert.error
+    }
+
+    if (insertError || !duplicate) {
       console.error("[duplicateProduct] Insert error:", insertError)
       return { success: false, error: "Failed to duplicate product" }
     }

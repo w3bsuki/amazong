@@ -264,8 +264,8 @@ export function calculateFormProgress(data: Partial<SellFormDataV4>): {
 			key: "description",
 			label: "Add description",
 			labelBg: "Добави описание",
-			completed: (data.description?.length ?? 0) >= 20,
-			required: false,
+			completed: (data.description?.trim().length ?? 0) >= 50,
+			required: true,
 		},
 		{
 			key: "shipping",

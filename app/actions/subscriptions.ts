@@ -1,7 +1,7 @@
 "use server"
 
 import { z } from "zod"
-import { createClient } from "@/lib/supabase/server"
+import { createAdminClient, createClient } from "@/lib/supabase/server"
 import { stripe } from "@/lib/stripe"
 import { revalidateTag } from "next/cache"
 import type Stripe from "stripe"
@@ -270,6 +270,7 @@ export async function createBillingPortalSession(args?: { locale?: "en" | "bg" }
 export async function downgradeToFreeTier(): Promise<{ tier?: "free"; error?: string }> {
   try {
     const supabase = await createClient()
+    const adminSupabase = createAdminClient()
 
     const {
       data: { user },
@@ -279,7 +280,7 @@ export async function downgradeToFreeTier(): Promise<{ tier?: "free"; error?: st
       return { error: "Unauthorized" }
     }
 
-    const { error } = await supabase
+    const { error } = await adminSupabase
       .from("profiles")
       .update({ tier: "free" })
       .eq("id", user.id)

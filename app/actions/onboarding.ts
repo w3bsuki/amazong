@@ -1,7 +1,7 @@
 "use server"
 
 import { z } from "zod"
-import { createClient } from "@/lib/supabase/server"
+import { createAdminClient, createClient } from "@/lib/supabase/server"
 
 export interface OnboardingData {
   userId: string
@@ -151,7 +151,10 @@ export async function completePostSignupOnboarding(
   }
 
   // Update profile
-  const { error: updateError } = await supabase
+  // Use service role for sensitive profile fields (role/is_seller/account_type).
+  const adminSupabase = createAdminClient()
+
+  const { error: updateError } = await adminSupabase
     .from("profiles")
     .update(updateData)
     .eq("id", userId)

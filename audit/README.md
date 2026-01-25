@@ -38,5 +38,5 @@ These are currently outside `audit/` but contain useful context:
 
 - `ARCHITECTURE.md` — repo boundaries + caching rules
 - `CODEBASE_AUDIT_REFACTOR_2026-01-24.md` — broader audit/refactor proposal
-- `TREIDO_AUDIT_2026-01-24.md` — runtime/UX audit (Playwright/Supabase MCP)
-- `docs/AUDIT_TAILWIND_SHADCN_TWITTER_THEME_2026-01-24.md` — theming audit (Twitter theme)
+- `docs-final/archive/root/TREIDO_AUDIT_2026-01-24.md` — runtime/UX audit (Playwright/Supabase MCP)
+- `audit/AUDIT_TAILWIND_SHADCN_TWITTER_THEME_2026-01-24.md` — theming audit (Twitter theme)

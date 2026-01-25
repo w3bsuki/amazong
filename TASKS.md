@@ -94,7 +94,7 @@ REUSE_EXISTING_SERVER=true pnpm test:e2e:smoke
 ## P2 — TYPESCRIPT SAFETY (66 Drift Items)
 
 > **Goal**: Fix unsafe TypeScript patterns to prevent runtime errors.
-> **Reference**: `codex-xhigh/typescript/ts-gate-2026-01-20.log`
+> **Reference**: `scripts/ts-safety-gate.baseline.json`
 
 ### P2-1: Fix Checkout Action Type Safety
 - [ ] In `app/[locale]/(checkout)/_actions/checkout.ts`:
@@ -181,7 +181,7 @@ Entry tasks:
 ## P4 — SUPABASE ALIGNMENT
 
 > **Goal**: Ensure database layer follows best practices.
-> **Reference**: `docs/BACKEND.md`, `docs/ENGINEERING.md`
+> **Reference**: `BACKEND.md`, `ENGINEERING.md`
 > **Status (2026-01-24)**: `category_stats` hardening + anon privilege hardening done (see `audit/supabase.md`). Leaked password protection still pending.
 
 ### P4-1: Regenerate Supabase Types
@@ -210,7 +210,7 @@ Entry tasks:
   - `lib/data/product-reviews.ts` — 1 cached function
 
 ### P4-4: RLS Policy Audit
-- [ ] Verify RLS enabled on all user-data tables (see `docs/BACKEND.md`)
+- [ ] Verify RLS enabled on all user-data tables (see `BACKEND.md`)
 - [ ] Check for `(SELECT auth.uid())` pattern in policies (performance)
 - [ ] Document any tables with RLS disabled and justify
 - **Reference**: `supabase/schema.sql`
@@ -218,7 +218,7 @@ Entry tasks:
 ### P4-5: Enable Leaked Password Protection
 - [ ] In Supabase Dashboard → Authentication → Settings
 - [ ] Enable "Leaked Password Protection"
-- [ ] Document in `codex-xhigh/logs/`
+- [ ] Document completion in `audit/supabase.md`
 - **Note**: This is a dashboard-only setting
 
 ---
@@ -226,7 +226,7 @@ Entry tasks:
 ## P5 — NEXT.JS 16 BEST PRACTICES
 
 > **Goal**: Ensure optimal Next.js 16 App Router patterns.
-> **Reference**: `docs/ENGINEERING.md`, `codex-xhigh/nextjs/FULL-AUDIT.md`
+> **Reference**: `ENGINEERING.md`, `ARCHITECTURE.md`
 
 ### P5-1: Proxy Configuration Audit
 - [ ] Verify `proxy.ts` is the only middleware (not `middleware.ts`)
@@ -257,7 +257,7 @@ Entry tasks:
 ## P6 — I18N COMPLETENESS
 
 > **Goal**: All user-facing strings via next-intl.
-> **Reference**: `docs/FRONTEND.md`
+> **Reference**: `FRONTEND.md`
 
 ### P6-1: Messages Parity Check
 - [ ] Run `pnpm test:unit __tests__/i18n-messages-parity.test.ts`
@@ -284,7 +284,7 @@ Entry tasks:
 ## P7 — TAILWIND V4 + SHADCN ALIGNMENT
 
 > **Goal**: Design system consistency, no drift.
-> **Reference**: `docs/DESIGN.md`
+> **Reference**: `DESIGN.md`
 
 ### P7-1: Run Style Drift Scans
 ```bash
@@ -315,7 +315,7 @@ pnpm -s styles:gate
 ## P8 — FEATURE COMPLETENESS AUDIT
 
 > **Goal**: Every button works, every flow completes.
-> **Reference**: `docs/FEATURES.md`
+> **Reference**: `FEATURES.md`
 
 ### P8-1: Auth Flow Audit
 - [ ] Sign up → email confirmation → login works
@@ -374,7 +374,7 @@ pnpm -s styles:gate
 ## P9 — STRIPE ALIGNMENT
 
 > **Goal**: Payments are deterministic and secure.
-> **Reference**: `docs/BACKEND.md`, `docs/PRODUCTION.md`
+> **Reference**: `BACKEND.md`, `PRODUCTION.md`
 
 ### P9-1: Webhook Signature Verification
 - [ ] All 3 webhook endpoints verify signatures:

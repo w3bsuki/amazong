@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server"
 import { createRouteHandlerClient } from "@/lib/supabase/server"
 import { z } from "zod"
+import { normalizeAttributeKey } from "@/lib/attributes/normalize-attribute-key"
 
 // Image schema - supports both URL string and object format (including isPrimary from form)
 const imageSchema = z.union([
@@ -206,15 +207,48 @@ export async function POST(request: NextRequest) {
     // After transform, all images are objects with url property
     const imageUrls = data.images.map(img => img.url)
 
-    // 6. Build attributes JSONB - condition goes in dedicated column, not here
+    // 6. Build attributes JSONB (canonical keys).
+    // Keep `condition` in JSONB too, so filters/hero specs can rely on a single key.
     const attributesJson: Record<string, string> = {}
-    if (data.attributes) {
-      for (const attr of data.attributes) {
-        // Skip condition - it has its own column
-        if (attr.name.toLowerCase() === "condition") continue
-        attributesJson[attr.name.toLowerCase().replaceAll(/\s+/g, '_')] = attr.value
+
+    // Fetch canonical keys for known attribute_ids in one query.
+    const attributeIds = Array.from(
+      new Set(
+        (data.attributes || [])
+          .map((attr) => attr.attribute_id)
+          .filter((id): id is string => typeof id === "string" && id.length > 0),
+      ),
+    )
+
+    const attributeKeyById = new Map<string, string>()
+    if (attributeIds.length > 0) {
+      const { data: defs, error: defsError } = await supabaseUser
+        .from("category_attributes")
+        .select("id, attribute_key, name")
+        .in("id", attributeIds)
+
+      if (defsError) {
+        console.error("[products/create] Failed to resolve attribute_key:", defsError)
+      } else {
+        for (const def of defs || []) {
+          const key = (def.attribute_key ?? normalizeAttributeKey(def.name ?? "")).trim()
+          if (def.id && key) attributeKeyById.set(def.id, key)
+        }
       }
     }
+
+    if (data.attributes) {
+      for (const attr of data.attributes) {
+        const keyFromId = attr.attribute_id ? attributeKeyById.get(attr.attribute_id) : null
+        const key = (keyFromId ?? normalizeAttributeKey(attr.name)).trim()
+        if (!key) continue
+        attributesJson[key] = attr.value
+      }
+    }
+
+    const conditionRaw = typeof data.condition === "string" ? data.condition.trim() : ""
+    const condition = conditionRaw || attributesJson.condition || "new"
+    attributesJson.condition = condition
 
     // 7. Compute final values - handle form V4 field names
     const finalListPrice = data.listPrice ?? data.compareAtPrice ?? null
@@ -243,8 +277,8 @@ export async function POST(request: NextRequest) {
       ships_to_worldwide: data.shipsToWorldwide ?? false,
       pickup_only: data.pickupOnly ?? false,
       free_shipping: data.freeShipping ?? false,
-      // Set condition column to match attributes.condition (avoid duplicate)
-      condition: data.condition || "new",
+      // Keep condition in the dedicated column too (canonical for the DB)
+      condition,
       attributes: attributesJson,
     }
     
@@ -262,6 +296,18 @@ export async function POST(request: NextRequest) {
           message: "You have reached your listing limit. Please upgrade your plan to add more listings.",
           upgradeRequired: true
         }, { status: 403 }))
+      }
+
+      if (error.code === "23514" && error.message?.includes("Category must be a leaf category")) {
+        return applyCookies(
+          NextResponse.json(
+            {
+              error: "LEAF_CATEGORY_REQUIRED",
+              message: "Please select a more specific category (leaf category)",
+            },
+            { status: 400 },
+          ),
+        )
       }
       
       return applyCookies(NextResponse.json({ 

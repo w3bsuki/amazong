@@ -14,6 +14,9 @@ Goal: keep a **small set of canonical docs in repo root**, and move legacy markd
 
 **Reference layer** (read as needed):
 - `ARCHITECTURE.md` — stack, boundaries, caching
+- `ENGINEERING.md` — engineering rules + rails
+- `FRONTEND.md` — UI/UX + i18n guidance
+- `BACKEND.md` — Supabase/Stripe backend guidance
 - `DESIGN.md` — UI tokens, patterns, anti-patterns
 - `TESTING.md` — gates, debugging tips
 - `FEATURES.md` — route/action/DB/test map
@@ -24,20 +27,14 @@ Goal: keep a **small set of canonical docs in repo root**, and move legacy markd
 
 - `docs-final/archive/**`: legacy docs, audits, logs, and prior planning artifacts kept only for reference.
 
-## What was archived (2026-01-23)
+## Archive inventory (kept)
 
-- Old root workflow docs:
-  - `docs-final/archive/root/agents.md`
-  - `docs-final/archive/root/RULES.md`
-  - `docs-final/archive/root/TODO.md`
-  - `docs-final/archive/root/supabase_tasks.md`
-- Prior canonical docs folder (now archived):
-  - `docs-final/archive/docs/*`
-- Prior audit/plan folders (now archived):
-  - `docs-final/archive/codex-xhigh/codex-xhigh/*`
-  - `docs-final/archive/supabase-info/supabase-info/*`
-  - `docs-final/archive/folders/.claude/*`
-  - `docs-final/archive/folders/.specs/*`
+- `docs-final/archive/root/`
+  - Kept: select audits + `supabase_tasks.md` (legacy checklist; Supabase lane).
+- `docs-final/archive/docs/`
+  - Kept: legacy audits/plans that are still referenced (e.g. escrow plan) or useful as history.
+- `docs-final/archive/supabase-info/`
+  - Kept: schema snapshots (Supabase lane; delete only when Supabase owner is done).
 
 ## Deletion policy
 

@@ -245,7 +245,20 @@ export async function fetchProductByUsernameAndSlug(
     category: productWithRelations.category ?? null,
     seller_stats: sellerStats ?? null,
     product_images: productWithRelations.product_images ?? [],
-    product_variants: (productWithRelations.product_variants ?? []) as unknown as ProductVariantRow[],
+    product_variants: ([...(productWithRelations.product_variants ?? [])] as Array<
+      Pick<ProductVariantRow, "id" | "name" | "sku" | "stock" | "price_adjustment" | "is_default" | "sort_order">
+    >)
+      .sort((a, b) => {
+        const ad = a.is_default ? 0 : 1
+        const bd = b.is_default ? 0 : 1
+        if (ad !== bd) return ad - bd
+
+        const ao = a.sort_order ?? 999
+        const bo = b.sort_order ?? 999
+        if (ao !== bo) return ao - bo
+
+        return String(a.name ?? "").localeCompare(String(b.name ?? ""))
+      }) as unknown as ProductVariantRow[],
   }
 
   addEntityTags(enriched)
