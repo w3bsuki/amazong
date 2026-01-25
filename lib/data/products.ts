@@ -142,6 +142,40 @@ function normalizeCategoryNode(input: unknown): Product['categories'] {
   }
 }
 
+/**
+ * Maps raw DB row to Product with normalized fields.
+ * Extracted to avoid duplication across getProducts/getProductsByCategorySlug.
+ */
+function mapRowToProduct(p: unknown): Product {
+  const row = p as unknown as Record<string, unknown>
+  const categories = normalizeCategoryNode(row.categories)
+  const seller = (row.seller && typeof row.seller === 'object') ? (row.seller as Record<string, unknown>) : null
+  // Extract nested user_verification from seller
+  const uv = (seller?.user_verification && typeof seller.user_verification === 'object')
+    ? (Array.isArray(seller.user_verification) ? seller.user_verification[0] : seller.user_verification) as Record<string, unknown>
+    : null
+
+  const rawProduct = p as unknown as { is_boosted?: boolean | null; boost_expires_at?: string | null }
+  const activeBoost = isBoostActive({
+    is_boosted: rawProduct.is_boosted ?? null,
+    boost_expires_at: rawProduct.boost_expires_at ?? null,
+  })
+
+  return {
+    ...(p as unknown as Product),
+    is_boosted: activeBoost,
+    categories,
+    category_slug: categories?.slug ?? null,
+    store_slug: (typeof seller?.username === 'string') ? (seller.username as string) : null,
+    seller_profile: {
+      ...(seller as Product['seller_profile']),
+      email_verified: uv?.email_verified === true ? true : null,
+      phone_verified: uv?.phone_verified === true ? true : null,
+      id_verified: uv?.id_verified === true ? true : null,
+    },
+  } as Product
+}
+
 function buildCategoryPath(
   leaf: Product['categories']
 ): { slug: string; name: string; nameBg?: string | null; icon?: string | null }[] | undefined {
@@ -321,35 +355,7 @@ export async function getProductsByCategorySlug(
       return []
     }
 
-    return (data || []).map((p: unknown) => {
-      const row = p as unknown as Record<string, unknown>
-      const categories = normalizeCategoryNode(row.categories)
-      const seller = (row.seller && typeof row.seller === 'object') ? (row.seller as Record<string, unknown>) : null
-      // Extract nested user_verification from seller
-      const uv = (seller?.user_verification && typeof seller.user_verification === 'object')
-        ? (Array.isArray(seller.user_verification) ? seller.user_verification[0] : seller.user_verification) as Record<string, unknown>
-        : null
-
-      const rawProduct = p as unknown as { is_boosted?: boolean | null; boost_expires_at?: string | null }
-      const activeBoost = isBoostActive({
-        is_boosted: rawProduct.is_boosted ?? null,
-        boost_expires_at: rawProduct.boost_expires_at ?? null,
-      })
-
-      return {
-        ...(p as unknown as Product),
-        is_boosted: activeBoost,
-        categories,
-        category_slug: categories?.slug ?? null,
-        store_slug: (typeof seller?.username === 'string') ? (seller.username as string) : null,
-        seller_profile: {
-          ...(seller as Product['seller_profile']),
-          email_verified: uv?.email_verified === true ? true : null,
-          phone_verified: uv?.phone_verified === true ? true : null,
-          id_verified: uv?.id_verified === true ? true : null,
-        },
-      } as Product
-    })
+    return (data || []).map(mapRowToProduct)
   } catch (error) {
     logger.error(`[getProductsByCategorySlug:${categorySlug}] Unexpected error`, error)
     return []
@@ -448,35 +454,7 @@ export async function getProducts(type: QueryType, limit = 36, zone?: ShippingRe
     }
 
     return (data || [])
-      .map((p: unknown) => {
-        const row = p as unknown as Record<string, unknown>
-        const categories = normalizeCategoryNode(row.categories)
-        const seller = (row.seller && typeof row.seller === 'object') ? (row.seller as Record<string, unknown>) : null
-        // Extract nested user_verification from seller
-        const uv = (seller?.user_verification && typeof seller.user_verification === 'object')
-          ? (Array.isArray(seller.user_verification) ? seller.user_verification[0] : seller.user_verification) as Record<string, unknown>
-          : null
-
-        const rawProduct = p as unknown as { is_boosted?: boolean | null; boost_expires_at?: string | null }
-        const activeBoost = isBoostActive({
-          is_boosted: rawProduct.is_boosted ?? null,
-          boost_expires_at: rawProduct.boost_expires_at ?? null,
-        })
-
-        return {
-          ...(p as unknown as Product),
-          is_boosted: activeBoost,
-          categories,
-          category_slug: categories?.slug ?? null,
-          store_slug: (typeof seller?.username === 'string') ? (seller.username as string) : null,
-          seller_profile: {
-            ...(seller as Product['seller_profile']),
-            email_verified: uv?.email_verified === true ? true : null,
-            phone_verified: uv?.phone_verified === true ? true : null,
-            id_verified: uv?.id_verified === true ? true : null,
-          },
-        } as Product
-      })
+      .map(mapRowToProduct)
       .filter((p: Product) =>
         type === 'deals' || type === 'promo'
           ? (p.list_price ?? 0) > p.price

@@ -73,7 +73,7 @@ Run these before starting cleanup to establish baseline:
 ## Folder Checklist
 
 ### 📁 Root Config Files
-- [ ] **package.json** — Remove unused deps (`@ai-sdk/gateway`, `@radix-ui/react-toggle`)
+- [x] **package.json** — Remove unused deps ✅ (Codex removed them already - knip clean)
 - [ ] **Root .md files** — Consolidate/archive redundant docs (AI_ASSISTANT.md, CLAUDE.md, etc.)
 - [ ] **.env files** — Ensure no secrets, proper .env.example exists
 
@@ -123,7 +123,7 @@ Run these before starting cleanup to establish baseline:
 - [ ] Review boost utilities
 
 #### `lib/data/`
-- [ ] **CRITICAL**: products.ts has internal duplication (lines 324-353 vs 453-482)
+- [x] **products.ts** — ✅ Extracted `mapRowToProduct()` helper to deduplicate mapping logic
 - [ ] Review category data fetching
 
 #### `lib/filters/`
@@ -231,11 +231,11 @@ Run these before starting cleanup to establish baseline:
 - [ ] **filters/filter-list.tsx** — Duplicates filter-modal, size-tiles
 - [ ] **filters/size-tiles.tsx** — Duplicated by filter-list, color-swatches
 - [ ] **filters/color-swatches.tsx** — Duplicates size-tiles
-- [ ] **product/product-card.tsx** — Duplicates product-card-list.tsx
-- [ ] **product/product-card-list.tsx** — Duplicates product-card.tsx
+- [x] **product/product-card.tsx** — ✅ KEPT (grid view, different layout from list)
+- [x] **product/product-card-list.tsx** — ✅ KEPT (list view, different layout from grid)
 - [ ] **product/write-review-dialog.tsx** — Pattern duplicated elsewhere
 - [ ] **product/product-page-layout.tsx** — Duplicated by mobile-product-page.tsx
-- [ ] **boost/boost-dialog.tsx** — DUPLICATE of account/selling/_components/boost-dialog.tsx
+- [x] **boost/boost-dialog.tsx** — ✅ DELETED (using account/selling version instead)
 - [ ] **auth/auth-gate-card.tsx** — Pattern duplicated in wishlist-context
 - [ ] **wishlist/wishlist-drawer.tsx** — Duplicates cart-drawer patterns
 - [ ] Review other shared components
@@ -274,26 +274,25 @@ Run these before starting cleanup to establish baseline:
 #### `app/[locale]/` — Locale Routes
 
 ##### `app/[locale]/(account)/`
-- [ ] **account/selling/_components/boost-dialog.tsx** — DUPLICATE of shared/boost/boost-dialog.tsx
+- [x] **account/selling/_components/boost-dialog.tsx** — ✅ KEPT (canonical version, shared one deleted)
 - [ ] **account/wishlist/_components/account-wishlist-toolbar.tsx** — Has internal duplication
 - [ ] **account/orders/_components/buyer-order-actions.tsx** — Duplicates seller-rate-buyer-actions
 - [ ] **account/orders/_components/account-orders-grid.tsx** — Has internal duplication
 - [ ] **account/orders/[id]/page.tsx** — Duplicates order-detail-content.tsx
 - [ ] **account/(settings)/notifications/** — Has internal duplication
-- [ ] **account/plans/upgrade/page.tsx** — Duplicates modal version
-- [ ] **@modal/(.)account/plans/upgrade/page.tsx** — Duplicates page version
+- [x] **plans/upgrade/** — ✅ KEPT (correct Next.js intercepting routes pattern - page + modal share UpgradeContent)
 - [ ] Review other account components
 
 ##### `app/[locale]/(admin)/`
-- [ ] **admin/notes/_components/notes-content.tsx** — Duplicates tasks-content.tsx
-- [ ] **admin/tasks/_components/tasks-content.tsx** — Duplicates notes-content.tsx
+- [x] **admin/notes/_components/notes-content.tsx** — ✅ KEPT (simple pinned notes, different from tasks)
+- [x] **admin/tasks/_components/tasks-content.tsx** — ✅ KEPT (kanban board with status/priority, different from notes)
 - [ ] **admin/docs/_components/docs-content.tsx** — Has internal duplication
 - [ ] Review other admin components
 
 ##### `app/[locale]/(sell)/`
 - [ ] **_components/steps/step-details.tsx** — Has internal duplication
-- [ ] **_components/steps/step-pricing.tsx** — MAJOR duplicate of pricing-field.tsx
-- [ ] **_components/fields/pricing-field.tsx** — MAJOR duplicate of step-pricing.tsx
+- [x] **_components/steps/step-pricing.tsx** — ✅ KEPT (mobile step-wizard UI, used by mobile-layout)
+- [x] **_components/fields/pricing-field.tsx** — ✅ KEPT (desktop compact field, used by desktop-layout)
 - [ ] **_components/fields/photos-field.tsx** — Has internal duplication
 - [ ] **_components/fields/category-field.tsx** — Has internal duplication
 - [ ] **_components/fields/attributes-field.tsx** — Has internal duplication
