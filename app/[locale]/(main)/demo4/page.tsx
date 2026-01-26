@@ -278,7 +278,9 @@ export default function QuickViewDemo() {
           <h2 className="text-lg font-semibold">The Fix (One Line)</h2>
           
           <div className="font-mono text-sm bg-card rounded-lg p-4 overflow-x-auto">
-            <p className="text-muted-foreground">// product-quick-view-content.tsx line ~270</p>
+            <p className="text-muted-foreground">
+              {"// product-quick-view-content.tsx line ~270"}
+            </p>
             <p className="text-destructive line-through">{"<Button variant=\"outline\" size=\"lg\" ...>"}</p>
             <p className="text-success">{"<Button variant=\"black\" size=\"lg\" ...>"}</p>
           </div>

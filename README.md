@@ -40,6 +40,20 @@ pnpm exec playwright show-report playwright-report
 pnpm clean
 ```
 
+## Storybook
+
+```bash
+# Run Storybook (component workshop)
+pnpm storybook
+
+# Build static Storybook site
+pnpm storybook:build
+```
+
+- Stories live next to components (e.g. `components/ui/button.stories.tsx`).
+- Use the toolbar to switch `Theme` (light/dark) and `Locale` (en/bg).
+- If a component depends on app-only providers, add a stub under `.storybook/mocks` and alias it in `.storybook/main.ts`.
+
 ## Project Structure
 
 **Agent entry point**: `CLAUDE.md` (read on every prompt)

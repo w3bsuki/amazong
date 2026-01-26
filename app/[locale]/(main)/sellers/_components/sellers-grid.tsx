@@ -40,8 +40,8 @@ export default function SellersGrid({
                     </h3>
                     {seller.verified && (
                       <Badge
-                        variant="secondary"
-                        className="bg-success/10 text-success text-xs px-1.5 py-0 shrink-0"
+                        variant="success-subtle"
+                        className="shrink-0"
                       >
                         {tSeller("verified")}
                       </Badge>

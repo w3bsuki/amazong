@@ -2,10 +2,18 @@
 
 import { useState } from "react"
 import { useLocale, useTranslations } from "next-intl"
+import { motion } from "framer-motion"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { CheckCircle, AlertCircle, ExternalLink, Loader2 } from "lucide-react"
+import {
+  CreditCard,
+  Wallet,
+  ArrowRight,
+  CheckCircle2,
+  ShieldCheck,
+  Zap,
+  ExternalLink,
+  Loader2,
+} from "lucide-react"
 
 type PayoutStatus = {
   stripe_connect_account_id: string | null
@@ -25,6 +33,7 @@ export function SellerPayoutSetup({ payoutStatus }: Props) {
   const [error, setError] = useState<string | null>(null)
 
   const isComplete = payoutStatus?.details_submitted && payoutStatus?.charges_enabled && payoutStatus?.payouts_enabled
+  const hasStarted = !!payoutStatus?.stripe_connect_account_id
 
   const getErrorMessage = (action: "onboarding" | "dashboard", status: number) => {
     if (status === 401) return t("errors.unauthorized")
@@ -64,7 +73,6 @@ export function SellerPayoutSetup({ payoutStatus }: Props) {
         return
       }
 
-      // Redirect to Stripe onboarding
       window.location.href = data.url
     } catch {
       setError(t("errors.generic"))
@@ -97,7 +105,6 @@ export function SellerPayoutSetup({ payoutStatus }: Props) {
         return
       }
 
-      // Open Stripe dashboard in new tab
       window.open(data.url, "_blank")
       setLoading(false)
     } catch {
@@ -106,87 +113,166 @@ export function SellerPayoutSetup({ payoutStatus }: Props) {
     }
   }
 
+  // Clean, centered hero CTA layout
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          {t("status")}
-          {isComplete ? (
-            <Badge variant="verified">
-              <CheckCircle className="size-3" />
-              {t("active")}
-            </Badge>
-          ) : payoutStatus?.stripe_connect_account_id ? (
-            <Badge variant="stock-low">
-              <AlertCircle className="size-3" />
-              {t("incomplete")}
-            </Badge>
-          ) : (
-            <Badge variant="outline">{t("notStarted")}</Badge>
-          )}
-        </CardTitle>
-        <CardDescription>
-          {isComplete
-            ? t("statusComplete")
-            : payoutStatus?.stripe_connect_account_id
-              ? t("statusIncomplete")
-              : t("statusNotStarted")}
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        {/* Status Details */}
-        {payoutStatus?.stripe_connect_account_id ? (
-          <div className="space-y-3 mb-6">
-            <StatusItem label={t("detailsSubmitted")} completed={payoutStatus.details_submitted} />
-            <StatusItem label={t("chargesEnabled")} completed={payoutStatus.charges_enabled} />
-            <StatusItem label={t("payoutsEnabled")} completed={payoutStatus.payouts_enabled} />
-          </div>
-        ) : null}
+    <div className="flex flex-col items-center justify-center text-center max-w-md mx-auto py-8 px-4">
+      {/* Icon */}
+      <motion.div
+        initial={{ scale: 0.8, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{ duration: 0.3 }}
+        className="size-20 rounded-2xl bg-primary flex items-center justify-center mb-6 shadow-lg shadow-primary/20"
+      >
+        {isComplete ? (
+          <CheckCircle2 className="size-10 text-primary-foreground" strokeWidth={2} />
+        ) : (
+          <Wallet className="size-10 text-primary-foreground" strokeWidth={2} />
+        )}
+      </motion.div>
 
-        {/* Error Message */}
-        {error ? (
-          <div className="p-3 mb-4 bg-destructive/10 text-destructive rounded-md text-sm">
-            {error}
-          </div>
-        ) : null}
+      {/* Title */}
+      <motion.h1
+        initial={{ y: 10, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.3, delay: 0.1 }}
+        className="text-2xl sm:text-3xl font-bold text-foreground mb-3"
+      >
+        {isComplete
+          ? t("titleComplete")
+          : hasStarted
+            ? t("titleContinue")
+            : t("titleSetup")}
+      </motion.h1>
 
-        {/* Actions */}
-        <div className="flex flex-wrap gap-3">
-          {!isComplete ? (
-            <Button onClick={handleStartOnboarding} disabled={loading}>
-              {loading ? <Loader2 className="size-4 mr-2 animate-spin" /> : null}
-              {payoutStatus?.stripe_connect_account_id ? t("continueSetup") : t("startSetup")}
-            </Button>
-          ) : (
-            <Button onClick={handleOpenDashboard} disabled={loading}>
-              {loading ? <Loader2 className="size-4 mr-2 animate-spin" /> : null}
-              {t("openDashboard")}
-              <ExternalLink className="size-4 ml-2" />
-            </Button>
-          )}
-        </div>
+      {/* Description */}
+      <motion.p
+        initial={{ y: 10, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.3, delay: 0.15 }}
+        className="text-muted-foreground text-base mb-8 max-w-sm"
+      >
+        {isComplete
+          ? t("descriptionComplete")
+          : hasStarted
+            ? t("descriptionContinue")
+            : t("descriptionSetup")}
+      </motion.p>
 
-        {/* How it works (kept, but de-emphasized to avoid a second "card") */}
-        <div className="mt-6 border-t border-border pt-4 space-y-3 text-sm text-muted-foreground">
-          <p className="font-medium text-foreground">{t("howItWorks")}</p>
-          <p>{t("howItWorksDesc1")}</p>
-          <p>{t("howItWorksDesc2")}</p>
-          <p>{t("howItWorksDesc3")}</p>
-        </div>
-      </CardContent>
-    </Card>
-  )
-}
-
-function StatusItem({ label, completed }: { label: string; completed: boolean }) {
-  return (
-    <div className="flex items-center gap-2 text-sm">
-      {completed ? (
-        <CheckCircle className="size-4 text-success" />
-      ) : (
-        <AlertCircle className="size-4 text-muted-foreground" />
+      {/* Error */}
+      {error && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="w-full p-3 mb-6 bg-destructive/10 text-destructive rounded-lg text-sm"
+        >
+          {error}
+        </motion.div>
       )}
-      <span className={completed ? "text-foreground" : "text-muted-foreground"}>{label}</span>
+
+      {/* CTA Button */}
+      <motion.div
+        initial={{ y: 10, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.3, delay: 0.2 }}
+        className="w-full"
+      >
+        {!isComplete ? (
+          <Button
+            onClick={handleStartOnboarding}
+            disabled={loading}
+            size="lg"
+            className="w-full h-12 text-base font-semibold shadow-md"
+          >
+            {loading ? (
+              <Loader2 className="size-5 mr-2 animate-spin" />
+            ) : (
+              <CreditCard className="size-5 mr-2" />
+            )}
+            {hasStarted ? t("continueSetup") : t("startSetup")}
+            <ArrowRight className="size-5 ml-2" />
+          </Button>
+        ) : (
+          <Button
+            onClick={handleOpenDashboard}
+            disabled={loading}
+            size="lg"
+            variant="outline"
+            className="w-full h-12 text-base font-semibold"
+          >
+            {loading ? (
+              <Loader2 className="size-5 mr-2 animate-spin" />
+            ) : null}
+            {t("openDashboard")}
+            <ExternalLink className="size-5 ml-2" />
+          </Button>
+        )}
+      </motion.div>
+
+      {/* Progress indicators for incomplete setup */}
+      {hasStarted && !isComplete && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.3 }}
+          className="mt-8 w-full space-y-2"
+        >
+          <div className="flex items-center gap-2 text-sm">
+            <div className={`size-5 rounded-full flex items-center justify-center ${payoutStatus?.details_submitted ? "bg-success text-success-foreground" : "bg-muted text-muted-foreground"}`}>
+              {payoutStatus?.details_submitted ? <CheckCircle2 className="size-3" /> : <span className="text-xs">1</span>}
+            </div>
+            <span className={payoutStatus?.details_submitted ? "text-foreground" : "text-muted-foreground"}>
+              {t("detailsSubmitted")}
+            </span>
+          </div>
+          <div className="flex items-center gap-2 text-sm">
+            <div className={`size-5 rounded-full flex items-center justify-center ${payoutStatus?.charges_enabled ? "bg-success text-success-foreground" : "bg-muted text-muted-foreground"}`}>
+              {payoutStatus?.charges_enabled ? <CheckCircle2 className="size-3" /> : <span className="text-xs">2</span>}
+            </div>
+            <span className={payoutStatus?.charges_enabled ? "text-foreground" : "text-muted-foreground"}>
+              {t("chargesEnabled")}
+            </span>
+          </div>
+          <div className="flex items-center gap-2 text-sm">
+            <div className={`size-5 rounded-full flex items-center justify-center ${payoutStatus?.payouts_enabled ? "bg-success text-success-foreground" : "bg-muted text-muted-foreground"}`}>
+              {payoutStatus?.payouts_enabled ? <CheckCircle2 className="size-3" /> : <span className="text-xs">3</span>}
+            </div>
+            <span className={payoutStatus?.payouts_enabled ? "text-foreground" : "text-muted-foreground"}>
+              {t("payoutsEnabled")}
+            </span>
+          </div>
+        </motion.div>
+      )}
+
+      {/* Benefits - only for new setup */}
+      {!hasStarted && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.3 }}
+          className="mt-10 pt-8 border-t border-border w-full"
+        >
+          <div className="grid gap-4 text-left">
+            <div className="flex items-start gap-3">
+              <div className="size-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                <ShieldCheck className="size-4 text-primary" />
+              </div>
+              <div>
+                <p className="text-sm font-medium text-foreground">{t("benefit1Title")}</p>
+                <p className="text-xs text-muted-foreground">{t("benefit1Desc")}</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3">
+              <div className="size-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                <Zap className="size-4 text-primary" />
+              </div>
+              <div>
+                <p className="text-sm font-medium text-foreground">{t("benefit2Title")}</p>
+                <p className="text-xs text-muted-foreground">{t("benefit2Desc")}</p>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+      )}
     </div>
   )
 }

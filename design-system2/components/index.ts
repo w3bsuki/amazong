@@ -1,7 +1,0 @@
-export * from "./ui/button"
-export * from "./ui/badge"
-export * from "./ui/avatar"
-export * from "./seller-badge"
-export * from "./category-badge"
-export * from "./social-proof"
-export * from "./avatar-group"

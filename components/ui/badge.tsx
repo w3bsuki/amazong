@@ -7,18 +7,16 @@ import { cn } from "@/lib/utils"
 /**
  * Professional E-commerce Badge System
  * 
- * Design principles (eBay/Amazon/Shopify inspired):
+ * Design principles (Vinted/eBay/Depop inspired):
  * 
  * TWO-TIER SYSTEM for WCAG AA compliance (4.5:1 contrast):
  * 1. SOLID badges: Dark background + white text (high emphasis)
  * 2. SUBTLE badges: Tinted background + dark text (low emphasis)
  * 
- * NEVER use colored text on same-color tinted backgrounds!
- * 
- * Badge sizing: consistent height, proper spacing, readable text
+ * Mobile-first: compact sizing, soft rounded corners
  */
 const badgeVariants = cva(
-  "inline-flex items-center justify-center gap-1 rounded-sm border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 [&>svg]:shrink-0",
+  "inline-flex items-center justify-center gap-0.5 rounded-md border px-1.5 py-0.5 text-2xs font-semibold leading-none w-fit whitespace-nowrap shrink-0 select-none [&>svg]:size-2.5 [&>svg]:shrink-0",
   {
     variants: {
       variant: {
@@ -67,21 +65,21 @@ const badgeVariants = cva(
         // Professional marketplace look like eBay
         // ═══════════════════════════════════════════════════════════
         "condition-new":
-          "border-transparent bg-badge-condition-new text-white font-semibold uppercase tracking-wider text-[10px]",
+          "border-transparent bg-badge-condition-new text-white font-semibold tracking-wide",
         "condition-likenew":
-          "border-transparent bg-badge-condition-likenew text-white font-semibold uppercase tracking-wider text-[10px]",
+          "border-transparent bg-badge-condition-likenew text-white font-semibold tracking-wide",
         "condition-good":
-          "border-transparent bg-badge-condition-good text-white font-semibold uppercase tracking-wider text-[10px]",
+          "border-transparent bg-badge-condition-good text-white font-semibold tracking-wide",
         "condition-fair":
-          "border-transparent bg-badge-condition-fair text-white font-semibold uppercase tracking-wider text-[10px]",
+          "border-transparent bg-badge-condition-fair text-white font-semibold tracking-wide",
         "condition-used":
-          "border-transparent bg-badge-condition-used text-white font-semibold uppercase tracking-wider text-[10px]",
+          "border-transparent bg-badge-condition-used text-white font-semibold tracking-wide",
         "condition-refurb":
-          "border-transparent bg-badge-condition-refurb text-white font-semibold uppercase tracking-wider text-[10px]",
+          "border-transparent bg-badge-condition-refurb text-white font-semibold tracking-wide",
         
         // Generic condition (backward compat)
         condition:
-          "border-transparent bg-foreground text-background font-semibold uppercase tracking-wider text-[10px]",
+          "border-transparent bg-foreground text-background font-semibold tracking-wide",
         "condition-outline":
           "border-border bg-background text-foreground font-medium",
 
@@ -139,7 +137,7 @@ const badgeVariants = cva(
         // LEGACY COMPAT (map to new system)
         // ═══════════════════════════════════════════════════════════
         "condition-pro": 
-          "border-transparent bg-foreground text-background font-semibold uppercase tracking-wider text-[10px]",
+          "border-transparent bg-foreground text-background font-semibold uppercase tracking-wide",
         "shipping-pro":
           "border-transparent bg-badge-success-solid text-white",
         "stock-urgent":

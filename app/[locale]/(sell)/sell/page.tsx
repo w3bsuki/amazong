@@ -1,9 +1,9 @@
 import { createClient } from "@/lib/supabase/server";
 import { setRequestLocale } from "next-intl/server";
-import { redirect, routing } from "@/i18n/routing";
+import { routing } from "@/i18n/routing";
 import { SellPageClient } from "./client";
 import { getSellCategories } from "./_lib/categories";
-import { createListing, completeSellerOnboarding } from "../_actions/sell";
+import { createListing } from "../_actions/sell";
 
 // Generate static params for all supported locales
 export function generateStaticParams() {
@@ -61,12 +61,8 @@ export default async function SellPage({
         initialSeller={null}
         initialNeedsOnboarding={false}
         initialUsername={null}
-        initialAccountType="personal"
-        initialDisplayName={null}
-        initialBusinessName={null}
         categories={[]}
         createListingAction={createListing}
-        completeSellerOnboardingAction={completeSellerOnboarding}
       />
     )
   }
@@ -100,13 +96,9 @@ export default async function SellPage({
       initialSeller={seller && seller.is_seller ? { id: seller.id, store_name: seller.store_name } : null}
       initialNeedsOnboarding={needsOnboarding ?? false}
       initialUsername={seller?.username ?? null}
-      initialAccountType={seller?.account_type === "business" ? "business" : "personal"}
-      initialDisplayName={seller?.display_name ?? null}
-      initialBusinessName={seller?.business_name ?? null}
       initialPayoutStatus={payoutStatus ?? null}
       categories={categories}
       createListingAction={createListing}
-      completeSellerOnboardingAction={completeSellerOnboarding}
     />
   );
 }

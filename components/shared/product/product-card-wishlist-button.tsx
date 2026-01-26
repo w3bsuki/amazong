@@ -1,0 +1,108 @@
+"use client"
+
+import * as React from "react"
+import { useWishlist } from "@/components/providers/wishlist-context"
+import { Heart } from "@phosphor-icons/react"
+import { cn } from "@/lib/utils"
+
+// =============================================================================
+// HELPERS
+// =============================================================================
+
+/**
+ * Format count with K suffix for thousands (1234 → "1.2K")
+ */
+function formatCount(count: number): string {
+  if (count >= 1000) {
+    return `${(count / 1000).toFixed(1).replace(/\.0$/, "")}K`
+  }
+  return count.toString()
+}
+
+// =============================================================================
+// TYPES
+// =============================================================================
+
+export interface ProductCardWishlistButtonProps {
+  id: string
+  title: string
+  price: number
+  image: string
+  favoritesCount?: number
+  isOwnProduct?: boolean
+  className?: string
+}
+
+// =============================================================================
+// COMPONENT - Top-right wishlist button with count
+// =============================================================================
+
+/**
+ * ProductCardWishlistButton - Clickable heart with favorites count
+ * 
+ * Positioned in top-right of product card image
+ * Shows: ♥ 234 or just ♥ if no count
+ */
+export function ProductCardWishlistButton({
+  id,
+  title,
+  price,
+  image,
+  favoritesCount,
+  isOwnProduct = false,
+  className,
+}: ProductCardWishlistButtonProps) {
+  const { isInWishlist, toggleWishlist } = useWishlist()
+  const [isPending, setIsPending] = React.useState(false)
+
+  const inWishlist = isInWishlist(id)
+  const hasCount = favoritesCount != null && favoritesCount > 0
+
+  const handleClick = React.useCallback(async (e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    if (isPending || isOwnProduct) return
+    
+    setIsPending(true)
+    try {
+      await toggleWishlist({ id, title, price, image })
+    } finally {
+      setIsPending(false)
+    }
+  }, [id, title, price, image, isPending, isOwnProduct, toggleWishlist])
+
+  return (
+    <button
+      type="button"
+      className={cn(
+        "absolute right-1.5 top-1.5 z-10 flex items-center gap-1 rounded-full px-2 py-1 outline-none transition-all",
+        "bg-background/90 backdrop-blur-sm shadow-sm",
+        // Show/hide on hover for desktop when not in wishlist and no count
+        !inWishlist && !hasCount && "lg:opacity-0 lg:group-hover:opacity-100 lg:transition-opacity lg:duration-150",
+        // Pending state
+        isPending && "pointer-events-none opacity-50",
+        className
+      )}
+      onClick={handleClick}
+      disabled={isPending || isOwnProduct}
+      aria-label={inWishlist ? "Remove from wishlist" : "Add to wishlist"}
+    >
+      <Heart 
+        size={16} 
+        weight={inWishlist ? "fill" : "regular"}
+        className={cn(
+          "shrink-0 transition-colors",
+          inWishlist ? "text-wishlist-active" : "text-muted-foreground"
+        )} 
+      />
+      {hasCount && (
+        <span className={cn(
+          "text-2xs font-medium tabular-nums",
+          inWishlist ? "text-wishlist-active" : "text-muted-foreground"
+        )}>
+          {formatCount(favoritesCount)}
+        </span>
+      )}
+    </button>
+  )
+}

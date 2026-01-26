@@ -22,7 +22,7 @@ export interface HorizontalProductStripCardProps {
 }
 
 // =============================================================================
-// Horizontal Product Card - Shared card for mobile horizontal scroll strips
+// Horizontal Product Card - Clean mobile-first design (Vinted/Depop style)
 // Used by: PromotedListingsStrip, OffersForYou, and similar components
 // =============================================================================
 
@@ -39,53 +39,45 @@ export function HorizontalProductCard({ product }: HorizontalProductStripCardPro
   return (
     <Link
       href={href}
-      className="shrink-0 w-40 active:opacity-80 transition-opacity"
+      className="shrink-0 w-36 active:opacity-80 transition-opacity snap-start"
     >
       {/* Product Image */}
-      <div className="relative aspect-square rounded-(--radius-card) overflow-hidden bg-muted mb-2">
-        {/* AD badge - top left for boosted listings */}
-        {product.isBoosted && (
-          <Badge
-            variant="promoted"
-            className="absolute top-1.5 left-1.5 z-10"
-          >
-            <span>{tProduct("adBadge")}</span>
-          </Badge>
-        )}
-        {/* Discount badge - below AD badge or at top if not boosted */}
-        {hasDiscount && (
-          <Badge
-            variant="deal"
-            className={cn(
-              "absolute left-1.5 z-10 text-2xs font-bold",
-              product.isBoosted ? "top-8" : "top-1.5"
-            )}
-          >
-            -{discountPercent}%
-          </Badge>
-        )}
-        {/* Wishlist button */}
+      <div className="relative aspect-square rounded-(--radius-card) overflow-hidden bg-muted mb-1.5">
+        {/* Badge stack - top left, compact */}
+        <div className="absolute top-1 left-1 z-10 flex flex-col gap-0.5">
+          {/* AD badge for boosted */}
+          {product.isBoosted && (
+            <Badge variant="promoted" className="text-[10px]">
+              {tProduct("adBadge")}
+            </Badge>
+          )}
+          {/* Discount badge */}
+          {hasDiscount && discountPercent >= 5 && (
+            <Badge variant="sale" className="text-[10px]">
+              -{discountPercent}%
+            </Badge>
+          )}
+          {/* Free shipping - icon only on mobile */}
+          {product.freeShipping && (
+            <Badge variant="shipping" className="text-[10px]">
+              <Truck size={10} weight="fill" />
+            </Badge>
+          )}
+        </div>
+        
+        {/* Wishlist button - top right */}
         <button
           type="button"
           onClick={(e) => {
             e.preventDefault()
             e.stopPropagation()
           }}
-          className="absolute top-1.5 right-1.5 z-10 size-8 bg-background/80 backdrop-blur-sm rounded-full flex items-center justify-center active:bg-background transition-colors"
+          className="absolute top-1 right-1 z-10 size-7 bg-background/80 backdrop-blur-sm rounded-full flex items-center justify-center active:bg-background transition-colors"
           aria-label={tProduct("addToWishlist")}
         >
-          <Heart size={16} className="text-foreground" />
+          <Heart size={14} className="text-foreground" />
         </button>
-        {/* Free shipping badge - bottom left */}
-        {product.freeShipping && (
-          <Badge
-            variant="shipping"
-            className="absolute bottom-1.5 left-1.5 z-10 gap-0.5 text-2xs font-semibold"
-          >
-            <Truck size={10} weight="fill" />
-            <span>{tProduct("freeDeliveryShort")}</span>
-          </Badge>
-        )}
+        
         {/* Product Image */}
         {product.image && product.image !== "/placeholder.svg" ? (
           <Image
@@ -93,42 +85,48 @@ export function HorizontalProductCard({ product }: HorizontalProductStripCardPro
             alt={product.title}
             fill
             className="object-cover"
-            sizes="160px"
+            sizes="144px"
           />
         ) : (
           <div className="absolute inset-0 flex items-center justify-center">
-            <Package size={36} className="text-muted-foreground/15" />
+            <Package size={32} className="text-muted-foreground/15" />
           </div>
         )}
       </div>
 
-      {/* Content */}
+      {/* Content - clean hierarchy */}
       <div className="space-y-0.5">
-        <div className="flex items-baseline gap-1.5">
+        {/* Price row */}
+        <div className="flex items-baseline gap-1">
           <span
             className={cn(
-              "text-sm font-bold",
+              "text-sm font-bold tabular-nums",
               hasDiscount ? "text-price-sale" : "text-foreground"
             )}
           >
             €{product.price.toFixed(2)}
           </span>
           {hasDiscount && (
-            <span className="text-2xs text-muted-foreground line-through">
+            <span className="text-2xs text-muted-foreground line-through tabular-nums">
               €{product.listPrice!.toFixed(2)}
             </span>
           )}
         </div>
-        <p className="text-xs text-foreground line-clamp-2 leading-snug">
+        
+        {/* Title */}
+        <p className="text-xs text-foreground line-clamp-2 leading-tight">
           {product.title}
         </p>
+        
         {/* Rating */}
         {product.rating > 0 && (
-          <div className="flex items-center gap-1">
-            <Star size={11} weight="fill" className="text-rating" />
-            <span className="text-2xs text-muted-foreground">
-              {product.rating.toFixed(1)}{" "}
-              <span>({product.reviews?.toLocaleString()})</span>
+          <div className="flex items-center gap-0.5">
+            <Star size={10} weight="fill" className="text-rating" />
+            <span className="text-2xs text-muted-foreground tabular-nums">
+              {product.rating.toFixed(1)}
+              {product.reviews && product.reviews > 0 && (
+                <span> ({product.reviews.toLocaleString()})</span>
+              )}
             </span>
           </div>
         )}

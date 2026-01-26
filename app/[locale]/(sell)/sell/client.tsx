@@ -12,7 +12,6 @@ import {
   SellFormSkeleton,
   SellErrorBoundary,
   UnifiedSellForm,
-  SellerOnboardingWizard,
   type Category,
   type Seller
 } from "../_components";
@@ -25,8 +24,6 @@ type SellerPayoutStatus = {
 } | null;
 
 type CreateListingAction = Parameters<typeof UnifiedSellForm>[0]["createListingAction"]
-type CompleteSellerOnboardingAction =
-  Parameters<typeof SellerOnboardingWizard>[0]["completeSellerOnboardingAction"]
 
 function isPayoutReady(payoutStatus: SellerPayoutStatus): boolean {
   return Boolean(
@@ -39,13 +36,9 @@ interface SellPageClientProps {
   initialSeller: Seller | null;
   initialNeedsOnboarding?: boolean;
   initialUsername?: string | null;
-  initialAccountType?: "personal" | "business";  // Always set in DB
-  initialDisplayName?: string | null;
-  initialBusinessName?: string | null;
   initialPayoutStatus?: SellerPayoutStatus;
   categories: Category[];
   createListingAction: CreateListingAction;
-  completeSellerOnboardingAction: CompleteSellerOnboardingAction;
 }
 
 export function SellPageClient({
@@ -53,13 +46,9 @@ export function SellPageClient({
   initialSeller,
   initialNeedsOnboarding = false,
   initialUsername = null,
-  initialAccountType = "personal",  // Default personal, but always comes from DB
-  initialDisplayName = null,
-  initialBusinessName = null,
   initialPayoutStatus,
   categories, // Pre-fetched from server
   createListingAction,
-  completeSellerOnboardingAction,
 }: SellPageClientProps) {
   const t = useTranslations("Sell");
   const locale = useLocale();
@@ -69,9 +58,6 @@ export function SellPageClient({
   const [isAuthChecking, setIsAuthChecking] = useState(!initialUser);
   const [needsOnboarding, setNeedsOnboarding] = useState(initialNeedsOnboarding);
   const [username, setUsername] = useState<string | null>(initialUsername);
-  const [accountType, setAccountType] = useState<"personal" | "business">(initialAccountType);
-  const [displayName, setDisplayName] = useState<string | null>(initialDisplayName);
-  const [businessName, setBusinessName] = useState<string | null>(initialBusinessName);
   const [payoutStatus, setPayoutStatus] = useState<SellerPayoutStatus>(initialPayoutStatus ?? null);
   const isBg = safeLocale === "bg";
 
@@ -114,10 +100,6 @@ export function SellPageClient({
 
         if (profileData?.username) {
           setUsername(profileData.username);
-          // account_type is always set in DB, defaults to 'personal'
-          setAccountType(profileData.account_type === "business" ? "business" : "personal");
-          setDisplayName(profileData.display_name || null);
-          setBusinessName(profileData.business_name || null);
 
           // Check if user needs onboarding (has username but is_seller is false)
           if (!profileData.is_seller) {
@@ -177,33 +159,8 @@ export function SellPageClient({
 
   // First-time seller onboarding
   // User has username but hasn't set up their seller profile yet (is_seller = false)
+  // Redirect to home page where post-signup modal will handle onboarding
   if (needsOnboarding && user && username) {
-    const handleOnboardingComplete = async () => {
-      // Refresh seller data after onboarding
-      const supabase = createClient();
-      const { data: profileData } = await supabase
-        .from("profiles")
-        .select("id, username, display_name, business_name")
-        .eq("id", user.id)
-        .single();
-
-      const { data: payoutData } = await supabase
-        .from("seller_payout_status")
-        .select("stripe_connect_account_id, details_submitted, charges_enabled, payouts_enabled")
-        .eq("seller_id", user.id)
-        .maybeSingle();
-
-      if (profileData) {
-        setSeller({
-          id: profileData.id,
-          store_name: profileData.display_name || profileData.business_name || profileData.username || "Store",
-        });
-        setNeedsOnboarding(false);
-      }
-
-      setPayoutStatus(payoutData ?? null);
-    };
-
     return (
       <div className="flex flex-1 flex-col">
         <ProgressHeader
@@ -216,16 +173,22 @@ export function SellPageClient({
           currentStep={1}
           totalSteps={4}
         />
-        <div className="flex-1 flex flex-col justify-center overflow-y-auto py-8">
-          <SellerOnboardingWizard
-            userId={user.id}
-            username={username as string}
-            initialAccountType={accountType}
-            displayName={displayName}
-            initialBusinessName={businessName}
-            completeSellerOnboardingAction={completeSellerOnboardingAction}
-            onComplete={handleOnboardingComplete}
-          />
+        <div className="flex-1 flex flex-col items-center justify-center overflow-y-auto py-8 px-4 text-center">
+          <div className="max-w-md space-y-4">
+            <h2 className="text-2xl font-bold text-foreground">
+              {isBg ? "Завършете настройката на акаунта" : "Complete Your Account Setup"}
+            </h2>
+            <p className="text-muted-foreground">
+              {isBg
+                ? "Моля, завършете настройката на вашия профил, преди да започнете да продавате."
+                : "Please complete your profile setup before you can start selling."}
+            </p>
+            <Button asChild size="lg" className="w-full">
+              <Link href="/?onboarding=true">
+                {isBg ? "Завършете настройката" : "Complete Setup"}
+              </Link>
+            </Button>
+          </div>
         </div>
       </div>
     );

@@ -340,6 +340,7 @@ export async function completeSellerOnboarding(args: {
       business_name: accountType === "business" ? (businessName.trim() || null) : null,
       is_seller: true,
       role: "seller",
+      onboarding_completed: true,  // Also complete post-signup onboarding
       updated_at: new Date().toISOString(),
     })
     .eq("id", userId)

@@ -46,7 +46,7 @@ interface PageShellProps extends React.ComponentProps<"div"> {
 
 const variantStyles: Record<PageShellVariant, string> = {
   default: "bg-background",
-  muted: "bg-surface-page",
+  muted: "bg-background", // Clean white - surface-page is also white now
 };
 
 export function PageShell({

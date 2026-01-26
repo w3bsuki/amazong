@@ -44,8 +44,13 @@ import {
   Avatar, 
   AvatarImage, 
   AvatarFallback, 
-  SocialProof 
-} from "@/design-system2/components";
+  SocialProof,
+  ProductCard,
+  TweetCard,
+  FilterSidebar
+} from "@/components/design-system2/components";
+import "@/components/design-system2/theme.css";  // IMPORT THEME CSS HERE TO ENSURE V2 STYLES APPLY
+
 
 import { Input } from "@/components/ui/input";
 import { 
@@ -269,15 +274,15 @@ export default function DesignSystemV2Page() {
                    <Button variant="destructive">Destructive</Button>
                    <Button variant="link">Link Style</Button>
                 </div>
-                <Separator />
-                <div className="flex flex-wrap gap-4 items-center">
-                   <Button variant="tweet" size="pill">Tweet Action</Button>
-                   <Button variant="tweet">Tweet Normal</Button>
-                   <Button variant="outline" size="pill">Pill Outline</Button>
-                </div>
-                <Separator />
-                <div className="flex flex-wrap gap-4 items-center">
-                  <Button size="lg">Large</Button>
+                 <Separator />
+                 <div className="flex flex-wrap gap-4 items-center">
+                    <Button variant="brand" size="sm" className="rounded-full">Tweet Action</Button>
+                    <Button variant="brand">Tweet Normal</Button>
+                    <Button variant="outline" size="sm" className="rounded-full">Pill Outline</Button>
+                 </div>
+                 <Separator />
+                 <div className="flex flex-wrap gap-4 items-center">
+                   <Button size="lg">Large</Button>
                   <Button size="default">Default</Button>
                   <Button size="sm">Small</Button>
                   <Button size="icon" variant="outline"><Heart className="w-4 h-4"/></Button>
@@ -312,9 +317,9 @@ export default function DesignSystemV2Page() {
                  <div>
                     <div className="text-sm text-muted-foreground mb-2">Marketplace Categories</div>
                     <div className="flex flex-wrap gap-2">
-                      <CategoryBadge category="fashion" />
-                      <CategoryBadge category="tech" />
-                      <CategoryBadge category="auto" />
+                      <CategoryBadge type="fashion" label="Fashion & Apparel" />
+                      <CategoryBadge type="tech" label="Electronics" />
+                      <CategoryBadge type="auto" label="Automotive" />
                     </div>
                  </div>
 
@@ -328,6 +333,81 @@ export default function DesignSystemV2Page() {
                  </div>
               </CardContent>
             </Card>
+
+            {/* PRODUCT CARD DEMO */}
+            <div className="col-span-1 lg:col-span-2">
+              <h3 className="text-xl font-semibold mb-4">Product Cards (V2)</h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                 {/* Item 1 */}
+                 <ProductCard 
+                    product={{
+                      title: "Sony PlayStation 5 Console (Slim Edition)",
+                      price: 499.99,
+                      rating: 4.8,
+                      reviews: 1240,
+                      image: "https://images.unsplash.com/photo-1606318801954-d46d46d3360a?auto=format&fit=crop&q=80&w=600",
+                      badges: { bestSeller: true, prime: true }
+                    }}
+                 />
+                 {/* Item 2 */}
+                 <ProductCard 
+                    product={{
+                      title: "Apple MacBook Pro 14 M3 Max 1TB Space Black",
+                      price: 3199.00,
+                      rating: 4.9,
+                      reviews: 85,
+                      image: "https://images.unsplash.com/photo-1517336714731-489689fd1ca4?auto=format&fit=crop&q=80&w=600",
+                      badges: { discount: "-15%" }
+                    }}
+                 />
+                 {/* Item 3 */}
+                 <ProductCard 
+                    product={{
+                      title: "Vintage 1996 Chicago Bulls Jersey - Mint Condition",
+                      price: 245.50,
+                      originalPrice: 350.00,
+                      rating: 4.5,
+                      reviews: 12,
+                      image: "https://images.unsplash.com/photo-1577439360824-7cc99335a968?auto=format&fit=crop&q=80&w=600",
+                      badges: {}
+                    }}
+                 />
+                  {/* Item 4 */}
+                  <ProductCard 
+                    product={{
+                      title: "Logitech MX Master 3S Performance Wireless Mouse",
+                      price: 99.99,
+                      rating: 4.7,
+                      reviews: 8543,
+                      image: "https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?auto=format&fit=crop&q=80&w=600",
+                      badges: { prime: true }
+                    }}
+                 />
+              </div>
+            </div>
+
+            {/* TWEET CARD */}
+            <Card className="bg-transparent border-0 shadow-none col-span-1 lg:col-span-2">
+              <CardHeader className="px-0"><CardTitle>Tweet Card (Container Style)</CardTitle></CardHeader>
+              <CardContent className="px-0">
+                 <TweetCard 
+                   author={{
+                     name: "Treido Official",
+                     handle: "@treido",
+                     avatar: "https://github.com/shadcn.png",
+                     verified: true
+                   }}
+                   content="We just launched our new design system v2. It's cleaner, faster, and 100% accessible. Open source soon! 🚀 #designsystem #ui"
+                   metrics={{
+                     likes: 1240,
+                     retweets: 48,
+                     replies: 12
+                   }}
+                   timestamp="2h"
+                 />
+              </CardContent>
+            </Card>
+
 
             {/* SOCIAL PROOF */}
             <Card>
@@ -369,6 +449,135 @@ export default function DesignSystemV2Page() {
                 </div>
               </CardContent>
             </Card>
+
+            {/* B2B DATA TABLE - DENSITY TEST */}
+            <div className="col-span-1 lg:col-span-2">
+              <h3 className="text-xl font-semibold mb-4">Marketplace Layout (B2B/C2C)</h3>
+              <div className="flex flex-col lg:flex-row gap-8 bg-neutral-50/50 dark:bg-neutral-900/20 p-6 rounded-2xl border border-dashed border-neutral-200 dark:border-neutral-800">
+                 
+                 {/* Sidebar Area */}
+                 <div className="hidden lg:block shrink-0 w-[240px]">
+                    <div className="bg-background rounded-xl p-4 shadow-sm border border-neutral-100 dark:border-neutral-800">
+                       <FilterSidebar />
+                    </div>
+                 </div>
+
+                 {/* Content Area */}
+                 <div className="flex-1 space-y-6">
+                    <div className="flex items-center justify-between">
+                       <h2 className="text-2xl font-bold tracking-tight">Search Results</h2>
+                       <div className="flex items-center gap-2">
+                          <span className="text-sm text-muted-foreground mr-2">1,240 results</span>
+                          <Select defaultValue="rel">
+                             <SelectTrigger className="w-[140px] h-9">
+                                <SelectValue placeholder="Sort by" />
+                             </SelectTrigger>
+                             <SelectContent>
+                                <SelectItem value="rel">Relevance</SelectItem>
+                                <SelectItem value="low">Price: Low to High</SelectItem>
+                                <SelectItem value="new">Newest Arrivals</SelectItem>
+                             </SelectContent>
+                          </Select>
+                       </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <ProductCard 
+                          product={{
+                              title: "Sony PlayStation 5 Console (Slim Edition)",
+                              price: 499.99,
+                              rating: 4.8,
+                              reviews: 1240,
+                              image: "https://images.unsplash.com/photo-1606318801954-d46d46d3360a?auto=format&fit=crop&q=80&w=600",
+                              badges: { bestSeller: true, prime: true }
+                          }}
+                        />
+                        <ProductCard 
+                          product={{
+                              title: "Apple MacBook Pro 14 M3 Max 1TB Space Black",
+                              price: 3199.00,
+                              rating: 4.9,
+                              reviews: 85,
+                              image: "https://images.unsplash.com/photo-1517336714731-489689fd1ca4?auto=format&fit=crop&q=80&w=600",
+                              badges: { discount: "-15%" }
+                          }}
+                        />
+                        <ProductCard 
+                          product={{
+                              title: "Logitech MX Master 3S Performance Wireless Mouse",
+                              price: 99.99,
+                              rating: 4.7,
+                              reviews: 8543,
+                              image: "https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?auto=format&fit=crop&q=80&w=600",
+                              badges: { prime: true }
+                          }}
+                        />
+                    </div>
+
+                    {/* Simple Pagination */}
+                    <div className="flex justify-center pt-8">
+                       <div className="flex items-center gap-1">
+                          <Button variant="outline" size="sm" disabled>Previous</Button>
+                          <Button variant="outline" size="sm" className="bg-brand-50 border-brand-200 text-brand-600 font-bold">1</Button>
+                          <Button variant="outline" size="sm" className="border-transparent">2</Button>
+                          <Button variant="outline" size="sm" className="border-transparent">3</Button>
+                          <span className="text-neutral-400 px-2">...</span>
+                          <Button variant="outline" size="sm">Next</Button>
+                       </div>
+                    </div>
+                 </div>
+              </div>
+            </div>
+
+            {/* B2B DATA TABLE - DENSITY TEST */}
+            <div className="col-span-1 lg:col-span-2">
+              <h3 className="text-xl font-semibold mb-4">B2B Data Density</h3>
+              <Card>
+                 <Table>
+                    <TableHeader>
+                      <TableRow className="bg-muted/50 hover:bg-muted/50">
+                        <TableHead className="w-[100px]">Order ID</TableHead>
+                        <TableHead>Status</TableHead>
+                        <TableHead>Customer</TableHead>
+                        <TableHead className="hidden md:table-cell">Product</TableHead>
+                        <TableHead className="text-right">Amount</TableHead>
+                        <TableHead className="w-[50px]"></TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {[1,2,3,4,5].map((i) => (
+                        <TableRow key={i}>
+                           <TableCell className="font-mono text-xs font-medium">#ORD-7{i}29</TableCell>
+                           <TableCell>
+                              <Badge variant={i%2===0 ? "secondary" : "default"} className="font-mono text-[10px] uppercase">
+                                 {i%2===0 ? "Pending" : "Paid"}
+                              </Badge>
+                           </TableCell>
+                           <TableCell className="font-medium">
+                              <div className="flex items-center gap-2">
+                                 <Avatar className="h-6 w-6">
+                                    <AvatarFallback className="text-[10px]">U{i}</AvatarFallback>
+                                 </Avatar>
+                                 <span className="text-sm">Acme Corp</span>
+                              </div>
+                           </TableCell>
+                           <TableCell className="hidden md:table-cell text-muted-foreground text-sm">
+                              Enterprise License (Tier {i})
+                           </TableCell>
+                           <TableCell className="text-right font-mono text-sm">
+                              ${(i * 1200.50).toLocaleString()}
+                           </TableCell>
+                           <TableCell>
+                             <Button variant="ghost" size="icon" className="h-8 w-8">
+                                <MoreHorizontal className="h-4 w-4" />
+                             </Button>
+                           </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                 </Table>
+              </Card>
+            </div>
 
             {/* FORM INPUTS */}
             <Card>

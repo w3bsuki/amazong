@@ -224,6 +224,13 @@ export function DrawerProvider({ children }: { children: React.ReactNode }) {
 // =============================================================================
 
 export function useDrawer() {
+  // In Storybook, use the mock context if available
+  if (typeof window !== "undefined" && (window as any).__STORYBOOK_DRAWER_CONTEXT__) {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    const mockContext = useContext((window as any).__STORYBOOK_DRAWER_CONTEXT__)
+    if (mockContext) return mockContext
+  }
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   const context = useContext(DrawerContext)
   if (!context) {
     throw new Error("useDrawer must be used within a DrawerProvider")

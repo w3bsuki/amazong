@@ -9,7 +9,7 @@ import { ProductCardImage } from "./product-card-image"
 import { ProductCardPrice } from "./product-card-price"
 import { ProductCardSeller } from "./product-card-seller"
 import { ProductCardSocialProof } from "./product-card-social-proof"
-import { FavoritesCount } from "./favorites-count"
+import { ProductCardWishlistButton } from "./product-card-wishlist-button"
 import { FreshnessIndicator } from "./freshness-indicator"
 import { useLocale, useTranslations } from "next-intl"
 import { cn } from "@/lib/utils"
@@ -224,7 +224,7 @@ function ProductCard({
 }: ProductCardProps & { ref?: React.Ref<HTMLDivElement> }) {
   const t = useTranslations("Product")
   const locale = useLocale()
-  const pathname = usePathname()
+  const pathname = usePathname() ?? "/"
   const isMobile = useIsMobile()
   const { openProductQuickView, enabledDrawers, isDrawerSystemEnabled } = useDrawer()
   const isQuickViewEnabled = isDrawerSystemEnabled && enabledDrawers.productQuickView
@@ -376,50 +376,62 @@ function ProductCard({
           outOfStockLabel={t("outOfStock")}
         />
 
-        {/* Promoted badge - top left (ad disclosure) */}
+        {/* Top-left: Boosted badge only */}
         {isBoosted && (
-          <Badge variant="promoted" className="absolute top-1.5 left-1.5 z-10">
-            {t("adBadge")}
-          </Badge>
+          <div className="absolute top-1.5 left-1.5 z-10">
+            <Badge variant="promoted" className="text-[10px]">
+              {t("adBadge")}
+            </Badge>
+          </div>
         )}
 
-        {/* Wishlist button - using ProductCardActions */}
-        <ProductCardActions
-          id={id}
-          title={title}
-          price={price}
-          image={image}
-          slug={slug ?? null}
-          username={username ?? null}
-          showQuickAdd={false}
-          showWishlist={showWishlist}
-          inStock={inStock}
-          isOwnProduct={isOwnProduct}
-        />
-
-        {/* Favorites count - bottom left overlay (Vinted style) */}
-        {favoritesCount && favoritesCount > 0 && (
-          <div className="absolute bottom-1.5 left-1.5 z-10 bg-background/80 backdrop-blur-sm rounded-full px-1.5 py-0.5">
-            <FavoritesCount count={favoritesCount} />
+        {/* Top-right: Wishlist button with count (desktop only - mobile uses drawer) */}
+        {showWishlist && (
+          <div className="hidden lg:block">
+            <ProductCardWishlistButton
+              id={id}
+              title={title}
+              price={price}
+              image={image}
+              {...(favoritesCount !== undefined ? { favoritesCount } : {})}
+              isOwnProduct={isOwnProduct}
+            />
           </div>
         )}
       </div>
 
-      {/* Content Area */}
-      <div className="relative z-2 mt-1">
-        {/* Title - Treido: text-compact line-clamp-2 */}
-        <p className="line-clamp-2 break-words text-compact font-medium text-foreground leading-tight">
+      {/* Content Area - Ultra-clean mobile-first layout */}
+      <div className="relative z-2 mt-1.5 space-y-0.5">
+        {/* Category + Time row - compact pill style */}
+        <div className="flex items-center gap-1 text-2xs min-w-0">
+          {(categoryLabel || smartBadge) && (
+            <span className="shrink-0 truncate max-w-[60%] rounded-sm bg-muted/60 px-1 py-px text-muted-foreground">
+              {smartBadge || categoryLabel}
+            </span>
+          )}
+          {createdAt && (
+            <>
+              {(categoryLabel || smartBadge) && <span className="text-muted-foreground/50">·</span>}
+              <FreshnessIndicator createdAt={createdAt} className="shrink-0 text-muted-foreground/70" />
+            </>
+          )}
+          {/* Desktop: show discount + free shipping inline */}
+          <span className="hidden lg:contents">
+            {hasDiscount && discountPercent >= 5 && (
+              <><span className="text-muted-foreground/50">·</span><span className="text-destructive font-medium">-{discountPercent}%</span></>
+            )}
+            {freeShipping && (
+              <><span className="text-muted-foreground/50">·</span><span className="text-emerald-600 dark:text-emerald-500 font-medium">{t("freeShipping")}</span></>
+            )}
+          </span>
+        </div>
+
+        {/* Title - clean, tight */}
+        <h3 className="line-clamp-2 break-words text-[13px] font-medium text-foreground leading-tight">
           {title}
-        </p>
+        </h3>
 
-        {/* Smart Badge - contextual category info (e.g., "BMW 320d" for cars) */}
-        {smartBadge && (
-          <p className="text-tiny text-muted-foreground truncate mt-0.5">
-            {smartBadge}
-          </p>
-        )}
-
-        {/* Price + Condition + Protection */}
+        {/* Price - compact, clean typography */}
         <ProductCardPrice
           price={price}
           originalPrice={originalPrice}
@@ -427,22 +439,13 @@ function ProductCard({
           conditionLabel={conditionLabel}
           showBuyerProtection={showBuyerProtection}
           buyerProtectionLabel={t("buyerProtectionInline")}
+          compact
         />
 
-        {/* Meta row: Location + Freshness indicator */}
-        <div className="flex items-center gap-1.5 text-tiny min-w-0">
-          {location && (
-            <span className="text-muted-foreground truncate min-w-0 flex-1">{location}</span>
-          )}
-          {location && createdAt && <span className="text-muted-foreground shrink-0">·</span>}
-          <FreshnessIndicator createdAt={createdAt} className="shrink-0" />
-        </div>
-
-        {/* Free Shipping - Treido subtle style */}
-        {freeShipping && (
-          <span className="inline-flex items-center gap-0.5 text-tiny text-muted-foreground">
-            <Truck size={10} weight="bold" />
-            <span className="hidden xs:inline">{t("freeShipping")}</span>
+        {/* Location - mobile only, if no category shown */}
+        {location && (
+          <span className="block lg:hidden text-2xs text-muted-foreground/70 truncate">
+            {location}
           </span>
         )}
 
@@ -466,9 +469,8 @@ function ProductCard({
           }}
         />
 
-        {/* Seller Row + Quick-Add (desktop only) */}
-        <div className="hidden lg:flex items-center justify-between gap-2 mt-1">
-          {/* Seller Info */}
+        {/* Seller Row + Quick-Add (desktop only - cleaner mobile UX) */}
+        <div className="hidden lg:flex items-center justify-between gap-2 pt-1">
           {displaySellerName ? (
             <ProductCardSeller
               name={displaySellerName}
@@ -481,8 +483,6 @@ function ProductCard({
           ) : (
             <div className="flex-1" />
           )}
-
-          {/* Quick-Add Button - using ProductCardActions */}
           <ProductCardActions
             id={id}
             title={title}
@@ -491,7 +491,7 @@ function ProductCard({
             slug={slug ?? null}
             username={username ?? null}
             showQuickAdd={showQuickAdd}
-            showWishlist={false}
+            showWishlist={false} // Wishlist is now in top-right of image
             inStock={inStock}
             isOwnProduct={isOwnProduct}
           />

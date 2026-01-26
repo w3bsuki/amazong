@@ -32,6 +32,7 @@ pnpm-debug.log*
 
 # build artifacts
 tsconfig.tsbuildinfo
+storybook-static/
 
 # playwright screenshots
 .playwright-mcp/
@@ -52,6 +53,7 @@ unit-test-output.txt
 devserver-crash.txt
 knip-output.json
 tsc-files.txt
+debug-storybook.log
 
 # Local audit/report outputs (regenerate as needed)
 knip-report.txt

@@ -5,20 +5,18 @@ import Link from "next/link";
 import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
-import { VerifiedAvatar } from "@/components/shared/verified-avatar";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { 
-  Check, 
-  Copy, 
   Sun, 
   Moon, 
   Star, 
@@ -30,27 +28,26 @@ import {
   Clock,
   AlertCircle,
   CheckCircle2,
-  Info,
   X,
   Flame,
   Zap,
-  Eye,
   Home,
   Palette,
-  Type,
   MousePointer,
   LayoutGrid,
-  Layers,
   Box,
   Menu,
-  Store,
-  Bell,
-  Search,
-  Sparkles,
   Tag,
   BadgeCheck,
-  CircleDot,
   ArrowRight,
+  RefreshCw,
+  Loader2,
+  Info,
+  Mail,
+  Search,
+  Eye,
+  ChevronDown,
+  Sparkles,
 } from "lucide-react";
 
 // ============================================
@@ -58,125 +55,127 @@ import {
 // ============================================
 const NAV_SECTIONS = [
   { id: "overview", label: "Overview", icon: Home },
-  { id: "colors", label: "Color Palette", icon: Palette },
-  { id: "badges", label: "Badges", icon: Tag },
+  { id: "colors", label: "Color System", icon: Palette },
+  { id: "typography", label: "Typography", icon: Box },
   { id: "buttons", label: "Buttons", icon: MousePointer },
-  { id: "typography", label: "Typography", icon: Type },
+  { id: "badges", label: "Badges", icon: Tag },
   { id: "forms", label: "Form Controls", icon: LayoutGrid },
   { id: "cards", label: "Cards", icon: Box },
-  { id: "marketplace", label: "E-Commerce", icon: ShoppingCart },
+  { id: "feedback", label: "Feedback", icon: RefreshCw },
 ] as const;
 
 // ============================================
-// COPY UTILITY
+// SECTION WRAPPER - Consistent spacing
 // ============================================
-function useCopyToClipboard() {
-  const [copiedValue, setCopiedValue] = useState<string | null>(null);
-
-  const copy = async (text: string) => {
-    await navigator.clipboard.writeText(text);
-    setCopiedValue(text);
-    setTimeout(() => setCopiedValue(null), 2000);
-  };
-
-  return { copiedValue, copy };
-}
-
-function CopyButton({ value, className }: { value: string; className?: string }) {
-  const { copiedValue, copy } = useCopyToClipboard();
-  const isCopied = copiedValue === value;
-
+function Section({ 
+  id, 
+  title, 
+  description,
+  children 
+}: { 
+  id: string;
+  title: string; 
+  description: string;
+  children: React.ReactNode;
+}) {
   return (
-    <button
-      onClick={() => copy(value)}
-      className={cn(
-        "inline-flex items-center justify-center rounded-md size-7 text-muted-foreground/60 transition-all hover:bg-zinc-100 hover:text-zinc-600 dark:hover:bg-zinc-800 dark:hover:text-zinc-300",
-        isCopied && "text-emerald-500 hover:text-emerald-500",
-        className
-      )}
-      title={isCopied ? "Copied!" : "Copy"}
-    >
-      {isCopied ? <Check className="size-3.5" /> : <Copy className="size-3.5" />}
-    </button>
+    <section id={id} className="scroll-mt-8 py-12 first:pt-0">
+      <div className="mb-8">
+        <h2 className="text-2xl font-semibold tracking-tight">{title}</h2>
+        <p className="text-muted-foreground mt-2 text-reading leading-relaxed max-w-2xl">{description}</p>
+      </div>
+      <div className="space-y-8">
+        {children}
+      </div>
+    </section>
   );
 }
 
 // ============================================
-// COLOR SWATCH - PROFESSIONAL
+// SHOWCASE GRID - For component demos
+// ============================================
+function ShowcaseGrid({ 
+  title, 
+  children, 
+  className,
+  cols = 1,
+}: { 
+  title?: string; 
+  children: React.ReactNode; 
+  className?: string;
+  cols?: 1 | 2 | 3 | 4;
+}) {
+  const gridCols = {
+    1: "",
+    2: "sm:grid-cols-2",
+    3: "sm:grid-cols-3",
+    4: "sm:grid-cols-2 lg:grid-cols-4",
+  };
+  
+  return (
+    <div className={cn("space-y-4", className)}>
+      {title && (
+        <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">{title}</h3>
+      )}
+      <div className={cn("grid gap-4", gridCols[cols])}>
+        {children}
+      </div>
+    </div>
+  );
+}
+
+// ============================================
+// DEMO BOX - Individual component showcase
+// ============================================
+function DemoBox({ 
+  label, 
+  children, 
+  className,
+  dark = false,
+}: { 
+  label?: string; 
+  children: React.ReactNode; 
+  className?: string;
+  dark?: boolean;
+}) {
+  return (
+    <div className={cn(
+      "rounded-xl border p-6 flex flex-col",
+      dark ? "bg-foreground border-foreground" : "bg-card border-border",
+      className
+    )}>
+      {children}
+      {label && (
+        <span className={cn(
+          "text-xs mt-4 pt-4 border-t",
+          dark ? "text-background/60 border-background/20" : "text-muted-foreground border-border"
+        )}>{label}</span>
+      )}
+    </div>
+  );
+}
+
+// ============================================
+// COLOR SWATCH
 // ============================================
 function ColorSwatch({ 
   name, 
   variable,
   className,
 }: { 
-  name: string;
+  name: string; 
   variable: string;
   className?: string;
 }) {
   return (
-    <div className="group relative">
-      <div className={cn(
-        "h-16 w-full rounded-lg border border-zinc-200/80 dark:border-zinc-700/50 shadow-sm transition-shadow hover:shadow-md",
-        className
-      )} />
-      <div className="mt-2.5 flex items-start justify-between">
-        <div className="min-w-0 flex-1">
-          <p className="text-[13px] font-medium text-zinc-900 dark:text-zinc-100">{name}</p>
-          <p className="text-[11px] font-mono text-zinc-500 dark:text-zinc-400 truncate mt-0.5">{variable}</p>
-        </div>
-        <CopyButton value={`var(${variable})`} className="opacity-0 group-hover:opacity-100 -mt-0.5" />
-      </div>
-    </div>
-  );
-}
-
-// ============================================
-// SECTION HEADER
-// ============================================
-function SectionHeader({ 
-  number, 
-  title, 
-  description 
-}: { 
-  number: string; 
-  title: string; 
-  description: string;
-}) {
-  return (
-    <div className="mb-8">
-      <div className="flex items-center gap-3 mb-2">
-        <span className="text-xs font-mono text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/50 px-2 py-0.5 rounded-md border border-blue-100 dark:border-blue-900">{number}</span>
-        <h2 className="text-2xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100">{title}</h2>
-      </div>
-      <p className="text-[15px] text-zinc-600 dark:text-zinc-400 max-w-2xl">{description}</p>
-    </div>
-  );
-}
-
-// ============================================
-// COMPONENT SHOWCASE BOX
-// ============================================
-function ShowcaseBox({ 
-  title, 
-  children, 
-  className 
-}: { 
-  title?: string; 
-  children: React.ReactNode; 
-  className?: string;
-}) {
-  return (
-    <div className={cn(
-      "rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 overflow-hidden",
-      className
-    )}>
-      {title && (
-        <div className="px-5 py-3 border-b border-zinc-100 dark:border-zinc-800/80">
-          <h3 className="text-sm font-medium text-zinc-700 dark:text-zinc-300">{title}</h3>
-        </div>
-      )}
-      <div className="p-5">
-        {children}
+    <div className="flex items-center gap-3">
+      <div 
+        className={cn("w-12 h-12 rounded-lg border border-border shadow-sm", className)}
+        style={{ backgroundColor: `var(${variable})` }}
+      />
+      <div>
+        <p className="text-sm font-medium">{name}</p>
+        <code className="text-xs text-muted-foreground">{variable}</code>
       </div>
     </div>
   );
@@ -212,31 +211,29 @@ export function DesignSystemClient() {
   }, []);
 
   return (
-    <div className="flex min-h-screen bg-zinc-50 dark:bg-zinc-950">
+    <div className="flex min-h-screen bg-background">
       {/* Sidebar */}
-      <aside
-        className={cn(
-          "fixed inset-y-0 left-0 z-50 w-[260px] border-r border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 transition-transform lg:sticky lg:top-0 lg:h-screen lg:translate-x-0",
-          sidebarOpen ? "translate-x-0" : "-translate-x-full"
-        )}
-      >
+      <aside className={cn(
+        "fixed inset-y-0 left-0 z-50 w-64 bg-sidebar border-r border-sidebar-border transition-transform duration-200 lg:sticky lg:top-0 lg:h-screen lg:translate-x-0",
+        sidebarOpen ? "translate-x-0" : "-translate-x-full"
+      )}>
         <div className="flex h-full flex-col">
-          {/* Logo */}
-          <div className="flex h-16 items-center justify-between border-b border-border px-5">
+          {/* Header */}
+          <div className="flex h-16 items-center justify-between border-b border-sidebar-border px-4">
             <div className="flex items-center gap-3">
-              <div className="flex size-8 items-center justify-center rounded-lg bg-primary">
-                <Sparkles className="size-4 text-primary-foreground" />
+              <div className="flex size-9 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+                <Zap className="size-5" />
               </div>
               <div>
-                <h1 className="font-semibold text-zinc-900 dark:text-zinc-100 leading-none text-[15px]">Treido</h1>
-                <p className="text-[11px] text-zinc-500 dark:text-zinc-500 mt-0.5">Design System</p>
+                <h1 className="font-semibold text-sidebar-foreground">Treido</h1>
+                <p className="text-xs text-sidebar-foreground/60">Design System</p>
               </div>
             </div>
             <Button
               variant="ghost"
-              size="icon"
+              size="icon-sm"
               onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-              className="size-8 text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300"
+              className="text-sidebar-foreground/60 hover:text-sidebar-foreground hover:bg-sidebar-accent"
             >
               <Sun className="size-4 rotate-0 scale-100 transition-transform dark:-rotate-90 dark:scale-0" />
               <Moon className="absolute size-4 rotate-90 scale-0 transition-transform dark:rotate-0 dark:scale-100" />
@@ -255,44 +252,38 @@ export function DesignSystemClient() {
                     setSidebarOpen(false);
                   }}
                   className={cn(
-                    "flex items-center gap-3 rounded-lg px-3 py-2 text-[13px] transition-all",
+                    "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors",
                     activeSection === id
-                      ? "bg-blue-50 dark:bg-blue-950/50 font-medium text-blue-700 dark:text-blue-400"
-                      : "text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-900 hover:text-zinc-900 dark:hover:text-zinc-200"
+                      ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium"
+                      : "text-sidebar-foreground/70 hover:bg-sidebar-accent/60 hover:text-sidebar-foreground"
                   )}
                 >
-                  <Icon className={cn(
-                    "size-4",
-                    activeSection === id ? "text-blue-600 dark:text-blue-400" : "text-zinc-400 dark:text-zinc-500"
-                  )} />
+                  <Icon className="size-4" />
                   {label}
                 </a>
               ))}
             </nav>
 
-            <div className="px-3 mt-6">
-              <Separator className="bg-zinc-100 dark:bg-zinc-800" />
+            <div className="px-3 my-4">
+              <Separator className="bg-sidebar-border" />
             </div>
 
-            <div className="px-3 mt-4">
-              <p className="px-3 text-[11px] font-medium uppercase tracking-wider text-zinc-400 dark:text-zinc-600 mb-2">
-                Resources
-              </p>
+            <div className="px-3">
               <Link
                 href="/"
-                className="flex items-center gap-3 rounded-lg px-3 py-2 text-[13px] text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-900 hover:text-zinc-900 dark:hover:text-zinc-200 transition-colors"
+                className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-sidebar-foreground/70 hover:bg-sidebar-accent/60 hover:text-sidebar-foreground transition-colors"
               >
-                <Home className="size-4 text-zinc-400 dark:text-zinc-500" />
+                <ArrowRight className="size-4 rotate-180" />
                 Back to Site
               </Link>
             </div>
           </ScrollArea>
 
           {/* Footer */}
-          <div className="border-t border-zinc-100 dark:border-zinc-800/80 p-4">
-            <div className="rounded-lg bg-zinc-50 dark:bg-zinc-900 px-3 py-2.5 text-center">
-              <p className="text-[11px] text-zinc-500 dark:text-zinc-500">
-                Tailwind v4 • oklch • shadcn/ui
+          <div className="border-t border-sidebar-border p-4">
+            <div className="rounded-lg bg-sidebar-accent/60 px-3 py-2.5 text-center">
+              <p className="text-xs text-sidebar-foreground/70">
+                Tailwind v4 + shadcn/ui
               </p>
             </div>
           </div>
@@ -302,35 +293,42 @@ export function DesignSystemClient() {
       {/* Mobile Menu Button */}
       <button
         onClick={() => setSidebarOpen(!sidebarOpen)}
-        className="fixed left-4 top-4 z-50 flex size-10 items-center justify-center rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 shadow-sm lg:hidden"
+        className="fixed left-4 top-4 z-50 flex size-10 items-center justify-center rounded-lg border border-border bg-background shadow-sm lg:hidden"
       >
-        {sidebarOpen ? <X className="size-5 text-zinc-600" /> : <Menu className="size-5 text-zinc-600" />}
+        {sidebarOpen ? <X className="size-5" /> : <Menu className="size-5" />}
       </button>
 
       {/* Backdrop */}
       {sidebarOpen && (
         <div
-          className="fixed inset-0 z-40 bg-black/40 backdrop-blur-sm lg:hidden"
+          className="fixed inset-0 z-40 bg-background/80 backdrop-blur-sm lg:hidden"
           onClick={() => setSidebarOpen(false)}
         />
       )}
 
       {/* Main Content */}
       <main className="flex-1 min-w-0">
-        <div className="mx-auto max-w-4xl px-6 py-16 lg:px-8">
+        <div className="mx-auto max-w-4xl px-6 py-12 lg:px-8 lg:py-16">
           <OverviewSection />
+          <Separator className="my-2" />
           <ColorsSection />
-          <BadgesSection />
-          <ButtonsSection />
+          <Separator className="my-2" />
           <TypographySection />
+          <Separator className="my-2" />
+          <ButtonsSection />
+          <Separator className="my-2" />
+          <BadgesSection />
+          <Separator className="my-2" />
           <FormsSection />
+          <Separator className="my-2" />
           <CardsSection />
-          <MarketplaceSection />
+          <Separator className="my-2" />
+          <FeedbackSection />
 
           {/* Footer */}
-          <footer className="mt-24 pt-8 border-t border-zinc-200 dark:border-zinc-800 text-center">
-            <p className="text-sm text-zinc-500">
-              Treido Design System v2.0
+          <footer className="mt-16 pt-8 border-t border-border text-center">
+            <p className="text-sm text-muted-foreground">
+              Built with shadcn/ui, Tailwind CSS v4, and oklch colors
             </p>
           </footer>
         </div>
@@ -344,37 +342,68 @@ export function DesignSystemClient() {
 // ============================================
 function OverviewSection() {
   return (
-    <section id="overview" className="scroll-mt-8">
-      <div className="mb-10">
-        <div className="inline-flex items-center gap-2 rounded-full border border-blue-200 dark:border-blue-900/50 bg-blue-50 dark:bg-blue-950/30 px-3 py-1 mb-5">
-          <CircleDot className="size-3 text-blue-600 dark:text-blue-400" />
-          <span className="text-[12px] font-medium text-blue-700 dark:text-blue-400">v2.0 Preview</span>
-        </div>
-        <h1 className="text-4xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100 mb-4">
-          Design System
-        </h1>
-        <p className="text-lg text-zinc-600 dark:text-zinc-400 max-w-xl leading-relaxed">
-          Professional design tokens and components for the Treido marketplace. Built with shadcn/ui and Tailwind CSS v4.
-        </p>
-      </div>
-      
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+    <Section 
+      id="overview" 
+      title="Treido Design System" 
+      description="A professional component library built with shadcn/ui, Tailwind CSS v4, and oklch colors. Twitter-inspired theming with full dark mode support."
+    >
+      {/* Hero Stats */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         {[
-          { icon: Palette, title: "oklch Colors", description: "Perceptually uniform" },
-          { icon: Layers, title: "100+ Tokens", description: "Semantic variables" },
-          { icon: Moon, title: "Dark Mode", description: "First-class support" },
-          { icon: Shield, title: "WCAG AA", description: "4.5:1 contrast" },
-        ].map((item) => (
-          <div key={item.title} className="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-5">
-            <div className="flex size-10 items-center justify-center rounded-lg bg-blue-50 dark:bg-blue-950/50 mb-3">
-              <item.icon className="size-5 text-blue-600 dark:text-blue-400" />
-            </div>
-            <h3 className="font-semibold text-zinc-900 dark:text-zinc-100 text-[15px]">{item.title}</h3>
-            <p className="text-sm text-zinc-500 dark:text-zinc-500 mt-1">{item.description}</p>
+          { value: "24", label: "Components", icon: Box },
+          { value: "8", label: "Button Variants", icon: MousePointer },
+          { value: "20+", label: "Badge Types", icon: Tag },
+          { value: "100%", label: "Accessible", icon: CheckCircle2 },
+        ].map((stat) => (
+          <div 
+            key={stat.label} 
+            className="rounded-xl border border-border bg-card p-5 text-center"
+          >
+            <stat.icon className="size-5 mx-auto mb-3 text-primary" />
+            <div className="text-2xl font-bold tracking-tight">{stat.value}</div>
+            <div className="text-sm text-muted-foreground mt-1">{stat.label}</div>
           </div>
         ))}
       </div>
-    </section>
+
+      {/* Quick Theme Preview */}
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="rounded-xl bg-primary p-6 text-center">
+          <div className="text-primary-foreground font-semibold">Primary</div>
+          <div className="text-primary-foreground/70 text-sm mt-1">Twitter Blue</div>
+        </div>
+        <div className="rounded-xl bg-secondary p-6 text-center">
+          <div className="text-secondary-foreground font-semibold">Secondary</div>
+          <div className="text-secondary-foreground/70 text-sm mt-1">Dark Neutral</div>
+        </div>
+        <div className="rounded-xl bg-muted p-6 text-center border border-border">
+          <div className="text-foreground font-semibold">Muted</div>
+          <div className="text-muted-foreground text-sm mt-1">Subtle Background</div>
+        </div>
+        <div className="rounded-xl bg-destructive p-6 text-center">
+          <div className="text-destructive-foreground font-semibold">Destructive</div>
+          <div className="text-destructive-foreground/70 text-sm mt-1">Error States</div>
+        </div>
+      </div>
+
+      {/* Info Card */}
+      <div className="rounded-xl border border-border bg-accent/30 p-6">
+        <div className="flex gap-4">
+          <div className="flex-shrink-0">
+            <div className="size-10 rounded-lg bg-primary/10 flex items-center justify-center">
+              <Info className="size-5 text-primary" />
+            </div>
+          </div>
+          <div>
+            <h3 className="font-semibold">Built for Marketplace</h3>
+            <p className="text-muted-foreground mt-1 text-sm leading-relaxed">
+              Every component is optimized for e-commerce: condition badges, shipping indicators, 
+              price displays, and seller trust badges all follow professional marketplace patterns.
+            </p>
+          </div>
+        </div>
+      </div>
+    </Section>
   );
 }
 
@@ -383,223 +412,75 @@ function OverviewSection() {
 // ============================================
 function ColorsSection() {
   return (
-    <section id="colors" className="mt-24 scroll-mt-8">
-      <SectionHeader 
-        number="01"
-        title="Color Palette"
-        description="Our color system uses oklch for perceptually uniform colors across light and dark themes."
-      />
-
-      {/* Primary Colors */}
-      <ShowcaseBox title="Primary Colors" className="mb-6">
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4">
-          <ColorSwatch name="Primary" variable="--primary" className="bg-primary" />
-          <ColorSwatch name="Primary FG" variable="--primary-foreground" className="bg-primary-foreground border-2" />
-          <ColorSwatch name="Secondary" variable="--secondary" className="bg-secondary" />
-          <ColorSwatch name="Accent" variable="--accent" className="bg-accent" />
-          <ColorSwatch name="Muted" variable="--muted" className="bg-muted" />
-          <ColorSwatch name="Destructive" variable="--destructive" className="bg-destructive" />
-        </div>
-      </ShowcaseBox>
-
-      {/* Semantic Status */}
-      <ShowcaseBox title="Semantic Status" className="mb-6">
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-          <ColorSwatch name="Success" variable="--success" className="bg-success" />
-          <ColorSwatch name="Warning" variable="--warning" className="bg-warning" />
-          <ColorSwatch name="Error" variable="--error" className="bg-error" />
-          <ColorSwatch name="Info" variable="--info" className="bg-info" />
-        </div>
-      </ShowcaseBox>
-
-      {/* Surfaces */}
-      <ShowcaseBox title="Surfaces &amp; Backgrounds">
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-          <ColorSwatch name="Background" variable="--background" className="bg-background" />
-          <ColorSwatch name="Card" variable="--card" className="bg-card" />
-          <ColorSwatch name="Popover" variable="--popover" className="bg-popover" />
-          <ColorSwatch name="Border" variable="--border" className="bg-border" />
-        </div>
-      </ShowcaseBox>
-    </section>
-  );
-}
-
-// ============================================
-// SECTION: BADGES
-// ============================================
-function BadgesSection() {
-  return (
-    <section id="badges" className="mt-24 scroll-mt-8">
-      <SectionHeader 
-        number="02"
-        title="Badges"
-        description="A comprehensive badge system with semantic colors and marketplace-specific variants."
-      />
-
-      {/* Default Badges */}
-      <ShowcaseBox title="Default Variants" className="mb-6">
-        <div className="flex flex-wrap gap-3">
-          <Badge className="bg-zinc-900 text-white dark:bg-zinc-50 dark:text-zinc-900 border-transparent rounded-md px-3 py-1 text-[12px] font-medium">Default</Badge>
-          <Badge variant="secondary" className="bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300 border-transparent rounded-md px-3 py-1 text-[12px] font-medium">Secondary</Badge>
-          <Badge variant="outline" className="border-zinc-300 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 bg-transparent rounded-md px-3 py-1 text-[12px] font-medium">Outline</Badge>
-          <Badge variant="destructive" className="rounded-md px-3 py-1 text-[12px] font-medium">Destructive</Badge>
-        </div>
-      </ShowcaseBox>
-
-      {/* Status Badges - Clean Blue Style */}
-      <ShowcaseBox title="Status Badges" className="mb-6">
-        <div className="space-y-4">
-          <div className="flex flex-wrap gap-3">
-            <Badge className="bg-emerald-50 text-emerald-700 border border-emerald-200 dark:bg-emerald-950/50 dark:text-emerald-400 dark:border-emerald-900 rounded-md px-3 py-1 text-[12px] font-medium">
-              <CheckCircle2 className="size-3 mr-1.5" />
-              Success
-            </Badge>
-            <Badge className="bg-amber-50 text-amber-700 border border-amber-200 dark:bg-amber-950/50 dark:text-amber-400 dark:border-amber-900 rounded-md px-3 py-1 text-[12px] font-medium">
-              <AlertCircle className="size-3 mr-1.5" />
-              Warning
-            </Badge>
-            <Badge className="bg-red-50 text-red-700 border border-red-200 dark:bg-red-950/50 dark:text-red-400 dark:border-red-900 rounded-md px-3 py-1 text-[12px] font-medium">
-              <X className="size-3 mr-1.5" />
-              Error
-            </Badge>
-            <Badge className="bg-blue-50 text-blue-700 border border-blue-200 dark:bg-blue-950/50 dark:text-blue-400 dark:border-blue-900 rounded-md px-3 py-1 text-[12px] font-medium">
-              <Info className="size-3 mr-1.5" />
-              Info
-            </Badge>
+    <Section 
+      id="colors" 
+      title="Color System" 
+      description="Semantic color tokens using oklch for perceptual uniformity. All colors automatically adapt to dark mode."
+    >
+      {/* Core Semantic Colors */}
+      <ShowcaseGrid title="Core Palette">
+        <div className="rounded-xl border border-border p-6 space-y-6">
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+            {[
+              { name: "Background", var: "--background", class: "bg-background border border-border" },
+              { name: "Foreground", var: "--foreground", class: "bg-foreground" },
+              { name: "Card", var: "--card", class: "bg-card border border-border" },
+              { name: "Muted", var: "--muted", class: "bg-muted" },
+              { name: "Accent", var: "--accent", class: "bg-accent" },
+              { name: "Border", var: "--border", class: "bg-border" },
+            ].map((color) => (
+              <div key={color.name} className="space-y-2">
+                <div className={cn("h-16 rounded-lg shadow-sm", color.class)} />
+                <div>
+                  <p className="text-sm font-medium">{color.name}</p>
+                  <code className="text-xs text-muted-foreground">{color.var}</code>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
-      </ShowcaseBox>
-
-      {/* Product Condition */}
-      <ShowcaseBox title="Product Condition" className="mb-6">
-        <div className="flex flex-wrap gap-3">
-          <Badge className="bg-blue-600 text-white border-transparent rounded-md px-3 py-1 text-[12px] font-semibold shadow-sm">NEW</Badge>
-          <Badge className="bg-sky-500 text-white border-transparent rounded-md px-3 py-1 text-[12px] font-semibold shadow-sm">LIKE NEW</Badge>
-          <Badge className="bg-teal-500 text-white border-transparent rounded-md px-3 py-1 text-[12px] font-semibold shadow-sm">GOOD</Badge>
-          <Badge className="bg-amber-500 text-white border-transparent rounded-md px-3 py-1 text-[12px] font-semibold shadow-sm">FAIR</Badge>
-          <Badge className="bg-zinc-500 text-white border-transparent rounded-md px-3 py-1 text-[12px] font-semibold shadow-sm">USED</Badge>
-          <Badge className="bg-violet-500 text-white border-transparent rounded-md px-3 py-1 text-[12px] font-semibold shadow-sm">REFURBISHED</Badge>
-        </div>
-      </ShowcaseBox>
-
-      {/* E-commerce Badges */}
-      <ShowcaseBox title="E-commerce Badges">
-        <div className="space-y-4">
-          <p className="text-[13px] text-muted-foreground mb-3">Solid Variants (High Emphasis)</p>
-          <div className="flex flex-wrap gap-3">
-            <Badge variant="deal">
-              <Flame className="size-3 mr-1.5" />
-              Hot Deal
-            </Badge>
-            <Badge variant="shipping">
-              <Truck className="size-3 mr-1.5" />
-              Free Shipping
-            </Badge>
-            <Badge variant="verified">
-              <BadgeCheck className="size-3 mr-1.5" />
-              Verified
-            </Badge>
-            <Badge variant="sale">
-              <Zap className="size-3 mr-1.5" />
-              Flash Sale
-            </Badge>
-          </div>
-          
-          <Separator className="my-4" />
-
-          <p className="text-[13px] text-muted-foreground mb-3">Subtle Variants (Low Emphasis)</p>
-          <div className="flex flex-wrap gap-3">
-            <Badge variant="success-subtle">In Stock</Badge>
-            <Badge variant="warning-subtle">Low Stock</Badge>
-            <Badge variant="critical-subtle">Out of Stock</Badge>
-            <Badge variant="info-subtle">Pre-order</Badge>
+      </ShowcaseGrid>
+      
+      {/* Semantic Status Colors */}
+      <ShowcaseGrid title="Semantic Status">
+        <div className="rounded-xl border border-border p-6">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            {[
+              { name: "Success", class: "bg-success" },
+              { name: "Warning", class: "bg-warning" },
+              { name: "Error", class: "bg-error" },
+              { name: "Info", class: "bg-info" },
+            ].map((color) => (
+              <div key={color.name} className="space-y-2">
+                <div className={cn("h-14 rounded-lg", color.class)} />
+                <p className="text-sm font-medium text-center">{color.name}</p>
+              </div>
+            ))}
           </div>
         </div>
-      </ShowcaseBox>
-    </section>
-  );
-}
+      </ShowcaseGrid>
 
-// ============================================
-// SECTION: BUTTONS
-// ============================================
-function ButtonsSection() {
-  return (
-    <section id="buttons" className="mt-24 scroll-mt-8">
-      <SectionHeader 
-        number="03"
-        title="Buttons"
-        description="Interactive button components with multiple variants and sizes for different contexts."
-      />
-
-      {/* Standard Variants */}
-      <ShowcaseBox title="Standard Variants" className="mb-6">
-        <div className="flex flex-wrap gap-3">
-          <Button>Primary</Button>
-          <Button variant="secondary">Secondary</Button>
-          <Button variant="outline">Outline</Button>
-          <Button variant="ghost">Ghost</Button>
-          <Button variant="link">Link</Button>
-          <Button variant="destructive">Destructive</Button>
+      {/* Interactive States */}
+      <ShowcaseGrid title="Interactive States">
+        <div className="rounded-xl border border-border p-6">
+          <div className="grid grid-cols-3 sm:grid-cols-6 gap-3">
+            {[
+              { name: "Primary", class: "bg-primary" },
+              { name: "Primary/80", class: "bg-primary/80" },
+              { name: "Primary/60", class: "bg-primary/60" },
+              { name: "Primary/40", class: "bg-primary/40" },
+              { name: "Primary/20", class: "bg-primary/20" },
+              { name: "Primary/10", class: "bg-primary/10" },
+            ].map((color) => (
+              <div key={color.name} className="space-y-2">
+                <div className={cn("h-10 rounded-md border border-border", color.class)} />
+                <p className="text-xs text-center text-muted-foreground">{color.name}</p>
+              </div>
+            ))}
+          </div>
         </div>
-      </ShowcaseBox>
-
-      {/* E-commerce Actions */}
-      <ShowcaseBox title="E-commerce Actions" className="mb-6">
-        <div className="flex flex-wrap gap-3">
-          <Button className="bg-blue-600 hover:bg-blue-700 text-white shadow-sm">
-            <ShoppingCart className="size-4 mr-2" />
-            Add to Cart
-          </Button>
-          <Button className="bg-zinc-900 hover:bg-zinc-800 text-white dark:bg-zinc-50 dark:hover:bg-zinc-200 dark:text-zinc-900 shadow-sm">
-            Buy Now
-          </Button>
-          <Button variant="outline" className="border-border">
-            <Heart className="size-4 mr-2" />
-            Save
-          </Button>
-          <Button variant="destructive">
-            <Flame className="size-4 mr-2" />
-            Hot Deal
-          </Button>
-        </div>
-      </ShowcaseBox>
-
-      {/* Sizes */}
-      <ShowcaseBox title="Button Sizes" className="mb-6">
-        <div className="flex flex-wrap items-center gap-3">
-          <Button size="sm">Small</Button>
-          <Button size="default">Default</Button>
-          <Button size="lg">Large</Button>
-          <Button size="icon" variant="outline">
-            <Heart className="size-4" />
-          </Button>
-        </div>
-      </ShowcaseBox>
-
-      {/* With Icons */}
-      <ShowcaseBox title="With Icons">
-        <div className="flex flex-wrap gap-3">
-          <Button variant="outline" className="border-zinc-300 dark:border-zinc-700">
-            <Search className="size-4 mr-2" />
-            Search
-          </Button>
-          <Button variant="secondary">
-            <Truck className="size-4 mr-2" />
-            Track Order
-          </Button>
-          <Button variant="ghost">
-            <Bell className="size-4 mr-2" />
-            Notifications
-          </Button>
-          <Button>
-            Continue
-            <ArrowRight className="size-4 ml-2" />
-          </Button>
-        </div>
-      </ShowcaseBox>
-    </section>
+      </ShowcaseGrid>
+    </Section>
   );
 }
 
@@ -608,36 +489,219 @@ function ButtonsSection() {
 // ============================================
 function TypographySection() {
   return (
-    <section id="typography" className="mt-24 scroll-mt-8">
-      <SectionHeader 
-        number="04"
-        title="Typography"
-        description="Type scale optimized for e-commerce readability and hierarchy."
-      />
-
-      <ShowcaseBox title="Type Scale">
-        <div className="space-y-6">
-          {[
-            { name: "Display", class: "text-4xl md:text-5xl font-bold tracking-tight", sample: "Big Sale Event" },
-            { name: "H1 / Page Title", class: "text-3xl font-bold tracking-tight", sample: "Design System" },
-            { name: "H2 / Section", class: "text-2xl font-semibold tracking-tight", sample: "Latest Arrivals" },
-            { name: "H3 / Card Title", class: "text-xl font-semibold", sample: "Sony PlayStation 5" },
-            { name: "Body Large", class: "text-lg", sample: "Experience lightning-fast loading with an ultra-high speed SSD." },
-            { name: "Body", class: "text-base", sample: "Free shipping on orders over $50. Easy returns within 30 days." },
-            { name: "Body Small", class: "text-sm text-zinc-600 dark:text-zinc-400", sample: "Ships within 24 hours. Free returns." },
-            { name: "Caption", class: "text-xs text-zinc-500 uppercase tracking-wider font-medium", sample: "Verified Seller • Member since 2019" },
-          ].map((item) => (
-            <div key={item.name} className="pb-6 border-b border-zinc-100 dark:border-zinc-800/50 last:border-0 last:pb-0">
-              <div className="flex items-center gap-3 mb-2">
-                <span className="text-[11px] font-medium text-zinc-500 dark:text-zinc-500 uppercase tracking-wider">{item.name}</span>
-                <span className="text-[10px] font-mono text-zinc-400 dark:text-zinc-600 bg-zinc-100 dark:bg-zinc-900 px-1.5 py-0.5 rounded">{item.class.split(" ")[0]}</span>
-              </div>
-              <p className={cn(item.class, "text-zinc-900 dark:text-zinc-100")}>{item.sample}</p>
-            </div>
-          ))}
+    <Section 
+      id="typography" 
+      title="Typography" 
+      description="Type scale optimized for marketplace interfaces with excellent readability."
+    >
+      <div className="rounded-xl border border-border p-6 space-y-6">
+        {/* Headings */}
+        <div className="space-y-4">
+          <p className="text-4xl font-bold tracking-tight">Display — 36px Bold</p>
+          <p className="text-3xl font-semibold tracking-tight">Heading 1 — 30px Semibold</p>
+          <p className="text-2xl font-semibold">Heading 2 — 24px Semibold</p>
+          <p className="text-xl font-medium">Heading 3 — 20px Medium</p>
+          <p className="text-lg font-medium">Heading 4 — 18px Medium</p>
         </div>
-      </ShowcaseBox>
-    </section>
+        
+        <Separator />
+        
+        {/* Body Text */}
+        <div className="space-y-3">
+          <p className="text-base">Body Default — 16px Regular</p>
+          <p className="text-sm">Body Small — 14px Regular</p>
+          <p className="text-xs">Caption — 12px Regular</p>
+          <p className="text-tiny">Micro — 11px Regular</p>
+        </div>
+
+        <Separator />
+        
+        {/* Special Styles */}
+        <div className="space-y-3">
+          <p className="text-lg font-bold tabular-nums">€1,299.99 — Price Large</p>
+          <p className="text-base font-semibold tabular-nums text-price-sale">€899.00 — Sale Price</p>
+          <p className="text-sm line-through text-muted-foreground tabular-nums">€1,199.00 — Strikethrough</p>
+        </div>
+      </div>
+    </Section>
+  );
+}
+
+// ============================================
+// SECTION: BUTTONS
+// ============================================
+function ButtonsSection() {
+  const [loading, setLoading] = useState(false);
+  
+  return (
+    <Section 
+      id="buttons" 
+      title="Buttons" 
+      description="Action components with consistent sizing, proper focus states, and accessible hover effects."
+    >
+      {/* Variants */}
+      <ShowcaseGrid title="Variants">
+        <div className="rounded-xl border border-border p-6">
+          <div className="flex flex-wrap gap-3">
+            <Button>Primary</Button>
+            <Button variant="secondary">Secondary</Button>
+            <Button variant="outline">Outline</Button>
+            <Button variant="ghost">Ghost</Button>
+            <Button variant="link">Link</Button>
+            <Button variant="destructive">Destructive</Button>
+          </div>
+        </div>
+      </ShowcaseGrid>
+
+      {/* Marketplace CTAs */}
+      <ShowcaseGrid title="Marketplace CTAs">
+        <div className="rounded-xl border border-border p-6">
+          <div className="flex flex-wrap gap-3">
+            <Button variant="black"><ShoppingCart className="size-4" />Add to Cart</Button>
+            <Button variant="cta"><Zap className="size-4" />Buy Now</Button>
+            <Button variant="deal"><Flame className="size-4" />Hot Deal</Button>
+            <Button variant="brand">Follow</Button>
+          </div>
+        </div>
+      </ShowcaseGrid>
+
+      {/* Sizes */}
+      <ShowcaseGrid title="Sizes">
+        <div className="rounded-xl border border-border p-6">
+          <div className="flex flex-wrap items-center gap-3">
+            <Button size="xs">XS 32px</Button>
+            <Button size="sm">SM 36px</Button>
+            <Button size="default">Default 44px</Button>
+            <Button size="lg">LG 48px</Button>
+            <Button size="xl">XL 56px</Button>
+          </div>
+        </div>
+      </ShowcaseGrid>
+
+      {/* Icon Buttons */}
+      <ShowcaseGrid title="Icon Buttons">
+        <div className="rounded-xl border border-border p-6">
+          <div className="flex flex-wrap items-center gap-3">
+            <Button size="icon-sm" variant="outline"><Heart className="size-4" /></Button>
+            <Button size="icon" variant="outline"><ShoppingCart className="size-4" /></Button>
+            <Button size="icon-lg" variant="outline"><Search className="size-5" /></Button>
+            <Button size="icon" variant="ghost"><Star className="size-4" /></Button>
+            <Button size="icon"><ArrowRight className="size-4" /></Button>
+          </div>
+        </div>
+      </ShowcaseGrid>
+
+      {/* States */}
+      <ShowcaseGrid title="States">
+        <div className="rounded-xl border border-border p-6">
+          <div className="flex flex-wrap items-center gap-3">
+            <Button disabled>Disabled</Button>
+            <Button disabled variant="outline">Disabled Outline</Button>
+            <Button onClick={() => setLoading(!loading)}>
+              {loading && <Loader2 className="size-4 animate-spin" />}
+              {loading ? "Loading..." : "Click to Load"}
+            </Button>
+          </div>
+        </div>
+      </ShowcaseGrid>
+    </Section>
+  );
+}
+
+// ============================================
+// SECTION: BADGES
+// ============================================
+function BadgesSection() {
+  return (
+    <Section 
+      id="badges" 
+      title="Badges" 
+      description="Two-tier badge system with solid (high emphasis) and subtle (low emphasis) variants for WCAG AA compliance."
+    >
+      {/* Core Variants */}
+      <ShowcaseGrid title="Core Variants">
+        <div className="rounded-xl border border-border p-6">
+          <div className="flex flex-wrap gap-2">
+            <Badge>Default</Badge>
+            <Badge variant="secondary">Secondary</Badge>
+            <Badge variant="outline">Outline</Badge>
+            <Badge variant="destructive">Destructive</Badge>
+          </div>
+        </div>
+      </ShowcaseGrid>
+
+      {/* Status Badges - Solid */}
+      <ShowcaseGrid title="Status — Solid (High Emphasis)">
+        <div className="rounded-xl border border-border p-6">
+          <div className="flex flex-wrap gap-2">
+            <Badge variant="success"><CheckCircle2 className="size-3" />Success</Badge>
+            <Badge variant="warning"><AlertCircle className="size-3" />Warning</Badge>
+            <Badge variant="critical"><X className="size-3" />Critical</Badge>
+            <Badge variant="info"><Info className="size-3" />Info</Badge>
+          </div>
+        </div>
+      </ShowcaseGrid>
+
+      {/* Status Badges - Subtle */}
+      <ShowcaseGrid title="Status — Subtle (Low Emphasis)">
+        <div className="rounded-xl border border-border p-6">
+          <div className="flex flex-wrap gap-2">
+            <Badge variant="success-subtle">In Stock</Badge>
+            <Badge variant="warning-subtle">Low Stock</Badge>
+            <Badge variant="critical-subtle">Out of Stock</Badge>
+            <Badge variant="info-subtle">Pre-order</Badge>
+            <Badge variant="neutral-subtle">Draft</Badge>
+          </div>
+        </div>
+      </ShowcaseGrid>
+
+      {/* Condition Badges */}
+      <ShowcaseGrid title="Product Condition (C2C)">
+        <div className="rounded-xl border border-border p-6">
+          <div className="flex flex-wrap gap-2">
+            <Badge variant="condition-new"><Sparkles className="size-3" />New</Badge>
+            <Badge variant="condition-likenew"><Heart className="size-3" />Like New</Badge>
+            <Badge variant="condition-good"><CheckCircle2 className="size-3" />Good</Badge>
+            <Badge variant="condition-fair"><AlertCircle className="size-3" />Fair</Badge>
+            <Badge variant="condition-used"><Package className="size-3" />Used</Badge>
+            <Badge variant="condition-refurb"><RefreshCw className="size-3" />Refurb</Badge>
+          </div>
+        </div>
+      </ShowcaseGrid>
+
+      {/* E-commerce Badges */}
+      <ShowcaseGrid title="E-commerce">
+        <div className="rounded-xl border border-border p-6 space-y-4">
+          <div>
+            <p className="text-xs text-muted-foreground mb-2">Shipping & Trust</p>
+            <div className="flex flex-wrap gap-2">
+              <Badge variant="shipping"><Truck className="size-3" />Free Shipping</Badge>
+              <Badge variant="shipping-express"><Zap className="size-3" />Express</Badge>
+              <Badge variant="verified"><BadgeCheck className="size-3" />Verified</Badge>
+              <Badge variant="top-rated"><Star className="size-3" />Top Rated</Badge>
+            </div>
+          </div>
+          <Separator />
+          <div>
+            <p className="text-xs text-muted-foreground mb-2">Deals & Promotions</p>
+            <div className="flex flex-wrap gap-2">
+              <Badge variant="deal"><Flame className="size-3" />Hot Deal</Badge>
+              <Badge variant="sale"><Zap className="size-3" />Flash Sale</Badge>
+              <Badge variant="promoted"><Info className="size-3" />Ad</Badge>
+            </div>
+          </div>
+          <Separator />
+          <div>
+            <p className="text-xs text-muted-foreground mb-2">Stock Status</p>
+            <div className="flex flex-wrap gap-2">
+              <Badge variant="stock-available"><CheckCircle2 className="size-3" />In Stock</Badge>
+              <Badge variant="stock-low"><Clock className="size-3" />Only 3 left</Badge>
+              <Badge variant="stock-out"><X className="size-3" />Sold Out</Badge>
+            </div>
+          </div>
+        </div>
+      </ShowcaseGrid>
+    </Section>
   );
 }
 
@@ -646,85 +710,75 @@ function TypographySection() {
 // ============================================
 function FormsSection() {
   return (
-    <section id="forms" className="mt-24 scroll-mt-8">
-      <SectionHeader 
-        number="05"
-        title="Form Controls"
-        description="Input components with accessible states and clear visual feedback."
-      />
-
-      <div className="grid gap-6 lg:grid-cols-2">
-        <ShowcaseBox title="Text Inputs">
+    <Section 
+      id="forms" 
+      title="Form Controls" 
+      description="Input components with proper focus states, error handling, and accessibility."
+    >
+      <ShowcaseGrid cols={2}>
+        {/* Text Inputs */}
+        <div className="rounded-xl border border-border p-6 space-y-4">
+          <h3 className="text-sm font-medium">Text Inputs</h3>
           <div className="space-y-4">
             <div className="space-y-2">
-              <Label className="text-[13px]">Email Address</Label>
-              <Input placeholder="you@example.com" className="h-10" />
+              <Label htmlFor="email">Email Address</Label>
+              <Input id="email" type="email" placeholder="you@example.com" />
             </div>
             <div className="space-y-2">
-              <Label className="text-[13px]">Search Products</Label>
+              <Label htmlFor="search">Search</Label>
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-zinc-400" />
-                <Input className="pl-10 h-10" placeholder="Search..." />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+                <Input id="search" className="pl-9" placeholder="Search products..." />
               </div>
             </div>
             <div className="space-y-2">
-              <Label className="text-[13px] text-red-600 dark:text-red-400">Error State</Label>
-              <Input className="border-red-300 dark:border-red-900 focus-visible:ring-red-500 h-10" defaultValue="invalid@" />
-              <p className="text-[12px] text-red-600 dark:text-red-400">Please enter a valid email address.</p>
+              <Label htmlFor="error" className="text-destructive">With Error</Label>
+              <Input 
+                id="error" 
+                className="border-destructive focus-visible:ring-destructive" 
+                defaultValue="invalid@" 
+              />
+              <p className="text-xs text-destructive">Please enter a valid email address.</p>
             </div>
           </div>
-        </ShowcaseBox>
+        </div>
 
-        <ShowcaseBox title="Selection Controls">
-          <div className="space-y-5">
+        {/* Selection Controls */}
+        <div className="rounded-xl border border-border p-6 space-y-4">
+          <h3 className="text-sm font-medium">Selection Controls</h3>
+          <div className="space-y-4">
             <div className="flex items-center gap-3">
-              <Checkbox id="terms" className="size-4" />
-              <Label htmlFor="terms" className="text-[13px] text-zinc-700 dark:text-zinc-300">Accept terms and conditions</Label>
+              <Checkbox id="terms" />
+              <Label htmlFor="terms" className="font-normal">Accept terms and conditions</Label>
             </div>
             <div className="flex items-center gap-3">
-              <Checkbox id="newsletter" defaultChecked className="size-4" />
-              <Label htmlFor="newsletter" className="text-[13px] text-zinc-700 dark:text-zinc-300">Subscribe to newsletter</Label>
+              <Checkbox id="newsletter" defaultChecked />
+              <Label htmlFor="newsletter" className="font-normal">Subscribe to newsletter</Label>
             </div>
             <Separator />
             <div className="flex items-center justify-between">
-              <Label className="text-[13px] text-zinc-700 dark:text-zinc-300">Push Notifications</Label>
-              <Switch />
+              <Label htmlFor="notifications" className="font-normal">Push Notifications</Label>
+              <Switch id="notifications" />
             </div>
             <div className="flex items-center justify-between">
-              <Label className="text-[13px] text-zinc-700 dark:text-zinc-300">Dark Mode</Label>
-              <Switch defaultChecked />
+              <Label htmlFor="darkmode" className="font-normal">Dark Mode</Label>
+              <Switch id="darkmode" defaultChecked />
             </div>
           </div>
-        </ShowcaseBox>
+        </div>
+      </ShowcaseGrid>
 
-        <ShowcaseBox title="Select Dropdown">
-          <div className="space-y-2">
-            <Label className="text-[13px]">Category</Label>
-            <Select>
-              <SelectTrigger className="h-10">
-                <SelectValue placeholder="Select category" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="electronics">Electronics</SelectItem>
-                <SelectItem value="fashion">Fashion</SelectItem>
-                <SelectItem value="home">Home &amp; Garden</SelectItem>
-                <SelectItem value="sports">Sports &amp; Outdoors</SelectItem>
-              </SelectContent>
-            </Select>
+      {/* Disabled States */}
+      <ShowcaseGrid title="Disabled States">
+        <div className="rounded-xl border border-border p-6">
+          <div className="flex flex-wrap items-center gap-3">
+            <Input disabled placeholder="Disabled input" className="max-w-xs" />
+            <Button disabled>Disabled</Button>
+            <Button variant="outline" disabled>Disabled Outline</Button>
           </div>
-        </ShowcaseBox>
-
-        <ShowcaseBox title="Disabled State">
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <Label className="text-[13px] text-zinc-400">Disabled Input</Label>
-              <Input disabled placeholder="Cannot edit" className="h-10" />
-            </div>
-            <Button disabled className="w-full">Disabled Button</Button>
-          </div>
-        </ShowcaseBox>
-      </div>
-    </section>
+        </div>
+      </ShowcaseGrid>
+    </Section>
   );
 }
 
@@ -733,214 +787,196 @@ function FormsSection() {
 // ============================================
 function CardsSection() {
   return (
-    <section id="cards" className="mt-24 scroll-mt-8">
-      <SectionHeader 
-        number="06"
-        title="Cards"
-        description="Container components for content and actions."
-      />
-
-      <div className="grid gap-6 lg:grid-cols-3">
+    <Section 
+      id="cards" 
+      title="Cards" 
+      description="Container components for grouping related content with consistent styling."
+    >
+      <ShowcaseGrid cols={2}>
         {/* Basic Card */}
-        <Card className="border-zinc-200 dark:border-zinc-800">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-base">Basic Card</CardTitle>
-            <CardDescription className="text-[13px]">Simple content container</CardDescription>
+        <Card>
+          <CardHeader>
+            <CardTitle>Basic Card</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-sm text-zinc-600 dark:text-zinc-400">
-              Cards contain content and actions about a single subject.
+            <p className="text-sm text-muted-foreground">
+              Cards use flat styling with subtle borders. No heavy shadows for a clean, modern look.
             </p>
           </CardContent>
-        </Card>
-
-        {/* Product Card */}
-        <Card className="overflow-hidden border-zinc-200 dark:border-zinc-800">
-          <div className="relative aspect-square bg-zinc-100 dark:bg-zinc-900">
-            <div className="absolute inset-0 flex items-center justify-center">
-              <Package className="size-16 text-zinc-300 dark:text-zinc-700" />
-            </div>
-            <div className="absolute left-3 top-3 flex gap-2">
-              <Badge className="bg-blue-600 text-white border-transparent rounded-md px-2.5 py-0.5 text-[11px] font-semibold">NEW</Badge>
-            </div>
-            <button className="absolute right-3 top-3 flex size-8 items-center justify-center rounded-full bg-white/90 dark:bg-zinc-900/90 border border-zinc-200 dark:border-zinc-700 hover:bg-white dark:hover:bg-zinc-900 transition-colors shadow-sm">
-              <Heart className="size-4 text-zinc-500" />
-            </button>
-          </div>
-          <CardContent className="p-4">
-            <h3 className="font-medium text-[15px] text-zinc-900 dark:text-zinc-100">Sony PlayStation 5</h3>
-            <div className="mt-2 flex items-center gap-1">
-              {[1, 2, 3, 4].map((i) => (
-                <Star key={i} className="size-3.5 fill-amber-400 text-amber-400" />
-              ))}
-              <Star className="size-3.5 text-zinc-300 dark:text-zinc-600" />
-              <span className="text-[12px] text-zinc-500 ml-1">(1,234)</span>
-            </div>
-            <div className="mt-3 flex items-baseline gap-2">
-              <span className="text-lg font-bold text-zinc-900 dark:text-zinc-100">$449.99</span>
-              <span className="text-sm text-zinc-400 line-through">$499.99</span>
-              <span className="text-[11px] font-medium text-emerald-600 dark:text-emerald-400">Save 10%</span>
-            </div>
-          </CardContent>
-          <div className="px-4 pb-4 flex gap-2">
-            <Button className="flex-1 bg-blue-600 hover:bg-blue-700 text-white h-9 text-[13px]">Add to Cart</Button>
-            <Button variant="outline" size="icon" className="h-9 w-9 border-zinc-300 dark:border-zinc-700">
-              <Heart className="size-4" />
-            </Button>
-          </div>
+          <CardFooter className="border-t pt-4">
+            <Button size="sm">Action</Button>
+          </CardFooter>
         </Card>
 
         {/* Seller Card */}
-        <Card className="border-border">
-          <CardContent className="pt-5">
-            <div className="flex gap-4">
-              <VerifiedAvatar
-                name="TechStore Pro"
-                avatarUrl={null}
-                size="lg"
-                isVerifiedBusiness={true}
-              />
+        <Card>
+          <CardHeader>
+            <CardTitle>Seller Card</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex gap-3 items-start">
+              <Avatar className="size-12">
+                <AvatarImage src="https://api.dicebear.com/7.x/initials/svg?seed=TS" />
+                <AvatarFallback>TS</AvatarFallback>
+              </Avatar>
               <div className="flex-1 min-w-0">
-                <h3 className="font-semibold text-[15px] text-foreground truncate">TechStore Pro</h3>
-                <div className="flex items-center gap-1 mt-1">
-                  <Star className="size-3.5 fill-amber-400 text-amber-400" />
-                  <span className="text-[13px] font-medium text-foreground">4.9</span>
-                  <span className="text-[12px] text-muted-foreground">(2,341)</span>
+                <div className="flex items-center gap-2">
+                  <p className="font-semibold">TechStore Pro</p>
+                  <Badge variant="verified"><BadgeCheck className="size-3" /></Badge>
                 </div>
-                <p className="text-[12px] text-muted-foreground mt-2">
-                  Member since 2019 • 10K+ items sold
-                </p>
+                <div className="flex items-center gap-1.5 mt-1">
+                  <Star className="size-3.5 fill-warning text-warning" />
+                  <span className="text-sm font-medium">4.9</span>
+                  <span className="text-sm text-muted-foreground">(2,341 reviews)</span>
+                </div>
               </div>
             </div>
           </CardContent>
-          <div className="px-5 pb-5 flex gap-2">
-            <Button variant="outline" className="flex-1 h-9 text-[13px]">
-              <Store className="size-4 mr-2" />
-              Visit Store
-            </Button>
-            <Button variant="ghost" size="icon" className="h-9 w-9">
-              <Bell className="size-4" />
-            </Button>
-          </div>
+          <CardFooter className="border-t pt-4">
+            <Button variant="outline" size="sm" className="w-full">Visit Store</Button>
+          </CardFooter>
         </Card>
-      </div>
-    </section>
+      </ShowcaseGrid>
+
+      {/* Product Cards Preview */}
+      <ShowcaseGrid title="Product Card Preview" cols={4}>
+        {[
+          { title: "Sony PS5", price: 449.99, original: 499.99, condition: "new", stock: true },
+          { title: "iPhone 14 Pro", price: 899.00, original: null, condition: "like_new", stock: true },
+          { title: "MacBook Air M2", price: 1199.00, original: 1299.00, condition: "good", stock: false },
+          { title: "Nintendo Switch", price: 299.99, original: null, condition: "used", stock: true },
+        ].map((product, i) => (
+          <div key={i} className="group rounded-xl border border-border overflow-hidden bg-card">
+            {/* Image Area */}
+            <div className="relative aspect-square bg-muted">
+              <div className="absolute inset-0 flex items-center justify-center">
+                <Package className="size-12 text-muted-foreground/30" />
+              </div>
+              <Badge 
+                variant={
+                  product.condition === "new" ? "condition-new" : 
+                  product.condition === "like_new" ? "condition-likenew" :
+                  product.condition === "good" ? "condition-good" : "condition-used"
+                }
+                className="absolute top-2 left-2"
+              >
+                {product.condition === "new" ? "NEW" : 
+                 product.condition === "like_new" ? "LIKE NEW" :
+                 product.condition === "good" ? "GOOD" : "USED"}
+              </Badge>
+              <button className="absolute top-2 right-2 size-8 rounded-full bg-background/90 backdrop-blur-sm flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity border border-border">
+                <Heart className="size-4 text-muted-foreground" />
+              </button>
+            </div>
+            {/* Content */}
+            <div className="p-3">
+              <p className="font-medium text-sm line-clamp-2">{product.title}</p>
+              <div className="flex items-baseline gap-2 mt-2">
+                <span className={cn(
+                  "font-bold tabular-nums",
+                  product.original ? "text-price-sale" : ""
+                )}>€{product.price.toFixed(2)}</span>
+                {product.original && (
+                  <span className="text-xs text-muted-foreground line-through">€{product.original.toFixed(2)}</span>
+                )}
+              </div>
+              {product.stock && (
+                <div className="flex items-center gap-1 mt-2 text-xs text-muted-foreground">
+                  <Truck className="size-3" />
+                  <span>Free shipping</span>
+                </div>
+              )}
+            </div>
+          </div>
+        ))}
+      </ShowcaseGrid>
+    </Section>
   );
 }
 
 // ============================================
-// SECTION: MARKETPLACE
+// SECTION: FEEDBACK (Loading, Progress, Skeleton)
 // ============================================
-function MarketplaceSection() {
+function FeedbackSection() {
   return (
-    <section id="marketplace" className="mt-24 scroll-mt-8">
-      <SectionHeader 
-        number="07"
-        title="E-Commerce Patterns"
-        description="Marketplace-specific components and patterns for pricing, orders, and promotions."
-      />
-
-      {/* Pricing */}
-      <ShowcaseBox title="Pricing Display" className="mb-6">
-        <div className="space-y-6">
-          <div className="p-5 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/30">
-            <div className="flex items-baseline gap-3 flex-wrap">
-              <span className="text-3xl font-bold text-zinc-900 dark:text-zinc-100">$79.99</span>
-              <span className="text-xl text-zinc-400 line-through">$129.99</span>
-              <Badge className="bg-emerald-50 text-emerald-700 border border-emerald-100 dark:bg-emerald-950/50 dark:text-emerald-400 dark:border-emerald-900 rounded-md px-2 py-0.5 text-[12px] font-semibold">
-                Save $50
-              </Badge>
+    <Section 
+      id="feedback" 
+      title="Feedback & Loading" 
+      description="Visual indicators for async operations, progress states, and content loading."
+    >
+      {/* Progress Bars */}
+      <ShowcaseGrid title="Progress Bars">
+        <div className="rounded-xl border border-border p-6 space-y-4">
+          <div className="space-y-2">
+            <div className="flex justify-between text-sm">
+              <span>Default</span>
+              <span className="text-muted-foreground">25%</span>
             </div>
-            <div className="flex items-center gap-4 mt-4 text-sm text-zinc-600 dark:text-zinc-400">
-              <div className="flex items-center gap-2">
-                <Truck className="size-4 text-emerald-500" />
-                <span>Free Shipping</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Shield className="size-4 text-blue-500" />
-                <span>Buyer Protection</span>
-              </div>
+            <Progress value={25} />
+          </div>
+          <div className="space-y-2">
+            <div className="flex justify-between text-sm">
+              <span>Half Progress</span>
+              <span className="text-muted-foreground">50%</span>
             </div>
+            <Progress value={50} />
+          </div>
+          <div className="space-y-2">
+            <div className="flex justify-between text-sm">
+              <span>Almost Done</span>
+              <span className="text-muted-foreground">75%</span>
+            </div>
+            <Progress value={75} />
+          </div>
+          <div className="space-y-2">
+            <div className="flex justify-between text-sm">
+              <span>Complete</span>
+              <span className="text-muted-foreground">100%</span>
+            </div>
+            <Progress value={100} />
           </div>
         </div>
-      </ShowcaseBox>
+      </ShowcaseGrid>
 
-      {/* Order Status */}
-      <ShowcaseBox title="Order Status" className="mb-6">
-        <div className="flex flex-wrap gap-3">
-          <Badge className="bg-amber-100 text-amber-800 border border-amber-200 dark:bg-amber-950/50 dark:text-amber-400 dark:border-amber-900 rounded-md px-3 py-1 text-[12px] font-medium">
-            <Clock className="size-3 mr-1.5" />
-            Pending
-          </Badge>
-          <Badge className="bg-blue-100 text-blue-800 border border-blue-200 dark:bg-blue-950/50 dark:text-blue-400 dark:border-blue-900 rounded-md px-3 py-1 text-[12px] font-medium">
-            <Package className="size-3 mr-1.5" />
-            Processing
-          </Badge>
-          <Badge className="bg-indigo-100 text-indigo-800 border border-indigo-200 dark:bg-indigo-950/50 dark:text-indigo-400 dark:border-indigo-900 rounded-md px-3 py-1 text-[12px] font-medium">
-            <Truck className="size-3 mr-1.5" />
-            Shipped
-          </Badge>
-          <Badge className="bg-emerald-100 text-emerald-800 border border-emerald-200 dark:bg-emerald-950/50 dark:text-emerald-400 dark:border-emerald-900 rounded-md px-3 py-1 text-[12px] font-medium">
-            <CheckCircle2 className="size-3 mr-1.5" />
-            Delivered
-          </Badge>
-          <Badge className="bg-red-100 text-red-800 border border-red-200 dark:bg-red-950/50 dark:text-red-400 dark:border-red-900 rounded-md px-3 py-1 text-[12px] font-medium">
-            <X className="size-3 mr-1.5" />
-            Cancelled
-          </Badge>
+      {/* Skeletons */}
+      <ShowcaseGrid title="Skeleton Loaders" cols={2}>
+        {/* Text Skeleton */}
+        <div className="rounded-xl border border-border p-6 space-y-3">
+          <Skeleton className="h-6 w-3/4" />
+          <Skeleton className="h-4 w-full" />
+          <Skeleton className="h-4 w-5/6" />
+          <Skeleton className="h-4 w-2/3" />
         </div>
-      </ShowcaseBox>
 
-      {/* Ratings */}
-      <ShowcaseBox title="Ratings" className="mb-6">
-        <div className="space-y-4">
+        {/* User Row Skeleton */}
+        <div className="rounded-xl border border-border p-6">
           <div className="flex items-center gap-3">
-            <div className="flex items-center gap-0.5">
-              {[1, 2, 3, 4, 5].map((i) => (
-                <Star key={i} className={cn(
-                  "size-5",
-                  i <= 4 ? "fill-amber-400 text-amber-400" : "text-zinc-300 dark:text-zinc-700"
-                )} />
-              ))}
+            <Skeleton className="size-12 rounded-full" />
+            <div className="flex-1 space-y-2">
+              <Skeleton className="h-4 w-32" />
+              <Skeleton className="h-3 w-24" />
             </div>
-            <span className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">4.0</span>
-            <span className="text-sm text-zinc-500">(1,234 reviews)</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="flex items-center gap-0.5">
-              {[1, 2, 3, 4, 5].map((i) => (
-                <Star key={i} className="size-4 fill-amber-400 text-amber-400" />
-              ))}
-            </div>
-            <span className="text-sm font-medium text-zinc-900 dark:text-zinc-100">5.0</span>
-            <span className="text-sm text-zinc-500">Perfect!</span>
+            <Skeleton className="h-8 w-20 rounded-md" />
           </div>
         </div>
-      </ShowcaseBox>
+      </ShowcaseGrid>
 
-      {/* Urgency Banners */}
-      <ShowcaseBox title="Urgency Banners">
-        <div className="space-y-3">
-          <div className="rounded-lg border border-amber-200 dark:border-amber-900/50 bg-amber-50 dark:bg-amber-950/30 px-4 py-3 flex items-center gap-3">
-            <div className="rounded-full bg-amber-100 dark:bg-amber-900/50 p-1.5">
-              <Clock className="size-4 text-amber-600 dark:text-amber-400" />
+      {/* Product Card Skeletons */}
+      <ShowcaseGrid title="Product Card Skeleton" cols={4}>
+        {[1, 2, 3, 4].map((i) => (
+          <div key={i} className="rounded-xl border border-border overflow-hidden">
+            <Skeleton className="aspect-square w-full" />
+            <div className="p-3 space-y-2">
+              <Skeleton className="h-4 w-3/4" />
+              <Skeleton className="h-3 w-1/2" />
+              <div className="flex items-center justify-between pt-1">
+                <Skeleton className="h-5 w-16" />
+                <Skeleton className="size-8 rounded-full" />
+              </div>
             </div>
-            <span className="text-[13px] font-medium text-amber-800 dark:text-amber-300">Only 3 left in stock — order soon!</span>
           </div>
-          <div className="rounded-lg border border-red-200 dark:border-red-900/50 bg-red-50 dark:bg-red-950/30 px-4 py-3 flex items-center gap-3">
-            <div className="rounded-full bg-red-100 dark:bg-red-900/50 p-1.5">
-              <Flame className="size-4 text-red-600 dark:text-red-400" />
-            </div>
-            <span className="text-[13px] font-medium text-red-800 dark:text-red-300">Sale ends in 2 hours!</span>
-          </div>
-          <div className="rounded-lg border border-blue-200 dark:border-blue-900/50 bg-blue-50 dark:bg-blue-950/30 px-4 py-3 flex items-center gap-3">
-            <div className="rounded-full bg-blue-100 dark:bg-blue-900/50 p-1.5">
-              <Eye className="size-4 text-blue-600 dark:text-blue-400" />
-            </div>
-            <span className="text-[13px] font-medium text-blue-800 dark:text-blue-300">12 people are viewing this item</span>
-          </div>
-        </div>
-      </ShowcaseBox>
-    </section>
+        ))}
+      </ShowcaseGrid>
+    </Section>
   );
 }
