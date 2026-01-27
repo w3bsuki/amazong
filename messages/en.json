@@ -1999,6 +1999,7 @@
         "subcategoryTabsAriaLabel": "Subcategory tabs",
         "sortPlaceholder": "Sort",
         "browseCategories": "Browse",
+        "viewAll": "View All",
         "categoryFinder": {
             "title": "Browse categories",
             "description": "Search and jump to a category.",

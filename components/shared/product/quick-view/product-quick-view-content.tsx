@@ -191,124 +191,125 @@ export function ProductQuickViewContent({
     )
   }
 
-  // Desktop layout - product page experience
+  // Desktop layout - clean, modern product dialog
   return (
-    <div className="grid grid-cols-[1fr_420px] min-h-full">
-      {/* LEFT: Gallery - takes most space */}
-      <div className="p-8">
-        <QuickViewImageGallery
-          images={allImages}
-          title={title}
-          discountPercent={showDiscount ? discountPercent : undefined}
-          onNavigateToProduct={onNavigateToProduct}
-          compact={false}
-        />
+    <div className="grid grid-cols-1 lg:grid-cols-[minmax(400px,55%)_1fr] min-h-full">
+      {/* LEFT: Gallery - larger, better proportions */}
+      <div className="relative bg-muted/30 flex items-center justify-center p-6 lg:p-8">
+        <div className="w-full max-w-[600px]">
+          <QuickViewImageGallery
+            images={allImages}
+            title={title}
+            discountPercent={showDiscount ? discountPercent : undefined}
+            onNavigateToProduct={onNavigateToProduct}
+            compact={false}
+          />
+        </div>
       </div>
 
-      {/* RIGHT: Product Info - fixed width sidebar */}
-      <div className="flex flex-col border-l border-border bg-muted/30">
-        <div className="flex-1 overflow-y-auto p-6 space-y-5">
-          {/* Title */}
-          <div className="space-y-2">
-            <h2 className="text-xl font-semibold leading-tight text-foreground">
+      {/* RIGHT: Product Info - scrollable, better hierarchy */}
+      <div className="flex flex-col bg-background">
+        {/* Scrollable content */}
+        <div className="flex-1 overflow-y-auto p-6 lg:p-8 space-y-6">
+          {/* Header: Title + badges */}
+          <div className="space-y-3 pr-10">
+            <h2 className="text-2xl font-bold leading-tight text-foreground">
               {title}
             </h2>
             
-            {/* Rating + Condition badges */}
-            <div className="flex flex-wrap items-center gap-2">
+            {/* Meta: Rating + Condition */}
+            <div className="flex flex-wrap items-center gap-3">
+              {condition && (
+                <Badge variant={getConditionBadgeVariant(condition)} className="gap-1.5">
+                  <Tag size={12} weight="fill" />
+                  {condition}
+                </Badge>
+              )}
               {hasRating && (
                 <div className="flex items-center gap-1.5 text-sm">
                   <Star size={16} weight="fill" className="fill-rating text-rating" />
-                  <span className="font-medium tabular-nums">{rating.toFixed(1)}</span>
+                  <span className="font-semibold tabular-nums">{rating.toFixed(1)}</span>
                   {typeof reviews === "number" && reviews > 0 && (
-                    <span className="text-muted-foreground">({reviews} {tProduct("reviews", { count: reviews })})</span>
+                    <span className="text-muted-foreground">({reviews})</span>
                   )}
                 </div>
-              )}
-              {condition && (
-                <Badge variant={getConditionBadgeVariant(condition)} className="gap-1">
-                  <Tag size={12} />
-                  {condition}
-                </Badge>
               )}
             </div>
           </div>
 
-          {/* Price Block */}
-          <div className="rounded-lg border border-border bg-card p-4 space-y-3">
+          {/* Price Section - prominent */}
+          <div className="rounded-xl border border-border bg-card p-5 space-y-4">
             <div className="flex items-baseline gap-3 flex-wrap">
               <span className={cn(
-                "text-3xl font-bold tabular-nums",
+                "text-4xl font-bold tabular-nums tracking-tight",
                 showDiscount ? "text-price-sale" : "text-foreground",
               )}>
                 {formattedPrice}
               </span>
               {showDiscount && originalPrice && (
                 <>
-                  <span className="text-lg text-muted-foreground line-through tabular-nums">
+                  <span className="text-xl text-muted-foreground line-through tabular-nums">
                     {formatPrice(originalPrice, { locale })}
                   </span>
-                  <Badge variant="destructive" className="text-sm px-2">
+                  <Badge variant="destructive" className="text-sm font-bold px-2.5 py-0.5">
                     -{discountPercent}%
                   </Badge>
                 </>
               )}
             </div>
 
-            {/* Shipping info */}
-            <div className="flex items-center gap-4 text-sm">
+            {/* Shipping & location inline */}
+            <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm">
               {freeShipping ? (
-                <span className="flex items-center gap-1.5 text-shipping-free font-medium">
-                  <Truck size={16} weight="fill" />
+                <span className="flex items-center gap-1.5 text-shipping-free font-semibold">
+                  <Truck size={18} weight="fill" />
                   {tProduct("freeShipping")}
                 </span>
               ) : (
                 <span className="flex items-center gap-1.5 text-muted-foreground">
-                  <Truck size={16} />
+                  <Truck size={18} />
                   {tProduct("shippingAvailable") || "Shipping available"}
                 </span>
               )}
-              {(location || (product as { location?: string }).location) && (
-                <span className="flex items-center gap-1 text-muted-foreground">
-                  <MapPin size={14} />
-                  {location || (product as { location?: string }).location}
+              {location && (
+                <span className="flex items-center gap-1.5 text-muted-foreground">
+                  <MapPin size={16} />
+                  {location}
                 </span>
               )}
             </div>
           </div>
 
-          {/* Quantity Selector */}
+          {/* Quantity Selector - cleaner */}
           {inStock && (
-            <div className="flex items-center justify-between gap-4 py-3 border-y border-border">
-              <div className="flex items-center gap-3">
-                <span className="text-sm font-medium text-muted-foreground">{tProduct("qty") || "Qty"}</span>
-                <div className="flex items-center border border-border rounded-lg">
-                  <button
-                    type="button"
-                    onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                    className="size-9 flex items-center justify-center hover:bg-muted transition-colors rounded-l-lg disabled:opacity-40"
-                    disabled={quantity <= 1}
-                    aria-label="Decrease quantity"
-                  >
-                    <Minus size={14} className={quantity <= 1 ? "text-muted-foreground/40" : "text-foreground"} />
-                  </button>
-                  <span className="px-4 py-2 text-sm font-medium min-w-12 text-center tabular-nums">
-                    {quantity}
-                  </span>
-                  <button
-                    type="button"
-                    onClick={() => setQuantity(Math.min(99, quantity + 1))}
-                    className="size-9 flex items-center justify-center hover:bg-muted transition-colors rounded-r-lg"
-                    aria-label="Increase quantity"
-                  >
-                    <Plus size={14} className="text-foreground" />
-                  </button>
-                </div>
+            <div className="flex items-center gap-4 py-2">
+              <span className="text-sm font-medium text-muted-foreground min-w-12">{tProduct("qty") || "Qty"}</span>
+              <div className="flex items-center rounded-lg border border-border bg-muted/30">
+                <button
+                  type="button"
+                  onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                  className="size-10 flex items-center justify-center hover:bg-muted transition-colors rounded-l-lg disabled:opacity-30"
+                  disabled={quantity <= 1}
+                  aria-label="Decrease quantity"
+                >
+                  <Minus size={16} weight="bold" />
+                </button>
+                <span className="px-5 py-2.5 text-base font-semibold min-w-14 text-center tabular-nums border-x border-border bg-background">
+                  {quantity}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setQuantity(Math.min(99, quantity + 1))}
+                  className="size-10 flex items-center justify-center hover:bg-muted transition-colors rounded-r-lg"
+                  aria-label="Increase quantity"
+                >
+                  <Plus size={16} weight="bold" />
+                </button>
               </div>
               {quantity > 1 && (
-                <div className="text-right">
-                  <span className="text-xs text-muted-foreground">{tProduct("total") || "Total"}</span>
-                  <div className="text-lg font-bold text-foreground tabular-nums">{totalPrice}</div>
+                <div className="ml-auto text-right">
+                  <span className="text-xs text-muted-foreground block">{tProduct("total") || "Total"}</span>
+                  <span className="text-lg font-bold tabular-nums">{totalPrice}</span>
                 </div>
               )}
             </div>
@@ -322,35 +323,34 @@ export function ProductQuickViewContent({
             onNavigateToProduct={onNavigateToProduct}
           />
 
-          {/* Trust Badges */}
-          <div className="flex items-center justify-center gap-4 py-3 text-xs text-muted-foreground">
-            <span className="flex items-center gap-1.5">
-              <ShieldCheck size={14} className="text-success" weight="fill" />
+          {/* Trust Badges - more prominent */}
+          <div className="flex items-center justify-center gap-6 py-4 px-4 rounded-lg bg-success/5 border border-success/20">
+            <span className="flex items-center gap-2 text-sm font-medium text-success">
+              <ShieldCheck size={18} weight="fill" />
               {tProduct("buyerProtection") || "Buyer Protection"}
             </span>
-            <span className="text-border">|</span>
-            <span className="flex items-center gap-1.5">
-              <ArrowsClockwise size={14} />
+            <span className="w-px h-4 bg-border" />
+            <span className="flex items-center gap-2 text-sm text-muted-foreground">
+              <ArrowsClockwise size={18} />
               {tProduct("easyReturns") || "Easy Returns"}
             </span>
           </div>
 
-          {/* View Full Page Link */}
-          <Button
+          {/* View full listing link */}
+          <button
             type="button"
-            variant="ghost"
-            className="w-full gap-2 text-muted-foreground hover:text-foreground"
             onClick={onNavigateToProduct}
+            className="w-full flex items-center justify-center gap-2 py-3 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
           >
             {tModal("viewFullPage")}
             <ArrowSquareOut size={16} weight="bold" />
-          </Button>
+          </button>
         </div>
 
-        {/* Sticky CTA buttons */}
-        <div className="sticky bottom-0 border-t border-border px-6 py-4 bg-background">
-          {/* Action buttons row */}
-          <div className="flex items-center gap-2 mb-3">
+        {/* Sticky footer with CTAs */}
+        <div className="sticky bottom-0 border-t border-border bg-background/95 backdrop-blur-sm px-6 lg:px-8 py-5">
+          {/* Quick actions row */}
+          <div className="flex items-center gap-3 mb-4">
             <Button
               type="button"
               variant="outline"
@@ -358,9 +358,9 @@ export function ProductQuickViewContent({
               onClick={handleCopyLink}
               aria-label={tModal("copyLink")}
               disabled={!shareUrl}
-              className="shrink-0"
+              className="size-10 shrink-0"
             >
-              <LinkSimple size={18} />
+              <LinkSimple size={18} weight="bold" />
             </Button>
             <Button
               type="button"
@@ -369,41 +369,40 @@ export function ProductQuickViewContent({
               onClick={handleToggleWishlist}
               aria-label={inWishlist ? tProduct("removeFromWatchlist") : tProduct("addToWatchlist")}
               disabled={wishlistPending}
-              className="shrink-0"
+              className="size-10 shrink-0"
             >
               <Heart
                 size={18}
-                weight={inWishlist ? "fill" : "regular"}
+                weight={inWishlist ? "fill" : "bold"}
                 className={cn(
-                  inWishlist ? "fill-wishlist-active text-wishlist-active" : "text-muted-foreground",
+                  inWishlist ? "fill-wishlist-active text-wishlist-active" : "text-foreground",
                   wishlistPending && "opacity-50",
                 )}
               />
             </Button>
-            <div className="flex-1" />
             {!inStock && (
-              <Badge variant="secondary" className="text-destructive bg-destructive/10">
+              <Badge variant="secondary" className="ml-auto text-destructive bg-destructive/10 font-medium">
                 {tProduct("outOfStock") || "Out of Stock"}
               </Badge>
             )}
           </div>
 
-          {/* Main CTAs */}
+          {/* Main CTAs - full width, stacked or side by side */}
           <div className="grid grid-cols-2 gap-3">
             <Button
               variant="black"
               size="lg"
-              className="gap-2 font-semibold"
+              className="gap-2.5 font-semibold h-12"
               onClick={handleAddToCartWithQuantity}
               disabled={!inStock}
             >
-              <ShoppingCart size={18} weight="bold" />
+              <ShoppingCart size={20} weight="bold" />
               {tDrawers("addToCart")}
             </Button>
             <Button
               variant="cta"
               size="lg"
-              className="font-semibold"
+              className="font-semibold h-12"
               onClick={onBuyNow}
               disabled={!inStock}
             >

@@ -69,10 +69,10 @@ export const MobileMenuSheet = forwardRef<MobileMenuSheetHandle, MobileMenuSheet
               </div>
               <DrawerClose asChild>
                 <button
-                  className="flex items-center justify-center size-touch -mr-1 rounded-full text-muted-foreground hover:text-foreground hover:bg-muted active:bg-muted/70 transition-colors touch-action-manipulation tap-transparent"
+                  className="flex items-center justify-center size-touch -mr-1 rounded-full text-foreground hover:bg-muted active:bg-muted/80 transition-colors touch-action-manipulation tap-transparent"
                   aria-label={t("closeMenu")}
                 >
-                  <X size={20} weight="regular" />
+                  <X size={20} weight="bold" />
                 </button>
               </DrawerClose>
             </div>

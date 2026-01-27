@@ -30,14 +30,13 @@ import { useCategoryCounts } from "@/hooks/use-category-counts"
 import { useCategoryAttributes } from "@/hooks/use-category-attributes"
 import { useViewMode } from "@/hooks/use-view-mode"
 import type { CategoryTreeNode } from "@/lib/category-tree"
-import { Fire } from "@phosphor-icons/react"
-
 // Extracted components
 import { FeedToolbar, type FeedTab, type FilterState } from "@/components/desktop/feed-toolbar"
 import { CompactCategorySidebar, type CategoryPath } from "@/components/desktop/category-sidebar"
 import { FiltersSidebar } from "@/components/desktop/filters-sidebar"
 import { ProductGridSkeleton } from "@/components/shared/product/product-grid-skeleton"
 import { PageShell } from "@/components/shared/page-shell"
+import { PromotedSection } from "@/components/desktop/promoted-section"
 import type { UIProduct } from "@/lib/data/products"
 
 import type { User } from "@supabase/supabase-js"
@@ -237,102 +236,58 @@ export function DesktopHome({
     <PageShell variant="muted">
       {/* Header is rendered by layout - no duplicate here */}
 
-      {/* Main content - unified container */}
-      <div className="container py-6">
-        <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-6">
-          {/* LEFT SIDEBAR */}
-          <aside className="hidden lg:flex flex-col shrink-0 gap-4 sticky top-20 self-start">
-            <CompactCategorySidebar
-              categories={categories}
-              locale={locale}
-              selectedPath={categoryPath}
-              onCategorySelect={handleCategorySelect}
-              categoryCounts={categoryCounts}
-            />
-            {categoryPath.length > 0 && (
-              <FiltersSidebar
+      {/* UNIFIED CONTENT SHELL - sidebar + main share one surface */}
+      <div className="container py-4">
+        <div className="rounded-2xl bg-card/80 shadow-sm overflow-hidden">
+          <div className="grid grid-cols-1 lg:grid-cols-[260px_1fr]">
+            {/* LEFT SIDEBAR - no separator, just breathing room */}
+            <aside className="hidden lg:flex flex-col shrink-0 gap-3 p-4 pr-2 bg-muted/20 sticky top-20 self-start max-h-[calc(100vh-6rem)] overflow-y-auto">
+              <CompactCategorySidebar
+                categories={categories}
                 locale={locale}
+                selectedPath={categoryPath}
+                onCategorySelect={handleCategorySelect}
+                categoryCounts={categoryCounts}
+              />
+              {categoryPath.length > 0 && (
+                <FiltersSidebar
+                  locale={locale}
+                  filters={filters}
+                  onFiltersChange={setFilters}
+                  onApply={() => fetchProducts(activeTab, 1, pageSize, false, activeCategorySlug)}
+                />
+              )}
+            </aside>
+
+            {/* MAIN CONTENT */}
+            <div className="flex-1 min-w-0 @container p-4 pl-2">
+              {/* PROMOTED SECTION: Desktop-specific styled container */}
+              {activeTab !== "promoted" && promotedProducts.length > 0 && (
+                <PromotedSection 
+                  products={promotedProducts} 
+                  locale={locale}
+                  maxProducts={5}
+                />
+              )}
+
+              {/* Feed toolbar: count + category pills (left) | sort + view toggle (right) */}
+              <FeedToolbar
+                locale={locale}
+                productCount={products.length}
+                activeTab={activeTab}
+                onTabChange={setActiveTab}
+                viewMode={viewMode}
+                onViewModeChange={setViewMode}
+                categorySlug={activeCategorySlug}
                 filters={filters}
                 onFiltersChange={setFilters}
-                onApply={() => fetchProducts(activeTab, 1, pageSize, false, activeCategorySlug)}
+                categoryAttributes={categoryAttributes}
+                isLoadingAttributes={isLoadingAttributes}
               />
-            )}
-          </aside>
 
-          {/* MAIN CONTENT */}
-          <div className="flex-1 min-w-0 @container">
-            {/* PROMOTED ROW: always first on desktop */}
-            {activeTab !== "promoted" && promotedProducts.length > 0 && (
-              <section
-                aria-label={t("tabs.promoted")}
-                className="mb-4 rounded-xl border border-border bg-muted/20 p-4 shadow-sm"
-              >
-                <div className="flex items-center gap-2 mb-3">
-                  <Fire size={16} weight="fill" className="text-fire shrink-0" />
-                  <h2 className="text-sm font-semibold text-foreground">
-                    {t("tabs.promoted")}{" "}
-                    <span className="text-muted-foreground font-normal">
-                      {t("sectionAriaLabel").toLocaleLowerCase(locale)}
-                    </span>
-                  </h2>
-                </div>
-
-                <div className="overflow-x-auto no-scrollbar">
-                  <div className="flex gap-4">
-                    {promotedProducts.slice(0, 10).map((product, index) => (
-                      <div key={product.id} className="w-56 shrink-0">
-                        <ProductCard
-                          id={product.id}
-                          title={product.title}
-                          price={product.price}
-                          originalPrice={product.listPrice ?? null}
-                          isOnSale={Boolean(product.isOnSale)}
-                          salePercent={product.salePercent ?? 0}
-                          saleEndDate={product.saleEndDate ?? null}
-                          createdAt={product.createdAt ?? null}
-                          image={product.image}
-                          rating={product.rating ?? 0}
-                          reviews={product.reviews ?? 0}
-                          slug={product.slug ?? null}
-                          username={product.storeSlug ?? null}
-                          sellerId={product.sellerId ?? null}
-                          sellerName={product.sellerName || product.storeSlug || undefined}
-                          sellerAvatarUrl={product.sellerAvatarUrl ?? null}
-                          sellerVerified={Boolean(product.sellerVerified)}
-                          {...(product.location ? { location: product.location } : {})}
-                          {...(product.condition ? { condition: product.condition } : {})}
-                          tags={product.tags ?? []}
-                          isBoosted
-                          index={index}
-                          {...(product.categoryRootSlug ? { categoryRootSlug: product.categoryRootSlug } : {})}
-                          {...(product.categoryPath ? { categoryPath: product.categoryPath } : {})}
-                          {...(product.attributes ? { attributes: product.attributes } : {})}
-                        />
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </section>
-            )}
-
-            {/* Feed toolbar: count + category pills (left) | sort + view toggle (right) */}
-            <FeedToolbar
-              locale={locale}
-              productCount={products.length}
-              activeTab={activeTab}
-              onTabChange={setActiveTab}
-              viewMode={viewMode}
-              onViewModeChange={setViewMode}
-              categorySlug={activeCategorySlug}
-              filters={filters}
-              onFiltersChange={setFilters}
-              categoryAttributes={categoryAttributes}
-              isLoadingAttributes={isLoadingAttributes}
-            />
-
-            {/* Product Grid - with proper container styling */}
-            <div className="rounded-xl bg-card border border-border p-4 shadow-sm">
-              <div role="list" aria-live="polite">
+              {/* Product Grid */}
+              <div className="rounded-xl bg-card border border-border p-4">
+                <div role="list" aria-live="polite">
                 {products.length === 0 && isLoading ? (
                   <ProductGridSkeleton viewMode={viewMode} />
                 ) : products.length === 0 ? (
@@ -418,6 +373,7 @@ export function DesktopHome({
                     )}
                   </>
                 )}
+                </div>
               </div>
             </div>
           </div>
@@ -443,49 +399,52 @@ export function DesktopHomeSkeleton() {
         </div>
       </div>
 
-      <div className="container py-6">
-        <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-6">
-          {/* Sidebar skeleton */}
-          <aside className="hidden lg:flex flex-col shrink-0 space-y-4">
-            <div className="rounded-lg border border-border bg-card p-1.5 shadow-sm">
-              {Array.from({ length: 12 }).map((_, i) => (
-                <Skeleton key={i} className="h-9 w-full rounded-md mb-1" />
-              ))}
-            </div>
-          </aside>
-
-          {/* Main skeleton */}
-          <div className="flex-1 min-w-0">
-            {/* Promoted row skeleton */}
-            <div className="mb-4 rounded-xl border border-border bg-muted/20 p-4 shadow-sm">
-              <div className="flex items-center gap-2 mb-3">
-                <Skeleton className="h-4 w-40" />
-              </div>
-              <div className="flex gap-4 overflow-hidden">
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <div key={i} className="w-56 shrink-0 space-y-2">
-                    <Skeleton className="aspect-square w-full rounded-md" />
-                    <Skeleton className="h-4 w-full" />
-                    <Skeleton className="h-4 w-2/3" />
-                  </div>
+      {/* Unified content shell skeleton */}
+      <div className="container py-4">
+        <div className="rounded-2xl bg-card/80 shadow-sm overflow-hidden">
+          <div className="grid grid-cols-1 lg:grid-cols-[260px_1fr]">
+            {/* Sidebar skeleton */}
+            <aside className="hidden lg:flex flex-col shrink-0 p-4 pr-2 bg-muted/20">
+              <div className="rounded-lg bg-card p-1.5">
+                {Array.from({ length: 12 }).map((_, i) => (
+                  <Skeleton key={i} className="h-9 w-full rounded-md mb-1" />
                 ))}
               </div>
-            </div>
+            </aside>
 
-            <div className="flex items-center gap-3 mb-4">
-              <Skeleton className="h-9 flex-1 rounded-md" />
-              <Skeleton className="h-8 w-24 rounded-md" />
-              <Skeleton className="h-8 w-16 rounded-md" />
-            </div>
-            <div className="rounded-xl bg-card border border-border p-4 shadow-sm">
-              <div className="grid gap-4 grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-                {Array.from({ length: 18 }).map((_, i) => (
-                  <div key={i} className="space-y-2">
-                    <Skeleton className="aspect-square w-full rounded-md" />
-                    <Skeleton className="h-4 w-full" />
-                    <Skeleton className="h-4 w-2/3" />
-                  </div>
-                ))}
+            {/* Main skeleton */}
+            <div className="flex-1 min-w-0 p-4 pl-2">
+              {/* Promoted row skeleton */}
+              <div className="mb-4 rounded-xl border border-border bg-muted/20 p-4">
+                <div className="flex items-center gap-2 mb-3">
+                  <Skeleton className="h-4 w-40" />
+                </div>
+                <div className="flex gap-4 overflow-hidden">
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <div key={i} className="w-56 shrink-0 space-y-2">
+                      <Skeleton className="aspect-square w-full rounded-md" />
+                      <Skeleton className="h-4 w-full" />
+                      <Skeleton className="h-4 w-2/3" />
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3 mb-4">
+                <Skeleton className="h-9 flex-1 rounded-md" />
+                <Skeleton className="h-8 w-24 rounded-md" />
+                <Skeleton className="h-8 w-16 rounded-md" />
+              </div>
+              <div className="rounded-xl bg-card border border-border p-4">
+                <div className="grid gap-4 grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+                  {Array.from({ length: 18 }).map((_, i) => (
+                    <div key={i} className="space-y-2">
+                      <Skeleton className="aspect-square w-full rounded-md" />
+                      <Skeleton className="h-4 w-full" />
+                      <Skeleton className="h-4 w-2/3" />
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
           </div>

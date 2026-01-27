@@ -1,6 +1,6 @@
 "use client"
 
-import { CaretRight } from "@phosphor-icons/react"
+import { CaretRight, CheckCircle } from "@phosphor-icons/react"
 import { useTranslations } from "next-intl"
 
 import { VerifiedAvatar } from "@/components/shared/verified-avatar"
@@ -39,30 +39,31 @@ export function QuickViewSellerCard({
       type="button"
       onClick={onNavigateToProduct}
       className={cn(
-        "w-full flex items-center gap-3 p-3 rounded-lg text-left",
+        "group w-full flex items-center gap-4 p-4 rounded-xl text-left",
         "bg-card border border-border",
-        "hover:bg-accent/50 transition-colors duration-100",
+        "hover:border-foreground/20 hover:shadow-sm transition-all duration-200",
         "focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
       )}
     >
       <VerifiedAvatar
         name={safeSellerName}
         avatarUrl={sellerAvatarUrl ?? null}
-        size="md"
+        size="lg"
         emailVerified={emailVerified ?? sellerVerified}
         phoneVerified={phoneVerified}
         idVerified={idVerified}
         isVerifiedBusiness={isVerifiedBusiness}
       />
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-semibold truncate">{safeSellerName}</p>
+        <p className="text-base font-semibold truncate group-hover:text-foreground transition-colors">{safeSellerName}</p>
         {hasVerification && (
-          <span className="text-xs text-muted-foreground">
+          <span className="flex items-center gap-1.5 text-sm text-muted-foreground">
+            <CheckCircle size={14} weight="fill" className="text-success shrink-0" />
             {tProduct("verifiedSeller")}
           </span>
         )}
       </div>
-      <CaretRight size={16} className="text-muted-foreground shrink-0" />
+      <CaretRight size={20} className="text-muted-foreground group-hover:text-foreground group-hover:translate-x-0.5 transition-all shrink-0" />
     </button>
   )
 }

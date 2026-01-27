@@ -83,7 +83,7 @@ function NavLink({
     onClick,
 }: {
     href: string
-    icon: React.ComponentType<{ size?: number; weight?: "regular" | "duotone"; className?: string }>
+    icon: React.ComponentType<{ size?: number; weight?: "regular" | "duotone" | "fill"; className?: string }>
     label: string
     onClick: () => void
 }) {
@@ -91,11 +91,11 @@ function NavLink({
         <Link
             href={href}
             onClick={onClick}
-            className="flex items-center gap-4 px-4 h-12 rounded-lg hover:bg-muted/50 active:bg-muted/70 transition-colors"
+            className="flex items-center gap-4 px-4 h-12 rounded-lg hover:bg-muted active:bg-muted/80 transition-colors"
         >
-            <Icon size={24} weight="duotone" className="text-muted-foreground shrink-0" />
+            <Icon size={22} weight="regular" className="text-muted-foreground shrink-0" />
             <span className="text-sm font-medium text-foreground flex-1">{label}</span>
-            <CaretRight size={18} weight="bold" className="text-muted-foreground/40 shrink-0" />
+            <CaretRight size={16} weight="bold" className="text-muted-foreground/40 shrink-0" />
         </Link>
     )
 }
@@ -146,7 +146,7 @@ export function SidebarMenuV2({ user, triggerClassName, userStats }: SidebarMenu
             <span
                 role="button"
                 className={cn(
-                    "inline-flex items-center justify-center size-10 rounded-md text-header-text hover:bg-header-hover active:bg-header-active transition-colors touch-action-manipulation tap-transparent cursor-pointer [&_svg]:size-6",
+                    "inline-flex items-center justify-center size-10 rounded-lg text-foreground hover:bg-muted active:bg-muted/80 transition-colors touch-action-manipulation tap-transparent cursor-pointer [&_svg]:size-6",
                     triggerClassName
                 )}
                 aria-label={t("title")}
@@ -170,7 +170,7 @@ export function SidebarMenuV2({ user, triggerClassName, userStats }: SidebarMenu
                     variant="ghost"
                     size="icon"
                     className={cn(
-                        "size-10 rounded-md text-header-text hover:bg-header-hover active:bg-header-active transition-colors touch-action-manipulation tap-transparent focus-visible:ring-0 focus-visible:ring-offset-0 [&_svg]:size-6",
+                        "size-10 rounded-lg text-foreground hover:bg-muted active:bg-muted/80 transition-colors touch-action-manipulation tap-transparent focus-visible:ring-0 focus-visible:ring-offset-0 [&_svg]:size-6",
                         triggerClassName
                     )}
                     aria-label={t("title")}
@@ -203,8 +203,8 @@ export function SidebarMenuV2({ user, triggerClassName, userStats }: SidebarMenu
                                 onClick={() => setOpen(false)}
                                 className="flex items-center gap-2.5 min-w-0 hover:opacity-90 transition-opacity"
                             >
-                                <div className="size-touch shrink-0 rounded-full bg-muted flex items-center justify-center">
-                                    <UserCircle size={26} weight="fill" className="text-brand" />
+                                <div className="size-touch shrink-0 rounded-full bg-primary/10 flex items-center justify-center">
+                                    <UserCircle size={26} weight="fill" className="text-primary" />
                                 </div>
                                 <span className="text-foreground text-base font-semibold truncate max-w-32">
                                     {firstName || displayName}
@@ -235,10 +235,10 @@ export function SidebarMenuV2({ user, triggerClassName, userStats }: SidebarMenu
                                 <Link
                                     href="/account/settings"
                                     onClick={() => setOpen(false)}
-                                    className="size-touch rounded-full flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
+                                    className="size-touch rounded-full flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
                                     aria-label={tAccountDrawer("settings")}
                                 >
-                                    <Gear size={24} weight="regular" />
+                                    <Gear size={22} weight="regular" />
                                 </Link>
                             )}
 
@@ -281,9 +281,9 @@ export function SidebarMenuV2({ user, triggerClassName, userStats }: SidebarMenu
                             <DrawerClose asChild>
                                 <button
                                     type="button"
-                                    className="size-touch rounded-full flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
+                                    className="size-touch rounded-full flex items-center justify-center text-foreground hover:bg-muted transition-colors"
                                 >
-                                    <X size={24} weight="bold" />
+                                    <X size={22} weight="bold" />
                                     <span className="sr-only">{t('close')}</span>
                                 </button>
                             </DrawerClose>
@@ -321,16 +321,16 @@ export function SidebarMenuV2({ user, triggerClassName, userStats }: SidebarMenu
                                     <Link
                                         href="/account/selling"
                                         onClick={() => setOpen(false)}
-                                        className="flex items-center justify-center gap-1.5 h-touch rounded-lg bg-muted/50 border border-border/60 hover:bg-muted/80 transition-colors"
+                                        className="flex items-center justify-center gap-1.5 h-touch rounded-lg bg-primary/5 border border-primary/20 hover:bg-primary/10 transition-colors"
                                     >
-                                        <Package size={18} weight="duotone" className="text-muted-foreground" />
+                                        <Package size={18} weight="duotone" className="text-primary" />
                                         <span className="text-sm font-semibold tabular-nums">{userStats?.activeListings ?? 0}</span>
                                         <span className="text-xs text-muted-foreground">{tMenu("active")}</span>
                                     </Link>
                                     <Link
                                         href="/account/selling"
                                         onClick={() => setOpen(false)}
-                                        className="flex items-center justify-center gap-1.5 h-touch rounded-lg bg-muted/50 border border-border/60 hover:bg-muted/80 transition-colors"
+                                        className="flex items-center justify-center gap-1.5 h-touch rounded-lg bg-primary/5 border border-primary/20 hover:bg-primary/10 transition-colors"
                                     >
                                         <RocketLaunch size={18} weight="duotone" className="text-primary" />
                                         <span className="text-sm font-semibold tabular-nums">{userStats?.boostedListings ?? 0}</span>
@@ -439,7 +439,7 @@ export function SidebarMenuV2({ user, triggerClassName, userStats }: SidebarMenu
                         /* Unauthenticated - Show categories link and info */
                         <section className="px-3 py-4">
                             <div className="text-center py-8">
-                                <UserCircle size={48} weight="duotone" className="mx-auto text-muted-foreground/50 mb-3" />
+                                <UserCircle size={48} weight="duotone" className="mx-auto text-primary/40 mb-3" />
                                 <h3 className="text-base font-semibold text-foreground mb-1">
                                     {tAccountDrawer("signInPrompt")}
                                 </h3>
@@ -450,7 +450,7 @@ export function SidebarMenuV2({ user, triggerClassName, userStats }: SidebarMenu
                                     <Link
                                         href="/auth/login"
                                         onClick={() => setOpen(false)}
-                                        className="flex items-center justify-center gap-2 h-10 px-6 rounded-full bg-brand text-primary-foreground text-sm font-semibold hover:bg-brand/90 transition-colors"
+                                        className="flex items-center justify-center gap-2 h-10 px-6 rounded-full bg-primary text-primary-foreground text-sm font-semibold hover:bg-primary/90 transition-colors"
                                     >
                                         <SignInIcon size={18} weight="bold" />
                                         <span>{t("signIn")}</span>
@@ -458,7 +458,7 @@ export function SidebarMenuV2({ user, triggerClassName, userStats }: SidebarMenu
                                     <Link
                                         href="/auth/sign-up"
                                         onClick={() => setOpen(false)}
-                                        className="flex items-center justify-center h-10 px-6 rounded-full border border-border text-foreground text-sm font-medium hover:bg-muted/50 transition-colors"
+                                        className="flex items-center justify-center h-10 px-6 rounded-full border border-primary/30 text-primary text-sm font-medium hover:bg-primary/5 transition-colors"
                                     >
                                         {tNav("register")}
                                     </Link>

@@ -1,7 +1,7 @@
 "use client"
 
 import type React from "react"
-import { createContext, useContext, useState, useEffect, useCallback, useOptimistic, useRef } from "react"
+import { createContext, useContext, useState, useEffect, useCallback, useOptimistic, useRef, startTransition } from "react"
 import { createClient } from "@/lib/supabase/client"
 import { toast } from "sonner"
 import { useAuth } from "./auth-state-manager"
@@ -191,7 +191,10 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
     }
 
     // Apply optimistic update BEFORE server call for instant feedback
-    applyOptimistic({ type: "add", productId: product.id, title: product.title, price: product.price, image: product.image })
+    // React 19 requires optimistic updates to be wrapped in startTransition
+    startTransition(() => {
+      applyOptimistic({ type: "add", productId: product.id, title: product.title, price: product.price, image: product.image })
+    })
 
     try {
       const supabase = createClient()
@@ -233,7 +236,10 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
     if (!user?.id) return
 
     // Apply optimistic update BEFORE server call for instant feedback
-    applyOptimistic({ type: "remove", productId })
+    // React 19 requires optimistic updates to be wrapped in startTransition
+    startTransition(() => {
+      applyOptimistic({ type: "remove", productId })
+    })
 
     try {
       const supabase = createClient()

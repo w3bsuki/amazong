@@ -180,7 +180,7 @@ export function CompactCategorySidebar({
         {/* Header category when drilled */}
         {viewLevel > 0 && headerCategory && (
           <div className="flex items-center gap-1">
-            <button type="button" onClick={() => {}} className={cn(itemActive, "flex-1")}>
+            <button type="button" onClick={() => {}} className={cn(itemActive, "flex-1 pr-1.5")}>
               <SquaresFour size={18} weight="fill" className="shrink-0" />
               <span className="flex-1 truncate">
                 {tCategories("allIn", { category: getCategoryName(headerCategory, locale) })}
@@ -188,21 +188,33 @@ export function CompactCategorySidebar({
               {isMounted && categoryCounts[headerCategory.slug] !== undefined && (
                 <span className="text-xs tabular-nums opacity-70">{categoryCounts[headerCategory.slug]}</span>
               )}
-            </button>
-            {/* Reset to All Categories button */}
-            <button
-              type="button"
-              onClick={() => {
-                setViewLevel(0)
-                setCurrentL0(null)
-                setCurrentL1(null)
-                onCategorySelect([], null)
-              }}
-              className="size-8 flex items-center justify-center rounded-md bg-muted hover:bg-destructive/10 hover:text-destructive transition-colors shrink-0"
-              aria-label={tCategories("backToAllCategories")}
-              title={tCategories("backToAllCategories")}
-            >
-              <X size={14} weight="bold" />
+              {/* Reset to All Categories button - inside the black button */}
+              <span
+                role="button"
+                tabIndex={0}
+                onClick={(e) => {
+                  e.stopPropagation()
+                  setViewLevel(0)
+                  setCurrentL0(null)
+                  setCurrentL1(null)
+                  onCategorySelect([], null)
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault()
+                    e.stopPropagation()
+                    setViewLevel(0)
+                    setCurrentL0(null)
+                    setCurrentL1(null)
+                    onCategorySelect([], null)
+                  }
+                }}
+                className="size-6 flex items-center justify-center rounded bg-background/20 hover:bg-background/30 transition-colors shrink-0 ml-1"
+                aria-label={tCategories("backToAllCategories")}
+                title={tCategories("backToAllCategories")}
+              >
+                <X size={12} weight="bold" />
+              </span>
             </button>
           </div>
         )}
