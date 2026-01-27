@@ -3,8 +3,8 @@ import { NextResponse } from "next/server"
 import { cacheLife, cacheTag } from "next/cache"
 import { isNextPrerenderInterrupted } from "@/lib/next/is-next-prerender-interrupted"
 
-// This endpoint returns product counts for root (L0) categories
-// Used for homepage category circles to show abundance (OLX/Bazar pattern)
+// This endpoint returns product counts for ALL categories (L0, L1, L2)
+// Used for sidebar category navigation to show listing counts
 
 // Cache for 1 hour, stale for 5 min (counts don't need to be real-time)
 const CACHE_TTL_SECONDS = 3600
@@ -16,7 +16,7 @@ interface CategoryCount {
 }
 
 /**
- * Get product counts for all root categories.
+ * Get product counts for all categories (L0, L1, L2).
  * Uses category_ancestors array for efficient counting.
  */
 async function getCategoryCountsCached(): Promise<CategoryCount[]> {
@@ -27,24 +27,24 @@ async function getCategoryCountsCached(): Promise<CategoryCount[]> {
   const supabase = createStaticClient()
   if (!supabase) return []
 
-  // Get all root (L0) category IDs
-  const { data: rootCats, error: rootError } = await supabase
+  // Get all categories (L0, L1, L2) - not just root
+  const { data: allCats, error: catsError } = await supabase
     .from("categories")
-    .select("id, slug")
-    .is("parent_id", null)
+    .select("id, slug, depth")
+    .lte("depth", 2) // L0, L1, L2 only
     .lt("display_order", 9000)
+    .order("depth", { ascending: true })
     .order("display_order", { ascending: true })
 
-  if (rootError || !rootCats) {
-    console.error("Error fetching root categories:", rootError)
+  if (catsError || !allCats) {
+    console.error("Error fetching categories:", catsError)
     return []
   }
 
-  // Count products for each root category
-  // Count products where category_ancestors array contains the category ID
+  // Count products for each category
+  // Products have category_ancestors array containing all ancestor category IDs
   const counts = await Promise.all(
-    rootCats.map(async (cat) => {
-      // Use direct count query with category_ancestors array containment
+    allCats.map(async (cat) => {
       const { count, error: countError } = await supabase
         .from('products')
         .select('id', { count: 'exact', head: true })

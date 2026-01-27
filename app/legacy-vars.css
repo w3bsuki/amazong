@@ -68,9 +68,23 @@
   --plans-skeleton-card-w: calc(100vw - 3rem);
   --plans-table-head-w: 13.75rem;
 
+  /* ===== DESKTOP LAYOUT TOKENS ===== */
+  /* Header heights - matches actual header components */
+  --header-h: 4rem;                           /* 64px - desktop standard header */
+  --header-h-mobile: 3.5rem;                  /* 56px - mobile header */
+  
+  /* Sidebar dimensions - shadcn pattern */
+  --sidebar-width: 17.5rem;                   /* 280px - category sidebar */
+  --sidebar-width-mobile: 18rem;              /* 288px - mobile drawer */
+  --sidebar-item-h: 2.5rem;                   /* 40px - sidebar item height */
+  
+  /* Sticky offsets - header + breathing room */
+  --sticky-top: calc(var(--header-h) + 0.5rem);  /* header + 8px margin */
+  --sidebar-max-h: calc(100dvh - var(--header-h) - 1.5rem);  /* viewport - header - margins */
+  
   /* Sidebar max heights - calc-based */
-  --category-sidebar-max-h: calc(100vh - 5rem);
-  --search-sidebar-max-h: calc(100vh - 8rem);
+  --category-sidebar-max-h: var(--sidebar-max-h);
+  --search-sidebar-max-h: calc(100dvh - var(--header-h) - 4rem);
 
   /* Account */
   --account-orders-sheet-scroll-h: calc(100vh - 12rem);

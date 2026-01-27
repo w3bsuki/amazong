@@ -52,7 +52,8 @@ export function CompactCategorySidebar({
   const [currentL1, setCurrentL1] = useState<CategoryTreeNode | null>(null)
   const [isExpanded, setIsExpanded] = useState(false)
   const [isMounted, setIsMounted] = useState(false)
-  const initialVisibleCount = 12
+  // Show more categories on desktop - better use of vertical space
+  const initialVisibleCount = 15
 
   useEffect(() => {
     setIsMounted(true)
@@ -143,7 +144,8 @@ export function CompactCategorySidebar({
     return selectedPath[selectedPath.length - 1]?.slug === slug
   }
 
-  const itemBase = "w-full flex items-center gap-2.5 px-3 py-1.5 rounded-md text-sm transition-colors text-left min-h-9"
+  // Item height from CSS var for consistency with layout tokens
+  const itemBase = "w-full flex items-center gap-2.5 px-3 py-2 rounded-md text-sm transition-colors text-left min-h-(--sidebar-item-h)"
   const itemActive = cn(itemBase, "bg-foreground text-background font-medium")
   const itemInactive = cn(itemBase, "text-muted-foreground hover:bg-muted hover:text-foreground")
 
@@ -266,6 +268,36 @@ export function CompactCategorySidebar({
                 <CaretDown size={14} weight="bold" />
                 {tCategories("moreCount", { count: hiddenCount })}
               </>
+            )}
+          </button>
+        )}
+
+        {/* View All button - shown when drilled into a category with subcategories */}
+        {viewLevel > 0 && headerCategory && visibleItems.length > 0 && (
+          <button
+            type="button"
+            onClick={() => {
+              // Select the current header category to view all products in it
+              if (viewLevel === 1 && currentL0) {
+                onCategorySelect(
+                  [{ slug: currentL0.slug, name: getCategoryName(currentL0, locale) }],
+                  currentL0
+                )
+              } else if (viewLevel === 2 && currentL0 && currentL1) {
+                onCategorySelect(
+                  [
+                    { slug: currentL0.slug, name: getCategoryName(currentL0, locale) },
+                    { slug: currentL1.slug, name: getCategoryName(currentL1, locale) },
+                  ],
+                  currentL1
+                )
+              }
+            }}
+            className="w-full flex items-center justify-center gap-2 py-2.5 mt-2 text-sm font-medium rounded-md bg-foreground text-background hover:bg-foreground/90 transition-colors"
+          >
+            {tCommon("viewAll")}
+            {isMounted && headerCategory && categoryCounts[headerCategory.slug] !== undefined && (
+              <span className="text-xs opacity-70">({categoryCounts[headerCategory.slug]})</span>
             )}
           </button>
         )}

@@ -37,6 +37,8 @@ function AlertDialogOverlay({
       data-slot="alert-dialog-overlay"
       className={cn(
         'fixed inset-0 z-50 bg-overlay-dark',
+        'data-[state=open]:animate-in data-[state=open]:fade-in-0',
+        'data-[state=closed]:animate-out data-[state=closed]:fade-out-0',
         className,
       )}
       {...props}
@@ -55,6 +57,8 @@ function AlertDialogContent({
         data-slot="alert-dialog-content"
         className={cn(
           'bg-background fixed top-1/2 left-1/2 z-50 grid w-full max-w-dialog -translate-x-1/2 -translate-y-1/2 gap-2 rounded-md border p-3 md:p-4 shadow-none sm:max-w-lg',
+          'data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95',
+          'data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95',
           className,
         )}
         {...props}

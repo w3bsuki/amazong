@@ -6,10 +6,21 @@ import { X } from 'lucide-react'
 
 import { cn } from '@/lib/utils'
 
+/**
+ * Dialog Root - wraps Radix Dialog with optional scroll lock bypass
+ * 
+ * By default, Radix Dialog's modal mode invokes react-remove-scroll, which
+ * modifies body styles (position, padding) and can cause sticky header flash.
+ * 
+ * To prevent this, we use modal={false} and provide our own custom overlay
+ * that prevents background scroll via `onWheel` + CSS (same pattern as Drawer).
+ */
 function Dialog({
   ...props
 }: React.ComponentProps<typeof DialogPrimitive.Root>) {
-  return <DialogPrimitive.Root data-slot="dialog" {...props} />
+  // Use modal={false} to bypass react-remove-scroll
+  // Our custom DialogOverlay handles scroll prevention manually
+  return <DialogPrimitive.Root data-slot="dialog" modal={false} {...props} />
 }
 
 function DialogTrigger({
@@ -30,22 +41,78 @@ function DialogClose({
   return <DialogPrimitive.Close data-slot="dialog-close" {...props} />
 }
 
+/**
+ * Blur intensity for dialog overlay
+ * Uses design system backdrop-blur tokens:
+ * - none: 0 (no blur)
+ * - sm: 4px (subtle)
+ * - md: 12px (standard modal blur) - DEFAULT
+ * - lg: 16px (heavier)
+ * - xl: 24px (maximum focus)
+ */
+type DialogOverlayBlur = "none" | "sm" | "md" | "lg" | "xl"
+
+const blurClasses: Record<DialogOverlayBlur, string> = {
+  none: "",
+  sm: "backdrop-blur-sm",
+  md: "backdrop-blur-md",
+  lg: "backdrop-blur-lg",
+  xl: "backdrop-blur-xl",
+}
+
+interface DialogOverlayProps extends React.ComponentProps<"button"> {
+  /**
+   * Blur intensity for the background overlay.
+   * @default "sm" (matches original Dialog behavior)
+   */
+  blur?: DialogOverlayBlur
+}
+
+/**
+ * Custom Dialog Overlay - prevents scroll without react-remove-scroll
+ * 
+ * We intentionally do NOT use Radix's Overlay here (same pattern as Drawer).
+ * Radix Dialog's overlay wraps in react-remove-scroll, which modifies body
+ * styles and causes sticky header flash. Using our own overlay with manual
+ * scroll prevention preserves sticky headers while keeping the dialog modal.
+ */
 function DialogOverlay({
   className,
+  blur = "sm",
   ...props
-}: React.ComponentProps<typeof DialogPrimitive.Overlay>) {
+}: DialogOverlayProps) {
   return (
-    <DialogPrimitive.Overlay
-      data-slot="dialog-overlay"
-      className={cn(
-        'fixed inset-0 z-50 bg-overlay-dark backdrop-blur-sm',
-        'data-[state=open]:animate-in data-[state=open]:fade-in-0',
-        'data-[state=closed]:animate-out data-[state=closed]:fade-out-0',
-        className,
-      )}
-      {...props}
-    />
+    <DialogClose asChild>
+      <button
+        type="button"
+        tabIndex={-1}
+        aria-hidden="true"
+        data-slot="dialog-overlay"
+        className={cn(
+          "fixed inset-0 z-50 bg-overlay-dark touch-none outline-none",
+          "animate-in fade-in-0",
+          blurClasses[blur],
+          className,
+        )}
+        onWheel={(e) => {
+          e.preventDefault()
+        }}
+        {...props}
+      />
+    </DialogClose>
   )
+}
+
+interface DialogContentProps extends React.ComponentProps<typeof DialogPrimitive.Content> {
+  showCloseButton?: boolean
+  closeLabel?: string
+  /** 'default' for standard dialogs, 'fullWidth' for large modals like quick view */
+  variant?: 'default' | 'fullWidth'
+  /**
+   * Blur intensity for the background overlay.
+   * @default "sm"
+   */
+  overlayBlur?: DialogOverlayBlur
 }
 
 function DialogContent({
@@ -54,20 +121,17 @@ function DialogContent({
   showCloseButton = true,
   closeLabel,
   variant = 'default',
+  overlayBlur = 'sm',
+  onCloseAutoFocus,
   ...props
-}: React.ComponentProps<typeof DialogPrimitive.Content> & {
-  showCloseButton?: boolean
-  closeLabel?: string
-  /** 'default' for standard dialogs, 'fullWidth' for large modals like quick view */
-  variant?: 'default' | 'fullWidth'
-}) {
+}: DialogContentProps) {
   return (
     <DialogPortal data-slot="dialog-portal">
-      <DialogOverlay />
+      <DialogOverlay blur={overlayBlur} />
       <DialogPrimitive.Content
         data-slot="dialog-content"
         className={cn(
-          'bg-background fixed top-1/2 left-1/2 z-50 grid w-full -translate-x-1/2 -translate-y-1/2 gap-2 border shadow-modal',
+          'bg-background fixed top-1/2 left-1/2 z-50 grid w-full -translate-x-1/2 -translate-y-1/2 gap-2 border shadow-modal outline-none',
           // Animations
           'data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95 data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%]',
           'data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%]',
@@ -78,6 +142,7 @@ function DialogContent({
             : 'max-w-dialog rounded-lg p-3 sm:max-w-lg md:p-4',
           className,
         )}
+        onCloseAutoFocus={onCloseAutoFocus}
         {...props}
       >
         {children}
