@@ -12,6 +12,7 @@ import {
   CaretUp,
   ArrowLeft,
   SquaresFour,
+  X,
 } from "@phosphor-icons/react"
 import { useTranslations } from "next-intl"
 
@@ -147,13 +148,7 @@ export function CompactCategorySidebar({
   const itemInactive = cn(itemBase, "text-muted-foreground hover:bg-muted hover:text-foreground")
 
   return (
-    <div className="rounded-lg border border-border bg-card shadow-sm">
-      <div className="px-3 py-2.5 border-b border-border">
-        <h2 className="text-sm font-semibold text-foreground">
-          {tCategories("title")}
-        </h2>
-      </div>
-
+    <div className="rounded-lg border border-border bg-card">
       <nav className="p-1.5 space-y-0.5">
         {/* Back button */}
         {viewLevel > 0 && (
@@ -167,7 +162,7 @@ export function CompactCategorySidebar({
           </button>
         )}
 
-        {/* "All" at L0 */}
+        {/* "All Categories" at L0 - prominent first option */}
         {viewLevel === 0 && (
           <button
             type="button"
@@ -175,7 +170,7 @@ export function CompactCategorySidebar({
             className={selectedPath.length === 0 ? itemActive : itemInactive}
           >
             <SquaresFour size={20} weight={selectedPath.length === 0 ? "fill" : "regular"} className="shrink-0" />
-            <span className="flex-1">{tCommon("all")}</span>
+            <span className="flex-1 font-medium">{tCommon("allCategories")}</span>
             <span className="text-xs tabular-nums opacity-70">
               {isMounted && totalCount > 0 ? totalCount : "—"}
             </span>
@@ -184,15 +179,32 @@ export function CompactCategorySidebar({
 
         {/* Header category when drilled */}
         {viewLevel > 0 && headerCategory && (
-          <button type="button" onClick={() => {}} className={itemActive}>
-            <SquaresFour size={18} weight="fill" className="shrink-0" />
-            <span className="flex-1 truncate">
-              {tCategories("allIn", { category: getCategoryName(headerCategory, locale) })}
-            </span>
-            {isMounted && categoryCounts[headerCategory.slug] !== undefined && (
-              <span className="text-xs tabular-nums opacity-70">{categoryCounts[headerCategory.slug]}</span>
-            )}
-          </button>
+          <div className="flex items-center gap-1">
+            <button type="button" onClick={() => {}} className={cn(itemActive, "flex-1")}>
+              <SquaresFour size={18} weight="fill" className="shrink-0" />
+              <span className="flex-1 truncate">
+                {tCategories("allIn", { category: getCategoryName(headerCategory, locale) })}
+              </span>
+              {isMounted && categoryCounts[headerCategory.slug] !== undefined && (
+                <span className="text-xs tabular-nums opacity-70">{categoryCounts[headerCategory.slug]}</span>
+              )}
+            </button>
+            {/* Reset to All Categories button */}
+            <button
+              type="button"
+              onClick={() => {
+                setViewLevel(0)
+                setCurrentL0(null)
+                setCurrentL1(null)
+                onCategorySelect([], null)
+              }}
+              className="size-8 flex items-center justify-center rounded-md bg-muted hover:bg-destructive/10 hover:text-destructive transition-colors shrink-0"
+              aria-label={tCategories("backToAllCategories")}
+              title={tCategories("backToAllCategories")}
+            >
+              <X size={14} weight="bold" />
+            </button>
+          </div>
         )}
 
         {/* Items */}

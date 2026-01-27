@@ -3,7 +3,13 @@ import type { Metadata } from "next"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import { routing } from "@/i18n/routing"
 import { MobileHome } from "@/components/mobile/mobile-home"
-import { getNewestProducts, getBoostedProducts, toUI } from "@/lib/data/products"
+import { 
+  getNewestProducts, 
+  getBoostedProducts, 
+  getDealsProducts,
+  getCategoryRowProducts,
+  toUI 
+} from "@/lib/data/products"
 import { getCategoryHierarchy } from "@/lib/data/categories"
 import { 
   DesktopHome, 
@@ -37,12 +43,33 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
   const categoriesWithChildren = await getCategoryHierarchy(null, 2)
 
   // Fetch initial products for mobile tabs (newest) AND promoted listings
-  const [newestProducts, boostedProducts] = await Promise.all([
+  // Also fetch curated category sections in parallel
+  const [
+    newestProducts, 
+    boostedProducts,
+    dealsProducts,
+    fashionProducts,
+    electronicsProducts,
+    automotiveProducts,
+  ] = await Promise.all([
     getNewestProducts(24),
     getBoostedProducts(10), // Promoted listings for flash deals section
+    getDealsProducts(10),   // Today's Offers section
+    getCategoryRowProducts("fashion", 10),      // Fashion section
+    getCategoryRowProducts("electronics", 10),  // Electronics section
+    getCategoryRowProducts("automotive", 10),   // Automotive section
   ])
+
   const initialProducts = newestProducts.map(p => toUI(p))
   const promotedProducts = boostedProducts.map(p => toUI(p))
+  
+  // Curated sections data
+  const curatedSections = {
+    deals: dealsProducts.map(p => toUI(p)),
+    fashion: fashionProducts.map(p => toUI(p)),
+    electronics: electronicsProducts.map(p => toUI(p)),
+    automotive: automotiveProducts.map(p => toUI(p)),
+  }
 
   return (
     <div className="flex flex-col md:pb-0">
@@ -58,6 +85,7 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
           <MobileHome
             initialProducts={initialProducts.slice(0, 12)}
             promotedProducts={promotedProducts}
+            curatedSections={curatedSections}
             initialCategories={categoriesWithChildren}
             locale={locale}
           />
@@ -77,6 +105,7 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
             categories={categoriesWithChildren}
             initialProducts={initialProducts}
             promotedProducts={promotedProducts}
+            curatedSections={curatedSections}
           />
         </Suspense>
       </div>

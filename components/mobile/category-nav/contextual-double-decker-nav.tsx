@@ -39,6 +39,17 @@ export interface ContextualDoubleDeckerNavProps {
   /** Whether this nav is sticky (default: true). */
   sticky?: boolean
   className?: string
+  
+  /** 
+   * Optional: When provided, shows an X button that resets directly to root categories.
+   * This is useful when user is deeply nested and wants to exit category browsing entirely.
+   */
+  onResetToRoot?: () => void
+  /** 
+   * Optional: Href for reset to root (alternative to callback).
+   * Defaults to /categories if onResetToRoot is not provided but reset is desired.
+   */
+  resetToRootHref?: string
 }
 
 export function ContextualDoubleDeckerNav({
@@ -52,6 +63,8 @@ export function ContextualDoubleDeckerNav({
   stickyTop = 40,
   sticky = true,
   className,
+  onResetToRoot,
+  resetToRootHref,
 }: ContextualDoubleDeckerNavProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const t = useTranslations("SearchCategories")
@@ -89,6 +102,10 @@ export function ContextualDoubleDeckerNav({
   )
 
   const showContextRow = Boolean(parentLabel) && Boolean(parentHref)
+  
+  // Determine if we should show reset-to-root functionality
+  const showResetToRoot = onResetToRoot || resetToRootHref
+  const effectiveResetHref = resetToRootHref || "/categories"
 
   return (
     <div
@@ -119,6 +136,38 @@ export function ContextualDoubleDeckerNav({
               <X size={12} weight="bold" className="opacity-60" />
             </Link>
           </div>
+          
+          {/* Reset to All Categories button - prominent X at end of row */}
+          {showResetToRoot && (
+            <div className="ml-auto shrink-0 pl-2">
+              {onResetToRoot ? (
+                <button
+                  type="button"
+                  onClick={onResetToRoot}
+                  className={cn(
+                    "size-7 flex items-center justify-center rounded-full",
+                    "bg-destructive/10 text-destructive hover:bg-destructive/20",
+                    "transition-colors active:scale-95"
+                  )}
+                  aria-label={tCategories("viewAll")}
+                >
+                  <X size={14} weight="bold" />
+                </button>
+              ) : (
+                <Link
+                  href={effectiveResetHref}
+                  className={cn(
+                    "size-7 flex items-center justify-center rounded-full",
+                    "bg-destructive/10 text-destructive hover:bg-destructive/20",
+                    "transition-colors active:scale-95"
+                  )}
+                  aria-label={tCategories("viewAll")}
+                >
+                  <X size={14} weight="bold" />
+                </Link>
+              )}
+            </div>
+          )}
         </div>
       )}
 

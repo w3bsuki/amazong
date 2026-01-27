@@ -74,11 +74,19 @@ interface Product {
   attributes?: Record<string, unknown>
 }
 
+interface CuratedSections {
+  deals: UIProduct[]
+  fashion: UIProduct[]
+  electronics: UIProduct[]
+  automotive: UIProduct[]
+}
+
 interface DesktopHomeProps {
   locale: string
   categories: CategoryTreeNode[]
   initialProducts?: Product[]
   promotedProducts?: Product[]
+  curatedSections?: CuratedSections
   user?: User | null
 }
 
@@ -91,6 +99,7 @@ export function DesktopHome({
   categories,
   initialProducts = [],
   promotedProducts = [],
+  // curatedSections not used on desktop - category discovery via sidebar
   user,
 }: DesktopHomeProps) {
   const t = useTranslations("TabbedProductFeed")

@@ -19,6 +19,7 @@ import { SubcategoryCircles } from "@/components/mobile/subcategory-circles"
 import { ContextualFilterBar } from "@/components/mobile/category-nav/contextual-filter-bar"
 import { HorizontalProductCard } from "@/components/mobile/horizontal-product-card"
 import { FeedControlBar, type SortOption, type QuickPillId } from "@/components/mobile/feed-control-bar"
+import { CategoryProductRowMobile } from "@/components/shared/product/category-product-row"
 import { useHeader } from "@/components/providers/header-context"
 import type { UIProduct } from "@/lib/data/products"
 import type { CategoryTreeNode } from "@/lib/category-tree"
@@ -29,9 +30,17 @@ import { useTranslations } from "next-intl"
 // Types
 // =============================================================================
 
+interface CuratedSections {
+  deals: UIProduct[]
+  fashion: UIProduct[]
+  electronics: UIProduct[]
+  automotive: UIProduct[]
+}
+
 interface MobileHomeProps {
   initialProducts: UIProduct[]
   promotedProducts?: UIProduct[]
+  curatedSections?: CuratedSections
   initialCategories: CategoryTreeNode[]
   locale: string
   user?: { id: string } | null
@@ -146,6 +155,7 @@ function SellPromoBanner() {
 export function MobileHome({
   initialProducts,
   promotedProducts,
+  curatedSections,
   initialCategories,
   locale,
   user,
@@ -252,45 +262,65 @@ export function MobileHome({
           <PromotedListingsStrip products={promotedProducts} />
         )}
 
-        {/* Feed Controls + For You - Only on "All" tab */}
-        {nav.isAllTab && (
-          <>
-            {/* Sticky Control Bar with Quick Pills */}
-            <FeedControlBar
-              activeSort={activeSort}
-              onSortChange={setActiveSort}
-              activePills={activePills}
-              onPillToggle={handlePillToggle}
-              onFilterClick={() => setSortModalOpen(true)}
-              productCount={nav.activeFeed.products.length}
-            />
-
-            {/* For You Horizontal Scroll - curated picks */}
-            {nav.activeFeed.products.length > 0 && (
-              <section className="pb-1">
-                <div className="px-inset mb-2 flex items-center justify-between">
-                  <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                    {t("mobile.forYouTitle")}
-                  </span>
-                  <Link
-                    href="/todays-deals"
-                    className="flex items-center gap-0.5 text-xs font-medium text-muted-foreground active:text-foreground"
-                  >
-                    {t("mobile.seeAll")}
-                    <ArrowRight size={12} weight="bold" />
-                  </Link>
-                </div>
-
-                <div className="overflow-x-auto no-scrollbar">
-                  <div className="flex gap-3 px-inset">
-                    {nav.activeFeed.products.slice(0, 8).map((product) => (
-                      <HorizontalProductCard key={product.id} product={product} />
-                    ))}
-                  </div>
-                </div>
-              </section>
+        {/* CURATED CATEGORY SECTIONS - Only on "All" tab, after promoted */}
+        {nav.isAllTab && curatedSections && (
+          <div className="space-y-2 pt-2">
+            {/* Today's Deals */}
+            {curatedSections.deals.length > 0 && (
+              <CategoryProductRowMobile
+                title={t("sections.deals")}
+                products={curatedSections.deals}
+                variant="deals"
+                seeAllHref="/todays-deals"
+                seeAllText={t("sections.seeAll")}
+              />
             )}
-          </>
+
+            {/* Fashion */}
+            {curatedSections.fashion.length > 0 && (
+              <CategoryProductRowMobile
+                title={t("sections.fashion")}
+                products={curatedSections.fashion}
+                variant="fashion"
+                seeAllHref="/categories/fashion"
+                seeAllText={t("sections.seeAll")}
+              />
+            )}
+
+            {/* Electronics */}
+            {curatedSections.electronics.length > 0 && (
+              <CategoryProductRowMobile
+                title={t("sections.electronics")}
+                products={curatedSections.electronics}
+                variant="electronics"
+                seeAllHref="/categories/electronics"
+                seeAllText={t("sections.seeAll")}
+              />
+            )}
+
+            {/* Automotive */}
+            {curatedSections.automotive.length > 0 && (
+              <CategoryProductRowMobile
+                title={t("sections.automotive")}
+                products={curatedSections.automotive}
+                variant="automotive"
+                seeAllHref="/categories/automotive"
+                seeAllText={t("sections.seeAll")}
+              />
+            )}
+          </div>
+        )}
+
+        {/* Feed Controls - transition from browse to shop mode */}
+        {nav.isAllTab && (
+          <FeedControlBar
+            activeSort={activeSort}
+            onSortChange={setActiveSort}
+            activePills={activePills}
+            onPillToggle={handlePillToggle}
+            onFilterClick={() => setSortModalOpen(true)}
+            productCount={nav.activeFeed.products.length}
+          />
         )}
 
         {/* Product Feed (reuse existing component) */}

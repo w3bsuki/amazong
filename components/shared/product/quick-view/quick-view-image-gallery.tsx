@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import Image from "next/image"
-import { CaretRight, CaretLeft } from "@phosphor-icons/react"
+import { CaretRight, CaretLeft, MagnifyingGlassPlus } from "@phosphor-icons/react"
 import { useTranslations } from "next-intl"
 
 import { Badge } from "@/components/ui/badge"
@@ -31,6 +31,7 @@ export function QuickViewImageGallery({
   const tDrawers = useTranslations("Drawers")
   const tProduct = useTranslations("Product")
   const [currentIndex, setCurrentIndex] = React.useState(0)
+  const [isZoomed, setIsZoomed] = React.useState(false)
   
   const hasMultiple = images.length > 1
   const currentImage = images[currentIndex] ?? PLACEHOLDER_IMAGE_PATH
@@ -52,21 +53,123 @@ export function QuickViewImageGallery({
     setCurrentIndex(0)
   }, [images])
 
+  // Desktop layout with horizontal thumbnails below
+  if (!compact) {
+    return (
+      <div className="flex flex-col gap-3">
+        {/* Main image - larger aspect for desktop modal */}
+        <div className="group relative">
+          <div className="relative aspect-square overflow-hidden rounded-xl bg-muted">
+            <button
+              type="button"
+              onClick={onNavigateToProduct}
+              className="absolute inset-0 size-full cursor-pointer focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
+              aria-label={tDrawers("viewFullListing")}
+              onMouseEnter={() => setIsZoomed(true)}
+              onMouseLeave={() => setIsZoomed(false)}
+            >
+              <Image
+                src={normalizeImageUrl(currentImage) ?? PLACEHOLDER_IMAGE_PATH}
+                alt={title}
+                fill
+                className={cn(
+                  "object-contain transition-transform duration-500",
+                  isZoomed && "scale-105"
+                )}
+                sizes="(max-width: 1024px) 100vw, 800px"
+                priority
+              />
+            </button>
+
+            {/* Image navigation arrows */}
+            {hasMultiple && (
+              <>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  onClick={(e) => { e.stopPropagation(); prevImage() }}
+                  className="absolute left-3 top-1/2 -translate-y-1/2 size-10 rounded-full bg-background/90 backdrop-blur-sm border border-border shadow-sm hover:bg-background opacity-0 group-hover:opacity-100 transition-opacity"
+                  aria-label={tProduct("previousImage")}
+                >
+                  <CaretLeft size={20} weight="bold" />
+                </Button>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  onClick={(e) => { e.stopPropagation(); nextImage() }}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 size-10 rounded-full bg-background/90 backdrop-blur-sm border border-border shadow-sm hover:bg-background opacity-0 group-hover:opacity-100 transition-opacity"
+                  aria-label={tProduct("nextImage")}
+                >
+                  <CaretRight size={20} weight="bold" />
+                </Button>
+              </>
+            )}
+
+            {/* Discount badge */}
+            {discountPercent && discountPercent > 0 && (
+              <Badge variant="discount" className="absolute top-3 left-3 text-sm px-2.5 py-1">
+                -{discountPercent}%
+              </Badge>
+            )}
+
+            {/* Image counter */}
+            {hasMultiple && (
+              <div className="absolute bottom-3 left-3 px-2.5 py-1 rounded-full bg-foreground/80 backdrop-blur-sm text-background text-xs font-medium tabular-nums">
+                {currentIndex + 1}/{images.length}
+              </div>
+            )}
+
+            {/* Zoom hint */}
+            <div className="absolute bottom-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity">
+              <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full bg-background/90 backdrop-blur-sm border border-border text-xs font-medium">
+                <MagnifyingGlassPlus size={14} weight="bold" />
+                {tDrawers("viewFullListing")}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Horizontal thumbnails - larger for desktop */}
+        {hasMultiple && (
+          <div className="flex gap-2.5 overflow-x-auto scrollbar-hide pb-1">
+            {images.map((img, i) => (
+              <button
+                key={`thumb-${i}`}
+                type="button"
+                onClick={() => setCurrentIndex(i)}
+                onMouseEnter={() => setCurrentIndex(i)}
+                className={cn(
+                  "relative size-20 shrink-0 rounded-lg overflow-hidden transition-all duration-200",
+                  i === currentIndex
+                    ? "ring-2 ring-foreground ring-offset-2 ring-offset-background"
+                    : "border border-border opacity-70 hover:opacity-100"
+                )}
+              >
+                <Image
+                  src={normalizeImageUrl(img) ?? PLACEHOLDER_IMAGE_PATH}
+                  alt=""
+                  fill
+                  className="object-cover"
+                  sizes="80px"
+                />
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+    )
+  }
+
+  // Mobile/compact layout
   return (
     <div className="relative">
-      {/* Main image - 4:3 for compact (mobile), square for desktop */}
-      <div className={cn(
-        "relative bg-muted",
-        compact ? "aspect-[4/3]" : "aspect-square"
-      )}>
-        {/* Main image - tappable to view full listing */}
+      <div className="relative aspect-[4/3] bg-muted">
         <button
           type="button"
           onClick={onNavigateToProduct}
-          className={cn(
-            "absolute inset-0 w-full h-full cursor-pointer",
-            "focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
-          )}
+          className="absolute inset-0 size-full cursor-pointer focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
           aria-label={tDrawers("viewFullListing")}
         >
           <Image
@@ -79,7 +182,6 @@ export function QuickViewImageGallery({
           />
         </button>
 
-        {/* Image navigation arrows */}
         {hasMultiple && (
           <>
             <Button
@@ -87,11 +189,7 @@ export function QuickViewImageGallery({
               variant="ghost"
               size="icon"
               onClick={(e) => { e.stopPropagation(); prevImage() }}
-              className={cn(
-                "absolute left-2 top-1/2 -translate-y-1/2",
-                "size-9 rounded-full bg-background/80 backdrop-blur-sm",
-                "hover:bg-background/90"
-              )}
+              className="absolute left-2 top-1/2 -translate-y-1/2 size-9 rounded-full bg-background/80 backdrop-blur-sm hover:bg-background/90"
               aria-label={tProduct("previousImage")}
             >
               <CaretLeft size={20} weight="bold" />
@@ -101,11 +199,7 @@ export function QuickViewImageGallery({
               variant="ghost"
               size="icon"
               onClick={(e) => { e.stopPropagation(); nextImage() }}
-              className={cn(
-                "absolute right-2 top-1/2 -translate-y-1/2",
-                "size-9 rounded-full bg-background/80 backdrop-blur-sm",
-                "hover:bg-background/90"
-              )}
+              className="absolute right-2 top-1/2 -translate-y-1/2 size-9 rounded-full bg-background/80 backdrop-blur-sm hover:bg-background/90"
               aria-label={tProduct("nextImage")}
             >
               <CaretRight size={20} weight="bold" />
@@ -113,60 +207,30 @@ export function QuickViewImageGallery({
           </>
         )}
 
-        {/* Image counter - only show in non-compact mode or when no thumbnails */}
-        {hasMultiple && !compact && (
-          <div className="absolute bottom-3 left-1/2 -translate-x-1/2 px-2.5 py-1 rounded-full bg-foreground/70 text-background text-xs font-medium tabular-nums">
-            {currentIndex + 1} / {images.length}
-          </div>
-        )}
-
-        {/* Close button */}
         {onRequestClose && (
           <Button
             type="button"
             variant="ghost"
             size="icon-sm"
-            onClick={(e) => {
-              e.stopPropagation()
-              onRequestClose()
-            }}
+            onClick={(e) => { e.stopPropagation(); onRequestClose() }}
             className="absolute top-3 right-3 rounded-full bg-background/80 backdrop-blur-sm hover:bg-background/90"
             aria-label={tProduct("close")}
           >
             <span className="sr-only">{tProduct("close")}</span>
-            <svg
-              aria-hidden="true"
-              width="20"
-              height="20"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
+            <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M18 6L6 18M6 6l12 12" />
             </svg>
           </Button>
         )}
 
-        {/* Discount badge */}
         {discountPercent && discountPercent > 0 && (
           <Badge variant="discount" className="absolute top-3 left-3">
             -{discountPercent}%
           </Badge>
         )}
-
-        {/* "View full listing" hint - only in non-compact mode */}
-        {!compact && (
-          <div className="absolute bottom-3 right-3 px-2 py-1 rounded-full bg-background/80 backdrop-blur-sm text-xs font-medium flex items-center gap-1 md:hidden">
-            {tDrawers("viewFullListing")} <CaretRight size={12} weight="bold" />
-          </div>
-        )}
       </div>
 
-      {/* Horizontal thumbnail strip - compact mode only */}
-      {compact && hasMultiple && (
+      {hasMultiple && (
         <div className="flex gap-1.5 overflow-x-auto px-4 py-2 scrollbar-hide">
           {images.map((img, i) => (
             <button

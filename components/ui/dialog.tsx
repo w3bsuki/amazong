@@ -74,7 +74,7 @@ function DialogContent({
           'duration-200',
           // Size & shape variants
           variant === 'fullWidth'
-            ? 'max-h-[90dvh] max-w-[calc(100vw-2rem)] rounded-xl p-0 md:max-w-5xl lg:max-w-6xl'
+            ? 'max-h-[90dvh] w-[calc(100vw-2rem)] rounded-xl p-0 md:w-[90vw] md:max-w-6xl lg:max-w-[1400px]'
             : 'max-w-dialog rounded-lg p-3 sm:max-w-lg md:p-4',
           className,
         )}

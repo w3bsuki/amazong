@@ -717,6 +717,30 @@ export const getNewestProducts = (limit = 36, zone?: ShippingRegion) => getProdu
 const getPromoProducts = (limit = 36, zone?: ShippingRegion) => getProducts('promo', limit, zone)
 const getBestSellers = (limit = 36, zone?: ShippingRegion) => getProducts('bestsellers', limit, zone)
 
+// =============================================================================
+// Homepage Curated Sections - Fetchers for category rows
+// =============================================================================
+
+/**
+ * Get products currently on sale (deals/promo).
+ * Used for "Today's Offers" section on homepage.
+ */
+export async function getDealsProducts(limit = 10, zone?: ShippingRegion): Promise<Product[]> {
+  return getProducts('deals', limit, zone)
+}
+
+/**
+ * Get products for a specific root category (L0).
+ * Used for category-specific homepage sections like "Trending in Fashion".
+ */
+export async function getCategoryRowProducts(
+  categorySlug: string,
+  limit = 10,
+  zone?: ShippingRegion
+): Promise<Product[]> {
+  return getProductsByCategorySlug(categorySlug, limit, zone)
+}
+
 /**
  * Get products with active boosts (is_boosted=true AND boost_expires_at > now).
  * Uses fair rotation: ORDER BY boost_expires_at ASC (soonest-expiring first).

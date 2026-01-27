@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useEffect, useMemo, startTransition } from "react"
 import { useSearchParams, type ReadonlyURLSearchParams } from "next/navigation"
-import { usePathname, useRouter } from "@/i18n/routing"
+import { usePathname, useRouter, Link } from "@/i18n/routing"
 import { X, Check, Star } from "@phosphor-icons/react"
 import { cn } from "@/lib/utils"
 import { useTranslations } from "next-intl"
@@ -588,30 +588,41 @@ export function FilterModal({
           )}
 
           {!showAllCategoriesOption && (
-            <button
-              type="button"
-              onClick={() => setPendingCategorySlug(null)}
-              className={cn(
-                "w-full flex items-center gap-3 h-10 transition-colors text-left",
-                rowPadClass,
-                pendingCategorySlug === null
-                  ? "bg-muted/40 text-foreground font-medium"
-                  : "text-foreground active:bg-muted/30"
-              )}
-              aria-pressed={pendingCategorySlug === null}
-            >
-              <div
+            <div className="flex items-center" style={{ paddingLeft: "var(--spacing-inset)", paddingRight: "var(--spacing-inset)" }}>
+              <button
+                type="button"
+                onClick={() => setPendingCategorySlug(null)}
                 className={cn(
-                  "size-5 rounded-full border flex items-center justify-center transition-colors shrink-0",
-                  pendingCategorySlug === null ? "bg-primary border-primary" : "border-input"
+                  "flex-1 flex items-center gap-3 h-10 transition-colors text-left",
+                  pendingCategorySlug === null
+                    ? "bg-muted/40 text-foreground font-medium"
+                    : "text-foreground active:bg-muted/30"
                 )}
+                aria-pressed={pendingCategorySlug === null}
               >
-                {pendingCategorySlug === null && <div className="size-2 rounded-full bg-primary-foreground" />}
-              </div>
-              <span className="text-sm font-medium">
-                {tHub("allInCategory", { category: categoryName || "" })}
-              </span>
-            </button>
+                <div
+                  className={cn(
+                    "size-5 rounded-full border flex items-center justify-center transition-colors shrink-0",
+                    pendingCategorySlug === null ? "bg-primary border-primary" : "border-input"
+                  )}
+                >
+                  {pendingCategorySlug === null && <div className="size-2 rounded-full bg-primary-foreground" />}
+                </div>
+                <span className="text-sm font-medium">
+                  {tHub("allInCategory", { category: categoryName || "" })}
+                </span>
+              </button>
+              {/* Reset to All Categories X button */}
+              <Link
+                href="/categories"
+                onClick={() => onOpenChange(false)}
+                className="size-8 flex items-center justify-center rounded-full bg-muted hover:bg-destructive/10 hover:text-destructive transition-colors shrink-0 ml-2"
+                aria-label={t("browseAllCategories")}
+                title={t("browseAllCategories")}
+              >
+                <X size={14} weight="bold" />
+              </Link>
+            </div>
           )}
 
           {subcategories.map((subcat) => {

@@ -12,13 +12,17 @@ import { useRouter } from "@/i18n/routing"
 import { useTranslations } from "next-intl"
 import { toast } from "sonner"
 
+import { X } from "lucide-react"
+
 import {
   Drawer,
   DrawerBody,
+  DrawerClose,
   DrawerContent,
   DrawerDescription,
   DrawerTitle,
 } from "@/components/ui/drawer"
+import { Button } from "@/components/ui/button"
 import type { QuickViewProduct } from "@/components/providers/drawer-context"
 import { useCart } from "@/components/providers/cart-context"
 import { ProductQuickViewContent } from "@/components/shared/product/quick-view/product-quick-view-content"
@@ -95,7 +99,18 @@ export function ProductQuickViewDrawer({
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
       <DrawerContent aria-label={t("quickView")} showHandle>
-        <DrawerTitle className="sr-only">{title || t("quickView")}</DrawerTitle>
+        {/* Header with title + close */}
+        <div className="flex items-center justify-between px-4 pb-2">
+          <DrawerTitle className="text-sm font-semibold text-foreground truncate">
+            {title || t("quickView")}
+          </DrawerTitle>
+          <DrawerClose asChild>
+            <Button variant="ghost" size="icon-sm" className="shrink-0 -mr-2">
+              <X className="size-5" />
+              <span className="sr-only">{t("close")}</span>
+            </Button>
+          </DrawerClose>
+        </div>
         <DrawerDescription className="sr-only">{description}</DrawerDescription>
         <DrawerBody className="px-0">
           {showSkeleton ? (

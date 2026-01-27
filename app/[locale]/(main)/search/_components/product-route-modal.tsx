@@ -3,26 +3,14 @@
 import type { ReactNode } from "react"
 import { useRouter } from "@/i18n/routing"
 import { useState } from "react"
-import { useTranslations } from "next-intl"
-import { ArrowSquareOut } from "@phosphor-icons/react"
+import { X } from "lucide-react"
 
-import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogClose } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 
 export function ProductRouteModal({ title, children }: { title: string; children: ReactNode }) {
   const router = useRouter()
   const [open, setOpen] = useState(true)
-  const t = useTranslations("ProductModal")
-
-  const handleViewFullPage = () => {
-    setOpen(false)
-    // Navigate forward to the real product page instead of going back
-    // The current URL path already points to the product, so we can use it
-    if (typeof window !== "undefined") {
-      const path = window.location.pathname
-      router.push(path)
-    }
-  }
 
   return (
     <div className="hidden md:block">
@@ -39,30 +27,26 @@ export function ProductRouteModal({ title, children }: { title: string; children
       >
         <DialogContent 
           variant="fullWidth" 
-          className="flex flex-col overflow-hidden"
+          className="flex h-[85dvh] flex-col overflow-hidden p-0"
           aria-describedby={undefined}
+          showCloseButton={false}
         >
-          {/* Sticky header with visible title */}
-          <div className="flex items-center justify-between gap-4 border-b border-border bg-background px-5 py-3 pr-14">
-            <DialogTitle className="truncate text-base font-semibold text-foreground">
-              {title}
-            </DialogTitle>
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              className="shrink-0 gap-1.5 text-muted-foreground hover:text-foreground"
-              onClick={handleViewFullPage}
-            >
-              {t("viewFullPage")}
-              <ArrowSquareOut size={16} weight="bold" />
-            </Button>
-          </div>
-
-          {/* Scrollable content */}
-          <div className="flex-1 overflow-y-auto overscroll-contain px-5 py-4">
+          {/* Scrollable content area - no header, cleaner look */}
+          <div className="relative flex-1 overflow-y-auto overscroll-contain">
             {children}
           </div>
+
+          {/* Floating close button - top right */}
+          <DialogClose asChild>
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="absolute right-4 top-4 z-20 size-10 rounded-full bg-background/90 backdrop-blur-sm border border-border shadow-sm hover:bg-background"
+            >
+              <X className="size-5" />
+              <span className="sr-only">Close</span>
+            </Button>
+          </DialogClose>
         </DialogContent>
       </Dialog>
     </div>
