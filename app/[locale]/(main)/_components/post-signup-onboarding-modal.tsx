@@ -18,6 +18,7 @@ import {
   YoutubeLogo,
   TwitterLogo,
   Link as LinkIcon,
+  User,
 } from "@phosphor-icons/react"
 import {
   Dialog,
@@ -37,7 +38,6 @@ import { AVATAR_VARIANTS, type AvatarVariant, getColorPalette } from "@/lib/avat
 
 export type OnboardingData = {
   userId: string
-  intent: "sell" | "shop" | "browse"
   accountType: "personal" | "business" | null
   displayName: string | null
   bio: string | null
@@ -67,33 +67,26 @@ interface PostSignupOnboardingModalProps {
   completePostSignupOnboarding: CompletePostSignupOnboardingAction
 }
 
-type OnboardingStep = "intent" | "profile" | "social" | "business" | "complete"
-type UserIntent = "sell" | "shop" | "browse" | null
+type OnboardingStep = "profile" | "social" | "business" | "complete"
 
 const translations = {
   en: {
-    // Intent step
-    intentTitle: "Welcome to Treido! 🎉",
-    intentSubtitle: "What brings you here today?",
-    wantToSell: "I want to sell",
-    wantToSellDesc: "List items and grow your business",
-    wantToShop: "I want to shop",
-    wantToShopDesc: "Browse and buy amazing products",
-    justBrowse: "Just browsing for now",
     // Profile step
-    profileTitle: "Set up your store",
-    profileSubtitle: "Help buyers get to know you",
-    storeNameLabel: "Store Name",
-    storeNamePlaceholder: "My Awesome Store",
-    storeNameHint: "This is how buyers will find you",
-    bioLabel: "About your store (optional)",
-    bioPlaceholder: "Tell buyers what you sell or what makes your store special...",
+    profileTitle: "Set up your profile",
+    profileSubtitle: "Help others get to know you",
+    displayNameLabel: "Display Name",
+    displayNamePlaceholder: "Your display name",
+    displayNameHint: "This is how others will see you",
+    bioLabel: "About you (optional)",
+    bioPlaceholder: "Tell others a bit about yourself...",
     bioHint: "Max 160 characters",
     profileImageLabel: "Profile Picture",
     profileImageHint: "Click to upload or choose a style",
+    step: "Step",
+    of: "of",
     // Social links step (personal)
     socialTitle: "Add your social links",
-    socialSubtitle: "Help buyers connect with you (optional)",
+    socialSubtitle: "Help others connect with you (optional)",
     instagramPlaceholder: "your.handle",
     tiktokPlaceholder: "your.handle",
     youtubePlaceholder: "channel",
@@ -114,38 +107,31 @@ const translations = {
     continue: "Continue",
     back: "Back",
     skip: "Skip",
-    finish: "Start exploring",
-    startSelling: "Start selling",
+    finish: "Start Shopping",
+    startSelling: "Become a Seller",
     settingUp: "Setting up...",
     // Complete
-    completeTitle: "You're all set! 🚀",
-    completeSellerTitle: "Your store is ready! 🎉",
-    completeSubtitle: "Time to explore amazing deals",
-    completeSellerSubtitle: "Start listing your first product",
+    completeTitle: "You're all set! 🎉",
+    completeSubtitle: "Your profile is ready to go",
+    profileUrl: "Your profile URL",
   },
   bg: {
-    // Intent step
-    intentTitle: "Добре дошли в Treido! 🎉",
-    intentSubtitle: "Какво ви носи тук днес?",
-    wantToSell: "Искам да продавам",
-    wantToSellDesc: "Публикувайте артикули и развивайте бизнеса си",
-    wantToShop: "Искам да пазарувам",
-    wantToShopDesc: "Разгледайте и купете страхотни продукти",
-    justBrowse: "Само разглеждам засега",
     // Profile step
-    profileTitle: "Настройте магазина си",
-    profileSubtitle: "Помогнете на купувачите да ви опознаят",
-    storeNameLabel: "Име на магазина",
-    storeNamePlaceholder: "Моят страхотен магазин",
-    storeNameHint: "Така купувачите ще ви намират",
-    bioLabel: "За вашия магазин (незадължително)",
-    bioPlaceholder: "Разкажете на купувачите какво продавате или какво прави магазина ви специален...",
+    profileTitle: "Настройте профила си",
+    profileSubtitle: "Помогнете на другите да ви опознаят",
+    displayNameLabel: "Показвано име",
+    displayNamePlaceholder: "Вашето показвано име",
+    displayNameHint: "Така другите ще ви виждат",
+    bioLabel: "За вас (незадължително)",
+    bioPlaceholder: "Разкажете малко за себе си...",
     bioHint: "Максимум 160 символа",
     profileImageLabel: "Профилна снимка",
     profileImageHint: "Кликнете за качване или изберете стил",
+    step: "Стъпка",
+    of: "от",
     // Social links step (personal)
     socialTitle: "Добавете социални връзки",
-    socialSubtitle: "Помогнете на купувачите да се свържат с вас (незадължително)",
+    socialSubtitle: "Помогнете на другите да се свържат с вас (незадължително)",
     instagramPlaceholder: "вашият.профил",
     tiktokPlaceholder: "вашият.профил",
     youtubePlaceholder: "канал",
@@ -166,14 +152,13 @@ const translations = {
     continue: "Продължи",
     back: "Назад",
     skip: "Пропусни",
-    finish: "Започнете да разглеждате",
-    startSelling: "Започнете да продавате",
+    finish: "Започни да пазаруваш",
+    startSelling: "Стани продавач",
     settingUp: "Настройка...",
     // Complete
-    completeTitle: "Готови сте! 🚀",
-    completeSellerTitle: "Вашият магазин е готов! 🎉",
-    completeSubtitle: "Време е да разгледате страхотни оферти",
-    completeSellerSubtitle: "Започнете да публикувате първия си продукт",
+    completeTitle: "Готови сте! 🎉",
+    completeSubtitle: "Вашият профил е готов",
+    profileUrl: "URL на профила ви",
   },
 }
 
@@ -192,15 +177,11 @@ export function PostSignupOnboardingModal({
   const [isPending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
 
-  // Step management
-  const [step, setStep] = useState<OnboardingStep>("intent")
-  
-  // User choices
-  const [intent, setIntent] = useState<UserIntent>(null)
-  // accountType comes from props - already set at signup!
+  // Step management - start at profile step (no more intent step!)
+  const [step, setStep] = useState<OnboardingStep>("profile")
   
   // Profile data
-  const [storeName, setStoreName] = useState(initialDisplayName || "")
+  const [displayName, setDisplayName] = useState(initialDisplayName || "")
   const [bio, setBio] = useState("")
   
   // Avatar
@@ -226,6 +207,17 @@ export function PostSignupOnboardingModal({
   const [website, setWebsite] = useState("")
   const [location, setLocation] = useState("")
 
+  // Calculate total steps and current step number for progress indicator
+  const getTotalSteps = () => (accountType === "personal" ? 3 : 3)
+  const getCurrentStepNumber = () => {
+    switch (step) {
+      case "profile": return 1
+      case "social": return 2
+      case "business": return 2
+      case "complete": return 3
+    }
+  }
+
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file) {
@@ -247,18 +239,6 @@ export function PostSignupOnboardingModal({
     }
   }
 
-  const handleIntentSelect = (selectedIntent: UserIntent) => {
-    setIntent(selectedIntent)
-    if (selectedIntent === "sell") {
-      // For sellers: just mark onboarding complete and redirect to /sell
-      // The /sell page has its own seller onboarding (Stripe Connect, etc.)
-      handleComplete(selectedIntent, null)
-    } else {
-      // For shop or browse, complete immediately
-      handleComplete(selectedIntent, null)
-    }
-  }
-
   const handleProfileNext = () => {
     // accountType from props determines next step
     if (accountType === "personal") {
@@ -268,10 +248,8 @@ export function PostSignupOnboardingModal({
     }
   }
 
-  const handleComplete = async (finalIntent?: UserIntent, _unused?: null) => {
+  const handleComplete = async () => {
     setError(null)
-    const useIntent = finalIntent ?? intent
-    // Use accountType from props - already set at signup!
 
     const socialLinks: Record<string, string> = {}
     if (instagram.trim()) socialLinks.instagram = instagram.trim()
@@ -282,9 +260,8 @@ export function PostSignupOnboardingModal({
 
     const data: OnboardingData = {
       userId,
-      intent: useIntent || "browse",
       accountType,  // From props - already set at signup!
-      displayName: storeName.trim() || null,
+      displayName: displayName.trim() || null,
       bio: bio.trim() || null,
       businessName: accountType === "business" ? businessName.trim() || null : null,
       website: accountType === "business" ? website.trim() || null : null,
@@ -312,9 +289,9 @@ export function PostSignupOnboardingModal({
     })
   }
 
-  const handleFinish = () => {
+  const handleFinish = (goToSell: boolean) => {
     onClose()
-    if (intent === "sell") {
+    if (goToSell) {
       router.push("/sell")
     } else {
       router.push("/")
@@ -324,10 +301,6 @@ export function PostSignupOnboardingModal({
 
   const goBack = () => {
     switch (step) {
-      case "profile":
-        // Go back to intent - no more account-type step!
-        setStep("intent")
-        break
       case "social":
       case "business":
         setStep("profile")
@@ -342,71 +315,7 @@ export function PostSignupOnboardingModal({
         showCloseButton={false}
       >
         <AnimatePresence mode="wait">
-          {/* STEP: Intent Selection */}
-          {step === "intent" && (
-            <motion.div
-              key="intent"
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
-              transition={{ duration: 0.2 }}
-              className="p-4 sm:p-5"
-            >
-              <DialogHeader className="mb-4 sm:mb-5">
-                <DialogTitle className="text-xl sm:text-2xl font-bold text-center">{t.intentTitle}</DialogTitle>
-                <DialogDescription className="text-center text-muted-foreground">{t.intentSubtitle}</DialogDescription>
-              </DialogHeader>
-
-              <div className="space-y-2.5">
-                {/* Sell option */}
-                <button
-                  type="button"
-                  onClick={() => handleIntentSelect("sell")}
-                  className="w-full p-3 sm:p-4 rounded-lg bg-primary/5 border-2 border-primary/20 hover:border-primary/40 hover:bg-primary/10 transition-all text-left group"
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="size-10 sm:size-11 rounded-lg bg-primary flex items-center justify-center shrink-0 shadow-sm">
-                      <Storefront className="size-5" weight="fill" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="font-semibold text-foreground">{t.wantToSell}</p>
-                      <p className="text-xs sm:text-sm text-muted-foreground">{t.wantToSellDesc}</p>
-                    </div>
-                    <ArrowRight className="size-5 text-primary group-hover:translate-x-0.5 transition-transform" weight="bold" />
-                  </div>
-                </button>
-
-                {/* Shop option */}
-                <button
-                  type="button"
-                  onClick={() => handleIntentSelect("shop")}
-                  className="w-full p-3 sm:p-4 rounded-lg bg-card border-2 border-input hover:border-primary/30 hover:bg-primary/5 transition-all text-left group"
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="size-10 sm:size-11 rounded-lg bg-info flex items-center justify-center shrink-0 shadow-sm">
-                      <ShoppingBag className="size-5" weight="fill" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="font-semibold text-foreground">{t.wantToShop}</p>
-                      <p className="text-xs sm:text-sm text-muted-foreground">{t.wantToShopDesc}</p>
-                    </div>
-                    <ArrowRight className="size-5 text-muted-foreground group-hover:text-primary group-hover:translate-x-0.5 transition-all" />
-                  </div>
-                </button>
-
-                {/* Browse option */}
-                <button
-                  type="button"
-                  onClick={() => handleIntentSelect("browse")}
-                  className="w-full py-3 text-sm text-primary/70 hover:text-primary font-medium hover:underline underline-offset-2 transition-colors"
-                >
-                  {t.justBrowse}
-                </button>
-              </div>
-            </motion.div>
-          )}
-
-          {/* STEP: Profile Setup */}
+          {/* STEP: Profile Setup (First Step) */}
           {step === "profile" && (
             <motion.div
               key="profile"
@@ -416,17 +325,16 @@ export function PostSignupOnboardingModal({
               transition={{ duration: 0.2 }}
               className="p-4 sm:p-5"
             >
-              <button
-                onClick={goBack}
-                className="flex items-center gap-1.5 text-sm text-primary hover:text-primary/80 font-medium mb-3 sm:mb-4 transition-colors"
-              >
-                <ArrowLeft className="size-4" weight="bold" />
-                {t.back}
-              </button>
+              {/* Progress indicator */}
+              <div className="flex items-center justify-center gap-2 mb-4 text-xs text-muted-foreground">
+                <span className="font-medium text-foreground">{t.step} {getCurrentStepNumber()}</span>
+                <span>{t.of}</span>
+                <span>{getTotalSteps()}</span>
+              </div>
 
               <DialogHeader className="mb-4 sm:mb-5">
-                <DialogTitle className="text-lg sm:text-xl font-semibold">{t.profileTitle}</DialogTitle>
-                <DialogDescription className="text-muted-foreground">{t.profileSubtitle}</DialogDescription>
+                <DialogTitle className="text-lg sm:text-xl font-semibold text-center">{t.profileTitle}</DialogTitle>
+                <DialogDescription className="text-muted-foreground text-center">{t.profileSubtitle}</DialogDescription>
               </DialogHeader>
 
               <div className="space-y-4 sm:space-y-5">
@@ -496,20 +404,20 @@ export function PostSignupOnboardingModal({
                   </div>
                 </div>
 
-                {/* Store Name */}
+                {/* Display Name */}
                 <div>
-                  <Label htmlFor="storeName" className="text-sm font-semibold text-foreground">
-                    {t.storeNameLabel}
+                  <Label htmlFor="displayName" className="text-sm font-semibold text-foreground">
+                    {t.displayNameLabel}
                   </Label>
                   <Input
-                    id="storeName"
-                    value={storeName}
-                    onChange={(e) => setStoreName(e.target.value)}
-                    placeholder={t.storeNamePlaceholder}
+                    id="displayName"
+                    value={displayName}
+                    onChange={(e) => setDisplayName(e.target.value)}
+                    placeholder={t.displayNamePlaceholder}
                     className="mt-2 h-10 border-input focus:border-primary focus:ring-primary/20"
                     maxLength={50}
                   />
-                  <p className="text-xs text-muted-foreground mt-1.5">{t.storeNameHint}</p>
+                  <p className="text-xs text-muted-foreground mt-1.5">{t.displayNameHint}</p>
                 </div>
 
                 {/* Bio */}
@@ -563,6 +471,13 @@ export function PostSignupOnboardingModal({
                 <ArrowLeft className="size-4" weight="bold" />
                 {t.back}
               </button>
+
+              {/* Progress indicator */}
+              <div className="flex items-center justify-center gap-2 mb-4 text-xs text-muted-foreground">
+                <span className="font-medium text-foreground">{t.step} {getCurrentStepNumber()}</span>
+                <span>{t.of}</span>
+                <span>{getTotalSteps()}</span>
+              </div>
 
               <DialogHeader className="mb-4 sm:mb-5">
                 <DialogTitle className="text-lg sm:text-xl font-semibold">{t.socialTitle}</DialogTitle>
@@ -703,6 +618,13 @@ export function PostSignupOnboardingModal({
                 {t.back}
               </button>
 
+              {/* Progress indicator */}
+              <div className="flex items-center justify-center gap-2 mb-4 text-xs text-muted-foreground">
+                <span className="font-medium text-foreground">{t.step} {getCurrentStepNumber()}</span>
+                <span>{t.of}</span>
+                <span>{getTotalSteps()}</span>
+              </div>
+
               <DialogHeader className="mb-4 sm:mb-5">
                 <DialogTitle className="text-lg sm:text-xl font-semibold">{t.businessInfoTitle}</DialogTitle>
                 <DialogDescription className="text-muted-foreground">{t.businessInfoSubtitle}</DialogDescription>
@@ -828,7 +750,7 @@ export function PostSignupOnboardingModal({
             </motion.div>
           )}
 
-          {/* STEP: Complete */}
+          {/* STEP: Complete - with profile preview and two CTAs */}
           {step === "complete" && (
             <motion.div
               key="complete"
@@ -848,26 +770,63 @@ export function PostSignupOnboardingModal({
 
               <DialogHeader className="mb-4 sm:mb-5">
                 <DialogTitle className="text-xl sm:text-2xl font-bold">
-                  {intent === "sell" ? t.completeSellerTitle : t.completeTitle}
+                  {t.completeTitle}
                 </DialogTitle>
                 <DialogDescription className="text-muted-foreground text-sm sm:text-base mt-1">
-                  {intent === "sell" ? t.completeSellerSubtitle : t.completeSubtitle}
+                  {t.completeSubtitle}
                 </DialogDescription>
               </DialogHeader>
 
-              <Button onClick={handleFinish} className="w-full h-11 sm:h-12 text-sm sm:text-base font-semibold shadow-sm">
-                {intent === "sell" ? (
-                  <>
-                    <Storefront className="size-4 sm:size-5 mr-2" weight="fill" />
-                    {t.startSelling}
-                  </>
-                ) : (
-                  <>
-                    <ShoppingBag className="size-4 sm:size-5 mr-2" weight="fill" />
-                    {t.finish}
-                  </>
-                )}
-              </Button>
+              {/* Profile Preview Card */}
+              <div className="mb-5 p-4 rounded-xl bg-secondary/50 border border-border">
+                <div className="flex items-center gap-3">
+                  <div className="size-12 rounded-lg overflow-hidden border-2 border-primary/20 shadow-sm">
+                    {useCustomAvatar && avatarPreview ? (
+                      <Image
+                        src={avatarPreview}
+                        alt="Your avatar"
+                        width={48}
+                        height={48}
+                        className="object-cover w-full h-full"
+                      />
+                    ) : (
+                      <Avatar
+                        size={48}
+                        name={username}
+                        variant={avatarVariant}
+                        colors={getColorPalette(avatarPalette)}
+                        square
+                      />
+                    )}
+                  </div>
+                  <div className="text-left">
+                    <p className="font-semibold text-foreground">{displayName || username}</p>
+                    <p className="text-xs text-muted-foreground">@{username}</p>
+                  </div>
+                </div>
+                <p className="text-xs text-muted-foreground mt-3 text-left">
+                  {t.profileUrl}: <span className="font-mono text-foreground">treido.eu/u/{username}</span>
+                </p>
+              </div>
+
+              {/* Two CTAs: Start Shopping (Primary) and Become a Seller (Secondary) */}
+              <div className="space-y-3">
+                <Button 
+                  onClick={() => handleFinish(false)} 
+                  className="w-full h-11 sm:h-12 text-sm sm:text-base font-semibold shadow-sm"
+                >
+                  <ShoppingBag className="size-4 sm:size-5 mr-2" weight="fill" />
+                  {t.finish}
+                </Button>
+                <Button 
+                  onClick={() => handleFinish(true)} 
+                  variant="outline"
+                  className="w-full h-11 sm:h-12 text-sm sm:text-base font-semibold border-2"
+                >
+                  <Storefront className="size-4 sm:size-5 mr-2" weight="fill" />
+                  {t.startSelling}
+                </Button>
+              </div>
             </motion.div>
           )}
         </AnimatePresence>

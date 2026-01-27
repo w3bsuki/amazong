@@ -13,7 +13,7 @@ import {
 } from "./toast"
 
 const meta: Meta<typeof Toast> = {
-  title: "UI/Toast",
+  title: "Primitives/Toast",
   component: Toast,
   tags: ["autodocs"],
   parameters: { layout: "centered" },

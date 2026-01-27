@@ -19,7 +19,8 @@ interface TabData {
   hasMore: boolean
 }
 
-interface L3Cache {
+// Cache children for any parent category (supports L3, L4, etc.)
+interface ChildrenCache {
   [parentId: string]: Category[]
 }
 
@@ -43,6 +44,7 @@ export interface UseCategoryNavigationReturn {
   activeTab: string
   activeL1: string | null
   activeL2: string | null
+  activeL3: string | null
   selectedPill: string | null
   setSelectedPill: (pill: string | null) => void
 
@@ -53,12 +55,18 @@ export interface UseCategoryNavigationReturn {
   l2Categories: Category[]
   currentL2: Category | undefined
   l3Categories: Category[]
+  currentL3: Category | undefined
+  l4Categories: Category[]
   circlesToDisplay: Category[]
   showL1Circles: boolean
   showL2Circles: boolean
+  showL3Circles: boolean
+  showL4Circles: boolean
   showPills: boolean
-  isDrilledDown: boolean // Treido pattern: true when circles hidden, pills visible
+  isDrilledDown: boolean
   isL3Loading: boolean
+  isL4Loading: boolean
+  isLeafCategory: boolean
   activeSlug: string
   isAllTab: boolean
   activeCategoryName: string | null
@@ -105,8 +113,12 @@ export function useCategoryNavigation({
   const displayCategories = initialCategories
 
   // L3 cache: lazy-loaded children keyed by parent L2 id
-  const [l3Cache, setL3Cache] = useState<L3Cache>({})
-  const [l3Loading, setL3Loading] = useState<string | null>(null)
+  // Generic children cache for lazy-loaded categories (L3, L4, etc.)
+  const [childrenCache, setChildrenCache] = useState<ChildrenCache>({})
+  const [childrenLoading, setChildrenLoading] = useState<string | null>(null)
+  
+  // L3 navigation state (L4 becomes selectedPill)
+  const [activeL3, setActiveL3] = useState<string | null>(null)
 
   // Initialize from URL params or props
   const urlInitialTab = searchParams.get("tab")
@@ -137,12 +149,14 @@ export function useCategoryNavigation({
     if (urlTab !== activeTab) {
       setActiveTab(urlTab)
       setActiveL2(null)
+      setActiveL3(null)
       setSelectedPill(null)
     }
 
     if (urlSub !== activeL1) {
       setActiveL1(urlSub)
       setActiveL2(null)
+      setActiveL3(null)
       setSelectedPill(null)
     }
   }, [urlTab, urlSub]) // eslint-disable-line react-hooks/exhaustive-deps
@@ -219,95 +233,125 @@ export function useCategoryNavigation({
   // L3 categories - LAZY LOADED from cache
   const l3Categories = useMemo(() => {
     if (!currentL2) return []
-    return l3Cache[currentL2.id] ?? []
-  }, [currentL2, l3Cache])
+    return childrenCache[currentL2.id] ?? []
+  }, [currentL2, childrenCache])
+
+  const currentL3 = useMemo(
+    () => l3Categories.find((c) => c.slug === activeL3),
+    [l3Categories, activeL3]
+  )
+
+  // L4 categories - LAZY LOADED from cache
+  const l4Categories = useMemo(() => {
+    if (!currentL3) return []
+    return childrenCache[currentL3.id] ?? []
+  }, [currentL3, childrenCache])
+
+  // Generic fetch children for any parent category
+  const fetchChildrenFor = useCallback(async (parentId: string) => {
+    if (childrenCache[parentId] || childrenLoading === parentId) return
+    
+    setChildrenLoading(parentId)
+    try {
+      const res = await fetch(`/api/categories/${parentId}/children`)
+      if (!res.ok) throw new Error("Failed to fetch child categories")
+      const data = await res.json()
+      setChildrenCache((prev) => ({
+        ...prev,
+        [parentId]: data.children || [],
+      }))
+    } catch (err) {
+      console.error("Failed to load child categories:", err)
+      setChildrenCache((prev) => ({ ...prev, [parentId]: [] }))
+    } finally {
+      setChildrenLoading(null)
+    }
+  }, [childrenCache, childrenLoading])
 
   // Fetch L3 children when L2 is selected
   useEffect(() => {
     if (!currentL2) return
-    if (l3Cache[currentL2.id] || l3Loading === currentL2.id) return
+    fetchChildrenFor(currentL2.id)
+  }, [currentL2?.id]) // eslint-disable-line react-hooks/exhaustive-deps
 
-    const fetchL3 = async () => {
-      setL3Loading(currentL2.id)
-      try {
-        const res = await fetch(`/api/categories/${currentL2.id}/children`)
-        if (!res.ok) throw new Error("Failed to fetch L3 categories")
-        const data = await res.json()
-        setL3Cache((prev) => ({
-          ...prev,
-          [currentL2.id]: data.children || [],
-        }))
-      } catch (err) {
-        console.error("Failed to load L3 categories:", err)
-        setL3Cache((prev) => ({ ...prev, [currentL2.id]: [] }))
-      } finally {
-        setL3Loading(null)
-      }
-    }
-
-    fetchL3()
-  }, [currentL2, l3Cache, l3Loading])
+  // Fetch L4 children when L3 is selected
+  useEffect(() => {
+    if (!currentL3) return
+    fetchChildrenFor(currentL3.id)
+  }, [currentL3?.id]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // ==========================================================================
-  // Visual Drill-Down Navigation (Treido-mock pattern)
+  // Visual Drill-Down Navigation (Temu-style continuous circles)
   // ==========================================================================
-  // KEY INSIGHT: Never show circles AND pills at the same time!
-  //
-  // STATE A (Showroom): Show circles, NO pills
-  //   - L1 circles when no L1 selected
-  //   - L2 circles when L1 selected but no L2 selected
-  //
-  // STATE B (Drilled Down): NO circles, show morphed back pill + L3 pills
-  //   - When L2 is selected, circles HIDE completely
-  //   - The active L2 morphs into a dark "back pill" with icon + X
-  //   - L3 subcategories appear as text pills next to the back pill
+  // Keep showing circles at each level until we reach a leaf category:
+  //   - L0 selected → show L1 circles (Men's, Women's, Kids)
+  //   - L1 selected → show L2 circles (Clothing, Shoes, Accessories)
+  //   - L2 selected → show L3 circles (T-Shirts, Pants, Jackets)
+  //   - L3 selected → show L4 circles (if any)
+  //   - L4 selected OR leaf reached → show banner + products
   // ==========================================================================
 
-  const isDrilledDown = !!activeL2 // STATE B: circles hidden, pills visible
-  const isL3Loading = !!currentL2 && l3Loading === currentL2.id
+  const isL3Loading = !!currentL2 && childrenLoading === currentL2.id
+  const isL4Loading = !!currentL3 && childrenLoading === currentL3.id
+  
+  // Check if we're at a leaf category (fetched but no children)
+  const isL3Leaf = !!currentL3 && childrenCache[currentL3.id] !== undefined && (childrenCache[currentL3.id]?.length ?? 0) === 0
+  const isL4Selected = !!selectedPill
+  const isLeafCategory = isL3Leaf || isL4Selected
 
-  // Determine what to show based on drill-down state
-  const showL1Circles = !isDrilledDown && !activeL1 && l1Categories.length > 0
-  const showL2Circles = !isDrilledDown && !!activeL1 && l2Categories.length > 0
-  const circlesToDisplay = isDrilledDown
-    ? [] // STATE B: No circles!
-    : showL2Circles
-      ? l2Categories
-      : showL1Circles
-        ? l1Categories
-        : []
+  // Determine which circles to show based on current drill-down level
+  // Keep showing current level while next level is loading
+  const showL1Circles = !activeL1 && l1Categories.length > 0
+  const showL2Circles = !!activeL1 && (!activeL2 || isL3Loading) && l2Categories.length > 0
+  const showL3Circles = !!activeL2 && (!activeL3 || isL4Loading) && l3Categories.length > 0
+  const showL4Circles = !!activeL3 && !selectedPill && !isL3Leaf && l4Categories.length > 0
 
-  // Pills shown in drilled-down state (STATE B). Even if L3 is empty/not loaded yet,
+  const circlesToDisplay = showL4Circles
+    ? l4Categories
+    : showL3Circles
+      ? l3Categories
+      : showL2Circles
+        ? l2Categories
+        : showL1Circles
+          ? l1Categories
+          : []
+
+  // Only show pills when at deepest level
+  const isDrilledDown = isLeafCategory
   // we still want the "back pill" row to exist and not fall back to circles.
   const showPills = isDrilledDown
 
   // Effective category slug for fetching products
   const activeSlug = useMemo(() => {
     if (selectedPill) return selectedPill
+    if (activeL3) return activeL3
     if (activeL2) return activeL2
     if (activeL1) return activeL1
     return activeTab
-  }, [selectedPill, activeL2, activeL1, activeTab])
+  }, [selectedPill, activeL3, activeL2, activeL1, activeTab])
 
   // Get current category name for empty state
   const activeCategoryName = useMemo(() => {
     if (selectedPill) {
-      const pill = l3Categories.find((c) => c.slug === selectedPill)
+      const pill = l4Categories.find((c) => c.slug === selectedPill)
       return pill ? getCategoryName(pill, locale) : null
     }
+    if (activeL3 && currentL3) return getCategoryName(currentL3, locale)
     if (activeL2 && currentL2) return getCategoryName(currentL2, locale)
     if (activeL1 && currentL1) return getCategoryName(currentL1, locale)
     if (activeTab !== "all" && currentL0) return getCategoryName(currentL0, locale)
     return null
   }, [
     selectedPill,
+    activeL3,
     activeL2,
     activeL1,
     activeTab,
     currentL0,
     currentL1,
     currentL2,
-    l3Categories,
+    currentL3,
+    l4Categories,
     locale,
   ])
 
@@ -486,6 +530,7 @@ export function useCategoryNavigation({
       setActiveTab(slug)
       setActiveL1(null)
       setActiveL2(null)
+      setActiveL3(null)
       setSelectedPill(null)
       updateUrl(slug, null)
       window.scrollTo({ top: 0, behavior: "smooth" })
@@ -495,40 +540,54 @@ export function useCategoryNavigation({
 
   const handleCircleClick = useCallback(
     (category: Category) => {
-      // Determine if clicked category is L1 or L2 based on whether it exists in l1Categories
-      // This allows clicking any L1 circle to update L1 (not L2), even if L1 is already set
+      // Determine category level based on which list it belongs to
       const isL1Category = l1Categories.some((c) => c.slug === category.slug)
+      const isL2Category = l2Categories.some((c) => c.slug === category.slug)
+      const isL3Category = l3Categories.some((c) => c.slug === category.slug)
+      const isL4Category = l4Categories.some((c) => c.slug === category.slug)
       
       if (isL1Category) {
-        // Clicking an L1 category - update L1 selection
+        // Clicking an L1 category - update L1 selection, reset deeper levels
         setActiveL1(category.slug)
         setActiveL2(null)
+        setActiveL3(null)
         setSelectedPill(null)
         updateUrl(activeTab, category.slug)
-      } else {
-        // Clicking an L2 category - update L2 selection (only if L1 is set)
-        if (activeL1) {
-          setActiveL2(category.slug)
-          setSelectedPill(null)
-        }
+      } else if (isL2Category) {
+        // Clicking an L2 category - update L2 selection
+        setActiveL2(category.slug)
+        setActiveL3(null)
+        setSelectedPill(null)
+      } else if (isL3Category) {
+        // Clicking an L3 category - update L3 selection
+        setActiveL3(category.slug)
+        setSelectedPill(null)
+      } else if (isL4Category) {
+        // Clicking an L4 category - set as selected pill (deepest level)
+        setSelectedPill(category.slug)
       }
     },
-    [activeL1, activeTab, updateUrl, l1Categories]
+    [activeTab, updateUrl, l1Categories, l2Categories, l3Categories, l4Categories]
   )
 
   const handleBack = useCallback(() => {
     if (selectedPill) {
       setSelectedPill(null)
+    } else if (activeL3) {
+      setActiveL3(null)
+      setSelectedPill(null)
     } else if (activeL2) {
       setActiveL2(null)
+      setActiveL3(null)
       setSelectedPill(null)
     } else if (activeL1) {
       setActiveL1(null)
       setActiveL2(null)
+      setActiveL3(null)
       setSelectedPill(null)
       updateUrl(activeTab, null)
     }
-  }, [selectedPill, activeL2, activeL1, activeTab, updateUrl])
+  }, [selectedPill, activeL3, activeL2, activeL1, activeTab, updateUrl])
 
   const handlePillClick = useCallback(
     (category: Category) => {
@@ -546,6 +605,7 @@ export function useCategoryNavigation({
     activeTab,
     activeL1,
     activeL2,
+    activeL3,
     selectedPill,
     setSelectedPill,
 
@@ -556,12 +616,18 @@ export function useCategoryNavigation({
     l2Categories,
     currentL2,
     l3Categories,
+    currentL3,
+    l4Categories,
     circlesToDisplay,
     showL1Circles,
     showL2Circles,
+    showL3Circles,
+    showL4Circles,
     showPills,
     isDrilledDown,
     isL3Loading,
+    isL4Loading,
+    isLeafCategory,
     activeSlug,
     isAllTab,
     activeCategoryName,

@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/nextjs-vite"
 import { Alert, AlertDescription, AlertTitle } from "./alert"
 
 const meta: Meta<typeof Alert> = {
-  title: "UI/Alert",
+  title: "Primitives/Alert",
   component: Alert,
   tags: ["autodocs"],
   parameters: { layout: "centered" },

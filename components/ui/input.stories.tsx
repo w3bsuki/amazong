@@ -6,7 +6,7 @@ import { Input } from "./input"
 import { Search as SearchIcon, Mail, Lock, Eye } from "lucide-react"
 
 const meta: Meta<typeof Input> = {
-  title: "UI/Input",
+  title: "Primitives/Input",
   component: Input,
   parameters: {
     layout: "centered",

@@ -15,6 +15,10 @@ interface ExploreBannerProps {
   onTabChange: (tab: ExploreTab) => void
   onSortClick: () => void
   productCount?: number
+  /** Make the banner sticky (sticks below header + pills) */
+  sticky?: boolean
+  /** Top offset for sticky positioning (to account for header height) */
+  stickyTop?: number
 }
 
 // =============================================================================
@@ -40,11 +44,19 @@ export function ExploreBanner({
   onTabChange,
   onSortClick,
   productCount,
+  sticky = true,
+  stickyTop = 88, // header (48) + pills (40)
 }: ExploreBannerProps) {
   const t = useTranslations("Home")
 
   return (
-    <div className="px-inset py-2">
+    <div
+      className={cn(
+        "px-inset py-2 bg-surface-page z-20",
+        sticky && "sticky"
+      )}
+      style={sticky ? { top: stickyTop } : undefined}
+    >
       {/* Banner Container */}
       <div className="rounded-lg border border-border/60 bg-background">
         <div className="flex items-center gap-1.5 p-1">

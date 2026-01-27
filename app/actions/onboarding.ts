@@ -5,7 +5,6 @@ import { createAdminClient, createClient } from "@/lib/supabase/server"
 
 export interface OnboardingData {
   userId: string
-  intent: "sell" | "shop" | "browse"
   accountType: "personal" | "business" | null
   displayName: string | null
   bio: string | null
@@ -20,7 +19,6 @@ export interface OnboardingData {
 
 const onboardingSchema = z.object({
   userId: z.string().uuid(),
-  intent: z.enum(["sell", "shop", "browse"]),
   accountType: z.enum(["personal", "business"]).nullable(),
   displayName: z.string().max(50).nullable(),
   bio: z.string().max(160).nullable(),
@@ -47,7 +45,6 @@ export async function completePostSignupOnboarding(
 
   const {
     userId,
-    intent,
     accountType,
     displayName,
     bio,
@@ -117,11 +114,7 @@ export async function completePostSignupOnboarding(
     }
   }
 
-  // Determine if user is becoming a seller
-  const isSeller = intent === "sell"
-  const finalAccountType = isSeller && accountType ? accountType : "personal"
-
-  // Build update object
+  // Build update object - simplified without intent, just update profile
   const updateData: Record<string, unknown> = {
     onboarding_completed: true,
     updated_at: new Date().toISOString(),
@@ -134,24 +127,18 @@ export async function completePostSignupOnboarding(
   if (bannerUrl) updateData.banner_url = bannerUrl
   if (location) updateData.location = location
   
-  // Seller-specific updates
-  if (isSeller) {
-    updateData.is_seller = true
-    updateData.role = "seller"
-    updateData.account_type = finalAccountType
-    
-    if (finalAccountType === "business") {
-      if (businessName) updateData.business_name = businessName
-      if (website) updateData.website_url = website
-    }
-    
-    if (socialLinks && Object.keys(socialLinks).length > 0) {
-      updateData.social_links = socialLinks
-    }
+  // Business account-specific updates
+  if (accountType === "business") {
+    if (businessName) updateData.business_name = businessName
+    if (website) updateData.website_url = website
+  }
+  
+  // Social links for all account types
+  if (socialLinks && Object.keys(socialLinks).length > 0) {
+    updateData.social_links = socialLinks
   }
 
-  // Update profile
-  // Use service role for sensitive profile fields (role/is_seller/account_type).
+  // Update profile using admin client for protected fields
   const adminSupabase = createAdminClient()
 
   const { error: updateError } = await adminSupabase
@@ -162,44 +149,6 @@ export async function completePostSignupOnboarding(
   if (updateError) {
     console.error("Profile update error:", updateError)
     return { success: false, error: "Failed to update profile" }
-  }
-
-  // Create seller_stats if becoming a seller
-  if (isSeller) {
-    const { error: statsError } = await supabase
-      .from("seller_stats")
-      .upsert(
-        {
-          seller_id: userId,
-          total_listings: 0,
-          active_listings: 0,
-          total_sales: 0,
-          total_revenue: 0,
-          average_rating: 0,
-          total_reviews: 0,
-        },
-        { onConflict: "seller_id" }
-      )
-
-    if (statsError) {
-      // Non-critical, log but don't fail
-      console.error("Seller stats creation error:", statsError)
-    }
-
-    // Create user_verification entry if not exists
-    const { error: verificationError } = await supabase
-      .from("user_verification")
-      .upsert(
-        {
-          user_id: userId,
-          email_verified: true, // They confirmed their email to get here
-        },
-        { onConflict: "user_id" }
-      )
-
-    if (verificationError) {
-      console.error("User verification creation error:", verificationError)
-    }
   }
 
   return { success: true }

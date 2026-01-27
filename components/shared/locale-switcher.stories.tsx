@@ -5,7 +5,7 @@ import type { Meta, StoryObj } from "@storybook/nextjs-vite"
 import { LocaleSwitcher } from "./locale-switcher"
 
 const meta: Meta<typeof LocaleSwitcher> = {
-  title: "Shared/LocaleSwitcher",
+  title: "Layout/LocaleSwitcher",
   component: LocaleSwitcher,
   tags: ["autodocs"],
   parameters: {

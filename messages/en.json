@@ -133,7 +133,9 @@
         "showLess": "Show fewer categories",
         "showLessShort": "Show less",
         "moreCount": "{count} more",
-        "allIn": "All in {category}"
+        "allIn": "All in {category}",
+        "explore": "Explore",
+        "itemsCount": "{count, plural, =0 {No items} =1 {1 item} other {# items}}"
     },
     "Home": {
         "metaTitle": "Home",

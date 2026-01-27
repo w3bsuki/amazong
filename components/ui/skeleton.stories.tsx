@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/nextjs-vite"
 import { Skeleton } from "./skeleton"
 
 const meta: Meta<typeof Skeleton> = {
-  title: "UI/Skeleton",
+  title: "Primitives/Skeleton",
   component: Skeleton,
   tags: ["autodocs"],
   parameters: { layout: "centered" },

@@ -617,10 +617,12 @@ export type Database = {
         Row: {
           attribute_key: string | null
           attribute_type: string
+          badge_priority: number | null
           category_id: string | null
           created_at: string | null
           hero_priority: number | null
           id: string
+          is_badge_spec: boolean | null
           is_filterable: boolean | null
           is_hero_spec: boolean | null
           is_required: boolean | null
@@ -637,10 +639,12 @@ export type Database = {
         Insert: {
           attribute_key?: string | null
           attribute_type: string
+          badge_priority?: number | null
           category_id?: string | null
           created_at?: string | null
           hero_priority?: number | null
           id?: string
+          is_badge_spec?: boolean | null
           is_filterable?: boolean | null
           is_hero_spec?: boolean | null
           is_required?: boolean | null
@@ -657,10 +661,12 @@ export type Database = {
         Update: {
           attribute_key?: string | null
           attribute_type?: string
+          badge_priority?: number | null
           category_id?: string | null
           created_at?: string | null
           hero_priority?: number | null
           id?: string
+          is_badge_spec?: boolean | null
           is_filterable?: boolean | null
           is_hero_spec?: boolean | null
           is_required?: boolean | null
@@ -2811,6 +2817,16 @@ export type Database = {
       get_hero_specs: {
         Args: { p_locale?: string; p_product_id: string }
         Returns: {
+          label: string
+          priority: number
+          unit_suffix: string
+          value: string
+        }[]
+      }
+      get_badge_specs: {
+        Args: { p_locale?: string; p_product_id: string }
+        Returns: {
+          attribute_key: string
           label: string
           priority: number
           unit_suffix: string

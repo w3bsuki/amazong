@@ -15,7 +15,7 @@ import {
 } from "./sheet"
 
 const meta: Meta<typeof Sheet> = {
-  title: "UI/Sheet",
+  title: "Primitives/Sheet",
   component: Sheet,
   tags: ["autodocs"],
   parameters: { layout: "centered" },

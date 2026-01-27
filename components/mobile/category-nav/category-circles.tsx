@@ -97,7 +97,7 @@ export function CategoryCircles({
     const allLabel = tCommon("all")
 
     return (
-      <div className="px-3 py-2.5 flex items-center overflow-x-auto no-scrollbar gap-2">
+      <div className="px-3 py-2 flex items-center overflow-x-auto no-scrollbar gap-2">
         {/* Morphed Back Button (Treido pattern) */}
         <button
           type="button"
@@ -180,7 +180,7 @@ export function CategoryCircles({
   }
 
   return (
-    <div className={cn("px-inset py-2 overflow-x-auto no-scrollbar", className)}>
+    <div className={cn("px-inset py-1.5 overflow-x-auto no-scrollbar", className)}>
       <div
         ref={containerRef}
         className="flex items-start gap-1.5"

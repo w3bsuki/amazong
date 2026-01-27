@@ -351,7 +351,7 @@ export function MobileCategoryBrowser({
         />
 
         {/* 4) Active Filter Chips (removable pills) */}
-        <div className="bg-background px-4 py-2">
+        <div className="bg-background px-inset py-1">
           <FilterChips
             appliedSearchParams={instant.appliedSearchParams}
             onRemoveFilter={handleRemoveFilter}
@@ -437,7 +437,7 @@ export function MobileCategoryBrowser({
       <div
         className={cn(
           "bg-background",
-          !nav.isDrilledDown && "py-2"
+          !nav.isDrilledDown && "py-1"
         )}
       >
         {nav.isAllTab ? (
@@ -506,12 +506,11 @@ export function MobileCategoryBrowser({
           onAllFiltersClick={() => setFilterHubOpen(true)}
           attributes={filterableAttributes}
           sticky={false}
-          className="border-b border-border/50"
         />
       )}
 
       {/* 5. Active Filter Chips (Tiny Badges) */}
-      <div className="bg-background px-4 pb-2">
+      <div className="bg-background px-inset pb-1">
         <FilterChips />
       </div>
 

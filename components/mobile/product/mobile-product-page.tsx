@@ -19,35 +19,8 @@ import { CategoryBadge } from "@/components/shared/product/category-badge";
 import { HeroSpecs } from "@/components/shared/product/hero-specs";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { safeAvatarSrc, cn } from "@/lib/utils";
+import { safeAvatarSrc, cn, getConditionBadgeVariant } from "@/lib/utils";
 import { PageShell } from "@/components/shared/page-shell";
-
-/** Map condition value to semantic color classes */
-function getConditionColorClass(condition: string | undefined | null): string {
-  if (!condition) return "bg-condition-new";
-  const normalized = condition.toLowerCase().replace(/[\s_-]/g, "");
-  switch (normalized) {
-    case "new":
-    case "newwithtags":
-      return "bg-condition-new";
-    case "likenew":
-    case "usedexcellent":
-      return "bg-condition-likenew";
-    case "good":
-    case "usedgood":
-      return "bg-condition-good";
-    case "fair":
-    case "usedfair":
-      return "bg-condition-fair";
-    case "used":
-      return "bg-condition-used";
-    case "refurbished":
-    case "refurb":
-      return "bg-condition-refurb";
-    default:
-      return "bg-condition-new";
-  }
-}
 
 import type { ProductPageViewModel } from "@/lib/view-models/product-page";
 import type { Database } from "@/lib/supabase/database.types";
@@ -253,12 +226,9 @@ export function MobileProductPage(props: MobileProductPageProps) {
         <div className="flex items-center gap-2 mt-2 flex-wrap">
           {/* Condition Badge */}
           {product.condition && (
-            <span className={cn(
-              "px-2 py-0.5 rounded text-primary-foreground text-xs font-bold",
-              getConditionColorClass(product.condition)
-            )}>
+            <Badge variant={getConditionBadgeVariant(product.condition)}>
               {product.condition}
-            </span>
+            </Badge>
           )}
           {!product.pickup_only && (
             <Badge variant="shipping">

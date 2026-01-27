@@ -5,143 +5,160 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 /**
- * Professional E-commerce Badge System
+ * Professional E-commerce Badge System (B2B/C2C/C2B)
  * 
- * Design principles (Vinted/eBay/Depop inspired):
+ * TIGHT COLOR PALETTE (industry standard):
+ *   🔴 Red     — urgency, deals, limited time, sale
+ *   🟠 Orange  — promotions, discounts (attention without alarm)
+ *   🟢 Green   — success, shipping, in-stock, verified actions
+ *   🔵 Blue    — trust, verified sellers, info (brand primary)
+ *   🟡 Amber   — warnings, low stock, caution
+ *   ⚫ Neutral — categories, ads, muted labels
  * 
- * TWO-TIER SYSTEM for WCAG AA compliance (4.5:1 contrast):
- * 1. SOLID badges: Dark background + white text (high emphasis)
- * 2. SUBTLE badges: Tinted background + dark text (low emphasis)
+ * THREE TIERS:
+ *   SOLID   — colored bg + white text (high emphasis)
+ *   OUTLINE — border + colored text + white bg (medium)
+ *   MUTED   — gray bg + dark text (low emphasis)
  * 
- * Mobile-first: compact sizing, soft rounded corners
+ * NO gradients, NO glow, NO sparkles — flat, professional.
  */
 const badgeVariants = cva(
-  "inline-flex items-center justify-center gap-0.5 rounded-md border px-1.5 py-0.5 text-2xs font-semibold leading-none w-fit whitespace-nowrap shrink-0 select-none [&>svg]:size-2.5 [&>svg]:shrink-0",
+  "inline-flex items-center justify-center gap-1 rounded-md border px-2 py-0.5 text-xs font-medium leading-tight w-fit whitespace-nowrap shrink-0 select-none transition-colors [&>svg]:size-3 [&>svg]:shrink-0",
   {
     variants: {
       variant: {
         // ═══════════════════════════════════════════════════════════
-        // CORE VARIANTS (shadcn defaults)
+        // BASE VARIANTS (shadcn defaults)
         // ═══════════════════════════════════════════════════════════
         default:
-          "border-transparent bg-primary text-primary-foreground",
+          "border-transparent bg-neutral-900 text-white dark:bg-neutral-100 dark:text-neutral-900",
         secondary:
-          "border-transparent bg-secondary text-secondary-foreground",
-        destructive:
-          "border-transparent bg-destructive text-white",
+          "border-transparent bg-neutral-100 text-neutral-700 dark:bg-neutral-800 dark:text-neutral-300",
         outline:
-          "border-border bg-transparent text-foreground",
+          "border-neutral-300 bg-white text-neutral-700 dark:border-neutral-600 dark:bg-neutral-900 dark:text-neutral-300",
+        destructive:
+          "border-transparent bg-red-600 text-white",
         
         // ═══════════════════════════════════════════════════════════
-        // SEMANTIC STATUS - SOLID (white text on dark bg)
-        // High emphasis for alerts, critical info
+        // STATUS - SOLID (high emphasis alerts)
         // ═══════════════════════════════════════════════════════════
         success:
-          "border-transparent bg-badge-success-solid text-white",
+          "border-transparent bg-emerald-600 text-white",
         warning:
-          "border-transparent bg-badge-warning-solid text-white",
+          "border-transparent bg-amber-500 text-white",
         critical:
-          "border-transparent bg-badge-critical-solid text-white",
+          "border-transparent bg-red-600 text-white",
         info:
-          "border-transparent bg-badge-info-solid text-white",
+          "border-transparent bg-blue-600 text-white",
         
         // ═══════════════════════════════════════════════════════════
-        // SEMANTIC STATUS - SUBTLE (dark text on tinted bg)
-        // Low emphasis for secondary info
+        // STATUS - OUTLINE (eBay/Vinted style — clean, professional)
+        // Border matches text, white background
         // ═══════════════════════════════════════════════════════════
         "success-subtle":
-          "border-transparent bg-badge-success-subtle-bg text-badge-success-subtle-fg",
+          "border-emerald-500 bg-white text-emerald-600 dark:border-emerald-500 dark:bg-neutral-900 dark:text-emerald-400",
         "warning-subtle":
-          "border-transparent bg-badge-warning-subtle-bg text-badge-warning-subtle-fg",
+          "border-amber-500 bg-white text-amber-600 dark:border-amber-500 dark:bg-neutral-900 dark:text-amber-400",
         "critical-subtle":
-          "border-transparent bg-badge-critical-subtle-bg text-badge-critical-subtle-fg",
+          "border-red-500 bg-white text-red-600 dark:border-red-500 dark:bg-neutral-900 dark:text-red-400",
         "info-subtle":
-          "border-transparent bg-badge-info-subtle-bg text-badge-info-subtle-fg",
+          "border-blue-500 bg-white text-blue-600 dark:border-blue-500 dark:bg-neutral-900 dark:text-blue-400",
         "neutral-subtle":
-          "border-transparent bg-badge-neutral-subtle-bg text-badge-neutral-subtle-fg",
+          "border-neutral-300 bg-white text-neutral-600 dark:border-neutral-600 dark:bg-neutral-900 dark:text-neutral-400",
 
         // ═══════════════════════════════════════════════════════════
-        // CONDITION BADGES - SOLID (white text for max contrast)
-        // Professional marketplace look like eBay
+        // PRODUCT CONDITION (C2C Marketplace)
+        // eBay-style: Outline badges with semantic color hints
         // ═══════════════════════════════════════════════════════════
         "condition-new":
-          "border-transparent bg-badge-condition-new text-white font-semibold tracking-wide",
+          "border-blue-500 bg-white text-blue-600 font-semibold dark:border-blue-500 dark:bg-neutral-900 dark:text-blue-400",
         "condition-likenew":
-          "border-transparent bg-badge-condition-likenew text-white font-semibold tracking-wide",
+          "border-emerald-500 bg-white text-emerald-600 dark:border-emerald-500 dark:bg-neutral-900 dark:text-emerald-400",
         "condition-good":
-          "border-transparent bg-badge-condition-good text-white font-semibold tracking-wide",
+          "border-teal-500 bg-white text-teal-600 dark:border-teal-500 dark:bg-neutral-900 dark:text-teal-400",
         "condition-fair":
-          "border-transparent bg-badge-condition-fair text-white font-semibold tracking-wide",
+          "border-amber-500 bg-white text-amber-600 dark:border-amber-500 dark:bg-neutral-900 dark:text-amber-400",
         "condition-used":
-          "border-transparent bg-badge-condition-used text-white font-semibold tracking-wide",
+          "border-neutral-400 bg-white text-neutral-600 dark:border-neutral-500 dark:bg-neutral-900 dark:text-neutral-400",
         "condition-refurb":
-          "border-transparent bg-badge-condition-refurb text-white font-semibold tracking-wide",
+          "border-violet-500 bg-white text-violet-600 dark:border-violet-500 dark:bg-neutral-900 dark:text-violet-400",
         
         // Generic condition (backward compat)
         condition:
-          "border-transparent bg-foreground text-background font-semibold tracking-wide",
+          "border-neutral-400 bg-white text-neutral-700 font-medium dark:border-neutral-500 dark:bg-neutral-900 dark:text-neutral-300",
         "condition-outline":
-          "border-border bg-background text-foreground font-medium",
+          "border-neutral-300 bg-white text-neutral-700 dark:border-neutral-600 dark:bg-neutral-900 dark:text-neutral-300",
 
         // ═══════════════════════════════════════════════════════════
-        // SHIPPING BADGES
+        // SHIPPING & DELIVERY — SOLID for emphasis
         // ═══════════════════════════════════════════════════════════
-        // Solid green for emphasis
         shipping:
-          "border-transparent bg-badge-success-solid text-white",
-        // Subtle for secondary
+          "border-transparent bg-emerald-600 text-white",
         "shipping-subtle":
-          "border-badge-shipping-border bg-badge-shipping-bg text-badge-shipping-text",
-        // Express - info blue solid
+          "border-emerald-500 bg-white text-emerald-600 dark:border-emerald-500 dark:bg-neutral-900 dark:text-emerald-400",
         "shipping-express":
-          "border-transparent bg-badge-info-solid text-white",
+          "border-transparent bg-blue-600 text-white",
 
         // ═══════════════════════════════════════════════════════════
-        // STOCK STATUS BADGES
+        // STOCK STATUS — Outline style for scannability
         // ═══════════════════════════════════════════════════════════
-        // Solid success
         "stock-available":
-          "border-transparent bg-badge-success-solid text-white",
-        // Subtle warning
+          "border-emerald-500 bg-white text-emerald-600 dark:border-emerald-500 dark:bg-neutral-900 dark:text-emerald-400",
         "stock-low":
-          "border-badge-stock-border bg-badge-stock-bg text-badge-stock-text font-medium",
-        // Solid critical for out of stock
+          "border-amber-500 bg-white text-amber-600 font-medium dark:border-amber-500 dark:bg-neutral-900 dark:text-amber-400",
         "stock-out":
-          "border-transparent bg-badge-neutral-solid text-white",
+          "border-neutral-400 bg-neutral-100 text-neutral-500 line-through dark:border-neutral-600 dark:bg-neutral-800 dark:text-neutral-500",
 
         // ═══════════════════════════════════════════════════════════
-        // DEAL/SALE BADGES
+        // DEALS & PROMOTIONS — attention-grabbing
+        // Tight palette: Red (urgency), Orange (promo), Neutral (ads)
         // ═══════════════════════════════════════════════════════════
+        // Promo label - orange stands out without alarm
+        promo:
+          "border-transparent bg-orange-500 text-white font-semibold",
+        // Discount percentage badge (e.g. -29%) - same orange family
+        discount:
+          "border-transparent bg-orange-500 text-white font-bold tabular-nums",
+        // Deal/Sale: Red for urgency - universal "sale" color
         deal:
-          "border-transparent bg-deal text-white font-semibold",
+          "border-transparent bg-red-600 text-white font-semibold",
         sale:
-          "border-transparent bg-badge-critical-solid text-white font-semibold",
+          "border-transparent bg-red-600 text-white font-semibold",
+        // Limited time - red with clock connotation
+        "limited-time":
+          "border-transparent bg-red-600 text-white font-semibold",
+        // Promoted/Ad: Muted gray - shouldn't compete with content
         promoted:
-          "border-badge-promoted-border bg-badge-promoted-bg text-badge-promoted-text font-medium",
+          "border-neutral-300 bg-neutral-100 text-neutral-500 dark:border-neutral-600 dark:bg-neutral-800 dark:text-neutral-400",
+        // Sponsored: Same as promoted
+        sponsored:
+          "border-neutral-300 bg-neutral-100 text-neutral-500 dark:border-neutral-600 dark:bg-neutral-800 dark:text-neutral-400",
 
         // ═══════════════════════════════════════════════════════════
-        // TRUST BADGES
+        // TRUST & VERIFICATION — Uses brand primary (Twitter blue)
         // ═══════════════════════════════════════════════════════════
         verified:
-          "border-transparent bg-badge-info-solid text-white",
+          "border-sky-500 bg-sky-50 text-sky-600 dark:border-sky-500 dark:bg-sky-950 dark:text-sky-400",
+        "verified-solid":
+          "border-transparent bg-sky-500 text-white",
         "top-rated":
-          "border-transparent bg-badge-warning-solid text-white",
+          "border-amber-500 bg-amber-50 text-amber-600 dark:border-amber-500 dark:bg-amber-950 dark:text-amber-400",
 
         // ═══════════════════════════════════════════════════════════
-        // CATEGORY/INFO BADGES (neutral, low emphasis)
+        // CATEGORY/INFO (muted, low emphasis)
         // ═══════════════════════════════════════════════════════════
         category:
-          "border-border bg-muted text-foreground",
+          "border-neutral-200 bg-neutral-100 text-neutral-600 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-400",
         
         // ═══════════════════════════════════════════════════════════
-        // LEGACY COMPAT (map to new system)
+        // LEGACY COMPAT
         // ═══════════════════════════════════════════════════════════
         "condition-pro": 
-          "border-transparent bg-foreground text-background font-semibold uppercase tracking-wide",
+          "border-transparent bg-neutral-900 text-white font-semibold tracking-wide dark:bg-neutral-100 dark:text-neutral-900",
         "shipping-pro":
-          "border-transparent bg-badge-success-solid text-white",
+          "border-transparent bg-emerald-600 text-white",
         "stock-urgent":
-          "border-badge-stock-border bg-badge-stock-bg text-badge-stock-text font-semibold",
+          "border-amber-500 bg-white text-amber-600 font-semibold dark:border-amber-500 dark:bg-neutral-900 dark:text-amber-400",
       },
     },
     defaultVariants: {

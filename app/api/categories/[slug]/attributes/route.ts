@@ -16,7 +16,7 @@ const CACHE_STALE_WHILE_REVALIDATE = 300
 type CategoryAttributeRow = Database["public"]["Tables"]["category_attributes"]["Row"];
 
 const CATEGORY_ATTRIBUTES_SELECT =
-  "id,category_id,name,name_bg,attribute_type,is_required,is_filterable,options,options_bg,placeholder,placeholder_bg,validation_rules,sort_order,created_at,attribute_key,is_hero_spec,hero_priority,unit_suffix" as const;
+  "id,category_id,name,name_bg,attribute_type,is_required,is_filterable,options,options_bg,placeholder,placeholder_bg,validation_rules,sort_order,created_at,attribute_key,is_hero_spec,hero_priority,is_badge_spec,badge_priority,unit_suffix" as const;
 
 async function getCategoryAttributesCached(slugOrId: string) {
   'use cache'

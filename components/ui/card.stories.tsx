@@ -15,7 +15,7 @@ import { Button } from "./button"
 import { Badge } from "./badge"
 
 const meta: Meta<typeof Card> = {
-  title: "UI/Card",
+  title: "Primitives/Card",
   component: Card,
   parameters: {
     layout: "centered",

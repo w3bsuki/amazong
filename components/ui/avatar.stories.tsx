@@ -5,7 +5,7 @@ import type { Meta, StoryObj } from "@storybook/nextjs-vite"
 import { Avatar, AvatarImage, AvatarFallback } from "./avatar"
 
 const meta: Meta<typeof Avatar> = {
-  title: "UI/Avatar",
+  title: "Primitives/Avatar",
   component: Avatar,
   parameters: {
     layout: "centered",

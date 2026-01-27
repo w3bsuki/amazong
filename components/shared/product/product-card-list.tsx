@@ -3,7 +3,8 @@
 import * as React from "react"
 import { Link } from "@/i18n/routing"
 import { useLocale, useTranslations } from "next-intl"
-import { cn } from "@/lib/utils"
+import { cn, getConditionBadgeVariant } from "@/lib/utils"
+import { computeBadgeSpecsClient, shouldShowConditionBadge } from "@/lib/badges/category-badge-specs"
 import { ProductCardActions } from "./product-card-actions"
 import { FreshnessIndicator } from "./freshness-indicator"
 import { Truck, MapPin, ShieldCheck } from "@phosphor-icons/react"
@@ -57,6 +58,11 @@ interface ProductCardListProps {
 
   // Trust
   showBuyerProtection?: boolean
+
+  // Category context for smart badges
+  categorySlug?: string | null
+  rootCategorySlug?: string | null
+  attributes?: Record<string, unknown>
 }
 
 /**
@@ -85,6 +91,9 @@ export function ProductCardList({
   className,
   condition,
   showBuyerProtection = false,
+  categorySlug,
+  rootCategorySlug,
+  attributes = {},
 }: ProductCardListProps) {
   const t = useTranslations("Product")
   const locale = useLocale()
@@ -95,8 +104,22 @@ export function ProductCardList({
   // Check if own product
   const isOwnProduct = !!(currentUserId && sellerId && currentUserId === sellerId)
 
-  // Condition badge helper
+  // Category-aware smart badges
+  const smartBadges = React.useMemo(() => {
+    return computeBadgeSpecsClient({
+      categorySlug: categorySlug || null,
+      rootCategorySlug: rootCategorySlug || null,
+      condition: condition || null,
+      attributes,
+    })
+  }, [categorySlug, rootCategorySlug, condition, attributes])
+
+  // Fallback condition label for categories that show condition
   const conditionLabel = React.useMemo(() => {
+    // If smart badges already include condition, don't duplicate
+    if (smartBadges.some(b => b.key === "condition")) return null
+    // If this category shouldn't show condition, skip
+    if (!shouldShowConditionBadge(categorySlug || null, rootCategorySlug || null)) return null
     if (!condition) return null
     const c = condition.toLowerCase()
     if (c === "new" || c === "novo" || c === "ново") return t("condition.new")
@@ -104,7 +127,7 @@ export function ProductCardList({
     if (c === "used" || c === "употребявано") return t("condition.usedShort")
     if (c === "refurbished" || c === "рефърбиш") return t("condition.refurbShort")
     return condition.slice(0, 8)
-  }, [condition, t])
+  }, [condition, t, smartBadges, categorySlug, rootCategorySlug])
 
   // Format price
   const formattedPrice = new Intl.NumberFormat(locale, {
@@ -143,7 +166,7 @@ export function ProductCardList({
       </Link>
 
       {/* Image - Left side */}
-      <div className="relative flex-shrink-0 w-32 h-32 sm:w-40 sm:h-40 rounded-md overflow-hidden bg-muted">
+      <div className="relative shrink-0 w-32 h-32 sm:w-40 sm:h-40 rounded-md overflow-hidden bg-muted">
         <Image
           src={normalizeImageUrl(image)}
           alt={title}
@@ -159,7 +182,7 @@ export function ProductCardList({
               <Badge variant="promoted">{t("adBadge")}</Badge>
             )}
             {showDiscountBadge && (
-              <Badge variant="deal" className="text-2xs font-bold">
+              <Badge variant="discount">
                 -{discountPercent}%
               </Badge>
             )}
@@ -204,12 +227,23 @@ export function ProductCardList({
           </p>
         )}
 
-        {/* Meta row: condition, location, freshness */}
+        {/* Meta row: smart badges, location, freshness */}
         <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground mb-2">
-          {conditionLabel && (
-            <span className="inline-flex items-center rounded-full bg-muted px-2 py-0.5 text-2xs font-medium uppercase">
+          {/* Category-aware smart badges (mileage for cars, condition for clothing, etc.) */}
+          {smartBadges.map((badge) => (
+            <Badge 
+              key={badge.key} 
+              variant={badge.key === "condition" ? getConditionBadgeVariant(condition) : "condition"}
+              className="text-2xs"
+            >
+              {badge.value}
+            </Badge>
+          ))}
+          {/* Fallback condition badge if no smart badges and condition applies */}
+          {smartBadges.length === 0 && conditionLabel && (
+            <Badge variant={getConditionBadgeVariant(condition)} className="text-2xs">
               {conditionLabel}
-            </span>
+            </Badge>
           )}
           {location && (
             <span className="inline-flex items-center gap-0.5">

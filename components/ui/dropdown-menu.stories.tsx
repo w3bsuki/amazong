@@ -12,7 +12,7 @@ import {
 } from "./dropdown-menu"
 
 const meta: Meta<typeof DropdownMenu> = {
-  title: "UI/DropdownMenu",
+  title: "Primitives/DropdownMenu",
   component: DropdownMenu,
   tags: ["autodocs"],
   parameters: { layout: "centered" },

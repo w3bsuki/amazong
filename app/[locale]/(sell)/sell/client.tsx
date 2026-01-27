@@ -242,15 +242,8 @@ export function SellPageClient({
           currentStep={1}
           totalSteps={4}
         />
-        <div className="flex-1 overflow-y-auto py-8">
-          <div className="container-narrow space-y-6">
-            <div className="space-y-1">
-              <h1 className="text-2xl font-semibold tracking-tight text-foreground">{t("payoutSetupRequired")}</h1>
-              <p className="text-sm text-muted-foreground mt-1">{t("payoutSetupDescription")}</p>
-            </div>
-
-            <SellerPayoutSetup payoutStatus={payoutStatus} />
-          </div>
+        <div className="flex-1 overflow-y-auto">
+          <SellerPayoutSetup payoutStatus={payoutStatus} variant="compact" />
         </div>
       </div>
     );

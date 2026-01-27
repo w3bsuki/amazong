@@ -144,7 +144,7 @@ export function QuickViewImageGallery({
 
       {/* Discount badge */}
       {discountPercent && discountPercent > 0 && (
-        <Badge variant="deal" className="absolute top-3 left-3">
+        <Badge variant="discount" className="absolute top-3 left-3">
           -{discountPercent}%
         </Badge>
       )}

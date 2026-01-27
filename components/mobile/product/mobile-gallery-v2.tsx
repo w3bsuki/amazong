@@ -17,36 +17,10 @@ import { useState, useEffect, useRef, useCallback, type ReactNode } from "react"
 import Image from "next/image"
 import { useTranslations } from "next-intl"
 import { Heart, ChevronLeft, MoreHorizontal, X } from "lucide-react"
-import { cn } from "@/lib/utils"
+import { cn, getConditionBadgeVariant } from "@/lib/utils"
+import { Badge } from "@/components/ui/badge"
 import { useWishlist } from "@/components/providers/wishlist-context"
 import type { GalleryImage } from "@/lib/view-models/product-page"
-
-/** Map condition value to semantic color classes */
-function getConditionColorClass(condition: string | undefined | null): string {
-  if (!condition) return "bg-condition-new"
-  const normalized = condition.toLowerCase().replace(/[\s_-]/g, "")
-  switch (normalized) {
-    case "new":
-    case "newwithtags":
-      return "bg-condition-new"
-    case "likenew":
-    case "usedexcellent":
-      return "bg-condition-likenew"
-    case "good":
-    case "usedgood":
-      return "bg-condition-good"
-    case "fair":
-    case "usedfair":
-      return "bg-condition-fair"
-    case "used":
-      return "bg-condition-used"
-    case "refurbished":
-    case "refurb":
-      return "bg-condition-refurb"
-    default:
-      return "bg-condition-new"
-  }
-}
 
 interface MobileGalleryV2Props {
   images: GalleryImage[]
@@ -182,9 +156,9 @@ export function MobileGalleryV2({
           {/* Bottom Badges */}
           <div className="absolute bottom-3 left-3 z-20 flex flex-col gap-1.5 items-start">
             {conditionLabel && (
-              <span className={cn("px-2 py-0.5 rounded text-primary-foreground text-xs font-bold", getConditionColorClass(condition))}>
+              <Badge variant={getConditionBadgeVariant(condition)}>
                 {conditionLabel}
-              </span>
+              </Badge>
             )}
             {categoryLabel && (
               <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-background/90 text-xs font-medium text-foreground">

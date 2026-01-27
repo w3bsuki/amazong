@@ -35,15 +35,15 @@ export function SubcategoryCircles({
   if (!subcategories || subcategories.length === 0) return null
 
   return (
-    <div className="py-3 overflow-x-auto no-scrollbar">
-      <div className="flex items-start gap-3 px-inset">
+    <div className="py-2 overflow-x-auto no-scrollbar">
+      <div className="flex items-start gap-2 px-inset">
         {/* View All - First circle */}
         <Link
           href={`/categories/${categorySlug}`}
-          className="flex flex-col items-center gap-1.5 shrink-0 w-16 active:opacity-80 transition-opacity"
+          className="flex flex-col items-center gap-1 shrink-0 w-[58px] active:opacity-80 transition-opacity"
         >
-          <div className="size-14 rounded-full bg-foreground text-background flex items-center justify-center">
-            <SquaresFour size={22} weight="fill" />
+          <div className="size-[52px] rounded-full bg-foreground text-background flex items-center justify-center">
+            <SquaresFour size={20} weight="fill" />
           </div>
           <span className="text-2xs text-center text-foreground font-semibold leading-tight line-clamp-2">
             {viewAllLabel}
@@ -56,10 +56,10 @@ export function SubcategoryCircles({
             key={sub.id}
             type="button"
             onClick={() => onSubcategoryClick?.(sub)}
-            className="flex flex-col items-center gap-1.5 shrink-0 w-16 active:opacity-80 transition-opacity"
+            className="flex flex-col items-center gap-1 shrink-0 w-[58px] active:opacity-80 transition-opacity"
           >
             {/* Circle with image/icon */}
-            <div className="size-14 rounded-full bg-muted/50 border border-border/30 overflow-hidden flex items-center justify-center">
+            <div className="size-[52px] rounded-full bg-muted/50 border border-border/30 overflow-hidden flex items-center justify-center">
               {sub.image_url ? (
                 <Image
                   src={sub.image_url}

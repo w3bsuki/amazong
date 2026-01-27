@@ -4,7 +4,7 @@ import { CartesianGrid, Line, LineChart, XAxis, YAxis } from "recharts"
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "./chart"
 
 const meta: Meta<typeof ChartContainer> = {
-  title: "UI/Chart",
+  title: "Primitives/Chart",
   component: ChartContainer,
   tags: ["autodocs"],
   parameters: { layout: "padded" },

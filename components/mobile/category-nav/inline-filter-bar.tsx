@@ -116,14 +116,14 @@ export function InlineFilterBar({
     <>
       <div
         className={cn(
-          "bg-background border-b border-border/60",
+          "bg-background",
           sticky && "sticky z-20",
           className
         )}
         style={sticky ? { top: stickyTop } : undefined}
       >
         {/* 50/50 Tab Bar */}
-        <div className="flex items-stretch divide-x divide-border/60" role="group" aria-label={t("filters")}>
+        <div className="flex items-stretch divide-x divide-border/40" role="group" aria-label={t("filters")}>
           {/* Filters Tab */}
           <button
             type="button"

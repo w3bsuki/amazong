@@ -6,7 +6,7 @@ import { Button } from "./button"
 import { Heart, ShoppingCart, Plus, Trash2, Send } from "lucide-react"
 
 const meta: Meta<typeof Button> = {
-  title: "UI/Button",
+  title: "Primitives/Button",
   component: Button,
   parameters: {
     layout: "centered",

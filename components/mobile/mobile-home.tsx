@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useMemo, useEffect } from "react"
+import { useState, useEffect } from "react"
 import { Link } from "@/i18n/routing"
 import { cn } from "@/lib/utils"
 import { PageShell } from "@/components/shared/page-shell"
@@ -13,10 +13,10 @@ import {
   Plus,
 } from "@phosphor-icons/react"
 import { MobileSearchOverlay } from "@/components/shared/search/mobile-search-overlay"
-import { FilterHub } from "@/components/shared/filters/filter-hub"
 import { SortModal } from "@/components/shared/filters/sort-modal"
 import { ProductFeed } from "@/components/shared/product/product-feed"
 import { SubcategoryCircles } from "@/components/mobile/subcategory-circles"
+import { ContextualFilterBar } from "@/components/mobile/category-nav/contextual-filter-bar"
 import { HorizontalProductCard } from "@/components/mobile/horizontal-product-card"
 import { ExploreBanner, type ExploreTab } from "@/components/mobile/explore-banner"
 import { useHeader } from "@/components/providers/header-context"
@@ -155,7 +155,6 @@ export function MobileHome({
 }: MobileHomeProps) {
   const t = useTranslations("Home")
   const [searchOpen, setSearchOpen] = useState(false)
-  const [filterHubOpen, setFilterHubOpen] = useState(false)
   const [sortModalOpen, setSortModalOpen] = useState(false)
   const [exploreTab, setExploreTab] = useState<ExploreTab>("newest")
   
@@ -188,11 +187,6 @@ export function MobileHome({
     return () => setHomepageHeader(null)
   }, [nav.activeTab, nav.handleTabChange, initialCategories, setHomepageHeader])
 
-  // Get category name for display (only used when NOT on "All" tab)
-  const categoryName = useMemo(() => {
-    return nav.activeCategoryName || nav.activeTab
-  }, [nav.activeCategoryName, nav.activeTab])
-
   return (
     <PageShell variant="muted" className="pb-24">
       {/* Search Overlay */}
@@ -206,13 +200,40 @@ export function MobileHome({
 
       {/* Main Content */}
       <div className="pb-4">
-        {/* Subcategory Circles - Visual browse when category selected (not "All") */}
-        {!nav.isAllTab && nav.l1Categories.length > 0 && (
+        {/* Leaf Category Banner - Shows when at deepest level (no more subcategories) */}
+        {!nav.isAllTab && nav.isLeafCategory && nav.activeCategoryName && (
+          <div className="mx-inset my-3 rounded-xl bg-gradient-to-r from-primary/10 via-primary/5 to-transparent p-4 border border-primary/20">
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
+                <Tag size={20} weight="fill" className="text-primary" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-foreground">{nav.activeCategoryName}</h3>
+                <p className="text-sm text-muted-foreground">Browse all products in this category</p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Subcategory Circles - Visual drill-down (Temu-style) */}
+        {/* L0 → L1 → L2 → L3 → L4 circles, until leaf category reached */}
+        {!nav.isAllTab && !nav.isLeafCategory && nav.circlesToDisplay.length > 0 && (
           <SubcategoryCircles
-            subcategories={nav.l1Categories}
-            categorySlug={nav.activeTab}
+            subcategories={nav.circlesToDisplay}
+            categorySlug={nav.activeSlug}
             locale={locale}
-            onSubcategoryClick={(category) => nav.handleCircleClick(category)}
+            onSubcategoryClick={nav.handleCircleClick}
+          />
+        )}
+
+        {/* Contextual Filter Bar - Smart category-aware filters */}
+        {/* Shows: Filter/Sort + Category-specific attribute pills (Size, Color, Brand) */}
+        {!nav.isAllTab && (
+          <ContextualFilterBar
+            locale={locale}
+            categorySlug={nav.activeSlug}
+            categoryId={nav.currentL0?.id}
+            className="sticky top-[88px] z-20"
           />
         )}
 
@@ -260,16 +281,6 @@ export function MobileHome({
           />
         )}
 
-        {/* Category Header - Only when category is selected (not "All" tab) */}
-        {!nav.isAllTab && (
-          <div className="px-inset py-3 flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <h2 className="text-sm font-bold text-foreground">{categoryName}</h2>
-              <span className="text-xs text-muted-foreground">({nav.activeFeed.products.length})</span>
-            </div>
-          </div>
-        )}
-
         {/* Product Feed (reuse existing component) */}
         <ProductFeed
           products={nav.activeFeed.products}
@@ -278,7 +289,7 @@ export function MobileHome({
           activeSlug={nav.activeSlug}
           locale={locale}
           isAllTab={nav.isAllTab}
-          activeCategoryName={nav.isAllTab ? null : categoryName}
+          activeCategoryName={nav.isAllTab ? null : nav.activeCategoryName}
           onLoadMore={nav.loadMoreProducts}
         />
 
@@ -288,15 +299,6 @@ export function MobileHome({
 
       {/* Sell CTA */}
       <SellPromoBanner />
-
-      {/* FilterHub Drawer (reuse existing, uses shadcn Drawer) */}
-      <FilterHub
-        open={filterHubOpen}
-        onOpenChange={setFilterHubOpen}
-        locale={locale}
-        mode="full"
-        initialSection={null}
-      />
 
       {/* Sort Modal - for additional sort options beyond the segmented tabs */}
       <SortModal

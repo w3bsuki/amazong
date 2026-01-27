@@ -4,6 +4,7 @@ import * as React from "react"
 import { useState, useMemo } from "react"
 import { useTranslations } from "next-intl"
 import { cn } from "@/lib/utils"
+import type { CategoryAttribute } from "@/lib/data/categories"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
 import {
@@ -47,15 +48,8 @@ export interface FilterState {
   attributes: Record<string, string | null>
 }
 
-export interface CategoryAttribute {
-  id: string
-  name: string
-  nameBg: string | null
-  type: string
-  options: string[] | null
-  optionsBg: string[] | null
-  sortOrder: number | null
-}
+// Re-export the CategoryAttribute type for consumers
+export type { CategoryAttribute }
 
 export interface FeedToolbarProps {
   locale: string
@@ -128,18 +122,18 @@ export function FeedToolbar({
       "color": 2,
     }
     const sorted = [...filtered].sort((a, b) => {
-      const aPriority = priorityMap[a.name.toLowerCase()] ?? (a.sortOrder ?? 999)
-      const bPriority = priorityMap[b.name.toLowerCase()] ?? (b.sortOrder ?? 999)
+      const aPriority = priorityMap[a.name.toLowerCase()] ?? (a.sort_order ?? 999)
+      const bPriority = priorityMap[b.name.toLowerCase()] ?? (b.sort_order ?? 999)
       return aPriority - bPriority
     })
 
     // Take first 5 attributes for filter pills
     return sorted.slice(0, 5).map((attr) => ({
       id: attr.name.toLowerCase().replace(/\s+/g, "_"),
-      label: locale === "bg" && attr.nameBg ? attr.nameBg : attr.name,
+      label: locale === "bg" && attr.name_bg ? attr.name_bg : attr.name,
       name: attr.name,
-      options: (locale === "bg" && attr.optionsBg && attr.optionsBg.length > 0
-        ? attr.optionsBg
+      options: (locale === "bg" && attr.options_bg && attr.options_bg.length > 0
+        ? attr.options_bg
         : attr.options || []
       ).slice(0, 8).map((opt) => ({
         value: opt.toLowerCase().replace(/\s+/g, "_"),

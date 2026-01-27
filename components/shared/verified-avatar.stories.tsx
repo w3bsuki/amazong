@@ -5,7 +5,7 @@ import type { Meta, StoryObj } from "@storybook/nextjs-vite"
 import { VerifiedAvatar } from "./verified-avatar"
 
 const meta: Meta<typeof VerifiedAvatar> = {
-  title: "Shared/VerifiedAvatar",
+  title: "Commerce/VerifiedAvatar",
   component: VerifiedAvatar,
   tags: ["autodocs"],
   parameters: {

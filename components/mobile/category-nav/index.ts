@@ -10,6 +10,7 @@ export type { CategoryL3PillsProps } from "./category-l3-pills"
 export { AllTabFilters } from "./all-tab-filters"
 export type { AllTabFiltersProps } from "./all-tab-filters"
 export { QuickFilterRow } from "./quick-filter-row"
+export { ContextualFilterBar } from "./contextual-filter-bar"
 
 // Phase 1: Contextual category navigation (Vinted-style)
 // ContextualCategoryHeader is handled by AppHeader

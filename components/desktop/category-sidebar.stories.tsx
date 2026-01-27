@@ -107,7 +107,7 @@ const mockCategoryCounts: Record<string, number> = {
 // =============================================================================
 
 const meta: Meta<typeof CompactCategorySidebar> = {
-  title: "Commerce/CategorySidebar",
+  title: "Layout/CategorySidebar",
   component: CompactCategorySidebar,
   parameters: {
     layout: "centered",

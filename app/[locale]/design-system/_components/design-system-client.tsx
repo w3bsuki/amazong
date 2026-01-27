@@ -659,7 +659,7 @@ function BadgesSection() {
       <ShowcaseGrid title="Product Condition (C2C)">
         <div className="rounded-xl border border-border p-6">
           <div className="flex flex-wrap gap-2">
-            <Badge variant="condition-new"><Sparkles className="size-3" />New</Badge>
+            <Badge variant="condition-new"><Tag className="size-3" />New</Badge>
             <Badge variant="condition-likenew"><Heart className="size-3" />Like New</Badge>
             <Badge variant="condition-good"><CheckCircle2 className="size-3" />Good</Badge>
             <Badge variant="condition-fair"><AlertCircle className="size-3" />Fair</Badge>

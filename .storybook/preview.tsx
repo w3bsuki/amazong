@@ -169,6 +169,23 @@ const preview: Preview = {
     },
   },
   parameters: {
+    options: {
+      // Organize the sidebar in a logical hierarchy
+      storySort: {
+        method: "alphabetical",
+        order: [
+          "Introduction",
+          "Design System", ["Overview", "Tokens", "*"],
+          "Primitives",     // shadcn/ui base components (Button, Input, etc.)
+          "Commerce",       // Product cards, seller components, trust badges
+          "Layout",         // Headers, sidebars, navigation
+          "Forms",          // Form-related composites
+          "Feedback",       // Toasts, alerts, dialogs
+          "Data Display",   // Tables, charts, lists
+          "*",              // Everything else
+        ],
+      },
+    },
     controls: {
       matchers: {
         color: /(background|color)$/i,

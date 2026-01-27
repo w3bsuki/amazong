@@ -4,7 +4,7 @@ import { Bold, Italic, Underline } from "lucide-react"
 import { ToggleGroup, ToggleGroupItem } from "./toggle-group"
 
 const meta = {
-  title: "UI/ToggleGroup",
+  title: "Primitives/ToggleGroup",
   component: ToggleGroup,
   tags: ["autodocs"],
   parameters: { layout: "centered" },

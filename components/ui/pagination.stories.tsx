@@ -11,7 +11,7 @@ import {
 } from "./pagination"
 
 const meta: Meta<typeof Pagination> = {
-  title: "UI/Pagination",
+  title: "Primitives/Pagination",
   component: Pagination,
   tags: ["autodocs"],
   parameters: { layout: "centered" },

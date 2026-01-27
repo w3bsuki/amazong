@@ -11,7 +11,7 @@ import type { QuickViewProduct } from "@/components/providers/drawer-context"
 import { useWishlist } from "@/components/providers/wishlist-context"
 import { PLACEHOLDER_IMAGE_PATH } from "@/lib/normalize-image-url"
 import { formatPrice, getDiscountPercentage, hasDiscount as checkHasDiscount } from "@/lib/format-price"
-import { cn } from "@/lib/utils"
+import { cn, getConditionBadgeVariant } from "@/lib/utils"
 
 import { QuickViewImageGallery } from "./quick-view-image-gallery"
 import { QuickViewSellerCard } from "./quick-view-seller-card"
@@ -223,7 +223,7 @@ export function ProductQuickViewContent({
         {/* Quick info badges */}
         <div className="flex flex-wrap gap-2">
           {condition && (
-            <Badge variant="condition">
+            <Badge variant={getConditionBadgeVariant(condition)}>
               <Tag size={12} />
               {condition}
             </Badge>

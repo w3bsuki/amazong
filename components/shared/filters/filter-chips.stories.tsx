@@ -6,7 +6,7 @@ import * as React from "react"
 import { FilterChips } from "./filter-chips"
 
 const meta: Meta<typeof FilterChips> = {
-  title: "Search/FilterChips",
+  title: "Commerce/FilterChips",
   component: FilterChips,
   tags: ["autodocs"],
   parameters: {

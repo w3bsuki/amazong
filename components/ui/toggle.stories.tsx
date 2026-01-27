@@ -4,7 +4,7 @@ import { Heart } from "lucide-react"
 import { Toggle } from "./toggle"
 
 const meta: Meta<typeof Toggle> = {
-  title: "UI/Toggle",
+  title: "Primitives/Toggle",
   component: Toggle,
   tags: ["autodocs"],
   parameters: { layout: "centered" },

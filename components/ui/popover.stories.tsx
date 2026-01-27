@@ -5,7 +5,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "./popover"
 import { Separator } from "./separator"
 
 const meta: Meta<typeof Popover> = {
-  title: "UI/Popover",
+  title: "Primitives/Popover",
   component: Popover,
   tags: ["autodocs"],
   parameters: { layout: "centered" },

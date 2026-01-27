@@ -10,7 +10,7 @@ import {
 } from "./breadcrumb"
 
 const meta: Meta<typeof Breadcrumb> = {
-  title: "UI/Breadcrumb",
+  title: "Primitives/Breadcrumb",
   component: Breadcrumb,
   tags: ["autodocs"],
   parameters: { layout: "centered" },

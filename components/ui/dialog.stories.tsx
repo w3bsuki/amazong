@@ -14,7 +14,7 @@ import { Input } from "./input"
 import { Label } from "./label"
 
 const meta: Meta<typeof Dialog> = {
-  title: "UI/Dialog",
+  title: "Primitives/Dialog",
   component: Dialog,
   tags: ["autodocs"],
   parameters: { layout: "centered" },

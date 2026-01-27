@@ -45,6 +45,8 @@ export interface CategoryAttribute {
   is_required: boolean | null
   is_hero_spec: boolean | null
   hero_priority: number | null
+  is_badge_spec: boolean | null
+  badge_priority: number | null
   unit_suffix: string | null
   sort_order: number | null
   validation_rules?: unknown | null
@@ -54,7 +56,7 @@ export interface CategoryAttribute {
 const VALID_ATTRIBUTE_TYPES: AttributeType[] = ['select', 'multiselect', 'boolean', 'number', 'text', 'date']
 
 const CATEGORY_ATTRIBUTES_SELECT =
-  'id,category_id,name,name_bg,attribute_type,attribute_key,options,options_bg,placeholder,placeholder_bg,is_filterable,is_required,is_hero_spec,hero_priority,unit_suffix,sort_order,validation_rules,created_at' as const
+  'id,category_id,name,name_bg,attribute_type,attribute_key,options,options_bg,placeholder,placeholder_bg,is_filterable,is_required,is_hero_spec,hero_priority,is_badge_spec,badge_priority,unit_suffix,sort_order,validation_rules,created_at' as const
 
 // Helper to transform DB row to CategoryAttribute
 function toCategoryAttribute(row: {
@@ -72,6 +74,8 @@ function toCategoryAttribute(row: {
   is_required: boolean | null
   is_hero_spec?: boolean | null
   hero_priority?: number | null
+  is_badge_spec?: boolean | null
+  badge_priority?: number | null
   unit_suffix?: string | null
   sort_order: number | null
   validation_rules?: unknown | null
@@ -99,6 +103,8 @@ function toCategoryAttribute(row: {
     is_required: row.is_required,
     is_hero_spec: row.is_hero_spec ?? null,
     hero_priority: row.hero_priority ?? null,
+    is_badge_spec: row.is_badge_spec ?? null,
+    badge_priority: row.badge_priority ?? null,
     unit_suffix: row.unit_suffix ?? null,
     sort_order: row.sort_order,
     validation_rules: row.validation_rules ?? null,

@@ -133,7 +133,9 @@
         "showLess": "Покажи по-малко категории",
         "showLessShort": "По-малко",
         "moreCount": "Още {count}",
-        "allIn": "Всички в {category}"
+        "allIn": "Всички в {category}",
+        "explore": "Разгледай",
+        "itemsCount": "{count, plural, =0 {Няма артикули} =1 {1 артикул} other {# артикула}}"
     },
     "Home": {
         "metaTitle": "Начало",

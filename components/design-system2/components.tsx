@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { Car, CheckCircle2, Heart, Laptop, MessageCircle, Repeat2, ShieldCheck, Shirt, Sparkles, Star, Store, Tag, Truck } from "lucide-react"
+import { Car, CheckCircle2, Heart, Laptop, MessageCircle, Repeat2, ShieldCheck, Shirt, Star, Store, Tag, Truck } from "lucide-react"
 
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -75,7 +75,7 @@ function SellerBadge({
 
   return (
     <Badge variant="success-subtle" className={cn("gap-1.5 rounded-md", className)}>
-      <Sparkles className="size-3.5" />
+      <Tag className="size-3.5" />
       New
     </Badge>
   )

@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/nextjs-vite"
 import { Textarea } from "./textarea"
 
 const meta: Meta<typeof Textarea> = {
-  title: "UI/Textarea",
+  title: "Primitives/Textarea",
   component: Textarea,
   tags: ["autodocs"],
   parameters: { layout: "centered" },

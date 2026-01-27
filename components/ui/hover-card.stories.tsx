@@ -4,7 +4,7 @@ import { Button } from "./button"
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "./hover-card"
 
 const meta: Meta<typeof HoverCard> = {
-  title: "UI/HoverCard",
+  title: "Primitives/HoverCard",
   component: HoverCard,
   tags: ["autodocs"],
   parameters: { layout: "centered" },

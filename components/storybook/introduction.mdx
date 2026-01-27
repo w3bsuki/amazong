@@ -1,0 +1,48 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="Introduction" />
+
+# Amazong Component Library
+
+Welcome to the component library. This Storybook contains all reusable UI components used across the Amazong marketplace.
+
+## Sidebar Organization
+
+| Category | Description |
+|----------|-------------|
+| **Introduction** | You are here – docs & getting started |
+| **Design System** | Design tokens, color palette, typography |
+| **Primitives** | Base shadcn/ui components (Button, Input, Card, etc.) |
+| **Commerce** | E-commerce components (ProductCard, SellerBadge, etc.) |
+| **Layout** | Headers, sidebars, navigation components |
+
+## Running Storybook
+
+```bash
+pnpm storybook
+```
+
+## Building for Production
+
+```bash
+pnpm storybook:build
+```
+
+## Where Stories Live
+
+- `components/ui/**` – shadcn primitives (Primitives category)
+- `components/shared/**` – reusable composites
+- `components/desktop/**` and `components/mobile/**` – platform-specific UI
+- `components/storybook/**` – showcase stories for page-level components
+
+## Workflow
+
+1. Build or tweak a component in isolation in Storybook
+2. Once it looks right, use the same component in the main app
+3. Keep reusable UI in `components/**`, not one-off experiments in `app/**`
+
+## What Needs Stories?
+
+- **100% coverage**: `components/ui/**` primitives
+- **High coverage**: `components/shared/**` reusable composites  
+- **Showcase only**: Page-level components via `components/storybook/**`

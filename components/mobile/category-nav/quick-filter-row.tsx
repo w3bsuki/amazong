@@ -184,6 +184,11 @@ export function QuickFilterRow({
         return count
     }, [searchParams, attributes])
 
+    // Pill styles matching CategoryNavItem pill variant
+    const pillBase = "shrink-0 h-8 px-3 text-xs font-medium rounded-full whitespace-nowrap flex items-center justify-center gap-1.5 border transition-colors tap-highlight-transparent"
+    const pillInactive = "border-border/50 bg-muted/60 text-muted-foreground hover:bg-muted hover:text-foreground"
+    const pillActive = "border-foreground bg-foreground text-background"
+
     return (
         <>
             <div
@@ -194,29 +199,22 @@ export function QuickFilterRow({
                 )}
             >
                 <div
-                    className="flex items-center gap-1.5 overflow-x-auto no-scrollbar"
+                    className="flex items-center gap-2 overflow-x-auto no-scrollbar"
                     role="group"
                     aria-label={tFilters("filters")}
                 >
-                    {/* All Filters Pill (first) - filled style */}
+                    {/* All Filters Pill - matches category pills exactly */}
                     <button
                         type="button"
                         onClick={handleAllFiltersClick}
                         className={cn(
-                            "shrink-0 h-touch-sm px-3 rounded-full",
-                            "flex items-center gap-1.5",
-                            "text-sm font-medium",
-                            "transition-colors",
-                            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
-                            "tap-highlight-transparent active:opacity-70",
-                            activeFilterCount > 0
-                                ? "bg-foreground text-background"
-                                : "bg-muted text-foreground border border-border/60"
+                            pillBase,
+                            activeFilterCount > 0 ? pillActive : pillInactive
                         )}
                         aria-haspopup="dialog"
                     >
                         <Sliders size={14} weight="bold" className="shrink-0" />
-                        <span className="whitespace-nowrap">{tHub("allFilters")}</span>
+                        <span>{tHub("allFilters")}</span>
                         {activeFilterCount > 0 && (
                             <span className="bg-background text-foreground text-2xs font-bold rounded-full min-w-4 h-4 px-1 flex items-center justify-center">
                                 {activeFilterCount}
@@ -224,29 +222,17 @@ export function QuickFilterRow({
                         )}
                     </button>
 
-                    {/* Divider (matches reference spacing) */}
-                    <div className="h-4 w-px bg-border/60 mx-0.5 shrink-0" aria-hidden="true" />
-
-                    {/* Sort Pill (second) - ghost style */}
+                    {/* Sort Pill - same styling */}
                     <button
                         type="button"
                         onClick={() => setSortOpen(true)}
-                        className={cn(
-                            "shrink-0 h-touch-sm px-3 rounded-full",
-                            "flex items-center gap-1.5",
-                            "text-sm font-medium whitespace-nowrap",
-                            "transition-colors",
-                            "bg-background text-muted-foreground border border-border/60",
-                            "hover:bg-muted/40 hover:text-foreground",
-                            "active:opacity-70",
-                            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1"
-                        )}
+                        className={cn(pillBase, pillInactive)}
                         aria-haspopup="dialog"
                     >
                         <span>{tFilters("sortBy")}</span>
                     </button>
 
-                    {/* Quick Filter Pills - outlined style with inverted active */}
+                    {/* Quick Filter Pills - consistent styling */}
                     {pills.map((pill) => {
                         const Icon = pill.icon
                         return (
@@ -255,15 +241,8 @@ export function QuickFilterRow({
                                 type="button"
                                 onClick={() => handlePillClick({ section: pill.section, label: pill.label })}
                                 className={cn(
-                                    "shrink-0 h-touch-sm px-3 rounded-full",
-                                    "flex items-center gap-1.5",
-                                    "text-sm font-medium whitespace-nowrap",
-                                    "transition-colors",
-                                    "tap-highlight-transparent active:opacity-70",
-                                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
-                                    pill.isActive
-                                        ? "bg-foreground text-background"
-                                        : "bg-background text-muted-foreground border border-border/60 hover:bg-muted/40 hover:text-foreground"
+                                    pillBase,
+                                    pill.isActive ? pillActive : pillInactive
                                 )}
                                 aria-pressed={pill.isActive}
                                 aria-haspopup="dialog"
