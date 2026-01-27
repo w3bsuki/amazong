@@ -117,6 +117,8 @@ function buildItemSpecificsDetails(attributes: unknown, condition?: string | nul
   const attrs = toRecord(attributes);
   for (const [key, value] of Object.entries(attrs)) {
     if (value == null) continue;
+    // Skip 'condition' from attributes - it's already shown from the dedicated column above
+    if (key.toLowerCase() === 'condition') continue;
     const label = key.replaceAll('_', " ").replaceAll(/\b\w/g, (c) => c.toUpperCase());
     details.push({ label, value: String(value) });
   }

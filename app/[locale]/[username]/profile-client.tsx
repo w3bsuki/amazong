@@ -101,7 +101,7 @@ interface PublicProfileClientProps {
     total_purchases: number
     average_rating?: number | null
     follower_count?: number
-    created_at: string
+    created_at: string | null  // nullable from cache to avoid ISR write storms
   }
   products: ProfileProduct[]
   productCount: number
@@ -191,7 +191,8 @@ export function PublicProfileClient({
 
   const displayName = profile.display_name || profile.username || 'User'
   const initials = displayName.slice(0, 2).toUpperCase()
-  const memberSince = new Date(profile.created_at)
+  // Handle nullable created_at (ISR cache optimization)
+  const memberSince = profile.created_at ? new Date(profile.created_at) : null
 
   const socialIcons: Record<string, React.ReactNode> = {
     facebook: <FacebookLogo className="size-5" weight="fill" />,
@@ -201,9 +202,11 @@ export function PublicProfileClient({
     youtube: <YoutubeLogo className="size-5" weight="fill" />,
   }
 
-  const memberSinceLabel = tSeller("memberSince", {
-    date: new Intl.DateTimeFormat(locale, { month: "long", year: "numeric" }).format(memberSince),
-  })
+  const memberSinceLabel = memberSince
+    ? tSeller("memberSince", {
+        date: new Intl.DateTimeFormat(locale, { month: "long", year: "numeric" }).format(memberSince),
+      })
+    : null
 
   return (
     <PageShell className="pb-20 sm:pb-8">
@@ -353,10 +356,12 @@ export function PublicProfileClient({
                   {profile.location}
                 </span>
               )}
-              <span className="flex items-center gap-1.5">
-                <Calendar className="size-4" />
-                {memberSinceLabel}
-              </span>
+              {memberSinceLabel && (
+                <span className="flex items-center gap-1.5">
+                  <Calendar className="size-4" />
+                  {memberSinceLabel}
+                </span>
+              )}
             </div>
 
             {/* Social Links */}

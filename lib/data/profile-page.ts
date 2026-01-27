@@ -68,7 +68,7 @@ export interface PublicProfile {
   business_name: string | null
   website_url: string | null
   social_links: Record<string, string> | null
-  created_at: string
+  created_at: string | null  // nullable to avoid non-deterministic fallback in cache
   total_sales: number
   average_rating?: number | null
   total_purchases: number
@@ -146,10 +146,10 @@ export async function getPublicProfileData(username: string): Promise<ProfilePag
       .eq("user_id", profile.id)
       .single(),
     
-    // Products (if seller)
+    // Products (if seller) - DETERMINISTIC query for ISR caching
+    // NOTE: No new Date() here - boost sorting happens post-cache to avoid ISR write storms
     profile.is_seller
       ? (async () => {
-          const nowIso = new Date().toISOString()
           const baseSelect = `
             id,
             title,
@@ -166,32 +166,17 @@ export async function getPublicProfileData(username: string): Promise<ProfilePag
             condition
           `
 
-          const baseQuery = () =>
-            supabase
-              .from("products")
-              .select(baseSelect, { count: "exact" })
-              .eq("seller_id", profile.id)
-              .eq("status", "active")
-
-          const { data: boosted, error: boostedError, count } = await baseQuery()
-            .eq("is_boosted", true)
-            .gt("boost_expires_at", nowIso)
-            .order("boost_expires_at", { ascending: false, nullsFirst: false })
+          // Stable query: just fetch by created_at, include boost fields for post-cache sorting
+          const { data, error, count } = await supabase
+            .from("products")
+            .select(baseSelect, { count: "exact" })
+            .eq("seller_id", profile.id)
+            .eq("status", "active")
             .order("created_at", { ascending: false })
             .limit(12)
 
-          if (boostedError) return { data: [], count: count ?? 0 }
-          if ((boosted?.length ?? 0) >= 12) return { data: boosted ?? [], count: count ?? 0 }
-
-          const remaining = 12 - (boosted?.length ?? 0)
-
-          const { data: rest, error: restError } = await baseQuery()
-            .or(`boost_expires_at.is.null,boost_expires_at.lte.${nowIso}`)
-            .order("created_at", { ascending: false })
-            .limit(remaining)
-
-          if (restError) return { data: boosted ?? [], count: count ?? 0 }
-          return { data: [...(boosted ?? []), ...(rest ?? [])], count: count ?? 0 }
+          if (error) return { data: [], count: count ?? 0 }
+          return { data: data ?? [], count: count ?? 0 }
         })()
       : Promise.resolve({ data: [], count: 0 }),
     
@@ -264,7 +249,8 @@ export async function getPublicProfileData(username: string): Promise<ProfilePag
     business_name: profile.account_type === "business" ? profile.business_name : null,
     website_url: profile.account_type === "business" ? profile.website_url : null,
     social_links: profile.account_type === "business" ? socialLinks : null,
-    created_at: profile.created_at || new Date().toISOString(),
+    // NOTE: Using null fallback instead of new Date() to avoid ISR write storms
+    created_at: profile.created_at || null,
     total_sales: sellerStats?.total_sales ?? 0,
     average_rating: sellerStats?.average_rating ?? null,
     total_purchases: buyerStats?.total_orders ?? 0,

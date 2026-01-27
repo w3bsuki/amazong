@@ -12,6 +12,7 @@ import { ViewTracker } from "@/components/shared/product/view-tracker";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ProductHeaderSync } from "@/components/shared/product/product-header-sync";
 import { Star } from "lucide-react";
+import { getConditionLabel } from "@/lib/utils";
 
 // V2 Desktop Components
 import { DesktopGalleryV2 } from "@/components/desktop/product/desktop-gallery-v2";
@@ -260,7 +261,7 @@ export function ProductPageLayout(props: ProductPageLayoutProps) {
                   </h1>
                   {product.condition && (
                     <span className="inline-block px-2 py-0.5 rounded-full bg-success/10 text-success text-xs font-medium">
-                      {product.condition}
+                      {getConditionLabel(product.condition)}
                     </span>
                   )}
 

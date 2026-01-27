@@ -44,6 +44,39 @@ export function getConditionBadgeVariant(condition: string | null | undefined): 
   }
 }
 
+/**
+ * Human-readable labels for product condition slugs
+ */
+const CONDITION_LABELS: Record<string, string> = {
+  'new': 'New',
+  'new-with-tags': 'New with Tags',
+  'new-without-tags': 'New without Tags',
+  'like-new': 'Like New',
+  'used-like-new': 'Like New',
+  'used-excellent': 'Used - Excellent',
+  'used-good': 'Used - Good',
+  'used-fair': 'Used - Fair',
+  'refurbished': 'Refurbished',
+  'refurb': 'Refurbished',
+  'used': 'Used',
+  'good': 'Good',
+  'fair': 'Fair',
+}
+
+/**
+ * Map condition slug to human-readable label.
+ * Falls back to title-cased slug if not in mapping.
+ */
+export function getConditionLabel(condition: string | null | undefined): string {
+  if (!condition) return ''
+  const label = CONDITION_LABELS[condition.toLowerCase()]
+  if (label) return label
+  // Fallback: convert "new-with-tags" to "New With Tags"
+  return condition
+    .replace(/[-_]/g, ' ')
+    .replace(/\b\w/g, (c) => c.toUpperCase())
+}
+
 export function safeAvatarSrc(src: string | null | undefined): string | undefined {
   if (!src) return undefined
   // Generated avatars are stored as a pseudo-URL format and must not be fetched by the browser.

@@ -19,7 +19,7 @@ import { CategoryBadge } from "@/components/shared/product/category-badge";
 import { HeroSpecs } from "@/components/shared/product/hero-specs";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { safeAvatarSrc, cn, getConditionBadgeVariant } from "@/lib/utils";
+import { safeAvatarSrc, cn, getConditionBadgeVariant, getConditionLabel } from "@/lib/utils";
 import { PageShell } from "@/components/shared/page-shell";
 
 import type { ProductPageViewModel } from "@/lib/view-models/product-page";
@@ -227,7 +227,7 @@ export function MobileProductPage(props: MobileProductPageProps) {
           {/* Condition Badge */}
           {product.condition && (
             <Badge variant={getConditionBadgeVariant(product.condition)}>
-              {product.condition}
+              {getConditionLabel(product.condition)}
             </Badge>
           )}
           {!product.pickup_only && (

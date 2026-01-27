@@ -29,9 +29,8 @@ import { useSellForm, useSellFormContext } from "../sell-form-provider";
 // Format + Price + Currency + Quantity + Offers
 // ============================================================================
 
-// V1: BGN only for cash on delivery in Bulgaria
+// Bulgaria joined Eurozone Jan 1, 2025 - EUR only
 const CURRENCIES = [
-  { value: "BGN", label: "лв", labelFull: "BGN (лв)" },
   { value: "EUR", label: "€", labelFull: "EUR (€)" },
 ] as const;
 
@@ -232,12 +231,9 @@ export function StepPricing() {
       </div>
 
       {/* Accept Offers Toggle - iOS list row style */}
-      <button
-        type="button"
-        onClick={() => setValue("acceptOffers", !acceptOffers)}
+      <div
         className={cn(
           "w-full flex items-center gap-3.5 py-3.5 min-h-touch-lg px-4 rounded-xl border transition-all",
-          "active:opacity-90",
           acceptOffers 
             ? "bg-selected border-selected-border" 
             : "bg-card border-border hover:bg-hover"
@@ -266,7 +262,7 @@ export function StepPricing() {
           onCheckedChange={(checked) => setValue("acceptOffers", checked)}
           className="shrink-0"
         />
-      </button>
+      </div>
 
       {/* Currency Drawer */}
       <Drawer open={currencyDrawerOpen} onOpenChange={setCurrencyDrawerOpen}>
@@ -285,7 +281,7 @@ export function StepPricing() {
                     key={curr.value}
                     type="button"
                     onClick={() => {
-                      setValue("currency", curr.value as "BGN" | "EUR" | "USD");
+                      setValue("currency", curr.value as "EUR");
                       setCurrencyDrawerOpen(false);
                     }}
                     className={cn(

@@ -120,11 +120,11 @@ export function AuthStateManager({ children }: { children: ReactNode }) {
   )
 }
 
-export function useAuth() {
+export function useAuth(): AuthContextType {
   // In Storybook, use the mock context if available
   if (typeof window !== "undefined" && (window as any).__STORYBOOK_AUTH_CONTEXT__) {
     // eslint-disable-next-line react-hooks/rules-of-hooks
-    const mockContext = useContext((window as any).__STORYBOOK_AUTH_CONTEXT__)
+    const mockContext = useContext((window as any).__STORYBOOK_AUTH_CONTEXT__) as AuthContextType | undefined
     if (mockContext) return mockContext
   }
   // eslint-disable-next-line react-hooks/rules-of-hooks

@@ -32,9 +32,9 @@ import { getCategoryAttributeKey, getCategoryAttributeLabel } from "@/lib/filter
 interface ContextualFilterBarProps {
   locale: string
   categorySlug: string
-  categoryId?: string
-  basePath?: string
-  className?: string
+  categoryId?: string | undefined
+  basePath?: string | undefined
+  className?: string | undefined
 }
 
 /** Smart icon mapping based on attribute name patterns */

@@ -439,11 +439,11 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   )
 }
 
-export function useCart() {
+export function useCart(): CartContextType {
   // In Storybook, use the mock context if available
   if (typeof window !== "undefined" && (window as any).__STORYBOOK_CART_CONTEXT__) {
     // eslint-disable-next-line react-hooks/rules-of-hooks
-    const mockContext = useContext((window as any).__STORYBOOK_CART_CONTEXT__)
+    const mockContext = useContext((window as any).__STORYBOOK_CART_CONTEXT__) as CartContextType | undefined
     if (mockContext) return mockContext
   }
   // eslint-disable-next-line react-hooks/rules-of-hooks

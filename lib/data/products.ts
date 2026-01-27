@@ -267,39 +267,56 @@ function pickPrimaryImage(p: Product): string {
 
 type QueryType = 'deals' | 'newest' | 'bestsellers' | 'featured' | 'promo'
 
-async function fetchBoostedFirst<T>(
+/**
+ * Sort products with active boosts first, then by secondary criteria.
+ * This runs OUTSIDE cache boundaries to avoid ISR write storms from new Date().
+ * Per Vercel docs: "Ensure you're not using new Date() in the ISR output"
+ */
+export function sortWithBoostPriority<T extends { is_boosted?: boolean | null; boost_expires_at?: string | null }>(
+  products: T[],
+  now: Date = new Date()
+): T[] {
+  return [...products].sort((a, b) => {
+    const aActive = isBoostActive(a, now)
+    const bActive = isBoostActive(b, now)
+    
+    // Active boosts first
+    if (aActive && !bActive) return -1
+    if (!aActive && bActive) return 1
+    
+    // Among active boosts, sort by expiry (soonest first for fair rotation)
+    if (aActive && bActive) {
+      const aExp = new Date(a.boost_expires_at!).getTime()
+      const bExp = new Date(b.boost_expires_at!).getTime()
+      return aExp - bExp
+    }
+    
+    // Non-boosted products keep their original order
+    return 0
+  })
+}
+
+/**
+ * Fetch products with stable ordering for caching.
+ * NO new Date() inside - deterministic output for ISR.
+ * Caller should use sortWithBoostPriority() after if boost ordering needed.
+ */
+async function fetchProductsStable<T>(
   makeQuery: () => any,
   {
     limit,
-    nowIso,
     applySecondaryOrder,
   }: {
     limit: number
-    nowIso: string
     applySecondaryOrder: (q: any) => any
   }
 ): Promise<{ data: T[]; error: unknown | null }> {
-  const boostedQuery = applySecondaryOrder(
-    makeQuery()
-      .eq('is_boosted', true)
-      .gt('boost_expires_at', nowIso)
-      .order('boost_expires_at', { ascending: false, nullsFirst: false })
-  )
-
-  const { data: boostedData, error: boostedError } = await boostedQuery.limit(limit)
-  if (boostedError) return { data: [], error: boostedError }
-
-  const boosted = (boostedData || []) as T[]
-  if (boosted.length >= limit) return { data: boosted, error: null }
-
-  const restQuery = applySecondaryOrder(
-    makeQuery().or(`boost_expires_at.is.null,boost_expires_at.lte.${nowIso}`)
-  )
-
-  const { data: restData, error: restError } = await restQuery.limit(limit - boosted.length)
-  if (restError) return { data: boosted, error: restError }
-
-  return { data: [...boosted, ...((restData || []) as T[])], error: null }
+  // Stable query: order by secondary criteria only, include boost fields for post-cache sorting
+  const query = applySecondaryOrder(makeQuery())
+  const { data, error } = await query.limit(limit)
+  
+  if (error) return { data: [], error }
+  return { data: (data || []) as T[], error: null }
 }
 
 /**
@@ -316,7 +333,7 @@ export async function getProductsByCategorySlug(
   cacheLife('products')
   try {
     const supabase = createStaticClient()
-    const nowIso = new Date().toISOString()
+    // NOTE: NO new Date() here - would cause ISR write storm per Vercel docs
 
     // Note: is_featured is a legacy field - we use is_boosted + boost_expires_at for promoted listings
     const productSelect =
@@ -344,9 +361,8 @@ export async function getProductsByCategorySlug(
       return q
     }
 
-    const { data, error } = await fetchBoostedFirst(makeBaseQuery, {
+    const { data, error } = await fetchProductsStable(makeBaseQuery, {
       limit,
-      nowIso,
       applySecondaryOrder: (q) => q.order('created_at', { ascending: false }),
     })
 
@@ -355,6 +371,7 @@ export async function getProductsByCategorySlug(
       return []
     }
 
+    // Map to Product type - boost sorting happens post-cache by caller if needed
     return (data || []).map(mapRowToProduct)
   } catch (error) {
     logger.error(`[getProductsByCategorySlug:${categorySlug}] Unexpected error`, error)
@@ -372,7 +389,7 @@ export async function getProducts(type: QueryType, limit = 36, zone?: ShippingRe
   cacheLife('products')
   try {
     const supabase = createStaticClient()
-    const nowIso = new Date().toISOString()
+    // NOTE: NO new Date() here - would cause ISR write storm per Vercel docs
 
     // Note: is_featured is a legacy field - we use is_boosted + boost_expires_at for promoted listings
     const productSelect = `id, title, price, seller_id, list_price, is_on_sale, sale_percent, sale_end_date, rating, review_count, images, is_boosted, boost_expires_at, created_at, ships_to_bulgaria, ships_to_uk, ships_to_europe, ships_to_usa, ships_to_worldwide, pickup_only, free_shipping, category_id, slug, 
@@ -406,8 +423,9 @@ export async function getProducts(type: QueryType, limit = 36, zone?: ShippingRe
           q = q.not('list_price', 'is', null).gt('list_price', 0)
           break
         case 'featured':
-          // Only show products with active (non-expired) boosts
-          q = q.eq('is_boosted', true).gt('boost_expires_at', nowIso)
+          // Include boosted products - active filtering happens post-cache
+          // to avoid ISR write storms from new Date()
+          q = q.eq('is_boosted', true).not('boost_expires_at', 'is', null)
           break
       }
 
@@ -435,16 +453,13 @@ export async function getProducts(type: QueryType, limit = 36, zone?: ShippingRe
       }
     }
 
-    // For 'featured' and 'newest', use direct queries without fetchBoostedFirst:
-    // - 'featured' shows only boosted products (handled via filter)
-    // - 'newest' should show pure chronological order (no boost priority)
-    // Other types (deals, promo, bestsellers) use fetchBoostedFirst for commercial priority
+    // All types use stable fetch - no new Date() in cache
+    // Boost priority sorting happens post-cache by caller if needed
     const { data, error } =
       type === 'featured' || type === 'newest'
         ? await applySecondaryOrder(makeBaseQuery()).limit(limit)
-        : await fetchBoostedFirst(makeBaseQuery, {
+        : await fetchProductsStable(makeBaseQuery, {
             limit,
-            nowIso,
             applySecondaryOrder,
           })
 
@@ -453,6 +468,9 @@ export async function getProducts(type: QueryType, limit = 36, zone?: ShippingRe
       return []
     }
 
+    // Map to Product type
+    // NOTE: For 'featured' type, caller must filter expired boosts post-cache using isBoostActive()
+    // This keeps the cache deterministic (no new Date() in output)
     return (data || [])
       .map(mapRowToProduct)
       .filter((p: Product) =>
@@ -697,9 +715,22 @@ const getGlobalDeals = (limit = 50, zone?: ShippingRegion) => getProducts('deals
 export const getNewestProducts = (limit = 36, zone?: ShippingRegion) => getProducts('newest', limit, zone)
 const getPromoProducts = (limit = 36, zone?: ShippingRegion) => getProducts('promo', limit, zone)
 const getBestSellers = (limit = 36, zone?: ShippingRegion) => getProducts('bestsellers', limit, zone)
+
 /**
  * Get products with active boosts (is_boosted=true AND boost_expires_at > now).
  * Uses fair rotation: ORDER BY boost_expires_at ASC (soonest-expiring first).
- * Note: The "featured" type in getProducts() handles this properly.
+ * 
+ * IMPORTANT: The cache returns ALL boosted products (including expired).
+ * This wrapper filters expired boosts OUTSIDE the cache to avoid ISR write storms.
+ * Per Vercel docs: "Ensure you're not using new Date() in the ISR output"
  */
-export const getBoostedProducts = (limit = 36, zone?: ShippingRegion) => getProducts('featured', limit, zone)
+export async function getBoostedProducts(limit = 36, zone?: ShippingRegion): Promise<Product[]> {
+  // Get cached products (may include expired boosts)
+  const products = await getProducts('featured', limit * 2, zone) // Fetch extra to account for expired
+  
+  // Filter expired boosts OUTSIDE cache boundary (safe to use new Date() here)
+  const now = new Date()
+  const activeBoosts = products.filter(p => isBoostActive(p, now))
+  
+  return activeBoosts.slice(0, limit)
+}

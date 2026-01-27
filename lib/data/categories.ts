@@ -136,6 +136,8 @@ export interface CategoryTreeNodeLite {
   parent_id: string | null
   display_order: number | null
   children: CategoryTreeNodeLite[]
+  /** True if this category has children in DB (may not be loaded in tree) */
+  has_children: boolean
 }
 
 export interface CategoryContext {
@@ -249,16 +251,25 @@ function buildCategoryTree(rows: CategoryHierarchyRow[]): CategoryWithChildren[]
   return sortChildren(rootCategories)
 }
 
-type RawCategoryTreeNodeLite = Omit<CategoryTreeNodeLite, 'children'>
+type RawCategoryTreeNodeLite = Omit<CategoryTreeNodeLite, 'children'> & { has_children?: boolean }
 
-function buildCategoryTreeLite(categories: RawCategoryTreeNodeLite[]): CategoryTreeNodeLite[] {
+function buildCategoryTreeLite(
+  categories: RawCategoryTreeNodeLite[],
+  childCountMap?: Map<string, number>
+): CategoryTreeNodeLite[] {
   const categoryMap = new Map<string, CategoryTreeNodeLite>()
   const roots: CategoryTreeNodeLite[] = []
 
   const activeCategories = categories.filter((row) => (row.display_order ?? 0) < 9000)
 
   for (const cat of activeCategories) {
-    categoryMap.set(cat.id, { ...cat, children: [] })
+    const dbChildCount = childCountMap?.get(cat.id) ?? 0
+    categoryMap.set(cat.id, {
+      ...cat,
+      children: [],
+      // has_children is true if DB says there are children OR if already marked
+      has_children: cat.has_children ?? dbChildCount > 0,
+    })
   }
 
   for (const cat of activeCategories) {
@@ -281,7 +292,11 @@ function buildCategoryTreeLite(categories: RawCategoryTreeNodeLite[]): CategoryT
     })
 
     for (const node of nodes) {
-      if (node.children.length > 0) sortChildren(node.children)
+      // Ensure has_children is true if there are loaded children
+      if (node.children.length > 0) {
+        node.has_children = true
+        sortChildren(node.children)
+      }
     }
   }
 
@@ -525,8 +540,34 @@ export async function getCategoryTreeDepth3(): Promise<CategoryTreeNodeLite[]> {
     label: "L3",
   })
 
+  // Fetch child counts for L3 categories to know which have L4 children
+  const l3Ids = l3Cats.map((c) => c.id)
+  const childCountMap = new Map<string, number>()
+  
+  if (l3Ids.length > 0) {
+    // Query to get count of children for each L3 category
+    const BATCH_SIZE = 200
+    for (let i = 0; i < l3Ids.length; i += BATCH_SIZE) {
+      const batchIds = l3Ids.slice(i, i + BATCH_SIZE)
+      const { data: childCounts, error: countError } = await supabase
+        .from("categories")
+        .select("parent_id")
+        .in("parent_id", batchIds)
+        .lt("display_order", 9000)
+      
+      if (!countError && childCounts) {
+        // Count children per parent
+        for (const row of childCounts) {
+          if (row.parent_id) {
+            childCountMap.set(row.parent_id, (childCountMap.get(row.parent_id) || 0) + 1)
+          }
+        }
+      }
+    }
+  }
+
   const allCats = [...rootCats, ...(l1Cats || []), ...l2Cats, ...l3Cats]
-  return buildCategoryTreeLite(allCats)
+  return buildCategoryTreeLite(allCats, childCountMap)
 }
 
 /**

@@ -96,7 +96,7 @@ function SellFormContent({
   createListingAction: CreateListingAction;
 }) {
   const form = useSellForm();
-  const { isBg, clearDraft, locale } = useSellFormContext();
+  const { isBg, clearDraft, setCurrentStep, locale } = useSellFormContext();
   const tBoost = useTranslations("Boost");
   
   const [isPending, startTransition] = useTransition();
@@ -161,13 +161,19 @@ function SellFormContent({
 
   // Handle reset for new listing
   const handleNewListing = useCallback(() => {
+    // Clear localStorage draft to prevent state persistence
+    clearDraft();
+    // Reset form to default values
     form.reset(defaultSellFormValuesV4);
+    // Reset to step 1
+    setCurrentStep(1);
+    // Clear UI state
     setSubmitError(null);
     setCreatedProductId(null);
     setCreatedProductHref(null);
     setShowSuccess(false);
     window.scrollTo({ top: 0, behavior: "instant" });
-  }, [form]);
+  }, [form, clearDraft, setCurrentStep]);
 
   // Processing screen
   if (isPending) {
