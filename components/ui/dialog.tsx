@@ -38,7 +38,9 @@ function DialogOverlay({
     <DialogPrimitive.Overlay
       data-slot="dialog-overlay"
       className={cn(
-        'fixed inset-0 z-50 bg-overlay-dark',
+        'fixed inset-0 z-50 bg-overlay-dark backdrop-blur-sm',
+        'data-[state=open]:animate-in data-[state=open]:fade-in-0',
+        'data-[state=closed]:animate-out data-[state=closed]:fade-out-0',
         className,
       )}
       {...props}
@@ -51,10 +53,13 @@ function DialogContent({
   children,
   showCloseButton = true,
   closeLabel,
+  variant = 'default',
   ...props
 }: React.ComponentProps<typeof DialogPrimitive.Content> & {
   showCloseButton?: boolean
   closeLabel?: string
+  /** 'default' for standard dialogs, 'fullWidth' for large modals like quick view */
+  variant?: 'default' | 'fullWidth'
 }) {
   return (
     <DialogPortal data-slot="dialog-portal">
@@ -62,7 +67,15 @@ function DialogContent({
       <DialogPrimitive.Content
         data-slot="dialog-content"
         className={cn(
-          'bg-background fixed top-1/2 left-1/2 z-50 grid w-full max-w-dialog -translate-x-1/2 -translate-y-1/2 gap-2 rounded-lg border p-3 md:p-4 sm:max-w-lg',
+          'bg-background fixed top-1/2 left-1/2 z-50 grid w-full -translate-x-1/2 -translate-y-1/2 gap-2 border shadow-modal',
+          // Animations
+          'data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95 data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%]',
+          'data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%]',
+          'duration-200',
+          // Size & shape variants
+          variant === 'fullWidth'
+            ? 'max-h-[90dvh] max-w-[calc(100vw-2rem)] rounded-xl p-0 md:max-w-5xl lg:max-w-6xl'
+            : 'max-w-dialog rounded-lg p-3 sm:max-w-lg md:p-4',
           className,
         )}
         {...props}
@@ -71,11 +84,22 @@ function DialogContent({
         {showCloseButton && (
           <DialogPrimitive.Close
             data-slot="dialog-close"
-            className="ring-offset-background focus:ring-ring data-[state=open]:bg-accent data-[state=open]:text-muted-foreground absolute top-3 right-3 rounded-xs opacity-70 transition-opacity hover:opacity-100 focus:ring-2 focus:ring-offset-2 focus:outline-hidden disabled:pointer-events-none [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4"
-            aria-label={closeLabel}
+            className={cn(
+              'absolute z-10 transition-all duration-150',
+              // Position & size
+              variant === 'fullWidth' ? 'top-3 right-3 size-10' : 'top-3 right-3 size-8',
+              // Styling - visible background for accessibility
+              'flex items-center justify-center rounded-full',
+              'bg-muted/80 backdrop-blur-sm',
+              'text-foreground hover:bg-muted hover:text-foreground',
+              // Focus ring
+              'focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none',
+              // Disabled state
+              'disabled:pointer-events-none',
+            )}
+            aria-label={closeLabel ?? 'Close'}
           >
-            <X />
-            {closeLabel ? <span className="sr-only">{closeLabel}</span> : null}
+            <X className={variant === 'fullWidth' ? 'size-5' : 'size-4'} />
           </DialogPrimitive.Close>
         )}
       </DialogPrimitive.Content>

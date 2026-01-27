@@ -399,10 +399,30 @@ function CategoryModalContent({
     async (cat: Category): Promise<Category[]> => {
       const existing = getChildren(cat);
       if (existing.length > 0) return existing;
-      // Phase 2 finalization: category tree is server-provided; no client fetch.
+      
+      // Skip if already loading
+      if (loadingChildrenById[cat.id]) return [];
+      
+      // Lazy-load children from API for deeper levels (L4+)
+      setLoadingChildrenById(prev => ({ ...prev, [cat.id]: true }));
+      try {
+        const res = await fetch(`/api/categories/${encodeURIComponent(cat.id)}/children`);
+        if (res.ok) {
+          const data = await res.json();
+          const children = (data.children || []) as Category[];
+          if (children.length > 0) {
+            setChildrenById(prev => ({ ...prev, [cat.id]: children }));
+            return children;
+          }
+        }
+      } catch {
+        // Silently fail - treat as leaf category
+      } finally {
+        setLoadingChildrenById(prev => ({ ...prev, [cat.id]: false }));
+      }
       return [];
     },
-    [getChildren]
+    [getChildren, loadingChildrenById]
   );
 
   // Search results

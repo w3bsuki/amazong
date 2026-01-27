@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { ArrowSquareOut, Heart, LinkSimple, MapPin, ShoppingCart, Star, Tag, Truck } from "@phosphor-icons/react"
+import { ArrowSquareOut, Heart, LinkSimple, ShoppingCart, Star, Tag, Truck, X } from "@phosphor-icons/react"
 import { useLocale, useTranslations } from "next-intl"
 import { toast } from "sonner"
 
@@ -12,6 +12,7 @@ import { useWishlist } from "@/components/providers/wishlist-context"
 import { PLACEHOLDER_IMAGE_PATH } from "@/lib/normalize-image-url"
 import { formatPrice, getDiscountPercentage, hasDiscount as checkHasDiscount } from "@/lib/format-price"
 import { cn, getConditionBadgeVariant } from "@/lib/utils"
+import { useIsMobile } from "@/hooks/use-mobile"
 
 import { QuickViewImageGallery } from "./quick-view-image-gallery"
 import { QuickViewSellerCard } from "./quick-view-seller-card"
@@ -21,8 +22,6 @@ async function copyToClipboard(text: string) {
     await navigator.clipboard.writeText(text)
     return
   }
-
-  // Fallback for older browsers / stricter permissions.
   const el = document.createElement("textarea")
   el.value = text
   el.setAttribute("readonly", "")
@@ -43,7 +42,6 @@ export function ProductQuickViewContent({
   onNavigateToProduct,
 }: {
   product: QuickViewProduct
-  /** Full-page href without locale prefix, e.g. `/{username}/{slug}` */
   productPath: string
   onRequestClose?: () => void
   onAddToCart: () => void
@@ -55,6 +53,7 @@ export function ProductQuickViewContent({
   const tModal = useTranslations("ProductModal")
   const locale = useLocale()
   const { isInWishlist, toggleWishlist } = useWishlist()
+  const isMobile = useIsMobile()
 
   const {
     id,
@@ -63,10 +62,7 @@ export function ProductQuickViewContent({
     image,
     images,
     originalPrice,
-    description,
     condition,
-    location,
-    categoryPath,
     freeShipping,
     rating,
     reviews,
@@ -93,8 +89,7 @@ export function ProductQuickViewContent({
     if (!productPath || productPath === "#") return null
     if (typeof window === "undefined") return null
     const safePath = productPath.startsWith("/") ? productPath : `/${productPath}`
-    const localizedPath = `/${locale}${safePath}`
-    return `${window.location.origin}${localizedPath}`
+    return `${window.location.origin}/${locale}${safePath}`
   }, [productPath, locale])
 
   const handleCopyLink = React.useCallback(async () => {
@@ -117,173 +112,136 @@ export function ProductQuickViewContent({
     }
   }, [wishlistPending, toggleWishlist, id, title, price, primaryImage])
 
+  const formattedPrice = formatPrice(price, { locale })
+
   return (
-    <div className="md:grid md:grid-cols-[1.1fr_0.9fr] md:min-h-full">
-      <div className="md:border-r md:border-border">
+    <div className="flex flex-col md:grid md:grid-cols-[1.1fr_0.9fr] md:min-h-full">
+      {/* Image section with close button */}
+      <div className="relative md:border-r md:border-border">
+        {/* Close button - top right */}
+        {onRequestClose && (
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon-sm"
+            onClick={onRequestClose}
+            className="absolute top-3 right-3 z-10 rounded-full bg-background/80 backdrop-blur-sm hover:bg-background"
+            aria-label={tProduct("close")}
+          >
+            <X size={20} weight="bold" />
+          </Button>
+        )}
         <QuickViewImageGallery
           images={allImages}
           title={title}
           discountPercent={showDiscount ? discountPercent : undefined}
           onNavigateToProduct={onNavigateToProduct}
-          {...(onRequestClose ? { onRequestClose } : {})}
+          compact={isMobile}
         />
       </div>
 
-      <div className="flex flex-col">
-        <div className="px-4 py-4 space-y-4">
-        {/* Price */}
-        <div className="flex items-baseline gap-2 flex-wrap">
-          <span
-            className={cn(
-              "text-2xl font-bold tabular-nums",
-              showDiscount ? "text-price-sale" : "text-price-regular",
-            )}
-          >
-            {formatPrice(price, { locale })}
-          </span>
-          {showDiscount && originalPrice && (
-            <span className="text-sm text-price-original line-through tabular-nums">
-              {formatPrice(originalPrice, { locale })}
+      <div className="flex flex-col flex-1">
+        <div className="px-4 py-3 space-y-2.5">
+          {/* Price */}
+          <div className="flex items-baseline gap-2 flex-wrap">
+            <span className={cn(
+              "text-xl font-bold tabular-nums",
+              showDiscount ? "text-price-sale" : "text-foreground",
+            )}>
+              {formattedPrice}
             </span>
-          )}
-          {showDiscount && (
-            <span className="text-sm font-medium text-price-savings">
-              {tProduct("savePercent", { percent: discountPercent })}
-            </span>
-          )}
-        </div>
-
-        {/* Title */}
-        <h2 className="text-lg font-semibold leading-tight text-foreground">
-          {title}
-        </h2>
-
-        {/* Top actions */}
-        <div className="flex items-center justify-between gap-2">
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            className="gap-1.5"
-            onClick={onNavigateToProduct}
-          >
-            {tModal("viewFullPage")}
-            <ArrowSquareOut size={16} weight="bold" />
-          </Button>
-
-          <div className="flex items-center gap-1.5">
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon-sm"
-              onClick={handleCopyLink}
-              aria-label={tModal("copyLink")}
-              disabled={!shareUrl}
-            >
-              <LinkSimple size={18} />
-            </Button>
-
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon-sm"
-              onClick={handleToggleWishlist}
-              aria-label={inWishlist ? tProduct("removeFromWatchlist") : tProduct("addToWatchlist")}
-              disabled={wishlistPending}
-            >
-              <Heart
-                size={18}
-                weight={inWishlist ? "fill" : "regular"}
-                className={cn(
-                  inWishlist
-                    ? "fill-wishlist-active text-wishlist-active"
-                    : "text-muted-foreground",
-                  wishlistPending && "opacity-50",
-                )}
-              />
-            </Button>
-          </div>
-        </div>
-
-        {/* Rating & Reviews */}
-        {hasRating && (
-          <div className="flex items-center gap-2">
-            <div className="flex items-center gap-1">
-              <Star size={16} weight="fill" className="fill-rating text-rating" />
-              <span className="font-semibold tabular-nums">{rating.toFixed(1)}</span>
-            </div>
-            {typeof reviews === "number" && reviews > 0 && (
-              <span className="text-sm text-muted-foreground tabular-nums">
-                ({tProduct("reviews", { count: reviews.toLocaleString() })})
+            {showDiscount && originalPrice && (
+              <span className="text-sm text-muted-foreground line-through tabular-nums">
+                {formatPrice(originalPrice, { locale })}
               </span>
             )}
           </div>
-        )}
 
-        {/* Quick info badges */}
-        <div className="flex flex-wrap gap-2">
-          {condition && (
-            <Badge variant={getConditionBadgeVariant(condition)}>
-              <Tag size={12} />
-              {condition}
-            </Badge>
-          )}
-          {freeShipping && (
-            <Badge variant="shipping">
-              <Truck size={12} weight="fill" />
-              {tProduct("freeShipping")}
-            </Badge>
-          )}
-          {location && (
-            <Badge variant="info">
-              <MapPin size={12} />
-              {location}
-            </Badge>
-          )}
-          {!inStock && (
-            <Badge variant="stock-out">
-              {tProduct("outOfStock")}
-            </Badge>
-          )}
+          {/* Title */}
+          <h2 className="text-base font-semibold leading-snug text-foreground line-clamp-2">
+            {title}
+          </h2>
+
+          {/* Rating + badges row */}
+          <div className="flex flex-wrap items-center gap-1.5">
+            {hasRating && (
+              <div className="flex items-center gap-1">
+                <Star size={14} weight="fill" className="fill-rating text-rating" />
+                <span className="text-sm font-medium tabular-nums">{rating.toFixed(1)}</span>
+                {typeof reviews === "number" && reviews > 0 && (
+                  <span className="text-xs text-muted-foreground">({reviews})</span>
+                )}
+              </div>
+            )}
+            {condition && (
+              <Badge variant={getConditionBadgeVariant(condition)}>
+                <Tag size={10} />
+                {condition}
+              </Badge>
+            )}
+            {freeShipping && (
+              <Badge variant="shipping">
+                <Truck size={10} weight="fill" />
+                {tProduct("freeShipping")}
+              </Badge>
+            )}
+          </div>
+
+          {/* View full page + actions */}
+          <div className="flex items-center justify-between gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              className="gap-1.5"
+              onClick={onNavigateToProduct}
+            >
+              {tModal("viewFullPage")}
+              <ArrowSquareOut size={16} weight="bold" />
+            </Button>
+            <div className="flex items-center gap-1">
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon-sm"
+                onClick={handleCopyLink}
+                aria-label={tModal("copyLink")}
+                disabled={!shareUrl}
+              >
+                <LinkSimple size={18} />
+              </Button>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon-sm"
+                onClick={handleToggleWishlist}
+                aria-label={inWishlist ? tProduct("removeFromWatchlist") : tProduct("addToWatchlist")}
+                disabled={wishlistPending}
+              >
+                <Heart
+                  size={18}
+                  weight={inWishlist ? "fill" : "regular"}
+                  className={cn(
+                    inWishlist ? "fill-wishlist-active text-wishlist-active" : "text-muted-foreground",
+                    wishlistPending && "opacity-50",
+                  )}
+                />
+              </Button>
+            </div>
+          </div>
+
+          {/* Seller card */}
+          <QuickViewSellerCard
+            sellerName={sellerName}
+            sellerAvatarUrl={sellerAvatarUrl}
+            sellerVerified={sellerVerified}
+            onNavigateToProduct={onNavigateToProduct}
+          />
         </div>
 
-        {/* Description */}
-        {description && (
-          <div className="space-y-1.5">
-            <h3 className="text-xs font-medium text-muted-foreground">
-              {tProduct("description")}
-            </h3>
-            <p className="text-sm leading-relaxed text-foreground line-clamp-4">
-              {description}
-            </p>
-          </div>
-        )}
-
-        {/* Category breadcrumb */}
-        {categoryPath && categoryPath.length > 0 && (
-          <div className="flex items-center gap-1 text-xs text-muted-foreground overflow-x-auto no-scrollbar">
-            {categoryPath.map((cat, i) => (
-              <React.Fragment key={cat.slug}>
-                {i > 0 && <span className="text-border">›</span>}
-                <span className="whitespace-nowrap">
-                  {locale === "bg" && cat.nameBg ? cat.nameBg : cat.name}
-                </span>
-              </React.Fragment>
-            ))}
-          </div>
-        )}
-
-        {/* Seller card */}
-        <QuickViewSellerCard
-          sellerName={sellerName}
-          sellerAvatarUrl={sellerAvatarUrl}
-          sellerVerified={sellerVerified}
-          onNavigateToProduct={onNavigateToProduct}
-        />
-      </div>
-
-        <div className="border-t border-border px-4 py-4 mt-auto bg-muted/30">
-          <div className="grid grid-cols-2 gap-3">
+        {/* Sticky CTA buttons */}
+        <div className="sticky bottom-0 border-t border-border px-4 py-3 mt-auto bg-background pb-safe-max">
+          <div className="grid grid-cols-2 gap-2.5">
             <Button
               variant="black"
               size="lg"

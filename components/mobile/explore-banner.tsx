@@ -1,20 +1,22 @@
 "use client"
 
 import { cn } from "@/lib/utils"
-import { Clock, Tag, Star, SlidersHorizontal } from "@phosphor-icons/react"
+import { Clock, Tag, SlidersHorizontal } from "@phosphor-icons/react"
 import { useTranslations } from "next-intl"
 
 // =============================================================================
 // Types
 // =============================================================================
 
-export type ExploreTab = "newest" | "offers" | "top-rated"
+export type ExploreTab = "newest" | "offers"
 
 interface ExploreBannerProps {
   activeTab: ExploreTab
   onTabChange: (tab: ExploreTab) => void
-  onSortClick: () => void
+  onFilterClick: () => void
   productCount?: number
+  /** Number of active filters (shows badge) */
+  activeFilterCount?: number
   /** Make the banner sticky (sticks below header + pills) */
   sticky?: boolean
   /** Top offset for sticky positioning (to account for header height) */
@@ -32,7 +34,6 @@ const EXPLORE_TABS: Array<{
 }> = [
   { id: "newest", labelKey: "mobile.exploreTabs.newest", icon: Clock },
   { id: "offers", labelKey: "mobile.exploreTabs.offers", icon: Tag },
-  { id: "top-rated", labelKey: "mobile.exploreTabs.topRated", icon: Star },
 ]
 
 // =============================================================================
@@ -42,75 +43,117 @@ const EXPLORE_TABS: Array<{
 export function ExploreBanner({
   activeTab,
   onTabChange,
-  onSortClick,
+  onFilterClick,
   productCount,
+  activeFilterCount = 0,
   sticky = true,
-  stickyTop = 88, // header (48) + pills (40)
+  stickyTop = 88,
 }: ExploreBannerProps) {
   const t = useTranslations("Home")
+  const hasActiveFilters = activeFilterCount > 0
 
   return (
     <div
       className={cn(
-        "px-inset py-2 bg-surface-page z-20",
+        "px-inset py-2 bg-background z-20",
         sticky && "sticky"
       )}
       style={sticky ? { top: stickyTop } : undefined}
     >
-      {/* Banner Container */}
-      <div className="rounded-lg border border-border/60 bg-background">
-        <div className="flex items-center gap-1.5 p-1">
-          {/* Segmented Control */}
-          <div className="flex-1 flex items-center rounded-md bg-muted/30 p-0.5">
-            {EXPLORE_TABS.map((tab) => {
-              const Icon = tab.icon
-              const isActive = activeTab === tab.id
-              return (
-                <button
-                  key={tab.id}
-                  type="button"
-                  onClick={() => onTabChange(tab.id)}
-                  className={cn(
-                    "flex-1 flex items-center justify-center gap-1.5",
-                    "h-touch-xs rounded-md text-xs font-medium",
-                    "transition-all duration-150",
-                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
-                    isActive
-                      ? "bg-background text-foreground shadow-sm"
-                      : "text-muted-foreground hover:text-foreground"
-                  )}
-                  aria-pressed={isActive}
-                >
-                  <Icon size={14} weight={isActive ? "fill" : "regular"} />
-                  <span className="whitespace-nowrap">
-                    {t(tab.labelKey)}
-                  </span>
-                </button>
-              )
-            })}
-          </div>
+      {/* Segmented Control Container */}
+      <div 
+        className="flex items-center h-10 rounded-xl bg-muted p-1 gap-1"
+        role="tablist"
+        aria-label={t("mobile.sortOptions")}
+      >
+        {/* Tab Segments */}
+        {EXPLORE_TABS.map((tab) => {
+          const Icon = tab.icon
+          const isActive = activeTab === tab.id
+          return (
+            <button
+              key={tab.id}
+              type="button"
+              role="tab"
+              id={`tab-${tab.id}`}
+              aria-selected={isActive}
+              tabIndex={isActive ? 0 : -1}
+              onClick={() => onTabChange(tab.id)}
+              className={cn(
+                // Layout
+                "flex-1 h-full flex items-center justify-center gap-1.5",
+                // Typography
+                "text-sm font-medium",
+                // Shape & touch
+                "rounded-lg tap-highlight-transparent",
+                // Transitions
+                "transition-all duration-200 ease-out",
+                // Focus state (a11y)
+                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+                // Active/Inactive states
+                isActive
+                  ? "bg-background text-foreground shadow-sm"
+                  : "text-muted-foreground hover:text-foreground"
+              )}
+            >
+              <Icon 
+                size={16} 
+                weight={isActive ? "fill" : "regular"} 
+                aria-hidden="true"
+              />
+              <span>{t(tab.labelKey)}</span>
+            </button>
+          )
+        })}
 
-          {/* Sort/Settings Button */}
-          <button
-            type="button"
-            onClick={onSortClick}
-            className={cn(
-              "h-touch-xs w-touch-xs shrink-0 flex items-center justify-center",
-              "rounded-md border border-border/60",
-              "text-muted-foreground hover:text-foreground",
-              "transition-colors",
-              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1"
-            )}
-            aria-label={t("mobile.sortOptions")}
-          >
-            <SlidersHorizontal size={16} weight="bold" />
-          </button>
-        </div>
+        {/* Divider */}
+        <div className="w-px h-5 bg-border/50 shrink-0" aria-hidden="true" />
+
+        {/* Filter Button */}
+        <button
+          type="button"
+          onClick={onFilterClick}
+          aria-label={
+            hasActiveFilters 
+              ? t("mobile.filtersActive", { count: activeFilterCount })
+              : t("mobile.sortOptions")
+          }
+          aria-pressed={hasActiveFilters}
+          className={cn(
+            // Layout
+            "relative h-full px-3.5 flex items-center justify-center",
+            // Shape & touch
+            "rounded-lg tap-highlight-transparent",
+            // Transitions
+            "transition-all duration-200 ease-out",
+            // Focus state (a11y)
+            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+            // Active/Inactive states
+            hasActiveFilters
+              ? "bg-foreground text-background"
+              : "text-muted-foreground hover:text-foreground hover:bg-background/60"
+          )}
+        >
+          <SlidersHorizontal 
+            size={18} 
+            weight={hasActiveFilters ? "fill" : "bold"} 
+            aria-hidden="true"
+          />
+          {/* Active filter count badge */}
+          {hasActiveFilters && (
+            <span 
+              className="absolute -top-1 -right-1 size-4 flex items-center justify-center rounded-full bg-destructive text-destructive-foreground text-[10px] font-bold"
+              aria-hidden="true"
+            >
+              {activeFilterCount > 9 ? "9+" : activeFilterCount}
+            </span>
+          )}
+        </button>
       </div>
 
-      {/* Product Count (subtle, below banner) */}
+      {/* Product Count */}
       {typeof productCount === "number" && productCount > 0 && (
-        <p className="mt-2 text-xs text-muted-foreground">
+        <p className="mt-2.5 text-xs text-muted-foreground tabular-nums">
           {t("mobile.listingsCount", { count: productCount })}
         </p>
       )}

@@ -23,6 +23,8 @@ interface CategoryChild {
   icon: string | null
   image_url: string | null
   display_order: number | null
+  has_children?: boolean
+  children?: CategoryChild[]
 }
 
 async function getChildrenCached(parentId: string): Promise<CategoryChild[]> {
@@ -46,10 +48,24 @@ async function getChildrenCached(parentId: string): Promise<CategoryChild[]> {
     console.error("getChildrenCached error:", error)
     return []
   }
+  
+  if (!data || data.length === 0) return []
+  
+  // Check which children have their own children
+  const childIds = data.map(c => c.id)
+  const { data: grandchildren } = await supabase
+    .from("categories")
+    .select("parent_id")
+    .in("parent_id", childIds)
+    .lt("display_order", 9000)
+  
+  const hasChildrenSet = new Set((grandchildren || []).map(g => g.parent_id))
 
-  return (data || []).map((cat) => ({
+  return data.map((cat) => ({
     ...cat,
     image_url: normalizeOptionalImageUrl(cat.image_url),
+    has_children: hasChildrenSet.has(cat.id),
+    children: [],
   }))
 }
 

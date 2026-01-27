@@ -39,6 +39,8 @@ interface MobileBottomBarV2Props {
     displayName: string
     phone?: string
   }
+  /** Currently active tab - when 'seller', shows contact-focused UI */
+  activeTab?: "info" | "seller"
   className?: string
 }
 
@@ -54,6 +56,7 @@ export function MobileBottomBarV2({
   categoryType,
   product,
   seller,
+  activeTab = "info",
   className,
 }: MobileBottomBarV2Props) {
   const t = useTranslations("Product")
@@ -111,8 +114,36 @@ export function MobileBottomBarV2({
     router.push(`/chat?seller=${encodeURIComponent(seller.id)}&type=visit`)
   }
 
-  // Render appropriate buttons based on category
+  // Render appropriate buttons based on category and active tab
   const renderButtons = () => {
+    // When on seller tab, show contact-focused buttons regardless of category
+    if (activeTab === "seller") {
+      return (
+        <>
+          {seller?.phone && (
+            <Button
+              variant="outline"
+              size="lg"
+              className="h-12 gap-2 px-4"
+              onClick={handleCall}
+            >
+              <Phone className="size-5" />
+              <span>{t("callSeller")}</span>
+            </Button>
+          )}
+          <Button
+            size="lg"
+            className="flex-1 h-12 gap-2"
+            onClick={handleContact}
+            disabled={!seller}
+          >
+            <MessageCircle className="size-5" />
+            <span>{t("contactSeller")}</span>
+          </Button>
+        </>
+      )
+    }
+
     switch (categoryType) {
       case "automotive":
         return (
@@ -179,11 +210,11 @@ export function MobileBottomBarV2({
             </Button>
             <Button
               size="lg"
-              className="flex-1 h-12 gap-2"
+              className="flex-[1.5] h-12 gap-2"
               onClick={handleAddToCart}
             >
               <ShoppingCart className="size-5" />
-              <span>{t("addToCart")}</span>
+              <span>{t("add")} · {formatPrice(product.price)}</span>
             </Button>
           </>
         )
@@ -199,26 +230,7 @@ export function MobileBottomBarV2({
         className
       )}
     >
-      <div className="px-3 pt-2 pb-3">
-        {/* Price Row */}
-        <div className="flex items-center justify-between mb-2">
-          <div className="flex items-baseline gap-2">
-            <span className="text-lg font-bold text-text-strong">
-              {formatPrice(product.price)}
-            </span>
-            {product.originalPrice && product.originalPrice > product.price && (
-              <span className="text-sm text-text-muted-alt line-through">
-                {formatPrice(product.originalPrice)}
-              </span>
-            )}
-            {discount > 0 && (
-              <span className="px-1.5 py-0.5 rounded bg-price-sale/10 text-price-sale text-xs font-semibold">
-                -{discount}%
-              </span>
-            )}
-          </div>
-        </div>
-        {/* Action Buttons */}
+      <div className="px-3 py-2.5">
         <div className="flex gap-2">
           {renderButtons()}
         </div>

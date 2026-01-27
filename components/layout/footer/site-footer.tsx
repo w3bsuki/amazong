@@ -1,6 +1,6 @@
 "use client"
 
-import { Link } from "@/i18n/routing"
+import { Link, usePathname } from "@/i18n/routing"
 import { useTranslations } from "next-intl"
 import {
     Accordion,
@@ -49,6 +49,38 @@ const PinterestIcon = () => (
 
 export function SiteFooter() {
     const t = useTranslations('Footer')
+    const pathname = usePathname()
+
+    // ==========================================================================
+    // 2026 Modern Mobile UX Pattern: App-like Footer Visibility
+    // ==========================================================================
+    // - Landing/Marketing pages: Full footer visible (for SEO, trust signals)
+    // - App pages (browsing, product, cart): Footer HIDDEN on mobile (tab bar replaces it)
+    // - Legal/Support pages: Footer visible (EU compliance requirement)
+    // - Desktop: Always visible (enough screen real estate)
+    //
+    // This mimics native e-commerce apps (Vinted, Depop, eBay) that hide
+    // traditional footers on mobile to maximize browsing space and use
+    // bottom tab bars for navigation instead.
+    // ==========================================================================
+    
+    // Strip locale prefix for route detection
+    const pathWithoutLocale = pathname.replace(/^\/(en|bg)/, "") || "/"
+    
+    // Routes where footer should be visible on mobile
+    const footerVisibleRoutes = [
+        "/", // Homepage/landing
+        "/about", "/careers", "/blog", "/investors", // Company
+        "/terms", "/privacy", "/cookies", "/accessibility", // Legal
+        "/customer-service", "/contact", "/help", "/returns", "/security", "/feedback", // Support
+        "/affiliates", "/advertise", "/sellers", "/suppliers", // Business
+    ]
+    
+    // Check if current route should show footer on mobile
+    const isFooterVisibleOnMobile = footerVisibleRoutes.some(route => {
+        if (route === "/") return pathWithoutLocale === "/"
+        return pathWithoutLocale.startsWith(route)
+    })
 
     const scrollToTop = () => {
         window.scrollTo({ top: 0, behavior: "smooth" })
@@ -122,7 +154,9 @@ export function SiteFooter() {
     return (
         <footer 
             id="footerHeader" 
-            className="bg-foreground text-background mt-auto w-full"
+            className={`bg-foreground text-background mt-auto w-full ${
+                isFooterVisibleOnMobile ? '' : 'hidden md:block'
+            }`}
             role="contentinfo"
             aria-label={t('footerLabel')}
         >

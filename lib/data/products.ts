@@ -1,6 +1,7 @@
 import 'server-only'
 
 import { cacheTag, cacheLife } from 'next/cache'
+import { connection } from 'next/server'
 import { createStaticClient } from '@/lib/supabase/server'
 import { logger } from '@/lib/logger'
 import { isBoostActive } from '@/lib/boost/boost-status'
@@ -722,13 +723,14 @@ const getBestSellers = (limit = 36, zone?: ShippingRegion) => getProducts('bests
  * 
  * IMPORTANT: The cache returns ALL boosted products (including expired).
  * This wrapper filters expired boosts OUTSIDE the cache to avoid ISR write storms.
- * Per Vercel docs: "Ensure you're not using new Date() in the ISR output"
+ * Uses connection() to signal dynamic rendering before new Date().
  */
 export async function getBoostedProducts(limit = 36, zone?: ShippingRegion): Promise<Product[]> {
   // Get cached products (may include expired boosts)
   const products = await getProducts('featured', limit * 2, zone) // Fetch extra to account for expired
   
-  // Filter expired boosts OUTSIDE cache boundary (safe to use new Date() here)
+  // Signal dynamic rendering before using new Date() (Next.js 16 Cache Components)
+  await connection()
   const now = new Date()
   const activeBoosts = products.filter(p => isBoostActive(p, now))
   

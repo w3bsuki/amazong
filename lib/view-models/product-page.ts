@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { getCategoryType, type CategoryType } from "@/lib/utils/category-type";
 import type { HeroSpec } from "@/lib/data/product-page";
+export type { HeroSpec };
 
 /**
  * Resolved hero spec ready for rendering.

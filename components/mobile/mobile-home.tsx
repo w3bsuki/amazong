@@ -18,7 +18,7 @@ import { ProductFeed } from "@/components/shared/product/product-feed"
 import { SubcategoryCircles } from "@/components/mobile/subcategory-circles"
 import { ContextualFilterBar } from "@/components/mobile/category-nav/contextual-filter-bar"
 import { HorizontalProductCard } from "@/components/mobile/horizontal-product-card"
-import { ExploreBanner, type ExploreTab } from "@/components/mobile/explore-banner"
+import { FeedControlBar, type SortOption, type QuickPillId } from "@/components/mobile/feed-control-bar"
 import { useHeader } from "@/components/providers/header-context"
 import type { UIProduct } from "@/lib/data/products"
 import type { CategoryTreeNode } from "@/lib/category-tree"
@@ -156,7 +156,17 @@ export function MobileHome({
   const t = useTranslations("Home")
   const [searchOpen, setSearchOpen] = useState(false)
   const [sortModalOpen, setSortModalOpen] = useState(false)
-  const [exploreTab, setExploreTab] = useState<ExploreTab>("newest")
+  const [activeSort, setActiveSort] = useState<SortOption>("newest")
+  const [activePills, setActivePills] = useState<QuickPillId[]>([])
+  
+  // Toggle a quick filter pill
+  const handlePillToggle = (pill: QuickPillId) => {
+    setActivePills(prev => 
+      prev.includes(pill) 
+        ? prev.filter(p => p !== pill)
+        : [...prev, pill]
+    )
+  }
   
   // Get header context to provide dynamic state to layout's header
   const { setHomepageHeader } = useHeader()
@@ -242,43 +252,45 @@ export function MobileHome({
           <PromotedListingsStrip products={promotedProducts} />
         )}
 
-        {/* For You - Only on "All" tab */}
-        {nav.isAllTab && nav.activeFeed.products.length > 0 && (
-          <section className="pt-3 pb-1">
-            <div className="px-inset mb-2.5 flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Tag size={18} weight="fill" className="text-muted-foreground" />
-                <span className="text-sm font-semibold text-foreground">
-                  {t("mobile.forYouTitle")}
-                </span>
-              </div>
-              <Link
-                href="/todays-deals"
-                className="flex items-center gap-0.5 text-xs font-medium text-muted-foreground active:text-foreground"
-              >
-                {t("mobile.seeAll")}
-                <ArrowRight size={12} weight="bold" />
-              </Link>
-            </div>
-
-            <div className="overflow-x-auto no-scrollbar">
-              <div className="flex gap-3 px-inset">
-                {nav.activeFeed.products.slice(0, 8).map((product) => (
-                  <HorizontalProductCard key={product.id} product={product} />
-                ))}
-              </div>
-            </div>
-          </section>
-        )}
-
-        {/* Explore Banner with Segmented Control - Only on "All" tab */}
+        {/* Feed Controls + For You - Only on "All" tab */}
         {nav.isAllTab && (
-          <ExploreBanner
-            activeTab={exploreTab}
-            onTabChange={setExploreTab}
-            onSortClick={() => setSortModalOpen(true)}
-            productCount={nav.activeFeed.products.length}
-          />
+          <>
+            {/* Sticky Control Bar with Quick Pills */}
+            <FeedControlBar
+              activeSort={activeSort}
+              onSortChange={setActiveSort}
+              activePills={activePills}
+              onPillToggle={handlePillToggle}
+              onFilterClick={() => setSortModalOpen(true)}
+              productCount={nav.activeFeed.products.length}
+            />
+
+            {/* For You Horizontal Scroll - curated picks */}
+            {nav.activeFeed.products.length > 0 && (
+              <section className="pb-1">
+                <div className="px-inset mb-2 flex items-center justify-between">
+                  <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                    {t("mobile.forYouTitle")}
+                  </span>
+                  <Link
+                    href="/todays-deals"
+                    className="flex items-center gap-0.5 text-xs font-medium text-muted-foreground active:text-foreground"
+                  >
+                    {t("mobile.seeAll")}
+                    <ArrowRight size={12} weight="bold" />
+                  </Link>
+                </div>
+
+                <div className="overflow-x-auto no-scrollbar">
+                  <div className="flex gap-3 px-inset">
+                    {nav.activeFeed.products.slice(0, 8).map((product) => (
+                      <HorizontalProductCard key={product.id} product={product} />
+                    ))}
+                  </div>
+                </div>
+              </section>
+            )}
+          </>
         )}
 
         {/* Product Feed (reuse existing component) */}

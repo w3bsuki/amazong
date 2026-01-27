@@ -318,14 +318,14 @@ export function PricingField({ className, categoryId, idPrefix = "sell-form", co
                       options={CURRENCIES.map(c => c.value)}
                       optionsBg={CURRENCIES.map(c => c.label)}
                       value={currency}
-                      onChange={(val) => setValue("currency", val as "BGN" | "EUR" | "USD")}
+                      onChange={(val) => setValue("currency", val as "EUR")}
                       locale={isBg ? "bg" : "en"}
                     />
                   </>
                 ) : (
                   <Select
                     value={currency}
-                    onValueChange={(val) => setValue("currency", val as "BGN" | "EUR" | "USD")}
+                    onValueChange={(val) => setValue("currency", val as "EUR")}
                   >
                     <SelectTrigger className="w-auto min-w-24 border-none bg-muted/60 h-10 rounded-xl font-bold focus:ring-0 focus:ring-offset-0 shadow-none px-3 text-sm">
                       <SelectValue />

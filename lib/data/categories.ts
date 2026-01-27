@@ -251,7 +251,7 @@ function buildCategoryTree(rows: CategoryHierarchyRow[]): CategoryWithChildren[]
   return sortChildren(rootCategories)
 }
 
-type RawCategoryTreeNodeLite = Omit<CategoryTreeNodeLite, 'children'> & { has_children?: boolean }
+type RawCategoryTreeNodeLite = Omit<CategoryTreeNodeLite, 'children' | 'has_children'> & { has_children?: boolean }
 
 function buildCategoryTreeLite(
   categories: RawCategoryTreeNodeLite[],

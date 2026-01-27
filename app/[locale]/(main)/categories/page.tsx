@@ -5,6 +5,7 @@ import { getCategoryShortName } from "@/lib/category-display"
 import { CaretRight, Storefront, Sparkle } from "@phosphor-icons/react/dist/ssr"
 import { CategoryCircleVisual } from "@/components/shared/category/category-circle-visual"
 import { PageShell } from "@/components/shared/page-shell"
+import { CategoriesHeaderSync } from "./_components/categories-header-sync"
 import type { Metadata } from "next"
 
 // =============================================================================
@@ -51,8 +52,13 @@ export default async function CategoriesPage({
   // L0 + L1 + L2 for directory display
   const categoriesWithChildren = await getCategoryHierarchy(null, 2)
 
+  // Header title for mobile contextual header
+  const headerTitle = locale === 'bg' ? 'Всички категории' : 'All Categories'
+
   return (
     <PageShell>
+      {/* Sync contextual header for mobile */}
+      <CategoriesHeaderSync title={headerTitle} />
 
       {/* Header */}
       <div className="border-b border-border/30 bg-background">

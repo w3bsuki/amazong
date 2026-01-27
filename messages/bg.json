@@ -211,7 +211,24 @@
                 "offers": "Оферти",
                 "topRated": "Топ оценени"
             },
-            "sortOptions": "Сортиране",
+            "feedControl": {
+                "offers": "Оферти"
+            },
+            "sort": {
+                "newest": "Най-нови",
+                "popular": "Популярни",
+                "priceLow": "Цена: Ниска",
+                "priceHigh": "Цена: Висока"
+            },
+            "quickPills": {
+                "offers": "Оферти",
+                "nearby": "Близо",
+                "sale": "Намаление",
+                "topRated": "Топ оценени",
+                "freeShip": "Безпл. дост."
+            },
+            "sortOptions": "Сортиране и филтри",
+            "filtersActive": "{count, plural, one {# активен филтър} other {# активни филтъра}}",
             "listingsCount": "{count, plural, one {# обява} other {# обяви}}"
         }
     },
@@ -234,6 +251,7 @@
             "samples": "Мостри",
             "verifiedShort": "Потвърден"
         },
+        "add": "Добави",
         "addToCart": "Добави в количката",
         "addedToCart": "Добавено в количката успешно!",
         "inCart": "В количката",
@@ -413,7 +431,16 @@
         "orders": "поръчки",
         "message": "Съобщение",
         "keyFeatures": "Ключови характеристики",
-        "fullSpecifications": "Всички спецификации"
+        "fullSpecifications": "Всички спецификации",
+        "productInfo": "Инфо",
+        "sellerInfo": "Продавач",
+        "shippingTitle": "Доставка",
+        "buyerProtectionDesc": "Пълна защита за вашата покупка",
+        "verified": "Потвърден",
+        "follow": "Последвай",
+        "contact": "Контакт",
+        "viewFullProfile": "Виж пълния профил",
+        "viewAllListings": "Виж всички ({count})"
     },
     "ProductModal": {
         "viewFullPage": "Виж пълната страница",
@@ -428,7 +455,7 @@
         "viewFullListing": "Виж цялата обява",
         "viewFullProfile": "Виж целия профил",
         "chatSeller": "Чат",
-        "addToCart": "Добави в кошницата",
+        "addToCart": "Кошница",
         "addedToCart": "Добавено в количката!",
         "messages": "Съобщения",
         "viewAllMessages": "Виж всички съобщения",

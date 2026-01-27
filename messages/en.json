@@ -211,7 +211,24 @@
                 "offers": "Offers",
                 "topRated": "Top Rated"
             },
-            "sortOptions": "Sort options",
+            "feedControl": {
+                "offers": "Offers"
+            },
+            "sort": {
+                "newest": "Newest",
+                "popular": "Popular",
+                "priceLow": "Price: Low",
+                "priceHigh": "Price: High"
+            },
+            "quickPills": {
+                "offers": "Offers",
+                "nearby": "Nearby",
+                "sale": "Sale",
+                "topRated": "Top Rated",
+                "freeShip": "Free Ship"
+            },
+            "sortOptions": "Sort and filter",
+            "filtersActive": "{count, plural, one {# filter active} other {# filters active}}",
             "listingsCount": "{count, plural, one {# listing} other {# listings}}"
         }
     },
@@ -234,6 +251,7 @@
             "samples": "Samples",
             "verifiedShort": "Verified"
         },
+        "add": "Add",
         "addToCart": "Add to Cart",
         "addedToCart": "Added to cart successfully!",
         "inCart": "In cart",
@@ -413,7 +431,16 @@
         "orders": "orders",
         "message": "Message",
         "keyFeatures": "Key Features",
-        "fullSpecifications": "Full Specifications"
+        "fullSpecifications": "Full Specifications",
+        "productInfo": "Info",
+        "sellerInfo": "Seller",
+        "shippingTitle": "Shipping",
+        "buyerProtectionDesc": "Full coverage for your purchase",
+        "verified": "Verified",
+        "follow": "Follow",
+        "contact": "Contact",
+        "viewFullProfile": "View Full Profile",
+        "viewAllListings": "View All ({count})"
     },
     "ProductModal": {
         "viewFullPage": "View Full Page",
@@ -428,7 +455,7 @@
         "viewFullListing": "View Full Listing",
         "viewFullProfile": "View Full Profile",
         "chatSeller": "Chat",
-        "addToCart": "Add to Cart",
+        "addToCart": "Cart",
         "addedToCart": "Added to cart!",
         "messages": "Messages",
         "viewAllMessages": "View All Messages",
