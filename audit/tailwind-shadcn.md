@@ -1,11 +1,11 @@
-# Tailwind v4 + shadcn/ui Audit — 2026-01-24
+# Tailwind v4 + shadcn/ui Audit — 2026-01-28
 
 ## Current state snapshot
 
 - Tailwind: `tailwindcss@4.1.18` (`package.json`)
 - PostCSS: `postcss.config.mjs` + `@tailwindcss/postcss`
 - shadcn/ui config: `components.json` (New York style, CSS variables, `app/globals.css`)
-- Animation baseline: `tw-animate-css`
+- Animation baseline: `tw-animate-css` (project rule is “no animations” → remove)
 
 ## Token / style sources (current)
 
@@ -24,37 +24,50 @@ Ran:
 
 - `pnpm -s styles:scan`
 
-Results:
+Results (latest scan, used code only):
 
-- Palette usage: **0 files / 0 findings**
-- Arbitrary values/hex/oklch: **0 files / 0 findings**
-- Missing semantic color tokens: **0 files / 0 missing**
-- Reports:
-  - `cleanup/palette-scan-report.txt`
-  - `cleanup/arbitrary-scan-report.txt`
-  - `cleanup/semantic-token-scan-report.txt`
+- Palette usage: **0** (PASS)
+- Gradients: **0** (PASS)
+- Arbitrary values: **38** (FAIL)
+- `bg-muted/*` opacity usage: **271** (FAIL)
+- `bg-primary/*` opacity usage: **160** (FAIL)
+- `border-primary/*` opacity usage: **78** (FAIL)
+- Legacy `brand` tokens: **236** (FAIL)
+- Hardcoded white/black (incl `/opacity`): **24** (FAIL)
+- Animations (`tw-animate` patterns): **55** (FAIL)
+
+Reports (tooling):
+- `cleanup/palette-scan-report.txt`
+- `cleanup/arbitrary-scan-report.txt`
+- `cleanup/semantic-token-scan-report.txt`
+
+Full plan:
+- `audit/TAILWIND_SHADCN_V4_AUDIT_2026-01-28.md`
 
 ## Findings (Phase 1)
 
-## Tailwind Lane Phase 1 Audit — 2026-01-24
+## Tailwind Lane Phase 1 Audit — 2026-01-28
 
 ### Critical (blocks Phase 2)
 
-- [ ] **Consolidate token sources** → multiple CSS files define token-like values which increases drift risk → Evidence: `app/globals.css`, `app/legacy-vars.css`, `app/shadcn-components.css`, `app/utilities.css` → Fix: define a single token source (prefer `app/globals.css`) and migrate the rest into utilities/components.
+- [ ] **Remove semantic opacity hacks** → kill `bg-muted/*`, `bg-primary/*`, `border-primary/*` across runtime UI → replace with semantic tokens (`bg-surface-subtle`, `bg-hover`, `bg-active`, `bg-selected`, `border-selected-border`)
+- [ ] **Remove legacy `brand` tokens** → replace with `primary` + semantic tokens
+- [ ] **Remove animations** → delete `tw-animate` usage in shadcn primitives and `app/shadcn-components.css`
+- [ ] **Remove custom/heavy shadows** → delete `shadow-[…]` and downgrade `shadow-xl|2xl` in runtime UI
 
 ### High (do in Phase 2)
 
-- [ ] **Codify “page canvas” + surface recipes** → ensure every route uses the same wrapper and spacing scale → Fix: standard `PageShell` (or equivalent) used across pages and route groups.
-- [ ] **Component recipe enforcement** → stop per-page “card/badge/border/radius” freehand combos → Fix: variants + shared composites for repeated UI (product cards, badges, banners, chips).
+- [ ] **Remove arbitrary values** → replace `*-[]` usage with theme tokens/utilities
+- [ ] **Consolidate surface recipes** → stop copy/paste of `rounded-lg border bg-muted/30 p-*` patterns
 
 ### Deferred (Phase 3 or backlog)
 
-- [ ] **Token diet** → reduce cognitive load by removing unused/overlapping tokens once UI is stable.
-- [ ] **Extend drift scans** → optionally flag `bg-white`, `text-black`, `border-gray-*` in non-demo codepaths.
+- [ ] **Token diet** → reduce cognitive load in `app/globals.css` (dedupe/trim once stable)
+- [ ] **Extend drift scans** → enforce “no semantic opacity hacks / no brand aliases / no animations” rules in CI
 
 ## Related audit (existing)
 
-- `docs/AUDIT_TAILWIND_SHADCN_TWITTER_THEME_2026-01-24.md`
+- `audit/AUDIT_TAILWIND_SHADCN_TWITTER_THEME_2026-01-24.md`
 
 ## Verification gates
 

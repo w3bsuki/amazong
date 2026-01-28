@@ -46,18 +46,18 @@ export interface CategoryProductRowProps {
 }
 
 // =============================================================================
-// ICON MAP
+// ICON MAP - Use size-5 (20px) for section headers
 // =============================================================================
 
 const VARIANT_ICONS: Record<CategoryRowVariant, ReactNode> = {
-  promoted: <Fire size={16} weight="fill" className="text-fire" />,
-  deals: <Tag size={16} weight="fill" className="text-price-sale" />,
-  fashion: <TShirt size={16} weight="fill" className="text-primary" />,
-  automotive: <Car size={16} weight="fill" className="text-primary" />,
-  electronics: <DeviceMobile size={16} weight="fill" className="text-primary" />,
-  kids: <Baby size={16} weight="fill" className="text-primary" />,
-  bulgarian: <FlagBanner size={16} weight="fill" className="text-success" />, // Bulgarian green
-  generic: <Tag size={16} weight="fill" className="text-muted-foreground" />,
+  promoted: <Fire size={20} weight="fill" className="text-fire" />,
+  deals: <Tag size={20} weight="fill" className="text-price-sale" />,
+  fashion: <TShirt size={20} weight="fill" className="text-primary" />,
+  automotive: <Car size={20} weight="fill" className="text-primary" />,
+  electronics: <DeviceMobile size={20} weight="fill" className="text-primary" />,
+  kids: <Baby size={20} weight="fill" className="text-primary" />,
+  bulgarian: <FlagBanner size={20} weight="fill" className="text-success" />,
+  generic: <Tag size={20} weight="fill" className="text-muted-foreground" />,
 }
 
 // =============================================================================
@@ -85,7 +85,7 @@ export function CategoryProductRow({
     <section
       aria-label={title}
       className={cn(
-        "rounded-xl border border-border bg-muted/20 p-4 shadow-sm",
+        "rounded-xl border border-border bg-surface-subtle p-4 shadow-sm",
         className
       )}
     >
@@ -169,28 +169,28 @@ export function CategoryProductRowMobile({
   const displayProducts = products.slice(0, maxProducts)
 
   return (
-    <section className={cn("pt-4 pb-2", className)}>
-      {/* Section header - improved hierarchy */}
-      <header className="px-inset mb-3 flex items-center justify-between min-h-[36px]">
+    <section className={cn("pt-section-top pb-section-bottom", className)}>
+      {/* Section header - semantic tokens */}
+      <header className="px-inset mb-3 flex items-center justify-between min-h-touch-sm">
         <div className="flex items-center gap-2.5">
-          <span className="flex-shrink-0 [&>svg]:size-[18px]">{displayIcon}</span>
-          <h2 className="text-[15px] font-semibold tracking-tight text-foreground leading-tight">
+          <span className="shrink-0 [&>svg]:size-5" aria-hidden="true">{displayIcon}</span>
+          <h2 className="text-body font-semibold tracking-tight text-foreground">
             {title}
           </h2>
         </div>
         {seeAllHref && (
           <Link
             href={seeAllHref}
-            className="flex items-center gap-1 text-[13px] font-medium text-primary min-h-touch-sm px-1 -mr-1 active:opacity-70 transition-opacity"
+            className="flex items-center gap-1 text-compact font-medium text-primary min-h-touch-sm px-1 -mr-1 active:opacity-70 transition-opacity"
           >
             {seeAllText}
-            <ArrowRight size={14} weight="bold" />
+            <ArrowRight size={14} weight="bold" aria-hidden="true" />
           </Link>
         )}
       </header>
 
-      {/* Horizontal scroll product cards */}
-      <div className="overflow-x-auto no-scrollbar">
+      {/* Horizontal scroll product cards with snap */}
+      <div className="overflow-x-auto no-scrollbar snap-x snap-mandatory">
         <div className="flex gap-3 px-inset pb-1">
           {displayProducts.map((product) => (
             <HorizontalProductCard key={product.id} product={product} />
@@ -212,7 +212,7 @@ export function TrustBannerDesktop({
 }) {
   return (
     <div className={cn(
-      "flex items-center justify-center gap-8 py-3 px-4 rounded-lg bg-muted/30 border border-border/30",
+      "flex items-center justify-center gap-8 py-3 px-4 rounded-lg bg-surface-subtle border border-border",
       className
     )}>
       <TrustItem icon="🛡️" label="Buyer Protection" />

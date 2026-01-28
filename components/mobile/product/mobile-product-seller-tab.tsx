@@ -24,10 +24,10 @@ import {
   ThumbsUp,
 } from "lucide-react";
 import { Link } from "@/i18n/routing";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { safeAvatarSrc, cn } from "@/lib/utils";
+import { UserAvatar } from "@/components/shared/user-avatar";
+import { cn } from "@/lib/utils";
 
 import type { ProductPageViewModel } from "@/lib/view-models/product-page";
 
@@ -74,15 +74,12 @@ function SellerProfileHeader({ seller }: { seller: SellerInfo }) {
     <div className="flex items-start gap-4">
       {/* Avatar */}
       <div className="relative shrink-0">
-        <Avatar className="size-16 ring-2 ring-border bg-muted">
-          <AvatarImage
-            src={safeAvatarSrc(seller.avatarUrl)}
-            alt={seller.name}
-          />
-          <AvatarFallback className="text-lg font-semibold bg-muted">
-            {seller.name.slice(0, 2).toUpperCase()}
-          </AvatarFallback>
-        </Avatar>
+        <UserAvatar
+          name={seller.name}
+          avatarUrl={seller.avatarUrl}
+          size="xl"
+          className="ring-2 ring-border"
+        />
         {seller.verified && (
           <span className="absolute -bottom-1 -right-1 size-6 bg-verified rounded-full ring-2 ring-surface-card flex items-center justify-center">
             <CheckCircle2 className="size-4 text-primary-foreground" fill="currentColor" />

@@ -25,8 +25,7 @@ import { useTranslations, useLocale } from "next-intl";
 import { formatDistanceToNow } from "date-fns";
 import { bg, enUS } from "date-fns/locale";
 import { Info, User } from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { safeAvatarSrc } from "@/lib/utils";
+import { UserAvatar } from "@/components/shared/user-avatar";
 
 // V3 Tab Components
 import { MobileProductInfoTab } from "./mobile-product-info-tab";
@@ -226,12 +225,13 @@ export function MobileProductPage(props: MobileProductPageProps) {
               className="flex-1 h-full gap-1.5 rounded-none bg-transparent text-muted-foreground font-medium data-[state=active]:bg-transparent data-[state=active]:text-foreground data-[state=active]:shadow-none border-b-2 border-transparent data-[state=active]:border-foreground transition-colors"
             >
               {sellerInfoForTab.avatarUrl ? (
-                <Avatar className="size-5 ring-1 ring-border/50">
-                  <AvatarImage src={safeAvatarSrc(sellerInfoForTab.avatarUrl)} alt={sellerInfoForTab.name} />
-                  <AvatarFallback className="text-[10px] font-medium bg-muted">
-                    {(sellerInfoForTab.name || "?").slice(0, 1).toUpperCase()}
-                  </AvatarFallback>
-                </Avatar>
+                <UserAvatar
+                  name={sellerInfoForTab.name || "?"}
+                  avatarUrl={sellerInfoForTab.avatarUrl}
+                  size="sm"
+                  className="size-5 ring-1 ring-border/50"
+                  fallbackClassName="text-[10px] font-medium bg-muted"
+                />
               ) : (
                 <User className="size-4" strokeWidth={1.5} />
               )}

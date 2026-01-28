@@ -197,15 +197,17 @@ export function FeedToolbar({
             return (
               <Button
                 key={tab.id}
-                variant={isActive ? "default" : "ghost"}
-                size="sm"
+                variant={isActive ? "default" : "outline"}
+                size="default"
                 onClick={() => onTabChange(tab.id)}
                 className={cn(
-                  "h-8 px-3 gap-1.5 shrink-0 rounded-full",
-                  isActive && "shadow-sm"
+                  "h-11 px-5 gap-2 shrink-0 rounded-xl font-medium",
+                  isActive 
+                    ? "shadow-md" 
+                    : "bg-muted/60 hover:bg-muted border-border/50"
                 )}
               >
-                <TabIcon size={14} weight={isActive ? "fill" : "regular"} />
+                <TabIcon size={18} weight={isActive ? "fill" : "regular"} />
                 <span className="text-sm">{tab.label}</span>
               </Button>
             )
@@ -218,17 +220,17 @@ export function FeedToolbar({
             <DropdownMenuTrigger asChild>
               <Button
                 variant={userCity ? "default" : "outline"}
-                size="sm"
-                className="h-8 gap-1.5 shrink-0 rounded-full"
+                size="default"
+                className="h-11 px-5 gap-2 shrink-0 rounded-xl font-medium"
               >
-                <MapPin size={14} weight={userCity ? "fill" : "regular"} />
+                <MapPin size={18} weight={userCity ? "fill" : "regular"} />
                 <span>
                   {userCity 
                     ? BULGARIAN_CITIES.find(c => c.value === userCity)?.[locale === "bg" ? "labelBg" : "label"] ?? userCity
                     : locale === "bg" ? "Избери град" : "Select city"
                   }
                 </span>
-                <CaretDown size={12} weight="bold" />
+                <CaretDown size={14} weight="bold" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="min-w-48 max-h-80 overflow-y-auto">
@@ -257,28 +259,28 @@ export function FeedToolbar({
           value={viewMode}
           onValueChange={(value) => value && onViewModeChange(value as "grid" | "list")}
           variant="outline"
-          className="h-8 bg-muted/50 p-0.5 rounded-full shrink-0"
+          className="h-11 bg-muted/50 p-1 rounded-xl shrink-0 border border-border/50"
         >
           <ToggleGroupItem
             value="grid"
             aria-label={tViewMode("gridView")}
-            className="size-7 p-0 rounded-full data-[state=on]:bg-background data-[state=on]:shadow-sm"
+            className="size-9 p-0 rounded-lg data-[state=on]:bg-background data-[state=on]:shadow-sm"
           >
-            <SquaresFour size={14} weight={viewMode === "grid" ? "fill" : "regular"} />
+            <SquaresFour size={18} weight={viewMode === "grid" ? "fill" : "regular"} />
           </ToggleGroupItem>
           <ToggleGroupItem
             value="list"
             aria-label={tViewMode("listView")}
-            className="size-7 p-0 rounded-full data-[state=on]:bg-background data-[state=on]:shadow-sm"
+            className="size-9 p-0 rounded-lg data-[state=on]:bg-background data-[state=on]:shadow-sm"
           >
-            <Rows size={14} weight={viewMode === "list" ? "fill" : "regular"} />
+            <Rows size={18} weight={viewMode === "list" ? "fill" : "regular"} />
           </ToggleGroupItem>
         </ToggleGroup>
       </div>
 
       {/* BOTTOM ROW: Category filter pills (only when category is selected) */}
       {(categoryFilters.length > 0 || isLoadingAttributes) && (
-        <div className="flex items-center gap-2 overflow-x-auto no-scrollbar">
+        <div className="flex items-center gap-2.5 overflow-x-auto no-scrollbar">
           {categoryFilters.map((filter) => (
             <DropdownMenu
               key={filter.id}
@@ -288,14 +290,14 @@ export function FeedToolbar({
               <DropdownMenuTrigger asChild>
                 <Button
                   variant="outline"
-                  size="sm"
+                  size="default"
                   className={cn(
-                    "h-8 px-3 gap-1.5 rounded-full shrink-0",
+                    "h-10 px-4 gap-2 rounded-xl shrink-0 font-medium",
                     filters.attributes[filter.id] && "border-primary bg-primary/5"
                   )}
                 >
                   {filter.label}
-                  <CaretDown size={12} weight="bold" className="text-muted-foreground" />
+                  <CaretDown size={14} weight="bold" className="text-muted-foreground" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="start" className="min-w-36">
@@ -331,16 +333,16 @@ export function FeedToolbar({
             <Button
               key={af.id}
               variant="default"
-              size="sm"
+              size="default"
               onClick={() => {
                 const newAttributes = { ...filters.attributes }
                 delete newAttributes[af.id]
                 onFiltersChange({ ...filters, attributes: newAttributes })
               }}
-              className="h-8 px-3 gap-1.5 rounded-full shrink-0"
+              className="h-10 px-4 gap-2 rounded-xl shrink-0 font-medium"
             >
               {af.displayLabel}
-              <X size={12} weight="bold" />
+              <X size={14} weight="bold" />
             </Button>
           ))}
         </div>

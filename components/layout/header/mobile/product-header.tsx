@@ -1,9 +1,9 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { UserAvatar } from "@/components/shared/user-avatar"
 import { ArrowLeft, Export, Heart, DotsThree } from "@phosphor-icons/react"
-import { cn, safeAvatarSrc } from "@/lib/utils"
+import { cn } from "@/lib/utils"
 import { useTranslations } from "next-intl"
 import { useWishlist } from "@/components/providers/wishlist-context"
 import { Link } from "@/i18n/routing"
@@ -38,7 +38,6 @@ export function MobileProductHeader({
   const tProduct = useTranslations("Product")
 
   // Seller display
-  const sellerInitials = (sellerName || sellerUsername || "?").slice(0, 1).toUpperCase()
   const profileHref = sellerUsername ? `/${sellerUsername}` : "#"
   const hasSellerInfo = sellerUsername || sellerAvatarUrl
 
@@ -120,20 +119,13 @@ export function MobileProductHeader({
                 "active:scale-95 transition-transform"
               )}
             >
-              <Avatar className="size-8">
-                <AvatarImage 
-                  src={safeAvatarSrc(sellerAvatarUrl)} 
-                  alt={sellerName || tProduct("seller")} 
-                />
-                <AvatarFallback 
-                  className={cn(
-                    "text-xs font-semibold",
-                    "bg-muted text-muted-foreground"
-                  )}
-                >
-                  {sellerInitials}
-                </AvatarFallback>
-              </Avatar>
+              <UserAvatar
+                name={sellerName || tProduct("seller")}
+                avatarUrl={sellerAvatarUrl ?? null}
+                size="sm"
+                className="size-8"
+                fallbackClassName="text-xs font-semibold bg-muted text-muted-foreground"
+              />
             </Link>
           )}
           

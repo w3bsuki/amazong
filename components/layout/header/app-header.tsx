@@ -29,6 +29,7 @@ import {
 } from "./desktop"
 import { MobileSearchOverlay } from "@/components/shared/search/mobile-search-overlay"
 import { useHeaderOptional } from "@/components/providers/header-context"
+import { useAuthOptional } from "@/components/providers/auth-state-manager"
 import { cn } from "@/lib/utils"
 import { useEffect, useRef, useState } from "react"
 import { useRouter, usePathname } from "@/i18n/routing"
@@ -173,6 +174,9 @@ export function AppHeader({
   hideOnMobile = false,
   hideOnDesktop = false,
 }: AppHeaderProps) {
+  const auth = useAuthOptional()
+  const effectiveUser = auth ? (auth.isLoading ? user : auth.user) : user
+
   const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false)
   const [isHydrated, setIsHydrated] = useState(false)
   const headerRef = useRef<HTMLElement>(null)
@@ -243,7 +247,7 @@ export function AppHeader({
       case "homepage":
         return (
           <MobileHomepageHeader
-            user={user}
+            user={effectiveUser}
             categories={effectiveHomepageCategories}
             userStats={userStats}
             activeCategory={effectiveHomepageCategory}
@@ -255,7 +259,7 @@ export function AppHeader({
       case "product":
         return (
           <MobileProductHeader
-            user={user}
+            user={effectiveUser}
             categories={categories}
             userStats={userStats}
             productTitle={effectiveProductTitle}
@@ -272,7 +276,7 @@ export function AppHeader({
       case "contextual":
         return (
           <MobileContextualHeader
-            user={user}
+            user={effectiveUser}
             categories={categories}
             userStats={userStats}
             title={effectiveContextualTitle}
@@ -289,7 +293,7 @@ export function AppHeader({
       default:
         return (
           <MobileDefaultHeader
-            user={user}
+            user={effectiveUser}
             categories={categories}
             userStats={userStats}
             onSearchOpen={handleSearchOpen}
@@ -308,7 +312,7 @@ export function AppHeader({
     // Minimal shows simplified desktop header
     if (variant === "minimal") return <DesktopMinimalHeader locale={locale} />
     // Homepage, contextual, and default use standard desktop layout
-    return <DesktopStandardHeader user={user} locale={locale} />
+    return <DesktopStandardHeader user={effectiveUser} locale={locale} />
   }
 
   // ==========================================================================

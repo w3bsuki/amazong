@@ -480,6 +480,11 @@
   --spacing-category-item-desktop: 5.5rem;
   --spacing-nav-row: 3rem;
 
+  /* === HOMEPAGE SECTION SPACING === */
+  --spacing-section-top: 0.25rem;   /* 4px - minimal top breathing */
+  --spacing-section-bottom: 0.5rem; /* 8px - tight section separation */
+  --spacing-section-gap: 0;         /* 0 - sections stack directly */
+
   /* === FILTER SIDEBAR === */
   --spacing-filter-sidebar: 15rem;
   --spacing-sidebar-max-h: calc(100vh - 6rem);

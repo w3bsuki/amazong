@@ -53,7 +53,7 @@ interface MobileHomeProps {
 }
 
 // =============================================================================
-// Promoted Listings Strip (demo style - w-40 cards)
+// Promoted Listings Strip - Uses semantic SectionHeader
 // =============================================================================
 
 function PromotedListingsStrip({
@@ -65,26 +65,26 @@ function PromotedListingsStrip({
   if (!products || products.length === 0) return null
 
   return (
-    <section className="pt-4 pb-2">
-      {/* Section header - improved hierarchy */}
-      <header className="px-inset mb-3 flex items-center justify-between min-h-[36px]">
+    <section className="pt-section-top pb-section-bottom">
+      {/* Section header - semantic tokens */}
+      <header className="px-inset mb-3 flex items-center justify-between min-h-touch-sm">
         <div className="flex items-center gap-2.5">
-          <Fire size={18} weight="fill" className="text-fire flex-shrink-0" />
-          <h2 className="text-[15px] font-semibold tracking-tight text-foreground leading-tight">
+          <Fire size={18} weight="fill" className="text-fire shrink-0" aria-hidden="true" />
+          <h2 className="text-body font-semibold tracking-tight text-foreground">
             {t("mobile.promotedListings")}
           </h2>
         </div>
         <Link
           href="/todays-deals"
-          className="flex items-center gap-1 text-[13px] font-medium text-primary min-h-touch-sm px-1 -mr-1 active:opacity-70 transition-opacity"
+          className="flex items-center gap-1 text-compact font-medium text-primary min-h-touch-sm px-1 -mr-1 active:opacity-70 transition-opacity"
         >
           {t("mobile.seeAll")}
-          <ArrowRight size={14} weight="bold" />
+          <ArrowRight size={14} weight="bold" aria-hidden="true" />
         </Link>
       </header>
 
-      {/* Horizontal scroll product cards */}
-      <div className="overflow-x-auto no-scrollbar">
+      {/* Horizontal scroll product cards with snap */}
+      <div className="overflow-x-auto no-scrollbar snap-x snap-mandatory">
         <div className="flex gap-3 px-inset pb-1">
           {products.slice(0, 8).map((product) => (
             <HorizontalProductCard key={product.id} product={product} />
@@ -108,14 +108,14 @@ function TrustBadgesInline() {
   ]
 
   return (
-    <div className="mx-inset my-3 flex items-center justify-between py-2.5 px-3 bg-muted/30 rounded-md border border-border/30">
+    <div className="mx-inset my-3 flex items-center justify-between py-2.5 px-3 bg-surface-subtle rounded-md border border-border">
       {badges.map(({ icon: Icon, label }, i) => (
         <div
           key={label}
-          className={cn("flex items-center gap-1.5", i > 0 && "border-l border-border/40 pl-3")}
+          className={cn("flex items-center gap-1.5", i > 0 && "border-l border-border pl-3")}
         >
-          <Icon size={14} weight="fill" className="text-foreground/70" />
-          <span className="text-2xs text-foreground/70 font-medium">{label}</span>
+          <Icon size={14} weight="fill" className="text-muted-foreground" />
+          <span className="text-2xs text-muted-foreground font-medium">{label}</span>
         </div>
       ))}
     </div>
@@ -222,9 +222,9 @@ export function MobileHome({
       <div className="pb-4">
         {/* Leaf Category Banner - Shows when at deepest level (no more subcategories) */}
         {!nav.isAllTab && nav.isLeafCategory && nav.activeCategoryName && (
-          <div className="mx-inset my-3 rounded-xl bg-primary/10 p-4 border border-primary/20">
+          <div className="mx-inset my-3 rounded-xl bg-selected p-4 border border-selected-border">
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
+              <div className="flex size-10 items-center justify-center rounded-full bg-hover">
                 <Tag size={20} weight="fill" className="text-primary" />
               </div>
               <div>
@@ -264,7 +264,7 @@ export function MobileHome({
 
         {/* CURATED CATEGORY SECTIONS - Only on "All" tab, after promoted */}
         {nav.isAllTab && curatedSections && (
-          <div className="space-y-2 pt-2">
+          <div className="space-y-section-gap">
             {/* Today's Deals */}
             {curatedSections.deals.length > 0 && (
               <CategoryProductRowMobile
