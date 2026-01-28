@@ -50,7 +50,7 @@ export function BrandField({
         <Field data-invalid={fieldState.invalid} className={className}>
           {/* Section Header (non-compact mode) */}
           {!compact && (
-            <div className="p-4 pb-3 border-b border-border/50 bg-muted/10">
+            <div className="p-4 pb-3 border-b border-border/50 bg-surface-subtle">
               <div className="flex items-center gap-3.5">
                 <div className="flex size-10 items-center justify-center rounded-md bg-background border border-border shadow-xs">
                   <Tag className="size-5 text-muted-foreground" />

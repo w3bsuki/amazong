@@ -42,7 +42,7 @@ export function CategoryContextBanner({
   const itemsLabel = t("itemsCount", { count: productCount })
 
   return (
-    <div className="mx-inset my-2 p-3 rounded-lg bg-muted/30 border border-border/30">
+    <div className="mx-inset my-2 p-3 rounded-lg bg-surface-subtle border border-border/30">
       <div className="flex items-center justify-between gap-3">
         {/* Category info */}
         <div className="min-w-0">

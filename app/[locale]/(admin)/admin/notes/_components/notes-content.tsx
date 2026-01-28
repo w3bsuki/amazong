@@ -191,7 +191,7 @@ function NoteCard({
   const locale = useLocale()
 
   return (
-    <Card className={cn("group", note.is_pinned && "border-primary/50 bg-primary/5")}>
+    <Card className={cn("group", note.is_pinned && "border-selected-border bg-hover")}>
       <CardHeader className="p-4 pb-2">
         <div className="flex items-start justify-between gap-2">
           <CardTitle className="text-base leading-tight">{note.title}</CardTitle>

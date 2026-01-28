@@ -79,19 +79,18 @@ export function ConditionField({ className, compact = false }: ConditionFieldPro
                     <button
                       type="button"
                       className={cn(
-                        "w-full flex items-center gap-3.5 min-h-16 px-4 py-3 rounded-xl border text-left transition-all",
-                        "active:scale-[0.98]",
-                        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30",
+                        "w-full flex items-center gap-3.5 min-h-16 px-4 py-3 rounded-xl border text-left transition-colors",
+                        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
                         fieldState.invalid 
                           ? "border-destructive/50 bg-destructive/5" 
                           : selectedLabel 
-                            ? "border-primary/30 bg-primary/5" 
-                            : "border-border bg-card hover:bg-muted/30"
+                            ? "border-selected-border bg-selected" 
+                            : "border-border bg-card hover:bg-hover"
                       )}
                     >
                       <div className={cn(
                         "size-11 rounded-xl flex items-center justify-center shrink-0 transition-colors",
-                        selectedLabel ? "bg-primary/15 text-primary" : "bg-muted text-muted-foreground"
+                        selectedLabel ? "bg-selected text-primary" : "bg-muted text-muted-foreground"
                       )}>
                         <Sparkle className="size-5" weight={selectedLabel ? "fill" : "regular"} />
                       </div>
@@ -136,16 +135,15 @@ export function ConditionField({ className, compact = false }: ConditionFieldPro
                               setIsOpen(false);
                             }}
                             className={cn(
-                              "w-full flex items-center gap-4 p-4 rounded-2xl border transition-all text-left",
-                              "active:scale-[0.98]",
+                              "w-full flex items-center gap-4 p-4 rounded-2xl border transition-colors text-left",
                               isSelected
-                                ? "border-primary bg-primary/5 ring-2 ring-primary/20"
-                                : "border-transparent bg-muted/40 hover:bg-muted/60"
+                                ? "border-selected-border bg-selected ring-2 ring-ring"
+                                : "border-transparent bg-surface-subtle hover:bg-hover"
                             )}
                           >
                             <div className={cn(
                               "size-12 rounded-xl flex items-center justify-center shrink-0 transition-colors",
-                              isSelected ? "bg-primary/15" : "bg-muted"
+                              isSelected ? "bg-selected" : "bg-surface-subtle"
                             )}>
                               <Sparkle 
                                 className={cn(
@@ -188,12 +186,12 @@ export function ConditionField({ className, compact = false }: ConditionFieldPro
                         type="button"
                         onClick={() => field.onChange(option.value)}
                         className={cn(
-                          "flex items-center justify-center h-12 px-4 rounded-md border transition-all text-center",
-                          "focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/5",
+                          "flex items-center justify-center h-12 px-4 rounded-md border transition-colors text-center",
+                          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background",
                           "touch-manipulation",
                           isSelected
-                            ? "border-primary bg-primary/10 text-primary font-bold shadow-xs"
-                            : "border-border bg-background hover:border-primary/30 text-muted-foreground hover:text-foreground"
+                            ? "border-selected-border bg-selected text-primary font-bold shadow-xs"
+                            : "border-border bg-background hover:border-hover-border text-muted-foreground hover:text-foreground"
                         )}
                       >
                         <span className="text-sm leading-tight">

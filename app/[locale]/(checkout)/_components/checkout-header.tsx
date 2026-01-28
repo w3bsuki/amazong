@@ -50,8 +50,8 @@ export function CheckoutHeader({ currentStep: propStep }: CheckoutHeaderProps) {
                     <div
                       className={cn(
                         "size-5 rounded-full flex items-center justify-center text-2xs font-semibold",
-                        isStepComplete && "bg-success text-white",
-                        isStepActive && "bg-primary text-white",
+                        isStepComplete && "bg-success text-success-foreground",
+                        isStepActive && "bg-primary text-primary-foreground",
                         !isStepComplete && !isStepActive && "bg-muted text-muted-foreground"
                       )}
                     >

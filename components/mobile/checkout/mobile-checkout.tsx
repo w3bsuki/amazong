@@ -114,120 +114,124 @@ export function MobileCheckout({
       <h1 className="sr-only">{t("title")}</h1>
 
       {/* Content area with bottom padding for sticky footer */}
-      <div className="pb-[calc(5rem+env(safe-area-inset-bottom))] space-y-3 p-4">
-        {/* Shipping Address Card */}
-        <Card>
-          <CardHeader className="border-b py-3 px-4">
-            <div className="flex items-center justify-between">
+      <div className="pb-safe">
+        <div className="space-y-3 p-4">
+          {/* Shipping Address Card */}
+          <Card>
+            <CardHeader className="border-b py-3 px-4">
+              <div className="flex items-center justify-between">
+                <CardTitle className="flex items-center gap-2 text-sm">
+                  <MapPin className="size-4 text-primary" weight="fill" />
+                  {t("shippingAddress")}
+                </CardTitle>
+                {isAuthenticated && (
+                  <Link 
+                    href="/account/addresses" 
+                    className="text-xs text-primary font-medium"
+                  >
+                    {t("manageAddresses")}
+                  </Link>
+                )}
+              </div>
+            </CardHeader>
+            <CardContent className="p-4">
+              <MobileAddressSection
+                isLoadingAddresses={isLoadingAddresses}
+                savedAddresses={savedAddresses}
+                selectedAddressId={selectedAddressId}
+                setSelectedAddressId={setSelectedAddressId}
+                useNewAddress={useNewAddress}
+                setUseNewAddress={setUseNewAddress}
+                newAddress={newAddress}
+                updateNewAddress={updateNewAddress}
+                handleBlur={handleBlur}
+                errors={errors}
+                touched={touched}
+              />
+            </CardContent>
+          </Card>
+
+          {/* Shipping Method Card */}
+          <Card>
+            <CardHeader className="border-b py-3 px-4">
               <CardTitle className="flex items-center gap-2 text-sm">
-                <MapPin className="size-4 text-primary" weight="fill" />
-                {t("shippingAddress")}
+                <Truck className="size-4 text-primary" weight="fill" />
+                {t("shippingMethod")}
               </CardTitle>
-              {isAuthenticated && (
-                <Link 
-                  href="/account/addresses" 
-                  className="text-xs text-primary font-medium"
-                >
-                  {t("manageAddresses")}
+            </CardHeader>
+            <CardContent className="p-4">
+              <MobileShippingSection
+                shippingMethod={shippingMethod}
+                setShippingMethod={setShippingMethod}
+                formatPrice={formatPrice}
+              />
+            </CardContent>
+          </Card>
+
+          {/* Order Items Card */}
+          <Card>
+            <CardHeader className="border-b py-3 px-4">
+              <div className="flex items-center justify-between">
+                <CardTitle className="flex items-center gap-2 text-sm">
+                  <Package className="size-4 text-primary" weight="fill" />
+                  {t("orderItems")}
+                  <Badge variant="secondary" className="ml-1 text-xs">{totalItems}</Badge>
+                </CardTitle>
+                <Link href="/cart" className="text-xs text-primary font-medium">
+                  {t("edit")}
                 </Link>
-              )}
-            </div>
-          </CardHeader>
-          <CardContent className="p-4">
-            <MobileAddressSection
-              isLoadingAddresses={isLoadingAddresses}
-              savedAddresses={savedAddresses}
-              selectedAddressId={selectedAddressId}
-              setSelectedAddressId={setSelectedAddressId}
-              useNewAddress={useNewAddress}
-              setUseNewAddress={setUseNewAddress}
-              newAddress={newAddress}
-              updateNewAddress={updateNewAddress}
-              handleBlur={handleBlur}
-              errors={errors}
-              touched={touched}
-            />
-          </CardContent>
-        </Card>
+              </div>
+            </CardHeader>
+            <CardContent className="p-4">
+              <MobileOrderItems items={items} formatPrice={formatPrice} />
+            </CardContent>
+          </Card>
 
-        {/* Shipping Method Card */}
-        <Card>
-          <CardHeader className="border-b py-3 px-4">
-            <CardTitle className="flex items-center gap-2 text-sm">
-              <Truck className="size-4 text-primary" weight="fill" />
-              {t("shippingMethod")}
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="p-4">
-            <MobileShippingSection
-              shippingMethod={shippingMethod}
-              setShippingMethod={setShippingMethod}
-              formatPrice={formatPrice}
-            />
-          </CardContent>
-        </Card>
+          {/* Order Summary Card */}
+          <Card>
+            <CardContent className="p-4 space-y-3">
+              <div className="flex justify-between text-sm">
+                <span className="text-muted-foreground">{t("subtotal")}</span>
+                <span className="font-medium">{formatPrice(subtotal)}</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-muted-foreground">{t("shipping")}</span>
+                <span className={cn("font-medium", shippingCost === 0 && "text-success")}>
+                  {shippingCost === 0 ? t("free") : formatPrice(shippingCost)}
+                </span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-muted-foreground">{t("tax", { percent: 10 })}</span>
+                <span className="font-medium">{formatPrice(tax)}</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-muted-foreground flex items-center gap-1">
+                  <ShieldCheck className="size-3 text-success" weight="fill" />
+                  {t("buyerProtection")}
+                </span>
+                <span className="font-medium">{formatPrice(buyerProtectionFee)}</span>
+              </div>
+              
+              <div className="flex justify-between pt-3 border-t">
+                <span className="font-semibold">{t("total")}</span>
+                <span className="text-xl font-bold">{formatPrice(total)}</span>
+              </div>
+            </CardContent>
+          </Card>
 
-        {/* Order Items Card */}
-        <Card>
-          <CardHeader className="border-b py-3 px-4">
-            <div className="flex items-center justify-between">
-              <CardTitle className="flex items-center gap-2 text-sm">
-                <Package className="size-4 text-primary" weight="fill" />
-                {t("orderItems")}
-                <Badge variant="secondary" className="ml-1 text-xs">{totalItems}</Badge>
-              </CardTitle>
-              <Link href="/cart" className="text-xs text-primary font-medium">
-                {t("edit")}
-              </Link>
-            </div>
-          </CardHeader>
-          <CardContent className="p-4">
-            <MobileOrderItems items={items} formatPrice={formatPrice} />
-          </CardContent>
-        </Card>
+          {/* Trust badges */}
+          <div className="flex items-center justify-center gap-4 py-2 text-xs text-muted-foreground">
+            <span className="flex items-center gap-1">
+              <Lock className="size-3" weight="fill" />
+              {t("securePayment")}
+            </span>
+            <span className="flex items-center gap-1">
+              <ShieldCheck className="size-3" weight="fill" />
+              {t("buyerProtection")}
+            </span>
+          </div>
 
-        {/* Order Summary Card */}
-        <Card>
-          <CardContent className="p-4 space-y-3">
-            <div className="flex justify-between text-sm">
-              <span className="text-muted-foreground">{t("subtotal")}</span>
-              <span className="font-medium">{formatPrice(subtotal)}</span>
-            </div>
-            <div className="flex justify-between text-sm">
-              <span className="text-muted-foreground">{t("shipping")}</span>
-              <span className={cn("font-medium", shippingCost === 0 && "text-success")}>
-                {shippingCost === 0 ? t("free") : formatPrice(shippingCost)}
-              </span>
-            </div>
-            <div className="flex justify-between text-sm">
-              <span className="text-muted-foreground">{t("tax", { percent: 10 })}</span>
-              <span className="font-medium">{formatPrice(tax)}</span>
-            </div>
-            <div className="flex justify-between text-sm">
-              <span className="text-muted-foreground flex items-center gap-1">
-                <ShieldCheck className="size-3 text-success" weight="fill" />
-                {t("buyerProtection")}
-              </span>
-              <span className="font-medium">{formatPrice(buyerProtectionFee)}</span>
-            </div>
-            
-            <div className="flex justify-between pt-3 border-t">
-              <span className="font-semibold">{t("total")}</span>
-              <span className="text-xl font-bold">{formatPrice(total)}</span>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Trust badges */}
-        <div className="flex items-center justify-center gap-4 py-2 text-xs text-muted-foreground">
-          <span className="flex items-center gap-1">
-            <Lock className="size-3" weight="fill" />
-            {t("securePayment")}
-          </span>
-          <span className="flex items-center gap-1">
-            <ShieldCheck className="size-3" weight="fill" />
-            {t("buyerProtection")}
-          </span>
+          <div className="h-20" aria-hidden="true" />
         </div>
       </div>
 

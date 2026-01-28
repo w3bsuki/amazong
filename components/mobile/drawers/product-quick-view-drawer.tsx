@@ -101,7 +101,7 @@ export function ProductQuickViewDrawer({
       <DrawerContent
         aria-label={t("quickView")}
         showHandle
-        className="touch-action-pan-y max-h-[85dvh] shadow-2xl"
+        className="touch-action-pan-y"
         overlayBlur="sm"
       >
         {/* Clean header with subtle styling */}

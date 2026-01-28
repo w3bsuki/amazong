@@ -22,9 +22,9 @@ export async function AboutPageContent() {
   const tBreadcrumbs = await getTranslations("Breadcrumbs")
 
   return (
-    <PageShell className="pb-20 sm:pb-12">
+      <PageShell className="pb-20 sm:pb-12">
       {/* Hero Section */}
-      <div className="bg-brand text-primary-foreground relative">
+      <div className="bg-primary text-primary-foreground relative">
         {/* Overlay for better text contrast */}
         <div className="absolute inset-0 bg-overlay-dark/20" aria-hidden="true" />
         <div className="container py-12 md:py-20 relative z-10">
@@ -51,7 +51,7 @@ export async function AboutPageContent() {
         <section className="py-12 md:py-16">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 items-center">
             <div>
-              <div className="inline-flex items-center gap-2 px-3 py-1 bg-brand/10 text-brand text-sm font-medium mb-4">
+              <div className="inline-flex items-center gap-2 px-3 py-1 bg-selected text-primary text-sm font-medium mb-4">
                 <Target className="size-4" />
                 {t("ourMission")}
               </div>
@@ -77,26 +77,26 @@ export async function AboutPageContent() {
               </div>
             </div>
             <div className="relative">
-                  <div className="aspect-video bg-brand/10 flex items-center justify-center">
+                  <div className="aspect-video bg-selected flex items-center justify-center">
                     <div className="grid grid-cols-2 gap-4 p-8">
                       <div className="bg-card p-4 text-center shadow-sm">
-                        <Lightning className="size-8 text-brand mx-auto mb-2" />
-                        <div className="text-lg font-bold text-brand">{t("statGrowing")}</div>
+                        <Lightning className="size-8 text-primary mx-auto mb-2" />
+                        <div className="text-lg font-bold text-primary">{t("statGrowing")}</div>
                         <div className="text-xs text-muted-foreground">{t("statGrowingDesc")}</div>
                       </div>
                       <div className="bg-card p-4 text-center shadow-sm">
-                        <Shield className="size-8 text-brand mx-auto mb-2" />
-                        <div className="text-lg font-bold text-brand">{t("statSecure")}</div>
+                        <Shield className="size-8 text-primary mx-auto mb-2" />
+                        <div className="text-lg font-bold text-primary">{t("statSecure")}</div>
                         <div className="text-xs text-muted-foreground">{t("statSecureDesc")}</div>
                       </div>
                       <div className="bg-card p-4 text-center shadow-sm">
-                        <Users className="size-8 text-brand mx-auto mb-2" />
-                        <div className="text-lg font-bold text-brand">{t("statLocal")}</div>
+                        <Users className="size-8 text-primary mx-auto mb-2" />
+                        <div className="text-lg font-bold text-primary">{t("statLocal")}</div>
                         <div className="text-xs text-muted-foreground">{t("statLocalDesc")}</div>
                       </div>
                       <div className="bg-card p-4 text-center shadow-sm">
-                        <Heart className="size-8 text-brand mx-auto mb-2" />
-                        <div className="text-lg font-bold text-brand">{t("statPassion")}</div>
+                        <Heart className="size-8 text-primary mx-auto mb-2" />
+                        <div className="text-lg font-bold text-primary">{t("statPassion")}</div>
                         <div className="text-xs text-muted-foreground">{t("statPassionDesc")}</div>
                       </div>
                     </div>
@@ -115,8 +115,8 @@ export async function AboutPageContent() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <Card className="group hover:shadow-md transition-shadow">
               <CardContent className="p-6">
-                <div className="size-12 bg-brand/10 flex items-center justify-center mb-4 group-hover:bg-brand/20 transition-colors">
-                  <Heart className="size-6 text-brand" />
+                <div className="size-12 bg-surface-subtle flex items-center justify-center mb-4 group-hover:bg-hover transition-colors">
+                  <Heart className="size-6 text-primary" />
                 </div>
                 <h3 className="font-bold text-lg mb-2">{t("valueCustomerFirst")}</h3>
                 <p className="text-muted-foreground text-sm">{t("valueCustomerFirstDesc")}</p>
@@ -125,8 +125,8 @@ export async function AboutPageContent() {
 
             <Card className="group hover:shadow-md transition-shadow">
               <CardContent className="p-6">
-                <div className="size-12 bg-brand/10 flex items-center justify-center mb-4 group-hover:bg-brand/20 transition-colors">
-                  <Shield className="size-6 text-brand" />
+                <div className="size-12 bg-surface-subtle flex items-center justify-center mb-4 group-hover:bg-hover transition-colors">
+                  <Shield className="size-6 text-primary" />
                 </div>
                 <h3 className="font-bold text-lg mb-2">{t("valueTrust")}</h3>
                 <p className="text-muted-foreground text-sm">{t("valueTrustDesc")}</p>
@@ -135,8 +135,8 @@ export async function AboutPageContent() {
 
             <Card className="group hover:shadow-md transition-shadow">
               <CardContent className="p-6">
-                <div className="size-12 bg-brand/10 flex items-center justify-center mb-4 group-hover:bg-brand/20 transition-colors">
-                  <Lightning className="size-6 text-brand" />
+                <div className="size-12 bg-surface-subtle flex items-center justify-center mb-4 group-hover:bg-hover transition-colors">
+                  <Lightning className="size-6 text-primary" />
                 </div>
                 <h3 className="font-bold text-lg mb-2">{t("valueInnovation")}</h3>
                 <p className="text-muted-foreground text-sm">{t("valueInnovationDesc")}</p>
@@ -145,8 +145,8 @@ export async function AboutPageContent() {
 
             <Card className="group hover:shadow-md transition-shadow">
               <CardContent className="p-6">
-                <div className="size-12 bg-brand/10 flex items-center justify-center mb-4 group-hover:bg-brand/20 transition-colors">
-                  <Leaf className="size-6 text-brand" />
+                <div className="size-12 bg-surface-subtle flex items-center justify-center mb-4 group-hover:bg-hover transition-colors">
+                  <Leaf className="size-6 text-primary" />
                 </div>
                 <h3 className="font-bold text-lg mb-2">{t("valueSustainability")}</h3>
                 <p className="text-muted-foreground text-sm">{t("valueSustainabilityDesc")}</p>
@@ -172,7 +172,7 @@ export async function AboutPageContent() {
             </div>
 
             <div className="text-center p-6">
-              <div className="size-16 bg-brand/10 text-brand flex items-center justify-center mx-auto mb-4">
+              <div className="size-16 bg-selected text-primary flex items-center justify-center mx-auto mb-4">
                 <Trophy className="size-8" />
               </div>
               <h3 className="font-bold text-lg mb-2">{t("offerQuality")}</h3>
@@ -195,32 +195,32 @@ export async function AboutPageContent() {
             <h3 className="text-xl font-bold text-center mb-8">{t("ourPromises")}</h3>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
               <div>
-                <div className="size-12 bg-brand/10 rounded-full flex items-center justify-center mx-auto mb-3">
-                  <Shield className="size-6 text-brand" />
+                <div className="size-12 bg-selected rounded-full flex items-center justify-center mx-auto mb-3">
+                  <Shield className="size-6 text-primary" />
                 </div>
                 <div className="text-lg font-bold">100%</div>
                 <div className="text-sm text-muted-foreground">{t("promiseSecure")}</div>
               </div>
 
               <div>
-                <div className="size-12 bg-brand/10 rounded-full flex items-center justify-center mx-auto mb-3">
-                  <Headphones className="size-6 text-brand" />
+                <div className="size-12 bg-selected rounded-full flex items-center justify-center mx-auto mb-3">
+                  <Headphones className="size-6 text-primary" />
                 </div>
                 <div className="text-lg font-bold">24/7</div>
                 <div className="text-sm text-muted-foreground">{t("customerSupport")}</div>
               </div>
 
               <div>
-                <div className="size-12 bg-brand/10 rounded-full flex items-center justify-center mx-auto mb-3">
-                  <Package className="size-6 text-brand" />
+                <div className="size-12 bg-selected rounded-full flex items-center justify-center mx-auto mb-3">
+                  <Package className="size-6 text-primary" />
                 </div>
                 <div className="text-lg font-bold">30</div>
                 <div className="text-sm text-muted-foreground">{t("dayReturns")}</div>
               </div>
 
               <div>
-                <div className="size-12 bg-brand/10 rounded-full flex items-center justify-center mx-auto mb-3">
-                  <CheckCircle className="size-6 text-brand" />
+                <div className="size-12 bg-selected rounded-full flex items-center justify-center mx-auto mb-3">
+                  <CheckCircle className="size-6 text-primary" />
                 </div>
                 <div className="text-lg font-bold">{t("promiseVerified")}</div>
                 <div className="text-sm text-muted-foreground">{t("promiseVerifiedDesc")}</div>
@@ -237,13 +237,13 @@ export async function AboutPageContent() {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link
                 href="/search"
-                className="inline-flex items-center justify-center px-8 py-3 bg-brand text-white font-medium hover:bg-brand-dark transition-colors"
+                className="inline-flex items-center justify-center px-8 py-3 bg-primary text-primary-foreground font-medium hover:bg-interactive-hover transition-colors"
               >
                 {t("ctaShopNow")}
               </Link>
               <Link
                 href="/contact"
-                className="inline-flex items-center justify-center px-8 py-3 border border-brand text-brand font-medium hover:bg-brand/5 transition-colors"
+                className="inline-flex items-center justify-center px-8 py-3 border border-selected-border text-primary font-medium hover:bg-hover transition-colors"
               >
                 {t("ctaContactUs")}
               </Link>

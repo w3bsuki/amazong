@@ -145,11 +145,11 @@ function SortDropdown({
         className={cn(
           "flex items-center gap-1.5 h-8 px-3 rounded-full",
           "text-sm font-medium whitespace-nowrap",
-          "bg-muted/60 text-foreground",
+          "bg-surface-subtle text-foreground",
           "border border-border/40",
           "transition-all duration-150",
-          "active:scale-[0.97]",
-          open && "bg-muted ring-2 ring-ring/20"
+          "active:opacity-90",
+          open && "bg-hover ring-2 ring-ring/20"
         )}
       >
         <ActiveIcon size={14} weight="bold" className="text-muted-foreground" />
@@ -166,7 +166,7 @@ function SortDropdown({
 
       {/* Dropdown Menu */}
       {open && (
-        <div className="absolute top-full right-0 mt-1.5 min-w-[140px] py-1.5 bg-popover rounded-xl shadow-lg border border-border z-50 animate-in fade-in-0 zoom-in-95 duration-150">
+        <div className="absolute top-full right-0 mt-1.5 min-w-36 py-1.5 bg-popover rounded-xl shadow-lg border border-border z-50">
           {SORT_OPTIONS.map((option) => {
             const Icon = option.icon
             const isActive = activeSort === option.id
@@ -182,8 +182,8 @@ function SortDropdown({
                   "w-full flex items-center gap-2 px-3 py-2 text-sm text-left",
                   "transition-colors duration-100",
                   isActive
-                    ? "bg-primary/10 text-primary font-medium"
-                    : "text-foreground hover:bg-muted"
+                    ? "bg-selected text-primary font-medium"
+                    : "text-foreground hover:bg-hover"
                 )}
               >
                 <Icon size={14} weight={isActive ? "fill" : "regular"} />
@@ -241,7 +241,7 @@ export function FeedControlBar({
             "relative flex items-center justify-center shrink-0 ml-inset",
             "h-8 w-8 rounded-full",
             "transition-all duration-150",
-            "active:scale-[0.95]",
+            "active:opacity-90",
             // Always black/inverted to stand out
             "bg-foreground text-background"
           )}
@@ -249,7 +249,7 @@ export function FeedControlBar({
           <SlidersHorizontal size={16} weight="bold" />
           {/* Active filter badge */}
           {totalActiveFilters > 0 && (
-            <span className="absolute -top-1 -right-1 size-4 flex items-center justify-center rounded-full bg-destructive text-destructive-foreground text-[10px] font-bold">
+            <span className="absolute -top-1 -right-1 size-4 flex items-center justify-center rounded-full bg-destructive text-destructive-foreground text-2xs font-bold">
               {totalActiveFilters > 9 ? "9+" : totalActiveFilters}
             </span>
           )}
@@ -278,13 +278,13 @@ export function FeedControlBar({
                     "flex items-center gap-1.5 h-8 px-3 rounded-full shrink-0",
                     "text-sm font-medium whitespace-nowrap",
                     "border transition-all duration-200",
-                    "active:scale-[0.97]",
+                    "active:opacity-90",
                     isActive
                       ? cn(
                           "border-transparent shadow-md",
                           pill.activeClassName
                         )
-                      : "bg-muted/50 text-muted-foreground border-border/40 hover:text-foreground hover:bg-muted"
+                      : "bg-surface-subtle text-muted-foreground border-border/40 hover:text-foreground hover:bg-hover active:bg-active"
                   )}
                 >
                   <Icon 

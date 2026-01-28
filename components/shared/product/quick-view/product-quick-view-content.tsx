@@ -218,10 +218,10 @@ export function ProductQuickViewContent({
 
   // Desktop layout - clean, modern product dialog
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-[minmax(400px,55%)_1fr] min-h-full">
+    <div className="grid grid-cols-1 lg:grid-cols-5 min-h-full">
       {/* LEFT: Gallery - larger, better proportions */}
-      <div className="relative bg-muted/30 flex items-center justify-center p-6 lg:p-8">
-        <div className="w-full max-w-[600px]">
+      <div className="relative bg-surface-subtle flex items-center justify-center p-6 lg:p-8 lg:col-span-3">
+        <div className="w-full max-w-xl">
           <QuickViewImageGallery
             images={allImages}
             title={title}
@@ -233,7 +233,7 @@ export function ProductQuickViewContent({
       </div>
 
       {/* RIGHT: Product Info - scrollable, better hierarchy */}
-      <div className="flex flex-col bg-background">
+      <div className="flex flex-col bg-background lg:col-span-2">
         {/* Scrollable content */}
         <div className="flex-1 overflow-y-auto p-6 lg:p-8 space-y-6">
           {/* Header: Title + badges */}
@@ -309,7 +309,7 @@ export function ProductQuickViewContent({
           {inStock && (
             <div className="flex items-center gap-4 py-2">
               <span className="text-sm font-medium text-muted-foreground min-w-12">{tProduct("qty") || "Qty"}</span>
-              <div className="flex items-center rounded-lg border border-border bg-muted/30">
+              <div className="flex items-center rounded-lg border border-border bg-surface-subtle">
                 <button
                   type="button"
                   onClick={() => setQuantity(Math.max(1, quantity - 1))}

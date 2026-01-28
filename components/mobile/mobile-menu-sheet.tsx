@@ -69,7 +69,7 @@ export const MobileMenuSheet = forwardRef<MobileMenuSheetHandle, MobileMenuSheet
               </div>
               <DrawerClose asChild>
                 <button
-                  className="flex items-center justify-center size-touch -mr-1 rounded-full text-foreground hover:bg-muted active:bg-muted/80 transition-colors touch-action-manipulation tap-transparent"
+                  className="flex items-center justify-center size-touch -mr-1 rounded-full text-foreground hover:bg-muted active:bg-active transition-colors touch-action-manipulation tap-transparent"
                   aria-label={t("closeMenu")}
                 >
                   <X size={20} weight="bold" />
@@ -93,7 +93,7 @@ export const MobileMenuSheet = forwardRef<MobileMenuSheetHandle, MobileMenuSheet
                 <Link
                   href="/categories"
                   onClick={() => setOpen(false)}
-                  className="text-xs text-primary font-medium hover:underline underline-offset-2 flex items-center gap-0.5 min-h-touch-xs px-1 -mr-1 rounded-md transition-colors active:bg-muted/50"
+                  className="text-xs text-primary font-medium hover:underline underline-offset-2 flex items-center gap-0.5 min-h-touch-xs px-1 -mr-1 rounded-md transition-colors active:bg-active"
                 >
                   {t("seeAll")}
                   <CaretRight size={12} weight="bold" />

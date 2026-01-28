@@ -88,7 +88,7 @@ export function BusinessStatsCards({ totals }: BusinessStatsProps) {
             {totals.products.toLocaleString()}
           </CardTitle>
           <CardAction>
-            <Badge variant="outline" className="border-primary/20 bg-primary/10 text-primary">
+            <Badge variant="outline" className="border-selected-border bg-selected text-primary">
               Listed
             </Badge>
           </CardAction>

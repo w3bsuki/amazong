@@ -504,7 +504,7 @@ export function EditProductClient({ productId, locale }: EditProductClientProps)
                   </div>
                 )}
                 {isOnSale && calculateDiscount() > 0 && (
-                  <div className="absolute top-2 left-2 bg-deal text-white text-xs font-bold px-2 py-1 rounded">
+                  <div className="absolute top-2 left-2 bg-deal text-deal-foreground text-xs font-bold px-2 py-1 rounded">
                     -{calculateDiscount()}%
                   </div>
                 )}

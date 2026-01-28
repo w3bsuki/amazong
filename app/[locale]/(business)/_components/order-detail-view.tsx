@@ -92,7 +92,7 @@ const STATUS_CONFIG = {
   },
   processing: {
     label: "Processing",
-    color: "bg-primary/10 text-primary border-primary/20",
+    color: "bg-selected text-primary border-selected-border",
     icon: IconRefresh,
     nextStatus: "shipped",
   },

@@ -70,7 +70,7 @@ export function AccountTabBar() {
                 "touch-action-manipulation tap-transparent",
                 "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-md",
                 active && !isStore 
-                  ? "text-brand" 
+                  ? "text-primary" 
                   : "text-muted-foreground",
               )}
               aria-label={tab.label}

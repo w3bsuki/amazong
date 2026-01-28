@@ -56,7 +56,7 @@ export default async function RegistryPage({
                             {t("heroSubtitle")}
                         </p>
                         <div className="flex flex-wrap gap-4">
-                            <Button className="bg-brand hover:bg-brand/90 text-foreground font-bold h-12 px-8 rounded-sm">
+                            <Button className="bg-primary hover:bg-interactive-hover text-primary-foreground font-bold h-12 px-8 rounded-sm">
                                 {t("createRegistry")}
                             </Button>
                             <Button variant="outline" className="bg-transparent border-header-text text-header-text hover:bg-header-text/10 font-bold h-12 px-8 rounded-sm">
@@ -65,7 +65,7 @@ export default async function RegistryPage({
                         </div>
                     </div>
                     <div className="hidden md:block">
-                        <Gift className="w-64 h-64 text-brand opacity-90" />
+                        <Gift className="w-64 h-64 text-primary opacity-90" />
                     </div>
                 </div>
             </div>
@@ -74,10 +74,10 @@ export default async function RegistryPage({
             <div className="container py-12">
                 <h2 className="text-3xl font-bold text-center mb-12">{t("typesTitle")}</h2>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <Card className="hover:border-brand transition-colors cursor-pointer border border-border">
+                    <Card className="hover:border-hover-border transition-colors cursor-pointer border border-border">
                         <CardHeader className="text-center">
-                            <div className="mx-auto bg-brand/10 w-16 h-16 rounded-full flex items-center justify-center mb-4">
-                                <Gift className="w-8 h-8 text-brand" />
+                            <div className="mx-auto bg-selected w-16 h-16 rounded-full flex items-center justify-center mb-4">
+                                <Gift className="w-8 h-8 text-primary" />
                             </div>
                             <CardTitle>{t("weddingTitle")}</CardTitle>
                         </CardHeader>
@@ -86,10 +86,10 @@ export default async function RegistryPage({
                         </CardContent>
                     </Card>
 
-                    <Card className="hover:border-brand transition-colors cursor-pointer border border-border">
+                    <Card className="hover:border-hover-border transition-colors cursor-pointer border border-border">
                         <CardHeader className="text-center">
-                            <div className="mx-auto bg-brand/15 w-16 h-16 rounded-full flex items-center justify-center mb-4">
-                                <UserPlus className="w-8 h-8 text-brand" />
+                            <div className="mx-auto bg-selected w-16 h-16 rounded-full flex items-center justify-center mb-4">
+                                <UserPlus className="w-8 h-8 text-primary" />
                             </div>
                             <CardTitle>{t("babyTitle")}</CardTitle>
                         </CardHeader>
@@ -98,10 +98,10 @@ export default async function RegistryPage({
                         </CardContent>
                     </Card>
 
-                    <Card className="hover:border-brand transition-colors cursor-pointer border border-border">
+                    <Card className="hover:border-hover-border transition-colors cursor-pointer border border-border">
                         <CardHeader className="text-center">
-                            <div className="mx-auto bg-brand/20 w-16 h-16 rounded-full flex items-center justify-center mb-4">
-                                <Gift className="w-8 h-8 text-brand" />
+                            <div className="mx-auto bg-selected w-16 h-16 rounded-full flex items-center justify-center mb-4">
+                                <Gift className="w-8 h-8 text-primary" />
                             </div>
                             <CardTitle>{t("birthdayTitle")}</CardTitle>
                         </CardHeader>

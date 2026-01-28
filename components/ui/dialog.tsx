@@ -90,7 +90,6 @@ function DialogOverlay({
         data-slot="dialog-overlay"
         className={cn(
           "fixed inset-0 z-50 bg-overlay-dark touch-none outline-none",
-          "animate-in fade-in-0",
           blurClasses[blur],
           className,
         )}
@@ -132,13 +131,9 @@ function DialogContent({
         data-slot="dialog-content"
         className={cn(
           'bg-background fixed top-1/2 left-1/2 z-50 grid w-full -translate-x-1/2 -translate-y-1/2 gap-2 border shadow-modal outline-none',
-          // Animations
-          'data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95 data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%]',
-          'data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%]',
-          'duration-200',
           // Size & shape variants
           variant === 'fullWidth'
-            ? 'max-h-[90dvh] w-[calc(100vw-2rem)] rounded-xl p-0 md:w-[90vw] md:max-w-6xl lg:max-w-[1400px]'
+            ? 'max-h-dialog w-dialog rounded-xl p-0 md:max-w-6xl lg:max-w-screen-xl'
             : 'max-w-dialog rounded-lg p-3 sm:max-w-lg md:p-4',
           className,
         )}
@@ -155,8 +150,8 @@ function DialogContent({
               variant === 'fullWidth' ? 'top-3 right-3 size-10' : 'top-3 right-3 size-8',
               // Styling - visible background for accessibility
               'flex items-center justify-center rounded-full',
-              'bg-muted/80 backdrop-blur-sm',
-              'text-foreground hover:bg-muted hover:text-foreground',
+              'bg-surface-subtle backdrop-blur-sm',
+              'text-foreground hover:bg-hover active:bg-active',
               // Focus ring
               'focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none',
               // Disabled state

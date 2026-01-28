@@ -5,12 +5,12 @@ import { cn } from "@/lib/utils";
  * PageShell — Canonical page surface wrapper for the entire app.
  *
  * This component enforces a single, consistent page canvas recipe across all routes.
- * It replaces ad-hoc usage of `min-h-screen bg-muted/30`, `bg-surface-page`,
+ * It replaces ad-hoc usage of `bg-surface-page`,
  * `bg-background`, etc. that previously drifted across routes.
  *
  * Variants:
  * - `default`: Clean white/dark canvas (`bg-background`) — used for most pages
- * - `muted`: Subtle page tint (`bg-surface-page`) — used for desktop home, search grids
+ * - `muted`: Alternate canvas (`bg-background`) — used for desktop home, search grids
  *
  * Usage:
  * ```tsx
@@ -30,7 +30,7 @@ interface PageShellProps extends React.ComponentProps<"div"> {
   /**
    * Surface variant:
    * - `default`: bg-background (clean white/dark)
-   * - `muted`: bg-muted/40 (subtle gray tint for grid pages)
+   * - `muted`: bg-background (alternate canvas for grid pages)
    */
   variant?: PageShellVariant;
   /**

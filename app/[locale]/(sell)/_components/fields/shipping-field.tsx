@@ -75,16 +75,16 @@ function ShippingRegionCard({
   return (
     <label
       className={cn(
-        "relative flex items-start gap-3 p-3 rounded-md border text-left transition-all w-full cursor-pointer",
+        "relative flex items-start gap-3 p-3 rounded-md border text-left transition-colors w-full cursor-pointer",
         isSelected
-          ? "border-primary bg-primary/10 shadow-xs"
-          : "border-border bg-background hover:border-primary/30"
+          ? "border-selected-border bg-selected shadow-xs"
+          : "border-border bg-background hover:border-hover-border"
       )}
     >
       {/* Icon */}
       <div className={cn(
         "size-9 rounded-full flex items-center justify-center shrink-0 border",
-        isSelected ? "bg-primary/10 border-primary/20" : "bg-muted/30 border-border/50"
+        isSelected ? "bg-selected border-selected-border" : "bg-surface-subtle border-border/50"
       )}>
         <Icon className={cn(
           "size-4.5",
@@ -113,7 +113,7 @@ function ShippingRegionCard({
             {region.carriers.map((carrier) => (
               <span
                 key={carrier}
-                className="text-2xs font-bold px-1.5 py-0.5 rounded-md bg-primary/10 text-primary border border-primary/10"
+                className="text-2xs font-bold px-1.5 py-0.5 rounded-md bg-surface-subtle text-primary border border-border"
               >
                 {carrier}
               </span>
@@ -309,25 +309,24 @@ export function ShippingField({ className, compact = false }: ShippingFieldProps
         <div className="space-y-2">
           {compact ? (
             <>
-              <button
-                type="button"
-                onClick={() => setIsCityDrawerOpen(true)}
-                className={cn(
-                  "w-full flex items-center gap-3.5 min-h-16 px-4 py-3 rounded-xl border text-left transition-all",
-                  "active:scale-[0.98]",
-                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30",
-                  sellerCity 
-                    ? "border-primary/30 bg-primary/5" 
-                    : "border-border bg-card hover:bg-muted/30"
-                )}
-              >
-                <div className={cn(
-                  "size-11 rounded-xl flex items-center justify-center shrink-0 transition-colors",
-                  sellerCity ? "bg-primary/15 text-primary" : "bg-muted text-muted-foreground"
-                )}>
-                  <MapPin className="size-5" weight={sellerCity ? "fill" : "regular"} />
-                </div>
-                <div className="flex-1 min-w-0">
+                <button
+                  type="button"
+                  onClick={() => setIsCityDrawerOpen(true)}
+                  className={cn(
+                    "w-full flex items-center gap-3.5 min-h-16 px-4 py-3 rounded-xl border text-left transition-colors",
+                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                    sellerCity 
+                      ? "border-selected-border bg-selected" 
+                      : "border-border bg-card hover:bg-hover"
+                  )}
+                >
+                  <div className={cn(
+                    "size-11 rounded-xl flex items-center justify-center shrink-0 transition-colors",
+                    sellerCity ? "bg-selected text-primary" : "bg-muted text-muted-foreground"
+                  )}>
+                    <MapPin className="size-5" weight={sellerCity ? "fill" : "regular"} />
+                  </div>
+                  <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-1.5">
                     <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
                       {isBg ? "Локация" : "Ships from"}
@@ -407,18 +406,17 @@ export function ShippingField({ className, compact = false }: ShippingFieldProps
           }
         }}
         className={cn(
-          "w-full flex items-center gap-3.5 p-4 rounded-xl border transition-all cursor-pointer",
-          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30",
-          "active:scale-[0.98]",
+          "w-full flex items-center gap-3.5 p-4 rounded-xl border transition-colors cursor-pointer",
+          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
           freeShipping 
-            ? "border-primary/40 bg-primary/5" 
-            : "border-border bg-card hover:bg-muted/30"
+            ? "border-selected-border bg-selected" 
+            : "border-border bg-card hover:bg-hover"
         )}
       >
         <div className={cn(
           "size-11 rounded-xl flex items-center justify-center shrink-0 transition-all",
           freeShipping 
-            ? "bg-primary/15 text-primary" 
+            ? "bg-selected text-primary" 
             : "bg-muted text-muted-foreground"
         )}>
           <Truck className="size-5" weight={freeShipping ? "fill" : "regular"} />
@@ -454,8 +452,8 @@ export function ShippingField({ className, compact = false }: ShippingFieldProps
             </label>
           </div>
           <div className={cn(
-            "flex items-center h-14 px-4 rounded-xl border bg-card transition-all",
-            "focus-within:ring-2 focus-within:ring-primary/20 focus-within:border-primary/50"
+            "flex items-center h-14 px-4 rounded-xl border bg-card transition-colors",
+            "focus-within:ring-2 focus-within:ring-ring focus-within:border-ring"
           )}>
             <span className="text-base font-bold text-muted-foreground mr-2">лв</span>
             <Input
@@ -502,7 +500,7 @@ export function ShippingField({ className, compact = false }: ShippingFieldProps
             <button
               type="button"
               onClick={() => setIsProcessingDrawerOpen(true)}
-              className="relative w-full flex items-center h-12 px-4 rounded-md border border-border bg-background hover:border-primary/30 transition-all text-left shadow-xs"
+              className="relative w-full flex items-center h-12 px-4 rounded-md border border-border bg-background hover:border-hover-border transition-colors text-left shadow-xs"
             >
               <div className="flex items-center gap-2 flex-1 min-w-0">
                 <span className="text-2xs font-bold uppercase tracking-wider text-muted-foreground shrink-0">
@@ -561,7 +559,7 @@ export function ShippingField({ className, compact = false }: ShippingFieldProps
       {!compact ? (
         <div className="rounded-md border border-form-section-border bg-form-section-bg overflow-hidden shadow-xs">
           {/* Header */}
-          <div className="p-4 pb-3 border-b border-border/50 bg-muted/10">
+          <div className="p-4 pb-3 border-b border-border/50 bg-surface-subtle">
             <div className="flex items-center gap-3.5">
               <div className="flex size-10 items-center justify-center rounded-md bg-form-section-bg border border-form-section-border shadow-xs">
                 <Truck className="size-5 text-muted-foreground" weight="bold" />

@@ -90,7 +90,7 @@ export default function BillingLoading() {
         </div>
 
         {/* Info Card */}
-        <Card className="bg-muted/30 border-dashed">
+        <Card className="bg-surface-subtle border-dashed">
           <CardContent className="flex items-start gap-3 pt-4">
             <Skeleton className="size-5 rounded shrink-0" />
             <div className="space-y-2 flex-1">

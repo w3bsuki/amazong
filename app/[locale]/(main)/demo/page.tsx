@@ -39,10 +39,10 @@ export default function DesignSystemDemo() {
             ✅ Status tokens adapt to dark mode (via `:root`/`.dark` overrides bridged into Tailwind).
           </p>
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-            <ColorSwatch name="success" className="bg-success text-white" />
+            <ColorSwatch name="success" className="bg-success text-success-foreground" />
             <ColorSwatch name="warning" className="bg-warning text-warning-foreground" />
-            <ColorSwatch name="error" className="bg-error text-white" />
-            <ColorSwatch name="info" className="bg-info text-white" />
+            <ColorSwatch name="error" className="bg-error text-error-foreground" />
+            <ColorSwatch name="info" className="bg-info text-info-foreground" />
           </div>
         </section>
 
@@ -82,10 +82,10 @@ export default function DesignSystemDemo() {
         <section className="space-y-4">
           <h2 className="text-xl font-semibold">Marketplace Semantic</h2>
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 md:grid-cols-5">
-            <ColorSwatch name="verified" className="bg-verified text-white" small />
-            <ColorSwatch name="shipping-free" className="bg-shipping-free text-white" small />
-            <ColorSwatch name="rating" className="bg-rating text-black" small />
-            <ColorSwatch name="wishlist" className="bg-wishlist text-white" small />
+            <ColorSwatch name="verified" className="bg-verified text-badge-fg-on-solid" small />
+            <ColorSwatch name="shipping-free" className="bg-shipping-free text-badge-fg-on-solid" small />
+            <ColorSwatch name="rating" className="bg-rating text-warning-foreground" small />
+            <ColorSwatch name="wishlist" className="bg-wishlist text-badge-fg-on-solid" small />
             <ColorSwatch name="deal" className="bg-deal text-deal-foreground" small />
           </div>
         </section>
@@ -107,12 +107,12 @@ export default function DesignSystemDemo() {
         <section className="space-y-4">
           <h2 className="text-xl font-semibold">Condition Badges</h2>
           <div className="flex flex-wrap gap-2">
-            <span className="rounded-full bg-condition-new px-3 py-1 text-sm font-medium text-white">New</span>
-            <span className="rounded-full bg-condition-likenew px-3 py-1 text-sm font-medium text-white">Like New</span>
-            <span className="rounded-full bg-condition-good px-3 py-1 text-sm font-medium text-white">Good</span>
-            <span className="rounded-full bg-condition-fair px-3 py-1 text-sm font-medium text-white">Fair</span>
-            <span className="rounded-full bg-condition-used px-3 py-1 text-sm font-medium text-white">Used</span>
-            <span className="rounded-full bg-condition-refurb px-3 py-1 text-sm font-medium text-white">Refurbished</span>
+            <span className="rounded-full bg-condition-new px-3 py-1 text-sm font-medium text-badge-fg-on-solid">New</span>
+            <span className="rounded-full bg-condition-likenew px-3 py-1 text-sm font-medium text-badge-fg-on-solid">Like New</span>
+            <span className="rounded-full bg-condition-good px-3 py-1 text-sm font-medium text-badge-fg-on-solid">Good</span>
+            <span className="rounded-full bg-condition-fair px-3 py-1 text-sm font-medium text-badge-fg-on-solid">Fair</span>
+            <span className="rounded-full bg-condition-used px-3 py-1 text-sm font-medium text-badge-fg-on-solid">Used</span>
+            <span className="rounded-full bg-condition-refurb px-3 py-1 text-sm font-medium text-badge-fg-on-solid">Refurbished</span>
           </div>
         </section>
 
@@ -201,7 +201,7 @@ function SurfaceCard({ name, className }: { name: string; className: string }) {
 
 function StatusPill({ name, className }: { name: string; className: string }) {
   return (
-    <span className={`rounded-full px-3 py-1 text-sm font-medium text-white ${className}`}>
+    <span className={`rounded-full px-3 py-1 text-sm font-medium text-badge-fg-on-solid ${className}`}>
       {name}
     </span>
   );

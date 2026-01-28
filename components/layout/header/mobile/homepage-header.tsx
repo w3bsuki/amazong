@@ -64,9 +64,9 @@ export function MobileHomepageHeader({
           onClick={onSearchOpen}
           className={cn(
             "flex-1 min-w-0 flex items-center gap-1.5 h-9 ml-2 px-3 rounded-full",
-            "bg-muted/50 border border-border/30",
+            "bg-surface-subtle border border-border/30",
             "text-muted-foreground text-sm text-left",
-            "active:bg-muted/70 transition-colors"
+            "active:bg-active transition-colors"
           )}
           aria-label={searchPlaceholder}
           aria-haspopup="dialog"

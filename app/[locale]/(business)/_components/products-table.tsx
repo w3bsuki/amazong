@@ -461,10 +461,10 @@ export function ProductsTable({
                 )}
               >
                 {tab.label}
-                <span className={cn(
+                  <span className={cn(
                   "ml-1.5 text-xs px-1.5 py-0.5 rounded-full",
                   statusFilter === tab.value
-                    ? "bg-primary/10 text-primary"
+                    ? "bg-selected text-primary"
                     : "bg-muted text-muted-foreground"
                 )}>
                   {statusCounts[tab.value]}
@@ -475,7 +475,7 @@ export function ProductsTable({
         </div>
 
         {/* Filters */}
-        <div className="px-4 lg:px-6 py-3 border-b bg-muted/30 space-y-3">
+        <div className="px-4 lg:px-6 py-3 border-b bg-surface-subtle space-y-3">
           {/* Search */}
           <div className="flex items-center gap-2">
             <div className="relative flex-1 max-w-sm">
@@ -574,7 +574,7 @@ export function ProductsTable({
           ) : (
             <Table>
               <TableHeader>
-                <TableRow className="hover:bg-transparent bg-muted/30">
+                <TableRow className="hover:bg-transparent bg-surface-subtle">
                   <TableHead className="w-10 pl-4">
                     <Checkbox checked={isAllSelected} onCheckedChange={toggleSelectAll} />
                   </TableHead>
@@ -603,7 +603,7 @@ export function ProductsTable({
                     key={product.id}
                     className={cn(
                       "group cursor-pointer",
-                      selectedIds.has(product.id) && "bg-primary/5"
+                      selectedIds.has(product.id) && "bg-selected"
                     )}
                     onClick={() => handleEditProduct(product)}
                   >
@@ -734,7 +734,7 @@ export function ProductsTable({
 
         {/* Footer */}
         {filteredProducts.length > 0 && (
-          <div className="px-4 lg:px-6 py-3 border-t bg-muted/30 text-xs text-muted-foreground">
+          <div className="px-4 lg:px-6 py-3 border-t bg-surface-subtle text-xs text-muted-foreground">
             Showing {filteredProducts.length} of {total} products
           </div>
         )}

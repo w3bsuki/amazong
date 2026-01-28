@@ -114,7 +114,7 @@ export default function ProductPageLoading() {
         </div>
 
         {/* Reviews Skeleton */}
-        <div className="mt-12 rounded-md bg-muted/20 p-4 border border-border/50">
+        <div className="mt-12 rounded-md bg-surface-subtle p-4 border border-border/50">
           <div className="flex items-center justify-between mb-8">
             <Skeleton className="h-7 w-40" />
             <Skeleton className="h-4 w-16" />

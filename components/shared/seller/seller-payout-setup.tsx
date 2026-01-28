@@ -260,7 +260,7 @@ export function SellerPayoutSetup({ payoutStatus, variant = "full" }: Props) {
         >
           <div className="grid gap-4 text-left">
             <div className="flex items-start gap-3">
-              <div className="size-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+              <div className="size-8 rounded-lg bg-selected flex items-center justify-center shrink-0">
                 <ShieldCheck className="size-4 text-primary" />
               </div>
               <div>
@@ -269,7 +269,7 @@ export function SellerPayoutSetup({ payoutStatus, variant = "full" }: Props) {
               </div>
             </div>
             <div className="flex items-start gap-3">
-              <div className="size-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+              <div className="size-8 rounded-lg bg-selected flex items-center justify-center shrink-0">
                 <Zap className="size-4 text-primary" />
               </div>
               <div>
@@ -286,7 +286,7 @@ export function SellerPayoutSetup({ payoutStatus, variant = "full" }: Props) {
 
   // Compact layout (sell gate on mobile): sticky CTA, minimal copy
   return (
-    <div className="mx-auto w-full max-w-md px-4 pt-4 pb-[calc(88px+env(safe-area-inset-bottom))] text-center">
+    <div className="mx-auto w-full max-w-md px-4 pt-4 pb-safe text-center">
       <div className="flex flex-col items-center">
         <div className="size-12 rounded-xl bg-primary flex items-center justify-center shadow-sm shadow-primary/15">
           {isComplete ? (
@@ -306,59 +306,61 @@ export function SellerPayoutSetup({ payoutStatus, variant = "full" }: Props) {
               "inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs",
               payoutStatus?.details_submitted
                 ? "border-success/30 bg-success/10 text-foreground"
-                : "border-border bg-muted/30 text-muted-foreground"
+                : "border-border bg-surface-subtle text-muted-foreground"
             )}>
               <span className={cn(
-                "inline-flex size-4 items-center justify-center rounded-full text-[10px]",
+                "inline-flex size-4 items-center justify-center rounded-full text-2xs",
                 payoutStatus?.details_submitted
                   ? "bg-success text-success-foreground"
                   : "bg-muted text-muted-foreground"
               )}>
                 {payoutStatus?.details_submitted ? <CheckCircle2 className="size-3" /> : "1"}
               </span>
-              <span className="truncate max-w-[12rem]">{t("detailsSubmitted")}</span>
+              <span className="truncate max-w-48">{t("detailsSubmitted")}</span>
             </div>
 
             <div className={cn(
               "inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs",
               payoutStatus?.charges_enabled
                 ? "border-success/30 bg-success/10 text-foreground"
-                : "border-border bg-muted/30 text-muted-foreground"
+                : "border-border bg-surface-subtle text-muted-foreground"
             )}>
               <span className={cn(
-                "inline-flex size-4 items-center justify-center rounded-full text-[10px]",
+                "inline-flex size-4 items-center justify-center rounded-full text-2xs",
                 payoutStatus?.charges_enabled
                   ? "bg-success text-success-foreground"
                   : "bg-muted text-muted-foreground"
               )}>
                 {payoutStatus?.charges_enabled ? <CheckCircle2 className="size-3" /> : "2"}
               </span>
-              <span className="truncate max-w-[12rem]">{t("chargesEnabled")}</span>
+              <span className="truncate max-w-48">{t("chargesEnabled")}</span>
             </div>
 
             <div className={cn(
               "inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs",
               payoutStatus?.payouts_enabled
                 ? "border-success/30 bg-success/10 text-foreground"
-                : "border-border bg-muted/30 text-muted-foreground"
+                : "border-border bg-surface-subtle text-muted-foreground"
             )}>
               <span className={cn(
-                "inline-flex size-4 items-center justify-center rounded-full text-[10px]",
+                "inline-flex size-4 items-center justify-center rounded-full text-2xs",
                 payoutStatus?.payouts_enabled
                   ? "bg-success text-success-foreground"
                   : "bg-muted text-muted-foreground"
               )}>
                 {payoutStatus?.payouts_enabled ? <CheckCircle2 className="size-3" /> : "3"}
               </span>
-              <span className="truncate max-w-[12rem]">{t("payoutsEnabled")}</span>
+              <span className="truncate max-w-48">{t("payoutsEnabled")}</span>
             </div>
           </div>
         )}
       </div>
 
+      <div className="h-22" aria-hidden="true" />
+
       {/* Fixed bottom CTA (always visible, no scroll required) */}
-      <div className="fixed bottom-0 left-0 right-0 z-50 border-t border-border/60 bg-background/95 px-4 pt-3 pb-[calc(16px+env(safe-area-inset-bottom))] backdrop-blur">
-        <div className="mx-auto w-full max-w-md">
+      <div className="fixed bottom-0 left-0 right-0 z-50 border-t border-border/60 bg-background/95 px-4 pt-3 pb-safe backdrop-blur">
+        <div className="mx-auto w-full max-w-md pb-4">
         {error && (
           <div className="w-full p-3 mb-3 bg-destructive/10 text-destructive rounded-lg text-sm">
             {error}

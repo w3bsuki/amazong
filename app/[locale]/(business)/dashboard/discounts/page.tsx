@@ -69,7 +69,7 @@ export default async function BusinessDiscountsPage() {
       case 'active':
         return <Badge variant="outline" className="bg-success/10 text-success border-success/20">Active</Badge>
       case 'scheduled':
-        return <Badge variant="outline" className="bg-brand/10 text-brand border-brand/20">Scheduled</Badge>
+        return <Badge variant="outline" className="bg-selected text-primary border-selected-border">Scheduled</Badge>
       case 'expired':
         return <Badge variant="outline" className="bg-muted text-muted-foreground border-border">Expired</Badge>
       case 'disabled':
@@ -105,7 +105,7 @@ export default async function BusinessDiscountsPage() {
                 <span className="tabular-nums">{activeDiscounts}</span>
                 <span className="opacity-70">active</span>
               </span>
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-brand/10 text-brand border border-brand/20">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-selected text-primary border border-selected-border">
                 <IconUsers className="size-3" />
                 <span className="tabular-nums">{totalUsage}</span>
                 <span className="opacity-70">uses</span>

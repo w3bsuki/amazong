@@ -90,43 +90,53 @@ export function HorizontalProductCard({
     <Link
       href={href}
       onClick={handleCardClick}
-      className="shrink-0 w-36 active:opacity-80 transition-opacity snap-start"
+      className="shrink-0 w-40 active:opacity-80 transition-opacity"
     >
       {/* Product Image */}
-      <div className="relative aspect-square rounded-(--radius-card) overflow-hidden bg-muted mb-1.5">
-        {/* Badge stack - top left, compact */}
-        <div className="absolute top-1 left-1 z-10 flex flex-col gap-0.5">
-          {/* AD badge for boosted */}
-          {product.isBoosted && (
-            <Badge variant="promoted" className="text-[10px]">
-              {tProduct("adBadge")}
-            </Badge>
-          )}
-          {/* Discount badge */}
-          {hasDiscount && discountPercent >= 5 && (
-            <Badge variant="sale" className="text-[10px]">
-              -{discountPercent}%
-            </Badge>
-          )}
-          {/* Free shipping - icon only on mobile */}
-          {product.freeShipping && (
-            <Badge variant="shipping" className="text-[10px]">
-              <Truck size={10} weight="fill" />
-            </Badge>
-          )}
-        </div>
+      <div className="relative aspect-square rounded-(--radius-card) overflow-hidden bg-muted mb-2">
+        {/* AD badge - top left for boosted listings */}
+        {product.isBoosted && (
+          <Badge
+            variant="promoted"
+            className="absolute top-1.5 left-1.5 z-10"
+          >
+            <span>{tProduct("adBadge")}</span>
+          </Badge>
+        )}
+        {/* Discount badge - below AD badge or at top if not boosted */}
+        {hasDiscount && (
+          <Badge
+            variant="deal"
+            className={cn(
+              "absolute left-1.5 z-10 text-2xs font-bold",
+              product.isBoosted ? "top-8" : "top-1.5"
+            )}
+          >
+            -{discountPercent}%
+          </Badge>
+        )}
         
-        {/* Wishlist button - top right */}
+        {/* Free shipping badge - bottom left */}
+        {product.freeShipping && (
+          <Badge
+            variant="shipping"
+            className="absolute bottom-1.5 left-1.5 z-10 gap-0.5 text-2xs font-semibold"
+          >
+            <Truck size={10} weight="fill" />
+            <span>{tProduct("freeDeliveryShort")}</span>
+          </Badge>
+        )}
+        {/* Wishlist button */}
         <button
           type="button"
           onClick={(e) => {
             e.preventDefault()
             e.stopPropagation()
           }}
-          className="absolute top-1 right-1 z-10 size-7 bg-background/80 backdrop-blur-sm rounded-full flex items-center justify-center active:bg-background transition-colors"
+          className="absolute top-1.5 right-1.5 z-10 size-8 bg-background/80 backdrop-blur-sm rounded-full flex items-center justify-center active:bg-background transition-colors"
           aria-label={tProduct("addToWishlist")}
         >
-          <Heart size={14} className="text-foreground" />
+          <Heart size={16} className="text-foreground" />
         </button>
         
         {/* Product Image */}
@@ -136,48 +146,42 @@ export function HorizontalProductCard({
             alt={product.title}
             fill
             className="object-cover"
-            sizes="144px"
+            sizes="160px"
           />
         ) : (
           <div className="absolute inset-0 flex items-center justify-center">
-            <Package size={32} className="text-muted-foreground/15" />
+            <Package size={36} className="text-muted-foreground/15" />
           </div>
         )}
       </div>
 
-      {/* Content - clean hierarchy */}
+      {/* Content */}
       <div className="space-y-0.5">
-        {/* Price row */}
-        <div className="flex items-baseline gap-1">
+        <div className="flex items-baseline gap-1.5">
           <span
             className={cn(
-              "text-sm font-bold tabular-nums",
+              "text-sm font-bold",
               hasDiscount ? "text-price-sale" : "text-foreground"
             )}
           >
             €{product.price.toFixed(2)}
           </span>
           {hasDiscount && (
-            <span className="text-2xs text-muted-foreground line-through tabular-nums">
+            <span className="text-2xs text-muted-foreground line-through">
               €{listPrice.toFixed(2)}
             </span>
           )}
         </div>
-        
-        {/* Title */}
-        <p className="text-xs text-foreground line-clamp-2 leading-tight">
+        <p className="text-xs text-foreground line-clamp-2 leading-snug">
           {product.title}
         </p>
-        
         {/* Rating */}
         {product.rating > 0 && (
-          <div className="flex items-center gap-0.5">
-            <Star size={10} weight="fill" className="text-rating" />
-            <span className="text-2xs text-muted-foreground tabular-nums">
-              {product.rating.toFixed(1)}
-              {product.reviews && product.reviews > 0 && (
-                <span> ({product.reviews.toLocaleString()})</span>
-              )}
+          <div className="flex items-center gap-1">
+            <Star size={11} weight="fill" className="text-rating" />
+            <span className="text-2xs text-muted-foreground">
+              {product.rating.toFixed(1)}{" "}
+              <span>({product.reviews?.toLocaleString()})</span>
             </span>
           </div>
         )}

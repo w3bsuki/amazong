@@ -136,7 +136,7 @@ export const StatsCard: Story = {
 
 export const Interactive: Story = {
   render: () => (
-    <Card className="cursor-pointer hover:border-primary/50 transition-colors">
+    <Card className="cursor-pointer hover:border-hover-border transition-colors">
       <CardHeader>
         <CardTitle>Premium Plan</CardTitle>
         <CardDescription>For power sellers</CardDescription>

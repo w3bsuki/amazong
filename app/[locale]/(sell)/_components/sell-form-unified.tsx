@@ -182,7 +182,7 @@ function SellFormContent({
         <div className="w-full max-w-sm text-center space-y-8">
           <div className="relative mx-auto w-24 h-24">
             {/* Outer spinning ring */}
-            <div className="absolute inset-0 rounded-full border-4 border-primary/10 border-t-primary animate-spin" />
+            <div className="absolute inset-0 rounded-full border-4 border-border border-t-primary animate-spin" />
             {/* Inner icon */}
             <div className="absolute inset-0 flex items-center justify-center">
               <CloudArrowUp className="size-10 text-primary animate-bounce" weight="bold" />
@@ -249,7 +249,7 @@ function SellFormContent({
 
             {/* Product preview card - cleaner */}
             {firstImageUrl && (
-              <div className="bg-muted/30 rounded-md p-4 border border-border/50">
+              <div className="bg-surface-subtle rounded-md p-4 border border-border/50">
                 <div className="flex items-center gap-4">
                   <img 
                     src={firstImageUrl} 
@@ -268,7 +268,7 @@ function SellFormContent({
 
             {/* Action buttons - cleaner, more professional */}
             <div className="space-y-4 pt-4">
-              <Button asChild className="w-full h-12 gap-2 bg-primary hover:bg-primary/90 text-base font-semibold rounded-md">
+              <Button asChild className="w-full h-12 gap-2 bg-primary hover:bg-interactive-hover text-base font-semibold rounded-md">
                 <Link href={createdProductHref || "/"}>
                   <Eye className="size-5" />
                   {isBg ? "Виж обявата" : "View Listing"}

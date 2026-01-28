@@ -59,7 +59,7 @@ export default async function AuthErrorPage({
             <Link href="/auth/login" className="block">
               <button className="
                 w-full h-10 
-                bg-primary hover:bg-primary/90
+                bg-primary hover:bg-interactive-hover
                 text-primary-foreground text-sm font-medium rounded-md 
                 transition-colors
                 flex items-center justify-center

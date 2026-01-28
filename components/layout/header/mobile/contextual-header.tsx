@@ -81,7 +81,7 @@ export function MobileContextualHeader({
                   onClick={() => onSubcategoryClick?.(cat)}
                   className="flex flex-col items-center gap-1.5 shrink-0 w-category-item-mobile active:opacity-80 transition-opacity"
                 >
-                  <div className="size-14 rounded-full bg-muted/50 border border-border/30 overflow-hidden flex items-center justify-center">
+                  <div className="size-14 rounded-full bg-surface-subtle border border-border/30 overflow-hidden flex items-center justify-center">
                     {getCategoryIcon(cat.slug, { size: 24, className: "text-muted-foreground" })}
                   </div>
                   <span className="text-2xs text-center text-muted-foreground font-medium leading-tight line-clamp-2">

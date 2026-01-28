@@ -379,7 +379,7 @@ function ProductCard({
         {/* Top-left: Boosted badge only */}
         {isBoosted && (
           <div className="absolute top-1.5 left-1.5 z-10">
-            <Badge variant="promoted" className="text-[10px]">
+            <Badge variant="promoted" className="text-2xs">
               {t("adBadge")}
             </Badge>
           </div>
@@ -405,7 +405,7 @@ function ProductCard({
         {/* Category + Time row - compact pill style */}
         <div className="flex items-center gap-1 text-2xs min-w-0">
           {(categoryLabel || smartBadge) && (
-            <span className="shrink-0 truncate max-w-[60%] rounded-sm bg-muted/60 px-1 py-px text-muted-foreground">
+            <span className="min-w-0 truncate rounded-sm bg-surface-subtle px-1 py-px text-muted-foreground">
               {smartBadge || categoryLabel}
             </span>
           )}
@@ -427,7 +427,7 @@ function ProductCard({
         </div>
 
         {/* Title - clean, tight */}
-        <h3 className="line-clamp-2 break-words text-[13px] font-medium text-foreground leading-tight">
+        <h3 className="line-clamp-2 break-words text-sm font-medium text-foreground leading-tight">
           {title}
         </h3>
 

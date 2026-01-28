@@ -71,7 +71,7 @@ export function FilterList({
             placeholder={searchPlaceholder || tHub("searchPlaceholder", { filterName: "" })}
             className={cn(
               "w-full h-10 pl-9 pr-3 rounded-lg",
-              "bg-muted/50 border border-border/50",
+              "bg-surface-subtle border border-border/50",
               "text-sm placeholder:text-muted-foreground",
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1"
             )}
@@ -97,8 +97,8 @@ export function FilterList({
                 className={cn(
                   "w-full flex items-center gap-3 px-4 h-10 transition-colors text-left",
                   isActive
-                    ? "bg-muted/40 text-foreground font-medium"
-                    : "text-foreground active:bg-muted/30"
+                    ? "bg-selected text-foreground font-medium"
+                    : "text-foreground active:bg-active"
                 )}
                 aria-pressed={isActive}
               >

@@ -299,7 +299,7 @@ export function SellerOrdersClient({ locale, actions }: SellerOrdersClientProps)
 
                             {/* Shipping Address - Full details for seller to ship */}
                             {item.order?.shipping_address && (
-                              <div className="text-sm bg-muted/50 rounded-lg p-3 mb-3 space-y-1">
+                              <div className="text-sm bg-surface-subtle rounded-lg p-3 mb-3 space-y-1">
                                 <div className="flex items-center gap-1.5 font-medium text-foreground">
                                   📍 Ship To:
                                 </div>

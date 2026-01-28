@@ -88,7 +88,7 @@ function ProductCardPrice({
         <span
           className={cn(
             "font-semibold tracking-tight tabular-nums",
-            compact ? "text-[13px]" : "text-base font-bold",
+            compact ? "text-compact" : "text-base font-bold",
             hasDiscount ? "text-price-sale" : "text-foreground"
           )}
         >

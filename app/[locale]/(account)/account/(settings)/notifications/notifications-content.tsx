@@ -358,7 +358,7 @@ export function NotificationsContent({
                     {formatDistanceToNow(new Date(notification.created_at), { addSuffix: true })}
                   </p>
                 </div>
-                {!notification.is_read && <div className="shrink-0 w-2 h-2 rounded-full bg-brand mt-2" />}
+                {!notification.is_read && <div className="shrink-0 w-2 h-2 rounded-full bg-primary mt-2" />}
               </Link>
             ))}
           </div>

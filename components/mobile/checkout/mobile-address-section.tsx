@@ -63,9 +63,9 @@ export function MobileAddressSection({
     return (
       <>
         {selected && (
-          <div className="rounded-lg border-2 border-primary bg-primary/5 p-3">
+          <div className="rounded-lg border-2 border-selected-border bg-selected p-3">
             <div className="flex items-start gap-2.5">
-              <div className="size-9 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+              <div className="size-9 rounded-full bg-selected flex items-center justify-center shrink-0">
                 <MapPin className="size-4 text-primary" weight="fill" />
               </div>
               <div className="flex-1 min-w-0">
@@ -100,7 +100,7 @@ export function MobileAddressSection({
 
         {/* Bottom sheet address selector */}
         <Sheet open={showAddressSelector} onOpenChange={setShowAddressSelector}>
-          <SheetContent side="bottom" className="h-[85dvh] rounded-t-2xl">
+          <SheetContent side="bottom" className="max-h-dialog rounded-t-2xl">
             <SheetHeader className="pb-4">
               <SheetTitle>{t("selectShippingAddress") || "Select shipping address"}</SheetTitle>
             </SheetHeader>
@@ -122,7 +122,7 @@ export function MobileAddressSection({
                       className={cn(
                         "flex items-start gap-3 p-3 rounded-lg border-2 cursor-pointer transition-all",
                         isSelected
-                          ? "border-primary bg-primary/5"
+                          ? "border-selected-border bg-selected"
                           : "border-border"
                       )}
                     >

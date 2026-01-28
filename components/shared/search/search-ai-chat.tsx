@@ -136,7 +136,7 @@ export function SearchAiChat({ className, onClose, compact = false }: SearchAiCh
             compact ? "py-8 px-4" : "py-12 px-6"
           )}>
             <Avatar className="size-12 mb-4">
-              <AvatarFallback className="bg-primary/10 text-primary">
+              <AvatarFallback className="bg-selected text-primary">
                 <Robot size={24} weight="fill" />
               </AvatarFallback>
             </Avatar>
@@ -155,7 +155,7 @@ export function SearchAiChat({ className, onClose, compact = false }: SearchAiCh
                     setInput(suggestion)
                     inputRef.current?.focus()
                   }}
-                  className="px-3 py-1.5 text-xs bg-muted hover:bg-muted/80 rounded-full text-muted-foreground hover:text-foreground transition-colors"
+                  className="px-3 py-1.5 text-xs bg-surface-subtle hover:bg-hover active:bg-active rounded-full text-muted-foreground hover:text-foreground transition-colors"
                 >
                   {suggestion}
                 </button>
@@ -233,7 +233,7 @@ export function SearchAiChat({ className, onClose, compact = false }: SearchAiCh
                           <Link
                             href={`/search?q=${encodeURIComponent(input)}`}
                             onClick={() => onClose?.()}
-                            className="shrink-0 w-28 h-28 flex flex-col items-center justify-center bg-muted rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/80"
+                            className="shrink-0 w-28 h-28 flex flex-col items-center justify-center bg-surface-subtle rounded-lg text-muted-foreground hover:text-foreground hover:bg-hover active:bg-active"
                           >
                             <ArrowRight size={20} />
                             <span className="text-xs mt-1">+{listings.length - 4} more</span>

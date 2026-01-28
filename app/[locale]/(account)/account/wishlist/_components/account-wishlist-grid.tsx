@@ -205,7 +205,7 @@ export function AccountWishlistGrid({ items, locale, onRemove }: WishlistGridPro
               role="button"
               tabIndex={0}
               aria-label={locale === "bg" ? `Отвори ${item.title}` : `Open ${item.title}`}
-              className="flex flex-col rounded-md bg-card border border-border overflow-hidden transition-colors active:bg-muted/40 text-left"
+              className="flex flex-col rounded-md bg-card border border-border overflow-hidden transition-colors active:bg-active text-left"
             >
               {/* Product Image */}
               <div className="relative aspect-square w-full overflow-hidden bg-card">
@@ -379,7 +379,7 @@ export function AccountWishlistGrid({ items, locale, onRemove }: WishlistGridPro
         {items.map((item) => (
           <div
             key={item.id}
-            className="group relative flex flex-col rounded-md bg-card border border-border overflow-hidden transition-colors hover:border-primary/30"
+            className="group relative flex flex-col rounded-md bg-card border border-border overflow-hidden transition-colors hover:border-hover-border"
           >
             {/* Product Image */}
             <div className="relative aspect-square w-full overflow-hidden bg-card">
@@ -511,7 +511,7 @@ export function AccountWishlistGrid({ items, locale, onRemove }: WishlistGridPro
           <Button
             variant="outline"
             onClick={handleAddAllToCart}
-            className="border-border/60 hover:bg-muted/40"
+            className="border-border/60 hover:bg-hover active:bg-active"
           >
             <ShoppingCart className="size-4 mr-2" />
             {labels.addAllToCart} ({items.filter(i => i.stock > 0).length})

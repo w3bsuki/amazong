@@ -141,6 +141,25 @@ if (!explicitBaseURL) {
 process.env.BASE_URL = baseURL
 process.env.PORT = basePort
 
+// Safety: avoid accidentally running E2E against production/staging (can create data).
+// Override explicitly when you really intend to run against a remote environment.
+const allowNonLocalE2E =
+  process.env.PW_ALLOW_NON_LOCAL === 'true' ||
+  process.env.PW_ALLOW_NON_LOCAL === '1' ||
+  process.env.E2E_ALLOW_NON_LOCAL === 'true' ||
+  process.env.E2E_ALLOW_NON_LOCAL === '1'
+
+const finalBase = new URL(baseURL)
+const isFinalLocalHost =
+  finalBase.hostname === 'localhost' || finalBase.hostname === '127.0.0.1'
+
+if (!isFinalLocalHost && !allowNonLocalE2E) {
+  throw new Error(
+    `[Playwright Config] Refusing to run against non-local BASE_URL (${baseURL}). ` +
+      `Set PW_ALLOW_NON_LOCAL=true (or E2E_ALLOW_NON_LOCAL=true) to override.`
+  )
+}
+
 if (debugConfig) {
   // Debug: Log the configuration (quiet by default for CI/tooling like knip)
   console.log(

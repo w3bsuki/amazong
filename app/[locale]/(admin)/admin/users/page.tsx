@@ -59,7 +59,7 @@ async function AdminUsersContent() {
       case "admin":
         return "border-foreground/20 bg-foreground/10 text-foreground"
       case "seller":
-        return "border-primary/20 bg-primary/10 text-primary"
+        return "border-selected-border bg-selected text-primary"
       default:
         return "border-border bg-muted text-muted-foreground"
     }

@@ -66,7 +66,7 @@ export default function SignUpSuccessClient() {
             </p>
           </div>
 
-          <div className="flex items-start gap-3 p-4 bg-primary/10 border border-primary/20 rounded-md text-left mb-6">
+          <div className="flex items-start gap-3 p-4 bg-selected border border-selected-border rounded-md text-left mb-6">
             <EnvelopeSimple
               className="size-5 text-primary shrink-0 mt-0.5"
               weight="duotone"
@@ -84,7 +84,7 @@ export default function SignUpSuccessClient() {
           <div className="space-y-3">
             <Link
               href="/auth/login"
-              className="w-full h-10 bg-primary hover:bg-primary/90 text-primary-foreground text-sm font-medium rounded-md transition-colors flex items-center justify-center"
+              className="w-full h-10 bg-primary hover:bg-interactive-hover text-primary-foreground text-sm font-medium rounded-md transition-colors flex items-center justify-center"
             >
               {t("goToSignIn")}
             </Link>

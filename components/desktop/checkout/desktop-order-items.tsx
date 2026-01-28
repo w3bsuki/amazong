@@ -25,7 +25,7 @@ export function DesktopOrderItems({ items, formatPrice }: DesktopOrderItemsProps
           <div key={`${item.id}-${item.variantId || ""}`} className="flex gap-4">
             {/* Product image - larger for desktop */}
             <Link href={productPath} className="shrink-0">
-              <div className="size-20 rounded-lg border border-border bg-muted overflow-hidden hover:border-primary/30 transition-colors">
+              <div className="size-20 rounded-lg border border-border bg-muted overflow-hidden hover:border-hover-border transition-colors">
                 <Image 
                   src={item.image || "/placeholder.svg"} 
                   alt={item.title} 

@@ -113,7 +113,6 @@ export function ContextualDoubleDeckerNav({
         sticky && "sticky z-40",
         "bg-background",
         "border-b border-border/50",
-        "animate-in fade-in slide-in-from-bottom-2 duration-300",
         className
       )}
       style={sticky ? { top: stickyTop } : undefined}
@@ -121,7 +120,7 @@ export function ContextualDoubleDeckerNav({
     >
       {/* Row 1: Context Stack (Where Am I) */}
       {showContextRow && (
-        <div className="px-3 py-2 flex items-center gap-2 overflow-x-auto no-scrollbar bg-muted/50 border-b border-border/50">
+        <div className="px-3 py-2 flex items-center gap-2 overflow-x-auto no-scrollbar bg-surface-subtle border-b border-border/50">
           <Link href={parentHref as string} className={chipInactiveToken} aria-label={tCategories("goToParentCategoryAriaLabel")}>
             {parentLabel}
           </Link>

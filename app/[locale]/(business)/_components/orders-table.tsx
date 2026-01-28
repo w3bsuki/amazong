@@ -100,7 +100,7 @@ const STATUS_CONFIG = {
   },
   processing: {
     label: "In Progress",
-    color: "bg-primary/10 text-primary border-primary/20",
+    color: "bg-selected text-primary border-selected-border",
     icon: IconRefresh
   },
   shipped: {
@@ -488,7 +488,7 @@ export function OrdersTable({
                     key={item.id}
                     className={cn(
                       "group",
-                      selectedIds.has(item.id) && "bg-muted/50"
+                      selectedIds.has(item.id) && "bg-selected"
                     )}
                   >
                     <TableCell>

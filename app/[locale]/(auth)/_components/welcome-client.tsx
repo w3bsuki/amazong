@@ -170,7 +170,7 @@ export function WelcomeClient({ locale }: { locale: string }) {
               key={s}
               className={cn(
                 "h-2 rounded-full transition-all duration-300",
-                s === step ? "w-8 bg-primary" : s < step ? "w-8 bg-primary/40" : "w-2 bg-muted"
+                s === step ? "w-8 bg-primary" : s < step ? "w-8 bg-selected" : "w-2 bg-muted"
               )}
             />
           ))}
@@ -230,7 +230,7 @@ export function WelcomeClient({ locale }: { locale: string }) {
                 <div className="space-y-3">
                   <Button
                     onClick={() => setStep(2)}
-                    className="w-full h-12 bg-primary text-primary-foreground hover:bg-primary/90"
+                    className="w-full h-12 bg-primary text-primary-foreground hover:bg-interactive-hover"
                   >
                     <Sparkle className="size-5 mr-2" weight="fill" />
                     Get Started
@@ -276,7 +276,7 @@ export function WelcomeClient({ locale }: { locale: string }) {
                         alt="Avatar preview"
                         width={96}
                         height={96}
-                        className="size-24 rounded-full object-cover border-4 border-primary/20"
+                        className="size-24 rounded-full object-cover border-4 border-selected-border"
                       />
                     ) : (
                       <Avatar
@@ -286,7 +286,7 @@ export function WelcomeClient({ locale }: { locale: string }) {
                         colors={COLOR_PALETTES[selectedPalette] ?? COLOR_PALETTES[0] ?? []}
                       />
                     )}
-                    <label className="absolute bottom-0 right-0 size-8 bg-primary text-primary-foreground hover:bg-primary/90 rounded-full flex items-center justify-center cursor-pointer shadow-sm transition-colors">
+                    <label className="absolute bottom-0 right-0 size-8 bg-primary text-primary-foreground hover:bg-interactive-hover rounded-full flex items-center justify-center cursor-pointer shadow-sm transition-colors">
                       <Camera className="size-4 text-primary-foreground" weight="bold" />
                       <input type="file" accept="image/*" className="hidden" onChange={handleFileChange} />
                     </label>
@@ -362,7 +362,7 @@ export function WelcomeClient({ locale }: { locale: string }) {
                   <Button
                     onClick={handleSaveAndContinue}
                     disabled={isPending}
-                    className="flex-1 bg-primary text-primary-foreground hover:bg-primary/90"
+                    className="flex-1 bg-primary text-primary-foreground hover:bg-interactive-hover"
                   >
                     {isPending ? (
                       <SpinnerGap className="size-4 animate-spin" />
@@ -443,7 +443,7 @@ export function WelcomeClient({ locale }: { locale: string }) {
                   <Button
                     onClick={handleSaveAndContinue}
                     disabled={isPending}
-                    className="flex-1 bg-primary text-primary-foreground hover:bg-primary/90"
+                    className="flex-1 bg-primary text-primary-foreground hover:bg-interactive-hover"
                   >
                     {isPending ? (
                       <SpinnerGap className="size-4 animate-spin" />
@@ -470,7 +470,7 @@ export function WelcomeClient({ locale }: { locale: string }) {
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
                   transition={{ type: "spring", stiffness: 200, delay: 0.1 }}
-                  className="size-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4"
+                  className="size-20 bg-selected rounded-full flex items-center justify-center mx-auto mb-4"
                 >
                   <Check className="size-10 text-primary" weight="bold" />
                 </motion.div>
@@ -483,9 +483,9 @@ export function WelcomeClient({ locale }: { locale: string }) {
                     <motion.div
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
-                      className="flex items-center gap-4 p-4 bg-muted hover:bg-muted/80 rounded-md border border-border transition-colors group"
+                      className="flex items-center gap-4 p-4 bg-surface-subtle hover:bg-hover active:bg-active rounded-md border border-border transition-colors group"
                     >
-                      <div className="size-12 bg-primary/10 rounded-md flex items-center justify-center shrink-0">
+                      <div className="size-12 bg-selected rounded-md flex items-center justify-center shrink-0">
                         <ShoppingBag className="size-6 text-primary" weight="duotone" />
                       </div>
                       <div className="flex-1 min-w-0">
@@ -500,7 +500,7 @@ export function WelcomeClient({ locale }: { locale: string }) {
                     <motion.div
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
-                      className="flex items-center gap-4 p-4 bg-muted hover:bg-muted/80 rounded-md border border-border transition-colors group"
+                      className="flex items-center gap-4 p-4 bg-surface-subtle hover:bg-hover active:bg-active rounded-md border border-border transition-colors group"
                     >
                       <div className="size-12 bg-primary rounded-md flex items-center justify-center shrink-0">
                         <Storefront className="size-6 text-primary-foreground" weight="fill" />
@@ -517,9 +517,9 @@ export function WelcomeClient({ locale }: { locale: string }) {
                     <motion.div
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
-                      className="flex items-center gap-4 p-4 bg-muted hover:bg-muted/80 rounded-md border border-border transition-colors group"
+                      className="flex items-center gap-4 p-4 bg-surface-subtle hover:bg-hover active:bg-active rounded-md border border-border transition-colors group"
                     >
-                      <div className="size-12 bg-primary/10 rounded-md flex items-center justify-center shrink-0">
+                      <div className="size-12 bg-selected rounded-md flex items-center justify-center shrink-0">
                         <UserCircle className="size-6 text-primary" weight="duotone" />
                       </div>
                       <div className="flex-1 min-w-0">

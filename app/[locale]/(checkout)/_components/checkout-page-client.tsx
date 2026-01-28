@@ -299,7 +299,7 @@ export default function CheckoutPageClient({
   return (
     <div>
       {/* Mobile */}
-      <div className="lg:hidden pb-[calc(5rem+env(safe-area-inset-bottom))]">
+      <div className="lg:hidden pb-safe">
         {/* Accessible page title - sr-only on mobile since header shows step progress */}
         <h1 className="sr-only">{t("title")}</h1>
         
@@ -404,6 +404,8 @@ export default function CheckoutPageClient({
             <span className="flex items-center gap-1"><Lock className="size-3" weight="fill" />{t("securePayment")}</span>
             <span className="flex items-center gap-1"><ShieldCheck className="size-3" weight="fill" />{t("buyerProtection")}</span>
           </div>
+
+          <div className="h-20" aria-hidden="true" />
         </div>
       </div>
 
@@ -452,9 +454,9 @@ export default function CheckoutPageClient({
             <div className="w-20" aria-hidden="true" />{/* Spacer for centering */}
           </div>
 
-          <div className="grid lg:grid-cols-[1fr,380px] gap-6 lg:gap-8">
+          <div className="flex items-start gap-6 lg:gap-8">
             {/* Main */}
-            <div className="space-y-4">
+            <div className="flex-1 space-y-4">
               {/* Address */}
               <Card>
                 <CardHeader className="border-b px-5">
@@ -523,7 +525,7 @@ export default function CheckoutPageClient({
             </div>
 
             {/* Sidebar */}
-            <div>
+            <div className="w-96 shrink-0">
               <Card className="sticky top-20">
                 <CardHeader className="border-b px-5">
                   <CardTitle className="text-base">{t("orderSummary") || "Order Summary"}</CardTitle>
@@ -643,9 +645,9 @@ function AddressSection({
       <>
         {/* Selected address card */}
         {selected && (
-          <div className="rounded-lg border-2 border-primary bg-primary/5 p-4">
+          <div className="rounded-lg border-2 border-selected-border bg-selected p-4">
             <div className="flex items-start gap-3">
-              <div className="size-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+              <div className="size-10 rounded-full bg-selected flex items-center justify-center shrink-0">
                 <MapPin className="size-5 text-primary" weight="fill" />
               </div>
               <div className="flex-1 min-w-0">
@@ -705,8 +707,8 @@ function AddressSection({
                       className={cn(
                         "flex items-start gap-3 p-4 rounded-md border-2 cursor-pointer transition-all",
                         isSelected
-                          ? "border-primary bg-primary/5 shadow-sm"
-                          : "border-border hover:border-primary/30"
+                          ? "border-selected-border bg-selected shadow-sm"
+                          : "border-border hover:border-hover-border"
                       )}
                     >
                       <RadioGroupItem value={addr.id} id={`addr-${addr.id}`} className="shrink-0 mt-0.5" />
@@ -942,8 +944,8 @@ function ShippingMethodSection({ shippingMethod, setShippingMethod, formatPrice,
               className={cn(
                 "flex items-center gap-3 p-3 rounded-lg border-2 cursor-pointer transition-all",
                 isSelected
-                  ? "border-primary bg-primary/5"
-                  : "border-border hover:border-primary/30"
+                  ? "border-selected-border bg-selected"
+                  : "border-border hover:border-hover-border"
               )}
             >
               <RadioGroupItem value={opt.id} id={`shipping-${opt.id}`} className="shrink-0" />
@@ -970,7 +972,7 @@ function ShippingMethodSection({ shippingMethod, setShippingMethod, formatPrice,
         return (
           <label key={opt.id} htmlFor={opt.id} className={cn(
             "flex items-center justify-between p-2.5 border rounded-md cursor-pointer transition-colors",
-            shippingMethod === opt.id ? "border-primary bg-primary/5" : "border-border hover:border-muted-foreground/30"
+            shippingMethod === opt.id ? "border-selected-border bg-selected" : "border-border hover:border-hover-border"
           )}>
             <div className="flex items-center gap-2.5">
               <RadioGroupItem value={opt.id} id={opt.id} />

@@ -260,7 +260,7 @@ export function DesktopBuyBoxV2({
       </div>
 
       {/* Shipping/Location Info */}
-      <div className="rounded-md border border-border bg-muted/30 p-2.5 space-y-1.5">
+      <div className="rounded-md border border-border bg-surface-subtle p-2.5 space-y-1.5">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2 text-sm">
             {isRealEstate ? (
@@ -405,7 +405,7 @@ export function DesktopBuyBoxV2({
       </div>
 
       {/* Embedded Seller Card */}
-      <div className="rounded-md border border-border bg-muted/30 p-3">
+      <div className="rounded-md border border-border bg-surface-subtle p-3">
         <div className="flex items-center gap-2.5">
           <UserAvatar
             name={seller.name}

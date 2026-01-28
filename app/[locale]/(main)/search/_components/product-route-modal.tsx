@@ -27,7 +27,7 @@ export function ProductRouteModal({ title, children }: { title: string; children
       >
         <DialogContent 
           variant="fullWidth" 
-          className="flex h-[85dvh] flex-col overflow-hidden p-0"
+          className="flex flex-col overflow-hidden p-0"
           aria-describedby={undefined}
           showCloseButton={false}
         >

@@ -297,7 +297,7 @@ export function AccountDrawer({ open, onOpenChange }: AccountDrawerProps) {
                   onClick={handleClose}
                   className={cn(
                     "flex items-center justify-between px-inset py-3",
-                    "hover:bg-muted/50 active:bg-muted transition-colors",
+                    "hover:bg-hover active:bg-active transition-colors",
                     "touch-action-manipulation tap-transparent"
                   )}
                 >

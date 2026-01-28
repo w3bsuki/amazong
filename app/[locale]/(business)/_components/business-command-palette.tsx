@@ -182,7 +182,7 @@ export function BusinessCommandPalette({ storeName }: CommandPaletteProps) {
       {/* Trigger Button in Header */}
       <button
         onClick={() => setOpen(true)}
-        className="flex items-center gap-2 px-3 h-8 text-sm text-muted-foreground rounded-md border bg-muted/50 hover:bg-muted transition-colors"
+        className="flex items-center gap-2 px-3 h-8 text-sm text-muted-foreground rounded-md border bg-surface-subtle hover:bg-hover transition-colors"
       >
         <IconSearch className="size-4" />
         <span className="hidden sm:inline">{t("trigger")}</span>

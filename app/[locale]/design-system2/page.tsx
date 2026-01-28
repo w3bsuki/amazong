@@ -461,7 +461,7 @@ export default function DesignSystemV2Page() {
             {/* B2B DATA TABLE - DENSITY TEST */}
             <div className="col-span-1 lg:col-span-2">
               <h3 className="text-xl font-semibold mb-4">Marketplace Layout (B2B/C2C)</h3>
-              <div className="flex flex-col lg:flex-row gap-8 bg-muted/50 p-6 rounded-2xl border border-dashed border-border">
+              <div className="flex flex-col lg:flex-row gap-8 bg-surface-subtle p-6 rounded-2xl border border-dashed border-border">
                  
                  {/* Sidebar Area */}
                  <div className="hidden lg:block shrink-0 w-60">
@@ -526,7 +526,7 @@ export default function DesignSystemV2Page() {
                     <div className="flex justify-center pt-8">
                        <div className="flex items-center gap-1">
                           <Button variant="outline" size="sm" disabled>Previous</Button>
-                          <Button variant="outline" size="sm" className="bg-brand-50 border-brand-200 text-brand-600 font-bold">1</Button>
+                          <Button variant="outline" size="sm" className="bg-selected border-selected-border text-primary font-bold">1</Button>
                           <Button variant="outline" size="sm" className="border-transparent">2</Button>
                           <Button variant="outline" size="sm" className="border-transparent">3</Button>
                           <span className="text-muted-foreground/70 px-2">...</span>
@@ -543,7 +543,7 @@ export default function DesignSystemV2Page() {
               <Card>
                  <Table>
                     <TableHeader>
-                      <TableRow className="bg-muted/50 hover:bg-muted/50">
+                      <TableRow className="bg-surface-subtle hover:bg-surface-subtle">
                         <TableHead className="w-24">Order ID</TableHead>
                         <TableHead>Status</TableHead>
                         <TableHead>Customer</TableHead>
@@ -784,7 +784,7 @@ export default function DesignSystemV2Page() {
               <CardHeader><CardTitle>Seller Identify</CardTitle></CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex items-center gap-3">
-                  <Badge variant="outline" className="gap-1 border-primary/20 text-primary bg-primary/5">
+                  <Badge variant="outline" className="gap-1 border-selected-border text-primary bg-hover">
                     <ShieldCheck className="w-3 h-3" /> Verified Seller
                   </Badge>
                   <Badge variant="outline" className="gap-1 border-warning/20 text-warning bg-warning/10">

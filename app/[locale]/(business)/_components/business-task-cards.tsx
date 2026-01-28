@@ -43,10 +43,10 @@ const taskConfig = [
     label: "new reviews",
     href: "/dashboard/reviews",
     icon: IconStar,
-    bgColor: "bg-brand/10",
-    borderColor: "border-brand/20",
-    textColor: "text-brand",
-    iconColor: "text-brand",
+    bgColor: "bg-selected",
+    borderColor: "border-selected-border",
+    textColor: "text-primary",
+    iconColor: "text-primary",
   },
 ]
 

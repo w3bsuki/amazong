@@ -122,7 +122,7 @@ export function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
                   <Link
                     href={buildProductUrl(item)}
                     onClick={handleClose}
-                    className="text-sm text-foreground hover:text-brand line-clamp-2 leading-snug"
+                    className="text-sm text-foreground hover:text-primary line-clamp-2 leading-snug"
                   >
                     {item.title}
                   </Link>

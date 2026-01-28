@@ -46,7 +46,7 @@ export function DescriptionField({
         <Field data-invalid={fieldState.invalid} className={className}>
           {/* Section Header (non-compact mode) */}
           {!compact && (
-            <div className="p-4 pb-3 border-b border-border/50 bg-muted/10">
+            <div className="p-4 pb-3 border-b border-border/50 bg-surface-subtle">
               <div className="flex items-center gap-3.5">
                 <div className="flex size-10 items-center justify-center rounded-md bg-background border border-border shadow-xs">
                   <TextAlignLeft className="size-5 text-muted-foreground" weight="bold" />
@@ -77,8 +77,8 @@ export function DescriptionField({
           {/* Rich Textarea with label inside */}
           <FieldContent className={cn(!compact && "p-5")}>
             <div className={cn(
-              "rounded-md border shadow-xs overflow-hidden transition-all bg-background",
-              "focus-within:border-primary focus-within:ring-4 focus-within:ring-primary/5",
+              "rounded-md border shadow-xs overflow-hidden transition-colors bg-background",
+              "focus-within:border-ring focus-within:ring-2 focus-within:ring-ring",
               fieldState.invalid && "border-destructive focus-within:ring-destructive/5"
             )}>
               <div className="px-4 pt-3">
@@ -106,7 +106,7 @@ export function DescriptionField({
               />
 
               {/* Toolbar */}
-              <div className="flex items-center justify-between border-t border-border/50 bg-muted/20 px-4 py-2">
+              <div className="flex items-center justify-between border-t border-border/50 bg-surface-subtle px-4 py-2">
                 <div className="flex gap-1">
                   <button
                     type="button"

@@ -31,7 +31,7 @@ export default async function NotFound({
   return (
     <div className="min-h-96 py-20 flex items-center justify-center px-4">
       <div className="text-center max-w-md">
-        <div className="text-8xl font-bold text-brand/20 mb-4">{t('heroTitle')}</div>
+        <div className="text-8xl font-bold text-primary/20 mb-4">{t('heroTitle')}</div>
 
         <h1 className="text-2xl font-bold text-foreground mb-2">{t('title')}</h1>
         
@@ -41,7 +41,7 @@ export default async function NotFound({
         
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
           <Link href="/">
-            <span className="inline-flex items-center justify-center rounded-md bg-brand px-4 py-2 text-sm font-medium text-white hover:bg-brand/90 w-full sm:w-auto">
+            <span className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-interactive-hover w-full sm:w-auto">
               {t('goToHomepage')}
             </span>
           </Link>

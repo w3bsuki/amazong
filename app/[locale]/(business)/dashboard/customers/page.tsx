@@ -71,7 +71,7 @@ export default async function BusinessCustomersPage() {
                 <span className="tabular-nums">{repeatCustomers}</span>
                 <span className="opacity-70">repeat ({returnRate}%)</span>
               </span>
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border border-primary/20 bg-primary/10 text-primary">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border border-selected-border bg-selected text-primary">
                 <IconCurrencyDollar className="size-3" />
                 <span className="tabular-nums">{formatCurrency(totalRevenue)}</span>
                 <span className="opacity-70">lifetime</span>

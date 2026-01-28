@@ -86,7 +86,7 @@ export default async function CategoriesPage({
             <Link
               key={cat.slug}
               href={`/categories/${cat.slug}`}
-              className="flex items-center gap-2 px-inset min-h-touch-lg active:bg-muted/50"
+              className="flex items-center gap-2 px-inset min-h-touch-lg active:bg-active"
             >
               <CategoryCircleVisual
                 category={cat}
@@ -117,13 +117,13 @@ export default async function CategoriesPage({
       </div>
 
       {/* Quick Actions */}
-      <div className="px-inset py-3 bg-muted/20 border-t border-border/30">
+      <div className="px-inset py-3 bg-surface-subtle border-t border-border/30">
         <div className="grid grid-cols-2 gap-2">
           <Link
             href="/sell"
             className="flex items-center gap-2 p-2 bg-background rounded-md border border-border/40"
           >
-            <div className="size-8 rounded-md bg-primary/10 flex items-center justify-center">
+            <div className="size-8 rounded-md bg-selected flex items-center justify-center">
               <Storefront size={16} weight="fill" className="text-primary" />
             </div>
             <div>

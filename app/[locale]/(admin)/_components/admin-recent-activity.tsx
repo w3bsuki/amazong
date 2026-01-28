@@ -100,7 +100,7 @@ export function AdminRecentActivity({ users, products, orders }: AdminRecentActi
       case "admin":
         return "bg-destructive/10 text-destructive border-destructive/20"
       case "seller":
-        return "bg-brand/10 text-brand border-brand/20"
+        return "bg-selected text-primary border-selected-border"
       default:
         return "bg-muted text-muted-foreground border-border"
     }

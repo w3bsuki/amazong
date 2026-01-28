@@ -139,7 +139,7 @@ export function UpgradeContent({
   return (
     <div className="space-y-6">
       {/* Current Plan Info */}
-      <div className="flex items-center justify-center gap-3 p-3 bg-muted/50 rounded-lg">
+      <div className="flex items-center justify-center gap-3 p-3 bg-surface-subtle rounded-lg">
         <span className="text-sm text-muted-foreground">
           {locale === 'bg' ? 'Текущ план:' : 'Current plan:'}
         </span>
@@ -173,7 +173,7 @@ export function UpgradeContent({
             onClick={() => setBillingPeriod('yearly')}
           >
             {locale === 'bg' ? 'Годишно' : 'Yearly'}
-            <Badge variant="secondary" className="text-xs bg-primary/10 text-primary">
+            <Badge variant="secondary" className="text-xs bg-selected text-primary">
               -17%
             </Badge>
           </button>
@@ -261,7 +261,7 @@ export function UpgradeContent({
 
                 {/* CTA Button */}
                 <Button
-                  className="w-full bg-primary hover:bg-primary/90"
+                  className="w-full bg-primary hover:bg-interactive-hover"
                   disabled={isLoading}
                   onClick={() => handleSubscribe(plan)}
                 >

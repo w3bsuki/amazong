@@ -96,7 +96,7 @@ export default function CartPageClient() {
           />
 
           <div className="mt-8 lg:mt-12 max-w-md mx-auto text-center">
-            <div className="size-24 bg-muted/50 rounded-full flex items-center justify-center mx-auto mb-6">
+            <div className="size-24 bg-surface-subtle rounded-full flex items-center justify-center mx-auto mb-6">
               <ShoppingCart className="size-10 text-muted-foreground/60" weight="duotone" />
             </div>
             <h1 className="text-2xl font-semibold mb-2">{t("emptyTitle")}</h1>
@@ -200,7 +200,7 @@ export default function CartPageClient() {
                     {/* Title */}
                     <Link
                       href={getProductUrl(item)}
-                      className="font-medium hover:text-brand transition-colors line-clamp-2 text-sm leading-snug pr-6"
+                      className="font-medium hover:text-primary transition-colors line-clamp-2 text-sm leading-snug pr-6"
                     >
                       {item.title}
                     </Link>
@@ -229,7 +229,7 @@ export default function CartPageClient() {
                     </button>
 
                     {/* Quantity selector */}
-                    <div className="flex items-center h-touch-xs rounded-md border border-border bg-muted/30">
+                    <div className="flex items-center h-touch-xs rounded-md border border-border bg-surface-subtle">
                       <button
                         onClick={() =>
                           item.quantity > 1 && updateQuantity(item.id, item.quantity - 1, item.variantId)
@@ -253,7 +253,7 @@ export default function CartPageClient() {
 
                     {/* Wishlist */}
                     <button
-                      className="size-touch-xs flex items-center justify-center rounded text-muted-foreground/50 hover:text-brand transition-colors"
+                      className="size-touch-xs flex items-center justify-center rounded text-muted-foreground/50 hover:text-primary transition-colors"
                       aria-label={t("saveForLater")}
                     >
                       <Heart className="size-4" />
@@ -311,7 +311,7 @@ export default function CartPageClient() {
                       <span>{t("secureCheckout")}</span>
                     </div>
                     <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                      <Truck className="size-4 text-brand" weight="fill" />
+                      <Truck className="size-4 text-primary" weight="fill" />
                       <span>{t("returns30Day")}</span>
                     </div>
                   </div>

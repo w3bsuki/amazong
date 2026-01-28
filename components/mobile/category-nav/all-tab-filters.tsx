@@ -56,7 +56,7 @@ export function AllTabFilters({
                 "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
                 isActive
                   ? "bg-foreground text-background border-foreground"
-                  : "bg-muted text-muted-foreground hover:bg-muted/80 hover:text-foreground border-border/40"
+                  : "bg-muted text-muted-foreground hover:bg-hover hover:text-foreground border-border/40"
               )}
               aria-pressed={isActive}
             >

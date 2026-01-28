@@ -204,7 +204,7 @@ export function FeedToolbar({
                   "h-11 px-5 gap-2 shrink-0 rounded-xl font-medium",
                   isActive 
                     ? "shadow-md" 
-                    : "bg-muted/60 hover:bg-muted border-border/50"
+                    : "bg-surface-subtle hover:bg-hover border-border/50"
                 )}
               >
                 <TabIcon size={18} weight={isActive ? "fill" : "regular"} />
@@ -259,7 +259,7 @@ export function FeedToolbar({
           value={viewMode}
           onValueChange={(value) => value && onViewModeChange(value as "grid" | "list")}
           variant="outline"
-          className="h-11 bg-muted/50 p-1 rounded-xl shrink-0 border border-border/50"
+          className="h-11 bg-surface-subtle p-1 rounded-xl shrink-0 border border-border/50"
         >
           <ToggleGroupItem
             value="grid"
@@ -293,7 +293,7 @@ export function FeedToolbar({
                   size="default"
                   className={cn(
                     "h-10 px-4 gap-2 rounded-xl shrink-0 font-medium",
-                    filters.attributes[filter.id] && "border-primary bg-primary/5"
+                    filters.attributes[filter.id] && "border-selected-border bg-selected"
                   )}
                 >
                   {filter.label}

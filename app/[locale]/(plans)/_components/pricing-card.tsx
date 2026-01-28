@@ -23,7 +23,7 @@ function Header({
   return (
     <div
       className={cn(
-        "bg-muted/50 relative mb-4 rounded-md border p-4",
+        "bg-surface-subtle relative mb-4 rounded-md border p-4",
         className
       )}
       {...props}

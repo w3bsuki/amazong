@@ -132,7 +132,7 @@ function SpecificationsList({ specifications }: { specifications: SpecItem[] }) 
             key={index}
             className={cn(
               "flex justify-between items-center px-3 py-2.5",
-              index % 2 === 1 && "bg-muted/20"
+              index % 2 === 1 && "bg-surface-subtle"
             )}
           >
             <span className="text-sm text-text-muted-alt">{spec.label}</span>
@@ -172,13 +172,13 @@ function DeliveryOptions({ pickupOnly }: { pickupOnly: boolean }) {
         {t("delivery")}
       </h3>
       <div className="flex flex-wrap gap-2">
-        <span className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-muted/30 text-sm">
+        <span className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-surface-subtle text-sm">
           <MapPin className="size-4 text-text-muted-alt" strokeWidth={1.5} />
           {pickupOnly ? t("pickupOnly") : t("meetup")}
         </span>
         {!pickupOnly && (
           <>
-            <span className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-muted/30 text-sm">
+            <span className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-surface-subtle text-sm">
               <Truck className="size-4 text-text-muted-alt" strokeWidth={1.5} />
               {t("shipping")}
             </span>
@@ -203,7 +203,7 @@ function ShippingReturnsInfo({ pickupOnly }: { pickupOnly: boolean }) {
       </h3>
       <div className="space-y-2">
         {/* Shipping */}
-        <div className="flex items-start gap-3 p-3 rounded-lg bg-muted/20">
+        <div className="flex items-start gap-3 p-3 rounded-lg bg-surface-subtle">
           <Package className="size-5 text-text-muted-alt shrink-0 mt-0.5" strokeWidth={1.5} />
           <div>
             <p className="text-sm font-medium text-text-strong">{t("shippingTitle")}</p>
@@ -213,7 +213,7 @@ function ShippingReturnsInfo({ pickupOnly }: { pickupOnly: boolean }) {
           </div>
         </div>
         {/* Returns */}
-        <div className="flex items-start gap-3 p-3 rounded-lg bg-muted/20">
+        <div className="flex items-start gap-3 p-3 rounded-lg bg-surface-subtle">
           <RotateCcw className="size-5 text-text-muted-alt shrink-0 mt-0.5" strokeWidth={1.5} />
           <div>
             <p className="text-sm font-medium text-text-strong">{t("returnsTitle")}</p>

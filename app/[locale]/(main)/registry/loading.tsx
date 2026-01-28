@@ -5,7 +5,7 @@ export default function RegistryLoading() {
   return (
     <PageShell className="pb-20 sm:pb-12">
       {/* Hero */}
-      <div className="bg-primary/5 py-10 sm:py-16">
+      <div className="bg-surface-subtle py-10 sm:py-16">
         <div className="container text-center">
           <Skeleton className="h-10 sm:h-14 w-64 mx-auto mb-4" />
           <Skeleton className="h-5 w-80 mx-auto mb-6" />

@@ -76,7 +76,7 @@ export function ComingSoonPage({
         <div className="max-w-xl w-full text-center">
           {/* Icon */}
           <div className="flex justify-center mb-3">
-            <div className="size-20 bg-brand/10 rounded-md flex items-center justify-center text-brand">
+            <div className="size-20 bg-selected rounded-md flex items-center justify-center text-primary">
               {icon}
             </div>
           </div>
@@ -114,7 +114,7 @@ export function ComingSoonPage({
                     <Button 
                       type="submit" 
                       disabled={isPending}
-                      className="bg-brand hover:bg-brand-dark"
+                      variant="cta"
                     >
                       {isPending ? (
                         <>
@@ -148,7 +148,7 @@ export function ComingSoonPage({
               <ul className="space-y-3">
                 {features.map((feature, index) => (
                   <li key={index} className="flex items-start gap-3">
-                    <CheckCircle className="size-5 text-brand shrink-0 mt-0.5" weight="fill" />
+                    <CheckCircle className="size-5 text-primary shrink-0 mt-0.5" weight="fill" />
                     <span className="text-muted-foreground">{feature}</span>
                   </li>
                 ))}

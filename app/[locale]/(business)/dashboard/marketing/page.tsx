@@ -97,7 +97,7 @@ export default async function BusinessMarketingPage() {
                 <Card className="h-full hover:shadow-md transition-shadow cursor-pointer group">
                   <CardContent className="p-4">
                     <div className="flex items-start gap-3">
-                      <div className="flex size-10 items-center justify-center rounded-lg bg-primary/10 shrink-0">
+                      <div className="flex size-10 items-center justify-center rounded-lg bg-selected shrink-0">
                         <Icon className="size-5 text-primary" />
                       </div>
                       <div className="flex-1 min-w-0">

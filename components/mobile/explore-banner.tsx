@@ -142,7 +142,7 @@ export function ExploreBanner({
           {/* Active filter count badge */}
           {hasActiveFilters && (
             <span 
-              className="absolute -top-1 -right-1 size-4 flex items-center justify-center rounded-full bg-destructive text-destructive-foreground text-[10px] font-bold"
+              className="absolute -top-1 -right-1 size-4 flex items-center justify-center rounded-full bg-destructive text-destructive-foreground text-2xs font-bold"
               aria-hidden="true"
             >
               {activeFilterCount > 9 ? "9+" : activeFilterCount}

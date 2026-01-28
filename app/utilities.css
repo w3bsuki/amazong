@@ -216,6 +216,14 @@
   width: 5.5rem;
 }
 
+@utility h-22 {
+  height: 5.5rem;
+}
+
+@utility top-22 {
+  top: 5.5rem;
+}
+
 @utility size-18 {
   width: 4.5rem;
   height: 4.5rem;

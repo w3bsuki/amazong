@@ -85,7 +85,7 @@ export function AccountDropdown({ user, variant = "icon", className }: AccountDr
         {!user ? (
           <div className="p-3">
             <Link href="/auth/login" className="block">
-              <Button className="w-full bg-primary hover:bg-primary/90 text-primary-foreground">
+              <Button className="w-full bg-primary hover:bg-interactive-hover text-primary-foreground">
                 {t("signIn")}
               </Button>
             </Link>
@@ -96,7 +96,7 @@ export function AccountDropdown({ user, variant = "icon", className }: AccountDr
         ) : (
           <>
             {/* User info */}
-            <div className="px-3 py-2.5 border-b border-border bg-muted/50">
+            <div className="px-3 py-2.5 border-b border-border bg-surface-subtle">
               <p className="text-sm font-medium text-foreground truncate">
                 {user.user_metadata?.full_name || user.email?.split("@")[0]}
               </p>

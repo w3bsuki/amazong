@@ -88,7 +88,7 @@ export function AccountRecentActivity({ orders, products, sales, locale }: Accou
       case 'pending':
         return 'bg-warning/10 text-warning border-transparent'
       case 'processing':
-        return 'bg-primary/10 text-primary border-transparent'
+        return 'bg-selected text-primary border-transparent'
       case 'shipped':
         return 'bg-info/10 text-info border-transparent'
       case 'delivered':
@@ -218,7 +218,7 @@ export function AccountRecentActivity({ orders, products, sales, locale }: Accou
                     <Link
                       key={order.id}
                       href={`/account/orders/${order.id}`}
-                      className="flex items-center gap-3 p-4 hover:bg-muted/40 transition-colors"
+                      className="flex items-center gap-3 p-4 hover:bg-hover active:bg-active transition-colors"
                     >
                       <div className="relative size-11 rounded-md overflow-hidden bg-card border border-border shrink-0">
                         {firstImageUrl ? (
@@ -317,7 +317,7 @@ export function AccountRecentActivity({ orders, products, sales, locale }: Accou
                 <Link
                   key={product.id}
                   href={`/product/${product.id}`}
-                  className="flex items-center gap-3 p-4 hover:bg-muted/40 transition-colors"
+                  className="flex items-center gap-3 p-4 hover:bg-hover active:bg-active transition-colors"
                 >
                   <div className="relative size-11 rounded-md overflow-hidden bg-card border border-border shrink-0">
                     {product.images?.[0] ? (

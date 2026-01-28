@@ -92,7 +92,7 @@ export default async function SharedWishlistPage({ params }: SharedWishlistPageP
               <CardContent className="p-3">
                 <Link 
                   href={`/product/${item.product_id}`}
-                  className="text-sm font-medium text-foreground hover:text-brand line-clamp-2 min-h-10"
+                  className="text-sm font-medium text-foreground hover:text-primary line-clamp-2 min-h-10"
                 >
                   {item.product_title}
                 </Link>
@@ -118,7 +118,7 @@ export default async function SharedWishlistPage({ params }: SharedWishlistPageP
         </div>
 
         {/* CTA Section */}
-        <div className="mt-12 text-center p-4 bg-muted/50 rounded-lg">
+        <div className="mt-12 text-center p-4 bg-surface-subtle rounded-lg">
           <h2 className="text-xl font-semibold mb-2">{t('createYourOwn')}</h2>
           <p className="text-muted-foreground mb-4">{t('signUpToCreate')}</p>
           <Button asChild variant="cta" className="font-medium">

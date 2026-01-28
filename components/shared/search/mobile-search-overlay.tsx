@@ -298,7 +298,7 @@ export function MobileSearchOverlay({
                   <button
                     type="button"
                     onClick={handleClearInput}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 size-touch-xs rounded-full flex items-center justify-center bg-muted text-muted-foreground hover:bg-muted/80 hover:text-foreground"
+                    className="absolute right-2 top-1/2 -translate-y-1/2 size-touch-xs rounded-full flex items-center justify-center bg-muted text-muted-foreground hover:bg-hover active:bg-active hover:text-foreground"
                     aria-label={tSearch("clear")}
                   >
                     <X size={12} weight="bold" aria-hidden="true" />
@@ -319,7 +319,7 @@ export function MobileSearchOverlay({
             {isSearching && (
               <div role="status" aria-live="polite" className="px-4 py-8 text-center">
                 <div className="inline-flex items-center gap-2 text-sm text-muted-foreground">
-                  <div className="size-5 border-2 border-primary/30 border-t-primary rounded-full animate-spin" aria-hidden="true" />
+                  <div className="size-5 border-2 border-border border-t-primary rounded-full animate-spin" aria-hidden="true" />
                   <span>{tSearch("searching")}</span>
                 </div>
               </div>
@@ -349,7 +349,7 @@ export function MobileSearchOverlay({
                       <button
                         type="button"
                         onClick={() => handleProductSelect(product)}
-                        className="w-full flex items-center gap-2 p-2 hover:bg-muted active:bg-muted/80 text-left touch-action-manipulation transition-colors"
+                        className="w-full flex items-center gap-2 p-2 hover:bg-hover active:bg-active text-left touch-action-manipulation transition-colors"
                       >
                         <div className="size-12 bg-muted rounded-lg overflow-hidden shrink-0 ring-1 ring-border">
                           {product.images?.[0] ? (
@@ -415,7 +415,7 @@ export function MobileSearchOverlay({
                           <button
                             type="button"
                             onClick={() => handleSearch(search)}
-                            className="w-full flex items-center gap-2 px-inset py-3 hover:bg-muted active:bg-muted/80 text-left touch-action-manipulation transition-colors"
+                            className="w-full flex items-center gap-2 px-inset py-3 hover:bg-hover active:bg-active text-left touch-action-manipulation transition-colors"
                           >
                             <Clock size={18} weight="regular" className="text-muted-foreground shrink-0" aria-hidden="true" />
                             <span className="flex-1 text-base text-foreground">{search}</span>
@@ -441,9 +441,9 @@ export function MobileSearchOverlay({
                         <button
                           type="button"
                           onClick={() => handleSearch(search)}
-                          className="w-full flex items-center gap-2 px-inset py-3 hover:bg-muted active:bg-muted/80 text-left touch-action-manipulation transition-colors"
+                          className="w-full flex items-center gap-2 px-inset py-3 hover:bg-hover active:bg-active text-left touch-action-manipulation transition-colors"
                         >
-                          <span className="size-6 rounded-full shrink-0 flex items-center justify-center text-xs font-bold text-primary-foreground bg-brand" aria-hidden="true">
+                          <span className="size-6 rounded-full shrink-0 flex items-center justify-center text-xs font-bold text-primary-foreground bg-primary" aria-hidden="true">
                             {index + 1}
                           </span>
                           <span className="flex-1 text-base text-foreground">{search}</span>

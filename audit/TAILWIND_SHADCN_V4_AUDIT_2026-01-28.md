@@ -33,15 +33,15 @@ PASS:
 - Gradients: **0**
 
 FAIL (must fix):
-- Arbitrary values: **38**
-- `bg-muted/*` opacity usage: **271**
-- `bg-primary/*` opacity usage: **160**
-- `border-primary/*` opacity usage: **78**
-- Hardcoded white/black (incl `/opacity`): **24**
-- Legacy `brand` tokens: **236**
-- Animations (`tw-animate-css` patterns): **55**
-- Custom shadow utilities: **2** (`shadow-[…]`)
-- Heavy shadows in runtime: **2** (`shadow-xl|2xl`)
+- Arbitrary values: **0**
+- `bg-muted/*` opacity usage: **186**
+- `bg-primary/*` opacity usage: **132**
+- `border-primary/*` opacity usage: **42**
+- Hardcoded white/black (incl `/opacity`): **34**
+- Legacy `brand` tokens: **0**
+- Animations (`tw-animate-css` patterns): **0**
+- Custom shadow utilities: **0** (`shadow-[…]`)
+- Heavy shadows in runtime: **9** (`shadow-xl|2xl`)
 
 ## Top offenders (where to start)
 
@@ -153,16 +153,17 @@ Use `docs/DESIGN.md` as the source of truth. These are the high-signal swaps:
 
 ### Critical (blocks production polish)
 
-- [ ] Remove `bg-muted/*` opacity usage (271 occurrences) → replace with `bg-surface-subtle` / `bg-hover` / `bg-active` / `bg-selected` → focus: filters + sell flows
-- [ ] Remove `bg-primary/*` + `border-primary/*` opacity usage (238 occurrences) → replace with semantic interactive tokens (`bg-selected`, `border-selected-border`, etc.)
-- [ ] Remove legacy `brand` tokens (236 occurrences) → unify to `primary` + semantic tokens
-- [ ] Remove animations (55 occurrences + `tw-animate-css` import + `app/shadcn-components.css` `@apply animate-*`)
-- [ ] Remove custom shadows (`shadow-[…]`) and downgrade heavy shadows (`shadow-xl|2xl`) in runtime UI
-- [ ] Replace hardcoded white/black (`text-white(/80)`, `bg-white`, `text-black`) with `*-foreground` tokens
+- [ ] Remove `bg-muted/*` opacity usage (**186** occurrences) → replace with `bg-surface-subtle` / `bg-hover` / `bg-active` / `bg-selected` → focus: filters + sell flows
+- [ ] Remove `bg-primary/*` + `border-primary/*` opacity usage (**174** occurrences) → replace with semantic interactive tokens (`bg-selected`, `border-selected-border`, etc.)
+- [x] Remove legacy `brand` tokens (**0** occurrences) → unify to `primary` + semantic tokens
+- [x] Remove animations (**0** occurrences + `tw-animate-css` import + `app/shadcn-components.css` `@apply animate-*`)
+- [x] Remove custom shadows (`shadow-[…]`) (**0** occurrences)
+- [ ] Downgrade heavy shadows in runtime UI (**9** occurrences) → replace `shadow-xl|2xl`
+- [ ] Replace hardcoded white/black (`text-white(/80)`, `bg-white`, `text-black`) (**34** occurrences) with `*-foreground` tokens
 
 ### High (next sprint)
 
-- [ ] Remove arbitrary values (38 occurrences) → replace with theme spacing/sizing tokens (`h-touch-*`, `max-h-*`, `rounded-*`) or delete the need (especially if animations are removed)
+- [x] Remove arbitrary values (**0** occurrences) → replace with theme spacing/sizing tokens (`h-touch-*`, `max-h-*`, `rounded-*`) or delete the need (especially if animations are removed)
 - [ ] Consolidate repeated “card recipes” into shared primitives (stop copy/paste of `rounded-lg border bg-muted/30 p-*`)
 - [ ] Add/extend style drift gates to catch:
   - `bg-muted/*`, `bg-primary/*`, `border-primary/*`
@@ -178,9 +179,8 @@ Use `docs/DESIGN.md` as the source of truth. These are the high-signal swaps:
 
 ## Execution plan (small batches, zero behavior change)
 
-1. Batch A: replace `bg-muted/*` in one area (filters) → run `pnpm -s styles:gate` + e2e smoke
-2. Batch B: replace `bg-primary/*` + `border-primary/*` in one area (sell flow) → run gates
-3. Batch C: remove animations in shadcn primitives (Dialog/Sheet/Drawer) → verify keyboard/focus + e2e smoke
-4. Batch D: remove `brand` aliases in public/legal/support pages → visual pass + smoke
-5. Batch E: remove remaining arbitrary values + custom shadows
-
+- [x] Batch A: replace `bg-muted/*` in one area (filters) → run `pnpm -s styles:gate` + e2e smoke
+- [x] Batch B: replace `bg-primary/*` + `border-primary/*` in one area (sell flow) → run gates
+- [x] Batch C: remove animations in shadcn primitives (Dialog/Sheet/Drawer) → verify keyboard/focus + e2e smoke
+- [x] Batch D: remove `brand` aliases in public/legal/support pages → visual pass + smoke
+- [x] Batch E: remove remaining arbitrary values + custom shadows

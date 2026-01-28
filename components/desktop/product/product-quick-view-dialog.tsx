@@ -88,7 +88,7 @@ export function ProductQuickViewDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
         variant="fullWidth"
-        className="h-[85dvh] max-h-[900px] p-0 gap-0 flex flex-col overflow-hidden"
+        className="gap-0 flex flex-col overflow-hidden"
         showCloseButton={false}
       >
         <DialogTitle className="sr-only">{title || tDrawers("quickView")}</DialogTitle>

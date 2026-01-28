@@ -86,7 +86,7 @@ export function CartDropdown() {
           <>
             <div className="max-h-(--spacing-scroll-md) overflow-y-auto">
               {items.slice(0, 4).map((item) => (
-                <div key={`${item.id}:${item.variantId ?? ""}`} className="flex gap-2 p-2 border-b border-border hover:bg-muted/50">
+                <div key={`${item.id}:${item.variantId ?? ""}`} className="flex gap-2 p-2 border-b border-border hover:bg-hover active:bg-active">
                   <Link href={buildProductUrl(item)} className="shrink-0">
                     <div className="size-12 bg-muted rounded-md overflow-hidden border border-border">
                       {item.image ? (
@@ -107,7 +107,7 @@ export function CartDropdown() {
                   <div className="flex-1 min-w-0">
                     <Link
                       href={buildProductUrl(item)}
-                      className="text-sm text-foreground hover:text-brand line-clamp-2 leading-snug"
+                      className="text-sm text-foreground hover:text-primary line-clamp-2 leading-snug"
                     >
                       {item.title}
                     </Link>

@@ -91,7 +91,7 @@ function NavLink({
         <Link
             href={href}
             onClick={onClick}
-            className="flex items-center gap-4 px-4 h-12 rounded-lg hover:bg-muted active:bg-muted/80 transition-colors"
+            className="flex items-center gap-4 px-4 h-12 rounded-lg hover:bg-hover active:bg-active transition-colors"
         >
             <Icon size={22} weight="regular" className="text-muted-foreground shrink-0" />
             <span className="text-sm font-medium text-foreground flex-1">{label}</span>
@@ -146,7 +146,7 @@ export function SidebarMenuV2({ user, triggerClassName, userStats }: SidebarMenu
             <span
                 role="button"
                 className={cn(
-                    "inline-flex items-center justify-center size-10 rounded-lg text-foreground hover:bg-muted active:bg-muted/80 transition-colors touch-action-manipulation tap-transparent cursor-pointer [&_svg]:size-6",
+                    "inline-flex items-center justify-center size-10 rounded-lg text-foreground hover:bg-hover active:bg-active transition-colors touch-action-manipulation tap-transparent cursor-pointer [&_svg]:size-6",
                     triggerClassName
                 )}
                 aria-label={t("title")}
@@ -170,7 +170,7 @@ export function SidebarMenuV2({ user, triggerClassName, userStats }: SidebarMenu
                     variant="ghost"
                     size="icon"
                     className={cn(
-                        "size-10 rounded-lg text-foreground hover:bg-muted active:bg-muted/80 transition-colors touch-action-manipulation tap-transparent focus-visible:ring-0 focus-visible:ring-offset-0 [&_svg]:size-6",
+                        "size-10 rounded-lg text-foreground hover:bg-hover active:bg-active transition-colors touch-action-manipulation tap-transparent focus-visible:ring-0 focus-visible:ring-offset-0 [&_svg]:size-6",
                         triggerClassName
                     )}
                     aria-label={t("title")}
@@ -203,7 +203,7 @@ export function SidebarMenuV2({ user, triggerClassName, userStats }: SidebarMenu
                                 onClick={() => setOpen(false)}
                                 className="flex items-center gap-2.5 min-w-0 hover:opacity-90 transition-opacity"
                             >
-                                <div className="size-touch shrink-0 rounded-full bg-primary/10 flex items-center justify-center">
+                                <div className="size-touch shrink-0 rounded-full bg-selected flex items-center justify-center">
                                     <UserCircle size={26} weight="fill" className="text-primary" />
                                 </div>
                                 <span className="text-foreground text-base font-semibold truncate max-w-32">
@@ -247,7 +247,7 @@ export function SidebarMenuV2({ user, triggerClassName, userStats }: SidebarMenu
                                 <DropdownMenuTrigger asChild>
                                     <button
                                         type="button"
-                                        className="size-touch rounded-full flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
+                                        className="size-touch rounded-full flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-hover transition-colors"
                                         aria-label={tLocaleSwitcher('label')}
                                     >
                                         <Image
@@ -264,14 +264,14 @@ export function SidebarMenuV2({ user, triggerClassName, userStats }: SidebarMenu
                                         <Link href="/" locale="en" onClick={() => setOpen(false)} className="flex items-center gap-2.5 px-3 py-2 cursor-pointer rounded-md">
                                             <Image src="https://flagcdn.com/w40/gb.png" alt="" width={18} height={12} className="h-3 w-auto rounded-sm object-cover" />
                                             <span className="text-sm font-medium">{tLocaleSwitcher('english')}</span>
-                                            {locale === 'en' && <span className="ml-auto text-brand font-bold text-xs">✓</span>}
+                                            {locale === 'en' && <span className="ml-auto text-primary font-bold text-xs">✓</span>}
                                         </Link>
                                     </DropdownMenuItem>
                                     <DropdownMenuItem asChild>
                                         <Link href="/" locale="bg" onClick={() => setOpen(false)} className="flex items-center gap-2.5 px-3 py-2 cursor-pointer rounded-md">
                                             <Image src="https://flagcdn.com/w40/bg.png" alt="" width={18} height={12} className="h-3 w-auto rounded-sm object-cover" />
                                             <span className="text-sm font-medium">{tLocaleSwitcher('bulgarian')}</span>
-                                            {locale === 'bg' && <span className="ml-auto text-brand font-bold text-xs">✓</span>}
+                                            {locale === 'bg' && <span className="ml-auto text-primary font-bold text-xs">✓</span>}
                                         </Link>
                                     </DropdownMenuItem>
                                 </DropdownMenuContent>
@@ -311,7 +311,7 @@ export function SidebarMenuV2({ user, triggerClassName, userStats }: SidebarMenu
                                 <Link
                                     href="/sell"
                                     onClick={() => setOpen(false)}
-                                    className="flex items-center justify-center gap-1.5 w-full h-touch rounded-lg bg-brand text-primary-foreground font-semibold hover:bg-brand/90 transition-colors mb-2"
+                                    className="flex items-center justify-center gap-1.5 w-full h-touch rounded-lg bg-primary text-primary-foreground font-semibold hover:bg-interactive-hover transition-colors mb-2"
                                 >
                                     <Plus size={18} weight="bold" />
                                     <span className="text-sm">{tMenu("newListing")}</span>
@@ -321,7 +321,7 @@ export function SidebarMenuV2({ user, triggerClassName, userStats }: SidebarMenu
                                     <Link
                                         href="/account/selling"
                                         onClick={() => setOpen(false)}
-                                        className="flex items-center justify-center gap-1.5 h-touch rounded-lg bg-primary/5 border border-primary/20 hover:bg-primary/10 transition-colors"
+                                        className="flex items-center justify-center gap-1.5 h-touch rounded-lg bg-surface-subtle border border-border hover:bg-hover hover:border-hover-border transition-colors"
                                     >
                                         <Package size={18} weight="duotone" className="text-primary" />
                                         <span className="text-sm font-semibold tabular-nums">{userStats?.activeListings ?? 0}</span>
@@ -330,7 +330,7 @@ export function SidebarMenuV2({ user, triggerClassName, userStats }: SidebarMenu
                                     <Link
                                         href="/account/selling"
                                         onClick={() => setOpen(false)}
-                                        className="flex items-center justify-center gap-1.5 h-touch rounded-lg bg-primary/5 border border-primary/20 hover:bg-primary/10 transition-colors"
+                                        className="flex items-center justify-center gap-1.5 h-touch rounded-lg bg-surface-subtle border border-border hover:bg-hover hover:border-hover-border transition-colors"
                                     >
                                         <RocketLaunch size={18} weight="duotone" className="text-primary" />
                                         <span className="text-sm font-semibold tabular-nums">{userStats?.boostedListings ?? 0}</span>
@@ -450,7 +450,7 @@ export function SidebarMenuV2({ user, triggerClassName, userStats }: SidebarMenu
                                     <Link
                                         href="/auth/login"
                                         onClick={() => setOpen(false)}
-                                        className="flex items-center justify-center gap-2 h-10 px-6 rounded-full bg-primary text-primary-foreground text-sm font-semibold hover:bg-primary/90 transition-colors"
+                                        className="flex items-center justify-center gap-2 h-10 px-6 rounded-full bg-primary text-primary-foreground text-sm font-semibold hover:bg-interactive-hover transition-colors"
                                     >
                                         <SignInIcon size={18} weight="bold" />
                                         <span>{t("signIn")}</span>
@@ -458,7 +458,7 @@ export function SidebarMenuV2({ user, triggerClassName, userStats }: SidebarMenu
                                     <Link
                                         href="/auth/sign-up"
                                         onClick={() => setOpen(false)}
-                                        className="flex items-center justify-center h-10 px-6 rounded-full border border-primary/30 text-primary text-sm font-medium hover:bg-primary/5 transition-colors"
+                                        className="flex items-center justify-center h-10 px-6 rounded-full border border-selected-border text-primary text-sm font-medium hover:bg-hover hover:border-hover-border transition-colors"
                                     >
                                         {tNav("register")}
                                     </Link>
@@ -489,7 +489,7 @@ export function SidebarMenuV2({ user, triggerClassName, userStats }: SidebarMenu
                                     <button
                                         type="button"
                                         disabled={isSigningOut}
-                                        className="flex-1 flex items-center justify-center gap-2 h-12 text-sm text-muted-foreground hover:text-destructive hover:bg-muted/50 transition-colors"
+                                        className="flex-1 flex items-center justify-center gap-2 h-12 text-sm text-muted-foreground hover:text-destructive hover:bg-hover active:bg-active transition-colors"
                                     >
                                         {isSigningOut ? (
                                             <SpinnerGap size={18} className="animate-spin" />

@@ -162,7 +162,7 @@ export function MessagesDrawer({ open, onOpenChange }: MessagesDrawerProps) {
                   onClick={handleClose}
                   className={cn(
                     "flex gap-3 px-inset py-3",
-                    "hover:bg-muted/50 active:bg-muted transition-colors",
+                    "hover:bg-hover active:bg-active transition-colors",
                     "touch-action-manipulation tap-transparent",
                     index !== recentConversations.length - 1 && "border-b border-border"
                   )}

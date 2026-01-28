@@ -246,7 +246,7 @@ export default async function BusinessAccountingPage() {
                   {formatCurrency(0)}
                 </TableCell>
               </TableRow>
-              <TableRow className="bg-muted/50">
+              <TableRow className="bg-surface-subtle">
                 <TableCell className="font-bold">Total Fees</TableCell>
                 <TableCell></TableCell>
                 <TableCell></TableCell>

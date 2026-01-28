@@ -54,8 +54,8 @@ export function PhotoThumbnail({
       className={cn(
         "group relative aspect-square overflow-hidden rounded-md border bg-muted transition-colors",
         isDragging 
-          ? "border-primary border-dashed opacity-50 scale-95" 
-          : "border-border/40 hover:border-primary/30",
+          ? "border-selected-border border-dashed opacity-50 scale-95" 
+          : "border-border/40 hover:border-hover-border",
         "cursor-grab active:cursor-grabbing touch-action-manipulation"
       )}
     >

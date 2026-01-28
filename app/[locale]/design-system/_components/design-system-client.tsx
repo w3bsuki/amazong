@@ -390,7 +390,7 @@ function OverviewSection() {
       <div className="rounded-xl border border-border bg-accent/30 p-6">
         <div className="flex gap-4">
           <div className="flex-shrink-0">
-            <div className="size-10 rounded-lg bg-primary/10 flex items-center justify-center">
+            <div className="size-10 rounded-lg bg-selected flex items-center justify-center">
               <Info className="size-5 text-primary" />
             </div>
           </div>
@@ -466,11 +466,11 @@ function ColorsSection() {
           <div className="grid grid-cols-3 sm:grid-cols-6 gap-3">
             {[
               { name: "Primary", class: "bg-primary" },
-              { name: "Primary/80", class: "bg-primary/80" },
-              { name: "Primary/60", class: "bg-primary/60" },
-              { name: "Primary/40", class: "bg-primary/40" },
-              { name: "Primary/20", class: "bg-primary/20" },
-              { name: "Primary/10", class: "bg-primary/10" },
+              { name: "Interactive Hover", class: "bg-interactive-hover" },
+              { name: "Hover", class: "bg-hover" },
+              { name: "Active", class: "bg-active" },
+              { name: "Selected", class: "bg-selected" },
+              { name: "Checked", class: "bg-checked" },
             ].map((color) => (
               <div key={color.name} className="space-y-2">
                 <div className={cn("h-10 rounded-md border border-border", color.class)} />

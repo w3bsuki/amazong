@@ -60,7 +60,7 @@ export function DesktopSpecsAccordion({
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {/* Key Features */}
           {keyFeatures.length > 0 && (
-            <div className="rounded-lg border border-border bg-muted/30 p-4">
+            <div className="rounded-lg border border-border bg-surface-subtle p-4">
               <h3 className="font-semibold text-foreground mb-3 text-sm">
                 {t("keyFeatures")}
               </h3>
@@ -85,7 +85,7 @@ export function DesktopSpecsAccordion({
 
           {/* Quick Specs */}
           {quickSpecs.length > 0 && (
-            <div className="rounded-lg border border-border bg-muted/30 p-4">
+            <div className="rounded-lg border border-border bg-surface-subtle p-4">
               <h3 className="font-semibold text-foreground mb-3 text-sm">
                 {t("quickSpecs")}
               </h3>
@@ -174,7 +174,7 @@ export function DesktopSpecsAccordion({
                 key={spec.label}
                 className={cn(
                   "flex items-center justify-between px-6 py-3 text-sm",
-                  i % 2 === 0 ? "bg-card" : "bg-muted/30",
+                  i % 2 === 0 ? "bg-card" : "bg-surface-subtle",
                   "border-b border-border/50 last:border-0"
                 )}
               >

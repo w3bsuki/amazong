@@ -57,7 +57,7 @@ export const CategoryNavItem = forwardRef<
     "border transition-colors",
     isActive
       ? "border-foreground bg-foreground text-background"
-      : "border-border/50 bg-muted/60 text-muted-foreground hover:bg-muted hover:text-foreground"
+      : "border-border/50 bg-surface-subtle text-muted-foreground hover:bg-hover hover:text-foreground"
   )
 
   const styles = variant === "tab" ? tabStyles : pillStyles

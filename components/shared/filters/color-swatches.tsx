@@ -99,10 +99,10 @@ export function ColorSwatches({
             key={option}
             type="button"
             onClick={() => handleSelect(option)}
-            className={cn(
-              "flex flex-col items-center gap-1.5 p-2 rounded-lg transition-colors",
-              "min-h-touch min-w-touch",
-              isActive ? "bg-secondary" : "active:bg-muted/50"
+              className={cn(
+                "flex flex-col items-center gap-1.5 p-2 rounded-lg transition-colors",
+                "min-h-touch min-w-touch",
+              isActive ? "bg-secondary" : "active:bg-active"
             )}
             aria-pressed={isActive}
           >
@@ -120,7 +120,7 @@ export function ColorSwatches({
                   size={16}
                   weight="bold"
                   className={cn(
-                    hex && isLight ? "text-foreground" : "text-white",
+                    hex && isLight ? "text-foreground" : "text-overlay-text",
                     !hex && "text-primary"
                   )}
                 />

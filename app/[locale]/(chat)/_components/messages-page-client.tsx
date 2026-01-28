@@ -165,7 +165,7 @@ function MessagesContent({ actions }: { actions: ChatInterfaceServerActions }) {
               <h1 className="text-xl font-bold">{labels.title}</h1>
             </div>
             <button 
-              className="flex items-center justify-center size-9 rounded-full bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
+              className="flex items-center justify-center size-9 rounded-full bg-primary text-primary-foreground hover:bg-interactive-hover transition-colors"
               aria-label={labels.newMessage}
             >
               <PencilSimpleLine size={20} weight="regular" />
@@ -180,12 +180,12 @@ function MessagesContent({ actions }: { actions: ChatInterfaceServerActions }) {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder={labels.searchPlaceholder}
-                className="pl-9 h-10 rounded-full bg-muted/50 border-0 focus-visible:ring-1 focus-visible:ring-ring"
+                className="pl-9 h-10 rounded-full bg-surface-subtle border-0 focus-visible:ring-1 focus-visible:ring-ring"
               />
             </div>
             {/* New message button - desktop only (already have it in header on mobile) */}
             <button 
-              className="hidden lg:flex shrink-0 items-center justify-center size-10 rounded-full bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
+              className="hidden lg:flex shrink-0 items-center justify-center size-10 rounded-full bg-primary text-primary-foreground hover:bg-interactive-hover transition-colors"
               aria-label={labels.newMessage}
             >
               <PencilSimpleLine size={20} weight="regular" />
@@ -223,7 +223,7 @@ function MessagesContent({ actions }: { actions: ChatInterfaceServerActions }) {
             </Suspense>
           ) : (
           /* Empty state - Desktop only */
-          <div className="hidden lg:flex flex-col items-center justify-center h-full bg-muted/30">
+          <div className="hidden lg:flex flex-col items-center justify-center h-full bg-surface-subtle">
             <div className="flex flex-col items-center gap-4 p-4 text-center max-w-sm">
               <div className="flex size-20 items-center justify-center rounded-full border-2 border-border bg-background">
                 <ChatCircle size={40} weight="regular" className="text-muted-foreground" />

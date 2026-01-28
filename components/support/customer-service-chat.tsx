@@ -15,7 +15,8 @@ export function CustomerServiceChat() {
   return (
     <>
       <Button 
-        className="w-full bg-brand hover:bg-brand/90 text-foreground border border-brand-dark"
+        variant="cta"
+        className="w-full"
         onClick={() => setIsOpen(true)}
       >
         {t("startChatting")}

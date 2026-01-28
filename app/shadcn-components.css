@@ -163,20 +163,6 @@
   transform: translateX(var(--radix-toast-swipe-end-x));
 }
 
-.ui-toast[data-state='open'] {
-  @apply animate-in slide-in-from-top-full;
-}
-
-.ui-toast[data-state='closed'] {
-  @apply animate-out fade-out-80 slide-out-to-right-full;
-}
-
-@media (min-width: 640px) {
-  .ui-toast[data-state='open'] {
-    @apply slide-in-from-bottom-full;
-  }
-}
-
 .destructive .ui-toast-action {
   @apply border-muted/40 hover:border-destructive/30 hover:bg-destructive hover:text-destructive-foreground focus:ring-destructive;
 }

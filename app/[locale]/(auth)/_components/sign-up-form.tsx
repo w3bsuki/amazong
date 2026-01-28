@@ -184,7 +184,7 @@ export function SignUpForm({
               size="lg"
               className={cn(
                 "h-10",
-                accountType === "personal" && "bg-primary/10 text-foreground border-primary hover:bg-primary/20"
+                accountType === "personal" && "bg-selected text-foreground border-selected-border hover:bg-hover"
               )}
               onClick={() => setAccountType("personal")}
               aria-pressed={accountType === "personal"}
@@ -197,7 +197,7 @@ export function SignUpForm({
               size="lg"
               className={cn(
                 "h-10",
-                accountType === "business" && "bg-primary/10 text-foreground border-primary hover:bg-primary/20"
+                accountType === "business" && "bg-selected text-foreground border-selected-border hover:bg-hover"
               )}
               onClick={() => setAccountType("business")}
               aria-pressed={accountType === "business"}

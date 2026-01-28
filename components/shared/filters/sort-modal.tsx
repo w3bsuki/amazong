@@ -113,8 +113,8 @@ export function SortModal({
                       "text-sm font-medium text-left",
                       "transition-colors",
                       isActive
-                        ? "bg-muted/50 text-foreground"
-                        : "text-foreground active:bg-muted/30"
+                        ? "bg-selected text-foreground"
+                        : "text-foreground active:bg-active"
                     )}
                     aria-pressed={isActive}
                   >

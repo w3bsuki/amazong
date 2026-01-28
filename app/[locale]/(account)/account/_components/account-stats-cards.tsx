@@ -103,14 +103,14 @@ export function AccountStatsCards({ totals, locale }: AccountStatsProps) {
           <Link
             key={action.href}
             href={action.href}
-            className="group flex items-center gap-2 px-4 py-2 rounded-full bg-background border border-border/60 hover:bg-muted/40 transition-colors shrink-0"
+            className="group flex items-center gap-2 px-4 py-2 rounded-full bg-background border border-border/60 hover:bg-hover active:bg-active transition-colors shrink-0"
           >
             <div className="flex size-7 items-center justify-center rounded-full bg-muted">
               <action.icon className="size-3.5 text-muted-foreground" strokeWidth={2} />
             </div>
             <span className="text-sm font-medium text-foreground">{action.label}</span>
             {action.count !== null && action.count > 0 && (
-              <span className="text-xs font-semibold text-primary bg-primary/10 px-1.5 py-0.5 rounded-full">
+              <span className="text-xs font-semibold text-primary bg-selected px-1.5 py-0.5 rounded-full">
                 {action.count}
               </span>
             )}

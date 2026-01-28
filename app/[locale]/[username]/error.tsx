@@ -36,7 +36,7 @@ export default function ProfileError({
 
           <a
             href="/"
-            className="inline-flex items-center justify-center rounded-md bg-brand px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-brand/90"
+            className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-interactive-hover"
           >
             {t('goToHomepage')}
           </a>

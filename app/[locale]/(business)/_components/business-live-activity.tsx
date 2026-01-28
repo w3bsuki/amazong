@@ -49,10 +49,10 @@ export function BusinessLiveActivity({
         </div>
       )}
       {cartAdds > 0 && (
-        <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-brand/10 border border-brand/20">
-          <IconShoppingCart className="size-3 text-brand" />
-          <span className="text-xs font-medium text-brand">{cartAdds}</span>
-          <span className="text-2xs text-brand/70">cart</span>
+        <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-selected border border-selected-border">
+          <IconShoppingCart className="size-3 text-primary" />
+          <span className="text-xs font-medium text-primary">{cartAdds}</span>
+          <span className="text-2xs text-primary/70">cart</span>
         </div>
       )}
     </div>

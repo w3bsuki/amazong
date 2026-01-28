@@ -69,7 +69,7 @@ function MemberCard({ member, locale }: { member: Member; locale: string }) {
                 name={displayName}
                 avatarUrl={member.avatar_url ?? null}
                 className="size-14 border-2 border-background shadow bg-muted"
-                fallbackClassName="text-lg bg-primary/10 text-primary"
+                fallbackClassName="text-lg bg-selected text-primary"
               />
               {(member.is_verified_business || member.verified) && (
                 <div className="absolute -bottom-0.5 -right-0.5 bg-info rounded-full p-0.5 border-2 border-background">
@@ -164,7 +164,7 @@ export default function MembersPageClient({
 
   return (
     <PageShell variant="muted" className="pb-20 sm:pb-8">
-      <div className="bg-brand text-primary-foreground py-6 sm:py-10">
+      <div className="bg-primary text-primary-foreground py-6 sm:py-10">
         <div className="container">
           <div className="[&_nav]:border-primary-foreground/20 [&_nav]:mb-2 [&_a]:text-primary-foreground/80 [&_a:hover]:text-primary-foreground [&_span[aria-current]]:text-primary-foreground [&_svg]:text-primary-foreground/50">
             <AppBreadcrumb

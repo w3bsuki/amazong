@@ -45,7 +45,7 @@ export function QuickViewSellerCard({
         onClick={onNavigateToProduct}
         className={cn(
           "group w-full flex items-center gap-2.5 p-2.5 rounded-lg text-left",
-          "bg-muted/50 border border-border/50",
+          "bg-surface-subtle border border-border/50",
           "hover:bg-muted hover:border-border transition-all",
           "focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1"
         )}
@@ -62,7 +62,7 @@ export function QuickViewSellerCard({
         <div className="flex-1 min-w-0">
           <p className="text-sm font-medium truncate">{safeSellerName}</p>
           {hasVerification && (
-            <span className="flex items-center gap-1 text-[11px] text-muted-foreground">
+            <span className="flex items-center gap-1 text-tiny text-muted-foreground">
               <CheckCircle size={10} weight="fill" className="text-success" />
               {tProduct("verifiedSeller")}
             </span>

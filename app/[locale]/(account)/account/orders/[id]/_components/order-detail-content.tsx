@@ -109,15 +109,15 @@ interface OrderDetailContentProps {
 }
 
 const STATUS_CONFIG = {
-  pending: { label: "Pending", labelBg: "Изчаква", color: "bg-warning", icon: Clock },
-  paid: { label: "Paid", labelBg: "Платена", color: "bg-info", icon: Receipt },
-  processing: { label: "Processing", labelBg: "Обработва се", color: "bg-primary", icon: Package },
-  shipped: { label: "Shipped", labelBg: "Изпратена", color: "bg-primary", icon: Truck },
-  delivered: { label: "Delivered", labelBg: "Доставена", color: "bg-success", icon: CheckCircle },
-  cancelled: { label: "Cancelled", labelBg: "Отменена", color: "bg-destructive", icon: XCircle },
+  pending: { label: "Pending", labelBg: "Изчаква", color: "bg-warning", text: "text-warning-foreground", icon: Clock },
+  paid: { label: "Paid", labelBg: "Платена", color: "bg-info", text: "text-info-foreground", icon: Receipt },
+  processing: { label: "Processing", labelBg: "Обработва се", color: "bg-primary", text: "text-primary-foreground", icon: Package },
+  shipped: { label: "Shipped", labelBg: "Изпратена", color: "bg-primary", text: "text-primary-foreground", icon: Truck },
+  delivered: { label: "Delivered", labelBg: "Доставена", color: "bg-success", text: "text-success-foreground", icon: CheckCircle },
+  cancelled: { label: "Cancelled", labelBg: "Отменена", color: "bg-destructive", text: "text-destructive-foreground", icon: XCircle },
 } as const satisfies Record<
   "pending" | "paid" | "processing" | "shipped" | "delivered" | "cancelled",
-  { label: string; labelBg: string; color: string; icon: typeof CheckCircle }
+  { label: string; labelBg: string; color: string; text: string; icon: typeof CheckCircle }
 >
 
 type OrderStatusKey = keyof typeof STATUS_CONFIG
@@ -347,7 +347,7 @@ export function OrderDetailContent({ locale, order, existingSellerFeedbackSeller
             </p>
           </div>
         </div>
-        <Badge variant="secondary" className={`${statusConfig.color} text-white`}>
+        <Badge variant="secondary" className={`${statusConfig.color} ${statusConfig.text}`}>
           <StatusIcon className="size-3.5 mr-1" weight="fill" />
           {locale === "bg" ? statusConfig.labelBg : statusConfig.label}
         </Badge>
@@ -369,7 +369,7 @@ export function OrderDetailContent({ locale, order, existingSellerFeedbackSeller
               return (
                 <div key={status} className="flex items-center flex-1">
                   <div className="flex flex-col items-center flex-1">
-                    <div className={`size-8 rounded-full flex items-center justify-center transition-colors ${isActive ? config.color + " text-white" : "bg-muted text-muted-foreground"
+                    <div className={`size-8 rounded-full flex items-center justify-center transition-colors ${isActive ? `${config.color} ${config.text}` : "bg-muted text-muted-foreground"
                       }`}>
                       <Icon className="size-4" weight={isCurrent ? "fill" : "regular"} />
                     </div>
@@ -567,7 +567,7 @@ export function OrderDetailContent({ locale, order, existingSellerFeedbackSeller
 
                       {/* Tracking Info */}
                       {item.tracking_number && (
-                        <div className="flex items-center gap-2 mt-2 p-2 rounded bg-muted/50">
+                        <div className="flex items-center gap-2 mt-2 p-2 rounded bg-surface-subtle">
                           <Truck className="size-4 text-muted-foreground" />
                           <span className="text-sm flex-1">
                             {item.shipping_carrier && CARRIERS[item.shipping_carrier.toLowerCase()]?.name}
@@ -746,7 +746,7 @@ export function OrderDetailContent({ locale, order, existingSellerFeedbackSeller
             </DialogDescription>
           </DialogHeader>
           {selectedItem && (
-            <div className="flex items-center gap-3 p-3 rounded-lg border bg-muted/50">
+            <div className="flex items-center gap-3 p-3 rounded-lg border bg-surface-subtle">
               <div className="relative size-12 rounded overflow-hidden bg-muted">
                 {selectedItem.product?.images?.[0] ? (
                   <Image

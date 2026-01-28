@@ -95,7 +95,7 @@ export function SectionContainer({
   className?: string
 }) {
   return (
-    <section className={cn("pt-section-top pb-section-bottom", className)}>
+    <section className={cn("pt-3 pb-1", className)}>
       {children}
     </section>
   )

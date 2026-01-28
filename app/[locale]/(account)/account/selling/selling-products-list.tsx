@@ -400,7 +400,7 @@ export function SellingProductsList({ products, locale, actions }: SellingProduc
           return (
             <div
               key={product.id}
-              className={`flex items-start gap-3 p-3 rounded-md bg-card border border-border ${boosted ? 'ring-2 ring-primary/20 border-primary/30' : ''
+              className={`flex items-start gap-3 p-3 rounded-md bg-card border border-border ${boosted ? 'ring-2 ring-selected-border border-selected-border' : ''
                 }`}
             >
               {/* Product Image */}
@@ -456,7 +456,7 @@ export function SellingProductsList({ products, locale, actions }: SellingProduc
                         }
                       </span>
                       {boosted && timeLeft && (
-                        <Badge variant="secondary" className="bg-primary/10 text-primary border-0 text-2xs px-1.5 py-0">
+                        <Badge variant="secondary" className="bg-selected text-primary border-0 text-2xs px-1.5 py-0">
                           <Lightning weight="fill" className="size-2.5 mr-0.5" />
                           {tBoost('timeLeft', { days: timeLeft.days, hours: timeLeft.hours })}
                         </Badge>
@@ -505,7 +505,7 @@ export function SellingProductsList({ products, locale, actions }: SellingProduc
                           <Button
                             variant="ghost"
                             size="icon"
-                            className={`size-8 ${boostExpired ? 'text-muted-foreground hover:text-primary' : 'text-primary'} hover:bg-primary/10`}
+                            className={`size-8 ${boostExpired ? 'text-muted-foreground hover:text-primary' : 'text-primary'} hover:bg-hover`}
                             title={boostExpired ? tBoost('reboost') : tBoost('trigger')}
                           >
                             <Lightning className="size-4" weight="bold" />
@@ -586,7 +586,7 @@ export function SellingProductsList({ products, locale, actions }: SellingProduc
           return (
             <div
               key={product.id}
-              className={`flex items-center gap-4 p-4 hover:bg-muted/40 transition-colors ${boosted ? 'bg-primary/5' : ''
+              className={`flex items-center gap-4 p-4 hover:bg-hover transition-colors ${boosted ? 'bg-selected' : ''
                 }`}
             >
               {/* Product Image */}
@@ -629,7 +629,7 @@ export function SellingProductsList({ products, locale, actions }: SellingProduc
                     </Badge>
                   )}
                   {boosted && timeLeft && (
-                    <Badge variant="secondary" className="bg-primary/10 text-primary border-0 text-xs shrink-0" title={product.boost_expires_at ? tBoost('boostActiveUntil', { date: formatBoostExpiry(product.boost_expires_at) }) : undefined}>
+                    <Badge variant="secondary" className="bg-selected text-primary border-0 text-xs shrink-0" title={product.boost_expires_at ? tBoost('boostActiveUntil', { date: formatBoostExpiry(product.boost_expires_at) }) : undefined}>
                       <Lightning weight="fill" className="size-3 mr-0.5" />
                       {tBoost('timeLeft', { days: timeLeft.days, hours: timeLeft.hours })}
                     </Badge>
@@ -690,7 +690,7 @@ export function SellingProductsList({ products, locale, actions }: SellingProduc
                       <Button
                         variant="outline"
                         size="sm"
-                        className={`gap-1.5 ${boostExpired ? 'text-muted-foreground border-muted-foreground/30 hover:text-primary hover:border-primary/30' : 'text-primary border-primary/30'} hover:bg-primary/10 h-9 px-3 rounded-full`}
+                        className={`gap-1.5 ${boostExpired ? 'text-muted-foreground border-muted-foreground/30 hover:text-primary hover:border-selected-border' : 'text-primary border-selected-border'} hover:bg-hover h-9 px-3 rounded-full`}
                       >
                         <Lightning className="size-4" weight="bold" />
                         {boostExpired ? tBoost('reboost') : tBoost('trigger')}

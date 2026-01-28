@@ -111,7 +111,7 @@ export function DesktopOrderSummary({
 
           {/* Payment method logos */}
           <div className="flex items-center justify-center gap-3">
-            <div className="flex items-center gap-2 px-3 py-2 rounded-md border border-border bg-muted/30">
+            <div className="flex items-center gap-2 px-3 py-2 rounded-md border border-border bg-surface-subtle">
               <CreditCard className="size-4 text-muted-foreground" />
               <span className="text-xs text-muted-foreground font-medium">
                 {t("securePayment") || "Secure Payment"}

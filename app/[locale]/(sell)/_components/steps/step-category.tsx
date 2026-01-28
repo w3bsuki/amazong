@@ -67,7 +67,7 @@ export function StepCategory() {
         
         {/* Show current path if selected */}
         {categoryPath.length > 0 && (
-          <div className="p-4 rounded-xl bg-primary/5 border border-primary/20">
+          <div className="p-4 rounded-xl bg-selected border border-selected-border">
             <p className="text-xs font-bold uppercase tracking-wider text-primary mb-1">
               {isBg ? "Избрана категория" : "Selected category"}
             </p>

@@ -272,7 +272,7 @@ export function AccountOrdersGrid({ orders, locale, actions }: AccountOrdersGrid
                       )
                     })}
                     {remainingCount > 0 && (
-                      <div className="flex size-14 items-center justify-center rounded-md bg-muted/50 text-sm font-medium text-muted-foreground">
+                      <div className="flex size-14 items-center justify-center rounded-md bg-surface-subtle text-sm font-medium text-muted-foreground">
                         +{remainingCount}
                       </div>
                     )}
@@ -453,7 +453,7 @@ export function AccountOrdersGrid({ orders, locale, actions }: AccountOrdersGrid
 
               return (
                 <Sheet key={order.id}>
-                  <div className="flex items-center gap-4 p-4 hover:bg-muted/30 transition-colors">
+                  <div className="flex items-center gap-4 p-4 hover:bg-hover transition-colors">
                     {/* Product thumbnails - fixed width for alignment */}
                     <div className="w-40 shrink-0">
                       <div className="flex -space-x-2">
@@ -551,7 +551,7 @@ export function AccountOrdersGrid({ orders, locale, actions }: AccountOrdersGrid
                     <ScrollArea className="flex-1 -mx-6 px-6 h-(--account-orders-sheet-scroll-h)">
                       <div className="py-6 space-y-6">
                         {/* Summary */}
-                        <div className="flex items-center justify-between p-4 rounded-lg bg-muted/50">
+                        <div className="flex items-center justify-between p-4 rounded-lg bg-surface-subtle">
                           <div>
                             <p className="text-sm text-muted-foreground">
                               {t.total}

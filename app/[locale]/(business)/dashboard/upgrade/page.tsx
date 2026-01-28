@@ -197,7 +197,7 @@ async function DashboardUpgradePageInner({ params }: UpgradePageProps) {
       <div className="text-center space-y-2">
         <div className="flex items-center justify-center gap-2 mb-4">
           <div className="p-3 rounded-full bg-warning">
-            <IconCrown className="size-8 text-white" />
+            <IconCrown className="size-8 text-warning-foreground" />
           </div>
         </div>
         <h1 className="text-3xl font-bold tracking-tight">{t.title}</h1>
@@ -324,7 +324,7 @@ async function DashboardUpgradePageInner({ params }: UpgradePageProps) {
         <CardContent>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {t.dashboardFeatures.map((feature, i) => (
-              <div key={i} className="flex items-center gap-2 p-3 rounded-lg bg-muted/50">
+              <div key={i} className="flex items-center gap-2 p-3 rounded-lg bg-surface-subtle">
                 <IconCheck className="size-4 text-success shrink-0" />
                 <span className="text-sm">{feature}</span>
               </div>
@@ -369,7 +369,7 @@ async function DashboardUpgradePageInner({ params }: UpgradePageProps) {
         </Card>
 
         {/* What you're missing */}
-        <Card className="border-primary/50 bg-primary/5">
+        <Card className="border-selected-border bg-selected">
           <CardHeader>
             <CardTitle className="text-lg flex items-center gap-2">
               <IconRocket className="size-5 text-primary" />

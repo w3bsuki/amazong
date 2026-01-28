@@ -97,7 +97,7 @@ function AttributeSelect({
         <button
           type="button"
           onClick={() => setIsOpen(true)}
-          className="relative w-full flex items-center h-12 px-4 rounded-md border border-border bg-background hover:border-primary/30 transition-all text-left shadow-xs"
+          className="relative w-full flex items-center h-12 px-4 rounded-md border border-border bg-background hover:border-hover-border transition-colors text-left shadow-xs"
         >
           <div className="flex items-center gap-2 flex-1 min-w-0">
             <span className="text-2xs font-bold uppercase tracking-wider text-muted-foreground shrink-0">
@@ -373,7 +373,7 @@ export function AttributesField({ className, compact = false }: AttributesFieldP
   // If no category selected
   if (!categoryId) {
     return (
-      <div className={cn("rounded-md border border-dashed border-border bg-muted/30 p-4", className)}>
+      <div className={cn("rounded-md border border-dashed border-border bg-surface-subtle p-4", className)}>
         <p className="text-sm text-muted-foreground text-center">
           {isBg ? "Изберете категория, за да видите спецификациите" : "Select a category to see item specifics"}
         </p>
@@ -404,7 +404,7 @@ export function AttributesField({ className, compact = false }: AttributesFieldP
                 {isBg ? "Основни характеристики" : "Main specifics"}
               </span>
             </div>
-            <span className="text-xs font-bold text-muted-foreground tabular-nums bg-muted/50 px-2 py-0.5 rounded-full">
+            <span className="text-xs font-bold text-muted-foreground tabular-nums bg-surface-subtle px-2 py-0.5 rounded-full">
               {filledDbRequiredSmartCount}/{dbRequiredSmartCount}
             </span>
           </div>
@@ -434,8 +434,8 @@ export function AttributesField({ className, compact = false }: AttributesFieldP
                     />
                   ) : (
                     <div className={cn(
-                      "relative flex items-center h-12 px-4 rounded-md border transition-all",
-                      "bg-background border-border shadow-xs focus-within:border-primary/50 focus-within:ring-4 focus-within:ring-primary/5"
+                      "relative flex items-center h-12 px-4 rounded-md border transition-colors",
+                      "bg-background border-border shadow-xs focus-within:border-ring focus-within:ring-2 focus-within:ring-ring"
                     )}>
                       <label className="text-2xs font-bold uppercase tracking-wider text-muted-foreground shrink-0 mr-2">
                         {getName(attr)}:
@@ -469,7 +469,7 @@ export function AttributesField({ className, compact = false }: AttributesFieldP
               variant="ghost"
               size="sm"
               onClick={() => setShowAllDbAttributes((v) => !v)}
-              className="h-8 text-xs font-bold text-primary hover:bg-primary/5"
+              className="h-8 text-xs font-bold text-primary hover:bg-hover active:bg-active"
             >
               {showAllDbAttributes
                 ? (isBg ? "Скрий" : "Hide")
@@ -503,8 +503,8 @@ export function AttributesField({ className, compact = false }: AttributesFieldP
                       />
                     ) : (
                       <div className={cn(
-                        "relative flex items-center h-12 px-4 rounded-md border transition-all",
-                        "bg-background border-border shadow-xs focus-within:border-primary/50 focus-within:ring-4 focus-within:ring-primary/5"
+                        "relative flex items-center h-12 px-4 rounded-md border transition-colors",
+                        "bg-background border-border shadow-xs focus-within:border-ring focus-within:ring-2 focus-within:ring-ring"
                       )}>
                         <label className="text-2xs font-bold uppercase tracking-wider text-muted-foreground shrink-0 mr-2">
                           {getName(attr)}:
@@ -546,8 +546,8 @@ export function AttributesField({ className, compact = false }: AttributesFieldP
                       />
                     ) : (
                       <div className={cn(
-                        "relative flex items-center h-12 px-4 rounded-md border transition-all",
-                        "bg-background border-border shadow-xs focus-within:border-primary/50 focus-within:ring-4 focus-within:ring-primary/5"
+                        "relative flex items-center h-12 px-4 rounded-md border transition-colors",
+                        "bg-background border-border shadow-xs focus-within:border-ring focus-within:ring-2 focus-within:ring-ring"
                       )}>
                         <label className="text-2xs font-bold uppercase tracking-wider text-muted-foreground shrink-0 mr-2">
                           {getName(attr)}:
@@ -584,7 +584,7 @@ export function AttributesField({ className, compact = false }: AttributesFieldP
                 {isBg ? "Задължителни характеристики" : "Required specifications"}
               </span>
             </div>
-            <span className="text-xs font-bold text-muted-foreground tabular-nums bg-muted/50 px-2 py-0.5 rounded-full">
+            <span className="text-xs font-bold text-muted-foreground tabular-nums bg-surface-subtle px-2 py-0.5 rounded-full">
               {filledRequiredCount}/{requiredAttrsCount}
             </span>
           </div>
@@ -627,10 +627,10 @@ export function AttributesField({ className, compact = false }: AttributesFieldP
                       compact={compact}
                       isBg={isBg}
                     />
-                  ) : (
+                    ) : (
                     <div className={cn(
-                      "relative flex items-center h-12 px-4 rounded-md border transition-all",
-                      "bg-background border-border shadow-xs focus-within:border-primary/50 focus-within:ring-4 focus-within:ring-primary/5"
+                      "relative flex items-center h-12 px-4 rounded-md border transition-colors",
+                      "bg-background border-border shadow-xs focus-within:border-ring focus-within:ring-2 focus-within:ring-ring"
                     )}>
                       <label className="text-2xs font-bold uppercase tracking-wider text-muted-foreground shrink-0 mr-2">
                         {label}:
@@ -702,8 +702,8 @@ export function AttributesField({ className, compact = false }: AttributesFieldP
                     />
                   ) : (
                     <div className={cn(
-                      "relative flex items-center h-12 px-4 rounded-md border transition-all",
-                      "bg-background border-border shadow-xs focus-within:border-primary/50 focus-within:ring-4 focus-within:ring-primary/5"
+                      "relative flex items-center h-12 px-4 rounded-md border transition-colors",
+                      "bg-background border-border shadow-xs focus-within:border-ring focus-within:ring-2 focus-within:ring-ring"
                     )}>
                       <label className="text-2xs font-bold uppercase tracking-wider text-muted-foreground shrink-0 mr-2">
                         {label}:
@@ -763,8 +763,8 @@ export function AttributesField({ className, compact = false }: AttributesFieldP
                     />
                   ) : (
                     <div className={cn(
-                      "relative flex items-center h-12 px-4 rounded-md border transition-all",
-                      "bg-background border-border shadow-xs focus-within:border-primary/50 focus-within:ring-4 focus-within:ring-primary/5"
+                      "relative flex items-center h-12 px-4 rounded-md border transition-colors",
+                      "bg-background border-border shadow-xs focus-within:border-ring focus-within:ring-2 focus-within:ring-ring"
                     )}>
                       <label className="text-2xs font-bold uppercase tracking-wider text-muted-foreground shrink-0 mr-2">
                         {getName(attr)}:
@@ -797,7 +797,7 @@ export function AttributesField({ className, compact = false }: AttributesFieldP
           {customAttrs.length > 0 && (
             <div className="grid gap-2">
               {customAttrs.map((attr, index) => (
-                <div key={index} className="flex items-center gap-3 rounded-md border border-border bg-muted/30 p-3">
+                <div key={index} className="flex items-center gap-3 rounded-md border border-border bg-surface-subtle p-3">
                   <div className="min-w-0 flex-1 flex items-center gap-2">
                     <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider shrink-0">{attr.name}:</span>
                     <span className="truncate text-sm font-bold text-foreground">{attr.value}</span>
@@ -816,7 +816,7 @@ export function AttributesField({ className, compact = false }: AttributesFieldP
           )}
 
           {/* Add New Custom Attribute */}
-          <div className="flex flex-col gap-3 p-4 rounded-md bg-muted/20 border border-dashed border-border">
+          <div className="flex flex-col gap-3 p-4 rounded-md bg-surface-subtle border border-dashed border-border">
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
                 <Label className="text-2xs font-bold text-muted-foreground uppercase tracking-wider">{isBg ? "Име" : "Name"}</Label>
@@ -842,7 +842,7 @@ export function AttributesField({ className, compact = false }: AttributesFieldP
               variant="outline"
               onClick={handleAddCustom}
               disabled={!newAttrName.trim() || !newAttrValue.trim()}
-              className="h-10 rounded-md border-primary/20 text-primary font-bold text-xs uppercase tracking-widest hover:bg-primary/5"
+              className="h-10 rounded-md border-selected-border text-primary font-bold text-xs uppercase tracking-widest hover:bg-hover active:bg-active"
             >
               <Plus className="size-3.5 mr-2" weight="bold" />
               {isBg ? "Добави характеристика" : "Add attribute"}
@@ -858,7 +858,7 @@ export function AttributesField({ className, compact = false }: AttributesFieldP
       {!compact ? (
         <div className="rounded-md border border-border bg-background overflow-hidden shadow-xs">
           {/* Header */}
-          <div className="p-4 pb-3 border-b border-border/50 bg-muted/10">
+          <div className="p-4 pb-3 border-b border-border/50 bg-surface-subtle">
             <div className="flex items-center gap-3.5">
               <div className="flex size-10 items-center justify-center rounded-md bg-background border border-border shadow-xs">
                 <Sliders className="size-5 text-muted-foreground" weight="bold" />

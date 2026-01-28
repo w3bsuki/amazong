@@ -178,7 +178,7 @@ export function SecurityContent({ locale, userEmail }: SecurityContentProps) {
                 {/* Email Row */}
                 <button
                     onClick={() => setIsChangeEmailOpen(true)}
-                    className="w-full flex items-center gap-3 p-3 text-left active:bg-muted/50 transition-colors"
+                    className="w-full flex items-center gap-3 p-3 text-left active:bg-active transition-colors"
                 >
                     <div className="flex size-10 items-center justify-center rounded-full bg-muted">
                         <Envelope className="size-5 text-muted-foreground" />
@@ -204,7 +204,7 @@ export function SecurityContent({ locale, userEmail }: SecurityContentProps) {
                     }}
                     role="button"
                     tabIndex={0}
-                    className="w-full flex items-center gap-3 p-3 text-left active:bg-muted/50 transition-colors"
+                    className="w-full flex items-center gap-3 p-3 text-left active:bg-active transition-colors"
                 >
                     <div className="flex size-10 items-center justify-center rounded-full bg-muted">
                         <Key className="size-5 text-muted-foreground" />
@@ -244,7 +244,7 @@ export function SecurityContent({ locale, userEmail }: SecurityContentProps) {
             </div>
 
             {/* Security Tips - Simplified */}
-            <div className="rounded-lg border bg-muted/30 p-3">
+            <div className="rounded-lg border bg-surface-subtle p-3">
                 <div className="flex items-center gap-2 mb-2">
                     <Shield className="size-4 text-primary" weight="fill" />
                     <span className="text-sm font-medium">{locale === 'bg' ? 'Съвети' : 'Tips'}</span>

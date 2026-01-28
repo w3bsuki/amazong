@@ -8,7 +8,7 @@ export default async function MembersLoadingSkeleton() {
   return (
     <PageShell variant="muted" className="pb-20 sm:pb-12" role="status" aria-live="polite" aria-busy="true">
       <p className="sr-only">{t("loading")}</p>
-      <div className="bg-primary/5 py-10 sm:py-16">
+      <div className="bg-surface-subtle py-10 sm:py-16">
         <div className="container">
           <div className="flex flex-col md:flex-row items-center gap-4">
             <div className="flex-1 space-y-4">

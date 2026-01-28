@@ -30,7 +30,7 @@ interface HeroSpecsProps {
  * Mobile: 2-column grid with compact pills
  * 
  * Uses design system tokens:
- * - bg-muted/30 for pill background (subtle)
+ * - bg-surface-subtle for pill background
  * - border-border for pill border
  * - text-muted-foreground for labels
  * - text-foreground + font-semibold for values
@@ -59,7 +59,7 @@ export function HeroSpecs({
         <div
           key={spec.label}
           className={cn(
-            "rounded-lg border border-border bg-muted/30",
+            "rounded-lg border border-border bg-surface-subtle",
             // Mobile: compact, centered layout
             // Desktop: slightly larger, centered
             isMobile

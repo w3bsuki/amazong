@@ -83,7 +83,7 @@ export default function SalesLoading() {
 
             {/* Desktop Table */}
             <div className="hidden md:block">
-              <div className="grid grid-cols-5 gap-4 p-4 border-b bg-muted/50">
+              <div className="grid grid-cols-5 gap-4 p-4 border-b bg-surface-subtle">
                 <Skeleton className="h-4 w-20" />
                 <Skeleton className="h-4 w-20" />
                 <Skeleton className="h-4 w-20" />

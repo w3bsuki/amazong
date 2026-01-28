@@ -232,7 +232,7 @@ export function QuickViewImageGallery({
 
         {/* Image counter - compact */}
         {hasMultiple && (
-          <div className="absolute bottom-1.5 left-1.5 px-1.5 py-0.5 rounded-full bg-foreground/70 backdrop-blur-sm text-background text-[10px] font-medium tabular-nums">
+          <div className="absolute bottom-1.5 left-1.5 px-1.5 py-0.5 rounded-full bg-foreground/70 backdrop-blur-sm text-background text-2xs font-medium tabular-nums">
             {currentIndex + 1}/{images.length}
           </div>
         )}
@@ -240,7 +240,7 @@ export function QuickViewImageGallery({
 
       {/* Thumbnail strip - styled for better UX */}
       {hasMultiple && (
-        <div className="flex gap-1.5 overflow-x-auto px-4 py-2 scrollbar-hide touch-action-pan-x bg-muted/30">
+        <div className="flex gap-1.5 overflow-x-auto px-4 py-2 scrollbar-hide touch-action-pan-x bg-surface-subtle">
           {images.map((img, i) => (
             <button
               key={`thumb-${i}`}

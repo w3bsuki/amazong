@@ -335,7 +335,7 @@ export default function PlansPageClient(props: {
         </section>
 
         <div className="mb-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
-          <div className="flex items-center gap-3 rounded-full border bg-muted/30 p-1">
+          <div className="flex items-center gap-3 rounded-full border bg-surface-subtle p-1">
             <button
               onClick={() => setAccountType("personal")}
               className={cn(
@@ -378,7 +378,7 @@ export default function PlansPageClient(props: {
               <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
                 {Array.from({ length: 5 }).map((_, i) => (
                   <div key={i} className="rounded-md border p-1.5">
-                    <div className="rounded-md bg-muted/50 p-4">
+                    <div className="rounded-md bg-surface-subtle p-4">
                       <div className="mb-6 h-5 w-20 rounded bg-muted" />
                       <div className="mb-3 h-8 w-16 rounded bg-muted" />
                       <div className="h-9 w-full rounded bg-muted" />
@@ -491,8 +491,8 @@ export default function PlansPageClient(props: {
             {t.features.items.map((feature, i) => {
               const Icon = featureIcons[feature.icon as keyof typeof featureIcons]
               return (
-                <div key={i} className="flex flex-col items-center bg-background p-4 text-center">
-                  <div className="mb-4 flex size-11 items-center justify-center rounded-lg bg-primary/10">
+                  <div key={i} className="flex flex-col items-center bg-background p-4 text-center">
+                    <div className="mb-4 flex size-11 items-center justify-center rounded-lg bg-selected">
                     <Icon className="size-5 text-primary" weight="fill" />
                   </div>
                   <h3 className="text-sm font-semibold">{feature.title}</h3>
@@ -522,7 +522,7 @@ export default function PlansPageClient(props: {
           <div className="overflow-hidden rounded-md border">
             <Table>
               <TableHeader>
-                <TableRow className="bg-muted/50 hover:bg-muted/50">
+                <TableRow className="bg-surface-subtle hover:bg-surface-subtle">
                   <TableHead className="h-12 w-(--plans-table-head-w) pl-4 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                     {t.comparison.plan}
                   </TableHead>
@@ -562,7 +562,7 @@ export default function PlansPageClient(props: {
                       className={cn(
                         "h-16",
                         index === filteredPlans.length - 1 && "border-0",
-                        isPopular && "bg-primary/5"
+                        isPopular && "bg-hover"
                       )}
                     >
                       <TableCell className="pl-4">
@@ -649,8 +649,8 @@ export default function PlansPageClient(props: {
           }}
           className="mb-16 scroll-mt-20"
         >
-          <div className="flex flex-col items-center gap-4 rounded-md border border-primary/20 bg-primary/5 p-4 text-center sm:flex-row sm:text-left">
-            <div className="flex size-12 shrink-0 items-center justify-center rounded-lg bg-primary/10">
+          <div className="flex flex-col items-center gap-4 rounded-md border border-selected-border bg-hover p-4 text-center sm:flex-row sm:text-left">
+            <div className="flex size-12 shrink-0 items-center justify-center rounded-lg bg-selected">
               <ShieldCheck className="size-6 text-primary" weight="fill" />
             </div>
             <div>
@@ -678,7 +678,7 @@ export default function PlansPageClient(props: {
             <Accordion type="single" collapsible className="w-full">
               {t.faq.items.map((item, i) => (
                 <AccordionItem key={i} value={`q${i}`} className="border-b px-0 last:border-0">
-                  <AccordionTrigger className="px-5 py-4 text-left text-sm hover:no-underline data-[state=open]:bg-muted/30">
+                  <AccordionTrigger className="px-5 py-4 text-left text-sm hover:no-underline data-[state=open]:bg-selected">
                     {item.q}
                   </AccordionTrigger>
                   <AccordionContent className="px-5 pb-4 text-sm text-muted-foreground">
@@ -693,7 +693,7 @@ export default function PlansPageClient(props: {
 
       <footer className="border-t">
         <div className="container flex flex-col items-center justify-between gap-4 py-8 sm:flex-row">
-            <span className="text-sm text-muted-foreground">© 2025 Treido</span>
+            <span className="text-sm text-muted-foreground">{tFooter("copyrightSimple")}</span>
             <div className="flex gap-4 text-sm">
               <Link href="/terms" className="text-muted-foreground hover:text-foreground">
                 {tFooter("terms")}

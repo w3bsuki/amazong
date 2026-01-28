@@ -52,7 +52,7 @@ export default async function BusinessAnalyticsPage() {
                 <span className="tabular-nums">{stats.totals.views.toLocaleString()}</span>
                 <span className="opacity-70">views</span>
               </span>
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border border-primary/20 bg-primary/10 text-primary">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border border-selected-border bg-selected text-primary">
                 <IconTrendingUp className="size-3" />
                 <span className="tabular-nums">{conversionRate.toFixed(1)}%</span>
                 <span className="opacity-70">conversion</span>
@@ -191,7 +191,7 @@ export default async function BusinessAnalyticsPage() {
           <CardContent>
             <div className="space-y-3">
               {stats.totals.products < 10 && (
-                <div className="flex items-start gap-3 p-3 rounded-lg bg-muted/50">
+                <div className="flex items-start gap-3 p-3 rounded-lg bg-surface-subtle">
                   <IconChartBar className="size-5 text-info mt-0.5" />
                   <div>
                     <p className="font-medium text-sm">Add more products</p>
@@ -202,7 +202,7 @@ export default async function BusinessAnalyticsPage() {
                 </div>
               )}
               {stats.totals.views < 100 && (
-                <div className="flex items-start gap-3 p-3 rounded-lg bg-muted/50">
+                <div className="flex items-start gap-3 p-3 rounded-lg bg-surface-subtle">
                   <IconEye className="size-5 text-primary mt-0.5" />
                   <div>
                     <p className="font-medium text-sm">Boost your listings</p>
@@ -213,7 +213,7 @@ export default async function BusinessAnalyticsPage() {
                 </div>
               )}
               {conversionRate < 2 && (
-                <div className="flex items-start gap-3 p-3 rounded-lg bg-muted/50">
+                <div className="flex items-start gap-3 p-3 rounded-lg bg-surface-subtle">
                   <IconTrendingUp className="size-5 text-success mt-0.5" />
                   <div>
                     <p className="font-medium text-sm">Improve product photos</p>

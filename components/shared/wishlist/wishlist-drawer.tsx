@@ -135,7 +135,7 @@ export function WishlistDrawer({ className, children }: WishlistDrawerProps) {
                     <Link
                       href={item.username ? `/${item.username}/${item.slug || item.product_id}` : "#"}
                       onClick={() => setOpen(false)}
-                      className="text-sm text-foreground line-clamp-2 leading-snug hover:text-brand"
+                      className="text-sm text-foreground line-clamp-2 leading-snug hover:text-primary"
                     >
                       {item.title}
                     </Link>
@@ -144,7 +144,7 @@ export function WishlistDrawer({ className, children }: WishlistDrawerProps) {
                     <div className="flex items-center gap-1.5 mt-auto pt-1">
                       <button
                         onClick={() => handleMoveToCart(item)}
-                        className="flex items-center gap-1 h-touch-xs px-2 text-xs font-medium text-brand hover:text-brand-dark bg-brand/10 hover:bg-brand/15 rounded-md touch-action-manipulation tap-transparent"
+                        className="flex items-center gap-1 h-touch-xs px-2 text-xs font-medium text-primary hover:text-primary bg-surface-subtle hover:bg-hover rounded-md touch-action-manipulation tap-transparent"
                       >
                         <ShoppingCart size={12} />
                         {t("add")}

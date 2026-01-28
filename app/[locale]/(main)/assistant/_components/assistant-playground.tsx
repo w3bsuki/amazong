@@ -126,7 +126,7 @@ function ProductCard({
   const image = item.images?.[0] || "/placeholder.jpg"
 
   const content = (
-    <Card className="group relative w-32 shrink-0 overflow-hidden border-border p-0 transition-all duration-200 hover:border-primary/30 hover:shadow-md sm:w-36">
+    <Card className="group relative w-32 shrink-0 overflow-hidden border-border p-0 transition-all duration-200 hover:border-hover-border hover:shadow-md sm:w-36">
       {/* Product Image */}
       <div className="relative aspect-square overflow-hidden bg-muted">
         <Image
@@ -204,7 +204,7 @@ function SuggestionChip({
     <button
       type="button"
       onClick={onClick}
-      className="group flex w-full items-center gap-2.5 rounded-lg border border-border bg-card px-3.5 py-3 text-left text-sm text-foreground transition-colors hover:border-primary/40 hover:bg-primary/5 active:bg-primary/10"
+      className="group flex w-full items-center gap-2.5 rounded-lg border border-border bg-card px-3.5 py-3 text-left text-sm text-foreground transition-colors hover:border-hover-border hover:bg-hover active:bg-active"
     >
       <Icon
         size={16}
@@ -300,12 +300,12 @@ function TypingIndicator({ text }: { text: string }) {
   return (
     <div className="flex items-start gap-3">
       <AssistantAvatar size="md" />
-      <div className="rounded-2xl rounded-bl-md border border-border/40 bg-muted/60 px-4 py-3">
+      <div className="rounded-2xl rounded-bl-md border border-border/40 bg-surface-subtle px-4 py-3">
         <span className="flex items-center gap-2 text-sm text-muted-foreground">
           <span className="flex gap-1">
-            <span className="size-2 animate-bounce rounded-full bg-primary/60 [animation-delay:-0.3s]" />
-            <span className="size-2 animate-bounce rounded-full bg-primary/60 [animation-delay:-0.15s]" />
-            <span className="size-2 animate-bounce rounded-full bg-primary/60" />
+            <span className="size-2 animate-bounce rounded-full bg-primary opacity-60 [animation-delay:-0.3s]" />
+            <span className="size-2 animate-bounce rounded-full bg-primary opacity-60 [animation-delay:-0.15s]" />
+            <span className="size-2 animate-bounce rounded-full bg-primary opacity-60" />
           </span>
           {text}
         </span>

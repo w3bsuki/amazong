@@ -105,7 +105,7 @@ function PriceSuggestionCard({
         <button
           type="button"
           onClick={() => onApply(suggestion.median)}
-          className="flex-1 p-2 rounded-lg bg-primary/10 hover:bg-primary/20 transition-colors text-center ring-2 ring-primary/30"
+          className="flex-1 p-2 rounded-lg bg-selected hover:bg-hover active:bg-active transition-colors text-center ring-2 ring-ring"
         >
           <div className="text-xs text-primary mb-0.5">{isBg ? "Препоръчана" : "Recommended"}</div>
           <div className="text-sm font-bold text-primary">
@@ -256,11 +256,11 @@ export function PricingField({ className, categoryId, idPrefix = "sell-form", co
               type="button"
               onClick={() => setValue("format", option.value, { shouldValidate: true })}
               className={cn(
-                "flex items-center justify-center gap-2 h-12 rounded-md border transition-all",
-                "focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/5",
+                "flex items-center justify-center gap-2 h-12 rounded-md border transition-colors",
+                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background",
                 isSelected
-                  ? "border-primary bg-primary/10 text-primary font-bold shadow-xs"
-                  : "border-border bg-background hover:border-primary/30 text-muted-foreground hover:text-foreground"
+                  ? "border-selected-border bg-selected text-primary font-bold shadow-xs"
+                  : "border-border bg-background hover:border-hover-border text-muted-foreground hover:text-foreground"
               )}
             >
               <Icon className="size-5" weight={isSelected ? "fill" : "bold"} />
@@ -286,7 +286,7 @@ export function PricingField({ className, categoryId, idPrefix = "sell-form", co
             
             <div className={cn(
               "rounded-xl border bg-card overflow-hidden transition-all",
-              "focus-within:ring-2 focus-within:ring-primary/20 focus-within:border-primary/50",
+              "focus-within:ring-2 focus-within:ring-ring focus-within:border-ring",
               fieldState.invalid ? "border-destructive/50 bg-destructive/5" : "border-border"
             )}>
               <div className="flex items-center h-16 px-4">
@@ -306,7 +306,7 @@ export function PricingField({ className, categoryId, idPrefix = "sell-form", co
                     <button
                       type="button"
                       onClick={() => setIsCurrencyDrawerOpen(true)}
-                      className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-muted/60 hover:bg-muted transition-colors"
+                      className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-surface-subtle hover:bg-hover active:bg-active transition-colors"
                     >
                       <span className="text-sm font-bold">{currency}</span>
                       <CaretRight className="size-3.5 text-muted-foreground rotate-90" />
@@ -327,7 +327,7 @@ export function PricingField({ className, categoryId, idPrefix = "sell-form", co
                     value={currency}
                     onValueChange={(val) => setValue("currency", val as "EUR")}
                   >
-                    <SelectTrigger className="w-auto min-w-24 border-none bg-muted/60 h-10 rounded-xl font-bold focus:ring-0 focus:ring-offset-0 shadow-none px-3 text-sm">
+                    <SelectTrigger className="w-auto min-w-24 border-none bg-surface-subtle h-10 rounded-xl font-bold focus:ring-0 focus:ring-offset-0 shadow-none px-3 text-sm">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -365,8 +365,8 @@ export function PricingField({ className, categoryId, idPrefix = "sell-form", co
           </label>
         </div>
         <div className={cn(
-          "flex items-center h-14 px-4 rounded-xl border bg-card transition-all",
-          "focus-within:ring-2 focus-within:ring-primary/20 focus-within:border-primary/50"
+          "flex items-center h-14 px-4 rounded-xl border bg-card transition-colors",
+          "focus-within:ring-2 focus-within:ring-ring focus-within:border-ring"
         )}>
           <span className="text-base font-bold text-muted-foreground mr-2">
             {CURRENCY_SYMBOLS[currency] || currency}
@@ -401,18 +401,17 @@ export function PricingField({ className, categoryId, idPrefix = "sell-form", co
         onClick={() => setValue("acceptOffers", !acceptOffers)}
         onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setValue("acceptOffers", !acceptOffers); } }}
         className={cn(
-          "w-full flex items-center gap-3.5 p-4 rounded-xl border transition-all cursor-pointer",
-          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30",
-          "active:scale-[0.98]",
+          "w-full flex items-center gap-3.5 p-4 rounded-xl border transition-colors cursor-pointer",
+          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
           acceptOffers 
-            ? "border-primary/40 bg-primary/5" 
-            : "border-border bg-card hover:bg-muted/30"
+            ? "border-selected-border bg-selected" 
+            : "border-border bg-card hover:bg-hover"
         )}
       >
         <div className={cn(
           "size-11 rounded-xl flex items-center justify-center shrink-0 transition-all",
           acceptOffers 
-            ? "bg-primary/15 text-primary" 
+            ? "bg-selected text-primary" 
             : "bg-muted text-muted-foreground"
         )}>
           <Handshake className="size-5" weight={acceptOffers ? "fill" : "regular"} />
@@ -444,7 +443,7 @@ export function PricingField({ className, categoryId, idPrefix = "sell-form", co
       {!compact ? (
         <div className="rounded-md border border-form-section-border bg-form-section-bg overflow-hidden shadow-xs">
           {/* Header */}
-          <div className="p-section pb-form border-b border-border/50 bg-muted/10">
+          <div className="p-section pb-form border-b border-border/50 bg-surface-subtle">
             <div className="flex items-center gap-form-sm">
               <div className="flex size-10 items-center justify-center rounded-md bg-form-section-bg border border-form-section-border shadow-xs">
                 <CurrencyDollar className="size-5 text-muted-foreground" weight="bold" />

@@ -51,7 +51,7 @@ export default async function ContactPage({
   return (
     <PageShell className="pb-20 sm:pb-12">
       {/* Hero Section */}
-      <div className="bg-brand text-primary-foreground">
+      <div className="bg-primary text-primary-foreground">
         <div className="container py-10 md:py-16">
           <div className="[&_nav]:border-primary-foreground/20 [&_nav]:mb-4 [&_a]:text-primary-foreground/80 [&_a:hover]:text-primary-foreground [&_span[aria-current]]:text-primary-foreground [&_svg]:text-primary-foreground/50">
             <AppBreadcrumb
@@ -74,16 +74,16 @@ export default async function ContactPage({
           <div className="grid grid-cols-2 gap-2 sm:gap-4 md:grid-cols-3">
             {quickHelp.map((item, index) => (
               <Link key={index} href={item.href}>
-                <Card className="h-full hover:shadow-md hover:border-brand/30 transition-all cursor-pointer group">
+                <Card className="h-full hover:shadow-md hover:border-hover-border transition-all cursor-pointer group">
                   <CardContent className="p-5">
                     <div className="flex items-start gap-4">
-                      <div className="size-12 bg-brand/10 flex items-center justify-center shrink-0 group-hover:bg-brand/20 transition-colors">
-                        <item.icon className="size-6 text-brand" />
+                      <div className="size-12 bg-surface-subtle flex items-center justify-center shrink-0 group-hover:bg-hover transition-colors">
+                        <item.icon className="size-6 text-primary" />
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center justify-between gap-2">
                           <h3 className="font-semibold">{item.title}</h3>
-                          <CaretRight className="size-4 text-muted-foreground group-hover:text-brand transition-colors" />
+                          <CaretRight className="size-4 text-muted-foreground group-hover:text-primary transition-colors" />
                         </div>
                         <p className="text-sm text-muted-foreground mt-1">{item.desc}</p>
                       </div>
@@ -101,8 +101,8 @@ export default async function ContactPage({
             <Card>
               <CardContent className="p-4">
                 <div className="flex items-center gap-3 mb-4">
-                  <div className="size-10 bg-brand/10 flex items-center justify-center">
-                    <PaperPlaneTilt className="size-5 text-brand" />
+                  <div className="size-10 bg-selected flex items-center justify-center">
+                    <PaperPlaneTilt className="size-5 text-primary" />
                   </div>
                   <div>
                     <h2 className="text-xl font-bold">{t('sendMessage')}</h2>
@@ -200,11 +200,11 @@ export default async function ContactPage({
           {/* Contact Info Sidebar */}
           <div className="space-y-4">
             {/* Customer Service */}
-            <Card className="border-brand/20 bg-brand/5">
+            <Card className="border-selected-border bg-selected">
               <CardContent className="p-5">
                 <div className="flex items-center gap-3 mb-4">
-                  <div className="size-10 bg-brand/20 flex items-center justify-center">
-                    <Headphones className="size-5 text-brand" />
+                  <div className="size-10 bg-surface-subtle flex items-center justify-center">
+                    <Headphones className="size-5 text-primary" />
                   </div>
                   <div>
                     <h3 className="font-bold">{t('customerService')}</h3>
@@ -212,7 +212,7 @@ export default async function ContactPage({
                   </div>
                 </div>
                 <Link href="/customer-service">
-                  <Button variant="outline" className="w-full border-brand text-brand hover:bg-brand hover:text-primary-foreground">
+                  <Button variant="outline" className="w-full border-selected-border text-primary hover:bg-primary hover:text-primary-foreground">
                     {t('visitHelpCenter')}
                   </Button>
                 </Link>
@@ -223,12 +223,12 @@ export default async function ContactPage({
             <Card>
               <CardContent className="p-5">
                 <div className="flex items-center gap-4">
-                  <div className="size-12 bg-brand/10 flex items-center justify-center shrink-0">
-                    <Envelope className="size-6 text-brand" />
+                  <div className="size-12 bg-surface-subtle flex items-center justify-center shrink-0">
+                    <Envelope className="size-6 text-primary" />
                   </div>
                   <div>
                     <h3 className="font-bold">{t('emailUs')}</h3>
-                    <a href="mailto:help@treido.com" className="text-sm text-brand hover:underline">
+                    <a href="mailto:help@treido.com" className="text-sm text-primary hover:underline">
                       help@treido.com
                     </a>
                     <p className="text-xs text-muted-foreground mt-1">{t('emailResponse')}</p>
@@ -241,12 +241,12 @@ export default async function ContactPage({
             <Card>
               <CardContent className="p-5">
                 <div className="flex items-center gap-4">
-                  <div className="size-12 bg-brand/10 flex items-center justify-center shrink-0">
-                    <Phone className="size-6 text-brand" />
+                  <div className="size-12 bg-surface-subtle flex items-center justify-center shrink-0">
+                    <Phone className="size-6 text-primary" />
                   </div>
                   <div>
                     <h3 className="font-bold">{t('callUs')}</h3>
-                    <a href="tel:+35921234567" className="text-sm text-brand hover:underline">
+                    <a href="tel:+35921234567" className="text-sm text-primary hover:underline">
                       +359 2 123 4567
                     </a>
                     <p className="text-xs text-muted-foreground mt-1">{t('callHours')}</p>
@@ -259,8 +259,8 @@ export default async function ContactPage({
             <Card>
               <CardContent className="p-5">
                 <div className="flex items-center gap-4">
-                  <div className="size-12 bg-brand/10 flex items-center justify-center shrink-0">
-                    <MapPin className="size-6 text-brand" />
+                  <div className="size-12 bg-surface-subtle flex items-center justify-center shrink-0">
+                    <MapPin className="size-6 text-primary" />
                   </div>
                   <div>
                     <h3 className="font-bold">{t('headquarters')}</h3>
@@ -278,8 +278,8 @@ export default async function ContactPage({
             <Card>
               <CardContent className="p-5">
                 <div className="flex items-center gap-4">
-                  <div className="size-12 bg-brand/10 flex items-center justify-center shrink-0">
-                    <Clock className="size-6 text-brand" />
+                  <div className="size-12 bg-surface-subtle flex items-center justify-center shrink-0">
+                    <Clock className="size-6 text-primary" />
                   </div>
                   <div>
                     <h3 className="font-bold">{t('hours')}</h3>
@@ -301,8 +301,8 @@ export default async function ContactPage({
             <CardContent className="p-4">
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div className="flex items-start gap-4">
-                  <div className="size-12 bg-brand/10 flex items-center justify-center shrink-0">
-                    <Question className="size-6 text-brand" />
+                  <div className="size-12 bg-surface-subtle flex items-center justify-center shrink-0">
+                    <Question className="size-6 text-primary" />
                   </div>
                   <div>
                     <h3 className="font-bold text-lg">{t('faqTitle')}</h3>

@@ -81,8 +81,7 @@ export function MobileProductHeader({
         "bg-background/80",
         "backdrop-blur-xl backdrop-saturate-150",
         // Subtle shadow instead of harsh border
-        "shadow-[0_1px_3px_rgba(0,0,0,0.05)]",
-        "dark:shadow-[0_1px_3px_rgba(0,0,0,0.3)]",
+        "shadow-sm",
         // Safe area for notch devices
         "pt-safe"
       )}
@@ -133,7 +132,7 @@ export function MobileProductHeader({
           {productTitle && (
             <h1 
               className={cn(
-                "text-[15px] font-semibold leading-tight",
+                "text-sm font-semibold leading-tight",
                 "text-foreground",
                 "truncate"
               )}

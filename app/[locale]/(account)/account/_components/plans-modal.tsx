@@ -205,7 +205,7 @@ export function PlansModal({
           {/* Compact Controls Row */}
           <div className="flex items-center justify-center gap-2 mt-3">
             {/* Account Type Toggle */}
-            <div className="inline-flex p-0.5 rounded-md bg-muted/50 border text-xs">
+            <div className="inline-flex p-0.5 rounded-md bg-surface-subtle border text-xs">
               <button
                 onClick={() => setAccountType("personal")}
                 className={cn(
@@ -235,7 +235,7 @@ export function PlansModal({
             <div className="w-px h-5 bg-border" />
 
             {/* Billing Toggle */}
-            <div className="inline-flex p-0.5 rounded-md bg-muted/50 border text-xs">
+            <div className="inline-flex p-0.5 rounded-md bg-surface-subtle border text-xs">
               <button
                 onClick={() => setBillingPeriod("monthly")}
                 className={cn(

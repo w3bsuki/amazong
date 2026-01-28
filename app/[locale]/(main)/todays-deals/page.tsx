@@ -55,7 +55,7 @@ export default async function TodaysDealsPage({
         />
       </div>
 
-      <section className="mt-4 border-y border-border bg-muted/30">
+      <section className="mt-4 border-y border-border bg-surface-subtle">
         <div className="container py-6 sm:py-8 flex items-start gap-4">
           <div className="size-12 sm:size-14 shrink-0 rounded-full bg-deal text-deal-foreground flex items-center justify-center">
             <Zap className="size-6 sm:size-7" weight="duotone" />

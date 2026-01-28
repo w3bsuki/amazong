@@ -66,7 +66,7 @@ export function CustomerReviewsHybrid({
   const t = useTranslations("Reviews");
 
   return (
-    <section className="mt-4 rounded-md bg-muted/20 p-3 border border-border/50">
+    <section className="mt-4 rounded-md bg-surface-subtle p-3 border border-border/50">
       <div className="flex items-center justify-between mb-3 gap-3 flex-wrap">
         <h2 className="text-lg font-bold text-foreground tracking-tight">{t("customerReviews")}</h2>
         <div className="flex items-center gap-3">

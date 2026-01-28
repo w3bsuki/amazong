@@ -230,7 +230,7 @@ export function MobileProductPage(props: MobileProductPageProps) {
                   avatarUrl={sellerInfoForTab.avatarUrl}
                   size="sm"
                   className="size-5 ring-1 ring-border/50"
-                  fallbackClassName="text-[10px] font-medium bg-muted"
+                  fallbackClassName="text-2xs font-medium bg-muted"
                 />
               ) : (
                 <User className="size-4" strokeWidth={1.5} />

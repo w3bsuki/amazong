@@ -28,7 +28,7 @@ interface SalesTableProps {
 
 const statusColors: Record<string, string> = {
   pending: "bg-warning/10 text-warning",
-  paid: "bg-brand/10 text-brand",
+  paid: "bg-selected text-primary",
   processing: "bg-order-processing/10 text-order-processing",
   shipped: "bg-order-shipped/10 text-order-shipped",
   delivered: "bg-success/10 text-success",

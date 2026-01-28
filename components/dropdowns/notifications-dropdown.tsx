@@ -470,7 +470,7 @@ export function NotificationsDropdown({ user }: NotificationsDropdownProps) {
                     )}
                   </div>
                   {!notification.is_read && (
-                    <div className="shrink-0 w-1.5 h-1.5 rounded-full bg-brand mt-2" />
+                    <div className="shrink-0 w-1.5 h-1.5 rounded-full bg-primary mt-2" />
                   )}
                 </Link>
               ))}

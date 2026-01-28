@@ -368,8 +368,8 @@ export type CategoryColorScheme = {
 const categoryColors: Record<string, CategoryColorScheme> = {
   // All categories use semantic neutral tokens
   // The visual distinction comes from the category icons, not colors
-  all: { bg: "bg-muted/60", text: "text-foreground", ring: "ring-ring" },
-  default: { bg: "bg-muted/40", text: "text-foreground", ring: "ring-ring" },
+  all: { bg: "bg-surface-subtle", text: "text-foreground", ring: "ring-ring" },
+  default: { bg: "bg-surface-subtle", text: "text-foreground", ring: "ring-ring" },
 }
 
 /**

@@ -338,7 +338,7 @@ export function AdminDocsContent({ initialDocs }: { initialDocs: AdminDoc[] }) {
               filteredDocs.map((doc) => (
                 <TableRow 
                   key={doc.id} 
-                  className="cursor-pointer hover:bg-muted/50"
+                  className="cursor-pointer hover:bg-hover"
                   onClick={() => { setSelectedDoc(doc); setIsEditing(false) }}
                 >
                   <TableCell className="font-medium">
@@ -560,7 +560,7 @@ function DocEditor({
                   </a>
                 ),
                 blockquote: ({ children }) => (
-                  <blockquote className="border-l-4 border-primary/30 pl-4 italic text-muted-foreground my-3">
+                  <blockquote className="border-l-4 border-selected-border pl-4 italic text-muted-foreground my-3">
                     {children}
                   </blockquote>
                 ),
@@ -599,9 +599,9 @@ function DocEditor({
                     </Table>
                   </div>
                 ),
-                thead: ({ children }) => <TableHeader className="bg-muted/50">{children}</TableHeader>,
+                thead: ({ children }) => <TableHeader className="bg-surface-subtle">{children}</TableHeader>,
                 tbody: ({ children }) => <TableBody>{children}</TableBody>,
-                tr: ({ children }) => <TableRow className="hover:bg-muted/30">{children}</TableRow>,
+                tr: ({ children }) => <TableRow className="hover:bg-hover">{children}</TableRow>,
                 th: ({ children }) => <TableHead className="whitespace-normal align-top">{children}</TableHead>,
                 td: ({ children }) => <TableCell className="whitespace-normal align-top">{children}</TableCell>,
               }}
@@ -612,7 +612,7 @@ function DocEditor({
         </div>
 
         {/* Footer */}
-        <div className="px-4 sm:px-6 py-3 border-t bg-muted/30 text-xs text-muted-foreground shrink-0">
+        <div className="px-4 sm:px-6 py-3 border-t bg-surface-subtle text-xs text-muted-foreground shrink-0">
           {t("viewer.lastUpdatedLabel")}{" "}
           {doc.updated_at
             ? new Date(doc.updated_at).toLocaleString(activeLocale)

@@ -134,7 +134,7 @@ function ShippingSkeleton() {
       <Skeleton className="h-touch-lg rounded-md" />
       
       {/* Package dimensions */}
-      <div className="rounded-md border border-border bg-muted/30 p-4">
+      <div className="rounded-md border border-border bg-surface-subtle p-4">
         <div className="flex items-center justify-between mb-3">
           <Skeleton className="h-4 w-32" />
           <Skeleton className="h-3 w-28" />

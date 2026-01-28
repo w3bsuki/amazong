@@ -338,12 +338,12 @@ export default async function SearchPage({
           </Suspense>
 
           {/* Mobile Results Info Strip */}
-          <div className="sm:hidden mb-4 flex items-center justify-between text-sm text-muted-foreground bg-muted/30 rounded-lg px-3 py-2.5">
+          <div className="sm:hidden mb-4 flex items-center justify-between text-sm text-muted-foreground bg-surface-subtle rounded-lg px-3 py-2.5">
             <span>
               <span className="font-semibold text-foreground">{totalProducts}</span> {totalProducts === 1 ? t('product') : t('products')}
             </span>
             {currentCategory && (
-              <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full font-medium">
+              <span className="text-xs bg-selected text-primary px-2 py-0.5 rounded-full font-medium">
                 {categoryName}
               </span>
             )}

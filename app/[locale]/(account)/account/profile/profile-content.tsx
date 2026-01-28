@@ -393,7 +393,7 @@ export function ProfileContent({
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
                 disabled={isUploadingAvatar}
-                className="absolute -bottom-1 -right-1 size-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center shadow-md hover:bg-primary/90 transition-colors"
+                className="absolute -bottom-1 -right-1 size-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center shadow-md hover:bg-interactive-hover transition-colors"
               >
                 <Camera className="size-4" weight="fill" />
               </button>
@@ -437,7 +437,7 @@ export function ProfileContent({
                   type="button"
                   onClick={() => handleChoosePresetAvatar(url)}
                   disabled={isUploadingAvatar}
-                  className="size-10 rounded-full overflow-hidden border bg-muted hover:bg-muted/80 transition-colors disabled:opacity-50"
+                  className="size-10 rounded-full overflow-hidden border bg-muted hover:bg-hover active:bg-active transition-colors disabled:opacity-50"
                   aria-label={locale === "bg" ? "Избери този аватар" : "Choose this avatar"}
                 >
                   {/* Render UserAvatar for boring-avatar presets, fallback to AvatarImg for legacy URLs */}
@@ -593,7 +593,7 @@ export function ProfileContent({
           {/* Email Row */}
           <button
             onClick={() => setIsChangeEmailOpen(true)}
-            className="w-full flex items-center gap-3 p-3 rounded-lg border bg-card hover:bg-muted/50 text-left transition-colors"
+            className="w-full flex items-center gap-3 p-3 rounded-lg border bg-card hover:bg-hover active:bg-active text-left transition-colors"
           >
             <div className="flex size-10 items-center justify-center rounded-full bg-muted">
               <Envelope className="size-5 text-muted-foreground" />
@@ -611,7 +611,7 @@ export function ProfileContent({
           {/* Password Row */}
           <button
             onClick={() => setIsChangePasswordOpen(true)}
-            className="w-full flex items-center gap-3 p-3 rounded-lg border bg-card hover:bg-muted/50 text-left transition-colors"
+            className="w-full flex items-center gap-3 p-3 rounded-lg border bg-card hover:bg-hover active:bg-active text-left transition-colors"
           >
             <div className="flex size-10 items-center justify-center rounded-full bg-muted">
               <Key className="size-5 text-muted-foreground" />

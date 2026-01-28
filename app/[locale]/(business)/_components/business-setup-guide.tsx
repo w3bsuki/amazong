@@ -98,7 +98,7 @@ export function BusinessSetupGuide({
 
   return (
     <div className="px-4 lg:px-6">
-      <Card className="border-primary/20 bg-primary/5">
+      <Card className="border-selected-border bg-selected">
         <CardHeader className="pb-3">
           <div className="flex items-start justify-between">
             <div className="flex items-center gap-3">
@@ -148,7 +148,7 @@ export function BusinessSetupGuide({
                     "flex items-center gap-3 rounded-lg border p-3 transition-all",
                     step.completed
                       ? "border-success/30 bg-success/5"
-                      : "border-border bg-card hover:border-primary/50 hover:bg-primary/5"
+                      : "border-border bg-card hover:border-hover-border hover:bg-hover"
                   )}>
                     <div className={cn(
                       "flex size-8 items-center justify-center rounded-full shrink-0",

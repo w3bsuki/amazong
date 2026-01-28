@@ -130,7 +130,7 @@ export function ContextualFilterBar({
     "border transition-all duration-150",
     "tap-highlight-transparent active:scale-95"
   )
-  const pillInactive = "border-border/50 bg-background text-muted-foreground hover:bg-muted/50 hover:text-foreground"
+  const pillInactive = "border-border/50 bg-background text-muted-foreground hover:bg-hover hover:text-foreground"
   const pillActive = "border-foreground bg-foreground text-background"
 
   return (

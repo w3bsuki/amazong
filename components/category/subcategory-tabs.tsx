@@ -68,7 +68,7 @@ function CategoryBanner({ category }: { category: Category }) {
   const name = locale === "bg" && category.name_bg ? category.name_bg : category.name
 
   return (
-    <div className="mb-4 rounded-md bg-primary/5 border border-border/50">
+    <div className="mb-4 rounded-md bg-surface-subtle border border-border/50">
       <div className="flex items-center gap-3 p-3">
         {/* Category Icon or Image */}
         <CategoryCircleVisual

@@ -71,7 +71,7 @@ function CategorySearchInput({
         className={cn(
           compact 
             ? "pl-9 h-9 text-sm" 
-            : "pl-11 h-12 text-base font-medium rounded-md border-border bg-muted/20 focus:bg-background transition-all"
+            : "pl-11 h-12 text-base font-medium rounded-md border-border bg-muted focus:bg-background transition-colors"
         )}
       />
     </div>
@@ -92,7 +92,7 @@ function CategoryEmptyState({ locale, compact = false }: { locale: string; compa
 
   return (
     <div className="py-12 text-center">
-      <div className="size-16 rounded-full bg-muted/30 flex items-center justify-center mx-auto mb-4">
+      <div className="size-16 rounded-full bg-surface-subtle flex items-center justify-center mx-auto mb-4">
         <MagnifyingGlass className="size-8 text-muted-foreground/30" />
       </div>
       <p className="text-sm font-bold text-muted-foreground uppercase tracking-widest">
@@ -129,8 +129,8 @@ function CategorySearchResults({
             onClick={() => onSelect(cat)}
             className={cn(
               "w-full flex flex-col items-start gap-0.5 px-3 py-2 rounded-md text-left transition-colors",
-              "hover:bg-muted",
-              selectedValue === cat.id && "bg-primary/10"
+              "hover:bg-hover",
+              selectedValue === cat.id && "bg-selected"
             )}
           >
             <span className="text-sm font-medium">{getName(cat)}</span>
@@ -153,8 +153,8 @@ function CategorySearchResults({
           className={cn(
             "w-full flex flex-col items-start gap-0.5 px-4 py-2.5 rounded-md border text-left transition-colors",
             selectedValue === cat.id 
-              ? "border-primary bg-primary/5 shadow-xs" 
-              : "border-border bg-background hover:border-primary/30"
+              ? "border-selected-border bg-selected shadow-xs" 
+              : "border-border bg-background hover:border-hover-border"
           )}
         >
           <span className="text-sm font-bold text-foreground">{getName(cat)}</span>
@@ -280,7 +280,7 @@ export function CategorySelector({
       className={cn(
         "relative w-full flex items-center h-12 px-4 rounded-md border transition-all text-left",
         "bg-background border border-border shadow-xs",
-        "hover:border-primary/50 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/5",
+        "hover:border-hover-border focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background",
         "transition-colors",
         className
       )}
@@ -298,7 +298,7 @@ export function CategorySelector({
       </div>
       <div className="flex items-center gap-2 shrink-0">
         {selectedCategory && (
-          <div className="size-5 rounded-full bg-primary/10 flex items-center justify-center">
+          <div className="size-5 rounded-full bg-selected flex items-center justify-center">
             <Check className="size-3 text-primary" weight="bold" />
           </div>
         )}
@@ -546,18 +546,18 @@ function CategoryModalContent({
 
           {/* Step & Breadcrumb Row */}
           {!searchQuery.trim() && (
-            <div className="px-4 py-2.5 bg-muted/10 flex items-center justify-between gap-4 border-t border-border/50">
+            <div className="px-4 py-2.5 bg-surface-subtle flex items-center justify-between gap-4 border-t border-border/50">
               <div className="flex items-center gap-3 min-w-0">
                 {navigationPath.length > 0 ? (
                   <button
                     type="button"
                     onClick={handleBack}
-                    className="size-8 flex items-center justify-center rounded-lg bg-background border border-border shadow-xs shrink-0 transition-colors hover:bg-muted"
+                    className="size-8 flex items-center justify-center rounded-lg bg-background border border-border shadow-xs shrink-0 transition-colors hover:bg-hover active:bg-active"
                   >
                     <CaretLeft className="size-4" weight="bold" />
                   </button>
                 ) : (
-                  <div className="size-8 flex items-center justify-center rounded-lg bg-primary/10 border border-primary/20 shrink-0">
+                  <div className="size-8 flex items-center justify-center rounded-lg bg-selected border border-selected-border shrink-0">
                     <FolderSimple className="size-4 text-primary" weight="bold" />
                   </div>
                 )}
@@ -622,7 +622,7 @@ function CategoryModalContent({
   return (
     <div className="flex h-(--spacing-scroll-lg)">
       {/* Left Panel - L1 Categories */}
-      <div className="w-48 border-r bg-muted/30">
+      <div className="w-48 border-r bg-surface-subtle">
         <ScrollArea className="h-full">
           <div className="p-1.5">
             {categories.map((cat) => (
@@ -633,8 +633,8 @@ function CategoryModalContent({
                 className={cn(
                   "w-full flex items-center justify-between px-3 py-2 rounded-md text-sm transition-colors",
                   activeL1?.id === cat.id
-                    ? "bg-primary/10 text-primary font-medium"
-                    : "text-foreground hover:bg-muted"
+                    ? "bg-selected text-primary font-medium"
+                    : "text-foreground hover:bg-hover"
                 )}
               >
                 <span className="truncate">{getName(cat)}</span>
@@ -713,34 +713,34 @@ function CategoryCard({
   const name = locale === "bg" && category.name_bg ? category.name_bg : category.name;
 
   return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={cn(
-        "relative flex items-center justify-between gap-3 w-full px-4 py-2.5 rounded-md border text-left transition-all min-h-12 touch-action-manipulation",
-        "hover:border-primary/30 active-scale-98",
-        "focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/5",
-        isSelected 
-          ? "border-primary bg-primary/5 shadow-xs" 
-          : "border-border bg-background shadow-xs"
-      )}
-    >
+      <button
+        type="button"
+        onClick={onClick}
+        className={cn(
+          "relative flex items-center justify-between gap-3 w-full px-4 py-2.5 rounded-md border text-left transition-colors min-h-12 touch-action-manipulation",
+          "hover:border-hover-border active:bg-active",
+          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background",
+          isSelected 
+            ? "border-selected-border bg-selected shadow-xs" 
+            : "border-border bg-background shadow-xs"
+        )}
+      >
       <span className="text-sm font-bold text-foreground line-clamp-2 flex-1 leading-tight">
         {name}
       </span>
-      <div className="shrink-0">
-        {hasChildren ? (
-          <div className="size-5 rounded-full bg-muted/30 flex items-center justify-center">
-            <CaretRight className="size-3 text-muted-foreground" weight="bold" />
-          </div>
-        ) : isSelected ? (
-          <div className="size-5 rounded-full bg-primary flex items-center justify-center">
-            <Check className="size-2.5 text-white" weight="bold" />
-          </div>
-        ) : (
-          <div className="size-5 rounded-full border border-border/50" />
-        )}
-      </div>
+        <div className="shrink-0">
+          {hasChildren ? (
+            <div className="size-5 rounded-full bg-surface-subtle flex items-center justify-center">
+              <CaretRight className="size-3 text-muted-foreground" weight="bold" />
+            </div>
+          ) : isSelected ? (
+            <div className="size-5 rounded-full bg-primary flex items-center justify-center">
+              <Check className="size-2.5 text-primary-foreground" weight="bold" />
+            </div>
+          ) : (
+            <div className="size-5 rounded-full border border-border/50" />
+          )}
+        </div>
     </button>
   );
 }

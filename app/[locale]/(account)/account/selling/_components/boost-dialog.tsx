@@ -185,7 +185,7 @@ export function BoostDialog({ product, locale, trigger, onBoostSuccess: _onBoost
     const timeLeft = getTimeLeft()
     return (
       <div className="flex flex-col gap-1">
-        <Badge className="bg-primary/10 text-primary border-0 gap-1">
+        <Badge className="bg-selected text-primary border-0 gap-1">
           <Lightning className="size-3" weight="fill" />
           {timeLeft 
             ? t('timeLeft', { days: timeLeft.days, hours: timeLeft.hours })
@@ -210,7 +210,7 @@ export function BoostDialog({ product, locale, trigger, onBoostSuccess: _onBoost
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         {trigger || (
-          <Button variant="outline" size="sm" className="gap-1.5 text-primary border-primary/30 hover:bg-primary/10 hover:text-primary">
+          <Button variant="outline" size="sm" className="gap-1.5 text-primary border-selected-border hover:bg-hover hover:text-primary">
             <Lightning className="size-4" weight="bold" />
             {wasBoostExpired ? t('reboost') : t('trigger')}
           </Button>
@@ -219,7 +219,7 @@ export function BoostDialog({ product, locale, trigger, onBoostSuccess: _onBoost
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <div className="size-10 rounded-lg bg-primary/10 flex items-center justify-center">
+            <div className="size-10 rounded-lg bg-selected flex items-center justify-center">
               <Rocket className="size-5 text-primary" weight="fill" />
             </div>
             {t('title')}
@@ -229,7 +229,7 @@ export function BoostDialog({ product, locale, trigger, onBoostSuccess: _onBoost
 
         <div className="space-y-4 pt-2">
           {/* Product being boosted */}
-          <div className="p-3 bg-muted/50 rounded-lg">
+          <div className="p-3 bg-surface-subtle rounded-lg">
             <p className="text-sm font-medium truncate">{product.title}</p>
           </div>
 
@@ -241,12 +241,12 @@ export function BoostDialog({ product, locale, trigger, onBoostSuccess: _onBoost
                 {[0, 1, 2].map((i) => (
                   <div
                     key={i}
-                    className="h-28 rounded-lg border border-border bg-muted/30 animate-pulse"
+                    className="h-28 rounded-lg border border-border bg-surface-subtle animate-pulse"
                   />
                 ))}
               </div>
             ) : pricingStatus === "error" || !pricingOptions ? (
-              <div className="rounded-lg border border-border bg-muted/30 p-3 text-xs text-muted-foreground">
+              <div className="rounded-lg border border-border bg-surface-subtle p-3 text-xs text-muted-foreground">
                 {t("errors.internal")}
               </div>
             ) : (
@@ -264,8 +264,8 @@ export function BoostDialog({ product, locale, trigger, onBoostSuccess: _onBoost
                       className={cn(
                         "relative flex flex-col items-center p-3 rounded-lg border-2 transition-all",
                         isSelected
-                          ? "border-primary bg-primary/5"
-                          : "border-border hover:border-primary/50"
+                          ? "border-selected-border bg-selected"
+                          : "border-border hover:border-hover-border"
                       )}
                     >
                       {isPopular && (
@@ -361,10 +361,10 @@ export function BoostDialog({ product, locale, trigger, onBoostSuccess: _onBoost
           <Link
             href="/account/plans"
             onClick={() => setIsOpen(false)}
-            className="flex items-center justify-between w-full p-3 rounded-lg border border-primary/20 bg-primary/5 hover:bg-primary/10 transition-colors group"
+            className="flex items-center justify-between w-full p-3 rounded-lg border border-selected-border bg-selected hover:bg-hover transition-colors group"
           >
             <div className="flex items-center gap-3">
-              <div className="size-9 rounded-lg bg-primary/10 flex items-center justify-center">
+              <div className="size-9 rounded-lg bg-selected flex items-center justify-center">
                 <Crown className="size-5 text-primary" weight="fill" />
               </div>
               <div className="text-left">

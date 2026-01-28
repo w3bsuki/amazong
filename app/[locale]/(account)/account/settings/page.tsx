@@ -57,7 +57,7 @@ export default async function AccountSettingsPage({
             <Link
               key={item.href}
               href={item.href}
-              className="rounded-md border bg-card px-3 py-2 text-sm hover:bg-muted/40 transition-colors"
+              className="rounded-md border bg-card px-3 py-2 text-sm hover:bg-hover active:bg-active transition-colors"
             >
               {item.label}
             </Link>

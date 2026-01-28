@@ -33,7 +33,7 @@ const tabButtonStyles = cn(
   // Interaction
   "tap-highlight-transparent",
   "transition-colors duration-150",
-  "active:bg-muted/50",
+  "active:bg-active",
   // Focus (shadcn pattern)
   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-0"
 )

@@ -41,13 +41,13 @@ export function LocaleSwitcher({ className, align = "end" }: LocaleSwitcherProps
         <DropdownMenuItem asChild>
           <Link href={href} locale="en" className="flex items-center gap-2">
             <span className="text-sm font-medium">{t("english")}</span>
-            {locale === "en" && <IconCheck className="ml-auto size-4 text-brand" />}
+            {locale === "en" && <IconCheck className="ml-auto size-4 text-primary" />}
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
           <Link href={href} locale="bg" className="flex items-center gap-2">
             <span className="text-sm font-medium">{t("bulgarian")}</span>
-            {locale === "bg" && <IconCheck className="ml-auto size-4 text-brand" />}
+            {locale === "bg" && <IconCheck className="ml-auto size-4 text-primary" />}
           </Link>
         </DropdownMenuItem>
       </DropdownMenuContent>

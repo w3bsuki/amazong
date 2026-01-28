@@ -167,7 +167,7 @@ function AccountNavUser({
                 name={displayName}
                 avatarUrl={user.avatar ?? null}
                 className="size-8 rounded-lg"
-                fallbackClassName="rounded-lg bg-primary/10 text-primary"
+                fallbackClassName="rounded-lg bg-selected text-primary"
               />
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-medium">{user.name || user.email}</span>
@@ -190,7 +190,7 @@ function AccountNavUser({
                   name={displayName}
                   avatarUrl={user.avatar ?? null}
                   className="size-8 rounded-lg"
-                  fallbackClassName="rounded-lg bg-primary/10 text-primary"
+                  fallbackClassName="rounded-lg bg-selected text-primary"
                 />
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-medium">{user.name || user.email}</span>
@@ -337,9 +337,9 @@ export function AccountSidebar({ user, plansModalActions, ...props }: AccountSid
 
         {/* Upgrade CTA */}
         <SidebarGroup className="px-2">
-          <div className="rounded-lg bg-primary/5 border border-primary/20 p-3">
+          <div className="rounded-lg bg-selected border border-selected-border p-3">
             <div className="flex items-center gap-2 mb-2">
-              <div className="size-8 rounded-md bg-primary/10 flex items-center justify-center">
+              <div className="size-8 rounded-md bg-selected flex items-center justify-center">
                 <IconSparkles className="size-4 text-primary" />
               </div>
               <div className="text-sm font-medium">

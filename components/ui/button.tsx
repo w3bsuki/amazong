@@ -11,23 +11,23 @@ const buttonVariants = cva(
     variants: {
       variant: {
         // shadcn-aligned default: primary CTA (Twitter blue)
-        default: "bg-primary text-primary-foreground hover:bg-primary/90",
+        default: "bg-primary text-primary-foreground hover:bg-interactive-hover",
         destructive:
           "bg-destructive text-destructive-foreground hover:bg-destructive/90 dark:bg-destructive/60",
         outline:
-          "border border-border bg-background hover:bg-muted text-foreground active:bg-muted/80 shadow-none",
+          "border border-border bg-background hover:bg-muted text-foreground active:bg-active shadow-none",
         secondary:
           "bg-secondary text-secondary-foreground hover:bg-secondary/80",
         ghost:
           "hover:bg-accent hover:text-accent-foreground active:bg-accent/80",
         link: "text-link underline-offset-4 hover:underline hover:text-link-hover",
         // Marketplace CTA alias (kept for semantic readability)
-        cta: "bg-primary text-primary-foreground hover:bg-primary/90",
+        cta: "bg-primary text-primary-foreground hover:bg-interactive-hover",
         deal: "bg-deal text-deal-foreground hover:bg-deal/90",
         // Treido black CTA (primary marketplace action)
         black: "bg-foreground text-background hover:bg-foreground/90 border border-foreground",
-        // Brand (Twitter theme)
-        brand: "bg-brand text-primary-foreground hover:bg-brand/90",
+        // Legacy alias (maps to primary)
+        brand: "bg-primary text-primary-foreground hover:bg-interactive-hover",
       },
       size: {
         xs: "h-8 px-2 text-xs gap-1 [&_svg]:size-3",           /* 32px - minimum for density */

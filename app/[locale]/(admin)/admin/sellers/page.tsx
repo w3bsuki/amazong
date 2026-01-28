@@ -113,7 +113,7 @@ async function AdminSellersContent() {
   const getTierBadge = (tier: string | null) => {
     switch (tier) {
       case 'business':
-        return 'border-primary/20 bg-primary/10 text-primary'
+        return 'border-selected-border bg-selected text-primary'
       case 'premium':
         return 'border-warning/20 bg-warning/10 text-warning'
       default:

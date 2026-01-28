@@ -28,7 +28,7 @@ export const SocialInput = forwardRef<HTMLInputElement, SocialInputProps>(
         )}
         <div className="flex-1 flex items-center h-10 sm:h-11 rounded-lg border-2 border-input overflow-hidden transition-colors focus-within:border-primary">
           {prefix && (
-            <span className="px-3 text-sm text-muted-foreground bg-muted/50 border-r border-input h-full flex items-center font-medium">
+            <span className="px-3 text-sm text-muted-foreground bg-surface-subtle border-r border-input h-full flex items-center font-medium">
               {prefix}
             </span>
           )}

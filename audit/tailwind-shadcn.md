@@ -5,7 +5,7 @@
 - Tailwind: `tailwindcss@4.1.18` (`package.json`)
 - PostCSS: `postcss.config.mjs` + `@tailwindcss/postcss`
 - shadcn/ui config: `components.json` (New York style, CSS variables, `app/globals.css`)
-- Animation baseline: `tw-animate-css` (project rule is “no animations” → remove)
+- Animation baseline: removed (`tw-animate-css` no longer used)
 
 ## Token / style sources (current)
 
@@ -24,17 +24,23 @@ Ran:
 
 - `pnpm -s styles:scan`
 
-Results (latest scan, used code only):
+Results (latest scan):
 
 - Palette usage: **0** (PASS)
 - Gradients: **0** (PASS)
-- Arbitrary values: **38** (FAIL)
-- `bg-muted/*` opacity usage: **271** (FAIL)
-- `bg-primary/*` opacity usage: **160** (FAIL)
-- `border-primary/*` opacity usage: **78** (FAIL)
-- Legacy `brand` tokens: **236** (FAIL)
-- Hardcoded white/black (incl `/opacity`): **24** (FAIL)
-- Animations (`tw-animate` patterns): **55** (FAIL)
+- Arbitrary values: **0** (PASS)
+- Missing semantic tokens: **0** (PASS)
+
+Additional drift counters (manual grep, `app/`, `components/`, `lib/`, `hooks/`):
+
+- `bg-muted/*` opacity usage: **186**
+- `bg-primary/*` opacity usage: **132**
+- `border-primary/*` opacity usage: **42**
+- Legacy `brand` tokens (`bg/text/border/ring-brand*`): **0**
+- Hardcoded white/black (incl `/opacity`): **34**
+- Animations (`tw-animate`, `animate-in/out`): **0**
+- Custom shadows (`shadow-[…]`): **0**
+- Heavy shadows (`shadow-xl|shadow-2xl`): **9**
 
 Reports (tooling):
 - `cleanup/palette-scan-report.txt`
@@ -51,13 +57,14 @@ Full plan:
 ### Critical (blocks Phase 2)
 
 - [ ] **Remove semantic opacity hacks** → kill `bg-muted/*`, `bg-primary/*`, `border-primary/*` across runtime UI → replace with semantic tokens (`bg-surface-subtle`, `bg-hover`, `bg-active`, `bg-selected`, `border-selected-border`)
-- [ ] **Remove legacy `brand` tokens** → replace with `primary` + semantic tokens
-- [ ] **Remove animations** → delete `tw-animate` usage in shadcn primitives and `app/shadcn-components.css`
-- [ ] **Remove custom/heavy shadows** → delete `shadow-[…]` and downgrade `shadow-xl|2xl` in runtime UI
+- [x] **Remove legacy `brand` tokens** → replace with `primary` + semantic tokens
+- [x] **Remove animations** → delete `tw-animate` usage in shadcn primitives and `app/shadcn-components.css`
+- [x] **Remove custom shadows** → delete `shadow-[…]`
+- [ ] **Downgrade heavy shadows** → replace `shadow-xl|2xl` in runtime UI
 
 ### High (do in Phase 2)
 
-- [ ] **Remove arbitrary values** → replace `*-[]` usage with theme tokens/utilities
+- [x] **Remove arbitrary values** → replace `*-[]` usage with theme tokens/utilities
 - [ ] **Consolidate surface recipes** → stop copy/paste of `rounded-lg border bg-muted/30 p-*` patterns
 
 ### Deferred (Phase 3 or backlog)
@@ -74,5 +81,6 @@ Full plan:
 ```bash
 pnpm -s styles:gate
 pnpm -s typecheck
+pnpm -s lint
 pnpm -s test:e2e:smoke
 ```

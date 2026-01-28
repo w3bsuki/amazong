@@ -241,8 +241,8 @@ function ConversationItem({
       onClick={onClick}
       className={cn(
         "w-full text-left flex items-center gap-3 px-3 py-2.5 transition-colors min-h-touch-lg",
-        "hover:bg-muted/50 active:bg-muted/70",
-        isSelected && "bg-muted/60"
+        "hover:bg-hover active:bg-active",
+        isSelected && "bg-selected"
       )}
     >
       {/* Avatar with product thumbnail overlay */}

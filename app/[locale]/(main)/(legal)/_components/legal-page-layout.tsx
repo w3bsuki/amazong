@@ -93,7 +93,7 @@ export function LegalPageLayout({
   return (
     <PageShell className="pb-20 sm:pb-12">
       {/* Hero Section */}
-      <div className="bg-brand text-primary-foreground">
+      <div className="bg-primary text-primary-foreground">
         <div className="container py-10 md:py-14">
           <div className="[&_nav]:border-primary-foreground/20 [&_nav]:mb-4 [&_a]:text-primary-foreground/80 [&_a:hover]:text-primary-foreground [&_span[aria-current]]:text-primary-foreground [&_svg]:text-primary-foreground/50">
             <AppBreadcrumb
@@ -160,8 +160,8 @@ export function LegalPageLayout({
                     <AccordionItem key={section.id} value={section.id} id={section.id} className="scroll-mt-4">
                       <AccordionTrigger className="hover:no-underline">
                         <div className="flex items-center gap-3">
-                          <div className="size-8 bg-brand/10 flex items-center justify-center shrink-0">
-                            <section.icon className="size-4 text-brand" />
+                          <div className="size-8 bg-selected flex items-center justify-center shrink-0">
+                            <section.icon className="size-4 text-primary" />
                           </div>
                           <span className="font-semibold text-left">
                             {index + 1}. {section.title}
@@ -183,8 +183,8 @@ export function LegalPageLayout({
             <Card className="bg-muted">
               <CardContent className="p-6">
                 <div className="flex items-start gap-4">
-                  <div className="size-12 bg-brand/10 flex items-center justify-center shrink-0">
-                    <Envelope className="size-6 text-brand" />
+                  <div className="size-12 bg-surface-subtle flex items-center justify-center shrink-0">
+                    <Envelope className="size-6 text-primary" />
                   </div>
                   <div>
                     <h3 className="font-bold text-lg mb-2">{questionsTitle}</h3>
@@ -211,9 +211,9 @@ export function LegalPageLayout({
                 <Link 
                   key={link.href}
                   href={link.href} 
-                  className="block p-4 border border-border hover:border-brand/50 hover:bg-brand/5 transition-colors"
+                  className="block p-4 border border-border hover:border-hover-border hover:bg-hover transition-colors"
                 >
-                  <link.icon className="size-5 text-brand mb-2" />
+                  <link.icon className="size-5 text-primary mb-2" />
                   <h4 className="font-medium">{link.title}</h4>
                   <p className="text-sm text-muted-foreground">{link.description}</p>
                 </Link>

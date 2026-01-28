@@ -115,7 +115,7 @@ export default function CheckoutSuccessPageClient({
 
         {/* Order info */}
         {state.orderId && (
-          <div className="bg-muted/50 rounded-md px-3 py-2 mb-4 text-sm">
+          <div className="bg-surface-subtle rounded-md px-3 py-2 mb-4 text-sm">
             <span className="text-muted-foreground">{t("orderId", { id: "" })}</span>
             <span className="font-mono font-medium ml-1">{state.orderId}</span>
           </div>

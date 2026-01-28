@@ -159,7 +159,7 @@ export function MobileCartDropdown() {
                                     <Link
                                         href={buildProductUrl(item)}
                                         onClick={() => setOpen(false)}
-                                        className="text-sm text-foreground hover:text-brand line-clamp-2 leading-snug"
+                                        className="text-sm text-foreground hover:text-primary line-clamp-2 leading-snug"
                                     >
                                         {item.title}
                                     </Link>

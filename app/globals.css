@@ -7,7 +7,6 @@
    ============================================================ */
 
 @import "tailwindcss";
-@import "tw-animate-css";
 @import "./utilities.css";
 @import "./shadcn-components.css";
 @import "./legacy-vars.css";
@@ -481,8 +480,8 @@
   --spacing-nav-row: 3rem;
 
   /* === HOMEPAGE SECTION SPACING === */
-  --spacing-section-top: 0.25rem;   /* 4px - minimal top breathing */
-  --spacing-section-bottom: 0.5rem; /* 8px - tight section separation */
+  --spacing-section-top: 0.25rem;   /* 4px - tight top */
+  --spacing-section-bottom: 0;      /* 0 - no bottom padding */
   --spacing-section-gap: 0;         /* 0 - sections stack directly */
 
   /* === FILTER SIDEBAR === */

@@ -38,12 +38,12 @@ export function UploadZone({
     <div
       {...getRootProps()}
       className={cn(
-        "relative flex flex-col items-center justify-center rounded-2xl border-2 border-dashed transition-all cursor-pointer",
+        "relative flex flex-col items-center justify-center rounded-2xl border-2 border-dashed transition-colors cursor-pointer",
         "min-h-44 sm:min-h-48 touch-action-manipulation",
-        "hover:bg-muted/20 active:scale-[0.99]",
+        "hover:bg-hover active:bg-active",
         isDragActive
-          ? "border-primary bg-primary/10"
-          : "border-border/60 bg-muted/10",
+          ? "border-selected-border bg-selected"
+          : "border-border/60 bg-surface-subtle",
         isUploading && "pointer-events-none opacity-70"
       )}
     >
@@ -51,7 +51,7 @@ export function UploadZone({
 
       {isUploading ? (
         <div className="flex flex-col items-center gap-4">
-          <div className="size-20 rounded-2xl bg-primary/10 flex items-center justify-center">
+          <div className="size-20 rounded-2xl bg-surface-subtle flex items-center justify-center">
             <SpinnerGap className="size-10 text-primary animate-spin" />
           </div>
           <div className="text-center">
@@ -62,7 +62,7 @@ export function UploadZone({
         </div>
       ) : (
         <>
-          <div className="size-20 rounded-2xl bg-primary/10 flex items-center justify-center mb-4">
+          <div className="size-20 rounded-2xl bg-surface-subtle flex items-center justify-center mb-4">
             {isDragActive ? (
               <Plus className="size-10 text-primary" weight="bold" />
             ) : (

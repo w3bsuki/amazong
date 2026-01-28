@@ -183,7 +183,7 @@ export default async function DemoCodexPage() {
         <section className="grid gap-4 lg:grid-cols-[1.4fr_1fr]">
           <Card className="overflow-hidden">
             <CardHeader className="pb-3">
-              <Badge variant="outline" className="w-fit border-primary/20 bg-selected text-primary">
+              <Badge variant="outline" className="w-fit border-selected-border bg-selected text-primary">
                 {t("heroBadge")}
               </Badge>
               <CardTitle className="mt-2 text-2xl leading-tight">

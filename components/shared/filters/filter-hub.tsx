@@ -483,7 +483,7 @@ export function FilterHub({
                   <button
                     type="button"
                     onClick={() => onOpenChange(false)}
-                    className="size-8 flex items-center justify-center rounded-full hover:bg-muted active:bg-muted/80 transition-colors"
+                    className="size-8 flex items-center justify-center rounded-full hover:bg-hover active:bg-active transition-colors"
                     aria-label={tHub("close")}
                   >
                     <X size={18} weight="bold" />
@@ -536,7 +536,7 @@ export function FilterHub({
                     key={section.id}
                     type="button"
                     onClick={() => setActiveSection(section.id)}
-                    className="w-full flex items-center justify-between px-inset h-10 active:bg-muted/30 transition-colors text-left"
+                    className="w-full flex items-center justify-between px-inset h-10 active:bg-active transition-colors text-left"
                   >
                     <div className="flex flex-col">
                       <span className="text-sm text-foreground">
@@ -577,8 +577,8 @@ export function FilterHub({
                         className={cn(
                           "w-full flex items-center gap-3 px-inset h-10 transition-colors text-left",
                           isActive
-                            ? "bg-muted/40 text-foreground font-medium"
-                            : "text-foreground active:bg-muted/30"
+                            ? "bg-selected text-foreground font-medium"
+                            : "text-foreground active:bg-active"
                         )}
                         aria-pressed={isActive}
                       >
@@ -631,8 +631,8 @@ export function FilterHub({
                     className={cn(
                       "w-full flex items-center gap-3 px-inset h-10 transition-colors text-left",
                       pending.availability === "instock"
-                        ? "bg-muted/40 text-foreground font-medium"
-                        : "text-foreground active:bg-muted/30"
+                        ? "bg-selected text-foreground font-medium"
+                        : "text-foreground active:bg-active"
                     )}
                     aria-pressed={pending.availability === "instock"}
                   >
@@ -668,8 +668,8 @@ export function FilterHub({
                       className={cn(
                         "flex-1 flex items-center gap-3 h-10 transition-colors text-left",
                         pendingCategorySlug === null
-                          ? "bg-muted/40 text-foreground font-medium"
-                          : "text-foreground active:bg-muted/30"
+                          ? "bg-selected text-foreground font-medium"
+                          : "text-foreground active:bg-active"
                       )}
                       aria-pressed={pendingCategorySlug === null}
                     >
@@ -709,8 +709,8 @@ export function FilterHub({
                         className={cn(
                           "w-full flex items-center gap-3 px-inset h-10 transition-colors text-left",
                           isActive
-                            ? "bg-muted/40 text-foreground font-medium"
-                            : "text-foreground active:bg-muted/30"
+                            ? "bg-selected text-foreground font-medium"
+                            : "text-foreground active:bg-active"
                         )}
                         aria-pressed={isActive}
                       >
@@ -753,8 +753,8 @@ export function FilterHub({
                       className={cn(
                         "-mx-inset w-auto flex items-center gap-3 px-inset h-10 transition-colors text-left",
                         isChecked
-                          ? "bg-muted/40 text-foreground font-medium"
-                          : "text-foreground active:bg-muted/30"
+                          ? "bg-selected text-foreground font-medium"
+                          : "text-foreground active:bg-active"
                       )}
                       aria-pressed={isChecked}
                     >
@@ -853,8 +853,8 @@ export function FilterHub({
                             className={cn(
                               "w-full flex items-center gap-3 px-inset h-10 transition-colors text-left",
                               isActive
-                                ? "bg-muted/40 text-foreground font-medium"
-                                : "text-foreground active:bg-muted/30"
+                                ? "bg-selected text-foreground font-medium"
+                                : "text-foreground active:bg-active"
                             )}
                             aria-pressed={isActive}
                           >

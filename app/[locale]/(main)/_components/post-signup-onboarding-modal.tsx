@@ -359,7 +359,7 @@ export function PostSignupOnboardingModal({
                   <Label className="text-sm font-semibold mb-2 sm:mb-2.5 block text-foreground">{t.profileImageLabel}</Label>
                   <div className="flex items-center gap-3 sm:gap-4">
                     <div className="relative">
-                      <div className="size-14 sm:size-16 rounded-xl overflow-hidden border-2 border-primary/20 shadow-sm">
+                      <div className="size-14 sm:size-16 rounded-xl overflow-hidden border-2 border-selected-border shadow-sm">
                         {useCustomAvatar && avatarPreview ? (
                           <Image
                             src={avatarPreview}
@@ -378,7 +378,7 @@ export function PostSignupOnboardingModal({
                           />
                         )}
                       </div>
-                      <label className="absolute -bottom-1 -right-1 size-6 sm:size-7 bg-primary text-primary-foreground rounded-full flex items-center justify-center cursor-pointer hover:bg-primary/90 transition-colors shadow-sm">
+                      <label className="absolute -bottom-1 -right-1 size-6 sm:size-7 bg-primary text-primary-foreground rounded-full flex items-center justify-center cursor-pointer hover:bg-interactive-hover transition-colors shadow-sm">
                         <Camera className="size-3 sm:size-3.5" weight="bold" />
                         <input
                           type="file"
@@ -402,7 +402,7 @@ export function PostSignupOnboardingModal({
                               "size-11 rounded-lg border-2 overflow-hidden transition-all",
                               !useCustomAvatar && avatarVariant === variant
                                 ? "border-primary shadow-sm ring-2 ring-primary/20"
-                                : "border-input hover:border-primary/40"
+                                : "border-input hover:border-hover-border"
                             )}
                           >
                             <Avatar
@@ -641,7 +641,7 @@ export function PostSignupOnboardingModal({
                 {/* Cover Image */}
                 <div>
                   <Label className="text-sm font-semibold text-foreground mb-2 block">{t.coverImageLabel}</Label>
-                  <label className="block w-full h-32 sm:h-40 border-2 border-primary/20 rounded-xl hover:border-primary/40 hover:bg-primary/5 cursor-pointer transition-all overflow-hidden">
+                  <label className="block w-full h-32 sm:h-40 border-2 border-selected-border rounded-xl hover:border-hover-border hover:bg-hover cursor-pointer transition-all overflow-hidden">
                     {coverPreview ? (
                       <Image
                         src={coverPreview}
@@ -685,7 +685,7 @@ export function PostSignupOnboardingModal({
                   <Label htmlFor="website" className="text-sm font-semibold text-foreground">
                     {t.websiteLabel}
                   </Label>
-                  <div className="mt-1.5 sm:mt-2 flex items-center border-2 border-input rounded-lg overflow-hidden focus-within:border-primary/50 transition-colors">
+                  <div className="mt-1.5 sm:mt-2 flex items-center border-2 border-input rounded-lg overflow-hidden focus-within:border-selected-border transition-colors">
                     <div className="px-2.5 sm:px-3 flex items-center bg-secondary border-r border-input h-9 sm:h-10">
                       <Globe className="size-4 text-primary" weight="duotone" />
                     </div>
@@ -705,7 +705,7 @@ export function PostSignupOnboardingModal({
                   <Label htmlFor="location" className="text-sm font-semibold text-foreground">
                     {t.locationLabel}
                   </Label>
-                  <div className="mt-1.5 sm:mt-2 flex items-center border-2 border-input rounded-lg overflow-hidden focus-within:border-primary/50 transition-colors">
+                  <div className="mt-1.5 sm:mt-2 flex items-center border-2 border-input rounded-lg overflow-hidden focus-within:border-selected-border transition-colors">
                     <div className="px-2.5 sm:px-3 flex items-center bg-secondary border-r border-input h-9 sm:h-10">
                       <MapPin className="size-4 text-primary" weight="duotone" />
                     </div>
@@ -787,7 +787,7 @@ export function PostSignupOnboardingModal({
               {/* Profile Preview Card */}
               <div className="mb-5 p-4 rounded-xl bg-secondary/50 border border-border">
                 <div className="flex items-center gap-3">
-                  <div className="size-12 rounded-lg overflow-hidden border-2 border-primary/20 shadow-sm">
+                  <div className="size-12 rounded-lg overflow-hidden border-2 border-selected-border shadow-sm">
                     {useCustomAvatar && avatarPreview ? (
                       <Image
                         src={avatarPreview}

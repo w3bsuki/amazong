@@ -347,7 +347,7 @@ export function BillingContent({
       {!seller && (
         <Card className="border-dashed">
           <CardContent className="flex flex-col items-center justify-center py-12 text-center">
-            <div className="rounded-full bg-primary/10 p-4 mb-4">
+            <div className="rounded-full bg-selected p-4 mb-4">
               <Crown className="size-8 text-primary" weight="duotone" />
             </div>
             <h2 className="text-lg font-semibold mb-2">{t.startSelling}</h2>
@@ -394,7 +394,7 @@ export function BillingContent({
                 <div className="flex items-center gap-3">
                   <div className={cn(
                     "p-2.5 rounded-md",
-                    seller.tier === 'business' ? "bg-primary/10" :
+                    seller.tier === 'business' ? "bg-selected" :
                       seller.tier === 'premium' ? "bg-warning/10" :
                         "bg-muted"
                   )}>
@@ -731,7 +731,7 @@ export function BillingContent({
                               </TableCell>
                               <TableCell>
                                 {boost.is_active && !isExpired ? (
-                                  <Badge className="bg-primary/10 text-primary">
+                                  <Badge className="bg-selected text-primary">
                                     <Lightning className="size-3 mr-1" weight="fill" />
                                     {locale === 'bg' ? 'Активен' : 'Active'}
                                   </Badge>
@@ -764,7 +764,7 @@ export function BillingContent({
 
       {/* Quick Info */}
       {seller && hasStripeCustomer && (
-        <Card className="bg-muted/30 border-dashed">
+        <Card className="bg-surface-subtle border-dashed">
           <CardContent className="flex items-start gap-4 pt-4">
             <Info className="size-5 text-muted-foreground mt-0.5 shrink-0" />
             <div className="text-sm text-muted-foreground grid gap-1">

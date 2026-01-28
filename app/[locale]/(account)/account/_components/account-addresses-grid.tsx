@@ -136,7 +136,7 @@ export function AccountAddressesGrid({
     return (
       <Sheet open={isOpen} onOpenChange={(open) => setOpenSheetId(open ? address.id : null)}>
         <SheetTrigger asChild>
-          <Card className={`cursor-pointer transition-colors hover:bg-muted/50 ${address.is_default ? 'border-brand ring-1 ring-brand/20' : ''}`}>
+          <Card className={`cursor-pointer transition-colors hover:bg-hover ${address.is_default ? 'border-selected-border ring-1 ring-ring/20' : ''}`}>
             <CardHeader className="pb-2">
               <div className="flex items-start justify-between gap-2">
                 <div className="flex items-center gap-2 min-w-0">
@@ -144,7 +144,7 @@ export function AccountAddressesGrid({
                   <CardTitle className="text-base truncate">{address.label}</CardTitle>
                 </div>
                 {address.is_default && (
-                  <Badge variant="secondary" className="shrink-0 text-xs bg-brand/10 text-brand border-0">
+                  <Badge variant="secondary" className="shrink-0 text-xs bg-selected text-primary border-0">
                     <Star className="size-3 mr-1" weight="fill" />
                     {t.default}
                   </Badge>
@@ -163,7 +163,7 @@ export function AccountAddressesGrid({
               <LabelIcon className={`size-5 ${getLabelColor(address.label)}`} weight="duotone" />
               {address.label}
               {address.is_default && (
-                <Badge variant="secondary" className="ml-2 text-xs bg-brand/10 text-brand border-0">
+                <Badge variant="secondary" className="ml-2 text-xs bg-selected text-primary border-0">
                   <Star className="size-3 mr-1" weight="fill" />
                   {t.default}
                 </Badge>
@@ -245,14 +245,14 @@ export function AccountAddressesGrid({
     const LabelIcon = getLabelIcon(address.label)
 
     return (
-      <Card className={`${address.is_default ? 'border-brand ring-1 ring-brand/20' : ''}`}>
+      <Card className={`${address.is_default ? 'border-selected-border ring-1 ring-ring/20' : ''}`}>
         <CardHeader className="pb-3">
           <div className="flex items-start justify-between">
             <div className="flex items-center gap-2">
               <LabelIcon className={`size-5 ${getLabelColor(address.label)}`} weight="duotone" />
               <CardTitle className="text-base">{address.label}</CardTitle>
               {address.is_default && (
-                <Badge variant="secondary" className="text-xs bg-brand/10 text-brand border-0">
+                <Badge variant="secondary" className="text-xs bg-selected text-primary border-0">
                   <Star className="size-3 mr-1" weight="fill" />
                   {t.default}
                 </Badge>
@@ -294,7 +294,7 @@ export function AccountAddressesGrid({
           {!address.is_default && (
             <Button 
               variant="link" 
-              className="mt-3 h-auto p-0 text-sm text-brand"
+              className="mt-3 h-auto p-0 text-sm text-primary"
               onClick={() => onSetDefault(address.id)}
               disabled={isLoading}
             >
@@ -309,7 +309,7 @@ export function AccountAddressesGrid({
   // Inline add new card JSX
   const addNewCardJSX = (
     <Card 
-      className="border-dashed cursor-pointer hover:border-brand/50 hover:bg-muted/30 transition-colors"
+      className="border-dashed cursor-pointer hover:border-hover-border hover:bg-hover transition-colors"
       onClick={onAdd}
     >
       <CardContent className="flex flex-col items-center justify-center h-full min-h-44 py-8">

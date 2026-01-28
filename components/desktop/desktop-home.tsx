@@ -116,10 +116,16 @@ export function DesktopHome({
   const [viewMode, setViewMode] = useViewMode("grid")
   
   // User's city for nearby filtering (persisted in localStorage)
-  const [userCity, setUserCity] = useState<string | null>(() => {
-    if (typeof window === "undefined") return "sofia" // Default SSR
-    return localStorage.getItem("treido_user_city") || "sofia"
-  })
+  const [userCity, setUserCity] = useState<string>("sofia")
+
+  useEffect(() => {
+    try {
+      const savedCity = localStorage.getItem("treido_user_city")
+      if (savedCity) setUserCity(savedCity)
+    } catch {
+      // Ignore storage access errors
+    }
+  }, [])
   
   const handleCityChange = useCallback((city: string) => {
     setUserCity(city)

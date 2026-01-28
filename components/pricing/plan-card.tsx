@@ -114,7 +114,7 @@ export function PlanCard({
         // Styling based on plan type
         isPopular && "border-primary ring-1 ring-primary/20 shadow-md",
         isBest && "border-rating ring-1 ring-rating/20 shadow-md",
-        isCurrentPlan && "bg-muted/30",
+        isCurrentPlan && "bg-selected",
         // Padding
         variant === "compact" ? "p-3" : "p-3 md:p-4"
       )}
@@ -239,7 +239,7 @@ export function PlanCard({
         variant={isPopular || isBest ? "default" : "outline"}
         className={cn(
           "w-full",
-          isPopular && "bg-primary hover:bg-primary/90",
+          isPopular && "bg-primary hover:bg-interactive-hover",
           isBest && "bg-rating hover:bg-rating/90 text-primary-foreground",
           isCurrentPlan && "opacity-50 cursor-not-allowed"
         )}

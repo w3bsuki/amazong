@@ -106,7 +106,7 @@ export function SelectDrawer({
               }}
               className={cn(
                 "w-full flex items-center justify-between gap-3 px-4 py-3 rounded-md text-left min-h-11 touch-action-manipulation",
-                "border border-border bg-muted/20 hover:bg-muted/30 active:bg-muted/40"
+                "border border-border bg-surface-subtle hover:bg-hover active:bg-active"
               )}
             >
               <span className="text-sm font-medium">
@@ -129,7 +129,7 @@ export function SelectDrawer({
                   className={cn(
                     "w-full flex items-center justify-between gap-3 px-4 py-3 rounded-md text-left min-h-11 touch-action-manipulation",
                     isSelected
-                      ? "bg-primary/10 text-primary"
+                      ? "bg-selected text-primary"
                       : "hover:bg-accent active:bg-accent/80"
                   )}
                 >

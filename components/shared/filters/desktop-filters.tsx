@@ -91,11 +91,11 @@ export function DesktopFilters({ attributes = [], categorySlug, categoryId }: De
   // Shared trigger styling (matches SortSelect)
   const triggerClass = cn(
     "h-8 px-3 gap-1.5 rounded-lg",
-    "bg-muted/50 hover:bg-muted/70 border border-border/40",
+    "bg-surface-subtle hover:bg-hover border border-border",
     "text-xs font-medium text-foreground",
     "focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:ring-ring",
   )
-  const triggerActiveClass = "bg-primary/10 text-primary border-primary/20 hover:bg-primary/15"
+  const triggerActiveClass = "bg-selected text-primary border-selected-border hover:bg-hover"
 
   return (
     <div className="flex items-center gap-2">

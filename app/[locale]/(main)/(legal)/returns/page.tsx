@@ -44,7 +44,7 @@ export default async function ReturnsPage({ params }: { params: Promise<{ locale
   return (
     <PageShell className="pb-20 sm:pb-12">
       {/* Hero Section */}
-      <div className="bg-brand text-primary-foreground">
+      <div className="bg-primary text-primary-foreground">
         <div className="container py-10 md:py-16">
           <div className="[&_nav]:border-primary-foreground/20 [&_nav]:mb-4 [&_a]:text-primary-foreground/80 [&_a:hover]:text-primary-foreground [&_span[aria-current]]:text-primary-foreground [&_svg]:text-primary-foreground/50">
             <AppBreadcrumb
@@ -81,21 +81,21 @@ export default async function ReturnsPage({ params }: { params: Promise<{ locale
             </Card>
             <Card>
               <CardContent className="p-4 text-center">
-                <Truck className="size-8 text-brand mx-auto mb-3" />
+                <Truck className="size-8 text-primary mx-auto mb-3" />
                 <h3 className="font-bold">{t('freeReturns')}</h3>
                 <p className="text-sm text-muted-foreground">{t('freeReturnsDesc')}</p>
               </CardContent>
             </Card>
             <Card>
               <CardContent className="p-4 text-center">
-                <CreditCard className="size-8 text-brand mx-auto mb-3" />
+                <CreditCard className="size-8 text-primary mx-auto mb-3" />
                 <h3 className="font-bold">{t('fastRefunds')}</h3>
                 <p className="text-sm text-muted-foreground">{t('fastRefundsDesc')}</p>
               </CardContent>
             </Card>
             <Card>
               <CardContent className="p-4 text-center">
-                <ShieldCheck className="size-8 text-brand mx-auto mb-3" />
+                <ShieldCheck className="size-8 text-primary mx-auto mb-3" />
                 <h3 className="font-bold">{t('noHassle')}</h3>
                 <p className="text-sm text-muted-foreground">{t('noHassleDesc')}</p>
               </CardContent>
@@ -110,10 +110,10 @@ export default async function ReturnsPage({ params }: { params: Promise<{ locale
             {/* Step 1 */}
             <Card className="relative">
               <CardContent className="p-6">
-                <div className="absolute -top-3 -left-3 size-8 bg-brand text-primary-foreground flex items-center justify-center font-bold text-lg">
+                <div className="absolute -top-3 -left-3 size-8 bg-primary text-primary-foreground flex items-center justify-center font-bold text-lg">
                   1
                 </div>
-                <Package className="size-10 text-brand mb-4 mt-2" />
+                <Package className="size-10 text-primary mb-4 mt-2" />
                 <h3 className="font-bold text-lg mb-2">{t('step1')}</h3>
                 <p className="text-sm text-muted-foreground">{t('step1Desc')}</p>
               </CardContent>
@@ -122,10 +122,10 @@ export default async function ReturnsPage({ params }: { params: Promise<{ locale
             {/* Step 2 */}
             <Card className="relative">
               <CardContent className="p-6">
-                <div className="absolute -top-3 -left-3 size-8 bg-brand text-primary-foreground flex items-center justify-center font-bold text-lg">
+                <div className="absolute -top-3 -left-3 size-8 bg-primary text-primary-foreground flex items-center justify-center font-bold text-lg">
                   2
                 </div>
-                <FileText className="size-10 text-brand mb-4 mt-2" />
+                <FileText className="size-10 text-primary mb-4 mt-2" />
                 <h3 className="font-bold text-lg mb-2">{t('step2')}</h3>
                 <p className="text-sm text-muted-foreground">{t('step2Desc')}</p>
               </CardContent>
@@ -134,10 +134,10 @@ export default async function ReturnsPage({ params }: { params: Promise<{ locale
             {/* Step 3 */}
             <Card className="relative">
               <CardContent className="p-6">
-                <div className="absolute -top-3 -left-3 size-8 bg-brand text-primary-foreground flex items-center justify-center font-bold text-lg">
+                <div className="absolute -top-3 -left-3 size-8 bg-primary text-primary-foreground flex items-center justify-center font-bold text-lg">
                   3
                 </div>
-                <Printer className="size-10 text-brand mb-4 mt-2" />
+                <Printer className="size-10 text-primary mb-4 mt-2" />
                 <h3 className="font-bold text-lg mb-2">{t('step3')}</h3>
                 <p className="text-sm text-muted-foreground">{t('step3Desc')}</p>
               </CardContent>
@@ -146,10 +146,10 @@ export default async function ReturnsPage({ params }: { params: Promise<{ locale
             {/* Step 4 */}
             <Card className="relative">
               <CardContent className="p-6">
-                <div className="absolute -top-3 -left-3 size-8 bg-brand text-primary-foreground flex items-center justify-center font-bold text-lg">
+                <div className="absolute -top-3 -left-3 size-8 bg-primary text-primary-foreground flex items-center justify-center font-bold text-lg">
                   4
                 </div>
-                <MapPin className="size-10 text-brand mb-4 mt-2" />
+                <MapPin className="size-10 text-primary mb-4 mt-2" />
                 <h3 className="font-bold text-lg mb-2">{t('step4')}</h3>
                 <p className="text-sm text-muted-foreground">{t('step4Desc')}</p>
               </CardContent>
@@ -205,8 +205,8 @@ export default async function ReturnsPage({ params }: { params: Promise<{ locale
             <Card>
               <CardContent className="p-6">
                 <div className="flex items-center gap-3 mb-4">
-                  <div className="size-10 bg-brand/10 flex items-center justify-center">
-                    <CreditCard className="size-5 text-brand" />
+                  <div className="size-10 bg-selected flex items-center justify-center">
+                    <CreditCard className="size-5 text-primary" />
                   </div>
                   <h3 className="text-lg font-bold">{t('refundInfo')}</h3>
                 </div>
@@ -230,9 +230,9 @@ export default async function ReturnsPage({ params }: { params: Promise<{ locale
           {/* Sidebar */}
           <div className="space-y-4">
             {/* Start Return CTA */}
-            <Card className="border-brand/30 bg-brand/5">
+            <Card className="border-selected-border bg-selected">
               <CardContent className="p-4 text-center">
-                <ArrowCounterClockwise className="size-12 text-brand mx-auto mb-4" />
+                <ArrowCounterClockwise className="size-12 text-primary mx-auto mb-4" />
                 <h3 className="font-bold text-lg mb-2">{t('readyToReturn')}</h3>
                 <p className="text-sm text-muted-foreground mb-4">{t('readyToReturnDesc')}</p>
                 <Link href="/account/orders" className="block">
@@ -260,7 +260,7 @@ export default async function ReturnsPage({ params }: { params: Promise<{ locale
             <Card className="bg-muted">
               <CardContent className="p-5">
                 <div className="flex items-start gap-3">
-                  <Question className="size-5 text-brand shrink-0 mt-0.5" />
+                  <Question className="size-5 text-primary shrink-0 mt-0.5" />
                   <div>
                     <h4 className="font-medium mb-1">{t('needHelp')}</h4>
                     <p className="text-sm text-muted-foreground mb-3">{t('needHelpDesc')}</p>
@@ -295,7 +295,7 @@ export default async function ReturnsPage({ params }: { params: Promise<{ locale
                   <AccordionItem key={index} value={`faq-${index}`}>
                     <AccordionTrigger className="hover:no-underline">
                       <div className="flex items-center gap-3 text-left">
-                        <Question className="size-5 text-brand shrink-0" />
+                        <Question className="size-5 text-primary shrink-0" />
                         <span className="font-medium">{faq.q}</span>
                       </div>
                     </AccordionTrigger>

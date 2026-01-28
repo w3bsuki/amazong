@@ -54,9 +54,9 @@ export function SortSelect() {
         size="default"
         className={cn(
           "px-3 w-full rounded-lg gap-2",
-          "bg-muted/50 hover:bg-muted/70 hover:text-foreground border border-border/40",
-          "active:bg-muted/70",
-          isSorted && "bg-primary/10 text-primary border-primary/20",
+          "bg-surface-subtle hover:bg-hover hover:text-foreground border border-border/40",
+          "active:bg-active",
+          isSorted && "bg-selected text-primary border-selected-border",
           "text-xs font-medium text-foreground",
           "focus:ring-2 focus:ring-offset-1 focus:ring-ring",
           "[&_svg[data-slot=select-icon]]:size-3"

@@ -55,7 +55,7 @@ export default async function FeedbackPage({
   return (
     <PageShell className="pb-20 sm:pb-12">
       {/* Hero Section */}
-      <div className="bg-brand text-primary-foreground">
+      <div className="bg-primary text-primary-foreground">
         <div className="container py-10 md:py-16">
           <div className="[&_nav]:border-primary-foreground/20 [&_nav]:mb-4 [&_a]:text-primary-foreground/80 [&_a:hover]:text-primary-foreground [&_span[aria-current]]:text-primary-foreground [&_svg]:text-primary-foreground/50">
             <AppBreadcrumb
@@ -88,8 +88,8 @@ export default async function FeedbackPage({
             {feedbackTypes.map((type, index) => (
               <Card key={index} className="text-center">
                 <CardContent className="p-5">
-                  <div className="size-12 bg-brand/10 rounded-full flex items-center justify-center mx-auto mb-3">
-                    <type.icon className="size-6 text-brand" weight="duotone" />
+                  <div className="size-12 bg-surface-subtle rounded-full flex items-center justify-center mx-auto mb-3">
+                    <type.icon className="size-6 text-primary" weight="duotone" />
                   </div>
                   <h3 className="font-semibold text-sm mb-1">{type.title}</h3>
                   <p className="text-xs text-muted-foreground">{type.desc}</p>
@@ -104,8 +104,8 @@ export default async function FeedbackPage({
           <Card>
             <CardContent className="p-4">
               <div className="flex items-center gap-3 mb-6">
-                <div className="size-10 bg-brand/10 rounded-lg flex items-center justify-center">
-                  <PaperPlaneTilt className="size-5 text-brand" />
+                <div className="size-10 bg-selected rounded-lg flex items-center justify-center">
+                  <PaperPlaneTilt className="size-5 text-primary" />
                 </div>
                 <div>
                   <h2 className="font-bold text-lg">{t('formTitle')}</h2>
@@ -159,7 +159,7 @@ export default async function FeedbackPage({
         <section className="mt-10 text-center">
           <p className="text-muted-foreground">
             {t('needHelp')}{' '}
-            <Link href="/contact" className="text-brand hover:underline font-medium">
+            <Link href="/contact" className="text-primary hover:underline font-medium">
               {t('contactUs')}
             </Link>
           </p>

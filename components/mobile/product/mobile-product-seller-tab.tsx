@@ -167,7 +167,7 @@ function SellerStatsGrid({ seller }: { seller: SellerInfo }) {
         {stats.map((stat, index) => (
           <div
             key={index}
-            className="flex items-center gap-3 p-3 rounded-lg bg-muted/30"
+            className="flex items-center gap-3 p-3 rounded-lg bg-surface-subtle"
           >
             <stat.icon className={cn("size-5 shrink-0", stat.color)} strokeWidth={1.5} />
             <div className="min-w-0">
@@ -265,10 +265,10 @@ function SellerListings({
           <Link
             key={product.id}
             href={getProductHref(product)}
-            className="group block rounded-lg border border-border/50 bg-surface-card overflow-hidden active:scale-[0.98] transition-transform"
+            className="group block rounded-lg border border-border/50 bg-surface-card overflow-hidden active:opacity-90 transition-opacity"
           >
             {/* Image */}
-            <div className="aspect-square relative bg-muted/30">
+            <div className="aspect-square relative bg-surface-subtle">
               {product.image ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
@@ -325,7 +325,7 @@ function ViewProfileLink({ username }: { username: string | null }) {
   return (
     <Link
       href={`/${username}`}
-      className="flex items-center justify-between p-4 -mx-4 mt-2 bg-muted/30 active:bg-muted/50 transition-colors"
+      className="flex items-center justify-between p-4 -mx-4 mt-2 bg-surface-subtle active:bg-active transition-colors"
     >
       <span className="text-sm font-medium text-text-strong">
         {t("viewFullProfile")}

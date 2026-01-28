@@ -26,6 +26,10 @@ function getArg(flag) {
   return process.argv[idx + 1]
 }
 
+function hasFlag(flag) {
+  return process.argv.includes(flag)
+}
+
 function requireEnv(name) {
   const value = env(name)
   if (!value) throw new Error(`Missing required env var: ${name}`)
@@ -34,6 +38,22 @@ function requireEnv(name) {
 
 async function main() {
   loadEnvFiles()
+
+  const appUrl = env('NEXT_PUBLIC_APP_URL')
+  const allowNonLocal =
+    env('E2E_ALLOW_NON_LOCAL') === 'true' ||
+    env('E2E_ALLOW_NON_LOCAL') === '1' ||
+    hasFlag('--allow-non-local')
+
+  // Safety: avoid accidentally creating test users against production/staging.
+  // This script uses the service role key and will write to whatever Supabase project
+  // your env vars point at.
+  if (appUrl && !/^https?:\/\/(localhost|127\.0\.0\.1)(?::\d+)?\/?$/i.test(appUrl) && !allowNonLocal) {
+    throw new Error(
+      `[e2e-user] Refusing to create users with NEXT_PUBLIC_APP_URL=${appUrl}. ` +
+        `Set E2E_ALLOW_NON_LOCAL=true or pass --allow-non-local to override.`
+    )
+  }
 
   const supabaseUrl = requireEnv('NEXT_PUBLIC_SUPABASE_URL')
   const supabaseAnonKey = requireEnv('NEXT_PUBLIC_SUPABASE_ANON_KEY')

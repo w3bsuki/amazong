@@ -85,7 +85,7 @@ export function MobileSpecsTabs({
                   key={index} 
                   className={cn(
                     "flex justify-between items-center px-4 py-3",
-                    index % 2 === 1 && "bg-muted/30"
+                    index % 2 === 1 && "bg-surface-subtle"
                   )}
                 >
                   <span className="text-sm text-text-muted-alt">{spec.label}</span>

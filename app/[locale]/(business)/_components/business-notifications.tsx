@@ -57,7 +57,7 @@ const notificationIcons: Record<NotificationType, React.ElementType> = {
 
 const notificationColors: Record<NotificationType, string> = {
   order: "bg-info/10 text-info",
-  inventory: "bg-primary/10 text-primary",
+  inventory: "bg-selected text-primary",
   review: "bg-warning/10 text-warning",
   alert: "bg-destructive/10 text-destructive",
   success: "bg-success/10 text-success",
@@ -188,8 +188,8 @@ export function BusinessNotifications({
                   <div
                     key={notification.id}
                     className={cn(
-                      "flex items-start gap-3 px-4 py-3 hover:bg-muted/50 transition-colors",
-                      !notification.read && "bg-primary/5"
+                      "flex items-start gap-3 px-4 py-3 hover:bg-hover active:bg-active transition-colors",
+                      !notification.read && "bg-selected"
                     )}
                   >
                     {/* Icon */}

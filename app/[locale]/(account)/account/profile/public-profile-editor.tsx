@@ -269,7 +269,7 @@ export function PublicProfileEditor({
     <div className="space-y-6">
       {/* Public Profile Preview Link */}
       {profile.username && (
-        <Card className="bg-primary/5 border-primary/20">
+        <Card className="bg-hover border-selected-border">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>

@@ -476,7 +476,7 @@ export function ProductFormModal({
         </div>
 
         {/* Content */}
-        <div className="flex-1 overflow-y-auto bg-muted/30">
+        <div className="flex-1 overflow-y-auto bg-surface-subtle">
           <div className="max-w-7xl mx-auto p-4 sm:p-4 lg:p-4">
             <div className="grid gap-4 product-form-grid lg:grid-cols-2">
               
@@ -555,7 +555,7 @@ export function ProductFormModal({
                       </div>
                     ))}
                     
-                    <label className="aspect-square rounded-lg border-2 border-dashed border-muted-foreground/25 hover:border-primary/50 hover:bg-primary/5 cursor-pointer transition-all flex flex-col items-center justify-center gap-1 text-muted-foreground hover:text-primary">
+                    <label className="aspect-square rounded-lg border-2 border-dashed border-muted-foreground/25 hover:border-hover-border hover:bg-hover active:bg-active cursor-pointer transition-all flex flex-col items-center justify-center gap-1 text-muted-foreground hover:text-primary">
                       <input
                         type="file"
                         accept="image/*"
@@ -756,8 +756,8 @@ export function ProductFormModal({
                         className={cn(
                           "px-2 py-2 text-xs rounded-lg border transition-all capitalize",
                           watch("condition") === cond
-                            ? "border-primary bg-primary/10 text-primary font-medium"
-                            : "border-border hover:border-primary/50"
+                            ? "border-selected-border bg-selected text-primary font-medium"
+                            : "border-border hover:border-hover-border"
                         )}
                       >
                         {cond.replace("_", " ")}

@@ -31,7 +31,7 @@ export function MobileAccordions({ shippingText, returnsText }: MobileAccordions
       <Accordion type="single" collapsible className="w-full">
         {/* Shipping & Returns */}
         <AccordionItem value="shipping" className="border-b border-border/50">
-          <AccordionTrigger className="px-4 py-3 hover:no-underline [&[data-state=open]]:bg-muted/30">
+          <AccordionTrigger className="px-4 py-3 hover:no-underline [&[data-state=open]]:bg-surface-subtle">
             <div className="flex items-center gap-2.5">
               <div className="size-8 rounded-md bg-muted flex items-center justify-center">
                 <Truck className="size-4 text-muted-foreground" />

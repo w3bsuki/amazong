@@ -112,23 +112,9 @@ function sanitizeCartItems(rawItems: CartItem[]): CartItem[] {
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const { user, isLoading: authLoading } = useAuth()
-  // Initialize from localStorage synchronously on client to avoid flash of empty cart
-  const [items, setItems] = useState<CartItem[]>(() => {
-    if (typeof window === "undefined") return []
-    try {
-      const savedCart = localStorage.getItem("cart")
-      const parsed = safeJsonParse<CartItem[]>(savedCart)
-      if (parsed) {
-        return sanitizeCartItems(parsed)
-      }
-    } catch {
-      // Ignore storage access errors
-    }
-    return []
-  })
+  const [items, setItems] = useState<CartItem[]>([])
   const hasSyncedRef = useRef<string | null>(null)
-  // If we initialized from localStorage, consider it loaded
-  const [storageLoaded, setStorageLoaded] = useState(() => typeof window !== "undefined")
+  const [storageLoaded, setStorageLoaded] = useState(false)
   const [serverSyncDone, setServerSyncDone] = useState(false)
 
   const loadServerCart = useCallback(async (activeUserId: string) => {
@@ -246,15 +232,9 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     localStorage.removeItem("cart")
   }, [])
 
-  // Load from localStorage immediately (for SSR hydration)
-  // Note: Initial state already loads from localStorage synchronously on client,
-  // but this effect handles edge cases like corrupt data cleanup
   useEffect(() => {
-    // Already loaded synchronously via useState initializer
-    if (storageLoaded) return
-    
-    const savedCart = localStorage.getItem("cart")
     try {
+      const savedCart = localStorage.getItem("cart")
       const parsed = safeJsonParse<CartItem[]>(savedCart)
       if (parsed) {
         const sanitized = sanitizeCartItems(parsed)
@@ -274,10 +254,11 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     } finally {
       setStorageLoaded(true)
     }
-  }, [storageLoaded])
+  }, [])
 
   // Sync with server when auth state settles
   useEffect(() => {
+    if (!storageLoaded) return
     if (authLoading) return // Wait for auth to settle
 
     const syncCart = async () => {
@@ -307,18 +288,19 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     }
 
     syncCart()
-  }, [user, authLoading, loadServerCart, syncLocalCartToServer])
+  }, [storageLoaded, user, authLoading, loadServerCart, syncLocalCartToServer])
 
   // Save cart to local storage whenever it changes.
   // This keeps the cart resilient across route-group layout boundaries and
   // provides an immediate UX even if server sync is delayed.
   useEffect(() => {
+    if (!storageLoaded) return
     try {
       localStorage.setItem("cart", JSON.stringify(items))
     } catch {
       // Ignore storage access errors
     }
-  }, [items])
+  }, [items, storageLoaded])
 
   const addToCart = (newItem: CartItem) => {
     const normalizedPrice = normalizePrice(newItem.price)

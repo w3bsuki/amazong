@@ -51,8 +51,8 @@ export function AccountAddressesStats({ stats, locale }: AddressesStatsProps) {
         </div>
         {stats.defaultCount > 0 && (
           <div className="flex items-center gap-1.5">
-            <span className="size-2 rounded-full bg-brand" />
-            <span className="font-medium text-brand">{stats.defaultCount}</span>
+            <span className="size-2 rounded-full bg-primary" />
+            <span className="font-medium text-primary">{stats.defaultCount}</span>
             <span className="text-muted-foreground">{t.default}</span>
           </div>
         )}
@@ -83,12 +83,12 @@ export function AccountAddressesStats({ stats, locale }: AddressesStatsProps) {
               <Star className="size-4 shrink-0" weight="duotone" />
               <span className="truncate">{t.defaultAddress}</span>
             </CardDescription>
-            <CardTitle className={`text-2xl font-semibold tabular-nums @[250px]/card:text-3xl ${stats.defaultCount > 0 ? 'text-brand' : ''}`}>
+            <CardTitle className={`text-2xl font-semibold tabular-nums @[250px]/card:text-3xl ${stats.defaultCount > 0 ? 'text-primary' : ''}`}>
               {stats.defaultCount.toLocaleString()}
             </CardTitle>
             <CardAction>
               {stats.defaultCount > 0 ? (
-                <Badge variant="outline" className="text-brand border-brand/30 bg-brand/10">
+                <Badge variant="outline" className="text-primary border-selected-border bg-selected">
                   {t.active}
                 </Badge>
               ) : (

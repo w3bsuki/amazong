@@ -193,7 +193,7 @@ export function DesktopFilterModal({
       variant="ghost"
       className={cn(
         'h-9 px-4 rounded-full gap-2 bg-secondary/50 hover:bg-secondary',
-        activeFilterCount > 0 && 'bg-primary/10 text-primary hover:bg-primary/20',
+        activeFilterCount > 0 && 'bg-selected text-primary hover:bg-hover',
         className
       )}
     >
@@ -222,7 +222,7 @@ export function DesktopFilterModal({
         {/* Header - fixed at top with subtle shadow */}
         <div className="flex shrink-0 items-center justify-between px-6 py-5 border-b bg-background">
           <div className="flex items-center gap-3">
-            <div className="p-2.5 rounded-md bg-primary/10">
+            <div className="p-2.5 rounded-md bg-selected">
               <Sliders size={22} className="text-primary" weight="duotone" />
             </div>
             <div>
@@ -495,7 +495,7 @@ function FilterSearch({
           placeholder={placeholder}
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="pl-9 h-9 text-sm bg-muted/50 border-input"
+          className="pl-9 h-9 text-sm bg-surface-subtle border-input"
         />
       </div>
       <div className="space-y-1 max-h-(--spacing-scroll-sm) overflow-y-auto">
@@ -507,7 +507,7 @@ function FilterSearch({
               className={cn(
                 "flex items-center gap-2.5 py-2 px-2.5 rounded-lg cursor-pointer transition-colors",
                 "hover:bg-muted",
-                isChecked && "bg-primary/10 hover:bg-primary/15"
+                isChecked && "bg-selected hover:bg-hover"
               )}
             >
               {isSingleSelect ? (
@@ -546,7 +546,7 @@ function FilterSearch({
         <button
           type="button"
           onClick={() => setIsExpanded(!isExpanded)}
-          className="text-sm text-primary hover:text-primary/80 font-medium w-full text-center py-2 flex items-center justify-center gap-1.5 rounded-lg hover:bg-primary/5 transition-colors"
+          className="text-sm text-primary hover:text-primary/80 font-medium w-full text-center py-2 flex items-center justify-center gap-1.5 rounded-lg hover:bg-hover transition-colors"
         >
           {isExpanded ? t('showLess') : t('showAllCount', { count: filteredOptions.length })}
           <CaretDown size={14} className={cn("transition-transform", isExpanded && "rotate-180")} />

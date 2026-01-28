@@ -259,7 +259,7 @@ export function StepDetails() {
                     key={attr.id}
                     type="button"
                     onClick={() => setAttrDrawerOpen(attr.id)}
-                    className="w-full flex items-center justify-between h-14 px-4 active:bg-muted/50 transition-colors"
+                    className="w-full flex items-center justify-between h-14 px-4 active:bg-active transition-colors"
                   >
                     <span className="text-reading text-foreground">{name}</span>
                     <div className="flex items-center gap-2">
@@ -307,7 +307,7 @@ export function StepDetails() {
           name="description"
           control={control}
           render={({ field }) => (
-            <div className="bg-card rounded-xl border border-border overflow-hidden focus-within:border-primary/50 focus-within:ring-2 focus-within:ring-primary/10 transition-all">
+            <div className="bg-card rounded-xl border border-border overflow-hidden focus-within:border-ring focus-within:ring-2 focus-within:ring-ring transition-colors">
               <Textarea
                 {...field}
                 placeholder={isBg
@@ -334,15 +334,15 @@ export function StepDetails() {
         </div>
         <div className="grid grid-cols-4 gap-2">
           {images.length < 12 && (
-              <button
-                type="button"
-                onClick={addDemoPhoto}
-                className="aspect-square rounded-xl border-2 border-dashed border-border flex flex-col items-center justify-center gap-1 hover:border-primary/40 hover:bg-accent/30 transition-all active:scale-95"
-              >
-                <Camera className="size-5 text-muted-foreground" />
-                <span className="text-2xs font-medium text-muted-foreground">
-                  {isBg ? "Добави" : "Add"}
-                </span>
+               <button
+                 type="button"
+                 onClick={addDemoPhoto}
+                 className="aspect-square rounded-xl border-2 border-dashed border-border flex flex-col items-center justify-center gap-1 hover:border-hover-border hover:bg-accent/30 transition-colors active:scale-95"
+               >
+                 <Camera className="size-5 text-muted-foreground" />
+                 <span className="text-2xs font-medium text-muted-foreground">
+                   {isBg ? "Добави" : "Add"}
+                 </span>
               </button>
           )}
           {images.map((img, i) => (
@@ -387,11 +387,11 @@ export function StepDetails() {
                       setConditionOpen(false);
                     }}
                     className={cn(
-                      "w-full flex items-center justify-between h-14 px-4 rounded-xl transition-all",
+                      "w-full flex items-center justify-between h-14 px-4 rounded-xl transition-colors",
                       "active:opacity-90",
                       isSelected
                         ? "bg-selected border border-selected-border"
-                        : "bg-muted/40 hover:bg-muted/60"
+                        : "bg-surface-subtle hover:bg-hover"
                     )}
                   >
                     <span className={cn(
@@ -437,11 +437,11 @@ export function StepDetails() {
                           setAttrDrawerOpen(null);
                         }}
                         className={cn(
-                          "w-full flex items-center justify-between h-14 px-4 rounded-xl transition-all",
+                          "w-full flex items-center justify-between h-14 px-4 rounded-xl transition-colors",
                           "active:opacity-90",
                           isSelected
                             ? "bg-selected border border-selected-border"
-                            : "bg-muted/40 hover:bg-muted/60"
+                            : "bg-surface-subtle hover:bg-hover"
                         )}
                       >
                         <span className={cn(

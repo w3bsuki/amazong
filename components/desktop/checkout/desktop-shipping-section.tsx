@@ -62,15 +62,15 @@ export function DesktopShippingSection({
             className={cn(
               "flex items-center gap-4 p-4 rounded-lg border-2 cursor-pointer transition-all",
               isSelected
-                ? "border-primary bg-primary/5"
-                : "border-border hover:border-primary/30"
+                ? "border-selected-border bg-selected"
+                : "border-border hover:border-hover-border"
             )}
           >
             <RadioGroupItem value={opt.id} id={`shipping-${opt.id}`} className="shrink-0" />
             
             <div className={cn(
               "size-10 rounded-full flex items-center justify-center shrink-0",
-              isSelected ? "bg-primary/10" : "bg-muted"
+              isSelected ? "bg-selected" : "bg-muted"
             )}>
               <Icon 
                 className={cn("size-5", isSelected ? "text-primary" : "text-muted-foreground")} 

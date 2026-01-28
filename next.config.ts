@@ -45,11 +45,12 @@ const nextConfig: NextConfig = {
       revalidate: 120,  // 2 minutes
       expire: 600,      // 10 minutes - force refresh
     },
-    // User data: short cache for personalization
+    // Public profile pages (username storefront + profile data)
+    // Use tag invalidation on mutations to avoid aggressive background revalidation.
     user: {
-      stale: 30,        // 30 seconds
-      revalidate: 60,   // 1 minute
-      expire: 300,      // 5 minutes
+      stale: 300,       // 5 minutes - serve stale briefly
+      revalidate: 3600, // 1 hour - background revalidate
+      expire: 86400,    // 1 day - hard expiry
     },
   },
 

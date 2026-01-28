@@ -4,7 +4,7 @@ import { PageShell } from "@/components/shared/page-shell"
 export default function GiftCardsLoadingSkeleton() {
   return (
     <PageShell variant="muted" className="pb-20 sm:pb-12">
-      <div className="bg-primary/5 py-8 sm:py-12">
+      <div className="bg-surface-subtle py-8 sm:py-12">
         <div className="container">
           <div className="flex gap-2 items-center mb-4">
             <Skeleton className="h-4 w-16" />

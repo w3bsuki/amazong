@@ -151,7 +151,7 @@ export function ProductCardList({
   return (
     <div
       className={cn(
-        "group relative flex gap-4 rounded-lg border border-border bg-card p-3 transition-colors hover:bg-muted/30",
+        "group relative flex gap-4 rounded-lg border border-border bg-card p-3 transition-colors hover:bg-hover active:bg-active",
         className
       )}
     >

@@ -138,7 +138,7 @@ export function StepperWrapper({
                   i + 1 === currentStep 
                     ? "bg-primary" 
                     : i + 1 < currentStep
-                      ? "bg-primary/50"
+                      ? "bg-primary"
                       : "bg-border"
                 )}
               />

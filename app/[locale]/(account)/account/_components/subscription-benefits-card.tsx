@@ -120,7 +120,7 @@ export function SubscriptionBenefitsCard({
         {/* Header with plan name */}
         <div className={cn(
           "px-4 py-3 flex items-center justify-between",
-          isPaidPlan ? "bg-primary/10" : "bg-muted/50"
+          isPaidPlan ? "bg-selected" : "bg-surface-subtle"
         )}>
           <div className="flex items-center gap-2">
             <Crown 

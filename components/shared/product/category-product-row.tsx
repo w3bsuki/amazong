@@ -169,29 +169,29 @@ export function CategoryProductRowMobile({
   const displayProducts = products.slice(0, maxProducts)
 
   return (
-    <section className={cn("pt-section-top pb-section-bottom", className)}>
-      {/* Section header - semantic tokens */}
-      <header className="px-inset mb-3 flex items-center justify-between min-h-touch-sm">
-        <div className="flex items-center gap-2.5">
-          <span className="shrink-0 [&>svg]:size-5" aria-hidden="true">{displayIcon}</span>
-          <h2 className="text-body font-semibold tracking-tight text-foreground">
+    <section className={cn("pt-3 pb-1", className)}>
+      {/* Section header */}
+      <div className="px-inset mb-2.5 flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <span className="shrink-0" aria-hidden="true">{displayIcon}</span>
+          <span className="text-sm font-bold text-foreground">
             {title}
-          </h2>
+          </span>
         </div>
         {seeAllHref && (
           <Link
             href={seeAllHref}
-            className="flex items-center gap-1 text-compact font-medium text-primary min-h-touch-sm px-1 -mr-1 active:opacity-70 transition-opacity"
+            className="flex items-center gap-0.5 text-xs font-medium text-muted-foreground active:text-foreground"
           >
             {seeAllText}
-            <ArrowRight size={14} weight="bold" aria-hidden="true" />
+            <ArrowRight size={12} weight="bold" />
           </Link>
         )}
-      </header>
+      </div>
 
-      {/* Horizontal scroll product cards with snap */}
-      <div className="overflow-x-auto no-scrollbar snap-x snap-mandatory">
-        <div className="flex gap-3 px-inset pb-1">
+      {/* Horizontal scroll product cards */}
+      <div className="overflow-x-auto no-scrollbar">
+        <div className="flex gap-3 px-inset">
           {displayProducts.map((product) => (
             <HorizontalProductCard key={product.id} product={product} />
           ))}

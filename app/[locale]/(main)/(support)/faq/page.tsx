@@ -269,14 +269,14 @@ export default async function FAQPage({ params }: { params: Promise<{ locale: st
         </div>
 
         {/* Contact CTA */}
-        <Card className="mt-10 max-w-2xl mx-auto bg-muted/50">
+        <Card className="mt-10 max-w-2xl mx-auto bg-surface-subtle">
           <CardContent className="flex flex-col sm:flex-row items-center justify-between gap-4 py-6">
             <div className="text-center sm:text-left">
               <p className="font-medium">{t.cantFind}</p>
             </div>
             <Link 
               href="/customer-service" 
-              className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-interactive-hover transition-colors"
             >
               {t.contactUs}
             </Link>

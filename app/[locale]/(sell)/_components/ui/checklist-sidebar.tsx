@@ -36,7 +36,7 @@ export function ChecklistSidebar({
         <h4 className="text-sm font-semibold text-foreground">
           {t("checklistSidebar.title")}
         </h4>
-        <span className="text-xs font-medium text-muted-foreground tabular-nums bg-muted/30 px-2 py-0.5 rounded border border-border/50">
+        <span className="text-xs font-medium text-muted-foreground tabular-nums bg-surface-subtle px-2 py-0.5 rounded border border-border/50">
           {completedCount}/{items.length}
         </span>
       </div>
@@ -46,7 +46,7 @@ export function ChecklistSidebar({
             <div className={cn(
               "size-5.5 rounded-md flex items-center justify-center shrink-0 transition-all border",
               item.completed 
-                ? "bg-primary border-primary text-white" 
+                ? "bg-primary border-primary text-primary-foreground" 
                 : "bg-background border-border text-muted-foreground/40"
             )}>
               {item.completed && <Check className="size-3" weight="bold" />}

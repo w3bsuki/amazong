@@ -177,7 +177,7 @@ export function StepPricing() {
                 <button
                   type="button"
                   onClick={() => setCurrencyDrawerOpen(true)}
-                  className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-muted/60 hover:bg-muted transition-colors active:opacity-90"
+                  className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-surface-subtle hover:bg-hover active:bg-active transition-colors"
                 >
                   <span className="text-sm font-bold">{currency}</span>
                   <CaretRight className="size-3.5 text-muted-foreground rotate-90" weight="bold" />
@@ -285,11 +285,11 @@ export function StepPricing() {
                       setCurrencyDrawerOpen(false);
                     }}
                     className={cn(
-                      "w-full flex items-center justify-between h-14 px-4 rounded-xl transition-all",
+                      "w-full flex items-center justify-between h-14 px-4 rounded-xl transition-colors",
                       "active:opacity-90",
                       isSelected
                         ? "bg-selected border border-selected-border"
-                        : "bg-muted/40 hover:bg-muted/60"
+                        : "bg-surface-subtle hover:bg-hover"
                     )}
                   >
                     <span className={cn(

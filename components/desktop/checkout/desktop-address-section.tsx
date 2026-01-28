@@ -65,9 +65,9 @@ export function DesktopAddressSection({
       <>
         {/* Selected address display */}
         {selected && (
-          <div className="rounded-lg border-2 border-primary bg-primary/5 p-5">
+          <div className="rounded-lg border-2 border-selected-border bg-selected p-5">
             <div className="flex items-start gap-4">
-              <div className="size-12 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+              <div className="size-12 rounded-full bg-selected flex items-center justify-center shrink-0">
                 <MapPin className="size-6 text-primary" weight="fill" />
               </div>
               <div className="flex-1 min-w-0">
@@ -113,7 +113,7 @@ export function DesktopAddressSection({
             <SheetHeader>
               <SheetTitle>{t("selectShippingAddress") || "Select shipping address"}</SheetTitle>
             </SheetHeader>
-            <div className="mt-6 flex flex-col gap-3 overflow-auto pb-4 max-h-[calc(100vh-12rem)]">
+            <div className="mt-6 flex flex-col gap-3 overflow-auto pb-4 max-h-(--account-orders-sheet-scroll-h)">
               <RadioGroup
                 value={selectedAddressId || ""}
                 onValueChange={(v) => {
@@ -131,8 +131,8 @@ export function DesktopAddressSection({
                       className={cn(
                         "flex items-start gap-3 p-4 rounded-lg border-2 cursor-pointer transition-all",
                         isSelected
-                          ? "border-primary bg-primary/5"
-                          : "border-border hover:border-primary/30"
+                          ? "border-selected-border bg-selected"
+                          : "border-border hover:border-hover-border"
                       )}
                     >
                       <RadioGroupItem value={addr.id} id={`addr-${addr.id}`} className="shrink-0 mt-0.5" />

@@ -56,12 +56,12 @@ export function MobileShippingSection({
           <label
             key={opt.id}
             htmlFor={`m-shipping-${opt.id}`}
-            className={cn(
-              "flex items-center gap-3 p-3 rounded-lg border-2 cursor-pointer transition-all",
-              isSelected
-                ? "border-primary bg-primary/5"
+              className={cn(
+                "flex items-center gap-3 p-3 rounded-lg border-2 cursor-pointer transition-all",
+                isSelected
+                ? "border-selected-border bg-selected"
                 : "border-border"
-            )}
+              )}
           >
             <RadioGroupItem value={opt.id} id={`m-shipping-${opt.id}`} className="shrink-0" />
             

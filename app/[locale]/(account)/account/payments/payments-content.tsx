@@ -186,7 +186,7 @@ export function PaymentsContent({
             </div>
 
             {/* Security Notice */}
-            <Card className="bg-muted/50 border-muted">
+            <Card className="bg-surface-subtle border-muted">
                 <CardContent className="flex items-start gap-3 pt-4">
                     <Shield className="size-5 text-primary shrink-0 mt-0.5" weight="fill" />
                     <div className="text-sm">
@@ -282,7 +282,7 @@ export function PaymentsContent({
 
                     {/* Add New Card Button */}
                     <Card 
-                        className="border-dashed cursor-pointer hover:border-primary/50 transition-colors"
+                        className="border-dashed cursor-pointer hover:border-hover-border transition-colors"
                         onClick={handleAddCard}
                     >
                         <CardContent className="flex items-center justify-center py-6">

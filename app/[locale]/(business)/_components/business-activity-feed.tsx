@@ -48,10 +48,10 @@ const activityIcons: Record<ActivityType, React.ElementType> = {
 
 const activityColors: Record<ActivityType, string> = {
   order: "bg-info/10 text-info",
-  product: "bg-primary/10 text-primary",
+  product: "bg-selected text-primary",
   review: "bg-warning/10 text-warning",
   customer: "bg-success/10 text-success",
-  milestone: "bg-primary/10 text-primary",
+  milestone: "bg-selected text-primary",
 }
 
 export function BusinessActivityFeed({ activities, className }: BusinessActivityFeedProps) {
@@ -107,7 +107,7 @@ export function BusinessActivityFeed({ activities, className }: BusinessActivity
                 <div
                   key={activity.id}
                   className={cn(
-                    "flex items-start gap-3 px-6 py-3 hover:bg-muted/50 transition-colors",
+                    "flex items-start gap-3 px-6 py-3 hover:bg-hover active:bg-active transition-colors",
                     index !== activities.length - 1 && "border-b"
                   )}
                 >

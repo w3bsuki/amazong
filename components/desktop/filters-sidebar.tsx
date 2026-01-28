@@ -93,7 +93,7 @@ export function FiltersSidebar({
                   "px-3 py-1.5 text-xs rounded-full transition-colors min-h-9",
                   filters.condition === c.id
                     ? "bg-foreground text-background font-medium"
-                    : "bg-muted text-muted-foreground hover:bg-muted/80 hover:text-foreground"
+                    : "bg-muted text-muted-foreground hover:bg-hover hover:text-foreground"
                 )}
               >
                 {c.label}

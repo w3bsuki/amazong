@@ -455,7 +455,7 @@ export function PlansContent({
             onClick={() => setBillingPeriod("yearly")}
           >
             {locale === "bg" ? "Годишно" : "Yearly"}
-            <Badge variant="secondary" className="text-xs bg-primary/10 text-primary">
+            <Badge variant="secondary" className="text-xs bg-selected text-primary">
               -17%
             </Badge>
           </button>

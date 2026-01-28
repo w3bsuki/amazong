@@ -46,7 +46,7 @@ function ReviewSection({
 }) {
   return (
     <div className="rounded-2xl border border-border bg-card overflow-hidden">
-      <div className="flex items-center justify-between px-4 py-3 bg-muted/30 border-b border-border/50">
+      <div className="flex items-center justify-between px-4 py-3 bg-surface-subtle border-b border-border/50">
         <div className="flex items-center gap-3">
           <div className={cn(
             "size-9 rounded-xl flex items-center justify-center",
@@ -65,7 +65,7 @@ function ReviewSection({
             variant="ghost"
             size="sm"
             onClick={onEdit}
-            className="h-8 px-3 gap-1.5 text-primary text-sm font-semibold hover:bg-primary/10"
+            className="h-8 px-3 gap-1.5 text-primary text-sm font-semibold hover:bg-hover active:bg-active"
           >
             <PencilSimple className="size-4" />
             Edit
@@ -145,7 +145,7 @@ export function ReviewField({ onEditStep }: ReviewFieldProps) {
     <div className="flex flex-col gap-5">
       {/* Validation warnings - Premium alert design */}
       {!isValid && (
-        <div className="p-4 rounded-2xl bg-muted/30 border border-border">
+        <div className="p-4 rounded-2xl bg-surface-subtle border border-border">
           <div className="flex items-start gap-3.5">
             <div className="size-10 rounded-xl bg-warning/10 flex items-center justify-center shrink-0">
               <Warning className="size-5 text-warning" weight="fill" />

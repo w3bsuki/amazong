@@ -139,7 +139,7 @@ export function DesktopLayout({
 
                 {/* AI Assistant - Show after first photo */}
                 {(formValues.images?.length ?? 0) > 0 && (
-                  <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 pt-4 border-t border-border">
+                  <div className="pt-4 border-t border-border">
                     <AiListingAssistant />
                   </div>
                 )}
@@ -193,7 +193,7 @@ export function DesktopLayout({
                 size="lg"
                 className={cn(
                   "w-full h-12 rounded-md gap-2 text-sm font-semibold",
-                  progress !== 100 && "bg-muted text-muted-foreground hover:bg-muted/80"
+                  progress !== 100 && "bg-muted text-muted-foreground hover:bg-hover active:bg-active"
                 )}
               >
                 {isSubmitting ? (
@@ -233,7 +233,7 @@ export function DesktopLayout({
               {/* Tips Card */}
               <div className="p-4 rounded-md border border-border bg-background shadow-xs">
                 <div className="flex items-center gap-2.5 mb-4">
-                  <div className="flex size-8 items-center justify-center rounded-md bg-primary/10 border border-primary/20">
+                  <div className="flex size-8 items-center justify-center rounded-md bg-selected border border-selected-border">
                     <Sparkle className="size-4 text-primary" weight="bold" />
                   </div>
                   <h4 className="text-sm font-semibold text-foreground">
@@ -243,7 +243,7 @@ export function DesktopLayout({
                 <ul className="space-y-3">
                   {tips.map((tip, index) => (
                     <li key={index} className="flex items-start gap-3">
-                      <div className="size-4 rounded-full bg-primary/10 flex items-center justify-center shrink-0 mt-0.5">
+                      <div className="size-4 rounded-full bg-selected flex items-center justify-center shrink-0 mt-0.5">
                         <Check className="size-2.5 text-primary" weight="bold" />
                       </div>
                       <span className="text-sm text-muted-foreground leading-relaxed">

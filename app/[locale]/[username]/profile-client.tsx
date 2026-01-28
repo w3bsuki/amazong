@@ -211,7 +211,7 @@ export function PublicProfileClient({
   return (
     <PageShell className="pb-20 sm:pb-8">
       {/* Banner */}
-      <div className="relative h-32 sm:h-48 md:h-56 bg-primary/10">
+      <div className="relative h-32 sm:h-48 md:h-56 bg-selected">
         {profile.banner_url && (
           <Image
             src={profile.banner_url}
@@ -372,7 +372,7 @@ export function PublicProfileClient({
                     href={profile.website_url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="p-2 rounded-full bg-muted hover:bg-muted/80 transition-colors"
+                    className="p-2 rounded-full bg-surface-subtle hover:bg-hover active:bg-active transition-colors"
                   >
                     <Globe className="size-5" />
                   </a>
@@ -385,7 +385,7 @@ export function PublicProfileClient({
                       href={url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="p-2 rounded-full bg-muted hover:bg-muted/80 transition-colors"
+                      className="p-2 rounded-full bg-surface-subtle hover:bg-hover active:bg-active transition-colors"
                     >
                       {socialIcons[platform] || <Globe className="size-5" />}
                     </a>

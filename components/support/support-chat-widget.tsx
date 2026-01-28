@@ -282,7 +282,7 @@ export function SupportChatWidget({
           <Button
             size="lg"
             className={cn(
-              "fixed bottom-4 right-4 z-50 h-12 w-12 rounded-full shadow bg-brand hover:bg-brand-dark",
+              "fixed bottom-4 right-4 z-50 h-12 w-12 rounded-full shadow bg-primary hover:bg-interactive-hover",
               "md:bottom-6 md:right-6",
               className
             )}
@@ -297,14 +297,14 @@ export function SupportChatWidget({
         className="w-full sm:w-(--container-modal-sm) p-0 flex flex-col"
       >
         {/* Header */}
-        <SheetHeader className="px-4 py-3 border-b bg-brand text-white">
+        <SheetHeader className="px-4 py-3 border-b bg-primary text-primary-foreground">
           <div className="flex items-center gap-3">
             <div className="size-10 bg-primary-foreground/20 rounded-full flex items-center justify-center">
               <Headphones className="size-5" weight="fill" />
             </div>
             <div className="flex-1">
-              <SheetTitle className="text-white text-lg">{t("contactUs")}</SheetTitle>
-              <p className="text-white/80 text-sm">{t("needMoreHelp")}</p>
+              <SheetTitle className="text-primary-foreground text-lg">{t("contactUs")}</SheetTitle>
+              <p className="text-primary-foreground/80 text-sm">{t("needMoreHelp")}</p>
             </div>
           </div>
         </SheetHeader>
@@ -322,7 +322,7 @@ export function SupportChatWidget({
             </div>
           ) : isLoading ? (
             <div className="flex items-center justify-center h-full">
-              <Spinner className="size-8 text-brand" label={tCommon("loading")} />
+              <Spinner className="size-8 text-primary" label={tCommon("loading")} />
             </div>
           ) : messages.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full text-center py-8">
@@ -347,7 +347,7 @@ export function SupportChatWidget({
                   {msg.is_support && (
                     <Avatar className="size-8 shrink-0">
                       <AvatarImage src="/images/support-avatar.png" />
-                      <AvatarFallback className="bg-brand text-white text-xs">
+                      <AvatarFallback className="bg-primary text-primary-foreground text-xs">
                         TS
                       </AvatarFallback>
                     </Avatar>
@@ -357,7 +357,7 @@ export function SupportChatWidget({
                       "max-w-(--support-chat-message-max-w) rounded-lg px-3 py-2",
                       msg.is_support
                         ? "bg-muted text-foreground"
-                        : "bg-brand text-white"
+                        : "bg-primary text-primary-foreground"
                     )}
                   >
                     <p className="text-sm whitespace-pre-wrap wrap-break-word">
@@ -366,7 +366,7 @@ export function SupportChatWidget({
                     <p
                       className={cn(
                         "text-2xs mt-1",
-                        msg.is_support ? "text-muted-foreground" : "text-white/70"
+                        msg.is_support ? "text-muted-foreground" : "text-primary-foreground/70"
                       )}
                     >
                       {formatTime(msg.created_at)}
@@ -395,7 +395,7 @@ export function SupportChatWidget({
                 size="icon"
                 onClick={handleSend}
                 disabled={!newMessage.trim() || isSending}
-                className="bg-brand hover:bg-brand-dark shrink-0"
+                className="bg-primary hover:bg-interactive-hover shrink-0"
               >
                 {isSending ? (
                   <Spinner className="size-4" label={tCommon("loading")} />
@@ -406,7 +406,7 @@ export function SupportChatWidget({
             </div>
             <p className="text-xs text-muted-foreground mt-2 text-center">
               {t("emailAlternative") || "Or email us at"}{" "}
-              <a href="mailto:help@treido.com" className="text-brand hover:underline">
+              <a href="mailto:help@treido.com" className="text-primary hover:underline">
                 help@treido.com
               </a>
             </p>

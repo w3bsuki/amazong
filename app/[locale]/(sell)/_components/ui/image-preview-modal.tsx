@@ -18,9 +18,9 @@ export function ImagePreviewModal({
   image,
   onClose,
 }: ImagePreviewModalProps) {
-  return (
-    <div 
-      className="fixed inset-0 z-50 bg-surface-gallery text-overlay-text flex items-center justify-center p-4 animate-in fade-in-0 duration-200"
+    return (
+      <div 
+      className="fixed inset-0 z-50 bg-surface-gallery text-overlay-text flex items-center justify-center p-4"
       onClick={onClose}
       role="dialog"
       aria-modal="true"

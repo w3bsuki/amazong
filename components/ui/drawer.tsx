@@ -146,7 +146,6 @@ function DrawerOverlay({
         data-slot="drawer-overlay"
         className={cn(
           "fixed inset-0 z-50 bg-overlay-dark touch-none outline-none",
-          "animate-in fade-in-0",
           blurClasses[blur],
           className
         )}

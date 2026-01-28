@@ -71,7 +71,7 @@ export function SellerProductsGrid({ products, totalCount, sellerUsername }: Sel
   if (!hasProducts) return null;
 
   return (
-    <div className="py-4 bg-muted/30">
+    <div className="py-4 bg-surface-subtle">
       {/* Header */}
       <div className="flex items-center justify-between px-4 mb-3">
         <h3 className="text-sm font-bold text-foreground">

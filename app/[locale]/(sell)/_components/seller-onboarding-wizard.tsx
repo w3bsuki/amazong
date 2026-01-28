@@ -89,7 +89,7 @@ export function SellerOnboardingWizard({
         {/* Progress indicator - step 2 = 66%, step 3 = 100% */}
         <div className="h-1 bg-muted">
           <motion.div
-            className="h-full bg-brand"
+            className="h-full bg-primary"
             initial={{ width: "0%" }}
             animate={{ width: `${(step / 3) * 100}%` }}
             transition={{ duration: 0.3 }}
@@ -111,7 +111,7 @@ export function SellerOnboardingWizard({
               >
                 {/* Header */}
                 <div className="text-center mb-6">
-                  <div className="inline-flex items-center justify-center w-14 h-14 rounded-md bg-brand mb-4">
+                  <div className="inline-flex items-center justify-center w-14 h-14 rounded-md bg-primary mb-4">
                     <Sparkle weight="bold" className="w-7 h-7 text-primary-foreground" />
                   </div>
                   <h1 className="text-xl sm:text-2xl font-semibold text-foreground mb-2">
@@ -187,7 +187,8 @@ export function SellerOnboardingWizard({
                 <Button
                   onClick={handleComplete}
                   disabled={isPending}
-                  className="w-full h-11 bg-brand hover:bg-brand-dark"
+                  variant="cta"
+                  className="w-full h-11"
                 >
                   {isPending ? (
                     <>
@@ -243,7 +244,7 @@ export function SellerOnboardingWizard({
                 {/* Action */}
                 <Button
                   onClick={onComplete}
-                  className="w-full h-12 bg-warning hover:bg-warning/90 text-white font-medium"
+                  className="w-full h-12 bg-warning hover:bg-warning/90 text-warning-foreground font-medium"
                 >
                   <Storefront className="mr-2 size-5" weight="fill" />
                   {t("sellerOnboardingWizard.startSelling")}

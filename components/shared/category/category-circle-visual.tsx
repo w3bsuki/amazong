@@ -52,7 +52,7 @@ export function CategoryCircleVisual({
   
   // Determine background and ring styles based on variant
   const isColorful = variant === "colorful"
-  const bgClass = isColorful ? colors.bg : "bg-muted/20"
+  const bgClass = isColorful ? colors.bg : "bg-surface-subtle"
   const iconColorClass = isColorful ? colors.text : "text-foreground"
   
   // Ring style: active uses category color, inactive uses subtle border with hover

@@ -70,7 +70,7 @@ export function MinimalHeader({
               className="flex items-center gap-2 hover:opacity-80 transition-opacity focus:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-sm"
               aria-label={tCommon("goToHomepage")}
             >
-              <ShoppingCart className="size-6 text-brand" weight="duotone" />
+              <ShoppingCart className="size-6 text-primary" weight="duotone" />
               <span className="text-xl font-semibold tracking-tight">treido.</span>
             </Link>
           </div>

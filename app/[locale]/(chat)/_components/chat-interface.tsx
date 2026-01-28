@@ -346,7 +346,7 @@ export function ChatInterface({
             {onBack && (
               <button
                 onClick={onBack}
-                className="flex items-center justify-center size-9 rounded-full hover:bg-muted active:bg-muted/70 transition-colors lg:hidden"
+                className="flex items-center justify-center size-9 rounded-full hover:bg-hover active:bg-active transition-colors lg:hidden"
               >
                 <ArrowLeft size={22} weight="regular" className="text-foreground" />
               </button>
@@ -628,7 +628,7 @@ export function ChatInterface({
                 // Generic system message (status updates, etc.)
                 return (
                   <div key={message.id} className="flex justify-center my-3">
-                    <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-muted/70 border border-border/50">
+                    <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-surface-subtle border border-border/50">
                       <span className="text-xs text-muted-foreground">
                         {message.content.replaceAll('**', "").replaceAll('_', "").split("\n")[0]}
                       </span>
@@ -785,7 +785,7 @@ export function ChatInterface({
             <button
               onClick={() => fileInputRef.current?.click()}
               disabled={isUploadingImage || isSending}
-              className="flex items-center justify-center size-10 rounded-full hover:bg-muted active:bg-muted/70 transition-colors shrink-0 disabled:opacity-50"
+              className="flex items-center justify-center size-10 rounded-full hover:bg-hover active:bg-active transition-colors shrink-0 disabled:opacity-50"
             >
               {isUploadingImage ? (
                 <CircleNotch size={22} weight="regular" className="text-primary animate-spin" />
@@ -795,7 +795,7 @@ export function ChatInterface({
             </button>
 
             {/* Input container - using ring pattern from shadcn */}
-            <div className="flex-1 flex items-end gap-2 px-3 py-2 rounded-full bg-muted/50 ring-1 ring-border focus-within:ring-2 focus-within:ring-ring transition-shadow min-h-10">
+            <div className="flex-1 flex items-end gap-2 px-3 py-2 rounded-full bg-surface-subtle ring-1 ring-border focus-within:ring-2 focus-within:ring-ring transition-shadow min-h-10">
               <textarea
                 ref={inputRef}
                 value={inputValue}
@@ -815,7 +815,7 @@ export function ChatInterface({
               className={cn(
                 "flex items-center justify-center size-10 rounded-full transition-colors shrink-0 disabled:opacity-50",
                 inputValue.trim()
-                  ? "bg-primary text-primary-foreground hover:bg-primary/90"
+                  ? "bg-primary text-primary-foreground hover:bg-interactive-hover"
                   : "bg-muted text-muted-foreground"
               )}
             >

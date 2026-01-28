@@ -86,7 +86,7 @@ export function SubcategoryPills({
     pillBase,
     "bg-background text-muted-foreground border-border/60", // White bg, light gray border
     "hover:border-foreground/20 hover:text-foreground",
-    "active:opacity-90 active:bg-muted/30" // Treido: active opacity effect
+    "active:opacity-90 active:bg-active" // Treido: active opacity effect
   )
 
   return (

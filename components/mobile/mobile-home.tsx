@@ -65,27 +65,27 @@ function PromotedListingsStrip({
   if (!products || products.length === 0) return null
 
   return (
-    <section className="pt-section-top pb-section-bottom">
-      {/* Section header - semantic tokens */}
-      <header className="px-inset mb-3 flex items-center justify-between min-h-touch-sm">
-        <div className="flex items-center gap-2.5">
-          <Fire size={18} weight="fill" className="text-fire shrink-0" aria-hidden="true" />
-          <h2 className="text-body font-semibold tracking-tight text-foreground">
+    <section className="pt-3 pb-1">
+      {/* Section header */}
+      <div className="px-inset mb-2.5 flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <Fire size={18} weight="fill" className="text-fire" />
+          <span className="text-sm font-bold text-foreground">
             {t("mobile.promotedListings")}
-          </h2>
+          </span>
         </div>
         <Link
           href="/todays-deals"
-          className="flex items-center gap-1 text-compact font-medium text-primary min-h-touch-sm px-1 -mr-1 active:opacity-70 transition-opacity"
+          className="flex items-center gap-0.5 text-xs font-medium text-muted-foreground active:text-foreground"
         >
           {t("mobile.seeAll")}
-          <ArrowRight size={14} weight="bold" aria-hidden="true" />
+          <ArrowRight size={12} weight="bold" />
         </Link>
-      </header>
+      </div>
 
-      {/* Horizontal scroll product cards with snap */}
-      <div className="overflow-x-auto no-scrollbar snap-x snap-mandatory">
-        <div className="flex gap-3 px-inset pb-1">
+      {/* Horizontal scroll product cards */}
+      <div className="overflow-x-auto no-scrollbar">
+        <div className="flex gap-3 px-inset">
           {products.slice(0, 8).map((product) => (
             <HorizontalProductCard key={product.id} product={product} />
           ))}
@@ -253,7 +253,7 @@ export function MobileHome({
             locale={locale}
             categorySlug={nav.activeSlug}
             categoryId={nav.currentL0?.id}
-            className="sticky top-[88px] z-20"
+            className="sticky top-22 z-20"
           />
         )}
 
@@ -264,7 +264,7 @@ export function MobileHome({
 
         {/* CURATED CATEGORY SECTIONS - Only on "All" tab, after promoted */}
         {nav.isAllTab && curatedSections && (
-          <div className="space-y-section-gap">
+          <>
             {/* Today's Deals */}
             {curatedSections.deals.length > 0 && (
               <CategoryProductRowMobile
@@ -308,7 +308,7 @@ export function MobileHome({
                 seeAllText={t("sections.seeAll")}
               />
             )}
-          </div>
+          </>
         )}
 
         {/* Feed Controls - transition from browse to shop mode */}

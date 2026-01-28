@@ -45,7 +45,7 @@ export default function CategoriesLoading() {
       </div>
 
       {/* Quick Actions - matches page.tsx */}
-      <div className="px-inset py-3 bg-muted/20 border-t border-border/30">
+      <div className="px-inset py-3 bg-surface-subtle border-t border-border/30">
         <div className="grid grid-cols-2 gap-2">
           <Skeleton className="h-14 w-full rounded-md" />
           <Skeleton className="h-14 w-full rounded-md" />

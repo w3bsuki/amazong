@@ -88,7 +88,7 @@ export default function WishlistPageClient() {
         <div className="container px-3 md:px-4">
           <div className="flex items-center justify-center py-8" role="status" aria-live="polite">
             <div className="flex flex-col items-center gap-3">
-              <SpinnerGap className="size-8 animate-spin text-brand" />
+              <SpinnerGap className="size-8 animate-spin text-primary" />
               <p className="text-sm text-muted-foreground">
                 {t("loading")}
               </p>
@@ -242,7 +242,7 @@ export default function WishlistPageClient() {
               <div className="p-2 sm:p-3">
                 {/* Title */}
                 <Link href={getProductUrl(item)}>
-                  <h3 className="text-sm font-medium text-foreground line-clamp-2 mb-1 group-hover:text-brand transition-colors min-h-10">
+                  <h3 className="text-sm font-medium text-foreground line-clamp-2 mb-1 group-hover:text-primary transition-colors min-h-10">
                     {item.title}
                   </h3>
                 </Link>

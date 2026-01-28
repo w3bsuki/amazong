@@ -444,8 +444,8 @@ export function FilterModal({
                   "w-full flex items-center gap-3 h-10 transition-colors text-left",
                   rowPadClass,
                   isActive
-                    ? "bg-muted/40 text-foreground font-medium"
-                    : "text-foreground active:bg-muted/30"
+                    ? "bg-selected text-foreground font-medium"
+                    : "text-foreground active:bg-active"
                 )}
                 aria-pressed={isActive}
               >
@@ -499,8 +499,8 @@ export function FilterModal({
                   "w-full flex items-center gap-3 h-10 transition-colors text-left",
                   rowPadClass,
                   isActive
-                    ? "bg-muted/40 text-foreground font-medium"
-                    : "text-foreground active:bg-muted/30"
+                    ? "bg-selected text-foreground font-medium"
+                    : "text-foreground active:bg-active"
                 )}
                 aria-pressed={isActive}
               >
@@ -539,8 +539,8 @@ export function FilterModal({
               "w-full flex items-center gap-3 h-10 transition-colors text-left",
               rowPadClass,
               pending.availability === "instock"
-                ? "bg-muted/40 text-foreground font-medium"
-                : "text-foreground active:bg-muted/30"
+                ? "bg-selected text-foreground font-medium"
+                : "text-foreground active:bg-active"
             )}
             aria-pressed={pending.availability === "instock"}
           >
@@ -570,8 +570,8 @@ export function FilterModal({
                 "w-full flex items-center gap-3 h-10 transition-colors text-left",
                 rowPadClass,
                 pendingCategorySlug === null
-                  ? "bg-muted/40 text-foreground font-medium"
-                  : "text-foreground active:bg-muted/30"
+                  ? "bg-selected text-foreground font-medium"
+                  : "text-foreground active:bg-active"
               )}
               aria-pressed={pendingCategorySlug === null}
             >
@@ -595,8 +595,8 @@ export function FilterModal({
                 className={cn(
                   "flex-1 flex items-center gap-3 h-10 transition-colors text-left",
                   pendingCategorySlug === null
-                    ? "bg-muted/40 text-foreground font-medium"
-                    : "text-foreground active:bg-muted/30"
+                    ? "bg-selected text-foreground font-medium"
+                    : "text-foreground active:bg-active"
                 )}
                 aria-pressed={pendingCategorySlug === null}
               >
@@ -637,8 +637,8 @@ export function FilterModal({
                   "w-full flex items-center gap-3 h-10 transition-colors text-left",
                   rowPadClass,
                   isActive
-                    ? "bg-muted/40 text-foreground font-medium"
-                    : "text-foreground active:bg-muted/30"
+                    ? "bg-selected text-foreground font-medium"
+                    : "text-foreground active:bg-active"
                 )}
                 aria-pressed={isActive}
               >
@@ -683,7 +683,7 @@ export function FilterModal({
                 <button
                   type="button"
                   onClick={() => onOpenChange(false)}
-                  className="size-8 flex items-center justify-center rounded-full hover:bg-muted active:bg-muted/80 transition-colors"
+                  className="size-8 flex items-center justify-center rounded-full hover:bg-hover active:bg-active transition-colors"
                   aria-label={tHub("close")}
                 >
                   <X size={18} weight="bold" />
@@ -741,7 +741,7 @@ export function FilterModal({
               <DialogClose asChild>
                 <button
                   type="button"
-                  className="size-8 flex items-center justify-center rounded-full hover:bg-muted active:bg-muted/80 transition-colors"
+                  className="size-8 flex items-center justify-center rounded-full hover:bg-hover active:bg-active transition-colors"
                   aria-label={tHub("close")}
                 >
                   <X size={18} weight="bold" />
