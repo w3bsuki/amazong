@@ -56,28 +56,22 @@ pnpm storybook:build
 
 ## Project Structure
 
-**Agent entry point**: `CLAUDE.md` (read on every prompt)
+**Agent entry point**: `AGENTS.md` (read on every prompt)
 
-**Canonical docs (root)**:
+**Canonical docs (SSOT)**:
 
 | Doc | Purpose |
 |-----|---------|
-| `WORKFLOW.md` | Process loop (Issues → Tasks → Verify) |
-| `ISSUES.md` | Issue registry |
-| `TASKS.md` | Active task list |
-| `REQUIREMENTS.md` | Launch feature checklist |
-| `ARCHITECTURE.md` | Stack, boundaries, caching |
-| `DESIGN.md` | UI tokens, patterns, anti-patterns |
-| `TESTING.md` | Gates, debugging tips |
-| `FEATURES.md` | Route/action/DB/test map |
-| `PRODUCTION.md` | Deployment checklist |
-| `PRODUCT.md` | Scope, roadmap |
+| `docs/PRD.md` | Product vision, scope, roadmap |
+| `docs/FEATURES.md` | Feature status (✅/🚧/⬜), route map |
+| `docs/ARCHITECTURE.md` | Stack, boundaries, caching, Supabase, Stripe |
+| `docs/DESIGN.md` | UI tokens, patterns, anti-patterns |
 
-**Legacy docs**: `docs-final/archive/` (reference only)
+**Legacy docs**: see `audit/` (dated) + root history (reference only)
 
 ## Where does this file go?
 
-Use these rules before adding new files (see `ARCHITECTURE.md` for full details):
+Use these rules before adding new files (see `docs/ARCHITECTURE.md` for full details):
 
 - `app/[locale]/(group)/.../_components/*`: UI used only by a single route group (account/admin/auth/business/chat/checkout/main/plans/sell).
 - `app/[locale]/(group)/.../_actions/*`: server actions used only by that route group.
@@ -90,13 +84,13 @@ Use these rules before adding new files (see `ARCHITECTURE.md` for full details)
 
 ## Documentation
 
-Docs are intentionally kept small and canonical in repo root (see `WORKFLOW.md`).
+Docs are intentionally kept small and canonical in `docs/` (see `AGENTS.md`).
 
 ## Caching (Next.js 16)
 
 - Cache Components are enabled (`cacheComponents: true`) and cache profiles live in `next.config.ts` under `cacheLife` (`categories`, `products`, `deals`, `user`).
 - Cached server data fetchers should use `'use cache'` + `cacheLife()` + `cacheTag()` for targeted invalidation.
-- Reference guide: `ARCHITECTURE.md`.
+- Reference guide: `docs/ARCHITECTURE.md`.
 
 ## Environment Variables
 #### AI Search (optional)

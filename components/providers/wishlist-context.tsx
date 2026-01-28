@@ -295,9 +295,16 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
 
 export function useWishlist(): WishlistContextType {
   // In Storybook, use the mock context if available
-  if (typeof window !== "undefined" && (window as any).__STORYBOOK_WISHLIST_CONTEXT__) {
+  const storybookWishlistContext =
+    typeof window !== "undefined"
+      ? (window as unknown as { __STORYBOOK_WISHLIST_CONTEXT__?: unknown }).__STORYBOOK_WISHLIST_CONTEXT__
+      : undefined
+
+  if (storybookWishlistContext) {
     // eslint-disable-next-line react-hooks/rules-of-hooks
-    const mockContext = useContext((window as any).__STORYBOOK_WISHLIST_CONTEXT__) as WishlistContextType | undefined
+    const mockContext = useContext(
+      storybookWishlistContext as React.Context<WishlistContextType | undefined>
+    )
     if (mockContext) return mockContext
   }
   // eslint-disable-next-line react-hooks/rules-of-hooks

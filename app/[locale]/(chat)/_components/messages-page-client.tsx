@@ -242,9 +242,15 @@ function MessagesContent({ actions }: { actions: ChatInterfaceServerActions }) {
   )
 }
 
-export function MessagesPageClient({ actions }: { actions: ChatInterfaceServerActions }) {
+interface MessagesPageClientProps {
+  actions: ChatInterfaceServerActions
+  initialSellerId?: string | undefined
+  initialProductId?: string | undefined
+}
+
+export function MessagesPageClient({ actions, initialSellerId, initialProductId }: MessagesPageClientProps) {
   return (
-    <MessageProvider>
+    <MessageProvider initialSellerId={initialSellerId} initialProductId={initialProductId}>
       <MessagesContent actions={actions} />
     </MessageProvider>
   )

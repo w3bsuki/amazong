@@ -235,6 +235,13 @@
   --color-badge-promoted-bg: oklch(0.25 0.04 50);
   --color-badge-promoted-border: oklch(0.38 0.08 50);
   --color-badge-promoted-text: oklch(0.75 0.12 50);
+  
+  /* Promoted Section (desktop) - Dark Mode */
+  --surface-promoted: oklch(0.22 0.04 50);
+  --surface-promoted-accent: oklch(0.65 0.18 50);
+  --border-promoted: oklch(0.35 0.08 50);
+  --text-promoted: oklch(0.88 0.10 50);
+  --text-promoted-muted: oklch(0.70 0.06 50);
   --color-badge-shipping-bg: var(--color-badge-success-subtle-bg);
   --color-badge-shipping-border: oklch(0.35 0.06 155);
   --color-badge-shipping-text: var(--color-badge-success-subtle-fg);
@@ -422,6 +429,15 @@
   --spacing-input: 2.75rem;
   --spacing-search: 2.75rem;
 
+  /* === LAYOUT GRID SYSTEM (Desktop Shell) === */
+  --layout-sidebar-w: 17.5rem;
+  --layout-sidebar-w-collapsed: 4rem;
+  --layout-content-max-w: 87.5rem;
+  --layout-gap: 1.5rem;
+  --layout-gap-sm: 1rem;
+  --product-card-min-w: 12.5rem;
+  --product-grid-gap: 1rem;
+
   /* === TOUCH TARGETS (Dense Marketplace) === */
   --spacing-touch-xs: 2rem;      /* 32px - minimum WCAG */
   --spacing-touch-sm: 2.25rem;   /* 36px - compact */
@@ -439,6 +455,14 @@
   --height-dialog-lg: 95dvh;
   --width-dialog: calc(100% - 2rem);
   --width-sheet-mobile: 85vw;
+
+  /* === ONBOARDING MODAL SIZING === */
+  /* Mobile: Full width minus safe margins */
+  --onboarding-modal-w: min(calc(100vw - 2rem), 28rem);
+  /* Mobile: Use dynamic viewport height, leave room for keyboard */
+  --onboarding-modal-max-h: calc(100dvh - 3rem);
+  /* Desktop: More controlled height */
+  --onboarding-modal-max-h-sm: min(85dvh, 40rem);
 
   /* === ICON SIZES (65% fill ratio for touch targets) === */
   --size-icon-xs: 1.25rem;       /* 20px - small inline */
@@ -553,6 +577,13 @@
   --color-badge-promoted-bg: oklch(0.97 0.04 50);
   --color-badge-promoted-border: oklch(0.88 0.08 50);
   --color-badge-promoted-text: oklch(0.42 0.14 50);
+  
+  /* Promoted Section (desktop) - Light Mode */
+  --surface-promoted: oklch(0.96 0.04 55);
+  --surface-promoted-accent: oklch(0.68 0.16 50);
+  --border-promoted: oklch(0.85 0.08 50);
+  --text-promoted: oklch(0.30 0.12 50);
+  --text-promoted-muted: oklch(0.50 0.08 50);
   --color-badge-shipping-bg: var(--color-badge-success-subtle-bg);
   --color-badge-shipping-border: oklch(0.88 0.06 155);
   --color-badge-shipping-text: var(--color-badge-success-subtle-fg);

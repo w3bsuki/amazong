@@ -28,7 +28,7 @@ export function StepWhat() {
       
       <div className="space-y-5">
         <TitleField compact />
-        <PhotosField maxPhotos={1} compact />
+        <PhotosField maxPhotos={8} compact />
       </div>
     </div>
   );

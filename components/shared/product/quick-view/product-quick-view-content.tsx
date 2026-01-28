@@ -123,10 +123,11 @@ export function ProductQuickViewContent({
   const formattedPrice = formatPrice(price, { locale })
   const totalPrice = formatPrice(price * quantity, { locale })
 
-  // Mobile layout (compact)
+  // Mobile layout - ultra-compact, everything visible without scrolling
   if (isMobile) {
     return (
-      <div className="flex flex-col">
+      <div className="flex flex-col h-full touch-action-pan-y">
+        {/* Compact hero image - wide aspect for more content space */}
         <QuickViewImageGallery
           images={allImages}
           title={title}
@@ -134,9 +135,12 @@ export function ProductQuickViewContent({
           onNavigateToProduct={onNavigateToProduct}
           compact
         />
-        <div className="flex flex-col flex-1 px-4 py-3 space-y-2.5">
-          <div className="flex items-baseline gap-2 flex-wrap">
-            <span className={cn("text-xl font-bold tabular-nums", showDiscount ? "text-price-sale" : "text-foreground")}>
+
+        {/* Content area - clean card-like styling */}
+        <div className="flex flex-col flex-1 px-4 pt-3 pb-2 gap-2">
+          {/* Price row - prominent */}
+          <div className="flex items-baseline gap-2">
+            <span className={cn("text-xl font-bold tabular-nums tracking-tight", showDiscount ? "text-price-sale" : "text-foreground")}>
               {formattedPrice}
             </span>
             {showDiscount && originalPrice && (
@@ -145,8 +149,12 @@ export function ProductQuickViewContent({
               </span>
             )}
           </div>
+
+          {/* Title - two lines max with proper weight */}
           <h2 className="text-base font-semibold leading-snug text-foreground line-clamp-2">{title}</h2>
-          <div className="flex flex-wrap items-center gap-1.5">
+
+          {/* Meta row - rating, condition, shipping inline */}
+          <div className="flex items-center gap-2 flex-wrap">
             {hasRating && (
               <div className="flex items-center gap-1">
                 <Star size={14} weight="fill" className="fill-rating text-rating" />
@@ -157,32 +165,49 @@ export function ProductQuickViewContent({
               </div>
             )}
             {condition && (
-              <Badge variant={getConditionBadgeVariant(condition)}>
+              <Badge variant={getConditionBadgeVariant(condition)} className="text-xs">
                 <Tag size={10} />
                 {condition}
               </Badge>
             )}
             {freeShipping && (
-              <Badge variant="shipping">
+              <Badge variant="shipping" className="text-xs">
                 <Truck size={10} weight="fill" />
                 {tProduct("freeShipping")}
               </Badge>
             )}
           </div>
+
+          {/* Seller card */}
           <QuickViewSellerCard
             sellerName={sellerName}
             sellerAvatarUrl={sellerAvatarUrl}
             sellerVerified={sellerVerified}
             onNavigateToProduct={onNavigateToProduct}
+            compact
           />
         </div>
-        <div className="sticky bottom-0 border-t border-border px-4 py-3 mt-auto bg-background pb-safe-max">
+
+        {/* CTA footer - polished */}
+        <div className="border-t border-border px-4 py-3 bg-background pb-safe-max">
           <div className="grid grid-cols-2 gap-2.5">
-            <Button variant="black" size="lg" className="gap-2" onClick={onAddToCart} disabled={!inStock}>
+            <Button
+              variant="black"
+              size="lg"
+              className="gap-2 touch-action-manipulation"
+              onClick={onAddToCart}
+              disabled={!inStock}
+            >
               <ShoppingCart size={18} weight="bold" />
               {tDrawers("addToCart")}
             </Button>
-            <Button variant="cta" size="lg" onClick={onBuyNow} disabled={!inStock}>
+            <Button
+              variant="cta"
+              size="lg"
+              className="touch-action-manipulation"
+              onClick={onBuyNow}
+              disabled={!inStock}
+            >
               {tProduct("buyNow")}
             </Button>
           </div>

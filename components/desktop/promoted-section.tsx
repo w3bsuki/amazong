@@ -13,7 +13,7 @@
 
 import * as React from "react"
 import { useTranslations } from "next-intl"
-import { Fire, ArrowRight } from "@phosphor-icons/react"
+import { Megaphone, ArrowRight } from "@phosphor-icons/react"
 import { cn } from "@/lib/utils"
 import { ProductCard } from "@/components/shared/product/product-card"
 import { Button } from "@/components/ui/button"
@@ -78,49 +78,37 @@ export function PromotedSection({
     <section
       aria-label={t("tabs.promoted")}
       className={cn(
-        // Clean container - no gradients
-        "mb-6 rounded-xl",
-        // Subtle warm background
-        "bg-amber-50/50 dark:bg-amber-950/20",
-        // Clean border
-        "border border-amber-200/50 dark:border-amber-800/30",
+        "mb-6 rounded-xl border border-border overflow-hidden",
         className
       )}
     >
-      {/* Content */}
-      <div className="p-4 sm:p-5">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-2.5">
-            {/* Clean icon badge - flat, no gradient */}
-            <div className="flex items-center justify-center size-8 rounded-lg bg-amber-500 dark:bg-amber-600">
-              <Fire size={18} weight="fill" className="text-white" />
-            </div>
-            <div>
-              <h2 className="text-base font-semibold text-foreground">
-                {t("tabs.promoted")}
-              </h2>
-              <p className="text-xs text-muted-foreground">
-                {t("sectionAriaLabel")}
-              </p>
-            </div>
+      {/* Header */}
+      <div className="flex items-center justify-between px-4 py-3 bg-deal">
+        <div className="flex items-center gap-3">
+          <div className="flex items-center justify-center size-9 rounded-lg bg-deal-foreground/20">
+            <Megaphone size={20} weight="fill" className="text-deal-foreground" />
           </div>
-          
-          {/* View all - proper button style */}
-          <Button
-            variant="outline"
-            size="sm"
-            asChild
-            className="border-amber-300 bg-white hover:bg-amber-50 text-amber-700 dark:border-amber-700 dark:bg-amber-950/50 dark:hover:bg-amber-900/50 dark:text-amber-400"
-          >
-            <Link href={`/${locale}?tab=promoted`}>
-              {t("viewAll")}
-              <ArrowRight size={14} className="ml-1.5" />
-            </Link>
-          </Button>
+          <h2 className="text-lg font-bold tracking-tight text-deal-foreground">
+            ПРОМОТИРАНИ ОБЯВИ
+          </h2>
         </div>
+        
+        {/* View all button */}
+        <Button
+          variant="outline"
+          size="sm"
+          asChild
+          className="bg-deal-foreground border-deal-foreground text-deal hover:bg-deal-light"
+        >
+          <Link href={`/${locale}?tab=promoted`}>
+            {t("viewAll")}
+            <ArrowRight size={14} className="ml-1.5" />
+          </Link>
+        </Button>
+      </div>
 
-        {/* Product Grid - responsive, not horizontal scroll */}
+      {/* Product Grid - white bg */}
+      <div className="p-4 bg-card">
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
           {displayProducts.map((product, index) => (
             <ProductCard

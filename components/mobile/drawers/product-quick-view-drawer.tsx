@@ -98,21 +98,30 @@ export function ProductQuickViewDrawer({
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
-      <DrawerContent aria-label={t("quickView")} showHandle>
-        {/* Header with title + close */}
-        <div className="flex items-center justify-between px-4 pb-2">
-          <DrawerTitle className="text-sm font-semibold text-foreground truncate">
+      <DrawerContent
+        aria-label={t("quickView")}
+        showHandle
+        className="touch-action-pan-y max-h-[85dvh] shadow-2xl"
+        overlayBlur="sm"
+      >
+        {/* Clean header with subtle styling */}
+        <div className="flex items-center justify-between px-4 pb-2 border-b border-border/30">
+          <DrawerTitle className="text-sm font-semibold text-foreground truncate pr-2">
             {title || t("quickView")}
           </DrawerTitle>
           <DrawerClose asChild>
-            <Button variant="ghost" size="icon-sm" className="shrink-0 -mr-2">
-              <X className="size-5" />
+            <Button
+              variant="ghost"
+              size="icon-sm"
+              className="shrink-0 -mr-2 size-8 rounded-full hover:bg-muted touch-action-manipulation"
+            >
+              <X className="size-4" />
               <span className="sr-only">{t("close")}</span>
             </Button>
           </DrawerClose>
         </div>
         <DrawerDescription className="sr-only">{description}</DrawerDescription>
-        <DrawerBody className="px-0">
+        <DrawerBody className="px-0 py-0 touch-action-pan-y overflow-hidden">
           {showSkeleton ? (
             <QuickViewSkeleton />
           ) : resolvedProduct ? (

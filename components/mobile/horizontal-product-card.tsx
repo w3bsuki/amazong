@@ -1,5 +1,6 @@
 "use client"
 
+import * as React from "react"
 import Image from "next/image"
 import { Link } from "@/i18n/routing"
 import { cn } from "@/lib/utils"
@@ -11,6 +12,7 @@ import {
   Star,
 } from "@phosphor-icons/react"
 import { useTranslations } from "next-intl"
+import { useDrawer, type QuickViewProduct } from "@/components/providers/drawer-context"
 import type { UIProduct } from "@/lib/data/products"
 
 // =============================================================================
@@ -19,6 +21,8 @@ import type { UIProduct } from "@/lib/data/products"
 
 export interface HorizontalProductStripCardProps {
   product: UIProduct
+  /** Disable quick view drawer (use direct link navigation) */
+  disableQuickView?: boolean
 }
 
 // =============================================================================
@@ -26,19 +30,66 @@ export interface HorizontalProductStripCardProps {
 // Used by: PromotedListingsStrip, OffersForYou, and similar components
 // =============================================================================
 
-export function HorizontalProductCard({ product }: HorizontalProductStripCardProps) {
+export function HorizontalProductCard({ 
+  product, 
+  disableQuickView = false 
+}: HorizontalProductStripCardProps) {
   const tProduct = useTranslations("Product")
-  const hasDiscount = product.listPrice && product.listPrice > product.price
+  const { openProductQuickView, enabledDrawers, isDrawerSystemEnabled } = useDrawer()
+  
+  const listPrice = product.listPrice
+  const hasDiscount = typeof listPrice === "number" && listPrice > product.price
   const discountPercent = hasDiscount
-    ? Math.round(((product.listPrice! - product.price) / product.listPrice!) * 100)
+    ? Math.round(((listPrice - product.price) / listPrice) * 100)
     : 0
   const href = product.storeSlug && product.slug
     ? `/${product.storeSlug}/${product.slug}`
     : `/product/${product.id}`
 
+  // Check if quick view drawer should be used
+  const shouldUseQuickView = !disableQuickView && 
+    isDrawerSystemEnabled && 
+    enabledDrawers.productQuickView
+
+  // Handle card click for quick view
+  const handleCardClick = React.useCallback((e: React.MouseEvent) => {
+    if (!shouldUseQuickView) return
+    
+    // Allow expected link behaviors (new tab, copy link, etc.)
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return
+    
+    e.preventDefault()
+    
+    const quickViewData: QuickViewProduct = {
+      id: product.id,
+      title: product.title,
+      price: product.price,
+      image: product.image,
+      ...(product.image && product.image !== "/placeholder.svg"
+        ? { images: [product.image] }
+        : {}),
+      ...(product.listPrice != null ? { originalPrice: product.listPrice } : {}),
+      ...(product.categoryPath ? { categoryPath: product.categoryPath } : {}),
+      ...(product.condition != null ? { condition: product.condition } : {}),
+      ...(product.location != null ? { location: product.location } : {}),
+      ...(product.freeShipping !== undefined ? { freeShipping: product.freeShipping } : {}),
+      ...(product.rating !== undefined ? { rating: product.rating } : {}),
+      ...(product.reviews !== undefined ? { reviews: product.reviews } : {}),
+      ...(product.slug != null ? { slug: product.slug } : {}),
+      ...(product.storeSlug != null ? { username: product.storeSlug } : {}),
+      ...(product.sellerId != null ? { sellerId: product.sellerId } : {}),
+      ...(product.sellerName != null ? { sellerName: product.sellerName } : {}),
+      ...(product.sellerAvatarUrl != null ? { sellerAvatarUrl: product.sellerAvatarUrl } : {}),
+      ...(product.sellerVerified !== undefined ? { sellerVerified: product.sellerVerified } : {}),
+    }
+    
+    openProductQuickView(quickViewData)
+  }, [shouldUseQuickView, product, openProductQuickView])
+
   return (
     <Link
       href={href}
+      onClick={handleCardClick}
       className="shrink-0 w-36 active:opacity-80 transition-opacity snap-start"
     >
       {/* Product Image */}
@@ -108,7 +159,7 @@ export function HorizontalProductCard({ product }: HorizontalProductStripCardPro
           </span>
           {hasDiscount && (
             <span className="text-2xs text-muted-foreground line-through tabular-nums">
-              €{product.listPrice!.toFixed(2)}
+              €{listPrice.toFixed(2)}
             </span>
           )}
         </div>

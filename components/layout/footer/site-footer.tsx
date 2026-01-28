@@ -174,7 +174,7 @@ export function SiteFooter() {
 
             {/* Mobile/Tablet Footer - Accordion */}
             <div className="lg:hidden px-4 py-6">
-                <Accordion type="single" collapsible className="w-full">
+                <Accordion type="single" collapsible defaultValue="help" className="w-full">
                     {footerSections.map((section) => (
                         <AccordionItem key={section.id} value={section.id} className="border-border/20">
                             <AccordionTrigger className="text-sm font-medium text-background hover:no-underline py-4 hover:text-background">

@@ -81,7 +81,9 @@ export function MobileBottomBarV2({
   // Navigate to chat
   const handleChat = () => {
     if (!seller?.id) return
-    router.push(`/chat?seller=${encodeURIComponent(seller.id)}`)
+    const params = new URLSearchParams({ seller: seller.id })
+    if (product.id) params.set("product", product.id)
+    router.push(`/chat?${params.toString()}`)
   }
 
   // Add to cart
@@ -105,13 +107,18 @@ export function MobileBottomBarV2({
   // Contact seller/agent (opens chat or contact form)
   const handleContact = () => {
     if (!seller?.id) return
-    router.push(`/chat?seller=${encodeURIComponent(seller.id)}`)
+    // Include product ID for context in the conversation
+    const params = new URLSearchParams({ seller: seller.id })
+    if (product.id) params.set("product", product.id)
+    router.push(`/chat?${params.toString()}`)
   }
 
   // Schedule visit (opens contact with inquiry type)
   const handleScheduleVisit = () => {
     if (!seller?.id) return
-    router.push(`/chat?seller=${encodeURIComponent(seller.id)}&type=visit`)
+    const params = new URLSearchParams({ seller: seller.id, type: "visit" })
+    if (product.id) params.set("product", product.id)
+    router.push(`/chat?${params.toString()}`)
   }
 
   // Render appropriate buttons based on category and active tab

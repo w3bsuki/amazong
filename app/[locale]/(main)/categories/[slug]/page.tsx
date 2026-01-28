@@ -1,6 +1,4 @@
 import { createStaticClient } from "@/lib/supabase/server"
-import { ProductCard } from "@/components/shared/product/product-card"
-import { Button } from "@/components/ui/button"
 import { SubcategoryTabs } from "@/components/category/subcategory-tabs"
 import { DesktopFilters } from "@/components/shared/filters/desktop-filters"
 import { FilterChips } from "@/components/shared/filters/filter-chips"
@@ -8,7 +6,8 @@ import { SortSelect } from "@/components/shared/search/sort-select"
 import { SearchPagination } from "@/components/shared/search/search-pagination"
 import { SearchFilters } from "@/components/shared/search/search-filters"
 import { EmptyStateCTA } from "@/components/shared/empty-state-cta"
-import { PageShell } from "@/components/shared/page-shell"
+import { DesktopShell } from "@/components/layout/desktop-shell"
+import { ProductGrid, type ProductGridProduct } from "@/components/grid"
 import { Suspense, use } from "react"
 import { setRequestLocale, getTranslations } from "next-intl/server"
 import { notFound } from "next/navigation"
@@ -369,113 +368,86 @@ function CategoryPageDynamicContent({
         />
       </div>
 
-      <PageShell variant="muted" className="hidden lg:block">
-        <div className="container px-4 xl:px-6 py-4">
-          {/* Subcategory circles - full width above grid (DEC-002: curated ordering + counts) */}
-          <SubcategoryTabs
-            currentCategory={currentCategory}
-            subcategories={subcategoriesWithCounts}
-            parentCategory={parentCategory}
-            basePath="/categories"
-            variant="desktop"
-            showCounts={true}
-          />
-
-          {/* Main grid: sidebar + content */}
-          <div className="grid grid-cols-[var(--spacing-filter-sidebar)_1fr] gap-6">
-            {/* Sidebar - uses bg-sidebar for subtle differentiation from main content */}
-            <aside className="shrink-0">
-              <div className="sticky top-20 max-h-(--spacing-sidebar-max-h) overflow-y-auto bg-sidebar rounded-lg p-4 -ml-2">
-                <SearchFilters
-                  categories={allCategories}
-                  subcategories={subcategories}
-                  currentCategory={currentCategory}
-                  parentCategory={parentCategory}
-                  allCategoriesWithSubs={allCategoriesWithSubs}
-                  brands={[]}
-                  basePath={`/categories/${slug}`}
-                  ancestry={ancestryFull}
-                />
-              </div>
-            </aside>
-
-            {/* Main content */}
-            <main className="min-w-0">
-              {/* Toolbar - single row with sort/count on left, filters on right */}
-              <div className="flex items-center justify-between gap-4 mb-4 pb-3 border-b border-border">
-                <div className="flex items-center gap-4 shrink-0">
-                  <SortSelect />
-                  <p className="text-sm text-muted-foreground whitespace-nowrap">
-                    <span className="font-semibold text-foreground">{totalProducts}</span>
-                    {' '}{t('results')} {t('in')} <span className="font-medium text-foreground">{categoryName}</span>
-                  </p>
-                </div>
-                <DesktopFilters attributes={filterableAttributes} categorySlug={slug} categoryId={categoryId} />
-              </div>
-
-              {/* Active filter chips */}
-              <FilterChips currentCategory={currentCategory} basePath={`/categories/${slug}`} className="mb-4" />
-
-              {/* Product grid */}
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-                {products.map((product) => {
-                  const image = product.image_url || product.images?.[0] || "/placeholder.svg"
-                  const sellerName =
-                    product.sellers?.display_name ||
-                    product.sellers?.business_name ||
-                    product.sellers?.store_slug
-
-                  return (
-                    <ProductCard
-                      key={product.id}
-                      id={product.id}
-                      title={product.title}
-                      price={product.price}
-                      image={image}
-                      rating={product.rating || 0}
-                      reviews={product.review_count || 0}
-                      originalPrice={product.list_price ?? null}
-                      tags={product.tags || []}
-                      slug={product.slug ?? null}
-                      username={product.sellers?.store_slug ?? null}
-                      sellerId={product.sellers?.id ?? null}
-                      {...(sellerName ? { sellerName } : {})}
-                      sellerAvatarUrl={product.sellers?.avatar_url ?? null}
-                      sellerTier={
-                        product.sellers?.account_type === "business"
-                          ? "business"
-                          : product.sellers?.tier === "premium"
-                            ? "premium"
-                            : "basic"
-                      }
-                      sellerVerified={Boolean(product.sellers?.is_verified_business)}
-                      categorySlug={slug}
-                      {...(product.attributes?.condition ? { condition: product.attributes.condition } : {})}
-                      {...(product.attributes?.brand ? { brand: product.attributes.brand } : {})}
-                      {...(product.attributes?.make ? { make: product.attributes.make } : {})}
-                      {...(product.attributes?.model ? { model: product.attributes.model } : {})}
-                      {...(product.attributes?.year ? { year: product.attributes.year } : {})}
-                      {...(product.attributes?.location ? { location: product.attributes.location } : {})}
-                    />
-                  )
-                })}
-
-                {products.length === 0 && (
-                  <EmptyStateCTA variant="no-category" categoryName={categoryName} className="mt-8 col-span-full" />
-                )}
-              </div>
-
-              {products.length > 0 && (
-                <SearchPagination
-                  totalItems={totalProducts}
-                  itemsPerPage={ITEMS_PER_PAGE}
-                  currentPage={currentPage}
-                />
-              )}
-            </main>
+      <DesktopShell
+        variant="muted"
+        className="hidden lg:block"
+        sidebar={
+          <div className="bg-sidebar rounded-lg p-4">
+            <SearchFilters
+              categories={allCategories}
+              subcategories={subcategories}
+              currentCategory={currentCategory}
+              parentCategory={parentCategory}
+              allCategoriesWithSubs={allCategoriesWithSubs}
+              brands={[]}
+              basePath={`/categories/${slug}`}
+              ancestry={ancestryFull}
+            />
           </div>
+        }
+        sidebarSticky
+      >
+        {/* Subcategory circles - full width above grid (DEC-002: curated ordering + counts) */}
+        <SubcategoryTabs
+          currentCategory={currentCategory}
+          subcategories={subcategoriesWithCounts}
+          parentCategory={parentCategory}
+          basePath="/categories"
+          variant="desktop"
+          showCounts={true}
+        />
+
+        {/* Toolbar - single row with sort/count on left, filters on right */}
+        <div className="flex items-center justify-between gap-4 mb-4 pb-3 border-b border-border">
+          <div className="flex items-center gap-4 shrink-0">
+            <SortSelect />
+            <p className="text-sm text-muted-foreground whitespace-nowrap">
+              <span className="font-semibold text-foreground">{totalProducts}</span>
+              {' '}{t('results')} {t('in')} <span className="font-medium text-foreground">{categoryName}</span>
+            </p>
+          </div>
+          <DesktopFilters attributes={filterableAttributes} categorySlug={slug} categoryId={categoryId} />
         </div>
-      </PageShell>
+
+        {/* Active filter chips */}
+        <FilterChips currentCategory={currentCategory} basePath={`/categories/${slug}`} className="mb-4" />
+
+        {/* Product grid with container queries */}
+        <div className="rounded-xl bg-card border border-border p-4">
+          {products.length === 0 ? (
+            <EmptyStateCTA variant="no-category" categoryName={categoryName} className="mt-4" />
+          ) : (
+            <ProductGrid
+              products={products.map((product): ProductGridProduct => ({
+                id: product.id,
+                title: product.title,
+                price: product.price,
+                image: product.image_url || product.images?.[0] || "/placeholder.svg",
+                listPrice: product.list_price ?? undefined,
+                rating: product.rating ?? 0,
+                reviews: product.review_count ?? 0,
+                slug: product.slug ?? null,
+                storeSlug: product.sellers?.store_slug ?? null,
+                sellerId: product.sellers?.id ?? null,
+                sellerName: product.sellers?.display_name || product.sellers?.business_name || product.sellers?.store_slug || undefined,
+                sellerAvatarUrl: product.sellers?.avatar_url ?? null,
+                sellerVerified: Boolean(product.sellers?.is_verified_business),
+                condition: product.attributes?.condition,
+                tags: product.tags ?? [],
+              }))}
+              viewMode="grid"
+            />
+          )}
+        </div>
+
+        {products.length > 0 && (
+          <SearchPagination
+            totalItems={totalProducts}
+            itemsPerPage={ITEMS_PER_PAGE}
+            currentPage={currentPage}
+          />
+        )}
+      </DesktopShell>
     </>
   )
 }

@@ -56,7 +56,7 @@ const VARIANT_ICONS: Record<CategoryRowVariant, ReactNode> = {
   automotive: <Car size={16} weight="fill" className="text-primary" />,
   electronics: <DeviceMobile size={16} weight="fill" className="text-primary" />,
   kids: <Baby size={16} weight="fill" className="text-primary" />,
-  bulgarian: <FlagBanner size={16} weight="fill" className="text-[#00966E]" />, // Bulgarian green
+  bulgarian: <FlagBanner size={16} weight="fill" className="text-success" />, // Bulgarian green
   generic: <Tag size={16} weight="fill" className="text-muted-foreground" />,
 }
 
@@ -169,27 +169,29 @@ export function CategoryProductRowMobile({
   const displayProducts = products.slice(0, maxProducts)
 
   return (
-    <section className={cn("pt-3 pb-1", className)}>
-      {/* Header */}
-      <div className="px-inset mb-2.5 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          {displayIcon}
-          <span className="text-sm font-bold text-foreground">{title}</span>
+    <section className={cn("pt-4 pb-2", className)}>
+      {/* Section header - improved hierarchy */}
+      <header className="px-inset mb-3 flex items-center justify-between min-h-[36px]">
+        <div className="flex items-center gap-2.5">
+          <span className="flex-shrink-0 [&>svg]:size-[18px]">{displayIcon}</span>
+          <h2 className="text-[15px] font-semibold tracking-tight text-foreground leading-tight">
+            {title}
+          </h2>
         </div>
         {seeAllHref && (
           <Link
             href={seeAllHref}
-            className="flex items-center gap-0.5 text-xs font-medium text-muted-foreground active:text-foreground"
+            className="flex items-center gap-1 text-[13px] font-medium text-primary min-h-touch-sm px-1 -mr-1 active:opacity-70 transition-opacity"
           >
             {seeAllText}
-            <ArrowRight size={12} weight="bold" />
+            <ArrowRight size={14} weight="bold" />
           </Link>
         )}
-      </div>
+      </header>
 
-      {/* Big horizontal scroll cards */}
+      {/* Horizontal scroll product cards */}
       <div className="overflow-x-auto no-scrollbar">
-        <div className="flex gap-3 px-inset">
+        <div className="flex gap-3 px-inset pb-1">
           {displayProducts.map((product) => (
             <HorizontalProductCard key={product.id} product={product} />
           ))}

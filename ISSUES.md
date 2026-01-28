@@ -1,4 +1,6 @@
-# Issues (SSOT)
+# Issues (Working Log — not SSOT)
+
+> SSOT is `AGENTS.md` + `docs/*`. This file is a working registry for bugs/audits, not an architecture spec.
 
 This is the single place we register user-reported problems and audit requests.
 
@@ -45,8 +47,8 @@ Summary:
 - Actual: Documentation and audit notes are spread across many folders/files.
 
 Acceptance:
-- [x] Canonical workflow docs exist in repo root.
-- [x] Legacy markdown is consolidated under `docs-final/` and root references updated.
+- [x] Canonical workflow docs exist in `AGENTS.md` + `docs/`.
+- [x] Legacy markdown is consolidated/archived and references updated.
 
 Linked tasks:
 - See `TASKS.md` (search for ISSUE-0001)

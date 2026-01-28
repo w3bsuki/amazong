@@ -221,10 +221,12 @@ function buildCategoryTree(rows: CategoryHierarchyRow[]): CategoryWithChildren[]
   
   // Second pass: build tree structure
   for (const row of activeRows) {
-    const category = categoryMap.get(row.id)!
+    const category = categoryMap.get(row.id)
+    if (!category) continue
     
     if (row.parent_id && categoryMap.has(row.parent_id)) {
-      const parent = categoryMap.get(row.parent_id)!
+      const parent = categoryMap.get(row.parent_id)
+      if (!parent) continue
       parent.children = parent.children || []
       parent.children.push(category)
     } else if (row.depth === 0) {
@@ -919,7 +921,10 @@ export async function getCategoryContext(slug: string): Promise<CategoryContext 
   }
 
   const depthByCategoryId = new Map<string, number>()
-  for (let i = 0; i < ancestorIds.length; i++) depthByCategoryId.set(ancestorIds[i]!, i)
+  for (let i = 0; i < ancestorIds.length; i++) {
+    const ancestorId = ancestorIds[i]
+    if (ancestorId) depthByCategoryId.set(ancestorId, i)
+  }
 
   // Sort inherited attrs root -> parent so nearer ancestors override farther ones.
   const inheritedSorted = [...inheritedAttributes].sort((a, b) => {

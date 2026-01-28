@@ -296,7 +296,7 @@ export function MobileCategoryBrowser({
     }
 
     // Use instant client-side navigation for circle clicks
-    const handleCircleClick = async (cat: any) => {
+    const handleCircleClick = async (cat: CategoryTreeNode) => {
       if (cat?.slug) {
         await instant.setCategorySlug(cat.slug, { clearAttrFilters: true })
       }
@@ -328,7 +328,7 @@ export function MobileCategoryBrowser({
         title: instant.categoryTitle || contextualInitialTitle,
         backHref,
         onBack: handleBack,
-        subcategories: (instant.children as any) ?? contextualSubcategories,
+        subcategories: instant.children.length ? instant.children : contextualSubcategories,
         onSubcategoryClick: handleCircleClick,
       })
       return () => setContextualHeader(null)
@@ -343,7 +343,7 @@ export function MobileCategoryBrowser({
         <InlineFilterBar
           locale={locale}
           onAllFiltersClick={() => setFilterHubOpen(true)}
-          attributes={(instant.attributes as any) ?? filterableAttributes}
+          attributes={instant.attributes.length ? instant.attributes : filterableAttributes}
           appliedSearchParams={instant.appliedSearchParams}
           stickyTop={48}
           sticky={true}
@@ -373,18 +373,18 @@ export function MobileCategoryBrowser({
         />
 
         {/* FilterHub Drawer (fallback for complex filters) */}
-        <FilterHub
-          open={filterHubOpen}
-          onOpenChange={setFilterHubOpen}
-          locale={locale}
-          {...(instant.categorySlug !== "all" ? { categorySlug: instant.categorySlug } : {})}
-          {...(instant.categoryId ? { categoryId: instant.categoryId } : {})}
-          attributes={(instant.attributes as any) ?? filterableAttributes}
-          appliedSearchParams={instant.appliedSearchParams}
-          onApply={handleApplyFilters}
-          mode="full"
-          initialSection={null}
-        />
+          <FilterHub
+            open={filterHubOpen}
+            onOpenChange={setFilterHubOpen}
+            locale={locale}
+            {...(instant.categorySlug !== "all" ? { categorySlug: instant.categorySlug } : {})}
+            {...(instant.categoryId ? { categoryId: instant.categoryId } : {})}
+            attributes={instant.attributes.length ? instant.attributes : filterableAttributes}
+            appliedSearchParams={instant.appliedSearchParams}
+            onApply={handleApplyFilters}
+            mode="full"
+            initialSection={null}
+          />
       </PageShell>
     )
   }

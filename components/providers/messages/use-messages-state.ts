@@ -54,7 +54,8 @@ export function useMessagesState(): UseMessagesStateReturn {
   const [currentConversation, setCurrentConversation] = useState<Conversation | null>(null)
   const [messages, setMessages] = useState<Message[]>([])
   const [totalUnreadCount, setTotalUnreadCount] = useState(0)
-  const [isLoading, setIsLoading] = useState(false)
+  // Start as true - we're always loading initially until we check auth
+  const [isLoading, setIsLoading] = useState(true)
   const [isLoadingMessages, setIsLoadingMessages] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [isOtherUserTyping, setIsOtherUserTyping] = useState(false)
@@ -70,6 +71,9 @@ export function useMessagesState(): UseMessagesStateReturn {
       } = await supabase.auth.getUser()
       if (user) {
         setCurrentUserId(user.id)
+      } else {
+        // No user - stop loading as there won't be any conversations
+        setIsLoading(false)
       }
     }
     getUser()

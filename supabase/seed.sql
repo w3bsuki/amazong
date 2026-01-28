@@ -21,7 +21,7 @@ VALUES (
     'seller@example.com',
     'Test Seller',
     'seller',
-    'https://api.dicebear.com/7.x/avataaars/svg?seed=Felix'
+    'boring-avatar:beam:0:Felix'
 )
 ON CONFLICT (id) DO NOTHING;
 

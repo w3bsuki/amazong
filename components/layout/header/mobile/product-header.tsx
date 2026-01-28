@@ -79,7 +79,7 @@ export function MobileProductHeader({
         "md:hidden",
         "sticky top-0 z-50",
         // Premium glass effect
-        "bg-white/80 dark:bg-zinc-950/80",
+        "bg-background/80",
         "backdrop-blur-xl backdrop-saturate-150",
         // Subtle shadow instead of harsh border
         "shadow-[0_1px_3px_rgba(0,0,0,0.05)]",
@@ -96,9 +96,9 @@ export function MobileProductHeader({
           size="icon"
           className={cn(
             "size-11 rounded-full shrink-0",
-            "text-zinc-700 dark:text-zinc-200",
-            "hover:bg-zinc-100 dark:hover:bg-zinc-800",
-            "active:scale-95 active:bg-zinc-200 dark:active:bg-zinc-700",
+            "text-foreground",
+            "hover:bg-muted",
+            "active:scale-95 active:bg-muted",
             "transition-all duration-150"
           )}
           aria-label={tProduct("back")}
@@ -115,7 +115,7 @@ export function MobileProductHeader({
               href={profileHref} 
               className={cn(
                 "shrink-0 rounded-full",
-                "ring-2 ring-white dark:ring-zinc-900",
+                "ring-2 ring-background",
                 "shadow-sm",
                 "active:scale-95 transition-transform"
               )}
@@ -128,9 +128,7 @@ export function MobileProductHeader({
                 <AvatarFallback 
                   className={cn(
                     "text-xs font-semibold",
-                    "bg-linear-to-br from-zinc-100 to-zinc-200",
-                    "dark:from-zinc-700 dark:to-zinc-800",
-                    "text-zinc-600 dark:text-zinc-300"
+                    "bg-muted text-muted-foreground"
                   )}
                 >
                   {sellerInitials}
@@ -144,7 +142,7 @@ export function MobileProductHeader({
             <h1 
               className={cn(
                 "text-[15px] font-semibold leading-tight",
-                "text-zinc-900 dark:text-zinc-50",
+                "text-foreground",
                 "truncate"
               )}
             >
@@ -163,9 +161,9 @@ export function MobileProductHeader({
               size="icon"
               className={cn(
                 "size-11 rounded-full",
-                "hover:bg-zinc-100 dark:hover:bg-zinc-800",
+                "hover:bg-muted",
                 "active:scale-95 transition-all duration-150",
-                isWishlisted && "hover:bg-rose-50 dark:hover:bg-rose-950/30"
+                isWishlisted && "hover:bg-wishlist-active/10"
               )}
               aria-label={isWishlisted ? tProduct("removeFromWishlist") : tProduct("addToWishlist")}
               aria-pressed={isWishlisted}
@@ -175,8 +173,8 @@ export function MobileProductHeader({
                 className={cn(
                   "size-icon-sm transition-all duration-200",
                   isWishlisted 
-                    ? "fill-rose-500 text-rose-500 scale-110" 
-                    : "text-zinc-700 dark:text-zinc-200"
+                    ? "fill-wishlist-active text-wishlist-active scale-110" 
+                    : "text-foreground"
                 )} 
                 weight={isWishlisted ? "fill" : "regular"}
               />
@@ -190,8 +188,8 @@ export function MobileProductHeader({
             size="icon"
             className={cn(
               "size-11 rounded-full",
-              "text-zinc-700 dark:text-zinc-200",
-              "hover:bg-zinc-100 dark:hover:bg-zinc-800",
+              "text-foreground",
+              "hover:bg-muted",
               "active:scale-95 transition-all duration-150"
             )}
             aria-label={tProduct("share")}

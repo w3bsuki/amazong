@@ -19,6 +19,9 @@ const FeedQuerySchema = z.object({
       'most_viewed',
       'best_sellers',
       'price_low',
+      'price_high',
+      'free_shipping',
+      'ending_soon',
       'nearby',
       'near_me',
     ])
@@ -63,6 +66,7 @@ export async function GET(request: NextRequest) {
         boost_expires_at,
         created_at, 
         free_shipping,
+        seller_city,
         slug,
         attributes,
         seller:profiles(id,username,avatar_url,tier),
@@ -90,6 +94,7 @@ export async function GET(request: NextRequest) {
         boost_expires_at,
         created_at, 
         free_shipping,
+        seller_city,
         slug,
         attributes,
         seller:profiles(id,username,avatar_url,tier),
@@ -101,13 +106,10 @@ export async function GET(request: NextRequest) {
         )
       `
 
-    let query: any
-
-    if (type === 'deals') {
-      query = supabase.from('deal_products').select(dealsSelect, { count: 'exact' })
-    } else {
-      query = supabase.from('products').select(baseSelect, { count: 'exact' })
-    }
+    let query =
+      type === "deals"
+        ? supabase.from("deal_products").select(dealsSelect, { count: "exact" })
+        : supabase.from("products").select(baseSelect, { count: "exact" })
 
     // Apply Category Filter
     if (category && category !== 'all') {
@@ -149,6 +151,24 @@ export async function GET(request: NextRequest) {
 
       case 'price_low':
         query = query.order('price', { ascending: true })
+        break
+
+      case 'price_high':
+        query = query.order('price', { ascending: false })
+        break
+
+      case 'free_shipping':
+        query = query.eq('free_shipping', true)
+        query = query.order('created_at', { ascending: false })
+        break
+
+      case 'ending_soon':
+        // Sales ending within 7 days, sorted by soonest end
+        query = query.eq('is_on_sale', true)
+        query = query.gt('sale_end_date', nowIso)
+        const weekFromNow = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()
+        query = query.lt('sale_end_date', weekFromNow)
+        query = query.order('sale_end_date', { ascending: true })
         break
 
       case 'nearby':

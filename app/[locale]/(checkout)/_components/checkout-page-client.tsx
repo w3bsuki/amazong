@@ -7,9 +7,9 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet"
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { Separator } from "@/components/ui/separator"
 import { Badge } from "@/components/ui/badge"
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { createClient } from "@/lib/supabase/client"
 import {
   ShoppingCart,
@@ -74,7 +74,7 @@ export default function CheckoutPageClient({
   createCheckoutSessionAction: CreateCheckoutSessionAction
   getCheckoutFeeQuoteAction: GetCheckoutFeeQuoteAction
 }) {
-  const { items, isReady, totalItems, subtotal } = useCart()
+  const { items, totalItems, subtotal } = useCart()
   const locale = useLocale()
   const t = useTranslations("CheckoutPage")
 
@@ -252,16 +252,23 @@ export default function CheckoutPageClient({
     if (!useNewAddress && selectedAddressId) return true
     if (useNewAddress) {
       const fields: Array<keyof NewAddressForm> = ["firstName", "lastName", "address", "city", "state", "zip"]
+      // Check validity without setting errors state - just validate the values directly
       return fields.every((field) => {
         const value = newAddress[field]
-        return value && value.trim() && !validateField(field)
+        if (!value || !value.trim()) return false
+        if (field === "zip" && !/^\d{4,5}$/.test(value)) return false
+        if ((field === "firstName" || field === "lastName") && value.length < 2) return false
+        if (field === "address" && value.length < 5) return false
+        return true
       })
     }
     return false
-  }, [useNewAddress, selectedAddressId, newAddress, validateField])
+  }, [useNewAddress, selectedAddressId, newAddress])
 
-  // Loading state
-  if (!mounted || !isReady) {
+  // Loading state - only wait for mounted (hydration safety)
+  // Cart items are loaded from localStorage immediately, so we can show checkout
+  // content right away. Server sync happens in background.
+  if (!mounted) {
     return (
       <div className="min-h-96 flex items-center justify-center">
         <SpinnerGap className="size-5 animate-spin text-muted-foreground" />
@@ -269,7 +276,9 @@ export default function CheckoutPageClient({
     )
   }
 
-  // Empty cart state
+  // Empty cart state - show immediately if no items
+  // If user has items on server, they'll sync in and trigger a re-render
+  // This prevents infinite spinner while waiting for auth/server sync
   if (items.length === 0) {
     return (
       <div className="min-h-96 flex items-center justify-center px-3">
@@ -290,109 +299,120 @@ export default function CheckoutPageClient({
   return (
     <div>
       {/* Mobile */}
-      <div className="lg:hidden pb-24">
+      <div className="lg:hidden pb-[calc(5rem+env(safe-area-inset-bottom))]">
         {/* Accessible page title - sr-only on mobile since header shows step progress */}
         <h1 className="sr-only">{t("title")}</h1>
-        {/* Delivery */}
-        <div className="bg-card px-4 pt-4 pb-3">
-          <div className="flex items-center justify-between mb-3">
-            <div className="flex items-center gap-2">
-              <MapPin className="size-4 text-brand" weight="fill" />
-              <span className="text-sm font-semibold">{t("shippingAddress")}</span>
-            </div>
-            {isAuthenticated && (
-              <Link href="/account/addresses" className="text-xs text-brand font-medium">{t("manageAddresses")}</Link>
-            )}
-          </div>
-          <AddressSection
-            isLoadingAddresses={isLoadingAddresses}
-            savedAddresses={savedAddresses}
-            selectedAddressId={selectedAddressId}
-            setSelectedAddressId={setSelectedAddressId}
-            useNewAddress={useNewAddress}
-            setUseNewAddress={setUseNewAddress}
-            newAddress={newAddress}
-            updateNewAddress={updateNewAddress}
-            handleBlur={handleBlur}
-            errors={errors}
-            touched={touched}
-            showAddressSelector={showAddressSelector}
-            setShowAddressSelector={setShowAddressSelector}
-            t={t}
-          />
-        </div>
+        
+        <div className="space-y-3 p-4">
+          {/* Delivery */}
+          <Card>
+            <CardHeader className="border-b">
+              <div className="flex items-center justify-between">
+                <CardTitle className="flex items-center gap-2 text-sm">
+                  <MapPin className="size-4 text-primary" weight="fill" />
+                  {t("shippingAddress")}
+                </CardTitle>
+                {isAuthenticated && (
+                  <Link href="/account/addresses" className="text-xs text-primary font-medium">{t("manageAddresses")}</Link>
+                )}
+              </div>
+            </CardHeader>
+            <CardContent>
+              <AddressSection
+                isLoadingAddresses={isLoadingAddresses}
+                savedAddresses={savedAddresses}
+                selectedAddressId={selectedAddressId}
+                setSelectedAddressId={setSelectedAddressId}
+                useNewAddress={useNewAddress}
+                setUseNewAddress={setUseNewAddress}
+                newAddress={newAddress}
+                updateNewAddress={updateNewAddress}
+                handleBlur={handleBlur}
+                errors={errors}
+                touched={touched}
+                showAddressSelector={showAddressSelector}
+                setShowAddressSelector={setShowAddressSelector}
+                t={t}
+              />
+            </CardContent>
+          </Card>
 
-        <div className="h-2 bg-muted" />
+          {/* Shipping */}
+          <Card>
+            <CardHeader className="border-b">
+              <CardTitle className="flex items-center gap-2 text-sm">
+                <Truck className="size-4 text-primary" weight="fill" />
+                {t("shippingMethod")}
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ShippingMethodSection
+                shippingMethod={shippingMethod}
+                setShippingMethod={setShippingMethod}
+                formatPrice={formatPrice}
+                t={t}
+                    compact
+              />
+            </CardContent>
+          </Card>
 
-        {/* Shipping */}
-        <div className="bg-card px-4 py-3">
-          <div className="flex items-center gap-2 mb-3">
-            <Truck className="size-4 text-brand" weight="fill" />
-            <span className="text-sm font-semibold">{t("shippingMethod")}</span>
-          </div>
-          <ShippingMethodSection
-            shippingMethod={shippingMethod}
-            setShippingMethod={setShippingMethod}
-            formatPrice={formatPrice}
-            t={t}
-            compact
-          />
-        </div>
+          {/* Items */}
+          <Card>
+            <CardHeader className="border-b">
+              <div className="flex items-center justify-between">
+                <CardTitle className="flex items-center gap-2 text-sm">
+                  <Package className="size-4 text-primary" weight="fill" />
+                  {t("orderItems")}
+                  <Badge variant="secondary" className="ml-1">{totalItems}</Badge>
+                </CardTitle>
+                <Link href="/cart" className="text-xs text-primary font-medium">{t("edit")}</Link>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <OrderItemsSection items={items} formatPrice={formatPrice} t={t} />
+            </CardContent>
+          </Card>
 
-        <div className="h-2 bg-muted" />
+          {/* Summary */}
+          <Card>
+            <CardContent className="py-4 space-y-2">
+              <div className="flex justify-between text-sm">
+                <span className="text-muted-foreground">{t("subtotal")}</span>
+                <span>{formatPrice(subtotal)}</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-muted-foreground">{t("shipping")}</span>
+                <span className={shippingCost === 0 ? "text-success font-medium" : ""}>{shippingCost === 0 ? t("free") : formatPrice(shippingCost)}</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-muted-foreground">{t("tax", { percent: 10 })}</span>
+                <span>{formatPrice(tax)}</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-muted-foreground">{t("buyerProtection")}</span>
+                <span>{formatPrice(buyerProtectionFee)}</span>
+              </div>
+              <div className="flex justify-between pt-2 border-t mt-2">
+                <span className="font-semibold">{t("total")}</span>
+                <span className="text-lg font-bold">{formatPrice(total)}</span>
+              </div>
+            </CardContent>
+          </Card>
 
-        {/* Items */}
-        <div className="bg-card px-4 py-3">
-          <div className="flex items-center justify-between mb-3">
-            <div className="flex items-center gap-2">
-              <Package className="size-4 text-brand" weight="fill" />
-              <span className="text-sm font-semibold">{t("orderItems")}</span>
-              <span className="text-xs bg-brand/10 text-brand px-2 py-0.5 rounded-full font-medium">{totalItems}</span>
-            </div>
-            <Link href="/cart" className="text-xs text-brand font-medium">{t("edit")}</Link>
+          {/* Trust badges */}
+          <div className="flex items-center justify-center gap-4 py-1 text-2xs text-muted-foreground">
+            <span className="flex items-center gap-1"><Lock className="size-3" weight="fill" />{t("securePayment")}</span>
+            <span className="flex items-center gap-1"><ShieldCheck className="size-3" weight="fill" />{t("buyerProtection")}</span>
           </div>
-          <OrderItemsSection items={items} formatPrice={formatPrice} t={t} />
-        </div>
-
-        <div className="h-2 bg-muted" />
-
-        {/* Summary */}
-        <div className="bg-card px-4 py-3 space-y-2">
-          <div className="flex justify-between text-sm">
-            <span className="text-muted-foreground">{t("subtotal")}</span>
-            <span>{formatPrice(subtotal)}</span>
-          </div>
-          <div className="flex justify-between text-sm">
-            <span className="text-muted-foreground">{t("shipping")}</span>
-            <span className={shippingCost === 0 ? "text-success font-medium" : ""}>{shippingCost === 0 ? t("free") : formatPrice(shippingCost)}</span>
-          </div>
-          <div className="flex justify-between text-sm">
-            <span className="text-muted-foreground">{t("tax", { percent: 10 })}</span>
-            <span>{formatPrice(tax)}</span>
-          </div>
-          <div className="flex justify-between text-sm">
-            <span className="text-muted-foreground">{t("buyerProtection")}</span>
-            <span>{formatPrice(buyerProtectionFee)}</span>
-          </div>
-          <div className="flex justify-between pt-1.5 border-t border-border mt-1.5">
-            <span className="font-semibold">{t("total")}</span>
-            <span className="font-bold text-base">{formatPrice(total)}</span>
-          </div>
-        </div>
-
-        {/* Trust */}
-        <div className="px-3 py-2.5 flex items-center justify-center gap-4 text-2xs text-muted-foreground">
-          <span className="flex items-center gap-1"><Lock className="size-3" weight="fill" />{t("securePayment")}</span>
-          <span className="flex items-center gap-1"><ShieldCheck className="size-3" weight="fill" />{t("buyerProtection")}</span>
         </div>
       </div>
 
       {/* Mobile sticky footer - hide when scrolled to bottom */}
       <div className={cn(
-        "lg:hidden fixed bottom-0 inset-x-0 bg-card border-t border-border pb-safe z-40 transition-transform duration-300",
+        "lg:hidden fixed inset-x-0 bottom-0 z-40 bg-background/95 backdrop-blur-md border-t transition-transform duration-300",
         isAtBottom ? "translate-y-full" : "translate-y-0"
       )}>
-        <div className="px-4 py-3">
+        <div className="px-4 py-3 pb-safe">
           <div className="flex items-center gap-2 mb-2 text-xs text-muted-foreground justify-center">
             <Lock className="size-3.5 text-success" weight="fill" />
             <span>{t("secureCheckout")}</span>
@@ -423,7 +443,7 @@ export default function CheckoutPageClient({
 
       {/* Desktop */}
       <div className="hidden lg:block py-6">
-        <div className="container-narrow">
+        <div className="container max-w-5xl">
           <div className="flex items-center justify-between mb-5">
             <Link href="/cart" className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground">
               <ArrowLeft className="size-4" />{t("backToCart")}
@@ -432,19 +452,21 @@ export default function CheckoutPageClient({
             <div className="w-20" aria-hidden="true" />{/* Spacer for centering */}
           </div>
 
-          <div className="grid grid-cols-12 gap-8">
+          <div className="grid lg:grid-cols-[1fr,380px] gap-6 lg:gap-8">
             {/* Main */}
-            <div className="col-span-7 space-y-4">
+            <div className="space-y-4">
               {/* Address */}
-              <section className="bg-card border border-border/60 rounded-lg overflow-hidden">
-                <div className="flex items-center justify-between px-5 py-4 border-b border-border/50">
-                  <div className="flex items-center gap-2.5">
-                    <MapPin className="size-5 text-brand" weight="fill" />
-                    <h2 className="text-base font-semibold">{t("shippingAddress")}</h2>
+              <Card>
+                <CardHeader className="border-b px-5">
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="flex items-center gap-2.5 text-base">
+                      <MapPin className="size-5 text-primary" weight="fill" />
+                      {t("shippingAddress")}
+                    </CardTitle>
+                    {isAuthenticated && <Link href="/account/addresses" className="text-xs text-primary font-medium">{t("manageAddresses")}</Link>}
                   </div>
-                  {isAuthenticated && <Link href="/account/addresses" className="text-xs text-brand font-medium">{t("manageAddresses")}</Link>}
-                </div>
-                <div className="p-5">
+                </CardHeader>
+                <CardContent className="p-5 pt-4">
                   <AddressSection
                     isLoadingAddresses={isLoadingAddresses}
                     savedAddresses={savedAddresses}
@@ -461,48 +483,52 @@ export default function CheckoutPageClient({
                     setShowAddressSelector={setShowAddressSelector}
                     t={t}
                   />
-                </div>
-              </section>
+                </CardContent>
+              </Card>
 
               {/* Shipping */}
-              <section className="bg-card border border-border/60 rounded-lg overflow-hidden">
-                <div className="flex items-center gap-2.5 px-5 py-4 border-b border-border/50">
-                  <Truck className="size-5 text-brand" weight="fill" />
-                  <h2 className="text-base font-semibold">{t("shippingMethod")}</h2>
-                </div>
-                <div className="p-5">
+              <Card>
+                <CardHeader className="border-b px-5">
+                  <CardTitle className="flex items-center gap-2.5 text-base">
+                    <Truck className="size-5 text-primary" weight="fill" />
+                    {t("shippingMethod")}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="p-5 pt-4">
                   <ShippingMethodSection
                     shippingMethod={shippingMethod}
                     setShippingMethod={setShippingMethod}
                     formatPrice={formatPrice}
                     t={t}
                   />
-                </div>
-              </section>
+                </CardContent>
+              </Card>
 
               {/* Items */}
-              <section className="bg-card border border-border/60 rounded-lg overflow-hidden">
-                <div className="flex items-center justify-between px-5 py-4 border-b border-border/50">
-                  <div className="flex items-center gap-2.5">
-                    <Package className="size-5 text-brand" weight="fill" />
-                    <h2 className="text-base font-semibold">{t("orderItems")}</h2>
-                    <Badge variant="secondary" className="ml-1">{totalItems}</Badge>
+              <Card>
+                <CardHeader className="border-b px-5">
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="flex items-center gap-2.5 text-base">
+                      <Package className="size-5 text-primary" weight="fill" />
+                      {t("orderItems")}
+                      <Badge variant="secondary" className="ml-1">{totalItems}</Badge>
+                    </CardTitle>
+                    <Link href="/cart" className="text-xs text-primary font-medium">{t("edit")}</Link>
                   </div>
-                  <Link href="/cart" className="text-xs text-brand font-medium">{t("edit")}</Link>
-                </div>
-                <div className="p-5">
+                </CardHeader>
+                <CardContent className="p-5 pt-4">
                   <OrderItemsSectionDesktop items={items} formatPrice={formatPrice} t={t} />
-                </div>
-              </section>
+                </CardContent>
+              </Card>
             </div>
 
             {/* Sidebar */}
-            <div className="col-span-5">
-              <div className="sticky top-20 bg-card border border-border/60 rounded-lg overflow-hidden">
-                <div className="px-5 py-4 border-b border-border/50">
-                  <h2 className="text-base font-semibold">{t("orderSummary") || "Order Summary"}</h2>
-                </div>
-                <div className="p-5 space-y-4">
+            <div>
+              <Card className="sticky top-20">
+                <CardHeader className="border-b px-5">
+                  <CardTitle className="text-base">{t("orderSummary") || "Order Summary"}</CardTitle>
+                </CardHeader>
+                <CardContent className="p-5 pt-4 space-y-4">
                   <div className="space-y-3 text-sm">
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">{t("subtotal")}</span>
@@ -512,22 +538,20 @@ export default function CheckoutPageClient({
                       <span className="text-muted-foreground">{t("shipping")}</span>
                       <span className={cn("font-medium", shippingCost === 0 && "text-success")}>{shippingCost === 0 ? t("free") : formatPrice(shippingCost)}</span>
                     </div>
-	                  <div className="flex justify-between">
-	                    <span className="text-muted-foreground">{t("tax", { percent: 10 })}</span>
-	                    <span className="font-medium">{formatPrice(tax)}</span>
-	                  </div>
-	                  <div className="flex justify-between">
-	                    <span className="text-muted-foreground">{t("buyerProtection")}</span>
-	                    <span className="font-medium">{formatPrice(buyerProtectionFee)}</span>
-	                  </div>
-	                </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">{t("tax", { percent: 10 })}</span>
+                      <span className="font-medium">{formatPrice(tax)}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">{t("buyerProtection")}</span>
+                      <span className="font-medium">{formatPrice(buyerProtectionFee)}</span>
+                    </div>
+                  </div>
 
-                  <Separator />
-
-                  <div className="rounded-lg bg-muted/30 p-4">
+                  <div className="border-t pt-4">
                     <div className="flex justify-between items-baseline">
                       <span className="text-base font-semibold">{t("total")}</span>
-                      <span className="text-2xl font-bold text-brand">{formatPrice(total)}</span>
+                      <span className="text-xl font-bold">{formatPrice(total)}</span>
                     </div>
                   </div>
 
@@ -560,8 +584,8 @@ export default function CheckoutPageClient({
                       <span>{t("buyerProtection")}</span>
                     </div>
                   </div>
-                </div>
-              </div>
+                </CardContent>
+              </Card>
             </div>
           </div>
         </div>
@@ -619,10 +643,10 @@ function AddressSection({
       <>
         {/* Selected address card */}
         {selected && (
-          <div className="rounded-lg border-2 border-brand bg-brand/5 p-4">
+          <div className="rounded-lg border-2 border-primary bg-primary/5 p-4">
             <div className="flex items-start gap-3">
-              <div className="size-10 rounded-full bg-brand/10 flex items-center justify-center shrink-0">
-                <MapPin className="size-5 text-brand" weight="fill" />
+              <div className="size-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                <MapPin className="size-5 text-primary" weight="fill" />
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-1">
@@ -642,7 +666,7 @@ function AddressSection({
                   {selected.city}, {selected.state} {selected.postal_code}
                 </p>
               </div>
-              <Check className="size-5 text-brand shrink-0" weight="bold" />
+              <Check className="size-5 text-primary shrink-0" weight="bold" />
             </div>
             {savedAddresses.length > 1 && (
               <Button
@@ -681,8 +705,8 @@ function AddressSection({
                       className={cn(
                         "flex items-start gap-3 p-4 rounded-md border-2 cursor-pointer transition-all",
                         isSelected
-                          ? "border-brand bg-brand/5 shadow-sm"
-                          : "border-border hover:border-brand/30"
+                          ? "border-primary bg-primary/5 shadow-sm"
+                          : "border-border hover:border-primary/30"
                       )}
                     >
                       <RadioGroupItem value={addr.id} id={`addr-${addr.id}`} className="shrink-0 mt-0.5" />
@@ -704,7 +728,7 @@ function AddressSection({
                           {addr.city}, {addr.state} {addr.postal_code}
                         </p>
                       </div>
-                      {isSelected && <Check className="size-5 text-brand shrink-0" weight="bold" />}
+                      {isSelected && <Check className="size-5 text-primary shrink-0" weight="bold" />}
                     </label>
                   )
                 })}
@@ -728,7 +752,7 @@ function AddressSection({
         <button
           type="button"
           onClick={() => setUseNewAddress(true)}
-          className="text-xs text-brand mt-3 block font-medium"
+          className="text-xs text-primary mt-3 block font-medium"
         >
           + {t("useNewAddress")}
         </button>
@@ -918,12 +942,12 @@ function ShippingMethodSection({ shippingMethod, setShippingMethod, formatPrice,
               className={cn(
                 "flex items-center gap-3 p-3 rounded-lg border-2 cursor-pointer transition-all",
                 isSelected
-                  ? "border-brand bg-brand/5"
-                  : "border-border hover:border-brand/30"
+                  ? "border-primary bg-primary/5"
+                  : "border-border hover:border-primary/30"
               )}
             >
               <RadioGroupItem value={opt.id} id={`shipping-${opt.id}`} className="shrink-0" />
-              <Icon className={cn("size-5", isSelected ? "text-brand" : "text-muted-foreground")} weight={isSelected ? "fill" : "regular"} />
+              <Icon className={cn("size-5", isSelected ? "text-primary" : "text-muted-foreground")} weight={isSelected ? "fill" : "regular"} />
               <div className="flex-1">
                 <p className="text-sm font-medium">{opt.label}</p>
                 <p className="text-xs text-muted-foreground">{opt.days}</p>

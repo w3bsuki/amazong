@@ -28,7 +28,7 @@ interface QuickPill {
   id: QuickPillId
   labelKey: string
   icon: typeof Fire
-  activeGradient?: string
+  activeClassName: string
 }
 
 interface FeedControlBarProps {
@@ -62,31 +62,31 @@ const QUICK_PILLS: QuickPill[] = [
     id: "offers", 
     labelKey: "mobile.quickPills.offers", 
     icon: Fire,
-    activeGradient: "from-orange-500 to-red-500"
+    activeClassName: "bg-deal text-deal-foreground"
   },
   { 
     id: "nearby", 
     labelKey: "mobile.quickPills.nearby", 
     icon: MapPin,
-    activeGradient: "from-blue-500 to-cyan-500"
+    activeClassName: "bg-info text-info-foreground"
   },
   { 
     id: "sale", 
     labelKey: "mobile.quickPills.sale", 
     icon: Percent,
-    activeGradient: "from-green-500 to-emerald-500"
+    activeClassName: "bg-success text-success-foreground"
   },
   { 
     id: "topRated", 
     labelKey: "mobile.quickPills.topRated", 
     icon: Star,
-    activeGradient: "from-amber-500 to-yellow-500"
+    activeClassName: "bg-warning text-warning-foreground"
   },
   { 
     id: "freeShip", 
     labelKey: "mobile.quickPills.freeShip", 
     icon: Package,
-    activeGradient: "from-purple-500 to-pink-500"
+    activeClassName: "bg-primary text-primary-foreground"
   },
 ]
 
@@ -120,7 +120,9 @@ function SortDropdown({
   const [open, setOpen] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
 
-  const activeOption = SORT_OPTIONS.find(o => o.id === activeSort) ?? SORT_OPTIONS[0]!
+  const defaultOption = SORT_OPTIONS[0] ?? { id: "newest", labelKey: "mobile.sort.newest", icon: Clock }
+
+  const activeOption = SORT_OPTIONS.find((o) => o.id === activeSort) ?? defaultOption
   const ActiveIcon = activeOption.icon
 
   // Close on outside click
@@ -279,8 +281,8 @@ export function FeedControlBar({
                     "active:scale-[0.97]",
                     isActive
                       ? cn(
-                          "bg-gradient-to-r text-white border-transparent shadow-md",
-                          pill.activeGradient
+                          "border-transparent shadow-md",
+                          pill.activeClassName
                         )
                       : "bg-muted/50 text-muted-foreground border-border/40 hover:text-foreground hover:bg-muted"
                   )}

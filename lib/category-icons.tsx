@@ -354,7 +354,7 @@ export function getCategoryIcon(
 // The getCategoryIcon function above handles all icon lookups with a unified API.
 
 // ============================================================================
-// CATEGORY COLORS - Semantic tokens per DESIGN.md
+// CATEGORY COLORS - Semantic tokens per docs/DESIGN.md
 // ============================================================================
 // Using neutral semantic tokens for consistency.
 // Active state uses ring for clear visual feedback.
@@ -374,7 +374,7 @@ const categoryColors: Record<string, CategoryColorScheme> = {
 
 /**
  * Get the color scheme for a category slug
- * All categories now use unified semantic tokens per DESIGN.md
+ * All categories now use unified semantic tokens per docs/DESIGN.md
  * @param slug - The category slug
  * @returns CategoryColorScheme with bg, text, and ring classes
  */

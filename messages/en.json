@@ -1157,7 +1157,8 @@
             "sales": "Sales",
             "plans": "Plans",
             "myAccount": "My Account",
-            "backToStore": "Back to Store"
+            "backToStore": "Back to Store",
+            "profile": "Profile"
         },
         "orders": {
             "title": "Your Orders",
@@ -2022,6 +2023,9 @@
             "promoted": "Promoted",
             "deals": "Deals",
             "price_low": "Lowest Price",
+            "price_high": "Highest Price",
+            "free_shipping": "Free Shipping",
+            "ending_soon": "Ending Soon",
             "nearby": "Near Me",
             "more": "More"
         },

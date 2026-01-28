@@ -69,8 +69,9 @@ export function useCategoryAttributes(
 
   const fetchAttributes = useCallback(async (slug: string) => {
     // Check cache first
-    if (cacheRef.current.has(slug)) {
-      setAttributes(cacheRef.current.get(slug)!)
+    const cached = cacheRef.current.get(slug)
+    if (cached) {
+      setAttributes(cached)
       return
     }
 

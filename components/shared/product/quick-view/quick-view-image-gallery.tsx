@@ -162,23 +162,24 @@ export function QuickViewImageGallery({
     )
   }
 
-  // Mobile/compact layout
+  // Mobile/compact layout - optimized touch handling, wide aspect for space efficiency
   return (
-    <div className="relative">
-      <div className="relative aspect-[4/3] bg-muted">
+    <div className="relative touch-action-pan-x">
+      <div className="relative aspect-[16/10] bg-muted">
         <button
           type="button"
           onClick={onNavigateToProduct}
-          className="absolute inset-0 size-full cursor-pointer focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
+          className="absolute inset-0 size-full cursor-pointer focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset touch-action-manipulation"
           aria-label={tDrawers("viewFullListing")}
         >
           <Image
             src={normalizeImageUrl(currentImage) ?? PLACEHOLDER_IMAGE_PATH}
             alt={title}
             fill
-            className="object-contain"
+            className="object-contain pointer-events-none"
             sizes="(max-width: 768px) 100vw, 400px"
             priority
+            draggable={false}
           />
         </button>
 
@@ -189,20 +190,20 @@ export function QuickViewImageGallery({
               variant="ghost"
               size="icon"
               onClick={(e) => { e.stopPropagation(); prevImage() }}
-              className="absolute left-2 top-1/2 -translate-y-1/2 size-9 rounded-full bg-background/80 backdrop-blur-sm hover:bg-background/90"
+              className="absolute left-1.5 top-1/2 -translate-y-1/2 size-8 rounded-full bg-background/80 backdrop-blur-sm hover:bg-background/90 touch-action-manipulation"
               aria-label={tProduct("previousImage")}
             >
-              <CaretLeft size={20} weight="bold" />
+              <CaretLeft size={18} weight="bold" />
             </Button>
             <Button
               type="button"
               variant="ghost"
               size="icon"
               onClick={(e) => { e.stopPropagation(); nextImage() }}
-              className="absolute right-2 top-1/2 -translate-y-1/2 size-9 rounded-full bg-background/80 backdrop-blur-sm hover:bg-background/90"
+              className="absolute right-1.5 top-1/2 -translate-y-1/2 size-8 rounded-full bg-background/80 backdrop-blur-sm hover:bg-background/90 touch-action-manipulation"
               aria-label={tProduct("nextImage")}
             >
-              <CaretRight size={20} weight="bold" />
+              <CaretRight size={18} weight="bold" />
             </Button>
           </>
         )}
@@ -213,34 +214,42 @@ export function QuickViewImageGallery({
             variant="ghost"
             size="icon-sm"
             onClick={(e) => { e.stopPropagation(); onRequestClose() }}
-            className="absolute top-3 right-3 rounded-full bg-background/80 backdrop-blur-sm hover:bg-background/90"
+            className="absolute top-2 right-2 rounded-full bg-background/80 backdrop-blur-sm hover:bg-background/90 touch-action-manipulation"
             aria-label={tProduct("close")}
           >
             <span className="sr-only">{tProduct("close")}</span>
-            <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M18 6L6 18M6 6l12 12" />
             </svg>
           </Button>
         )}
 
         {discountPercent && discountPercent > 0 && (
-          <Badge variant="discount" className="absolute top-3 left-3">
+          <Badge variant="discount" className="absolute top-2 left-2 text-xs px-1.5 py-0.5">
             -{discountPercent}%
           </Badge>
         )}
+
+        {/* Image counter - compact */}
+        {hasMultiple && (
+          <div className="absolute bottom-1.5 left-1.5 px-1.5 py-0.5 rounded-full bg-foreground/70 backdrop-blur-sm text-background text-[10px] font-medium tabular-nums">
+            {currentIndex + 1}/{images.length}
+          </div>
+        )}
       </div>
 
+      {/* Thumbnail strip - styled for better UX */}
       {hasMultiple && (
-        <div className="flex gap-1.5 overflow-x-auto px-4 py-2 scrollbar-hide">
+        <div className="flex gap-1.5 overflow-x-auto px-4 py-2 scrollbar-hide touch-action-pan-x bg-muted/30">
           {images.map((img, i) => (
             <button
               key={`thumb-${i}`}
               type="button"
               onClick={() => setCurrentIndex(i)}
               className={cn(
-                "relative size-12 shrink-0 rounded-md overflow-hidden transition-all",
+                "relative size-11 shrink-0 rounded-md overflow-hidden transition-all touch-action-manipulation",
                 i === currentIndex
-                  ? "ring-2 ring-foreground ring-offset-1 ring-offset-background"
+                  ? "ring-2 ring-foreground ring-offset-1 ring-offset-background shadow-sm"
                   : "border border-border opacity-60 hover:opacity-100"
               )}
             >
@@ -248,8 +257,9 @@ export function QuickViewImageGallery({
                 src={normalizeImageUrl(img) ?? PLACEHOLDER_IMAGE_PATH}
                 alt=""
                 fill
-                className="object-cover"
-                sizes="48px"
+                className="object-cover pointer-events-none"
+                sizes="44px"
+                draggable={false}
               />
             </button>
           ))}

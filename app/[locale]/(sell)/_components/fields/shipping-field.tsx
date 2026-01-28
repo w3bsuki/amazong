@@ -388,16 +388,26 @@ export function ShippingField({ className, compact = false }: ShippingFieldProps
       )}
 
       {/* Free Shipping Toggle - Premium pill design */}
-      <button
-        type="button"
+      <div
+        role="button"
+        tabIndex={0}
         onClick={() => {
           setValue("freeShipping", !freeShipping);
           if (!freeShipping) {
             setValue("shippingPrice", "0");
           }
         }}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            setValue("freeShipping", !freeShipping);
+            if (!freeShipping) {
+              setValue("shippingPrice", "0");
+            }
+          }
+        }}
         className={cn(
-          "w-full flex items-center gap-3.5 p-4 rounded-xl border transition-all",
+          "w-full flex items-center gap-3.5 p-4 rounded-xl border transition-all cursor-pointer",
           "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30",
           "active:scale-[0.98]",
           freeShipping 
@@ -433,7 +443,7 @@ export function ShippingField({ className, compact = false }: ShippingFieldProps
           }}
           className="shrink-0 scale-110"
         />
-      </button>
+      </div>
 
       {/* Shipping Price (if not free) */}
       {!freeShipping && (

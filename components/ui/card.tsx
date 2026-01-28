@@ -8,8 +8,7 @@ function Card({ className, ...props }: React.ComponentProps<"div">) {
       data-slot="card"
       className={cn(
         // Treido: flat cards (border + no heavy shadow)
-        // Using --radius-card so card rounding is token-driven
-        "bg-card text-card-foreground flex flex-col gap-2 rounded-(--radius-card) border border-border shadow-none",
+        "bg-card text-card-foreground flex flex-col rounded-lg border border-border shadow-none",
         className
       )}
       {...props}
@@ -21,10 +20,7 @@ function CardHeader({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="card-header"
-      className={cn(
-        "@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-1.5 px-3 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-3",
-        className
-      )}
+      className={cn("flex flex-col gap-1.5 p-4", className)}
       {...props}
     />
   )
@@ -67,7 +63,7 @@ function CardContent({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="card-content"
-      className={cn("px-3", className)}
+      className={cn("p-4 pt-0", className)}
       {...props}
     />
   )

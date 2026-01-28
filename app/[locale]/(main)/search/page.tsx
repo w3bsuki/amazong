@@ -1,6 +1,5 @@
 import { createStaticClient } from "@/lib/supabase/server"
 import { routing } from "@/i18n/routing"
-import { ProductCard } from "@/components/shared/product/product-card"
 import { SearchFilters } from "@/components/shared/search/search-filters"
 import { SubcategoryTabs } from "@/components/category/subcategory-tabs"
 import { SearchHeader } from "./_components/search-header"
@@ -12,6 +11,8 @@ import { FilterChips } from "@/components/shared/filters/filter-chips"
 import { SortSelect } from "@/components/shared/search/sort-select"
 import { SearchPagination } from "@/components/shared/search/search-pagination"
 import { EmptyStateCTA } from "@/components/shared/empty-state-cta"
+import { DesktopShell } from "@/components/layout/desktop-shell"
+import { ProductGrid, type ProductGridProduct } from "@/components/grid"
 import { PageShell } from "@/components/shared/page-shell"
 import { Suspense } from "react"
 import { setRequestLocale, getTranslations } from "next-intl/server"
@@ -246,199 +247,215 @@ export default async function SearchPage({
   // Get translations for search page UI
   const t = await getTranslations('SearchFilters')
 
+  // Transform products for ProductGrid
+  const gridProducts: ProductGridProduct[] = products.map((product) => ({
+    id: product.id,
+    title: product.title,
+    price: product.price,
+    image: product.image_url || product.images?.[0] || "/placeholder.svg",
+    listPrice: product.list_price ?? undefined,
+    rating: product.rating ?? 0,
+    reviews: product.review_count ?? 0,
+    slug: product.slug ?? null,
+    storeSlug: product.profiles?.username ?? null,
+    sellerId: product.profiles?.id ?? null,
+    sellerName: product.profiles?.display_name || product.profiles?.business_name || product.profiles?.username || undefined,
+    sellerAvatarUrl: product.profiles?.avatar_url ?? null,
+    sellerVerified: Boolean(product.profiles?.is_verified_business),
+    condition: product.attributes?.condition,
+    tags: product.tags ?? [],
+  }))
+
+  const categoryName = currentCategory
+    ? (locale === "bg" && currentCategory.name_bg)
+      ? currentCategory.name_bg
+      : currentCategory.name
+    : undefined
+
+  // Sidebar content for desktop
+  const sidebarContent = (
+    <div className="bg-sidebar rounded-lg p-4">
+      <Suspense>
+        <SearchFilters
+          categories={allCategories}
+          subcategories={subcategories}
+          currentCategory={currentCategory}
+          allCategoriesWithSubs={allCategoriesWithSubs}
+          brands={brands}
+        />
+      </Suspense>
+    </div>
+  )
+
   return (
-    <PageShell variant="muted" className="overflow-x-hidden">
-      <div className="container overflow-x-hidden">
-        <div className="flex flex-col lg:flex-row gap-4">
-          {/* Sidebar Filters - Hidden on mobile, uses bg-sidebar for visual differentiation */}
-          <aside className="w-64 hidden lg:block shrink-0">
-            <div className="sticky top-28 py-4 px-3 bg-sidebar rounded-lg max-h-(--search-sidebar-max-h) overflow-y-auto no-scrollbar">
-              <Suspense>
-                <SearchFilters
-                  categories={allCategories}
-                  subcategories={subcategories}
-                  currentCategory={currentCategory}
-                  allCategoriesWithSubs={allCategoriesWithSubs}
-                  brands={brands}
-                />
-              </Suspense>
-            </div>
-          </aside>
+    <>
+      {/* Mobile Layout */}
+      <PageShell variant="muted" className="lg:hidden overflow-x-hidden">
+        <div className="container overflow-x-hidden py-4">
+          {/* Show SubcategoryTabs when in a category, SearchHeader otherwise */}
+          {currentCategory ? (
+            <Suspense>
+              <SubcategoryTabs
+                currentCategory={currentCategory}
+                subcategories={subcategories}
+                parentCategory={parentCategory}
+              />
+            </Suspense>
+          ) : (
+            <Suspense>
+              <SearchHeader
+                query={query}
+                category={searchParams.category}
+                totalResults={products.length}
+              />
+            </Suspense>
+          )}
 
-          {/* Main Results */}
-          <div className="flex-1 min-w-0 py-4 sm:py-6">
-            {/* Show SubcategoryTabs when in a category, SearchHeader otherwise */}
-            {currentCategory ? (
-              <Suspense>
-                <SubcategoryTabs
-                  currentCategory={currentCategory}
-                  subcategories={subcategories}
-                  parentCategory={parentCategory}
-                />
-              </Suspense>
-            ) : (
-              <Suspense>
-                <SearchHeader
-                  query={query}
-                  category={searchParams.category}
-                  totalResults={products.length}
-                />
-              </Suspense>
-            )}
+          {/* Active Filter Pills */}
+          <div className="mb-4">
+            <Suspense>
+              <FilterChips currentCategory={currentCategory} />
+            </Suspense>
+          </div>
 
-            {/* Active Filter Pills - Show on all devices, only when filters are active */}
-            <div className="mb-4">
-              <Suspense>
-                <FilterChips currentCategory={currentCategory} />
-              </Suspense>
-            </div>
+          {/* Mobile Control Bar */}
+          <Suspense>
+            <QuickFilterRow
+              locale={locale}
+              {...(currentCategory?.slug ? { categorySlug: currentCategory.slug } : {})}
+              {...(categoryIdForFilters ? { categoryId: categoryIdForFilters } : {})}
+              {...(query ? { searchQuery: query } : {})}
+              attributes={filterableAttributes}
+              subcategories={allCategories.map((c) => ({
+                id: c.id,
+                name: c.name,
+                name_bg: c.name_bg,
+                slug: c.slug,
+              }))}
+              basePath="/search"
+              categoryParamKey="category"
+            />
+          </Suspense>
 
-            {/* Mobile Control Bar — Sticky Sort + Filter below header */}
-            <div className="lg:hidden">
-              <Suspense>
-                <QuickFilterRow
-                  locale={locale}
-                  {...(currentCategory?.slug ? { categorySlug: currentCategory.slug } : {})}
-                  {...(categoryIdForFilters ? { categoryId: categoryIdForFilters } : {})}
-                  {...(query ? { searchQuery: query } : {})}
-                  attributes={filterableAttributes}
-                  subcategories={allCategories.map((c) => ({
-                    id: c.id,
-                    name: c.name,
-                    name_bg: c.name_bg,
-                    slug: c.slug,
-                  }))}
-                  basePath="/search"
-                  categoryParamKey="category"
-                />
-              </Suspense>
-            </div>
-
-            {/* Desktop Filter & Sort Row */}
-            <div className="hidden lg:flex mb-3 sm:mb-5 items-center gap-2 sm:gap-2.5">
-              {/* Sort Dropdown */}
-              <div className="lg:max-w-44">
-                <SortSelect />
-              </div>
-
-              {/* Desktop Quick Filters */}
-              <div className="flex items-center gap-2">
-                <Suspense>
-                  <DesktopFilters />
-                </Suspense>
-              </div>
-
-              {/* Results count - right aligned */}
-              <p className="text-sm text-muted-foreground ml-auto whitespace-nowrap">
-                <span className="font-semibold text-foreground">{totalProducts}</span>
-                <span> {t('results')}</span>
-                {query && (
-                  <span>
-                    {" "}{t('for')} <span className="font-medium text-primary">&quot;{query}&quot;</span>
-                  </span>
-                )}
-                {currentCategory && !query && (
-                  <span> {t('in')} <span className="font-medium">{locale === 'bg' && currentCategory.name_bg ? currentCategory.name_bg : currentCategory.name}</span></span>
-                )}
-              </p>
-            </div>
-
-            {/* Mobile Results Info Strip */}
-            <div className="sm:hidden mb-4 flex items-center justify-between text-sm text-muted-foreground bg-muted/30 rounded-lg px-3 py-2.5">
-              <span>
-                <span className="font-semibold text-foreground">{totalProducts}</span> {totalProducts === 1 ? t('product') : t('products')}
+          {/* Mobile Results Info Strip */}
+          <div className="sm:hidden mb-4 flex items-center justify-between text-sm text-muted-foreground bg-muted/30 rounded-lg px-3 py-2.5">
+            <span>
+              <span className="font-semibold text-foreground">{totalProducts}</span> {totalProducts === 1 ? t('product') : t('products')}
+            </span>
+            {currentCategory && (
+              <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full font-medium">
+                {categoryName}
               </span>
-              {currentCategory && (
-                <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full font-medium">
-                  {locale === 'bg' && currentCategory.name_bg ? currentCategory.name_bg : currentCategory.name}
-                </span>
-              )}
-            </div>
-
-            {/* Product Grid */}
-            <div className="grid grid-cols-2 gap-2 sm:gap-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-              {products.map((product) => {
-                const image = product.image_url || product.images?.[0] || "/placeholder.svg"
-                const sellerName =
-                  product.profiles?.display_name ||
-                  product.profiles?.business_name ||
-                  product.profiles?.username
-                const resolvedCategorySlug = product.categories?.slug || currentCategory?.slug
-                const condition = product.attributes?.condition
-                const brand = product.attributes?.brand
-                const make = product.attributes?.make
-                const model = product.attributes?.model
-                const year = product.attributes?.year
-                const location = product.attributes?.location
-
-                return (
-                  <ProductCard
-                    key={product.id}
-                    id={product.id}
-                    title={product.title}
-                    price={product.price}
-                    image={image}
-                    rating={product.rating || 0}
-                    reviews={product.review_count || 0}
-                    originalPrice={product.list_price ?? null}
-                    tags={product.tags || []}
-                    slug={product.slug ?? null}
-                    username={product.profiles?.username ?? null}
-                    sellerId={product.profiles?.id ?? null}
-                    {...(sellerName ? { sellerName } : {})}
-                    sellerAvatarUrl={product.profiles?.avatar_url ?? null}
-                    sellerTier={
-                      product.profiles?.account_type === "business"
-                        ? "business"
-                        : product.profiles?.tier === "premium"
-                          ? "premium"
-                          : "basic"
-                    }
-                    sellerVerified={Boolean(product.profiles?.is_verified_business)}
-                    {...(resolvedCategorySlug ? { categorySlug: resolvedCategorySlug } : {})}
-                    {...(condition ? { condition } : {})}
-                    {...(brand ? { brand } : {})}
-                    {...(make ? { make } : {})}
-                    {...(model ? { model } : {})}
-                    {...(year ? { year } : {})}
-                    {...(location ? { location } : {})}
-                  />
-                )
-              })}
-            </div>
-
-            {products.length === 0 && (
-              (() => {
-                const categoryName = currentCategory
-                  ? (locale === "bg" && currentCategory.name_bg)
-                    ? currentCategory.name_bg
-                    : currentCategory.name
-                  : undefined
-
-                return (
-                  <EmptyStateCTA
-                    variant={query ? "no-search" : "no-category"}
-                    {...(query ? { searchQuery: query } : {})}
-                    {...(categoryName ? { categoryName } : {})}
-                    className="mt-8"
-                  />
-                )
-              })()
-            )}
-
-            {/* Pagination */}
-            {products.length > 0 && (
-              <Suspense>
-                <SearchPagination
-                  totalItems={totalProducts}
-                  itemsPerPage={ITEMS_PER_PAGE}
-                  currentPage={currentPage}
-                />
-              </Suspense>
             )}
           </div>
+
+          {/* Mobile Product Grid */}
+          <ProductGrid products={gridProducts} viewMode="grid" />
+
+          {products.length === 0 && (
+            <EmptyStateCTA
+              variant={query ? "no-search" : "no-category"}
+              {...(query ? { searchQuery: query } : {})}
+              {...(categoryName ? { categoryName } : {})}
+              className="mt-8"
+            />
+          )}
+
+          {/* Pagination */}
+          {products.length > 0 && (
+            <Suspense>
+              <SearchPagination
+                totalItems={totalProducts}
+                itemsPerPage={ITEMS_PER_PAGE}
+                currentPage={currentPage}
+              />
+            </Suspense>
+          )}
         </div>
-      </div>
-    </PageShell>
+      </PageShell>
+
+      {/* Desktop Layout with DesktopShell */}
+      <DesktopShell
+        variant="muted"
+        className="hidden lg:block"
+        sidebar={sidebarContent}
+        sidebarSticky
+      >
+        {/* Show SubcategoryTabs when in a category, SearchHeader otherwise */}
+        {currentCategory ? (
+          <Suspense>
+            <SubcategoryTabs
+              currentCategory={currentCategory}
+              subcategories={subcategories}
+              parentCategory={parentCategory}
+            />
+          </Suspense>
+        ) : (
+          <Suspense>
+            <SearchHeader
+              query={query}
+              category={searchParams.category}
+              totalResults={products.length}
+            />
+          </Suspense>
+        )}
+
+        {/* Active Filter Pills */}
+        <div className="mb-4">
+          <Suspense>
+            <FilterChips currentCategory={currentCategory} />
+          </Suspense>
+        </div>
+
+        {/* Desktop Filter & Sort Row */}
+        <div className="flex mb-4 items-center gap-2">
+          <div className="max-w-44">
+            <SortSelect />
+          </div>
+          <div className="flex items-center gap-2">
+            <Suspense>
+              <DesktopFilters />
+            </Suspense>
+          </div>
+          <p className="text-sm text-muted-foreground ml-auto whitespace-nowrap">
+            <span className="font-semibold text-foreground">{totalProducts}</span>
+            <span> {t('results')}</span>
+            {query && (
+              <span>
+                {" "}{t('for')} <span className="font-medium text-primary">&quot;{query}&quot;</span>
+              </span>
+            )}
+            {currentCategory && !query && (
+              <span> {t('in')} <span className="font-medium">{categoryName}</span></span>
+            )}
+          </p>
+        </div>
+
+        {/* Product Grid with container queries */}
+        <div className="rounded-xl bg-card border border-border p-4">
+          {products.length === 0 ? (
+            <EmptyStateCTA
+              variant={query ? "no-search" : "no-category"}
+              {...(query ? { searchQuery: query } : {})}
+              {...(categoryName ? { categoryName } : {})}
+              className="mt-4"
+            />
+          ) : (
+            <ProductGrid products={gridProducts} viewMode="grid" />
+          )}
+        </div>
+
+        {/* Pagination */}
+        {products.length > 0 && (
+          <Suspense>
+            <SearchPagination
+              totalItems={totalProducts}
+              itemsPerPage={ITEMS_PER_PAGE}
+              currentPage={currentPage}
+            />
+          </Suspense>
+        )}
+      </DesktopShell>
+    </>
   )
 }

@@ -194,15 +194,18 @@ export function AppHeader({
   const effectiveHomepageSearchOpen = headerContext?.homepageHeader?.onSearchOpen ?? onSearchOpen
   const effectiveHomepageCategories = headerContext?.homepageHeader?.categories ?? categories
   
-  const effectiveContextualTitle = headerContext?.contextualHeader?.title ?? contextualTitle
-  const effectiveContextualBackHref = headerContext?.contextualHeader?.backHref ?? contextualBackHref
-  const effectiveContextualBack = headerContext?.contextualHeader?.onBack ?? onContextualBack
-  const effectiveContextualSubcategories = headerContext?.contextualHeader?.subcategories ?? contextualSubcategories
-  const effectiveContextualSubcategoryClick = headerContext?.contextualHeader?.onSubcategoryClick ?? onSubcategoryClick
-  const effectiveContextualHideActions = headerContext?.contextualHeader?.hideActions ?? false
-
   // Avoid hydration mismatch when other client boundaries update HeaderProvider state
   // before the header boundary itself hydrates (e.g., ProductHeaderSync on PDP).
+  const hydratedContextualHeader = isHydrated ? headerContext?.contextualHeader : null
+  const effectiveContextualTitle = hydratedContextualHeader?.title ?? contextualTitle
+  const effectiveContextualBackHref = hydratedContextualHeader?.backHref ?? contextualBackHref
+  const effectiveContextualBack = hydratedContextualHeader?.onBack ?? onContextualBack
+  const effectiveContextualSubcategories =
+    hydratedContextualHeader?.subcategories ?? contextualSubcategories
+  const effectiveContextualSubcategoryClick =
+    hydratedContextualHeader?.onSubcategoryClick ?? onSubcategoryClick
+  const effectiveContextualHideActions = hydratedContextualHeader?.hideActions ?? false
+
   const hydratedProductHeader = isHydrated ? headerContext?.productHeader : null
   const effectiveProductTitle = hydratedProductHeader?.productTitle ?? productTitle
   const effectiveSellerName = hydratedProductHeader?.sellerName ?? sellerName

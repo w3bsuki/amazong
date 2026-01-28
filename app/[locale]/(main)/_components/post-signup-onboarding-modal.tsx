@@ -35,6 +35,7 @@ import { cn } from "@/lib/utils"
 import Image from "next/image"
 import Avatar from "boring-avatars"
 import { AVATAR_VARIANTS, type AvatarVariant, getColorPalette } from "@/lib/avatar-palettes"
+import { SocialInput } from "@/components/ui/social-input"
 
 export type OnboardingData = {
   userId: string
@@ -309,7 +310,12 @@ export function PostSignupOnboardingModal({
   }
 
   return (
-    <Dialog open={isOpen} onOpenChange={() => {}}>
+    <Dialog open={isOpen} onOpenChange={(open) => {
+      // Allow dismissal only on complete step to prevent accidental close
+      if (!open && step === "complete") {
+        onClose()
+      }
+    }}>
       <DialogContent 
         className="w-(--onboarding-modal-w) sm:max-w-md max-h-(--onboarding-modal-max-h) sm:max-h-(--onboarding-modal-max-h-sm) overflow-y-auto p-0 bg-card border-0 shadow-md"
         showCloseButton={false}
@@ -325,15 +331,25 @@ export function PostSignupOnboardingModal({
               transition={{ duration: 0.2 }}
               className="p-4 sm:p-5"
             >
-              {/* Progress indicator */}
-              <div className="flex items-center justify-center gap-2 mb-4 text-xs text-muted-foreground">
-                <span className="font-medium text-foreground">{t.step} {getCurrentStepNumber()}</span>
-                <span>{t.of}</span>
-                <span>{getTotalSteps()}</span>
+              {/* Visual Progress Dots */}
+              <div className="flex items-center justify-center gap-1.5 mb-5">
+                {Array.from({ length: getTotalSteps() }).map((_, i) => (
+                  <div
+                    key={i}
+                    className={cn(
+                      "h-2 rounded-full transition-all duration-300",
+                      i < getCurrentStepNumber()
+                        ? "bg-primary w-6"
+                        : i === getCurrentStepNumber() - 1
+                          ? "bg-primary w-2"
+                          : "bg-muted w-2"
+                    )}
+                  />
+                ))}
               </div>
 
-              <DialogHeader className="mb-4 sm:mb-5">
-                <DialogTitle className="text-lg sm:text-xl font-semibold text-center">{t.profileTitle}</DialogTitle>
+              <DialogHeader className="mb-5 sm:mb-6">
+                <DialogTitle className="text-xl sm:text-2xl font-bold text-center tracking-tight">{t.profileTitle}</DialogTitle>
                 <DialogDescription className="text-muted-foreground text-center">{t.profileSubtitle}</DialogDescription>
               </DialogHeader>
 
@@ -383,14 +399,14 @@ export function PostSignupOnboardingModal({
                               setUseCustomAvatar(false)
                             }}
                             className={cn(
-                              "size-8 sm:size-9 rounded-lg border-2 overflow-hidden transition-all",
+                              "size-11 rounded-lg border-2 overflow-hidden transition-all",
                               !useCustomAvatar && avatarVariant === variant
-                                ? "border-primary shadow-sm"
-                                : "border-input hover:border-primary/30"
+                                ? "border-primary shadow-sm ring-2 ring-primary/20"
+                                : "border-input hover:border-primary/40"
                             )}
                           >
                             <Avatar
-                              size={30}
+                              size={44}
                               name={username}
                               variant={variant}
                               colors={getColorPalette(avatarPalette)}
@@ -472,96 +488,77 @@ export function PostSignupOnboardingModal({
                 {t.back}
               </button>
 
-              {/* Progress indicator */}
-              <div className="flex items-center justify-center gap-2 mb-4 text-xs text-muted-foreground">
-                <span className="font-medium text-foreground">{t.step} {getCurrentStepNumber()}</span>
-                <span>{t.of}</span>
-                <span>{getTotalSteps()}</span>
+              {/* Visual Progress Dots */}
+              <div className="flex items-center justify-center gap-1.5 mb-5">
+                {Array.from({ length: getTotalSteps() }).map((_, i) => (
+                  <div
+                    key={i}
+                    className={cn(
+                      "h-2 rounded-full transition-all duration-300",
+                      i < getCurrentStepNumber()
+                        ? "bg-primary w-6"
+                        : i === getCurrentStepNumber() - 1
+                          ? "bg-primary w-2"
+                          : "bg-muted w-2"
+                    )}
+                  />
+                ))}
               </div>
 
-              <DialogHeader className="mb-4 sm:mb-5">
-                <DialogTitle className="text-lg sm:text-xl font-semibold">{t.socialTitle}</DialogTitle>
-                <DialogDescription className="text-muted-foreground">{t.socialSubtitle}</DialogDescription>
+              <DialogHeader className="mb-5 sm:mb-6">
+                <DialogTitle className="text-xl sm:text-2xl font-bold tracking-tight">{t.socialTitle}</DialogTitle>
+                <DialogDescription className="text-muted-foreground mt-1">{t.socialSubtitle}</DialogDescription>
               </DialogHeader>
 
-              <div className="space-y-2.5 sm:space-y-3">
+              <div className="space-y-3">
                 {/* Instagram */}
-                <div className="flex items-center gap-2.5 sm:gap-3">
-                  <div className="size-9 sm:size-10 rounded-lg bg-social-instagram flex items-center justify-center shrink-0 shadow-sm">
-                    <InstagramLogo className="size-4 sm:size-5 text-primary-foreground" weight="fill" />
-                  </div>
-                  <div className="flex-1 flex items-center border-2 border-input rounded-lg overflow-hidden focus-within:border-primary/50 transition-colors">
-                    <span className="px-2 sm:px-3 text-xs sm:text-sm text-muted-foreground bg-secondary border-r border-input h-9 flex items-center">@</span>
-                    <input
-                      type="text"
-                      value={instagram}
-                      onChange={(e) => setInstagram(e.target.value.replace(/^@/, ""))}
-                      placeholder={t.instagramPlaceholder}
-                      className="flex-1 h-9 px-2 sm:px-3 text-sm bg-card focus:outline-none"
-                    />
-                  </div>
-                </div>
+                <SocialInput
+                  prefix="@"
+                  icon={<InstagramLogo className="size-5 text-primary-foreground" weight="fill" />}
+                  iconBg="bg-social-instagram"
+                  value={instagram}
+                  onChange={(e) => setInstagram(e.target.value.replace(/^@/, ""))}
+                  placeholder={t.instagramPlaceholder}
+                />
 
                 {/* TikTok */}
-                <div className="flex items-center gap-2.5 sm:gap-3">
-                  <div className="size-9 sm:size-10 rounded-lg bg-social-tiktok flex items-center justify-center shrink-0 shadow-sm">
-                    <TiktokLogo className="size-4 sm:size-5 text-primary-foreground" weight="fill" />
-                  </div>
-                  <div className="flex-1 flex items-center border-2 border-input rounded-lg overflow-hidden focus-within:border-primary/50 transition-colors">
-                    <span className="px-2 sm:px-3 text-xs sm:text-sm text-muted-foreground bg-secondary border-r border-input h-9 flex items-center">@</span>
-                    <input
-                      type="text"
-                      value={tiktok}
-                      onChange={(e) => setTiktok(e.target.value.replace(/^@/, ""))}
-                      placeholder={t.tiktokPlaceholder}
-                      className="flex-1 h-9 px-2 sm:px-3 text-sm bg-card focus:outline-none"
-                    />
-                  </div>
-                </div>
+                <SocialInput
+                  prefix="@"
+                  icon={<TiktokLogo className="size-5 text-primary-foreground" weight="fill" />}
+                  iconBg="bg-social-tiktok"
+                  value={tiktok}
+                  onChange={(e) => setTiktok(e.target.value.replace(/^@/, ""))}
+                  placeholder={t.tiktokPlaceholder}
+                />
 
                 {/* YouTube */}
-                <div className="flex items-center gap-2.5 sm:gap-3">
-                  <div className="size-9 sm:size-10 rounded-lg bg-social-youtube flex items-center justify-center shrink-0 shadow-sm">
-                    <YoutubeLogo className="size-4 sm:size-5 text-primary-foreground" weight="fill" />
-                  </div>
-                  <Input
-                    value={youtube}
-                    onChange={(e) => setYoutube(e.target.value)}
-                    placeholder={t.youtubePlaceholder}
-                    className="h-9 border-2 border-input focus:border-primary/50"
-                  />
-                </div>
+                <SocialInput
+                  icon={<YoutubeLogo className="size-5 text-primary-foreground" weight="fill" />}
+                  iconBg="bg-social-youtube"
+                  value={youtube}
+                  onChange={(e) => setYoutube(e.target.value)}
+                  placeholder={t.youtubePlaceholder}
+                />
 
                 {/* Twitter/X */}
-                <div className="flex items-center gap-2.5 sm:gap-3">
-                  <div className="size-9 sm:size-10 rounded-lg bg-social-twitter flex items-center justify-center shrink-0 shadow-sm">
-                    <TwitterLogo className="size-4 sm:size-5 text-primary-foreground" weight="fill" />
-                  </div>
-                  <div className="flex-1 flex items-center border-2 border-input rounded-lg overflow-hidden focus-within:border-primary/50 transition-colors">
-                    <span className="px-2 sm:px-3 text-xs sm:text-sm text-muted-foreground bg-secondary border-r border-input h-9 flex items-center">@</span>
-                    <input
-                      type="text"
-                      value={twitter}
-                      onChange={(e) => setTwitter(e.target.value.replace(/^@/, ""))}
-                      placeholder={t.twitterPlaceholder}
-                      className="flex-1 h-9 px-2 sm:px-3 text-sm bg-card focus:outline-none"
-                    />
-                  </div>
-                </div>
+                <SocialInput
+                  prefix="@"
+                  icon={<TwitterLogo className="size-5 text-primary-foreground" weight="fill" />}
+                  iconBg="bg-social-twitter"
+                  value={twitter}
+                  onChange={(e) => setTwitter(e.target.value.replace(/^@/, ""))}
+                  placeholder={t.twitterPlaceholder}
+                />
 
                 {/* Other link */}
-                <div className="flex items-center gap-2.5 sm:gap-3">
-                  <div className="size-9 sm:size-10 rounded-lg bg-primary flex items-center justify-center shrink-0 shadow-sm">
-                    <LinkIcon className="size-4 sm:size-5 text-primary-foreground" weight="bold" />
-                  </div>
-                  <Input
-                    type="url"
-                    value={otherLink}
-                    onChange={(e) => setOtherLink(e.target.value)}
-                    placeholder={t.otherLinkPlaceholder}
-                    className="h-9 border-2 border-input focus:border-primary/50"
-                  />
-                </div>
+                <SocialInput
+                  icon={<LinkIcon className="size-5 text-primary-foreground" weight="bold" />}
+                  iconBg="bg-primary"
+                  type="url"
+                  value={otherLink}
+                  onChange={(e) => setOtherLink(e.target.value)}
+                  placeholder={t.otherLinkPlaceholder}
+                />
               </div>
 
               {error && (
@@ -618,15 +615,25 @@ export function PostSignupOnboardingModal({
                 {t.back}
               </button>
 
-              {/* Progress indicator */}
-              <div className="flex items-center justify-center gap-2 mb-4 text-xs text-muted-foreground">
-                <span className="font-medium text-foreground">{t.step} {getCurrentStepNumber()}</span>
-                <span>{t.of}</span>
-                <span>{getTotalSteps()}</span>
+              {/* Visual Progress Dots */}
+              <div className="flex items-center justify-center gap-1.5 mb-5">
+                {Array.from({ length: getTotalSteps() }).map((_, i) => (
+                  <div
+                    key={i}
+                    className={cn(
+                      "h-2 rounded-full transition-all duration-300",
+                      i < getCurrentStepNumber()
+                        ? "bg-primary w-6"
+                        : i === getCurrentStepNumber() - 1
+                          ? "bg-primary w-2"
+                          : "bg-muted w-2"
+                    )}
+                  />
+                ))}
               </div>
 
-              <DialogHeader className="mb-4 sm:mb-5">
-                <DialogTitle className="text-lg sm:text-xl font-semibold">{t.businessInfoTitle}</DialogTitle>
+              <DialogHeader className="mb-5 sm:mb-6">
+                <DialogTitle className="text-xl sm:text-2xl font-bold tracking-tight">{t.businessInfoTitle}</DialogTitle>
                 <DialogDescription className="text-muted-foreground">{t.businessInfoSubtitle}</DialogDescription>
               </DialogHeader>
 
@@ -634,7 +641,7 @@ export function PostSignupOnboardingModal({
                 {/* Cover Image */}
                 <div>
                   <Label className="text-sm font-semibold text-foreground mb-2 block">{t.coverImageLabel}</Label>
-                  <label className="block w-full h-20 sm:h-24 border-2 border-dashed border-primary/30 rounded-lg hover:border-primary/50 hover:bg-primary/5 cursor-pointer transition-all overflow-hidden">
+                  <label className="block w-full h-32 sm:h-40 border-2 border-primary/20 rounded-xl hover:border-primary/40 hover:bg-primary/5 cursor-pointer transition-all overflow-hidden">
                     {coverPreview ? (
                       <Image
                         src={coverPreview}
@@ -768,8 +775,8 @@ export function PostSignupOnboardingModal({
                 <Check className="size-8 sm:size-10 text-primary-foreground" weight="bold" />
               </motion.div>
 
-              <DialogHeader className="mb-4 sm:mb-5">
-                <DialogTitle className="text-xl sm:text-2xl font-bold">
+              <DialogHeader className="mb-5 sm:mb-6">
+                <DialogTitle className="text-2xl sm:text-3xl font-bold tracking-tight">
                   {t.completeTitle}
                 </DialogTitle>
                 <DialogDescription className="text-muted-foreground text-sm sm:text-base mt-1">

@@ -213,27 +213,27 @@ export function MobileCartDropdown() {
 
                 <DrawerFooter className="border-t border-border gap-1.5">
                     {items.length === 0 ? (
-                        <Link href="/search" onClick={() => setOpen(false)} className="w-full">
-                            <Button variant="cta" size="default" className="w-full">
+                        <Button variant="cta" size="default" className="w-full" asChild>
+                            <Link href="/search" onClick={() => setOpen(false)}>
                                 {t('startShopping')}
-                            </Button>
-                        </Link>
+                            </Link>
+                        </Button>
                     ) : (
                         <>
                             <div className="flex items-center justify-between py-1">
                                 <span className="text-xs text-muted-foreground">{t('subtotal')}</span>
                                 <span className="text-base font-bold text-foreground">{formatPrice(subtotal)}</span>
                             </div>
-                            <Link href="/checkout" onClick={() => setOpen(false)} className="block">
-                                <Button variant="cta" size="default" className="w-full">
+                            <Button variant="cta" size="default" className="w-full" asChild>
+                                <Link href="/checkout" onClick={() => setOpen(false)}>
                                     {t('checkout')}
-                                </Button>
-                            </Link>
-                            <Link href="/cart" onClick={() => setOpen(false)} className="block">
-                                <Button variant="outline" size="sm" className="w-full">
+                                </Link>
+                            </Button>
+                            <Button variant="outline" size="sm" className="w-full" asChild>
+                                <Link href="/cart" onClick={() => setOpen(false)}>
                                     {t('viewCart')}
-                                </Button>
-                            </Link>
+                                </Link>
+                            </Button>
                         </>
                     )}
                 </DrawerFooter>

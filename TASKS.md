@@ -1,4 +1,4 @@
-# Tasks — Current Sprint
+# Tasks — Current Sprint (Working Log — not SSOT)
 
 > **Execution checklist for current work.** Keep this focused — max ~20 tasks at a time.
 
@@ -92,7 +92,7 @@ REUSE_EXISTING_SERVER=true pnpm test:e2e:smoke  # If UI/flow touched
 1. Each task references an issue: `(ISSUE-####)` when applicable
 2. Keep tasks small (≤ 1 day)
 3. Include verification note when not obvious
-4. If task changes product scope, update `REQUIREMENTS.md` + `FEATURES.md`
+4. If task changes product scope, update `docs/PRD.md` + `docs/FEATURES.md`
 
 ---
 

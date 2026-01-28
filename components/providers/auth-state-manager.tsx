@@ -8,6 +8,7 @@ import {
   useCallback,
   useRef,
   type ReactNode,
+  type Context,
 } from "react"
 import { createClient } from "@/lib/supabase/client"
 import type { User, Session, AuthChangeEvent } from "@supabase/supabase-js"
@@ -122,9 +123,14 @@ export function AuthStateManager({ children }: { children: ReactNode }) {
 
 export function useAuth(): AuthContextType {
   // In Storybook, use the mock context if available
-  if (typeof window !== "undefined" && (window as any).__STORYBOOK_AUTH_CONTEXT__) {
+  const storybookAuthContext =
+    typeof window !== "undefined"
+      ? (window as unknown as { __STORYBOOK_AUTH_CONTEXT__?: unknown }).__STORYBOOK_AUTH_CONTEXT__
+      : undefined
+
+  if (storybookAuthContext) {
     // eslint-disable-next-line react-hooks/rules-of-hooks
-    const mockContext = useContext((window as any).__STORYBOOK_AUTH_CONTEXT__) as AuthContextType | undefined
+    const mockContext = useContext(storybookAuthContext as Context<AuthContextType | null>)
     if (mockContext) return mockContext
   }
   // eslint-disable-next-line react-hooks/rules-of-hooks

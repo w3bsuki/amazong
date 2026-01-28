@@ -170,10 +170,38 @@ export async function fetchConversations(
   // Fetch profiles
   const profileMap = await fetchProfiles(supabase, Array.from(userIds))
 
-  // Transform conversations
-  const conversations = convs.map((conv) =>
-    transformConversation(conv as RawConversationRow, profileMap)
-  )
+  // Fetch last message for each conversation (to show preview in conversation list)
+  const conversationIds = convs.map((c) => c.id)
+  const { data: lastMessages } = await supabase
+    .from("messages")
+    .select("conversation_id, content, sender_id, message_type, created_at")
+    .in("conversation_id", conversationIds)
+    .order("created_at", { ascending: false })
+
+  // Group messages by conversation and pick the latest one
+  const lastMessageMap = new Map<string, { content: string; sender_id: string; message_type: string; created_at: string }>()
+  if (lastMessages) {
+    for (const msg of lastMessages) {
+      if (!lastMessageMap.has(msg.conversation_id)) {
+        lastMessageMap.set(msg.conversation_id, {
+          content: msg.content,
+          sender_id: msg.sender_id,
+          message_type: msg.message_type,
+          created_at: msg.created_at,
+        })
+      }
+    }
+  }
+
+  // Transform conversations with last message data
+  const conversations = convs.map((conv) => {
+    const transformed = transformConversation(conv as RawConversationRow, profileMap)
+    const lastMsg = lastMessageMap.get(conv.id)
+    if (lastMsg) {
+      transformed.last_message = lastMsg
+    }
+    return transformed
+  })
 
   // Calculate total unread
   const unreadCount = conversations.reduce((sum, conv) => {
@@ -204,7 +232,20 @@ export async function fetchConversation(
   // Fetch profiles for buyer and seller
   const profileMap = await fetchProfiles(supabase, [data.buyer_id, data.seller_id])
 
-  return transformConversation(data as RawConversationRow, profileMap)
+  // Fetch last message for this conversation
+  const { data: lastMsgData } = await supabase
+    .from("messages")
+    .select("content, sender_id, message_type, created_at")
+    .eq("conversation_id", conversationId)
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .single()
+
+  const transformed = transformConversation(data as RawConversationRow, profileMap)
+  if (lastMsgData) {
+    transformed.last_message = lastMsgData
+  }
+  return transformed
 }
 
 // =============================================================================

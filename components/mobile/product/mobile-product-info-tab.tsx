@@ -278,16 +278,16 @@ export function MobileProductInfoTab({
               <span 
                 className={cn(
                   "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full",
-                  "bg-zinc-100 dark:bg-zinc-800",
-                  "text-xs font-medium text-zinc-700 dark:text-zinc-300",
+                  "bg-muted",
+                  "text-xs font-medium text-foreground",
                   "truncate max-w-45"
                 )}
               >
-                <Folder className="size-3 shrink-0 text-zinc-500" strokeWidth={2} />
+                <Folder className="size-3 shrink-0 text-muted-foreground" strokeWidth={2} />
                 <span className="truncate">
                   {rootCategoryName || categoryName}
                   {showSubcategory && (
-                    <span className="text-zinc-400 dark:text-zinc-500"> · {categoryName}</span>
+                    <span className="text-muted-foreground/70"> · {categoryName}</span>
                   )}
                 </span>
               </span>
@@ -296,7 +296,7 @@ export function MobileProductInfoTab({
           
           {/* Right: Time & Views */}
           {(timeAgo || (viewCount != null && viewCount > 0)) && (
-            <div className="flex items-center gap-3 text-xs text-zinc-500 dark:text-zinc-400 shrink-0">
+            <div className="flex items-center gap-3 text-xs text-muted-foreground shrink-0">
               {timeAgo && (
                 <span className="inline-flex items-center gap-1">
                   <Clock className="size-3.5" strokeWidth={1.5} />

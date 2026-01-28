@@ -34,20 +34,31 @@ export default async function LocaleProviders({
         disableTransitionOnChange
       >
         <AuthStateManager>
-          <MessageProvider>
-            <CurrencyProvider>
-              <CartProvider>
-                <WishlistProvider>
-                  <DrawerProvider>
-                    {children}
-                    <Suspense fallback={null}>
-                      <GlobalDrawers />
-                    </Suspense>
-                  </DrawerProvider>
-                </WishlistProvider>
-              </CartProvider>
-            </CurrencyProvider>
-          </MessageProvider>
+          <CurrencyProvider>
+            <CartProvider>
+              <WishlistProvider>
+                <DrawerProvider>
+                  <Suspense
+                    fallback={
+                      <>
+                        {children}
+                        <Suspense fallback={null}>
+                          <GlobalDrawers />
+                        </Suspense>
+                      </>
+                    }
+                  >
+                    <MessageProvider>
+                      {children}
+                      <Suspense fallback={null}>
+                        <GlobalDrawers />
+                      </Suspense>
+                    </MessageProvider>
+                  </Suspense>
+                </DrawerProvider>
+              </WishlistProvider>
+            </CartProvider>
+          </CurrencyProvider>
         </AuthStateManager>
       </ThemeProvider>
     </IntlClientProvider>

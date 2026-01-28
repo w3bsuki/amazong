@@ -383,6 +383,7 @@ function CategoryModalContent({
   const stepLabels = locale === "bg"
     ? ["Ниво 0", "Ниво 1", "Ниво 2", "Ниво 3"]
     : ["Level 0", "Level 1", "Level 2", "Level 3"];
+  const lastNavigationItem = navigationPath.at(-1)
 
   const getName = (cat: Category) =>
     locale === "bg" && cat.name_bg ? cat.name_bg : cat.name;
@@ -567,7 +568,7 @@ function CategoryModalContent({
                   </span>
                   <h3 className="text-xs font-bold text-foreground uppercase tracking-wider truncate">
                     {navigationPath.length > 0 
-                      ? (navigationPath.at(-1) ? getName(navigationPath.at(-1)!) : stepLabels[0])
+                      ? (lastNavigationItem ? getName(lastNavigationItem) : stepLabels[0])
                       : stepLabels[0]
                     }
                   </h3>

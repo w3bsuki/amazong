@@ -480,7 +480,7 @@ Secondary:
 
 ### C. Related Documentation
 - [TREIDO_AUDIT_2026-01-24.md](docs-final/archive/root/TREIDO_AUDIT_2026-01-24.md) - Previous audit
-- [FEATURES.md](FEATURES.md) - Feature checklist
+- [FEATURES.md](../docs/FEATURES.md) - Feature checklist
 - [REQUIREMENTS.md](REQUIREMENTS.md) - Original requirements
 
 ---

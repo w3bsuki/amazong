@@ -108,13 +108,21 @@ const ColorSwatch = ({
       <div>
          <div className="font-semibold text-sm tracking-tight">{name}</div>
          <div className="text-xs text-muted-foreground font-mono truncate select-all">{className}</div>
-         {variable && <div className="text-[10px] text-muted-foreground font-mono select-all opacity-50">{variable}</div>}
+         {variable && <div className="text-2xs text-muted-foreground font-mono select-all opacity-50">{variable}</div>}
       </div>
     </div>
   )
 }
 
-const TypographySpec = ({ role, size, tracking, weight, sample }: any) => (
+type TypographySpecProps = {
+  role: string
+  size: string
+  tracking: string
+  weight: string
+  sample: string
+}
+
+const TypographySpec = ({ role, size, tracking, weight, sample }: TypographySpecProps) => (
   <div className="grid grid-cols-1 md:grid-cols-4 gap-4 py-4 border-b last:border-0 items-center">
     <div className="col-span-1">
       <div className="font-semibold text-sm text-foreground">{role}</div>
@@ -453,11 +461,11 @@ export default function DesignSystemV2Page() {
             {/* B2B DATA TABLE - DENSITY TEST */}
             <div className="col-span-1 lg:col-span-2">
               <h3 className="text-xl font-semibold mb-4">Marketplace Layout (B2B/C2C)</h3>
-              <div className="flex flex-col lg:flex-row gap-8 bg-neutral-50/50 dark:bg-neutral-900/20 p-6 rounded-2xl border border-dashed border-neutral-200 dark:border-neutral-800">
+              <div className="flex flex-col lg:flex-row gap-8 bg-muted/50 p-6 rounded-2xl border border-dashed border-border">
                  
                  {/* Sidebar Area */}
-                 <div className="hidden lg:block shrink-0 w-[240px]">
-                    <div className="bg-background rounded-xl p-4 shadow-sm border border-neutral-100 dark:border-neutral-800">
+                 <div className="hidden lg:block shrink-0 w-60">
+                    <div className="bg-background rounded-xl p-4 shadow-sm border border-border">
                        <FilterSidebar />
                     </div>
                  </div>
@@ -469,7 +477,7 @@ export default function DesignSystemV2Page() {
                        <div className="flex items-center gap-2">
                           <span className="text-sm text-muted-foreground mr-2">1,240 results</span>
                           <Select defaultValue="rel">
-                             <SelectTrigger className="w-[140px] h-9">
+                            <SelectTrigger className="w-36 h-9">
                                 <SelectValue placeholder="Sort by" />
                              </SelectTrigger>
                              <SelectContent>
@@ -521,7 +529,7 @@ export default function DesignSystemV2Page() {
                           <Button variant="outline" size="sm" className="bg-brand-50 border-brand-200 text-brand-600 font-bold">1</Button>
                           <Button variant="outline" size="sm" className="border-transparent">2</Button>
                           <Button variant="outline" size="sm" className="border-transparent">3</Button>
-                          <span className="text-neutral-400 px-2">...</span>
+                          <span className="text-muted-foreground/70 px-2">...</span>
                           <Button variant="outline" size="sm">Next</Button>
                        </div>
                     </div>
@@ -536,12 +544,12 @@ export default function DesignSystemV2Page() {
                  <Table>
                     <TableHeader>
                       <TableRow className="bg-muted/50 hover:bg-muted/50">
-                        <TableHead className="w-[100px]">Order ID</TableHead>
+                        <TableHead className="w-24">Order ID</TableHead>
                         <TableHead>Status</TableHead>
                         <TableHead>Customer</TableHead>
                         <TableHead className="hidden md:table-cell">Product</TableHead>
                         <TableHead className="text-right">Amount</TableHead>
-                        <TableHead className="w-[50px]"></TableHead>
+                        <TableHead className="w-12"></TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -549,14 +557,14 @@ export default function DesignSystemV2Page() {
                         <TableRow key={i}>
                            <TableCell className="font-mono text-xs font-medium">#ORD-7{i}29</TableCell>
                            <TableCell>
-                              <Badge variant={i%2===0 ? "secondary" : "default"} className="font-mono text-[10px] uppercase">
+                              <Badge variant={i%2===0 ? "secondary" : "default"} className="font-mono text-2xs uppercase">
                                  {i%2===0 ? "Pending" : "Paid"}
                               </Badge>
                            </TableCell>
                            <TableCell className="font-medium">
                               <div className="flex items-center gap-2">
                                  <Avatar className="h-6 w-6">
-                                    <AvatarFallback className="text-[10px]">U{i}</AvatarFallback>
+                                    <AvatarFallback className="text-2xs">U{i}</AvatarFallback>
                                  </Avatar>
                                  <span className="text-sm">Acme Corp</span>
                               </div>
@@ -610,7 +618,7 @@ export default function DesignSystemV2Page() {
                  </div>
                  <div className="space-y-2">
                     <label className="text-sm font-medium">Product Description</label>
-                    <Textarea placeholder="Describe the item condition..." className="min-h-[80px]" />
+                    <Textarea placeholder="Describe the item condition..." className="min-h-20" />
                  </div>
                  <div className="flex items-center space-x-2 pt-2">
                     <Checkbox id="terms" />
@@ -706,7 +714,7 @@ export default function DesignSystemV2Page() {
                  ].map((shadow) => (
                    <div key={shadow.name} className="flex flex-col items-center justify-center p-6 bg-card rounded-lg border border-border/50" style={{ boxShadow: `var(--${shadow.var})` }}>
                      <span className="font-semibold text-sm">Shadow {shadow.name}</span>
-                     <span className="text-[10px] text-muted-foreground font-mono mt-1">--{shadow.var}</span>
+                     <span className="text-2xs text-muted-foreground font-mono mt-1">--{shadow.var}</span>
                    </div>
                  ))}
               </div>
@@ -731,7 +739,7 @@ export default function DesignSystemV2Page() {
                     </div>
                     <div className="flex-1">
                       <div className="font-semibold text-sm">Radius {radius.name}</div>
-                      <code className="text-[10px] text-muted-foreground">var(--{radius.var})</code>
+                      <code className="text-2xs text-muted-foreground">var(--{radius.var})</code>
                     </div>
                   </div>
                 ))}
@@ -779,7 +787,7 @@ export default function DesignSystemV2Page() {
                   <Badge variant="outline" className="gap-1 border-primary/20 text-primary bg-primary/5">
                     <ShieldCheck className="w-3 h-3" /> Verified Seller
                   </Badge>
-                  <Badge variant="outline" className="gap-1 border-orange-500/20 text-orange-600 bg-orange-50">
+                  <Badge variant="outline" className="gap-1 border-warning/20 text-warning bg-warning/10">
                     <Star className="w-3 h-3 fill-current" /> Top Rated
                   </Badge>
                   <Badge variant="outline" className="gap-1">
@@ -832,7 +840,7 @@ export default function DesignSystemV2Page() {
               <TableCaption>Recent Orders</TableCaption>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="w-[100px]">Order</TableHead>
+                  <TableHead className="w-24">Order</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead>Method</TableHead>
                   <TableHead className="text-right">Amount</TableHead>
@@ -842,7 +850,7 @@ export default function DesignSystemV2Page() {
                 <TableRow>
                   <TableCell className="font-medium">INV001</TableCell>
                   <TableCell>
-                     <Badge variant="outline" className="border-green-200 bg-green-50 text-green-700">Paid</Badge>
+                     <Badge variant="outline" className="border-success/20 bg-success/10 text-success">Paid</Badge>
                   </TableCell>
                   <TableCell>Credit Card</TableCell>
                   <TableCell className="text-right">$250.00</TableCell>
@@ -850,7 +858,7 @@ export default function DesignSystemV2Page() {
                 <TableRow>
                   <TableCell className="font-medium">INV002</TableCell>
                   <TableCell>
-                     <Badge variant="outline" className="border-yellow-200 bg-yellow-50 text-yellow-700">Pending</Badge>
+                     <Badge variant="outline" className="border-warning/20 bg-warning/10 text-warning">Pending</Badge>
                   </TableCell>
                   <TableCell>PayPal</TableCell>
                   <TableCell className="text-right">$145.00</TableCell>
@@ -912,7 +920,7 @@ export default function DesignSystemV2Page() {
 
                 <div className="flex items-center gap-1">
                    {[1,2,3,4,5].map(s => (
-                     <Star key={s} className="w-5 h-5 fill-yellow-400 text-yellow-400" />
+                     <Star key={s} className="w-5 h-5 fill-rating text-rating" />
                    ))}
                    <span className="ml-2 font-bold">4.9</span>
                    <span className="text-muted-foreground text-sm">(2,304 reviews)</span>

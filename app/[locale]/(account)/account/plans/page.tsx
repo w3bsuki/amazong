@@ -81,6 +81,7 @@ export default async function PlansPage({ params }: PlansPageProps) {
   const seller = profile ? {
     id: profile.id,
     tier: profile.tier || 'free',
+    account_type: (accountType === 'business' ? 'business' : 'personal') as 'personal' | 'business',
     commission_rate: commissionRate,
     stripe_customer_id: privateProfile?.stripe_customer_id ?? null,
   } : null

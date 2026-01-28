@@ -25,10 +25,10 @@ export default async function MessagesPage({
   searchParams,
 }: {
   params: Promise<{ locale: string }>
-  searchParams: Promise<{ conversation?: string }>
+  searchParams: Promise<{ conversation?: string; seller?: string; product?: string }>
 }) {
   const { locale } = await params
-  const { conversation } = await searchParams
+  const { conversation, seller, product } = await searchParams
   const supabase = await createClient()
 
   const { data: { user } } = await (supabase
@@ -51,6 +51,10 @@ export default async function MessagesPage({
   }
 
   return (
-    <MessagesPageClient actions={{ blockUser, reportConversation }} />
+    <MessagesPageClient 
+      actions={{ blockUser, reportConversation }} 
+      initialSellerId={seller}
+      initialProductId={product}
+    />
   )
 }

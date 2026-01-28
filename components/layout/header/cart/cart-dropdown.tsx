@@ -76,11 +76,11 @@ export function CartDropdown() {
           <div className="p-4 text-center">
             <ShoppingCart size={36} weight="light" className="text-muted-foreground/30 mx-auto mb-2" />
             <p className="text-muted-foreground text-sm mb-3">{t("empty")}</p>
-            <Link href="/search">
-              <Button variant="cta" size="default" className="w-full">
+            <Button variant="cta" size="default" className="w-full" asChild>
+              <Link href="/search">
                 {t("startShopping")}
-              </Button>
-            </Link>
+              </Link>
+            </Button>
           </div>
         ) : (
           <>
@@ -176,16 +176,16 @@ export function CartDropdown() {
                 <span className="text-base font-semibold text-foreground">{formatPrice(subtotal)}</span>
               </div>
               <div className="flex gap-2">
-                <Link href="/cart" className="flex-1">
-                  <Button variant="outline" size="default" className="w-full">
+                <Button variant="outline" size="default" className="w-full flex-1" asChild>
+                  <Link href="/cart">
                     {t("viewCart")}
-                  </Button>
-                </Link>
-                <Link href="/checkout" className="flex-1">
-                  <Button variant="cta" size="default" className="w-full">
+                  </Link>
+                </Button>
+                <Button variant="cta" size="default" className="w-full flex-1" asChild>
+                  <Link href="/checkout">
                     {t("checkout")}
-                  </Button>
-                </Link>
+                  </Link>
+                </Button>
               </div>
             </div>
           </>

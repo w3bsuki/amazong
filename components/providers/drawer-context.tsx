@@ -225,9 +225,16 @@ export function DrawerProvider({ children }: { children: React.ReactNode }) {
 
 export function useDrawer(): DrawerContextValue {
   // In Storybook, use the mock context if available
-  if (typeof window !== "undefined" && (window as any).__STORYBOOK_DRAWER_CONTEXT__) {
+  const storybookDrawerContext =
+    typeof window !== "undefined"
+      ? (window as unknown as { __STORYBOOK_DRAWER_CONTEXT__?: unknown }).__STORYBOOK_DRAWER_CONTEXT__
+      : undefined
+
+  if (storybookDrawerContext) {
     // eslint-disable-next-line react-hooks/rules-of-hooks
-    const mockContext = useContext((window as any).__STORYBOOK_DRAWER_CONTEXT__) as DrawerContextValue | undefined
+    const mockContext = useContext(
+      storybookDrawerContext as React.Context<DrawerContextValue | undefined>
+    )
     if (mockContext) return mockContext
   }
   // eslint-disable-next-line react-hooks/rules-of-hooks

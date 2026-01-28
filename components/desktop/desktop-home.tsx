@@ -20,11 +20,7 @@ import * as React from "react"
 import { useState, useCallback, useMemo, useRef, useEffect } from "react"
 
 import { useTranslations } from "next-intl"
-import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
-import { Skeleton } from "@/components/ui/skeleton"
-import { ProductCard } from "@/components/shared/product/product-card"
-import { ProductCardList } from "@/components/shared/product/product-card-list"
 import { EmptyStateCTA } from "@/components/shared/empty-state-cta"
 import { useCategoryCounts } from "@/hooks/use-category-counts"
 import { useCategoryAttributes } from "@/hooks/use-category-attributes"
@@ -35,8 +31,9 @@ import { FeedToolbar, type FeedTab, type FilterState } from "@/components/deskto
 import { CompactCategorySidebar, type CategoryPath } from "@/components/desktop/category-sidebar"
 import { FiltersSidebar } from "@/components/desktop/filters-sidebar"
 import { ProductGridSkeleton } from "@/components/shared/product/product-grid-skeleton"
-import { PageShell } from "@/components/shared/page-shell"
 import { PromotedSection } from "@/components/desktop/promoted-section"
+import { DesktopShell, DesktopShellSkeleton } from "@/components/layout/desktop-shell"
+import { ProductGrid, type ProductGridProduct } from "@/components/grid"
 import type { UIProduct } from "@/lib/data/products"
 
 import type { User } from "@supabase/supabase-js"
@@ -117,6 +114,19 @@ export function DesktopHome({
     attributes: {},
   })
   const [viewMode, setViewMode] = useViewMode("grid")
+  
+  // User's city for nearby filtering (persisted in localStorage)
+  const [userCity, setUserCity] = useState<string | null>(() => {
+    if (typeof window === "undefined") return "sofia" // Default SSR
+    return localStorage.getItem("treido_user_city") || "sofia"
+  })
+  
+  const handleCityChange = useCallback((city: string) => {
+    setUserCity(city)
+    if (typeof window !== "undefined") {
+      localStorage.setItem("treido_user_city", city)
+    }
+  }, [])
 
   const { counts: categoryCounts } = useCategoryCounts()
   const pageSize = 24
@@ -135,7 +145,7 @@ export function DesktopHome({
 
   // Fetch products
   const fetchProducts = useCallback(
-    async (tab: FeedTab, pageNum: number, limit: number, append = false, catSlug?: string | null) => {
+    async (tab: FeedTab, pageNum: number, limit: number, append = false, catSlug?: string | null, city?: string | null) => {
       setIsLoading(true)
       try {
         const params = new URLSearchParams({
@@ -144,6 +154,8 @@ export function DesktopHome({
           limit: String(limit),
         })
         if (catSlug) params.set("category", catSlug)
+        // Pass city for nearby tab
+        if (tab === "nearby" && city) params.set("city", city)
 
         const res = await fetch(`/api/products/feed?${params.toString()}`)
         if (!res.ok) return
@@ -200,24 +212,27 @@ export function DesktopHome({
   useEffect(() => {
     if (!initialFetchDone.current) {
       initialFetchDone.current = true
-      fetchProducts(activeTab, 1, pageSize, false, activeCategorySlug)
+      fetchProducts(activeTab, 1, pageSize, false, activeCategorySlug, userCity)
     }
   }, [])
 
-  // Fetch on tab/category change
+  // Fetch on tab/category/city change
   const prevTab = useRef(activeTab)
   const prevCat = useRef<string | null>(null)
+  const prevCity = useRef<string | null>(userCity)
   useEffect(() => {
     const tabChanged = prevTab.current !== activeTab
     const catChanged = prevCat.current !== activeCategorySlug
+    const cityChanged = activeTab === "nearby" && prevCity.current !== userCity
     prevTab.current = activeTab
     prevCat.current = activeCategorySlug
+    prevCity.current = userCity
 
-    if (tabChanged || catChanged) {
+    if (tabChanged || catChanged || cityChanged) {
       setPage(1)
-      fetchProducts(activeTab, 1, pageSize, false, activeCategorySlug)
+      fetchProducts(activeTab, 1, pageSize, false, activeCategorySlug, userCity)
     }
-  }, [activeTab, activeCategorySlug, fetchProducts])
+  }, [activeTab, activeCategorySlug, userCity, fetchProducts])
 
   const handleCategorySelect = (path: CategoryPath[], _cat: CategoryTreeNode | null) => {
     setCategoryPath(path)
@@ -228,230 +243,128 @@ export function DesktopHome({
     if (!isLoading && hasMore) {
       const next = page + 1
       setPage(next)
-      fetchProducts(activeTab, next, pageSize, true, activeCategorySlug)
+      fetchProducts(activeTab, next, pageSize, true, activeCategorySlug, userCity)
     }
   }
 
+  // Convert products to ProductGridProduct format
+  const gridProducts: ProductGridProduct[] = products.map((product) => ({
+    id: product.id,
+    title: product.title,
+    price: product.price,
+    image: product.image,
+    listPrice: product.listPrice,
+    isOnSale: product.isOnSale,
+    salePercent: product.salePercent,
+    saleEndDate: product.saleEndDate,
+    createdAt: product.createdAt,
+    slug: product.slug,
+    storeSlug: product.storeSlug,
+    sellerId: product.sellerId,
+    sellerName: product.sellerName,
+    sellerAvatarUrl: product.sellerAvatarUrl,
+    sellerVerified: product.sellerVerified,
+    location: product.location,
+    condition: product.condition,
+    isBoosted: product.isBoosted,
+    rating: product.rating,
+    reviews: product.reviews,
+    tags: product.tags,
+    categoryRootSlug: product.categoryRootSlug,
+    categoryPath: product.categoryPath,
+    attributes: product.attributes,
+  }))
+
+  // Sidebar content
+  const sidebarContent = (
+    <>
+      <CompactCategorySidebar
+        categories={categories}
+        locale={locale}
+        selectedPath={categoryPath}
+        onCategorySelect={handleCategorySelect}
+        categoryCounts={categoryCounts}
+      />
+      {categoryPath.length > 0 && (
+        <FiltersSidebar
+          locale={locale}
+          filters={filters}
+          onFiltersChange={setFilters}
+          onApply={() => fetchProducts(activeTab, 1, pageSize, false, activeCategorySlug, userCity)}
+        />
+      )}
+    </>
+  )
+
   return (
-    <PageShell variant="muted">
-      {/* Header is rendered by layout - no duplicate here */}
+    <DesktopShell
+      variant="muted"
+      sidebar={sidebarContent}
+      sidebarSticky
+    >
+      {/* PROMOTED SECTION: Desktop-specific styled container */}
+      {activeTab !== "promoted" && promotedProducts.length > 0 && (
+        <PromotedSection 
+          products={promotedProducts} 
+          locale={locale}
+          maxProducts={5}
+        />
+      )}
 
-      {/* CLEAN GRID LAYOUT - no nested container, sidebar aligns with content */}
-      <div className="container py-4">
-        <div className="grid grid-cols-1 lg:grid-cols-[var(--sidebar-width)_1fr] gap-4 lg:gap-6 items-start">
-          {/* LEFT SIDEBAR - independent column, aligns with promoted section top */}
-          <aside className="hidden lg:flex flex-col shrink-0 gap-3 sticky top-(--sticky-top) self-start max-h-(--sidebar-max-h) overflow-y-auto">
-            <CompactCategorySidebar
-              categories={categories}
-              locale={locale}
-              selectedPath={categoryPath}
-              onCategorySelect={handleCategorySelect}
-              categoryCounts={categoryCounts}
-            />
-            {categoryPath.length > 0 && (
-              <FiltersSidebar
-                locale={locale}
-                filters={filters}
-                onFiltersChange={setFilters}
-                onApply={() => fetchProducts(activeTab, 1, pageSize, false, activeCategorySlug)}
-              />
-            )}
-          </aside>
+      {/* Feed toolbar: count + category pills (left) | sort + view toggle (right) */}
+      <FeedToolbar
+        locale={locale}
+        productCount={products.length}
+        activeTab={activeTab}
+        onTabChange={setActiveTab}
+        viewMode={viewMode}
+        onViewModeChange={setViewMode}
+        categorySlug={activeCategorySlug}
+        userCity={userCity}
+        onCityChange={handleCityChange}
+        filters={filters}
+        onFiltersChange={setFilters}
+        categoryAttributes={categoryAttributes}
+        isLoadingAttributes={isLoadingAttributes}
+      />
 
-          {/* MAIN CONTENT - independent column */}
-          <div className="flex-1 min-w-0 @container flex flex-col gap-4">
-            {/* PROMOTED SECTION: Desktop-specific styled container */}
-            {activeTab !== "promoted" && promotedProducts.length > 0 && (
-              <PromotedSection 
-                products={promotedProducts} 
-                locale={locale}
-                maxProducts={5}
-              />
-            )}
-
-            {/* Feed toolbar: count + category pills (left) | sort + view toggle (right) */}
-            <FeedToolbar
-              locale={locale}
-              productCount={products.length}
-              activeTab={activeTab}
-              onTabChange={setActiveTab}
+      {/* Product Grid */}
+      <div className="rounded-xl bg-card border border-border p-4">
+        {products.length === 0 && isLoading ? (
+          <ProductGridSkeleton viewMode={viewMode} />
+        ) : products.length === 0 ? (
+          <EmptyStateCTA
+            variant={activeCategorySlug ? "no-category" : "no-listings"}
+            {...(activeCategorySlug ? { categoryName: activeCategorySlug } : {})}
+          />
+        ) : (
+          <>
+            <ProductGrid
+              products={gridProducts}
               viewMode={viewMode}
-              onViewModeChange={setViewMode}
-              categorySlug={activeCategorySlug}
-              filters={filters}
-              onFiltersChange={setFilters}
-              categoryAttributes={categoryAttributes}
-              isLoadingAttributes={isLoadingAttributes}
             />
 
-            {/* Product Grid */}
-            <div className="rounded-xl bg-card border border-border p-4">
-                <div role="list" aria-live="polite">
-                {products.length === 0 && isLoading ? (
-                  <ProductGridSkeleton viewMode={viewMode} />
-                ) : products.length === 0 ? (
-                  <EmptyStateCTA
-                    variant={activeCategorySlug ? "no-category" : "no-listings"}
-                    {...(activeCategorySlug ? { categoryName: activeCategorySlug } : {})}
-                  />
-                ) : (
-                  <>
-                    <div
-                      className={cn(
-                        viewMode === "list"
-                          ? "flex flex-col gap-3"
-                          : "grid gap-4 grid-cols-2 @[520px]:grid-cols-3 @[720px]:grid-cols-4 @[960px]:grid-cols-5"
-                      )}
-                    >
-                      {products.map((product, index) => (
-                        <div key={product.id} role="listitem">
-                          {viewMode === "list" ? (
-                            <ProductCardList
-                              id={product.id}
-                              title={product.title}
-                              price={product.price}
-                              originalPrice={product.listPrice ?? null}
-                              image={product.image}
-                              createdAt={product.createdAt ?? null}
-                              slug={product.slug ?? null}
-                              username={product.storeSlug ?? null}
-                              sellerId={product.sellerId ?? null}
-                              sellerName={product.sellerName || product.storeSlug || undefined}
-                              sellerVerified={Boolean(product.sellerVerified)}
-                              location={product.location}
-                              condition={product.condition}
-                              freeShipping={false}
-                            />
-                          ) : (
-                            <ProductCard
-                              id={product.id}
-                              title={product.title}
-                              price={product.price}
-                              originalPrice={product.listPrice ?? null}
-                              isOnSale={Boolean(product.isOnSale)}
-                              salePercent={product.salePercent ?? 0}
-                              saleEndDate={product.saleEndDate ?? null}
-                              createdAt={product.createdAt ?? null}
-                              image={product.image}
-                              rating={product.rating ?? 0}
-                              reviews={product.reviews ?? 0}
-                              slug={product.slug ?? null}
-                              username={product.storeSlug ?? null}
-                              sellerId={product.sellerId ?? null}
-                              sellerName={product.sellerName || product.storeSlug || undefined}
-                              sellerAvatarUrl={product.sellerAvatarUrl ?? null}
-                              sellerVerified={Boolean(product.sellerVerified)}
-                              {...(product.location ? { location: product.location } : {})}
-                              {...(product.condition ? { condition: product.condition } : {})}
-                              tags={product.tags ?? []}
-                              {...(product.isBoosted ? { isBoosted: true } : {})}
-                              index={index}
-                              // Category-aware contextual attributes
-                              {...(product.categoryRootSlug ? { categoryRootSlug: product.categoryRootSlug } : {})}
-                              {...(product.categoryPath ? { categoryPath: product.categoryPath } : {})}
-                              {...(product.attributes ? { attributes: product.attributes } : {})}
-                            />
-                          )}
-                        </div>
-                      ))}
-                    </div>
-
-                    {hasMore && (
-                      <div className="mt-8 text-center">
-                        <Button onClick={loadMore} disabled={isLoading} size="lg" className="min-w-36">
-                          {isLoading ? (
-                            <span className="flex items-center gap-2">
-                              <span className="size-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
-                              {t("loading")}
-                            </span>
-                          ) : (
-                            t("loadMore")
-                          )}
-                        </Button>
-                      </div>
-                    )}
-                  </>
-                )}
-                </div>
+            {hasMore && (
+              <div className="mt-8 text-center">
+                <Button onClick={loadMore} disabled={isLoading} size="lg" className="min-w-36">
+                  {isLoading ? (
+                    <span className="flex items-center gap-2">
+                      <span className="size-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                      {t("loading")}
+                    </span>
+                  ) : (
+                    t("loadMore")
+                  )}
+                </Button>
               </div>
-            </div>
-          </div>
-        </div>
-    </PageShell>
+            )}
+          </>
+        )}
+      </div>
+    </DesktopShell>
   )
 }
 
 export function DesktopHomeSkeleton() {
-  return (
-    <PageShell variant="muted">
-      {/* Header skeleton */}
-      <div className="sticky top-0 z-50 w-full bg-background border-b border-border">
-        <div className="container h-14 flex items-center justify-between gap-4">
-          <Skeleton className="h-6 w-20" />
-          <Skeleton className="h-10 flex-1 max-w-2xl rounded-full" />
-          <div className="flex items-center gap-2">
-            <Skeleton className="size-10 rounded-md" />
-            <Skeleton className="size-10 rounded-md" />
-            <Skeleton className="size-10 rounded-md" />
-          </div>
-        </div>
-      </div>
-
-      {/* Clean grid skeleton - matches main layout */}
-      <div className="container py-4">
-        <div className="grid grid-cols-1 lg:grid-cols-[var(--sidebar-width)_1fr] gap-4 lg:gap-6 items-start">
-          {/* Sidebar skeleton */}
-          <aside className="hidden lg:flex flex-col shrink-0">
-            <div className="rounded-lg border border-border bg-card p-1.5">
-              {Array.from({ length: 15 }).map((_, i) => (
-                <Skeleton key={i} className="h-(--sidebar-item-h) w-full rounded-md mb-1" />
-              ))}
-            </div>
-          </aside>
-
-          {/* Main skeleton */}
-          <div className="flex-1 min-w-0 flex flex-col gap-4">
-            {/* Promoted row skeleton */}
-            <div className="rounded-xl border border-amber-200/50 bg-amber-50/50 p-4">
-              <div className="flex items-center gap-2 mb-3">
-                <Skeleton className="size-8 rounded-lg" />
-                <Skeleton className="h-5 w-32" />
-              </div>
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <div key={i} className="space-y-2">
-                    <Skeleton className="aspect-square w-full rounded-md" />
-                    <Skeleton className="h-4 w-full" />
-                    <Skeleton className="h-4 w-2/3" />
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Toolbar skeleton */}
-            <div className="flex items-center justify-between gap-3">
-              <Skeleton className="h-5 w-20" />
-              <div className="flex items-center gap-2">
-                <Skeleton className="h-8 w-24 rounded-md" />
-                <Skeleton className="h-8 w-16 rounded-md" />
-              </div>
-            </div>
-
-            {/* Product grid skeleton */}
-            <div className="rounded-xl bg-card border border-border p-4">
-              <div className="grid gap-4 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4">
-                {Array.from({ length: 16 }).map((_, i) => (
-                  <div key={i} className="space-y-2">
-                    <Skeleton className="aspect-square w-full rounded-md" />
-                    <Skeleton className="h-4 w-full" />
-                    <Skeleton className="h-4 w-2/3" />
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </PageShell>
-  )
+  return <DesktopShellSkeleton showSidebar sidebarItems={15} contentRows={16} />
 }

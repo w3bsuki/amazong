@@ -106,12 +106,38 @@ function DrawerOverlay({
   blur = "md",
   ...props
 }: DrawerOverlayProps) {
+  // Lock body scroll when overlay mounts
+  React.useEffect(() => {
+    const scrollY = window.scrollY
+    const body = document.body
+    const html = document.documentElement
+    
+    // Save current overflow
+    const originalBodyOverflow = body.style.overflow
+    const originalHtmlOverflow = html.style.overflow
+    const originalBodyPosition = body.style.position
+    const originalBodyTop = body.style.top
+    const originalBodyWidth = body.style.width
+    
+    // Lock scroll
+    body.style.overflow = "hidden"
+    html.style.overflow = "hidden"
+    body.style.position = "fixed"
+    body.style.top = `-${scrollY}px`
+    body.style.width = "100%"
+    
+    return () => {
+      // Restore scroll
+      body.style.overflow = originalBodyOverflow
+      html.style.overflow = originalHtmlOverflow
+      body.style.position = originalBodyPosition
+      body.style.top = originalBodyTop
+      body.style.width = originalBodyWidth
+      window.scrollTo(0, scrollY)
+    }
+  }, [])
+
   return (
-    // NOTE: We intentionally do NOT use Vaul/Radix's Overlay here.
-    // Radix Dialog's overlay wraps in react-remove-scroll, which applies
-    // `body[data-scroll-locked] { overflow: hidden }` and breaks `position: sticky`
-    // headers on iOS (the header scrolls out of view when a drawer opens).
-    // Using our own overlay preserves sticky headers while keeping the drawer modal.
     <DrawerClose asChild>
       <button
         type="button"
@@ -125,6 +151,9 @@ function DrawerOverlay({
           className
         )}
         onWheel={(e) => {
+          e.preventDefault()
+        }}
+        onTouchMove={(e) => {
           e.preventDefault()
         }}
         {...props}
@@ -305,6 +334,11 @@ function DrawerFooter({ className, ...props }: React.ComponentProps<"div">) {
  * Scrollable body container for drawer content.
  * Use this for content that may overflow - it includes proper scroll handling
  * and the data-vaul-no-drag attribute to prevent scroll interference with drag.
+ *
+ * Touch handling:
+ * - touch-action-pan-y: allows vertical scroll, prevents pinch-zoom
+ * - overscroll-contain: prevents scroll chaining to parent
+ * - data-vaul-no-drag: prevents vaul from intercepting scroll gestures
  */
 function DrawerBody({ className, ...props }: React.ComponentProps<"div">) {
   return (
@@ -312,7 +346,7 @@ function DrawerBody({ className, ...props }: React.ComponentProps<"div">) {
       data-slot="drawer-body"
       data-vaul-no-drag
       className={cn(
-        "flex-1 overflow-y-auto overscroll-contain px-4",
+        "flex-1 overflow-y-auto overscroll-contain touch-action-pan-y px-4",
         className
       )}
       {...props}

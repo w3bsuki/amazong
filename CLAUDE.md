@@ -1,6 +1,6 @@
-# CLAUDE.md — Agent Instructions
+# CLAUDE.md — Agent Instructions (Legacy Wrapper)
 
-> **Read this file first on every prompt.**
+> **Read `AGENTS.md` first on every prompt.**
 
 ## Project
 
@@ -12,33 +12,27 @@
 
 | Doc | When to Read |
 |-----|--------------|
-| **[PRD.md](PRD.md)** | What we're building, scope, roadmap |
-| **[FEATURES.md](FEATURES.md)** | Feature status (✅/🚧/⬜), what's implemented |
-| **[TASKS.md](TASKS.md)** | Current sprint tasks |
-| **[ISSUES.md](ISSUES.md)** | Bug/issue registry |
+| **[AGENTS.md](AGENTS.md)** | Repo entry point + rules |
+| **[docs/PRD.md](docs/PRD.md)** | What we're building, scope, roadmap |
+| **[docs/FEATURES.md](docs/FEATURES.md)** | Feature status (✅/🚧/⬜), what's implemented |
+| **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)** | Boundaries, caching, Supabase, Stripe |
+| **[docs/DESIGN.md](docs/DESIGN.md)** | UI tokens, patterns, anti-patterns |
 
 ## Reference Docs
 
-| Doc | When to Read |
-|-----|--------------|
-| [ARCHITECTURE.md](ARCHITECTURE.md) | Stack, boundaries, caching, Supabase, Stripe |
-| [DESIGN.md](DESIGN.md) | UI tokens, patterns, anti-patterns |
-| [TESTING.md](TESTING.md) | Gates, debugging |
-| [PRODUCTION.md](PRODUCTION.md) | Deployment, go-live |
-| [REQUIREMENTS.md](REQUIREMENTS.md) | Detailed launch requirements |
-| [WORKFLOW.md](WORKFLOW.md) | Dev process loop |
+If something needs a new doc, update `AGENTS.md` first.
 
 ---
 
 ## Workflow
 
 ```
-1. Read PRD.md        → Understand what we're building
-2. Check FEATURES.md  → See what's implemented (✅) vs pending (⬜)
-3. Check TASKS.md     → Pick a task or add new
+1. Read docs/PRD.md        → Understand what we're building
+2. Check docs/FEATURES.md  → See what's implemented (✅) vs pending (⬜)
+3. Create/choose a task    → Keep scope tiny (1–3 files)
 4. Implement          → Small batch, 1-3 files max
 5. Verify             → Run gates (below)
-6. Update             → Mark task done, update FEATURES.md if feature ships
+6. Update             → Mark task done, update docs/FEATURES.md if feature ships
 ```
 
 ---
@@ -122,9 +116,9 @@ pnpm test:e2e:smoke         # Playwright smoke
 
 ## Before Starting Any Task
 
-1. **Read PRD.md** — understand the product
-2. **Check FEATURES.md** — is this feature built?
-3. **Check TASKS.md** — is there an existing task?
+1. **Read docs/PRD.md** — understand the product
+2. **Check docs/FEATURES.md** — is this feature built?
+3. **Keep scope small** — if >3 files, break it up
 4. **Keep scope small** — if >3 files, break it up
 5. **Run gates** after every meaningful change
 

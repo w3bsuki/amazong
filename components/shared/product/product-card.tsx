@@ -421,7 +421,7 @@ function ProductCard({
               <><span className="text-muted-foreground/50">·</span><span className="text-destructive font-medium">-{discountPercent}%</span></>
             )}
             {freeShipping && (
-              <><span className="text-muted-foreground/50">·</span><span className="text-emerald-600 dark:text-emerald-500 font-medium">{t("freeShipping")}</span></>
+              <><span className="text-muted-foreground/50">·</span><span className="text-success font-medium">{t("freeShipping")}</span></>
             )}
           </span>
         </div>

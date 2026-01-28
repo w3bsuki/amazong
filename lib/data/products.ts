@@ -43,6 +43,7 @@ export interface Product {
   ships_to_worldwide?: boolean | null
   pickup_only?: boolean | null
   free_shipping?: boolean | null
+  seller_city?: string | null
   category_slug?: string | null
   slug?: string | null
   store_slug?: string | null
@@ -258,7 +259,8 @@ function pickPrimaryImage(p: Product): string {
       return ao - bo
     })
 
-  if (fromTable.length) return fromTable[0]!.image_url
+  const firstUrl = fromTable[0]?.image_url
+  if (firstUrl) return firstUrl
   return p.images?.[0] || '/placeholder.svg'
 }
 
@@ -287,8 +289,8 @@ export function sortWithBoostPriority<T extends { is_boosted?: boolean | null; b
     
     // Among active boosts, sort by expiry (soonest first for fair rotation)
     if (aActive && bActive) {
-      const aExp = new Date(a.boost_expires_at!).getTime()
-      const bExp = new Date(b.boost_expires_at!).getTime()
+      const aExp = a.boost_expires_at ? new Date(a.boost_expires_at).getTime() : 0
+      const bExp = b.boost_expires_at ? new Date(b.boost_expires_at).getTime() : 0
       return aExp - bExp
     }
     
@@ -302,14 +304,20 @@ export function sortWithBoostPriority<T extends { is_boosted?: boolean | null; b
  * NO new Date() inside - deterministic output for ISR.
  * Caller should use sortWithBoostPriority() after if boost ordering needed.
  */
-async function fetchProductsStable<T>(
-  makeQuery: () => any,
+type LimitableResult<T> = { data: T[] | null; error: unknown | null }
+type LimitableQuery<T> = PromiseLike<LimitableResult<T>> & {
+  limit: (count: number) => LimitableQuery<T>
+  order: (column: string, options: { ascending: boolean; nullsFirst?: boolean }) => LimitableQuery<T>
+}
+
+async function fetchProductsStable<T, Q extends LimitableQuery<T>>(
+  makeQuery: () => Q,
   {
     limit,
     applySecondaryOrder,
   }: {
     limit: number
-    applySecondaryOrder: (q: any) => any
+    applySecondaryOrder: (q: Q) => Q
   }
 ): Promise<{ data: T[]; error: unknown | null }> {
   // Stable query: order by secondary criteria only, include boost fields for post-cache sorting
@@ -317,7 +325,7 @@ async function fetchProductsStable<T>(
   const { data, error } = await query.limit(limit)
   
   if (error) return { data: [], error }
-  return { data: (data || []) as T[], error: null }
+  return { data: data ?? [], error: null }
 }
 
 /**
@@ -401,7 +409,7 @@ export async function getProducts(type: QueryType, limit = 36, zone?: ShippingRe
       // OPTIMIZED: Flat category join - no 4-level nesting!
       // Use getCategoryPath() separately when breadcrumbs are needed.
       // Note: user_verification joins to profiles via user_id, and we join profiles via seller_id
-      let q: any =
+      let q =
         type === 'deals'
           ? supabase.from('deal_products').select(productSelect)
           : supabase.from('products').select(productSelect)
@@ -554,6 +562,7 @@ export function normalizeProductRow(p: {
   review_count?: number | null
   images?: string[] | null
   free_shipping?: boolean | null
+  seller_city?: string | null
   product_images?: Array<{
     image_url: string
     thumbnail_url?: string | null
@@ -603,6 +612,7 @@ export function normalizeProductRow(p: {
     review_count: p.review_count ?? null,
     images: p.images ?? null,
     free_shipping: p.free_shipping ?? null,
+    seller_city: p.seller_city ?? null,
     product_images: p.product_images ?? null,
     product_attributes: p.product_attributes ?? null,
     is_boosted: activeBoost,
@@ -671,7 +681,8 @@ export function toUI(p: Product): UIProduct {
     ...(typeof attrs.make === "string" ? { make: attrs.make } : {}),
     ...(typeof attrs.model === "string" ? { model: attrs.model } : {}),
     ...(typeof attrs.year === "string" ? { year: attrs.year } : {}),
-    ...(typeof attrs.location === "string" ? { location: attrs.location } : {}),
+    // Use attrs.location first, fall back to seller_city
+    ...((typeof attrs.location === "string" ? { location: attrs.location } : p.seller_city ? { location: p.seller_city } : {})),
   }
 }
 

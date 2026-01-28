@@ -1,6 +1,6 @@
-# Audit (SSOT)
+# Audit (Working Folder)
 
-This folder is the **single source of truth** for *current* audits and refactor plans.
+This folder contains *working* audits and refactor notes. SSOT lives in `AGENTS.md` + `docs/*`.
 
 If you find older audit/docs elsewhere in the repo, link them from here and mark them as **archived** instead of duplicating content.
 
@@ -36,7 +36,7 @@ pnpm -s test:e2e:smoke
 
 These are currently outside `audit/` but contain useful context:
 
-- `ARCHITECTURE.md` — repo boundaries + caching rules
+- `docs/ARCHITECTURE.md` — repo boundaries + caching rules
 - `CODEBASE_AUDIT_REFACTOR_2026-01-24.md` — broader audit/refactor proposal
 - `docs-final/archive/root/TREIDO_AUDIT_2026-01-24.md` — runtime/UX audit (Playwright/Supabase MCP)
 - `audit/AUDIT_TAILWIND_SHADCN_TWITTER_THEME_2026-01-24.md` — theming audit (Twitter theme)

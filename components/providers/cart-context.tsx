@@ -112,9 +112,23 @@ function sanitizeCartItems(rawItems: CartItem[]): CartItem[] {
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const { user, isLoading: authLoading } = useAuth()
-  const [items, setItems] = useState<CartItem[]>([])
+  // Initialize from localStorage synchronously on client to avoid flash of empty cart
+  const [items, setItems] = useState<CartItem[]>(() => {
+    if (typeof window === "undefined") return []
+    try {
+      const savedCart = localStorage.getItem("cart")
+      const parsed = safeJsonParse<CartItem[]>(savedCart)
+      if (parsed) {
+        return sanitizeCartItems(parsed)
+      }
+    } catch {
+      // Ignore storage access errors
+    }
+    return []
+  })
   const hasSyncedRef = useRef<string | null>(null)
-  const [storageLoaded, setStorageLoaded] = useState(false)
+  // If we initialized from localStorage, consider it loaded
+  const [storageLoaded, setStorageLoaded] = useState(() => typeof window !== "undefined")
   const [serverSyncDone, setServerSyncDone] = useState(false)
 
   const loadServerCart = useCallback(async (activeUserId: string) => {
@@ -233,7 +247,12 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   }, [])
 
   // Load from localStorage immediately (for SSR hydration)
+  // Note: Initial state already loads from localStorage synchronously on client,
+  // but this effect handles edge cases like corrupt data cleanup
   useEffect(() => {
+    // Already loaded synchronously via useState initializer
+    if (storageLoaded) return
+    
     const savedCart = localStorage.getItem("cart")
     try {
       const parsed = safeJsonParse<CartItem[]>(savedCart)
@@ -255,7 +274,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     } finally {
       setStorageLoaded(true)
     }
-  }, [])
+  }, [storageLoaded])
 
   // Sync with server when auth state settles
   useEffect(() => {
@@ -441,9 +460,16 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
 export function useCart(): CartContextType {
   // In Storybook, use the mock context if available
-  if (typeof window !== "undefined" && (window as any).__STORYBOOK_CART_CONTEXT__) {
+  const storybookCartContext =
+    typeof window !== "undefined"
+      ? (window as unknown as { __STORYBOOK_CART_CONTEXT__?: unknown }).__STORYBOOK_CART_CONTEXT__
+      : undefined
+
+  if (storybookCartContext) {
     // eslint-disable-next-line react-hooks/rules-of-hooks
-    const mockContext = useContext((window as any).__STORYBOOK_CART_CONTEXT__) as CartContextType | undefined
+    const mockContext = useContext(
+      storybookCartContext as React.Context<CartContextType | undefined>
+    )
     if (mockContext) return mockContext
   }
   // eslint-disable-next-line react-hooks/rules-of-hooks

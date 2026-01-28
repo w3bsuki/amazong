@@ -6,6 +6,7 @@ import { AccountStatsCards } from "./_components/account-stats-cards"
 import { AccountChart } from "./_components/account-chart"
 import { AccountRecentActivity } from "./_components/account-recent-activity"
 import { AccountBadges } from "./_components/account-badges"
+import { SubscriptionBenefitsCard } from "./_components/subscription-benefits-card"
 
 interface AccountPageProps {
   params: Promise<{
@@ -32,12 +33,16 @@ export default async function AccountPage({ params }: AccountPageProps) {
   }
 
   // Fetch all user stats in parallel (no joins)
-  const [ordersResult, wishlistResult, productsResult, , salesResult] = await Promise.all([
+  const [ordersResult, wishlistResult, productsResult, , salesResult, profileResult, subscriptionResult] = await Promise.all([
     supabase.from('orders').select('id, total_amount, status, created_at', { count: 'exact' }).eq('user_id', user.id).order('created_at', { ascending: false }).limit(5),
     supabase.from('wishlists').select('id', { count: 'exact' }).eq('user_id', user.id),
     supabase.from('products').select('id, title, price, stock, images, created_at', { count: 'exact' }).eq('seller_id', user.id).order('created_at', { ascending: false }).limit(5),
     supabase.from('messages').select('id, is_read', { count: 'exact' }).eq('sender_id', user.id).neq('sender_id', user.id),
     supabase.from('order_items').select('id, order_id, price_at_purchase, quantity, product_id', { count: 'exact' }).eq('seller_id', user.id).limit(5),
+    // Profile with subscription benefits
+    supabase.from('profiles').select('*').eq('id', user.id).single(),
+    // Active subscription
+    supabase.from('subscriptions').select('status, expires_at, auto_renew, plan_type').eq('seller_id', user.id).eq('status', 'active').order('created_at', { ascending: false }).limit(1).maybeSingle(),
   ])
 
   const totalOrders = ordersResult.count || 0
@@ -48,6 +53,29 @@ export default async function AccountPage({ params }: AccountPageProps) {
   const totalSales = salesResult.count || 0
   const salesData = salesResult.data || []
   
+  // Profile and subscription data
+  type ProfileBoostFields = {
+    boosts_remaining?: number | null
+    boosts_allocated?: number | null
+    boosts_reset_at?: string | null
+  }
+
+  const profile = profileResult.data
+    ? (profileResult.data as NonNullable<typeof profileResult.data> & ProfileBoostFields)
+    : null
+  const subscription = subscriptionResult.data
+  
+  // Fetch subscription plan details if user has an active subscription
+  const planResult = subscription?.plan_type
+    ? await supabase
+        .from('subscription_plans')
+        .select('max_listings, boosts_included, priority_support, analytics_access, badge_type')
+        .eq('tier', subscription.plan_type)
+        .eq('account_type', profile?.account_type || 'personal')
+        .single()
+    : { data: null }
+  const plan = planResult.data
+
   // Fetch products for recent sales - with proper typing
   interface SaleItem { id: string; order_id: string; price_at_purchase: number; quantity: number; product_id: string }
   const productIds = [...new Set(salesData.map((item: SaleItem) => item.product_id))]
@@ -108,6 +136,26 @@ export default async function AccountPage({ params }: AccountPageProps) {
       
       {/* Quick action buttons */}
       <AccountStatsCards totals={totals} locale={locale} />
+      
+      {/* Subscription benefits - show if user is a seller */}
+      {profile?.tier && (
+        <SubscriptionBenefitsCard
+          locale={locale}
+          tier={profile.tier}
+          accountType={(profile.account_type === 'business' ? 'business' : 'personal') as 'personal' | 'business'}
+          maxListings={plan?.max_listings ?? 30}
+          boostsIncluded={plan?.boosts_included ?? profile.boosts_allocated ?? 0}
+          prioritySupport={plan?.priority_support ?? false}
+          analyticsAccess={plan?.analytics_access ?? 'none'}
+          badgeType={plan?.badge_type ?? null}
+          activeListings={productCount}
+          boostsRemaining={profile.boosts_remaining ?? 0}
+          boostsResetAt={profile.boosts_reset_at ?? null}
+          expiresAt={subscription?.expires_at ?? null}
+          isActive={subscription?.status === 'active'}
+          isCancelled={subscription?.status === 'active' && subscription?.auto_renew === false}
+        />
+      )}
       
       {/* User badges */}
       <AccountBadges locale={locale} />

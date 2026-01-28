@@ -17,7 +17,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
-import { Lightning, User, Buildings, X, ArrowsClockwise, CalendarBlank, Warning } from "@phosphor-icons/react"
+import { Lightning, X, ArrowsClockwise, CalendarBlank, Warning } from "@phosphor-icons/react"
 import { cn } from "@/lib/utils"
 import { toast } from "sonner"
 import { PlansGrid, type Plan } from "@/components/pricing/plan-card"
@@ -135,9 +135,6 @@ export function PlansContent({
 }: PlansContentProps) {
   const [loadingPlanId, setLoadingPlanId] = useState<string | null>(null)
   const [billingPeriod, setBillingPeriod] = useState<"monthly" | "yearly">("monthly")
-  const [accountType, setAccountType] = useState<"personal" | "business">(
-    seller?.account_type || "personal"
-  )
   const [isPending, startTransition] = useTransition()
   const [cancelDialogOpen, setCancelDialogOpen] = useState(false)
   const searchParams = useSearchParams()
@@ -264,10 +261,9 @@ export function PlansContent({
     }
   }
 
-  // Filter plans by account type
-  const filteredPlans = plans
-    .filter((p) => !p.account_type || p.account_type === accountType)
-    .map(toPlan)
+  // Plans are already filtered by account type from server
+  // Just map to Plan interface for display
+  const mappedPlans = plans.map(toPlan)
 
   return (
     <div className="space-y-6">
@@ -435,38 +431,8 @@ export function PlansContent({
         </div>
       )}
 
-      {/* Account Type Toggle + Billing Toggle */}
-      <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-        <div className="inline-flex p-1 rounded-md bg-muted/50 border">
-          <button
-            onClick={() => setAccountType("personal")}
-            className={cn(
-              "flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all",
-              accountType === "personal"
-                ? "bg-background shadow-sm text-foreground"
-                : "text-muted-foreground hover:text-foreground"
-            )}
-          >
-            <User weight={accountType === "personal" ? "fill" : "regular"} className="size-4" />
-            {locale === "bg" ? "Личен" : "Personal"}
-          </button>
-          <button
-            onClick={() => setAccountType("business")}
-            className={cn(
-              "flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all",
-              accountType === "business"
-                ? "bg-background shadow-sm text-foreground"
-                : "text-muted-foreground hover:text-foreground"
-            )}
-          >
-            <Buildings weight={accountType === "business" ? "fill" : "regular"} className="size-4" />
-            {locale === "bg" ? "Бизнес" : "Business"}
-          </button>
-        </div>
-
-        <div className="hidden sm:block w-px h-8 bg-border" />
-
-        {/* Billing Toggle */}
+      {/* Billing Period Toggle */}
+      <div className="flex items-center justify-center">
         <div className="inline-flex items-center gap-2 bg-muted rounded-lg p-1">
           <button
             className={cn(
@@ -498,7 +464,7 @@ export function PlansContent({
 
       {/* Plans Grid - Uses shared component */}
       <PlansGrid
-        plans={filteredPlans}
+        plans={mappedPlans}
         locale={locale}
         billingPeriod={billingPeriod}
         currentTier={currentTier}

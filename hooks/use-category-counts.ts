@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useCallback } from "react"
+import { useState, useEffect, useCallback, useRef } from "react"
 
 interface CategoryCounts {
   [slug: string]: number
@@ -13,9 +13,13 @@ interface UseCategoryCountsResult {
   refetch: () => void
 }
 
-// Cache key for localStorage
-const CACHE_KEY = "category-counts"
+// Cache key for localStorage - v2 includes L1/L2 subcategory counts
+const CACHE_KEY = "category-counts-v2"
 const CACHE_TTL_MS = 60 * 60 * 1000 // 1 hour
+
+// Retry configuration
+const MAX_RETRIES = 2
+const RETRY_DELAY_MS = 1000
 
 interface CacheEntry {
   counts: CategoryCounts
@@ -61,21 +65,36 @@ function saveToCache(counts: CategoryCounts): void {
 /**
  * Hook to fetch and cache category listing counts.
  * Uses localStorage for client-side caching to avoid repeated fetches.
+ * Fails gracefully without console errors - uses cached data as fallback.
  */
 export function useCategoryCounts(): UseCategoryCountsResult {
   const [counts, setCounts] = useState<CategoryCounts>(() => getFromCache() || {})
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [hasFetched, setHasFetched] = useState(false)
+  const abortControllerRef = useRef<AbortController | null>(null)
+  const retryCountRef = useRef(0)
 
-  const fetchCounts = useCallback(async () => {
+  const fetchCounts = useCallback(async (signal?: AbortSignal) => {
     setIsLoading(true)
     setError(null)
     
     try {
-      const res = await fetch("/api/categories/counts")
+      const res = await fetch(
+        "/api/categories/counts",
+        signal ? { signal } : undefined
+      )
+      
+      // Check if aborted before processing response
+      if (signal?.aborted) return
+      
       if (!res.ok) {
-        throw new Error(`Failed to fetch counts: ${res.status}`)
+        // Don't retry on client errors (4xx), only server errors (5xx)
+        if (res.status >= 400 && res.status < 500) {
+          setError(`Client error: ${res.status}`)
+          return
+        }
+        throw new Error(`Server error: ${res.status}`)
       }
       
       const data = await res.json()
@@ -83,15 +102,50 @@ export function useCategoryCounts(): UseCategoryCountsResult {
       if (data.counts && typeof data.counts === "object") {
         setCounts(data.counts)
         saveToCache(data.counts)
+        retryCountRef.current = 0 // Reset retry count on success
       }
     } catch (e) {
+      // Silently ignore aborted requests
+      if (e instanceof Error && e.name === "AbortError") {
+        return
+      }
+      
       const message = e instanceof Error ? e.message : "Unknown error"
+      
+      // Retry logic for transient failures
+      if (retryCountRef.current < MAX_RETRIES) {
+        retryCountRef.current++
+        // Schedule retry with exponential backoff
+        setTimeout(() => {
+          if (!signal?.aborted) {
+            fetchCounts(signal)
+          }
+        }, RETRY_DELAY_MS * retryCountRef.current)
+        return
+      }
+      
+      // After all retries exhausted, set error state but don't log to console
+      // The hook has cached data as fallback, so this is a graceful degradation
       setError(message)
-      console.error("[useCategoryCounts] Error:", message)
+      
+      // Only log in development for debugging, not in production
+      if (process.env.NODE_ENV === "development") {
+        // Use console.debug instead of console.error - less noisy
+        console.debug("[useCategoryCounts] Failed after retries, using cached data:", message)
+      }
     } finally {
       setIsLoading(false)
     }
   }, [])
+
+  // Public refetch function (creates new abort controller)
+  const refetch = useCallback(() => {
+    // Cancel any in-flight request
+    abortControllerRef.current?.abort()
+    abortControllerRef.current = new AbortController()
+    retryCountRef.current = 0
+    fetchCounts(abortControllerRef.current.signal)
+  }, [fetchCounts])
 
   useEffect(() => {
     // Only fetch on client-side and only once
@@ -115,9 +169,17 @@ export function useCategoryCounts(): UseCategoryCountsResult {
       }
     }
     
+    // Create abort controller for this fetch
+    abortControllerRef.current = new AbortController()
+    
     // Fetch fresh data (either no cache or stale cache)
-    fetchCounts()
+    fetchCounts(abortControllerRef.current.signal)
+    
+    // Cleanup: abort any in-flight request on unmount
+    return () => {
+      abortControllerRef.current?.abort()
+    }
   }, [fetchCounts, hasFetched])
 
-  return { counts, isLoading, error, refetch: fetchCounts }
+  return { counts, isLoading, error, refetch }
 }

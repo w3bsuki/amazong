@@ -1,6 +1,7 @@
 "use client"
 
-import React, { createContext, useContext, useCallback } from "react"
+import React, { createContext, useContext, useCallback, useEffect, useRef } from "react"
+import { useRouter } from "@/i18n/routing"
 
 // =============================================================================
 // TYPES - Re-exported from lib/types/messages.ts
@@ -47,7 +48,15 @@ export function useMessages(): MessageContextValue {
 // PROVIDER - Clean, thin wrapper using extracted hooks
 // =============================================================================
 
-export function MessageProvider({ children }: { children: React.ReactNode }) {
+interface MessageProviderProps {
+  children: React.ReactNode
+  initialSellerId?: string | undefined
+  initialProductId?: string | undefined
+}
+
+export function MessageProvider({ children, initialSellerId, initialProductId }: MessageProviderProps) {
+  const router = useRouter()
+  const hasInitialized = useRef(false)
   // State management hook
   const {
     currentUserId,
@@ -105,6 +114,43 @@ export function MessageProvider({ children }: { children: React.ReactNode }) {
 
   // Typing indicator hook
   const { sendTypingIndicator } = useTypingIndicator()
+
+  // =============================================================================
+  // AUTO-START CONVERSATION
+  // If initialSellerId is provided, start or find existing conversation
+  // =============================================================================
+  
+  useEffect(() => {
+    if (!currentUserId || !initialSellerId || hasInitialized.current) return
+    if (isLoading) return // Wait for conversations to load first
+    
+    hasInitialized.current = true
+    
+    const initConversation = async () => {
+      try {
+        // Check if conversation already exists with this seller/product
+        const existingConv = conversations.find(
+          (conv) =>
+            (conv.seller_id === initialSellerId || conv.buyer_id === initialSellerId) &&
+            (!initialProductId || conv.product?.id === initialProductId)
+        )
+        
+        if (existingConv) {
+          // Select existing conversation and navigate
+          await selectConversation(existingConv.id)
+          router.replace(`/chat/${existingConv.id}`)
+        } else {
+          // Start new conversation
+          const conversationId = await startConversation(initialSellerId, initialProductId)
+          router.replace(`/chat/${conversationId}`)
+        }
+      } catch (err) {
+        console.error("Error initializing conversation:", err)
+      }
+    }
+    
+    initConversation()
+  }, [currentUserId, initialSellerId, initialProductId, isLoading, conversations, selectConversation, startConversation, router])
 
   // =============================================================================
   // CONTEXT VALUE

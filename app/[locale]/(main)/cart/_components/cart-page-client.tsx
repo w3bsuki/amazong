@@ -1,5 +1,6 @@
 "use client"
 
+import { useState, useEffect } from "react"
 import Image from "next/image"
 import { Link, useRouter } from "@/i18n/routing"
 import { useCart } from "@/components/providers/cart-context"
@@ -26,6 +27,9 @@ import { useRecentlyViewed } from "@/hooks/use-recently-viewed"
 import { ProductCard } from "@/components/shared/product/product-card"
 import { PageShell } from "@/components/shared/page-shell"
 
+/** Timeout to show cart content even if auth hasn't finished (ms) */
+const CART_READY_TIMEOUT = 3000
+
 export default function CartPageClient() {
   const { items, isReady, removeFromCart, updateQuantity, subtotal, totalItems } = useCart()
   const router = useRouter()
@@ -34,6 +38,17 @@ export default function CartPageClient() {
   const tBreadcrumbs = useTranslations("Breadcrumbs")
   const locale = useLocale()
   const { products: recentlyViewed, isLoaded: recentlyViewedLoaded } = useRecentlyViewed()
+  
+  // Timeout fallback: show cart after 3s even if auth hasn't settled
+  const [timedOut, setTimedOut] = useState(false)
+  useEffect(() => {
+    if (isReady) return // Already ready, no timeout needed
+    const timer = setTimeout(() => setTimedOut(true), CART_READY_TIMEOUT)
+    return () => clearTimeout(timer)
+  }, [isReady])
+  
+  // Cart is "effectively ready" if either fully ready or timed out
+  const effectivelyReady = isReady || timedOut
 
   const handleCheckout = () => {
     if (items.length === 0) return
@@ -54,7 +69,8 @@ export default function CartPageClient() {
     return `/${sellerSlug}/${item.slug ?? item.id}`
   }
 
-  if (!isReady) {
+  // Show loading spinner only while waiting (max 3s)
+  if (!effectivelyReady) {
     return (
       <div className="bg-secondary/30 min-h-(--page-section-min-h-lg) pt-14 lg:pt-0">
         <div className="container py-6 flex items-center justify-center">

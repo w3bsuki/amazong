@@ -5,12 +5,14 @@ import { useState, useMemo } from "react"
 import { useTranslations } from "next-intl"
 import { cn } from "@/lib/utils"
 import type { CategoryAttribute } from "@/lib/data/categories"
-import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
+import { Button } from "@/components/ui/button"
 import {
   CaretDown,
   SquaresFour,
   TrendUp,
+  TrendDown,
   ChartLineUp,
   Eye,
   Star,
@@ -18,6 +20,9 @@ import {
   Rows,
   X,
   Check,
+  MapPin,
+  Package,
+  Timer,
 } from "@phosphor-icons/react"
 import {
   DropdownMenu,
@@ -25,6 +30,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { BULGARIAN_CITIES } from "@/lib/bulgarian-cities"
 
 // =============================================================================
 // TYPES
@@ -34,11 +40,15 @@ export type FeedTab =
   | "all"
   | "newest"
   | "promoted"
+  | "nearby"
   | "deals"
   | "top_rated"
   | "best_sellers"
   | "most_viewed"
   | "price_low"
+  | "price_high"
+  | "free_shipping"
+  | "ending_soon"
 
 export interface FilterState {
   priceMin: string
@@ -59,6 +69,10 @@ export interface FeedToolbarProps {
   viewMode: "grid" | "list"
   onViewModeChange: (mode: "grid" | "list") => void
   categorySlug: string | null
+  /** User's city for nearby filtering */
+  userCity?: string | null
+  /** Callback when user wants to change city */
+  onCityChange?: (city: string) => void
   filters: FilterState
   onFiltersChange: (f: FilterState) => void
   categoryAttributes: CategoryAttribute[]
@@ -66,7 +80,7 @@ export interface FeedToolbarProps {
 }
 
 // =============================================================================
-// FEED TOOLBAR - Inline search row that lives with content
+// FEED TOOLBAR - Clean shadcn-style filter navigation
 // =============================================================================
 
 export function FeedToolbar({
@@ -77,6 +91,8 @@ export function FeedToolbar({
   viewMode,
   onViewModeChange,
   categorySlug,
+  userCity,
+  onCityChange,
   filters,
   onFiltersChange,
   categoryAttributes,
@@ -85,21 +101,15 @@ export function FeedToolbar({
   const t = useTranslations("TabbedProductFeed")
   const tViewMode = useTranslations("ViewMode")
 
-  const primaryTabs: Array<{ id: FeedTab; label: string }> = [
-    { id: "newest", label: t("tabs.newest") },
-    { id: "promoted", label: t("tabs.promoted") },
-  ]
-
-  const moreTabs: Array<{ id: FeedTab; label: string; icon: typeof TrendUp }> = [
-    { id: "best_sellers", label: t("tabs.best_sellers"), icon: ChartLineUp },
-    { id: "most_viewed", label: t("tabs.most_viewed"), icon: Eye },
-    { id: "top_rated", label: t("tabs.top_rated"), icon: Star },
+  // Clean tab definitions - NO promoted (shown above in dedicated section)
+  const allTabs: Array<{ id: FeedTab; label: string; icon: typeof TrendUp }> = [
+    { id: "newest", label: t("tabs.newest"), icon: TrendUp },
+    { id: "nearby", label: t("tabs.nearby"), icon: MapPin },
     { id: "deals", label: t("tabs.deals"), icon: Percent },
-    { id: "price_low", label: t("tabs.price_low"), icon: TrendUp },
+    { id: "best_sellers", label: t("tabs.best_sellers"), icon: ChartLineUp },
+    { id: "top_rated", label: t("tabs.top_rated"), icon: Star },
+    { id: "free_shipping", label: t("tabs.free_shipping"), icon: Package },
   ]
-
-  const activeMoreTab = moreTabs.find((tab) => tab.id === activeTab) ?? null
-  const ActiveMoreIcon = activeMoreTab?.icon ?? null
 
   // Build contextual filter pills from category attributes (max 5 for UI cleanliness)
   const categoryFilters = useMemo(() => {
@@ -165,9 +175,10 @@ export function FeedToolbar({
   }, [categoryFilters, filters.attributes])
 
   return (
-    <div className="flex items-center gap-3 mb-4">
-      {/* LEFT: Product count + Category filter pills */}
-      <div className="flex items-center gap-2 flex-1 min-w-0 overflow-x-auto no-scrollbar">
+    <div className="flex flex-col gap-3 mb-4">
+      {/* TOP ROW: Clean filter tabs */}
+      <div className="flex items-center gap-3">
+        {/* Product count */}
         <span className="text-sm font-medium text-foreground whitespace-nowrap shrink-0">
           {productCount.toLocaleString(locale)}{" "}
           <span className="text-muted-foreground font-normal">
@@ -175,178 +186,165 @@ export function FeedToolbar({
           </span>
         </span>
 
-        {/* Category filter pills - loading skeleton */}
-        {isLoadingAttributes && categorySlug && (
-          <>
-            {[1, 2, 3].map((i) => (
-              <Skeleton key={i} className="h-9 w-24 rounded-full shrink-0" />
-            ))}
-          </>
-        )}
+        {/* Separator */}
+        <div className="h-5 w-px bg-border shrink-0" />
 
-        {/* Category filter pills - only show when category selected */}
-        {!isLoadingAttributes && categoryFilters.map((filter) => (
-          <DropdownMenu 
-            key={filter.id} 
-            open={activeDropdown === filter.id} 
-            onOpenChange={(open) => setActiveDropdown(open ? filter.id : null)}
-          >
-            <DropdownMenuTrigger asChild>
-              <button
-                type="button"
-                className={cn(
-                  "inline-flex items-center gap-1.5 px-3 h-9 text-sm rounded-full border whitespace-nowrap shrink-0",
-                  "bg-background border-border hover:bg-muted/50 transition-colors",
-                  filters.attributes[filter.id] && "border-foreground/20 bg-foreground/5",
-                )}
-              >
-                {filter.label}
-                <CaretDown size={12} weight="bold" className="text-muted-foreground" />
-              </button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" className="min-w-36">
-              {filter.options.map((opt) => {
-                const isSelected = filters.attributes[filter.id] === opt.value
-                return (
-                  <DropdownMenuItem
-                    key={opt.value}
-                    onClick={() => {
-                      const newAttributes = { ...filters.attributes }
-                      if (newAttributes[filter.id] === opt.value) {
-                        delete newAttributes[filter.id]
-                      } else {
-                        newAttributes[filter.id] = opt.value
-                      }
-                      onFiltersChange({ ...filters, attributes: newAttributes })
-                    }}
-                    className={cn("cursor-pointer", isSelected && "bg-muted font-medium")}
-                  >
-                    <span className="w-4 flex items-center justify-center mr-1">
-                      {isSelected && <Check size={14} weight="bold" />}
-                    </span>
-                    {opt.label}
-                  </DropdownMenuItem>
-                )
-              })}
-            </DropdownMenuContent>
-          </DropdownMenu>
-        ))}
-
-        {/* Active filter badges */}
-        {activeAttributeFilters.map((af) => (
-          <button
-            key={af.id}
-            type="button"
-            onClick={() => {
-              const newAttributes = { ...filters.attributes }
-              delete newAttributes[af.id]
-              onFiltersChange({ ...filters, attributes: newAttributes })
-            }}
-            className="inline-flex items-center gap-1.5 px-3 h-9 text-sm rounded-full bg-foreground text-background font-medium whitespace-nowrap shrink-0"
-          >
-            {af.displayLabel}
-            <X size={14} weight="bold" className="text-background/70" />
-          </button>
-        ))}
-      </div>
-
-      {/* RIGHT: Quick filter + More + View Toggle */}
-      <div className="flex items-center gap-2 shrink-0">
-        {/* Quick filter: Newest / Promoted */}
-        <div className="flex items-center rounded-full border border-border/50 bg-muted/30 p-0.5">
-          {primaryTabs.map((tab) => {
+        {/* Clean shadcn-style tabs */}
+        <div className="flex items-center gap-1 flex-1 overflow-x-auto no-scrollbar">
+          {allTabs.map((tab) => {
+            const TabIcon = tab.icon
             const isActive = activeTab === tab.id
             return (
               <Button
                 key={tab.id}
-                type="button"
-                variant="ghost"
+                variant={isActive ? "default" : "ghost"}
                 size="sm"
                 onClick={() => onTabChange(tab.id)}
                 className={cn(
-                  "h-8 rounded-full px-3 transition-all duration-150",
-                  isActive
-                    ? "bg-background text-foreground shadow-sm"
-                    : "text-muted-foreground hover:text-foreground bg-transparent hover:bg-transparent",
+                  "h-8 px-3 gap-1.5 shrink-0 rounded-full",
+                  isActive && "shadow-sm"
                 )}
               >
-                {tab.label}
+                <TabIcon size={14} weight={isActive ? "fill" : "regular"} />
+                <span className="text-sm">{tab.label}</span>
               </Button>
             )
           })}
         </div>
 
-        {/* More sort options */}
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <button
-              type="button"
-              aria-label={t("sortPlaceholder")}
-              className={cn(
-                "inline-flex items-center gap-1.5 rounded-md px-3 h-9",
-                "text-sm font-medium whitespace-nowrap",
-                "bg-muted/40 text-foreground border border-border/50",
-                "hover:bg-muted/60 hover:border-border transition-all duration-150",
-              )}
-            >
-              {ActiveMoreIcon && <ActiveMoreIcon size={14} weight="fill" />}
-              <span>{activeMoreTab ? activeMoreTab.label : t("tabs.more")}</span>
-              <CaretDown size={12} weight="bold" className="text-muted-foreground" />
-            </button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="min-w-44">
-            {moreTabs.map((tab) => {
-              const Icon = tab.icon
-              const isActive = activeTab === tab.id
-              return (
-                <DropdownMenuItem
-                  key={tab.id}
-                  onClick={() => onTabChange(tab.id)}
-                  className={cn("cursor-pointer flex items-center gap-2", isActive && "bg-muted font-medium")}
-                >
-                  <span className="w-4 flex items-center justify-center">
-                    {isActive && <Check size={14} weight="bold" />}
-                  </span>
-                  <Icon size={14} weight={isActive ? "fill" : "regular"} />
-                  {tab.label}
-                </DropdownMenuItem>
-              )
-            })}
-          </DropdownMenuContent>
-        </DropdownMenu>
+        {/* City selector - shown when nearby tab is active */}
+        {activeTab === "nearby" && (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant={userCity ? "default" : "outline"}
+                size="sm"
+                className="h-8 gap-1.5 shrink-0 rounded-full"
+              >
+                <MapPin size={14} weight={userCity ? "fill" : "regular"} />
+                <span>
+                  {userCity 
+                    ? BULGARIAN_CITIES.find(c => c.value === userCity)?.[locale === "bg" ? "labelBg" : "label"] ?? userCity
+                    : locale === "bg" ? "Избери град" : "Select city"
+                  }
+                </span>
+                <CaretDown size={12} weight="bold" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="min-w-48 max-h-80 overflow-y-auto">
+              {BULGARIAN_CITIES.filter(c => c.value !== "other").map((city) => {
+                const isSelected = userCity === city.value
+                return (
+                  <DropdownMenuItem
+                    key={city.value}
+                    onClick={() => onCityChange?.(city.value)}
+                    className={cn("cursor-pointer flex items-center gap-2", isSelected && "bg-muted font-medium")}
+                  >
+                    <span className="w-4 flex items-center justify-center">
+                      {isSelected && <Check size={14} weight="bold" />}
+                    </span>
+                    {locale === "bg" ? city.labelBg : city.label}
+                  </DropdownMenuItem>
+                )
+              })}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )}
 
         {/* View Toggle */}
-        <div className="relative flex items-center rounded-lg border border-border/50 bg-muted/30 p-0.5">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => onViewModeChange("grid")}
-            className={cn(
-              "size-8 rounded-md transition-all duration-150",
-              viewMode === "grid"
-                ? "bg-background text-foreground shadow-sm"
-                : "text-muted-foreground hover:text-foreground bg-transparent hover:bg-transparent"
-            )}
+        <ToggleGroup
+          type="single"
+          value={viewMode}
+          onValueChange={(value) => value && onViewModeChange(value as "grid" | "list")}
+          variant="outline"
+          className="h-8 bg-muted/50 p-0.5 rounded-full shrink-0"
+        >
+          <ToggleGroupItem
+            value="grid"
             aria-label={tViewMode("gridView")}
+            className="size-7 p-0 rounded-full data-[state=on]:bg-background data-[state=on]:shadow-sm"
           >
-            <SquaresFour size={16} weight={viewMode === "grid" ? "fill" : "regular"} />
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => onViewModeChange("list")}
-            className={cn(
-              "size-8 rounded-md transition-all duration-150",
-              viewMode === "list"
-                ? "bg-background text-foreground shadow-sm"
-                : "text-muted-foreground hover:text-foreground bg-transparent hover:bg-transparent"
-            )}
+            <SquaresFour size={14} weight={viewMode === "grid" ? "fill" : "regular"} />
+          </ToggleGroupItem>
+          <ToggleGroupItem
+            value="list"
             aria-label={tViewMode("listView")}
+            className="size-7 p-0 rounded-full data-[state=on]:bg-background data-[state=on]:shadow-sm"
           >
-            <Rows size={16} weight={viewMode === "list" ? "fill" : "regular"} />
-          </Button>
-        </div>
+            <Rows size={14} weight={viewMode === "list" ? "fill" : "regular"} />
+          </ToggleGroupItem>
+        </ToggleGroup>
       </div>
+
+      {/* BOTTOM ROW: Category filter pills (only when category is selected) */}
+      {(categoryFilters.length > 0 || isLoadingAttributes) && (
+        <div className="flex items-center gap-2 overflow-x-auto no-scrollbar">
+          {categoryFilters.map((filter) => (
+            <DropdownMenu
+              key={filter.id}
+              open={activeDropdown === filter.id}
+              onOpenChange={(open) => setActiveDropdown(open ? filter.id : null)}
+            >
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className={cn(
+                    "h-8 px-3 gap-1.5 rounded-full shrink-0",
+                    filters.attributes[filter.id] && "border-primary bg-primary/5"
+                  )}
+                >
+                  {filter.label}
+                  <CaretDown size={12} weight="bold" className="text-muted-foreground" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start" className="min-w-36">
+                {filter.options.map((opt) => {
+                  const isSelected = filters.attributes[filter.id] === opt.value
+                  return (
+                    <DropdownMenuItem
+                      key={opt.value}
+                      onClick={() => {
+                        const newAttributes = { ...filters.attributes }
+                        if (newAttributes[filter.id] === opt.value) {
+                          delete newAttributes[filter.id]
+                        } else {
+                          newAttributes[filter.id] = opt.value
+                        }
+                        onFiltersChange({ ...filters, attributes: newAttributes })
+                      }}
+                      className={cn("cursor-pointer", isSelected && "bg-muted font-medium")}
+                    >
+                      <span className="w-4 flex items-center justify-center mr-1">
+                        {isSelected && <Check size={14} weight="bold" />}
+                      </span>
+                      {opt.label}
+                    </DropdownMenuItem>
+                  )
+                })}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ))}
+
+          {/* Active filter badges */}
+          {activeAttributeFilters.map((af) => (
+            <Button
+              key={af.id}
+              variant="default"
+              size="sm"
+              onClick={() => {
+                const newAttributes = { ...filters.attributes }
+                delete newAttributes[af.id]
+                onFiltersChange({ ...filters, attributes: newAttributes })
+              }}
+              className="h-8 px-3 gap-1.5 rounded-full shrink-0"
+            >
+              {af.displayLabel}
+              <X size={12} weight="bold" />
+            </Button>
+          ))}
+        </div>
+      )}
     </div>
   )
 }

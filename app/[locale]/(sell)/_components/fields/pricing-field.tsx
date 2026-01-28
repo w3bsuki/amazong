@@ -395,11 +395,13 @@ export function PricingField({ className, categoryId, idPrefix = "sell-form", co
       </div>
 
       {/* Accept Offers Toggle - Premium pill design */}
-      <button
-        type="button"
+      <div
+        role="button"
+        tabIndex={0}
         onClick={() => setValue("acceptOffers", !acceptOffers)}
+        onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setValue("acceptOffers", !acceptOffers); } }}
         className={cn(
-          "w-full flex items-center gap-3.5 p-4 rounded-xl border transition-all",
+          "w-full flex items-center gap-3.5 p-4 rounded-xl border transition-all cursor-pointer",
           "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30",
           "active:scale-[0.98]",
           acceptOffers 
@@ -433,7 +435,7 @@ export function PricingField({ className, categoryId, idPrefix = "sell-form", co
           onCheckedChange={(checked) => setValue("acceptOffers", checked)}
           className="shrink-0 scale-110"
         />
-      </button>
+      </div>
     </FieldContent>
   );
 

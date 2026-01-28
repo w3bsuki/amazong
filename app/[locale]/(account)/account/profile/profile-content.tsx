@@ -99,15 +99,18 @@ const SHIPPING_REGIONS = [
   { value: "WW", label: "Worldwide", labelBg: "Целият свят" },
 ]
 
+// Format: boring-avatar:variant:paletteIndex:seed
+// Variants: marble, beam, pixel, sunset, ring, bauhaus
+// Palettes: 0-5 (see lib/avatar-palettes.ts)
 const PRESET_AVATARS = [
-  "https://api.dicebear.com/7.x/avataaars/svg?seed=Nova",
-  "https://api.dicebear.com/7.x/avataaars/svg?seed=Riley",
-  "https://api.dicebear.com/7.x/avataaars/svg?seed=Kai",
-  "https://api.dicebear.com/7.x/avataaars/svg?seed=Zoe",
-  "https://api.dicebear.com/7.x/avataaars/svg?seed=Max",
-  "https://api.dicebear.com/7.x/avataaars/svg?seed=Luna",
-  "https://api.dicebear.com/7.x/avataaars/svg?seed=Aria",
-  "https://api.dicebear.com/7.x/avataaars/svg?seed=Theo",
+  "boring-avatar:marble:0:Nova",
+  "boring-avatar:beam:1:Riley",
+  "boring-avatar:sunset:2:Kai",
+  "boring-avatar:bauhaus:3:Zoe",
+  "boring-avatar:ring:4:Max",
+  "boring-avatar:pixel:5:Luna",
+  "boring-avatar:marble:1:Aria",
+  "boring-avatar:beam:2:Theo",
 ]
 
 function AvatarImg({ src, alt, size, className }: { src: string; alt: string; size: number; className?: string }) {
@@ -243,7 +246,7 @@ export function ProfileContent({
   const handleChangeEmail = async () => {
     const emailValidation = validateEmail(emailData.newEmail, locale)
     if (!emailValidation.valid) {
-      toast.error(emailValidation.error!)
+      toast.error(emailValidation.error ?? (locale === "bg" ? "Невалиден имейл" : "Invalid email"))
       return
     }
 
@@ -437,7 +440,18 @@ export function ProfileContent({
                   className="size-10 rounded-full overflow-hidden border bg-muted hover:bg-muted/80 transition-colors disabled:opacity-50"
                   aria-label={locale === "bg" ? "Избери този аватар" : "Choose this avatar"}
                 >
-                  <AvatarImg src={url} alt="" size={40} className="size-full object-cover" />
+                  {/* Render UserAvatar for boring-avatar presets, fallback to AvatarImg for legacy URLs */}
+                  {url.startsWith("boring-avatar:") ? (
+                    <UserAvatar
+                      name={profile.full_name || profile.email || "User"}
+                      avatarUrl={url}
+                      size="sm"
+                      className="size-full"
+                      fallbackClassName="bg-muted text-muted-foreground text-xs font-bold"
+                    />
+                  ) : (
+                    <AvatarImg src={url} alt="" size={40} className="size-full object-cover" />
+                  )}
                 </button>
               ))}
             </div>

@@ -54,8 +54,12 @@ export function CustomerReviewsHybrid({
   submitReview,
 }: CustomerReviewsHybridProps) {
   const router = useRouter();
-  const safeRating = Number.isFinite(rating) ? rating : 0;
-  const safeCount = Number.isFinite(reviewCount) ? reviewCount : 0;
+  
+  // Use reviews array as source of truth - if no reviews exist, show 0 rating
+  // This prevents the contradiction where rating shows 4.7 but reviews show "No reviews yet"
+  const hasReviews = reviews.length > 0;
+  const safeRating = hasReviews && Number.isFinite(rating) ? rating : 0;
+  const safeCount = hasReviews ? (Number.isFinite(reviewCount) ? reviewCount : reviews.length) : 0;
 
   const distribution = [1, 2, 3, 4, 5].map((s) => reviews.filter((r) => r.rating === s).length);
 
