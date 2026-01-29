@@ -2,6 +2,7 @@ import { createStaticClient } from "@/lib/supabase/server"
 import { ITEMS_PER_PAGE } from "../../../_lib/pagination"
 import type { CategoryProductFilters, Product } from "./types"
 import { normalizeAttributeKey } from "@/lib/attributes/normalize-attribute-key"
+import { logEvent } from "@/lib/structured-log"
 
 export async function searchProducts(
   supabase: ReturnType<typeof createStaticClient>,
@@ -11,7 +12,7 @@ export async function searchProducts(
   limit: number = ITEMS_PER_PAGE,
   shippingFilter: string = ""
 ): Promise<{ products: Product[]; total: number }> {
-  const debug = process.env.DEBUG_CATEGORY_SEARCH === "1"
+  const debug = process.env.NODE_ENV !== "production" && process.env.DEBUG_CATEGORY_SEARCH === "1"
   const t0 = debug ? Date.now() : 0
   const offset = (page - 1) * limit
 
@@ -102,10 +103,13 @@ export async function searchProducts(
   const tParallel0 = debug ? Date.now() : 0
   const [{ count: totalCount }, { data }] = await Promise.all([countQuery, dbQuery])
   if (debug) {
-    console.log(
-      `[category:searchProducts] count+rows in ${Date.now() - tParallel0}ms ` +
-        `(rows=${(data || []).length}, total=${totalCount ?? 0}, overall ${Date.now() - t0}ms)`
-    )
+    logEvent("info", "category_search_products_debug", {
+      route: "category/[slug]",
+      parallelMs: Date.now() - tParallel0,
+      rows: (data || []).length,
+      total: totalCount ?? 0,
+      overallMs: Date.now() - t0,
+    })
   }
 
   type DbSellerProfile = {

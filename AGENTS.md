@@ -8,6 +8,21 @@ Read this first. This file is the **single entry point** for humans + AI agents 
 - Goal: ship production ASAP with clean boundaries and minimal bloat
 - Stack: Next.js 16 (App Router) + React 19 + TypeScript + Tailwind v4 + shadcn/ui + Supabase (RLS/Auth/Storage) + Stripe (Checkout + Connect) + next-intl
 
+## Quick Start
+
+```bash
+pnpm install
+pnpm dev
+```
+
+Common gates:
+
+```bash
+pnpm -s typecheck
+pnpm -s lint
+pnpm -s styles:gate
+```
+
 ## Canonical Docs (SSOT)
 
 Only these docs define “how the project works”. If something conflicts with them, it’s wrong/outdated.
@@ -29,6 +44,15 @@ Only these docs define “how the project works”. If something conflicts with 
 - [ ] Small batches (1–3 files), shippable, with verification
 - [ ] No new animations (keep UX stable and fast)
 
+## Do NOT
+
+- Don’t add new features (scope creep) unless PRD/FEATURES updated first.
+- Don’t log secrets/PII (server or client).
+- Don’t ship hardcoded user-facing strings (always use `next-intl`).
+- Don’t use gradients, arbitrary Tailwind values, or hardcoded colors (run `pnpm -s styles:gate`).
+- Don’t import route-private code across route groups.
+- Don’t read `cookies()`/`headers()` inside cached (`'use cache'`) functions.
+
 ## Where Things Go (Boundaries)
 
 - `app/[locale]/(group)/**/_components/*` route-private UI
@@ -43,12 +67,24 @@ Only these docs define “how the project works”. If something conflicts with 
 
 ## Verification Gates (Run Often)
 
+Always:
+
 ```bash
 pnpm -s typecheck
 pnpm -s lint
+pnpm -s styles:gate
+```
+
+Conditional:
+
+```bash
 pnpm -s test:unit
 REUSE_EXISTING_SERVER=true pnpm -s test:e2e:smoke
-pnpm -s styles:gate
+```
+
+Weekly + before deploy + cleanup batches:
+
+```bash
 pnpm -s knip
 pnpm -s dupes
 ```

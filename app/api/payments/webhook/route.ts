@@ -3,6 +3,7 @@ import { createAdminClient } from "@/lib/supabase/server"
 import { NextResponse } from "next/server"
 import { getStripeWebhookSecrets } from "@/lib/env"
 import { logError } from "@/lib/structured-log"
+import type Stripe from "stripe"
 
 /**
  * Canonical ownership:
@@ -23,7 +24,7 @@ export async function POST(request: Request) {
         return NextResponse.json({ error: "No signature" }, { status: 400 })
     }
 
-    let event: unknown
+    let event: Stripe.Event | null = null
 
     try {
         const secrets = getStripeWebhookSecrets()
@@ -52,18 +53,18 @@ export async function POST(request: Request) {
     }
 
     try {
-        switch ((event as any).type) {
-            case 'checkout.session.completed': {
-                const session = (event as any).data.object
+        switch (event.type) {
+            case "checkout.session.completed": {
+                const session = event.data.object as Stripe.Checkout.Session
 
                 // Handle listing boost payments (DEC-003)
-                if (session.mode === 'payment' && session.metadata?.type === 'listing_boost') {
+                if (session.mode === "payment" && session.metadata?.type === "listing_boost") {
                     const productId = session.metadata.product_id
                     const sellerId = session.metadata.profile_id
-                    const durationDays = parseInt(session.metadata.duration_days || '7', 10)
+                    const durationDays = Number.parseInt(session.metadata.duration_days || "7", 10)
                     const sessionId = session.id
                     const amountTotal = session.amount_total // in cents
-                    const currency = session.currency?.toUpperCase() || 'EUR'
+                    const currency = session.currency?.toUpperCase() || "EUR"
 
                     if (!productId || !sellerId) {
                         logError("stripe_webhook_boost_missing_metadata", null, {
@@ -75,7 +76,7 @@ export async function POST(request: Request) {
 
                     // Idempotency key: `stripe_checkout_session_id` (unique index in DB).
                     // Use Stripe event timestamp so retries cannot extend boost duration.
-                    const eventCreatedSeconds = (event as any)?.created
+                    const eventCreatedSeconds = event.created
                     const startsAt = typeof eventCreatedSeconds === "number"
                         ? new Date(eventCreatedSeconds * 1000)
                         : new Date()
@@ -100,7 +101,7 @@ export async function POST(request: Request) {
                     if (boostInsertError) {
                         // If this is a retry, the row may already exist; fetch it so we can still
                         // enforce product flags without extending the boost.
-                        const isDuplicate = (boostInsertError as any)?.code === "23505"
+                        const isDuplicate = boostInsertError.code === "23505"
                         if (!isDuplicate) {
                             logError("stripe_webhook_boost_insert_failed", boostInsertError, {
                                 route: "api/payments/webhook",
@@ -131,14 +132,14 @@ export async function POST(request: Request) {
 
                     // Update product: set is_boosted=true and boost_expires_at
                     const { error: productUpdateError } = await supabase
-                        .from('products')
+                        .from("products")
                         .update({
                             is_boosted: true,
                             boost_expires_at: expiresAtIso,
-                            listing_type: 'boosted',
+                            listing_type: "boosted",
                         })
-                        .eq('id', productId)
-                        .eq('seller_id', sellerId)
+                        .eq("id", productId)
+                        .eq("seller_id", sellerId)
 
                     if (productUpdateError) {
                         logError("stripe_webhook_product_boost_update_failed", productUpdateError, {
@@ -151,17 +152,28 @@ export async function POST(request: Request) {
                 }
 
                 // Handle setup mode sessions (saved payment methods)
-                if (session.mode !== 'setup') break
+                if (session.mode !== "setup") break
 
-                const customerId = session.customer as string
-                const setupIntentId = session.setup_intent as string
+                const customerId =
+                    typeof session.customer === "string"
+                        ? session.customer
+                        : session.customer?.id ?? null
+
+                const setupIntentId =
+                    typeof session.setup_intent === "string"
+                        ? session.setup_intent
+                        : session.setup_intent?.id ?? null
+
                 const userId = session.metadata?.user_id
 
-                if (!userId || !setupIntentId) break
+                if (!userId || !setupIntentId || !customerId) break
 
                 // Get the SetupIntent to find the payment method
                 const setupIntent = await stripe.setupIntents.retrieve(setupIntentId)
-                const paymentMethodId = setupIntent.payment_method as string
+                const paymentMethodId =
+                    typeof setupIntent.payment_method === "string"
+                        ? setupIntent.payment_method
+                        : setupIntent.payment_method?.id ?? null
 
                 if (!paymentMethodId) break
 
@@ -219,8 +231,8 @@ export async function POST(request: Request) {
                 break
             }
 
-            case 'payment_method.detached': {
-                const paymentMethod = (event as any).data.object
+            case "payment_method.detached": {
+                const paymentMethod = event.data.object as Stripe.PaymentMethod
                 
                 // Remove from database if it exists
                 await supabase
@@ -236,7 +248,7 @@ export async function POST(request: Request) {
     } catch (error) {
         logError("stripe_webhook_handler_error", error, {
             route: "api/payments/webhook",
-            eventType: (event as any)?.type,
+            eventType: event.type,
         })
         return NextResponse.json(
             { error: "Webhook handler failed" },

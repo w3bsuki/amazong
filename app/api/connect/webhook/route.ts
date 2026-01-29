@@ -2,6 +2,7 @@ import { NextResponse } from "next/server"
 import { createAdminClient } from "@/lib/supabase/server"
 import { stripe } from "@/lib/stripe"
 import { getStripeConnectWebhookSecrets } from "@/lib/env"
+import { logError, logEvent } from "@/lib/structured-log"
 import type Stripe from "stripe"
 
 /**
@@ -21,7 +22,9 @@ export async function POST(req: Request) {
   const sig = req.headers.get("stripe-signature")
 
   if (!sig) {
-    console.error("Missing Stripe signature for Connect webhook")
+    logError("stripe_connect_webhook_missing_signature", null, {
+      route: "api/connect/webhook",
+    })
     return NextResponse.json({ error: "Missing signature" }, { status: 400 })
   }
 
@@ -46,7 +49,10 @@ export async function POST(req: Request) {
     }
   } catch (err) {
     const errorMessage = err instanceof Error ? err.message : "Unknown error"
-    console.error("Connect webhook signature verification failed:", errorMessage)
+    logError("stripe_connect_webhook_signature_verification_failed", err, {
+      route: "api/connect/webhook",
+      message: errorMessage,
+    })
     return NextResponse.json(
       { error: `Webhook Error: ${errorMessage}` },
       { status: 400 }
@@ -62,7 +68,9 @@ export async function POST(req: Request) {
     // Get seller_id from account metadata
     const sellerId = account.metadata?.seller_id
     if (!sellerId) {
-      console.warn("No seller_id in account metadata:", account.id)
+      logEvent("warn", "stripe_connect_webhook_missing_seller_metadata", {
+        route: "api/connect/webhook",
+      })
       // Try to find by account ID
       const { data: existingStatus } = await supabase
         .from("seller_payout_status")
@@ -71,7 +79,9 @@ export async function POST(req: Request) {
         .single()
 
       if (!existingStatus) {
-        console.error("Could not find seller for account:", account.id)
+        logError("stripe_connect_webhook_seller_not_found_for_account", null, {
+          route: "api/connect/webhook",
+        })
         return NextResponse.json({ received: true })
       }
     }
@@ -88,12 +98,8 @@ export async function POST(req: Request) {
       .eq("stripe_connect_account_id", account.id)
 
     if (updateError) {
-      console.error("Error updating seller payout status:", updateError)
-    } else {
-      console.log("Updated payout status for account:", account.id, {
-        details_submitted: account.details_submitted,
-        charges_enabled: account.charges_enabled,
-        payouts_enabled: account.payouts_enabled,
+      logError("stripe_connect_webhook_update_seller_payout_status_failed", updateError, {
+        route: "api/connect/webhook",
       })
     }
   }
@@ -115,7 +121,9 @@ export async function POST(req: Request) {
         .eq("stripe_connect_account_id", accountId)
 
       if (updateError) {
-        console.error("Error handling deauthorization:", updateError)
+        logError("stripe_connect_webhook_handle_deauthorization_failed", updateError, {
+          route: "api/connect/webhook",
+        })
       }
     }
   }
