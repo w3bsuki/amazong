@@ -148,13 +148,13 @@ export default async function DemoCodexPage() {
               icon={<Heart className="size-5" />}
               label={t("favoritesAria")}
               count={3}
-              badgeClassName="bg-notification text-white"
+              badgeClassName="bg-notification text-badge-fg-on-solid"
             />
             <IconCountButton
               icon={<ShoppingCart className="size-5" />}
               label={t("cartAria")}
               count={2}
-              badgeClassName="bg-cart-badge text-white"
+              badgeClassName="bg-cart-badge text-badge-fg-on-solid"
             />
           </div>
         </div>
@@ -461,7 +461,7 @@ function ConditionBadge({
     <Badge
       variant="outline"
       className={cn(
-        "rounded-full border-transparent text-2xs font-semibold text-white",
+        "rounded-full border-transparent text-2xs font-semibold text-badge-fg-on-solid",
         styleByCondition[condition]
       )}
     >

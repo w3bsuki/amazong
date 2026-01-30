@@ -55,8 +55,8 @@ const STATUS_COLUMNS = [
 ]
 
 const PRIORITY_COLORS: Record<string, string> = {
-  urgent: "bg-admin-urgent text-white",
-  high: "bg-admin-high text-white",
+  urgent: "bg-admin-urgent text-badge-fg-on-solid",
+  high: "bg-admin-high text-badge-fg-on-solid",
   medium: "bg-admin-medium text-foreground",
   low: "bg-muted text-muted-foreground",
 }
@@ -140,7 +140,7 @@ export function AdminTasksContent({ initialTasks }: { initialTasks: AdminTask[] 
           status: "todo",
           due_date: task.due_date ?? null,
         })
-        .select()
+        .select("id, title, description, status, priority, due_date, assigned_to, created_by, created_at, updated_at")
         .single()
       
       if (error) {

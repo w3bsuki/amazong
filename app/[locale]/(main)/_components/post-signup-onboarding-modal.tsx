@@ -35,7 +35,7 @@ import { cn } from "@/lib/utils"
 import Image from "next/image"
 import Avatar from "boring-avatars"
 import { AVATAR_VARIANTS, type AvatarVariant, getColorPalette } from "@/lib/avatar-palettes"
-import { SocialInput } from "@/components/ui/social-input"
+import { SocialInput } from "@/components/shared/auth/social-input"
 
 export type OnboardingData = {
   userId: string

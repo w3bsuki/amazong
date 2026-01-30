@@ -5,7 +5,7 @@
  * `components/storybook/**` and imports the real component for showcase.
  */
 import type { Meta, StoryObj } from "@storybook/nextjs-vite"
-import SellersGrid from "@/app/[locale]/(main)/sellers/_components/sellers-grid"
+import SellersGrid from "@/components/shared/seller/sellers-grid"
 
 const meta: Meta<typeof SellersGrid> = {
   title: "Commerce/SellersGrid",

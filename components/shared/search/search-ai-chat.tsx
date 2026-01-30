@@ -283,6 +283,7 @@ export function SearchAiChat({ className, onClose, compact = false }: SearchAiCh
             size="icon"
             disabled={!input.trim() || isLoading}
             className="shrink-0 rounded-full"
+            aria-label={t("sendMessage")}
           >
             {isLoading ? (
               <CircleNotch size={18} className="animate-spin" />

@@ -299,7 +299,7 @@ export function BuyerOrderActions({
           size="sm"
           onClick={handleConfirmDelivery}
           disabled={isSubmitting}
-          className="bg-status-success text-white hover:brightness-95"
+          className="bg-status-success text-badge-fg-on-solid hover:brightness-95"
         >
           {isSubmitting ? (
             <Loader2 className="h-4 w-4 mr-1.5 animate-spin" />
@@ -436,7 +436,7 @@ export function BuyerOrderActions({
             <Button 
               onClick={handleReportIssue} 
               disabled={isSubmitting || !issueType || issueDescription.length < 10}
-              className="bg-status-warning text-white hover:brightness-95"
+              className="bg-status-warning text-badge-fg-on-solid hover:brightness-95"
             >
               {isSubmitting ? (
                 <>

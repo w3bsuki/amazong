@@ -813,11 +813,11 @@ export default function DesignSystemV2Page() {
               <CardHeader><CardTitle>Product Condition</CardTitle></CardHeader>
               <CardContent>
                 <div className="flex flex-wrap gap-3">
-                  <Badge className="border-0 text-white hover:bg-opacity-90" style={{ backgroundColor: 'var(--color-badge-condition-new)' }}>New</Badge>
-                  <Badge className="border-0 text-white hover:bg-opacity-90" style={{ backgroundColor: 'var(--color-badge-condition-likenew)' }}>Like New</Badge>
-                  <Badge className="border-0 text-white hover:bg-opacity-90" style={{ backgroundColor: 'var(--color-badge-condition-good)' }}>Good</Badge>
-                  <Badge className="border-0 text-white hover:bg-opacity-90" style={{ backgroundColor: 'var(--color-badge-condition-fair)' }}>Fair</Badge>
-                  <Badge className="border-0 text-white hover:bg-opacity-90" style={{ backgroundColor: 'var(--color-badge-condition-used)' }}>Used</Badge>
+                  <Badge className="border-0 text-badge-fg-on-solid hover:bg-opacity-90" style={{ backgroundColor: 'var(--color-badge-condition-new)' }}>New</Badge>
+                  <Badge className="border-0 text-badge-fg-on-solid hover:bg-opacity-90" style={{ backgroundColor: 'var(--color-badge-condition-likenew)' }}>Like New</Badge>
+                  <Badge className="border-0 text-badge-fg-on-solid hover:bg-opacity-90" style={{ backgroundColor: 'var(--color-badge-condition-good)' }}>Good</Badge>
+                  <Badge className="border-0 text-badge-fg-on-solid hover:bg-opacity-90" style={{ backgroundColor: 'var(--color-badge-condition-fair)' }}>Fair</Badge>
+                  <Badge className="border-0 text-badge-fg-on-solid hover:bg-opacity-90" style={{ backgroundColor: 'var(--color-badge-condition-used)' }}>Used</Badge>
                 </div>
                 <p className="text-xs text-muted-foreground mt-2">Using mapped OKLCH values from global tokens.</p>
               </CardContent>

@@ -214,7 +214,7 @@ export function AdminDocsContent({ initialDocs }: { initialDocs: AdminDoc[] }) {
           status: doc.status || "draft",
           locale,
         })
-        .select()
+        .select("id, title, slug, content, category, status, author_id, locale, created_at, updated_at")
         .single()
       
       if (error) {

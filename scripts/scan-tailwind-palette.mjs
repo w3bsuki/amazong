@@ -38,6 +38,7 @@ const paletteAlt = paletteFamilies.join("|");
 // - from-*/to-*/via-* (any value, not just palette)
 const rePalette = new RegExp(`\\b(?:${paletteAlt})-\\d{2,3}(?:\\/\\d{1,3})?\\b`, "gi");
 const reFillPalette = new RegExp(`\\bfill-(?:${paletteAlt})-\\d{2,3}(?:\\/\\d{1,3})?\\b`, "gi");
+const reMono = /\b(?:bg|text|border|ring|fill|stroke)-(?:white|black)(?:\/\d{1,3})?\b/gi;
 const gradientIgnoreBases = [/^slide-(?:in|out)-(?:from|to)-/];
 const reRawGradient = /\b(?:repeating-)?(?:linear|radial|conic)-gradient\(/gi;
 
@@ -162,14 +163,16 @@ for (const abs of allFiles) {
 
   const palette = countMatches(scanText, rePalette);
   const fill = countMatches(scanText, reFillPalette);
+  const mono = countMatches(scanText, reMono);
   const gradient = countGradientClusters(scanText);
   const rawGradient = countMatches(scanText, reRawGradient);
-  const total = palette + fill + gradient + rawGradient;
+  const total = palette + fill + mono + gradient + rawGradient;
 
   if (total === 0) continue;
 
   totals.palette += palette;
   totals.fill += fill;
+  totals.mono = (totals.mono ?? 0) + mono;
   totals.gradient += gradient;
   totals.rawGradient = (totals.rawGradient ?? 0) + rawGradient;
   totals.files += 1;
@@ -179,6 +182,7 @@ for (const abs of allFiles) {
     total,
     palette,
     fill,
+    mono,
     gradient,
     rawGradient,
   });
@@ -194,12 +198,12 @@ reportLines.push("Top offenders (rough match counts)");
 reportLines.push("--------------------------------");
 for (const row of byFile.slice(0, 50)) {
   reportLines.push(
-    `${row.file}  ~${row.total} (palette:${row.palette}, gradient:${row.gradient}, rawGradient:${row.rawGradient}, fill:${row.fill})`
+    `${row.file}  ~${row.total} (palette:${row.palette}, mono:${row.mono}, gradient:${row.gradient}, rawGradient:${row.rawGradient}, fill:${row.fill})`
   );
 }
 reportLines.push("--------------------------------");
 reportLines.push(
-  `Totals: files=${totals.files} palette=${totals.palette} gradient=${totals.gradient} rawGradient=${totals.rawGradient ?? 0} fill=${totals.fill}`
+  `Totals: files=${totals.files} palette=${totals.palette} mono=${totals.mono ?? 0} gradient=${totals.gradient} rawGradient=${totals.rawGradient ?? 0} fill=${totals.fill}`
 );
 reportLines.push("");
 reportLines.push("Auth flow candidates");
@@ -227,14 +231,15 @@ for (const row of byFile.slice(0, topN)) {
 }
 console.log("--------------------------------");
 console.log(
-  `Totals: files=${totals.files} palette=${totals.palette} gradient=${totals.gradient} rawGradient=${totals.rawGradient ?? 0} fill=${totals.fill}`
+  `Totals: files=${totals.files} palette=${totals.palette} mono=${totals.mono ?? 0} gradient=${totals.gradient} rawGradient=${totals.rawGradient ?? 0} fill=${totals.fill}`
 );
 console.log(`Full report: ${path.relative(projectRoot, reportPath).replaceAll("\\", "/")}`);
 console.log(`Auth candidates found: ${authCandidates.length}`);
 
 if (process.env.FAIL_ON_FINDINGS === "1") {
   const rawGradientTotal = totals.rawGradient ?? 0;
-  if (totals.palette > 0 || totals.fill > 0 || totals.gradient > 0 || rawGradientTotal > 0) {
+  const monoTotal = totals.mono ?? 0;
+  if (totals.palette > 0 || totals.fill > 0 || monoTotal > 0 || totals.gradient > 0 || rawGradientTotal > 0) {
     process.exitCode = 1;
   }
 }

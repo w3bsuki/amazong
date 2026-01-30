@@ -10,6 +10,7 @@
     "docs:install": "cd docs-site && pnpm install",
     "seed:admin-docs": "node scripts/seed-admin-docs.mjs",
     "validate:skills": "node scripts/validate-agent-skills.mjs",
+    "skills:sync": "node scripts/sync-agent-skills.mjs",
     "styles:scan:palette": "node scripts/scan-tailwind-palette.mjs",
     "styles:scan:arbitrary": "node scripts/scan-tailwind-arbitrary.mjs",
     "styles:scan:tokens": "node scripts/scan-tailwind-semantic-tokens.mjs",

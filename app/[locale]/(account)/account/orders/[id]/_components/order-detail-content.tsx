@@ -40,6 +40,7 @@ import { bg, enUS } from "date-fns/locale"
 import { getOrderStatusFromItems, type OrderItemStatus } from "@/lib/order-status"
 import { OrderTimeline } from "./order-timeline"
 import { BuyerOrderActions, type BuyerOrderActionsServerActions } from "../../_components/buyer-order-actions"
+import { useTranslations } from "next-intl"
 
 export type OrderDetailContentServerActions = BuyerOrderActionsServerActions & {
   requestReturn: (
@@ -147,6 +148,7 @@ const CARRIERS: Record<string, { name: string; trackingUrl: string }> = {
 }
 
 export function OrderDetailContent({ locale, order, existingSellerFeedbackSellerIds, conversationId, actions }: OrderDetailContentProps) {
+  const tCommon = useTranslations("Common")
   const [isReturnDialogOpen, setIsReturnDialogOpen] = useState(false)
   const [returnReason, setReturnReason] = useState("")
   const [selectedItem, setSelectedItem] = useState<OrderItem | null>(null)
@@ -322,7 +324,7 @@ export function OrderDetailContent({ locale, order, existingSellerFeedbackSeller
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-3">
           <Link href="/account/orders">
-            <Button variant="ghost" size="icon" className="size-8">
+            <Button variant="ghost" size="icon" className="size-8" aria-label={tCommon("back")}>
               <ArrowLeft className="size-4" />
             </Button>
           </Link>
@@ -336,6 +338,7 @@ export function OrderDetailContent({ locale, order, existingSellerFeedbackSeller
                 size="icon"
                 className="size-6"
                 onClick={() => copyToClipboard(order.id, locale === "bg" ? "ID" : "ID")}
+                aria-label={tCommon("copyOrderId")}
               >
                 <Copy className="size-3" />
               </Button>
@@ -660,6 +663,7 @@ export function OrderDetailContent({ locale, order, existingSellerFeedbackSeller
                     size="icon"
                     className="size-5"
                     onClick={() => copyToClipboard(stripePaymentIntentId, "Payment ID")}
+                    aria-label={tCommon("copyPaymentId")}
                   >
                     <Copy className="size-3" />
                   </Button>

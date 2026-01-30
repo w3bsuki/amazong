@@ -89,7 +89,7 @@ export function PromotedSection({
             <Megaphone size={20} weight="fill" className="text-deal-foreground" />
           </div>
           <h2 className="text-lg font-bold tracking-tight text-deal-foreground">
-            ПРОМОТИРАНИ ОБЯВИ
+            {t("promotedTitle")}
           </h2>
         </div>
         

@@ -1,7 +1,7 @@
 "use server"
 
 import { z } from "zod"
-import { createAdminClient, createClient } from "@/lib/supabase/server"
+import { createClient } from "@/lib/supabase/server"
 
 export interface OnboardingData {
   userId: string
@@ -84,13 +84,14 @@ export async function completePostSignupOnboarding(
   if (avatarType === "custom" && avatarFile) {
     const fileExt = avatarFile.name.split(".").pop()
     const fileName = `${userId}-avatar-${Date.now()}.${fileExt}`
+    const filePath = `${userId}/${fileName}`
 
     const { error: uploadError, data: uploadData } = await supabase.storage
       .from("avatars")
-      .upload(fileName, avatarFile, { upsert: true })
+      .upload(filePath, avatarFile, { upsert: true })
 
     if (!uploadError && uploadData) {
-      const { data: { publicUrl } } = supabase.storage.from("avatars").getPublicUrl(fileName)
+      const { data: { publicUrl } } = supabase.storage.from("avatars").getPublicUrl(filePath)
       avatarUrl = publicUrl
     }
   } else if (avatarType === "generated" && avatarVariant !== undefined) {
@@ -103,13 +104,14 @@ export async function completePostSignupOnboarding(
   if (coverFile && accountType === "business") {
     const fileExt = coverFile.name.split(".").pop()
     const fileName = `${userId}-banner-${Date.now()}.${fileExt}`
+    const filePath = `${userId}/${fileName}`
 
     const { error: uploadError, data: uploadData } = await supabase.storage
       .from("avatars") // Using same bucket for simplicity
-      .upload(fileName, coverFile, { upsert: true })
+      .upload(filePath, coverFile, { upsert: true })
 
     if (!uploadError && uploadData) {
-      const { data: { publicUrl } } = supabase.storage.from("avatars").getPublicUrl(fileName)
+      const { data: { publicUrl } } = supabase.storage.from("avatars").getPublicUrl(filePath)
       bannerUrl = publicUrl
     }
   }
@@ -138,10 +140,8 @@ export async function completePostSignupOnboarding(
     updateData.social_links = socialLinks
   }
 
-  // Update profile using admin client for protected fields
-  const adminSupabase = createAdminClient()
-
-  const { error: updateError } = await adminSupabase
+  // Update profile with authed client (RLS enforces ownership)
+  const { error: updateError } = await supabase
     .from("profiles")
     .update(updateData)
     .eq("id", userId)
@@ -177,19 +177,12 @@ export async function checkOnboardingStatus(userId: string): Promise<{
     return { needsOnboarding: false, profile: null }
   }
 
-  // Cast to expected shape (column may not be in generated types yet)
-  const profile = rawProfile as {
-    username?: string | null
-    display_name?: string | null
-    onboarding_completed?: boolean | null
-  }
-
   return {
-    needsOnboarding: !profile.onboarding_completed,
+    needsOnboarding: !rawProfile.onboarding_completed,
     profile: {
-      username: profile.username ?? null,
-      displayName: profile.display_name ?? null,
-      onboardingCompleted: profile.onboarding_completed ?? false,
+      username: rawProfile.username ?? null,
+      displayName: rawProfile.display_name ?? null,
+      onboardingCompleted: rawProfile.onboarding_completed ?? false,
     },
   }
 }

@@ -121,6 +121,7 @@
     },
     "Categories": {
         "title": "Categories",
+        "headerTitleAll": "All Categories",
         "metaDescription": "Browse all product categories at Treido. Find electronics, fashion, home & garden, and more.",
         "bannerDescription": "Browse products in this category",
         "all": "All",
@@ -135,9 +136,20 @@
         "showLess": "Show fewer categories",
         "showLessShort": "Show less",
         "moreCount": "{count} more",
+        "categoryCount": "{count} categories",
         "allIn": "All in {category}",
         "explore": "Explore",
-        "itemsCount": "{count, plural, =0 {No items} =1 {1 item} other {# items}}"
+        "itemsCount": "{count, plural, =0 {No items} =1 {1 item} other {# items}}",
+        "quickActions": {
+            "sell": {
+                "title": "Sell",
+                "subtitle": "Free"
+            },
+            "deals": {
+                "title": "Deals",
+                "subtitle": "Up to 70%"
+            }
+        }
     },
     "Home": {
         "metaTitle": "Home",
@@ -551,6 +563,7 @@
         "signIn": "Sign In",
         "startConversation": "Start a conversation with our support team",
         "typeMessage": "Type a message...",
+        "sendMessage": "Send message",
         "emailAlternative": "Or email us at"
     },
     "TodaysDeals": {
@@ -847,6 +860,8 @@
         "next": "Next",
         "previous": "Previous",
         "back": "Back",
+        "copyOrderId": "Copy order ID",
+        "copyPaymentId": "Copy payment ID",
         "backTo": "Back to {label}",
         "goToHomepage": "Go to homepage",
         "morePages": "More pages",
@@ -1277,7 +1292,8 @@
         "aiDescription": "Ask me anything about products. I can search, compare, and help you find what you need.",
         "aiPlaceholder": "Ask AI anything...",
         "aiThinking": "Thinking...",
-        "stopGenerating": "Stop"
+        "stopGenerating": "Stop",
+        "sendMessage": "Send message"
     },
     "SearchFilters": {
         "department": "Department",
@@ -2002,6 +2018,7 @@
         "sortPlaceholder": "Sort",
         "browseCategories": "Browse",
         "viewAll": "View All",
+        "promotedTitle": "PROMOTED LISTINGS",
         "categoryFinder": {
             "title": "Browse categories",
             "description": "Search and jump to a category.",
@@ -2987,6 +3004,21 @@
         "last30Days": "Last 30 days",
         "last7Days": "Last 7 days",
         "selectTimeRange": "Select time range"
+    },
+    "GlobalError": {
+        "title": "Something went wrong!",
+        "description": "An unexpected error occurred. We apologize for the inconvenience.",
+        "errorId": "Error ID: {id}",
+        "tryAgain": "Try again",
+        "goToHomepage": "Go to homepage"
+    },
+    "GlobalNotFound": {
+        "title": "Page not found",
+        "description": "The page you're looking for doesn't exist or has been moved. Let's get you back on track.",
+        "goToHomepage": "Go to homepage",
+        "supportPrefix": "If you believe this is an error, please",
+        "supportLink": "contact support",
+        "supportSuffix": "."
     },
     "NotFound": {
         "metaTitle": "Page not found",

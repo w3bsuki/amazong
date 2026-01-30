@@ -7,15 +7,17 @@
  * Note: This is a Server Component so we use basic HTML elements
  * to avoid issues with client-only components (Button uses React Context).
  */
-import { setRequestLocale } from "next-intl/server";
-import { routing } from "@/i18n/routing";
-import { PageShell } from "@/components/shared/page-shell";
+import { getTranslations, setRequestLocale } from "next-intl/server"
+import { routing } from "@/i18n/routing"
+import { PageShell } from "@/components/shared/page-shell"
 
-export default function GlobalNotFound() {
-  setRequestLocale(routing.defaultLocale);
+export default async function GlobalNotFound() {
+  const locale = routing.defaultLocale
+  setRequestLocale(locale)
+  const t = await getTranslations({ locale, namespace: "GlobalNotFound" })
 
   return (
-    <html lang="en">
+    <html lang={locale}>
       <body className="bg-background text-foreground">
         <PageShell className="flex flex-col items-center justify-center p-4">
           <div className="mx-auto max-w-md text-center">
@@ -31,28 +33,27 @@ export default function GlobalNotFound() {
             </div>
 
             <h1 className="mb-2 text-2xl font-bold tracking-tight text-foreground">
-              Page Not Found
+              {t("title")}
             </h1>
             <p className="mb-6 text-muted-foreground">
-              The page you&apos;re looking for doesn&apos;t exist or has been moved.
-              Let&apos;s get you back on track.
+              {t("description")}
             </p>
 
             <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
               <a
-                href="/"
+                href={`/${locale}`}
                 className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-interactive-hover"
               >
-                Go to Homepage
+                {t("goToHomepage")}
               </a>
             </div>
 
             <p className="mt-8 text-xs text-muted-foreground">
-              If you believe this is an error, please{" "}
-              <a href="/contact" className="text-primary hover:underline">
-                contact support
+              {t("supportPrefix")}{" "}
+              <a href={`/${locale}/contact`} className="text-primary hover:underline">
+                {t("supportLink")}
               </a>
-              .
+              {t("supportSuffix")}
             </p>
           </div>
         </PageShell>

@@ -98,13 +98,13 @@ function collectTagsForRequest(body: RevalidateRequest): string[] {
     out.add('categories:tree')
     out.add('categories:sell')
     out.add('categories:sell:depth:3')
-    const rec = supabase.record ?? {}
-    const old = supabase.old_record ?? {}
+    const rec: Record<string, unknown> = supabase.record ?? {}
+    const old: Record<string, unknown> = supabase.old_record ?? {}
 
-    const slug = asString((rec as any).slug)
-    const oldSlug = asString((old as any).slug)
-    const parentId = asString((rec as any).parent_id)
-    const oldParentId = asString((old as any).parent_id)
+    const slug = asString(rec["slug"])
+    const oldSlug = asString(old["slug"])
+    const parentId = asString(rec["parent_id"])
+    const oldParentId = asString(old["parent_id"])
 
     if (slug) out.add(`category:${slug}`)
     if (oldSlug) out.add(`category:${oldSlug}`)
@@ -113,11 +113,11 @@ function collectTagsForRequest(body: RevalidateRequest): string[] {
   }
 
   if (supabase?.table === 'category_attributes') {
-    const rec = supabase.record ?? {}
-    const old = supabase.old_record ?? {}
+    const rec: Record<string, unknown> = supabase.record ?? {}
+    const old: Record<string, unknown> = supabase.old_record ?? {}
 
-    const categoryId = asString((rec as any).category_id)
-    const oldCategoryId = asString((old as any).category_id)
+    const categoryId = asString(rec["category_id"])
+    const oldCategoryId = asString(old["category_id"])
 
     if (categoryId) out.add(`attrs:category:${categoryId}`)
     if (oldCategoryId) out.add(`attrs:category:${oldCategoryId}`)

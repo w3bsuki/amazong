@@ -1,10 +1,7 @@
 # Production — V1 Launch Alignment (Treido)
 
-> This folder tracks release readiness work. **SSOT remains** `AGENTS.md` + `docs/*`.
->
-> Agent drafts:
-> - Codex version: `production/codex_production.md`
-> - Opus version: (add when written)
+> This file tracks release readiness. **SSOT remains** `AGENTS.md` + `docs/*`.
+> Active tasks live in `TASKS.md`.
 
 ## Snapshot (2026-01-28)
 

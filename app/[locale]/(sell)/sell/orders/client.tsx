@@ -14,6 +14,7 @@ import { SellerRateBuyerActions, type SellerRateBuyerActionsServerActions } from
 import { type OrderItemStatus } from "@/lib/order-status"
 import { cn } from "@/lib/utils"
 import { formatDistanceToNow } from "date-fns"
+import { useTranslations } from "next-intl"
 
 type SellerOrderItem = {
   id: string
@@ -86,6 +87,7 @@ interface SellerOrdersClientProps {
 type StatusFilter = OrderItemStatus | 'all' | 'active'
 
 export function SellerOrdersClient({ locale, actions }: SellerOrdersClientProps) {
+  const tCommon = useTranslations("Common")
   const [orders, setOrders] = useState<SellerOrderItem[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [isRefreshing, setIsRefreshing] = useState(false)
@@ -164,7 +166,7 @@ export function SellerOrdersClient({ locale, actions }: SellerOrdersClientProps)
       {/* Header */}
       <header className="sticky top-0 z-50 bg-background border-b">
         <div className="container mx-auto px-4 py-4 flex items-center gap-4">
-          <Button variant="ghost" size="icon" asChild>
+          <Button variant="ghost" size="icon" asChild aria-label={tCommon("back")}>
             <Link href="/sell">
               <ArrowLeft className="h-5 w-5" />
             </Link>
@@ -194,7 +196,7 @@ export function SellerOrdersClient({ locale, actions }: SellerOrdersClientProps)
             >
               <CardContent className="p-4">
                 <div className="flex items-center gap-3">
-                  <div className={cn("w-10 h-10 rounded-full flex items-center justify-center text-white", stat.color)}>
+                  <div className={cn("w-10 h-10 rounded-full flex items-center justify-center text-badge-fg-on-solid", stat.color)}>
                     <span className="text-lg">{stat.icon}</span>
                   </div>
                   <div>

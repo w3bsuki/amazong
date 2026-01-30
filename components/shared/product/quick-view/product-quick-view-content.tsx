@@ -153,17 +153,8 @@ export function ProductQuickViewContent({
           {/* Title - two lines max with proper weight */}
           <h2 className="text-base font-semibold leading-snug text-foreground line-clamp-2">{title}</h2>
 
-          {/* Meta row - rating, condition, shipping inline */}
-          <div className="flex items-center gap-2 flex-wrap">
-            {hasRating && (
-              <div className="flex items-center gap-1">
-                <Star size={14} weight="fill" className="fill-rating text-rating" />
-                <span className="text-sm font-medium tabular-nums">{rating.toFixed(1)}</span>
-                {typeof reviews === "number" && reviews > 0 && (
-                  <span className="text-xs text-muted-foreground">({reviews})</span>
-                )}
-              </div>
-            )}
+          {/* Condition + shipping badges - fixed height prevents CLS */}
+          <div className="flex items-center gap-2 h-6">
             {condition && (
               <Badge variant={getConditionBadgeVariant(condition)} className="text-xs">
                 <Tag size={10} />
@@ -178,11 +169,13 @@ export function ProductQuickViewContent({
             )}
           </div>
 
-          {/* Seller card */}
+          {/* Seller card with rating */}
           <QuickViewSellerCard
             sellerName={sellerName}
             sellerAvatarUrl={sellerAvatarUrl}
             sellerVerified={sellerVerified}
+            rating={rating}
+            reviews={reviews}
             onNavigateToProduct={onNavigateToProduct}
             compact
           />
@@ -313,7 +306,7 @@ export function ProductQuickViewContent({
                 <button
                   type="button"
                   onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                  className="size-10 flex items-center justify-center hover:bg-muted transition-colors rounded-l-lg disabled:opacity-30"
+                  className="size-touch-lg flex items-center justify-center hover:bg-muted transition-colors rounded-l-lg disabled:opacity-30"
                   disabled={quantity <= 1}
                   aria-label="Decrease quantity"
                 >
@@ -325,7 +318,7 @@ export function ProductQuickViewContent({
                 <button
                   type="button"
                   onClick={() => setQuantity(Math.min(99, quantity + 1))}
-                  className="size-10 flex items-center justify-center hover:bg-muted transition-colors rounded-r-lg"
+                  className="size-touch-lg flex items-center justify-center hover:bg-muted transition-colors rounded-r-lg"
                   aria-label="Increase quantity"
                 >
                   <Plus size={16} weight="bold" />
@@ -383,7 +376,7 @@ export function ProductQuickViewContent({
               onClick={handleCopyLink}
               aria-label={tModal("copyLink")}
               disabled={!shareUrl}
-              className="size-10 shrink-0"
+              className="size-touch-lg shrink-0"
             >
               <LinkSimple size={18} weight="bold" />
             </Button>
@@ -394,7 +387,7 @@ export function ProductQuickViewContent({
               onClick={handleToggleWishlist}
               aria-label={inWishlist ? tProduct("removeFromWatchlist") : tProduct("addToWatchlist")}
               disabled={wishlistPending}
-              className="size-10 shrink-0"
+              className="size-touch-lg shrink-0"
             >
               <Heart
                 size={18}

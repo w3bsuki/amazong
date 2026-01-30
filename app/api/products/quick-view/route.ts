@@ -47,6 +47,7 @@ export async function GET(request: NextRequest) {
 
     const sellerUsername = product.seller?.username ?? null
     const sellerName = product.seller?.display_name || product.seller?.username || null
+    const sellerVerified = Boolean(product.seller?.verified)
 
     return NextResponse.json(
       {
@@ -66,7 +67,7 @@ export async function GET(request: NextRequest) {
         ...(typeof product.seller?.id === "string" ? { sellerId: product.seller.id } : {}),
         ...(sellerName != null ? { sellerName } : {}),
         ...(product.seller?.avatar_url != null ? { sellerAvatarUrl: product.seller.avatar_url } : {}),
-        ...(typeof product.seller?.verified === "boolean" ? { sellerVerified: product.seller.verified } : {}),
+        sellerVerified,
       },
       {
         headers: {

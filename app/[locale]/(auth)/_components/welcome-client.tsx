@@ -104,15 +104,16 @@ export function WelcomeClient({ locale }: { locale: string }) {
       if (useCustomAvatar && avatarFile) {
         const fileExt = avatarFile.name.split(".").pop()
         const fileName = `${userId}-${Date.now()}.${fileExt}`
+        const filePath = `${userId}/${fileName}`
 
         const { error: uploadError, data } = await supabase.storage
           .from("avatars")
-          .upload(fileName, avatarFile, { upsert: true })
+          .upload(filePath, avatarFile, { upsert: true })
 
         if (!uploadError && data) {
           const {
             data: { publicUrl },
-          } = supabase.storage.from("avatars").getPublicUrl(fileName)
+          } = supabase.storage.from("avatars").getPublicUrl(filePath)
           avatarUrl = publicUrl
         }
       } else if (!useCustomAvatar) {

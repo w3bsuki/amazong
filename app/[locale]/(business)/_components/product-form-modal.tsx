@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { useForm } from "react-hook-form"
+import { useForm, type Resolver } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 import Image from "next/image"
@@ -291,8 +291,7 @@ export function ProductFormModal({
     reset,
     formState: { errors, isDirty },
   } = useForm<ProductFormData>({
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    resolver: zodResolver(productFormSchema) as any,
+    resolver: zodResolver(productFormSchema) as unknown as Resolver<ProductFormData>,
     defaultValues: {
       title: "",
       description: "",

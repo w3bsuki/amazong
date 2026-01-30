@@ -136,7 +136,7 @@ export async function submitBuyerFeedback(
         communication: input.communication ?? true,
         reasonable_expectations: input.reasonable_expectations ?? true,
       })
-      .select()
+      .select("id, seller_id, buyer_id, order_id, rating, comment, payment_promptness, communication, reasonable_expectations, seller_response, seller_response_at, created_at, updated_at")
       .single()
 
     if (error) {
@@ -248,7 +248,19 @@ export async function getBuyerReceivedRatings(
     const { data, error, count } = await supabase
       .from("buyer_feedback")
       .select(`
-        *,
+        id,
+        seller_id,
+        buyer_id,
+        order_id,
+        rating,
+        comment,
+        payment_promptness,
+        communication,
+        reasonable_expectations,
+        seller_response,
+        seller_response_at,
+        created_at,
+        updated_at,
         seller:profiles!buyer_feedback_seller_id_fkey(
           display_name,
           username
@@ -393,7 +405,19 @@ export async function getSellerGivenFeedback(
     const { data, error, count } = await supabase
       .from("buyer_feedback")
       .select(`
-        *,
+        id,
+        seller_id,
+        buyer_id,
+        order_id,
+        rating,
+        comment,
+        payment_promptness,
+        communication,
+        reasonable_expectations,
+        seller_response,
+        seller_response_at,
+        created_at,
+        updated_at,
         buyer_profile:profiles!buyer_feedback_buyer_id_fkey(
           full_name,
           avatar_url

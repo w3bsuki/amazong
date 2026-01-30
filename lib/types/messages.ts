@@ -109,11 +109,20 @@ export interface RawConversationRow {
   seller_unread_count: number | null
   created_at: string
   updated_at: string
-  product: {
-    id: string
-    title: string
-    images: string[] | null
-  } | null
+  // NOTE: Supabase typed relationship for products may be `T[]` when `isOneToOne` is false.
+  // Normalize in transformer.
+  product:
+    | {
+        id: string
+        title: string
+        images: string[] | null
+      }
+    | Array<{
+        id: string
+        title: string
+        images: string[] | null
+      }>
+    | null
 }
 
 export interface RawProfileRow {

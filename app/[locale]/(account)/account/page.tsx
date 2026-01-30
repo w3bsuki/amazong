@@ -40,7 +40,7 @@ export default async function AccountPage({ params }: AccountPageProps) {
     supabase.from('messages').select('id, is_read', { count: 'exact' }).eq('sender_id', user.id).neq('sender_id', user.id),
     supabase.from('order_items').select('id, order_id, price_at_purchase, quantity, product_id', { count: 'exact' }).eq('seller_id', user.id).limit(5),
     // Profile with subscription benefits
-    supabase.from('profiles').select('*').eq('id', user.id).single(),
+    supabase.from('profiles').select('account_type, tier, boosts_allocated, boosts_remaining, boosts_reset_at').eq('id', user.id).single(),
     // Active subscription
     supabase.from('subscriptions').select('status, expires_at, auto_renew, plan_type').eq('seller_id', user.id).eq('status', 'active').order('created_at', { ascending: false }).limit(1).maybeSingle(),
   ])
@@ -54,15 +54,7 @@ export default async function AccountPage({ params }: AccountPageProps) {
   const salesData = salesResult.data || []
   
   // Profile and subscription data
-  type ProfileBoostFields = {
-    boosts_remaining?: number | null
-    boosts_allocated?: number | null
-    boosts_reset_at?: string | null
-  }
-
-  const profile = profileResult.data
-    ? (profileResult.data as NonNullable<typeof profileResult.data> & ProfileBoostFields)
-    : null
+  const profile = profileResult.data ?? null
   const subscription = subscriptionResult.data
   
   // Fetch subscription plan details if user has an active subscription

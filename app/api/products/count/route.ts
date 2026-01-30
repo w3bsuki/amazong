@@ -4,6 +4,8 @@ import type { Database } from "@/lib/supabase/database.types"
 import { getPublicSupabaseEnv } from "@/lib/supabase/shared"
 import { getShippingFilter, parseShippingRegion } from "@/lib/shipping"
 import { normalizeAttributeKey } from "@/lib/attributes/normalize-attribute-key"
+import { logError } from "@/lib/structured-log"
+import { z } from "zod"
 
 /**
  * POST /api/products/count
@@ -12,24 +14,30 @@ import { normalizeAttributeKey } from "@/lib/attributes/normalize-attribute-key"
  * Uses `count: "planned"` for fast response (<300ms p95).
  */
 
-interface CountRequest {
-  categoryId?: string | null
-  query?: string | null
-  filters?: {
-    minPrice?: number | null
-    maxPrice?: number | null
-    minRating?: number | null
-    availability?: "instock" | null
-    deals?: boolean | null
-    verified?: boolean | null
-    attributes?: Record<string, string | string[]>
-  }
-}
-
 interface CountResponse {
   count: number
   timestamp: string
 }
+
+const CountRequestSchema = z
+  .object({
+    categoryId: z.string().uuid().nullable().optional(),
+    query: z.string().trim().min(1).max(200).nullable().optional(),
+    filters: z
+      .object({
+        minPrice: z.coerce.number().nonnegative().nullable().optional(),
+        maxPrice: z.coerce.number().nonnegative().nullable().optional(),
+        minRating: z.coerce.number().min(0).max(5).nullable().optional(),
+        availability: z.enum(["instock"]).nullable().optional(),
+        deals: z.coerce.boolean().nullable().optional(),
+        verified: z.coerce.boolean().nullable().optional(),
+        attributes: z
+          .record(z.string(), z.union([z.string(), z.array(z.string()).max(20)]))
+          .optional(),
+      })
+      .optional(),
+  })
+  .strict()
 
 function getAbortErrorMessage(err: unknown): string | null {
   if (!err) return null
@@ -71,7 +79,12 @@ function fetchWithTimeoutMs(timeoutMs: number, requestSignal?: AbortSignal) {
 
 export async function POST(request: NextRequest): Promise<NextResponse<CountResponse | { error: string }>> {
   try {
-    const body = (await request.json()) as CountRequest
+    const parseResult = CountRequestSchema.safeParse(await request.json())
+    if (!parseResult.success) {
+      return NextResponse.json({ error: "Invalid request" }, { status: 400 })
+    }
+
+    const body = parseResult.data
     const { categoryId, query, filters = {} } = body
 
     const { url, anonKey } = getPublicSupabaseEnv()
@@ -127,7 +140,7 @@ export async function POST(request: NextRequest): Promise<NextResponse<CountResp
 
     // Attribute filters
     if (filters.attributes) {
-      for (const [rawAttrName, attrValue] of Object.entries(filters.attributes)) {
+      for (const [rawAttrName, attrValue] of Object.entries(filters.attributes).slice(0, 25)) {
         if (!attrValue) continue
 
         const attrName = normalizeAttributeKey(rawAttrName) || rawAttrName
@@ -158,7 +171,9 @@ export async function POST(request: NextRequest): Promise<NextResponse<CountResp
         return NextResponse.json({ error: "Count request timed out" }, { status: 504 })
       }
 
-      console.error("[api/products/count] Supabase error:", error)
+      logError("api_products_count_supabase_error", error, {
+        route: "api/products/count",
+      })
       return NextResponse.json({ error: "Failed to get count" }, { status: 500 })
     }
 
@@ -176,7 +191,9 @@ export async function POST(request: NextRequest): Promise<NextResponse<CountResp
       return NextResponse.json({ error: "Count request timed out" }, { status: 504 })
     }
 
-    console.error("[api/products/count] Error:", err)
+    logError("api_products_count_handler_error", err, {
+      route: "api/products/count",
+    })
     return NextResponse.json({ error: "Invalid request" }, { status: 400 })
   }
 }

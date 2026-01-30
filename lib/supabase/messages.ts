@@ -43,6 +43,7 @@ export function transformConversation(
 ): Conversation {
   const buyerProfile = profileMap.get(conv.buyer_id)
   const sellerProfile = profileMap.get(conv.seller_id)
+  const productRow = Array.isArray(conv.product) ? conv.product[0] ?? null : conv.product
 
   return {
     ...conv,
@@ -68,11 +69,11 @@ export function transformConversation(
           username: sellerProfile.username,
         }
       : null,
-    product: conv.product
+    product: productRow
       ? {
-          id: conv.product.id,
-          title: conv.product.title,
-          images: conv.product.images || [],
+          id: productRow.id,
+          title: productRow.title,
+          images: productRow.images || [],
         }
       : null,
     // Legacy compatibility mappings
@@ -137,9 +138,41 @@ export function transformMessage(
 // =============================================================================
 
 const CONVERSATION_SELECT = `
-  *,
+  id,
+  buyer_id,
+  seller_id,
+  product_id,
+  order_id,
+  subject,
+  status,
+  last_message_at,
+  buyer_unread_count,
+  seller_unread_count,
+  created_at,
+  updated_at,
   product:products(id, title, images)
 `
+
+type UserConversationRpcRow = {
+  id: string
+  buyer_id: string
+  seller_id: string
+  product_id: string | null
+  order_id: string | null
+  subject: string | null
+  status: string | null
+  last_message_at: string | null
+  buyer_unread_count: number | null
+  seller_unread_count: number | null
+  created_at: string
+  updated_at: string
+  product_title: string | null
+  product_images: string[] | null
+  last_message_content: string | null
+  last_message_sender_id: string | null
+  last_message_type: string | null
+  last_message_created_at: string | null
+}
 
 /**
  * Fetch all conversations for a user
@@ -148,15 +181,15 @@ export async function fetchConversations(
   supabase: SupabaseClient,
   userId: string
 ): Promise<{ conversations: Conversation[]; unreadCount: number }> {
-  const { data: convs, error } = await supabase
-    .from("conversations")
-    .select(CONVERSATION_SELECT)
-    .or(`buyer_id.eq.${userId},seller_id.eq.${userId}`)
-    .order("last_message_at", { ascending: false, nullsFirst: false })
+  const { data: rows, error } = await supabase.rpc("get_user_conversations", {
+    p_user_id: userId,
+  })
 
   if (error) throw error
 
-  if (!convs || convs.length === 0) {
+  const convs = (rows ?? []) as UserConversationRpcRow[]
+
+  if (convs.length === 0) {
     return { conversations: [], unreadCount: 0 }
   }
 
@@ -167,39 +200,46 @@ export async function fetchConversations(
     userIds.add(conv.seller_id)
   })
 
-  // Fetch profiles
+  // Fetch profiles for richer display_name/username fields
   const profileMap = await fetchProfiles(supabase, Array.from(userIds))
-
-  // Fetch last message for each conversation (to show preview in conversation list)
-  const conversationIds = convs.map((c) => c.id)
-  const { data: lastMessages } = await supabase
-    .from("messages")
-    .select("conversation_id, content, sender_id, message_type, created_at")
-    .in("conversation_id", conversationIds)
-    .order("created_at", { ascending: false })
-
-  // Group messages by conversation and pick the latest one
-  const lastMessageMap = new Map<string, { content: string; sender_id: string; message_type: string; created_at: string }>()
-  if (lastMessages) {
-    for (const msg of lastMessages) {
-      if (!lastMessageMap.has(msg.conversation_id)) {
-        lastMessageMap.set(msg.conversation_id, {
-          content: msg.content,
-          sender_id: msg.sender_id,
-          message_type: msg.message_type,
-          created_at: msg.created_at,
-        })
-      }
-    }
-  }
 
   // Transform conversations with last message data
   const conversations = convs.map((conv) => {
-    const transformed = transformConversation(conv as RawConversationRow, profileMap)
-    const lastMsg = lastMessageMap.get(conv.id)
-    if (lastMsg) {
-      transformed.last_message = lastMsg
+    const raw: RawConversationRow = {
+      id: conv.id,
+      buyer_id: conv.buyer_id,
+      seller_id: conv.seller_id,
+      product_id: conv.product_id,
+      order_id: conv.order_id,
+      subject: conv.subject,
+      status: conv.status,
+      last_message_at: conv.last_message_at,
+      buyer_unread_count: conv.buyer_unread_count,
+      seller_unread_count: conv.seller_unread_count,
+      created_at: conv.created_at,
+      updated_at: conv.updated_at,
+      product:
+        conv.product_id && conv.product_title
+          ? { id: conv.product_id, title: conv.product_title, images: conv.product_images }
+          : null,
     }
+
+    const transformed = transformConversation(raw, profileMap)
+
+    if (
+      conv.last_message_content &&
+      conv.last_message_sender_id &&
+      conv.last_message_type &&
+      conv.last_message_created_at
+    ) {
+      transformed.last_message = {
+        content: conv.last_message_content,
+        sender_id: conv.last_message_sender_id,
+        message_type: conv.last_message_type,
+        created_at: conv.last_message_created_at,
+      }
+    }
+
     return transformed
   })
 

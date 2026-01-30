@@ -1,6 +1,6 @@
 import { Metadata } from "next";
 import { setRequestLocale } from "next-intl/server";
-import { DesignSystemClient } from "./_components/design-system-client";
+import { DesignSystemClient } from "@/components/shared/design-system/design-system-client";
 
 export const metadata: Metadata = {
   title: "Treido Design System v2",

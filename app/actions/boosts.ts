@@ -30,21 +30,18 @@ async function getProfileBoosts(userId: string): Promise<ProfileBoostData | null
   const supabase = await createClient()
   if (!supabase) return null
 
-  // Use select("*") and cast since new columns aren't in generated types
   const { data } = await supabase
     .from("profiles")
-    .select("*")
+    .select("boosts_remaining, boosts_allocated, boosts_reset_at")
     .eq("id", userId)
     .single()
 
   if (!data) return null
 
-  // Cast to access new columns
-  const profile = data as Record<string, unknown>
   return {
-    boosts_remaining: (profile.boosts_remaining as number) ?? 0,
-    boosts_allocated: (profile.boosts_allocated as number) ?? 0,
-    boosts_reset_at: (profile.boosts_reset_at as string) ?? null,
+    boosts_remaining: data.boosts_remaining ?? 0,
+    boosts_allocated: data.boosts_allocated ?? 0,
+    boosts_reset_at: data.boosts_reset_at ?? null,
   }
 }
 

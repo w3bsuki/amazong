@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useContext, useState, useCallback, useRef, useEffect, type ReactNode } from "react";
-import { useForm, FormProvider, useFormContext, type UseFormReturn } from "react-hook-form";
+import { useForm, FormProvider, useFormContext, type UseFormReturn, type Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   sellFormSchemaV4,
@@ -111,8 +111,7 @@ export function SellFormProvider({
 }: SellFormProviderProps) {
   // Form setup with react-hook-form
   const methods = useForm<SellFormDataV4>({
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    resolver: zodResolver(sellFormSchemaV4) as any,
+    resolver: zodResolver(sellFormSchemaV4) as unknown as Resolver<SellFormDataV4>,
     defaultValues: existingProduct || { ...defaultSellFormValuesV4, ...defaultValues },
     mode: "onChange", // Validate on change for real-time feedback
   });

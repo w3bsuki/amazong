@@ -47,13 +47,13 @@ export default async function CategoriesPage({
   const locale = validateLocale(localeParam)
   setRequestLocale(locale)
 
-  const t = await getTranslations('Common')
+  const t = await getTranslations({ locale, namespace: "Categories" })
 
   // L0 + L1 + L2 for directory display
   const categoriesWithChildren = await getCategoryHierarchy(null, 2)
 
   // Header title for mobile contextual header
-  const headerTitle = locale === 'bg' ? 'Всички категории' : 'All Categories'
+  const headerTitle = t("headerTitleAll")
 
   return (
     <PageShell>
@@ -64,13 +64,9 @@ export default async function CategoriesPage({
       <div className="border-b border-border/30 bg-background">
         <div className="px-inset py-1.5">
           <div className="flex items-baseline justify-between gap-2">
-            <h1 className="text-sm font-bold text-foreground">
-              {locale === 'bg' ? 'Категории' : 'Categories'}
-            </h1>
+            <h1 className="text-sm font-bold text-foreground">{t("title")}</h1>
             <p className="text-2xs text-muted-foreground whitespace-nowrap">
-              {locale === 'bg'
-                ? `${categoriesWithChildren.length} категории`
-                : `${categoriesWithChildren.length} categories`}
+              {t("categoryCount", { count: categoriesWithChildren.length })}
             </p>
           </div>
         </div>
@@ -127,8 +123,8 @@ export default async function CategoriesPage({
               <Storefront size={16} weight="fill" className="text-primary" />
             </div>
             <div>
-              <div className="text-sm font-medium">{locale === 'bg' ? 'Продай' : 'Sell'}</div>
-              <div className="text-2xs text-muted-foreground">{locale === 'bg' ? 'Безплатно' : 'Free'}</div>
+              <div className="text-sm font-medium">{t("quickActions.sell.title")}</div>
+              <div className="text-2xs text-muted-foreground">{t("quickActions.sell.subtitle")}</div>
             </div>
           </Link>
 
@@ -140,8 +136,8 @@ export default async function CategoriesPage({
               <Sparkle size={16} weight="fill" className="text-deal" />
             </div>
             <div>
-              <div className="text-sm font-medium">{locale === 'bg' ? 'Оферти' : 'Deals'}</div>
-              <div className="text-2xs text-muted-foreground">{locale === 'bg' ? 'До -70%' : 'Up to 70%'}</div>
+              <div className="text-sm font-medium">{t("quickActions.deals.title")}</div>
+              <div className="text-2xs text-muted-foreground">{t("quickActions.deals.subtitle")}</div>
             </div>
           </Link>
         </div>

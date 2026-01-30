@@ -233,27 +233,27 @@ export type Database = {
       }
       boost_prices: {
         Row: {
-          created_at: string | null
-          currency: string | null
+          created_at: string
+          currency: string
           duration_days: number
           id: string
-          is_active: boolean | null
+          is_active: boolean
           price: number
         }
         Insert: {
-          created_at?: string | null
-          currency?: string | null
+          created_at?: string
+          currency?: string
           duration_days: number
           id?: string
-          is_active?: boolean | null
+          is_active?: boolean
           price: number
         }
         Update: {
-          created_at?: string | null
-          currency?: string | null
+          created_at?: string
+          currency?: string
           duration_days?: number
           id?: string
-          is_active?: boolean | null
+          is_active?: boolean
           price?: number
         }
         Relationships: []
@@ -1121,6 +1121,56 @@ export type Database = {
           },
         ]
       }
+      private_profiles: {
+        Row: {
+          commission_rate: number | null
+          created_at: string
+          email: string | null
+          final_value_fee: number | null
+          id: string
+          insertion_fee: number | null
+          per_order_fee: number | null
+          phone: string | null
+          stripe_customer_id: string | null
+          updated_at: string
+          vat_number: string | null
+        }
+        Insert: {
+          commission_rate?: number | null
+          created_at?: string
+          email?: string | null
+          final_value_fee?: number | null
+          id: string
+          insertion_fee?: number | null
+          per_order_fee?: number | null
+          phone?: string | null
+          stripe_customer_id?: string | null
+          updated_at?: string
+          vat_number?: string | null
+        }
+        Update: {
+          commission_rate?: number | null
+          created_at?: string
+          email?: string | null
+          final_value_fee?: number | null
+          id?: string
+          insertion_fee?: number | null
+          per_order_fee?: number | null
+          phone?: string | null
+          stripe_customer_id?: string | null
+          updated_at?: string
+          vat_number?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "private_profiles_id_fkey"
+            columns: ["id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       product_attributes: {
         Row: {
           attribute_id: string | null
@@ -1214,6 +1264,58 @@ export type Database = {
             columns: ["product_id"]
             isOneToOne: false
             referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      product_private: {
+        Row: {
+          barcode: string | null
+          cost_price: number | null
+          created_at: string
+          product_id: string
+          seller_id: string
+          sku: string | null
+          updated_at: string
+        }
+        Insert: {
+          barcode?: string | null
+          cost_price?: number | null
+          created_at?: string
+          product_id: string
+          seller_id: string
+          sku?: string | null
+          updated_at?: string
+        }
+        Update: {
+          barcode?: string | null
+          cost_price?: number | null
+          created_at?: string
+          product_id?: string
+          seller_id?: string
+          sku?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_private_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: true
+            referencedRelation: "deal_products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "product_private_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: true
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "product_private_seller_id_fkey"
+            columns: ["seller_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -1456,107 +1558,15 @@ export type Database = {
           },
         ]
       }
-      product_private: {
-        Row: {
-          barcode: string | null
-          cost_price: number | null
-          created_at: string
-          product_id: string
-          seller_id: string
-          sku: string | null
-          updated_at: string
-        }
-        Insert: {
-          barcode?: string | null
-          cost_price?: number | null
-          created_at?: string
-          product_id: string
-          seller_id: string
-          sku?: string | null
-          updated_at?: string
-        }
-        Update: {
-          barcode?: string | null
-          cost_price?: number | null
-          created_at?: string
-          product_id?: string
-          seller_id?: string
-          sku?: string | null
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "product_private_product_id_fkey"
-            columns: ["product_id"]
-            isOneToOne: true
-            referencedRelation: "products"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "product_private_seller_id_fkey"
-            columns: ["seller_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      private_profiles: {
-        Row: {
-          commission_rate: number | null
-          created_at: string
-          email: string | null
-          final_value_fee: number | null
-          id: string
-          insertion_fee: number | null
-          per_order_fee: number | null
-          phone: string | null
-          stripe_customer_id: string | null
-          updated_at: string
-          vat_number: string | null
-        }
-        Insert: {
-          commission_rate?: number | null
-          created_at?: string
-          email?: string | null
-          final_value_fee?: number | null
-          id: string
-          insertion_fee?: number | null
-          per_order_fee?: number | null
-          phone?: string | null
-          stripe_customer_id?: string | null
-          updated_at?: string
-          vat_number?: string | null
-        }
-        Update: {
-          commission_rate?: number | null
-          created_at?: string
-          email?: string | null
-          final_value_fee?: number | null
-          id?: string
-          insertion_fee?: number | null
-          per_order_fee?: number | null
-          phone?: string | null
-          stripe_customer_id?: string | null
-          updated_at?: string
-          vat_number?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "private_profiles_id_fkey"
-            columns: ["id"]
-            isOneToOne: true
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       profiles: {
         Row: {
           account_type: string
           avatar_url: string | null
           banner_url: string | null
           bio: string | null
+          boosts_allocated: number | null
+          boosts_remaining: number | null
+          boosts_reset_at: string | null
           business_name: string | null
           country_code: string | null
           created_at: string
@@ -1586,6 +1596,9 @@ export type Database = {
           avatar_url?: string | null
           banner_url?: string | null
           bio?: string | null
+          boosts_allocated?: number | null
+          boosts_remaining?: number | null
+          boosts_reset_at?: string | null
           business_name?: string | null
           country_code?: string | null
           created_at?: string
@@ -1615,6 +1628,9 @@ export type Database = {
           avatar_url?: string | null
           banner_url?: string | null
           bio?: string | null
+          boosts_allocated?: number | null
+          boosts_remaining?: number | null
+          boosts_reset_at?: string | null
           business_name?: string | null
           country_code?: string | null
           created_at?: string
@@ -2533,6 +2549,15 @@ export type Database = {
         }
         Relationships: []
       }
+      category_stats_mv: {
+        Row: {
+          category_id: string | null
+          depth: number | null
+          slug: string | null
+          subtree_product_count: number | null
+        }
+        Relationships: []
+      }
       deal_products: {
         Row: {
           attributes: Json | null
@@ -2756,6 +2781,10 @@ export type Database = {
       check_subscription_expiry: { Args: never; Returns: undefined }
       cleanup_expired_boosts: { Args: never; Returns: undefined }
       cleanup_sold_wishlist_items: { Args: never; Returns: undefined }
+      create_subscription_expiry_notifications: {
+        Args: never
+        Returns: undefined
+      }
       disable_wishlist_sharing: {
         Args: { p_user_id?: string }
         Returns: undefined
@@ -2768,12 +2797,23 @@ export type Database = {
         }[]
       }
       expire_listing_boosts: { Args: never; Returns: undefined }
+      expire_subscriptions: { Args: never; Returns: undefined }
       generate_product_slug: {
         Args: { product_id: string; title: string }
         Returns: string
       }
       generate_share_token: { Args: never; Returns: string }
       generate_store_slug: { Args: { store_name: string }; Returns: string }
+      get_badge_specs: {
+        Args: { p_locale?: string; p_product_id: string }
+        Returns: {
+          attribute_key: string
+          label: string
+          priority: number
+          unit_suffix: string
+          value: string
+        }[]
+      }
       get_blocked_users: {
         Args: never
         Returns: {
@@ -2799,6 +2839,15 @@ export type Database = {
           slug: string
         }[]
       }
+      get_category_stats: {
+        Args: never
+        Returns: {
+          category_id: string
+          depth: number
+          slug: string
+          subtree_product_count: number
+        }[]
+      }
       get_conversation_messages: {
         Args: { p_conversation_id: string }
         Returns: {
@@ -2817,16 +2866,6 @@ export type Database = {
       get_hero_specs: {
         Args: { p_locale?: string; p_product_id: string }
         Returns: {
-          label: string
-          priority: number
-          unit_suffix: string
-          value: string
-        }[]
-      }
-      get_badge_specs: {
-        Args: { p_locale?: string; p_product_id: string }
-        Returns: {
-          attribute_key: string
           label: string
           priority: number
           unit_suffix: string
@@ -2918,6 +2957,7 @@ export type Database = {
         Returns: undefined
       }
       refresh_category_stats: { Args: never; Returns: undefined }
+      reset_monthly_boosts: { Args: never; Returns: undefined }
       transliterate_bulgarian: { Args: { input_text: string }; Returns: string }
       unblock_user: { Args: { p_user_to_unblock: string }; Returns: boolean }
       validate_username: { Args: { username: string }; Returns: boolean }

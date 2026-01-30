@@ -3,10 +3,18 @@ import { createAdminClient } from '@/lib/supabase/server';
 import { stripe } from '@/lib/stripe';
 import { getStripeWebhookSecrets } from '@/lib/env';
 import { ensureOrderConversations } from "@/lib/order-conversations"
+import { logError } from "@/lib/structured-log"
 import type Stripe from 'stripe';
+import { z } from "zod"
 
-// PRODUCTION: Use centralized admin client for consistency
-const supabase = createAdminClient();
+const OrderItemSchema = z.object({
+  id: z.string().uuid(),
+  variantId: z.string().uuid().nullable().optional().default(null),
+  qty: z.coerce.number().int().positive().default(1),
+  price: z.coerce.number().nonnegative(),
+})
+
+const OrderItemsSchema = z.array(OrderItemSchema).max(100)
 
 /**
  * Canonical ownership:
@@ -23,21 +31,22 @@ type OrderItemPayload = {
   price: number;
 };
 
-function parseOrderItems(
-  session: Stripe.Checkout.Session
-): OrderItemPayload[] {
+function parseOrderItems(session: Stripe.Checkout.Session): OrderItemPayload[] {
   const rawItems = session.metadata?.items_json;
   if (!rawItems) {
     return [];
   }
 
   try {
-    const parsed = JSON.parse(rawItems);
-    if (Array.isArray(parsed)) {
-      return parsed as OrderItemPayload[];
-    }
-  } catch {
-    return [];
+    const parsed = JSON.parse(rawItems) as unknown
+    const result = OrderItemsSchema.safeParse(parsed)
+    if (!result.success) return []
+    return result.data
+  } catch (err) {
+    logError("stripe_checkout_webhook_items_json_parse_failed", err, {
+      route: "api/checkout/webhook",
+      sessionId: session.id,
+    })
   }
 
   return [];
@@ -46,6 +55,7 @@ function parseOrderItems(
 type OrderConversationSeed = { productId: string; sellerId: string }
 
 async function ensureOrderItems(
+  supabase: ReturnType<typeof createAdminClient>,
   orderId: string,
   itemsData: OrderItemPayload[]
 ): Promise<OrderConversationSeed[]> {
@@ -56,7 +66,10 @@ async function ensureOrderItems(
     .eq('order_id', orderId);
 
   if (existingItemsError) {
-    console.error('Error checking order items:', existingItemsError);
+    logError("stripe_checkout_webhook_order_items_existing_fetch_failed", existingItemsError, {
+      route: "api/checkout/webhook",
+      orderId,
+    })
     return [];
   }
 
@@ -82,7 +95,10 @@ async function ensureOrderItems(
     .in('id', productIds);
 
   if (productsError) {
-    console.error('Error fetching products:', productsError);
+    logError("stripe_checkout_webhook_products_fetch_failed", productsError, {
+      route: "api/checkout/webhook",
+      orderId,
+    })
   }
 
   const productSellerMap = new Map(
@@ -115,7 +131,10 @@ async function ensureOrderItems(
     .insert(validItems);
 
   if (itemsError) {
-    console.error('Error creating order items:', itemsError);
+    logError("stripe_checkout_webhook_order_items_insert_failed", itemsError, {
+      route: "api/checkout/webhook",
+      orderId,
+    })
   }
 
   return validItems.map((item) => ({
@@ -125,11 +144,14 @@ async function ensureOrderItems(
 }
 
 export async function POST(req: Request) {
+  const supabase = createAdminClient()
   const body = await req.text();
   const sig = req.headers.get('stripe-signature');
 
   if (!sig) {
-    console.error('Missing Stripe signature');
+    logError("stripe_checkout_webhook_missing_signature", null, {
+      route: "api/checkout/webhook",
+    })
     return NextResponse.json({ error: 'Missing signature' }, { status: 400 });
   }
 
@@ -154,7 +176,10 @@ export async function POST(req: Request) {
     }
   } catch (err) {
     const errorMessage = err instanceof Error ? err.message : 'Unknown error';
-    console.error('Webhook signature verification failed:', errorMessage);
+    logError("stripe_checkout_webhook_signature_verification_failed", err, {
+      route: "api/checkout/webhook",
+      message: errorMessage,
+    })
     return NextResponse.json(
       { error: `Webhook Error: ${errorMessage}` },
       { status: 400 }
@@ -189,13 +214,15 @@ export async function POST(req: Request) {
           .limit(1);
 
         if (existingOrdersError) {
-          console.error('Error checking existing orders:', existingOrdersError);
+          logError("stripe_checkout_webhook_existing_order_fetch_failed", existingOrdersError, {
+            route: "api/checkout/webhook",
+          })
         }
 
         const existingOrderId = existingOrders?.[0]?.id;
 
         if (existingOrderId) {
-          const conversationSeeds = await ensureOrderItems(existingOrderId, itemsData)
+          const conversationSeeds = await ensureOrderItems(supabase, existingOrderId, itemsData)
           if (sessionBuyerId && conversationSeeds.length > 0) {
             await ensureOrderConversations(
               supabase,
@@ -231,7 +258,10 @@ export async function POST(req: Request) {
 
       const userId = sessionBuyerId
       if (!userId) {
-        console.error('No user_id found in session');
+        logError("stripe_checkout_webhook_missing_user_id", null, {
+          route: "api/checkout/webhook",
+          sessionId: session.id,
+        })
         return NextResponse.json({ error: 'No user_id' }, { status: 400 });
       }
 
@@ -249,7 +279,9 @@ export async function POST(req: Request) {
         .single();
 
       if (orderError) {
-        console.error('Error creating order:', orderError);
+        logError("stripe_checkout_webhook_order_insert_failed", orderError, {
+          route: "api/checkout/webhook",
+        })
         // Don't return error to Stripe - log it and investigate
         // Stripe will retry on 5xx errors
         return NextResponse.json({ error: 'Order creation failed' }, { status: 500 });
@@ -257,7 +289,7 @@ export async function POST(req: Request) {
 
       // Create order items from line items
       if (lineItems.data.length > 0) {
-        const conversationSeeds = await ensureOrderItems(order.id, itemsData);
+        const conversationSeeds = await ensureOrderItems(supabase, order.id, itemsData);
         if (conversationSeeds.length > 0) {
           await ensureOrderConversations(
             supabase,
@@ -275,7 +307,10 @@ export async function POST(req: Request) {
       // await sendOrderConfirmationEmail(session.customer_details?.email, order);
 
     } catch (error) {
-      console.error('Error processing checkout session:', error);
+      logError("stripe_checkout_webhook_handler_failed", error, {
+        route: "api/checkout/webhook",
+        eventType: event.type,
+      })
       return NextResponse.json({ error: 'Processing failed' }, { status: 500 });
     }
   }
@@ -288,7 +323,11 @@ export async function POST(req: Request) {
   // Handle payment failures
   if (event.type === 'payment_intent.payment_failed') {
     const paymentIntent = event.data.object as Stripe.PaymentIntent;
-    console.error('Payment failed:', paymentIntent.id, paymentIntent.last_payment_error?.message);
+    logError("stripe_checkout_webhook_payment_failed", null, {
+      route: "api/checkout/webhook",
+      paymentIntentId: paymentIntent.id,
+      message: paymentIntent.last_payment_error?.message ?? null,
+    })
   }
 
   return NextResponse.json({ received: true });

@@ -4,6 +4,7 @@ import * as React from "react"
 import { useWishlist } from "@/components/providers/wishlist-context"
 import { Heart } from "@phosphor-icons/react"
 import { cn } from "@/lib/utils"
+import { useTranslations } from "next-intl"
 
 // =============================================================================
 // HELPERS
@@ -52,6 +53,7 @@ export function ProductCardWishlistButton({
   isOwnProduct = false,
   className,
 }: ProductCardWishlistButtonProps) {
+  const t = useTranslations("Product")
   const { isInWishlist, toggleWishlist } = useWishlist()
   const [isPending, setIsPending] = React.useState(false)
 
@@ -75,7 +77,7 @@ export function ProductCardWishlistButton({
     <button
       type="button"
       className={cn(
-        "absolute right-1.5 top-1.5 z-10 flex items-center gap-1 rounded-full px-2 py-1 outline-none transition-all",
+        "absolute right-1.5 top-1.5 z-10 flex items-center gap-1 rounded-full px-2 h-touch-lg outline-none transition-all",
         "bg-background/90 backdrop-blur-sm shadow-sm",
         // Show/hide on hover for desktop when not in wishlist and no count
         !inWishlist && !hasCount && "lg:opacity-0 lg:group-hover:opacity-100 lg:transition-opacity lg:duration-150",
@@ -85,7 +87,7 @@ export function ProductCardWishlistButton({
       )}
       onClick={handleClick}
       disabled={isPending || isOwnProduct}
-      aria-label={inWishlist ? "Remove from wishlist" : "Add to wishlist"}
+      aria-label={inWishlist ? t("removeFromWatchlist") : t("addToWatchlist")}
     >
       <Heart 
         size={16} 

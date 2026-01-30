@@ -315,7 +315,7 @@ export function DesktopBuyBoxV2({
               <button
                 type="button"
                 onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                className="size-touch-xs flex items-center justify-center hover:bg-muted transition-colors disabled:opacity-40"
+                className="size-touch-lg flex items-center justify-center hover:bg-muted transition-colors disabled:opacity-40"
                 disabled={quantity <= 1}
                 aria-label={t("decreaseQuantity")}
               >
@@ -328,13 +328,13 @@ export function DesktopBuyBoxV2({
                   )}
                 />
               </button>
-              <span className="px-3 py-1 text-sm font-medium min-w-10 text-center">
+              <span className="px-3 py-1 text-sm font-medium min-w-touch text-center">
                 {quantity}
               </span>
               <button
                 type="button"
                 onClick={() => setQuantity(Math.min(99, quantity + 1))}
-                className="size-touch-xs flex items-center justify-center hover:bg-muted transition-colors"
+                className="size-touch-lg flex items-center justify-center hover:bg-muted transition-colors"
                 aria-label={t("increaseQuantity")}
               >
                 <Plus className="size-3.5 text-foreground" />

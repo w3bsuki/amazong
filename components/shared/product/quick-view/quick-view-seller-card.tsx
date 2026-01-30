@@ -1,6 +1,6 @@
 "use client"
 
-import { CaretRight, CheckCircle } from "@phosphor-icons/react"
+import { CaretRight, CheckCircle, Star } from "@phosphor-icons/react"
 import { useTranslations } from "next-intl"
 
 import { VerifiedAvatar } from "@/components/shared/verified-avatar"
@@ -10,6 +10,10 @@ interface QuickViewSellerCardProps {
   sellerName?: string | null | undefined
   sellerAvatarUrl?: string | null | undefined
   sellerVerified?: boolean | undefined
+  /** Product rating to show in compact mode */
+  rating?: number | undefined
+  /** Review count */
+  reviews?: number | undefined
   /** New: granular verification levels */
   emailVerified?: boolean | undefined
   phoneVerified?: boolean | undefined
@@ -24,6 +28,8 @@ export function QuickViewSellerCard({
   sellerName,
   sellerAvatarUrl,
   sellerVerified,
+  rating,
+  reviews,
   emailVerified,
   phoneVerified,
   idVerified,
@@ -36,6 +42,7 @@ export function QuickViewSellerCard({
   // Backwards compatibility: if only sellerVerified is passed, treat as email verified
   const hasVerification = emailVerified || phoneVerified || idVerified || isVerifiedBusiness || sellerVerified
   const safeSellerName = sellerName ?? tProduct("seller")
+  const hasRating = typeof rating === "number" && rating > 0
 
   // Compact card mode for mobile - smaller but still a proper card
   if (compact) {
@@ -46,7 +53,7 @@ export function QuickViewSellerCard({
         className={cn(
           "group w-full flex items-center gap-2.5 p-2.5 rounded-lg text-left",
           "bg-surface-subtle border border-border/50",
-          "hover:bg-muted hover:border-border transition-all",
+          "hover:bg-muted hover:border-border transition-colors",
           "focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1"
         )}
       >
@@ -60,7 +67,18 @@ export function QuickViewSellerCard({
           isVerifiedBusiness={isVerifiedBusiness}
         />
         <div className="flex-1 min-w-0">
-          <p className="text-sm font-medium truncate">{safeSellerName}</p>
+          <div className="flex items-center gap-2">
+            <p className="text-sm font-medium truncate">{safeSellerName}</p>
+            {hasRating && (
+              <span className="flex items-center gap-0.5 text-xs tabular-nums shrink-0">
+                <Star size={12} weight="fill" className="fill-rating text-rating" />
+                {rating.toFixed(1)}
+                {typeof reviews === "number" && reviews > 0 && (
+                  <span className="text-muted-foreground">({reviews})</span>
+                )}
+              </span>
+            )}
+          </div>
           {hasVerification && (
             <span className="flex items-center gap-1 text-tiny text-muted-foreground">
               <CheckCircle size={10} weight="fill" className="text-success" />

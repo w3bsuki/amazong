@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite"
 
-import { DesignSystemClient } from "@/app/[locale]/design-system/_components/design-system-client"
+import { DesignSystemClient } from "@/components/shared/design-system/design-system-client"
 
 const meta: Meta<typeof DesignSystemClient> = {
   title: "Design System/Tokens",

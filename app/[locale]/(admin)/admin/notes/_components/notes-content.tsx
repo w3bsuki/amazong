@@ -97,7 +97,7 @@ export function AdminNotesContent({ initialNotes }: { initialNotes: AdminNote[] 
           title: note.title,
           content: note.content ?? null,
         })
-        .select()
+        .select("id, title, content, is_pinned, author_id, created_at, updated_at")
         .single()
       
       if (error) {

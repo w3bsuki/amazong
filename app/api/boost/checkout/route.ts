@@ -3,7 +3,10 @@ import { stripe } from '@/lib/stripe'
 import { createRouteHandlerClient, createStaticClient } from '@/lib/supabase/server'
 import { eurToBgnApprox } from '@/lib/currency'
 import { isBoostActive } from '@/lib/boost/boost-status'
+import { buildLocaleUrl } from '@/lib/stripe-locale'
+import { logError } from '@/lib/structured-log'
 import { getTranslations } from 'next-intl/server'
+import { z } from 'zod'
 
 const PROFILE_SELECT_FOR_STRIPE = 'id,stripe_customer_id'
 
@@ -27,6 +30,14 @@ function parseDurationDays(input: string): BoostDurationDays | null {
   if (parsed === 1 || parsed === 7 || parsed === 30) return parsed
   return null
 }
+
+const BoostCheckoutBodySchema = z
+  .object({
+    productId: z.string().uuid(),
+    durationDays: z.union([z.string(), z.number()]).transform((v) => String(v)),
+    locale: z.string().optional(),
+  })
+  .strict()
 
 async function getBoostPriceEur(
   supabase: ReturnType<typeof createRouteHandlerClient>["supabase"],
@@ -59,14 +70,14 @@ export async function POST(req: NextRequest) {
       return json({ errorKey: 'errors.unauthorized' }, { status: 401 })
     }
 
-    const body = await req.json()
-    const { productId, durationDays, locale } = body as { productId: string, durationDays: string, locale?: string }
-    const resolvedLocale = toBoostLocale(locale)
-    const t = await getTranslations({ locale: resolvedLocale, namespace: 'Boost' })
-
-    if (!productId || !durationDays) {
+    const parseResult = BoostCheckoutBodySchema.safeParse(await req.json())
+    if (!parseResult.success) {
       return json({ errorKey: 'errors.missingFields' }, { status: 400 })
     }
+
+    const { productId, durationDays, locale } = parseResult.data
+    const resolvedLocale = toBoostLocale(locale)
+    const t = await getTranslations({ locale: resolvedLocale, namespace: 'Boost' })
 
     const parsedDuration = parseDurationDays(durationDays)
     if (!parsedDuration) {
@@ -155,8 +166,16 @@ export async function POST(req: NextRequest) {
         sku: pricingMeta.sku,
         type: 'listing_boost',
       },
-      success_url: `${process.env.NEXT_PUBLIC_APP_URL}/${resolvedLocale}/account/selling?boost_success=true&product_id=${productId}`,
-      cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/${resolvedLocale}/account/selling?boost_canceled=true&product_id=${productId}`,
+      success_url: buildLocaleUrl(
+        "account/selling",
+        resolvedLocale,
+        `boost_success=true&product_id=${productId}`
+      ),
+      cancel_url: buildLocaleUrl(
+        "account/selling",
+        resolvedLocale,
+        `boost_canceled=true&product_id=${productId}`
+      ),
     })
 
     return json({ 
@@ -169,9 +188,9 @@ export async function POST(req: NextRequest) {
       locale: resolvedLocale,
     })
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error'
-    const errorType = error instanceof Error ? error.constructor.name : typeof error
-    console.error(`[boost-checkout] ${errorType}: ${errorMessage}`)
+    logError("boost_checkout_handler_failed", error, {
+      route: "api/boost/checkout",
+    })
     return json(
       { errorKey: 'errors.internal' },
       { status: 500 }

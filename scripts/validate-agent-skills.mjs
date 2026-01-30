@@ -2,13 +2,24 @@ import fs from "node:fs";
 import path from "node:path";
 
 const repoRoot = path.resolve(process.cwd());
+const userHome = process.env.USERPROFILE || process.env.HOME || "";
+const codexHome = process.env.CODEX_HOME || "";
+const userCodexSkills = codexHome
+  ? path.join(codexHome, "skills")
+  : userHome
+    ? path.join(userHome, ".codex", "skills")
+    : "";
+const userClaudeSkills = userHome ? path.join(userHome, ".claude", "skills") : "";
 
 const skillsRoots = [
+  path.join(repoRoot, ".codex", "skills"),
   path.join(repoRoot, ".claude", "skills"),
   path.join(repoRoot, "docs-final", "archive", "folders", ".claude", "skills"),
-];
+  userCodexSkills,
+  userClaudeSkills,
+].filter(Boolean);
 
-const skillsRoot = skillsRoots.find((p) => fs.existsSync(p));
+const existingRoots = [...new Set(skillsRoots.filter((p) => fs.existsSync(p)))];
 
 function fail(message) {
   process.stderr.write(`\nAgent Skills validation failed: ${message}\n`);
@@ -66,7 +77,7 @@ function listSkillDirs(root) {
   if (!fs.existsSync(root)) return [];
   const entries = fs.readdirSync(root, { withFileTypes: true });
   return entries
-    .filter((e) => e.isDirectory())
+    .filter((e) => e.isDirectory() && !e.name.startsWith("."))
     .map((e) => path.join(root, e.name))
     .sort((a, b) => a.localeCompare(b));
 }
@@ -105,20 +116,31 @@ function validateSkillDir(skillDir) {
   }
 }
 
+function displayPath(p) {
+  const rel = path.relative(repoRoot, p);
+  return rel.startsWith("..") ? p : rel;
+}
+
 function main() {
-  if (!skillsRoot) {
+  if (existingRoots.length === 0) {
     process.stdout.write(`No skills folder found at ${path.relative(repoRoot, skillsRoots[0])}\n`);
     return;
   }
 
-  const skillDirs = listSkillDirs(skillsRoot);
-  if (skillDirs.length === 0) {
-    process.stdout.write(`No skill directories found under ${path.relative(repoRoot, skillsRoot)}\n`);
-    return;
+  let validatedAny = false;
+  for (const root of existingRoots) {
+    const skillDirs = listSkillDirs(root);
+    if (skillDirs.length === 0) {
+      process.stdout.write(`No skill directories found under ${displayPath(root)}\n`);
+      continue;
+    }
+
+    validatedAny = true;
+    process.stdout.write(`Validating ${skillDirs.length} skill(s) under ${displayPath(root)}...\n`);
+    for (const d of skillDirs) validateSkillDir(d);
   }
 
-  process.stdout.write(`Validating ${skillDirs.length} skill(s) under ${path.relative(repoRoot, skillsRoot)}...\n`);
-  for (const d of skillDirs) validateSkillDir(d);
+  if (!validatedAny) return;
 
   if (process.exitCode && process.exitCode !== 0) {
     return;

@@ -133,7 +133,7 @@ export function HorizontalProductCard({
             e.preventDefault()
             e.stopPropagation()
           }}
-          className="absolute top-1.5 right-1.5 z-10 size-8 bg-background/80 backdrop-blur-sm rounded-full flex items-center justify-center active:bg-background transition-colors"
+          className="absolute top-1.5 right-1.5 z-10 size-touch-lg bg-background/80 backdrop-blur-sm rounded-full flex items-center justify-center active:bg-background transition-colors"
           aria-label={tProduct("addToWishlist")}
         >
           <Heart size={16} className="text-foreground" />

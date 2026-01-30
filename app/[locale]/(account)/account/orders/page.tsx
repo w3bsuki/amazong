@@ -112,11 +112,27 @@ export default async function OrdersPage({ params, searchParams }: OrdersPagePro
   const { data: ordersRaw } = await supabase
     .from("orders")
     .select(`
-        *,
-      fulfillment_status,
+        id,
+        created_at,
+        status,
+        fulfillment_status,
+        total_amount,
         order_items (
-            *,
-            product:products(*)
+          id,
+          product_id,
+          seller_id,
+          quantity,
+          price_at_purchase,
+          status,
+          tracking_number,
+          shipping_carrier,
+          shipped_at,
+          product:products(
+            id,
+            title,
+            images,
+            price
+          )
         )
     `)
     .eq("user_id", user.id)

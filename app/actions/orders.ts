@@ -57,6 +57,40 @@ export interface OrderItem {
   }
 }
 
+const ORDER_ITEM_LIST_SELECT = `
+  id,
+  order_id,
+  product_id,
+  seller_id,
+  quantity,
+  price_at_purchase,
+  status,
+  seller_received_at,
+  shipped_at,
+  delivered_at,
+  tracking_number,
+  shipping_carrier,
+  product:products(id, title, images, slug),
+  order:orders(id, user_id, total_amount, status, shipping_address, created_at)
+`
+
+const ORDER_ITEM_DETAIL_SELECT = `
+  id,
+  order_id,
+  product_id,
+  seller_id,
+  quantity,
+  price_at_purchase,
+  status,
+  seller_received_at,
+  shipped_at,
+  delivered_at,
+  tracking_number,
+  shipping_carrier,
+  product:products(id, title, images, slug),
+  seller:profiles!order_items_seller_id_fkey(id, full_name, avatar_url, username)
+`
+
 /**
  * Update the status of an order item (seller only)
  */
@@ -160,13 +194,10 @@ export async function getSellerOrders(
     // Build query
     let query = supabase
       .from('order_items')
-      .select(`
-        *,
-        product:products(id, title, images, slug),
-        order:orders(id, user_id, total_amount, status, shipping_address, created_at)
-      `)
+      .select(ORDER_ITEM_LIST_SELECT)
       .eq('seller_id', user.id)
       .order('created_at', { ascending: false, foreignTable: 'orders' })
+      .limit(200)
 
     // Apply status filter
     if (statusFilter && statusFilter !== 'all') {
@@ -313,13 +344,10 @@ export async function getBuyerOrders(): Promise<{ orders: OrderItem[]; error?: s
     // Get order items with product and seller info
     const { data: orderItems, error: itemsError } = await supabase
       .from('order_items')
-      .select(`
-        *,
-        product:products(id, title, images, slug),
-        order:orders(id, user_id, total_amount, status, shipping_address, created_at)
-      `)
+      .select(ORDER_ITEM_LIST_SELECT)
       .in('order_id', orderIds)
       .order('created_at', { ascending: false, foreignTable: 'orders' })
+      .limit(200)
 
     if (itemsError) {
       return { orders: [], error: "Failed to fetch order items" }
@@ -1007,9 +1035,7 @@ export async function getBuyerOrderDetails(
         shipping_address,
         created_at,
         order_items (
-          *,
-          product:products(id, title, images, slug),
-          seller:profiles!order_items_seller_id_fkey(id, full_name, avatar_url, username)
+          ${ORDER_ITEM_DETAIL_SELECT}
         )
       `)
       .eq('id', orderId)
@@ -1034,7 +1060,7 @@ export async function getBuyerOrderDetails(
         total_amount: order.total_amount,
         shipping_address: order.shipping_address,
         created_at: order.created_at,
-        items: order.order_items,
+        items: order.order_items.map((item) => ({ ...item, created_at: order.created_at })) as OrderItem[],
       }
     }
   } catch (error) {

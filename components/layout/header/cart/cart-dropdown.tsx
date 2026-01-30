@@ -130,12 +130,12 @@ export function CartDropdown() {
                               removeFromCart(item.id, item.variantId)
                             }
                           }}
-                          className="size-5 shrink-0 flex items-center justify-center rounded hover:bg-muted text-muted-foreground hover:text-foreground"
+                          className="size-touch-lg shrink-0 flex items-center justify-center rounded hover:bg-muted text-muted-foreground hover:text-foreground"
                           aria-label={t("decreaseQuantity")}
                         >
                           <Minus size={10} weight="bold" />
                         </button>
-                        <span className="text-xs font-medium text-foreground w-4 text-center">
+                        <span className="text-xs font-medium text-foreground min-w-touch text-center">
                           {item.quantity}
                         </span>
                         <button
@@ -143,7 +143,7 @@ export function CartDropdown() {
                             e.preventDefault()
                             updateQuantity(item.id, item.quantity + 1, item.variantId)
                           }}
-                          className="size-5 shrink-0 flex items-center justify-center rounded hover:bg-muted text-muted-foreground hover:text-foreground"
+                          className="size-touch-lg shrink-0 flex items-center justify-center rounded hover:bg-muted text-muted-foreground hover:text-foreground"
                           aria-label={t("increaseQuantity")}
                         >
                           <Plus size={10} weight="bold" />
@@ -154,7 +154,7 @@ export function CartDropdown() {
                           e.preventDefault()
                           removeFromCart(item.id, item.variantId)
                         }}
-                        className="size-5 shrink-0 flex items-center justify-center rounded hover:bg-destructive/10 text-muted-foreground hover:text-destructive"
+                        className="size-touch-lg shrink-0 flex items-center justify-center rounded hover:bg-destructive/10 text-muted-foreground hover:text-destructive"
                         aria-label={t("removeItem")}
                       >
                         <Trash size={12} weight="regular" />

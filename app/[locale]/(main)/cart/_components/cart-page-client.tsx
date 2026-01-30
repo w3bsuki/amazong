@@ -26,6 +26,7 @@ import { useTranslations, useLocale } from "next-intl"
 import { useRecentlyViewed } from "@/hooks/use-recently-viewed"
 import { ProductCard } from "@/components/shared/product/product-card"
 import { PageShell } from "@/components/shared/page-shell"
+import { useHeaderOptional } from "@/components/providers/header-context"
 
 /** Timeout to show cart content even if auth hasn't finished (ms) */
 const CART_READY_TIMEOUT = 3000
@@ -38,6 +39,7 @@ export default function CartPageClient() {
   const tBreadcrumbs = useTranslations("Breadcrumbs")
   const locale = useLocale()
   const { products: recentlyViewed, isLoaded: recentlyViewedLoaded } = useRecentlyViewed()
+  const header = useHeaderOptional()
   
   // Timeout fallback: show cart after 3s even if auth hasn't settled
   const [timedOut, setTimedOut] = useState(false)
@@ -46,6 +48,13 @@ export default function CartPageClient() {
     const timer = setTimeout(() => setTimedOut(true), CART_READY_TIMEOUT)
     return () => clearTimeout(timer)
   }, [isReady])
+
+  useEffect(() => {
+    if (!header) return
+    header.setHomepageHeader(null)
+    header.setContextualHeader(null)
+    header.setProductHeader(null)
+  }, [header])
   
   // Cart is "effectively ready" if either fully ready or timed out
   const effectivelyReady = isReady || timedOut
@@ -222,29 +231,29 @@ export default function CartPageClient() {
                     {/* Delete */}
                     <button
                       onClick={() => removeFromCart(item.id, item.variantId)}
-                      className="size-touch-xs flex items-center justify-center rounded text-muted-foreground/50 hover:text-destructive transition-colors"
+                      className="size-touch-lg flex items-center justify-center rounded text-muted-foreground/50 hover:text-destructive transition-colors"
                       aria-label={t("delete")}
                     >
                       <Trash className="size-4" />
                     </button>
 
                     {/* Quantity selector */}
-                    <div className="flex items-center h-touch-xs rounded-md border border-border bg-surface-subtle">
+                    <div className="flex items-center h-touch-lg rounded-md border border-border bg-surface-subtle">
                       <button
                         onClick={() =>
                           item.quantity > 1 && updateQuantity(item.id, item.quantity - 1, item.variantId)
                         }
                         disabled={item.quantity <= 1}
-                        className="size-touch-xs flex items-center justify-center hover:bg-muted disabled:opacity-30 transition-colors rounded-l-md"
+                        className="size-touch-lg flex items-center justify-center hover:bg-muted disabled:opacity-30 transition-colors rounded-l-md"
                         aria-label={tCartDropdown("decreaseQuantity")}
                       >
                         <Minus className="size-3.5" weight="bold" />
                       </button>
-                      <span className="w-touch-xs text-center text-sm font-semibold tabular-nums">{item.quantity}</span>
+                      <span className="min-w-touch text-center text-sm font-semibold tabular-nums">{item.quantity}</span>
                       <button
                         onClick={() => updateQuantity(item.id, item.quantity + 1, item.variantId)}
                         disabled={item.quantity >= 10}
-                        className="size-touch-xs flex items-center justify-center hover:bg-muted disabled:opacity-30 transition-colors rounded-r-md"
+                        className="size-touch-lg flex items-center justify-center hover:bg-muted disabled:opacity-30 transition-colors rounded-r-md"
                         aria-label={tCartDropdown("increaseQuantity")}
                       >
                         <Plus className="size-3.5" weight="bold" />
@@ -253,7 +262,7 @@ export default function CartPageClient() {
 
                     {/* Wishlist */}
                     <button
-                      className="size-touch-xs flex items-center justify-center rounded text-muted-foreground/50 hover:text-primary transition-colors"
+                      className="size-touch-lg flex items-center justify-center rounded text-muted-foreground/50 hover:text-primary transition-colors"
                       aria-label={t("saveForLater")}
                     >
                       <Heart className="size-4" />

@@ -1,22 +1,34 @@
 import { createRouteHandlerClient } from "@/lib/supabase/server"
 import { stripe } from "@/lib/stripe"
+import { logError } from "@/lib/structured-log"
 import { NextResponse } from "next/server"
+import { z } from "zod"
 
 export async function POST(request: import("next/server").NextRequest) {
-    try {
-        const { supabase, applyCookies } = createRouteHandlerClient(request)
+    const { supabase, applyCookies } = createRouteHandlerClient(request)
+    const json = (body: unknown, init?: Parameters<typeof NextResponse.json>[1]) =>
+        applyCookies(NextResponse.json(body, init))
 
+    const BodySchema = z
+        .object({
+            paymentMethodId: z.string().regex(/^pm_/),
+            dbId: z.string().uuid(),
+        })
+        .strict()
+
+    try {
         const { data: { user } } = await supabase.auth.getUser()
         
         if (!user) {
-            return applyCookies(NextResponse.json({ error: "Not authenticated" }, { status: 401 }))
+            return json({ error: "Not authenticated" }, { status: 401 })
         }
 
-        const { paymentMethodId, dbId } = await request.json()
-
-        if (!paymentMethodId || !dbId) {
-            return applyCookies(NextResponse.json({ error: "Missing required fields" }, { status: 400 }))
+        const parseResult = BodySchema.safeParse(await request.json())
+        if (!parseResult.success) {
+            return json({ error: "Missing required fields" }, { status: 400 })
         }
+
+        const { paymentMethodId, dbId } = parseResult.data
 
         // Get profile with Stripe customer ID
         const { data: profile } = await supabase
@@ -26,7 +38,7 @@ export async function POST(request: import("next/server").NextRequest) {
             .single()
 
         if (!profile?.stripe_customer_id) {
-            return applyCookies(NextResponse.json({ error: "No Stripe customer found" }, { status: 400 }))
+            return json({ error: "No Stripe customer found" }, { status: 400 })
         }
 
         // Update default payment method in Stripe
@@ -37,10 +49,14 @@ export async function POST(request: import("next/server").NextRequest) {
         })
 
         // Update in database - set all to non-default, then set the selected one
-        await supabase
+        const { error: clearDefaultsError } = await supabase
             .from('user_payment_methods')
             .update({ is_default: false })
             .eq('user_id', user.id)
+
+        if (clearDefaultsError) {
+            throw clearDefaultsError
+        }
 
         const { error: updateError } = await supabase
             .from('user_payment_methods')
@@ -52,10 +68,12 @@ export async function POST(request: import("next/server").NextRequest) {
             throw updateError
         }
 
-        return applyCookies(NextResponse.json({ success: true }))
+        return json({ success: true })
     } catch (error) {
-        console.error("Error setting default payment method:", error)
-        return NextResponse.json(
+        logError("payments_set_default_handler_failed", error, {
+            route: "api/payments/set-default",
+        })
+        return json(
             { error: "Failed to set default payment method" },
             { status: 500 }
         )

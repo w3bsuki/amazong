@@ -379,10 +379,10 @@ function CategoryModalContent({
   const [childrenById, setChildrenById] = useState<Record<string, Category[]>>({});
   const [loadingChildrenById, setLoadingChildrenById] = useState<Record<string, boolean>>({});
 
-  const MAX_DEPTH = 3; // L0 -> L1 -> L2 -> L3
+  const MAX_DEPTH = 4; // L0 -> L1 -> L2 -> L3 -> L4 (supports 647 L4 categories)
   const stepLabels = locale === "bg"
-    ? ["Ниво 0", "Ниво 1", "Ниво 2", "Ниво 3"]
-    : ["Level 0", "Level 1", "Level 2", "Level 3"];
+    ? ["Ниво 0", "Ниво 1", "Ниво 2", "Ниво 3", "Ниво 4"]
+    : ["Level 0", "Level 1", "Level 2", "Level 3", "Level 4"];
   const lastNavigationItem = navigationPath.at(-1)
 
   const getName = (cat: Category) =>
@@ -564,7 +564,7 @@ function CategoryModalContent({
                 
                 <div className="flex flex-col min-w-0">
                   <span className="text-2xs font-bold text-muted-foreground uppercase tracking-widest leading-none mb-1">
-                    {locale === "bg" ? "Стъпка" : "Step"} {currentStep}/4
+                    {locale === "bg" ? "Стъпка" : "Step"} {currentStep}/{MAX_DEPTH + 1}
                   </span>
                   <h3 className="text-xs font-bold text-foreground uppercase tracking-wider truncate">
                     {navigationPath.length > 0 

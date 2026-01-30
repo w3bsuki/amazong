@@ -79,7 +79,7 @@ export function WishlistDrawer({ className, children }: WishlistDrawerProps) {
             </div>
             <DrawerClose asChild>
               <button
-                className="text-xs text-muted-foreground hover:text-foreground h-touch-xs px-2 rounded-md hover:bg-muted touch-action-manipulation tap-transparent"
+                className="text-xs text-muted-foreground hover:text-foreground h-touch-lg px-2 rounded-md hover:bg-muted touch-action-manipulation tap-transparent"
                 aria-label={t("close")}
               >
                 {t("close")}
@@ -144,7 +144,7 @@ export function WishlistDrawer({ className, children }: WishlistDrawerProps) {
                     <div className="flex items-center gap-1.5 mt-auto pt-1">
                       <button
                         onClick={() => handleMoveToCart(item)}
-                        className="flex items-center gap-1 h-touch-xs px-2 text-xs font-medium text-primary hover:text-primary bg-surface-subtle hover:bg-hover rounded-md touch-action-manipulation tap-transparent"
+                        className="flex items-center gap-1 h-touch-lg px-2 text-xs font-medium text-primary hover:text-primary bg-surface-subtle hover:bg-hover rounded-md touch-action-manipulation tap-transparent"
                       >
                         <ShoppingCart size={12} />
                         {t("add")}
@@ -154,7 +154,7 @@ export function WishlistDrawer({ className, children }: WishlistDrawerProps) {
                           removeFromWishlist(item.product_id)
                           toast.success(t("removed"))
                         }}
-                        className="flex items-center justify-center size-touch-xs rounded-md text-muted-foreground hover:text-destructive hover:bg-destructive/10 touch-action-manipulation tap-transparent"
+                        className="flex items-center justify-center size-touch-lg rounded-md text-muted-foreground hover:text-destructive hover:bg-destructive/10 touch-action-manipulation tap-transparent"
                         aria-label={t("remove")}
                       >
                         <Trash size={14} />

@@ -120,7 +120,7 @@ export function MobileGalleryV2({
               <button
                 type="button"
                 onClick={onBack}
-                className="size-9 rounded-full bg-surface-floating/90 shadow-sm flex items-center justify-center active:bg-background"
+                className="size-touch-lg rounded-full bg-surface-floating/90 shadow-sm flex items-center justify-center active:bg-background"
                 aria-label={t("back")}
               >
                 <ChevronLeft className="size-5 text-text-strong" />
@@ -135,7 +135,7 @@ export function MobileGalleryV2({
                   type="button"
                   onClick={handleWishlistToggle}
                   className={cn(
-                    "size-9 rounded-full shadow-sm flex items-center justify-center",
+                    "size-touch-lg rounded-full shadow-sm flex items-center justify-center",
                     isWishlisted 
                       ? "bg-destructive text-destructive-foreground" 
                       : "bg-surface-floating/90 active:bg-background"

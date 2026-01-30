@@ -139,15 +139,15 @@ export function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
                               ? updateQuantity(item.id, item.quantity - 1, item.variantId)
                               : removeFromCart(item.id, item.variantId)
                           }
-                          className="flex items-center justify-center size-touch-xs rounded-md hover:bg-background text-muted-foreground hover:text-foreground touch-action-manipulation tap-transparent"
+                          className="flex items-center justify-center size-touch-lg rounded-md hover:bg-background text-muted-foreground hover:text-foreground touch-action-manipulation tap-transparent"
                           aria-label={t("decreaseQuantity")}
                         >
                           <Minus size={14} weight="bold" />
                         </button>
-                        <span className="text-xs font-medium text-foreground w-6 text-center">{item.quantity}</span>
+                        <span className="text-xs font-medium text-foreground min-w-touch text-center">{item.quantity}</span>
                         <button
                           onClick={() => updateQuantity(item.id, item.quantity + 1, item.variantId)}
-                          className="flex items-center justify-center size-touch-xs rounded-md hover:bg-background text-muted-foreground hover:text-foreground touch-action-manipulation tap-transparent"
+                          className="flex items-center justify-center size-touch-lg rounded-md hover:bg-background text-muted-foreground hover:text-foreground touch-action-manipulation tap-transparent"
                           aria-label={t("increaseQuantity")}
                         >
                           <Plus size={14} weight="bold" />
@@ -155,7 +155,7 @@ export function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
                       </div>
                       <button
                         onClick={() => removeFromCart(item.id, item.variantId)}
-                        className="flex items-center justify-center size-touch-xs rounded-md hover:bg-destructive/10 text-muted-foreground hover:text-destructive touch-action-manipulation tap-transparent"
+                        className="flex items-center justify-center size-touch-lg rounded-md hover:bg-destructive/10 text-muted-foreground hover:text-destructive touch-action-manipulation tap-transparent"
                         aria-label={t("removeItem")}
                       >
                         <Trash size={14} weight="regular" />

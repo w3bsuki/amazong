@@ -1,16 +1,31 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect, routing } from "@/i18n/routing";
-import { setRequestLocale } from "next-intl/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AccountLayoutContent } from "./account-layout-content";
 import { headers } from "next/headers";
 import { createSubscriptionCheckoutSession } from "@/app/actions/subscriptions";
 import { connection } from "next/server";
+import type { Metadata } from "next";
 
 // Generate static params for all supported locales
 export function generateStaticParams() {
     return routing.locales.map((locale) => ({ locale }));
+}
+
+export async function generateMetadata({
+    params,
+}: {
+    params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+    const { locale } = await params;
+    setRequestLocale(locale);
+    const t = await getTranslations({ locale, namespace: "Account" });
+
+    return {
+        title: t("title"),
+    };
 }
 
 function AccountLayoutSkeleton() {

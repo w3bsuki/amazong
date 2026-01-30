@@ -1,12 +1,27 @@
 import { CheckoutHeader } from "./_components/checkout-header"
 import { CheckoutFooter } from "./_components/checkout-footer"
-import { setRequestLocale } from "next-intl/server"
+import { getTranslations, setRequestLocale } from "next-intl/server"
 import { routing } from "@/i18n/routing"
 import { PageShell } from "@/components/shared/page-shell"
+import type { Metadata } from "next"
 
 // Generate static params for all supported locales
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }))
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>
+}): Promise<Metadata> {
+  const { locale } = await params
+  setRequestLocale(locale)
+  const t = await getTranslations({ locale, namespace: "CheckoutPage" })
+
+  return {
+    title: t("title"),
+  }
 }
 
 /**

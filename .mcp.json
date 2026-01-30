@@ -13,6 +13,10 @@
         "-File",
         "scripts/mcp/supabase-mcp.ps1"
       ]
+    },
+    "codex": {
+      "command": "codex",
+      "args": ["mcp-server"]
     }
   }
 }

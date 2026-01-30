@@ -462,8 +462,12 @@ export async function updatePassword(formData: FormData): Promise<{
     }
 
     // Verify current password by attempting to sign in
+    if (!user.email) {
+      return { success: false, error: "Password update is not available for this account" }
+    }
+
     const { error: signInError } = await supabase.auth.signInWithPassword({
-      email: user.email!,
+      email: user.email,
       password: rawData.currentPassword,
     })
 

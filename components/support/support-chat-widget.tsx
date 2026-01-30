@@ -396,6 +396,7 @@ export function SupportChatWidget({
                 onClick={handleSend}
                 disabled={!newMessage.trim() || isSending}
                 className="bg-primary hover:bg-interactive-hover shrink-0"
+                aria-label={t("sendMessage")}
               >
                 {isSending ? (
                   <Spinner className="size-4" label={tCommon("loading")} />

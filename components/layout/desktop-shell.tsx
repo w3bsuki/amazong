@@ -1,5 +1,3 @@
-"use client";
-
 /**
  * DesktopShell — Unified desktop layout with CSS Grid + named areas
  *
@@ -30,6 +28,8 @@
  * </DesktopShell>
  * ```
  */
+
+"use client";
 
 import * as React from "react";
 import { cn } from "@/lib/utils";
