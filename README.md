@@ -62,16 +62,16 @@ pnpm storybook:build
 
 | Doc | Purpose |
 |-----|---------|
-| `docs/PRD.md` | Product vision, scope, roadmap |
-| `docs/FEATURES.md` | Feature status (✅/🚧/⬜), route map |
-| `docs/ARCHITECTURE.md` | Stack, boundaries, caching, Supabase, Stripe |
-| `docs/DESIGN.md` | UI tokens, patterns, anti-patterns |
+| `.codex/project/PRD.md` | Product vision, scope, roadmap |
+| `.codex/project/FEATURES.md` | Feature status (✅/🚧/⬜), route map |
+| `.codex/project/ARCHITECTURE.md` | Stack, boundaries, caching, Supabase, Stripe |
+| `.codex/project/DESIGN.md` | UI tokens, patterns, anti-patterns |
 
 **Legacy docs**: see `audit/` (dated) + root history (reference only)
 
 ## Where does this file go?
 
-Use these rules before adding new files (see `docs/ARCHITECTURE.md` for full details):
+Use these rules before adding new files (see `.codex/project/ARCHITECTURE.md` for full details):
 
 - `app/[locale]/(group)/.../_components/*`: UI used only by a single route group (account/admin/auth/business/chat/checkout/main/plans/sell).
 - `app/[locale]/(group)/.../_actions/*`: server actions used only by that route group.
@@ -84,13 +84,13 @@ Use these rules before adding new files (see `docs/ARCHITECTURE.md` for full det
 
 ## Documentation
 
-Docs are intentionally kept small and canonical in `docs/` (see `AGENTS.md`).
+Docs are intentionally kept small and canonical in `.codex/project/` (see `.codex/AGENTS.md`).
 
 ## Caching (Next.js 16)
 
 - Cache Components are enabled (`cacheComponents: true`) and cache profiles live in `next.config.ts` under `cacheLife` (`categories`, `products`, `deals`, `user`).
 - Cached server data fetchers should use `'use cache'` + `cacheLife()` + `cacheTag()` for targeted invalidation.
-- Reference guide: `docs/ARCHITECTURE.md`.
+- Reference guide: `.codex/project/ARCHITECTURE.md`.
 
 ## Environment Variables
 #### AI Search (optional)

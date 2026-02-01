@@ -41,7 +41,7 @@ function GlobalErrorContent({
   return (
     <PageShell className="flex flex-col items-center justify-center p-4">
       <div className="mx-auto max-w-md text-center">
-        <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-destructive/10">
+        <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-card ring-1 ring-destructive">
           <WarningCircle className="h-10 w-10 text-destructive" weight="duotone" />
         </div>
         <h1 className="mb-2 text-2xl font-bold tracking-tight">{t("title")}</h1>

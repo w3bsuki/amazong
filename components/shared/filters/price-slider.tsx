@@ -120,7 +120,7 @@ export function PriceSlider({
               "w-full h-10 px-3 rounded-md",
               "bg-surface-subtle border border-border/50",
               "text-sm placeholder:text-muted-foreground",
-              "focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
+              "focus:outline-none focus:ring-2 focus:ring-focus-ring focus:border-primary"
             )}
             aria-label={t("min")}
           />
@@ -137,7 +137,7 @@ export function PriceSlider({
               "w-full h-10 px-3 rounded-md",
               "bg-surface-subtle border border-border/50",
               "text-sm placeholder:text-muted-foreground",
-              "focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
+              "focus:outline-none focus:ring-2 focus:ring-focus-ring focus:border-primary"
             )}
             aria-label={t("max")}
           />

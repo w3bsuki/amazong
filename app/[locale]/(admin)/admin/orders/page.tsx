@@ -98,17 +98,17 @@ export default async function AdminOrdersPage() {
   const getStatusColor = (status: string | null) => {
     switch (status) {
       case 'paid':
-        return 'bg-success/15 text-success border-success/25'
+        return 'bg-muted text-success border-success'
       case 'pending':
-        return 'bg-order-pending/15 text-order-pending border-order-pending/25'
+        return 'bg-muted text-order-pending border-order-pending'
       case 'processing':
-        return 'bg-order-processing/15 text-order-processing border-order-processing/25'
+        return 'bg-muted text-order-processing border-order-processing'
       case 'shipped':
-        return 'bg-order-shipped/15 text-order-shipped border-order-shipped/25'
+        return 'bg-muted text-order-shipped border-order-shipped'
       case 'delivered':
-        return 'bg-order-delivered/15 text-order-delivered border-order-delivered/25'
+        return 'bg-muted text-order-delivered border-order-delivered'
       case 'cancelled':
-        return 'bg-order-cancelled/15 text-order-cancelled border-order-cancelled/25'
+        return 'bg-muted text-order-cancelled border-order-cancelled'
       default:
         return 'bg-muted text-muted-foreground border-border'
     }

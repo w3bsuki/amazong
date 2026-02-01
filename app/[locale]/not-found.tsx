@@ -31,7 +31,7 @@ export default async function NotFound({
   return (
     <div className="min-h-96 py-20 flex items-center justify-center px-4">
       <div className="text-center max-w-md">
-        <div className="text-8xl font-bold text-primary/20 mb-4">{t('heroTitle')}</div>
+        <div className="text-8xl font-bold text-muted-foreground mb-4">{t('heroTitle')}</div>
 
         <h1 className="text-2xl font-bold text-foreground mb-2">{t('title')}</h1>
         

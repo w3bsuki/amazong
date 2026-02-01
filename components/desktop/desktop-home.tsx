@@ -63,6 +63,7 @@ interface Product {
   location?: string
   condition?: string
   isBoosted?: boolean
+  boostExpiresAt?: string | null
   tags?: string[]
   // Category & attributes for contextual display
   categoryRootSlug?: string
@@ -281,6 +282,16 @@ export function DesktopHome({
     attributes: product.attributes,
   }))
 
+  const activePromotedProducts = useMemo(() => {
+    const now = Date.now()
+    return promotedProducts.filter((p) => {
+      if (!p.isBoosted) return false
+      if (!p.boostExpiresAt) return false
+      const expiresAt = Date.parse(p.boostExpiresAt)
+      return Number.isFinite(expiresAt) && expiresAt > now
+    })
+  }, [promotedProducts])
+
   // Sidebar content
   const sidebarContent = (
     <>
@@ -309,9 +320,9 @@ export function DesktopHome({
       sidebarSticky
     >
       {/* PROMOTED SECTION: Desktop-specific styled container */}
-      {activeTab !== "promoted" && promotedProducts.length > 0 && (
+      {activeTab !== "promoted" && activePromotedProducts.length > 0 && (
         <PromotedSection 
-          products={promotedProducts} 
+          products={activePromotedProducts} 
           locale={locale}
           maxProducts={5}
         />

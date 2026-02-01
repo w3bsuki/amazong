@@ -93,7 +93,7 @@ export function MobileProductHeader({
           variant="ghost"
           size="icon"
           className={cn(
-            "size-11 rounded-full shrink-0",
+            "size-touch rounded-full shrink-0",
             "text-foreground",
             "hover:bg-muted",
             "active:scale-95 active:bg-muted",
@@ -151,10 +151,10 @@ export function MobileProductHeader({
               variant="ghost"
               size="icon"
               className={cn(
-                "size-11 rounded-full",
+                "size-touch-sm rounded-full",
                 "hover:bg-muted",
                 "active:scale-95 transition-all duration-150",
-                isWishlisted && "hover:bg-wishlist-active/10"
+                isWishlisted && "bg-selected hover:bg-hover"
               )}
               aria-label={isWishlisted ? tProduct("removeFromWishlist") : tProduct("addToWishlist")}
               aria-pressed={isWishlisted}
@@ -173,12 +173,12 @@ export function MobileProductHeader({
           )}
 
           {/* Share Button */}
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon"
-            className={cn(
-              "size-11 rounded-full",
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              className={cn(
+              "size-touch-sm rounded-full",
               "text-foreground",
               "hover:bg-muted",
               "active:scale-95 transition-all duration-150"

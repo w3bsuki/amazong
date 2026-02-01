@@ -4,8 +4,6 @@
  * Provides client-side badge utilities for determining which
  * attributes to show as badges on product cards.
  * 
- * For server-side cached functions, import from './category-badge-specs.server'
- * 
  * Examples:
  * - Fashion: condition + brand
  * - Electronics: condition + storage

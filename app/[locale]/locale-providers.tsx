@@ -38,23 +38,12 @@ export default async function LocaleProviders({
             <CartProvider>
               <WishlistProvider>
                 <DrawerProvider>
-                  <Suspense
-                    fallback={
-                      <>
-                        {children}
-                        <Suspense fallback={null}>
-                          <GlobalDrawers />
-                        </Suspense>
-                      </>
-                    }
-                  >
-                    <MessageProvider>
-                      {children}
-                      <Suspense fallback={null}>
-                        <GlobalDrawers />
-                      </Suspense>
-                    </MessageProvider>
-                  </Suspense>
+                  <MessageProvider>
+                    {children}
+                    <Suspense fallback={null}>
+                      <GlobalDrawers />
+                    </Suspense>
+                  </MessageProvider>
                 </DrawerProvider>
               </WishlistProvider>
             </CartProvider>

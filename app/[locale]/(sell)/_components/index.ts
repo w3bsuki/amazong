@@ -7,7 +7,6 @@
 
 // Authentication & Onboarding
 export { SignInPrompt } from "./sign-in-prompt";
-export { SellerOnboardingWizard } from "./seller-onboarding-wizard";
 
 // Form Provider & Context
 export { 

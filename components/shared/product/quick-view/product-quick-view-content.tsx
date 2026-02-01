@@ -126,7 +126,7 @@ export function ProductQuickViewContent({
   // Mobile layout - ultra-compact, everything visible without scrolling
   if (isMobile) {
     return (
-      <div className="flex flex-col h-full touch-action-pan-y">
+      <div className="flex flex-col h-full touch-pan-y">
         {/* Compact hero image - wide aspect for more content space */}
         <QuickViewImageGallery
           images={allImages}
@@ -187,7 +187,7 @@ export function ProductQuickViewContent({
             <Button
               variant="black"
               size="lg"
-              className="gap-2 touch-action-manipulation"
+              className="gap-2 touch-manipulation"
               onClick={onAddToCart}
               disabled={!inStock}
             >
@@ -197,7 +197,7 @@ export function ProductQuickViewContent({
             <Button
               variant="cta"
               size="lg"
-              className="touch-action-manipulation"
+              className="touch-manipulation"
               onClick={onBuyNow}
               disabled={!inStock}
             >

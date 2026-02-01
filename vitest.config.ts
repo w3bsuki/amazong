@@ -60,7 +60,6 @@ export default defineConfig(async () => {
           'lib/logger.ts', // Logger - side effects
           'lib/image-compression.ts', // Image compression - requires canvas
           'lib/bulgarian-cities.ts', // Static data
-          'lib/category-attribute-config.ts', // Static config
           'lib/category-display.ts', // Static display utils
           'hooks/use-geo-welcome.ts', // Complex with Supabase + cookies
         ],

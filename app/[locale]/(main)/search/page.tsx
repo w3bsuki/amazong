@@ -1,5 +1,4 @@
 import { createStaticClient } from "@/lib/supabase/server"
-import { routing } from "@/i18n/routing"
 import { SearchFilters } from "@/components/shared/search/search-filters"
 import { SubcategoryTabs } from "@/components/category/subcategory-tabs"
 import { SearchHeader } from "./_components/search-header"
@@ -11,7 +10,7 @@ import { FilterChips } from "@/components/shared/filters/filter-chips"
 import { SortSelect } from "@/components/shared/search/sort-select"
 import { SearchPagination } from "@/components/shared/search/search-pagination"
 import { EmptyStateCTA } from "@/components/shared/empty-state-cta"
-import { DesktopShell } from "@/components/layout/desktop-shell"
+import { DesktopShell } from "@/components/layout/desktop-shell.server"
 import { ProductGrid, type ProductGridProduct } from "@/components/grid"
 import { PageShell } from "@/components/shared/page-shell"
 import { Suspense } from "react"
@@ -23,11 +22,6 @@ import { ITEMS_PER_PAGE } from "../_lib/pagination"
 import { getCategoryContext } from "@/lib/data/categories"
 import type { CategoryAttribute } from "@/lib/data/categories"
 import { normalizeAttributeKey } from "@/lib/attributes/normalize-attribute-key"
-
-
-export function generateStaticParams() {
-  return routing.locales.map((locale) => ({ locale }))
-}
 
 export async function generateMetadata({ params, searchParams }: {
   params: Promise<{ locale: string }>

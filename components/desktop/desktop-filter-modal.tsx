@@ -29,7 +29,7 @@ import { Badge } from '@/components/ui/badge'
 import { Switch } from '@/components/ui/switch'
 import { Slider } from '@/components/ui/slider'
 import { useFilterCount } from '@/hooks/use-filter-count'
-import type { CategoryAttribute } from '@/lib/data/categories'
+import type { CategoryAttribute } from '@/lib/types/categories'
 import { getCategoryAttributeKey, getCategoryAttributeLabel, getCategoryAttributeOptions } from '@/lib/filters/category-attribute'
 
 interface DesktopFilterModalProps {
@@ -546,7 +546,7 @@ function FilterSearch({
         <button
           type="button"
           onClick={() => setIsExpanded(!isExpanded)}
-          className="text-sm text-primary hover:text-primary/80 font-medium w-full text-center py-2 flex items-center justify-center gap-1.5 rounded-lg hover:bg-hover transition-colors"
+          className="text-sm text-link hover:text-link-hover font-medium w-full text-center py-2 flex items-center justify-center gap-1.5 rounded-lg hover:bg-hover transition-colors"
         >
           {isExpanded ? t('showLess') : t('showAllCount', { count: filteredOptions.length })}
           <CaretDown size={14} className={cn("transition-transform", isExpanded && "rotate-180")} />

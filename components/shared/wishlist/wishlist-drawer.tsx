@@ -57,12 +57,7 @@ export function WishlistDrawer({ className, children }: WishlistDrawerProps) {
     toast.success(t("movedToCart"))
   }
 
-  const contentMaxHeight =
-    items.length === 0
-      ? "max-h-(--wishlist-drawer-max-h-empty)"
-      : items.length <= 2
-        ? "max-h-(--wishlist-drawer-max-h-few)"
-        : "max-h-(--wishlist-drawer-max-h)"
+  const contentMaxHeight = items.length <= 2 ? "max-h-dialog-sm" : "max-h-dialog"
 
   return (
     <Drawer open={open} onOpenChange={setOpen}>
@@ -154,7 +149,7 @@ export function WishlistDrawer({ className, children }: WishlistDrawerProps) {
                           removeFromWishlist(item.product_id)
                           toast.success(t("removed"))
                         }}
-                        className="flex items-center justify-center size-touch-lg rounded-md text-muted-foreground hover:text-destructive hover:bg-destructive/10 touch-action-manipulation tap-transparent"
+                        className="flex items-center justify-center size-touch-lg rounded-md text-muted-foreground hover:text-destructive hover:bg-hover touch-action-manipulation tap-transparent"
                         aria-label={t("remove")}
                       >
                         <Trash size={14} />

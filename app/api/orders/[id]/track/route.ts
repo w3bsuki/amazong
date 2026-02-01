@@ -1,27 +1,38 @@
 import { NextResponse } from "next/server"
 import { updateOrderItemStatus } from "@/app/actions/orders"
-import type { ShippingCarrier } from "@/lib/order-status"
+import { orderItemIdParamSchema, trackOrderPayloadSchema } from "@/lib/validation/orders"
 
 
 export async function POST(
   req: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const { id } = await params
+  const paramsResult = orderItemIdParamSchema.safeParse(await params)
+  if (!paramsResult.success) {
+    return NextResponse.json({ error: "Invalid order item id" }, { status: 400 })
+  }
 
-  let body: { trackingNumber?: string; shippingCarrier?: ShippingCarrier } = {}
-  try {
-    body = await req.json()
-  } catch {
-    body = {}
+  const rawBody = await req.text()
+  let parsedBody: unknown = {}
+  if (rawBody) {
+    try {
+      parsedBody = JSON.parse(rawBody)
+    } catch {
+      return NextResponse.json({ error: "Invalid JSON" }, { status: 400 })
+    }
+  }
+
+  const bodyResult = trackOrderPayloadSchema.safeParse(parsedBody)
+  if (!bodyResult.success) {
+    return NextResponse.json({ error: "Invalid request" }, { status: 400 })
   }
 
   // Tracking is meaningful once shipped; we use shipped status as the canonical state.
   const result = await updateOrderItemStatus(
-    id,
+    paramsResult.data.id,
     "shipped",
-    body.trackingNumber,
-    body.shippingCarrier
+    bodyResult.data.trackingNumber,
+    bodyResult.data.shippingCarrier
   )
 
   if (!result.success) {

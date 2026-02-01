@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite"
 import { CartesianGrid, Line, LineChart, XAxis, YAxis } from "recharts"
 
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from "./chart"
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/shared/charts/chart"
 
 const meta: Meta<typeof ChartContainer> = {
   title: "Primitives/Chart",

@@ -65,7 +65,7 @@ export function FiltersSidebar({
               placeholder={tFilters("min")}
               value={filters.priceMin}
               onChange={(e) => onFiltersChange({ ...filters, priceMin: e.target.value })}
-              className="h-9 text-sm"
+              className="h-touch-sm text-sm"
             />
             <span className="text-muted-foreground text-sm">–</span>
             <Input
@@ -73,7 +73,7 @@ export function FiltersSidebar({
               placeholder={tFilters("max")}
               value={filters.priceMax}
               onChange={(e) => onFiltersChange({ ...filters, priceMax: e.target.value })}
-              className="h-9 text-sm"
+              className="h-touch-sm text-sm"
             />
           </div>
         </div>
@@ -90,7 +90,7 @@ export function FiltersSidebar({
                 type="button"
                 onClick={() => onFiltersChange({ ...filters, condition: filters.condition === c.id ? null : c.id })}
                 className={cn(
-                  "px-3 py-1.5 text-xs rounded-full transition-colors min-h-9",
+                  "px-3 py-1.5 text-xs rounded-full transition-colors min-h-touch-sm",
                   filters.condition === c.id
                     ? "bg-foreground text-background font-medium"
                     : "bg-muted text-muted-foreground hover:bg-hover hover:text-foreground"
@@ -102,7 +102,7 @@ export function FiltersSidebar({
           </div>
         </div>
 
-        <Button size="sm" onClick={onApply} disabled={!hasActive} className="w-full h-9 text-sm font-medium">
+        <Button size="sm" onClick={onApply} disabled={!hasActive} className="w-full h-touch-sm text-sm font-medium">
           {tCommon("apply")}
         </Button>
       </div>

@@ -6,26 +6,26 @@ import { cn } from "@/lib/utils"
 
 const buttonVariants = cva(
   // Treido: Remove ring-offset, use active:opacity-90 for native iOS feel, tap-highlight-transparent
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none shrink-0 [&_svg]:shrink-0 outline-none focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:outline-none active:opacity-90 tap-highlight-transparent",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none shrink-0 [&_svg]:shrink-0 outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none active:opacity-90 tap-highlight-transparent",
   {
     variants: {
       variant: {
         // shadcn-aligned default: primary CTA (Twitter blue)
         default: "bg-primary text-primary-foreground hover:bg-interactive-hover",
         destructive:
-          "bg-destructive text-destructive-foreground hover:bg-destructive/90 dark:bg-destructive/60",
+          "bg-destructive text-destructive-foreground hover:bg-destructive dark:bg-destructive",
         outline:
           "border border-border bg-background hover:bg-muted text-foreground active:bg-active shadow-none",
         secondary:
-          "bg-secondary text-secondary-foreground hover:bg-secondary/80",
+          "bg-secondary text-secondary-foreground hover:bg-secondary",
         ghost:
-          "hover:bg-accent hover:text-accent-foreground active:bg-accent/80",
+          "hover:bg-accent hover:text-accent-foreground active:bg-active",
         link: "text-link underline-offset-4 hover:underline hover:text-link-hover",
         // Marketplace CTA alias (kept for semantic readability)
         cta: "bg-primary text-primary-foreground hover:bg-interactive-hover",
-        deal: "bg-deal text-deal-foreground hover:bg-deal/90",
+        deal: "bg-deal text-deal-foreground hover:bg-deal",
         // Treido black CTA (primary marketplace action)
-        black: "bg-foreground text-background hover:bg-foreground/90 border border-foreground",
+        black: "bg-foreground text-background hover:bg-foreground border border-foreground",
         // Legacy alias (maps to primary)
         brand: "bg-primary text-primary-foreground hover:bg-interactive-hover",
       },

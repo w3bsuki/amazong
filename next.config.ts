@@ -52,6 +52,14 @@ const nextConfig: NextConfig = {
       revalidate: 3600, // 1 hour - background revalidate
       expire: 86400,    // 1 day - hard expiry
     },
+    // Generic “longest reasonable” profile used by tag invalidation sites that
+    // don’t want to decide between products/user/categories semantics.
+    // (Matches existing usages of `revalidateTag(tag, "max")` in the codebase.)
+    max: {
+      stale: 300,       // 5 minutes - serve stale briefly
+      revalidate: 3600, // 1 hour - background revalidate
+      expire: 86400,    // 1 day - hard expiry
+    },
   },
 
   // Image optimization configuration

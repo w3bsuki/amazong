@@ -376,12 +376,20 @@ function ProductCard({
           outOfStockLabel={t("outOfStock")}
         />
 
-        {/* Top-left: Boosted badge only */}
-        {isBoosted && (
-          <div className="absolute top-1.5 left-1.5 z-10">
-            <Badge variant="promoted" className="text-2xs">
-              {t("adBadge")}
-            </Badge>
+        {/* Top-left: Stacked badges (promoted + discount on mobile) */}
+        {(isBoosted || (hasDiscount && discountPercent >= 5)) && (
+          <div className="absolute top-1 left-1 lg:top-1.5 lg:left-1.5 z-10 flex flex-col gap-0.5">
+            {isBoosted && (
+              <Badge variant="promoted" className="text-2xs rounded-full px-1.5 py-0.5">
+                {t("adBadge")}
+              </Badge>
+            )}
+            {/* Discount pill - mobile only (desktop shows inline in content) */}
+            {hasDiscount && discountPercent >= 5 && (
+              <Badge variant="sale" className="text-2xs rounded-full px-1.5 py-0.5 font-semibold lg:hidden">
+                -{discountPercent}%
+              </Badge>
+            )}
           </div>
         )}
 
@@ -401,7 +409,7 @@ function ProductCard({
       </div>
 
       {/* Content Area - Ultra-clean mobile-first layout */}
-      <div className="relative z-2 mt-1.5 space-y-0.5">
+      <div className="relative z-2 mt-1 lg:mt-1.5 space-y-0">
         {/* Category + Time row - compact pill style */}
         <div className="flex items-center gap-1 text-2xs min-w-0">
           {(categoryLabel || smartBadge) && (
@@ -426,8 +434,8 @@ function ProductCard({
           </span>
         </div>
 
-        {/* Title - clean, tight */}
-        <h3 className="line-clamp-2 break-words text-sm font-medium text-foreground leading-tight">
+        {/* Title - clean, tight, de-emphasized vs price */}
+        <h3 className="line-clamp-2 break-words text-compact lg:text-sm font-normal lg:font-medium text-foreground leading-tight">
           {title}
         </h3>
 

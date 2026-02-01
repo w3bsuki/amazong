@@ -47,11 +47,10 @@ export function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
     [locale]
   )
 
-  const contentMaxHeight = useMemo(() => {
-    if (items.length === 0) return "max-h-(--wishlist-drawer-max-h-empty)"
-    if (items.length <= 2) return "max-h-(--wishlist-drawer-max-h-few)"
-    return "max-h-(--wishlist-drawer-max-h)"
-  }, [items.length])
+  const contentMaxHeight = useMemo(
+    () => (items.length <= 2 ? "max-h-dialog-sm" : "max-h-dialog"),
+    [items.length]
+  )
 
   const buildProductUrl = useCallback((item: CartItem) => {
     if (!item.username) return "#"
@@ -155,7 +154,7 @@ export function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
                       </div>
                       <button
                         onClick={() => removeFromCart(item.id, item.variantId)}
-                        className="flex items-center justify-center size-touch-lg rounded-md hover:bg-destructive/10 text-muted-foreground hover:text-destructive touch-action-manipulation tap-transparent"
+                        className="flex items-center justify-center size-touch-lg rounded-md hover:bg-hover text-muted-foreground hover:text-destructive touch-action-manipulation tap-transparent"
                         aria-label={t("removeItem")}
                       >
                         <Trash size={14} weight="regular" />

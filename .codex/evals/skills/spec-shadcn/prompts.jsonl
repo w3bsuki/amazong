@@ -1,0 +1,10 @@
+{"id": "shadcn-01", "should_trigger": true, "prompt": "Audit the components/ui folder for shadcn boundary violations", "expected_outcome": "identifies any app logic, fetching, or next-intl in primitives"}
+{"id": "shadcn-02", "should_trigger": true, "prompt": "SPEC-SHADCN:AUDIT\nGoal: check if components/ui imports from app/ or lib/supabase", "expected_outcome": "scans imports, reports boundary drift if found"}
+{"id": "shadcn-03", "should_trigger": true, "prompt": "Review CVA patterns in Button and Badge components", "expected_outcome": "audits CVA usage, variant ergonomics"}
+{"id": "shadcn-04", "should_trigger": true, "prompt": "Check if any shadcn primitives have leaked into route-private folders", "expected_outcome": "identifies duplicate primitives in app/**/_components"}
+{"id": "shadcn-05", "should_trigger": false, "prompt": "Fix the button styling to use blue-600", "expected_outcome": "should NOT trigger audit-only skill, this is an IMPL request"}
+{"id": "shadcn-06", "should_trigger": true, "prompt": "Are there any Radix composition issues in components/ui?", "expected_outcome": "audits asChild usage, portal layering, focus handling"}
+{"id": "shadcn-07", "should_trigger": true, "prompt": "Audit Base UI usage in our shadcn components", "expected_outcome": "identifies Base UI vs Radix patterns"}
+{"id": "shadcn-08", "should_trigger": false, "prompt": "Install the shadcn accordion component", "expected_outcome": "should NOT trigger, this is CLI/IMPL not audit"}
+{"id": "shadcn-09", "should_trigger": true, "prompt": "Check components/shared for primitives that should be in components/ui", "expected_outcome": "identifies composite vs primitive boundary issues"}
+{"id": "shadcn-10", "should_trigger": true, "prompt": "Scan for accessibility issues in dialog and drawer components", "expected_outcome": "audits a11y basics: focus trap, aria labels, overlay blocking"}

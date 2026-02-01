@@ -53,7 +53,7 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
     automotiveProducts,
   ] = await Promise.all([
     getNewestProducts(24),
-    getBoostedProducts(10), // Promoted listings for flash deals section
+    getBoostedProducts(24), // Promoted listings (client filters expired boosts)
     getDealsProducts(10),   // Today's Offers section
     getCategoryRowProducts("fashion", 10),      // Fashion section
     getCategoryRowProducts("electronics", 10),  // Electronics section

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { Link } from "@/i18n/routing"
 import { cn } from "@/lib/utils"
 import { PageShell } from "@/components/shared/page-shell"
@@ -21,7 +21,7 @@ import { HorizontalProductCard } from "@/components/mobile/horizontal-product-ca
 import { FeedControlBar, type SortOption, type QuickPillId } from "@/components/mobile/feed-control-bar"
 import { CategoryProductRowMobile } from "@/components/shared/product/category-product-row"
 import { useHeader } from "@/components/providers/header-context"
-import type { UIProduct } from "@/lib/data/products"
+import type { UIProduct } from "@/lib/types/products"
 import type { CategoryTreeNode } from "@/lib/category-tree"
 import { useCategoryNavigation } from "@/hooks/use-category-navigation"
 import { useTranslations } from "next-intl"
@@ -168,6 +168,16 @@ export function MobileHome({
   const [sortModalOpen, setSortModalOpen] = useState(false)
   const [activeSort, setActiveSort] = useState<SortOption>("newest")
   const [activePills, setActivePills] = useState<QuickPillId[]>([])
+
+  const activePromotedProducts = useMemo(() => {
+    const now = Date.now()
+    return (promotedProducts ?? []).filter((p) => {
+      if (!p.isBoosted) return false
+      if (!p.boostExpiresAt) return false
+      const expiresAt = Date.parse(p.boostExpiresAt)
+      return Number.isFinite(expiresAt) && expiresAt > now
+    })
+  }, [promotedProducts])
   
   // Toggle a quick filter pill
   const handlePillToggle = (pill: QuickPillId) => {
@@ -258,8 +268,8 @@ export function MobileHome({
         )}
 
         {/* Promoted Listings - Only on "All" tab */}
-        {nav.isAllTab && promotedProducts && promotedProducts.length > 0 && (
-          <PromotedListingsStrip products={promotedProducts} />
+        {nav.isAllTab && activePromotedProducts.length > 0 && (
+          <PromotedListingsStrip products={activePromotedProducts} />
         )}
 
         {/* CURATED CATEGORY SECTIONS - Only on "All" tab, after promoted */}

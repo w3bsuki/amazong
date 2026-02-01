@@ -11,7 +11,7 @@ import { useState, useEffect, useCallback } from "react"
 import { CountBadge } from "@/components/shared/count-badge"
 
 export function CartDropdown() {
-  const { items, totalItems, subtotal, removeFromCart, updateQuantity } = useCart()
+  const { items, totalItems, isReady, subtotal, removeFromCart, updateQuantity } = useCart()
   const t = useTranslations("CartDropdown")
   const tNav = useTranslations("Navigation")
   const locale = useLocale()
@@ -20,7 +20,7 @@ export function CartDropdown() {
     setMounted(true)
   }, [])
 
-  const displayItems = mounted ? totalItems : 0
+  const displayItems = mounted && isReady ? totalItems : 0
 
   const buildProductUrl = useCallback((item: CartItem) => {
     const sellerSlug = item.username ?? item.storeSlug
@@ -49,7 +49,6 @@ export function CartDropdown() {
               {mounted && displayItems > 0 && (
                 <CountBadge
                   count={displayItems}
-                  max={9}
                   className="absolute -top-1 -right-1.5 bg-cart-badge text-primary-foreground ring-2 ring-header-bg h-4 min-w-4 px-1 text-2xs"
                   aria-hidden="true"
                 />
@@ -68,7 +67,7 @@ export function CartDropdown() {
           <div className="flex items-center gap-1.5">
             <ShoppingCart size={16} weight="regular" className="text-muted-foreground" />
             <h3 className="font-semibold text-sm text-foreground">{t("title")}</h3>
-            <span className="text-xs text-muted-foreground">({totalItems})</span>
+            <span className="text-xs text-muted-foreground">({displayItems})</span>
           </div>
         </div>
 

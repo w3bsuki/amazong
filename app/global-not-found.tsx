@@ -25,7 +25,7 @@ export default async function GlobalNotFound() {
             <div className="mb-8">
               <div className="relative mx-auto h-40 w-40">
                 <div className="flex items-center justify-center h-full">
-                  <span className="text-8xl font-bold text-muted-foreground/20">
+                  <span className="text-8xl font-bold text-muted-foreground">
                     404
                   </span>
                 </div>

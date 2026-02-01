@@ -7,10 +7,12 @@ interface ModalProps {
   children: React.ReactNode
   title?: string
   description?: string
+  ariaLabel?: string
 }
 
-export function Modal({ children, title, description }: ModalProps) {
+export function Modal({ children, title, description, ariaLabel }: ModalProps) {
   const router = useRouter()
+  const hasHeading = Boolean(title || description)
 
   const handleClose = () => {
     router.back()
@@ -18,7 +20,10 @@ export function Modal({ children, title, description }: ModalProps) {
 
   return (
     <Dialog open onOpenChange={(open) => !open && handleClose()}>
-      <DialogContent className="max-w-4xl max-h-dialog overflow-y-auto">
+      <DialogContent
+        className="max-w-4xl max-h-dialog overflow-y-auto"
+        aria-label={!hasHeading ? ariaLabel : undefined}
+      >
         {(title || description) && (
           <DialogHeader>
             {title && <DialogTitle>{title}</DialogTitle>}

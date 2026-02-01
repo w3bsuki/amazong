@@ -255,7 +255,7 @@ export function MobileSearchOverlay({
                 type="button"
                 variant="ghost"
                 onClick={handleClose}
-                className="h-8 px-2 text-primary font-medium hover:bg-transparent hover:text-primary/80"
+                className="h-8 px-2 text-link font-medium hover:bg-transparent hover:text-link-hover"
               >
                 {tSearch("close")}
               </Button>
@@ -336,7 +336,7 @@ export function MobileSearchOverlay({
                   <button
                     type="button"
                     onClick={() => handleSearch(query)}
-                    className="text-xs text-primary font-medium flex items-center gap-1 hover:text-primary/80"
+                    className="text-xs text-link font-medium flex items-center gap-1 hover:text-link-hover"
                   >
                     {tSearch("viewAll")}
                     <ArrowRight size={12} weight="regular" aria-hidden="true" />

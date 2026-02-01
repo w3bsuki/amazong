@@ -1,12 +1,12 @@
 # Treido Audit Payload Contract (v1)
 
-This contract exists to make **parallel, read-only specialist audits** mergeable by a single orchestrator.
+This contract exists to make **parallel, read-only audits** mergeable by a single orchestrator.
 
 ## Rules
 
 - Output must be **Markdown** and **only** the payload section.
-- Start with `## <AUDITOR_NAME>` (examples: `## TW4`, `## SHADCN`, `## NEXTJS`).
-- Do **not** patch files. Do **not** edit `TASKS.md`.
+- Start with `## <AUDITOR_NAME>` (examples: `## FRONTEND`, `## BACKEND`, `## TW4`, `## SHADCN`, `## NEXTJS`).
+- Do **not** patch files. Do **not** edit `.codex/TASKS.md`.
 - Avoid secrets/PII (cookies, headers, tokens, emails, addresses).
 
 ## Template (copy/paste)
@@ -43,4 +43,3 @@ This contract exists to make **parallel, read-only specialist audits** mergeable
 - [ ] Exactly one top-level section starting with `##`
 - [ ] Includes all required headings: Scope / Findings / Acceptance Checks / Risks
 - [ ] Findings table rows reference real files
-

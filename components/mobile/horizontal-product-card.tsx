@@ -13,6 +13,7 @@ import {
 } from "@phosphor-icons/react"
 import { useTranslations } from "next-intl"
 import { useDrawer, type QuickViewProduct } from "@/components/providers/drawer-context"
+import { useWishlist } from "@/components/providers/wishlist-context"
 import type { UIProduct } from "@/lib/data/products"
 
 // =============================================================================
@@ -36,6 +37,8 @@ export function HorizontalProductCard({
 }: HorizontalProductStripCardProps) {
   const tProduct = useTranslations("Product")
   const { openProductQuickView, enabledDrawers, isDrawerSystemEnabled } = useDrawer()
+  const { isInWishlist, toggleWishlist } = useWishlist()
+  const [isWishlistPending, setIsWishlistPending] = React.useState(false)
   
   const listPrice = product.listPrice
   const hasDiscount = typeof listPrice === "number" && listPrice > product.price
@@ -50,6 +53,8 @@ export function HorizontalProductCard({
   const shouldUseQuickView = !disableQuickView && 
     isDrawerSystemEnabled && 
     enabledDrawers.productQuickView
+
+  const inWishlist = isInWishlist(product.id)
 
   // Handle card click for quick view
   const handleCardClick = React.useCallback((e: React.MouseEvent) => {
@@ -85,6 +90,24 @@ export function HorizontalProductCard({
     
     openProductQuickView(quickViewData)
   }, [shouldUseQuickView, product, openProductQuickView])
+
+  const handleWishlist = React.useCallback(async (e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    if (isWishlistPending) return
+
+    setIsWishlistPending(true)
+    try {
+      await toggleWishlist({
+        id: product.id,
+        title: product.title,
+        price: product.price,
+        image: product.image,
+      })
+    } finally {
+      setIsWishlistPending(false)
+    }
+  }, [isWishlistPending, product, toggleWishlist])
 
   return (
     <Link
@@ -129,14 +152,16 @@ export function HorizontalProductCard({
         {/* Wishlist button */}
         <button
           type="button"
-          onClick={(e) => {
-            e.preventDefault()
-            e.stopPropagation()
-          }}
-          className="absolute top-1.5 right-1.5 z-10 size-touch-lg bg-background/80 backdrop-blur-sm rounded-full flex items-center justify-center active:bg-background transition-colors"
-          aria-label={tProduct("addToWishlist")}
+          onClick={handleWishlist}
+          className={cn(
+            "absolute top-1.5 right-1.5 z-10 size-touch-xs bg-background/80 backdrop-blur-sm rounded-full flex items-center justify-center active:bg-background transition-colors",
+            inWishlist && "text-wishlist-active"
+          )}
+          aria-label={inWishlist ? tProduct("removeFromWishlist") : tProduct("addToWishlist")}
+          aria-pressed={inWishlist}
+          disabled={isWishlistPending}
         >
-          <Heart size={16} className="text-foreground" />
+          <Heart className={cn("size-icon-xs", inWishlist ? "fill-current" : "text-foreground")} />
         </button>
         
         {/* Product Image */}

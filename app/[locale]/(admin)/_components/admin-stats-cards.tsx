@@ -47,7 +47,7 @@ export function AdminStatsCards({ totals }: AdminStatsProps) {
             {totals.users.toLocaleString(locale)}
           </CardTitle>
           <CardAction>
-            <Badge variant="outline" className="border-success/20 bg-success/10 text-success">
+            <Badge variant="outline" className="border-success bg-muted text-success">
               <IconTrendingUp className="size-3" />
               {t("stats.users.badge")}
             </Badge>
@@ -68,7 +68,7 @@ export function AdminStatsCards({ totals }: AdminStatsProps) {
             {totals.sellers.toLocaleString(locale)}
           </CardTitle>
           <CardAction>
-            <Badge variant="outline" className="border-info/20 bg-info/10 text-info">
+            <Badge variant="outline" className="border-info bg-muted text-info">
               <IconTrendingUp className="size-3" />
               {t("stats.sellers.badge")}
             </Badge>
@@ -109,7 +109,7 @@ export function AdminStatsCards({ totals }: AdminStatsProps) {
             {totals.orders.toLocaleString(locale)}
           </CardTitle>
           <CardAction>
-            <Badge variant="outline" className="border-warning/20 bg-warning/10 text-warning">
+            <Badge variant="outline" className="border-warning bg-muted text-warning">
               {t("stats.orders.badge")}
             </Badge>
           </CardAction>
@@ -129,7 +129,7 @@ export function AdminStatsCards({ totals }: AdminStatsProps) {
             {formatCurrency(totals.revenue)}
           </CardTitle>
           <CardAction>
-            <Badge variant="outline" className="border-success/20 bg-success/10 text-success">
+            <Badge variant="outline" className="border-success bg-muted text-success">
               <IconTrendingUp className="size-3" />
               {t("stats.revenue.badge")}
             </Badge>

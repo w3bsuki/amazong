@@ -16,7 +16,7 @@ import { getCategoryAttributeKey } from "@/lib/filters/category-attribute"
 // - Left: "Filters" with active count badge → opens FilterHub drawer
 // - Right: "Sort" showing current sort → opens sort bottom sheet
 //
-// Design system compliance (docs/DESIGN.md):
+// Design system compliance (.codex/project/DESIGN.md):
 // - h-11 touch targets (44px Treido standard)
 // - Semantic tokens only (text-muted-foreground, bg-muted)
 // - Tailwind v4 best practices

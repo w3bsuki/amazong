@@ -103,14 +103,14 @@ export function ConditionField({ className, compact = false }: ConditionFieldPro
                         </div>
                         <span className={cn(
                           "text-base font-semibold truncate block mt-0.5",
-                          selectedLabel ? "text-foreground" : "text-muted-foreground/50"
+                          selectedLabel ? "text-foreground" : "text-text-subtle"
                         )}>
                           {selectedLabel || (isBg ? "Изберете..." : "Select condition")}
                         </span>
                       </div>
                       <CaretRight className={cn(
                         "size-5 shrink-0 transition-colors",
-                        selectedLabel ? "text-primary/50" : "text-muted-foreground/30"
+                        selectedLabel ? "text-primary" : "text-text-subtle"
                       )} weight="bold" />
                     </button>
                   </DrawerTrigger>

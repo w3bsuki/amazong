@@ -10,7 +10,7 @@ import { useTranslations } from "next-intl"
 // =============================================================================
 // ACTIVE FILTER CHIPS — Removable pills showing applied filters
 //
-// Design system compliance (docs/DESIGN.md):
+// Design system compliance (.codex/project/DESIGN.md):
 // - Consistent chip height (h-touch-sm = 36px)
 // - rounded-full for pill shape (per token reference)
 // - Semantic tokens (bg-secondary, text-muted-foreground)
@@ -229,7 +229,7 @@ export function FilterChips({
           className={cn(
             // Layout
             "inline-flex items-center gap-1 h-touch-sm pl-2.5 pr-1.5 shrink-0",
-            // Shape (pill per docs/DESIGN.md)
+            // Shape (pill per .codex/project/DESIGN.md)
             "rounded-full",
             // Colors (neutral, inverted on hover)
             "bg-secondary text-foreground",

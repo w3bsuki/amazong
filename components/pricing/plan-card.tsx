@@ -112,8 +112,8 @@ export function PlanCard({
           ? "min-w-(--container-2xs) max-w-(--container-xs) w-full shrink-0 snap-center md:w-auto md:min-w-0 md:max-w-none md:shrink md:snap-none"
           : "min-w-(--container-dropdown) max-w-(--container-modal-sm) w-full shrink-0 snap-center md:w-auto md:min-w-0 md:max-w-none md:shrink md:snap-none",
         // Styling based on plan type
-        isPopular && "border-primary ring-1 ring-primary/20 shadow-md",
-        isBest && "border-rating ring-1 ring-rating/20 shadow-md",
+        isPopular && "border-primary ring-1 ring-primary shadow-md",
+        isBest && "border-rating ring-1 ring-rating shadow-md",
         isCurrentPlan && "bg-selected",
         // Padding
         variant === "compact" ? "p-3" : "p-3 md:p-4"

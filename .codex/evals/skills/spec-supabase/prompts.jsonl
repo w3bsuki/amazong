@@ -1,0 +1,10 @@
+{"id": "supabase-01", "should_trigger": true, "prompt": "Audit RLS policies for all user-data tables", "expected_outcome": "identifies tables without RLS or with weak policies"}
+{"id": "supabase-02", "should_trigger": true, "prompt": "SPEC-SUPABASE:AUDIT\nGoal: check for wildcard selects in hot paths\nScope: app/actions/**, lib/**", "expected_outcome": "finds select('*') and bare .select() calls"}
+{"id": "supabase-03", "should_trigger": true, "prompt": "Are there any select('*') or bare .select() calls?", "expected_outcome": "identifies query optimization issues"}
+{"id": "supabase-04", "should_trigger": true, "prompt": "Check if correct Supabase client is used in each context", "expected_outcome": "verifies server vs client vs admin client usage"}
+{"id": "supabase-05", "should_trigger": false, "prompt": "Create a new migration for the products table", "expected_outcome": "should NOT trigger, this is IMPL not audit"}
+{"id": "supabase-06", "should_trigger": true, "prompt": "Audit service role key usage - is it server-only?", "expected_outcome": "verifies admin client is not exposed to client bundles"}
+{"id": "supabase-07", "should_trigger": true, "prompt": "Check migrations for RLS enablement on new tables", "expected_outcome": "audits migration hygiene"}
+{"id": "supabase-08", "should_trigger": true, "prompt": "Are there N+1 query patterns in server components?", "expected_outcome": "identifies looping queries"}
+{"id": "supabase-09", "should_trigger": true, "prompt": "Audit Storage bucket policies", "expected_outcome": "checks for world-writable buckets"}
+{"id": "supabase-10", "should_trigger": true, "prompt": "Check for user-specific reads inside cached functions", "expected_outcome": "identifies auth.uid() usage in 'use cache' functions"}

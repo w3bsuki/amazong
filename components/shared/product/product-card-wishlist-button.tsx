@@ -77,7 +77,7 @@ export function ProductCardWishlistButton({
     <button
       type="button"
       className={cn(
-        "absolute right-1.5 top-1.5 z-10 flex items-center gap-1 rounded-full px-2 h-touch-lg outline-none transition-all",
+        "absolute right-1.5 top-1.5 z-10 inline-flex items-center gap-0.5 rounded-full h-touch-xs px-1.5 outline-none transition-all lg:gap-1 lg:h-touch-sm lg:px-2",
         "bg-background/90 backdrop-blur-sm shadow-sm",
         // Show/hide on hover for desktop when not in wishlist and no count
         !inWishlist && !hasCount && "lg:opacity-0 lg:group-hover:opacity-100 lg:transition-opacity lg:duration-150",
@@ -90,16 +90,15 @@ export function ProductCardWishlistButton({
       aria-label={inWishlist ? t("removeFromWatchlist") : t("addToWatchlist")}
     >
       <Heart 
-        size={16} 
-        weight={inWishlist ? "fill" : "regular"}
         className={cn(
-          "shrink-0 transition-colors",
+          "shrink-0 transition-colors size-icon-xs",
           inWishlist ? "text-wishlist-active" : "text-muted-foreground"
-        )} 
+        )}
+        weight={inWishlist ? "fill" : "regular"}
       />
       {hasCount && (
         <span className={cn(
-          "text-2xs font-medium tabular-nums",
+          "hidden text-2xs font-medium tabular-nums lg:inline",
           inWishlist ? "text-wishlist-active" : "text-muted-foreground"
         )}>
           {formatCount(favoritesCount)}

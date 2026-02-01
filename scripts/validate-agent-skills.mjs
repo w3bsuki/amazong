@@ -2,6 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 
 const repoRoot = path.resolve(process.cwd());
+const repoSkillsRoot = path.join(repoRoot, ".codex", "skills");
 const userHome = process.env.USERPROFILE || process.env.HOME || "";
 const codexHome = process.env.CODEX_HOME || "";
 const userCodexSkills = codexHome
@@ -82,7 +83,11 @@ function listSkillDirs(root) {
     .sort((a, b) => a.localeCompare(b));
 }
 
-function validateSkillDir(skillDir) {
+function listSkillNames(root) {
+  return listSkillDirs(root).map((p) => path.basename(p));
+}
+
+function validateSkillDir(skillDir, options = {}) {
   const dirName = path.basename(skillDir);
   const skillMd = path.join(skillDir, "SKILL.md");
 
@@ -100,6 +105,7 @@ function validateSkillDir(skillDir) {
 
   const name = fm.data.name;
   const description = fm.data.description;
+  const version = fm.data.version;
 
   if (!name) {
     fail(`${dirName}: missing required frontmatter field 'name'`);
@@ -114,6 +120,33 @@ function validateSkillDir(skillDir) {
   } else if (description.length < 1 || description.length > 1024) {
     fail(`${dirName}: 'description' must be 1-1024 characters`);
   }
+
+  if (options.requireVersion) {
+    if (!version) {
+      fail(`${dirName}: missing required frontmatter field 'version'`);
+    } else if (version.length < 1 || version.length > 64) {
+      fail(`${dirName}: 'version' must be 1-64 characters`);
+    }
+  }
+}
+
+function validateRepoSkillStructure(skillDir) {
+  const dirName = path.basename(skillDir);
+  const referencesDir = path.join(skillDir, "references");
+  const scriptsDir = path.join(skillDir, "scripts");
+
+  if (!fs.existsSync(referencesDir)) fail(`${dirName}: missing references/ directory`);
+  if (!fs.existsSync(scriptsDir)) fail(`${dirName}: missing scripts/ directory`);
+
+  const indexPath = path.join(referencesDir, "00-index.md");
+  if (!fs.existsSync(indexPath)) fail(`${dirName}: missing references/00-index.md`);
+
+  if (fs.existsSync(scriptsDir)) {
+    const hasScript = fs
+      .readdirSync(scriptsDir, { withFileTypes: true })
+      .some((e) => e.isFile() && (e.name.endsWith(".mjs") || e.name.endsWith(".js") || e.name.endsWith(".ts")));
+    if (!hasScript) fail(`${dirName}: scripts/ has no runnable script files`);
+  }
 }
 
 function displayPath(p) {
@@ -122,6 +155,26 @@ function displayPath(p) {
 }
 
 function main() {
+  if (fs.existsSync(repoSkillsRoot) && userCodexSkills) {
+    if (!fs.existsSync(userCodexSkills)) {
+      fail(
+        `Missing Codex user skills folder at ${userCodexSkills}. Run: pnpm -s skills:sync (from repo root)`,
+      );
+    } else {
+      const repoSkillNames = new Set(listSkillNames(repoSkillsRoot));
+      const userSkillNames = new Set(listSkillNames(userCodexSkills));
+      const missing = [...repoSkillNames].filter((name) => !userSkillNames.has(name));
+
+      if (missing.length > 0) {
+        fail(
+          `User Codex skills missing ${missing.length} repo skill(s): ${missing.join(
+            ", ",
+          )}. Run: pnpm -s skills:sync (from repo root)`,
+        );
+      }
+    }
+  }
+
   if (existingRoots.length === 0) {
     process.stdout.write(`No skills folder found at ${path.relative(repoRoot, skillsRoots[0])}\n`);
     return;
@@ -129,6 +182,7 @@ function main() {
 
   let validatedAny = false;
   for (const root of existingRoots) {
+    const isRepoSkillsRoot = path.resolve(root) === path.join(repoRoot, ".codex", "skills");
     const skillDirs = listSkillDirs(root);
     if (skillDirs.length === 0) {
       process.stdout.write(`No skill directories found under ${displayPath(root)}\n`);
@@ -137,7 +191,10 @@ function main() {
 
     validatedAny = true;
     process.stdout.write(`Validating ${skillDirs.length} skill(s) under ${displayPath(root)}...\n`);
-    for (const d of skillDirs) validateSkillDir(d);
+    for (const d of skillDirs) {
+      validateSkillDir(d, { requireVersion: isRepoSkillsRoot });
+      if (isRepoSkillsRoot) validateRepoSkillStructure(d);
+    }
   }
 
   if (!validatedAny) return;

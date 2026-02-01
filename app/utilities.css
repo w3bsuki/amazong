@@ -239,6 +239,15 @@
   -webkit-tap-highlight-color: transparent;
 }
 
+/* ===== ASPECT UTILITIES ===== */
+@utility aspect-16-10 {
+  aspect-ratio: 16 / 10;
+}
+
+@utility aspect-4-3 {
+  aspect-ratio: 4 / 3;
+}
+
 /* ===== MISC UTILITIES ===== */
 .rounded-inherit {
   border-radius: inherit;

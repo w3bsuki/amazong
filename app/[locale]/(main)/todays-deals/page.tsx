@@ -1,17 +1,13 @@
 import { setRequestLocale, getTranslations } from "next-intl/server"
 import { Lightning as Zap } from "@phosphor-icons/react/dist/ssr"
 import type { Metadata } from 'next'
-import { routing, validateLocale } from "@/i18n/routing"
+import { validateLocale } from "@/i18n/routing"
 import { AppBreadcrumb, breadcrumbPresets } from "@/components/navigation/app-breadcrumb"
 import { getProducts, toUI } from "@/lib/data/products"
 import { ProductCard } from "@/components/shared/product/product-card"
 import { PageShell } from "@/components/shared/page-shell"
 import { cookies } from "next/headers"
 import { parseShippingRegion } from "@/lib/shipping"
-
-export function generateStaticParams() {
-  return routing.locales.map((locale) => ({ locale }))
-}
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale: localeParam } = await params

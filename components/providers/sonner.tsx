@@ -53,12 +53,13 @@ const Toaster = ({ ...props }: ToasterProps) => {
           closeButton:
             'group-[.toast]:bg-transparent group-[.toast]:text-muted-foreground group-[.toast]:hover:text-foreground group-[.toast]:border-none',
           success:
-            'group-[.toaster]:border-success/30 group-[.toaster]:bg-success/10',
+            'group-[.toaster]:border-badge-success-subtle-bg group-[.toaster]:bg-badge-success-subtle-bg',
           error:
-            'group-[.toaster]:border-destructive/30 group-[.toaster]:bg-destructive/10',
+            'group-[.toaster]:border-badge-critical-subtle-bg group-[.toaster]:bg-badge-critical-subtle-bg',
           warning:
-            'group-[.toaster]:border-warning/30 group-[.toaster]:bg-warning/10',
-          info: 'group-[.toaster]:border-info/30 group-[.toaster]:bg-info/10',
+            'group-[.toaster]:border-badge-warning-subtle-bg group-[.toaster]:bg-badge-warning-subtle-bg',
+          info:
+            'group-[.toaster]:border-badge-info-subtle-bg group-[.toaster]:bg-badge-info-subtle-bg',
         },
       }}
       style={

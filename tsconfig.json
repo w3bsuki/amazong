@@ -50,6 +50,7 @@
     "test",
     "playwright-report",
     "test-results",
+    "supabase/functions",
     "inspiration"
   ]
 }

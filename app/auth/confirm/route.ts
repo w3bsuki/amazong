@@ -1,5 +1,5 @@
-import { createClient } from "@/lib/supabase/server"
-import { NextResponse } from "next/server"
+import { createRouteHandlerClient } from "@/lib/supabase/server"
+import { NextResponse, type NextRequest } from "next/server"
 import type { EmailOtpType } from "@supabase/supabase-js"
 
 function safeNextPath(input: string | null | undefined): string {
@@ -40,7 +40,7 @@ function resolveLocaleFromRequest(searchParams: URLSearchParams, nextPath: strin
  * - New users (onboarding_completed=false): Redirect to home with ?onboarding=true
  * - Existing users: Redirect to intended destination
  */
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
   const { searchParams, origin } = new URL(request.url)
   
   // Get parameters - Supabase uses either code (PKCE) or token_hash
@@ -64,11 +64,8 @@ export async function GET(request: Request) {
     redirectTo = process.env.NEXT_PUBLIC_SITE_URL || origin
   }
   
-  const supabase = await createClient()
-  
-  if (!supabase) {
-    return NextResponse.redirect(`${redirectTo}/auth/error?error=server_error`)
-  }
+  const { supabase, applyCookies } = createRouteHandlerClient(request)
+  const redirectWithCookies = (url: string) => applyCookies(NextResponse.redirect(url))
   
   // Handle PKCE flow (code parameter) - this is what Supabase sends for email confirmation
   if (code) {
@@ -91,16 +88,16 @@ export async function GET(request: Request) {
         
         // If onboarding not completed, redirect to home with onboarding modal trigger
         if (!profileData?.onboarding_completed) {
-          return NextResponse.redirect(`${redirectTo}${withLocalePrefix(locale, "/")}/?onboarding=true`)
+          return redirectWithCookies(`${redirectTo}${withLocalePrefix(locale, "/")}/?onboarding=true`)
         }
       }
       
       // Otherwise redirect to intended destination
-      return NextResponse.redirect(`${redirectTo}${withLocalePrefix(locale, next)}`)
+      return redirectWithCookies(`${redirectTo}${withLocalePrefix(locale, next)}`)
     }
     
     console.error("Code exchange error:", error.message)
-    return NextResponse.redirect(`${redirectTo}${withLocalePrefix(locale, "/auth/error")}?error=invalid_code`)
+    return redirectWithCookies(`${redirectTo}${withLocalePrefix(locale, "/auth/error")}?error=invalid_code`)
   }
   
   // Handle token_hash flow (older method)
@@ -126,22 +123,22 @@ export async function GET(request: Request) {
           const profileData = profile as { onboarding_completed?: boolean | null } | null
           
           if (!profileData?.onboarding_completed) {
-            return NextResponse.redirect(`${redirectTo}${withLocalePrefix(locale, "/")}/?onboarding=true`)
+            return redirectWithCookies(`${redirectTo}${withLocalePrefix(locale, "/")}/?onboarding=true`)
           }
         }
-        return NextResponse.redirect(`${redirectTo}${withLocalePrefix(locale, next)}`)
+        return redirectWithCookies(`${redirectTo}${withLocalePrefix(locale, next)}`)
       } else if (type === "recovery") {
-        return NextResponse.redirect(`${redirectTo}${withLocalePrefix(locale, "/auth/reset-password")}`)
+        return redirectWithCookies(`${redirectTo}${withLocalePrefix(locale, "/auth/reset-password")}`)
       } else if (type === "email_change") {
-        return NextResponse.redirect(`${redirectTo}${withLocalePrefix(locale, "/account/settings")}?email_changed=true`)
+        return redirectWithCookies(`${redirectTo}${withLocalePrefix(locale, "/account/settings")}?email_changed=true`)
       }
       
-      return NextResponse.redirect(`${redirectTo}${withLocalePrefix(locale, next)}`)
+      return redirectWithCookies(`${redirectTo}${withLocalePrefix(locale, next)}`)
     }
     
     console.error("Email verification error:", error.message)
   }
   
   // If verification fails, redirect to an error page
-  return NextResponse.redirect(`${redirectTo}${withLocalePrefix(locale, "/auth/error")}?error=verification_failed`)
+  return redirectWithCookies(`${redirectTo}${withLocalePrefix(locale, "/auth/error")}?error=verification_failed`)
 }

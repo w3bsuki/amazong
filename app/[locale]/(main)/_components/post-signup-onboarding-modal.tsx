@@ -401,7 +401,7 @@ export function PostSignupOnboardingModal({
                             className={cn(
                               "size-11 rounded-lg border-2 overflow-hidden transition-all",
                               !useCustomAvatar && avatarVariant === variant
-                                ? "border-primary shadow-sm ring-2 ring-primary/20"
+                                ? "border-primary shadow-sm ring-2 ring-focus-ring"
                                 : "border-input hover:border-hover-border"
                             )}
                           >
@@ -430,7 +430,7 @@ export function PostSignupOnboardingModal({
                     value={displayName}
                     onChange={(e) => setDisplayName(e.target.value)}
                     placeholder={t.displayNamePlaceholder}
-                    className="mt-2 h-10 border-input focus:border-primary focus:ring-primary/20"
+                    className="mt-2 h-10 border-input focus:border-primary focus:ring-focus-ring"
                     maxLength={50}
                   />
                   <p className="text-xs text-muted-foreground mt-1.5">{t.displayNameHint}</p>
@@ -446,7 +446,7 @@ export function PostSignupOnboardingModal({
                     value={bio}
                     onChange={(e) => setBio(e.target.value.slice(0, 160))}
                     placeholder={t.bioPlaceholder}
-                    className="mt-2 resize-none border-input focus:border-primary focus:ring-primary/20"
+                    className="mt-2 resize-none border-input focus:border-primary focus:ring-focus-ring"
                     rows={3}
                     maxLength={160}
                   />
@@ -482,7 +482,7 @@ export function PostSignupOnboardingModal({
             >
               <button
                 onClick={goBack}
-                className="flex items-center gap-1.5 text-sm text-primary hover:text-primary/80 font-medium mb-3 sm:mb-4 transition-colors"
+                className="flex items-center gap-1.5 text-sm text-link hover:text-link-hover font-medium mb-3 sm:mb-4 transition-colors"
               >
                 <ArrowLeft className="size-4" weight="bold" />
                 {t.back}
@@ -609,7 +609,7 @@ export function PostSignupOnboardingModal({
             >
               <button
                 onClick={goBack}
-                className="flex items-center gap-1.5 text-sm text-primary hover:text-primary/80 font-medium mb-3 sm:mb-4 transition-colors"
+                className="flex items-center gap-1.5 text-sm text-link hover:text-link-hover font-medium mb-3 sm:mb-4 transition-colors"
               >
                 <ArrowLeft className="size-4" weight="bold" />
                 {t.back}
@@ -652,7 +652,7 @@ export function PostSignupOnboardingModal({
                       />
                     ) : (
                       <div className="w-full h-full flex flex-col items-center justify-center gap-1">
-                        <Camera className="size-5 sm:size-6 text-primary/60" weight="duotone" />
+                        <Camera className="size-5 sm:size-6 text-text-subtle" weight="duotone" />
                         <span className="text-xs text-muted-foreground">Click to upload</span>
                       </div>
                     )}

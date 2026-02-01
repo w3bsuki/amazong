@@ -8,19 +8,15 @@ import { cn } from '@/lib/utils'
 
 /**
  * Dialog Root - wraps Radix Dialog with optional scroll lock bypass
- * 
- * By default, Radix Dialog's modal mode invokes react-remove-scroll, which
- * modifies body styles (position, padding) and can cause sticky header flash.
- * 
- * To prevent this, we use modal={false} and provide our own custom overlay
- * that prevents background scroll via `onWheel` + CSS (same pattern as Drawer).
+ *
+ * Default to modal dialogs (focus trap + aria-hidden). For cases where
+ * react-remove-scroll causes layout shifts, pass modal={false} explicitly.
  */
 function Dialog({
+  modal = true,
   ...props
 }: React.ComponentProps<typeof DialogPrimitive.Root>) {
-  // Use modal={false} to bypass react-remove-scroll
-  // Our custom DialogOverlay handles scroll prevention manually
-  return <DialogPrimitive.Root data-slot="dialog" modal={false} {...props} />
+  return <DialogPrimitive.Root data-slot="dialog" modal={modal} {...props} />
 }
 
 function DialogTrigger({

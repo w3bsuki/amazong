@@ -255,7 +255,7 @@ export function DesignSystemClient() {
                     "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors",
                     activeSection === id
                       ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium"
-                      : "text-sidebar-foreground/70 hover:bg-sidebar-accent/60 hover:text-sidebar-foreground"
+                      : "text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-foreground"
                   )}
                 >
                   <Icon className="size-4" />
@@ -271,7 +271,7 @@ export function DesignSystemClient() {
             <div className="px-3">
               <Link
                 href="/"
-                className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-sidebar-foreground/70 hover:bg-sidebar-accent/60 hover:text-sidebar-foreground transition-colors"
+                className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-foreground transition-colors"
               >
                 <ArrowRight className="size-4 rotate-180" />
                 Back to Site
@@ -281,7 +281,7 @@ export function DesignSystemClient() {
 
           {/* Footer */}
           <div className="border-t border-sidebar-border p-4">
-            <div className="rounded-lg bg-sidebar-accent/60 px-3 py-2.5 text-center">
+            <div className="rounded-lg bg-sidebar-accent px-3 py-2.5 text-center">
               <p className="text-xs text-sidebar-foreground/70">
                 Tailwind v4 + shadcn/ui
               </p>
@@ -301,7 +301,7 @@ export function DesignSystemClient() {
       {/* Backdrop */}
       {sidebarOpen && (
         <div
-          className="fixed inset-0 z-40 bg-background/80 backdrop-blur-sm lg:hidden"
+          className="fixed inset-0 z-40 bg-overlay-light backdrop-blur-sm lg:hidden"
           onClick={() => setSidebarOpen(false)}
         />
       )}
@@ -387,7 +387,7 @@ function OverviewSection() {
       </div>
 
       {/* Info Card */}
-      <div className="rounded-xl border border-border bg-accent/30 p-6">
+      <div className="rounded-xl border border-border bg-surface-subtle p-6">
         <div className="flex gap-4">
           <div className="flex-shrink-0">
             <div className="size-10 rounded-lg bg-selected flex items-center justify-center">
@@ -864,8 +864,8 @@ function CardsSection() {
                  product.condition === "like_new" ? "LIKE NEW" :
                  product.condition === "good" ? "GOOD" : "USED"}
               </Badge>
-              <button className="absolute top-2 right-2 size-8 rounded-full bg-background/90 backdrop-blur-sm flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity border border-border">
-                <Heart className="size-4 text-muted-foreground" />
+              <button className="absolute top-2 right-2 size-8 rounded-full bg-surface-overlay backdrop-blur-sm flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity border border-border">
+                <Heart className="size-4 text-overlay-text" />
               </button>
             </div>
             {/* Content */}

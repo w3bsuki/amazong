@@ -101,12 +101,12 @@ export function ProductCardActions({
 
     return (
         <>
-            {/* Wishlist button - Treido: top-2 right-2, w-8 h-8, glassy */}
+            {/* Wishlist button - Compact mobile (32px), slightly larger desktop (36px) */}
             {showWishlist && (
                 <button
                     type="button"
                     className={cn(
-                        "absolute right-2 top-2 z-10 size-touch-lg rounded-full flex items-center justify-center outline-none transition-colors",
+                        "absolute right-1.5 top-1.5 lg:right-2 lg:top-2 z-10 size-touch-xs lg:size-touch-sm rounded-full flex items-center justify-center outline-none transition-colors scale-90 lg:scale-100",
                         !inWishlist && "lg:pointer-events-none lg:opacity-0 lg:group-hover:pointer-events-auto lg:group-hover:opacity-100 lg:transition-opacity lg:duration-100",
                         inWishlist
                             ? "bg-background/95 backdrop-blur text-wishlist-active"
@@ -118,10 +118,10 @@ export function ProductCardActions({
                     disabled={isWishlistPending}
                     aria-label={inWishlist ? t("removeFromWatchlist") : t("addToWatchlist")}
                 >
-                    {/* Heart icon */}
+                    {/* Heart icon - size-icon-xs (20px) for ~62% fill ratio */}
                     <Heart 
                         className={cn(
-                            "w-4 h-4 stroke-[1.5]",
+                            "size-icon-xs",
                             inWishlist && "fill-wishlist-active text-wishlist-active"
                         )} 
                         weight={inWishlist ? "fill" : "regular"} 
@@ -129,12 +129,12 @@ export function ProductCardActions({
                 </button>
             )}
 
-            {/* Quick-Add Button - Desktop only, Treido style */}
+            {/* Quick-Add Button - Desktop only, compact (36px) */}
             {showQuickAdd && (
                 <button
                     type="button"
                     className={cn(
-                        "hidden lg:flex size-touch-lg shrink-0 items-center justify-center rounded-md border border-border bg-background text-muted-foreground active:bg-muted outline-none transition-colors",
+                        "hidden lg:flex size-touch-sm shrink-0 items-center justify-center rounded-md border border-border bg-background text-muted-foreground active:bg-muted outline-none transition-colors",
                         inCart && "border-foreground bg-foreground text-background",
                         (!inStock || isOwnProduct) && "cursor-not-allowed opacity-40"
                     )}
@@ -144,9 +144,9 @@ export function ProductCardActions({
                     data-slot="quick-add"
                 >
                     {inCart ? (
-                        <ShoppingCart size={14} weight="fill" />
+                        <ShoppingCart className="size-icon-xs" weight="fill" />
                     ) : (
-                        <Plus size={14} weight="bold" />
+                        <Plus className="size-icon-xs" weight="bold" />
                     )}
                 </button>
             )}

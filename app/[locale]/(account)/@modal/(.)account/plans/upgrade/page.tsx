@@ -79,9 +79,9 @@ async function UpgradeModalContent() {
   )
 }
 
-function UpgradeLoadingFallback() {
+function UpgradeLoadingFallback({ label }: { label: string }) {
   return (
-    <Modal>
+    <Modal ariaLabel={label}>
       <div className="flex items-center justify-center py-12">
         <Loader2 className="size-8 animate-spin text-muted-foreground" />
       </div>
@@ -95,9 +95,11 @@ function UpgradeLoadingFallback() {
  * This page is shown as a modal overlay when navigating from within the app.
  * When accessed directly (or on refresh), the user sees the full page version.
  */
-export default function InterceptedUpgradePage() {
+export default async function InterceptedUpgradePage() {
+  const tCommon = await getTranslations("Common")
+
   return (
-    <Suspense fallback={<UpgradeLoadingFallback />}>
+    <Suspense fallback={<UpgradeLoadingFallback label={tCommon("loading")} />}>
       <UpgradeModalContent />
     </Suspense>
   )

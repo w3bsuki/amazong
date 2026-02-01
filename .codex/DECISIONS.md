@@ -329,3 +329,90 @@ Consequences
 
 Links
 - Conversation: .codex/CONVERSATION.md
+
+---
+
+## DEC-2026-01-30-01
+
+Status: accepted
+Owners: treido-orchestrator | treido-verify
+
+Context
+- We want strict single-writer consistency and no drift in the shared control plane (`TASKS.md`).
+- Verify results must gate execution, but should not create concurrent edit pressure on `TASKS.md`.
+
+Decision
+- Keep `VERIFY:` **read-only**: it returns a verify report to the orchestrator and **never edits** `TASKS.md`.
+- The orchestrator remains the single writer for `TASKS.md` status updates.
+
+Why
+- Prevents race conditions and “status drift” across lanes.
+- Keeps Phase 4 authoritative without adding coordination overhead.
+
+Consequences
+- Slight extra step: orchestrator applies verify results to `TASKS.md`.
+
+Links
+- Workflow: .codex/WORKFLOW.md
+
+---
+
+## DEC-2026-01-30-02
+
+Status: accepted
+Owners: treido-orchestrator | treido-frontend | treido-backend | treido-verify
+
+Context
+- Repo skills exploded into overlapping micro-skills (auditors vs implementers vs legacy duplicates), causing trigger confusion and sync bloat.
+- We want a small, stable skill set with clear phase/mode rules, while keeping audits mergeable and execution shippable.
+
+Decision
+- Collapse repo-loaded skills under `.codex/skills/` to **4 skills**:
+  - `treido-orchestrator`
+  - `treido-frontend` (supports `AUDIT:` + `IMPL:` modes)
+  - `treido-backend` (supports `AUDIT:` + `IMPL:` modes; includes Supabase MCP workflow)
+  - `treido-verify`
+- Move prior micro-skills and deprecated duplicates to `.codex/skills-archive/*` (kept for reference, not loaded/synced).
+- Keep a **single** task queue: `TASKS.md` remains the control plane (no per-skill task files).
+
+Why
+- Fewer skills reduces drift, accidental mis-triggering, and skill-sync noise.
+- Mode-based lanes preserve the read-only audit discipline without requiring separate auditor directories.
+
+Consequences
+- Orchestrator spawns **lane audits** (`treido-frontend`/`treido-backend` in AUDIT mode) instead of multiple domain auditor skills by default.
+- Tasks should reference owners `treido-frontend` / `treido-backend` (and `treido-orchestrator` for planning), not `treido-impl-*`/`treido-audit-*`.
+
+Links
+- Workflow: .codex/WORKFLOW.md
+- Tasks: .codex/TASKS.md
+
+---
+
+## DEC-2026-01-30-03
+
+Status: accepted
+Owners: treido-orchestrator | treido-frontend | treido-backend | treido-verify
+
+Context
+- Keeping `.codex/skills-archive/` created “garbage hoarding” incentives and drift.
+- The 4 core skills needed real, portable expertise (references) and automation (scripts), not just command snippets.
+- Path drift existed between docs (`audit/*`, `TASKS.md`) and the actual SSOT locations under `.codex/`.
+
+Decision
+- Delete `.codex/skills-archive/` entirely.
+- Rebuild the 4 core skills to include:
+  - `references/` with a `00-index.md` and deeper procedural docs
+  - `scripts/` with runnable validation/scan helpers
+- Make `ORCH:` default to the automatic loop (AUDIT → MERGE → PLAN → EXECUTE → VERIFY) unless explicitly phase-overridden.
+- Standardize references to `.codex/audit/*` and `.codex/TASKS.md` in active workflow docs/skills.
+
+Why
+- Deletes the dead path that kept resurfacing.
+- Encodes domain knowledge in a form humans/agents can re-use without re-deriving it from memory.
+- Enables a tighter “ORCH: <goal>” workflow without requiring manual `AUDIT:`/`IMPL:` prompting.
+
+Links
+- Workflow: .codex/WORKFLOW.md
+- Skills: .codex/skills/*
+- Tasks: .codex/TASKS.md

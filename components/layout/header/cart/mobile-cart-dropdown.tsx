@@ -24,10 +24,11 @@ import { CountBadge } from "@/components/shared/count-badge"
 export function MobileCartDropdown() {
     const [open, setOpen] = useState(false)
     const [mounted, setMounted] = useState(false)
-    const { items, totalItems, subtotal, removeFromCart, updateQuantity } = useCart()
+    const { items, totalItems, isReady, subtotal, removeFromCart, updateQuantity } = useCart()
     const t = useTranslations('CartDropdown')
     const tNav = useTranslations('Navigation')
     const locale = useLocale()
+    const displayItems = isReady ? totalItems : 0
 
     const formatPrice = (price: number) => {
         return new Intl.NumberFormat(locale === 'bg' ? 'bg-BG' : 'en-IE', {
@@ -77,10 +78,9 @@ export function MobileCartDropdown() {
                 >
                     <span className="relative" aria-hidden="true">
                         <ShoppingCart size={24} weight="regular" className="text-header-text" />
-                        {totalItems > 0 && (
+                        {displayItems > 0 && (
                             <CountBadge
-                                count={totalItems}
-                                max={9}
+                                count={displayItems}
                                 className="absolute -top-0.5 -right-1 bg-cart-badge text-primary-foreground ring-2 ring-header-bg h-4 min-w-4 px-1 text-2xs"
                                 aria-hidden="true"
                             />
@@ -95,7 +95,7 @@ export function MobileCartDropdown() {
                             <ShoppingCart size={16} weight="regular" className="text-muted-foreground" />
                             <DrawerTitle className="text-sm font-semibold">{t('title')}</DrawerTitle>
                             <span className="text-xs text-muted-foreground" suppressHydrationWarning>
-                                ({totalItems})
+                                ({displayItems})
                             </span>
                         </div>
                         <DrawerClose asChild>

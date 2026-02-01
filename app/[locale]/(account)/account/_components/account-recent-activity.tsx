@@ -15,7 +15,7 @@ function SectionHeader({ title, href, viewAllText }: { title: string; href: stri
       <span className="font-semibold text-base text-foreground">{title}</span>
       <Link
         href={href}
-        className="text-xs font-medium text-primary hover:text-primary/80 transition-colors flex items-center gap-0.5"
+        className="text-xs font-medium text-link hover:text-link-hover transition-colors flex items-center gap-0.5"
       >
         {viewAllText}
         <IconChevronRight className="size-3.5" />

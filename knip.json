@@ -6,7 +6,8 @@
     "app/**/route.ts",
     "app/api/**/*.ts",
     "app/actions/**/*.ts",
-    "lib/auth/**/*.ts"
+    "lib/auth/**/*.ts",
+    "supabase/functions/**/index.ts"
   ],
   "project": ["**/*.{ts,tsx}"],
   "ignore": [

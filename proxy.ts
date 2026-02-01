@@ -11,11 +11,24 @@ const handleI18nRouting = createMiddleware(routing);
  * Next.js 16 Proxy (renamed from middleware)
  * Handles i18n routing, geo-detection, and session management
  */
-export async function proxy(request: NextRequest) {
+export default async function proxy(request: NextRequest) {
   const response = handleI18nRouting(request);
 
-  // Pass pathname to layout for conditional rendering
-  response.headers.set('x-pathname', request.nextUrl.pathname);
+  // Pass pathname to layout for conditional rendering (request headers, not response headers)
+  const overrideHeaders = response.headers.get('x-middleware-override-headers');
+  const overrideList = new Set(
+    (overrideHeaders ?? '')
+      .split(',')
+      .map((value) => value.trim())
+      .filter(Boolean)
+  );
+
+  overrideList.add('x-pathname');
+  response.headers.set(
+    'x-middleware-override-headers',
+    Array.from(overrideList).join(',')
+  );
+  response.headers.set('x-middleware-request-x-pathname', request.nextUrl.pathname);
 
   // Geo-detection: Set user-country and user-zone cookies if not present
   const existingCountryRaw = request.cookies.get('user-country')?.value;
@@ -59,16 +72,14 @@ export async function proxy(request: NextRequest) {
   return await updateSession(request, response);
 }
 
-export default proxy;
-
 export const config = {
-  // Run middleware only for actual app routes.
+  // Run proxy only for actual app routes.
   // Avoid executing on:
   // - API routes
   // - Next.js internals
   // - common static files (icons, images, maps, etc.)
   // - robots/sitemap
   matcher: [
-    '/((?!api(?:/|$)|_next(?:/|$)|_vercel(?:/|$)|favicon\.ico$|robots\.txt$|sitemap\.xml$|manifest\.webmanifest$|.*\\.(?:png|jpg|jpeg|gif|webp|avif|svg|ico|css|js|mjs|map|txt|xml|json|woff|woff2|ttf|otf)$).*)',
+    '/((?!api(?:/|$)|_next(?:/|$)|_vercel(?:/|$)|favicon\\.ico$|robots\\.txt$|sitemap\\.xml$|manifest\\.webmanifest$|.*\\.(?:png|jpg|jpeg|gif|webp|avif|svg|ico|css|js|mjs|map|txt|xml|json|woff|woff2|ttf|otf)$).*)',
   ],
 };

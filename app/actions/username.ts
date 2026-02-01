@@ -605,13 +605,25 @@ export async function getCurrentUserProfile() {
           "created_at",
           "last_username_change",
           "tier",
-          "vat_number",
         ].join(",")
       )
       .eq("id", user.id)
       .single()
-    
-    return profile
+
+    if (!profile) return null
+
+    const { data: privateProfile } = await supabase
+      .from("private_profiles")
+      .select("vat_number")
+      .eq("id", user.id)
+      .maybeSingle()
+
+    const baseProfile = profile as unknown as Record<string, unknown>
+
+    return {
+      ...baseProfile,
+      vat_number: privateProfile?.vat_number ?? null,
+    }
   } catch {
     return null
   }

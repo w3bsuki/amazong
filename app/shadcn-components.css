@@ -54,6 +54,37 @@
   border-radius: 2px;
 }
 
+/* Chart */
+.ui-chart .recharts-cartesian-axis-tick text {
+  fill: var(--color-muted-foreground);
+}
+
+.ui-chart .recharts-cartesian-grid line,
+.ui-chart .recharts-curve.recharts-tooltip-cursor,
+.ui-chart .recharts-polar-grid line,
+.ui-chart .recharts-reference-line line {
+  stroke: var(--color-border);
+}
+
+.ui-chart .recharts-radial-bar-background-sector,
+.ui-chart .recharts-rectangle.recharts-tooltip-cursor {
+  fill: var(--color-muted);
+}
+
+.ui-chart .recharts-dot {
+  stroke: transparent;
+}
+
+.ui-chart .recharts-layer,
+.ui-chart .recharts-sector,
+.ui-chart .recharts-surface {
+  outline: none;
+}
+
+.ui-chart .recharts-sector {
+  stroke: transparent;
+}
+
 /* Select */
 .ui-select-trigger svg {
   pointer-events: none;
@@ -99,6 +130,34 @@
 .ui-select-item svg:not([class*='size-']) {
   width: 1rem;
   height: 1rem;
+}
+
+.ui-select-item[data-disabled] {
+  pointer-events: none;
+  color: var(--color-muted-foreground);
+}
+
+.ui-select-item[data-disabled] svg:not([class*='text-']) {
+  color: var(--color-muted-foreground);
+}
+
+.ui-toggle svg {
+  pointer-events: none;
+  flex-shrink: 0;
+}
+
+.ui-toggle svg:not([class*='size-']) {
+  width: 1rem;
+  height: 1rem;
+}
+
+.ui-toggle[data-state='on'] {
+  background-color: var(--color-accent);
+  color: var(--color-accent-foreground);
+}
+
+.ui-toggle[data-state='on'] svg:not([class*='text-']) {
+  color: var(--color-accent-foreground);
 }
 
 .ui-select-content--popper[data-side='bottom'] {
@@ -164,11 +223,17 @@
 }
 
 .destructive .ui-toast-action {
-  @apply border-muted/40 hover:border-destructive/30 hover:bg-destructive hover:text-destructive-foreground focus:ring-destructive;
+  @apply hover:bg-destructive hover:text-destructive-foreground focus:ring-destructive;
+  border-color: var(--toast-destructive-border);
 }
 
 .destructive .ui-toast-close {
-  @apply text-destructive-foreground/70 hover:text-destructive-foreground focus:ring-destructive/50 focus:ring-offset-destructive;
+  @apply hover:text-destructive-foreground focus:ring-destructive focus:ring-offset-destructive;
+  color: var(--toast-destructive-foreground-muted);
+}
+
+.destructive .ui-toast-action:hover {
+  border-color: var(--toast-destructive-border-hover);
 }
 
 /* Switch */
@@ -177,11 +242,7 @@
 }
 
 .ui-switch[data-state='unchecked'] {
-  background-color: var(--color-input);
-}
-
-.dark .ui-switch[data-state='unchecked'] {
-  background-color: oklch(from var(--color-input) l c h / 80%);
+  background-color: var(--switch-unchecked-bg);
 }
 
 .ui-switch-thumb[data-state='checked'] {

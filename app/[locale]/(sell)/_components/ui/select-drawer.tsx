@@ -130,7 +130,7 @@ export function SelectDrawer({
                     "w-full flex items-center justify-between gap-3 px-4 py-3 rounded-md text-left min-h-11 touch-action-manipulation",
                     isSelected
                       ? "bg-selected text-primary"
-                      : "hover:bg-accent active:bg-accent/80"
+                      : "hover:bg-hover active:bg-active"
                   )}
                 >
                   <span className={cn(

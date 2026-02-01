@@ -335,14 +335,14 @@ export function ShippingField({ className, compact = false }: ShippingFieldProps
                   </div>
                   <span className={cn(
                     "text-base font-semibold truncate block mt-0.5",
-                    sellerCity ? "text-foreground" : "text-muted-foreground/50"
+                    sellerCity ? "text-foreground" : "text-text-subtle"
                   )}>
                     {selectedCityLabel || (isBg ? "Изберете град..." : "Select your city")}
                   </span>
                 </div>
                 <CaretRight className={cn(
                   "size-5 shrink-0 transition-colors",
-                  sellerCity ? "text-primary/50" : "text-muted-foreground/30"
+                  sellerCity ? "text-primary" : "text-text-subtle"
                 )} weight="bold" />
               </button>
               <SelectDrawer
@@ -510,7 +510,7 @@ export function ShippingField({ className, compact = false }: ShippingFieldProps
                   {processingDays} {isBg ? (processingDays === 1 ? "ден" : "дни") : (processingDays === 1 ? "day" : "days")}
                 </span>
               </div>
-              <CaretRight className="size-4 text-muted-foreground/50 shrink-0 ml-2" weight="bold" />
+              <CaretRight className="size-4 text-text-subtle shrink-0 ml-2" weight="bold" />
             </button>
             <SelectDrawer
               isOpen={isProcessingDrawerOpen}

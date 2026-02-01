@@ -8,7 +8,7 @@ This is not a Tailwind manual. It encodes Treido's "no drift" rules.
 - No gradients.
 - No arbitrary values (no `[...]`).
 - No hardcoded colors / palette utilities (no `bg-blue-500`, no hex).
-- Use semantic tokens as defined by the project (see `docs/DESIGN.md`).
+- Use semantic tokens as defined by the project (see `.codex/project/DESIGN.md`).
 
 ## Source Of Truth (Use The Gate)
 

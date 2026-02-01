@@ -226,4 +226,3 @@ export function ProductGridSkeleton({
   );
 }
 
-export default ProductGrid;

@@ -45,14 +45,14 @@ export function BusinessLiveActivity({
           </span>
           <IconUsers className="size-3 text-success" />
           <span className="text-xs font-medium text-success">{currentVisitors}</span>
-          <span className="text-2xs text-success/70">live</span>
+          <span className="text-2xs text-success">live</span>
         </div>
       )}
       {cartAdds > 0 && (
         <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-selected border border-selected-border">
           <IconShoppingCart className="size-3 text-primary" />
           <span className="text-xs font-medium text-primary">{cartAdds}</span>
-          <span className="text-2xs text-primary/70">cart</span>
+          <span className="text-2xs text-primary">cart</span>
         </div>
       )}
     </div>

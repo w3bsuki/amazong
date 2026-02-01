@@ -1,11 +1,13 @@
 import 'server-only'
 
 import { cacheTag, cacheLife } from 'next/cache'
-import { connection } from 'next/server'
 import { createStaticClient } from '@/lib/supabase/server'
 import { logger } from '@/lib/logger'
 import { isBoostActive } from '@/lib/boost/boost-status'
 import { getShippingFilter, productShipsToRegion, type ShippingRegion } from '@/lib/shipping'
+import type { UIProduct } from '@/lib/types/products'
+
+export type { UIProduct }
 
 // =============================================================================
 // Types - Minimal, practical types
@@ -82,46 +84,6 @@ export interface Product {
   }> | null
 }
 
-/** UI-ready product format */
-export interface UIProduct {
-  id: string
-  title: string
-  price: number
-  createdAt?: string | null
-  listPrice?: number
-  isOnSale?: boolean
-  salePercent?: number
-  saleEndDate?: string | null
-  isBoosted?: boolean
-  boostExpiresAt?: string | null
-  image: string
-  rating: number
-  reviews: number
-  categorySlug?: string
-  /** Root (L0) category slug (e.g. fashion, electronics, automotive) */
-  categoryRootSlug?: string
-  /** Category path from L0 -> leaf, includes both EN and BG labels */
-  categoryPath?: { slug: string; name: string; nameBg?: string | null; icon?: string | null }[]
-  slug?: string | null
-  storeSlug?: string | null
-  sellerId?: string | null
-  sellerName?: string | null
-  sellerAvatarUrl?: string | null
-  sellerTier?: 'basic' | 'premium' | 'business'
-  sellerVerified?: boolean
-  sellerEmailVerified?: boolean
-  sellerPhoneVerified?: boolean
-  sellerIdVerified?: boolean
-  freeShipping?: boolean
-
-  attributes?: Record<string, string>
-  condition?: string
-  brand?: string
-  make?: string
-  model?: string
-  year?: string
-  location?: string
-}
 
 function normalizeCategoryNode(input: unknown): Product['categories'] {
   if (!input) return null
@@ -271,38 +233,8 @@ function pickPrimaryImage(p: Product): string {
 type QueryType = 'deals' | 'newest' | 'bestsellers' | 'featured' | 'promo'
 
 /**
- * Sort products with active boosts first, then by secondary criteria.
- * This runs OUTSIDE cache boundaries to avoid ISR write storms from new Date().
- * Per Vercel docs: "Ensure you're not using new Date() in the ISR output"
- */
-export function sortWithBoostPriority<T extends { is_boosted?: boolean | null; boost_expires_at?: string | null }>(
-  products: T[],
-  now: Date = new Date()
-): T[] {
-  return [...products].sort((a, b) => {
-    const aActive = isBoostActive(a, now)
-    const bActive = isBoostActive(b, now)
-    
-    // Active boosts first
-    if (aActive && !bActive) return -1
-    if (!aActive && bActive) return 1
-    
-    // Among active boosts, sort by expiry (soonest first for fair rotation)
-    if (aActive && bActive) {
-      const aExp = a.boost_expires_at ? new Date(a.boost_expires_at).getTime() : 0
-      const bExp = b.boost_expires_at ? new Date(b.boost_expires_at).getTime() : 0
-      return aExp - bExp
-    }
-    
-    // Non-boosted products keep their original order
-    return 0
-  })
-}
-
-/**
  * Fetch products with stable ordering for caching.
  * NO new Date() inside - deterministic output for ISR.
- * Caller should use sortWithBoostPriority() after if boost ordering needed.
  */
 type LimitableResult<T> = { data: T[] | null; error: unknown | null }
 type LimitableQuery<T> = PromiseLike<LimitableResult<T>> & {
@@ -395,7 +327,7 @@ export async function getProductsByCategorySlug(
 export async function getProducts(type: QueryType, limit = 36, zone?: ShippingRegion): Promise<Product[]> {
   'use cache'
   cacheTag('products:list', `products:type:${type}`)
-  cacheLife('products')
+  cacheLife(type === 'deals' ? 'deals' : 'products')
   try {
     const supabase = createStaticClient()
     // NOTE: NO new Date() here - would cause ISR write storm per Vercel docs
@@ -753,21 +685,12 @@ export async function getCategoryRowProducts(
 }
 
 /**
- * Get products with active boosts (is_boosted=true AND boost_expires_at > now).
- * Uses fair rotation: ORDER BY boost_expires_at ASC (soonest-expiring first).
- * 
- * IMPORTANT: The cache returns ALL boosted products (including expired).
- * This wrapper filters expired boosts OUTSIDE the cache to avoid ISR write storms.
- * Uses connection() to signal dynamic rendering before new Date().
+ * Get products eligible for the "Promoted" section.
+ *
+ * NOTE: This function must stay safe for static prerendering (no `new Date()` in RSC).
+ * Expired boosts are filtered client-side where "current time" is allowed.
  */
 export async function getBoostedProducts(limit = 36, zone?: ShippingRegion): Promise<Product[]> {
-  // Get cached products (may include expired boosts)
-  const products = await getProducts('featured', limit * 2, zone) // Fetch extra to account for expired
-  
-  // Signal dynamic rendering before using new Date() (Next.js 16 Cache Components)
-  await connection()
-  const now = new Date()
-  const activeBoosts = products.filter(p => isBoostActive(p, now))
-  
-  return activeBoosts.slice(0, limit)
+  const products = await getProducts('featured', limit * 2, zone)
+  return products.filter((p) => Boolean(p.is_boosted) && Boolean(p.boost_expires_at)).slice(0, limit)
 }

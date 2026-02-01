@@ -552,7 +552,7 @@ function DocEditor({
                 a: ({ children, href }) => (
                   <a
                     href={href}
-                    className="text-primary underline underline-offset-4 hover:text-primary/90"
+                    className="text-link underline underline-offset-4 hover:text-link-hover"
                     target={href?.startsWith("http") ? "_blank" : undefined}
                     rel={href?.startsWith("http") ? "noreferrer" : undefined}
                   >

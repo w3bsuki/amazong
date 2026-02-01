@@ -54,9 +54,62 @@ interface MessageProviderProps {
   initialProductId?: string | undefined
 }
 
-export function MessageProvider({ children, initialSellerId, initialProductId }: MessageProviderProps) {
+function MessageAutoStartConversation({
+  initialSellerId,
+  initialProductId,
+  currentUserId,
+  isLoading,
+  conversations,
+  selectConversation,
+  startConversation,
+}: {
+  initialSellerId: string
+  initialProductId?: string | undefined
+  currentUserId: string | null
+  isLoading: boolean
+  conversations: Array<{ id: string; seller_id: string; buyer_id: string; product?: { id?: string | null } | null }>
+  selectConversation: (conversationId: string) => Promise<void>
+  startConversation: (sellerId: string, productId?: string | undefined) => Promise<string>
+}) {
   const router = useRouter()
   const hasInitialized = useRef(false)
+
+  useEffect(() => {
+    if (!currentUserId || hasInitialized.current) return
+    if (isLoading) return // Wait for conversations to load first
+
+    hasInitialized.current = true
+
+    const initConversation = async () => {
+      try {
+        // Check if conversation already exists with this seller/product
+        const existingConv = conversations.find(
+          (conv) =>
+            (conv.seller_id === initialSellerId || conv.buyer_id === initialSellerId) &&
+            (!initialProductId || conv.product?.id === initialProductId)
+        )
+
+        if (existingConv) {
+          // Select existing conversation and navigate
+          await selectConversation(existingConv.id)
+          router.replace(`/chat/${existingConv.id}`)
+        } else {
+          // Start new conversation
+          const conversationId = await startConversation(initialSellerId, initialProductId)
+          router.replace(`/chat/${conversationId}`)
+        }
+      } catch (err) {
+        console.error("Error initializing conversation:", err)
+      }
+    }
+
+    initConversation()
+  }, [currentUserId, initialSellerId, initialProductId, isLoading, conversations, selectConversation, startConversation, router])
+
+  return null
+}
+
+export function MessageProvider({ children, initialSellerId, initialProductId }: MessageProviderProps) {
   // State management hook
   const {
     currentUserId,
@@ -120,38 +173,6 @@ export function MessageProvider({ children, initialSellerId, initialProductId }:
   // If initialSellerId is provided, start or find existing conversation
   // =============================================================================
   
-  useEffect(() => {
-    if (!currentUserId || !initialSellerId || hasInitialized.current) return
-    if (isLoading) return // Wait for conversations to load first
-    
-    hasInitialized.current = true
-    
-    const initConversation = async () => {
-      try {
-        // Check if conversation already exists with this seller/product
-        const existingConv = conversations.find(
-          (conv) =>
-            (conv.seller_id === initialSellerId || conv.buyer_id === initialSellerId) &&
-            (!initialProductId || conv.product?.id === initialProductId)
-        )
-        
-        if (existingConv) {
-          // Select existing conversation and navigate
-          await selectConversation(existingConv.id)
-          router.replace(`/chat/${existingConv.id}`)
-        } else {
-          // Start new conversation
-          const conversationId = await startConversation(initialSellerId, initialProductId)
-          router.replace(`/chat/${conversationId}`)
-        }
-      } catch (err) {
-        console.error("Error initializing conversation:", err)
-      }
-    }
-    
-    initConversation()
-  }, [currentUserId, initialSellerId, initialProductId, isLoading, conversations, selectConversation, startConversation, router])
-
   // =============================================================================
   // CONTEXT VALUE
   // =============================================================================
@@ -178,6 +199,17 @@ export function MessageProvider({ children, initialSellerId, initialProductId }:
 
   return (
     <MessageContext.Provider value={value}>
+      {initialSellerId ? (
+        <MessageAutoStartConversation
+          initialSellerId={initialSellerId}
+          initialProductId={initialProductId}
+          currentUserId={currentUserId}
+          isLoading={isLoading}
+          conversations={conversations}
+          selectConversation={selectConversation}
+          startConversation={startConversation}
+        />
+      ) : null}
       {children}
     </MessageContext.Provider>
   )

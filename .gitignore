@@ -58,6 +58,9 @@ debug-storybook.log
 # Local audit/report outputs (regenerate as needed)
 knip-report.txt
 tsc-report.txt
+
+# Agent temp files (should not be committed)
+.codex/_write_test.txt
 dev-e2e.log
 e2e.log
 

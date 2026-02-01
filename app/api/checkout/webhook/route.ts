@@ -204,41 +204,6 @@ export async function POST(req: Request) {
 
       const sessionBuyerId = session.client_reference_id || session.metadata?.user_id
 
-      // Idempotency: avoid creating duplicate orders for the same payment intent.
-      if (session.payment_intent) {
-        const { data: existingOrders, error: existingOrdersError } = await supabase
-          .from('orders')
-          .select('id')
-          .eq('stripe_payment_intent_id', session.payment_intent as string)
-          .order('created_at', { ascending: false })
-          .limit(1);
-
-        if (existingOrdersError) {
-          logError("stripe_checkout_webhook_existing_order_fetch_failed", existingOrdersError, {
-            route: "api/checkout/webhook",
-          })
-        }
-
-        const existingOrderId = existingOrders?.[0]?.id;
-
-        if (existingOrderId) {
-          const conversationSeeds = await ensureOrderItems(supabase, existingOrderId, itemsData)
-          if (sessionBuyerId && conversationSeeds.length > 0) {
-            await ensureOrderConversations(
-              supabase,
-              conversationSeeds.map((seed) => ({
-                orderId: existingOrderId,
-                buyerId: sessionBuyerId,
-                sellerId: seed.sellerId,
-                productId: seed.productId,
-              }))
-            )
-          }
-
-          return NextResponse.json({ received: true });
-        }
-      }
-
       // Get line items for order details
       const lineItems = await stripe.checkout.sessions.listLineItems(session.id);
 
@@ -265,18 +230,26 @@ export async function POST(req: Request) {
         return NextResponse.json({ error: 'No user_id' }, { status: 400 });
       }
 
-      const { data: order, error: orderError } = await supabase
-        .from('orders')
-        .insert({
-          user_id: userId,
-          total_amount: (session.amount_total || 0) / 100,
-          status: 'paid',
-          shipping_address: shippingAddr as import("@/lib/supabase/database.types").Json,
-          // Store Stripe payment intent for reference
-          stripe_payment_intent_id: session.payment_intent as string,
-        })
-        .select("id")
-        .single();
+      const orderPayload = {
+        user_id: userId,
+        total_amount: (session.amount_total || 0) / 100,
+        status: 'paid',
+        shipping_address: shippingAddr as import("@/lib/supabase/database.types").Json,
+        // Store Stripe payment intent for reference
+        stripe_payment_intent_id: session.payment_intent as string,
+      }
+
+      const { data: order, error: orderError } = session.payment_intent
+        ? await supabase
+          .from('orders')
+          .upsert(orderPayload, { onConflict: "stripe_payment_intent_id" })
+          .select("id")
+          .single()
+        : await supabase
+          .from('orders')
+          .insert(orderPayload)
+          .select("id")
+          .single()
 
       if (orderError) {
         logError("stripe_checkout_webhook_order_insert_failed", orderError, {

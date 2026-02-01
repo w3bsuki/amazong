@@ -1,7 +1,6 @@
 import { notFound } from "next/navigation"
 import type { Metadata } from "next"
 import { getTranslations, setRequestLocale } from "next-intl/server"
-import { connection } from "next/server"
 
 import { createStaticClient } from "@/lib/supabase/server"
 import { fetchProductByUsernameAndSlug, fetchSellerProducts, fetchProductFavoritesCount, fetchProductHeroSpecs, type ProductPageProduct, type HeroSpec } from "@/lib/data/product-page"
@@ -139,8 +138,6 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
 }
 
 export default async function ProductPage({ params }: ProductPageProps) {
-  await connection()
-
   const { username, productSlug, locale } = await params
   setRequestLocale(locale)
 

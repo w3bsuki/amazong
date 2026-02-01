@@ -146,6 +146,7 @@ export async function POST(req: Request) {
           const currentPeriodEnd = (subscriptionResponse as unknown as { current_period_end: number }).current_period_end
           const expiresAt = new Date(currentPeriodEnd * 1000).toISOString()
           const stripePriceId = subscriptionResponse.items?.data?.[0]?.price?.id ?? null
+          const startsAt = new Date(subscriptionResponse.start_date * 1000).toISOString()
 
           // Get plan details by ID (this is the source of truth)
           const { data: plan } = await supabase
@@ -192,51 +193,24 @@ export async function POST(req: Request) {
             }
           }
 
-          // Idempotency: if Stripe retries, don't create duplicates
-          const { data: existingSub } = await supabase
+          const { error: subError } = await supabase
             .from('subscriptions')
-            .select('id')
-            .eq('stripe_subscription_id', subscriptionId)
-            .maybeSingle()
+            .upsert({
+              seller_id: profileId,
+              plan_type: plan.tier,
+              status: 'active',
+              price_paid: pricePaid,
+              billing_period: billingPeriod,
+              starts_at: startsAt,
+              expires_at: expiresAt,
+              stripe_customer_id: (typeof session.customer === 'string' ? session.customer : null),
+              stripe_subscription_id: subscriptionId,
+              stripe_price_id: stripePriceId,
+              updated_at: new Date().toISOString(),
+            }, { onConflict: 'stripe_subscription_id' })
 
-          if (existingSub?.id) {
-            const { error: updateError } = await supabase
-              .from('subscriptions')
-              .update({
-                seller_id: profileId,
-                plan_type: plan.tier,
-                status: 'active',
-                price_paid: pricePaid,
-                billing_period: billingPeriod,
-                expires_at: expiresAt,
-                stripe_customer_id: (typeof session.customer === 'string' ? session.customer : null),
-                stripe_price_id: stripePriceId,
-                updated_at: new Date().toISOString(),
-              })
-              .eq('id', existingSub.id)
-
-            if (updateError) {
-              logWebhookError('subscription-update', updateError)
-            }
-          } else {
-            const { error: subError } = await supabase
-              .from('subscriptions')
-              .insert({
-                seller_id: profileId,
-                plan_type: plan.tier,
-                status: 'active',
-                price_paid: pricePaid,
-                billing_period: billingPeriod,
-                starts_at: new Date().toISOString(),
-                expires_at: expiresAt,
-                stripe_customer_id: (typeof session.customer === 'string' ? session.customer : null),
-                stripe_subscription_id: subscriptionId,
-                stripe_price_id: stripePriceId,
-              })
-
-            if (subError) {
-              logWebhookError('subscription-insert', subError)
-            }
+          if (subError) {
+            logWebhookError('subscription-upsert', subError)
           }
 
           // Update profile tier (public surface) and fee fields (private surface) from plan

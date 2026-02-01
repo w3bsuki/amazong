@@ -48,7 +48,7 @@ export function ProductQuickViewDrawer({
   const router = useRouter()
   const { addToCart } = useCart()
   const isMobile = useIsMobile()
-  const { product: resolvedProduct } = useProductQuickViewDetails(open, product)
+  const { product: resolvedProduct, isLoading: detailsLoading } = useProductQuickViewDetails(open, product)
 
   const handleAddToCart = React.useCallback(() => {
     if (!resolvedProduct) return
@@ -94,14 +94,14 @@ export function ProductQuickViewDrawer({
     return null
   }
 
-  const showSkeleton = isLoading || (open && !resolvedProduct)
+  const showSkeleton = isLoading || detailsLoading || (open && !resolvedProduct)
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
       <DrawerContent
         aria-label={t("quickView")}
         showHandle
-        className="touch-action-pan-y"
+        className="touch-pan-y"
         overlayBlur="sm"
       >
         {/* Clean header with subtle styling */}
@@ -113,7 +113,7 @@ export function ProductQuickViewDrawer({
             <Button
               variant="ghost"
               size="icon-sm"
-              className="shrink-0 -mr-2 size-8 rounded-full hover:bg-muted touch-action-manipulation"
+              className="shrink-0 -mr-2 size-8 rounded-full hover:bg-muted touch-manipulation"
             >
               <X className="size-4" />
               <span className="sr-only">{t("close")}</span>
@@ -121,7 +121,7 @@ export function ProductQuickViewDrawer({
           </DrawerClose>
         </div>
         <DrawerDescription className="sr-only">{description}</DrawerDescription>
-        <DrawerBody className="px-0 py-0 touch-action-pan-y overflow-hidden">
+        <DrawerBody className="px-0 py-0">
           {showSkeleton ? (
             <QuickViewSkeleton />
           ) : resolvedProduct ? (

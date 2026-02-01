@@ -10,9 +10,9 @@ This is a concrete example of the **parallel audit → single-writer plan → ex
 
 - Intent match: “styling / UI looks off / mobile styling”
 - Bundle: **UI**
-- Auditors: `treido-audit-nextjs` + `treido-audit-tw4` + `treido-audit-shadcn`
+- Audit lane: `treido-frontend` (AUDIT)
 
-Orchestrator spawns the 3 auditors in parallel and requires the payload contract:
+Orchestrator spawns the lane audit and requires the payload contract:
 `.codex/skills/treido-orchestrator/references/audit-payload.md`
 
 ## Phase 1 — Sample Auditor Payloads (Read-only)
@@ -37,7 +37,7 @@ Orchestrator spawns the 3 auditors in parallel and requires the payload contract
 - [ ] No gradients/arbitrary values/palette colors in touched files
 
 ### Risks
-- If tokens don’t match design intent, confirm approved tokens in `docs/DESIGN.md`
+- If tokens don’t match design intent, confirm approved tokens in `.codex/project/DESIGN.md`
 ```
 
 ```md
@@ -86,7 +86,7 @@ Orchestrator spawns the 3 auditors in parallel and requires the payload contract
 
 ## Phase 1.5 — Orchestrator Merges Into One Audit File (Single Writer)
 
-Create: `audit/2026-01-29_mobile-landing-styling.md`
+Create: `.codex/audit/2026-01-29_mobile-landing-styling.md`
 
 ```md
 # Audit — 2026-01-29 — Mobile Landing Styling
@@ -103,24 +103,24 @@ Create: `audit/2026-01-29_mobile-landing-styling.md`
 
 ## Phase 2 — Orchestrator Writes Tasks (Single Writer)
 
-Append a small, prioritized set into `TASKS.md` (example format):
+Append a small, prioritized set into `.codex/TASKS.md` (example format):
 
 ```md
 ### UI Bundle — Mobile Landing Styling (ISSUE-EXAMPLE)
 
-- [ ] [EXEC] [treido-impl-frontend] NEXTJS-001: Make landing page a Server Component; isolate CTA client handler (ISSUE-EXAMPLE)
+- [ ] [EXEC] [treido-frontend] NEXTJS-001: Make landing page a Server Component; isolate CTA client handler (ISSUE-EXAMPLE)
   - Verify: `pnpm -s typecheck`
 
-- [ ] [EXEC] [treido-impl-frontend] SHADCN-001: Remove `app/**` imports from `components/ui/button.tsx` (ISSUE-EXAMPLE)
+- [ ] [EXEC] [treido-frontend] SHADCN-001: Remove `app/**` imports from `components/ui/button.tsx` (ISSUE-EXAMPLE)
   - Verify: `pnpm -s typecheck`
 
-- [ ] [EXEC] [treido-impl-frontend] TW4-001: Replace arbitrary spacing with token-safe spacing on landing (ISSUE-EXAMPLE)
+- [ ] [EXEC] [treido-frontend] TW4-001: Replace arbitrary spacing with token-safe spacing on landing (ISSUE-EXAMPLE)
   - Verify: `pnpm -s styles:gate`
 ```
 
 ## Phase 3 — Implementation (Single Writer)
 
-`treido-impl-frontend` executes in 1–3 file batches:
+`treido-frontend` executes in 1–3 file batches:
 
 1. Batch 1: `NEXTJS-001` (server/client boundary)
 2. Batch 2: `SHADCN-001` (primitive boundary)

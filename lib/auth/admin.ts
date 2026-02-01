@@ -82,6 +82,20 @@ export async function getAdminStats() {
 
   const adminClient = createAdminClient()
 
+  const toRecord = (value: unknown): Record<string, unknown> | null => {
+    if (!value || typeof value !== "object") return null
+    return value as Record<string, unknown>
+  }
+
+  const asNumber = (value: unknown): number | null => {
+    if (typeof value === "number") return Number.isFinite(value) ? value : null
+    if (typeof value === "string") {
+      const parsed = Number(value)
+      return Number.isFinite(parsed) ? parsed : null
+    }
+    return null
+  }
+
   const sevenDaysAgoIso = new Date(
     Date.now() - 7 * 24 * 60 * 60 * 1000
   ).toISOString()
@@ -123,15 +137,16 @@ export async function getAdminStats() {
       .limit(10),
   ])
   
-  // Calculate revenue
-  const { data: revenueData } = await adminClient
-    .from('orders')
-    .select('total_amount')
-    .eq('status', 'paid')
-  
-  const totalRevenue = revenueData?.reduce((sum, order) => 
-    sum + Number(order.total_amount || 0), 0
-  ) || 0
+  // Calculate revenue via SQL aggregate (avoid scanning all orders client-side)
+  const revenueResult = await adminClient
+    .from("orders")
+    .select("total_amount.sum()")
+    .eq("status", "paid")
+    .maybeSingle()
+
+  const revenueRecord = toRecord(revenueResult.data)
+  const totalRevenue =
+    asNumber(revenueRecord?.total_amount) ?? asNumber(revenueRecord?.sum) ?? 0
 
   const recentUsersBase = recentUsersResult.data || []
   const recentUserIds = recentUsersBase.map((u) => u.id).filter(Boolean)

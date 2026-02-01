@@ -445,7 +445,7 @@ export function NotificationsDropdown({ user }: NotificationsDropdownProps) {
                   }}
                   className={cn(
                     "flex items-start gap-2.5 px-4 py-3 hover:bg-muted transition-colors",
-                    !notification.is_read && "bg-accent/30"
+                    !notification.is_read && "bg-selected"
                   )}
                 >
                   <div className="shrink-0 mt-0.5">

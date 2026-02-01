@@ -95,7 +95,7 @@ function NavLink({
         >
             <Icon size={22} weight="regular" className="text-muted-foreground shrink-0" />
             <span className="text-sm font-medium text-foreground flex-1">{label}</span>
-            <CaretRight size={16} weight="bold" className="text-muted-foreground/40 shrink-0" />
+            <CaretRight size={16} weight="bold" className="text-muted-foreground shrink-0" />
         </Link>
     )
 }
@@ -439,7 +439,7 @@ export function SidebarMenuV2({ user, triggerClassName, userStats }: SidebarMenu
                         /* Unauthenticated - Show categories link and info */
                         <section className="px-3 py-4">
                             <div className="text-center py-8">
-                                <UserCircle size={48} weight="duotone" className="mx-auto text-primary/40 mb-3" />
+                                <UserCircle size={48} weight="duotone" className="mx-auto text-muted-foreground mb-3" />
                                 <h3 className="text-base font-semibold text-foreground mb-1">
                                     {tAccountDrawer("signInPrompt")}
                                 </h3>

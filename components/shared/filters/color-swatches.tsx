@@ -110,7 +110,7 @@ export function ColorSwatches({
             <div
               className={cn(
                 "size-8 rounded-full border-2 flex items-center justify-center transition-all",
-                isActive ? "border-primary ring-2 ring-primary/30" : "border-border",
+                isActive ? "border-primary ring-2 ring-primary" : "border-border",
                 !hex && "bg-muted"
               )}
               style={hex ? { backgroundColor: hex } : undefined}

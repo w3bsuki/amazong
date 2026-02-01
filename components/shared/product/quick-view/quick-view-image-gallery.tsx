@@ -164,12 +164,12 @@ export function QuickViewImageGallery({
 
   // Mobile/compact layout - optimized touch handling, wide aspect for space efficiency
   return (
-    <div className="relative touch-action-pan-x">
-      <div className="relative aspect-[16/10] bg-muted">
+    <div className="relative touch-pan-x">
+      <div className="relative aspect-16-10 bg-muted">
         <button
           type="button"
           onClick={onNavigateToProduct}
-          className="absolute inset-0 size-full cursor-pointer focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset touch-action-manipulation"
+          className="absolute inset-0 size-full cursor-pointer focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset touch-manipulation"
           aria-label={tDrawers("viewFullListing")}
         >
           <Image
@@ -190,7 +190,7 @@ export function QuickViewImageGallery({
               variant="ghost"
               size="icon"
               onClick={(e) => { e.stopPropagation(); prevImage() }}
-              className="absolute left-1.5 top-1/2 -translate-y-1/2 size-8 rounded-full bg-background/80 backdrop-blur-sm hover:bg-background/90 touch-action-manipulation"
+              className="absolute left-1.5 top-1/2 -translate-y-1/2 size-8 rounded-full bg-background/80 backdrop-blur-sm hover:bg-background/90 touch-manipulation"
               aria-label={tProduct("previousImage")}
             >
               <CaretLeft size={18} weight="bold" />
@@ -200,7 +200,7 @@ export function QuickViewImageGallery({
               variant="ghost"
               size="icon"
               onClick={(e) => { e.stopPropagation(); nextImage() }}
-              className="absolute right-1.5 top-1/2 -translate-y-1/2 size-8 rounded-full bg-background/80 backdrop-blur-sm hover:bg-background/90 touch-action-manipulation"
+              className="absolute right-1.5 top-1/2 -translate-y-1/2 size-8 rounded-full bg-background/80 backdrop-blur-sm hover:bg-background/90 touch-manipulation"
               aria-label={tProduct("nextImage")}
             >
               <CaretRight size={18} weight="bold" />
@@ -214,7 +214,7 @@ export function QuickViewImageGallery({
             variant="ghost"
             size="icon-sm"
             onClick={(e) => { e.stopPropagation(); onRequestClose() }}
-            className="absolute top-2 right-2 rounded-full bg-background/80 backdrop-blur-sm hover:bg-background/90 touch-action-manipulation"
+            className="absolute top-2 right-2 rounded-full bg-background/80 backdrop-blur-sm hover:bg-background/90 touch-manipulation"
             aria-label={tProduct("close")}
           >
             <span className="sr-only">{tProduct("close")}</span>
@@ -240,14 +240,14 @@ export function QuickViewImageGallery({
 
       {/* Thumbnail strip - styled for better UX */}
       {hasMultiple && (
-        <div className="flex gap-1.5 overflow-x-auto px-4 py-2 scrollbar-hide touch-action-pan-x bg-surface-subtle">
+        <div className="flex gap-1.5 overflow-x-auto px-4 py-2 scrollbar-hide touch-pan-x bg-surface-subtle">
           {images.map((img, i) => (
             <button
               key={`thumb-${i}`}
               type="button"
               onClick={() => setCurrentIndex(i)}
               className={cn(
-                "relative size-11 shrink-0 rounded-md overflow-hidden transition-all touch-action-manipulation",
+                "relative size-11 shrink-0 rounded-md overflow-hidden transition-all touch-manipulation",
                 i === currentIndex
                   ? "ring-2 ring-foreground ring-offset-1 ring-offset-background shadow-sm"
                   : "border border-border opacity-60 hover:opacity-100"

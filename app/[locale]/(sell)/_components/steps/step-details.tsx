@@ -6,7 +6,6 @@ import { Sparkle, CaretRight, Check, Camera, Plus, X } from "@phosphor-icons/rea
 import { cn } from "@/lib/utils";
 import { conditionOptions } from "@/lib/sell/schema-v4";
 import { useSellForm, useSellFormContext } from "../sell-form-provider";
-import { getCategoryConfigFromPath, isAttributeFilled } from "@/lib/category-attribute-config";
 import {
   Drawer,
   DrawerContent,
@@ -36,6 +35,11 @@ interface CategoryAttribute {
   sort_order: number;
 }
 
+// Helper: Check if attribute value is filled
+function isAttributeFilled(value: string | undefined | null): boolean {
+  return value !== undefined && value !== null && value.trim() !== "";
+}
+
 // Simple selection row - iOS style
 function SelectionRow({
   label,
@@ -60,7 +64,7 @@ function SelectionRow({
         "w-full flex items-center justify-between h-14 px-4 rounded-xl border transition-all",
         "active:opacity-90",
         hasError
-          ? "border-destructive/40 bg-destructive/5"
+          ? "border-destructive/40 bg-surface-subtle"
           : value
             ? "bg-selected border-selected-border"
             : "border-border bg-card hover:bg-hover"
@@ -337,7 +341,7 @@ export function StepDetails() {
                <button
                  type="button"
                  onClick={addDemoPhoto}
-                 className="aspect-square rounded-xl border-2 border-dashed border-border flex flex-col items-center justify-center gap-1 hover:border-hover-border hover:bg-accent/30 transition-colors active:scale-95"
+                 className="aspect-square rounded-xl border-2 border-dashed border-border flex flex-col items-center justify-center gap-1 hover:border-hover-border hover:bg-hover transition-colors active:scale-95"
                >
                  <Camera className="size-5 text-muted-foreground" />
                  <span className="text-2xs font-medium text-muted-foreground">
@@ -349,14 +353,14 @@ export function StepDetails() {
             <div key={`${img.url}-${i}`} className="aspect-square rounded-xl bg-muted relative overflow-hidden group ring-1 ring-border/50">
               <img src={img.url} alt="" className="w-full h-full object-cover" />
               {i === 0 && (
-                <div className="absolute bottom-1 left-1 px-1.5 py-0.5 rounded text-2xs font-bold bg-foreground/90 text-background">
+                <div className="absolute bottom-1 left-1 px-1.5 py-0.5 rounded text-2xs font-bold bg-surface-overlay text-overlay-text">
                   {isBg ? "Корица" : "Cover"}
                 </div>
               )}
               <button
                 type="button"
                 onClick={() => removePhoto(i)}
-                className="absolute top-1 right-1 size-6 flex items-center justify-center rounded-full bg-background/90 text-foreground opacity-0 group-hover:opacity-100 transition-opacity"
+                className="absolute top-1 right-1 size-6 flex items-center justify-center rounded-full bg-surface-overlay text-overlay-text opacity-0 group-hover:opacity-100 transition-opacity"
               >
                 <X className="size-3" weight="bold" />
               </button>

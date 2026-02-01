@@ -338,7 +338,7 @@ export function NotificationsContent({
                 }}
                 className={cn(
                   "flex items-start gap-3 p-3 hover:bg-muted",
-                  !notification.is_read && "bg-accent/30"
+                  !notification.is_read && "bg-selected"
                 )}
               >
                 <div className="shrink-0 mt-0.5">{getNotificationIcon(notification.type)}</div>
