@@ -84,7 +84,7 @@ function DrawerClose({
  */
 type DrawerOverlayBlur = "none" | "sm" | "md" | "lg" | "xl"
 
-interface DrawerOverlayProps extends React.ComponentProps<"button"> {
+interface DrawerOverlayProps extends React.ComponentProps<typeof DrawerPrimitive.Overlay> {
   /**
    * Blur intensity for the background overlay.
    * Creates a frosted glass effect that focuses attention on the drawer.
@@ -101,26 +101,30 @@ const blurClasses: Record<DrawerOverlayBlur, string> = {
   xl: "backdrop-blur-xl",    // 24px
 }
 
+/**
+ * Drawer Overlay - uses vaul's native Overlay which handles dismiss properly
+ * @see https://vaul.emilkowal.ski/api - Overlay covers inert portion when drawer is open
+ *
+ * The native Overlay allows:
+ * - Click/tap to dismiss (if dismissible)
+ * - Proper drag-to-dismiss gestures
+ * - Background scrolling prevention
+ */
 function DrawerOverlay({
   className,
   blur = "md",
   ...props
 }: DrawerOverlayProps) {
   return (
-    <DrawerClose asChild>
-      <button
-        type="button"
-        tabIndex={-1}
-        aria-hidden="true"
-        data-slot="drawer-overlay"
-        className={cn(
-          "fixed inset-0 z-50 bg-overlay-dark touch-none outline-none",
-          blurClasses[blur],
-          className
-        )}
-        {...props}
-      />
-    </DrawerClose>
+    <DrawerPrimitive.Overlay
+      data-slot="drawer-overlay"
+      className={cn(
+        "fixed inset-0 z-50 bg-overlay-dark",
+        blurClasses[blur],
+        className
+      )}
+      {...props}
+    />
   )
 }
 
