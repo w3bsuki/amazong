@@ -11,8 +11,9 @@ import {
   Star,
   Truck,
 } from "lucide-react";
-import { getTranslations } from "next-intl/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 
+import { routing, validateLocale } from "@/i18n/routing";
 import { CountBadge } from "@/components/shared/count-badge";
 import { PageShell } from "@/components/shared/page-shell";
 import { Badge } from "@/components/ui/badge";
@@ -21,6 +22,10 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
+
+export function generateStaticParams() {
+  return routing.locales.map((locale) => ({ locale }));
+}
 
 export const metadata: Metadata = {
   title: "Demo — Codex Marketplace Reference",
@@ -107,7 +112,14 @@ const PRODUCTS: Array<{
   },
 ];
 
-export default async function DemoCodexPage() {
+export default async function DemoCodexPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale: rawLocale } = await params;
+  const locale = validateLocale(rawLocale);
+  setRequestLocale(locale);
   const t = await getTranslations("DemoCodex");
 
   return (
