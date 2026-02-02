@@ -205,7 +205,7 @@ export function MobileSearchOverlay({
             "hover:bg-header-hover active:bg-header-active",
             "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
             "transition-colors duration-150",
-            "md:hidden touch-action-manipulation",
+            "md:hidden touch-manipulation",
             className
           )}
           aria-label={tSearch("search")}
@@ -349,7 +349,7 @@ export function MobileSearchOverlay({
                       <button
                         type="button"
                         onClick={() => handleProductSelect(product)}
-                        className="w-full flex items-center gap-2 p-2 hover:bg-hover active:bg-active text-left touch-action-manipulation transition-colors"
+                        className="w-full flex items-center gap-2 p-2 hover:bg-hover active:bg-active text-left touch-manipulation transition-colors"
                       >
                         <div className="size-12 bg-muted rounded-lg overflow-hidden shrink-0 ring-1 ring-border">
                           {product.images?.[0] ? (
@@ -415,7 +415,7 @@ export function MobileSearchOverlay({
                           <button
                             type="button"
                             onClick={() => handleSearch(search)}
-                            className="w-full flex items-center gap-2 px-inset py-3 hover:bg-hover active:bg-active text-left touch-action-manipulation transition-colors"
+                            className="w-full flex items-center gap-2 px-inset py-3 hover:bg-hover active:bg-active text-left touch-manipulation transition-colors"
                           >
                             <Clock size={18} weight="regular" className="text-muted-foreground shrink-0" aria-hidden="true" />
                             <span className="flex-1 text-base text-foreground">{search}</span>
@@ -441,7 +441,7 @@ export function MobileSearchOverlay({
                         <button
                           type="button"
                           onClick={() => handleSearch(search)}
-                          className="w-full flex items-center gap-2 px-inset py-3 hover:bg-hover active:bg-active text-left touch-action-manipulation transition-colors"
+                          className="w-full flex items-center gap-2 px-inset py-3 hover:bg-hover active:bg-active text-left touch-manipulation transition-colors"
                         >
                           <span className="size-6 rounded-full shrink-0 flex items-center justify-center text-xs font-bold text-primary-foreground bg-primary" aria-hidden="true">
                             {index + 1}

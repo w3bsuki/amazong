@@ -94,7 +94,7 @@ export function CategoryCircle({
     "flex flex-col items-center justify-start",
     "rounded-md p-0.5",
     "transition-colors",
-    "touch-action-manipulation",
+    "touch-manipulation",
     "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
     dimmed ? "opacity-50" : "opacity-100",
     className

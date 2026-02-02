@@ -3,16 +3,14 @@
 import { useCallback } from "react"
 import { useSearchParams } from "next/navigation"
 import { usePathname, useRouter } from "@/i18n/routing"
-import { Check } from "@phosphor-icons/react"
-import { cn } from "@/lib/utils"
 import { useTranslations } from "next-intl"
 import {
   Drawer,
   DrawerContent,
   DrawerHeader,
   DrawerTitle,
-  DrawerClose,
 } from "@/components/ui/drawer"
+import { FilterRadioGroup, FilterRadioItem } from "./filter-radio-group"
 
 // =============================================================================
 // SORT MODAL — Bottom sheet for sort options
@@ -98,35 +96,22 @@ export function SortModal({
           </DrawerTitle>
         </DrawerHeader>
 
-        <div className="overflow-y-auto py-2 pb-safe-max">
-          <div className="space-y-0.5">
-            {visibleOptions.map((option) => {
-              const isActive = currentSort === option.value
-              return (
-                <DrawerClose key={option.value} asChild>
-                  <button
-                    type="button"
-                    onClick={() => handleSortChange(option.value)}
-                    className={cn(
-                      "w-full flex items-center justify-between",
-                      "px-inset h-11",
-                      "text-sm font-medium text-left",
-                      "transition-colors",
-                      isActive
-                        ? "bg-selected text-foreground"
-                        : "text-foreground active:bg-active"
-                    )}
-                    aria-pressed={isActive}
-                  >
-                    <span>{t(option.labelKey)}</span>
-                    {isActive && (
-                      <Check size={16} weight="bold" className="shrink-0" />
-                    )}
-                  </button>
-                </DrawerClose>
-              )
-            })}
-          </div>
+        <div className="overflow-y-auto py-2 pb-safe-max px-inset">
+          <FilterRadioGroup
+            value={currentSort}
+            onValueChange={handleSortChange}
+            className="-mx-inset"
+          >
+            {visibleOptions.map((option) => (
+              <FilterRadioItem
+                key={option.value}
+                value={option.value}
+                fullBleed
+              >
+                {t(option.labelKey)}
+              </FilterRadioItem>
+            ))}
+          </FilterRadioGroup>
         </div>
       </DrawerContent>
     </Drawer>

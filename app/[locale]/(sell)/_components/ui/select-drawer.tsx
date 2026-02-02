@@ -105,7 +105,7 @@ export function SelectDrawer({
                 onClose();
               }}
               className={cn(
-                "w-full flex items-center justify-between gap-3 px-4 py-3 rounded-md text-left min-h-11 touch-action-manipulation",
+                "w-full flex items-center justify-between gap-3 px-4 py-3 rounded-md text-left min-h-11 touch-manipulation",
                 "border border-border bg-surface-subtle hover:bg-hover active:bg-active"
               )}
             >
@@ -127,7 +127,7 @@ export function SelectDrawer({
                   type="button"
                   onClick={() => handleSelect(idx)}
                   className={cn(
-                    "w-full flex items-center justify-between gap-3 px-4 py-3 rounded-md text-left min-h-11 touch-action-manipulation",
+                    "w-full flex items-center justify-between gap-3 px-4 py-3 rounded-md text-left min-h-11 touch-manipulation",
                     isSelected
                       ? "bg-selected text-primary"
                       : "hover:bg-hover active:bg-active"

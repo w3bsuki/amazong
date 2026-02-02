@@ -26,14 +26,18 @@ import { getCategoryAttributeKey } from "@/lib/filters/category-attribute"
 /** Shared styles for filter/sort tab buttons */
 const tabButtonStyles = cn(
   // Layout
-  "flex-1 h-touch-sm",
-  "inline-flex items-center justify-center gap-1.5",
+  "flex-1 h-touch",
+  "inline-flex items-center justify-center gap-2",
   // Typography
-  "text-sm font-medium",
+  "text-sm font-semibold",
+  // Colors - visible, not faded
+  "text-foreground",
+  // Border styling
+  "border border-border",
   // Interaction
   "tap-highlight-transparent",
   "transition-colors duration-150",
-  "active:bg-active",
+  "active:bg-muted",
   // Focus (shadcn pattern)
   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-0"
 )
@@ -116,21 +120,22 @@ export function InlineFilterBar({
     <>
       <div
         className={cn(
-          "bg-background",
+          "bg-background px-inset py-2",
           sticky && "sticky z-20",
           className
         )}
         style={sticky ? { top: stickyTop } : undefined}
       >
         {/* 50/50 Tab Bar */}
-        <div className="flex items-stretch divide-x divide-border/40" role="group" aria-label={t("filters")}>
+        <div className="flex items-stretch gap-2" role="group" aria-label={t("filters")}>
           {/* Filters Tab */}
           <button
             type="button"
             onClick={onAllFiltersClick}
             className={cn(
               tabButtonStyles,
-              hasActiveFilters ? "text-foreground" : "text-muted-foreground"
+              "rounded-lg",
+              hasActiveFilters && "bg-selected border-selected-border"
             )}
             aria-haspopup="dialog"
             aria-expanded={false}
@@ -138,7 +143,7 @@ export function InlineFilterBar({
             <SlidersHorizontal className="size-4 shrink-0" aria-hidden="true" />
             <span>{t("filters")}</span>
             {hasActiveFilters && (
-              <span className="inline-flex items-center justify-center size-5 rounded-full bg-foreground text-background text-xs font-semibold">
+              <span className="inline-flex items-center justify-center size-5 rounded-full bg-foreground text-background text-xs font-bold">
                 {activeFilterCount}
               </span>
             )}
@@ -150,7 +155,8 @@ export function InlineFilterBar({
             onClick={openSort}
             className={cn(
               tabButtonStyles,
-              isSorted ? "text-foreground" : "text-muted-foreground"
+              "rounded-lg",
+              isSorted && "bg-selected border-selected-border"
             )}
             aria-haspopup="dialog"
             aria-expanded={sortOpen}

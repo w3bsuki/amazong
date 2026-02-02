@@ -3,12 +3,13 @@
 import { useState, useCallback, useEffect, useMemo, startTransition } from "react"
 import { useSearchParams, type ReadonlyURLSearchParams } from "next/navigation"
 import { usePathname, useRouter, Link } from "@/i18n/routing"
-import { X, Check, Star } from "@phosphor-icons/react"
+import { X, Star } from "@phosphor-icons/react"
 import { cn } from "@/lib/utils"
 import { useTranslations } from "next-intl"
 import { useFilterCount } from "@/hooks/use-filter-count"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { Button } from "@/components/ui/button"
+import { Checkbox } from "@/components/ui/checkbox"
 import {
   Drawer,
   DrawerBody,
@@ -31,6 +32,8 @@ import { ColorSwatches } from "./color-swatches"
 import { SizeTiles } from "./size-tiles"
 import { FilterList } from "./filter-list"
 import { PriceSlider } from "./price-slider"
+import { FilterCheckboxItem, FilterCheckboxList } from "./filter-checkbox-item"
+import { FilterRadioGroup, FilterRadioItem } from "./filter-radio-group"
 
 // =============================================================================
 // FILTER MODAL — Single-section modal for quick filter pills (eBay pattern)
@@ -351,27 +354,12 @@ export function FilterModal({
     if (attribute.attribute_type === "boolean") {
       const isChecked = getPendingAttrValues(attrKey).includes("true")
       return (
-        <button
-          type="button"
-          onClick={() => setPendingAttrValues(attrKey, isChecked ? [] : ["true"])}
-          className={cn(
-            "w-full flex items-center gap-3 px-3 h-10 rounded-lg transition-colors",
-            isChecked ? "bg-secondary text-primary font-medium" : "active:bg-muted"
-          )}
-          aria-pressed={isChecked}
+        <FilterCheckboxItem
+          checked={isChecked}
+          onCheckedChange={(checked) => setPendingAttrValues(attrKey, checked ? ["true"] : [])}
         >
-          <div
-            className={cn(
-              "size-5 rounded border flex items-center justify-center transition-colors",
-              isChecked ? "bg-primary border-primary" : "border-input"
-            )}
-          >
-            {isChecked && (
-              <Check size={12} weight="bold" className="text-primary-foreground" />
-            )}
-          </div>
-          <span className="text-sm">{tCommon("yes")}</span>
-        </button>
+          {tCommon("yes")}
+        </FilterCheckboxItem>
       )
     }
 
@@ -421,47 +409,32 @@ export function FilterModal({
         attribute.attribute_type === "multiselect" || shouldForceMultiSelect(attribute)
 
       return (
-        <div className={cn(listBleedClass, "divide-y divide-border")}>
+        <FilterCheckboxList className={listBleedClass}>
           {options.map((option, idx) => {
             const currentValues = getPendingAttrValues(attrKey)
             const isActive = currentValues.includes(option)
 
             return (
-              <button
+              <FilterCheckboxItem
                 key={idx}
-                type="button"
-                onClick={() => {
+                checked={isActive}
+                onCheckedChange={(checked) => {
                   if (!allowMulti) {
-                    setPendingAttrValues(attrKey, isActive ? [] : [option])
+                    setPendingAttrValues(attrKey, checked ? [option] : [])
                     return
                   }
-                  const newValues = isActive
-                    ? currentValues.filter((v) => v !== option)
-                    : [...currentValues, option]
+                  const newValues = checked
+                    ? [...currentValues, option]
+                    : currentValues.filter((v) => v !== option)
                   setPendingAttrValues(attrKey, newValues)
                 }}
-                className={cn(
-                  "w-full flex items-center gap-3 h-10 transition-colors text-left",
-                  rowPadClass,
-                  isActive
-                    ? "bg-selected text-foreground font-medium"
-                    : "text-foreground active:bg-active"
-                )}
-                aria-pressed={isActive}
+                fullBleed={isMobile}
               >
-                <div
-                  className={cn(
-                    "size-5 rounded border flex items-center justify-center transition-colors shrink-0",
-                    isActive ? "bg-primary border-primary" : "border-input"
-                  )}
-                >
-                  {isActive && <Check size={12} weight="bold" className="text-primary-foreground" />}
-                </div>
-                <span className="text-sm">{option}</span>
-              </button>
+                {option}
+              </FilterCheckboxItem>
             )
           })}
-        </div>
+        </FilterCheckboxList>
       )
     }
 
@@ -496,7 +469,7 @@ export function FilterModal({
                   }))
                 }
                 className={cn(
-                  "w-full flex items-center gap-3 h-10 transition-colors text-left",
+                  "w-full flex items-center gap-3 h-11 transition-colors text-left",
                   rowPadClass,
                   isActive
                     ? "bg-selected text-foreground font-medium"
@@ -504,14 +477,18 @@ export function FilterModal({
                 )}
                 aria-pressed={isActive}
               >
-                <div
-                  className={cn(
-                    "size-5 rounded border flex items-center justify-center transition-colors shrink-0",
-                    isActive ? "bg-primary border-primary" : "border-input"
-                  )}
-                >
-                  {isActive && <Check size={12} weight="bold" className="text-primary-foreground" />}
-                </div>
+                <Checkbox
+                  checked={isActive}
+                  onCheckedChange={() =>
+                    setPending((prev) => ({
+                      ...prev,
+                      minRating: isActive ? null : stars.toString(),
+                    }))
+                  }
+                  className="pointer-events-none shrink-0"
+                  aria-hidden="true"
+                  tabIndex={-1}
+                />
                 <div className="flex text-rating">
                   {[...Array(5)].map((_, i) => (
                     <Star key={i} size={18} weight={i < stars ? "fill" : "regular"} />
@@ -526,134 +503,68 @@ export function FilterModal({
 
       {/* Availability Section */}
       {section === "availability" && (
-        <div className={cn(listBleedClass, "divide-y divide-border")}>
-          <button
-            type="button"
-            onClick={() =>
+        <div className={listBleedClass}>
+          <FilterCheckboxItem
+            checked={pending.availability === "instock"}
+            onCheckedChange={(checked) =>
               setPending((prev) => ({
                 ...prev,
-                availability: prev.availability === "instock" ? null : "instock",
+                availability: checked ? "instock" : null,
               }))
             }
-            className={cn(
-              "w-full flex items-center gap-3 h-10 transition-colors text-left",
-              rowPadClass,
-              pending.availability === "instock"
-                ? "bg-selected text-foreground font-medium"
-                : "text-foreground active:bg-active"
-            )}
-            aria-pressed={pending.availability === "instock"}
+            fullBleed={isMobile}
           >
-            <div
-              className={cn(
-                "size-5 rounded border flex items-center justify-center transition-colors",
-                pending.availability === "instock" ? "bg-primary border-primary" : "border-input"
-              )}
-            >
-              {pending.availability === "instock" && (
-                <Check size={12} weight="bold" className="text-primary-foreground" />
-              )}
-            </div>
-            <span className="text-sm">{t("inStock")}</span>
-          </button>
+            {t("inStock")}
+          </FilterCheckboxItem>
         </div>
       )}
 
       {/* Category Section */}
       {section === "category" && subcategories.length > 0 && (
-        <div className={cn(listBleedClass, "divide-y divide-border")}>
-          {showAllCategoriesOption && (
-            <button
-              type="button"
-              onClick={() => setPendingCategorySlug(null)}
-              className={cn(
-                "w-full flex items-center gap-3 h-10 transition-colors text-left",
-                rowPadClass,
-                pendingCategorySlug === null
-                  ? "bg-selected text-foreground font-medium"
-                  : "text-foreground active:bg-active"
-              )}
-              aria-pressed={pendingCategorySlug === null}
-            >
-              <div
-                className={cn(
-                  "size-5 rounded-full border flex items-center justify-center transition-colors shrink-0",
-                  pendingCategorySlug === null ? "bg-primary border-primary" : "border-input"
-                )}
-              >
-                {pendingCategorySlug === null && <div className="size-2 rounded-full bg-primary-foreground" />}
-              </div>
-              <span className="text-sm">{t("browseAllCategories")}</span>
-            </button>
-          )}
+        <div className={listBleedClass}>
+          <FilterRadioGroup
+            value={pendingCategorySlug ?? ""}
+            onValueChange={(value) => setPendingCategorySlug(value || null)}
+          >
+            {showAllCategoriesOption && (
+              <FilterRadioItem value="" fullBleed={isMobile}>
+                {t("browseAllCategories")}
+              </FilterRadioItem>
+            )}
 
-          {!showAllCategoriesOption && (
-            <div className="flex items-center" style={{ paddingLeft: "var(--spacing-inset)", paddingRight: "var(--spacing-inset)" }}>
-              <button
-                type="button"
-                onClick={() => setPendingCategorySlug(null)}
-                className={cn(
-                  "flex-1 flex items-center gap-3 h-10 transition-colors text-left",
-                  pendingCategorySlug === null
-                    ? "bg-selected text-foreground font-medium"
-                    : "text-foreground active:bg-active"
-                )}
-                aria-pressed={pendingCategorySlug === null}
-              >
-                <div
-                  className={cn(
-                    "size-5 rounded-full border flex items-center justify-center transition-colors shrink-0",
-                    pendingCategorySlug === null ? "bg-primary border-primary" : "border-input"
-                  )}
+            {!showAllCategoriesOption && (
+              <div className="flex items-center px-inset border-b border-border">
+                <FilterRadioItem
+                  value=""
+                  className="flex-1 border-b-0"
                 >
-                  {pendingCategorySlug === null && <div className="size-2 rounded-full bg-primary-foreground" />}
-                </div>
-                <span className="text-sm font-medium">
                   {tHub("allInCategory", { category: categoryName || "" })}
-                </span>
-              </button>
-              {/* Reset to All Categories X button */}
-              <Link
-                href="/categories"
-                onClick={() => onOpenChange(false)}
-                className="size-8 flex items-center justify-center rounded-full bg-muted hover:bg-destructive-subtle hover:text-destructive transition-colors shrink-0 ml-2"
-                aria-label={t("browseAllCategories")}
-                title={t("browseAllCategories")}
-              >
-                <X size={14} weight="bold" />
-              </Link>
-            </div>
-          )}
-
-          {subcategories.map((subcat) => {
-            const isActive = pendingCategorySlug === subcat.slug
-            const subcatName = locale === "bg" && subcat.name_bg ? subcat.name_bg : subcat.name
-            return (
-              <button
-                key={subcat.id}
-                type="button"
-                onClick={() => setPendingCategorySlug(isActive ? null : subcat.slug)}
-                className={cn(
-                  "w-full flex items-center gap-3 h-10 transition-colors text-left",
-                  rowPadClass,
-                  isActive
-                    ? "bg-selected text-foreground font-medium"
-                    : "text-foreground active:bg-active"
-                )}
-                aria-pressed={isActive}
-              >
-                <div
-                  className={cn(
-                    "size-5 rounded-full border flex items-center justify-center transition-colors shrink-0",
-                    isActive ? "bg-primary border-primary" : "border-input"
-                  )}
+                </FilterRadioItem>
+                <Link
+                  href="/categories"
+                  onClick={() => onOpenChange(false)}
+                  className="size-8 flex items-center justify-center rounded-full bg-muted hover:bg-destructive-subtle hover:text-destructive transition-colors shrink-0 ml-2"
+                  aria-label={t("browseAllCategories")}
+                  title={t("browseAllCategories")}
                 >
-                  {isActive && <div className="size-2 rounded-full bg-primary-foreground" />}
-                </div>
-                <span className="text-sm">{subcatName}</span>
-              </button>
-            )
-          })}
+                  <X size={14} weight="bold" />
+                </Link>
+              </div>
+            )}
+
+            {subcategories.map((subcat) => {
+              const subcatName = locale === "bg" && subcat.name_bg ? subcat.name_bg : subcat.name
+              return (
+                <FilterRadioItem
+                  key={subcat.id}
+                  value={subcat.slug}
+                  fullBleed={isMobile}
+                >
+                  {subcatName}
+                </FilterRadioItem>
+              )
+            })}
+          </FilterRadioGroup>
         </div>
       )}
 

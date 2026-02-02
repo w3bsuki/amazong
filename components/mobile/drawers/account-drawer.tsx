@@ -299,7 +299,7 @@ export function AccountDrawer({ open, onOpenChange }: AccountDrawerProps) {
                   className={cn(
                     "flex items-center justify-between px-inset py-3",
                     "hover:bg-hover active:bg-active transition-colors",
-                    "touch-action-manipulation tap-transparent"
+                    "touch-manipulation tap-transparent"
                   )}
                 >
                   <div className="flex items-center gap-3">

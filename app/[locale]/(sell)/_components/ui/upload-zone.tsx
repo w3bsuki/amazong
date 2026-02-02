@@ -39,7 +39,7 @@ export function UploadZone({
       {...getRootProps()}
       className={cn(
         "relative flex flex-col items-center justify-center rounded-2xl border-2 border-dashed transition-colors cursor-pointer",
-        "min-h-44 sm:min-h-48 touch-action-manipulation",
+        "min-h-44 sm:min-h-48 touch-manipulation",
         "hover:bg-hover active:bg-active",
         isDragActive
           ? "border-selected-border bg-selected"

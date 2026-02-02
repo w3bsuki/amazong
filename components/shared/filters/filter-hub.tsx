@@ -6,8 +6,6 @@ import { usePathname, useRouter, Link } from "@/i18n/routing"
 import {
   CaretLeft,
   CaretRight,
-  Check,
-  Star,
   X,
   SquaresFour,
 } from "@phosphor-icons/react"
@@ -15,6 +13,7 @@ import { cn } from "@/lib/utils"
 import { useTranslations } from "next-intl"
 import { useFilterCount } from "@/hooks/use-filter-count"
 import { Button } from "@/components/ui/button"
+import { Checkbox } from "@/components/ui/checkbox"
 import {
   Drawer,
   DrawerBody,
@@ -39,6 +38,8 @@ import { PriceSlider } from "./price-slider"
 import { FilterRatingSection } from "./filter-rating-section"
 import { FilterAvailabilitySection } from "./filter-availability-section"
 import { FilterCategorySection } from "./filter-category-section"
+import { FilterCheckboxItem, FilterCheckboxList } from "./filter-checkbox-item"
+import { FilterRadioGroup, FilterRadioItem } from "./filter-radio-group"
 
 // =============================================================================
 // FILTER HUB — Main filtering modal with pending/applied state
@@ -622,82 +623,42 @@ export function FilterHub({
               {activeSection === "location" && (
                 <div className="space-y-4">
                   {/* City selector */}
-                  <div className="-mx-inset divide-y divide-border">
-                    {/* Any location option */}
-                    <button
-                      type="button"
-                      onClick={() => setPending((prev) => ({ ...prev, city: null }))}
-                      className={cn(
-                        "w-full flex items-center gap-3 px-inset h-12 transition-colors text-left",
-                        !pending.city
-                          ? "bg-selected text-foreground font-medium"
-                          : "text-foreground active:bg-active"
-                      )}
+                  <div className="-mx-inset">
+                    <FilterRadioGroup
+                      value={pending.city ?? ""}
+                      onValueChange={(value) => setPending((prev) => ({ ...prev, city: value || null }))}
                     >
-                      <div
-                        className={cn(
-                          "size-5 rounded-full border flex items-center justify-center transition-colors shrink-0",
-                          !pending.city ? "bg-primary border-primary" : "border-input"
-                        )}
-                      >
-                        {!pending.city && <Check size={12} weight="bold" className="text-primary-foreground" />}
-                      </div>
-                      <span className="text-sm">{t("anyLocation")}</span>
-                    </button>
-                    
-                    {/* City options */}
-                    {BULGARIAN_CITIES.filter(c => c.value !== "other").slice(0, 15).map((city) => {
-                      const isSelected = pending.city === city.value
-                      return (
-                        <button
+                      {/* Any location option */}
+                      <FilterRadioItem value="" fullBleed>
+                        {t("anyLocation")}
+                      </FilterRadioItem>
+                      
+                      {/* City options */}
+                      {BULGARIAN_CITIES.filter(c => c.value !== "other").slice(0, 15).map((city) => (
+                        <FilterRadioItem
                           key={city.value}
-                          type="button"
-                          onClick={() => setPending((prev) => ({ ...prev, city: city.value }))}
-                          className={cn(
-                            "w-full flex items-center gap-3 px-inset h-12 transition-colors text-left",
-                            isSelected
-                              ? "bg-selected text-foreground font-medium"
-                              : "text-foreground active:bg-active"
-                          )}
+                          value={city.value}
+                          fullBleed
                         >
-                          <div
-                            className={cn(
-                              "size-5 rounded-full border flex items-center justify-center transition-colors shrink-0",
-                              isSelected ? "bg-primary border-primary" : "border-input"
-                            )}
-                          >
-                            {isSelected && <Check size={12} weight="bold" className="text-primary-foreground" />}
-                          </div>
-                          <span className="text-sm">{locale === "bg" ? city.labelBg : city.label}</span>
-                        </button>
-                      )
-                    })}
+                          {locale === "bg" ? city.labelBg : city.label}
+                        </FilterRadioItem>
+                      ))}
+                    </FilterRadioGroup>
                   </div>
                   
                   {/* Nearby toggle */}
-                  <button
-                    type="button"
-                    onClick={() => setPending((prev) => ({ 
-                      ...prev, 
-                      nearby: prev.nearby === "true" ? null : "true" 
-                    }))}
-                    className={cn(
-                      "-mx-inset w-auto flex items-center gap-3 px-inset h-12 transition-colors text-left",
-                      pending.nearby === "true"
-                        ? "bg-selected text-foreground font-medium"
-                        : "text-foreground active:bg-active"
-                    )}
-                  >
-                    <div
-                      className={cn(
-                        "size-5 rounded border flex items-center justify-center transition-colors shrink-0",
-                        pending.nearby === "true" ? "bg-primary border-primary" : "border-input"
-                      )}
+                  <div className="-mx-inset">
+                    <FilterCheckboxItem
+                      checked={pending.nearby === "true"}
+                      onCheckedChange={(checked) => setPending((prev) => ({ 
+                        ...prev, 
+                        nearby: checked ? "true" : null 
+                      }))}
+                      fullBleed
                     >
-                      {pending.nearby === "true" && <Check size={12} weight="bold" className="text-primary-foreground" />}
-                    </div>
-                    <span className="text-sm">{t("nearMe")}</span>
-                  </button>
+                      {t("nearMe")}
+                    </FilterCheckboxItem>
+                  </div>
                 </div>
               )}
 
@@ -729,37 +690,15 @@ export function FilterHub({
                 if (attr.attribute_type === "boolean") {
                   const isChecked = getPendingAttrValues(attrKey).includes("true")
                   return (
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setPendingAttrValues(attrKey, isChecked ? [] : ["true"])
-                      }
-                      className={cn(
-                        "-mx-inset w-auto flex items-center gap-3 px-inset h-10 transition-colors text-left",
-                        isChecked
-                          ? "bg-selected text-foreground font-medium"
-                          : "text-foreground active:bg-active"
-                      )}
-                      aria-pressed={isChecked}
-                    >
-                      <div
-                        className={cn(
-                          "size-5 rounded border flex items-center justify-center transition-colors",
-                          isChecked ? "bg-primary border-primary" : "border-input"
-                        )}
+                    <div className="-mx-inset">
+                      <FilterCheckboxItem
+                        checked={isChecked}
+                        onCheckedChange={(checked) => setPendingAttrValues(attrKey, checked ? ["true"] : [])}
+                        fullBleed
                       >
-                        {isChecked && (
-                          <Check
-                            size={12}
-                            weight="bold"
-                            className="text-primary-foreground"
-                          />
-                        )}
-                      </div>
-                      <span className="text-sm">
                         {tCommon("yes")}
-                      </span>
-                    </button>
+                      </FilterCheckboxItem>
+                    </div>
                   )
                 }
 
@@ -812,49 +751,32 @@ export function FilterHub({
                     shouldForceMultiSelect(attr)
 
                   return (
-                    <div className="-mx-inset divide-y divide-border">
+                    <FilterCheckboxList className="-mx-inset">
                       {options.map((option, idx) => {
                         const currentValues = getPendingAttrValues(attrKey)
                         const isActive = currentValues.includes(option)
 
                         return (
-                          <button
+                          <FilterCheckboxItem
                             key={idx}
-                            type="button"
-                            onClick={() => {
+                            checked={isActive}
+                            onCheckedChange={(checked) => {
                               if (!allowMulti) {
-                                setPendingAttrValues(
-                                  attrKey,
-                                  isActive ? [] : [option]
-                                )
+                                setPendingAttrValues(attrKey, checked ? [option] : [])
                                 return
                               }
-                              const newValues = isActive
-                                ? currentValues.filter((v) => v !== option)
-                                : [...currentValues, option]
+                              const newValues = checked
+                                ? [...currentValues, option]
+                                : currentValues.filter((v) => v !== option)
                               setPendingAttrValues(attrKey, newValues)
                             }}
-                            className={cn(
-                              "w-full flex items-center gap-3 px-inset h-10 transition-colors text-left",
-                              isActive
-                                ? "bg-selected text-foreground font-medium"
-                                : "text-foreground active:bg-active"
-                            )}
-                            aria-pressed={isActive}
+                            fullBleed
                           >
-                            <div
-                              className={cn(
-                                "size-5 rounded border flex items-center justify-center transition-colors shrink-0",
-                                isActive ? "bg-primary border-primary" : "border-input"
-                              )}
-                            >
-                              {isActive && <Check size={12} weight="bold" className="text-primary-foreground" />}
-                            </div>
-                            <span className="text-sm">{option}</span>
-                          </button>
+                            {option}
+                          </FilterCheckboxItem>
                         )
                       })}
-                    </div>
+                    </FilterCheckboxList>
                   )
                 }
 

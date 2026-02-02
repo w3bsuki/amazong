@@ -163,7 +163,7 @@ export function MessagesDrawer({ open, onOpenChange }: MessagesDrawerProps) {
                   className={cn(
                     "flex gap-3 px-inset py-3",
                     "hover:bg-hover active:bg-active transition-colors",
-                    "touch-action-manipulation tap-transparent",
+                    "touch-manipulation tap-transparent",
                     index !== recentConversations.length - 1 && "border-b border-border"
                   )}
                 >

@@ -56,7 +56,7 @@ export function PhotoThumbnail({
         isDragging 
           ? "border-selected-border border-dashed opacity-50 scale-95" 
           : "border-border/40 hover:border-hover-border",
-        "cursor-grab active:cursor-grabbing touch-action-manipulation"
+        "cursor-grab active:cursor-grabbing touch-manipulation"
       )}
     >
       <Image

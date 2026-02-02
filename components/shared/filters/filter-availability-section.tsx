@@ -1,8 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { Check } from "@phosphor-icons/react";
-import { cn } from "@/lib/utils";
+import { FilterCheckboxItem } from "./filter-checkbox-item";
 
 interface FilterAvailabilitySectionProps {
   availability: string | null;
@@ -16,25 +15,13 @@ export function FilterAvailabilitySection({ availability, onChange }: FilterAvai
 
   return (
     <div className="-mx-inset">
-      <button
-        type="button"
-        onClick={() => onChange(isInStock ? null : "instock")}
-        className={cn(
-          "w-full flex items-center gap-3 px-inset h-10 transition-colors text-left",
-          isInStock ? "bg-selected text-foreground font-medium" : "text-foreground active:bg-active"
-        )}
-        aria-pressed={isInStock}
+      <FilterCheckboxItem
+        checked={isInStock}
+        onCheckedChange={(checked) => onChange(checked ? "instock" : null)}
+        fullBleed
       >
-        <div
-          className={cn(
-            "size-5 rounded border flex items-center justify-center transition-colors",
-            isInStock ? "bg-primary border-primary" : "border-input"
-          )}
-        >
-          {isInStock && <Check size={12} weight="bold" className="text-primary-foreground" />}
-        </div>
-        <span className="text-sm">{t("inStock")}</span>
-      </button>
+        {t("inStock")}
+      </FilterCheckboxItem>
     </div>
   );
 }

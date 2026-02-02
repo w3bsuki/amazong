@@ -123,7 +123,7 @@ export function SubcategoryCircles({
                 onClick={handleAllClick}
                 aria-current={isDesktop && !activeSubcategorySlug ? "page" : undefined}
                 className={cn(
-                  "flex flex-col items-center gap-1 group shrink-0 touch-action-manipulation",
+                  "flex flex-col items-center gap-1 group shrink-0 touch-manipulation",
                   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
                   isDesktop
                     ? "min-w-(--spacing-category-item-desktop) gap-2"
@@ -164,7 +164,7 @@ export function SubcategoryCircles({
                 href={buildUrl(currentCategory.slug)}
                 prefetch={true}
                 className={cn(
-                  "flex flex-col items-center gap-1 group shrink-0 touch-action-manipulation",
+                  "flex flex-col items-center gap-1 group shrink-0 touch-manipulation",
                   isDesktop
                     ? "min-w-(--spacing-category-item-desktop) gap-2"
                     : "min-w-(--spacing-category-item-lg)"
@@ -207,7 +207,7 @@ export function SubcategoryCircles({
             const isActive = isDesktop && activeSubcategorySlug === subcat.slug
 
             const itemClasses = cn(
-              "flex flex-col items-center group shrink-0 touch-action-manipulation",
+              "flex flex-col items-center group shrink-0 touch-manipulation",
               isDesktop
                 ? "min-w-(--spacing-category-item-desktop) gap-2"
                 : "min-w-(--spacing-category-item-lg) gap-1.5"

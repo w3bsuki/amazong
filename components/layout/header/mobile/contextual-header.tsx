@@ -2,7 +2,7 @@
 
 import { MobileCartDropdown } from "@/components/layout/header/cart/mobile-cart-dropdown"
 import { MobileWishlistButton } from "@/components/shared/wishlist/mobile-wishlist-button"
-import { getCategoryIcon } from "@/lib/category-icons"
+import { CategoryCircleVisual } from "@/components/shared/category/category-circle-visual"
 import { getCategoryShortName } from "@/lib/category-display"
 import { MagnifyingGlass, ArrowLeft } from "@phosphor-icons/react"
 import { Link } from "@/i18n/routing"
@@ -69,22 +69,26 @@ export function MobileContextualHeader({
           </div>
         )}
       </div>
-      {/* Subcategory circles */}
+      {/* Subcategory circles - Same spacing as homepage CategoryCirclesSimple */}
       {subcategories.length > 0 && (
         <div className="bg-background border-b border-border/50">
-          <div className="px-4 py-3">
-            <div className="flex items-start gap-3 overflow-x-auto no-scrollbar">
+          <div className="px-inset py-1.5 overflow-x-auto no-scrollbar">
+            <div className="flex items-start gap-1">
               {subcategories.map((cat) => (
                 <button
                   key={cat.id}
                   type="button"
                   onClick={() => onSubcategoryClick?.(cat)}
-                  className="flex flex-col items-center gap-1.5 shrink-0 w-category-item-mobile active:opacity-80 transition-opacity"
+                  className="flex flex-col items-center gap-0.5 shrink-0 w-(--spacing-category-item-lg) active:opacity-80 transition-opacity group"
                 >
-                  <div className="size-14 rounded-full bg-surface-subtle border border-border/30 overflow-hidden flex items-center justify-center">
-                    {getCategoryIcon(cat.slug, { size: 24, weight: "bold", className: "text-muted-foreground" })}
-                  </div>
-                  <span className="text-2xs text-center text-muted-foreground font-medium leading-tight line-clamp-2">
+                  <CategoryCircleVisual
+                    category={cat}
+                    className="size-(--spacing-category-circle)"
+                    fallbackIconSize={18}
+                    fallbackIconWeight="bold"
+                    variant="colorful"
+                  />
+                  <span className="text-2xs text-center text-muted-foreground font-medium leading-tight line-clamp-1 truncate w-full">
                     {getCategoryShortName(cat, locale)}
                   </span>
                 </button>

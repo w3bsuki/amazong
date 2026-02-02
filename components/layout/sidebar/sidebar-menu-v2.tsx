@@ -146,7 +146,7 @@ export function SidebarMenuV2({ user, triggerClassName, userStats }: SidebarMenu
             <span
                 role="button"
                 className={cn(
-                    "inline-flex items-center justify-center size-10 rounded-lg text-foreground hover:bg-hover active:bg-active transition-colors touch-action-manipulation tap-transparent cursor-pointer [&_svg]:size-6",
+                    "inline-flex items-center justify-center size-10 rounded-lg text-foreground hover:bg-hover active:bg-active transition-colors touch-manipulation tap-transparent cursor-pointer [&_svg]:size-6",
                     triggerClassName
                 )}
                 aria-label={t("title")}
@@ -170,7 +170,7 @@ export function SidebarMenuV2({ user, triggerClassName, userStats }: SidebarMenu
                     variant="ghost"
                     size="icon"
                     className={cn(
-                        "size-10 rounded-lg text-foreground hover:bg-hover active:bg-active transition-colors touch-action-manipulation tap-transparent focus-visible:ring-0 focus-visible:ring-offset-0 [&_svg]:size-6",
+                        "size-10 rounded-lg text-foreground hover:bg-hover active:bg-active transition-colors touch-manipulation tap-transparent focus-visible:ring-0 focus-visible:ring-offset-0 [&_svg]:size-6",
                         triggerClassName
                     )}
                     aria-label={t("title")}

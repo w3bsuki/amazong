@@ -144,7 +144,7 @@ export function WishlistDrawer({ className, children }: WishlistDrawerProps) {
                     <button
                       data-vaul-no-drag
                       onClick={() => handleMoveToCart(item)}
-                      className="flex items-center justify-center size-8 rounded-md text-foreground hover:bg-muted touch-action-manipulation tap-transparent"
+                      className="flex items-center justify-center size-8 rounded-md text-foreground hover:bg-muted touch-manipulation tap-transparent"
                       aria-label={t("add")}
                     >
                       <ShoppingCart size={18} weight="regular" />
@@ -155,7 +155,7 @@ export function WishlistDrawer({ className, children }: WishlistDrawerProps) {
                         removeFromWishlist(item.product_id)
                         toast.success(t("removed"))
                       }}
-                      className="flex items-center justify-center size-8 rounded-md text-muted-foreground hover:text-destructive hover:bg-hover touch-action-manipulation tap-transparent"
+                      className="flex items-center justify-center size-8 rounded-md text-muted-foreground hover:text-destructive hover:bg-hover touch-manipulation tap-transparent"
                       aria-label={t("remove")}
                     >
                       <Trash size={16} weight="regular" />

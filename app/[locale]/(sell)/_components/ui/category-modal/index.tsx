@@ -717,7 +717,7 @@ function CategoryCard({
         type="button"
         onClick={onClick}
         className={cn(
-          "relative flex items-center justify-between gap-3 w-full px-4 py-2.5 rounded-md border text-left transition-colors min-h-12 touch-action-manipulation",
+          "relative flex items-center justify-between gap-3 w-full px-4 py-2.5 rounded-md border text-left transition-colors min-h-12 touch-manipulation",
           "hover:border-hover-border active:bg-active",
           "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background",
           isSelected 
