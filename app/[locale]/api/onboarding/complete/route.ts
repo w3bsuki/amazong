@@ -1,44 +1,100 @@
-import { NextResponse } from "next/server"
-import { createClient } from "@/lib/supabase/server"
+import { NextResponse, type NextRequest } from "next/server"
+import { z } from "zod"
+import { createAdminClient, createRouteHandlerClient } from "@/lib/supabase/server"
 
-interface OnboardingCompleteRequest {
-  username?: string
-  displayName?: string
-  businessName?: string
-  accountType: "personal" | "business"
-  category?: string
-  website?: string
-  location?: string
-  interests?: string[]
-  avatarType?: "custom" | "generated"
-  avatarVariant?: string
-  avatarPalette?: number
-}
+const optionalNonEmptyString = (schema: z.ZodString) =>
+  z.preprocess((value) => {
+    if (typeof value !== "string") return value
+    const trimmed = value.trim()
+    return trimmed.length === 0 ? undefined : trimmed
+  }, schema.optional())
+
+const requestSchema = z.object({
+  username: optionalNonEmptyString(z.string().min(3).max(30)),
+  displayName: optionalNonEmptyString(z.string().max(50)),
+  businessName: optionalNonEmptyString(z.string().max(100)),
+  accountType: z.enum(["personal", "business"]),
+  category: optionalNonEmptyString(z.string().max(100)),
+  website: z.preprocess((value) => {
+    if (typeof value !== "string") return value
+    const trimmed = value.trim()
+    return trimmed.length === 0 ? undefined : trimmed
+  }, z.string().url().optional()),
+  location: optionalNonEmptyString(z.string().max(100)),
+  interests: z.array(z.string().min(1).max(50)).max(50).optional(),
+  avatarType: z.enum(["custom", "generated"]).optional(),
+  avatarVariant: z.string().optional(),
+  avatarPalette: z.number().int().min(0).max(50).optional(),
+})
+
+type OnboardingCompleteRequest = z.infer<typeof requestSchema>
 
 export async function POST(
-  request: Request,
+  request: NextRequest,
   { params }: { params: Promise<{ locale: string }> }
 ) {
   try {
-    const body: OnboardingCompleteRequest = await request.json()
-    const { locale } = await params
+    const rawBody: unknown = await request.json()
+    const parsed = requestSchema.safeParse(rawBody)
+    if (!parsed.success) {
+      return NextResponse.json({ error: "Invalid request" }, { status: 400 })
+    }
 
-    const supabase = await createClient()
+    const body: OnboardingCompleteRequest = parsed.data
+    void (await params) // Keep route signature stable for locale-prefixed API
+
+    const { supabase, applyCookies } = createRouteHandlerClient(request)
     
     // Get current user
     const { data: { user }, error: authError } = await supabase.auth.getUser()
     
     if (authError || !user) {
-      return NextResponse.json(
+      return applyCookies(
+        NextResponse.json(
         { error: "Unauthorized" },
         { status: 401 }
       )
+      )
     }
 
-    // Build profile update object
+    // Idempotency + safety: this endpoint should only be used to finish first-run onboarding.
+    // If a user already completed onboarding, don't let this route become a "backdoor" for
+    // changing protected/sensitive profile fields.
+    const { data: currentProfile, error: currentProfileError } = await supabase
+      .from("profiles")
+      .select("onboarding_completed")
+      .eq("id", user.id)
+      .single()
+
+    if (currentProfileError) {
+      return applyCookies(
+        NextResponse.json({ error: "Failed to load profile" }, { status: 500 })
+      )
+    }
+
+    if (currentProfile?.onboarding_completed) {
+      return applyCookies(NextResponse.json({ success: true }))
+    }
+
+    // NOTE: `account_type` is treated as a sensitive entitlement-like field in Treido.
+    // Authenticated users may be restricted from updating it directly at the DB grant layer.
+    // Prefer the service-role client, but fall back to the authed client so onboarding can
+    // still complete even if the service key is not configured in the runtime.
+    let adminSupabase: ReturnType<typeof createAdminClient> | null = null
+    try {
+      adminSupabase = createAdminClient()
+    } catch {
+      adminSupabase = null
+    }
+
+    // Build profile update object (only columns that exist in `public.profiles`)
     const profileUpdate: Record<string, unknown> = {
       onboarding_completed: true,
-      account_type: body.accountType,
+      updated_at: new Date().toISOString(),
+    }
+
+    if (adminSupabase) {
+      profileUpdate.account_type = body.accountType
     }
 
     if (body.username) {
@@ -50,62 +106,42 @@ export async function POST(
     }
 
     if (body.location) {
-      profileUpdate.location_city = body.location
+      profileUpdate.location = body.location
     }
 
-    if (body.interests && body.interests.length > 0) {
-      profileUpdate.interests = body.interests
+    if (body.accountType === "business") {
+      if (body.businessName) profileUpdate.business_name = body.businessName
+      if (body.website) profileUpdate.website_url = body.website
     }
 
-    // Update profile
-    const { error: profileError } = await supabase
+    // Update profile. Service role bypasses column grants; fallback respects grants.
+    const updateClient = adminSupabase ?? supabase
+    const { error: profileError } = await updateClient
       .from("profiles")
       .update(profileUpdate)
       .eq("id", user.id)
 
     if (profileError) {
-      console.error("Error updating profile:", profileError)
-      return NextResponse.json(
+      // Friendly conflict for username collisions (race vs availability check).
+      if (profileError.code === "23505") {
+        return applyCookies(
+          NextResponse.json(
+            { error: "Username already taken" },
+            { status: 409 }
+          )
+        )
+      }
+
+      return applyCookies(
+        NextResponse.json(
         { error: "Failed to update profile" },
         { status: 500 }
       )
+      )
     }
 
-    // If business account, update private_profiles for business-specific fields
-    if (body.accountType === "business") {
-      const privateProfileUpdate: Record<string, unknown> = {}
-
-      if (body.businessName) {
-        privateProfileUpdate.business_name = body.businessName
-      }
-
-      if (body.website) {
-        privateProfileUpdate.business_website = body.website
-      }
-
-      if (body.category) {
-        privateProfileUpdate.business_category = body.category
-      }
-
-      // Only update if there are business fields to save
-      if (Object.keys(privateProfileUpdate).length > 0) {
-        const { error: privateError } = await supabase
-          .from("private_profiles")
-          .upsert({
-            id: user.id,
-            ...privateProfileUpdate,
-          })
-
-        if (privateError) {
-          console.error("Error updating private profile:", privateError)
-          // Non-critical error, don't fail the whole request
-        }
-      }
-    }
-
-    return NextResponse.json({ success: true })
+    return applyCookies(NextResponse.json({ success: true }))
   } catch (error) {
-    console.error("Error completing onboarding:", error)
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }

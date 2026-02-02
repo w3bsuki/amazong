@@ -4,7 +4,7 @@
 
 | Started | 2026-02-02 |
 |---------|------------|
-| Status | � Phase 1 Complete |
+| Status | 🔄 In Progress (mobile deep-dive) |
 | Tool | Playwright MCP via next-devtools |
 
 ---
@@ -13,11 +13,11 @@
 
 | Phase | Desktop | Mobile | Status |
 |-------|---------|--------|--------|
-| A: Auth Flows | ✅ | ✅ | Complete |
-| B: Buyer Flows | ✅ | ✅ | Complete |
-| C: Seller Flows | 🔄 | ⬜ | Partial (public pages) |
-| D: Order Management | ⬜ | ⬜ | Requires Auth |
-| E: Account/Settings | 🔄 | ⬜ | Partial (nav tested) |
+| A: Auth Flows | ✅ | ✅ | Complete (see auth redirect issue) |
+| B: Buyer Flows | ✅ | ❌ | Blocked (onboarding deadlock blocks cart/checkout) |
+| C: Seller Flows | 🔄 | 🔄 | Partial (wizard tested; publish not executed) |
+| D: Order Management | ⬜ | 🔄 | Partial (orders list route loads; deeper tests deferred for PII safety) |
+| E: Account/Settings | 🔄 | 🔄 | Partial (account + chat tested) |
 
 Legend: ✅ Complete | 🔄 Partial | ⬜ Not Started | ❌ Blocked
 
@@ -38,19 +38,21 @@ Legend: ✅ Complete | 🔄 Partial | ⬜ Not Started | ❌ Blocked
 
 | Severity | Count | Desktop | Mobile |
 |----------|-------|---------|--------|
-| Critical | 0 | 0 | 0 |
-| High | 1 | 1 | 1 |
-| Medium | 0 | 0 | 0 |
-| Low | 2 | 2 | 2 |
+| Critical | 2 | — | 2 |
+| High | 3 | — | 3 |
+| Medium | 1 | — | 1 |
+| Low | 3 | — | 3 |
 
-**Total Issues Found:** 3
+**Total Issues Found:** 9
 
-### High Priority
-- **ISSUE-002**: Public routes (`/search`, `/cart`, `/categories`) redirect to onboarding instead of being accessible without auth
+### Critical blockers (ship-stoppers)
+- **ISSUE-004**: Post-login redirect duplicates locale (`/<locale>/<locale>/account`) and lands on a 404
+- **ISSUE-005**: Onboarding completion fails (`POST /<locale>/api/onboarding/complete` → 500), blocking cart/checkout via onboarding gate
 
-### Low Priority
-- **ISSUE-001**: `/auth/forgot-password` page title missing route name ("Treido" instead of "Forgot password | Treido")
-- **ISSUE-003**: `/sell` page title missing route name ("Treido" instead of "Sell | Treido")
+### Next batch (high)
+- **ISSUE-006**: Sell category step lacks validation feedback (Continue does nothing)
+- **ISSUE-007**: Sell wizard reaches “Publish Listing” too early (incomplete details allowed)
+- **ISSUE-002**: Onboarding gate blocks “public” routes for users with incomplete onboarding (cart/checkout deadlock)
 
 ---
 
@@ -58,7 +60,7 @@ Legend: ✅ Complete | 🔄 Partial | ⬜ Not Started | ❌ Blocked
 
 ### Auth (Desktop + Mobile)
 - Signup form with all validation, password toggle, terms links
-- Login form with remember me, forgot password link
+- Login form with remember me, forgot password link (⚠️ see auth redirect issue)
 - Password reset request form
 - Auth error page with recovery options
 
@@ -67,7 +69,7 @@ Legend: ✅ Complete | 🔄 Partial | ⬜ Not Started | ❌ Blocked
 - Category navigation (24+ categories)
 - Product cards (images, prices, discounts, ratings, wishlist)
 - Today's Deals page (48 products)
-- Product detail pages (basic structure)
+- Product detail pages (full listing tested; add-to-cart works in-session)
 - Mobile bottom navigation
 
 ### Seller Flows (Public)
@@ -86,7 +88,7 @@ The following features require a logged-in user session to fully test:
 - Order management (view, track, cancel)
 - Profile editing and address book
 - Seller dashboard and order fulfillment
-- Checkout completion
+- Checkout completion (**currently blocked by onboarding deadlock**)
 - Wishlist management
 
 ---
@@ -104,13 +106,13 @@ playwright-audit/
 │   └── account.md       🔄 Partial
 ├── mobile/
 │   ├── auth.md          ✅ Complete
-│   ├── buying.md        ✅ Complete
-│   ├── selling.md       ⬜ Not Started
-│   ├── orders.md        ⬜ Requires Auth
-│   └── account.md       ⬜ Not Started
+│   ├── buying.md        ❌ Blocked (cart/checkout)
+│   ├── selling.md       🔄 Partial
+│   ├── orders.md        🔄 Partial
+│   └── account.md       🔄 Partial
 └── issues/
-    ├── frontend.md      ✅ 3 issues logged
-    └── backend.md       ⬜ No issues found
+    ├── frontend.md      ✅ 9 issues logged
+    └── backend.md       ✅ 1 issue logged
 ```
 
 ---

@@ -10,6 +10,7 @@ import {
   type ReactNode,
   type Context,
 } from "react"
+import { usePathname } from "next/navigation"
 import { createClient } from "@/lib/supabase/client"
 import type { User, Session, AuthChangeEvent } from "@supabase/supabase-js"
 
@@ -35,8 +36,10 @@ export function AuthStateManager({ children }: { children: ReactNode }) {
     isAuthenticated: false,
   })
 
+  const pathname = usePathname()
   const isInitializedRef = useRef(false)
   const pendingRefreshRef = useRef<Promise<void> | null>(null)
+  const lastPathnameRef = useRef<string | null>(null)
 
   const refreshSession = useCallback(async () => {
     // Prevent concurrent refreshes
@@ -61,7 +64,8 @@ export function AuthStateManager({ children }: { children: ReactNode }) {
           isAuthenticated: !!session?.user,
         })
       } catch (error) {
-        console.error("Failed to refresh session:", error)
+        // Avoid logging raw error objects in client (can contain request details).
+        console.error("Failed to refresh session")
         setState((prev) => ({ ...prev, isLoading: false }))
       } finally {
         pendingRefreshRef.current = null
@@ -82,9 +86,6 @@ export function AuthStateManager({ children }: { children: ReactNode }) {
     isInitializedRef.current = true
 
     const supabase = createClient()
-
-    // Initial session fetch
-    refreshSession()
 
     // SINGLE auth state listener for the entire app
     const {
@@ -113,6 +114,30 @@ export function AuthStateManager({ children }: { children: ReactNode }) {
       subscription.unsubscribe()
     }
   }, [refreshSession])
+
+  // Sync session on navigation when leaving auth routes. This fixes cases where auth is
+  // performed on the server (server actions setting cookies), which won't trigger the
+  // browser client's onAuthStateChange event.
+  useEffect(() => {
+    if (!pathname) return
+
+    const previous = lastPathnameRef.current
+    if (previous === pathname) return
+    lastPathnameRef.current = pathname
+
+    // First load: always fetch once.
+    if (!previous) {
+      void refreshSession()
+      return
+    }
+
+    const wasAuthRoute = previous.includes("/auth")
+    const isAuthRoute = pathname.includes("/auth")
+
+    if (wasAuthRoute && !isAuthRoute) {
+      void refreshSession()
+    }
+  }, [pathname, refreshSession])
 
   return (
     <AuthContext.Provider value={{ ...state, signOut, refreshSession }}>

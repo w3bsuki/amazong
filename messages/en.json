@@ -117,7 +117,9 @@
         "wishlist": "Wishlist",
         "chat": "Chat",
         "categories": "Categories",
-        "mobileNavigation": "Mobile navigation"
+        "profile": "Profile",
+        "mobileNavigation": "Mobile navigation",
+        "back": "Back"
     },
     "Categories": {
         "title": "Categories",
@@ -251,6 +253,7 @@
             },
             "sortOptions": "Sort and filter",
             "filtersActive": "{count, plural, one {# filter active} other {# filters active}}",
+            "allListings": "All Listings",
             "listingsCount": "{count, plural, one {# listing} other {# listings}}"
         }
     },
@@ -1964,16 +1967,23 @@
     "ProfilePage": {
         "business": "Business",
         "seller": "Seller",
-        "editProfile": "Edit profile",
+        "editProfile": "Edit Profile",
         "share": "Share",
+        "shareProfile": "Share Profile",
         "about": "About",
         "stats": "Stats",
+        "settings": "Settings",
+        "listings": "Listings",
+        "sold": "Sold",
         "sales": "Sales",
         "sellerRating": "Seller rating",
         "followers": "Followers",
+        "following": "Following",
         "purchases": "Purchases",
         "buyerRating": "Buyer rating",
         "noReviewsYet": "No reviews yet",
+        "noFollowersYet": "No followers yet",
+        "followersCount": "{count, plural, one {# follower} other {# followers}}",
         "forSale": "For sale",
         "reviews": "Reviews",
         "viewAll": "View all",
@@ -1984,6 +1994,29 @@
         "promptPayment": "Prompt payment",
         "metadataDescriptionSeller": "View {name}'s profile on Treido. {sales, plural, one {# sale} other {# sales}}, ⭐ {rating}",
         "metadataDescriptionMember": "View {name}'s profile on Treido. Treido member"
+    },
+    "ProfileSettings": {
+        "editProfile": "Edit profile",
+        "editProfileDescription": "Update your photo, bio, and public info",
+        "myListings": "My listings",
+        "myListingsDescription": "Manage your active products",
+        "addresses": "Addresses",
+        "addressesDescription": "Shipping and billing addresses",
+        "paymentMethods": "Payment Methods",
+        "paymentMethodsDescription": "Cards, wallets, billing",
+        "security": "Privacy & Security",
+        "securityDescription": "Password, 2FA, data settings",
+        "notifications": "Notifications",
+        "notificationsDescription": "Manage alerts and updates",
+        "languageRegion": "Language & Region",
+        "languageRegionDescription": "Language preferences",
+        "helpSupport": "Help & Support",
+        "helpSupportDescription": "FAQs, contact us",
+        "appSettings": "App settings",
+        "appSettingsDescription": "Notifications, language, theme",
+        "goToAccount": "Go to Account",
+        "signOut": "Log Out",
+        "signOutDescription": "Sign out of your account"
     },
     "SellersDirectory": {
         "title": "Top sellers | Treido",
@@ -3311,5 +3344,102 @@
         },
         "watching": "{count} watching",
         "footer": "Theme: Twitter (tweakcn) • Tailwind v4 • shadcn/ui new-york"
+    },
+    "Onboarding": {
+        "common": {
+            "back": "Back",
+            "continue": "Continue",
+            "skipForNow": "Skip for now",
+            "processing": "Processing...",
+            "stepLabel": "Step {current} of {total}",
+            "tryAgain": "Try again"
+        },
+        "accountType": {
+            "title": "Welcome to Treido!",
+            "subtitle": "How will you be using Treido?",
+            "personalTitle": "Personal Account",
+            "personalDescription": "Buy & sell as an individual",
+            "businessTitle": "Business Account",
+            "businessDescription": "Professional selling tools & features",
+            "upgradeNote": "You can upgrade anytime"
+        },
+        "profile": {
+            "title": "Set up your profile",
+            "subtitle": "Help others get to know you",
+            "usernameLabel": "Username",
+            "usernamePlaceholder": "your_username",
+            "usernameHint": "This is your unique identity on Treido. You can change it once.",
+            "displayNameLabel": "Display Name",
+            "displayNamePlaceholder": "Your display name",
+            "displayNameHint": "This is how others will see you",
+            "profileImageLabel": "Profile picture",
+            "profileImageHint": "Upload a photo or pick a style",
+            "checking": "Checking...",
+            "available": "Available",
+            "unavailable": "Unavailable"
+        },
+        "businessProfile": {
+            "title": "Set up your business",
+            "subtitle": "Tell us about your business",
+            "businessNameLabel": "Business Name",
+            "businessNamePlaceholder": "Your Business",
+            "businessNameHint": "Your official business name",
+            "usernameLabel": "Username",
+            "usernamePlaceholder": "your_business",
+            "usernameHint": "Auto-suggested from your business name",
+            "categoryLabel": "Business Category",
+            "categoryPlaceholder": "Select a category",
+            "websiteLabel": "Website (optional)",
+            "websitePlaceholder": "https://your-business.com",
+            "locationLabel": "Location (optional)",
+            "locationPlaceholder": "Sofia, Bulgaria",
+            "logoLabel": "Business logo",
+            "logoHint": "Upload your logo",
+            "checking": "Checking...",
+            "available": "Available",
+            "unavailable": "Unavailable",
+            "categories": {
+                "fashion": "Fashion & Clothing",
+                "electronics": "Electronics",
+                "home": "Home & Garden",
+                "automotive": "Automotive",
+                "sports": "Sports & Outdoors",
+                "beauty": "Beauty & Personal Care",
+                "food": "Food & Beverages",
+                "services": "Services",
+                "other": "Other"
+            }
+        },
+        "interests": {
+            "title": "What are you interested in?",
+            "subtitle": "Select at least 3 categories to personalize your experience",
+            "selectedCount": "{count} selected",
+            "minRequired": "Select at least 3 to continue",
+            "categories": {
+                "fashion": "Fashion",
+                "electronics": "Electronics",
+                "home": "Home & Garden",
+                "automotive": "Automotive",
+                "sports": "Sports",
+                "beauty": "Beauty",
+                "food": "Food",
+                "services": "Services",
+                "kids": "Kids & Baby",
+                "art": "Art & Crafts",
+                "books": "Books",
+                "gaming": "Gaming",
+                "music": "Music",
+                "pets": "Pets"
+            }
+        },
+        "complete": {
+            "title": "You're all set!",
+            "subtitle": "Your profile is ready to go",
+            "saving": "Setting up your profile...",
+            "errorGeneric": "Something went wrong. Please try again.",
+            "startBrowsing": "Start browsing",
+            "listFirstItem": "List your first item",
+            "completeStore": "Complete your store"
+        }
     }
 }

@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation"
 import { setRequestLocale } from "next-intl/server"
+import { locales } from "@/i18n/routing"
 
 import { createStaticClient } from "@/lib/supabase/server"
 import {
@@ -13,6 +14,12 @@ import { DesktopGalleryV2 } from "@/components/desktop/product/desktop-gallery-v
 import { DesktopBuyBoxV2 } from "@/components/desktop/product/desktop-buy-box-v2"
 import { HeroSpecs } from "@/components/shared/product/hero-specs"
 import { ProductRouteModal } from "../../../_components/product-route-modal"
+
+// Generate static params for build validation (required by cacheComponents)
+// This is an intercepted route for modals - products are dynamically fetched
+export function generateStaticParams() {
+  return locales.map((locale) => ({ locale, username: "__placeholder__", productSlug: "__placeholder__" }))
+}
 
 export default async function ProductQuickViewModalPage({
   params,

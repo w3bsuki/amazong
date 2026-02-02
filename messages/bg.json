@@ -117,7 +117,9 @@
         "wishlist": "Любими",
         "chat": "Чат",
         "categories": "Обяви",
-        "mobileNavigation": "Мобилна навигация"
+        "profile": "Профил",
+        "mobileNavigation": "Мобилна навигация",
+        "back": "Назад"
     },
     "Categories": {
         "title": "Категории",
@@ -251,6 +253,7 @@
             },
             "sortOptions": "Сортиране и филтри",
             "filtersActive": "{count, plural, one {# активен филтър} other {# активни филтъра}}",
+            "allListings": "Всички обяви",
             "listingsCount": "{count, plural, one {# обява} other {# обяви}}"
         }
     },
@@ -1966,14 +1969,21 @@
         "seller": "Продавач",
         "editProfile": "Редактирай профил",
         "share": "Сподели",
+        "shareProfile": "Сподели профил",
         "about": "За мен",
         "stats": "Статистика",
+        "settings": "Настройки",
+        "listings": "Обяви",
+        "sold": "Продадени",
         "sales": "Продажби",
         "sellerRating": "Рейтинг продавач",
         "followers": "Последователи",
+        "following": "Следвани",
         "purchases": "Покупки",
         "buyerRating": "Рейтинг купувач",
         "noReviewsYet": "Няма отзиви",
+        "noFollowersYet": "Няма последователи",
+        "followersCount": "{count, plural, one {# последовател} other {# последователи}}",
         "forSale": "Обяви",
         "reviews": "Отзиви",
         "viewAll": "Виж всички",
@@ -1984,6 +1994,29 @@
         "promptPayment": "Бързо плащане",
         "metadataDescriptionSeller": "Вижте профила на {name} в Treido. {sales, plural, one {# продажба} other {# продажби}}, ⭐ {rating}",
         "metadataDescriptionMember": "Вижте профила на {name} в Treido. Член на Treido"
+    },
+    "ProfileSettings": {
+        "editProfile": "Редактиране на профила",
+        "editProfileDescription": "Промяна на снимка, био и публична информация",
+        "myListings": "Моите обяви",
+        "myListingsDescription": "Управление на активни продукти",
+        "addresses": "Адреси",
+        "addressesDescription": "Адреси за доставка и фактуриране",
+        "paymentMethods": "Начини на плащане",
+        "paymentMethodsDescription": "Карти, портфейли, фактуриране",
+        "security": "Поверителност и сигурност",
+        "securityDescription": "Парола, 2FA, настройки за данни",
+        "notifications": "Известия",
+        "notificationsDescription": "Управление на известия",
+        "languageRegion": "Език и регион",
+        "languageRegionDescription": "Езикови настройки",
+        "helpSupport": "Помощ и поддръжка",
+        "helpSupportDescription": "ЧЗВ, свържете се с нас",
+        "appSettings": "Настройки",
+        "appSettingsDescription": "Известия, език, тема",
+        "goToAccount": "Към акаунта",
+        "signOut": "Изход",
+        "signOutDescription": "Изход от профила"
     },
     "SellersDirectory": {
         "title": "Топ продавачи | Treido",
@@ -3311,5 +3344,102 @@
         },
         "watching": "{count} watching",
         "footer": "Theme: Twitter (tweakcn) • Tailwind v4 • shadcn/ui new-york"
+    },
+    "Onboarding": {
+        "common": {
+            "back": "Назад",
+            "continue": "Продължи",
+            "skipForNow": "Пропусни за сега",
+            "processing": "Обработка...",
+            "stepLabel": "Стъпка {current} от {total}",
+            "tryAgain": "Опитай отново"
+        },
+        "accountType": {
+            "title": "Добре дошли в Treido!",
+            "subtitle": "Как ще използвате Treido?",
+            "personalTitle": "Личен акаунт",
+            "personalDescription": "Купувайте и продавайте като физическо лице",
+            "businessTitle": "Бизнес акаунт",
+            "businessDescription": "Професионални инструменти за продажба",
+            "upgradeNote": "Можете да надстроите по всяко време"
+        },
+        "profile": {
+            "title": "Настройте профила си",
+            "subtitle": "Помогнете на другите да ви опознаят",
+            "usernameLabel": "Потребителско име",
+            "usernamePlaceholder": "вашето_име",
+            "usernameHint": "Това е вашата уникална идентичност в Treido. Можете да го промените веднъж.",
+            "displayNameLabel": "Показвано име",
+            "displayNamePlaceholder": "Вашето показвано име",
+            "displayNameHint": "Така другите ще ви виждат",
+            "profileImageLabel": "Профилна снимка",
+            "profileImageHint": "Качете снимка или изберете стил",
+            "checking": "Проверка...",
+            "available": "Свободно",
+            "unavailable": "Заето"
+        },
+        "businessProfile": {
+            "title": "Настройте бизнеса си",
+            "subtitle": "Разкажете ни за вашия бизнес",
+            "businessNameLabel": "Име на бизнеса",
+            "businessNamePlaceholder": "Вашият Бизнес",
+            "businessNameHint": "Официалното име на вашия бизнес",
+            "usernameLabel": "Потребителско име",
+            "usernamePlaceholder": "вашият_бизнес",
+            "usernameHint": "Автоматично предложено от името на бизнеса",
+            "categoryLabel": "Категория на бизнеса",
+            "categoryPlaceholder": "Изберете категория",
+            "websiteLabel": "Уебсайт (незадължително)",
+            "websitePlaceholder": "https://вашият-бизнес.com",
+            "locationLabel": "Местоположение (незадължително)",
+            "locationPlaceholder": "София, България",
+            "logoLabel": "Лого на бизнеса",
+            "logoHint": "Качете логото си",
+            "checking": "Проверка...",
+            "available": "Свободно",
+            "unavailable": "Заето",
+            "categories": {
+                "fashion": "Мода и облекло",
+                "electronics": "Електроника",
+                "home": "Дом и градина",
+                "automotive": "Автомобили",
+                "sports": "Спорт и отдих",
+                "beauty": "Красота и лична грижа",
+                "food": "Храни и напитки",
+                "services": "Услуги",
+                "other": "Друго"
+            }
+        },
+        "interests": {
+            "title": "Какво ви интересува?",
+            "subtitle": "Изберете поне 3 категории за персонализиране",
+            "selectedCount": "{count} избрани",
+            "minRequired": "Изберете поне 3 за да продължите",
+            "categories": {
+                "fashion": "Мода",
+                "electronics": "Електроника",
+                "home": "Дом и градина",
+                "automotive": "Автомобили",
+                "sports": "Спорт",
+                "beauty": "Красота",
+                "food": "Храна",
+                "services": "Услуги",
+                "kids": "Деца и бебета",
+                "art": "Изкуство",
+                "books": "Книги",
+                "gaming": "Игри",
+                "music": "Музика",
+                "pets": "Домашни любимци"
+            }
+        },
+        "complete": {
+            "title": "Готови сте!",
+            "subtitle": "Профилът ви е готов",
+            "saving": "Настройване на профила...",
+            "errorGeneric": "Нещо се обърка. Моля, опитайте отново.",
+            "startBrowsing": "Започнете да разглеждате",
+            "listFirstItem": "Добавете първа обява",
+            "completeStore": "Завършете магазина си"
+        }
     }
 }

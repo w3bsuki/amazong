@@ -2,7 +2,7 @@
 
 > Order management tested on mobile viewports
 
-| Status | ⬜ Not Started |
+| Status | 🔄 Partial |
 |--------|----------------|
 | Viewport | Mobile |
 
@@ -12,7 +12,7 @@
 
 | Test | iPhone 14 | Android | Status |
 |------|-----------|---------|--------|
-| Buyer order list | ⬜ | ⬜ | Not Started |
+| Buyer order list | ✅ | ⬜ | Route loads |
 | Buyer order detail | ⬜ | ⬜ | Not Started |
 | Order tracking | ⬜ | ⬜ | Not Started |
 | Seller orders | ⬜ | ⬜ | Not Started |
@@ -27,9 +27,9 @@
 
 | Field | Result |
 |-------|--------|
-| Status | ⬜ Not Tested |
-| Expected | Orders display in mobile-friendly list |
-| Actual | — |
+| Status | ✅ Pass (route-level) |
+| Expected | Orders list route loads on mobile |
+| Actual | `/account/orders` route loads and renders an “Orders” heading. Deeper inspection of order rows/details deferred to avoid exposing PII in audit artifacts. |
 
 ---
 

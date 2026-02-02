@@ -31,7 +31,7 @@ export function MobileHomepageHeader({
 
   return (
     <div className="md:hidden bg-background/95 backdrop-blur-md pt-safe">
-      <div className="h-12 px-1 flex items-center">
+      <div className="h-13 px-1 flex items-center">
         <SidebarMenu user={user} categories={categories} triggerClassName="-ml-2" {...(userStats && { userStats })} />
         <Link href="/" className="shrink-0 -ml-1">
           <span className="text-lg font-extrabold tracking-tight text-foreground">treido.</span>

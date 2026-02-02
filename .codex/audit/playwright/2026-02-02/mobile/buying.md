@@ -2,7 +2,7 @@
 
 > Buyer flows tested on mobile viewports (390x844 iPhone 14, 360x740 Android)
 
-| Status | ✅ Complete |
+| Status | ❌ Blocked |
 |--------|----------------|
 | Viewport | Mobile |
 
@@ -14,11 +14,11 @@
 |------|-----------|---------|--------|
 | Homepage load | ✅ | ⬜ | Tested |
 | Category navigation | ✅ | ⬜ | Tested |
-| Search + filters | ⚠️ | ⬜ | See ISSUE-002 |
-| Product detail page | ⚠️ | ⬜ | Partial - loading issue |
-| Add to cart | ⬜ | ⬜ | Not Started (auth required) |
-| Cart management | ⬜ | ⬜ | Not Started (auth required) |
-| Checkout flow | ⬜ | ⬜ | Not Started (auth required) |
+| Search + filters | ✅ | ⬜ | Tested |
+| Product detail page | ✅ | ⬜ | Tested |
+| Add to cart | ✅ | ⬜ | Tested (auth session) |
+| Cart management | ❌ | ⬜ | Blocked (ISSUE-005) |
+| Checkout flow | ❌ | ⬜ | Blocked (ISSUE-005) |
 | Order confirmation | ⬜ | ⬜ | Not Started (auth required) |
 
 ---
@@ -49,9 +49,9 @@
 
 | Field | Result |
 |-------|--------|
-| Status | ⚠️ Issue |
+| Status | ✅ Pass |
 | Expected | Search bar prominent, filters in drawer/modal, results scroll |
-| Actual | Search button visible in header. **ISSUE-002**: Search route redirects to onboarding for unauthenticated users instead of allowing public search. |
+| Actual | Search modal works from header; direct `/search?q=...` navigation works and renders results + filter controls. |
 
 ---
 
@@ -59,9 +59,9 @@
 
 | Field | Result |
 |-------|--------|
-| Status | ⚠️ Partial |
+| Status | ✅ Pass |
 | Expected | Image gallery swipeable, sticky add-to-cart button |
-| Actual | Page navigates correctly, title renders ("Google Pixel 8 Pro | tech_haven | Treido"). Content may be loading asynchronously - snapshot showing minimal elements. Product links from homepage work. |
+| Actual | Full listing page loads (images, specs, description, seller block, similar items). Sticky bottom actions render (Chat + Add). |
 
 ---
 
@@ -69,9 +69,9 @@
 
 | Field | Result |
 |-------|--------|
-| Status | ⬜ Not Tested |
-| Expected | Touch target adequate, feedback visible |
-| Actual | Requires auth or testing with product page fully loaded |
+| Status | ✅ Pass (partial) |
+| Expected | Add-to-cart adds item and user can proceed to cart/checkout |
+| Actual | Add-to-cart triggers backend cart mutation successfully, but cart access is blocked by onboarding gate (see Cart Management). |
 
 ---
 
@@ -79,9 +79,9 @@
 
 | Field | Result |
 |-------|--------|
-| Status | ⬜ Not Tested |
+| Status | ❌ Blocked |
 | Expected | Cart accessible via tab bar, item management touch-friendly |
-| Actual | Cart button/icon visible in header. **ISSUE-002**: Cart route may redirect to onboarding. |
+| Actual | Navigating to `/cart` redirects to onboarding when onboarding cannot complete (ISSUE-005). |
 
 ---
 
@@ -89,9 +89,9 @@
 
 | Field | Result |
 |-------|--------|
-| Status | ⬜ Not Tested |
+| Status | ❌ Blocked |
 | Expected | Mobile-optimized checkout, payment form works on mobile |
-| Actual | Requires authentication |
+| Actual | Blocked because cart route is gated by onboarding and onboarding completion fails (ISSUE-005). |
 
 ---
 
@@ -129,7 +129,8 @@
 
 | ID | Route | Severity | Description |
 |----|-------|----------|-------------|
-| ISSUE-002 | `/search`, `/cart` | High | Public routes redirect to onboarding instead of being accessible |
+| ISSUE-005 | `/cart`, `/checkout` | Critical | Onboarding completion fails (500), leaving cart/checkout inaccessible due to onboarding gate |
+| ISSUE-002 | `/cart` | High | Onboarding gate blocks “public” routes for users with incomplete onboarding (deadlock with ISSUE-005) |
 
 ---
 

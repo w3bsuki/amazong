@@ -50,6 +50,27 @@ pnpm -s dupes
   - Files: `proxy.ts` · `app/[locale]/(main)/_providers/onboarding-provider.tsx` (and any route-guard logic)
   - Audit: `.codex/audit/playwright/2026-02-02/issues/frontend.md` (ISSUE-002)
 
+- [ ] AUTH-PLAY-001: Fix post-login redirect duplicating locale (`/<locale>/<locale>/account`)
+  - Priority: Critical
+  - Owner: treido-frontend
+  - Verify: manual sign-in from `/en/auth/login?next=%2Fen%2Faccount` redirects to `/en/account` · `REUSE_EXISTING_SERVER=true pnpm -s test:e2e:smoke`
+  - Files: `app/[locale]/(auth)/_actions/auth.ts`
+  - Audit: `.codex/audit/playwright/2026-02-02/issues/frontend.md` (ISSUE-004)
+
+- [ ] BE-ONBOARD-001: Fix onboarding completion 500 (unblock cart/checkout)
+  - Priority: Critical
+  - Owner: treido-backend
+  - Verify: complete onboarding → `/en/cart` accessible → proceed to checkout (stop before payment) · `REUSE_EXISTING_SERVER=true pnpm -s test:e2e:smoke`
+  - Files: `app/[locale]/api/onboarding/complete/route.ts` · `lib/supabase/server.ts`
+  - Audit: `.codex/audit/playwright/2026-02-02/issues/backend.md` (ISSUE-001) · `.codex/audit/playwright/2026-02-02/issues/frontend.md` (ISSUE-005)
+
+- [ ] FE-SELL-PLAY-001: Sell wizard step validation (category + publish gating)
+  - Priority: High
+  - Owner: treido-frontend
+  - Verify: category step blocks without selection; publish disabled until required fields complete · `pnpm -s typecheck` · `pnpm -s lint` · `pnpm -s styles:gate`
+  - Files: `app/[locale]/(sell)/_components/layouts/stepper-wrapper.tsx` · `app/[locale]/(sell)/_components/steps/step-category.tsx` · `app/[locale]/(sell)/_components/fields/review-field.tsx`
+  - Audit: `.codex/audit/playwright/2026-02-02/issues/frontend.md` (ISSUE-006, ISSUE-007)
+
 - [ ] DOCS-ALIGN-001: Update `docs/02-FEATURES.md` to match actual implementation (upgrade conservative items)
   - Priority: High
   - Owner: treido-orchestrator

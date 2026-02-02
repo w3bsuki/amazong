@@ -51,6 +51,7 @@
   --border: oklch(0.93 0.01 230);            /* #e1eaef - blue-gray */
   --input: oklch(0.98 0 0);                  /* #f7f9fa */
   --ring: oklch(0.65 0.17 230);              /* #1da1f2 */
+  --category-ring: var(--foreground);        /* Black ring for category selection */
 
   /* === SEMANTIC STATUS (Light) - Professional, desaturated === */
   --success: oklch(0.52 0.14 155);
@@ -349,6 +350,7 @@
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
+  --color-category-ring: var(--category-ring);
   
   /* Interactive state colors (semantic - use these instead of primary/10) */
   --color-selected: var(--selected);
@@ -499,7 +501,7 @@
   --size-icon-lg: 1.75rem;       /* 28px - large/bold */
 
   /* === CATEGORY NAVIGATION === */
-  --spacing-category-circle: 3rem; /* 48px - mobile-optimized circles (Instagram pattern) */
+  --spacing-category-circle: 3.25rem; /* 52px - mobile-optimized circles (Instagram pattern) */
   --spacing-category-circle-desktop: 4rem; /* 64px on desktop */
   --spacing-category-item: 3.5rem; /* 56px - compact item width */
   --spacing-category-item-mobile: 3.5rem; /* 56px - mobile subcategory buttons */

@@ -2,7 +2,7 @@
 
 > Account/settings tested on mobile viewports
 
-| Status | ⬜ Not Started |
+| Status | 🔄 Partial |
 |--------|----------------|
 | Viewport | Mobile |
 
@@ -12,7 +12,7 @@
 
 | Test | iPhone 14 | Android | Status |
 |------|-----------|---------|--------|
-| Profile view | ⬜ | ⬜ | Not Started |
+| Profile view | ✅ | ⬜ | Tested (account overview) |
 | Profile edit | ⬜ | ⬜ | Not Started |
 | Address book | ⬜ | ⬜ | Not Started |
 | Notifications | ⬜ | ⬜ | Not Started |
@@ -26,9 +26,9 @@
 
 | Field | Result |
 |-------|--------|
-| Status | ⬜ Not Tested |
-| Expected | Profile displays, avatar fits, info readable |
-| Actual | — |
+| Status | ✅ Pass |
+| Expected | Account overview renders and is navigable on mobile |
+| Actual | `/account` renders an overview (greeting, revenue tile, quick links, plan card). Navigation to `/account/orders` loads successfully (tested without capturing order details for PII safety). |
 
 ---
 
@@ -74,7 +74,9 @@
 
 ## Issues Found
 
-*No issues documented yet*
+| ID | Route | Severity | Description |
+|----|-------|----------|-------------|
+| ISSUE-008 | `/chat/[conversationId]` | Medium | Order summary in chat shows `$` instead of `€` |
 
 ---
 

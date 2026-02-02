@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { useEffect, useRef, useState } from "react"
-import { House, SquaresFour, ChatCircle, User, Plus } from "@phosphor-icons/react"
+import { House, SquaresFour, ChatCircle, UserCircle, Plus } from "@phosphor-icons/react"
 import { Link, usePathname } from "@/i18n/routing"
 import { cn } from "@/lib/utils"
 import { CountBadge } from "@/components/shared/count-badge"
@@ -10,6 +10,7 @@ import { useTranslations } from "next-intl"
 import { MobileMenuSheet, type MobileMenuSheetHandle } from "@/components/mobile/mobile-menu-sheet"
 import { useMessages } from "@/components/providers/message-context"
 import { useDrawer } from "@/components/providers/drawer-context"
+import { useCurrentUsername } from "@/hooks/use-current-username"
 import type { CategoryTreeNode } from "@/lib/category-tree"
 
 interface MobileTabBarProps {
@@ -30,6 +31,12 @@ export function MobileTabBar({ categories }: MobileTabBarProps) {
 
   // Get drawer actions for chat button
   const { openMessages } = useDrawer()
+
+  // Get current user's username for profile navigation
+  const { username: currentUsername } = useCurrentUsername()
+  
+  // Profile href: navigate to own profile if username available, fallback to /account
+  const profileHref = currentUsername ? `/${currentUsername}` : "/account"
 
   // Avoid SSR/hydration mismatches caused by client-only UI (drawers/portals).
   if (!mounted) return null
@@ -182,30 +189,30 @@ export function MobileTabBar({ categories }: MobileTabBarProps) {
             )}>{t("chat")}</span>
           </button>
 
-          {/* Account */}
+          {/* Profile - Own profile page or account fallback */}
           <Link
-            href="/account"
+            href={profileHref}
             prefetch={true}
             className={cn(
               "flex flex-col items-center justify-center gap-0.5 w-full h-full",
               "tap-highlight-transparent active:opacity-50 transition-opacity",
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-md",
             )}
-            aria-label={t("account")}
-            aria-current={isActive("/account") ? "page" : undefined}
+            aria-label={t("profile")}
+            aria-current={isActive("/account") || (currentUsername && pathname.includes(`/${currentUsername}`)) ? "page" : undefined}
           >
-            <User 
+            <UserCircle 
               size={24}
-              weight={isActive("/account") ? "fill" : "regular"}
+              weight={isActive("/account") || (currentUsername && pathname.includes(`/${currentUsername}`)) ? "fill" : "regular"}
               className={cn(
                 "transition-colors",
-                isActive("/account") ? "text-foreground" : "text-muted-foreground"
+                isActive("/account") || (currentUsername && pathname.includes(`/${currentUsername}`)) ? "text-foreground" : "text-muted-foreground"
               )} 
             />
             <span className={cn(
               "text-2xs font-medium leading-none tracking-tight",
-              isActive("/account") ? "text-foreground font-semibold" : "text-muted-foreground"
-            )}>{t("account")}</span>
+              isActive("/account") || (currentUsername && pathname.includes(`/${currentUsername}`)) ? "text-foreground font-semibold" : "text-muted-foreground"
+            )}>{t("profile")}</span>
           </Link>
         </div>
       </nav>

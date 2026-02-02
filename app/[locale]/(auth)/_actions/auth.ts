@@ -73,6 +73,16 @@ function safeRedirectPath(input: string | null | undefined): string | null {
   return input
 }
 
+function stripLocalePrefixFromPath(path: string, locale: "en" | "bg"): string {
+  const prefix = `/${locale}`
+  if (path === prefix) return "/"
+  if (path.startsWith(`${prefix}/`)) {
+    const rest = path.slice(prefix.length)
+    return rest.length > 0 ? rest : "/"
+  }
+  return path
+}
+
 const forgotPasswordSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
 })
@@ -164,7 +174,8 @@ export async function login(
 
   const safe = safeRedirectPath(redirectPath) || "/"
   const safeLocale = locale === "bg" ? "bg" : "en"
-  return redirect({ href: safe, locale: safeLocale })
+  const normalized = stripLocalePrefixFromPath(safe, safeLocale)
+  return redirect({ href: normalized, locale: safeLocale })
 }
 
 export async function signUp(

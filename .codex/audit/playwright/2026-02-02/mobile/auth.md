@@ -51,9 +51,9 @@
 
 | Field | Result |
 |-------|--------|
-| Status | ✅ Pass |
+| Status | ⚠️ Issue |
 | Expected | Form displays correctly, touch-friendly |
-| Actual | Email/phone and password fields visible. "Forgot your password?" link present. Remember me checkbox functional. "Create your Treido account" CTA visible. Page title "Sign in | Treido" correct. |
+| Actual | Form UI renders correctly and is usable on mobile. ⚠️ After successful login from an auth-gated route, redirect can land on `/<locale>/<locale>/account` and show a 404 (see **ISSUE-004**). |
 
 #### Android
 
@@ -110,6 +110,8 @@
 | ID | Route | Severity | Description |
 |----|-------|----------|-------------|
 | ISSUE-001 | `/auth/forgot-password` | Low | Page title missing route name (same as desktop) |
+| ISSUE-004 | `/auth/login` | Critical | Post-login redirect duplicates locale (`/<locale>/<locale>/account`) and lands on a 404 |
+| ISSUE-009 | Onboarding flows | Low | Missing i18n message key logged: `Navigation.back (en)` |
 
 ---
 

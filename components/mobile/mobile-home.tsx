@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useEffect, useMemo, useState } from "react"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { Tag } from "@phosphor-icons/react"
 import { PageShell } from "@/components/shared/page-shell"
 import { MobileSearchOverlay } from "@/components/shared/search/mobile-search-overlay"
@@ -8,7 +8,7 @@ import { SortModal } from "@/components/shared/filters/sort-modal"
 import { ProductFeed } from "@/components/shared/product/product-feed"
 import { SubcategoryCircles } from "@/components/mobile/subcategory-circles"
 import { ContextualFilterBar } from "@/components/mobile/category-nav/contextual-filter-bar"
-import { FeedControlBar, type SortOption, type QuickPillId } from "@/components/mobile/feed-control-bar"
+import { StickyCategoryBar } from "@/components/mobile/sticky-category-bar"
 import { CategoryProductRowMobile } from "@/components/shared/product/category-product-row"
 import { useHeader } from "@/components/providers/header-context"
 import type { UIProduct } from "@/lib/types/products"
@@ -88,8 +88,10 @@ export function MobileHome({
   const t = useTranslations("Home")
   const [searchOpen, setSearchOpen] = useState(false)
   const [sortModalOpen, setSortModalOpen] = useState(false)
-  const [activeSort, setActiveSort] = useState<SortOption>("newest")
-  const [activePills, setActivePills] = useState<QuickPillId[]>([])
+  const [showStickyFilters, setShowStickyFilters] = useState(false)
+  
+  // Ref for intersection observer sentinel (marks end of promo sections)
+  const feedStartRef = useRef<HTMLDivElement>(null)
   
   // Drawer-selected category for filtering
   const [drawerCategory, setDrawerCategory] = useState<CategoryTreeNode | null>(null)
@@ -103,15 +105,6 @@ export function MobileHome({
       return Number.isFinite(expiresAt) && expiresAt > now
     })
   }, [promotedProducts])
-  
-  // Toggle a quick filter pill
-  const handlePillToggle = (pill: QuickPillId) => {
-    setActivePills(prev => 
-      prev.includes(pill) 
-        ? prev.filter(p => p !== pill)
-        : [...prev, pill]
-    )
-  }
   
   // Handle drawer category change
   const handleDrawerCategoryChange = useCallback((
@@ -149,6 +142,28 @@ export function MobileHome({
     })
     return () => setHomepageHeader(null)
   }, [nav.activeTab, nav.handleTabChange, initialCategories, setHomepageHeader])
+
+  // Show sticky filter bar when user scrolls past promo sections (downward only)
+  useEffect(() => {
+    if (!feedStartRef.current) return
+    
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry) return
+        // Only show when sentinel is ABOVE viewport (scrolled past it)
+        // boundingClientRect.top < 0 means it's above the viewport
+        const scrolledPast = !entry.isIntersecting && entry.boundingClientRect.top < 52
+        setShowStickyFilters(scrolledPast)
+      },
+      { 
+        threshold: 0,
+        rootMargin: "-52px 0px 0px 0px" // Account for header height
+      }
+    )
+    
+    observer.observe(feedStartRef.current)
+    return () => observer.disconnect()
+  }, [])
 
   return (
     <CategoryDrawerProvider
@@ -206,7 +221,7 @@ export function MobileHome({
             locale={locale}
             categorySlug={nav.activeSlug}
             categoryId={nav.currentL0?.id}
-            className="sticky top-22 z-20"
+            className="sticky top-13 z-20"
           />
         )}
 
@@ -264,15 +279,30 @@ export function MobileHome({
           </>
         )}
 
-        {/* Feed Controls - transition from browse to shop mode */}
+        {/* Sentinel - marks where feed starts, triggers sticky filter bar */}
+        {nav.isAllTab && <div ref={feedStartRef} className="h-px" />}
+
+        {/* Section divider before product grid */}
         {nav.isAllTab && (
-          <FeedControlBar
-            activeSort={activeSort}
-            onSortChange={setActiveSort}
-            activePills={activePills}
-            onPillToggle={handlePillToggle}
+          <div className="flex items-center justify-between px-inset pt-4 pb-2">
+            <h2 className="text-sm font-medium text-foreground">
+              {t("mobile.allListings")}
+            </h2>
+            <span className="text-xs text-muted-foreground tabular-nums">
+              {nav.activeFeed.products.length > 0 && t("mobile.listingsCount", { count: nav.activeFeed.products.length })}
+            </span>
+          </div>
+        )}
+
+        {/* Sticky Category Bar - appears when scrolled past promo sections */}
+        {nav.isAllTab && showStickyFilters && (
+          <StickyCategoryBar
+            categories={initialCategories}
+            activeCategory={nav.activeTab === "all" ? null : nav.activeTab}
+            onCategorySelect={(slug) => nav.handleTabChange(slug ?? "all")}
             onFilterClick={() => setSortModalOpen(true)}
-            productCount={nav.activeFeed.products.length}
+            locale={locale}
+            className="fixed top-13 left-0 right-0 animate-in slide-in-from-top-2 duration-200"
           />
         )}
 

@@ -48,8 +48,6 @@ interface FeedControlBarProps {
   activeFilterCount?: number
   /** Make the bar sticky */
   sticky?: boolean
-  /** Top offset for sticky positioning */
-  stickyTop?: number
   className?: string
 }
 
@@ -210,25 +208,22 @@ export function FeedControlBar({
   productCount,
   activeFilterCount = 0,
   sticky = true,
-  stickyTop = 88,
   className,
 }: FeedControlBarProps) {
   const t = useTranslations("Home")
-  const hasActiveFilters = activeFilterCount > 0
   const totalActiveFilters = activeFilterCount + activePills.length
 
   return (
     <div
       className={cn(
         "bg-background z-20",
-        sticky && "sticky",
+        sticky && "sticky top-13",
         className
       )}
-      style={sticky ? { top: stickyTop } : undefined}
     >
       {/* Control Row */}
       <div className="flex items-center gap-2 py-2.5">
-        {/* Filter Button - LEFT side, BLACK, prominent */}
+        {/* Filter Button */}
         <button
           type="button"
           onClick={onFilterClick}
@@ -242,12 +237,10 @@ export function FeedControlBar({
             "h-8 w-8 rounded-full",
             "transition-all duration-150",
             "active:opacity-90",
-            // Always black/inverted to stand out
             "bg-foreground text-background"
           )}
         >
           <SlidersHorizontal size={16} weight="bold" />
-          {/* Active filter badge */}
           {totalActiveFilters > 0 && (
             <span className="absolute -top-1 -right-1 size-4 flex items-center justify-center rounded-full bg-destructive text-destructive-foreground text-2xs font-bold">
               {totalActiveFilters > 9 ? "9+" : totalActiveFilters}
@@ -258,7 +251,7 @@ export function FeedControlBar({
         {/* Scrollable Pills Container */}
         <div className="flex-1 overflow-x-auto no-scrollbar">
           <div className="flex items-center gap-2 pr-inset">
-            {/* Sort Dropdown - FIRST */}
+            {/* Sort Dropdown */}
             <SortDropdown
               activeSort={activeSort}
               onSortChange={onSortChange}
@@ -299,7 +292,7 @@ export function FeedControlBar({
         </div>
       </div>
 
-      {/* Product Count - subtle, below controls */}
+      {/* Product Count */}
       {typeof productCount === "number" && productCount > 0 && (
         <p className="px-inset pb-2 text-xs text-muted-foreground tabular-nums">
           {t("mobile.listingsCount", { count: productCount })}

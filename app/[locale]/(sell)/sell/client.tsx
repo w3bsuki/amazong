@@ -5,7 +5,6 @@ import { Link } from "@/i18n/routing";
 import { createClient } from "@/lib/supabase/client";
 import { useLocale, useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
-import { SellerPayoutSetup } from "@/components/shared/seller/seller-payout-setup";
 import { ProgressHeader } from "../_components/ui";
 import {
   SignInPrompt,
@@ -16,7 +15,7 @@ import {
   type Seller
 } from "../_components";
 
-type SellerPayoutStatus = {
+export type SellerPayoutStatus = {
   stripe_connect_account_id: string | null;
   details_submitted: boolean;
   charges_enabled: boolean;
@@ -228,29 +227,9 @@ export function SellPageClient({
     );
   }
 
-  // Stripe Connect gating (V2): sellers must complete payout setup before listing.
-  if (!isPayoutReady(payoutStatus)) {
-    return (
-      <div className="flex flex-1 flex-col">
-        <ProgressHeader
-          progressPercent={0}
-          autoSaved={false}
-          isSaving={false}
-          hasUnsavedChanges={false}
-          onSaveDraft={() => {}}
-          locale={safeLocale}
-          currentStep={1}
-          totalSteps={4}
-        />
-        <div className="flex-1 overflow-y-auto">
-          <SellerPayoutSetup payoutStatus={payoutStatus} variant="compact" />
-        </div>
-      </div>
-    );
-  }
-
   // =========================================================================
-  // MAIN CONTENT: Traditional Form
+  // MAIN CONTENT: Sell Form
+  // Payout status is checked at publish time, not at form entry
   // =========================================================================
 
   return (
@@ -261,6 +240,7 @@ export function SellPageClient({
         locale={safeLocale}
         categories={categories}
         createListingAction={createListingAction}
+        payoutStatus={payoutStatus}
       />
     </SellErrorBoundary>
   );

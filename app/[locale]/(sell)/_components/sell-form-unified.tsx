@@ -20,8 +20,22 @@ import { useTranslations } from "next-intl";
 
 import { SellFormProvider, useSellForm, useSellFormContext, defaultSellFormValuesV4 } from "./sell-form-provider";
 import { DesktopLayout, MobileLayout } from "./layouts";
+import { PayoutRequiredModal } from "./ui/payout-required-modal";
 import type { Category } from "../_lib/types";
 import type { SellFormDataV4 } from "@/lib/sell/schema-v4";
+
+type SellerPayoutStatus = {
+  stripe_connect_account_id: string | null;
+  details_submitted: boolean;
+  charges_enabled: boolean;
+  payouts_enabled: boolean;
+} | null;
+
+function isPayoutReady(payoutStatus: SellerPayoutStatus | undefined): boolean {
+  return Boolean(
+    payoutStatus?.details_submitted && payoutStatus?.charges_enabled && payoutStatus?.payouts_enabled
+  );
+}
 
 type CreateListingResult =
   | {
@@ -54,6 +68,7 @@ interface UnifiedSellFormProps {
   sellerId: string;
   categories?: Category[];
   createListingAction: CreateListingAction;
+  payoutStatus?: SellerPayoutStatus;
 }
 
 /**
@@ -71,6 +86,7 @@ export function UnifiedSellForm({
   sellerId,
   categories = [],
   createListingAction,
+  payoutStatus,
 }: UnifiedSellFormProps) {
   return (
     <SellFormProvider
@@ -80,7 +96,11 @@ export function UnifiedSellForm({
       {...(existingProduct ? { existingProduct } : {})}
       totalSteps={4}
     >
-      <SellFormContent sellerId={sellerId} createListingAction={createListingAction} />
+      <SellFormContent 
+        sellerId={sellerId} 
+        createListingAction={createListingAction} 
+        payoutStatus={payoutStatus}
+      />
     </SellFormProvider>
   );
 }
@@ -91,9 +111,11 @@ export function UnifiedSellForm({
 function SellFormContent({
   sellerId,
   createListingAction,
+  payoutStatus,
 }: {
   sellerId: string;
   createListingAction: CreateListingAction;
+  payoutStatus: SellerPayoutStatus | undefined;
 }) {
   const form = useSellForm();
   const { isBg, clearDraft, setCurrentStep, locale } = useSellFormContext();
@@ -104,10 +126,19 @@ function SellFormContent({
   const [showSuccess, setShowSuccess] = useState(false);
   const [createdProductId, setCreatedProductId] = useState<string | null>(null);
   const [createdProductHref, setCreatedProductHref] = useState<string | null>(null);
+  const [showPayoutModal, setShowPayoutModal] = useState(false);
+  const [pendingSubmitData, setPendingSubmitData] = useState<SellFormDataV4 | null>(null);
 
-  // Handle form submission
+  // Handle form submission - check payout status first
   const handleSubmit = useCallback(async (data: SellFormDataV4) => {
     setSubmitError(null);
+    
+    // Gate at publish: check payout status before submitting
+    if (!isPayoutReady(payoutStatus)) {
+      setPendingSubmitData(data);
+      setShowPayoutModal(true);
+      return;
+    }
     
     startTransition(async () => {
       try {
@@ -157,7 +188,7 @@ function SellFormContent({
         toast.error(errorMessage);
       }
     });
-  }, [isBg, sellerId, clearDraft]);
+  }, [isBg, sellerId, clearDraft, payoutStatus, createListingAction]);
 
   // Handle reset for new listing
   const handleNewListing = useCallback(() => {
@@ -366,6 +397,12 @@ function SellFormContent({
           isSubmitting={isPending}
         />
       </div>
+
+      {/* Payout Required Modal - shown when user tries to publish without Stripe setup */}
+      <PayoutRequiredModal
+        open={showPayoutModal}
+        onOpenChange={setShowPayoutModal}
+      />
     </>
   );
 }

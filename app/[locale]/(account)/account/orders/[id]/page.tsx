@@ -1,10 +1,18 @@
 import { createClient } from "@/lib/supabase/server"
 import { notFound } from "next/navigation"
 import { redirect } from "@/i18n/routing"
+import { setRequestLocale } from "next-intl/server"
+import { locales } from "@/i18n/routing"
 import { buyerConfirmDelivery, canBuyerRateSeller, reportOrderIssue, requestOrderCancellation, requestReturn } from "@/app/actions/orders"
 import { submitSellerFeedback } from "@/app/actions/seller-feedback"
 import { OrderDetailContent } from "./_components/order-detail-content"
 import type { OrderItemStatus } from "@/lib/order-status"
+
+// Return placeholder param for build validation (required by cacheComponents)
+// Actual pages are rendered server-side for authenticated users
+export function generateStaticParams() {
+  return locales.map((locale) => ({ locale, id: "__placeholder__" }))
+}
 
 interface OrderDetailPageProps {
   params: Promise<{
@@ -73,6 +81,10 @@ interface Order {
 export default async function OrderDetailPage({ params }: OrderDetailPageProps) {
   const { locale: localeParam, id } = await params
   const locale = localeParam === "bg" ? "bg" : "en"
+  
+  // Enable static generation for this locale
+  setRequestLocale(locale)
+  
   const supabase = await createClient()
 
   if (!supabase) {

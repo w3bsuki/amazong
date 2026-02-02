@@ -63,6 +63,7 @@ tsc-report.txt
 .codex/_write_test.txt
 dev-e2e.log
 e2e.log
+temp-tradesphere-audit/
 
 # Typecheck/task outputs
 tsc.task.out

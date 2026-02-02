@@ -7,9 +7,10 @@ import { blockUser } from "@/app/actions/blocked-users"
 import { reportConversation } from "../../_actions/report-conversation"
 import { AuthGateCard } from "@/components/shared/auth/auth-gate-card"
 
-// Generate static params for all supported locales (conversation ID is dynamic)
+// Generate static params for build validation (required by cacheComponents)
+// Actual pages are rendered server-side for authenticated users
 export function generateStaticParams() {
-  return routing.locales.map((locale) => ({ locale }))
+  return routing.locales.map((locale) => ({ locale, conversationId: "__placeholder__" }))
 }
 
 /**

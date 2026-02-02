@@ -138,9 +138,9 @@ export function MobileProfileHeader({
             <Export className="size-icon-sm" weight="bold" />
           </Button>
 
-          {/* Context-aware action: Settings for own profile, Follow for others */}
+          {/* Context-aware action: Account for own profile, Follow for others */}
           {isOwnProfile ? (
-            <Link href="/account/profile">
+            <Link href="/account">
               <Button
                 type="button"
                 variant="ghost"

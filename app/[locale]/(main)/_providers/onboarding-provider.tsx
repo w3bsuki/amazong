@@ -1,6 +1,6 @@
 "use client"
 
-import { createContext, useEffect, useState, useRef, type ReactNode } from "react"
+import { createContext, useEffect, useMemo, useState, useRef, type ReactNode } from "react"
 import { useRouter, usePathname } from "next/navigation"
 import { createClient } from "@/lib/supabase/client"
 import { useAuthOptional } from "@/components/providers/auth-state-manager"
@@ -34,14 +34,15 @@ interface RawProfileData {
 }
 
 // Routes that should always be accessible without onboarding
-const BYPASS_ROUTES = [
-  "/onboarding",
-  "/auth",
-  "/api",
-  "/terms",
-  "/privacy",
-  "/help",
-]
+const BYPASS_PREFIXES = ["/onboarding", "/auth", "/api", "/terms", "/privacy", "/help", "/search", "/cart", "/categories"]
+
+function stripLocale(pathname: string) {
+  return pathname.replace(/^\/(en|bg)(?=\/|$)/, "") || "/"
+}
+
+function hasPrefix(pathname: string, prefix: string) {
+  return pathname === prefix || pathname.startsWith(`${prefix}/`)
+}
 
 export function OnboardingProvider({
   children,
@@ -55,13 +56,34 @@ export function OnboardingProvider({
   const [isChecking, setIsChecking] = useState(true)
   const hasCheckedRef = useRef<string | null>(null)
   const hasRedirectedRef = useRef(false)
+  const previousPathnameRef = useRef<string | null>(null)
 
   // Get user from auth context
   const user = auth?.user ?? null
   const authLoading = auth?.isLoading ?? true
 
   // Check if current route should bypass onboarding check
-  const shouldBypass = BYPASS_ROUTES.some(route => pathname.includes(route))
+  const pathWithoutLocale = useMemo(() => stripLocale(pathname), [pathname])
+  const shouldBypass = useMemo(
+    () => BYPASS_PREFIXES.some((prefix) => hasPrefix(pathWithoutLocale, prefix)),
+    [pathWithoutLocale],
+  )
+
+  // When leaving onboarding routes, force a re-check. This ensures that once the
+  // user completes onboarding (DB row updated), we don't keep stale client state.
+  useEffect(() => {
+    const previous = previousPathnameRef.current
+    previousPathnameRef.current = pathWithoutLocale
+
+    const wasOnboarding = previous ? hasPrefix(previous, "/onboarding") : false
+    const isOnboarding = hasPrefix(pathWithoutLocale, "/onboarding")
+
+    if (wasOnboarding && !isOnboarding) {
+      hasCheckedRef.current = null
+      hasRedirectedRef.current = false
+      setIsChecking(true)
+    }
+  }, [pathWithoutLocale])
 
   // Check if we should redirect to onboarding when user changes
   useEffect(() => {
@@ -90,7 +112,7 @@ export function OnboardingProvider({
       const supabase = createClient()
 
       // Get profile - check onboarding_completed flag
-      const { data: rawProfile } = await supabase
+      const { data: rawProfile, error } = await supabase
         .from("profiles")
         .select("username, display_name, onboarding_completed, account_type")
         .eq("id", user.id)
@@ -98,7 +120,7 @@ export function OnboardingProvider({
 
       const profileData = rawProfile as RawProfileData | null
       
-      if (profileData) {
+      if (!error && profileData) {
         setProfile({
           username: profileData.username ?? null,
           display_name: profileData.display_name ?? null,
@@ -114,20 +136,22 @@ export function OnboardingProvider({
           hasRedirectedRef.current = true
           router.push(`/${locale}/onboarding`)
         }
+      } else {
+        setProfile(null)
       }
 
       setIsChecking(false)
     }
 
     checkOnboarding()
-  }, [user, authLoading, locale, router, shouldBypass, pathname])
+  }, [user, authLoading, locale, router, shouldBypass])
 
   // Reset redirect flag when pathname changes to allow re-checking
   useEffect(() => {
     if (shouldBypass) {
       hasRedirectedRef.current = false
     }
-  }, [pathname, shouldBypass])
+  }, [pathWithoutLocale, shouldBypass])
 
   const showOnboarding = () => router.push(`/${locale}/onboarding`)
   const hideOnboarding = () => {} // No-op for route-based onboarding

@@ -1,10 +1,18 @@
 import { requireDashboardAccess } from "@/lib/auth/business"
 import { createClient } from "@/lib/supabase/server"
 import { notFound } from "next/navigation"
+import { setRequestLocale } from "next-intl/server"
+import { locales } from "@/i18n/routing"
 import { OrderDetailView } from "../../../_components/order-detail-view"
 
+// Return placeholder param for build validation (required by cacheComponents)
+// Actual pages are rendered server-side for authenticated sellers
+export function generateStaticParams() {
+  return locales.map((locale) => ({ locale, orderId: "__placeholder__" }))
+}
+
 interface OrderDetailPageProps {
-  params: Promise<{ orderId: string }>
+  params: Promise<{ locale: string; orderId: string }>
 }
 
 async function getOrderDetails(orderId: string, sellerId: string) {
@@ -121,7 +129,12 @@ async function getOrderDetails(orderId: string, sellerId: string) {
 }
 
 export default async function OrderDetailPage({ params }: OrderDetailPageProps) {
-  const { orderId } = await params
+  const { locale: localeParam, orderId } = await params
+  const locale = localeParam === "bg" ? "bg" : "en"
+  
+  // Enable static generation for this locale
+  setRequestLocale(locale)
+  
   // Requires paid business subscription
   const businessSeller = await requireDashboardAccess()
   const orderData = await getOrderDetails(orderId, businessSeller.id)
