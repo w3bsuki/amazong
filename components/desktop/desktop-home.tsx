@@ -26,6 +26,7 @@ import { useCategoryCounts } from "@/hooks/use-category-counts"
 import { useCategoryAttributes } from "@/hooks/use-category-attributes"
 import { useViewMode } from "@/hooks/use-view-mode"
 import type { CategoryTreeNode } from "@/lib/category-tree"
+import { getCategoryName, type CategoryDisplay } from "@/lib/category-display"
 // Extracted components
 import { FeedToolbar, type FeedTab, type FilterState } from "@/components/desktop/feed-toolbar"
 import { CompactCategorySidebar, type CategoryPath } from "@/components/desktop/category-sidebar"
@@ -34,6 +35,7 @@ import { ProductGridSkeleton } from "@/components/shared/product/product-grid-sk
 import { PromotedSection } from "@/components/desktop/promoted-section"
 import { DesktopShell, DesktopShellSkeleton } from "@/components/layout/desktop-shell"
 import { ProductGrid, type ProductGridProduct } from "@/components/grid"
+import { SubcategoryCircles } from "@/components/category/subcategory-circles"
 import type { UIProduct } from "@/lib/data/products"
 
 import type { User } from "@supabase/supabase-js"
@@ -113,6 +115,7 @@ export function DesktopHome({
     priceMax: "",
     condition: null,
     attributes: {},
+    quickFilters: [],
   })
   const [viewMode, setViewMode] = useViewMode("grid")
   
@@ -143,6 +146,52 @@ export function DesktopHome({
     return null
   }, [categoryPath])
 
+  const activeCategoryNode = useMemo(() => {
+    if (categoryPath.length === 0) return null
+
+    let nodes = categories
+    let current: CategoryTreeNode | undefined
+
+    for (const step of categoryPath) {
+      current = nodes.find((c) => c.slug === step.slug)
+      if (!current) return null
+      nodes = current.children ?? []
+    }
+
+    return current ?? null
+  }, [categories, categoryPath])
+
+  // Compute sibling categories for leaf-level navigation
+  // Siblings are other children of the same parent (for when we're at a leaf with no children)
+  const siblingCategories = useMemo(() => {
+    if (categoryPath.length === 0) return []
+    if (!activeCategoryNode) return []
+    // Only compute siblings if active node has no children (leaf level)
+    if (activeCategoryNode.children && activeCategoryNode.children.length > 0) return []
+    
+    // Find the parent node by traversing path up to second-to-last
+    if (categoryPath.length === 1) {
+      // Parent is root - siblings are root categories
+      return categories
+    }
+    
+    // Navigate to parent node
+    let nodes = categories
+    let parentNode: CategoryTreeNode | undefined
+    
+    for (let i = 0; i < categoryPath.length - 1; i++) {
+      const step = categoryPath[i]
+      if (!step) continue
+      const found = nodes.find((c) => c.slug === step.slug)
+      if (!found) return []
+      parentNode = found
+      nodes = found.children ?? []
+    }
+    
+    // Siblings are all children of parent (including current)
+    return parentNode?.children ?? []
+  }, [categories, categoryPath, activeCategoryNode])
+
   const { attributes: categoryAttributes, isLoading: isLoadingAttributes } = useCategoryAttributes(activeCategorySlug)
 
   // Clear attribute filters when category changes
@@ -150,19 +199,49 @@ export function DesktopHome({
     setFilters(prev => ({ ...prev, attributes: {} }))
   }, [activeCategorySlug])
 
+  const handleSubcategorySelect = useCallback(
+    (category: CategoryDisplay) => {
+      setCategoryPath((prev) => {
+        const lastSlug = prev[prev.length - 1]?.slug
+        if (lastSlug === category.slug) return prev
+        return [...prev, { slug: category.slug, name: getCategoryName(category, locale) }]
+      })
+      setPage(1)
+    },
+    [locale]
+  )
+
+  // Handle sibling category selection (replaces current level, not appends)
+  const handleSiblingSelect = useCallback(
+    (category: CategoryDisplay) => {
+      setCategoryPath((prev) => {
+        if (prev.length === 0) return prev
+        const lastSlug = prev[prev.length - 1]?.slug
+        if (lastSlug === category.slug) return prev
+        // Replace the last element with the new sibling
+        const newPath = prev.slice(0, -1)
+        return [...newPath, { slug: category.slug, name: getCategoryName(category, locale) }]
+      })
+      setPage(1)
+    },
+    [locale]
+  )
+
   // Fetch products
   const fetchProducts = useCallback(
-    async (tab: FeedTab, pageNum: number, limit: number, append = false, catSlug?: string | null, city?: string | null) => {
+    async (tab: FeedTab, pageNum: number, limit: number, append = false, catSlug?: string | null, city?: string | null, quickFilters: string[] = []) => {
       setIsLoading(true)
       try {
         const params = new URLSearchParams({
-          type: tab,
+          sort: tab,
           page: String(pageNum),
           limit: String(limit),
         })
         if (catSlug) params.set("category", catSlug)
-        // Pass city for nearby tab
-        if (tab === "nearby" && city) params.set("city", city)
+        // Pass city for nearby filter
+        if (quickFilters.includes("nearby") && city) params.set("city", city)
+        // Pass quick filters
+        if (quickFilters.length > 0) params.set("filters", quickFilters.join(","))
 
         const res = await fetch(`/api/products/feed?${params.toString()}`)
         if (!res.ok) return
@@ -219,27 +298,31 @@ export function DesktopHome({
   useEffect(() => {
     if (!initialFetchDone.current) {
       initialFetchDone.current = true
-      fetchProducts(activeTab, 1, pageSize, false, activeCategorySlug, userCity)
+      fetchProducts(activeTab, 1, pageSize, false, activeCategorySlug, userCity, filters.quickFilters)
     }
   }, [])
 
-  // Fetch on tab/category/city change
+  // Fetch on tab/category/city/filters change
   const prevTab = useRef(activeTab)
   const prevCat = useRef<string | null>(null)
   const prevCity = useRef<string | null>(userCity)
+  const prevQuickFilters = useRef<string[]>([])
   useEffect(() => {
     const tabChanged = prevTab.current !== activeTab
     const catChanged = prevCat.current !== activeCategorySlug
-    const cityChanged = activeTab === "nearby" && prevCity.current !== userCity
+    const nearbyActive = filters.quickFilters?.includes("nearby") ?? false
+    const cityChanged = nearbyActive && prevCity.current !== userCity
+    const quickFiltersChanged = JSON.stringify(prevQuickFilters.current) !== JSON.stringify(filters.quickFilters)
     prevTab.current = activeTab
     prevCat.current = activeCategorySlug
     prevCity.current = userCity
+    prevQuickFilters.current = filters.quickFilters ?? []
 
-    if (tabChanged || catChanged || cityChanged) {
+    if (tabChanged || catChanged || cityChanged || quickFiltersChanged) {
       setPage(1)
-      fetchProducts(activeTab, 1, pageSize, false, activeCategorySlug, userCity)
+      fetchProducts(activeTab, 1, pageSize, false, activeCategorySlug, userCity, filters.quickFilters)
     }
-  }, [activeTab, activeCategorySlug, userCity, fetchProducts])
+  }, [activeTab, activeCategorySlug, userCity, filters.quickFilters, fetchProducts])
 
   const handleCategorySelect = (path: CategoryPath[], _cat: CategoryTreeNode | null) => {
     setCategoryPath(path)
@@ -250,7 +333,7 @@ export function DesktopHome({
     if (!isLoading && hasMore) {
       const next = page + 1
       setPage(next)
-      fetchProducts(activeTab, next, pageSize, true, activeCategorySlug, userCity)
+      fetchProducts(activeTab, next, pageSize, true, activeCategorySlug, userCity, filters.quickFilters)
     }
   }
 
@@ -292,6 +375,46 @@ export function DesktopHome({
     })
   }, [promotedProducts])
 
+  // ALWAYS merge promoted products into the grid (unified container design)
+  // Promoted products appear first with promo badge, regular products follow
+  const finalGridProducts: ProductGridProduct[] = useMemo(() => {
+    if (activePromotedProducts.length > 0) {
+      // Inject promoted products at the start of the grid
+      const promotedGridProducts: ProductGridProduct[] = activePromotedProducts.map((p) => ({
+        id: p.id,
+        title: p.title,
+        price: p.price,
+        image: p.image,
+        listPrice: p.listPrice,
+        isOnSale: p.isOnSale,
+        salePercent: p.salePercent,
+        saleEndDate: p.saleEndDate,
+        createdAt: p.createdAt,
+        slug: p.slug,
+        storeSlug: p.storeSlug,
+        sellerId: p.sellerId,
+        sellerName: p.sellerName,
+        sellerAvatarUrl: p.sellerAvatarUrl,
+        sellerVerified: p.sellerVerified,
+        location: p.location,
+        condition: p.condition,
+        isBoosted: true, // Mark as promoted for badge display
+        rating: p.rating,
+        reviews: p.reviews,
+        tags: p.tags,
+        categoryRootSlug: p.categoryRootSlug,
+        categoryPath: p.categoryPath,
+        attributes: p.attributes,
+      }))
+      // Remove duplicates (in case a promoted product is also in regular products)
+      const regularFiltered = gridProducts.filter(
+        (p) => !promotedGridProducts.some((promo) => promo.id === p.id)
+      )
+      return [...promotedGridProducts, ...regularFiltered]
+    }
+    return gridProducts
+  }, [activePromotedProducts, gridProducts])
+
   // Sidebar content
   const sidebarContent = (
     <>
@@ -319,8 +442,82 @@ export function DesktopHome({
       sidebar={sidebarContent}
       sidebarSticky
     >
-      {/* PROMOTED SECTION: Desktop-specific styled container */}
-      {activeTab !== "promoted" && activePromotedProducts.length > 0 && (
+      {/* CATEGORY HEADER + CIRCLES: Always on top when category selected */}
+      {activeCategoryNode && (
+        <div className="rounded-xl bg-card border border-border p-4 mb-4">
+          <div className="flex items-start justify-between gap-3">
+            <div className="min-w-0">
+              <h2 className="text-lg font-semibold text-foreground leading-tight">
+                {getCategoryName(activeCategoryNode, locale)}
+              </h2>
+              <p className="text-sm text-muted-foreground">
+                {finalGridProducts.length.toLocaleString(locale)}{" "}
+                {t("sectionAriaLabel").toLocaleLowerCase(locale)}
+              </p>
+            </div>
+          </div>
+
+          {/* Show subcategories if available, otherwise show siblings for navigation */}
+          {Array.isArray(activeCategoryNode.children) && activeCategoryNode.children.length > 0 ? (
+            <SubcategoryCircles
+              className="mt-3"
+              variant="desktop"
+              currentCategory={{
+                id: activeCategoryNode.id,
+                name: activeCategoryNode.name,
+                name_bg: activeCategoryNode.name_bg,
+                slug: activeCategoryNode.slug,
+                parent_id: activeCategoryNode.parent_id ?? null,
+                image_url: activeCategoryNode.image_url ?? null,
+                ...(typeof categoryCounts[activeCategoryNode.slug] === "number"
+                  ? { subtree_product_count: categoryCounts[activeCategoryNode.slug] }
+                  : {}),
+              }}
+              subcategories={activeCategoryNode.children.map((c) => ({
+                id: c.id,
+                name: c.name,
+                name_bg: c.name_bg,
+                slug: c.slug,
+                parent_id: c.parent_id ?? activeCategoryNode.id ?? null,
+                image_url: c.image_url ?? null,
+                ...(typeof categoryCounts[c.slug] === "number" ? { subtree_product_count: categoryCounts[c.slug] } : {}),
+              }))}
+              onSelectCategory={handleSubcategorySelect}
+            />
+          ) : siblingCategories.length > 0 ? (
+            // At leaf level - show sibling categories for navigation
+            <SubcategoryCircles
+              className="mt-3"
+              variant="desktop"
+              currentCategory={{
+                id: activeCategoryNode.id,
+                name: activeCategoryNode.name,
+                name_bg: activeCategoryNode.name_bg,
+                slug: activeCategoryNode.slug,
+                parent_id: activeCategoryNode.parent_id ?? null,
+                image_url: activeCategoryNode.image_url ?? null,
+                ...(typeof categoryCounts[activeCategoryNode.slug] === "number"
+                  ? { subtree_product_count: categoryCounts[activeCategoryNode.slug] }
+                  : {}),
+              }}
+              subcategories={siblingCategories.map((c) => ({
+                id: c.id,
+                name: c.name,
+                name_bg: c.name_bg,
+                slug: c.slug,
+                parent_id: c.parent_id ?? null,
+                image_url: c.image_url ?? null,
+                ...(typeof categoryCounts[c.slug] === "number" ? { subtree_product_count: categoryCounts[c.slug] } : {}),
+              }))}
+              activeSubcategorySlug={activeCategoryNode.slug}
+              onSelectCategory={handleSiblingSelect}
+            />
+          ) : null}
+        </div>
+      )}
+
+      {/* PROMOTED SECTION: Only on homepage "All" view - standalone section on top */}
+      {!activeCategorySlug && activePromotedProducts.length > 0 && (
         <PromotedSection 
           products={activePromotedProducts} 
           locale={locale}
@@ -332,6 +529,7 @@ export function DesktopHome({
       <FeedToolbar
         locale={locale}
         productCount={products.length}
+        showCount={categoryPath.length === 0}
         activeTab={activeTab}
         onTabChange={setActiveTab}
         viewMode={viewMode}
@@ -347,9 +545,9 @@ export function DesktopHome({
 
       {/* Product Grid */}
       <div className="rounded-xl bg-card border border-border p-4">
-        {products.length === 0 && isLoading ? (
+        {finalGridProducts.length === 0 && isLoading ? (
           <ProductGridSkeleton viewMode={viewMode} />
-        ) : products.length === 0 ? (
+        ) : finalGridProducts.length === 0 ? (
           <EmptyStateCTA
             variant={activeCategorySlug ? "no-category" : "no-listings"}
             {...(activeCategorySlug ? { categoryName: activeCategorySlug } : {})}
@@ -357,7 +555,7 @@ export function DesktopHome({
         ) : (
           <>
             <ProductGrid
-              products={gridProducts}
+              products={finalGridProducts}
               viewMode={viewMode}
             />
 

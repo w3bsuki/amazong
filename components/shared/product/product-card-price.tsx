@@ -97,7 +97,7 @@ function ProductCardPrice({
         {/* Original price struck through */}
         {hasDiscount && formattedOriginalPrice && (
           <span className={cn(
-            "text-muted-foreground/70 line-through tabular-nums",
+            "text-muted-foreground line-through tabular-nums",
             compact ? "text-2xs" : "text-compact"
           )}>
             {formattedOriginalPrice}

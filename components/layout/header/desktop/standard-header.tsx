@@ -3,7 +3,6 @@
 import {
   AccountDropdown,
   MessagesDropdown,
-  NotificationsDropdown,
   WishlistDropdown,
 } from "@/components/dropdowns"
 import { CartDropdown } from "@/components/layout/header/cart/cart-dropdown"
@@ -12,91 +11,82 @@ import { Button } from "@/components/ui/button"
 import { Camera } from "@phosphor-icons/react"
 import { Link } from "@/i18n/routing"
 import { useTranslations } from "next-intl"
+import { useNotificationCount } from "@/hooks/use-notification-count"
 import type { BaseHeaderProps } from "../types"
 
 /**
  * Desktop Standard Header
  * 
- * Standard desktop header with:
- * - Logo + Account dropdown on left
- * - Search bar in center
- * - Action buttons (wishlist, messages, notifications, create listing, cart) on right
+ * Production-ready desktop header with:
+ * - Logo + Account (with notification badge + arrow) on left
+ * - Search bar in center (dominant element)
+ * - Messages, Wishlist, Cart, Sell CTA on right
  * 
- * Used for: All standard pages on desktop (homepage, categories, search, etc.)
+ * Design: Subtle background tint + bottom border for visual containment
+ * Pattern: Notification badge merged into Account avatar (saves icon slot)
  */
 export function DesktopStandardHeader({
   user,
   locale,
 }: BaseHeaderProps) {
   const t = useTranslations("Navigation")
+  const notificationCount = useNotificationCount(user)
 
   return (
-    <div className="hidden md:block bg-header-bg text-header-text">
-      <div className="container h-16 flex items-center justify-between gap-4">
-        {/* Left: Logo + Account */}
-        <div className="flex items-center gap-2">
+    <header className="hidden md:block bg-header-bg text-header-text border-b border-header-border">
+      <div className="container h-16 flex items-center justify-between gap-6">
+        {/* Left: Logo + Account (with notification badge) */}
+        <div className="flex items-center gap-3">
           <Link href="/" className="flex items-center shrink-0">
             <span className="text-xl font-bold tracking-tight text-header-text">treido.</span>
           </Link>
           <div className="hidden lg:block">
-            <AccountDropdown user={user} variant="full" />
+            <AccountDropdown user={user} variant="full" notificationCount={notificationCount} />
           </div>
         </div>
 
-        {/* Center: Search */}
+        {/* Center: Search (dominant element) */}
         <div className="flex-1 max-w-2xl">
           <DesktopSearch />
         </div>
 
         {/* Right: Actions */}
-        <div className="flex items-center gap-0.5">
+        <div className="flex items-center gap-1">
           {user ? (
             <>
-              <WishlistDropdown />
+              {/* Messages */}
               <MessagesDropdown user={user} />
-              <NotificationsDropdown user={user} />
-              <Link href="/sell" aria-label={t("createListing")}>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="size-10 [&_svg]:size-6 border border-transparent hover:border-header-text/20 rounded-md text-header-text hover:text-header-text hover:bg-header-hover"
-                >
-                  <Camera weight="regular" />
-                </Button>
-              </Link>
-              <div className="hidden md:block lg:hidden">
-                <AccountDropdown user={user} />
-              </div>
+              
+              {/* Commerce: Wishlist + Cart */}
+              <WishlistDropdown />
               <CartDropdown />
+              
+              {/* Primary CTA: Create Listing */}
+              <Button variant="secondary" size="sm" className="ml-2" asChild>
+                <Link href="/sell">
+                  <Camera weight="regular" className="size-4" />
+                  <span className="hidden xl:inline">{t("createListing")}</span>
+                </Link>
+              </Button>
+              
+              {/* Account on medium screens (when full variant is hidden) */}
+              <div className="hidden md:block lg:hidden ml-1">
+                <AccountDropdown user={user} notificationCount={notificationCount} />
+              </div>
             </>
           ) : (
             <div className="flex items-center gap-2">
-              <Link
-                href="/auth/login"
-                className="text-sm font-medium text-header-text hover:bg-header-hover px-3 py-2 rounded-md transition-colors"
-              >
-                {t("signIn")}
-              </Link>
-              <Link
-                href="/auth/sign-up"
-                className="text-sm font-medium bg-cta-secondary text-cta-secondary-text hover:bg-cta-secondary-hover px-4 py-2 rounded-md transition-colors"
-              >
-                {t("register")}
-              </Link>
-              <Link href="/sell" aria-label={t("createListing")}>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="size-10 [&_svg]:size-6 border border-transparent hover:border-header-text/20 rounded-md text-header-text hover:text-header-text hover:bg-header-hover"
-                >
-                  <Camera weight="regular" />
-                </Button>
-              </Link>
+              <Button variant="header-ghost" size="sm" asChild>
+                <Link href="/auth/login">{t("signIn")}</Link>
+              </Button>
+              <Button variant="secondary" size="sm" asChild>
+                <Link href="/auth/sign-up">{t("register")}</Link>
+              </Button>
               <CartDropdown />
             </div>
           )}
         </div>
       </div>
-    </div>
+    </header>
   )
 }

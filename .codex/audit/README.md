@@ -1,12 +1,17 @@
 # Audit (Working Folder)
 
-This folder contains *working* audits and refactor notes. **SSOT is** `.codex/AGENTS.md` + `.codex/project/*`.
+This folder contains *working* audits and refactor notes.
+
+**SSOT:**
+- Stable docs: `docs/*` (start at `docs/00-INDEX.md`)
+- Execution queue: `.codex/TASKS.md`
 
 ## Structure
 
 - **Root** — Active/recent dated audit files (last 7-14 days)
 - **`lane/`** — Permanent checklist/heuristics files (not dated, not SSOT)
 - **`archive/`** — Completed/older dated audits (searchable, out of the way)
+- **`playwright/`** — Playwright UI/UX audit runs (dated folders)
 
 ## Active Audits (Root)
 
@@ -14,7 +19,7 @@ Recent dated audit files live here. Move to `archive/` once findings are resolve
 
 ## Lane Files (Reference Checklists)
 
-These are audit checklists, **not SSOT**. Real architectural truth lives in `.codex/project/ARCHITECTURE.md`.
+These are audit checklists, **not SSOT**. Real architectural truth lives in `docs/03-ARCHITECTURE.md` and `docs/04-DESIGN.md`.
 
 - `lane/nextjs.md` — App Router structure, server/client boundaries, caching, route handlers, server actions, i18n.
 - `lane/tailwind-shadcn.md` — Tailwind v4 (CSS-first), token system, shadcn/ui usage, styling drift.
@@ -45,7 +50,8 @@ REUSE_EXISTING_SERVER=true pnpm -s test:e2e:smoke
 
 ## Related Docs
 
-- `.codex/project/ARCHITECTURE.md` — repo boundaries + caching rules (SSOT)
-- `.codex/project/DESIGN.md` — Tailwind v4 tokens, UI rules (SSOT)
+- `docs/03-ARCHITECTURE.md` — repo boundaries + caching rules (SSOT)
+- `docs/04-DESIGN.md` — Tailwind v4 tokens, UI rules (SSOT)
+- `docs/WORKFLOW.md` — operations workflow
 - `.codex/TASKS.md` — active task tracking
 

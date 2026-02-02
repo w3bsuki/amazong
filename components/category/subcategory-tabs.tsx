@@ -20,6 +20,8 @@ interface Category {
 interface SubcategoryTabsProps {
   currentCategory: Category | null
   subcategories: Category[]
+  /** Sibling categories to show when at leaf level (no subcategories) */
+  siblingCategories?: Category[]
   parentCategory?: Category | null // Kept for backward compatibility (not used here, breadcrumb is separate)
   basePath?: string // "/categories" or undefined for "/search?category="
   variant?: "default" | "desktop" // desktop = larger circles
@@ -27,19 +29,53 @@ interface SubcategoryTabsProps {
   activeSubcategorySlug?: string | null | undefined
   /** Show product counts under category names (DEC-002 curated browse UX) */
   showCounts?: boolean
+  /** Optional: handle selection locally (no navigation). When set, renders buttons instead of links. */
+  onSelectCategory?: (category: Category) => void
 }
 
 /**
  * Category header section with title and subcategory circles.
- * Shows a banner when at the deepest level (no subcategories).
+ * Shows siblings when at the deepest level (no subcategories).
  */
-export function SubcategoryTabs({ currentCategory, subcategories, basePath, variant = "default", activeSubcategorySlug, showCounts = false }: SubcategoryTabsProps) {
+export function SubcategoryTabs({ 
+  currentCategory, 
+  subcategories, 
+  siblingCategories = [],
+  basePath, 
+  variant = "default", 
+  activeSubcategorySlug, 
+  showCounts = false,
+  onSelectCategory,
+}: SubcategoryTabsProps) {
   const searchParams = useSearchParams()
 
   if (!currentCategory) return null
 
-  // At deepest level - show category banner instead of circles
+  // At deepest level - show sibling navigation circles (current category highlighted among siblings)
   if (subcategories.length === 0) {
+    // If we have siblings, show them as navigation circles
+    if (siblingCategories.length > 0) {
+      return (
+        <div className="mb-4 pb-3 border-b border-border">
+          {/* Small banner context showing current category */}
+          <CategoryBannerCompact category={currentCategory} />
+          
+          {/* Sibling circles for navigation - current is highlighted */}
+          <SubcategoryCircles
+            subcategories={siblingCategories}
+            currentCategory={currentCategory}
+            searchParamsString={searchParams.toString()}
+            variant={variant}
+            activeSubcategorySlug={currentCategory.slug}
+            showCounts={showCounts}
+            {...(basePath ? { basePath } : {})}
+            {...(onSelectCategory ? { onSelectCategory } : {})}
+          />
+        </div>
+      )
+    }
+    
+    // No siblings either - just show banner
     return <CategoryBanner category={currentCategory} />
   }
 
@@ -54,13 +90,40 @@ export function SubcategoryTabs({ currentCategory, subcategories, basePath, vari
         activeSubcategorySlug={activeSubcategorySlug}
         showCounts={showCounts}
         {...(basePath ? { basePath } : {})}
+        {...(onSelectCategory ? { onSelectCategory } : {})}
       />
     </div>
   )
 }
 
 /**
- * Banner shown at the deepest category level.
+ * Compact banner shown above sibling circles at leaf level.
+ */
+function CategoryBannerCompact({ category }: { category: Category }) {
+  const locale = useLocale()
+  const t = useTranslations("Categories")
+  const name = locale === "bg" && category.name_bg ? category.name_bg : category.name
+
+  return (
+    <div className="flex items-center gap-2 mb-3">
+      <CategoryCircleVisual
+        category={category}
+        active={true}
+        className="size-10 shrink-0"
+        fallbackIconSize={20}
+        fallbackIconWeight="regular"
+        variant="colorful"
+      />
+      <div className="min-w-0">
+        <h2 className="text-base font-semibold text-foreground truncate">{name}</h2>
+        <p className="text-xs text-muted-foreground">{t("browseSiblings")}</p>
+      </div>
+    </div>
+  )
+}
+
+/**
+ * Full banner shown at the deepest category level when no siblings available.
  */
 function CategoryBanner({ category }: { category: Category }) {
   const locale = useLocale()

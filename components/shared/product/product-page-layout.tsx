@@ -52,7 +52,7 @@ type CategorySummary = {
 };
 
 // Mobile-specific imports
-import { MobileProductPage } from "@/components/mobile/product/mobile-product-page";
+import { MobileProductSingleScroll } from "@/components/mobile/product/mobile-product-single-scroll";
 
 // Loading skeletons for Suspense boundaries
 function RelatedProductsSkeleton() {
@@ -185,7 +185,7 @@ export function ProductPageLayout(props: ProductPageLayoutProps) {
       />
 
       {/* ===== MOBILE PRODUCT PAGE ===== */}
-      <MobileProductPage
+      <MobileProductSingleScroll
         locale={locale}
         username={username}
         productSlug={productSlug}

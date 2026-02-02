@@ -31,10 +31,14 @@ import {
   shouldForceMultiSelectCategoryAttribute,
 } from "@/lib/filters/category-attribute"
 import { setPendingAttributeValues } from "@/lib/filters/pending-attributes"
+import { BULGARIAN_CITIES } from "@/lib/bulgarian-cities"
 import { ColorSwatches } from "./color-swatches"
 import { SizeTiles } from "./size-tiles"
 import { FilterList } from "./filter-list"
 import { PriceSlider } from "./price-slider"
+import { FilterRatingSection } from "./filter-rating-section"
+import { FilterAvailabilitySection } from "./filter-availability-section"
+import { FilterCategorySection } from "./filter-category-section"
 
 // =============================================================================
 // FILTER HUB — Main filtering modal with pending/applied state
@@ -132,6 +136,8 @@ interface PendingFilters {
   availability: string | null
   deals: string | null
   verified: string | null
+  city: string | null
+  nearby: string | null
   attributes: Record<string, string[]>
 }
 
@@ -198,6 +204,8 @@ export function FilterHub({
     availability: null,
     deals: null,
     verified: null,
+    city: null,
+    nearby: null,
     attributes: {},
   })
 
@@ -249,6 +257,8 @@ export function FilterHub({
       availability: searchParams.get("availability"),
       deals: searchParams.get("deals"),
       verified: searchParams.get("verified"),
+      city: searchParams.get("city"),
+      nearby: searchParams.get("nearby"),
       attributes: visibleAttributes.reduce(
         (acc, attr) => {
           const attrKey = getCategoryAttributeKey(attr)
@@ -282,6 +292,7 @@ export function FilterHub({
     sections.push(
       { id: "rating", label: t("customerReviews") },
       { id: "price", label: t("price") },
+      { id: "location", label: t("location") },
       { id: "availability", label: t("availability") }
     )
 
@@ -332,6 +343,8 @@ export function FilterHub({
       availability: null,
       deals: null,
       verified: null,
+      city: null,
+      nearby: null,
       attributes: {},
     })
   }, [])
@@ -346,6 +359,8 @@ export function FilterHub({
       pending.availability !== null ||
       pending.deals !== null ||
       pending.verified !== null ||
+      pending.city !== null ||
+      pending.nearby !== null ||
       Object.keys(pending.attributes).length > 0
     )
   }, [pendingCategorySlug, pending])
@@ -361,6 +376,8 @@ export function FilterHub({
     params.delete("availability")
     params.delete("deals")
     params.delete("verified")
+    params.delete("city")
+    params.delete("nearby")
     params.delete("page")
 
     // Remove all attr_* params
@@ -377,6 +394,8 @@ export function FilterHub({
     if (pending.availability) params.set("availability", pending.availability)
     if (pending.deals) params.set("deals", pending.deals)
     if (pending.verified) params.set("verified", pending.verified)
+    if (pending.city) params.set("city", pending.city)
+    if (pending.nearby) params.set("nearby", pending.nearby)
 
     // Apply pending attribute filters
     for (const [attrName, values] of Object.entries(pending.attributes)) {
@@ -427,6 +446,19 @@ export function FilterHub({
       if (section.id === "availability") {
         return pending.availability === "instock" ? t("inStock") : null
       }
+      if (section.id === "location") {
+        const parts: string[] = []
+        if (pending.city) {
+          const cityData = BULGARIAN_CITIES.find((c) => c.value === pending.city)
+          if (cityData) {
+            parts.push(locale === "bg" ? cityData.labelBg : cityData.label)
+          }
+        }
+        if (pending.nearby === "true") {
+          parts.push(t("nearMe"))
+        }
+        return parts.length > 0 ? parts.join(", ") : null
+      }
       if ("attribute" in section && section.attribute) {
         const values = getPendingAttrValues(getCategoryAttributeKey(section.attribute))
         if (values.length === 0) return null
@@ -459,7 +491,7 @@ export function FilterHub({
         {/* Header */}
         <DrawerHeader
           className={cn(
-            "px-inset pb-3 border-b border-border/50",
+            "px-inset pb-3 border-b border-border",
             activeSection || isSingleMode ? "pt-4" : "pt-3"
           )}
         >
@@ -528,7 +560,7 @@ export function FilterHub({
           {/* In full mode, show list view when no section is active */}
           {!activeSection && !isSingleMode ? (
             /* Main List View (full mode only) */
-            <div className="divide-y divide-border/30">
+            <div className="divide-y divide-border">
               {filterSections.map((section) => {
                 const summary = getSelectedSummary(section)
                 return (
@@ -544,13 +576,14 @@ export function FilterHub({
                       </span>
                       {summary && (
                         <span className="text-xs text-muted-foreground truncate">
+                          {summary}
                         </span>
                       )}
                     </div>
                     <CaretRight
                       size={16}
                       weight="bold"
-                      className="text-muted-foreground/60"
+                      className="text-muted-foreground"
                     />
                   </button>
                 )
@@ -561,49 +594,10 @@ export function FilterHub({
             <div className="px-inset py-4 space-y-2">
               {/* Ratings */}
               {activeSection === "rating" && (
-                <div className="-mx-inset divide-y divide-border/30">
-                  {[4, 3, 2, 1].map((stars) => {
-                    const isActive = pending.minRating === stars.toString()
-                    return (
-                      <button
-                        key={stars}
-                        type="button"
-                        onClick={() =>
-                          setPending((prev) => ({
-                            ...prev,
-                            minRating: isActive ? null : stars.toString(),
-                          }))
-                        }
-                        className={cn(
-                          "w-full flex items-center gap-3 px-inset h-10 transition-colors text-left",
-                          isActive
-                            ? "bg-selected text-foreground font-medium"
-                            : "text-foreground active:bg-active"
-                        )}
-                        aria-pressed={isActive}
-                      >
-                        <div
-                          className={cn(
-                            "size-5 rounded border flex items-center justify-center transition-colors shrink-0",
-                            isActive ? "bg-primary border-primary" : "border-input"
-                          )}
-                        >
-                          {isActive && <Check size={12} weight="bold" className="text-primary-foreground" />}
-                        </div>
-                        <div className="flex text-rating">
-                          {[...Array(5)].map((_, i) => (
-                            <Star
-                              key={i}
-                              size={18}
-                              weight={i < stars ? "fill" : "regular"}
-                            />
-                          ))}
-                        </div>
-                        <span className="text-sm">{t("andUp")}</span>
-                      </button>
-                    )
-                  })}
-                </div>
+                <FilterRatingSection
+                  minRating={pending.minRating}
+                  onChange={(minRating) => setPending((prev) => ({ ...prev, minRating }))}
+                />
               )}
 
               {/* Price */}
@@ -618,115 +612,105 @@ export function FilterHub({
 
               {/* Availability */}
               {activeSection === "availability" && (
-                <div className="-mx-inset">
+                <FilterAvailabilitySection
+                  availability={pending.availability}
+                  onChange={(availability) => setPending((prev) => ({ ...prev, availability }))}
+                />
+              )}
+
+              {/* Location */}
+              {activeSection === "location" && (
+                <div className="space-y-4">
+                  {/* City selector */}
+                  <div className="-mx-inset divide-y divide-border">
+                    {/* Any location option */}
+                    <button
+                      type="button"
+                      onClick={() => setPending((prev) => ({ ...prev, city: null }))}
+                      className={cn(
+                        "w-full flex items-center gap-3 px-inset h-12 transition-colors text-left",
+                        !pending.city
+                          ? "bg-selected text-foreground font-medium"
+                          : "text-foreground active:bg-active"
+                      )}
+                    >
+                      <div
+                        className={cn(
+                          "size-5 rounded-full border flex items-center justify-center transition-colors shrink-0",
+                          !pending.city ? "bg-primary border-primary" : "border-input"
+                        )}
+                      >
+                        {!pending.city && <Check size={12} weight="bold" className="text-primary-foreground" />}
+                      </div>
+                      <span className="text-sm">{t("anyLocation")}</span>
+                    </button>
+                    
+                    {/* City options */}
+                    {BULGARIAN_CITIES.filter(c => c.value !== "other").slice(0, 15).map((city) => {
+                      const isSelected = pending.city === city.value
+                      return (
+                        <button
+                          key={city.value}
+                          type="button"
+                          onClick={() => setPending((prev) => ({ ...prev, city: city.value }))}
+                          className={cn(
+                            "w-full flex items-center gap-3 px-inset h-12 transition-colors text-left",
+                            isSelected
+                              ? "bg-selected text-foreground font-medium"
+                              : "text-foreground active:bg-active"
+                          )}
+                        >
+                          <div
+                            className={cn(
+                              "size-5 rounded-full border flex items-center justify-center transition-colors shrink-0",
+                              isSelected ? "bg-primary border-primary" : "border-input"
+                            )}
+                          >
+                            {isSelected && <Check size={12} weight="bold" className="text-primary-foreground" />}
+                          </div>
+                          <span className="text-sm">{locale === "bg" ? city.labelBg : city.label}</span>
+                        </button>
+                      )
+                    })}
+                  </div>
+                  
+                  {/* Nearby toggle */}
                   <button
                     type="button"
-                    onClick={() =>
-                      setPending((prev) => ({
-                        ...prev,
-                        availability:
-                          prev.availability === "instock" ? null : "instock",
-                      }))
-                    }
+                    onClick={() => setPending((prev) => ({ 
+                      ...prev, 
+                      nearby: prev.nearby === "true" ? null : "true" 
+                    }))}
                     className={cn(
-                      "w-full flex items-center gap-3 px-inset h-10 transition-colors text-left",
-                      pending.availability === "instock"
+                      "-mx-inset w-auto flex items-center gap-3 px-inset h-12 transition-colors text-left",
+                      pending.nearby === "true"
                         ? "bg-selected text-foreground font-medium"
                         : "text-foreground active:bg-active"
                     )}
-                    aria-pressed={pending.availability === "instock"}
                   >
                     <div
                       className={cn(
-                        "size-5 rounded border flex items-center justify-center transition-colors",
-                        pending.availability === "instock"
-                          ? "bg-primary border-primary"
-                          : "border-input"
+                        "size-5 rounded border flex items-center justify-center transition-colors shrink-0",
+                        pending.nearby === "true" ? "bg-primary border-primary" : "border-input"
                       )}
                     >
-                      {pending.availability === "instock" && (
-                        <Check
-                          size={12}
-                          weight="bold"
-                          className="text-primary-foreground"
-                        />
-                      )}
+                      {pending.nearby === "true" && <Check size={12} weight="bold" className="text-primary-foreground" />}
                     </div>
-                    <span className="text-sm">{t("inStock")}</span>
+                    <span className="text-sm">{t("nearMe")}</span>
                   </button>
                 </div>
               )}
 
               {/* Category Section - L2+ drill-down (Phase 3) */}
               {activeSection === "category" && subcategories.length > 0 && (
-                <div className="-mx-inset divide-y divide-border/30">
-                  {/* "All in Category" option with close button */}
-                  <div className="flex items-center px-inset">
-                    <button
-                      type="button"
-                      onClick={() => setPendingCategorySlug(null)}
-                      className={cn(
-                        "flex-1 flex items-center gap-3 h-10 transition-colors text-left",
-                        pendingCategorySlug === null
-                          ? "bg-selected text-foreground font-medium"
-                          : "text-foreground active:bg-active"
-                      )}
-                      aria-pressed={pendingCategorySlug === null}
-                    >
-                      <div
-                        className={cn(
-                          "size-5 rounded-full border flex items-center justify-center transition-colors shrink-0",
-                          pendingCategorySlug === null ? "bg-primary border-primary" : "border-input"
-                        )}
-                      >
-                        {pendingCategorySlug === null && <div className="size-2 rounded-full bg-primary-foreground" />}
-                      </div>
-                      <span className="text-sm">
-                        {tHub("allInCategory", { category: categoryName || "" })}
-                      </span>
-                    </button>
-                    {/* Reset to All Categories X button */}
-                    <Link
-                      href="/categories"
-                      onClick={() => onOpenChange(false)}
-                      className="size-8 flex items-center justify-center rounded-full bg-muted hover:bg-destructive/10 hover:text-destructive transition-colors shrink-0 ml-2"
-                      aria-label={t("browseAllCategories")}
-                      title={t("browseAllCategories")}
-                    >
-                      <X size={14} weight="bold" />
-                    </Link>
-                  </div>
-
-                  {/* Subcategory options */}
-                  {subcategories.map((subcat) => {
-                    const isActive = pendingCategorySlug === subcat.slug
-                    const subcatName = locale === "bg" && subcat.name_bg ? subcat.name_bg : subcat.name
-                    return (
-                      <button
-                        key={subcat.id}
-                        type="button"
-                        onClick={() => setPendingCategorySlug(isActive ? null : subcat.slug)}
-                        className={cn(
-                          "w-full flex items-center gap-3 px-inset h-10 transition-colors text-left",
-                          isActive
-                            ? "bg-selected text-foreground font-medium"
-                            : "text-foreground active:bg-active"
-                        )}
-                        aria-pressed={isActive}
-                      >
-                        <div
-                          className={cn(
-                            "size-5 rounded-full border flex items-center justify-center transition-colors shrink-0",
-                            isActive ? "bg-primary border-primary" : "border-input"
-                          )}
-                        >
-                          {isActive && <div className="size-2 rounded-full bg-primary-foreground" />}
-                        </div>
-                        <span className="text-sm">{subcatName}</span>
-                      </button>
-                    )
-                  })}
-                </div>
+                <FilterCategorySection
+                  locale={locale}
+                  categoryName={categoryName ?? ""}
+                  pendingCategorySlug={pendingCategorySlug}
+                  onChangePendingCategorySlug={setPendingCategorySlug}
+                  subcategories={subcategories}
+                  onCloseHub={() => onOpenChange(false)}
+                />
               )}
 
               {/* Category Attribute Filters */}
@@ -828,7 +812,7 @@ export function FilterHub({
                     shouldForceMultiSelect(attr)
 
                   return (
-                    <div className="-mx-inset divide-y divide-border/30">
+                    <div className="-mx-inset divide-y divide-border">
                       {options.map((option, idx) => {
                         const currentValues = getPendingAttrValues(attrKey)
                         const isActive = currentValues.includes(option)
@@ -881,7 +865,7 @@ export function FilterHub({
         </DrawerBody>
 
         {/* Footer with Apply CTA + Live Count */}
-        <DrawerFooter className="px-inset border-t border-border/30 bg-background">
+        <DrawerFooter className="px-inset border-t border-border bg-background">
           <Button
             className="w-full h-11 rounded-full text-sm font-bold"
             onClick={applyFilters}

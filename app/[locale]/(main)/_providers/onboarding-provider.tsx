@@ -1,16 +1,14 @@
 "use client"
 
 import { createContext, useEffect, useState, useRef, type ReactNode } from "react"
+import { useRouter, usePathname } from "next/navigation"
 import { createClient } from "@/lib/supabase/client"
-import {
-  PostSignupOnboardingModal,
-  type CompletePostSignupOnboardingAction,
-} from "../_components/post-signup-onboarding-modal"
 import { useAuthOptional } from "@/components/providers/auth-state-manager"
 
 interface OnboardingContextValue {
   showOnboarding: () => void
   hideOnboarding: () => void
+  isOnboardingComplete: boolean
 }
 
 const OnboardingContext = createContext<OnboardingContextValue | null>(null)
@@ -18,7 +16,6 @@ const OnboardingContext = createContext<OnboardingContextValue | null>(null)
 interface OnboardingProviderProps {
   children: ReactNode
   locale: string
-  completePostSignupOnboarding: CompletePostSignupOnboardingAction
 }
 
 interface ProfileData {
@@ -36,66 +33,63 @@ interface RawProfileData {
   account_type?: string | null
 }
 
+// Routes that should always be accessible without onboarding
+const BYPASS_ROUTES = [
+  "/onboarding",
+  "/auth",
+  "/api",
+  "/terms",
+  "/privacy",
+  "/help",
+]
+
 export function OnboardingProvider({
   children,
   locale,
-  completePostSignupOnboarding,
 }: OnboardingProviderProps) {
   const auth = useAuthOptional()
+  const router = useRouter()
+  const pathname = usePathname()
   
   const [profile, setProfile] = useState<ProfileData | null>(null)
-  const [isModalOpen, setIsModalOpen] = useState(false)
-  const [_isChecking, setIsChecking] = useState(true)
+  const [isChecking, setIsChecking] = useState(true)
   const hasCheckedRef = useRef<string | null>(null)
-  const pendingOpenRef = useRef(false)
-  const [isDialogSafe, setIsDialogSafe] = useState(false)
+  const hasRedirectedRef = useRef(false)
 
   // Get user from auth context
   const user = auth?.user ?? null
   const authLoading = auth?.isLoading ?? true
 
-  // Avoid Radix Dialog opening before the header boundary hydrates.
-  useEffect(() => {
-    let cancelled = false
-    const deadline = Date.now() + 2_000
+  // Check if current route should bypass onboarding check
+  const shouldBypass = BYPASS_ROUTES.some(route => pathname.includes(route))
 
-    const poll = () => {
-      if (cancelled) return
-      const headerHydrated = document.querySelector('header[data-hydrated="true"]')
-      if (headerHydrated || Date.now() > deadline) {
-        setIsDialogSafe(true)
-        return
-      }
-      setTimeout(poll, 50)
-    }
-
-    poll()
-    return () => {
-      cancelled = true
-    }
-  }, [])
-
-  // Check if we should show onboarding when user changes
+  // Check if we should redirect to onboarding when user changes
   useEffect(() => {
     if (authLoading) return // Wait for auth to settle
+    if (shouldBypass) {
+      setIsChecking(false)
+      return // Don't check onboarding on bypass routes
+    }
 
     const checkOnboarding = async () => {
       if (!user) {
         setProfile(null)
-        setIsModalOpen(false)
         hasCheckedRef.current = null
-        pendingOpenRef.current = false
+        hasRedirectedRef.current = false
         setIsChecking(false)
         return
       }
 
       // Already checked for this user
-      if (hasCheckedRef.current === user.id) return
+      if (hasCheckedRef.current === user.id) {
+        setIsChecking(false)
+        return
+      }
       hasCheckedRef.current = user.id
 
       const supabase = createClient()
 
-      // Get profile - cast to unknown first for type safety
+      // Get profile - check onboarding_completed flag
       const { data: rawProfile } = await supabase
         .from("profiles")
         .select("username, display_name, onboarding_completed, account_type")
@@ -112,19 +106,13 @@ export function OnboardingProvider({
           account_type: (profileData.account_type as "personal" | "business") ?? "personal",
         })
 
-        // Check if onboarding is needed
-        // Show modal if onboarding not completed AND user has a username (meaning they've signed up)
-        // OR if there's an onboarding query param
-        let forceOnboarding = false
-        try {
-          forceOnboarding = new URLSearchParams(window.location.search).get("onboarding") === "true"
-        } catch {
-          forceOnboarding = false
-        }
-        const needsOnboarding = !profileData.onboarding_completed && profileData.username
+        // Check if onboarding is needed based on onboarding_completed flag (NOT username)
+        const needsOnboarding = profileData.onboarding_completed !== true
 
-        if (forceOnboarding || needsOnboarding) {
-          pendingOpenRef.current = true
+        // Redirect to onboarding if needed and haven't already
+        if (needsOnboarding && !hasRedirectedRef.current && !shouldBypass) {
+          hasRedirectedRef.current = true
+          router.push(`/${locale}/onboarding`)
         }
       }
 
@@ -132,48 +120,23 @@ export function OnboardingProvider({
     }
 
     checkOnboarding()
-  }, [user, authLoading])
+  }, [user, authLoading, locale, router, shouldBypass, pathname])
 
-  // Open onboarding after the app is safe to open dialogs.
+  // Reset redirect flag when pathname changes to allow re-checking
   useEffect(() => {
-    if (!user) return
-    if (!isDialogSafe) return
-    if (!pendingOpenRef.current) return
+    if (shouldBypass) {
+      hasRedirectedRef.current = false
+    }
+  }, [pathname, shouldBypass])
 
-    pendingOpenRef.current = false
-    const timer = window.setTimeout(() => setIsModalOpen(true), 300)
-    return () => window.clearTimeout(timer)
-  }, [user, isDialogSafe])
+  const showOnboarding = () => router.push(`/${locale}/onboarding`)
+  const hideOnboarding = () => {} // No-op for route-based onboarding
 
-  const showOnboarding = () => setIsModalOpen(true)
-  const hideOnboarding = () => setIsModalOpen(false)
-
-  const handleClose = () => {
-    setIsModalOpen(false)
-    // Remove the query param if present
-    if (typeof window === "undefined") return
-    const url = new URL(window.location.href)
-    if (!url.searchParams.has("onboarding")) return
-
-    url.searchParams.delete("onboarding")
-    window.history.replaceState({}, "", url.toString())
-  }
+  const isOnboardingComplete = profile?.onboarding_completed === true
 
   return (
-    <OnboardingContext.Provider value={{ showOnboarding, hideOnboarding }}>
+    <OnboardingContext.Provider value={{ showOnboarding, hideOnboarding, isOnboardingComplete }}>
       {children}
-      {user && profile?.username && (
-        <PostSignupOnboardingModal
-          isOpen={isModalOpen}
-          onClose={handleClose}
-          userId={user.id}
-          username={profile.username}
-          displayName={profile.display_name}
-          accountType={profile.account_type}
-          locale={locale}
-          completePostSignupOnboarding={completePostSignupOnboarding}
-        />
-      )}
     </OnboardingContext.Provider>
   )
 }

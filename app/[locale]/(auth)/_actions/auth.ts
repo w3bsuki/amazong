@@ -176,7 +176,6 @@ export async function signUp(
     name: formData.get("name"),
     username: formData.get("username"),
     email: formData.get("email"),
-    accountType: formData.get("accountType"),
     password: formData.get("password"),
     confirmPassword: formData.get("confirmPassword"),
   })
@@ -205,11 +204,13 @@ export async function signUp(
     options: {
       // Include locale/next as query params so the non-locale /auth/confirm route
       // can redirect users back into the correct locale after verification.
-      emailRedirectTo: `${siteUrl}/auth/confirm?locale=${encodeURIComponent(locale)}&next=${encodeURIComponent("/")}`,
+      // After signup, redirect to onboarding flow to select account type
+      emailRedirectTo: `${siteUrl}/auth/confirm?locale=${encodeURIComponent(locale)}&next=${encodeURIComponent("/onboarding")}`,
       data: {
         full_name: parsed.data.name,
         username: usernameLower,
-        account_type_intent: parsed.data.accountType,
+        // Account type is now selected during onboarding, defaulting to personal
+        account_type_intent: "personal",
       },
     },
   })

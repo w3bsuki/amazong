@@ -62,13 +62,6 @@ export interface ContextualHeaderProps extends BaseHeaderProps {
   hideActions?: boolean | undefined
 }
 
-export interface DefaultHeaderProps extends BaseHeaderProps {
-  /** Callback to open search overlay */
-  onSearchOpen: () => void
-  /** Search placeholder text */
-  searchPlaceholder: string
-}
-
 export interface MinimalHeaderProps {
   /** Locale for translations */
   locale: string

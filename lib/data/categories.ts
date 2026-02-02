@@ -760,6 +760,37 @@ async function getSiblingCategories(parentId: string | null): Promise<Category[]
 }
 
 /**
+ * Fetch sibling categories with product counts for navigation circles.
+ * Shows all siblings of a category (same parent) including the current one.
+ * Used for leaf-level navigation where there are no children.
+ * 
+ * @param categoryId - Current category UUID
+ * @returns Array of sibling categories with product counts (current category included)
+ */
+export async function getCategorySiblingsWithCounts(categoryId: string): Promise<CategoryWithCount[]> {
+  'use cache'
+  cacheTag(`category-siblings-counts:${categoryId}`)
+  cacheLife('categories')
+  
+  const supabase = createStaticClient()
+  
+  // First get the current category to find its parent
+  const { data: currentCat, error: currentError } = await supabase
+    .from('categories')
+    .select('id, parent_id')
+    .eq('id', categoryId)
+    .single()
+  
+  if (currentError || !currentCat) {
+    logger.error('[getCategorySiblingsWithCounts] Current category not found', currentError)
+    return []
+  }
+  
+  // Get all siblings (same parent_id) including the current category
+  return getSubcategoriesWithCounts(currentCat.parent_id, false)
+}
+
+/**
  * Fetch direct children of a category.
  * Used for subcategory tabs and navigation.
  * 
@@ -837,8 +868,9 @@ export async function getCategoryContext(slug: string): Promise<CategoryContext 
           .order('display_order')
           .order('name'),
     
-    // Children: DEC-002 compliant (curated ordering + visibility filtering)
-    getSubcategoriesForBrowse(current.id, true),
+    // Children: fetch ALL, sorting handles curated-first ordering
+    // filterForBrowse=false ensures all children show as navigation circles
+    getSubcategoriesForBrowse(current.id, false),
     
     // Filterable attributes for current category
     supabase
@@ -1062,20 +1094,20 @@ export async function getSubcategoriesWithCounts(
  * Get subcategories ordered by curated first, then by product count.
  * Implements DEC-002 ordering: display_order > 0 first, then by subtree_product_count DESC.
  * 
- * DEC-002 visibility rule: show if (count > 0) OR (display_order > 0) — curated empties are visible.
- * 
  * @param parentId - Parent category UUID (null for root categories)
- * @param filterForBrowse - If true (default), only return visible categories per DEC-002 rule
+ * @param filterForBrowse - If true, only shows populated OR curated categories (for homepage).
+ *                          If false (recommended for category pages), returns ALL children.
  * @returns Array of subcategories sorted by curated then popularity
  */
 export async function getSubcategoriesForBrowse(
   parentId: string | null,
-  filterForBrowse: boolean = true
+  filterForBrowse: boolean = false
 ): Promise<CategoryWithCount[]> {
   // Always fetch all counts (we filter in TS for flexibility)
   const subcats = await getSubcategoriesWithCounts(parentId, false)
   
-  // DEC-002: Filter to show categories that are populated OR curated
+  // Only filter when explicitly requested (e.g., homepage browse)
+  // Category pages should show ALL children for navigation
   const visible = filterForBrowse
     ? subcats.filter(cat => {
         const isCurated = (cat.display_order ?? 0) > 0 && (cat.display_order ?? 9999) < 9000
@@ -1098,7 +1130,10 @@ export async function getSubcategoriesForBrowse(
       return (a.display_order ?? 999) - (b.display_order ?? 999)
     }
     
-    // Within non-curated: sort by product count DESC
-    return b.subtree_product_count - a.subtree_product_count
+    // Within non-curated: sort by product count DESC, then by name ASC for consistency
+    if (b.subtree_product_count !== a.subtree_product_count) {
+      return b.subtree_product_count - a.subtree_product_count
+    }
+    return a.name.localeCompare(b.name)
   })
 }

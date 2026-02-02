@@ -2,9 +2,10 @@
 
 This document defines **how agents coordinate work** in this repo.
 
-**Everything lives in `.codex/`:**
-- Project rails + boundaries: `AGENTS.md`
-- Product + app architecture: `project/*`
+**Stable docs live in `docs/`; execution state lives in `.codex/`:**
+- Project rails + boundaries (SSOT): `docs/AGENTS.md`
+- Workflow (SSOT): `docs/WORKFLOW.md`
+- Product/system docs (SSOT): `docs/00-INDEX.md` (and linked docs)
 - Active task queue: `.codex/TASKS.md`
 - Audit outputs: `.codex/audit/*`
 - Active debate thread: `CONVERSATION.md`
@@ -47,7 +48,7 @@ This document defines **how agents coordinate work** in this repo.
 ### Docs (optional)
 
 - Trigger: `DOCS:` (if/when added as a skill)
-- Writes: `.codex/project/*` only when explicitly requested by the orchestrator/human.
+- Writes: `docs/*` only when explicitly requested by the orchestrator/human.
 - Responsibility: update SSOT docs when shipped work changes architecture/rails/feature scope.
 
 ## Auto-Execute Policy

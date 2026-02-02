@@ -111,7 +111,7 @@ export function CategoryCircles({
           aria-label={tCommon("back")}
         >
           {/* Mini icon inside translucent circle */}
-          <div className="w-4 h-4 bg-background/20 rounded-full flex items-center justify-center text-background">
+          <div className="w-4 h-4 bg-surface-subtle rounded-full flex items-center justify-center text-background">
             {activeIcon}
           </div>
           <span className="max-w-20 truncate">{backLabel}</span>
@@ -138,7 +138,7 @@ export function CategoryCircles({
                 "shrink-0 whitespace-nowrap px-3 py-1.5 rounded-full text-xs font-medium border transition-all",
                 selectedPill === null
                   ? "bg-foreground text-background border-foreground"
-                  : "bg-background text-muted-foreground border-border hover:border-foreground/30"
+                  : "bg-background text-muted-foreground border-border hover:border-border"
               )}
             >
               {allLabel}
@@ -156,7 +156,7 @@ export function CategoryCircles({
                     "shrink-0 whitespace-nowrap px-3 py-1.5 rounded-full text-xs font-medium border transition-all",
                     isSelected
                       ? "bg-foreground text-background border-foreground"
-                      : "bg-background text-muted-foreground border-border hover:border-foreground/30"
+                      : "bg-background text-muted-foreground border-border hover:border-border"
                   )}
                 >
                   {getCategoryName(cat, locale)}
@@ -183,7 +183,7 @@ export function CategoryCircles({
     <div className={cn("px-inset py-1.5 overflow-x-auto no-scrollbar", className)}>
       <div
         ref={containerRef}
-        className="flex items-start gap-1.5"
+        className="flex items-start gap-1"
       >
         {/* 'All' Circle (Static - Always visible) */}
         <CategoryCircle
@@ -192,12 +192,12 @@ export function CategoryCircles({
           active={!activeL2}
           onClick={() => onBack()}
           circleClassName="size-(--spacing-category-circle)"
-          fallbackIconSize={24}
+          fallbackIconSize={18}
           fallbackIconWeight="regular"
           variant="colorful"
           className="flex-none w-(--spacing-category-item-lg)"
           labelClassName={cn(
-            "w-full text-2xs text-center leading-tight line-clamp-2 px-0 mt-1",
+            "w-full text-2xs text-center leading-tight line-clamp-1 truncate px-0 mt-0.5",
             "font-medium",
             !activeL2 ? "text-foreground" : "text-muted-foreground"
           )}
@@ -218,13 +218,13 @@ export function CategoryCircles({
               active={isActive}
               loading={isLoading}
               circleClassName="size-(--spacing-category-circle)"
-              fallbackIconSize={24}
+              fallbackIconSize={18}
               fallbackIconWeight="regular"
               variant="colorful"
               label={getCategoryShortName(sub, locale)}
               className="flex-none w-(--spacing-category-item-lg)"
               labelClassName={cn(
-                "w-full text-2xs text-center leading-tight line-clamp-2 px-0 mt-1",
+                "w-full text-2xs text-center leading-tight line-clamp-1 truncate px-0 mt-0.5",
                 "font-medium",
                 isActive ? "text-foreground" : "text-muted-foreground"
               )}

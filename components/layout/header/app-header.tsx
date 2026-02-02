@@ -17,7 +17,6 @@
 // =============================================================================
 
 import {
-  MobileDefaultHeader,
   MobileHomepageHeader,
   MobileProductHeader,
   MobileContextualHeader,
@@ -129,13 +128,24 @@ function detectRouteConfig(pathname: string, explicitVariant?: HeaderVariant): R
   if (pathWithoutLocale.startsWith("/assistant")) {
     return { variant: "contextual" }
   }
+
+  // Search: reuse the homepage mobile header (inline search) to avoid the legacy "search bar under header" layout
+  if (pathWithoutLocale.startsWith("/search")) {
+    return { variant: "homepage" }
+  }
   
-  // Product pages: /{username}/{productSlug} (2+ segments, not a known route)
   // Known routes start with: /search, /cart, /checkout, /account, /sell, /plans, /auth
   const segments = pathWithoutLocale.split("/").filter(Boolean)
   const knownRoutes = ["search", "cart", "checkout", "account", "sell", "plans", "auth", "categories", "api", "assistant"]
+  
+  // Product pages: /{username}/{productSlug} (2+ segments, not a known route)
   if (segments.length >= 2 && segments[0] && !knownRoutes.includes(segments[0])) {
     return { variant: "product" }
+  }
+  
+  // Profile pages: /{username} (1 segment, not a known route) - use contextual header
+  if (segments.length === 1 && segments[0] && !knownRoutes.includes(segments[0])) {
+    return { variant: "contextual" }
   }
   
   // Default for everything else
@@ -291,13 +301,15 @@ export function AppHeader({
       case "minimal":
         return <MobileMinimalHeader locale={locale} />
       default:
+        // Fallback to homepage header (inline search + pills)
         return (
-          <MobileDefaultHeader
+          <MobileHomepageHeader
             user={effectiveUser}
-            categories={categories}
+            categories={effectiveHomepageCategories}
             userStats={userStats}
+            activeCategory={effectiveHomepageCategory}
+            onCategorySelect={effectiveHomepageCategorySelect}
             onSearchOpen={handleSearchOpen}
-            searchPlaceholder={searchPlaceholder}
             locale={locale}
           />
         )

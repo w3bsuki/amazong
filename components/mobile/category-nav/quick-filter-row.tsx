@@ -186,14 +186,14 @@ export function QuickFilterRow({
 
     // Pill styles matching CategoryNavItem pill variant
     const pillBase = "shrink-0 h-8 px-3 text-xs font-medium rounded-full whitespace-nowrap flex items-center justify-center gap-1.5 border transition-colors tap-highlight-transparent"
-    const pillInactive = "border-border/50 bg-surface-subtle text-muted-foreground hover:bg-hover hover:text-foreground"
+    const pillInactive = "border-border bg-surface-subtle text-muted-foreground hover:bg-hover hover:text-foreground"
     const pillActive = "border-foreground bg-foreground text-background"
 
     return (
         <>
             <div
                 className={cn(
-                    "bg-background border-b border-border/30",
+                    "bg-background border-b border-border",
                     "px-inset py-1.5",
                     className
                 )}

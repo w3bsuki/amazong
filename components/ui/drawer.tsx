@@ -250,7 +250,7 @@ function DrawerContent({
           >
             <div
               aria-hidden="true"
-              className="h-1.5 w-12 shrink-0 cursor-grab rounded-full bg-muted-foreground/30 transition-colors active:cursor-grabbing hover:bg-muted-foreground/50"
+              className="h-1.5 w-12 shrink-0 cursor-grab rounded-full bg-muted transition-colors active:cursor-grabbing hover:bg-muted-foreground"
             />
           </div>
         )}

@@ -34,6 +34,36 @@ pnpm -s dupes
 
 ## 📋 Ready (≤15)
 
+### Production push (2026-02-02) — blockers + alignment
+
+- [x] PROD-000: Delete orphaned `temp-tradesphere-audit/` prototype folder
+  - Priority: Critical
+  - Owner: treido-orchestrator
+  - Verify: `pnpm -s typecheck` · `pnpm -s lint`
+  - Files: `temp-tradesphere-audit/**`
+  - Audit: `.codex/audit/2026-02-02_file-organization-audit.md`
+
+- [ ] FE-PLAY-001: Public routes must not be gated by onboarding (guest can browse)
+  - Priority: Critical
+  - Owner: treido-frontend
+  - Verify: manual guest nav (`/search`, `/cart`, `/categories`) · `REUSE_EXISTING_SERVER=true pnpm -s test:e2e:smoke`
+  - Files: `proxy.ts` · `app/[locale]/(main)/_providers/onboarding-provider.tsx` (and any route-guard logic)
+  - Audit: `.codex/audit/playwright/2026-02-02/issues/frontend.md` (ISSUE-002)
+
+- [ ] DOCS-ALIGN-001: Update `docs/02-FEATURES.md` to match actual implementation (upgrade conservative items)
+  - Priority: High
+  - Owner: treido-orchestrator
+  - Verify: docs updated + counts still consistent
+  - Files: `docs/02-FEATURES.md`
+  - Audit: `.codex/audit/2026-02-02_feature-alignment-audit.md`
+
+- [ ] SUPABASE-PLANS-001: Make `getPlansForUpgrade()` use static client + caching for public plans
+  - Priority: Medium
+  - Owner: treido-backend
+  - Verify: `pnpm -s typecheck` · `pnpm -s lint`
+  - Files: `lib/data/plans.ts`
+  - Audit: `.codex/audit/2026-02-02_supabase-audit.md`
+
 ### ORCH cleanup + design refresh (2026-01-31) — round 1 (audit: `.codex/audit/2026-01-31_full_orch_cleanup.md`)
 
 - [ ] ORCH-CLN-010: Delete knip-confirmed unused files/folders

@@ -35,17 +35,17 @@ export function SubcategoryCircles({
   if (!subcategories || subcategories.length === 0) return null
 
   return (
-    <div className="py-2 overflow-x-auto no-scrollbar">
-      <div className="flex items-start gap-2 px-inset">
+    <div className="py-1.5 overflow-x-auto no-scrollbar">
+      <div className="flex items-start gap-1 px-inset">
         {/* View All - First circle */}
         <Link
           href={`/categories/${categorySlug}`}
-          className="flex flex-col items-center gap-1 shrink-0 w-(--spacing-category-circle) active:opacity-80 transition-opacity"
+          className="flex flex-col items-center gap-0.5 shrink-0 w-(--spacing-category-item-lg) active:opacity-80 transition-opacity"
         >
-          <div className="size-(--category-circle-mobile) rounded-full bg-foreground text-background flex items-center justify-center">
-            <SquaresFour size={20} weight="fill" />
+          <div className="size-(--spacing-category-circle) rounded-full bg-foreground text-background flex items-center justify-center">
+            <SquaresFour size={18} weight="fill" />
           </div>
-          <span className="text-2xs text-center text-foreground font-semibold leading-tight line-clamp-2">
+          <span className="text-2xs text-center text-foreground font-semibold leading-tight line-clamp-1 truncate w-full">
             {viewAllLabel}
           </span>
         </Link>
@@ -56,24 +56,24 @@ export function SubcategoryCircles({
             key={sub.id}
             type="button"
             onClick={() => onSubcategoryClick?.(sub)}
-            className="flex flex-col items-center gap-1 shrink-0 w-(--spacing-category-circle) active:opacity-80 transition-opacity"
+            className="flex flex-col items-center gap-0.5 shrink-0 w-(--spacing-category-item-lg) active:opacity-80 transition-opacity"
           >
             {/* Circle with image/icon */}
-            <div className="size-(--category-circle-mobile) rounded-full bg-surface-subtle border border-border/30 overflow-hidden flex items-center justify-center">
+            <div className="size-(--spacing-category-circle) rounded-full bg-surface-subtle border border-border/30 overflow-hidden flex items-center justify-center">
               {sub.image_url ? (
                 <Image
                   src={sub.image_url}
                   alt={getCategoryName(sub, locale)}
-                  width={56}
-                  height={56}
+                  width={48}
+                  height={48}
                   className="size-full object-cover"
                 />
               ) : (
-                <Package size={20} className="text-muted-foreground/40" />
+                <Package size={18} className="text-muted-foreground/40" />
               )}
             </div>
             {/* Label */}
-            <span className="text-2xs text-center text-muted-foreground font-medium leading-tight line-clamp-2">
+            <span className="text-2xs text-center text-muted-foreground font-medium leading-tight line-clamp-1 truncate w-full">
               {getCategoryName(sub, locale)}
             </span>
           </button>

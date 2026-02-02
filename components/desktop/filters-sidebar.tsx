@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { useTranslations } from "next-intl"
+import type { QuickFilter } from "./feed-toolbar"
 
 // =============================================================================
 // TYPES
@@ -16,6 +17,8 @@ export interface FilterState {
   condition: string | null
   /** Dynamic attribute filters: attributeName -> selected value */
   attributes: Record<string, string | null>
+  /** Quick filter toggles (deals, nearby, etc.) */
+  quickFilters: QuickFilter[]
 }
 
 export interface FiltersSidebarProps {

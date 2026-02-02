@@ -20,6 +20,9 @@ const buttonVariants = cva(
           "bg-secondary text-secondary-foreground hover:bg-secondary",
         ghost:
           "hover:bg-accent hover:text-accent-foreground active:bg-active",
+        // Desktop header actions - clean, borderless interaction (treido-ui)
+        "header-ghost":
+          "text-header-text bg-transparent hover:bg-header-hover active:bg-header-active rounded-md transition-colors",
         link: "text-link underline-offset-4 hover:underline hover:text-link-hover",
         // Marketplace CTA alias (kept for semantic readability)
         cta: "bg-primary text-primary-foreground hover:bg-interactive-hover",

@@ -160,7 +160,7 @@ export function WriteReviewDialog({
                     className={`h-8 w-8 transition-colors ${
                       star <= activeRating
                         ? "fill-rating text-rating"
-                        : "text-muted-foreground/30 hover:text-muted-foreground/50"
+                        : "text-muted-foreground hover:text-foreground"
                     }`}
                   />
                 </button>

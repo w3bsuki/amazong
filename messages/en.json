@@ -124,6 +124,7 @@
         "headerTitleAll": "All Categories",
         "metaDescription": "Browse all product categories at Treido. Find electronics, fashion, home & garden, and more.",
         "bannerDescription": "Browse products in this category",
+        "browseSiblings": "Browse similar categories",
         "all": "All",
         "navigationAriaLabel": "Category navigation",
         "subcategoriesAriaLabel": "Subcategories",
@@ -225,6 +226,7 @@
             "trustBestPrices": "Best Prices",
             "sellBannerTitle": "Have something to sell?",
             "sellBannerSubtitle": "Free to list • Reach thousands",
+            "browseCategorySubtitle": "Browse all products in this category",
             "forYouTitle": "For you",
             "exploreTabs": {
                 "newest": "Newest",
@@ -460,7 +462,26 @@
         "follow": "Follow",
         "contact": "Contact",
         "viewFullProfile": "View Full Profile",
-        "viewAllListings": "View All ({count})"
+        "viewAllListings": "View All ({count})",
+        "negotiable": "Negotiable",
+        "similarItems": "Similar Items",
+        "safety": {
+            "title": "Safety Tips",
+            "description": "Meet in public places, inspect items before payment, and use secure payment methods."
+        },
+        "report": {
+            "listing": "Report this listing"
+        },
+        "seller": {
+            "respondsWithinHour": "Usually responds within 1 hour",
+            "respondsWithinHours": "Usually responds within {hours} hours",
+            "listings": "Listings",
+            "reviews": "reviews",
+            "memberSince": "Member since",
+            "viewProfile": "View Profile",
+            "follow": "Follow",
+            "following": "Following"
+        }
     },
     "ProductModal": {
         "viewFullPage": "View Full Page",
@@ -704,6 +725,7 @@
         "state": "State",
         "statePlaceholder": "State",
         "zipCode": "ZIP Code",
+        "zipPlaceholder": "10001",
         "shippingMethod": "Shipping Method",
         "standardShipping": "Standard Shipping",
         "standardDays": "5-7 business days",
@@ -1377,7 +1399,12 @@
         "closeFilters": "Close filters",
         "searchAttributePlaceholder": "Search {attribute}...",
         "showLess": "Show less",
-        "showAllCount": "Show all ({count})"
+        "showAllCount": "Show all ({count})",
+        "location": "Location",
+        "selectCity": "Select city",
+        "nearMe": "Near me",
+        "clear": "Clear",
+        "moreFilters": "More filters"
     },
     "CartDropdown": {
         "title": "Shopping Cart",
@@ -1903,6 +1930,8 @@
         "popularCategories": "Popular categories from this store",
         "seeAllCategories": "See all categories",
         "responseLabel": "Response",
+        "response": "Response",
+        "listings": "Listings",
         "shippedLabel": "Ships",
         "sinceLabel": "Since",
         "chatLabel": "Chat"
@@ -2016,6 +2045,8 @@
         "categoryTabsAriaLabel": "Category tabs",
         "subcategoryTabsAriaLabel": "Subcategory tabs",
         "sortPlaceholder": "Sort",
+        "cityPlaceholder": "City",
+        "clear": "Clear",
         "browseCategories": "Browse",
         "viewAll": "View All",
         "promotedTitle": "PROMOTED LISTINGS",
@@ -2045,7 +2076,8 @@
             "free_shipping": "Free Shipping",
             "ending_soon": "Ending Soon",
             "nearby": "Near Me",
-            "more": "More"
+            "more": "More",
+            "moreFilters": "+{count} more"
         },
         "scroll": {
             "left": "Scroll left",

@@ -113,7 +113,7 @@ export function ProductQuickViewDrawer({
             <Button
               variant="ghost"
               size="icon-sm"
-              className="shrink-0 -mr-2 size-8 rounded-full hover:bg-muted touch-manipulation"
+              className="shrink-0 -mr-2 rounded-full hover:bg-muted touch-manipulation"
             >
               <X className="size-4" />
               <span className="sr-only">{t("close")}</span>

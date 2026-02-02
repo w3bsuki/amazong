@@ -9,14 +9,10 @@ import { SubmitButton } from "@/components/auth/submit-button"
 import {
   Field,
   FieldContent,
-  FieldDescription,
   FieldError,
   FieldLabel,
-  FieldLegend,
-  FieldSet,
 } from "@/components/shared/field"
 import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
 import { Link } from "@/i18n/routing"
 import { cn } from "@/lib/utils"
 import { getPasswordStrength } from "@/lib/validations/password-strength"
@@ -52,8 +48,6 @@ export function SignUpForm({
   const [username, setUsername] = useState("")
   const [isCheckingUsername, setIsCheckingUsername] = useState(false)
   const [usernameAvailable, setUsernameAvailable] = useState<boolean | null>(null)
-
-  const [accountType, setAccountType] = useState<"personal" | "business">("personal")
 
   const initialState = useMemo<AuthActionState>(() => ({ fieldErrors: {}, success: false }), [])
   const [state, formAction] = useActionState(signUpAction.bind(null, locale), initialState)
@@ -171,44 +165,6 @@ export function SignUpForm({
             {state.error}
           </div>
         )}
-
-        {/* Account Type Selection */}
-        <FieldSet>
-          <FieldLegend variant="label">{t("accountTypeLabel")}</FieldLegend>
-          <input type="hidden" name="accountType" value={accountType} />
-
-          <div className="grid grid-cols-2 gap-2">
-            <Button
-              type="button"
-              variant={accountType === "personal" ? "default" : "outline"}
-              size="lg"
-              className={cn(
-                "h-10",
-                accountType === "personal" && "bg-selected text-foreground border-selected-border hover:bg-hover"
-              )}
-              onClick={() => setAccountType("personal")}
-              aria-pressed={accountType === "personal"}
-            >
-              {t("accountTypePersonal")}
-            </Button>
-            <Button
-              type="button"
-              variant={accountType === "business" ? "default" : "outline"}
-              size="lg"
-              className={cn(
-                "h-10",
-                accountType === "business" && "bg-selected text-foreground border-selected-border hover:bg-hover"
-              )}
-              onClick={() => setAccountType("business")}
-              aria-pressed={accountType === "business"}
-            >
-              {t("accountTypeBusiness")}
-            </Button>
-          </div>
-          <FieldDescription className="text-xs">
-            {t("accountTypeHint")}
-          </FieldDescription>
-        </FieldSet>
 
         {/* Name Field */}
         <Field data-invalid={!!state?.fieldErrors?.name}>

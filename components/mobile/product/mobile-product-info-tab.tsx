@@ -8,12 +8,17 @@
 // Part of the two-tab mobile product page layout.
 // =============================================================================
 
-import { useTranslations, useLocale } from "next-intl";
-import { MapPin, Truck, Package, ShieldCheck, RotateCcw, Clock, Eye, Folder } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
 import { HeroSpecs } from "@/components/shared/product/hero-specs";
 import { CustomerReviewsHybrid } from "@/components/shared/product/customer-reviews-hybrid";
-import { cn, getConditionBadgeVariant, getConditionLabel } from "@/lib/utils";
+import { MobileSellerPreviewCard } from "./mobile-seller-preview-card";
+import { MobileSafetyTips, MobileReportButton } from "./mobile-trust-sections";
+import { MetaRow, type CategorySummary } from "@/components/shared/product/meta-row";
+import { ProductHeader } from "@/components/shared/product/product-header";
+import { SpecificationsList, type SpecItem } from "@/components/shared/product/specifications-list";
+import { ProductDescription } from "@/components/shared/product/product-description";
+import { DeliveryOptions } from "@/components/shared/product/delivery-options";
+import { ShippingReturnsInfo } from "@/components/shared/product/shipping-returns-info";
+import { cn } from "@/lib/utils";
 
 import type { ResolvedHeroSpec } from "@/lib/view-models/product-page";
 import type { CustomerReview } from "@/components/shared/product/customer-reviews-hybrid";
@@ -23,18 +28,18 @@ import type { SubmitReviewFn } from "@/components/shared/product/write-review-di
 // Types
 // -----------------------------------------------------------------------------
 
-interface SpecItem {
-  label: string;
-  value: string | number | undefined | null;
-}
-
-interface CategorySummary {
-  id?: string;
+interface SellerPreview {
+  id: string;
   name: string;
-  name_bg?: string | null;
-  slug: string;
-  icon?: string | null;
-  parent_id?: string | null;
+  username?: string | null;
+  avatarUrl?: string | null;
+  verified?: boolean;
+  rating?: number | null;
+  reviewCount?: number | null;
+  responseTimeHours?: number | null;
+  listingsCount?: number | null;
+  totalSales?: number | null;
+  joinedYear?: string | null;
 }
 
 interface MobileProductInfoTabProps {
@@ -72,165 +77,18 @@ interface MobileProductInfoTabProps {
   timeAgo?: string | null;
   /** View count */
   viewCount?: number | null;
-}
-
-// -----------------------------------------------------------------------------
-// Sub-components
-// -----------------------------------------------------------------------------
-
-/** Title + Condition + Trust Badges */
-function ProductHeader({
-  title,
-  condition,
-  pickupOnly,
-}: {
-  title: string;
-  condition: string | null;
-  pickupOnly: boolean;
-}) {
-  const t = useTranslations("Product");
-
-  return (
-    <div className="space-y-3">
-      <h1 className="text-lg font-semibold text-text-strong leading-snug">
-        {title}
-      </h1>
-      <div className="flex items-center gap-2 flex-wrap">
-        {condition && (
-          <Badge variant={getConditionBadgeVariant(condition)}>
-            {getConditionLabel(condition)}
-          </Badge>
-        )}
-        {!pickupOnly && (
-          <Badge variant="shipping">
-            <Truck className="size-3" strokeWidth={2} />
-            {t("freeShipping")}
-          </Badge>
-        )}
-      </div>
-    </div>
-  );
-}
-
-/** Specifications List */
-function SpecificationsList({ specifications }: { specifications: SpecItem[] }) {
-  const t = useTranslations("Product");
-  const validSpecs = specifications.filter(
-    (spec) => spec.value !== undefined && spec.value !== null && spec.value !== ""
-  );
-
-  if (validSpecs.length === 0) return null;
-
-  return (
-    <div className="space-y-2">
-      <h3 className="text-xs font-semibold text-text-muted-alt uppercase tracking-wide">
-        {t("specifications")}
-      </h3>
-      <div className="rounded-lg border border-border/50 overflow-hidden divide-y divide-border/50">
-        {validSpecs.map((spec, index) => (
-          <div
-            key={index}
-            className={cn(
-              "flex justify-between items-center px-3 py-2.5",
-              index % 2 === 1 && "bg-surface-subtle"
-            )}
-          >
-            <span className="text-sm text-text-muted-alt">{spec.label}</span>
-            <span className="text-sm font-medium text-text-strong">{spec.value}</span>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-/** Product Description */
-function ProductDescription({ description }: { description: string | null }) {
-  const t = useTranslations("Product");
-
-  if (!description) return null;
-
-  return (
-    <div className="space-y-2">
-      <h3 className="text-xs font-semibold text-text-muted-alt uppercase tracking-wide">
-        {t("description")}
-      </h3>
-      <div className="text-sm text-text-muted leading-relaxed whitespace-pre-line">
-        {description}
-      </div>
-    </div>
-  );
-}
-
-/** Delivery Options */
-function DeliveryOptions({ pickupOnly }: { pickupOnly: boolean }) {
-  const t = useTranslations("Product");
-
-  return (
-    <div className="space-y-2">
-      <h3 className="text-xs font-semibold text-text-muted-alt uppercase tracking-wide">
-        {t("delivery")}
-      </h3>
-      <div className="flex flex-wrap gap-2">
-        <span className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-surface-subtle text-sm">
-          <MapPin className="size-4 text-text-muted-alt" strokeWidth={1.5} />
-          {pickupOnly ? t("pickupOnly") : t("meetup")}
-        </span>
-        {!pickupOnly && (
-          <>
-            <span className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-surface-subtle text-sm">
-              <Truck className="size-4 text-text-muted-alt" strokeWidth={1.5} />
-              {t("shipping")}
-            </span>
-            <span className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-shipping-free/10 text-shipping-free text-sm font-medium">
-              {t("freeShipping")}
-            </span>
-          </>
-        )}
-      </div>
-    </div>
-  );
-}
-
-/** Shipping & Returns Info */
-function ShippingReturnsInfo({ pickupOnly }: { pickupOnly: boolean }) {
-  const t = useTranslations("Product");
-
-  return (
-    <div className="space-y-3">
-      <h3 className="text-xs font-semibold text-text-muted-alt uppercase tracking-wide">
-        {t("shippingReturns")}
-      </h3>
-      <div className="space-y-2">
-        {/* Shipping */}
-        <div className="flex items-start gap-3 p-3 rounded-lg bg-surface-subtle">
-          <Package className="size-5 text-text-muted-alt shrink-0 mt-0.5" strokeWidth={1.5} />
-          <div>
-            <p className="text-sm font-medium text-text-strong">{t("shippingTitle")}</p>
-            <p className="text-xs text-text-muted-alt mt-0.5">
-              {!pickupOnly ? t("freeDelivery") : t("defaultShipping")}
-            </p>
-          </div>
-        </div>
-        {/* Returns */}
-        <div className="flex items-start gap-3 p-3 rounded-lg bg-surface-subtle">
-          <RotateCcw className="size-5 text-text-muted-alt shrink-0 mt-0.5" strokeWidth={1.5} />
-          <div>
-            <p className="text-sm font-medium text-text-strong">{t("returnsTitle")}</p>
-            <p className="text-xs text-text-muted-alt mt-0.5">{t("defaultReturns")}</p>
-          </div>
-        </div>
-        {/* Buyer Protection */}
-        <div className="flex items-start gap-3 p-3 rounded-lg bg-success/5 border border-success/20">
-          <ShieldCheck className="size-5 text-success shrink-0 mt-0.5" strokeWidth={1.5} />
-          <div>
-            <p className="text-sm font-medium text-success">{t("buyerProtection")}</p>
-            <p className="text-xs text-text-muted-alt mt-0.5">{t("buyerProtectionDesc")}</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
+  /** Product price */
+  price?: number | null;
+  /** Price currency */
+  currency?: string;
+  /** Whether price is negotiable */
+  isNegotiable?: boolean;
+  /** Seller preview info */
+  seller?: SellerPreview | null;
+  /** Callback when View Profile is clicked */
+  onViewSellerProfile?: () => void;
+  /** Callback when report is clicked */
+  onReport?: () => void;
 }
 
 // -----------------------------------------------------------------------------
@@ -255,74 +113,55 @@ export function MobileProductInfoTab({
   rootCategory,
   timeAgo,
   viewCount,
+  price,
+  currency = "EUR",
+  isNegotiable,
+  seller,
+  onViewSellerProfile,
+  onReport,
 }: MobileProductInfoTabProps) {
-  const currentLocale = useLocale();
-
-  // Get display names
-  const rootCategoryName = rootCategory 
-    ? (currentLocale === "bg" && rootCategory.name_bg ? rootCategory.name_bg : rootCategory.name)
-    : null;
-  const categoryName = category 
-    ? (currentLocale === "bg" && category.name_bg ? category.name_bg : category.name)
-    : null;
-  const showSubcategory = category && rootCategory && category.slug !== rootCategory.slug;
-  
   return (
     <div className={cn("space-y-4 py-4", className)}>
       {/* Meta Row: [Category chain] ←→ [Time · Views] */}
       {(category || rootCategory || timeAgo || (viewCount != null && viewCount > 0)) && (
-        <div className="px-4 flex items-center justify-between gap-3">
-          {/* Left: Category badge */}
-          {(category || rootCategory) && (
-            <div className="flex items-center gap-1.5 min-w-0">
-              <span 
-                className={cn(
-                  "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full",
-                  "bg-muted",
-                  "text-xs font-medium text-foreground",
-                  "truncate max-w-45"
-                )}
-              >
-                <Folder className="size-3 shrink-0 text-muted-foreground" strokeWidth={2} />
-                <span className="truncate">
-                  {rootCategoryName || categoryName}
-                  {showSubcategory && (
-                    <span className="text-muted-foreground/70"> · {categoryName}</span>
-                  )}
-                </span>
-              </span>
-            </div>
-          )}
-          
-          {/* Right: Time & Views */}
-          {(timeAgo || (viewCount != null && viewCount > 0)) && (
-            <div className="flex items-center gap-3 text-xs text-muted-foreground shrink-0">
-              {timeAgo && (
-                <span className="inline-flex items-center gap-1">
-                  <Clock className="size-3.5" strokeWidth={1.5} />
-                  {timeAgo}
-                </span>
-              )}
-              {viewCount != null && viewCount > 0 && (
-                <span className="inline-flex items-center gap-1">
-                  <Eye className="size-3.5" strokeWidth={1.5} />
-                  {viewCount.toLocaleString()}
-                </span>
-              )}
-            </div>
-          )}
+        <div className="px-4">
+          <MetaRow
+            category={category ?? null}
+            rootCategory={rootCategory ?? null}
+            timeAgo={timeAgo ?? null}
+            viewCount={viewCount ?? null}
+            locale={locale}
+          />
         </div>
       )}
 
-      {/* Title + Badges */}
+      {/* Header: price + title + badges */}
       <div className="px-4">
-        <ProductHeader title={title} condition={condition} pickupOnly={pickupOnly} />
+        <ProductHeader
+          title={title}
+          condition={condition}
+          freeShipping={!pickupOnly}
+          price={price ?? 0}
+          currency={currency}
+          isNegotiable={Boolean(isNegotiable)}
+          locale={locale}
+        />
       </div>
 
       {/* Hero Specs (if available) */}
       {heroSpecs.length > 0 && (
         <div className="px-4">
           <HeroSpecs specs={heroSpecs.slice(0, 4)} variant="mobile" />
+        </div>
+      )}
+
+      {/* Seller Preview Card */}
+      {seller && (
+        <div className="px-4">
+          <MobileSellerPreviewCard
+            seller={seller}
+            onViewProfile={onViewSellerProfile}
+          />
         </div>
       )}
 
@@ -338,7 +177,7 @@ export function MobileProductInfoTab({
 
       {/* Delivery Options */}
       <div className="px-4">
-        <DeliveryOptions pickupOnly={pickupOnly} />
+        <DeliveryOptions pickupOnly={pickupOnly} freeShipping={!pickupOnly} />
       </div>
 
       {/* Shipping & Returns */}
@@ -357,6 +196,16 @@ export function MobileProductInfoTab({
           locale={locale}
           {...(submitReview && { submitReview })}
         />
+      </div>
+
+      {/* Safety Tips */}
+      <div className="px-4 pt-2">
+        <MobileSafetyTips />
+      </div>
+
+      {/* Report Listing */}
+      <div className="px-4">
+        <MobileReportButton onReport={onReport} />
       </div>
     </div>
   );

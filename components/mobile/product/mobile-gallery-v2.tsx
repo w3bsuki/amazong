@@ -175,6 +175,37 @@ export function MobileGalleryV2({
             </div>
           )}
 
+          {/* Thumbnail Strip - Overlaid inside gallery (prototype pattern) */}
+          {images.length > 1 && (
+            <div className="absolute bottom-3 left-3 right-16 z-20 flex gap-1.5 overflow-x-auto scrollbar-hide">
+              {images.map((img, i) => (
+                <button
+                  key={i}
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    scrollToImage(i)
+                  }}
+                  className={cn(
+                    "flex-shrink-0 size-11 rounded-lg overflow-hidden border-2 transition-all",
+                    i === activeIndex 
+                      ? "border-background shadow-md" 
+                      : "border-transparent opacity-70"
+                  )}
+                  aria-label={t("viewImageNumber", { number: i + 1 })}
+                >
+                  <Image
+                    src={img.src}
+                    alt={img.alt}
+                    width={44}
+                    height={44}
+                    className="object-cover size-full"
+                  />
+                </button>
+              ))}
+            </div>
+          )}
+
           {/* Swipeable Image Gallery */}
           <div
             ref={galleryRef}
@@ -197,37 +228,6 @@ export function MobileGalleryV2({
             ))}
           </div>
         </div>
-
-        {/* Horizontal Thumbnail Strip */}
-        {images.length > 1 && (
-          <div className="flex gap-1.5 p-2 bg-surface-card border-b border-border/50">
-            {images.map((img, i) => (
-              <button
-                key={i}
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation()
-                  scrollToImage(i)
-                }}
-                className={cn(
-                  "flex-1 aspect-square rounded-lg overflow-hidden transition-all",
-                  i === activeIndex 
-                    ? "ring-2 ring-foreground ring-offset-1 ring-offset-background" 
-                    : "opacity-50 hover:opacity-75"
-                )}
-                aria-label={t("viewImageNumber", { number: i + 1 })}
-              >
-                <Image
-                  src={img.src}
-                  alt={img.alt}
-                  width={80}
-                  height={80}
-                  className="object-cover size-full"
-                />
-              </button>
-            ))}
-          </div>
-        )}
       </div>
 
       {/* Fullscreen Image Viewer */}

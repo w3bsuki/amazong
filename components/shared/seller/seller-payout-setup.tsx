@@ -136,7 +136,7 @@ export function SellerPayoutSetup({ payoutStatus, variant = "full" }: Props) {
         initial={{ scale: 0.8, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ duration: 0.3 }}
-        className="size-20 rounded-2xl bg-primary flex items-center justify-center mb-6 shadow-lg shadow-primary/20"
+        className="size-20 rounded-2xl bg-primary flex items-center justify-center mb-6 shadow-lg shadow-primary"
       >
         {isComplete ? (
           <CheckCircle2 className="size-10 text-primary-foreground" strokeWidth={2} />
@@ -170,7 +170,7 @@ export function SellerPayoutSetup({ payoutStatus, variant = "full" }: Props) {
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          className="w-full p-3 mb-6 bg-destructive/10 text-destructive rounded-lg text-sm"
+          className="w-full p-3 mb-6 bg-destructive-subtle text-destructive rounded-lg text-sm"
         >
           {error}
         </motion.div>
@@ -288,7 +288,7 @@ export function SellerPayoutSetup({ payoutStatus, variant = "full" }: Props) {
   return (
     <div className="mx-auto w-full max-w-md px-4 pt-4 pb-safe text-center">
       <div className="flex flex-col items-center">
-        <div className="size-12 rounded-xl bg-primary flex items-center justify-center shadow-sm shadow-primary/15">
+        <div className="size-12 rounded-xl bg-primary flex items-center justify-center shadow-sm shadow-sm">
           {isComplete ? (
             <CheckCircle2 className="size-7 text-primary-foreground" strokeWidth={2} />
           ) : (
@@ -305,7 +305,7 @@ export function SellerPayoutSetup({ payoutStatus, variant = "full" }: Props) {
             <div className={cn(
               "inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs",
               payoutStatus?.details_submitted
-                ? "border-success/30 bg-success/10 text-foreground"
+                ? "border-success bg-success-subtle text-foreground"
                 : "border-border bg-surface-subtle text-muted-foreground"
             )}>
               <span className={cn(
@@ -322,7 +322,7 @@ export function SellerPayoutSetup({ payoutStatus, variant = "full" }: Props) {
             <div className={cn(
               "inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs",
               payoutStatus?.charges_enabled
-                ? "border-success/30 bg-success/10 text-foreground"
+                ? "border-success bg-success-subtle text-foreground"
                 : "border-border bg-surface-subtle text-muted-foreground"
             )}>
               <span className={cn(
@@ -339,7 +339,7 @@ export function SellerPayoutSetup({ payoutStatus, variant = "full" }: Props) {
             <div className={cn(
               "inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs",
               payoutStatus?.payouts_enabled
-                ? "border-success/30 bg-success/10 text-foreground"
+                ? "border-success bg-success-subtle text-foreground"
                 : "border-border bg-surface-subtle text-muted-foreground"
             )}>
               <span className={cn(
@@ -359,10 +359,10 @@ export function SellerPayoutSetup({ payoutStatus, variant = "full" }: Props) {
       <div className="h-22" aria-hidden="true" />
 
       {/* Fixed bottom CTA (always visible, no scroll required) */}
-      <div className="fixed bottom-0 left-0 right-0 z-50 border-t border-border/60 bg-background/95 px-4 pt-3 pb-safe backdrop-blur">
+      <div className="fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-background px-4 pt-3 pb-safe backdrop-blur">
         <div className="mx-auto w-full max-w-md pb-4">
         {error && (
-          <div className="w-full p-3 mb-3 bg-destructive/10 text-destructive rounded-lg text-sm">
+          <div className="w-full p-3 mb-3 bg-destructive-subtle text-destructive rounded-lg text-sm">
             {error}
           </div>
         )}

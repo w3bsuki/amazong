@@ -101,9 +101,9 @@ export function ProductFeed({
       <div aria-busy={isLoading} aria-label={isLoading ? loadingLabel : undefined} className="relative">
       {/* Loading overlay for smooth category transitions */}
       {showLoadingOverlay && isLoading && products.length > 0 && (
-        <div className="absolute inset-0 bg-background/60 z-10 flex items-start justify-center pt-20">
+        <div className="absolute inset-0 bg-background z-10 flex items-start justify-center pt-20">
           <div className="flex flex-col items-center gap-2">
-            <div className="size-8 border-2 border-muted-foreground/30 border-t-foreground rounded-full animate-spin" />
+            <div className="size-8 border-2 border-muted-foreground border-t-foreground rounded-full animate-spin" />
             <span className="text-xs text-muted-foreground">{loadingLabel}</span>
           </div>
         </div>

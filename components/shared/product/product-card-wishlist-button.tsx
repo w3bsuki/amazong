@@ -78,7 +78,7 @@ export function ProductCardWishlistButton({
       type="button"
       className={cn(
         "absolute right-1.5 top-1.5 z-10 inline-flex items-center gap-0.5 rounded-full h-touch-xs px-1.5 outline-none transition-all lg:gap-1 lg:h-touch-sm lg:px-2",
-        "bg-background/90 backdrop-blur-sm shadow-sm",
+        "bg-background backdrop-blur-sm shadow-sm",
         // Show/hide on hover for desktop when not in wishlist and no count
         !inWishlist && !hasCount && "lg:opacity-0 lg:group-hover:opacity-100 lg:transition-opacity lg:duration-150",
         // Pending state

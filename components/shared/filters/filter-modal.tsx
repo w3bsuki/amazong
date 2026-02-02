@@ -421,7 +421,7 @@ export function FilterModal({
         attribute.attribute_type === "multiselect" || shouldForceMultiSelect(attribute)
 
       return (
-        <div className={cn(listBleedClass, "divide-y divide-border/30")}>
+        <div className={cn(listBleedClass, "divide-y divide-border")}>
           {options.map((option, idx) => {
             const currentValues = getPendingAttrValues(attrKey)
             const isActive = currentValues.includes(option)
@@ -482,7 +482,7 @@ export function FilterModal({
 
       {/* Rating Section */}
       {section === "rating" && (
-        <div className={cn(listBleedClass, "divide-y divide-border/30")}>
+        <div className={cn(listBleedClass, "divide-y divide-border")}>
           {[4, 3, 2, 1].map((stars) => {
             const isActive = pending.minRating === stars.toString()
             return (
@@ -526,7 +526,7 @@ export function FilterModal({
 
       {/* Availability Section */}
       {section === "availability" && (
-        <div className={cn(listBleedClass, "divide-y divide-border/30")}>
+        <div className={cn(listBleedClass, "divide-y divide-border")}>
           <button
             type="button"
             onClick={() =>
@@ -561,7 +561,7 @@ export function FilterModal({
 
       {/* Category Section */}
       {section === "category" && subcategories.length > 0 && (
-        <div className={cn(listBleedClass, "divide-y divide-border/30")}>
+        <div className={cn(listBleedClass, "divide-y divide-border")}>
           {showAllCategoriesOption && (
             <button
               type="button"
@@ -616,7 +616,7 @@ export function FilterModal({
               <Link
                 href="/categories"
                 onClick={() => onOpenChange(false)}
-                className="size-8 flex items-center justify-center rounded-full bg-muted hover:bg-destructive/10 hover:text-destructive transition-colors shrink-0 ml-2"
+                className="size-8 flex items-center justify-center rounded-full bg-muted hover:bg-destructive-subtle hover:text-destructive transition-colors shrink-0 ml-2"
                 aria-label={t("browseAllCategories")}
                 title={t("browseAllCategories")}
               >
@@ -667,7 +667,7 @@ export function FilterModal({
       <Drawer open={open} onOpenChange={onOpenChange}>
         <DrawerContent className="max-h-dialog flex flex-col rounded-t-2xl px-0 pb-0 bg-background">
 
-          <DrawerHeader className="px-inset pt-4 pb-3 border-b border-border/30">
+          <DrawerHeader className="px-inset pt-4 pb-3 border-b border-border">
             <div className="flex items-center justify-between min-h-touch-sm">
               <DrawerTitle className="text-base font-semibold">{sectionLabel}</DrawerTitle>
               <div className="flex items-center gap-2">
@@ -696,7 +696,7 @@ export function FilterModal({
             <div className={contentPaddingClass}>{body}</div>
           </DrawerBody>
 
-          <DrawerFooter className="px-inset border-t border-border/30 bg-background">
+          <DrawerFooter className="px-inset border-t border-border bg-background">
             <Button
               className="w-full h-11 rounded-full text-sm font-bold"
               onClick={applyFilters}
@@ -725,7 +725,7 @@ export function FilterModal({
         )}
         showCloseButton={false}
       >
-        <DialogHeader className="px-4 py-4 border-b border-border/50 shrink-0">
+        <DialogHeader className="px-4 py-4 border-b border-border shrink-0">
           <div className="flex items-center justify-between">
             <DialogTitle className="text-lg font-semibold">{sectionLabel}</DialogTitle>
             <div className="flex items-center gap-2">
@@ -755,7 +755,7 @@ export function FilterModal({
           <div className={contentPaddingClass}>{body}</div>
         </div>
 
-        <div className="p-4 border-t border-border/50 bg-background shrink-0 pb-safe-max">
+        <div className="p-4 border-t border-border bg-background shrink-0 pb-safe-max">
           <Button
             className="w-full h-11 rounded-full text-sm font-bold"
             onClick={applyFilters}

@@ -27,10 +27,12 @@ pnpm -s styles:gate
 
 Only these docs define “how the project works”. If something conflicts with them, it’s wrong/outdated.
 
-- `project/PRD.md` — what Treido is + launch scope
-- `project/FEATURES.md` — feature checklist (✅/🚧/⬜) + route map
-- `project/ARCHITECTURE.md` — module boundaries, caching, Supabase, Stripe, i18n
-- `project/DESIGN.md` — Tailwind v4 + shadcn tokens, UI rules, forbidden patterns
+- `docs/00-INDEX.md` — docs hub (start here)
+- `docs/01-PRD.md` — what Treido is + launch scope
+- `docs/02-FEATURES.md` — feature checklist (✅/🚧/⬜) + route map
+- `docs/03-ARCHITECTURE.md` — module boundaries, caching, Supabase, Stripe, i18n
+- `docs/04-DESIGN.md` — Tailwind v4 + shadcn tokens, UI rules, forbidden patterns
+- `docs/13-PRODUCTION-PUSH.md` — production push plan (phases + SSOT links)
 
 ## Agent Workflow (Operations SSOT)
 
@@ -211,10 +213,11 @@ pnpm -s dupes
 ## Docs Hygiene
 
 - Do not create new Markdown files unless explicitly requested by the human.
-  - Prefer updating existing SSOT docs (`.codex/AGENTS.md`, `.codex/TASKS.md`) over adding new files.
+  - Prefer updating existing SSOT docs (`docs/*`, `.codex/TASKS.md`) over adding new files.
   - Exception: script-generated reports under `cleanup/` are allowed.
-- SSOT docs live in `.codex/project/` (linked above).
+- SSOT docs live in `docs/` (start at `docs/00-INDEX.md`).
+- `.codex/project/*` is deprecated and may contain only thin pointers for backward compatibility.
 - Working audits belong in `.codex/audit/` (dated files, lane format).
-- Refactor workplans belong in `refactor/` (indexes + file maps).
+- Historical planning snapshots belong in `docs/archive/`.
 - Business/legal/public docs belong in `docs-site/` (do not mix with engineering docs).
 - Keep docs modular (≤500 lines each). If a doc grows, split it and update this file.

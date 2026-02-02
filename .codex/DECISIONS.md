@@ -416,3 +416,32 @@ Links
 - Workflow: .codex/WORKFLOW.md
 - Skills: .codex/skills/*
 - Tasks: .codex/TASKS.md
+
+---
+
+## DEC-2026-02-02-01
+
+Status: accepted
+Owners: treido-orchestrator
+
+Context
+- We have audit artifacts scattered across `production/`, `refactor/`, `cleanup/`, repo root, and `.codex/audit/`, creating drift and “which doc is current?” confusion.
+- We want `/docs` to be the stable documentation SSOT while keeping execution state (tasks/audits/decisions) in `.codex/`.
+
+Decision
+- `/docs/*` is SSOT for stable product/system documentation (PRD/FEATURES/ARCH/DESIGN/ROUTES/etc).
+- `.codex/audit/*` is the single working folder for audits (with `archive/` for superseded inputs).
+- `.codex/TASKS.md` is the single execution queue; other task lists are archived/deprecated.
+- Keep compatibility by turning `.codex/project/*` into thin “DEPRECATED → see /docs” pointers (no duplicated rules).
+
+Why
+- One place to read, one place to execute, and minimal cross-folder drift.
+
+Consequences
+- We must move/merge legacy audits into `.codex/audit/archive/` and update links in docs/skills/readmes.
+- Agents can always start at `AGENTS.md` → `/docs/00-INDEX.md` for stable docs and `.codex/TASKS.md` for active work.
+
+Links
+- Docs hub: docs/00-INDEX.md
+- Audits: .codex/audit/README.md
+- Tasks: .codex/TASKS.md

@@ -23,3 +23,15 @@ export type { InlineFilterBarProps } from "./inline-filter-bar"
 export { SmartAnchorNav } from "./smart-anchor-nav"
 export type { SmartAnchorNavProps } from "./smart-anchor-nav"
 
+// Phase 3: Native Drawer-based Category Browse (2026-02-01)
+export { CategoryDrawerProvider, useCategoryDrawer, useCategoryDrawerOptional } from "./category-drawer-context"
+export type { CategoryDrawerProviderProps, CategoryDrawerState, CategoryDrawerActions, DrawerSnap } from "./category-drawer-context"
+export { CategoryCirclesSimple } from "./category-circles-simple"
+export type { CategoryCirclesSimpleProps } from "./category-circles-simple"
+export { CategoryPillGrid } from "./category-pill-grid"
+export type { CategoryPillGridProps } from "./category-pill-grid"
+export { QuickPicksRow } from "./quick-picks-row"
+export type { QuickPicksRowProps, QuickPick } from "./quick-picks-row"
+export { CategoryMiniBar } from "./category-mini-bar"
+export type { CategoryMiniBarProps } from "./category-mini-bar"
+

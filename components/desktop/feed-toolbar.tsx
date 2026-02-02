@@ -1,28 +1,17 @@
 "use client"
 
 import * as React from "react"
-import { useState, useMemo } from "react"
+import { useMemo } from "react"
 import { useTranslations } from "next-intl"
 import { cn } from "@/lib/utils"
 import type { CategoryAttribute } from "@/lib/data/categories"
-import { Skeleton } from "@/components/ui/skeleton"
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
-import { Button } from "@/components/ui/button"
 import {
   CaretDown,
   SquaresFour,
-  TrendUp,
-  TrendDown,
-  ChartLineUp,
-  Eye,
-  Star,
-  Percent,
   Rows,
-  X,
   Check,
-  MapPin,
-  Package,
-  Timer,
+  ArrowsDownUp,
 } from "@phosphor-icons/react"
 import {
   DropdownMenu,
@@ -30,25 +19,21 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { BULGARIAN_CITIES } from "@/lib/bulgarian-cities"
+import { QuickFilterPills } from "./quick-filter-pills"
+import { CategoryAttributeDropdowns, type CategoryFilterDef } from "./category-attribute-dropdowns"
+import { pillBase, pillInactive } from "./feed-toolbar-pill"
 
 // =============================================================================
 // TYPES
 // =============================================================================
 
 export type FeedTab =
-  | "all"
   | "newest"
-  | "promoted"
-  | "nearby"
-  | "deals"
-  | "top_rated"
-  | "best_sellers"
-  | "most_viewed"
+  | "popular"
   | "price_low"
   | "price_high"
-  | "free_shipping"
-  | "ending_soon"
+
+export type QuickFilter = "deals" | "nearby" | "top_rated" | "free_shipping"
 
 export interface FilterState {
   priceMin: string
@@ -56,6 +41,8 @@ export interface FilterState {
   condition: string | null
   /** Dynamic attribute filters: attributeName -> selected value */
   attributes: Record<string, string | null>
+  /** Active quick filters */
+  quickFilters: QuickFilter[]
 }
 
 // Re-export the CategoryAttribute type for consumers
@@ -64,6 +51,8 @@ export type { CategoryAttribute }
 export interface FeedToolbarProps {
   locale: string
   productCount: number
+  /** Show the count label to the left of the tabs (desktop home shows a dedicated category header). */
+  showCount?: boolean
   activeTab: FeedTab
   onTabChange: (tab: FeedTab) => void
   viewMode: "grid" | "list"
@@ -80,12 +69,26 @@ export interface FeedToolbarProps {
 }
 
 // =============================================================================
-// FEED TOOLBAR - Clean shadcn-style filter navigation
+// CONSTANTS
+// =============================================================================
+
+const MAX_INLINE_ATTRS = 2
+
+const SORT_OPTIONS: Array<{ id: FeedTab; labelKey: string }> = [
+  { id: "newest", labelKey: "tabs.newest" },
+  { id: "popular", labelKey: "tabs.best_sellers" },
+  { id: "price_low", labelKey: "tabs.price_low" },
+  { id: "price_high", labelKey: "tabs.price_high" },
+]
+
+// =============================================================================
+// FEED TOOLBAR - Single row unified filter bar
 // =============================================================================
 
 export function FeedToolbar({
   locale,
   productCount,
+  showCount = true,
   activeTab,
   onTabChange,
   viewMode,
@@ -101,25 +104,14 @@ export function FeedToolbar({
   const t = useTranslations("TabbedProductFeed")
   const tViewMode = useTranslations("ViewMode")
 
-  // Clean tab definitions - NO promoted (shown above in dedicated section)
-  const allTabs: Array<{ id: FeedTab; label: string; icon: typeof TrendUp }> = [
-    { id: "newest", label: t("tabs.newest"), icon: TrendUp },
-    { id: "nearby", label: t("tabs.nearby"), icon: MapPin },
-    { id: "deals", label: t("tabs.deals"), icon: Percent },
-    { id: "best_sellers", label: t("tabs.best_sellers"), icon: ChartLineUp },
-    { id: "top_rated", label: t("tabs.top_rated"), icon: Star },
-    { id: "free_shipping", label: t("tabs.free_shipping"), icon: Package },
-  ]
-
-  // Build contextual filter pills from category attributes (max 5 for UI cleanliness)
-  const categoryFilters = useMemo(() => {
+  // Build contextual filter pills from category attributes (max 4 for single row)
+  const categoryFilters = useMemo<CategoryFilterDef[]>(() => {
     if (!categorySlug || categoryAttributes.length === 0) return []
 
-    // Skip Gender when already in a gendered category (e.g., men-clothing, women-shoes)
+    // Skip Gender when already in a gendered category
     const isGenderedCategory = /^(men|women|kids|boys|girls)-/.test(categorySlug) ||
       categorySlug.includes("-mens") || categorySlug.includes("-womens")
     
-    // Filter out Gender if redundant, then sort by priority
     const filtered = categoryAttributes.filter(attr => {
       if (attr.name.toLowerCase() === "gender" && isGenderedCategory) return false
       return true
@@ -130,6 +122,7 @@ export function FeedToolbar({
       "condition": 0,
       "size": 1,
       "color": 2,
+      "brand": 3,
     }
     const sorted = [...filtered].sort((a, b) => {
       const aPriority = priorityMap[a.name.toLowerCase()] ?? (a.sort_order ?? 999)
@@ -137,216 +130,122 @@ export function FeedToolbar({
       return aPriority - bPriority
     })
 
-    // Take first 5 attributes for filter pills
-    return sorted.slice(0, 5).map((attr) => ({
+    // Return all sorted attributes for inline + overflow handling
+    return sorted.map((attr) => ({
       id: attr.name.toLowerCase().replace(/\s+/g, "_"),
       label: locale === "bg" && attr.name_bg ? attr.name_bg : attr.name,
       name: attr.name,
       options: (locale === "bg" && attr.options_bg && attr.options_bg.length > 0
         ? attr.options_bg
         : attr.options || []
-      ).slice(0, 8).map((opt) => ({
+      ).slice(0, 10).map((opt) => ({
         value: opt.toLowerCase().replace(/\s+/g, "_"),
         label: opt,
       })),
     }))
   }, [categorySlug, categoryAttributes, locale])
 
-  const [activeDropdown, setActiveDropdown] = useState<string | null>(null)
+  // Split category filters into inline (visible) and overflow ("+N more" dropdown)
+  const inlineFilters = categoryFilters.slice(0, MAX_INLINE_ATTRS)
+  const overflowFilters = categoryFilters.slice(MAX_INLINE_ATTRS)
 
-  // Get active attribute filters for badge display
-  const activeAttributeFilters = useMemo(() => {
-    const active: { id: string; label: string; value: string; displayLabel: string }[] = []
-    for (const filter of categoryFilters) {
-      const selectedValue = filters.attributes[filter.id]
-      if (selectedValue) {
-        const opt = filter.options.find((o) => o.value === selectedValue)
-        if (opt) {
-          active.push({
-            id: filter.id,
-            label: filter.label,
-            value: selectedValue,
-            displayLabel: opt.label,
-          })
-        }
-      }
-    }
-    return active
-  }, [categoryFilters, filters.attributes])
+  // Toggle quick filter
+  const toggleQuickFilter = (id: QuickFilter) => {
+    const current = filters.quickFilters || []
+    const newFilters = current.includes(id)
+      ? current.filter(f => f !== id)
+      : [...current, id]
+    onFiltersChange({ ...filters, quickFilters: newFilters })
+  }
+
+  const activeQuickFilters = filters.quickFilters || []
+
+  // Get current sort label
+  const currentSortLabel = SORT_OPTIONS.find(s => s.id === activeTab)?.labelKey ?? "tabs.newest"
 
   return (
-    <div className="flex flex-col gap-3 mb-4">
-      {/* TOP ROW: Clean filter tabs */}
-      <div className="flex items-center gap-3">
-        {/* Product count */}
-        <span className="text-sm font-medium text-foreground whitespace-nowrap shrink-0">
-          {productCount.toLocaleString(locale)}{" "}
-          <span className="text-muted-foreground font-normal">
-            {t("sectionAriaLabel").toLocaleLowerCase(locale)}
-          </span>
-        </span>
-
-        {/* Separator */}
-        <div className="h-5 w-px bg-border shrink-0" />
-
-        {/* Clean shadcn-style tabs */}
-        <div className="flex items-center gap-1 flex-1 overflow-x-auto no-scrollbar">
-          {allTabs.map((tab) => {
-            const TabIcon = tab.icon
-            const isActive = activeTab === tab.id
+    <div className="flex items-center gap-3 mb-4 pb-4 border-b border-border">
+      {/* LEFT: Sort dropdown */}
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <button type="button" className={cn(pillBase, pillInactive)}>
+            <ArrowsDownUp size={16} weight="regular" className="shrink-0" />
+            <span>{t(currentSortLabel)}</span>
+            <CaretDown className="size-4 opacity-60 shrink-0" />
+          </button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="start" className="min-w-44">
+          {SORT_OPTIONS.map((opt) => {
+            const isSelected = activeTab === opt.id
             return (
-              <Button
-                key={tab.id}
-                variant={isActive ? "default" : "outline"}
-                size="default"
-                onClick={() => onTabChange(tab.id)}
-                className={cn(
-                  "h-11 px-5 gap-2 shrink-0 rounded-xl font-medium",
-                  isActive 
-                    ? "shadow-md" 
-                    : "bg-surface-subtle hover:bg-hover border-border/50"
-                )}
+              <DropdownMenuItem
+                key={opt.id}
+                onClick={() => onTabChange(opt.id)}
+                className={cn(isSelected && "bg-accent")}
               >
-                <TabIcon size={18} weight={isActive ? "fill" : "regular"} />
-                <span className="text-sm">{tab.label}</span>
-              </Button>
+                <span className="flex-1">{t(opt.labelKey)}</span>
+                {isSelected && <Check className="size-4 text-primary" />}
+              </DropdownMenuItem>
             )
           })}
-        </div>
+        </DropdownMenuContent>
+      </DropdownMenu>
 
-        {/* City selector - shown when nearby tab is active */}
-        {activeTab === "nearby" && (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant={userCity ? "default" : "outline"}
-                size="default"
-                className="h-11 px-5 gap-2 shrink-0 rounded-xl font-medium"
-              >
-                <MapPin size={18} weight={userCity ? "fill" : "regular"} />
-                <span>
-                  {userCity 
-                    ? BULGARIAN_CITIES.find(c => c.value === userCity)?.[locale === "bg" ? "labelBg" : "label"] ?? userCity
-                    : locale === "bg" ? "Избери град" : "Select city"
-                  }
-                </span>
-                <CaretDown size={14} weight="bold" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="min-w-48 max-h-80 overflow-y-auto">
-              {BULGARIAN_CITIES.filter(c => c.value !== "other").map((city) => {
-                const isSelected = userCity === city.value
-                return (
-                  <DropdownMenuItem
-                    key={city.value}
-                    onClick={() => onCityChange?.(city.value)}
-                    className={cn("cursor-pointer flex items-center gap-2", isSelected && "bg-muted font-medium")}
-                  >
-                    <span className="w-4 flex items-center justify-center">
-                      {isSelected && <Check size={14} weight="bold" />}
-                    </span>
-                    {locale === "bg" ? city.labelBg : city.label}
-                  </DropdownMenuItem>
-                )
-              })}
-            </DropdownMenuContent>
-          </DropdownMenu>
-        )}
-
-        {/* View Toggle */}
-        <ToggleGroup
-          type="single"
-          value={viewMode}
-          onValueChange={(value) => value && onViewModeChange(value as "grid" | "list")}
-          variant="outline"
-          className="h-11 bg-surface-subtle p-1 rounded-xl shrink-0 border border-border/50"
-        >
-          <ToggleGroupItem
-            value="grid"
-            aria-label={tViewMode("gridView")}
-            className="size-9 p-0 rounded-lg data-[state=on]:bg-background data-[state=on]:shadow-sm"
-          >
-            <SquaresFour size={18} weight={viewMode === "grid" ? "fill" : "regular"} />
-          </ToggleGroupItem>
-          <ToggleGroupItem
-            value="list"
-            aria-label={tViewMode("listView")}
-            className="size-9 p-0 rounded-lg data-[state=on]:bg-background data-[state=on]:shadow-sm"
-          >
-            <Rows size={18} weight={viewMode === "list" ? "fill" : "regular"} />
-          </ToggleGroupItem>
-        </ToggleGroup>
-      </div>
-
-      {/* BOTTOM ROW: Category filter pills (only when category is selected) */}
-      {(categoryFilters.length > 0 || isLoadingAttributes) && (
-        <div className="flex items-center gap-2.5 overflow-x-auto no-scrollbar">
-          {categoryFilters.map((filter) => (
-            <DropdownMenu
-              key={filter.id}
-              open={activeDropdown === filter.id}
-              onOpenChange={(open) => setActiveDropdown(open ? filter.id : null)}
-            >
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="outline"
-                  size="default"
-                  className={cn(
-                    "h-10 px-4 gap-2 rounded-xl shrink-0 font-medium",
-                    filters.attributes[filter.id] && "border-selected-border bg-selected"
-                  )}
-                >
-                  {filter.label}
-                  <CaretDown size={14} weight="bold" className="text-muted-foreground" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="start" className="min-w-36">
-                {filter.options.map((opt) => {
-                  const isSelected = filters.attributes[filter.id] === opt.value
-                  return (
-                    <DropdownMenuItem
-                      key={opt.value}
-                      onClick={() => {
-                        const newAttributes = { ...filters.attributes }
-                        if (newAttributes[filter.id] === opt.value) {
-                          delete newAttributes[filter.id]
-                        } else {
-                          newAttributes[filter.id] = opt.value
-                        }
-                        onFiltersChange({ ...filters, attributes: newAttributes })
-                      }}
-                      className={cn("cursor-pointer", isSelected && "bg-muted font-medium")}
-                    >
-                      <span className="w-4 flex items-center justify-center mr-1">
-                        {isSelected && <Check size={14} weight="bold" />}
-                      </span>
-                      {opt.label}
-                    </DropdownMenuItem>
-                  )
-                })}
-              </DropdownMenuContent>
-            </DropdownMenu>
-          ))}
-
-          {/* Active filter badges */}
-          {activeAttributeFilters.map((af) => (
-            <Button
-              key={af.id}
-              variant="default"
-              size="default"
-              onClick={() => {
-                const newAttributes = { ...filters.attributes }
-                delete newAttributes[af.id]
-                onFiltersChange({ ...filters, attributes: newAttributes })
-              }}
-              className="h-10 px-4 gap-2 rounded-xl shrink-0 font-medium"
-            >
-              {af.displayLabel}
-              <X size={14} weight="bold" />
-            </Button>
-          ))}
-        </div>
+      {/* Product count */}
+      {showCount && (
+        <>
+          <div className="h-6 w-px bg-border shrink-0" />
+          <span className="text-sm text-muted-foreground whitespace-nowrap shrink-0">
+            <span className="font-semibold text-foreground">{productCount.toLocaleString(locale)}</span>
+            {" "}{t("sectionAriaLabel").toLowerCase()}
+          </span>
+        </>
       )}
+
+      {/* Category-specific filter dropdowns OR generic quick pills */}
+      {categorySlug && categoryFilters.length > 0 ? (
+        // Category selected: show category-specific filters (Size, Brand, Color, etc.)
+        <CategoryAttributeDropdowns
+          locale={locale}
+          filters={filters}
+          onFiltersChange={onFiltersChange}
+          inlineFilters={inlineFilters}
+          overflowFilters={overflowFilters}
+        />
+      ) : (
+        // No category: show generic quick filter pills (Deals, Nearby, Top Rated)
+        <QuickFilterPills
+          locale={locale}
+          activeQuickFilters={activeQuickFilters}
+          onToggleQuickFilter={toggleQuickFilter}
+          userCity={userCity ?? null}
+          {...(onCityChange ? { onCityChange } : {})}
+        />
+      )}
+
+      {/* View Toggle */}
+      <div className="h-6 w-px bg-border shrink-0" />
+      <ToggleGroup
+        type="single"
+        value={viewMode}
+        onValueChange={(value) => value && onViewModeChange(value as "grid" | "list")}
+        className="h-9 bg-surface-subtle p-0.5 rounded-lg shrink-0 border border-border"
+      >
+        <ToggleGroupItem
+          value="grid"
+          aria-label={tViewMode("gridView")}
+          className="size-8 p-0 rounded-md data-[state=on]:bg-background data-[state=on]:shadow-sm"
+        >
+          <SquaresFour size={18} weight={viewMode === "grid" ? "fill" : "regular"} />
+        </ToggleGroupItem>
+        <ToggleGroupItem
+          value="list"
+          aria-label={tViewMode("listView")}
+          className="size-8 p-0 rounded-md data-[state=on]:bg-background data-[state=on]:shadow-sm"
+        >
+          <Rows size={18} weight={viewMode === "list" ? "fill" : "regular"} />
+        </ToggleGroupItem>
+      </ToggleGroup>
     </div>
   )
 }

@@ -1,15 +1,14 @@
 import { createStaticClient } from "@/lib/supabase/server"
 import { SubcategoryTabs } from "@/components/category/subcategory-tabs"
-import { DesktopFilters } from "@/components/shared/filters/desktop-filters"
+import { DesktopFilterToolbar } from "@/components/desktop/desktop-filter-toolbar"
 import { FilterChips } from "@/components/shared/filters/filter-chips"
-import { SortSelect } from "@/components/shared/search/sort-select"
 import { SearchPagination } from "@/components/shared/search/search-pagination"
 import { SearchFilters } from "@/components/shared/search/search-filters"
 import { EmptyStateCTA } from "@/components/shared/empty-state-cta"
 import { DesktopShell } from "@/components/layout/desktop-shell.server"
 import { ProductGrid, type ProductGridProduct } from "@/components/grid"
 import { Suspense, use } from "react"
-import { setRequestLocale, getTranslations } from "next-intl/server"
+import { setRequestLocale } from "next-intl/server"
 import { notFound } from "next/navigation"
 import type { Metadata } from 'next'
 import CategorySlugLoading from "./loading"
@@ -138,9 +137,9 @@ function CategoryPageContent({
 
   const { current: currentCategory, parent: parentCategory, children: subcategories } = categoryContext
   
-  // DEC-002: Fetch subcategories with counts for curated browse UX
-  // filterForBrowse=true enforces "show if populated OR curated" rule
-  const subcategoriesWithCounts = use(getSubcategoriesForBrowse(currentCategory.id, true))
+  // Fetch subcategories with counts - NEVER filter on category browse pages
+  // All children should show as circles; sorting handles curated-first ordering
+  const subcategoriesWithCounts = use(getSubcategoriesForBrowse(currentCategory.id, false))
   
   const allCategoriesWithSubs = categoriesWithChildren.map((c) => ({
     category: c,
@@ -299,8 +298,6 @@ function CategoryPageDynamicContent({
     )
   )
 
-  const t = use(getTranslations('SearchFilters'))
-
   const products = result.products
   const totalProducts = result.total
 
@@ -397,17 +394,15 @@ function CategoryPageDynamicContent({
           showCounts={true}
         />
 
-        {/* Toolbar - single row with sort/count on left, filters on right */}
-        <div className="flex items-center justify-between gap-4 mb-4 pb-3 border-b border-border">
-          <div className="flex items-center gap-4 shrink-0">
-            <SortSelect />
-            <p className="text-sm text-muted-foreground whitespace-nowrap">
-              <span className="font-semibold text-foreground">{totalProducts}</span>
-              {' '}{t('results')} {t('in')} <span className="font-medium text-foreground">{categoryName}</span>
-            </p>
-          </div>
-          <DesktopFilters attributes={filterableAttributes} categorySlug={slug} categoryId={categoryId} />
-        </div>
+        {/* Unified Filter Toolbar */}
+        <DesktopFilterToolbar
+          locale={locale}
+          productCount={totalProducts}
+          categoryName={categoryName}
+          categorySlug={slug}
+          categoryId={categoryId}
+          attributes={filterableAttributes}
+        />
 
         {/* Active filter chips */}
         <FilterChips currentCategory={currentCategory} basePath={`/categories/${slug}`} className="mb-4" />

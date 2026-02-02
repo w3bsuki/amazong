@@ -51,6 +51,9 @@
     "playwright-report",
     "test-results",
     "supabase/functions",
-    "inspiration"
+    "inspiration",
+    "temp-tradesphere-audit",
+    "refactor",
+    "docs/archive"
   ]
 }

@@ -274,4 +274,30 @@
   -webkit-user-drag: none;
 }
 
+/* ===== MOBILE PDP UTILITIES ===== */
+/* Native press feedback for tap interactions */
+.tap-highlight {
+  transition: opacity 100ms ease;
+}
+.tap-highlight:active {
+  opacity: 0.7;
+}
 
+/* Marketplace card shadow */
+.shadow-card {
+  box-shadow: 0 4px 12px -2px hsl(var(--foreground) / 0.08);
+}
+
+/* Promoted listing glow */
+.promoted-glow {
+  box-shadow: 0 0 20px hsl(var(--primary) / 0.25);
+}
+
+/* Hidden scrollbar alias (for prototype compatibility) */
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}

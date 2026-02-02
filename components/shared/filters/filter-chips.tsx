@@ -250,7 +250,7 @@ export function FilterChips({
           <span
             className={cn(
               "size-4 rounded-full inline-flex items-center justify-center",
-              "bg-foreground/10 group-hover:bg-destructive-foreground/20",
+              "bg-muted group-hover:bg-destructive-subtle",
               "transition-colors"
             )}
             aria-hidden="true"

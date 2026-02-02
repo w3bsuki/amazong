@@ -8,8 +8,8 @@ export function QuickViewSkeleton() {
 
   return (
     <div className="flex flex-col">
-      {/* Image skeleton - 4:3 on mobile, square on desktop */}
-      <Skeleton className={isMobile ? "aspect-4-3 w-full rounded-none" : "aspect-square w-full rounded-none"} />
+      {/* Image skeleton - square to match QuickViewImageGallery compact mode */}
+      <Skeleton className={isMobile ? "aspect-square w-full rounded-none" : "aspect-square w-full rounded-none"} />
       
       {/* Thumbnail strip skeleton - mobile only */}
       {isMobile && (

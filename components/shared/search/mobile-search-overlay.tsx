@@ -272,7 +272,7 @@ export function MobileSearchOverlay({
                 <MagnifyingGlass
                   size={18}
                   weight="regular"
-                  className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground/60 pointer-events-none"
+                  className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none"
                   aria-hidden="true"
                 />
                 <FieldLabel htmlFor={searchInputId} className="sr-only">
@@ -382,7 +382,7 @@ export function MobileSearchOverlay({
             {/* No Results */}
             {!isSearching && query.length >= minSearchLength && products.length === 0 && (
               <div role="status" aria-live="polite" className="px-inset py-10 text-center">
-                <Package size={48} weight="regular" className="text-muted-foreground/50 mx-auto mb-3" aria-hidden="true" />
+                <Package size={48} weight="regular" className="text-muted-foreground mx-auto mb-3" aria-hidden="true" />
                 <p className="text-base font-medium text-foreground">
                   {tSearch("noResultsFor", { query })}
                 </p>

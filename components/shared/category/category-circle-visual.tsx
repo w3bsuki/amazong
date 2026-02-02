@@ -58,7 +58,7 @@ export function CategoryCircleVisual({
   // Ring style: active uses category color, inactive uses subtle border with hover
   const ringClass = active
     ? cn("ring-2 ring-offset-2 ring-offset-background", isColorful ? colors.ring : "ring-primary")
-    : "ring-1 ring-border/60 group-hover:ring-2 group-hover:ring-border"
+    : "ring-1 ring-border group-hover:ring-2 group-hover:ring-border"
 
   return (
     <div

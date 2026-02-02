@@ -3,10 +3,12 @@
 import { useSearchParams } from "next/navigation"
 import { useRouter } from "@/i18n/routing"
 import { Checkbox } from "@/components/ui/checkbox"
-import { Star, CaretDown, CaretRight, Check, Package } from "@phosphor-icons/react"
+import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
+import { Star, CaretDown, CaretRight, Check, Package, MapPin, Crosshair } from "@phosphor-icons/react"
 import { useLocale, useTranslations } from "next-intl"
 import { Link } from "@/i18n/routing"
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { cn } from "@/lib/utils"
 import {
   Accordion,
@@ -14,7 +16,15 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { CategoryBreadcrumbTrail } from "@/components/category/category-breadcrumb-trail"
+import { BULGARIAN_CITIES } from "@/lib/bulgarian-cities"
 
 interface Category {
   id: string
@@ -63,6 +73,18 @@ export function SearchFilters({
   const currentRating = searchParams.get("minRating")
   const currentBrand = searchParams.get("brand")
   const currentAvailability = searchParams.get("availability")
+  const currentCity = searchParams.get("city")
+  const currentNearby = searchParams.get("nearby") === "true"
+  
+  // Price input state (controlled inputs that sync with URL)
+  const [priceMin, setPriceMin] = useState(currentMinPrice ?? "")
+  const [priceMax, setPriceMax] = useState(currentMaxPrice ?? "")
+  
+  // Sync price inputs with URL on mount/change
+  useEffect(() => {
+    setPriceMin(currentMinPrice ?? "")
+    setPriceMax(currentMaxPrice ?? "")
+  }, [currentMinPrice, currentMaxPrice])
   
   // Track expanded categories
   const [expandedCategories, setExpandedCategories] = useState<string[]>([])
@@ -130,6 +152,50 @@ export function SearchFilters({
       router.push(`/search?${params.toString()}`)
     }
   }
+  
+  // Apply price from min/max inputs
+  const applyPriceInputs = useCallback(() => {
+    const params = new URLSearchParams(searchParams.toString())
+    if (priceMin && priceMin !== "0") params.set("minPrice", priceMin)
+    else params.delete("minPrice")
+    if (priceMax && priceMax !== "0") params.set("maxPrice", priceMax)
+    else params.delete("maxPrice")
+    
+    if (basePath) {
+      router.push(`${basePath}?${params.toString()}`)
+    } else {
+      router.push(`/search?${params.toString()}`)
+    }
+  }, [priceMin, priceMax, searchParams, basePath, router])
+  
+  // Handle location changes
+  const handleCityChange = useCallback((city: string | null) => {
+    const params = new URLSearchParams(searchParams.toString())
+    if (city && city !== "all") {
+      params.set("city", city)
+    } else {
+      params.delete("city")
+    }
+    if (basePath) {
+      router.push(`${basePath}?${params.toString()}`)
+    } else {
+      router.push(`/search?${params.toString()}`)
+    }
+  }, [searchParams, basePath, router])
+  
+  const toggleNearby = useCallback(() => {
+    const params = new URLSearchParams(searchParams.toString())
+    if (currentNearby) {
+      params.delete("nearby")
+    } else {
+      params.set("nearby", "true")
+    }
+    if (basePath) {
+      router.push(`${basePath}?${params.toString()}`)
+    } else {
+      router.push(`/search?${params.toString()}`)
+    }
+  }, [currentNearby, searchParams, basePath, router])
 
   const clearAllFilters = () => {
     if (basePath) {
@@ -144,7 +210,7 @@ export function SearchFilters({
     }
   }
 
-  const hasActiveFilters = currentMinPrice || currentMaxPrice || currentRating || currentBrand || currentAvailability
+  const hasActiveFilters = currentMinPrice || currentMaxPrice || currentRating || currentBrand || currentAvailability || currentCity || currentNearby
 
   // Get subcategories for a given category from allCategoriesWithSubs
   const getSubcategoriesFor = (categoryId: string) => {
@@ -209,7 +275,7 @@ export function SearchFilters({
                     className={`text-sm cursor-pointer min-h-8 flex items-center px-2 -mx-2 rounded-md transition-colors ${
                       cat.id === currentCategory.id 
                         ? 'font-semibold text-sidebar-foreground bg-sidebar-accent' 
-                        : 'text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'
+                        : 'text-sidebar-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'
                     }`}
                   >
                     {getCategoryName(cat)}
@@ -221,7 +287,7 @@ export function SearchFilters({
             {/* Subcategories section header */}
             {validSubcategories.length > 0 && (
               <>
-                <h3 className="text-xs font-semibold text-sidebar-foreground/60 uppercase tracking-wide mb-2 mt-4">
+                <h3 className="text-xs font-semibold text-sidebar-muted-foreground uppercase tracking-wide mb-2 mt-4">
                   {locale === 'bg' ? 'Подкатегории' : 'Subcategories'}
                 </h3>
                 <nav className="space-y-0.5">
@@ -229,7 +295,7 @@ export function SearchFilters({
                     <Link
                       key={subcat.id}
                       href={`/categories/${subcat.slug}`}
-                      className="text-sm cursor-pointer text-sidebar-foreground/70 hover:text-sidebar-accent-foreground hover:bg-sidebar-accent min-h-9 flex items-center px-2 -mx-2 rounded-md transition-colors"
+                      className="text-sm cursor-pointer text-sidebar-muted-foreground hover:text-sidebar-accent-foreground hover:bg-sidebar-accent min-h-9 flex items-center px-2 -mx-2 rounded-md transition-colors"
                     >
                       {getCategoryName(subcat)}
                     </Link>
@@ -270,9 +336,9 @@ export function SearchFilters({
                           aria-expanded={isExpanded}
                         >
                           {isExpanded ? (
-                            <CaretDown size={16} weight="regular" className="text-sidebar-foreground/60" aria-hidden="true" />
+                            <CaretDown size={16} weight="regular" className="text-sidebar-muted-foreground" aria-hidden="true" />
                           ) : (
-                            <CaretRight size={16} weight="regular" className="text-sidebar-foreground/60" aria-hidden="true" />
+                            <CaretRight size={16} weight="regular" className="text-sidebar-muted-foreground" aria-hidden="true" />
                           )}
                         </button>
                       )}
@@ -285,7 +351,7 @@ export function SearchFilters({
                           <Link
                             key={subcat.id}
                             href={`/categories/${subcat.slug}`}
-                            className="text-sm cursor-pointer min-h-8 flex items-center px-2 -mx-2 rounded-md text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground transition-colors"
+                            className="text-sm cursor-pointer min-h-8 flex items-center px-2 -mx-2 rounded-md text-sidebar-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground transition-colors"
                           >
                             {getCategoryName(subcat)}
                           </Link>
@@ -303,7 +369,7 @@ export function SearchFilters({
       {/* ================================================================
           SECTION 2-4: Filters using Accordion (cleaner UI)
           ================================================================ */}
-      <Accordion type="multiple" defaultValue={["reviews", "price", "availability"]} className="w-full mt-4">
+      <Accordion type="multiple" defaultValue={["reviews", "price", "location", "availability"]} className="w-full mt-4">
         {/* Customer Reviews */}
         <AccordionItem value="reviews" className="border-b-0">
           <AccordionTrigger className="py-3 text-sm font-semibold text-sidebar-foreground hover:no-underline hover:text-sidebar-accent-foreground">
@@ -320,7 +386,7 @@ export function SearchFilters({
                       "w-full flex items-center gap-2 py-2 px-2 -mx-2 rounded-md transition-colors",
                       isActive
                         ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium"
-                        : "hover:bg-sidebar-accent/50 text-sidebar-foreground"
+                        : "hover:bg-sidebar-muted text-sidebar-foreground"
                     )}
                     onClick={() => updateParams("minRating", isActive ? null : stars.toString())}
                   >
@@ -344,37 +410,129 @@ export function SearchFilters({
           </AccordionContent>
         </AccordionItem>
 
-        {/* Price */}
+        {/* Price - Min/Max inputs */}
         <AccordionItem value="price" className="border-b-0">
           <AccordionTrigger className="py-3 text-sm font-semibold text-sidebar-foreground hover:no-underline hover:text-sidebar-accent-foreground">
             {t('price')}
           </AccordionTrigger>
           <AccordionContent className="pb-2">
-            <div className="space-y-0.5">
-              {[
-                { label: t('under25'), min: null, max: "25" },
-                { label: t('range2550'), min: "25", max: "50" },
-                { label: t('range50100'), min: "50", max: "100" },
-                { label: t('range100200'), min: "100", max: "200" },
-                { label: t('above200'), min: "200", max: null }
-              ].map(({ label, min, max }) => {
-                const isActive = currentMinPrice === min && currentMaxPrice === max
-                return (
-                  <button
-                    key={label}
-                    className={cn(
-                      "w-full flex items-center justify-between py-2 px-2 -mx-2 rounded-md text-sm transition-colors",
-                      isActive
-                        ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium"
-                        : "hover:bg-sidebar-accent/50 text-sidebar-foreground"
-                    )}
-                    onClick={() => handlePriceClick(min, max)}
-                  >
-                    {label}
-                    {isActive && <Check size={16} weight="regular" className="text-primary" />}
-                  </button>
-                )
-              })}
+            <div className="space-y-3">
+              {/* Min/Max input row */}
+              <div className="flex items-center gap-2">
+                <div className="flex-1">
+                  <Input
+                    type="number"
+                    placeholder={t('min')}
+                    value={priceMin}
+                    onChange={(e) => setPriceMin(e.target.value)}
+                    onKeyDown={(e) => e.key === "Enter" && applyPriceInputs()}
+                    className="h-9 text-sm"
+                    min={0}
+                  />
+                </div>
+                <span className="text-muted-foreground text-sm">–</span>
+                <div className="flex-1">
+                  <Input
+                    type="number"
+                    placeholder={t('max')}
+                    value={priceMax}
+                    onChange={(e) => setPriceMax(e.target.value)}
+                    onKeyDown={(e) => e.key === "Enter" && applyPriceInputs()}
+                    className="h-9 text-sm"
+                    min={0}
+                  />
+                </div>
+                <Button
+                  size="sm"
+                  variant="secondary"
+                  onClick={applyPriceInputs}
+                  className="h-9 px-3"
+                >
+                  {t('go')}
+                </Button>
+              </div>
+              
+              {/* Quick price presets */}
+              <div className="flex flex-wrap gap-1.5">
+                {[
+                  { label: locale === "bg" ? "Под 25" : "Under 25", min: null, max: "25" },
+                  { label: "25-50", min: "25", max: "50" },
+                  { label: "50-100", min: "50", max: "100" },
+                  { label: "100-200", min: "100", max: "200" },
+                  { label: locale === "bg" ? "Над 200" : "200+", min: "200", max: null }
+                ].map(({ label, min, max }) => {
+                  const isActive = currentMinPrice === min && currentMaxPrice === max
+                  return (
+                    <button
+                      key={label}
+                      className={cn(
+                        "px-2.5 py-1 rounded-md text-xs font-medium transition-colors",
+                        isActive
+                          ? "bg-primary text-primary-foreground"
+                          : "bg-sidebar-accent text-sidebar-accent-foreground hover:bg-sidebar-muted"
+                      )}
+                      onClick={() => handlePriceClick(min, max)}
+                    >
+                      {label}
+                    </button>
+                  )
+                })}
+              </div>
+            </div>
+          </AccordionContent>
+        </AccordionItem>
+        
+        {/* Location */}
+        <AccordionItem value="location" className="border-b-0">
+          <AccordionTrigger className="py-3 text-sm font-semibold text-sidebar-foreground hover:no-underline hover:text-sidebar-accent-foreground">
+            {t('location')}
+          </AccordionTrigger>
+          <AccordionContent className="pb-2">
+            <div className="space-y-3">
+              {/* City selector */}
+              <Select
+                value={currentCity ?? "all"}
+                onValueChange={(value) => handleCityChange(value === "all" ? null : value)}
+              >
+                <SelectTrigger className="w-full h-9">
+                  <SelectValue placeholder={t('selectCity')} />
+                </SelectTrigger>
+                <SelectContent className="max-h-64">
+                  <SelectItem value="all">
+                    <span className="flex items-center gap-2">
+                      <MapPin size={14} weight="regular" />
+                      {t('anyLocation')}
+                    </span>
+                  </SelectItem>
+                  {BULGARIAN_CITIES.filter(c => c.value !== "other").map((city) => (
+                    <SelectItem key={city.value} value={city.value}>
+                      {locale === "bg" ? city.labelBg : city.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              
+              {/* Nearby toggle */}
+              <label
+                htmlFor="nearby"
+                className={cn(
+                  "flex items-center gap-3 py-2 px-2 -mx-2 rounded-md cursor-pointer transition-colors",
+                  currentNearby
+                    ? "bg-sidebar-accent text-sidebar-accent-foreground"
+                    : "hover:bg-sidebar-muted text-sidebar-foreground"
+                )}
+              >
+                <Checkbox
+                  id="nearby"
+                  checked={currentNearby}
+                  onCheckedChange={toggleNearby}
+                  className="size-4 border-muted-foreground data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+                />
+                <span className="text-sm flex items-center gap-1.5">
+                  <Crosshair size={16} weight="regular" className="text-primary" />
+                  {t('nearMe')}
+                </span>
+              </label>
             </div>
           </AccordionContent>
         </AccordionItem>
@@ -391,7 +549,7 @@ export function SearchFilters({
                 "flex items-center gap-3 py-2 px-2 -mx-2 rounded-md cursor-pointer transition-colors",
                 currentAvailability === "instock"
                   ? "bg-sidebar-accent text-sidebar-accent-foreground"
-                  : "hover:bg-sidebar-accent/50 text-sidebar-foreground"
+                  : "hover:bg-sidebar-muted text-sidebar-foreground"
               )}
             >
               <Checkbox

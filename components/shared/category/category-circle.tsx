@@ -112,13 +112,13 @@ export function CategoryCircle({
         {/* Loading spinner overlay - subtle ring pulse */}
         {loading && (
           <div className="absolute inset-0 flex items-center justify-center">
-            <div className="size-full rounded-full border-2 border-foreground/20 border-t-foreground animate-spin" />
+            <div className="size-full rounded-full border-2 border-border border-t-foreground animate-spin" />
           </div>
         )}
       </div>
       <span className={cn("mt-1", labelClassName)}>{label}</span>
       {typeof count === "number" && count > 0 && (
-        <span className={cn("text-2xs text-muted-foreground/70 leading-none -mt-0.5", countClassName)}>
+        <span className={cn("text-2xs text-muted-foreground leading-none -mt-0.5", countClassName)}>
           {formatCount(count)}
         </span>
       )}

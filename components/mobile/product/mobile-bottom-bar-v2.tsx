@@ -39,8 +39,6 @@ interface MobileBottomBarV2Props {
     displayName: string
     phone?: string
   }
-  /** Currently active tab - when 'seller', shows contact-focused UI */
-  activeTab?: "info" | "seller"
   className?: string
 }
 
@@ -56,7 +54,6 @@ export function MobileBottomBarV2({
   categoryType,
   product,
   seller,
-  activeTab = "info",
   className,
 }: MobileBottomBarV2Props) {
   const t = useTranslations("Product")
@@ -121,36 +118,8 @@ export function MobileBottomBarV2({
     router.push(`/chat?${params.toString()}`)
   }
 
-  // Render appropriate buttons based on category and active tab
+  // Render appropriate buttons based on category type
   const renderButtons = () => {
-    // When on seller tab, show contact-focused buttons regardless of category
-    if (activeTab === "seller") {
-      return (
-        <>
-          {seller?.phone && (
-            <Button
-              variant="outline"
-              size="lg"
-              className="h-12 gap-2 px-4"
-              onClick={handleCall}
-            >
-              <Phone className="size-5" />
-              <span>{t("callSeller")}</span>
-            </Button>
-          )}
-          <Button
-            size="lg"
-            className="flex-1 h-12 gap-2"
-            onClick={handleContact}
-            disabled={!seller}
-          >
-            <MessageCircle className="size-5" />
-            <span>{t("contactSeller")}</span>
-          </Button>
-        </>
-      )
-    }
-
     switch (categoryType) {
       case "automotive":
         return (
@@ -232,12 +201,12 @@ export function MobileBottomBarV2({
     <div
       className={cn(
         "fixed bottom-0 left-0 right-0 z-50",
-        "bg-surface-elevated border-t border-border",
+        "bg-background/95 backdrop-blur-sm border-t border-border",
         "pb-safe",
         className
       )}
     >
-      <div className="px-3 py-2.5">
+      <div className="px-3 py-2.5 max-w-lg mx-auto">
         <div className="flex gap-2">
           {renderButtons()}
         </div>

@@ -124,6 +124,7 @@
         "headerTitleAll": "Всички категории",
         "metaDescription": "Разгледайте всички категории продукти в Treido. Намерете електроника, мода, дом и градина и още.",
         "bannerDescription": "Разгледай продуктите в тази категория",
+        "browseSiblings": "Разгледай подобни категории",
         "all": "Всички",
         "navigationAriaLabel": "Навигация по категории",
         "subcategoriesAriaLabel": "Подкатегории",
@@ -225,6 +226,7 @@
             "trustBestPrices": "Топ цени",
             "sellBannerTitle": "Имаш нещо за продан?",
             "sellBannerSubtitle": "Безплатно публикуване • Достигни хиляди",
+            "browseCategorySubtitle": "Разгледай всички продукти в тази категория",
             "forYouTitle": "За теб",
             "exploreTabs": {
                 "newest": "Най-нови",
@@ -460,7 +462,26 @@
         "follow": "Последвай",
         "contact": "Контакт",
         "viewFullProfile": "Виж пълния профил",
-        "viewAllListings": "Виж всички ({count})"
+        "viewAllListings": "Виж всички ({count})",
+        "negotiable": "По договаряне",
+        "similarItems": "Подобни артикули",
+        "safety": {
+            "title": "Съвети за безопасност",
+            "description": "Срещайте се на публични места, проверявайте артикулите преди плащане и използвайте сигурни методи за плащане."
+        },
+        "report": {
+            "listing": "Докладвай тази обява"
+        },
+        "seller": {
+            "respondsWithinHour": "Обикновено отговаря до 1 час",
+            "respondsWithinHours": "Обикновено отговаря до {hours} часа",
+            "listings": "Обяви",
+            "reviews": "отзиви",
+            "memberSince": "Член от",
+            "viewProfile": "Виж профила",
+            "follow": "Последвай",
+            "following": "Следвате"
+        }
     },
     "ProductModal": {
         "viewFullPage": "Виж пълната страница",
@@ -704,6 +725,7 @@
         "state": "Област",
         "statePlaceholder": "Област",
         "zipCode": "Пощенски код",
+        "zipPlaceholder": "1000",
         "shippingMethod": "Метод на доставка",
         "standardShipping": "Стандартна доставка",
         "standardDays": "5-7 работни дни",
@@ -1377,7 +1399,12 @@
         "closeFilters": "Затвори филтрите",
         "searchAttributePlaceholder": "Търси {attribute}...",
         "showLess": "Покажи по-малко",
-        "showAllCount": "Покажи всички ({count})"
+        "showAllCount": "Покажи всички ({count})",
+        "location": "Местоположение",
+        "selectCity": "Изберете град",
+        "nearMe": "Наблизо",
+        "clear": "Изчисти",
+        "moreFilters": "Още филтри"
     },
     "CartDropdown": {
         "title": "Количка",
@@ -1903,6 +1930,8 @@
         "popularCategories": "Популярни категории от този магазин",
         "seeAllCategories": "Виж всички категории",
         "responseLabel": "Отговор",
+        "response": "Отговор",
+        "listings": "Обяви",
         "shippedLabel": "Изпраща",
         "sinceLabel": "От",
         "chatLabel": "Чат"
@@ -2021,6 +2050,8 @@
         "categoryTabsAriaLabel": "Табове за категории",
         "subcategoryTabsAriaLabel": "Табове за подкатегории",
         "sortPlaceholder": "Сортиране",
+        "cityPlaceholder": "Град",
+        "clear": "Изчисти",
         "browseCategories": "Категории",
         "viewAll": "Виж всички",
         "promotedTitle": "ПРОМОТИРАНИ ОБЯВИ",
@@ -2045,7 +2076,8 @@
             "free_shipping": "Безплатна доставка",
             "ending_soon": "Скоро приключва",
             "nearby": "Наблизо",
-            "more": "Още"
+            "more": "Още",
+            "moreFilters": "+{count} още"
         },
         "scroll": {
             "left": "Скрол наляво",

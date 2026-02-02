@@ -1,23 +1,13 @@
 "use client"
 
-import { useEffect, useMemo, useState } from "react"
-import { Link } from "@/i18n/routing"
-import { cn } from "@/lib/utils"
+import { useCallback, useEffect, useMemo, useState } from "react"
+import { Tag } from "@phosphor-icons/react"
 import { PageShell } from "@/components/shared/page-shell"
-import {
-  ShieldCheck,
-  Tag,
-  ArrowRight,
-  Truck,
-  Fire,
-  Plus,
-} from "@phosphor-icons/react"
 import { MobileSearchOverlay } from "@/components/shared/search/mobile-search-overlay"
 import { SortModal } from "@/components/shared/filters/sort-modal"
 import { ProductFeed } from "@/components/shared/product/product-feed"
 import { SubcategoryCircles } from "@/components/mobile/subcategory-circles"
 import { ContextualFilterBar } from "@/components/mobile/category-nav/contextual-filter-bar"
-import { HorizontalProductCard } from "@/components/mobile/horizontal-product-card"
 import { FeedControlBar, type SortOption, type QuickPillId } from "@/components/mobile/feed-control-bar"
 import { CategoryProductRowMobile } from "@/components/shared/product/category-product-row"
 import { useHeader } from "@/components/providers/header-context"
@@ -25,6 +15,17 @@ import type { UIProduct } from "@/lib/types/products"
 import type { CategoryTreeNode } from "@/lib/category-tree"
 import { useCategoryNavigation } from "@/hooks/use-category-navigation"
 import { useTranslations } from "next-intl"
+
+// New drawer-based navigation
+import {
+  CategoryDrawerProvider,
+  useCategoryDrawer,
+  CategoryCirclesSimple,
+} from "@/components/mobile/category-nav"
+import { CategoryBrowseDrawer } from "@/components/mobile/drawers/category-browse-drawer"
+import { PromotedListingsStrip } from "@/components/shared/promoted-listings-strip"
+import { TrustBadgesInline } from "@/components/shared/trust-badges-inline"
+import { SellPromoBanner } from "@/components/shared/sell-promo-banner"
 
 // =============================================================================
 // Types
@@ -53,99 +54,20 @@ interface MobileHomeProps {
 }
 
 // =============================================================================
-// Promoted Listings Strip - Uses semantic SectionHeader
+// Fetch Children Helper (for lazy-loading subcategories)
 // =============================================================================
 
-function PromotedListingsStrip({
-  products,
-}: {
-  products: UIProduct[]
-}) {
-  const t = useTranslations("Home")
-  if (!products || products.length === 0) return null
-
-  return (
-    <section className="pt-3 pb-1">
-      {/* Section header */}
-      <div className="px-inset mb-2.5 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Fire size={18} weight="fill" className="text-fire" />
-          <span className="text-sm font-bold text-foreground">
-            {t("mobile.promotedListings")}
-          </span>
-        </div>
-        <Link
-          href="/todays-deals"
-          className="flex items-center gap-0.5 text-xs font-medium text-muted-foreground active:text-foreground"
-        >
-          {t("mobile.seeAll")}
-          <ArrowRight size={12} weight="bold" />
-        </Link>
-      </div>
-
-      {/* Horizontal scroll product cards */}
-      <div className="overflow-x-auto no-scrollbar">
-        <div className="flex gap-3 px-inset">
-          {products.slice(0, 8).map((product) => (
-            <HorizontalProductCard key={product.id} product={product} />
-          ))}
-        </div>
-      </div>
-    </section>
-  )
-}
-
-// =============================================================================
-// Trust Badges (demo style)
-// =============================================================================
-
-function TrustBadgesInline() {
-  const t = useTranslations("Home")
-  const badges = [
-    { icon: ShieldCheck, label: t("mobile.trustProtected") },
-    { icon: Truck, label: t("mobile.trustFastShip") },
-    { icon: Tag, label: t("mobile.trustBestPrices") },
-  ]
-
-  return (
-    <div className="mx-inset my-3 flex items-center justify-between py-2.5 px-3 bg-surface-subtle rounded-md border border-border">
-      {badges.map(({ icon: Icon, label }, i) => (
-        <div
-          key={label}
-          className={cn("flex items-center gap-1.5", i > 0 && "border-l border-border pl-3")}
-        >
-          <Icon size={14} weight="fill" className="text-muted-foreground" />
-          <span className="text-2xs text-muted-foreground font-medium">{label}</span>
-        </div>
-      ))}
-    </div>
-  )
-}
-
-// =============================================================================
-// Sell Promo Banner (demo style)
-// =============================================================================
-
-function SellPromoBanner() {
-  const t = useTranslations("Home")
-  return (
-    <Link
-      href="/sell"
-      className="mx-inset mb-4 flex items-center justify-between gap-3 rounded-md bg-foreground text-background p-3 active:opacity-90 transition-opacity"
-    >
-      <div className="space-y-0.5 min-w-0">
-        <p className="text-sm font-bold leading-tight">
-          {t("mobile.sellBannerTitle")}
-        </p>
-        <p className="text-xs text-background/70 leading-tight">
-          {t("mobile.sellBannerSubtitle")}
-        </p>
-      </div>
-      <div className="size-9 shrink-0 bg-background text-foreground rounded-full flex items-center justify-center">
-        <Plus size={18} weight="bold" />
-      </div>
-    </Link>
-  )
+async function fetchCategoryChildren(parentId: string): Promise<CategoryTreeNode[]> {
+  try {
+    const res = await fetch(`/api/categories/${parentId}/children`, {
+      next: { revalidate: 3600 },
+    })
+    if (!res.ok) return []
+    const data = await res.json()
+    return data.children ?? []
+  } catch {
+    return []
+  }
 }
 
 // =============================================================================
@@ -168,6 +90,9 @@ export function MobileHome({
   const [sortModalOpen, setSortModalOpen] = useState(false)
   const [activeSort, setActiveSort] = useState<SortOption>("newest")
   const [activePills, setActivePills] = useState<QuickPillId[]>([])
+  
+  // Drawer-selected category for filtering
+  const [drawerCategory, setDrawerCategory] = useState<CategoryTreeNode | null>(null)
 
   const activePromotedProducts = useMemo(() => {
     const now = Date.now()
@@ -188,13 +113,21 @@ export function MobileHome({
     )
   }
   
+  // Handle drawer category change
+  const handleDrawerCategoryChange = useCallback((
+    category: CategoryTreeNode | null,
+    path: CategoryTreeNode[]
+  ) => {
+    setDrawerCategory(category)
+  }, [])
+  
   // Get header context to provide dynamic state to layout's header
   const { setHomepageHeader } = useHeader()
 
   // Use the navigation hook that handles all product loading
   const nav = useCategoryNavigation({
     initialCategories,
-    defaultTab: null,
+    defaultTab: drawerCategory?.slug ?? null,
     defaultSubTab: null,
     defaultL2: null,
     defaultL3: null,
@@ -218,17 +151,27 @@ export function MobileHome({
   }, [nav.activeTab, nav.handleTabChange, initialCategories, setHomepageHeader])
 
   return (
-    <PageShell variant="muted" className="pb-24">
-      {/* Search Overlay */}
-      <MobileSearchOverlay
-        hideDefaultTrigger
-        externalOpen={searchOpen}
-        onOpenChange={setSearchOpen}
-      />
+    <CategoryDrawerProvider
+      rootCategories={initialCategories}
+      onCategoryChange={handleDrawerCategoryChange}
+    >
+      <PageShell variant="muted" className="pb-24">
+        {/* Search Overlay */}
+        <MobileSearchOverlay
+          hideDefaultTrigger
+          externalOpen={searchOpen}
+          onOpenChange={setSearchOpen}
+        />
 
-      {/* Header is rendered by layout - passes variant="homepage" with category pills */}
+        {/* Header is rendered by layout - passes variant="homepage" with category pills */}
+        
+        {/* L0 Category Circles - Tapping opens drawer for L1+ navigation */}
+        <CategoryCirclesSimple
+          categories={initialCategories}
+          locale={locale}
+        />
 
-      {/* Main Content */}
+        {/* Main Content */}
       <div className="pb-4">
         {/* Leaf Category Banner - Shows when at deepest level (no more subcategories) */}
         {!nav.isAllTab && nav.isLeafCategory && nav.activeCategoryName && (
@@ -239,7 +182,7 @@ export function MobileHome({
               </div>
               <div>
                 <h3 className="font-semibold text-foreground">{nav.activeCategoryName}</h3>
-                <p className="text-sm text-muted-foreground">Browse all products in this category</p>
+                <p className="text-sm text-muted-foreground">{t("mobile.browseCategorySubtitle")}</p>
               </div>
             </div>
           </div>
@@ -359,6 +302,18 @@ export function MobileHome({
         locale={locale}
         excludeOptions={nav.isAllTab ? ["newest"] : undefined}
       />
+      
+      {/* Category Browse Drawer - Native app-style category navigation */}
+      <CategoryBrowseDrawer
+        locale={locale}
+        fetchChildren={fetchCategoryChildren}
+        onCategoryChange={(cat) => {
+          if (cat) {
+            nav.handleTabChange(cat.slug)
+          }
+        }}
+      />
     </PageShell>
+    </CategoryDrawerProvider>
   )
 }

@@ -5,20 +5,24 @@ import { Button } from "@/components/ui/button"
 import { Link } from "@/i18n/routing"
 import { useTranslations } from "next-intl"
 import { User } from "@supabase/supabase-js"
-import { SpinnerGap, UserCircle, Package, Storefront, ChatCircle, Gear, SignOut, CaretRight } from "@phosphor-icons/react"
+import { SpinnerGap, UserCircle, Package, Storefront, ChatCircle, Gear, SignOut, CaretRight, CaretDown, Bell } from "@phosphor-icons/react"
 import { useState } from "react"
 import { cn } from "@/lib/utils"
+import { CountBadge } from "@/components/shared/count-badge"
 
 interface AccountDropdownProps {
   user: User | null
   variant?: "icon" | "full"
   className?: string
+  /** Notification count to display as badge on avatar */
+  notificationCount?: number
 }
 
-export function AccountDropdown({ user, variant = "icon", className }: AccountDropdownProps) {
+export function AccountDropdown({ user, variant = "icon", notificationCount = 0, className }: AccountDropdownProps) {
   const t = useTranslations("Header")
   const tAccount = useTranslations("Account")
   const tAccountDrawer = useTranslations("AccountDrawer")
+  const tNotifications = useTranslations("NotificationsDropdown")
   const [isSigningOut, setIsSigningOut] = useState(false)
 
   // For non-authenticated users with icon variant, show a simple Sign In link
@@ -26,8 +30,8 @@ export function AccountDropdown({ user, variant = "icon", className }: AccountDr
     return (
       <Link href="/auth/login">
         <Button
-          variant="ghost"
-          className={cn("h-10 px-3 text-sm font-medium border border-transparent hover:border-header-text/20 rounded-md text-header-text hover:text-header-text hover:bg-header-hover", className)}
+          variant="header-ghost"
+          className={cn("h-10 px-3 text-sm font-medium", className)}
         >
           {t("signIn")}
         </Button>
@@ -35,32 +39,51 @@ export function AccountDropdown({ user, variant = "icon", className }: AccountDr
     )
   }
 
+  const displayName = user ? (user.user_metadata?.full_name || user.email?.split("@")[0] || "User") : t("signIn")
+
   const triggerContent = variant === "full" ? (
     <div
       className={cn(
-        "h-11 px-3 text-sm font-semibold leading-none border border-transparent hover:border-header-text/20 rounded-md text-header-text hover:text-header-text hover:bg-header-hover transition-all flex items-center cursor-pointer",
+        "h-11 px-3 text-sm font-semibold leading-none rounded-md text-header-text hover:bg-header-hover transition-all flex items-center cursor-pointer gap-1",
         className
       )}
     >
       <div className="flex items-center gap-2" aria-hidden="true">
-        <div className="flex items-center justify-center text-header-text/90">
+        {/* Avatar with notification badge */}
+        <div className="relative flex items-center justify-center text-header-text-muted">
           <UserCircle weight="fill" className="size-7" />
+          {notificationCount > 0 && (
+            <CountBadge
+              count={notificationCount}
+              className="absolute -top-0.5 -right-0.5 bg-notification text-primary-foreground ring-2 ring-header-bg h-4 min-w-4 px-1 text-2xs"
+              aria-hidden="true"
+            />
+          )}
         </div>
         <div className="flex flex-col items-start leading-none gap-0.5">
-          <span className="text-xs text-header-text/70 font-normal">
+          <span className="text-xs text-header-text-muted font-normal">
             {t("hello")}
           </span>
           <span className="text-sm font-bold truncate max-w-24 lg:max-w-36">
-            {user ? (user.user_metadata?.full_name || user.email?.split("@")[0] || "User") : t("signIn")}
+            {displayName}
           </span>
         </div>
       </div>
+      {/* Dropdown arrow indicator */}
+      <CaretDown weight="bold" className="size-3 text-header-text-muted ml-0.5" />
     </div>
   ) : (
     <div
-      className={cn("inline-flex items-center justify-center border border-transparent hover:border-header-text/20 rounded-md text-header-text hover:text-header-text hover:bg-header-hover relative size-11 [&_svg]:size-6 cursor-pointer", className)}
+      className={cn("inline-flex items-center justify-center rounded-md text-header-text hover:bg-header-hover relative size-11 [&_svg]:size-6 cursor-pointer transition-colors", className)}
     >
       <UserCircle weight="fill" />
+      {notificationCount > 0 && (
+        <CountBadge
+          count={notificationCount}
+          className="absolute -top-0.5 -right-0.5 bg-notification text-primary-foreground ring-2 ring-header-bg h-4 min-w-4 px-1 text-2xs"
+          aria-hidden="true"
+        />
+      )}
     </div>
   )
 
@@ -71,7 +94,7 @@ export function AccountDropdown({ user, variant = "icon", className }: AccountDr
         <Link
           href={user ? "/account" : "/auth/login"}
           className="block rounded-md outline-none focus-visible:outline-2 focus-visible:outline-ring"
-          aria-label={`${t("hello")}, ${user?.email?.split("@")[0] || t("signIn")}. ${t("accountAndLists")}`}
+          aria-label={`${t("hello")}, ${user?.email?.split("@")[0] || t("signIn")}. ${t("accountAndLists")}${notificationCount > 0 ? ` (${notificationCount} ${tNotifications("title").toLowerCase()})` : ""}`}
         >
           {triggerContent}
         </Link>
@@ -105,6 +128,18 @@ export function AccountDropdown({ user, variant = "icon", className }: AccountDr
 
             {/* Navigation links */}
             <nav className="py-1">
+              {/* Notifications link with badge */}
+              <Link href="/account/notifications" className="flex items-center justify-between px-3 py-2 text-sm text-foreground hover:bg-accent">
+                <span className="flex items-center gap-2.5">
+                  <Bell size={16} weight="regular" className="text-muted-foreground" />
+                  {tNotifications("title")}
+                </span>
+                {notificationCount > 0 && (
+                  <span className="text-2xs bg-notification text-primary-foreground px-1.5 py-0.5 rounded-full">
+                    {notificationCount}
+                  </span>
+                )}
+              </Link>
               <Link href="/account/orders" className="flex items-center gap-2.5 px-3 py-2 text-sm text-foreground hover:bg-accent">
                 <Package size={16} weight="regular" className="text-muted-foreground" />
                 {tAccount("header.orders")}

@@ -2,7 +2,7 @@
 
 import { Link } from "@/i18n/routing"
 import { cn } from "@/lib/utils"
-import { HorizontalProductCard } from "@/components/mobile/horizontal-product-card"
+import { HorizontalProductCard } from "@/components/shared/product/horizontal-product-card"
 import { ArrowRight, Fire, Tag, TShirt, Car, DeviceMobile, Baby, FlagBanner } from "@phosphor-icons/react"
 import type { UIProduct } from "@/lib/data/products"
 import type { ReactNode } from "react"
