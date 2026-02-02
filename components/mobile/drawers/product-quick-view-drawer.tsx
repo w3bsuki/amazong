@@ -12,7 +12,7 @@ import { useRouter } from "@/i18n/routing"
 import { useTranslations } from "next-intl"
 import { toast } from "sonner"
 
-import { X } from "lucide-react"
+import { X } from "@phosphor-icons/react"
 
 import {
   Drawer,
@@ -22,7 +22,6 @@ import {
   DrawerDescription,
   DrawerTitle,
 } from "@/components/ui/drawer"
-import { Button } from "@/components/ui/button"
 import type { QuickViewProduct } from "@/components/providers/drawer-context"
 import { useCart } from "@/components/providers/cart-context"
 import { ProductQuickViewContent } from "@/components/shared/product/quick-view/product-quick-view-content"
@@ -110,14 +109,12 @@ export function ProductQuickViewDrawer({
             {title || t("quickView")}
           </DrawerTitle>
           <DrawerClose asChild>
-            <Button
-              variant="ghost"
-              size="icon-sm"
-              className="shrink-0 -mr-2 rounded-full hover:bg-muted touch-manipulation"
+            <button
+              className="shrink-0 text-muted-foreground/60 hover:text-foreground transition-colors"
+              aria-label={t("close")}
             >
-              <X className="size-4" />
-              <span className="sr-only">{t("close")}</span>
-            </Button>
+              <X size={20} weight="light" />
+            </button>
           </DrawerClose>
         </div>
         <DrawerDescription className="sr-only">{description}</DrawerDescription>

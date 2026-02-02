@@ -10,6 +10,7 @@ import {
   Gear,
   Star,
   CaretRight,
+  X,
 } from "@phosphor-icons/react"
 import {
   Drawer,
@@ -227,10 +228,10 @@ export function AccountDrawer({ open, onOpenChange }: AccountDrawerProps) {
             </div>
             <DrawerClose asChild>
               <button
-                className="text-xs text-muted-foreground hover:text-foreground h-touch-xs px-2 rounded-md hover:bg-muted touch-action-manipulation tap-transparent"
+                className="text-muted-foreground/60 hover:text-foreground transition-colors"
                 aria-label={tAccount("close")}
               >
-                {tAccount("close")}
+                <X size={20} weight="light" />
               </button>
             </DrawerClose>
           </div>

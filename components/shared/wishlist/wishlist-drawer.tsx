@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { Heart, ShoppingCart, Trash, ArrowRight } from "@phosphor-icons/react"
+import { Heart, ShoppingCart, Trash, ArrowRight, X } from "@phosphor-icons/react"
 import {
   Drawer,
   DrawerTrigger,
@@ -74,10 +74,10 @@ export function WishlistDrawer({ className, children }: WishlistDrawerProps) {
             </div>
             <DrawerClose asChild>
               <button
-                className="text-xs text-muted-foreground hover:text-foreground h-touch-lg px-2 rounded-md hover:bg-muted touch-action-manipulation tap-transparent"
+                className="text-muted-foreground/60 hover:text-foreground transition-colors"
                 aria-label={t("close")}
               >
-                {t("close")}
+                <X size={20} weight="light" />
               </button>
             </DrawerClose>
           </div>
@@ -108,7 +108,10 @@ export function WishlistDrawer({ className, children }: WishlistDrawerProps) {
               {items.map((item, index) => (
                 <div
                   key={item.id}
-                  className={cn("flex gap-2 py-2", index !== items.length - 1 && "border-b border-border")}
+                  className={cn(
+                    "grid grid-cols-[56px_1fr_auto] gap-2 py-2",
+                    index !== items.length - 1 && "border-b border-border"
+                  )}
                 >
                   <Link
                     href={item.username ? `/${item.username}/${item.slug || item.product_id}` : "#"}
@@ -126,7 +129,7 @@ export function WishlistDrawer({ className, children }: WishlistDrawerProps) {
                     </div>
                   </Link>
 
-                  <div className="flex-1 min-w-0 flex flex-col">
+                  <div className="min-w-0 flex flex-col">
                     <Link
                       href={item.username ? `/${item.username}/${item.slug || item.product_id}` : "#"}
                       onClick={() => setOpen(false)}
@@ -134,27 +137,29 @@ export function WishlistDrawer({ className, children }: WishlistDrawerProps) {
                     >
                       {item.title}
                     </Link>
-                    <p className="text-sm font-semibold text-foreground mt-0.5">{formatPrice(item.price)}</p>
+                    <p className="text-sm font-semibold tabular-nums text-foreground mt-auto pt-1">{formatPrice(item.price)}</p>
+                  </div>
 
-                    <div className="flex items-center gap-1.5 mt-auto pt-1">
-                      <button
-                        onClick={() => handleMoveToCart(item)}
-                        className="flex items-center gap-1 h-touch-lg px-2 text-xs font-medium text-primary hover:text-primary bg-surface-subtle hover:bg-hover rounded-md touch-action-manipulation tap-transparent"
-                      >
-                        <ShoppingCart size={12} />
-                        {t("add")}
-                      </button>
-                      <button
-                        onClick={() => {
-                          removeFromWishlist(item.product_id)
-                          toast.success(t("removed"))
-                        }}
-                        className="flex items-center justify-center size-touch-lg rounded-md text-muted-foreground hover:text-destructive hover:bg-hover touch-action-manipulation tap-transparent"
-                        aria-label={t("remove")}
-                      >
-                        <Trash size={14} />
-                      </button>
-                    </div>
+                  <div className="flex flex-col items-end justify-between">
+                    <button
+                      data-vaul-no-drag
+                      onClick={() => handleMoveToCart(item)}
+                      className="flex items-center justify-center size-8 rounded-md text-foreground hover:bg-muted touch-action-manipulation tap-transparent"
+                      aria-label={t("add")}
+                    >
+                      <ShoppingCart size={18} weight="regular" />
+                    </button>
+                    <button
+                      data-vaul-no-drag
+                      onClick={() => {
+                        removeFromWishlist(item.product_id)
+                        toast.success(t("removed"))
+                      }}
+                      className="flex items-center justify-center size-8 rounded-md text-muted-foreground hover:text-destructive hover:bg-hover touch-action-manipulation tap-transparent"
+                      aria-label={t("remove")}
+                    >
+                      <Trash size={16} weight="regular" />
+                    </button>
                   </div>
                 </div>
               ))}

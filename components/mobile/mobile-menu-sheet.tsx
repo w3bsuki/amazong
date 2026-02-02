@@ -113,7 +113,7 @@ export const MobileMenuSheet = forwardRef<MobileMenuSheetHandle, MobileMenuSheet
                       onClick={() => setOpen(false)}
                       circleClassName="size-14"
                       fallbackIconSize={24}
-                      fallbackIconWeight="regular"
+                      fallbackIconWeight="bold"
                       variant="menu"
                       label={getShortName(cat)}
                       labelClassName="text-2xs font-medium text-center text-foreground leading-tight line-clamp-2 w-full max-w-none break-words hyphens-auto"

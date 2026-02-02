@@ -290,21 +290,30 @@ function DrawerFooter({ className, ...props }: React.ComponentProps<"div">) {
   )
 }
 
+interface DrawerBodyProps extends React.ComponentProps<"div"> {
+  /**
+   * Disable drag-to-dismiss on this scroll area.
+   * Set to true for content with complex interactive elements (sliders, carousels).
+   * @default false - allows drag-to-dismiss from anywhere for iOS-native feel
+   */
+  noDrag?: boolean
+}
+
 /**
  * Scrollable body container for drawer content.
- * Use this for content that may overflow - it includes proper scroll handling
- * and the data-vaul-no-drag attribute to prevent scroll interference with drag.
+ * Use this for content that may overflow - it includes proper scroll handling.
  *
  * Touch handling:
  * - touch-pan-y: allows vertical scroll, prevents pinch-zoom
  * - overscroll-contain: prevents scroll chaining to parent
- * - data-vaul-no-drag: prevents vaul from intercepting scroll gestures
+ * - Drag-to-dismiss enabled by default for native iOS feel
+ *   (add data-vaul-no-drag to specific interactive elements that conflict)
  */
-function DrawerBody({ className, ...props }: React.ComponentProps<"div">) {
+function DrawerBody({ className, noDrag = false, ...props }: DrawerBodyProps) {
   return (
     <div
       data-slot="drawer-body"
-      data-vaul-no-drag
+      {...(noDrag && { "data-vaul-no-drag": true })}
       className={cn(
         "flex-1 overflow-y-auto overscroll-contain touch-pan-y px-4",
         className

@@ -75,7 +75,7 @@ export function CategoryCirclesSimple({
           onClick={handleAllClick}
           circleClassName="size-(--spacing-category-circle)"
           fallbackIconSize={18}
-          fallbackIconWeight="regular"
+          fallbackIconWeight="bold"
           variant="colorful"
           className="flex-none w-(--spacing-category-item-lg)"
           labelClassName={cn(
@@ -97,7 +97,7 @@ export function CategoryCirclesSimple({
               active={isActive}
               circleClassName="size-(--spacing-category-circle)"
               fallbackIconSize={18}
-              fallbackIconWeight="regular"
+              fallbackIconWeight="bold"
               variant="colorful"
               label={getCategoryShortName(category, locale)}
               className="flex-none w-(--spacing-category-item-lg)"

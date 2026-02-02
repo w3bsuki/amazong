@@ -1,7 +1,7 @@
 "use client"
 
 import { useMemo, useCallback } from "react"
-import { ShoppingCart, Package, Minus, Plus, Trash } from "@phosphor-icons/react"
+import { ShoppingCart, Package, Minus, Plus, Trash, X } from "@phosphor-icons/react"
 import {
   Drawer,
   DrawerContent,
@@ -71,10 +71,10 @@ export function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
             </div>
             <DrawerClose asChild>
               <button
-                className="text-xs text-muted-foreground hover:text-foreground h-touch-xs px-2 rounded-md hover:bg-muted touch-action-manipulation tap-transparent"
+                className="text-muted-foreground/60 hover:text-foreground transition-colors"
                 aria-label={t("close")}
               >
-                {t("close")}
+                <X size={20} weight="light" />
               </button>
             </DrawerClose>
           </div>
@@ -129,35 +129,38 @@ export function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
                     <span className="text-xs text-muted-foreground mt-0.5 line-clamp-1">{item.variantName}</span>
                   )}
                   <div className="flex items-center justify-between mt-auto pt-1">
-                    <span className="text-sm font-semibold text-foreground">{formatPrice(item.price)}</span>
-                    <div className="flex items-center gap-0.5">
-                      <div className="flex items-center bg-muted rounded-md">
+                    <span className="text-sm font-semibold tabular-nums text-foreground">{formatPrice(item.price)}</span>
+                    <div className="flex items-center gap-1">
+                      <div className="inline-flex items-center h-6 rounded border border-border bg-muted">
                         <button
+                          data-vaul-no-drag
                           onClick={() =>
                             item.quantity > 1
                               ? updateQuantity(item.id, item.quantity - 1, item.variantId)
                               : removeFromCart(item.id, item.variantId)
                           }
-                          className="flex items-center justify-center size-touch-lg rounded-md hover:bg-background text-muted-foreground hover:text-foreground touch-action-manipulation tap-transparent"
+                          className="flex items-center justify-center w-6 h-full text-muted-foreground hover:text-foreground"
                           aria-label={t("decreaseQuantity")}
                         >
-                          <Minus size={14} weight="bold" />
+                          <Minus size={10} weight="bold" />
                         </button>
-                        <span className="text-xs font-medium text-foreground min-w-touch text-center">{item.quantity}</span>
+                        <span className="w-5 text-xs font-medium tabular-nums text-foreground text-center">{item.quantity}</span>
                         <button
+                          data-vaul-no-drag
                           onClick={() => updateQuantity(item.id, item.quantity + 1, item.variantId)}
-                          className="flex items-center justify-center size-touch-lg rounded-md hover:bg-background text-muted-foreground hover:text-foreground touch-action-manipulation tap-transparent"
+                          className="flex items-center justify-center w-6 h-full text-muted-foreground hover:text-foreground"
                           aria-label={t("increaseQuantity")}
                         >
-                          <Plus size={14} weight="bold" />
+                          <Plus size={10} weight="bold" />
                         </button>
                       </div>
                       <button
+                        data-vaul-no-drag
                         onClick={() => removeFromCart(item.id, item.variantId)}
-                        className="flex items-center justify-center size-touch-lg rounded-md hover:bg-hover text-muted-foreground hover:text-destructive touch-action-manipulation tap-transparent"
+                        className="flex items-center justify-center size-6 rounded text-muted-foreground hover:text-destructive"
                         aria-label={t("removeItem")}
                       >
-                        <Trash size={14} weight="regular" />
+                        <Trash size={12} weight="regular" />
                       </button>
                     </div>
                   </div>

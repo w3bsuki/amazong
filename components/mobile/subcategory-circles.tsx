@@ -1,12 +1,12 @@
 "use client"
 
 import * as React from "react"
-import Image from "next/image"
 import { Link } from "@/i18n/routing"
 import type { CategoryTreeNode } from "@/lib/category-tree"
 import { getCategoryName } from "@/lib/category-display"
-import { SquaresFour, Package } from "@phosphor-icons/react"
+import { SquaresFour } from "@phosphor-icons/react"
 import { useTranslations } from "next-intl"
+import { CategoryCircleVisual } from "@/components/shared/category/category-circle-visual"
 
 // =============================================================================
 // TYPES
@@ -17,6 +17,8 @@ export interface SubcategoryCirclesProps {
   categorySlug: string
   locale: string
   onSubcategoryClick?: (category: CategoryTreeNode) => void
+  /** When true, always show Phosphor icons instead of images. */
+  preferIcon?: boolean
 }
 
 // =============================================================================
@@ -28,6 +30,7 @@ export function SubcategoryCircles({
   categorySlug,
   locale,
   onSubcategoryClick,
+  preferIcon = true, // Default to Phosphor icons
 }: SubcategoryCirclesProps) {
   const tCommon = useTranslations("Common")
   const viewAllLabel = tCommon("viewAll")
@@ -59,19 +62,15 @@ export function SubcategoryCircles({
             className="flex flex-col items-center gap-0.5 shrink-0 w-(--spacing-category-item-lg) active:opacity-80 transition-opacity"
           >
             {/* Circle with image/icon */}
-            <div className="size-(--spacing-category-circle) rounded-full bg-surface-subtle border border-border/30 overflow-hidden flex items-center justify-center">
-              {sub.image_url ? (
-                <Image
-                  src={sub.image_url}
-                  alt={getCategoryName(sub, locale)}
-                  width={48}
-                  height={48}
-                  className="size-full object-cover"
-                />
-              ) : (
-                <Package size={18} className="text-muted-foreground/40" />
-              )}
-            </div>
+            <CategoryCircleVisual
+              category={sub}
+              active={false}
+              className="size-(--spacing-category-circle)"
+              fallbackIconSize={18}
+              fallbackIconWeight="bold"
+              variant="muted"
+              preferIcon={preferIcon}
+            />
             {/* Label */}
             <span className="text-2xs text-center text-muted-foreground font-medium leading-tight line-clamp-1 truncate w-full">
               {getCategoryName(sub, locale)}

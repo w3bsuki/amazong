@@ -467,7 +467,8 @@
   /* === TOUCH TARGETS (Dense Marketplace) === */
   --spacing-touch-xs: 2rem;      /* 32px - minimum WCAG */
   --spacing-touch-sm: 2.25rem;   /* 36px - compact */
-  --spacing-touch: 2.5rem;       /* 40px - header icons */
+  --spacing-touch: 2.5rem;       /* 40px - default */
+  --spacing-touch-md: 2.75rem;   /* 44px - Apple minimum (header icons) */
   --spacing-touch-lg: 3rem;      /* 48px - bottom nav */
 
   /* === PAGE INSETS (responsive edge padding) === */

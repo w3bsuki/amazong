@@ -1,7 +1,7 @@
 "use client"
 
 import { useCallback } from "react"
-import { ChatCircle, Circle, Check } from "@phosphor-icons/react"
+import { ChatCircle, Circle, Check, X } from "@phosphor-icons/react"
 import {
   Drawer,
   DrawerContent,
@@ -111,10 +111,10 @@ export function MessagesDrawer({ open, onOpenChange }: MessagesDrawerProps) {
             </div>
             <DrawerClose asChild>
               <button
-                className="text-xs text-muted-foreground hover:text-foreground h-touch-xs px-2 rounded-md hover:bg-muted touch-action-manipulation tap-transparent"
+                className="text-muted-foreground/60 hover:text-foreground transition-colors"
                 aria-label={t("close")}
               >
-                {t("close")}
+                <X size={20} weight="light" />
               </button>
             </DrawerClose>
           </div>

@@ -34,6 +34,11 @@ export interface CategoryCircleVisualProps {
   fallbackIconWeight?: "thin" | "light" | "regular" | "bold" | "fill" | "duotone"
   /** Visual style per surface. */
   variant?: "muted" | "menu" | "rail" | "colorful"
+  /** 
+   * When true, always show Phosphor icon instead of image_url.
+   * Use this to prefer icons over photos for cleaner visual hierarchy.
+   */
+  preferIcon?: boolean
 }
 
 export function CategoryCircleVisual({
@@ -41,11 +46,13 @@ export function CategoryCircleVisual({
   active = false,
   className,
   fallbackIconSize = 24,
-  fallbackIconWeight = "regular",
+  fallbackIconWeight = "bold", // Bold for better visibility
   variant = "colorful", // Default to colorful OLX-style
+  preferIcon = true, // Default to Phosphor icons (set to false to show images/emojis)
 }: CategoryCircleVisualProps) {
-  const imageUrl = hasMeaningfulImageUrl(category.image_url) ? category.image_url : null
-  const icon = hasMeaningfulIcon(category.icon) ? category.icon : null
+  // When preferIcon is true, skip image_url AND icon (emoji) checks - go straight to Phosphor
+  const imageUrl = !preferIcon && hasMeaningfulImageUrl(category.image_url) ? category.image_url : null
+  const icon = !preferIcon && hasMeaningfulIcon(category.icon) ? category.icon : null
   
   // Get category-specific colors
   const colors = getCategoryColor(category.slug)

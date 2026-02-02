@@ -89,7 +89,7 @@ export default async function CategoriesPage({
                 active={false}
                 className="size-14 shrink-0" // Treido: 56px (size-14) standard
                 fallbackIconSize={24}
-                fallbackIconWeight="regular"
+                fallbackIconWeight="bold"
                 variant="muted"
               />
 

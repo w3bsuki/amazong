@@ -527,6 +527,19 @@
         "signIn": "Sign In",
         "sales": "sales"
     },
+    "CategoryDrawer": {
+        "title": "Categories",
+        "description": "Browse product categories",
+        "subcategories": "Subcategories",
+        "noSubcategories": "No subcategories available",
+        "seeAllIn": "See all in {category}",
+        "close": "Close"
+    },
+    "QuickPicks": {
+        "trending": "Trending",
+        "deals": "Deals",
+        "topRated": "Top Rated"
+    },
     "Freshness": {
         "justNow": "Just now",
         "today": "Today",

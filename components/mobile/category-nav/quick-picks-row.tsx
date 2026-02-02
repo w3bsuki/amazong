@@ -3,6 +3,7 @@
 import * as React from "react"
 import { cn } from "@/lib/utils"
 import { Fire, Star, TrendUp } from "@phosphor-icons/react"
+import { useTranslations } from "next-intl"
 
 // =============================================================================
 // Types
@@ -28,34 +29,6 @@ export interface QuickPicksRowProps {
 }
 
 // =============================================================================
-// Default Picks
-// =============================================================================
-
-function getDefaultPicks(locale: string): QuickPick[] {
-  const isEn = locale === "en"
-  return [
-    {
-      id: "trending",
-      label: isEn ? "Trending" : "Популярни",
-      icon: <TrendUp size={16} weight="bold" />,
-      params: { sort: "trending" },
-    },
-    {
-      id: "deals",
-      label: isEn ? "Deals" : "Намаления",
-      icon: <Fire size={16} weight="fill" className="text-destructive" />,
-      params: { deals: "true" },
-    },
-    {
-      id: "top-rated",
-      label: isEn ? "Top Rated" : "Най-добри",
-      icon: <Star size={16} weight="fill" className="text-warning" />,
-      params: { sort: "rating" },
-    },
-  ]
-}
-
-// =============================================================================
 // Component
 // =============================================================================
 
@@ -65,7 +38,28 @@ export function QuickPicksRow({
   onSelect,
   className,
 }: QuickPicksRowProps) {
-  const picks = getDefaultPicks(locale)
+  const t = useTranslations("QuickPicks")
+
+  const picks: QuickPick[] = React.useMemo(() => [
+    {
+      id: "trending",
+      label: t("trending"),
+      icon: <TrendUp size={16} weight="bold" />,
+      params: { sort: "trending" },
+    },
+    {
+      id: "deals",
+      label: t("deals"),
+      icon: <Fire size={16} weight="fill" className="text-destructive" />,
+      params: { deals: "true" },
+    },
+    {
+      id: "top-rated",
+      label: t("topRated"),
+      icon: <Star size={16} weight="fill" className="text-warning" />,
+      params: { sort: "rating" },
+    },
+  ], [t])
 
   return (
     <div className={cn("flex items-center gap-2 overflow-x-auto no-scrollbar", className)}>

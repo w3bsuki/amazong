@@ -22,11 +22,11 @@ export function MobileWishlistButton() {
     return (
       <span
         role="button"
-        className="flex items-center justify-center size-touch-xs p-0 rounded-md relative hover:bg-header-hover active:bg-header-active transition-colors touch-action-manipulation tap-transparent cursor-pointer"
+        className="flex items-center justify-center size-touch-md p-0 rounded-md relative hover:bg-header-hover active:bg-header-active transition-colors touch-action-manipulation tap-transparent cursor-pointer"
         aria-label={tNav("wishlist")}
       >
         <span className="relative" aria-hidden="true">
-          <Heart weight="regular" className="size-icon-xs text-header-text" />
+          <Heart weight="regular" className="size-icon text-header-text" />
         </span>
       </span>
     )
@@ -35,15 +35,15 @@ export function MobileWishlistButton() {
   return (
     <WishlistDrawer>
       <button
-        className="flex items-center justify-center size-touch-xs p-0 rounded-md relative hover:bg-header-hover active:bg-header-active transition-colors touch-action-manipulation tap-transparent"
+        className="flex items-center justify-center size-touch-md p-0 rounded-md relative hover:bg-header-hover active:bg-header-active transition-colors touch-action-manipulation tap-transparent"
         aria-label={tNav("wishlist")}
       >
         <span className="relative" aria-hidden="true">
-          <Heart weight="regular" className="size-icon-xs text-header-text" />
+          <Heart weight="regular" className="size-icon text-header-text" />
           {totalItems > 0 && (
             <CountBadge
               count={totalItems}
-              className="absolute -top-0.5 -right-0.5 bg-wishlist-active text-primary-foreground ring-2 ring-header-bg h-4 min-w-4 px-1 text-2xs shadow-sm"
+              className="absolute -top-1 -right-1 bg-wishlist-active text-primary-foreground ring-1 ring-header-bg h-3.5 min-w-3.5 px-0.5 text-2xs leading-none"
               aria-hidden="true"
             />
           )}

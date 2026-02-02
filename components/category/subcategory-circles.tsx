@@ -35,6 +35,8 @@ interface SubcategoryCirclesProps {
   onSelectCategory?: (category: Category) => void
   /** Optional: special handler for the \"All\" circle when onSelectCategory is set. */
   onSelectAll?: () => void
+  /** When true, always show Phosphor icons instead of images. */
+  preferIcon?: boolean
 }
 
 export function SubcategoryCircles({
@@ -49,7 +51,9 @@ export function SubcategoryCircles({
   showCounts = false,
   onSelectCategory,
   onSelectAll,
+  preferIcon = true, // Default to Phosphor icons
 }: SubcategoryCirclesProps) {
+  // Force icons for now (preferIcon default is true in visual component)
   const locale = useLocale()
   const tCommon = useTranslations("Common")
   const tSearch = useTranslations("SearchFilters")
@@ -220,8 +224,9 @@ export function SubcategoryCircles({
                     : "size-(--spacing-category-circle)"
                 )}
                 fallbackIconSize={isDesktop ? 28 : 24}
-                fallbackIconWeight="light"
+                fallbackIconWeight="bold"
                 variant={isActive ? "colorful" : "muted"}
+                preferIcon={preferIcon}
               />
             )
 

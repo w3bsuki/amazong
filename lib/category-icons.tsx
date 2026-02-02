@@ -228,7 +228,7 @@ export function getCategoryIcon(
   slug: string,
   options: CategoryIconOptions = {}
 ): React.ReactNode {
-  const { size = 20, className = "", weight = "regular" } = options
+  const { size = 20, className = "", weight = "bold" } = options
 
   const iconProps = { size, weight, className }
 

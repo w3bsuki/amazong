@@ -111,7 +111,7 @@ function CategoryBannerCompact({ category }: { category: Category }) {
         active={true}
         className="size-10 shrink-0"
         fallbackIconSize={20}
-        fallbackIconWeight="regular"
+        fallbackIconWeight="bold"
         variant="colorful"
       />
       <div className="min-w-0">
@@ -139,7 +139,7 @@ function CategoryBanner({ category }: { category: Category }) {
           active={false}
           className="size-(--spacing-category-circle) shrink-0 bg-secondary/30 border border-border/60"
           fallbackIconSize={24}
-          fallbackIconWeight="light"
+          fallbackIconWeight="bold"
           variant="muted"
         />
 

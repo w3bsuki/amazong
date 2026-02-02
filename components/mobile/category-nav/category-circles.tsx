@@ -45,6 +45,8 @@ export interface CategoryCirclesProps {
   onAllPillClick?: () => void
   hideBackButton?: boolean
   className?: string
+  /** When true, always show Phosphor icons instead of images. */
+  preferIcon?: boolean
 }
 
 // =============================================================================
@@ -72,6 +74,7 @@ export function CategoryCircles({
   onAllPillClick,
   hideBackButton,
   className,
+  preferIcon = true, // Default to Phosphor icons
 }: CategoryCirclesProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const tCommon = useTranslations("Common")
@@ -193,8 +196,9 @@ export function CategoryCircles({
           onClick={() => onBack()}
           circleClassName="size-(--spacing-category-circle)"
           fallbackIconSize={18}
-          fallbackIconWeight="regular"
+          fallbackIconWeight="bold"
           variant="colorful"
+          preferIcon={preferIcon}
           className="flex-none w-(--spacing-category-item-lg)"
           labelClassName={cn(
             "w-full text-2xs text-center leading-tight line-clamp-1 truncate px-0 mt-0.5",
@@ -219,8 +223,9 @@ export function CategoryCircles({
               loading={isLoading}
               circleClassName="size-(--spacing-category-circle)"
               fallbackIconSize={18}
-              fallbackIconWeight="regular"
+              fallbackIconWeight="bold"
               variant="colorful"
+              preferIcon={preferIcon}
               label={getCategoryShortName(sub, locale)}
               className="flex-none w-(--spacing-category-item-lg)"
               labelClassName={cn(

@@ -527,6 +527,19 @@
         "signIn": "Вход",
         "sales": "продажби"
     },
+    "CategoryDrawer": {
+        "title": "Категории",
+        "description": "Разгледайте категории продукти",
+        "subcategories": "Подкатегории",
+        "noSubcategories": "Няма подкатегории",
+        "seeAllIn": "Виж всички в {category}",
+        "close": "Затвори"
+    },
+    "QuickPicks": {
+        "trending": "Популярни",
+        "deals": "Намаления",
+        "topRated": "Най-добри"
+    },
     "Freshness": {
         "justNow": "Току-що",
         "today": "Днес",

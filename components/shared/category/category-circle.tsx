@@ -61,6 +61,11 @@ export interface CategoryCircleProps {
   variant?: "muted" | "menu" | "rail" | "colorful"
   fallbackIconSize?: IconSize
   fallbackIconWeight?: "thin" | "light" | "regular" | "bold" | "fill" | "duotone"
+  /** 
+   * When true, always show Phosphor icon instead of image_url.
+   * Use this to prefer icons over photos for cleaner visual hierarchy.
+   */
+  preferIcon?: boolean
 }
 
 export function CategoryCircle({
@@ -81,7 +86,8 @@ export function CategoryCircle({
   countClassName,
   variant = "muted",
   fallbackIconSize = 24,
-  fallbackIconWeight = "regular",
+  fallbackIconWeight = "bold", // Bold for better visibility
+  preferIcon = true, // Default to Phosphor icons
 }: CategoryCircleProps) {
   const baseClasses = cn(
     "group",
@@ -108,6 +114,7 @@ export function CategoryCircle({
           fallbackIconSize={fallbackIconSize}
           fallbackIconWeight={fallbackIconWeight}
           variant={variant}
+          preferIcon={preferIcon}
         />
         {/* Loading spinner overlay - subtle ring pulse */}
         {loading && (

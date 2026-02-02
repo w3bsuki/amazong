@@ -9,6 +9,8 @@ import {
   DrawerHeader,
   DrawerBody,
   DrawerTitle,
+  DrawerDescription,
+  DrawerClose,
 } from "@/components/ui/drawer"
 import { cn } from "@/lib/utils"
 import { useCategoryDrawer } from "@/components/mobile/category-nav/category-drawer-context"
@@ -16,6 +18,7 @@ import { CategoryPillGrid } from "@/components/mobile/category-nav/category-pill
 import { QuickPicksRow, type QuickPick } from "@/components/mobile/category-nav/quick-picks-row"
 import { getCategoryName } from "@/lib/category-display"
 import { X } from "@phosphor-icons/react"
+import { useTranslations } from "next-intl"
 import type { CategoryTreeNode } from "@/lib/category-tree"
 
 // =============================================================================
@@ -52,6 +55,7 @@ export function CategoryBrowseDrawer({
   className,
 }: CategoryBrowseDrawerProps) {
   const router = useRouter()
+  const t = useTranslations("CategoryDrawer")
   const {
     isOpen,
     activeCategory,
@@ -111,9 +115,9 @@ export function CategoryBrowseDrawer({
 
   // Header text (L0 category name)
   const headerText = useMemo(() => {
-    if (path.length === 0 || !path[0]) return locale === "bg" ? "Категории" : "Categories"
+    if (path.length === 0 || !path[0]) return t("title")
     return getCategoryName(path[0], locale)
-  }, [path, locale])
+  }, [path, locale, t])
 
   // Don't render anything when closed - prevents broken overlay
   if (!isOpen) {
@@ -130,24 +134,25 @@ export function CategoryBrowseDrawer({
         className={className}
         aria-label="Browse categories"
       >
-        {/* Header with title and close button */}
         <DrawerHeader className="flex-row items-center justify-between gap-2 py-2">
           <DrawerTitle className="text-base font-semibold">
             {headerText}
           </DrawerTitle>
-          <button
-            type="button"
-            onClick={close}
-            className={cn(
-              "p-2 -mr-2 rounded-full",
-              "hover:bg-accent transition-colors",
-              "shrink-0"
-            )}
-            aria-label="Close"
-          >
-            <X size={20} weight="bold" />
-          </button>
+          <DrawerClose asChild>
+            <button
+              type="button"
+              className={cn(
+                "p-2 -mr-2 rounded-full",
+                "hover:bg-muted transition-colors",
+                "shrink-0"
+              )}
+              aria-label={t("close")}
+            >
+              <X size={20} weight="bold" className="text-muted-foreground" />
+            </button>
+          </DrawerClose>
         </DrawerHeader>
+        <DrawerDescription className="sr-only">{t("description")}</DrawerDescription>
 
         <DrawerBody className="pt-0 pb-safe-max">
           {/* Quick picks row */}
@@ -161,7 +166,7 @@ export function CategoryBrowseDrawer({
           {/* Subcategory label */}
           {children.length > 0 && (
             <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide pb-2">
-              {locale === "bg" ? "Подкатегории" : "Subcategories"}
+              {t("subcategories")}
             </p>
           )}
 
@@ -178,9 +183,7 @@ export function CategoryBrowseDrawer({
           {!isLoading && children.length === 0 && (
             <div className="py-8 text-center">
               <p className="text-sm text-muted-foreground">
-                {locale === "bg"
-                  ? "Няма подкатегории"
-                  : "No subcategories available"}
+                {t("noSubcategories")}
               </p>
             </div>
           )}
@@ -200,7 +203,7 @@ export function CategoryBrowseDrawer({
                 "active:opacity-90 transition-opacity"
               )}
             >
-              {locale === "bg" ? `Виж всички в ${getCategoryName(path[0], locale)}` : `See all in ${getCategoryName(path[0], locale)}`}
+              {t("seeAllIn", { category: getCategoryName(path[0], locale) })}
             </button>
           )}
         </DrawerBody>
