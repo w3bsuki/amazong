@@ -54,6 +54,15 @@ export interface ProductHeaderState {
   productImage?: string | null
 }
 
+export interface ProfileHeaderState {
+  displayName: string | null
+  username: string | null
+  avatarUrl: string | null
+  isOwnProfile: boolean
+  isFollowing: boolean
+  sellerId: string | null
+}
+
 interface HeaderContextValue {
   // Homepage header state
   homepageHeader: HomepageHeaderState | null
@@ -66,6 +75,10 @@ interface HeaderContextValue {
   // Product header state
   productHeader: ProductHeaderState | null
   setProductHeader: (state: ProductHeaderState | null) => void
+  
+  // Profile header state
+  profileHeader: ProfileHeaderState | null
+  setProfileHeader: (state: ProfileHeaderState | null) => void
 }
 
 // =============================================================================
@@ -78,6 +91,7 @@ export function HeaderProvider({ children }: { children: ReactNode }) {
   const [homepageHeader, setHomepageHeader] = useState<HomepageHeaderState | null>(null)
   const [contextualHeader, setContextualHeader] = useState<ContextualHeaderState | null>(null)
   const [productHeader, setProductHeader] = useState<ProductHeaderState | null>(null)
+  const [profileHeader, setProfileHeader] = useState<ProfileHeaderState | null>(null)
 
   return (
     <HeaderContext.Provider
@@ -88,6 +102,8 @@ export function HeaderProvider({ children }: { children: ReactNode }) {
         setContextualHeader,
         productHeader,
         setProductHeader,
+        profileHeader,
+        setProfileHeader,
       }}
     >
       {children}

@@ -1,15 +1,20 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useCallback } from "react"
 import Image from "next/image"
 import { Link } from "@/i18n/routing"
 import { useLocale, useTranslations } from "next-intl"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Separator } from "@/components/ui/separator"
-import { PageShell } from "@/components/shared/page-shell"
+import {
+  ProfileShell,
+  ProfileStats,
+  ProfileTabs,
+  ProfileSettingsPanel,
+  ProfileHeaderSync,
+} from "@/components/shared/profile"
 import {
   Star,
   MapPin,
@@ -28,11 +33,16 @@ import {
   ShareNetwork,
   Heart,
   ArrowRight,
+  Gear,
+  ChatCircle,
+  Users,
+  CheckCircle as Verified,
 } from "@phosphor-icons/react"
 import { ProductCard } from "@/components/shared/product/product-card"
 import { FollowSellerButton, type FollowSellerActions } from "@/components/seller/follow-seller-button"
 import { SellerVerificationBadge } from "@/components/shared/product/seller-verification-badge"
 import { UserAvatar } from "@/components/shared/user-avatar"
+import { useAuth } from "@/components/providers/auth-state-manager"
 
 // =============================================================================
 // Types - Match the data shape from lib/data/profile-page.ts
@@ -186,11 +196,11 @@ export function PublicProfileClient({
   const locale = useLocale()
   const tProfile = useTranslations("ProfilePage")
   const tSeller = useTranslations("Seller")
+  const { signOut } = useAuth()
 
-  const [activeTab, setActiveTab] = useState(profile.is_seller ? "listings" : "buyer-reviews")
+  const [activeTab, setActiveTab] = useState(profile.is_seller ? "listings" : "reviews")
 
   const displayName = profile.display_name || profile.username || 'User'
-  const initials = displayName.slice(0, 2).toUpperCase()
   // Handle nullable created_at (ISR cache optimization)
   const memberSince = profile.created_at ? new Date(profile.created_at) : null
 
@@ -208,465 +218,374 @@ export function PublicProfileClient({
       })
     : null
 
-  return (
-    <PageShell className="pb-20 sm:pb-8">
-      {/* Banner */}
-      <div className="relative h-32 sm:h-48 md:h-56 bg-selected">
-        {profile.banner_url && (
-          <Image
-            src={profile.banner_url}
-            alt=""
-            fill
-            className="object-cover"
-            priority
-          />
-        )}
-        <div className="absolute inset-0 bg-background/40" />
-      </div>
+  // Build stats for the horizontal row (Tradesphere pattern: 4 stats)
+  const statsItems = profile.is_seller
+    ? [
+        { value: productCount, label: tProfile("listings") },
+        { value: profile.total_sales, label: tProfile("sold") },
+        { value: profile.follower_count ?? 0, label: tProfile("followers") },
+        { value: profile.total_purchases, label: tProfile("following") },
+      ]
+    : [
+        { value: profile.total_purchases, label: tProfile("purchases") },
+        { value: buyerReviewCount, label: tProfile("reviews") },
+      ]
 
-      {/* Profile Header */}
-      <div className="container relative -mt-16 sm:-mt-20">
-        <div className="flex flex-col sm:flex-row sm:items-end gap-4">
-          {/* Avatar */}
-          <div className="relative">
-            <UserAvatar
-              name={displayName}
-              avatarUrl={profile.avatar_url ?? null}
-              size="lg"
-              className="size-28 sm:size-36 border-4 border-background shadow-none"
-              fallbackClassName="text-3xl bg-primary text-primary-foreground"
-            />
-            {profile.is_verified_business && (
-              <div className="absolute -bottom-1 -right-1 bg-primary rounded-full p-1.5 border-2 border-background">
-                <CheckCircle className="size-5 text-primary-foreground" weight="fill" />
-              </div>
-            )}
-          </div>
-
-          {/* Name and Actions */}
-          <div className="flex-1 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pb-2">
-            <div>
-              <div className="flex items-center gap-2 flex-wrap">
-                <h1 className="text-2xl sm:text-3xl font-bold">{displayName}</h1>
-                {profile.account_type === "business" && (
-                  <Badge variant="secondary" className="gap-1">
-                    <Storefront className="size-3.5" />
-                    {tProfile("business")}
-                  </Badge>
-                )}
-                {profile.is_seller && (
-                  <Badge variant="outline" className="gap-1 text-success border-success/20 bg-success/10">
-                    <Package className="size-3.5" />
-                    {tProfile("seller")}
-                  </Badge>
-                )}
-                <SellerVerificationBadge
-                  variant="badge"
-                  size="sm"
-                  isVerifiedBusiness={Boolean(profile.is_verified_business)}
-                />
-              </div>
-              <p className="text-muted-foreground">@{profile.username}</p>
-              {profile.is_seller && sellerReviewCount > 0 && profile.average_rating ? (
-                <div className="mt-1">
-                  <StarRating rating={profile.average_rating} count={sellerReviewCount} />
-                </div>
-              ) : null}
-              {profile.business_name && (
-                <p className="text-sm text-muted-foreground mt-0.5">{profile.business_name}</p>
-              )}
-            </div>
-
-            <div className="flex gap-2">
-              {isOwnProfile ? (
-                <Link href="/account/profile">
-                  <Button variant="outline" size="sm" className="gap-2">
-                    <PencilSimple className="size-4" />
-                    {tProfile("editProfile")}
-                  </Button>
-                </Link>
-              ) : profile.is_seller && followActions ? (
-                <>
-                  <FollowSellerButton
-                    sellerId={profile.id}
-                    initialIsFollowing={isFollowing}
-                    actions={followActions}
-                    locale={locale}
-                    size="sm"
+  // Build tabs array
+  const tabs = [
+    // Listings tab (sellers only)
+    ...(profile.is_seller ? [{
+      value: "listings",
+      label: tProfile("forSale"),
+      count: productCount,
+      icon: <Package className="size-4" />,
+      content: (
+        <div className="px-4 py-4">
+          {products.length > 0 ? (
+            <>
+              <div className="grid grid-cols-2 gap-3">
+                {products.map((product) => (
+                  <ProductCard
+                    key={product.id}
+                    id={product.id}
+                    title={product.title}
+                    price={product.price}
+                    image={product.images?.[0] || ''}
+                    originalPrice={product.list_price}
+                    sellerId={product.seller_id}
+                    slug={product.slug}
+                    {...(product.condition ? { condition: product.condition } : {})}
+                    username={profile.username}
+                    sellerName={displayName}
+                    sellerAvatarUrl={profile.avatar_url}
+                    sellerVerified={Boolean(profile.is_verified_business)}
+                    sellerTier={profile.account_type === 'business' ? 'business' : (profile.tier === 'premium' ? 'premium' : 'basic')}
                   />
-                  <Button variant="ghost" size="icon" className="size-9" aria-label={tProfile("share")}>
-                    <ShareNetwork className="size-4" />
-                  </Button>
-                </>
-              ) : (
-                <Button variant="ghost" size="icon" className="size-9" aria-label={tProfile("share")}>
-                  <ShareNetwork className="size-4" />
-                </Button>
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* Stats strip (desktop-first) */}
-        <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
-          {profile.is_seller && (
-            <Card>
-              <CardContent className="p-4">
-                <p className="text-xs text-muted-foreground">{tProfile("forSale")}</p>
-                <p className="text-xl font-semibold tabular-nums">{productCount}</p>
-              </CardContent>
-            </Card>
-          )}
-          {profile.is_seller && (
-            <Card>
-              <CardContent className="p-4">
-                <p className="text-xs text-muted-foreground">{tProfile("sales")}</p>
-                <p className="text-xl font-semibold tabular-nums">{profile.total_sales}</p>
-              </CardContent>
-            </Card>
-          )}
-          {profile.is_seller && (
-            <Card>
-              <CardContent className="p-4">
-                <p className="text-xs text-muted-foreground">{tProfile("followers")}</p>
-                <p className="text-xl font-semibold tabular-nums">{profile.follower_count ?? 0}</p>
-              </CardContent>
-            </Card>
-          )}
-          <Card>
-            <CardContent className="p-4">
-              <p className="text-xs text-muted-foreground">{tProfile("purchases")}</p>
-              <p className="text-xl font-semibold tabular-nums">{profile.total_purchases}</p>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Bio and Info */}
-        <div className="mt-4 grid gap-4 md:grid-cols-3">
-          {/* Left Column - Bio and Details */}
-          <div className="md:col-span-2 space-y-4">
-            {profile.bio && (
-              <p className="text-muted-foreground">{profile.bio}</p>
-            )}
-
-            <div className="flex flex-wrap gap-x-5 gap-y-2 text-sm text-muted-foreground">
-              {profile.location && (
-                <span className="flex items-center gap-1.5">
-                  <MapPin className="size-4" />
-                  {profile.location}
-                </span>
-              )}
-              {memberSinceLabel && (
-                <span className="flex items-center gap-1.5">
-                  <Calendar className="size-4" />
-                  {memberSinceLabel}
-                </span>
-              )}
-            </div>
-
-            {/* Social Links */}
-            {profile.social_links && Object.keys(profile.social_links).length > 0 && (
-              <div className="flex gap-2">
-                {profile.website_url && (
-                  <a
-                    href={profile.website_url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="p-2 rounded-full bg-surface-subtle hover:bg-hover active:bg-active transition-colors"
-                  >
-                    <Globe className="size-5" />
-                  </a>
-                )}
-                {Object.entries(profile.social_links).map(([platform, url]) => {
-                  if (!url) return null
-                  return (
-                    <a
-                      key={platform}
-                      href={url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="p-2 rounded-full bg-surface-subtle hover:bg-hover active:bg-active transition-colors"
-                    >
-                      {socialIcons[platform] || <Globe className="size-5" />}
-                    </a>
-                  )
-                })}
+                ))}
               </div>
-            )}
-          </div>
-
-          {/* Right Column - Stats */}
-          <div className="space-y-3">
-            <Card>
-              <CardContent className="p-4 space-y-3">
-                {/* Seller Stats */}
-                {profile.is_seller && (
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm text-muted-foreground flex items-center gap-1.5">
-                        <Package className="size-4" />
-                        {tProfile("sales")}
-                      </span>
-                      <span className="font-semibold">{profile.total_sales}</span>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm text-muted-foreground">
-                        {tProfile("sellerRating")}
-                      </span>
-                      {sellerReviewCount > 0 && profile.average_rating ? (
-                        <StarRating rating={profile.average_rating} count={sellerReviewCount} />
-                      ) : (
-                        <span className="text-sm text-muted-foreground">
-                          {tProfile("noReviewsYet")}
-                        </span>
-                      )}
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm text-muted-foreground flex items-center gap-1.5">
-                        <Heart className="size-4" />
-                        {tProfile("followers")}
-                      </span>
-                      <span className="font-semibold">{profile.follower_count ?? 0}</span>
-                    </div>
-                    <Separator />
-                  </div>
-                )}
-
-                {/* Buyer Stats */}
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-muted-foreground flex items-center gap-1.5">
-                      <ShoppingBag className="size-4" />
-                      {tProfile("purchases")}
-                    </span>
-                    <span className="font-semibold">{profile.total_purchases}</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-muted-foreground">
-                      {tProfile("buyerRating")}
-                    </span>
-                    {buyerReviewCount > 0 ? (
-                      <span className="text-sm font-medium">{buyerReviewCount}</span>
-                    ) : (
-                      <span className="text-sm text-muted-foreground">
-                        {tProfile("noReviewsYet")}
-                      </span>
-                    )}
-                  </div>
+              {productCount > 12 && (
+                <div className="mt-6 flex justify-center">
+                  <Link href={`/search?seller=${profile.id}`}>
+                    <Button variant="outline" className="gap-2">
+                      {tProfile("viewAll")} ({productCount})
+                      <ArrowRight className="size-4" />
+                    </Button>
+                  </Link>
                 </div>
-              </CardContent>
-            </Card>
-          </div>
+              )}
+            </>
+          ) : (
+            <div className="py-12 text-center text-muted-foreground">
+              <Package className="size-12 mx-auto mb-3 opacity-50" />
+              <p>{tProfile("noActiveListings")}</p>
+            </div>
+          )}
         </div>
+      ),
+    }] : []),
+
+    // Reviews tab
+    {
+      value: "reviews",
+      label: tProfile("reviews"),
+      count: profile.is_seller ? sellerReviewCount : buyerReviewCount,
+      icon: <Star className="size-4" />,
+      content: (
+        <div className="px-4 py-4">
+          {profile.is_seller ? (
+            // Seller reviews
+            sellerReviews.length > 0 ? (
+              <div className="space-y-3">
+                {sellerReviews.map((review) => (
+                  <Card key={review.id}>
+                    <CardContent className="p-3">
+                      <div className="flex items-start gap-3">
+                        <UserAvatar
+                          name={review.buyer?.display_name || review.buyer?.username || "?"}
+                          avatarUrl={review.buyer?.avatar_url ?? null}
+                          className="size-9"
+                          fallbackClassName="text-xs"
+                        />
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center justify-between gap-2">
+                            {review.buyer?.username ? (
+                              <Link
+                                href={`/${review.buyer.username}`}
+                                className="font-medium text-sm truncate tap-highlight-transparent"
+                              >
+                                {review.buyer.display_name || review.buyer.username}
+                              </Link>
+                            ) : (
+                              <span className="font-medium text-sm truncate">
+                                {review.buyer?.display_name || "Buyer"}
+                              </span>
+                            )}
+                            <span className="text-xs text-muted-foreground flex-shrink-0">
+                              {formatTimeAgo(review.created_at, locale) ?? ""}
+                            </span>
+                          </div>
+                          <div className="mt-1">
+                            <StarRating rating={review.rating} count={0} />
+                          </div>
+                          {review.comment && (
+                            <p className="mt-2 text-sm text-muted-foreground line-clamp-3">{review.comment}</p>
+                          )}
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            ) : (
+              <div className="py-12 text-center text-muted-foreground">
+                <Star className="size-12 mx-auto mb-3 opacity-50" />
+                <p>{tProfile("noReviewsYet")}</p>
+              </div>
+            )
+          ) : (
+            // Buyer reviews
+            buyerReviews.length > 0 ? (
+              <div className="space-y-3">
+                {buyerReviews.map((review) => (
+                  <Card key={review.id}>
+                    <CardContent className="p-3">
+                      <div className="flex items-start gap-3">
+                        <UserAvatar
+                          name={review.seller?.display_name || review.seller?.username || "?"}
+                          avatarUrl={review.seller?.avatar_url ?? null}
+                          className="size-9"
+                          fallbackClassName="text-xs"
+                        />
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center justify-between gap-2">
+                            {review.seller?.username ? (
+                              <Link
+                                href={`/${review.seller.username}`}
+                                className="font-medium text-sm truncate tap-highlight-transparent"
+                              >
+                                {review.seller.display_name || review.seller.username}
+                              </Link>
+                            ) : (
+                              <span className="font-medium text-sm truncate">
+                                {review.seller?.display_name || "Seller"}
+                              </span>
+                            )}
+                            <span className="text-xs text-muted-foreground flex-shrink-0">
+                              {formatTimeAgo(review.created_at, locale) ?? ""}
+                            </span>
+                          </div>
+                          <div className="mt-1">
+                            <StarRating rating={review.rating} count={0} />
+                          </div>
+                          {review.comment && (
+                            <p className="mt-2 text-sm text-muted-foreground line-clamp-3">{review.comment}</p>
+                          )}
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            ) : (
+              <div className="py-12 text-center text-muted-foreground">
+                <Star className="size-12 mx-auto mb-3 opacity-50" />
+                <p>{tProfile("noReviewsYet")}</p>
+              </div>
+            )
+          )}
+        </div>
+      ),
+    },
+
+    // Followers tab
+    {
+      value: "followers",
+      label: tProfile("followers"),
+      icon: <Users className="size-4" />,
+      content: (
+        <div className="space-y-3 pb-4">
+          {(profile.follower_count ?? 0) > 0 ? (
+            <>
+              <div className="py-8 text-center text-muted-foreground">
+                <Users className="size-12 mx-auto mb-3 opacity-50" />
+                <p className="text-sm">
+                  {tProfile("followersCount", { count: profile.follower_count ?? 0 })}
+                </p>
+              </div>
+            </>
+          ) : (
+            <div className="py-12 text-center text-muted-foreground">
+              <Users className="size-12 mx-auto mb-3 opacity-50" />
+              <p>{tProfile("noFollowersYet")}</p>
+            </div>
+          )}
+        </div>
+      ),
+    },
+
+    // Settings tab (own profile only)
+    ...(isOwnProfile ? [{
+      value: "settings",
+      label: tProfile("settings"),
+      icon: <Gear className="size-4" />,
+      content: (
+        <ProfileSettingsPanel
+          isSeller={Boolean(profile.is_seller)}
+          onSignOut={signOut}
+        />
+      ),
+    }] : []),
+  ]
+
+  // Header content: bio, location, badges, social
+  const headerContent = (
+    <div className="space-y-2">
+      {/* Badges row */}
+      <div className="flex flex-wrap gap-1.5">
+        {profile.account_type === "business" && (
+          <Badge variant="secondary" className="gap-1 text-xs">
+            <Storefront className="size-3" />
+            {tProfile("business")}
+          </Badge>
+        )}
+        {profile.is_seller && (
+          <Badge variant="outline" className="gap-1 text-xs text-success border-success/20 bg-success/10">
+            <Package className="size-3" />
+            {tProfile("seller")}
+          </Badge>
+        )}
+        <SellerVerificationBadge
+          variant="badge"
+          size="sm"
+          isVerifiedBusiness={Boolean(profile.is_verified_business)}
+        />
       </div>
 
-      {/* Tabs Content */}
-      <div className="container mt-8">
-        <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList>
-            {profile.is_seller && (
-              <TabsTrigger value="listings">
-                <Package className="size-4 md:size-5 mr-1" />
-                {tProfile("forSale")} <span className="tabular-nums">({productCount})</span>
-              </TabsTrigger>
-            )}
-            {profile.is_seller && (
-              <TabsTrigger value="seller-reviews">
-                <Star className="size-4 md:size-5 mr-2" />
-                {tProfile("reviews")} <span className="tabular-nums">({sellerReviewCount})</span>
-              </TabsTrigger>
-            )}
-            {(!profile.is_seller || profile.total_purchases > 0) && (
-              <TabsTrigger value="buyer-reviews">
-                <Star className="size-4 md:size-5 mr-2" />
-                {tProfile("buyerRating")} <span className="tabular-nums">({buyerReviewCount})</span>
-              </TabsTrigger>
-            )}
-          </TabsList>
+      {/* Rating */}
+      {profile.is_seller && sellerReviewCount > 0 && profile.average_rating ? (
+        <StarRating rating={profile.average_rating} count={sellerReviewCount} />
+      ) : null}
 
-          {/* Listings Tab */}
-          {profile.is_seller && (
-            <TabsContent value="listings" className="mt-6">
-              {products.length > 0 ? (
-                <>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3">
-                    {products.map((product) => (
-                      <ProductCard
-                        key={product.id}
-                        id={product.id}
-                        title={product.title}
-                        price={product.price}
-                        image={product.images?.[0] || ''}
-                        originalPrice={product.list_price}
-                        sellerId={product.seller_id}
-                        slug={product.slug}
-                        {...(product.condition ? { condition: product.condition } : {})}
-                        username={profile.username}
-                        sellerName={displayName}
-                        sellerAvatarUrl={profile.avatar_url}
-                        sellerVerified={Boolean(profile.is_verified_business)}
-                        sellerTier={profile.account_type === 'business' ? 'business' : (profile.tier === 'premium' ? 'premium' : 'basic')}
-                      />
-                    ))}
-                  </div>
-                  {productCount > 12 && (
-                    <div className="mt-6 flex justify-center">
-                      <Link href={`/search?seller=${profile.id}`}>
-                        <Button variant="outline" className="gap-2">
-                          {tProfile("viewAll")} ({productCount})
-                          <ArrowRight className="size-4" />
-                        </Button>
-                      </Link>
-                    </div>
-                  )}
-                </>
-              ) : (
-                <div className="py-12 text-center text-muted-foreground">
-                  <Package className="size-12 mx-auto mb-3 opacity-50" />
-                  <p>{tProfile("noActiveListings")}</p>
-                </div>
-              )}
-            </TabsContent>
-          )}
+      {/* Bio */}
+      {profile.bio && (
+        <p className="text-sm text-muted-foreground">{profile.bio}</p>
+      )}
 
-          {/* Seller Reviews Tab */}
-          {profile.is_seller && (
-            <TabsContent value="seller-reviews" className="mt-6">
-              {sellerReviews.length > 0 ? (
-                <div className="space-y-4 max-w-3xl">
-                  {sellerReviews.map((review) => (
-                    <Card key={review.id}>
-                      <CardContent className="p-4">
-                        <div className="flex items-start gap-3">
-                          <UserAvatar
-                            name={review.buyer?.display_name || review.buyer?.username || "?"}
-                            avatarUrl={review.buyer?.avatar_url ?? null}
-                            className="size-10 bg-muted"
-                            fallbackClassName="bg-muted text-xs font-semibold"
-                          />
-                          <div className="flex-1">
-                            <div className="flex items-center justify-between">
-                              {review.buyer?.username ? (
-                                <Link
-                                  href={`/${review.buyer.username}`}
-                                  className="font-medium hover:underline"
-                                >
-                                  {review.buyer.display_name || review.buyer.username}
-                                </Link>
-                              ) : (
-                                <span className="font-medium">
-                                  {review.buyer?.display_name || review.buyer?.username}
-                                </span>
-                              )}
-                              <span className="text-xs text-muted-foreground">
-                                {formatTimeAgo(review.created_at, locale) ?? ""}
-                              </span>
-                            </div>
-                            <div className="flex items-center gap-2 mt-1">
-                              <StarRating rating={review.rating} count={0} />
-                              <div className="flex gap-1 text-xs">
-                                {review.item_as_described && (
-                                  <Badge variant="secondary" className="text-2xs py-0">
-                                    {tProfile("accurate")}
-                                  </Badge>
-                                )}
-                                {review.shipping_speed && (
-                                  <Badge variant="secondary" className="text-2xs py-0">
-                                    {tProfile("fastShipping")}
-                                  </Badge>
-                                )}
-                                {review.communication && (
-                                  <Badge variant="secondary" className="text-2xs py-0">
-                                    {tProfile("goodComms")}
-                                  </Badge>
-                                )}
-                              </div>
-                            </div>
-                            {review.comment && (
-                              <p className="mt-2 text-sm text-muted-foreground">{review.comment}</p>
-                            )}
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-              ) : (
-                <div className="py-12 text-center text-muted-foreground">
-                  <Star className="size-12 mx-auto mb-3 opacity-50" />
-                  <p>{tProfile("noReviewsYet")}</p>
-                </div>
-              )}
-            </TabsContent>
-          )}
-
-          {/* Buyer Reviews Tab */}
-          {(!profile.is_seller || profile.total_purchases > 0) && (
-            <TabsContent value="buyer-reviews" className="mt-6">
-              {buyerReviews.length > 0 ? (
-                <div className="space-y-4 max-w-3xl">
-                  {buyerReviews.map((review) => (
-                    <Card key={review.id}>
-                      <CardContent className="p-4">
-                        <div className="flex items-start gap-3">
-                          <UserAvatar
-                            name={review.seller?.display_name || review.seller?.username || "?"}
-                            avatarUrl={review.seller?.avatar_url ?? null}
-                            className="size-10 bg-muted"
-                            fallbackClassName="bg-muted text-xs font-semibold"
-                          />
-                          <div className="flex-1">
-                            <div className="flex items-center justify-between">
-                              {review.seller?.username ? (
-                                <Link
-                                  href={`/${review.seller.username}`}
-                                  className="font-medium hover:underline"
-                                >
-                                  {review.seller.display_name || review.seller.username}
-                                </Link>
-                              ) : (
-                                <span className="font-medium">
-                                  {review.seller?.display_name || review.seller?.username}
-                                </span>
-                              )}
-                              <span className="text-xs text-muted-foreground">
-                                {formatTimeAgo(review.created_at, locale) ?? ""}
-                              </span>
-                            </div>
-                            <div className="flex items-center gap-2 mt-1">
-                              <StarRating rating={review.rating} count={0} />
-                              <div className="flex gap-1 text-xs">
-                                {review.payment_promptness && (
-                                  <Badge variant="secondary" className="text-2xs py-0">
-                                    {tProfile("promptPayment")}
-                                  </Badge>
-                                )}
-                                {review.communication && (
-                                  <Badge variant="secondary" className="text-2xs py-0">
-                                    {tProfile("goodComms")}
-                                  </Badge>
-                                )}
-                              </div>
-                            </div>
-                            {review.comment && (
-                              <p className="mt-2 text-sm text-muted-foreground">{review.comment}</p>
-                            )}
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-              ) : (
-                <div className="py-12 text-center text-muted-foreground">
-                  <Star className="size-12 mx-auto mb-3 opacity-50" />
-                  <p>{tProfile("noReviewsYet")}</p>
-                </div>
-              )}
-            </TabsContent>
-          )}
-        </Tabs>
+      {/* Location and member since */}
+      <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
+        {profile.location && (
+          <span className="flex items-center gap-1">
+            <MapPin className="size-3.5" />
+            {profile.location}
+          </span>
+        )}
+        {memberSinceLabel && (
+          <span className="flex items-center gap-1">
+            <Calendar className="size-3.5" />
+            {memberSinceLabel}
+          </span>
+        )}
       </div>
-    </PageShell>
+
+      {/* Social links */}
+      {profile.social_links && Object.keys(profile.social_links).length > 0 && (
+        <div className="flex gap-2 pt-1">
+          {profile.website_url && (
+            <a
+              href={profile.website_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="p-2 rounded-full bg-surface-subtle active:bg-active tap-highlight-transparent"
+            >
+              <Globe className="size-4" />
+            </a>
+          )}
+          {Object.entries(profile.social_links).map(([platform, url]) => {
+            if (!url) return null
+            return (
+              <a
+                key={platform}
+                href={url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="p-2 rounded-full bg-surface-subtle active:bg-active tap-highlight-transparent"
+              >
+                {socialIcons[platform] || <Globe className="size-4" />}
+              </a>
+            )
+          })}
+        </div>
+      )}
+    </div>
+  )
+
+  // Action buttons (Tradesphere style: rounded-xl, side-by-side)
+  const actions = isOwnProfile ? (
+    <>
+      <Link href="/account/profile" className="flex-1">
+        <Button className="w-full py-2.5 rounded-xl gap-2">
+          <PencilSimple className="size-4" />
+          {tProfile("editProfile")}
+        </Button>
+      </Link>
+      <Button variant="secondary" className="flex-1 py-2.5 rounded-xl gap-2">
+        <ShareNetwork className="size-4" />
+        {tProfile("shareProfile")}
+      </Button>
+    </>
+  ) : (
+    <>
+      {profile.is_seller && followActions ? (
+        <FollowSellerButton
+          sellerId={profile.id}
+          initialIsFollowing={isFollowing}
+          actions={followActions}
+          locale={locale}
+          className="flex-1 rounded-xl"
+        />
+      ) : null}
+      {!isOwnProfile && (
+        <Link href={`/chat?to=${profile.id}`} className="flex-1">
+          <Button variant="secondary" className="w-full py-2.5 rounded-xl gap-2">
+            <ChatCircle className="size-4" />
+            {tSeller("message")}
+          </Button>
+        </Link>
+      )}
+      <Button variant="ghost" size="icon" className="size-10 rounded-xl" aria-label={tProfile("share")}>
+        <ShareNetwork className="size-5" />
+      </Button>
+    </>
+  )
+
+  return (
+    <>
+      <ProfileHeaderSync
+        displayName={profile.display_name}
+        username={profile.username}
+        avatarUrl={profile.avatar_url}
+        isOwnProfile={isOwnProfile}
+        isFollowing={isFollowing}
+        sellerId={profile.id}
+      />
+      <ProfileShell
+        displayName={displayName}
+        username={profile.username}
+        avatarUrl={profile.avatar_url}
+        bannerUrl={profile.banner_url}
+        isVerifiedBusiness={Boolean(profile.is_verified_business)}
+        stats={<ProfileStats stats={statsItems} />}
+        actions={actions}
+        headerContent={headerContent}
+        tabs={
+          <ProfileTabs
+            tabs={tabs}
+            value={activeTab}
+            onValueChange={setActiveTab}
+          />
+        }
+        className="pb-20 sm:pb-8"
+      />
+    </>
   )
 }

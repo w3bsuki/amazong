@@ -20,6 +20,7 @@ import {
   MobileHomepageHeader,
   MobileProductHeader,
   MobileContextualHeader,
+  MobileProfileHeader,
   MobileMinimalHeader,
 } from "./mobile"
 import {
@@ -143,9 +144,9 @@ function detectRouteConfig(pathname: string, explicitVariant?: HeaderVariant): R
     return { variant: "product" }
   }
   
-  // Profile pages: /{username} (1 segment, not a known route) - use contextual header
+  // Profile pages: /{username} (1 segment, not a known route) - use profile header
   if (segments.length === 1 && segments[0] && !knownRoutes.includes(segments[0])) {
-    return { variant: "contextual" }
+    return { variant: "profile" }
   }
   
   // Default for everything else
@@ -229,6 +230,15 @@ export function AppHeader({
   const effectiveProductPrice = hydratedProductHeader?.productPrice ?? productPrice
   const effectiveProductImage = hydratedProductHeader?.productImage ?? productImage
 
+  // Profile header context (for profile pages)
+  const hydratedProfileHeader = isHydrated ? headerContext?.profileHeader : null
+  const effectiveProfileDisplayName = hydratedProfileHeader?.displayName ?? null
+  const effectiveProfileUsername = hydratedProfileHeader?.username ?? null
+  const effectiveProfileAvatarUrl = hydratedProfileHeader?.avatarUrl ?? null
+  const effectiveProfileIsOwn = hydratedProfileHeader?.isOwnProfile ?? false
+  const effectiveProfileIsFollowing = hydratedProfileHeader?.isFollowing ?? false
+  const effectiveProfileSellerId = hydratedProfileHeader?.sellerId ?? null
+
   const searchPlaceholder = tNav("searchPlaceholderShort")
 
   // Mark header as hydrated for E2E tests
@@ -279,6 +289,22 @@ export function AppHeader({
             productId={effectiveProductId}
             productPrice={effectiveProductPrice}
             productImage={effectiveProductImage}
+            onBack={() => router.back()}
+            locale={locale}
+          />
+        )
+      case "profile":
+        return (
+          <MobileProfileHeader
+            user={effectiveUser}
+            categories={categories}
+            userStats={userStats}
+            displayName={effectiveProfileDisplayName}
+            username={effectiveProfileUsername}
+            avatarUrl={effectiveProfileAvatarUrl}
+            isOwnProfile={effectiveProfileIsOwn}
+            isFollowing={effectiveProfileIsFollowing}
+            sellerId={effectiveProfileSellerId}
             onBack={() => router.back()}
             locale={locale}
           />

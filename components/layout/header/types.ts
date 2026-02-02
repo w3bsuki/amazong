@@ -6,7 +6,7 @@ import type { UserListingStats } from "@/components/layout/sidebar/sidebar-menu-
 // Header Types
 // =============================================================================
 
-export type HeaderVariant = "default" | "homepage" | "product" | "contextual" | "minimal"
+export type HeaderVariant = "default" | "homepage" | "product" | "contextual" | "profile" | "minimal"
 
 export interface BaseHeaderProps {
   /** Authenticated user */
@@ -60,6 +60,23 @@ export interface ContextualHeaderProps extends BaseHeaderProps {
   onSubcategoryClick?: ((cat: CategoryTreeNode) => void) | undefined
   /** Hide search/wishlist/cart actions (for assistant page) */
   hideActions?: boolean | undefined
+}
+
+export interface ProfileHeaderProps extends BaseHeaderProps {
+  /** Display name for profile header */
+  displayName?: string | null | undefined
+  /** Username for profile (@ handle) */
+  username?: string | null | undefined
+  /** Avatar URL for profile */
+  avatarUrl?: string | null | undefined
+  /** Whether viewing own profile */
+  isOwnProfile: boolean
+  /** Whether current user is following this profile */
+  isFollowing?: boolean | undefined
+  /** Seller ID for follow action */
+  sellerId?: string | null | undefined
+  /** Router for back navigation */
+  onBack: () => void
 }
 
 export interface MinimalHeaderProps {
