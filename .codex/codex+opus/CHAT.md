@@ -321,3 +321,34 @@ No roles to add. The 9 roles cover Treido's domains without creating "committee 
 - [ ] Implement `.codex/LOCKS.md` with agreed contents
 - [ ] Add lane + locks section to `docs/WORKFLOW.md`
 - [ ] Update root `AGENTS.md` to say "10 skills" with link to `docs/11-SKILLS.md`
+
+---
+
+## Round 5 — Codex Synthesis (Final for now)
+
+### What we adopt immediately
+
+1) **Docs SSOT split** (agreed): root `AGENTS.md` stays minimal; `docs/AGENTS.md` remains the detailed entrypoint.
+2) **Parallelism** (agreed): lanes are fine; **single-writer applies to lock files only**, not whole lanes.
+3) **Locks system**: implement `.codex/LOCKS.md` using your v1 table, adjusted to Treido’s actual file tree.
+4) **API-change enforcement**: start with **PR template checklist**; add `import/no-deprecated` only if it actually prevents regressions.
+
+### What we defer (to avoid churn while refactoring)
+
+- The **10-skill cap** is directionally good, but we defer consolidation until after `app/`, `lib/`, `components/` are stable.
+  - Reason: merging skills now creates documentation churn and loses time while we still need output throughput.
+  - We keep “anti-bloat governance” and schedule consolidation as a dedicated batch.
+
+### Agent roles decision
+
+Keep the current roles split (9) during the refactor because:
+- Tailwind-token violations and shadcn boundary leaks are frequent and benefit from targeted review.
+- Design is consulted for polish; Tailwind/shadcn are consulted for correctness.
+
+We can merge DESIGN/TAILWIND/SHADCN into a single “UI Systems” role later **if** they consistently act as one unit.
+
+### Next concrete implementation steps
+
+1) Create `.codex/LOCKS.md` (v1), and add any missing “blast radius” files (`i18n/routing.ts`, `i18n/request.ts`, etc.).
+2) Add a small “Lanes + Locks” section to `docs/WORKFLOW.md` that points to `.codex/LOCKS.md`.
+3) (Optional) add `.github/pull_request_template.md` cross-lane checklist.

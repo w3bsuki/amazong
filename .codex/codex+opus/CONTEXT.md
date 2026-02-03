@@ -69,7 +69,7 @@ We operate as a “dev team” of specialists. The orchestrator owns coordinatio
 - **shadcn**: `components/ui/*` primitives boundary + Radix composition + CVA discipline.
 - **Testing**: Playwright/unit strategy, selectors, deflaking, CI stability.
 - **Docs**: keeps `docs/**` coherent, deduped, indexed; maintains “always-read” minimalism.
-- **Security**: PII/logging/secrets rails; reviews auth/payments surface changes.
+- **Security**: enforces pause conditions (blocks unapproved DB/auth/payments work) + guards PII/logging/secrets; reviews auth/payments surface changes.
 
 Role playbooks live in `agents/*.md`.
 
@@ -93,4 +93,3 @@ If two skills overlap >30% in practice, schedule a merge batch after the current
 - For folder refactors, follow `.codex/refactor/ORCHESTRATION.md` and update the relevant `.codex/refactor/_*.md`.
 - Ship in small batches (1–3 files) and run gates from `docs/WORKFLOW.md`.
 - Use lane model to parallelize: app/lib/components can move simultaneously if lock files are coordinated.
-
