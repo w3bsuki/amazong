@@ -78,6 +78,7 @@ export function CategoryCirclesSimple({
           fallbackIconSize={18}
           fallbackIconWeight="bold"
           variant="colorful"
+          preferIcon={false}
           className="flex-none w-(--spacing-category-item-lg)"
           labelClassName={cn(
             "w-full text-2xs text-center leading-tight line-clamp-1 px-0 mt-0.5",
@@ -100,6 +101,7 @@ export function CategoryCirclesSimple({
               fallbackIconSize={18}
               fallbackIconWeight="bold"
               variant="colorful"
+              preferIcon={false}
               label={tCategories("shortName", { slug: getCategorySlugKey(category.slug), name: getCategoryName(category, locale) })}
               className="flex-none w-(--spacing-category-item-lg)"
               labelClassName={cn(
