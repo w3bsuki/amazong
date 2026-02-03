@@ -107,4 +107,3 @@ export function FilterRadioItem({
  * FilterRadioList — Alias for FilterRadioGroup for semantic consistency
  * @deprecated Use FilterRadioGroup directly
  */
-export const FilterRadioList = FilterRadioGroup

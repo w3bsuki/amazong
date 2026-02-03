@@ -767,28 +767,7 @@ async function getSiblingCategories(parentId: string | null): Promise<Category[]
  * @param categoryId - Current category UUID
  * @returns Array of sibling categories with product counts (current category included)
  */
-export async function getCategorySiblingsWithCounts(categoryId: string): Promise<CategoryWithCount[]> {
-  'use cache'
-  cacheTag(`category-siblings-counts:${categoryId}`)
-  cacheLife('categories')
-  
-  const supabase = createStaticClient()
-  
-  // First get the current category to find its parent
-  const { data: currentCat, error: currentError } = await supabase
-    .from('categories')
-    .select('id, parent_id')
-    .eq('id', categoryId)
-    .single()
-  
-  if (currentError || !currentCat) {
-    logger.error('[getCategorySiblingsWithCounts] Current category not found', currentError)
-    return []
-  }
-  
-  // Get all siblings (same parent_id) including the current category
-  return getSubcategoriesWithCounts(currentCat.parent_id, false)
-}
+
 
 /**
  * Fetch direct children of a category.
