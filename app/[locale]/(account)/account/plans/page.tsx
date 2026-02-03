@@ -3,14 +3,16 @@ import { redirect } from "@/i18n/routing"
 import { getTranslations } from "next-intl/server"
 import { PlansContent } from "./plans-content"
 import {
+  PLANS_SELECT_FOR_PLANS_PAGE,
+  PRIVATE_PROFILE_SELECT_FOR_UPGRADE,
+  PROFILE_SELECT_FOR_PLANS,
+} from "@/lib/data/plans"
+import {
   cancelSubscription,
   createBillingPortalSession,
   createSubscriptionCheckoutSession,
   reactivateSubscription,
 } from "@/app/actions/subscriptions"
-
-const PROFILE_SELECT_FOR_PLANS = 'id,tier,account_type'
-const PRIVATE_PROFILE_SELECT_FOR_PLANS = 'id,commission_rate,stripe_customer_id'
 
 interface PlansPageProps {
   params: Promise<{
@@ -46,7 +48,7 @@ export default async function PlansPage({ params }: PlansPageProps) {
       .single(),
     supabase
       .from('private_profiles')
-      .select(PRIVATE_PROFILE_SELECT_FOR_PLANS)
+      .select(PRIVATE_PROFILE_SELECT_FOR_UPGRADE)
       .eq('id', user.id)
       .maybeSingle(),
   ])
@@ -54,7 +56,7 @@ export default async function PlansPage({ params }: PlansPageProps) {
   // Fetch subscription plans (only valid fields)
   const { data: plans } = await supabase
     .from('subscription_plans')
-    .select('id, name, tier, price_monthly, price_yearly, description, features, is_active, stripe_price_monthly_id, stripe_price_yearly_id, max_listings, commission_rate, account_type, final_value_fee, insertion_fee, per_order_fee, boosts_included, priority_support, analytics_access')
+    .select(PLANS_SELECT_FOR_PLANS_PAGE)
     .eq('is_active', true)
     .order('price_monthly', { ascending: true })
 

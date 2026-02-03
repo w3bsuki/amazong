@@ -20,6 +20,13 @@ export const PROFILE_SELECT_FOR_UPGRADE = 'id,tier' as const
 /** Private profile fields needed for upgrade flows */
 export const PRIVATE_PROFILE_SELECT_FOR_UPGRADE = 'id,commission_rate,stripe_customer_id' as const
 
+/** Profile fields needed for account plans page */
+export const PROFILE_SELECT_FOR_PLANS = 'id,tier,account_type' as const
+
+/** Select for account plans page (UI expects these fields) */
+export const PLANS_SELECT_FOR_PLANS_PAGE =
+  'id, name, tier, price_monthly, price_yearly, description, features, is_active, stripe_price_monthly_id, stripe_price_yearly_id, max_listings, commission_rate, account_type, final_value_fee, insertion_fee, per_order_fee, boosts_included, priority_support, analytics_access' as const
+
 // =============================================================================
 // Queries — use these instead of inline queries
 // =============================================================================
