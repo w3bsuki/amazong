@@ -4,6 +4,7 @@ import type { Database } from "@/lib/supabase/database.types";
 import { cacheLife, cacheTag } from "next/cache";
 import { isNextPrerenderInterrupted } from "@/lib/next/is-next-prerender-interrupted";
 import { normalizeAttributeKey } from "@/lib/attributes/normalize-attribute-key";
+import { CATEGORY_ATTRIBUTES_SELECT } from "@/lib/supabase/selects/categories";
 
 // Public endpoint: use anon key so RLS is still enforced
 
@@ -14,9 +15,6 @@ const CACHE_STALE_WHILE_REVALIDATE = 300
 
 // Use the generated database type for category attributes
 type CategoryAttributeRow = Database["public"]["Tables"]["category_attributes"]["Row"];
-
-const CATEGORY_ATTRIBUTES_SELECT =
-  "id,category_id,name,name_bg,attribute_type,is_required,is_filterable,options,options_bg,placeholder,placeholder_bg,validation_rules,sort_order,created_at,attribute_key,is_hero_spec,hero_priority,is_badge_spec,badge_priority,unit_suffix" as const;
 
 async function getCategoryAttributesCached(slugOrId: string) {
   'use cache'

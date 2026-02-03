@@ -4,6 +4,7 @@ import type { SupabaseClient } from "@supabase/supabase-js"
 import type { Database } from "@/lib/supabase/database.types"
 import { isNextPrerenderInterrupted } from "@/lib/next/is-next-prerender-interrupted"
 import { cacheLife, cacheTag } from "next/cache"
+import { CATEGORY_ATTRIBUTES_SELECT } from "@/lib/supabase/selects/categories"
 
 type CategoryAttribute = Database["public"]["Tables"]["category_attributes"]["Row"]
 
@@ -124,9 +125,6 @@ async function getCategoryAttributesCached(params: {
   if (includeGlobal) cacheTag('attrs:global')
 
   // Fetch attributes for requested category scope
-  const CATEGORY_ATTRIBUTES_SELECT =
-    "id, category_id, name, name_bg, attribute_type, options, options_bg, placeholder, placeholder_bg, is_filterable, is_required, sort_order, validation_rules, created_at, attribute_key, is_hero_spec, hero_priority, is_badge_spec, badge_priority, unit_suffix" as const
-
   let query = supabase.from("category_attributes").select(CATEGORY_ATTRIBUTES_SELECT)
 
   if (includeGlobal) {

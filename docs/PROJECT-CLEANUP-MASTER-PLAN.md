@@ -6,6 +6,15 @@ Massively reduce repo size/complexity **without changing observable behavior** (
 
 **Target**: ~50% less “code” (define scope below, then measure).
 
+## Status (2026-02-03)
+
+Already shipped cleanup commits (main branch):
+- `468f8808` checkpoint before cleanup
+- `a56e2966` remove confirmed unused modules (~3.2k LOC deleted)
+- `5e25a5d2` centralize cached API responses (`lib/api/response-helpers.ts`)
+- `ff7c9645` centralize addresses select
+- `4bc07cee` dedupe plans selectors
+
 ## Non‑Negotiables / Safety
 
 - No UI/styling changes (same Tailwind tokens/classes; same rendered structure where feasible).
@@ -26,6 +35,9 @@ Massively reduce repo size/complexity **without changing observable behavior** (
 
 Baseline snapshot on 2026-02-03 (tracked files):
 - TS/TSX lines in `app/components/lib/hooks`: **~136,905** (`app`: ~76,591, `components`: ~43,916, `lib`: ~13,616, `hooks`: ~2,782).
+
+Current snapshot after initial cleanup:
+- TS/TSX lines in `app/components/lib/hooks`: **~134,147** (`app`: ~75,706, `components`: ~42,055, `lib`: ~13,604, `hooks`: ~2,782).
 
 ## Audit Summary (5 lanes)
 
@@ -94,6 +106,12 @@ Move composites out of `components/ui/` to `components/shared/` (or route-privat
 - Merge pass-through layouts and modal-slot wrappers via shared components (keep same output).
 - Centralize repeated Supabase select strings and DTO types.
 
+### Phase 2.1 — Fast “drift killers” (recommended next)
+
+These reduce maintenance cost immediately with low blast radius:
+- App Router: move `setRequestLocale(locale)` to `app/[locale]/layout.tsx` and delete pass-through layouts that only set locale and return children (keep layouts that define parallel route slots).
+- Supabase: introduce canonical `lib/supabase/selects/*` constants and replace inline select strings (categories/products/profiles).
+
 ### Phase 3 — Big-ticket de-duplication (higher risk, biggest LOC wins)
 
 This is where 50% becomes realistic:
@@ -113,4 +131,3 @@ This is where 50% becomes realistic:
 - [ ] All gates green after every batch.
 - [ ] No UI/copy regressions on golden-path flows (smoke + E2E).
 - [ ] Clear ownership + boundaries strengthened (`components/ui` primitives only, route-private stays route-private).
-
