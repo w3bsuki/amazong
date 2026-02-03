@@ -4,6 +4,7 @@ import { normalizeOptionalImageUrl } from "@/lib/normalize-image-url"
 import { cacheLife, cacheTag } from "next/cache"
 import { isNextPrerenderInterrupted } from "@/lib/next/is-next-prerender-interrupted"
 import { cachedJsonResponse } from "@/lib/api/response-helpers"
+import { CATEGORY_TREE_NODE_SELECT } from "@/lib/supabase/selects/categories"
 
 // NOTE: This endpoint serves public data (no user cookies required).
 // In Cache Components mode, avoid Dynamic APIs like `connection()` and avoid
@@ -110,7 +111,7 @@ async function getRootCategoriesCached() {
 
   const { data, error } = await supabase
     .from("categories")
-    .select("id, name, name_bg, slug, icon, image_url, parent_id, display_order")
+    .select(CATEGORY_TREE_NODE_SELECT)
     .is("parent_id", null)
     .lt("display_order", 9000)
     .order("display_order", { ascending: true })
@@ -140,7 +141,7 @@ async function getRootWithChildrenCached(depth: number) {
 
   const { data: rootCats, error: rootError } = await supabase
     .from("categories")
-    .select("id, name, name_bg, slug, parent_id, icon, image_url, display_order")
+    .select(CATEGORY_TREE_NODE_SELECT)
     .is("parent_id", null)
     .lt("display_order", 9000)
     .order("display_order", { ascending: true })
@@ -150,7 +151,7 @@ async function getRootWithChildrenCached(depth: number) {
   const rootIds = (rootCats || []).map((c) => c.id)
   const { data: l1Cats, error: l1Error } = await supabase
     .from("categories")
-    .select("id, name, name_bg, slug, parent_id, icon, image_url, display_order")
+    .select(CATEGORY_TREE_NODE_SELECT)
     .in("parent_id", rootIds)
     .lt("display_order", 9000)
     .order("display_order", { ascending: true })
@@ -176,7 +177,7 @@ async function getRootWithChildrenCached(depth: number) {
           try {
             const { data: l2Data, error: l2Error } = await supabase
               .from("categories")
-              .select("id, name, name_bg, slug, parent_id, icon, image_url, display_order")
+              .select(CATEGORY_TREE_NODE_SELECT)
               .in("parent_id", ids)
               .lt("display_order", 9000)
               .order("display_order", { ascending: true })

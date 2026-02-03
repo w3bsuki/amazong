@@ -6,6 +6,7 @@ import { normalizeOptionalImageUrl } from '@/lib/normalize-image-url'
 import { logger } from '@/lib/logger'
 import { normalizeAttributeKey } from '@/lib/attributes/normalize-attribute-key'
 import type { AttributeType, CategoryAttribute } from '@/lib/types/categories'
+import { CATEGORY_TREE_NODE_SELECT } from '@/lib/supabase/selects/categories'
 
 // =============================================================================
 // Type Definitions
@@ -738,7 +739,7 @@ async function getSiblingCategories(parentId: string | null): Promise<Category[]
   
   let query = supabase
     .from('categories')
-    .select('id, name, name_bg, slug, parent_id, image_url, icon, display_order')
+    .select(CATEGORY_TREE_NODE_SELECT)
     .lt('display_order', 9999)
     .order('display_order', { ascending: true })
     .order('name', { ascending: true })
@@ -785,7 +786,7 @@ async function getChildCategories(categoryId: string): Promise<Category[]> {
   
   const { data, error } = await supabase
     .from('categories')
-    .select('id, name, name_bg, slug, parent_id, image_url, icon, display_order')
+    .select(CATEGORY_TREE_NODE_SELECT)
     .eq('parent_id', categoryId)
     .lt('display_order', 9999)
     .order('display_order', { ascending: true })
