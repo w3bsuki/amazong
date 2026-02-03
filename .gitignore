@@ -102,3 +102,7 @@ prompts/_archive/
 # docs-site (local)
 docs-site/.next/
 docs-site/node_modules/
+
+# Python (skill scripts tooling)
+__pycache__/
+*.py[cod]
