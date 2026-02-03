@@ -3,7 +3,7 @@
 import { MobileCartDropdown } from "@/components/layout/header/cart/mobile-cart-dropdown"
 import { MobileWishlistButton } from "@/components/shared/wishlist/mobile-wishlist-button"
 import { CategoryCircleVisual } from "@/components/shared/category/category-circle-visual"
-import { getCategoryShortName } from "@/lib/category-display"
+import { getCategoryName, getCategorySlugKey } from "@/lib/category-display"
 import { MagnifyingGlass, ArrowLeft } from "@phosphor-icons/react"
 import { Link } from "@/i18n/routing"
 import { useTranslations } from "next-intl"
@@ -28,6 +28,7 @@ export function MobileContextualHeader({
   hideActions = false,
 }: ContextualHeaderProps) {
   const tCommon = useTranslations("Common")
+  const tCategories = useTranslations("Categories")
 
   return (
     <div className="md:hidden bg-background pt-safe">
@@ -89,7 +90,7 @@ export function MobileContextualHeader({
                     variant="colorful"
                   />
                   <span className="text-2xs text-center text-muted-foreground font-medium leading-tight line-clamp-1 truncate w-full">
-                    {getCategoryShortName(cat, locale)}
+                    {tCategories("shortName", { slug: getCategorySlugKey(cat.slug), name: getCategoryName(cat, locale) })}
                   </span>
                 </button>
               ))}

@@ -7,6 +7,7 @@
    ============================================================ */
 
 @import "tailwindcss";
+@import "tw-animate-css";
 @import "./utilities.css";
 @import "./shadcn-components.css";
 @import "./legacy-vars.css";
@@ -52,6 +53,10 @@
   --input: oklch(0.98 0 0);                  /* #f7f9fa */
   --ring: oklch(0.65 0.17 230);              /* #1da1f2 */
   --category-ring: var(--foreground);        /* Black ring for category selection */
+
+  /* Layout */
+  /* Updated at runtime by AppHeader (measured px) to keep fixed mobile header from overlapping content. */
+  --app-header-offset: calc(var(--header-h-mobile, 3.5rem) + env(safe-area-inset-top));
 
   /* === SEMANTIC STATUS (Light) - Professional, desaturated === */
   --success: oklch(0.52 0.14 155);
@@ -854,4 +859,5 @@
     /* New stacking context - isolates from body position changes */
     isolation: isolate;
   }
+
 }

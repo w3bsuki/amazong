@@ -81,7 +81,7 @@ export function MobileTabBar({ categories }: MobileTabBarProps) {
   return (
     <>
       <nav
-        className="fixed bottom-0 left-0 right-0 z-50 bg-surface-elevated border-t border-border pb-safe md:hidden"
+        className="fixed bottom-0 left-0 right-0 z-40 bg-surface-elevated border-t border-border pb-safe md:hidden"
         role="navigation"
         aria-label={t("mobileNavigation")}
         data-testid="mobile-tab-bar"

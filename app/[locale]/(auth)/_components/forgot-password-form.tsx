@@ -70,7 +70,7 @@ export function ForgotPasswordForm({
       <form action={formAction} className="space-y-4">
         {state?.error && (
           <div className="p-3 text-sm text-destructive bg-destructive/10 border border-destructive/20 rounded-md">
-            {state.error}
+            {t(state.error as never)}
           </div>
         )}
 
@@ -91,7 +91,9 @@ export function ForgotPasswordForm({
                   "border-destructive focus-visible:ring-destructive/20",
               )}
             />
-            <FieldError id="email-error">{state?.fieldErrors?.email}</FieldError>
+            <FieldError id="email-error">
+              {state?.fieldErrors?.email ? t(state.fieldErrors.email as never) : null}
+            </FieldError>
           </FieldContent>
         </Field>
 

@@ -1,5 +1,6 @@
 import 'server-only'
 
+import { cacheLife, cacheTag } from 'next/cache'
 import { createStaticClient, createClient } from '@/lib/supabase/server'
 
 // =============================================================================
@@ -77,6 +78,10 @@ export type UpgradePlan = {
  * Fetch all active subscription plans (public, cacheable)
  */
 export async function getActivePlans(): Promise<SubscriptionPlan[]> {
+  'use cache'
+  cacheTag('plans')
+  cacheLife('max')
+
   const client = createStaticClient()
   const { data } = await client
     .from('subscription_plans')

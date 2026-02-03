@@ -528,7 +528,7 @@ export function SellingProductsList({ products, locale, actions }: SellingProduc
                       )}
                     </Button>
                     <Button asChild variant="ghost" size="icon" className="size-8">
-                      <Link href={`/account/selling/edit?id=${product.id}`}>
+                      <Link href={`/account/selling/${product.id}/edit`}>
                         <Pencil className="size-4" />
                       </Link>
                     </Button>
@@ -733,7 +733,7 @@ export function SellingProductsList({ products, locale, actions }: SellingProduc
                   </Link>
                 </Button>
                 <Button asChild variant="ghost" size="icon" className="size-9">
-                  <Link href={`/account/selling/edit?id=${product.id}`}>
+                  <Link href={`/account/selling/${product.id}/edit`}>
                     <Pencil className="size-4" />
                     <span className="sr-only">{t('editSrOnly')}</span>
                   </Link>

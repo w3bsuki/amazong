@@ -19,6 +19,7 @@ import { Truck } from "@phosphor-icons/react"
 import { useDrawer, type QuickViewProduct } from "@/components/providers/drawer-context"
 import { isFeatureEnabled } from "@/lib/feature-flags"
 import { formatTimeAgo } from "@/lib/utils/format-time"
+import { isBoostActiveNow } from "@/lib/boost/boost-status"
 
 // =============================================================================
 // CVA VARIANTS
@@ -121,6 +122,7 @@ interface ProductCardProps extends VariantProps<typeof productCardVariants> {
 
   // Promotion (boosted listing)
   isBoosted?: boolean
+  boostExpiresAt?: string | null
 
   // Legacy props (accepted but ignored for backwards compat)
   brand?: string
@@ -190,6 +192,7 @@ function ProductCard({
   samplesAvailable,
   // Promotion
   isBoosted,
+  boostExpiresAt,
 }: ProductCardProps & { ref?: React.Ref<HTMLDivElement> }) {
   const t = useTranslations("Product")
   const locale = useLocale()
@@ -205,6 +208,12 @@ function ProductCard({
 
   // Resolve state
   const resolvedState = state ?? (isOnSale || hasDiscount ? "sale" : "default")
+
+  const isBoostedActive = React.useMemo(() => {
+    if (!isBoosted) return false
+    if (!boostExpiresAt) return true
+    return isBoostActiveNow({ is_boosted: true, boost_expires_at: boostExpiresAt })
+  }, [boostExpiresAt, isBoosted])
 
   // URLs
   const productUrl = username ? `/${username}/${slug || id}` : "#"
@@ -356,9 +365,9 @@ function ProductCard({
         />
 
         {/* Top-left: Stacked badges (promoted + discount on mobile) */}
-        {(isBoosted || (hasDiscount && discountPercent >= 5)) && (
+        {(isBoostedActive || (hasDiscount && discountPercent >= 5)) && (
           <div className="absolute top-1 left-1 lg:top-1.5 lg:left-1.5 z-10 flex flex-col gap-0.5">
-            {isBoosted && (
+            {isBoostedActive && (
               <Badge variant="promoted" className="text-2xs rounded-full px-1.5 py-0.5">
                 {t("adBadge")}
               </Badge>

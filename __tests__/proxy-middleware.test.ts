@@ -82,7 +82,8 @@ describe('proxy middleware', () => {
 
     const res = await proxy(req)
 
-    expect(res.headers.get('x-pathname')).toBe('/bg')
+    expect(res.headers.get('x-middleware-request-x-pathname')).toBe('/bg')
+    expect(res.headers.get('x-middleware-override-headers')).toContain('x-pathname')
 
     const cookiesSet = (res as any).__cookiesSet as Array<{ name: string; value: string }>
     expect(cookiesSet.find((c) => c.name === 'user-country')?.value).toBe('BG')

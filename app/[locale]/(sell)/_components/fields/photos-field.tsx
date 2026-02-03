@@ -6,6 +6,7 @@ import { Camera, SpinnerGap, WarningCircle } from "@phosphor-icons/react";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Field, FieldLabel, FieldDescription, FieldError, FieldContent } from "@/components/shared/field";
+import { useTranslations } from "next-intl";
 
 import type { ProductImage } from "@/lib/sell/schema-v4";
 import { compressImage } from "@/lib/image-compression";
@@ -75,6 +76,7 @@ export function PhotosField({
   // Use context instead of prop drilling
   const { watch, setValue, formState: { errors } } = useSellForm();
   const { isBg } = useSellFormContext();
+  const tSell = useTranslations("Sell")
 
   // Local state
   const images = watch("images") || [];
@@ -334,7 +336,9 @@ export function PhotosField({
 
               {/* Error Message */}
               {hasError && (
-                <FieldError errors={[errors.images]} className="mt-3" />
+                <FieldError className="mt-3">
+                  {errors.images?.message ? tSell(errors.images.message as never) : null}
+                </FieldError>
               )}
             </FieldContent>
           </div>
@@ -401,10 +405,9 @@ export function PhotosField({
 
             {/* Error Message */}
             {hasError && (
-              <FieldError
-                errors={[errors.images]}
-                className="mt-3"
-              />
+              <FieldError className="mt-3">
+                {errors.images?.message ? tSell(errors.images.message as never) : null}
+              </FieldError>
             )}
           </FieldContent>
         )}

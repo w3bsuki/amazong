@@ -63,6 +63,11 @@ export function MobileGalleryV2({
   const { isInWishlist, toggleWishlist } = useWishlist()
   const isWishlisted = product ? isInWishlist(product.id) : false
 
+  const getAlt = useCallback(
+    (img: GalleryImage) => t(img.altKey as never, img.altParams as never),
+    [t],
+  )
+
   // Sync scroll position with active index
   useEffect(() => {
     const el = galleryRef.current
@@ -196,7 +201,7 @@ export function MobileGalleryV2({
                 >
                   <Image
                     src={img.src}
-                    alt={img.alt}
+                    alt={getAlt(img)}
                     width={44}
                     height={44}
                     className="object-cover size-full"
@@ -217,7 +222,7 @@ export function MobileGalleryV2({
                 <div className="relative aspect-square">
                   <Image
                     src={img.src}
-                    alt={img.alt}
+                    alt={getAlt(img)}
                     fill
                     className="object-cover"
                     priority={i === 0}
@@ -260,7 +265,7 @@ export function MobileGalleryV2({
             {images[activeIndex] && (
               <Image
                 src={images[activeIndex].src}
-                alt={images[activeIndex].alt}
+                alt={getAlt(images[activeIndex])}
                 fill
                 className="object-contain"
                 sizes="100vw"
@@ -286,7 +291,7 @@ export function MobileGalleryV2({
               >
                 <Image
                   src={img.src}
-                  alt={img.alt}
+                  alt={getAlt(img)}
                   width={56}
                   height={56}
                   className="object-cover size-full"

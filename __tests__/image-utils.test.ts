@@ -1,38 +1,10 @@
 import { describe, expect, it } from 'vitest'
 import {
-  shimmerBlurDataURL,
   productBlurDataURL,
-  heroBlurDataURL,
-  categoryBlurDataURL,
   getImageLoadingStrategy,
 } from '@/lib/image-utils'
 
 describe('lib/image-utils', () => {
-  describe('shimmerBlurDataURL', () => {
-    it('returns a valid base64 data URL', () => {
-      const result = shimmerBlurDataURL()
-      expect(result).toMatch(/^data:image\/svg\+xml;base64,/)
-    })
-
-    it('accepts custom dimensions', () => {
-      const result = shimmerBlurDataURL(100, 50)
-      expect(result).toMatch(/^data:image\/svg\+xml;base64,/)
-      // Decode and verify dimensions in SVG
-      const base64 = result.replace('data:image/svg+xml;base64,', '')
-      const svg = Buffer.from(base64, 'base64').toString('utf-8')
-      expect(svg).toContain('width="100"')
-      expect(svg).toContain('height="50"')
-    })
-
-    it('uses default dimensions of 10x10', () => {
-      const result = shimmerBlurDataURL()
-      const base64 = result.replace('data:image/svg+xml;base64,', '')
-      const svg = Buffer.from(base64, 'base64').toString('utf-8')
-      expect(svg).toContain('width="10"')
-      expect(svg).toContain('height="10"')
-    })
-  })
-
   describe('productBlurDataURL', () => {
     it('returns a valid base64 data URL', () => {
       const result = productBlurDataURL()
@@ -44,36 +16,6 @@ describe('lib/image-utils', () => {
       const base64 = result.replace('data:image/svg+xml;base64,', '')
       const svg = Buffer.from(base64, 'base64').toString('utf-8')
       expect(svg).toContain('#e5e7eb')
-    })
-  })
-
-  describe('heroBlurDataURL', () => {
-    it('returns a valid base64 data URL', () => {
-      const result = heroBlurDataURL()
-      expect(result).toMatch(/^data:image\/svg\+xml;base64,/)
-    })
-
-    it('uses gradient for hero background', () => {
-      const result = heroBlurDataURL()
-      const base64 = result.replace('data:image/svg+xml;base64,', '')
-      const svg = Buffer.from(base64, 'base64').toString('utf-8')
-      expect(svg).toContain('linearGradient')
-      expect(svg).toContain('#374151')
-      expect(svg).toContain('#1f2937')
-    })
-  })
-
-  describe('categoryBlurDataURL', () => {
-    it('returns a valid base64 data URL', () => {
-      const result = categoryBlurDataURL()
-      expect(result).toMatch(/^data:image\/svg\+xml;base64,/)
-    })
-
-    it('uses light neutral fill color', () => {
-      const result = categoryBlurDataURL()
-      const base64 = result.replace('data:image/svg+xml;base64,', '')
-      const svg = Buffer.from(base64, 'base64').toString('utf-8')
-      expect(svg).toContain('#f3f4f6')
     })
   })
 

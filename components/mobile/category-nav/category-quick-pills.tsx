@@ -2,8 +2,8 @@
 
 import { useRef, useEffect } from "react"
 import type { CategoryTreeNode } from "@/lib/category-tree"
-import { getCategoryShortName } from "@/lib/category-display"
-import { getCategoryIcon } from "@/lib/category-icons"
+import { getCategoryName, getCategorySlugKey } from "@/lib/category-display"
+import { getCategoryIcon } from "@/components/shared/category/category-icons"
 import { CategoryNavItem } from "./category-nav-item"
 import { useTranslations } from "next-intl"
 
@@ -36,6 +36,7 @@ export function CategoryQuickPills({
 }: CategoryQuickPillsProps) {
   const tabsContainerRef = useRef<HTMLDivElement>(null)
   const tCommon = useTranslations("Common")
+  const tCategories = useTranslations("Categories")
 
   // Auto-scroll selected tab to left edge
   useEffect(() => {
@@ -88,7 +89,7 @@ export function CategoryQuickPills({
 
         {/* Category Pills */}
         {categories.map((cat) => {
-          const label = getCategoryShortName(cat, locale)
+          const label = tCategories("shortName", { slug: getCategorySlugKey(cat.slug), name: getCategoryName(cat, locale) })
           const isActive = activeTab === cat.slug
           const icon = getCategoryIcon(cat.slug, { size: 14 })
 

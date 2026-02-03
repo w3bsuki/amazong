@@ -378,6 +378,8 @@ export async function upgradeToBusinessAccount(data: z.infer<typeof businessUpgr
       }
     }
     
+    const userId = user.id
+
     // Update to business account (public + private surfaces)
     const updatedAt = new Date().toISOString()
     const adminSupabase = createAdminClient()
@@ -390,11 +392,11 @@ export async function upgradeToBusinessAccount(data: z.infer<typeof businessUpgr
           website_url: data.website_url || null,
           updated_at: updatedAt,
         })
-        .eq("id", user.id),
+        .eq("id", userId),
       supabase
         .from("private_profiles")
         .upsert(
-          { id: user.id, vat_number: data.vat_number || null, updated_at: updatedAt },
+          { id: userId, vat_number: data.vat_number || null, updated_at: updatedAt },
           { onConflict: "id" }
         ),
     ])
@@ -409,7 +411,7 @@ export async function upgradeToBusinessAccount(data: z.infer<typeof businessUpgr
       .from("business_verification")
       .upsert(
         {
-          seller_id: user.id,
+          seller_id: userId,
           legal_name: data.business_name,
           vat_number: data.vat_number || null,
           verification_level: 0,
@@ -463,6 +465,8 @@ export async function downgradeToPersonalAccount(): Promise<{
     // Uses service role for sensitive profile fields (account_type/tier/is_verified_business).
     const adminSupabase = createAdminClient()
 
+    const userId = user.id
+
     const { error: updateError } = await adminSupabase
       .from("profiles")
       .update({
@@ -471,7 +475,7 @@ export async function downgradeToPersonalAccount(): Promise<{
         tier: "free",
         updated_at: new Date().toISOString(),
       })
-      .eq("id", user.id)
+      .eq("id", userId)
     
     if (updateError) {
       console.error("downgradeToPersonalAccount error:", updateError)

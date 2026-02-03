@@ -6,6 +6,7 @@ import { TextAlignLeft, TextB, TextItalic, List } from "@phosphor-icons/react";
 import { Field, FieldLabel, FieldDescription, FieldError, FieldContent } from "@/components/shared/field";
 import { cn } from "@/lib/utils";
 import { useSellForm, useSellFormContext } from "../sell-form-provider";
+import { useTranslations } from "next-intl";
 
 // ============================================================================
 // DESCRIPTION FIELD - Rich text area for product description
@@ -33,6 +34,7 @@ export function DescriptionField({
 }: DescriptionFieldProps) {
   const { control, watch } = useSellForm();
   const { isBg } = useSellFormContext();
+  const tSell = useTranslations("Sell")
 
   const currentValue = watch("description") || "";
   const charCount = currentValue.length;
@@ -148,10 +150,9 @@ export function DescriptionField({
 
             {/* Error Message */}
             {fieldState.invalid && (
-              <FieldError
-                errors={[fieldState.error]}
-                className="mt-2"
-              />
+              <FieldError className="mt-2">
+                {fieldState.error?.message ? tSell(fieldState.error.message as never) : null}
+              </FieldError>
             )}
           </FieldContent>
         </Field>

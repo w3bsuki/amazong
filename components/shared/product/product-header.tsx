@@ -3,7 +3,7 @@
 import { useTranslations } from "next-intl";
 import { Truck } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { getConditionBadgeVariant, getConditionLabel } from "@/lib/utils";
+import { getConditionBadgeVariant } from "@/lib/utils";
 
 interface ProductHeaderProps {
   title: string;
@@ -29,6 +29,38 @@ export function ProductHeader({
   locale,
 }: ProductHeaderProps) {
   const t = useTranslations("Product");
+
+  const getConditionKey = (value: string): string | null => {
+    const normalized = value.toLowerCase().replace(/[\s_-]/g, "");
+    switch (normalized) {
+      case "new":
+        return "condition.new";
+      case "newwithtags":
+        return "condition.newWithTags";
+      case "newwithouttags":
+        return "condition.newWithoutTags";
+      case "likenew":
+      case "usedlikenew":
+        return "condition.likeNew";
+      case "usedexcellent":
+        return "condition.usedExcellent";
+      case "usedgood":
+        return "condition.usedGood";
+      case "usedfair":
+        return "condition.usedFair";
+      case "refurbished":
+      case "refurb":
+        return "condition.refurbished";
+      case "used":
+        return "condition.used";
+      case "good":
+        return "condition.good";
+      case "fair":
+        return "condition.fair";
+      default:
+        return null;
+    }
+  };
 
   const formatPrice = (p: number) =>
     new Intl.NumberFormat(locale === "bg" ? "bg-BG" : "en-IE", {
@@ -57,7 +89,10 @@ export function ProductHeader({
       <div className="flex items-center gap-1.5 flex-wrap pt-1">
         {condition && (
           <Badge variant={getConditionBadgeVariant(condition)}>
-            {getConditionLabel(condition)}
+            {(() => {
+              const key = getConditionKey(condition);
+              return key ? t(key) : condition;
+            })()}
           </Badge>
         )}
         {freeShipping && (

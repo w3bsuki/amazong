@@ -119,6 +119,7 @@ function SellFormContent({
 }) {
   const form = useSellForm();
   const { isBg, clearDraft, setCurrentStep, locale } = useSellFormContext();
+  const tSell = useTranslations("Sell");
   const tBoost = useTranslations("Boost");
   
   const [isPending, startTransition] = useTransition();
@@ -154,9 +155,18 @@ function SellFormContent({
 
         if (!result.success) {
           const issueMessages = result.issues
-            ?.map((i) => `${i.path.join(".")}: ${i.message}`)
+            ?.map((i) => {
+              const key = i.message
+              if (!key) return null
+              try {
+                return tSell(key as never)
+              } catch {
+                return key
+              }
+            })
+            .filter(Boolean)
             .join(", ")
-            .trim();
+            .trim()
 
           const baseError = result.message || result.error || "Failed to create listing";
           throw new Error(baseError + (issueMessages ? ` (${issueMessages})` : ""));

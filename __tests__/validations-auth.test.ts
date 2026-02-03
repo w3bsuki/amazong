@@ -7,12 +7,10 @@ import {
   getPasswordStrength,
   validatePassword,
   validateEmail,
-  getLocalizedPasswordErrors,
-  getLocalizedEmailErrors,
   RESERVED_USERNAMES
-} from '@/lib/validations/auth'
+} from '@/lib/validation/auth'
 
-describe('lib/validations/auth', () => {
+describe('lib/validation/auth', () => {
   describe('emailSchema', () => {
     it('accepts valid emails', () => {
       const validEmails = [
@@ -43,7 +41,7 @@ describe('lib/validations/auth', () => {
       const result = emailSchema.safeParse('')
       expect(result.success).toBe(false)
       if (!result.success) {
-        expect(result.error.issues[0].message).toBe('Email is required')
+        expect(result.error.issues[0].message).toBe('errors.emailRequired')
       }
     })
     
@@ -73,7 +71,7 @@ describe('lib/validations/auth', () => {
       const result = passwordSchema.safeParse('Pass1')
       expect(result.success).toBe(false)
       if (!result.success) {
-        expect(result.error.issues[0].message).toBe('Password must be at least 8 characters')
+        expect(result.error.issues[0].message).toBe('errors.passwordMin')
       }
     })
     
@@ -81,7 +79,7 @@ describe('lib/validations/auth', () => {
       const result = passwordSchema.safeParse('12345678')
       expect(result.success).toBe(false)
       if (!result.success) {
-        expect(result.error.issues.some(e => e.message.includes('letter'))).toBe(true)
+        expect(result.error.issues.some(e => e.message === 'errors.passwordLetter')).toBe(true)
       }
     })
     
@@ -89,7 +87,7 @@ describe('lib/validations/auth', () => {
       const result = passwordSchema.safeParse('abcdefgh')
       expect(result.success).toBe(false)
       if (!result.success) {
-        expect(result.error.issues.some(e => e.message.includes('number'))).toBe(true)
+        expect(result.error.issues.some(e => e.message === 'errors.passwordNumber')).toBe(true)
       }
     })
   })
@@ -244,49 +242,37 @@ describe('lib/validations/auth', () => {
         })
         expect(result.success).toBe(false)
         if (!result.success) {
-          expect(result.error.issues.some(e => e.message === 'Passwords do not match')).toBe(true)
+          expect(result.error.issues.some(e => e.message === 'passwordsDoNotMatch')).toBe(true)
         }
       })
     })
     
-    describe('account type', () => {
-      it('accepts personal account type', () => {
-        const result = signUpSchema.safeParse({ ...validSignUp, accountType: 'personal' })
-        expect(result.success).toBe(true)
-      })
-      
-      it('accepts business account type', () => {
-        const result = signUpSchema.safeParse({ ...validSignUp, accountType: 'business' })
-        expect(result.success).toBe(true)
-      })
-      
-      it('rejects invalid account type', () => {
-        const result = signUpSchema.safeParse({ ...validSignUp, accountType: 'invalid' })
-        expect(result.success).toBe(false)
-      })
+    it('ignores accountType (selected during onboarding)', () => {
+      const result = signUpSchema.safeParse({ ...validSignUp, accountType: 'invalid' })
+      expect(result.success).toBe(true)
     })
   })
   
   describe('getPasswordStrength', () => {
     it('returns Weak for very short passwords', () => {
       const result = getPasswordStrength('abc')
-      expect(result.label).toBe('Weak')
+      expect(result.labelKey).toBe('strengthWeak')
       expect(result.score).toBeLessThanOrEqual(2)
     })
     
     it('returns Fair for medium strength passwords', () => {
       const result = getPasswordStrength('password1')
-      expect(result.label).toBe('Fair')
+      expect(result.labelKey).toBe('strengthFair')
     })
     
     it('returns Good for good passwords', () => {
       const result = getPasswordStrength('Password123')
-      expect(result.label).toBe('Good')
+      expect(result.labelKey).toBe('strengthGood')
     })
     
     it('returns Strong for strong passwords', () => {
       const result = getPasswordStrength('Password123!')
-      expect(result.label).toBe('Strong')
+      expect(result.labelKey).toBe('strengthStrong')
     })
     
     it('includes correct color classes', () => {
@@ -306,103 +292,47 @@ describe('lib/validations/auth', () => {
   
   describe('validatePassword', () => {
     it('returns valid for good password', () => {
-      const result = validatePassword('Password1', 'en')
+      const result = validatePassword('Password1')
       expect(result.valid).toBe(true)
       expect(result.errors).toEqual([])
     })
     
-    it('returns errors for invalid password in English', () => {
-      const result = validatePassword('abc', 'en')
+    it('returns error keys for invalid password', () => {
+      const result = validatePassword('abc')
       expect(result.valid).toBe(false)
-      expect(result.errors).toContain('Password must be at least 8 characters')
-      expect(result.errors).toContain('Password must contain at least one number')
-    })
-    
-    it('returns errors for invalid password in Bulgarian', () => {
-      const result = validatePassword('abc', 'bg')
-      expect(result.valid).toBe(false)
-      expect(result.errors).toContain('Паролата трябва да е поне 8 символа')
-      expect(result.errors).toContain('Паролата трябва да съдържа поне една цифра')
+      expect(result.errors).toContain('errors.passwordMin')
+      expect(result.errors).toContain('errors.passwordNumber')
     })
     
     it('returns letter error when password has no letters', () => {
-      const result = validatePassword('12345678', 'en')
-      expect(result.errors).toContain('Password must contain at least one letter')
+      const result = validatePassword('12345678')
+      expect(result.errors).toContain('errors.passwordLetter')
     })
   })
   
   describe('validateEmail', () => {
     it('returns valid for good email', () => {
-      const result = validateEmail('test@example.com', 'en')
+      const result = validateEmail('test@example.com')
       expect(result.valid).toBe(true)
       expect(result.error).toBeNull()
     })
     
-    it('returns required error for empty email in English', () => {
-      const result = validateEmail('', 'en')
+    it('returns required error for empty email', () => {
+      const result = validateEmail('')
       expect(result.valid).toBe(false)
-      expect(result.error).toBe('Email is required')
+      expect(result.error).toBe('errors.emailRequired')
     })
     
-    it('returns required error for empty email in Bulgarian', () => {
-      const result = validateEmail('', 'bg')
+    it('returns invalid error for bad email', () => {
+      const result = validateEmail('invalid')
       expect(result.valid).toBe(false)
-      expect(result.error).toBe('Имейлът е задължителен')
-    })
-    
-    it('returns invalid error for bad email in English', () => {
-      const result = validateEmail('invalid', 'en')
-      expect(result.valid).toBe(false)
-      expect(result.error).toBe('Please enter a valid email address')
-    })
-    
-    it('returns invalid error for bad email in Bulgarian', () => {
-      const result = validateEmail('invalid', 'bg')
-      expect(result.valid).toBe(false)
-      expect(result.error).toBe('Моля, въведете валиден имейл адрес')
+      expect(result.error).toBe('errors.emailInvalid')
     })
     
     it('handles whitespace-only email', () => {
-      const result = validateEmail('   ', 'en')
+      const result = validateEmail('   ')
       expect(result.valid).toBe(false)
-      expect(result.error).toBe('Email is required')
-    })
-  })
-  
-  describe('getLocalizedPasswordErrors', () => {
-    it('returns English messages for en locale', () => {
-      const messages = getLocalizedPasswordErrors('en')
-      expect(messages.min).toBe('Password must be at least 8 characters')
-      expect(messages.letter).toBe('Password must contain at least one letter')
-      expect(messages.number).toBe('Password must contain at least one number')
-      expect(messages.match).toBe('Passwords do not match')
-    })
-    
-    it('returns Bulgarian messages for bg locale', () => {
-      const messages = getLocalizedPasswordErrors('bg')
-      expect(messages.min).toBe('Паролата трябва да е поне 8 символа')
-      expect(messages.letter).toBe('Паролата трябва да съдържа поне една буква')
-      expect(messages.number).toBe('Паролата трябва да съдържа поне една цифра')
-      expect(messages.match).toBe('Паролите не съвпадат')
-    })
-    
-    it('defaults to English for unknown locale', () => {
-      const messages = getLocalizedPasswordErrors('fr')
-      expect(messages.min).toBe('Password must be at least 8 characters')
-    })
-  })
-  
-  describe('getLocalizedEmailErrors', () => {
-    it('returns English messages for en locale', () => {
-      const messages = getLocalizedEmailErrors('en')
-      expect(messages.required).toBe('Email is required')
-      expect(messages.invalid).toBe('Please enter a valid email address')
-    })
-    
-    it('returns Bulgarian messages for bg locale', () => {
-      const messages = getLocalizedEmailErrors('bg')
-      expect(messages.required).toBe('Имейлът е задължителен')
-      expect(messages.invalid).toBe('Моля, въведете валиден имейл адрес')
+      expect(result.error).toBe('errors.emailRequired')
     })
   })
   

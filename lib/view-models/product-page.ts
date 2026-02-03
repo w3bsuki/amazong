@@ -15,13 +15,14 @@ export interface ResolvedHeroSpec {
 
 export interface GalleryImage {
   src: string;
-  alt: string;
+  altKey: string;
+  altParams: Record<string, string | number>;
   width: number;
   height: number;
 }
 
 export interface ItemSpecificDetail {
-  label: string;
+  key: string;
   value: string;
 }
 
@@ -112,7 +113,7 @@ function buildItemSpecificsDetails(attributes: unknown, condition?: string | nul
   
   // Condition comes from dedicated column only (not attributes JSONB)
   if (condition) {
-    details.push({ label: "Condition", value: condition });
+    details.push({ key: "condition", value: condition });
   }
 
   const attrs = toRecord(attributes);
@@ -120,8 +121,7 @@ function buildItemSpecificsDetails(attributes: unknown, condition?: string | nul
     if (value == null) continue;
     // Skip 'condition' from attributes - it's already shown from the dedicated column above
     if (key.toLowerCase() === 'condition') continue;
-    const label = key.replaceAll('_', " ").replaceAll(/\b\w/g, (c) => c.toUpperCase());
-    details.push({ label, value: String(value) });
+    details.push({ key, value: String(value) });
   }
 
   return details;
@@ -130,7 +130,8 @@ function buildItemSpecificsDetails(attributes: unknown, condition?: string | nul
 function buildGalleryImages(productTitle: string, images: string[]) {
   return images.map((src, idx) => ({
     src,
-    alt: `${productTitle} – image ${idx + 1}`,
+    altKey: "imageAlt",
+    altParams: { title: productTitle, index: idx + 1 },
     width: 1200,
     height: 1200,
   }));
@@ -234,7 +235,7 @@ export function buildProductPageViewModel(args: {
         : "https://schema.org/OutOfStock",
       seller: {
         "@type": "Organization",
-        name: seller?.display_name || seller?.username || "Seller",
+        name: sellerName,
         url: `${siteUrl}/${locale}/${seller?.username}`,
       },
       url: `${siteUrl}/${locale}/${username}/${productSlug}`,

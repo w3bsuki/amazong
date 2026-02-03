@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { stripe } from '@/lib/stripe'
 import { createRouteHandlerClient, createStaticClient } from '@/lib/supabase/server'
 import { eurToBgnApprox } from '@/lib/currency'
-import { isBoostActive } from '@/lib/boost/boost-status'
+import { isBoostActiveNow } from '@/lib/boost/boost-status'
 import { buildLocaleUrl } from '@/lib/stripe-locale'
 import { logError } from '@/lib/structured-log'
 import { getTranslations } from 'next-intl/server'
@@ -112,7 +112,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Check if already boosted
-    if (isBoostActive({ is_boosted: product.is_boosted, boost_expires_at: product.boost_expires_at })) {
+    if (isBoostActiveNow({ is_boosted: product.is_boosted, boost_expires_at: product.boost_expires_at })) {
       return json({ errorKey: 'errors.alreadyBoosted' }, { status: 400 })       
     }
 

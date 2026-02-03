@@ -17,6 +17,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useSellForm, useSellFormContext } from "../sell-form-provider";
 import { conditionOptions } from "@/lib/sell/schema-v4";
+import { useTranslations } from "next-intl";
 
 // ============================================================================
 // REVIEW FIELD - Final review step using context pattern
@@ -86,6 +87,7 @@ interface ReviewFieldProps {
 export function ReviewField({ onEditStep }: ReviewFieldProps) {
   const { watch } = useSellForm();
   const { isBg, setCurrentStep } = useSellFormContext();
+  const tSell = useTranslations("Sell")
   
   const formValues = watch();
   
@@ -130,7 +132,7 @@ export function ReviewField({ onEditStep }: ReviewFieldProps) {
   // Get condition label
   const conditionInfo = conditionOptions.find(c => c.value === condition);
   const conditionLabel = conditionInfo
-    ? (isBg ? conditionInfo.labelBg : conditionInfo.label)
+    ? tSell(conditionInfo.labelKey as never)
     : "";
 
   // Get currency symbol

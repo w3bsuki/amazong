@@ -41,6 +41,16 @@ export function DesktopSpecsAccordion({
   const [showAllSpecs, setShowAllSpecs] = useState(false)
   const [showFullDescription, setShowFullDescription] = useState(false)
 
+  const getSpecLabel = (key: string): string => {
+    if (key === "condition") {
+      return t("conditionLabel").replace(/:$/, "")
+    }
+
+    return key
+      .replaceAll("_", " ")
+      .replaceAll(/\b\w/g, (c) => c.toUpperCase())
+  }
+
   const keyFeatures = specifications.slice(0, keyFeaturesCount)
   const quickSpecs = specifications.slice(
     keyFeaturesCount,
@@ -67,13 +77,13 @@ export function DesktopSpecsAccordion({
               <ul className="space-y-2">
                 {keyFeatures.map((spec) => (
                   <li
-                    key={spec.label}
+                    key={spec.key}
                     className="flex items-start gap-2 text-sm"
                   >
                     <Check className="size-3.5 text-success shrink-0 mt-0.5" />
                     <span className="text-foreground text-xs">
                       <span className="text-muted-foreground">
-                        {spec.label}:
+                        {getSpecLabel(spec.key)}:
                       </span>{" "}
                       {spec.value}
                     </span>
@@ -92,10 +102,10 @@ export function DesktopSpecsAccordion({
               <div className="space-y-1.5">
                 {quickSpecs.map((spec) => (
                   <div
-                    key={spec.label}
+                    key={spec.key}
                     className="flex items-center justify-between text-xs py-1 border-b border-border/40 last:border-0"
                   >
-                    <span className="text-muted-foreground">{spec.label}</span>
+                    <span className="text-muted-foreground">{getSpecLabel(spec.key)}</span>
                     <span className="font-medium text-foreground">
                       {spec.value}
                     </span>
@@ -171,14 +181,14 @@ export function DesktopSpecsAccordion({
               : specifications.slice(0, keyFeaturesCount + quickSpecsCount)
             ).map((spec, i) => (
               <div
-                key={spec.label}
+                key={spec.key}
                 className={cn(
                   "flex items-center justify-between px-6 py-3 text-sm",
                   i % 2 === 0 ? "bg-card" : "bg-surface-subtle",
                   "border-b border-border/50 last:border-0"
                 )}
               >
-                <span className="text-muted-foreground">{spec.label}</span>
+                <span className="text-muted-foreground">{getSpecLabel(spec.key)}</span>
                 <span className="font-medium text-foreground">{spec.value}</span>
               </div>
             ))}

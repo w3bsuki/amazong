@@ -2,11 +2,11 @@
 
 import { useRef } from "react"
 import type { CategoryTreeNode } from "@/lib/category-tree"
-import { getCategoryShortName, getCategoryName } from "@/lib/category-display"
+import { getCategoryName, getCategorySlugKey } from "@/lib/category-display"
 import { CategoryCircle } from "@/components/shared/category/category-circle"
 import { X, CaretLeft, SquaresFour } from "@phosphor-icons/react"
 import { cn } from "@/lib/utils"
-import { getCategoryIcon } from "@/lib/category-icons"
+import { getCategoryIcon } from "@/components/shared/category/category-icons"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useTranslations } from "next-intl"
 
@@ -78,6 +78,7 @@ export function CategoryCircles({
 }: CategoryCirclesProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const tCommon = useTranslations("Common")
+  const tCategories = useTranslations("Categories")
 
   // When circlesNavigateToPages is true, circles become Link elements for SEO + prefetch.
   // This gives us proper loading.tsx skeleton states during navigation.
@@ -226,7 +227,7 @@ export function CategoryCircles({
               fallbackIconWeight="bold"
               variant="colorful"
               preferIcon={preferIcon}
-              label={getCategoryShortName(sub, locale)}
+              label={tCategories("shortName", { slug: getCategorySlugKey(sub.slug), name: getCategoryName(sub, locale) })}
               className="flex-none w-(--spacing-category-item-lg)"
               labelClassName={cn(
                 "w-full text-2xs text-center leading-tight line-clamp-1 truncate px-0 mt-0.5",

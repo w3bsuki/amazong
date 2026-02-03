@@ -3,6 +3,18 @@ node_modules/
 .pnpm-store/
 .vscode/
 
+# AI/IDE tool folders (do not commit)
+.agent/
+.agents/
+.claude/
+.cursor/
+.gemini/
+.kiro/
+.qoder/
+.qwen/
+.trae/
+.windsurf/
+
 # next.js
 .next/
 out/
@@ -61,6 +73,7 @@ tsc-report.txt
 
 # Agent temp files (should not be committed)
 .codex/_write_test.txt
+.codex/locks/
 dev-e2e.log
 e2e.log
 temp-tradesphere-audit/

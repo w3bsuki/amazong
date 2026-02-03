@@ -7,6 +7,7 @@ import { Field, FieldLabel, FieldDescription, FieldError, FieldContent } from "@
 import { cn } from "@/lib/utils";
 import { conditionOptions } from "@/lib/sell/schema-v4";
 import { useSellForm, useSellFormContext } from "../sell-form-provider";
+import { useTranslations } from "next-intl";
 import {
   Drawer,
   DrawerContent,
@@ -32,6 +33,7 @@ export function ConditionField({ className, compact = false }: ConditionFieldPro
   const { control } = useSellForm();
   const { isBg } = useSellFormContext();
   const [isOpen, setIsOpen] = useState(false);
+  const tSell = useTranslations("Sell")
 
   return (
     <Controller
@@ -39,7 +41,7 @@ export function ConditionField({ className, compact = false }: ConditionFieldPro
       control={control}
       render={({ field, fieldState }) => {
         const selectedOption = conditionOptions.find(opt => opt.value === field.value);
-        const selectedLabel = selectedOption ? (isBg ? selectedOption.labelBg : selectedOption.label) : null;
+        const selectedLabel = selectedOption ? tSell(selectedOption.labelKey as never) : null;
 
         return (
           <Field data-invalid={fieldState.invalid} className={className}>
@@ -124,7 +126,7 @@ export function ConditionField({ className, compact = false }: ConditionFieldPro
                     <div className="p-4 space-y-3 max-h-dialog-sm overflow-y-auto" data-vaul-no-drag>
                       {conditionOptions.map((option) => {
                         const isSelected = field.value === option.value;
-                        const label = isBg ? option.labelBg : option.label;
+                        const label = tSell(option.labelKey as never);
 
                         return (
                           <button
@@ -178,7 +180,7 @@ export function ConditionField({ className, compact = false }: ConditionFieldPro
                 <div className="grid gap-2.5 grid-cols-2 sm:grid-cols-3">
                   {conditionOptions.map((option) => {
                     const isSelected = field.value === option.value;
-                    const label = isBg ? option.labelBg : option.label;
+                    const label = tSell(option.labelKey as never);
 
                     return (
                       <button
@@ -205,10 +207,9 @@ export function ConditionField({ className, compact = false }: ConditionFieldPro
 
               {/* Error Message */}
               {fieldState.invalid && (
-                <FieldError
-                  errors={[fieldState.error]}
-                  className="mt-3"
-                />
+                <FieldError className="mt-3">
+                  {fieldState.error?.message ? tSell(fieldState.error.message as never) : null}
+                </FieldError>
               )}
             </FieldContent>
           </Field>

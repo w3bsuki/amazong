@@ -2,14 +2,13 @@
 
 import type { ChangeEvent } from "react";
 import { useTranslations } from "next-intl";
-import { ArrowLeft, Check, MapPin, SpinnerGap, WarningCircle } from "@phosphor-icons/react";
+import { ArrowLeft, Check, MapPin, SpinnerGap } from "@phosphor-icons/react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
+import { AddressFormFields } from "../../_components/address-form";
 import type { NewAddressForm, SavedAddress } from "./checkout-types";
 
 interface AddressSectionProps {
@@ -180,141 +179,100 @@ export function AddressSection({
         </button>
       )}
 
-      <div className="grid grid-cols-2 gap-3">
-        <div className="space-y-1.5">
-          <Label htmlFor="firstName" className="text-sm font-medium">
-            {t("firstName")} <span className="text-destructive">*</span>
-          </Label>
-          <Input
-            id="firstName"
-            placeholder={t("firstNamePlaceholder")}
-            value={newAddress.firstName}
-            onChange={updateNewAddress("firstName")}
-            onBlur={handleBlur("firstName")}
-            className={cn(touched.firstName && errors.firstName && "border-destructive")}
-            aria-invalid={!!(touched.firstName && errors.firstName)}
-            aria-describedby={errors.firstName ? "firstName-error" : undefined}
-          />
-          {touched.firstName && errors.firstName && (
-            <p id="firstName-error" className="text-xs text-destructive flex items-center gap-1">
-              <WarningCircle className="size-3.5 shrink-0" weight="fill" />
-              <span>{errors.firstName}</span>
-            </p>
-          )}
-        </div>
-
-        <div className="space-y-1.5">
-          <Label htmlFor="lastName" className="text-sm font-medium">
-            {t("lastName")} <span className="text-destructive">*</span>
-          </Label>
-          <Input
-            id="lastName"
-            placeholder={t("lastNamePlaceholder")}
-            value={newAddress.lastName}
-            onChange={updateNewAddress("lastName")}
-            onBlur={handleBlur("lastName")}
-            className={cn(touched.lastName && errors.lastName && "border-destructive")}
-            aria-invalid={!!(touched.lastName && errors.lastName)}
-            aria-describedby={errors.lastName ? "lastName-error" : undefined}
-          />
-          {touched.lastName && errors.lastName && (
-            <p id="lastName-error" className="text-xs text-destructive flex items-center gap-1">
-              <WarningCircle className="size-3.5 shrink-0" weight="fill" />
-              <span>{errors.lastName}</span>
-            </p>
-          )}
-        </div>
-      </div>
-
-      <div className="space-y-1.5">
-        <Label htmlFor="address" className="text-sm font-medium">
-          {t("address")} <span className="text-destructive">*</span>
-        </Label>
-        <Input
-          id="address"
-          placeholder={t("addressPlaceholder")}
-          value={newAddress.address}
-          onChange={updateNewAddress("address")}
-          onBlur={handleBlur("address")}
-          className={cn(touched.address && errors.address && "border-destructive")}
-          aria-invalid={!!(touched.address && errors.address)}
-          aria-describedby={errors.address ? "address-error" : undefined}
-        />
-        {touched.address && errors.address && (
-          <p id="address-error" className="text-xs text-destructive flex items-center gap-1">
-            <WarningCircle className="size-3.5 shrink-0" weight="fill" />
-            <span>{errors.address}</span>
-          </p>
-        )}
-      </div>
-
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-        <div className="space-y-1.5">
-          <Label htmlFor="city" className="text-sm font-medium">
-            {t("city")} <span className="text-destructive">*</span>
-          </Label>
-          <Input
-            id="city"
-            placeholder={t("cityPlaceholder")}
-            value={newAddress.city}
-            onChange={updateNewAddress("city")}
-            onBlur={handleBlur("city")}
-            className={cn(touched.city && errors.city && "border-destructive")}
-            aria-invalid={!!(touched.city && errors.city)}
-            aria-describedby={errors.city ? "city-error" : undefined}
-          />
-          {touched.city && errors.city && (
-            <p id="city-error" className="text-xs text-destructive flex items-center gap-1">
-              <WarningCircle className="size-3.5 shrink-0" weight="fill" />
-              <span>{errors.city}</span>
-            </p>
-          )}
-        </div>
-
-        <div className="space-y-1.5">
-          <Label htmlFor="state" className="text-sm font-medium">
-            {t("state")} <span className="text-destructive">*</span>
-          </Label>
-          <Input
-            id="state"
-            placeholder={t("statePlaceholder")}
-            value={newAddress.state}
-            onChange={updateNewAddress("state")}
-            onBlur={handleBlur("state")}
-            className={cn(touched.state && errors.state && "border-destructive")}
-            aria-invalid={!!(touched.state && errors.state)}
-            aria-describedby={errors.state ? "state-error" : undefined}
-          />
-          {touched.state && errors.state && (
-            <p id="state-error" className="text-xs text-destructive flex items-center gap-1">
-              <WarningCircle className="size-3.5 shrink-0" weight="fill" />
-              <span>{errors.state}</span>
-            </p>
-          )}
-        </div>
-
-        <div className="space-y-1.5">
-          <Label htmlFor="zip" className="text-sm font-medium">
-            {t("zipCode")} <span className="text-destructive">*</span>
-          </Label>
-          <Input
-            id="zip"
-            placeholder={t("zipPlaceholder")}
-            value={newAddress.zip}
-            onChange={updateNewAddress("zip")}
-            onBlur={handleBlur("zip")}
-            className={cn(touched.zip && errors.zip && "border-destructive")}
-            aria-invalid={!!(touched.zip && errors.zip)}
-            aria-describedby={errors.zip ? "zip-error" : undefined}
-          />
-          {touched.zip && errors.zip && (
-            <p id="zip-error" className="text-xs text-destructive flex items-center gap-1">
-              <WarningCircle className="size-3.5 shrink-0" weight="fill" />
-              <span>{errors.zip}</span>
-            </p>
-          )}
-        </div>
-      </div>
+      <AddressFormFields
+        nameFields={[
+          {
+            id: "firstName",
+            label: (
+              <>
+                {t("firstName")} <span className="text-destructive">*</span>
+              </>
+            ),
+            placeholder: t("firstNamePlaceholder"),
+            value: newAddress.firstName,
+            onChange: updateNewAddress("firstName"),
+            onBlur: handleBlur("firstName"),
+            error: errors.firstName,
+            touched: touched.firstName,
+            required: true,
+          },
+          {
+            id: "lastName",
+            label: (
+              <>
+                {t("lastName")} <span className="text-destructive">*</span>
+              </>
+            ),
+            placeholder: t("lastNamePlaceholder"),
+            value: newAddress.lastName,
+            onChange: updateNewAddress("lastName"),
+            onBlur: handleBlur("lastName"),
+            error: errors.lastName,
+            touched: touched.lastName,
+            required: true,
+          },
+        ]}
+        addressLine1={{
+          id: "address",
+          label: (
+            <>
+              {t("address")} <span className="text-destructive">*</span>
+            </>
+          ),
+          placeholder: t("addressPlaceholder"),
+          value: newAddress.address,
+          onChange: updateNewAddress("address"),
+          onBlur: handleBlur("address"),
+          error: errors.address,
+          touched: touched.address,
+          required: true,
+        }}
+        city={{
+          id: "city",
+          label: (
+            <>
+              {t("city")} <span className="text-destructive">*</span>
+            </>
+          ),
+          placeholder: t("cityPlaceholder"),
+          value: newAddress.city,
+          onChange: updateNewAddress("city"),
+          onBlur: handleBlur("city"),
+          error: errors.city,
+          touched: touched.city,
+          required: true,
+        }}
+        state={{
+          id: "state",
+          label: (
+            <>
+              {t("state")} <span className="text-destructive">*</span>
+            </>
+          ),
+          placeholder: t("statePlaceholder"),
+          value: newAddress.state,
+          onChange: updateNewAddress("state"),
+          onBlur: handleBlur("state"),
+          error: errors.state,
+          touched: touched.state,
+          required: true,
+        }}
+        postalCode={{
+          id: "zip",
+          label: (
+            <>
+              {t("zipCode")} <span className="text-destructive">*</span>
+            </>
+          ),
+          placeholder: t("zipPlaceholder"),
+          value: newAddress.zip,
+          onChange: updateNewAddress("zip"),
+          onBlur: handleBlur("zip"),
+          error: errors.zip,
+          touched: touched.zip,
+          required: true,
+        }}
+      />
     </div>
   );
 }

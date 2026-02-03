@@ -1,3 +1,5 @@
+import "server-only"
+
 type AiProvider = "google" | "openai" | "groq" | "gateway"
 
 function getEnv(key: string): string | undefined {
@@ -53,4 +55,3 @@ export function parseAiModelSpec(spec: string): { provider: AiProvider; modelId:
 
   return { provider, modelId }
 }
-

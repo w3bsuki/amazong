@@ -5,6 +5,8 @@
  * - English locale: €29.99 (symbol before, dot decimal)
  */
 
+import { formatCurrencyAmount, formatEurPriceParts } from "./price-formatting"
+
 export type SupportedLocale = 'en' | 'bg'
 
 /** BGN/EUR fixed exchange rate (Bulgarian Lev pegged to Euro) */
@@ -43,15 +45,7 @@ export function getCurrencyCode(locale: string): string {
  * - bg: 299,99 € (Bulgarian format for EUR)
  */
 export function formatPrice(amount: number, locale: string): string {
-  const currency = getCurrencyCode(locale)
-  
-  // Use en-IE (Irish English) for English locale to get proper EUR formatting
-  return new Intl.NumberFormat(locale === 'bg' ? 'bg-BG' : 'en-IE', {
-    style: 'currency',
-    currency,
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2
-  }).format(amount)
+  return formatCurrencyAmount(amount, locale, getCurrencyCode(locale), { showSymbol: true })
 }
 
 /**
@@ -65,57 +59,11 @@ export interface PriceParts {
 }
 
 export function formatPriceParts(amount: number, locale: string): PriceParts {
-  const symbol = '€' // Always EUR
-  const isBulgarian = locale === 'bg'
-  
-  const wholePart = Math.floor(amount).toString()
-  const decimalPart = (amount % 1).toFixed(2).slice(2) // Get .XX part without leading dot
-  
+  const parts = formatEurPriceParts(amount, locale)
   return {
-    symbol,
-    wholePart: isBulgarian ? wholePart.replaceAll(/\B(?=(\d{3})+(?!\d))/g, ' ') : wholePart,
-    decimalPart,
-    symbolPosition: isBulgarian ? 'after' : 'before'
+    symbol: parts.symbol,
+    wholePart: parts.wholePart,
+    decimalPart: parts.decimalPart,
+    symbolPosition: parts.symbolPosition,
   }
-}
-
-/**
- * Format a date according to locale conventions
- */
-export function formatDeliveryDate(date: Date, locale: string): string {
-  const options: Intl.DateTimeFormatOptions = {
-    weekday: 'long',
-    month: 'long',
-    day: 'numeric'
-  }
-  
-  return new Intl.DateTimeFormat(locale === 'bg' ? 'bg-BG' : 'en-US', options).format(date)
-}
-
-/**
- * Get an estimated delivery date (e.g., 3 business days from now)
- */
-export function getEstimatedDeliveryDate(businessDays: number = 1): Date {
-  const date = new Date()
-  let addedDays = 0
-  
-  while (addedDays < businessDays) {
-    date.setDate(date.getDate() + 1)
-    const dayOfWeek = date.getDay()
-    // Skip weekends (0 = Sunday, 6 = Saturday)
-    if (dayOfWeek !== 0 && dayOfWeek !== 6) {
-      addedDays++
-    }
-  }
-  
-  return date
-}
-
-/**
- * Format a number according to locale conventions
- * - en: 1,000.50
- * - bg: 1 000,50
- */
-function formatNumber(value: number, locale: string): string {
-  return new Intl.NumberFormat(locale === 'bg' ? 'bg-BG' : 'en-US').format(value)
 }

@@ -7,23 +7,23 @@ import { z } from "zod";
 
 // Condition options - clear labels
 export const conditionOptions = [
-	{ value: "new-with-tags", label: "New with tags", labelBg: "Ново с етикети", description: "Brand new, never worn, original tags attached" },
-	{ value: "new-without-tags", label: "New without tags", labelBg: "Ново без етикети", description: "Brand new, never worn, tags removed" },
-	{ value: "used-like-new", label: "Like new", labelBg: "Като ново", description: "Worn once or twice, no visible signs of wear" },
-	{ value: "used-excellent", label: "Used - Excellent", labelBg: "Използвано - Отлично", description: "Gently used, minimal signs of wear" },
-	{ value: "used-good", label: "Used - Good", labelBg: "Използвано - Добро", description: "Used with some signs of wear" },
-	{ value: "used-fair", label: "Used - Fair", labelBg: "Използвано - Задоволително", description: "Visible wear, may have minor flaws" },
+	{ value: "new-with-tags", labelKey: "conditions.newWithTags.label", descriptionKey: "conditions.newWithTags.description" },
+	{ value: "new-without-tags", labelKey: "conditions.newWithoutTags.label", descriptionKey: "conditions.newWithoutTags.description" },
+	{ value: "used-like-new", labelKey: "conditions.usedLikeNew.label", descriptionKey: "conditions.usedLikeNew.description" },
+	{ value: "used-excellent", labelKey: "conditions.usedExcellent.label", descriptionKey: "conditions.usedExcellent.description" },
+	{ value: "used-good", labelKey: "conditions.usedGood.label", descriptionKey: "conditions.usedGood.description" },
+	{ value: "used-fair", labelKey: "conditions.usedFair.label", descriptionKey: "conditions.usedFair.description" },
 ] as const;
 
 export const formatOptions = [
-	{ value: "fixed", label: "Fixed Price", labelBg: "Фиксирана цена", icon: "Tag", description: "Buy it now" },
-	{ value: "auction", label: "Auction", labelBg: "Търг", icon: "Gavel", description: "Accept bids" },
+	{ value: "fixed", labelKey: "formats.fixed.label", descriptionKey: "formats.fixed.description", icon: "Tag" },
+	{ value: "auction", labelKey: "formats.auction.label", descriptionKey: "formats.auction.description", icon: "Gavel" },
 ] as const;
 
 // Image with metadata
 export const imageSchema = z.object({
-	url: z.string().url("Invalid image URL"),
-	thumbnailUrl: z.string().url("Invalid thumbnail URL").optional(),
+	url: z.string().url("validation.invalidImageUrl"),
+	thumbnailUrl: z.string().url("validation.invalidThumbnailUrl").optional(),
 	isPrimary: z.boolean().optional().default(false),
 });
 
@@ -32,8 +32,8 @@ export type ProductImage = z.infer<typeof imageSchema>;
 // Attribute for Item Specifics
 export const attributeSchema = z.object({
 	attributeId: z.string().uuid().nullable().optional(),
-	name: z.string().min(1, "Attribute name is required"),
-	value: z.string().min(1, "Attribute value is required"),
+	name: z.string().min(1, "validation.attributeNameRequired"),
+	value: z.string().min(1, "validation.attributeValueRequired"),
 	isCustom: z.boolean().default(false),
 });
 
@@ -52,17 +52,17 @@ export const sellFormSchemaV4 = z.object({
 	// ========== PHOTOS (Required) ==========
 	images: z
 		.array(imageSchema)
-		.min(1, "Add at least 1 photo to continue")
-		.max(12, "Maximum 12 photos allowed"),
+		.min(1, "validation.photosRequired")
+		.max(12, "validation.photosMax"),
 
 	// ========== BASIC INFO ==========
 	title: z
 		.string()
-		.min(5, "Title needs at least 5 characters")
-		.max(80, "Title can't exceed 80 characters")
-		.refine((val) => !/[<>{}[\]\\]/.test(val), "Title contains invalid characters"),
+		.min(5, "validation.titleMin")
+		.max(80, "validation.titleMax")
+		.refine((val) => !/[<>{}[\]\\]/.test(val), "validation.titleInvalidCharacters"),
 
-	categoryId: z.string().min(1, "Please select a category"),
+	categoryId: z.string().min(1, "validation.categoryRequired"),
 
 	categoryPath: z
 		.array(
@@ -86,15 +86,15 @@ export const sellFormSchemaV4 = z.object({
 		"used-good",
 		"used-fair",
 	], {
-		error: "Please select condition",
+		error: "validation.conditionRequired",
 	}),
 
 	// ========== DESCRIPTION ==========
 	description: z.string()
-		.min(1, "Description is required")
-		.max(4000, "Description can't exceed 4,000 characters")
+		.min(1, "validation.descriptionRequired")
+		.max(4000, "validation.descriptionMax")
 		.refine((val) => val.trim().length >= 50, {
-			message: "Description must be at least 50 characters",
+			message: "validation.descriptionMin",
 		})
 		.default(""),
 
@@ -106,22 +106,22 @@ export const sellFormSchemaV4 = z.object({
 
 	price: z
 		.string()
-		.min(1, "Enter a price")
-		.refine((val) => !isNaN(Number.parseFloat(val)) && Number.parseFloat(val) > 0, "Enter a valid price greater than 0")
-		.refine((val) => Number.parseFloat(val) <= 999999.99, "Price can't exceed 999,999.99"),
+		.min(1, "validation.priceRequired")
+		.refine((val) => !isNaN(Number.parseFloat(val)) && Number.parseFloat(val) > 0, "validation.priceInvalid")
+		.refine((val) => Number.parseFloat(val) <= 999999.99, "validation.priceMax"),
 
 	currency: z.enum(["EUR"]).default("EUR"), // Bulgaria joined Eurozone Jan 1, 2025
 
 	compareAtPrice: z
 		.string()
 		.optional()
-		.refine((val) => !val || (!isNaN(Number.parseFloat(val)) && Number.parseFloat(val) > 0), "Invalid compare price"),
+		.refine((val) => !val || (!isNaN(Number.parseFloat(val)) && Number.parseFloat(val) > 0), "validation.compareAtInvalid"),
 
 	quantity: z.coerce
 		.number()
-		.int("Quantity must be a whole number")
-		.min(1, "Quantity must be at least 1")
-		.max(9999, "Quantity can't exceed 9,999")
+		.int("validation.quantityInteger")
+		.min(1, "validation.quantityMin")
+		.max(9999, "validation.quantityMax")
 		.default(1),
 
 	acceptOffers: z.boolean().default(false),
@@ -141,7 +141,7 @@ export const sellFormSchemaV4 = z.object({
 	shippingPrice: z
 		.string()
 		.optional()
-		.refine((val) => !val || (!isNaN(Number.parseFloat(val)) && Number.parseFloat(val) >= 0), "Invalid shipping price"),
+		.refine((val) => !val || (!isNaN(Number.parseFloat(val)) && Number.parseFloat(val) >= 0), "validation.shippingPriceInvalid"),
 
 	freeShipping: z.boolean().default(false),
 
@@ -150,7 +150,7 @@ export const sellFormSchemaV4 = z.object({
 	processingDays: z.coerce.number().min(1).max(30).default(3),
 
 	// ========== TAGS ==========
-	tags: z.array(z.string()).max(10, "Maximum 10 tags").default([]),
+	tags: z.array(z.string()).max(10, "validation.tagsMax").default([]),
 }).superRefine((data, ctx) => {
 	// Discount sanity: compare-at price must be higher than the active price.
 	if (!data.compareAtPrice) return;
@@ -164,7 +164,7 @@ export const sellFormSchemaV4 = z.object({
 		ctx.addIssue({
 			code: z.ZodIssueCode.custom,
 			path: ["compareAtPrice"],
-			message: "Compare at price must be higher than your price",
+			message: "validation.compareAtMustBeHigher",
 		});
 	}
 });
@@ -213,8 +213,7 @@ export const defaultSellFormValuesV4: SellFormDataV4 = {
 // ============================================================================
 export interface ProgressItem {
 	key: string;
-	label: string;
-	labelBg: string;
+	labelKey: string;
 	completed: boolean;
 	required: boolean;
 }
@@ -227,50 +226,43 @@ export function calculateFormProgress(data: Partial<SellFormDataV4>): {
 	const items: ProgressItem[] = [
 		{
 			key: "photos",
-			label: "Add photos",
-			labelBg: "Добави снимки",
+			labelKey: "checklistSidebar.items.photos",
 			completed: (data.images?.length ?? 0) > 0,
 			required: true,
 		},
 		{
 			key: "title",
-			label: "Write title",
-			labelBg: "Напиши заглавие",
+			labelKey: "checklistSidebar.items.title",
 			completed: (data.title?.length ?? 0) >= 5,
 			required: true,
 		},
 		{
 			key: "category",
-			label: "Select category",
-			labelBg: "Избери категория",
+			labelKey: "checklistSidebar.items.category",
 			completed: !!data.categoryId && data.categoryId.length > 0,
 			required: true,
 		},
 		{
 			key: "condition",
-			label: "Choose condition",
-			labelBg: "Избери състояние",
+			labelKey: "checklistSidebar.items.condition",
 			completed: !!data.condition,
 			required: true,
 		},
 		{
 			key: "price",
-			label: "Set price",
-			labelBg: "Задай цена",
+			labelKey: "checklistSidebar.items.price",
 			completed: !!data.price && Number.parseFloat(data.price) > 0,
 			required: true,
 		},
 		{
 			key: "description",
-			label: "Add description",
-			labelBg: "Добави описание",
+			labelKey: "checklistSidebar.items.description",
 			completed: (data.description?.trim().length ?? 0) >= 50,
 			required: true,
 		},
 		{
 			key: "shipping",
-			label: "Configure shipping",
-			labelBg: "Настрой доставка",
+			labelKey: "checklistSidebar.items.shipping",
 			completed: !!(
 				data.shipsToBulgaria ||
 				data.shipsToUK ||
@@ -290,16 +282,4 @@ export function calculateFormProgress(data: Partial<SellFormDataV4>): {
 	const nextStep = items.find((i) => i.required && !i.completed) || null;
 
 	return { percentage, items, nextStep };
-}
-
-// ============================================================================
-// VALIDATION HELPERS
-// ============================================================================
-function getFieldError(errors: Record<string, string[] | undefined>, field: string): string | undefined {
-	return errors[field]?.[0];
-}
-
-function isFormValid(data: Partial<SellFormDataV4>): boolean {
-	const { percentage } = calculateFormProgress(data);
-	return percentage === 100;
 }

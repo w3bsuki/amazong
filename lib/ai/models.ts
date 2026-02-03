@@ -1,3 +1,5 @@
+import "server-only"
+
 import { createGateway } from "ai"
 import { google } from "@ai-sdk/google"
 import { openai } from "@ai-sdk/openai"
@@ -56,4 +58,3 @@ export function getAiFallbackModel() {
 export function getAiVisionModel() {
   return getModelFromSpec(getAiVisionModelSpec())
 }
-

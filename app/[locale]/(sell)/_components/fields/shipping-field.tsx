@@ -24,6 +24,7 @@ import { cn } from "@/lib/utils";
 import { useSellForm, useSellFormContext } from "../sell-form-provider";
 import { BULGARIAN_CITIES } from "@/lib/bulgarian-cities";
 import { SelectDrawer } from "../ui/select-drawer";
+import { useTranslations } from "next-intl";
 
 // ============================================================================
 // Shipping Regions Configuration - V1: Bulgaria only (Cash on Delivery)
@@ -238,6 +239,7 @@ interface ShippingFieldProps {
 export function ShippingField({ className, compact = false }: ShippingFieldProps) {
   const { setValue, watch } = useSellForm();
   const { isBg } = useSellFormContext();
+  const tSell = useTranslations("Sell")
 
   const [isCityDrawerOpen, setIsCityDrawerOpen] = useState(false);
   const [isProcessingDrawerOpen, setIsProcessingDrawerOpen] = useState(false);
@@ -300,7 +302,9 @@ export function ShippingField({ className, compact = false }: ShippingFieldProps
           ))}
         </div>
         {hasError && (
-          <FieldError errors={[{ message: isBg ? "Изберете поне един регион" : "Select at least one region" }]} />
+          <FieldError>
+            {tSell("validation.shippingRegionRequired" as never)}
+          </FieldError>
         )}
       </div>
 

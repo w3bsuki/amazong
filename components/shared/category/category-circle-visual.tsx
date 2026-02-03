@@ -1,7 +1,7 @@
 import * as React from "react"
 
 import { cn } from "@/lib/utils"
-import { getCategoryIcon, getCategoryColor, type IconSize } from "@/lib/category-icons"
+import { getCategoryIcon, getCategoryColor, type IconSize } from "@/components/shared/category/category-icons"
 import { PLACEHOLDER_IMAGE_PATH } from "@/lib/normalize-image-url"
 
 type CategoryLike = {

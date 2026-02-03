@@ -15,6 +15,7 @@ import { useTranslations } from "next-intl"
 import { useDrawer, type QuickViewProduct } from "@/components/providers/drawer-context"
 import { useWishlist } from "@/components/providers/wishlist-context"
 import type { UIProduct } from "@/lib/data/products"
+import { isBoostActiveNow } from "@/lib/boost/boost-status"
 
 // =============================================================================
 // TYPES
@@ -45,6 +46,11 @@ export function HorizontalProductCard({
   const discountPercent = hasDiscount
     ? Math.round(((listPrice - product.price) / listPrice) * 100)
     : 0
+  const isBoostedActive = product.isBoosted
+    ? product.boostExpiresAt
+      ? isBoostActiveNow({ is_boosted: true, boost_expires_at: product.boostExpiresAt })
+      : true
+    : false
   const href = product.storeSlug && product.slug
     ? `/${product.storeSlug}/${product.slug}`
     : `/product/${product.id}`
@@ -118,7 +124,7 @@ export function HorizontalProductCard({
       {/* Product Image */}
       <div className="relative aspect-square rounded-(--radius-card) overflow-hidden bg-muted mb-2">
         {/* AD badge - top left for boosted listings */}
-        {product.isBoosted && (
+        {isBoostedActive && (
           <Badge
             variant="promoted"
             className="absolute top-1.5 left-1.5 z-10"
@@ -132,7 +138,7 @@ export function HorizontalProductCard({
             variant="deal"
             className={cn(
               "absolute left-1.5 z-10 text-2xs font-bold",
-              product.isBoosted ? "top-8" : "top-1.5"
+              isBoostedActive ? "top-8" : "top-1.5"
             )}
           >
             -{discountPercent}%

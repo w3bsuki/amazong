@@ -9,6 +9,7 @@ import {
 import { Badge } from "@/components/ui/badge"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import Image from "next/image"
+import { formatCurrency } from "@/app/[locale]/_lib/format-currency"
 
 interface RecentProduct {
   id: string
@@ -41,14 +42,6 @@ interface BusinessRecentActivityProps {
 }
 
 export function BusinessRecentActivity({ products, orders }: BusinessRecentActivityProps) {
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'BGN',
-      maximumFractionDigits: 2,
-    }).format(value)
-  }
-
   const getStatusColor = (status: string | null) => {
     switch (status) {
       case 'active':
@@ -102,7 +95,7 @@ export function BusinessRecentActivity({ products, orders }: BusinessRecentActiv
                     </div>
                     <div className="flex flex-col items-end gap-1">
                       <span className="text-sm font-medium text-success">
-                        {formatCurrency(product.price)}
+                        {formatCurrency(product.price, { locale: "en-US", maximumFractionDigits: 2 })}
                       </span>
                       <Badge variant="outline" className={`text-xs ${getStatusColor(product.status)}`}>
                         {product.status || 'active'}
@@ -156,7 +149,7 @@ export function BusinessRecentActivity({ products, orders }: BusinessRecentActiv
                         </p>
                       </div>
                       <div className="text-sm font-medium tabular-nums">
-                        {formatCurrency(order.price_at_purchase * order.quantity)}
+                        {formatCurrency(order.price_at_purchase * order.quantity, { locale: "en-US", maximumFractionDigits: 2 })}
                       </div>
                     </div>
                   )

@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Field, FieldLabel, FieldDescription, FieldError, FieldContent } from "@/components/shared/field";
 import { cn } from "@/lib/utils";
 import { useSellForm, useSellFormContext } from "../sell-form-provider";
+import { useTranslations } from "next-intl";
 
 // ============================================================================
 // TITLE FIELD - Product title input with character count
@@ -35,6 +36,7 @@ export function TitleField({
 }: TitleFieldProps) {
   const { control, watch } = useSellForm();
   const { isBg } = useSellFormContext();
+  const tSell = useTranslations("Sell")
 
   const currentValue = watch("title") || "";
   const charCount = currentValue.length;
@@ -121,10 +123,9 @@ export function TitleField({
 
             {/* Error Message */}
             {fieldState.invalid && (
-              <FieldError
-                errors={[fieldState.error]}
-                className="mt-form-sm"
-              />
+              <FieldError className="mt-form-sm">
+                {fieldState.error?.message ? tSell(fieldState.error.message as never) : null}
+              </FieldError>
             )}
           </FieldContent>
         </Field>

@@ -34,6 +34,7 @@
 - Active tasks: [.codex/TASKS.md](.codex/TASKS.md)
 - Shipped log: [.codex/SHIPPED.md](.codex/SHIPPED.md)
 - Decisions: [.codex/DECISIONS.md](.codex/DECISIONS.md)
+- Refactor workspace: [.codex/refactor/](.codex/refactor/)
 
 ## Skills (3 total, auto-applied by context)
 

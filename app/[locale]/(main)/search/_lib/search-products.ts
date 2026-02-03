@@ -1,7 +1,7 @@
 import { createStaticClient } from "@/lib/supabase/server"
 import { ITEMS_PER_PAGE } from "../../_lib/pagination"
 import type { Product, SearchProductFilters } from "./types"
-import { isBoostActive } from "@/lib/boost/boost-status"
+import { isBoostActiveNow } from "@/lib/boost/boost-status"
 import { normalizeAttributeKey } from "@/lib/attributes/normalize-attribute-key"
 
 type SearchQueryResult = {
@@ -221,7 +221,7 @@ export async function searchProducts(
         image_url: images[0] ?? null,
         tags,
         slug,
-        is_boosted: isBoostActive({ is_boosted: isBoostedFlag, boost_expires_at: boostExpiresAt }),
+        is_boosted: isBoostActiveNow({ is_boosted: isBoostedFlag, boost_expires_at: boostExpiresAt }),
         profiles,
         categories,
       }

@@ -1,6 +1,6 @@
 # DOCS-PLAN.md — Treido Documentation System
 
-> **Purpose:** Master plan for Treido documentation. **SSOT docs are the canonical ones linked from `docs/00-INDEX.md`.** `docs/archive/*` is explicitly **not SSOT** (historical/reference). Max 500 lines per file.
+> **Purpose:** Master plan for Treido documentation. **SSOT docs are the canonical ones linked from `docs/00-INDEX.md`.** `docs/archive/*` is explicitly **not SSOT** (historical/reference). Prefer docs that are easy to scan; split when it improves clarity (no hard line limit).
 
 ---
 
@@ -36,6 +36,18 @@ Create a **complete, AI-readable documentation system** that enables:
 ├── 14-UI-UX-PLAN.md      ← UI/UX roadmap
 └── 15-DEV-DEPARTMENT.md  ← Roles + ownership + maintenance cadence
 ```
+
+### Source-of-truth rules (non-negotiable)
+
+1) **Stable documentation lives in `docs/`.**
+2) **Runtime/high-churn docs live in `.codex/`** (tasks, refactor workspace, audit notes).
+3) **No markdown sprawl:** `*.md` files must be only in:
+   - `docs/**`
+   - `.codex/**`
+   - `**/AGENTS.md`
+   - `README.md`
+   - `.github/**` (repo meta: templates/instructions)
+   - `.agent/**`, `.agents/**`, `.claude/**`, `.cursor/**`, `.gemini/**`, `.kiro/**`, `.qoder/**`, `.qwen/**`, `.trae/**`, `.windsurf/**` (tooling skills/configs)
 
 ---
 
@@ -116,7 +128,7 @@ Content in tables, code blocks, or compact prose.
 
 ### Rules
 
-1. **Max 500 lines** per file — split if larger
+1. Prefer “one screen per concept” — split if it improves scanability
 2. **Tables over prose** — faster to scan
 3. **Code blocks** — exact file paths, commands
 4. **Checkmarks** — ✅ done, 🚧 wip, ⬜ not started
@@ -254,7 +266,7 @@ Create doc: [DOC_NUMBER]-[DOC_NAME].md
 
 Rules:
 1. Follow the Doc Pattern template in DOCS-PLAN.md
-2. Max 500 lines, tables over prose, no fluff
+2. Prefer short docs (split when it improves scanability), tables over prose, no fluff
 3. Include metadata block (Scope, Audience, Type)
 4. Use existing sources: docs/, docs/archive/uirefactor/ (patterns only), codebase
 5. After creating, update DOCS-PLAN.md checklist: mark [x] complete

@@ -3,7 +3,7 @@ export type BoostLike = {
   boost_expires_at?: string | null
 }
 
-export function isBoostActive(boost: BoostLike, now: Date = new Date()): boolean {
+export function isBoostActiveAt(boost: BoostLike, now: Date): boolean {
   if (boost.is_boosted !== true) return false
   if (!boost.boost_expires_at) return false
 
@@ -11,4 +11,12 @@ export function isBoostActive(boost: BoostLike, now: Date = new Date()): boolean
   if (Number.isNaN(expiresAt.getTime())) return false
 
   return expiresAt.getTime() > now.getTime()
+}
+
+export function isBoostActiveNow(boost: BoostLike): boolean {
+  return isBoostActiveAt(boost, new Date())
+}
+
+export function isBoostActive(boost: BoostLike, now: Date): boolean {
+  return isBoostActiveAt(boost, now)
 }

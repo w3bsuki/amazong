@@ -9,13 +9,7 @@ import {
   IconBox,
   IconShoppingCart,
   IconBuildingStore,
-  IconSettings,
-  IconChartBar,
-  IconCategory,
-  IconTags,
   IconHome,
-  IconMessage,
-  IconCrown,
   IconFileText,
   IconChecklist,
   IconNote,
@@ -86,31 +80,6 @@ export function AdminSidebar({ user, ...props }: AdminSidebarProps) {
       url: "/admin/sellers",
       icon: IconBuildingStore,
     },
-    {
-      title: t("items.categories"),
-      url: "/admin/categories",
-      icon: IconCategory,
-    },
-    {
-      title: t("items.brands"),
-      url: "/admin/brands",
-      icon: IconTags,
-    },
-    {
-      title: t("items.messages"),
-      url: "/admin/messages",
-      icon: IconMessage,
-    },
-    {
-      title: t("items.subscriptions"),
-      url: "/admin/subscriptions",
-      icon: IconCrown,
-    },
-    {
-      title: t("items.analytics"),
-      url: "/admin/analytics",
-      icon: IconChartBar,
-    },
   ]
 
   const adminSecondaryNav = [
@@ -118,11 +87,6 @@ export function AdminSidebar({ user, ...props }: AdminSidebarProps) {
       title: t("secondary.backToStore"),
       url: "/",
       icon: IconHome,
-    },
-    {
-      title: t("secondary.settings"),
-      url: "/admin/settings",
-      icon: IconSettings,
     },
   ]
 

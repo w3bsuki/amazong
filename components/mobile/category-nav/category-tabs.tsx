@@ -2,7 +2,7 @@
 
 import { useRef, useEffect } from "react"
 import type { CategoryTreeNode } from "@/lib/category-tree"
-import { getCategoryShortName } from "@/lib/category-display"
+import { getCategoryName, getCategorySlugKey } from "@/lib/category-display"
 import { CategoryNavItem, TabContent } from "./category-nav-item"
 import { useTranslations } from "next-intl"
 
@@ -35,6 +35,7 @@ export function CategoryTabs({
 }: CategoryTabsProps) {
   const tabsContainerRef = useRef<HTMLDivElement>(null)
   const tCommon = useTranslations("Common")
+  const tCategories = useTranslations("Categories")
 
   // Auto-scroll selected tab to left edge
   useEffect(() => {
@@ -86,7 +87,7 @@ export function CategoryTabs({
 
         {/* Category Tabs */}
         {categories.map((cat) => {
-          const label = getCategoryShortName(cat, locale)
+          const label = tCategories("shortName", { slug: getCategorySlugKey(cat.slug), name: getCategoryName(cat, locale) })
           const isActive = activeTab === cat.slug
 
           return tabsNavigateToPages ? (

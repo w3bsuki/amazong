@@ -45,6 +45,8 @@ export async function POST(
     maxAge: 3600, // 1 hour
     httpOnly: true,
     sameSite: "lax",
+    secure: process.env.NODE_ENV === "production",
+    path: "/",
   })
 
   return response

@@ -50,6 +50,7 @@ export interface ProductGridProduct {
   location?: string | undefined;
   condition?: string | undefined;
   isBoosted?: boolean | undefined;
+  boostExpiresAt?: string | null | undefined;
   rating?: number | undefined;
   reviews?: number | undefined;
   tags?: string[] | undefined;
@@ -165,7 +166,8 @@ export function ProductGrid({
                 {...(product.location ? { location: product.location } : {})}
                 {...(product.condition ? { condition: product.condition } : {})}
                 tags={product.tags ?? []}
-                {...(product.isBoosted ? { isBoosted: true } : {})}
+                isBoosted={Boolean(product.isBoosted)}
+                boostExpiresAt={product.boostExpiresAt ?? null}
                 index={index}
                 {...(product.categoryRootSlug ? { categoryRootSlug: product.categoryRootSlug } : {})}
                 {...(product.categoryPath ? { categoryPath: product.categoryPath } : {})}

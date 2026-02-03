@@ -17,8 +17,8 @@ interface CategoryCount {
 
 /**
  * Get product counts for all categories.
- * Uses category_ancestors array for efficient counting.
- * Fetches L0, L1, L2 categories based on parent_id hierarchy.
+ * Reads from `category_stats` (view backed by a materialized view) for speed.
+ * Filters to L0, L1, L2 categories using the precomputed `depth`.
  * Returns empty array on failure (graceful degradation).
  */
 async function getCategoryCountsCached(): Promise<CategoryCount[]> {
@@ -29,69 +29,24 @@ async function getCategoryCountsCached(): Promise<CategoryCount[]> {
   try {
     const supabase = createStaticClient()
 
-    // Get all categories - we'll filter by hierarchy depth
-    // L0: parent_id is null
-    // L1: parent's parent_id is null  
-    // L2: grandparent's parent_id is null
-    const { data: allCats, error: catsError } = await supabase
-      .from("categories")
-      .select("id, slug, parent_id")
-      .lt("display_order", 9000)
-      .order("display_order", { ascending: true })
+    const { data: stats, error: statsError } = await supabase
+      .from('category_stats')
+      .select('slug, depth, subtree_product_count')
+      .lte('depth', 2)
 
-    if (catsError || !allCats) {
-      // Log only in development to avoid noise in production
+    if (statsError || !stats) {
       if (process.env.NODE_ENV === "development") {
-        console.debug("Category counts: Error fetching categories:", catsError?.message)
+        console.debug("Category counts: Error fetching category_stats:", statsError?.message)
       }
       return []
     }
 
-    // Build parent lookup for depth calculation
-    const parentMap = new Map(allCats.map(c => [c.id, c.parent_id]))
-    
-    // Calculate depth for each category
-    const getDepth = (id: string): number => {
-      let depth = 0
-      let currentId: string | null = id
-      while (currentId && parentMap.has(currentId)) {
-        const parentId = parentMap.get(currentId)
-        if (!parentId) break
-        depth++
-        currentId = parentId
-      }
-      return depth
-    }
-
-    // Filter to L0, L1, L2 only (depth 0, 1, 2)
-    const catsToCount = allCats.filter(cat => getDepth(cat.id) <= 2)
-
-    // Count products for each category
-    // Products have category_ancestors array containing all ancestor category IDs
-    const counts = await Promise.all(
-      catsToCount.map(async (cat) => {
-        try {
-          const { count, error: countError } = await supabase
-            .from('products')
-            .select('id', { count: 'exact', head: true })
-            .contains('category_ancestors', [cat.id])
-          
-          if (countError) {
-            // Silent failure for individual category counts
-            return { slug: cat.slug, count: 0 }
-          }
-
-          return { 
-            slug: cat.slug, 
-            count: count ?? 0 
-          }
-        } catch {
-          return { slug: cat.slug, count: 0 }
-        }
-      })
-    )
-
-    return counts
+    return stats
+      .filter((row) => typeof row.slug === "string")
+      .map((row) => ({
+        slug: row.slug as string,
+        count: row.subtree_product_count ?? 0,
+      }))
   } catch (error) {
     // Allow prerender interruptions to propagate
     if (isNextPrerenderInterrupted(error)) throw error

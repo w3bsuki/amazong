@@ -20,7 +20,6 @@ export type {
 } from "@/lib/types/messages"
 
 import type { MessageContextValue } from "@/lib/types/messages"
-import { DEFAULT_MESSAGE_CONTEXT } from "@/lib/types/messages"
 
 // Hooks
 import { useMessagesState } from "@/components/providers/messages/use-messages-state"
@@ -28,6 +27,26 @@ import { useMessagesRealtime, useTypingIndicator } from "@/components/providers/
 import { useMessagesActions } from "@/components/providers/messages/use-messages-actions"
 
 const MessageContext = createContext<MessageContextValue | undefined>(undefined)
+
+const DEFAULT_MESSAGE_CONTEXT: MessageContextValue = {
+  conversations: [],
+  currentConversation: null,
+  messages: [],
+  totalUnreadCount: 0,
+  isLoading: false,
+  isLoadingMessages: false,
+  error: null,
+  currentUserId: null,
+  isOtherUserTyping: false,
+  loadConversations: async () => {},
+  selectConversation: async () => {},
+  sendMessage: async () => {},
+  markAsRead: async () => {},
+  startConversation: async () => "",
+  closeConversation: async () => {},
+  refreshUnreadCount: async () => {},
+  sendTypingIndicator: () => {},
+}
 
 // =============================================================================
 // HOOK - Safe to use anywhere (returns defaults if outside provider)

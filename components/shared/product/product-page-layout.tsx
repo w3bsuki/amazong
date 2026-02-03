@@ -12,7 +12,6 @@ import { ViewTracker } from "@/components/shared/product/view-tracker";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ProductHeaderSync } from "@/components/shared/product/product-header-sync";
 import { Star } from "lucide-react";
-import { getConditionLabel } from "@/lib/utils";
 
 // V2 Desktop Components
 import { DesktopGalleryV2 } from "@/components/desktop/product/desktop-gallery-v2";
@@ -131,6 +130,37 @@ interface ProductPageLayoutProps {
 
 export function ProductPageLayout(props: ProductPageLayoutProps) {
   const tProduct = useTranslations("Product");
+  const getConditionKey = (value: string): string | null => {
+    const normalized = value.toLowerCase().replace(/[\s_-]/g, "");
+    switch (normalized) {
+      case "new":
+        return "condition.new";
+      case "newwithtags":
+        return "condition.newWithTags";
+      case "newwithouttags":
+        return "condition.newWithoutTags";
+      case "likenew":
+      case "usedlikenew":
+        return "condition.likeNew";
+      case "usedexcellent":
+        return "condition.usedExcellent";
+      case "usedgood":
+        return "condition.usedGood";
+      case "usedfair":
+        return "condition.usedFair";
+      case "refurbished":
+      case "refurb":
+        return "condition.refurbished";
+      case "used":
+        return "condition.used";
+      case "good":
+        return "condition.good";
+      case "fair":
+        return "condition.fair";
+      default:
+        return null;
+    }
+  };
   const {
     locale,
     username,
@@ -261,7 +291,10 @@ export function ProductPageLayout(props: ProductPageLayoutProps) {
                   </h1>
                   {product.condition && (
                     <span className="inline-block px-2 py-0.5 rounded-full bg-success/10 text-success text-xs font-medium">
-                      {getConditionLabel(product.condition)}
+                      {(() => {
+                        const key = getConditionKey(product.condition);
+                        return key ? tProduct(key) : product.condition;
+                      })()}
                     </span>
                   )}
 

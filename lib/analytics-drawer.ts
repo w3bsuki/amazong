@@ -12,6 +12,8 @@
  * - drawer_view_time: Time spent viewing a drawer
  */
 
+import "client-only"
+
 export type DrawerType = "product_quick_view" | "cart" | "messages" | "account"
 export type DrawerCloseMethod = "swipe" | "backdrop" | "button" | "escape"
 

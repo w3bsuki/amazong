@@ -15,7 +15,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { Link } from "@/i18n/routing"
 import { cn } from "@/lib/utils"
-import { getPasswordStrength } from "@/lib/validations/password-strength"
+import { getPasswordStrength } from "@/lib/validation/password-strength"
 
 type AuthActionState = {
   error?: string
@@ -162,7 +162,7 @@ export function SignUpForm({
       >
         {state?.error && (
           <div className="p-3 text-sm text-destructive bg-destructive/10 border border-destructive/20 rounded-md">
-            {state.error}
+            {t(state.error as never)}
           </div>
         )}
 
@@ -185,7 +185,9 @@ export function SignUpForm({
                   "border-destructive focus-visible:ring-destructive/20",
               )}
             />
-            <FieldError id="name-error">{state?.fieldErrors?.name}</FieldError>
+            <FieldError id="name-error">
+              {state?.fieldErrors?.name ? t(state.fieldErrors.name as never) : null}
+            </FieldError>
           </FieldContent>
         </Field>
 
@@ -222,7 +224,7 @@ export function SignUpForm({
               </div>
             </div>
             <FieldError id="username-error">
-              {state?.fieldErrors?.username}
+              {state?.fieldErrors?.username ? t(state.fieldErrors.username as never) : null}
             </FieldError>
           </FieldContent>
         </Field>
@@ -246,7 +248,9 @@ export function SignUpForm({
                   "border-destructive focus-visible:ring-destructive/20",
               )}
             />
-            <FieldError id="email-error">{state?.fieldErrors?.email}</FieldError>
+            <FieldError id="email-error">
+              {state?.fieldErrors?.email ? t(state.fieldErrors.email as never) : null}
+            </FieldError>
           </FieldContent>
         </Field>
 
@@ -293,7 +297,7 @@ export function SignUpForm({
                 <div className={`h-full transition-all duration-300 rounded-full ${strength.color} ${strength.width}`} />
               </div>
               <p className="text-xs text-muted-foreground">
-                {t("passwordStrength")}: {t(`strength${strength.label}`)}
+                {t("passwordStrength")}: {t(strength.labelKey)}
               </p>
             </div>
           )}
@@ -311,7 +315,7 @@ export function SignUpForm({
             </div>
           )}
             <FieldError id="password-error" className="mt-1">
-              {state?.fieldErrors?.password}
+              {state?.fieldErrors?.password ? t(state.fieldErrors.password as never) : null}
             </FieldError>
           </FieldContent>
         </Field>
@@ -355,7 +359,9 @@ export function SignUpForm({
               </button>
             </div>
             <FieldError id="confirmPassword-error">
-              {state?.fieldErrors?.confirmPassword}
+              {state?.fieldErrors?.confirmPassword
+                ? t(state.fieldErrors.confirmPassword as never)
+                : null}
             </FieldError>
           </FieldContent>
         </Field>

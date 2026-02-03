@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useTransition } from "react"
+import { useTranslations } from "next-intl"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -20,14 +21,13 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Loader2, Package, Truck, CheckCircle, XCircle, MessageSquare } from "lucide-react"
-import { 
-  ORDER_STATUS_CONFIG,
-  SHIPPING_CARRIERS, 
-  getNextStatusOptions,
+import {
   canSellerUpdateStatus,
+  SHIPPING_CARRIER_VALUES,
   type OrderItemStatus, 
   type ShippingCarrier 
 } from "@/lib/order-status"
+import { ORDER_STATUS_CONFIG } from "@/components/orders/order-status-config"
 import { toast } from "sonner"
 import { Link, useRouter } from "@/i18n/routing"
 
@@ -47,7 +47,6 @@ interface OrderStatusActionsProps {
   sellerId: string
   isSeller?: boolean
   conversationId?: string | null
-  locale?: string
   actions: OrderStatusActionsServerActions
 }
 
@@ -58,9 +57,10 @@ export function OrderStatusActions({
   sellerId: _sellerId,
   isSeller = true,
   conversationId,
-  locale = 'en',
   actions,
 }: OrderStatusActionsProps) {
+  const tOrders = useTranslations("Orders")
+  const tCommon = useTranslations("Common")
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
   const [showShippingDialog, setShowShippingDialog] = useState(false)
@@ -68,7 +68,6 @@ export function OrderStatusActions({
   const [shippingCarrier, setShippingCarrier] = useState<ShippingCarrier | ''>()
 
   const config = ORDER_STATUS_CONFIG[currentStatus]
-  const _nextOptions = getNextStatusOptions(currentStatus)
   const canUpdate = isSeller && canSellerUpdateStatus(currentStatus)
 
   async function handleStatusUpdate(newStatus: OrderItemStatus) {
@@ -82,13 +81,14 @@ export function OrderStatusActions({
       try {
         const result = await actions.updateOrderItemStatus(orderItemId, newStatus)
         if (result.success) {
-          toast.success(`Order marked as ${ORDER_STATUS_CONFIG[newStatus].label}`)
+          const statusLabel = tOrders(ORDER_STATUS_CONFIG[newStatus].labelKey)
+          toast.success(tOrders("toasts.orderMarkedAs", { status: statusLabel }))
           router.refresh()
         } else {
-          toast.error(result.error || 'Failed to update status')
+          toast.error(result.error || tOrders("errors.failedToUpdateStatus"))
         }
       } catch {
-        toast.error('An error occurred')
+        toast.error(tOrders("errors.unexpectedError"))
       }
     })
   }
@@ -103,14 +103,14 @@ export function OrderStatusActions({
           shippingCarrier as ShippingCarrier || undefined
         )
         if (result.success) {
-          toast.success('Order marked as shipped!')
+          toast.success(tOrders("toasts.orderMarkedAsShipped"))
           setShowShippingDialog(false)
           router.refresh()
         } else {
-          toast.error(result.error || 'Failed to update status')
+          toast.error(result.error || tOrders("errors.failedToUpdateStatus"))
         }
       } catch {
-        toast.error('An error occurred')
+        toast.error(tOrders("errors.unexpectedError"))
       }
     })
   }
@@ -133,7 +133,7 @@ export function OrderStatusActions({
         <Button variant="outline" size="sm" asChild>
           <Link href={`/chat/${conversationId}`}>
             <MessageSquare className="h-4 w-4 mr-1.5" />
-            Chat
+            {tOrders("actions.chat")}
           </Link>
         </Button>
       )}
@@ -150,7 +150,7 @@ export function OrderStatusActions({
           ) : (
             getActionIcon(config.nextStatus)
           )}
-          {isPending ? 'Updating...' : config.nextActionLabel}
+          {isPending ? tOrders("actions.updating") : config.nextActionKey ? tOrders(config.nextActionKey) : null}
         </Button>
       )}
 
@@ -164,7 +164,7 @@ export function OrderStatusActions({
           disabled={isPending}
         >
           <XCircle className="h-4 w-4 mr-1.5" />
-          Cancel
+          {tCommon("cancel")}
         </Button>
       )}
 
@@ -172,23 +172,23 @@ export function OrderStatusActions({
       <Dialog open={showShippingDialog} onOpenChange={setShowShippingDialog}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Ship Order</DialogTitle>
+            <DialogTitle>{tOrders("actions.shipOrder")}</DialogTitle>
             <DialogDescription>
-              Add tracking information for this shipment (optional but recommended).
+              {tOrders("shipping.dialogDescription")}
             </DialogDescription>
           </DialogHeader>
           
           <div className="space-y-4 py-4">
             <div className="space-y-2">
-              <Label htmlFor="carrier">Shipping Carrier</Label>
+              <Label htmlFor="carrier">{tOrders("shipping.carrierLabel")}</Label>
               <Select value={shippingCarrier} onValueChange={(v) => setShippingCarrier(v as ShippingCarrier)}>
                 <SelectTrigger id="carrier">
-                  <SelectValue placeholder="Select carrier" />
+                  <SelectValue placeholder={tOrders("shipping.carrierPlaceholder")} />
                 </SelectTrigger>
                 <SelectContent>
-                  {SHIPPING_CARRIERS.map((carrier) => (
-                    <SelectItem key={carrier.value} value={carrier.value}>
-                      {carrier.label}
+                  {SHIPPING_CARRIER_VALUES.map((carrier) => (
+                    <SelectItem key={carrier} value={carrier}>
+                      {tOrders(`shippingCarriers.${carrier}` as never)}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -196,10 +196,10 @@ export function OrderStatusActions({
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="tracking">Tracking Number</Label>
+              <Label htmlFor="tracking">{tOrders("shipping.trackingNumberLabel")}</Label>
               <Input
                 id="tracking"
-                placeholder="Enter tracking number"
+                placeholder={tOrders("shipping.trackingNumberPlaceholder")}
                 value={trackingNumber}
                 onChange={(e) => setTrackingNumber(e.target.value)}
               />
@@ -212,18 +212,18 @@ export function OrderStatusActions({
               onClick={() => setShowShippingDialog(false)}
               disabled={isPending}
             >
-              Cancel
+              {tCommon("cancel")}
             </Button>
             <Button onClick={handleShippingSubmit} disabled={isPending}>
               {isPending ? (
                 <>
                   <Loader2 className="h-4 w-4 mr-1.5 animate-spin" />
-                  Shipping...
+                  {tOrders("actions.shipping")}
                 </>
               ) : (
                 <>
                   <Truck className="h-4 w-4 mr-1.5" />
-                  Mark as Shipped
+                  {tOrders("actions.markAsShipped")}
                 </>
               )}
             </Button>

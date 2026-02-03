@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { useRef, useCallback, useEffect, useId } from "react"
+import { useRef, useCallback, useEffect } from "react"
 import Image from "next/image"
 import { MagnifyingGlass, Clock, TrendUp, Package, X, ArrowRight, Eye, Robot } from "@phosphor-icons/react"
 import { Button } from "@/components/ui/button"
@@ -27,7 +27,7 @@ export function DesktopSearch() {
   const tSearch = useTranslations("SearchOverlay")
   const inputRef = useRef<HTMLInputElement>(null)
   const formRef = useRef<HTMLFormElement>(null)
-  const searchInputId = useId()
+  const searchInputId = "treido-desktop-search-input"
 
   const buildSearchHref = useCallback((q: string) => {
     const trimmed = q.trim()

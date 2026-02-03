@@ -5,16 +5,16 @@
  * All prices are stored and displayed in EUR for consistency.
  */
 
+import { formatCurrencyAmount, formatEurPriceParts } from "./price-formatting"
+
 export const BASE_CURRENCY = 'EUR' as const
 
 export type SupportedCurrency = 'EUR' | 'USD'
-type SupportedLocale = 'en' | 'bg'
 
 interface FormatPriceOptions {
   locale?: string
   currency?: SupportedCurrency
   showSymbol?: boolean
-  showVat?: boolean
 }
 
 /**
@@ -22,12 +22,6 @@ interface FormatPriceOptions {
  * - Bulgarian: "29,99 €" (symbol after, comma decimal)
  * - English (IE): "€29.99" (symbol before, dot decimal)
  */
-const localeMap: Record<string, string> = {
-  'bg': 'bg-BG',
-  'en': 'en-IE', // Irish English uses EUR format
-  'de': 'de-DE',
-}
-
 /**
  * Format price for display
  * 
@@ -48,22 +42,9 @@ export function formatPrice(
     locale = 'en',
     currency = BASE_CURRENCY,
     showSymbol = true,
-    showVat = false
   } = options
 
-  const formatted = new Intl.NumberFormat(localeMap[locale] || 'en-IE', {
-    style: showSymbol ? 'currency' : 'decimal',
-    currency,
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(priceInEUR)
-
-  if (showVat) {
-    const vatLabel = locale === 'bg' ? 'с ДДС' : 'incl. VAT'
-    return `${formatted} ${vatLabel}`
-  }
-
-  return formatted
+  return formatCurrencyAmount(priceInEUR, locale, currency, { showSymbol })
 }
 
 /**
@@ -77,17 +58,12 @@ export interface PriceParts {
 }
 
 export function formatPriceParts(amount: number, locale: string = 'en'): PriceParts {
-  const isEuro = locale === 'bg'
-  const symbol = '€'
-  
-  const wholePart = Math.floor(amount).toString()
-  const decimalPart = (amount % 1).toFixed(2).slice(2)
-  
+  const parts = formatEurPriceParts(amount, locale)
   return {
-    symbol,
-    wholePart: isEuro ? wholePart.replaceAll(/\B(?=(\d{3})+(?!\d))/g, ' ') : wholePart,
-    decimalPart,
-    symbolPosition: isEuro ? 'after' : 'before'
+    symbol: parts.symbol,
+    wholePart: parts.wholePart,
+    decimalPart: parts.decimalPart,
+    symbolPosition: parts.symbolPosition,
   }
 }
 

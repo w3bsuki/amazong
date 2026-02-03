@@ -1,8 +1,7 @@
-import { getMessages, setRequestLocale } from 'next-intl/server'
+import { setRequestLocale } from 'next-intl/server'
 import Script from 'next/script'
 import { routing } from '@/i18n/routing'
 import { PerformanceMeasureGuard } from './PerformanceMeasureGuard'
-import { IntlClientProvider } from '../intl-client-provider'
 import { PageShell } from "@/components/shared/page-shell"
 
 // Generate static params for all supported locales
@@ -27,11 +26,9 @@ export default async function SellLayout({
   
   // Enable static rendering - CRITICAL for Next.js 16+
   setRequestLocale(locale);
-  
-  const messages = await getMessages()
 
   return (
-    <IntlClientProvider locale={locale} messages={messages}>
+    <>
       <Script
         id="perf-measure-guard"
         strategy="beforeInteractive"
@@ -64,6 +61,6 @@ export default async function SellLayout({
           {children}
         </main>
       </PageShell>
-    </IntlClientProvider>
+    </>
   )
 }

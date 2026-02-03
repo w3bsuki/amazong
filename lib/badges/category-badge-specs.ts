@@ -11,20 +11,7 @@
  * - E-Bikes: range + motor power
  */
 
-type BadgeItem = { key: string; label: string; value: string }
-
-/**
- * Format condition string for display.
- * Converts "used-excellent" to "Used - Excellent" etc.
- */
-function formatCondition(condition: string): string {
-  return condition
-    .replaceAll("-", " - ")
-    .replaceAll("_", " ")
-    .replaceAll(/\b\w/g, (c) => c.toUpperCase())
-    .replace(" - ", "-") // Collapse double dash
-    .replace("  ", " ") // Collapse double space
-}
+type BadgeItem = { key: string; value: string }
 
 function isAutomotiveCategory(slug: string, rootSlug: string | null): boolean {
   return slug.includes("vehicle") || slug.includes("automotive") || 
@@ -52,45 +39,45 @@ function isFashionCategory(slug: string, rootSlug: string | null): boolean {
 function buildAutomotiveBadges(attrs: Record<string, unknown>): BadgeItem[] {
   const badges: BadgeItem[] = []
   const mileage = attrs.mileage || attrs.mileage_km
-  if (mileage) badges.push({ key: "mileage", label: "Mileage", value: `${mileage} km` })
+  if (mileage) badges.push({ key: "mileage", value: String(mileage) })
   const year = attrs.year
-  if (year) badges.push({ key: "year", label: "Year", value: String(year) })
+  if (year) badges.push({ key: "year", value: String(year) })
   return badges.slice(0, 2)
 }
 
 function buildEmobilityBadges(attrs: Record<string, unknown>, slug: string): BadgeItem[] {
   const badges: BadgeItem[] = []
   const range = attrs.range
-  if (range) badges.push({ key: "range", label: "Range", value: String(range) })
+  if (range) badges.push({ key: "range", value: String(range) })
   const power = attrs.motor_power || attrs.max_speed
   if (power) {
-    const label = slug.includes("scooter") ? "Speed" : "Power"
-    badges.push({ key: "power", label, value: String(power) })
+    const key = slug.includes("scooter") ? "speed" : "power"
+    badges.push({ key, value: String(power) })
   }
   return badges.slice(0, 2)
 }
 
 function buildElectronicsBadges(attrs: Record<string, unknown>, condition: string | null): BadgeItem[] {
   const badges: BadgeItem[] = []
-  if (condition) badges.push({ key: "condition", label: "Condition", value: formatCondition(condition) })
+  if (condition) badges.push({ key: "condition", value: condition })
   const storage = attrs.storage_capacity || attrs.storage
-  if (storage) badges.push({ key: "storage", label: "Storage", value: String(storage) })
+  if (storage) badges.push({ key: "storage", value: String(storage) })
   return badges.slice(0, 2)
 }
 
 function buildGamingBadges(attrs: Record<string, unknown>, condition: string | null): BadgeItem[] {
   const badges: BadgeItem[] = []
   const platform = attrs.platform
-  if (platform) badges.push({ key: "platform", label: "Platform", value: String(platform) })
-  if (condition) badges.push({ key: "condition", label: "Condition", value: formatCondition(condition) })
+  if (platform) badges.push({ key: "platform", value: String(platform) })
+  if (condition) badges.push({ key: "condition", value: condition })
   return badges.slice(0, 2)
 }
 
 function buildFashionBadges(attrs: Record<string, unknown>, condition: string | null): BadgeItem[] {
   const badges: BadgeItem[] = []
-  if (condition) badges.push({ key: "condition", label: "Condition", value: formatCondition(condition) })
+  if (condition) badges.push({ key: "condition", value: condition })
   const brand = attrs.brand
-  if (brand) badges.push({ key: "brand", label: "Brand", value: String(brand) })
+  if (brand) badges.push({ key: "brand", value: String(brand) })
   return badges.slice(0, 2)
 }
 
@@ -128,7 +115,7 @@ export function computeBadgeSpecsClient(params: {
 
   // Default: Just show condition if available
   if (condition) {
-    return [{ key: "condition", label: "Condition", value: formatCondition(condition) }]
+    return [{ key: "condition", value: condition }]
   }
   return []
 }

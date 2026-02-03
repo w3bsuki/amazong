@@ -1,5 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js"
 import { logger } from "@/lib/logger"
+import type { Database } from "@/lib/supabase/database.types"
 import type {
   Conversation,
   Message,
@@ -17,7 +18,7 @@ import type {
  * Fetch profiles for a list of user IDs
  */
 export async function fetchProfiles(
-  supabase: SupabaseClient,
+  supabase: SupabaseClient<Database>,
   userIds: string[]
 ): Promise<Map<string, RawProfileRow>> {
   if (userIds.length === 0) return new Map()
@@ -178,7 +179,7 @@ type UserConversationRpcRow = {
  * Fetch all conversations for a user
  */
 export async function fetchConversations(
-  supabase: SupabaseClient,
+  supabase: SupabaseClient<Database>,
   userId: string
 ): Promise<{ conversations: Conversation[]; unreadCount: number }> {
   const { data: rows, error } = await supabase.rpc("get_user_conversations", {
@@ -258,7 +259,7 @@ export async function fetchConversations(
  * Fetch a single conversation by ID
  */
 export async function fetchConversation(
-  supabase: SupabaseClient,
+  supabase: SupabaseClient<Database>,
   conversationId: string
 ): Promise<Conversation> {
   const { data, error } = await supabase
@@ -283,7 +284,12 @@ export async function fetchConversation(
 
   const transformed = transformConversation(data as RawConversationRow, profileMap)
   if (lastMsgData) {
-    transformed.last_message = lastMsgData
+    transformed.last_message = {
+      content: lastMsgData.content,
+      sender_id: lastMsgData.sender_id,
+      message_type: lastMsgData.message_type ?? "text",
+      created_at: lastMsgData.created_at,
+    }
   }
   return transformed
 }
@@ -299,7 +305,7 @@ const MESSAGE_SELECT =
  * Fetch messages for a conversation
  */
 export async function fetchMessages(
-  supabase: SupabaseClient,
+  supabase: SupabaseClient<Database>,
   conversationId: string
 ): Promise<Message[]> {
   const { data: msgs, error } = await supabase
@@ -325,7 +331,7 @@ export async function fetchMessages(
  * Fetch a single sender profile
  */
 export async function fetchSenderProfile(
-  supabase: SupabaseClient,
+  supabase: SupabaseClient<Database>,
   senderId: string
 ): Promise<Pick<RawProfileRow, "id" | "full_name" | "avatar_url"> | null> {
   const { data } = await supabase
@@ -345,7 +351,7 @@ export async function fetchSenderProfile(
  * Send a new message
  */
 export async function sendMessageToConversation(
-  supabase: SupabaseClient,
+  supabase: SupabaseClient<Database>,
   conversationId: string,
   senderId: string,
   content: string
@@ -370,7 +376,7 @@ export async function sendMessageToConversation(
  * Mark messages as read in a conversation
  */
 export async function markConversationRead(
-  supabase: SupabaseClient,
+  supabase: SupabaseClient<Database>,
   conversationId: string
 ): Promise<void> {
   const { error } = await supabase.rpc("mark_messages_read", {
@@ -384,7 +390,7 @@ export async function markConversationRead(
  * Close a conversation
  */
 export async function closeConversationInDb(
-  supabase: SupabaseClient,
+  supabase: SupabaseClient<Database>,
   conversationId: string
 ): Promise<void> {
   const { error } = await supabase
@@ -399,7 +405,7 @@ export async function closeConversationInDb(
  * Get or create a conversation
  */
 export async function getOrCreateConversation(
-  supabase: SupabaseClient,
+  supabase: SupabaseClient<Database>,
   sellerId: string,
   productId?: string,
   subject?: string
@@ -419,7 +425,7 @@ export async function getOrCreateConversation(
  * Refresh unread count via RPC
  */
 export async function fetchTotalUnreadCount(
-  supabase: SupabaseClient
+  supabase: SupabaseClient<Database>
 ): Promise<number> {
   const { data, error } = await supabase.rpc("get_total_unread_messages")
 

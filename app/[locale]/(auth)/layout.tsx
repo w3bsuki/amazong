@@ -1,6 +1,5 @@
-import { getMessages, setRequestLocale } from 'next-intl/server'
+import { setRequestLocale } from 'next-intl/server'
 import { routing, validateLocale } from '@/i18n/routing'
-import { IntlClientProvider } from '../intl-client-provider'
 import { PageShell } from "@/components/shared/page-shell"
 
 // Generate static params for all supported locales
@@ -20,16 +19,12 @@ export default async function AuthLayout({
   
   // Enable static rendering - CRITICAL for Next.js 16+
   setRequestLocale(locale);
-  
-  const messages = await getMessages()
 
   return (
-    <IntlClientProvider locale={locale} messages={messages}>
-      <PageShell variant="muted">
-        <main id="main-content" role="main">
-          {children}
-        </main>
-      </PageShell>
-    </IntlClientProvider>
+    <PageShell variant="muted">
+      <main id="main-content" role="main">
+        {children}
+      </main>
+    </PageShell>
   )
 }

@@ -33,76 +33,38 @@ import {
 } from "@/components/layout/sidebar/sidebar"
 import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
+import { BUSINESS_NAV, type BusinessRoute } from "../dashboard/_lib/routes"
+
+const NAV_ICONS: Record<BusinessRoute, React.ElementType> = {
+  "/dashboard": IconDashboard,
+  "/dashboard/orders": IconShoppingCart,
+  "/dashboard/products": IconBox,
+  "/dashboard/inventory": IconPackage,
+  "/dashboard/customers": IconUsers,
+  "/dashboard/discounts": IconTag,
+  "/dashboard/marketing": IconSpeakerphone,
+  "/dashboard/analytics": IconChartBar,
+  "/dashboard/accounting": IconReceipt,
+  "/dashboard/settings": IconSettings,
+}
+
+const withIcons = (items: { title: string; url: BusinessRoute }[]) =>
+  items.map((item) => ({
+    ...item,
+    icon: NAV_ICONS[item.url],
+  }))
 
 // Shopify-style nav structure with grouped sections
-const salesChannelNav = [
-  {
-    title: "Home",
-    url: "/dashboard",
-    icon: IconDashboard,
-  },
-  {
-    title: "Orders",
-    url: "/dashboard/orders",
-    icon: IconShoppingCart,
-    badge: 0, // Will be dynamic
-  },
-]
+const salesChannelNav = withIcons(BUSINESS_NAV.salesChannel).map((item) => ({
+  ...item,
+  ...(item.url === "/dashboard/orders" ? { badge: 0 } : {}),
+}))
 
-const productsNav = [
-  {
-    title: "Products",
-    url: "/dashboard/products",
-    icon: IconBox,
-  },
-  {
-    title: "Inventory",
-    url: "/dashboard/inventory",
-    icon: IconPackage,
-  },
-]
-
-const customersNav = [
-  {
-    title: "Customers",
-    url: "/dashboard/customers",
-    icon: IconUsers,
-  },
-]
-
-const marketingNav = [
-  {
-    title: "Discounts",
-    url: "/dashboard/discounts",
-    icon: IconTag,
-  },
-  {
-    title: "Marketing",
-    url: "/dashboard/marketing",
-    icon: IconSpeakerphone,
-  },
-]
-
-const analyticsNav = [
-  {
-    title: "Analytics",
-    url: "/dashboard/analytics",
-    icon: IconChartBar,
-  },
-  {
-    title: "Finances",
-    url: "/dashboard/accounting",
-    icon: IconReceipt,
-  },
-]
-
-const settingsNav = [
-  {
-    title: "Settings",
-    url: "/dashboard/settings",
-    icon: IconSettings,
-  },
-]
+const productsNav = withIcons(BUSINESS_NAV.products)
+const customersNav = withIcons(BUSINESS_NAV.customers)
+const marketingNav = withIcons(BUSINESS_NAV.marketing)
+const analyticsNav = withIcons(BUSINESS_NAV.analytics)
+const settingsNav = withIcons(BUSINESS_NAV.settings)
 
 interface BusinessSidebarProps extends React.ComponentProps<typeof Sidebar> {
   user: {

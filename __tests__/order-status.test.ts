@@ -1,73 +1,35 @@
 import { describe, expect, it } from 'vitest'
 import {
-  ORDER_STATUS_CONFIG,
-  getStatusConfig,
   canSellerUpdateStatus,
   getNextStatusOptions,
+  getOrderStatusFromItems,
+  SHIPPING_CARRIER_VALUES,
   type OrderItemStatus,
 } from '@/lib/order-status'
 
 describe('lib/order-status', () => {
-  describe('ORDER_STATUS_CONFIG', () => {
-    const expectedStatuses: OrderItemStatus[] = [
-      'pending',
-      'received',
-      'processing',
-      'shipped',
-      'delivered',
-      'cancelled',
-    ]
-
-    it('has config for all expected statuses', () => {
-      expectedStatuses.forEach((status) => {
-        expect(ORDER_STATUS_CONFIG[status]).toBeDefined()
-      })
+  describe('getOrderStatusFromItems', () => {
+    it('returns fallback for empty list', () => {
+      expect(getOrderStatusFromItems([], 'pending')).toBe('pending')
+      expect(getOrderStatusFromItems([], 'paid')).toBe('paid')
     })
 
-    it('each status has required properties', () => {
-      expectedStatuses.forEach((status) => {
-        const config = ORDER_STATUS_CONFIG[status]
-        expect(config.label).toBeDefined()
-        expect(config.description).toBeDefined()
-        expect(config.color).toBeDefined()
-        expect(config.bgColor).toBeDefined()
-        expect(config.borderColor).toBeDefined()
-        expect(config.icon).toBeDefined()
-      })
+    it('returns cancelled when all items are cancelled', () => {
+      expect(getOrderStatusFromItems(['cancelled', 'cancelled'])).toBe('cancelled')
     })
 
-    it('pending has nextStatus of received', () => {
-      expect(ORDER_STATUS_CONFIG.pending.nextStatus).toBe('received')
+    it('returns delivered when all active items delivered', () => {
+      expect(getOrderStatusFromItems(['delivered', 'delivered'])).toBe('delivered')
     })
 
-    it('delivered has no nextStatus', () => {
-      expect(ORDER_STATUS_CONFIG.delivered.nextStatus).toBeUndefined()
+    it('returns shipped when any item shipped/delivered', () => {
+      expect(getOrderStatusFromItems(['processing', 'shipped'])).toBe('shipped')
+      expect(getOrderStatusFromItems(['processing', 'delivered'])).toBe('shipped')
     })
 
-    it('cancelled has no nextStatus', () => {
-      expect(ORDER_STATUS_CONFIG.cancelled.nextStatus).toBeUndefined()
-    })
-  })
-
-  describe('getStatusConfig', () => {
-    it('returns correct config for valid status', () => {
-      const config = getStatusConfig('pending')
-      expect(config.label).toBe('Pending')
-      expect(config.icon).toBe('⏳')
-    })
-
-    it('returns pending config for unknown status (fallback)', () => {
-      const config = getStatusConfig('unknown' as OrderItemStatus)
-      expect(config.label).toBe('Pending')
-    })
-
-    it('returns correct config for all statuses', () => {
-      expect(getStatusConfig('pending').label).toBe('Pending')
-      expect(getStatusConfig('received').label).toBe('Received')
-      expect(getStatusConfig('processing').label).toBe('Processing')
-      expect(getStatusConfig('shipped').label).toBe('Shipped')
-      expect(getStatusConfig('delivered').label).toBe('Delivered')
-      expect(getStatusConfig('cancelled').label).toBe('Cancelled')
+    it('returns processing when any item processing/received', () => {
+      expect(getOrderStatusFromItems(['pending', 'received'])).toBe('processing')
+      expect(getOrderStatusFromItems(['pending', 'processing'])).toBe('processing')
     })
   })
 
@@ -114,6 +76,17 @@ describe('lib/order-status', () => {
     it('returns empty array for cancelled', () => {
       const options = getNextStatusOptions('cancelled')
       expect(options).toEqual([])
+    })
+  })
+
+  describe('SHIPPING_CARRIER_VALUES', () => {
+    it('contains the expected values', () => {
+      expect(SHIPPING_CARRIER_VALUES).toContain('speedy')
+      expect(SHIPPING_CARRIER_VALUES).toContain('other')
+    })
+
+    it('does not contain duplicates', () => {
+      expect(new Set(SHIPPING_CARRIER_VALUES).size).toBe(SHIPPING_CARRIER_VALUES.length)
     })
   })
 })

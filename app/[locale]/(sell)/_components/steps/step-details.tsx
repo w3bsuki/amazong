@@ -6,6 +6,7 @@ import { Sparkle, CaretRight, Check, Camera, Plus, X } from "@phosphor-icons/rea
 import { cn } from "@/lib/utils";
 import { conditionOptions } from "@/lib/sell/schema-v4";
 import { useSellForm, useSellFormContext } from "../sell-form-provider";
+import { useTranslations } from "next-intl";
 import {
   Drawer,
   DrawerContent,
@@ -89,6 +90,7 @@ function SelectionRow({
 export function StepDetails() {
   const { control, watch, setValue } = useSellForm();
   const { isBg } = useSellFormContext();
+  const tSell = useTranslations("Sell")
 
   // Drawer states
   const [conditionOpen, setConditionOpen] = useState(false);
@@ -106,7 +108,7 @@ export function StepDetails() {
   // Get condition label
   const selectedCondition = conditionOptions.find(c => c.value === condition);
   const conditionLabel = selectedCondition
-    ? (isBg ? selectedCondition.labelBg : selectedCondition.label)
+    ? tSell(selectedCondition.labelKey as never)
     : undefined;
 
   // DB attributes state
@@ -381,7 +383,7 @@ export function StepDetails() {
             <div className="p-4 space-y-1.5">
               {conditionOptions.map((opt) => {
                 const isSelected = condition === opt.value;
-                const label = isBg ? opt.labelBg : opt.label;
+                const label = tSell(opt.labelKey as never);
                 return (
                   <button
                     key={opt.value}

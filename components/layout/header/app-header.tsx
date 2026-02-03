@@ -247,6 +247,30 @@ export function AppHeader({
     setIsHydrated(true)
   }, [])
 
+  // Mobile header is fixed (not sticky) to avoid scroll-lock breaking sticky positioning
+  // when drawers/sheets open. Keep content alignment via a measured CSS var.
+  useEffect(() => {
+    const headerEl = headerRef.current
+    if (!headerEl) return
+
+    const updateOffset = () => {
+      const height = headerEl.getBoundingClientRect().height
+      if (!Number.isFinite(height) || height <= 0) return
+      document.documentElement.style.setProperty("--app-header-offset", `${Math.ceil(height)}px`)
+    }
+
+    updateOffset()
+
+    const ro = new ResizeObserver(() => {
+      updateOffset()
+    })
+    ro.observe(headerEl)
+
+    return () => {
+      ro.disconnect()
+    }
+  }, [])
+
   // Handle search open
   const handleSearchOpen = () => {
     if (effectiveHomepageSearchOpen) {
@@ -368,7 +392,7 @@ export function AppHeader({
         ref={headerRef}
         data-slot="app-header"
         className={cn(
-          "sticky top-0 z-50 w-full flex flex-col",
+          "fixed inset-x-0 top-0 z-40 w-full flex flex-col md:sticky",
           variant !== "homepage" && variant !== "contextual" && "bg-header-bg",
           hideOnMobile && "hidden md:flex md:flex-col",
           hideOnDesktop && "md:hidden"

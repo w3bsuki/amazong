@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils"
 import { SlidersHorizontal } from "@phosphor-icons/react"
 import { useTranslations } from "next-intl"
 import type { CategoryTreeNode } from "@/lib/category-tree"
-import { getCategoryShortName } from "@/lib/category-display"
+import { getCategoryName, getCategorySlugKey } from "@/lib/category-display"
 
 // =============================================================================
 // Types
@@ -45,6 +45,7 @@ export function StickyCategoryBar({
 }: StickyCategoryBarProps) {
   const t = useTranslations("Common")
   const tHome = useTranslations("Home")
+  const tCategories = useTranslations("Categories")
 
   return (
     <div className={cn("bg-background z-30 border-b border-border/50", className)}>
@@ -112,7 +113,7 @@ export function StickyCategoryBar({
                       : "bg-surface-subtle text-muted-foreground border border-border/40"
                   )}
                 >
-                  {getCategoryShortName(cat, locale)}
+                  {tCategories("shortName", { slug: getCategorySlugKey(cat.slug), name: getCategoryName(cat, locale) })}
                 </button>
               )
             })}

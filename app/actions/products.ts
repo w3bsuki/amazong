@@ -6,9 +6,40 @@ import type { SupabaseClient } from "@supabase/supabase-js"
 import type { Database } from "@/lib/supabase/database.types"
 import { z } from "zod"
 
+function isProbablyJunkTitle(title: string): boolean {
+  const trimmed = title.trim()
+  const compact = trimmed.replace(/\s+/g, "")
+
+  // Minimum meaningful content
+  if (compact.length < 5) return true
+
+  // Pure digits or pure symbols
+  if (/^\d+$/.test(compact)) return true
+  if (/^[^0-9A-Za-z\u0400-\u04FF]+$/.test(compact)) return true
+
+  // Overwhelmingly numeric (e.g. "123123123123")
+  const digitCount = (compact.match(/\d/g) ?? []).length
+  if (compact.length >= 10 && digitCount / compact.length > 0.8) return true
+
+  // Extremely low variety (e.g. "aaaaaaa", "11111111", "abababababab")
+  const uniqueChars = new Set(compact.toLowerCase()).size
+  if (compact.length >= 12 && uniqueChars <= 2) return true
+  if (/^(.)\1{6,}$/.test(compact)) return true
+
+  return false
+}
+
+const listingTitleSchema = z
+  .string()
+  .trim()
+  .min(5, "Title needs at least 5 characters")
+  .max(255, "Title can't exceed 255 characters")
+  .refine((val) => !/[<>{}[\]\\]/.test(val), "Title contains invalid characters")
+  .refine((val) => !isProbablyJunkTitle(val), "Please enter a more descriptive title")
+
 // Product validation schema - matches database columns
 const productSchema = z.object({
-  title: z.string().min(1, "Product title is required").max(255),
+  title: listingTitleSchema,
   description: z.string().optional().nullable(),
   price: z.coerce.number().min(0, "Price must be positive"),
   compareAtPrice: z.coerce.number().min(0).optional().nullable(), // maps to list_price
@@ -250,7 +281,7 @@ export async function updateProduct(
     // Check product ownership
     const { data: existingProduct, error: fetchError } = await supabase
       .from("products")
-      .select("id, seller_id, category_id")
+      .select("id, seller_id, category_id, title")
       .eq("id", productId)
       .single()
     
@@ -261,13 +292,28 @@ export async function updateProduct(
     if (existingProduct.seller_id !== user.id) {
       return { success: false, error: "You don't have permission to edit this product" }
     }
+
+    // Guard: status transitions to "active" must pass listing-quality validation.
+    if (input.status === "active") {
+      const nextTitle = input.title ?? existingProduct.title
+      const parsedTitle = listingTitleSchema.safeParse(nextTitle)
+      if (!parsedTitle.success) {
+        return { success: false, error: parsedTitle.error.issues[0]?.message || "Invalid title" }
+      }
+    }
     
     // Build update object with all business fields
     const updateData: Record<string, unknown> = {
       updated_at: new Date().toISOString(),
     }
     
-    if (input.title !== undefined) updateData.title = input.title
+    if (input.title !== undefined) {
+      const parsedTitle = listingTitleSchema.safeParse(input.title)
+      if (!parsedTitle.success) {
+        return { success: false, error: parsedTitle.error.issues[0]?.message || "Invalid title" }
+      }
+      updateData.title = parsedTitle.data
+    }
     if (input.description !== undefined) updateData.description = input.description
     if (input.price !== undefined) updateData.price = input.price
     if (input.compareAtPrice !== undefined) updateData.list_price = input.compareAtPrice
@@ -406,6 +452,30 @@ export async function bulkUpdateProductStatus(
     const { data: { user }, error: authError } = await supabase.auth.getUser()
     if (authError || !user) {
       return { success: false, error: "You must be logged in to update products" }
+    }
+
+    if (status === "active") {
+      const { data: titles, error: titleError } = await supabase
+        .from("products")
+        .select("id,title")
+        .eq("seller_id", user.id)
+        .in("id", productIds)
+
+      if (titleError) {
+        return { success: false, error: "Failed to validate listing titles" }
+      }
+
+      const invalidCount = (titles ?? []).filter((row) => {
+        const title = typeof row?.title === "string" ? row.title : ""
+        return !listingTitleSchema.safeParse(title).success
+      }).length
+
+      if (invalidCount > 0) {
+        return {
+          success: false,
+          error: "Some listings have invalid titles. Fix titles before publishing.",
+        }
+      }
     }
     
     // Update products (RLS will ensure user owns them)

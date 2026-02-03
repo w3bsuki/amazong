@@ -4,6 +4,7 @@ import { memo } from "react";
 import { Controller } from "react-hook-form";
 import { FolderSimple } from "@phosphor-icons/react";
 import { Field, FieldLabel, FieldDescription, FieldError, FieldContent } from "@/components/shared/field";
+import { useTranslations } from "next-intl";
 
 import { useSellForm, useSellFormContext } from "../sell-form-provider";
 import { CategorySelector } from "../ui/category-modal";
@@ -25,6 +26,7 @@ interface CategoryFieldProps {
 export function CategoryField({ onCategoryChange, className, compact = false }: CategoryFieldProps) {
   const { control, setValue, watch } = useSellForm();
   const { categories, isBg } = useSellFormContext();
+  const tSell = useTranslations("Sell")
 
   const categoryPathRaw = watch("categoryPath");
   const categoryPath: CategoryPathItem[] | undefined = categoryPathRaw?.map((item) => ({
@@ -101,7 +103,9 @@ export function CategoryField({ onCategoryChange, className, compact = false }: 
 
                 {/* Error Message */}
                 {fieldState.invalid && (
-                  <FieldError errors={[fieldState.error]} className="mt-form-sm" />
+                  <FieldError className="mt-form-sm">
+                    {fieldState.error?.message ? tSell(fieldState.error.message as never) : null}
+                  </FieldError>
                 )}
               </FieldContent>
             </div>
@@ -138,7 +142,9 @@ export function CategoryField({ onCategoryChange, className, compact = false }: 
                 />
 
                 {fieldState.invalid && (
-                  <FieldError errors={[fieldState.error]} className="mt-3" />
+                  <FieldError className="mt-3">
+                    {fieldState.error?.message ? tSell(fieldState.error.message as never) : null}
+                  </FieldError>
                 )}
               </FieldContent>
             </>

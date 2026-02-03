@@ -60,6 +60,7 @@ export async function useSubscriptionBoost(productId: string): Promise<BoostResu
   if (!user) {
     return { success: false, error: "Not authenticated" }
   }
+  const userId = user.id
 
   // Verify the product belongs to the user
   const { data: product, error: productError } = await supabase
@@ -72,7 +73,7 @@ export async function useSubscriptionBoost(productId: string): Promise<BoostResu
     return { success: false, error: "Product not found" }
   }
 
-  if (product.seller_id !== user.id) {
+  if (product.seller_id !== userId) {
     return { success: false, error: "You can only boost your own products" }
   }
 
@@ -81,7 +82,7 @@ export async function useSubscriptionBoost(productId: string): Promise<BoostResu
   }
 
   // Get user's boost allocation
-  const boostData = await getProfileBoosts(user.id)
+  const boostData = await getProfileBoosts(userId)
   if (!boostData) {
     return { success: false, error: "Profile not found" }
   }
@@ -99,7 +100,7 @@ export async function useSubscriptionBoost(productId: string): Promise<BoostResu
   const { error: deductError } = await adminSupabase
     .from("profiles")
     .update({ boosts_remaining: boostsRemaining - 1 } as Record<string, unknown>)
-    .eq("id", user.id)
+    .eq("id", userId)
 
   if (deductError) {
     console.error("Failed to deduct boost:", deductError)
@@ -125,7 +126,7 @@ export async function useSubscriptionBoost(productId: string): Promise<BoostResu
     await adminSupabase
       .from("profiles")
       .update({ boosts_remaining: boostsRemaining } as Record<string, unknown>)
-      .eq("id", user.id)
+      .eq("id", userId)
 
     console.error("Failed to boost product:", boostError)
     return { success: false, error: "Failed to boost product. Please try again." }
@@ -136,7 +137,7 @@ export async function useSubscriptionBoost(productId: string): Promise<BoostResu
     .from("listing_boosts")
     .insert({
       product_id: productId,
-      seller_id: user.id,
+      seller_id: userId,
       price_paid: 0, // Free from subscription
       duration_days: boostDuration,
       expires_at: expiresAt.toISOString(),

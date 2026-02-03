@@ -170,6 +170,9 @@ export async function GET(request: NextRequest) {
         .from('products')
         .select(productSelect, { count: 'exact' })
         .filter('category_ancestors', 'cs', `{${categoryData.id}}`)
+        // Public browsing surfaces must not show non-active listings.
+        // Temporary legacy allowance: status can be NULL for older rows.
+        .or('status.eq.active,status.is.null')
 
       // Feed type filters: promoted = active boosts only (is_boosted=true AND boost_expires_at > now)
       if (type === 'promoted') {
@@ -238,6 +241,9 @@ export async function GET(request: NextRequest) {
       let query = supabase
         .from('products')
         .select(productSelect, { count: 'exact' })
+        // Public browsing surfaces must not show non-active listings.
+        // Temporary legacy allowance: status can be NULL for older rows.
+        .or('status.eq.active,status.is.null')
 
       // Feed type filters: promoted = active boosts only (is_boosted=true AND boost_expires_at > now)
       if (type === 'promoted') {

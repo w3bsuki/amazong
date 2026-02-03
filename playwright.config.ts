@@ -183,9 +183,21 @@ const timestampedReport =
   process.env.PW_TIMESTAMPED_REPORT === 'true' ||
   process.env.PW_TIMESTAMPED_REPORT === '1'
 
+const skipWebServer =
+  process.env.PW_SKIP_WEBSERVER === 'true' || process.env.PW_SKIP_WEBSERVER === '1'
+
 const htmlReportFolder =
   process.env.PW_HTML_REPORT_DIR ||
   (timestampedReport ? `playwright-report-${Date.now()}` : 'playwright-report')
+
+function envWith(overrides: Record<string, string>): Record<string, string> {
+  const env: Record<string, string> = {}
+  for (const [key, value] of Object.entries(process.env)) {
+    if (typeof value === 'string') env[key] = value
+  }
+  for (const [key, value] of Object.entries(overrides)) env[key] = value
+  return env
+}
 
 export default defineConfig({
   // Warm key routes once before all tests so first-hit Next.js dev compilation
@@ -289,18 +301,33 @@ export default defineConfig({
   // Web server configuration
   // - If the server is already running, reuse it.
   // - If not, start it using the command below.
-  webServer: {
-    command:
-      process.env.TEST_PROD === 'true'
-        ? `pnpm -s build && cross-env PORT=${basePort} pnpm -s start`
-        : `node scripts/clear-next-dev-lock.mjs && cross-env NEXT_PUBLIC_E2E=true PORT=${basePort} pnpm -s exec next dev --webpack -H 127.0.0.1 -p ${basePort}`,
-    url: webServerURL,
-    reuseExistingServer,
-    // Even when reusing an existing dev server, the first request to a route can
-    // trigger slow on-demand compilation. Keep the readiness timeout generous.
-    timeout: 120_000,
-    ...(isCI ? { stdout: 'pipe', stderr: 'pipe' } : {}),
-  },
+  //
+  // With `exactOptionalPropertyTypes: true`, avoid `webServer: undefined`.
+  ...(skipWebServer
+    ? {}
+    : {
+        webServer: {
+          command:
+            process.env.TEST_PROD === 'true'
+              ? `pnpm -s build && pnpm -s start`
+              : `node scripts/playwright-web-server.mjs`,
+          url: webServerURL,
+          reuseExistingServer,
+          env:
+            process.env.TEST_PROD === 'true'
+              ? envWith({ PORT: basePort })
+              : envWith({
+                  NEXT_PUBLIC_E2E: 'true',
+                  PW_USE_WEBPACK: 'true',
+                  PORT: basePort,
+                  HOSTNAME: '127.0.0.1',
+                }),
+          // Even when reusing an existing dev server, the first request to a route can
+          // trigger slow on-demand compilation. Keep the readiness timeout generous.
+          timeout: 120_000,
+          ...(isCI ? { stdout: 'pipe', stderr: 'pipe' } : {}),
+        },
+      }),
 
   // Output directory for test artifacts
   outputDir,

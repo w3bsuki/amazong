@@ -52,11 +52,7 @@ app/
 | `/` | Homepage | public | ✗ |
 | `/about` | About page | public | ✗ |
 | `/accessibility` | Accessibility statement | public | ✗ |
-| `/advertise` | Advertising info | public | ✗ |
-| `/affiliates` | Affiliate program | public | ✗ |
 | `/assistant` | AI shopping assistant | public | ✗ |
-| `/blog` | Blog/articles | public | ✗ |
-| `/careers` | Careers page | public | ✗ |
 | `/cart` | Shopping cart | public | ✗ |
 | `/categories` | Category listing | public | ✗ |
 | `/categories/:slug` | Category page | public | ✓ |
@@ -71,10 +67,7 @@ app/
 | `/feedback` | Feedback form | public | ✗ |
 | `/help` | Help center | public | ✗ |
 | `/security` | Security info | public | ✗ |
-| `/demo` | Demo page | public | ✗ |
-| `/free-shipping` | Free shipping promo | public | ✗ |
 | `/gift-cards` | Gift cards | public | ✗ |
-| `/investors` | Investor relations | public | ✗ |
 | `/members` | Membership info | public | ✗ |
 | `/messages` | Messages redirect | public | ✗ |
 | `/registry` | Gift registry | public | ✗ |
@@ -82,8 +75,6 @@ app/
 | `/seller/dashboard` | Basic seller dashboard | seller | ✗ |
 | `/seller/settings/payouts` | Seller payout settings | seller | ✗ |
 | `/sellers` | Sellers directory | public | ✗ |
-| `/store-locator` | Store locator | public | ✗ |
-| `/suppliers` | Suppliers page | public | ✗ |
 | `/todays-deals` | Daily deals | public | ✗ |
 | `/wishlist` | User wishlist | auth | ✗ |
 | `/wishlist/:token` | Personal wishlist share | public | ✓ |

@@ -280,10 +280,12 @@ export async function downgradeToFreeTier(): Promise<{ tier?: "free"; error?: st
       return { error: "Unauthorized" }
     }
 
+    const userId = user.id
+
     const { error } = await adminSupabase
       .from("profiles")
       .update({ tier: "free" })
-      .eq("id", user.id)
+      .eq("id", userId)
 
     if (error) {
       return { error: error.message }

@@ -28,6 +28,7 @@ import { cn } from "@/lib/utils";
 import { formatOptions } from "@/lib/sell/schema-v4";
 import { useSellForm, useSellFormContext } from "../sell-form-provider";
 import { SelectDrawer } from "../ui/select-drawer";
+import { useTranslations } from "next-intl";
 
 // ============================================================================
 // Constants - V1: BGN only (Cash on Delivery in Bulgaria)
@@ -214,6 +215,7 @@ interface PricingFieldProps {
 export function PricingField({ className, categoryId, idPrefix = "sell-form", compact = false }: PricingFieldProps) {
   const { control, setValue, watch, formState: { errors } } = useSellForm();
   const { isBg } = useSellFormContext();
+  const tSell = useTranslations("Sell")
 
   const [isCurrencyDrawerOpen, setIsCurrencyDrawerOpen] = useState(false);
 
@@ -248,7 +250,7 @@ export function PricingField({ className, categoryId, idPrefix = "sell-form", co
         {formatOptions.map((option) => {
           const isSelected = format === option.value;
           const Icon = option.value === "fixed" ? Tag : Gavel;
-          const label = isBg ? option.labelBg : option.label;
+          const label = tSell(option.labelKey as never);
 
           return (
             <button
@@ -342,7 +344,9 @@ export function PricingField({ className, categoryId, idPrefix = "sell-form", co
               </div>
             </div>
             {fieldState.invalid && (
-              <FieldError errors={[fieldState.error]} />
+              <FieldError>
+                {fieldState.error?.message ? tSell(fieldState.error.message as never) : null}
+              </FieldError>
             )}
           </div>
         )}

@@ -1,5 +1,6 @@
 import { setRequestLocale } from "next-intl/server";
 import { routing, validateLocale } from "@/i18n/routing";
+import { CommerceProviders } from "../_providers/commerce-providers";
 
 // Generate static params for all supported locales
 export function generateStaticParams() {
@@ -30,8 +31,10 @@ export default async function ChatLayout({
     setRequestLocale(locale);
 
     return (
-        <div className="fixed inset-0 flex w-full bg-background overflow-hidden">
-            {children}
-        </div>
+        <CommerceProviders>
+            <div className="fixed inset-0 flex w-full bg-background overflow-hidden">
+                {children}
+            </div>
+        </CommerceProviders>
     );
 }

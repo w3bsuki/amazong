@@ -5,6 +5,8 @@
  * Never use process.env.X! directly - use these helpers instead.
  */
 
+import "server-only"
+
 // =============================================================================
 // Validation helpers
 // =============================================================================

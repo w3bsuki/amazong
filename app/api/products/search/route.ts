@@ -43,6 +43,9 @@ export async function GET(request: Request) {
         slug,
         seller:profiles(username)
       `)
+      // Public browsing surfaces must not show non-active listings.
+      // Temporary legacy allowance: status can be NULL for older rows.
+      .or("status.eq.active,status.is.null")
       .or(`title.ilike.${searchPattern},description.ilike.${searchPattern}`)
       .limit(safeLimit)
       .order("created_at", { ascending: false })

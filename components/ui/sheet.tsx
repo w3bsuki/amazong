@@ -37,6 +37,9 @@ function SheetOverlay({
       data-slot="sheet-overlay"
       className={cn(
         "fixed inset-0 z-50 bg-overlay-dark",
+        "data-[state=open]:animate-in data-[state=closed]:animate-out",
+        "data-[state=open]:fade-in data-[state=closed]:fade-out",
+        "duration-200 ease-out",
         className
       )}
       {...props}
@@ -54,21 +57,26 @@ function SheetContent({
   side?: "top" | "right" | "bottom" | "left"
   closeLabel?: string
 }) {
+  const resolvedCloseLabel = closeLabel ?? "Close"
+
   return (
     <SheetPortal>
       <SheetOverlay />
       <SheetPrimitive.Content
         data-slot="sheet-content"
         className={cn(
-          "bg-background fixed z-50 flex flex-col gap-4 shadow-lg",
+          "bg-background fixed z-50 flex flex-col gap-4 shadow-lg outline-none",
+          "data-[state=open]:animate-in data-[state=closed]:animate-out",
+          "data-[state=open]:fade-in data-[state=closed]:fade-out",
+          "duration-200 ease-out",
           side === "right" &&
-            "inset-y-0 right-0 h-full w-3/4 border-l sm:max-w-sm",
+            "inset-y-0 right-0 h-full w-3/4 border-l sm:max-w-sm data-[state=open]:slide-in-from-right data-[state=closed]:slide-out-to-right",
           side === "left" &&
-            "inset-y-0 left-0 h-full w-3/4 border-r sm:max-w-sm",
+            "inset-y-0 left-0 h-full w-3/4 border-r sm:max-w-sm data-[state=open]:slide-in-from-left data-[state=closed]:slide-out-to-left",
           side === "top" &&
-            "inset-x-0 top-0 h-auto border-b",
+            "inset-x-0 top-0 h-auto border-b data-[state=open]:slide-in-from-top data-[state=closed]:slide-out-to-top",
           side === "bottom" &&
-            "inset-x-0 bottom-0 h-auto border-t",
+            "inset-x-0 bottom-0 h-auto border-t data-[state=open]:slide-in-from-bottom data-[state=closed]:slide-out-to-bottom",
           className
         )}
         {...props}
@@ -76,10 +84,10 @@ function SheetContent({
         {children}
         <SheetPrimitive.Close
           className="ring-offset-background focus:ring-ring data-[state=open]:bg-secondary absolute top-4 right-4 rounded-xs opacity-70 transition-opacity hover:opacity-100 focus:ring-2 focus:ring-offset-2 focus:outline-hidden disabled:pointer-events-none"
-          aria-label={closeLabel}
+          aria-label={resolvedCloseLabel}
         >
           <XIcon className="size-4" />
-          {closeLabel ? <span className="sr-only">{closeLabel}</span> : null}
+          <span className="sr-only">{resolvedCloseLabel}</span>
         </SheetPrimitive.Close>
       </SheetPrimitive.Content>
     </SheetPortal>

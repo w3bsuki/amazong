@@ -1,10 +1,7 @@
 import { z } from "zod"
-import { SHIPPING_CARRIERS, type ShippingCarrier } from "@/lib/order-status"
+import { SHIPPING_CARRIER_VALUES, type ShippingCarrier } from "@/lib/order-status"
 
-const shippingCarrierValues = SHIPPING_CARRIERS.map((carrier) => carrier.value) as unknown as [
-  ShippingCarrier,
-  ...ShippingCarrier[]
-]
+const shippingCarrierValues = SHIPPING_CARRIER_VALUES as unknown as [ShippingCarrier, ...ShippingCarrier[]]
 
 export const orderItemIdParamSchema = z
   .object({

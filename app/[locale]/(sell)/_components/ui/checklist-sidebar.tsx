@@ -6,14 +6,12 @@ import { useTranslations } from "next-intl";
 
 interface ChecklistItem {
   key: string;
-  label: string;
-  labelBg: string;
+  labelKey: string;
   completed: boolean;
 }
 
 interface ChecklistSidebarProps {
   items: ChecklistItem[];
-  locale: string;
 }
 
 /**
@@ -24,9 +22,7 @@ interface ChecklistSidebarProps {
  */
 export function ChecklistSidebar({
   items,
-  locale,
 }: ChecklistSidebarProps) {
-  const isBg = locale === "bg";
   const completedCount = items.filter(i => i.completed).length;
   const t = useTranslations("Sell")
   
@@ -56,7 +52,7 @@ export function ChecklistSidebar({
               "text-xs font-bold tracking-tight transition-colors",
               item.completed ? "text-foreground" : "text-muted-foreground/70"
             )}>
-              {isBg ? item.labelBg : item.label}
+              {t(item.labelKey as never)}
             </span>
           </li>
         ))}

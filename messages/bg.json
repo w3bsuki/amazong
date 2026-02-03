@@ -124,6 +124,7 @@
     },
     "Categories": {
         "title": "Категории",
+        "shortName": "{slug, select, electronics {Техника} automotive {Авто} home {Дом} home_kitchen {Дом} jewelry_watches {Бижута} movies_music {Медия} services {Услуги} collectibles {Колекции} e_mobility {Е-мобилност} health_wellness {Здраве} tools_home {Инструменти} baby_kids {Деца} baby {Деца} other {name}}",
         "headerTitleAll": "Всички категории",
         "metaDescription": "Разгледайте всички категории продукти в Treido. Намерете електроника, мода, дом и градина и още.",
         "bannerDescription": "Разгледай продуктите в тази категория",
@@ -268,9 +269,34 @@
         "overnight": "Overnight",
         "condition": {
             "new": "Ново",
+            "newWithTags": "Ново с етикет",
+            "newWithoutTags": "Ново без етикет",
             "likeNew": "Като ново",
+            "usedExcellent": "Употребявано - отлично",
+            "usedGood": "Употребявано - добро",
+            "usedFair": "Употребявано - задоволително",
+            "refurbished": "Рефърбишнато",
             "usedShort": "Употр.",
+            "used": "Употребявано",
+            "good": "Добро",
+            "fair": "Задоволително",
             "refurbShort": "Рефърб."
+        },
+        "badges": {
+            "labels": {
+                "mileage": "Пробег",
+                "year": "Година",
+                "range": "Обхват",
+                "power": "Мощност",
+                "speed": "Скорост",
+                "storage": "Памет",
+                "platform": "Платформа",
+                "brand": "Марка",
+                "condition": "Състояние"
+            },
+            "values": {
+                "kilometers": "{value} км"
+            }
         },
         "b2b": {
             "moqShort": "МОП",
@@ -285,6 +311,7 @@
         "addToWishlist": "Добави в любими",
         "removeFromWishlist": "Премахни от любими",
         "noImage": "Няма изображение",
+        "imageAlt": "{title} — снимка {index}",
         "adBadge": "Промо",
         "inStock": "В наличност",
         "outOfStock": "Изчерпан",
@@ -1200,7 +1227,29 @@
         "oneNumber": "Една цифра",
         "passwordSameAsOld": "Новата парола трябва да е различна от текущата.",
         "somethingWentWrong": "Нещо се обърка. Моля, опитайте отново.",
-        "invalidEmail": "Моля, въведете валиден имейл адрес."
+        "invalidEmail": "Моля, въведете валиден имейл адрес.",
+        "errors": {
+            "emailRequired": "Имейлът е задължителен",
+            "emailInvalid": "Моля, въведете валиден имейл адрес",
+            "passwordRequired": "Паролата е задължителна",
+            "passwordMin": "Паролата трябва да е поне 8 символа",
+            "passwordMax": "Паролата трябва да е до 72 символа",
+            "passwordLetter": "Паролата трябва да съдържа поне една буква",
+            "passwordNumber": "Паролата трябва да съдържа поне една цифра",
+            "passwordUppercase": "Паролата трябва да съдържа поне една главна буква",
+            "passwordLowercase": "Паролата трябва да съдържа поне една малка буква",
+            "nameRequired": "Името е задължително",
+            "nameMin": "Името трябва да е поне 2 символа",
+            "nameMax": "Името трябва да е до 50 символа",
+            "usernameMin": "Потребителското име трябва да е поне 3 символа",
+            "usernameMax": "Потребителското име трябва да е до 30 символа",
+            "usernameStart": "Потребителското име трябва да започва с буква или цифра",
+            "usernameCharset": "Потребителското име може да съдържа само малки букви, цифри и долни черти",
+            "usernameNoConsecutiveUnderscores": "Потребителското име не може да има последователни долни черти",
+            "usernameNoTrailingUnderscore": "Потребителското име не може да завършва с долна черта",
+            "usernameReserved": "Това потребителско име е запазено",
+            "confirmPasswordRequired": "Моля, потвърдете паролата"
+        }
     },
     "Account": {
         "title": "Твоят акаунт",
@@ -2548,7 +2597,79 @@
             "formProgressAriaLabel": "Прогрес на формуляра: {percent}%"
         },
         "checklistSidebar": {
-            "title": "Списък"
+            "title": "Списък",
+            "items": {
+                "photos": "Добави снимки",
+                "title": "Напиши заглавие",
+                "category": "Избери категория",
+                "condition": "Избери състояние",
+                "price": "Задай цена",
+                "description": "Добави описание",
+                "shipping": "Настрой доставка"
+            }
+        },
+        "conditions": {
+            "newWithTags": {
+                "label": "Ново с етикети",
+                "description": "Чисто ново, никога не е носено, с оригинални етикети"
+            },
+            "newWithoutTags": {
+                "label": "Ново без етикети",
+                "description": "Чисто ново, никога не е носено, без етикети"
+            },
+            "usedLikeNew": {
+                "label": "Като ново",
+                "description": "Носено веднъж или два пъти, без видими следи"
+            },
+            "usedExcellent": {
+                "label": "Използвано - Отлично",
+                "description": "Леко използвано, минимални следи от употреба"
+            },
+            "usedGood": {
+                "label": "Използвано - Добро",
+                "description": "Използвано с някои следи от употреба"
+            },
+            "usedFair": {
+                "label": "Използвано - Задоволително",
+                "description": "Видимо използвано, може да има леки дефекти"
+            }
+        },
+        "formats": {
+            "fixed": {
+                "label": "Фиксирана цена",
+                "description": "Купи веднага"
+            },
+            "auction": {
+                "label": "Търг",
+                "description": "Приемай наддавания"
+            }
+        },
+        "validation": {
+            "invalidImageUrl": "Невалиден URL на изображение",
+            "invalidThumbnailUrl": "Невалиден URL на миниатюра",
+            "attributeNameRequired": "Името на атрибута е задължително",
+            "attributeValueRequired": "Стойността на атрибута е задължителна",
+            "photosRequired": "Добавете поне 1 снимка",
+            "photosMax": "Максимум 12 снимки",
+            "titleMin": "Заглавието трябва да е поне 5 символа",
+            "titleMax": "Заглавието не може да надвишава 80 символа",
+            "titleInvalidCharacters": "Заглавието съдържа невалидни символи",
+            "categoryRequired": "Изберете категория",
+            "conditionRequired": "Изберете състояние",
+            "descriptionRequired": "Описанието е задължително",
+            "descriptionMax": "Описанието не може да надвишава 4 000 символа",
+            "descriptionMin": "Описанието трябва да е поне 50 символа",
+            "priceRequired": "Въведете цена",
+            "priceInvalid": "Въведете валидна цена по-голяма от 0",
+            "priceMax": "Цената не може да надвишава 999 999.99",
+            "compareAtInvalid": "Невалидна стара цена",
+            "compareAtMustBeHigher": "Старата цена трябва да е по-висока от вашата цена",
+            "quantityInteger": "Количеството трябва да е цяло число",
+            "quantityMin": "Количеството трябва да е поне 1",
+            "quantityMax": "Количеството не може да надвишава 9 999",
+            "shippingPriceInvalid": "Невалидна цена за доставка",
+            "shippingRegionRequired": "Изберете поне един регион",
+            "tagsMax": "Максимум 10 тагове"
         },
         "brandCombobox": {
             "defaultPlaceholder": "Избери марка...",
@@ -3268,6 +3389,9 @@
         "suggestionOne": "Намери ми телефон под 500 лв.",
         "suggestionTwo": "Покажи ми маратонки за бягане",
         "suggestionThree": "Най-добър лаптоп за училище",
+        "userLabel": "Ти",
+        "statusOnline": "Онлайн",
+        "topBadge": "Топ",
         "send": "Изпрати",
         "stop": "Спри",
         "toolRunning": "Търся…",
@@ -3281,6 +3405,9 @@
         "sellAutofill": "Генерирай чернова",
         "imageUrlPlaceholder": "https://…",
         "loading": "Търся продукти…",
+        "errorTitle": "Нещо се обърка",
+        "errorDescription": "Моля, опитайте отново. Ако проблемът продължи, върнете се по-късно.",
+        "retry": "Опитай отново",
         "requestFailed": "Заявката не успя"
     },
     "AccountPlansUpgrade": {
@@ -3461,6 +3588,68 @@
             "startBrowsing": "Започнете да разглеждате",
             "listFirstItem": "Добавете първа обява",
             "completeStore": "Завършете магазина си"
+        }
+    },
+    "Orders": {
+        "status": {
+            "pending": {
+                "label": "Изчакване",
+                "description": "Очаква потвърждение от продавача"
+            },
+            "received": {
+                "label": "Потвърдена",
+                "description": "Продавачът потвърди поръчката"
+            },
+            "processing": {
+                "label": "Обработка",
+                "description": "Поръчката се подготвя"
+            },
+            "shipped": {
+                "label": "Изпратена",
+                "description": "Поръчката е на път"
+            },
+            "delivered": {
+                "label": "Доставена",
+                "description": "Поръчката е доставена"
+            },
+            "cancelled": {
+                "label": "Отменена",
+                "description": "Поръчката е отменена"
+            }
+        },
+        "actions": {
+            "markAsReceived": "Потвърди",
+            "startProcessing": "Започни обработка",
+            "markAsShipped": "Отбележи като изпратена",
+            "markAsDelivered": "Отбележи като доставена",
+            "chat": "Чат",
+            "updating": "Обновяване...",
+            "shipOrder": "Изпрати поръчката",
+            "shipping": "Изпращане..."
+        },
+        "shipping": {
+            "dialogDescription": "Добавете информация за проследяване (незадължително, но препоръчително).",
+            "carrierLabel": "Куриер",
+            "carrierPlaceholder": "Избери куриер",
+            "trackingNumberLabel": "Номер за проследяване",
+            "trackingNumberPlaceholder": "Въведете номер за проследяване"
+        },
+        "shippingCarriers": {
+            "speedy": "Speedy",
+            "econt": "Econt",
+            "dhl": "DHL",
+            "ups": "UPS",
+            "fedex": "FedEx",
+            "bulgarian_posts": "Български пощи",
+            "other": "Друго"
+        },
+        "toasts": {
+            "orderMarkedAs": "Поръчката е отбелязана като {status}",
+            "orderMarkedAsShipped": "Поръчката е отбелязана като изпратена!"
+        },
+        "errors": {
+            "failedToUpdateStatus": "Неуспешно обновяване на статуса",
+            "unexpectedError": "Възникна грешка"
         }
     }
 }

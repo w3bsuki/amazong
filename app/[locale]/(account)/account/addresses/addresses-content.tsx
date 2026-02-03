@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useMemo } from "react"
+import { useState, useMemo, type ChangeEvent } from "react"
 import { useRouter } from "@/i18n/routing"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -42,6 +42,7 @@ import { createClient } from "@/lib/supabase/client"
 import { AccountAddressesStats } from "../_components/account-addresses-stats"
 import { AccountAddressesGrid } from "../_components/account-addresses-grid"
 import { USER_ADDRESSES_SELECT } from "./_lib/selects"
+import { AddressFormFields } from "../../../_components/address-form"
 
 interface Address {
     id: string
@@ -109,6 +110,10 @@ export function AddressesContent({ locale, initialAddresses }: AddressesContentP
 
     const handleInputChange = (field: keyof AddressFormData, value: string | boolean) => {
         setFormData(prev => ({ ...prev, [field]: value }))
+    }
+
+    const handleTextChange = (field: keyof AddressFormData) => (event: ChangeEvent<HTMLInputElement>) => {
+        handleInputChange(field, event.target.value)
     }
 
     const openAddDialog = () => {
@@ -384,15 +389,6 @@ export function AddressesContent({ locale, initialAddresses }: AddressesContentP
                         </div>
 
                         <div className="space-y-2">
-                            <Label>{locale === 'bg' ? 'Пълно име' : 'Full Name'} *</Label>
-                            <Input 
-                                value={formData.full_name}
-                                onChange={(e) => handleInputChange('full_name', e.target.value)}
-                                placeholder={locale === 'bg' ? 'Иван Иванов' : 'John Doe'}
-                            />
-                        </div>
-
-                        <div className="space-y-2">
                             <Label>{locale === 'bg' ? 'Телефон' : 'Phone'}</Label>
                             <Input 
                                 value={formData.phone}
@@ -401,50 +397,76 @@ export function AddressesContent({ locale, initialAddresses }: AddressesContentP
                             />
                         </div>
 
-                        <div className="space-y-2">
-                            <Label>{locale === 'bg' ? 'Адрес' : 'Address Line 1'} *</Label>
-                            <Input 
-                                value={formData.address_line1}
-                                onChange={(e) => handleInputChange('address_line1', e.target.value)}
-                                placeholder={locale === 'bg' ? 'ул. Витоша 1' : 'Street address'}
-                            />
-                        </div>
-
-                        <div className="space-y-2">
-                            <Label>{locale === 'bg' ? 'Адрес 2' : 'Address Line 2'}</Label>
-                            <Input 
-                                value={formData.address_line2}
-                                onChange={(e) => handleInputChange('address_line2', e.target.value)}
-                                placeholder={locale === 'bg' ? 'Апартамент, етаж и др.' : 'Apartment, floor, etc.'}
-                            />
-                        </div>
-
-                        <div className="grid grid-cols-3 gap-4">
-                            <div className="space-y-2">
-                                <Label>{locale === 'bg' ? 'Град' : 'City'} *</Label>
-                                <Input 
-                                    value={formData.city}
-                                    onChange={(e) => handleInputChange('city', e.target.value)}
-                                    placeholder={locale === 'bg' ? 'София' : 'City'}
-                                />
-                            </div>
-                            <div className="space-y-2">
-                                <Label>{locale === 'bg' ? 'Област' : 'State'}</Label>
-                                <Input 
-                                    value={formData.state}
-                                    onChange={(e) => handleInputChange('state', e.target.value)}
-                                    placeholder={locale === 'bg' ? 'София-град' : 'State'}
-                                />
-                            </div>
-                            <div className="space-y-2">
-                                <Label>{locale === 'bg' ? 'Пощ. код' : 'Postal Code'} *</Label>
-                                <Input 
-                                    value={formData.postal_code}
-                                    onChange={(e) => handleInputChange('postal_code', e.target.value)}
-                                    placeholder="1000"
-                                />
-                            </div>
-                        </div>
+                        <AddressFormFields
+                            nameFields={[
+                                {
+                                    id: "full_name",
+                                    label: (
+                                        <>
+                                            {locale === 'bg' ? 'Пълно име' : 'Full Name'}{" "}
+                                            <span className="text-destructive">*</span>
+                                        </>
+                                    ),
+                                    placeholder: locale === 'bg' ? 'Иван Иванов' : 'John Doe',
+                                    value: formData.full_name,
+                                    onChange: handleTextChange('full_name'),
+                                    required: true,
+                                },
+                            ]}
+                            addressLine1={{
+                                id: "address_line1",
+                                label: (
+                                    <>
+                                        {locale === 'bg' ? 'Адрес' : 'Address Line 1'}{" "}
+                                        <span className="text-destructive">*</span>
+                                    </>
+                                ),
+                                placeholder: locale === 'bg' ? 'ул. Витоша 1' : 'Street address',
+                                value: formData.address_line1,
+                                onChange: handleTextChange('address_line1'),
+                                required: true,
+                            }}
+                            addressLine2={{
+                                id: "address_line2",
+                                label: locale === 'bg' ? 'Адрес 2' : 'Address Line 2',
+                                placeholder: locale === 'bg' ? 'Апартамент, етаж и др.' : 'Apartment, floor, etc.',
+                                value: formData.address_line2,
+                                onChange: handleTextChange('address_line2'),
+                            }}
+                            city={{
+                                id: "city",
+                                label: (
+                                    <>
+                                        {locale === 'bg' ? 'Град' : 'City'}{" "}
+                                        <span className="text-destructive">*</span>
+                                    </>
+                                ),
+                                placeholder: locale === 'bg' ? 'София' : 'City',
+                                value: formData.city,
+                                onChange: handleTextChange('city'),
+                                required: true,
+                            }}
+                            state={{
+                                id: "state",
+                                label: locale === 'bg' ? 'Област' : 'State',
+                                placeholder: locale === 'bg' ? 'София-град' : 'State',
+                                value: formData.state,
+                                onChange: handleTextChange('state'),
+                            }}
+                            postalCode={{
+                                id: "postal_code",
+                                label: (
+                                    <>
+                                        {locale === 'bg' ? 'Пощ. код' : 'Postal Code'}{" "}
+                                        <span className="text-destructive">*</span>
+                                    </>
+                                ),
+                                placeholder: "1000",
+                                value: formData.postal_code,
+                                onChange: handleTextChange('postal_code'),
+                                required: true,
+                            }}
+                        />
 
                         <div className="flex items-center gap-2">
                             <input

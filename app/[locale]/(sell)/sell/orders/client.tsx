@@ -358,7 +358,6 @@ export function SellerOrdersClient({ locale, actions }: SellerOrdersClientProps)
                               sellerId={item.seller_id}
                               isSeller={true}
                               conversationId={conversationId ?? null}
-                              locale={locale}
                               actions={{ updateOrderItemStatus: actions.updateOrderItemStatus }}
                             />
 

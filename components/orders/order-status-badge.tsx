@@ -1,5 +1,7 @@
 import { cn } from "@/lib/utils"
-import { ORDER_STATUS_CONFIG, type OrderItemStatus } from "@/lib/order-status"
+import { ORDER_STATUS_CONFIG } from "@/components/orders/order-status-config"
+import type { OrderItemStatus } from "@/lib/order-status"
+import { useTranslations } from "next-intl"
 
 interface OrderStatusBadgeProps {
   status: OrderItemStatus
@@ -14,6 +16,7 @@ export function OrderStatusBadge({
   size = 'md',
   className 
 }: OrderStatusBadgeProps) {
+  const t = useTranslations("Orders")
   const config = ORDER_STATUS_CONFIG[status] || ORDER_STATUS_CONFIG.pending
 
   const sizeClasses = {
@@ -34,13 +37,14 @@ export function OrderStatusBadge({
       )}
     >
       {showIcon && <span className="shrink-0">{config.icon}</span>}
-      <span>{config.label}</span>
+      <span>{t(config.labelKey)}</span>
     </span>
   )
 }
 
 // Compact version for tables
 function OrderStatusDot({ status }: { status: OrderItemStatus }) {
+  const t = useTranslations("Orders")
   const config = ORDER_STATUS_CONFIG[status] || ORDER_STATUS_CONFIG.pending
   
   const dotColors: Record<OrderItemStatus, string> = {
@@ -55,7 +59,7 @@ function OrderStatusDot({ status }: { status: OrderItemStatus }) {
   return (
     <span className="inline-flex items-center gap-2">
       <span className={cn("w-2 h-2 rounded-full", dotColors[status])} />
-      <span className="text-sm text-muted-foreground">{config.label}</span>
+      <span className="text-sm text-muted-foreground">{t(config.labelKey)}</span>
     </span>
   )
 }

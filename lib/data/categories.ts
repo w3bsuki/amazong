@@ -6,7 +6,7 @@ import { normalizeOptionalImageUrl } from '@/lib/normalize-image-url'
 import { logger } from '@/lib/logger'
 import { normalizeAttributeKey } from '@/lib/attributes/normalize-attribute-key'
 import type { AttributeType, CategoryAttribute } from '@/lib/types/categories'
-import { CATEGORY_TREE_NODE_SELECT } from '@/lib/supabase/selects/categories'
+import { CATEGORY_ATTRIBUTES_SELECT, CATEGORY_TREE_NODE_SELECT } from '@/lib/supabase/selects/categories'
 
 // =============================================================================
 // Type Definitions
@@ -31,9 +31,6 @@ export type { AttributeType, CategoryAttribute }
 
 // Valid attribute types
 const VALID_ATTRIBUTE_TYPES: AttributeType[] = ['select', 'multiselect', 'boolean', 'number', 'text', 'date']
-
-const CATEGORY_ATTRIBUTES_SELECT =
-  'id,category_id,name,name_bg,attribute_type,attribute_key,options,options_bg,placeholder,placeholder_bg,is_filterable,is_required,is_hero_spec,hero_priority,is_badge_spec,badge_priority,unit_suffix,sort_order,validation_rules,created_at' as const
 
 // Helper to transform DB row to CategoryAttribute
 function toCategoryAttribute(row: {

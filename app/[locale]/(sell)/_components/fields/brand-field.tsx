@@ -7,6 +7,7 @@ import { Field, FieldLabel, FieldDescription, FieldError, FieldContent } from "@
 import { cn } from "@/lib/utils";
 import { useSellForm, useSellFormContext } from "../sell-form-provider";
 import { BrandCombobox } from "../ui/brand-combobox";
+import { useTranslations } from "next-intl";
 
 // ============================================================================
 // BRAND FIELD - Brand selector using shadcn Combobox pattern
@@ -29,6 +30,7 @@ export function BrandField({
 }: BrandFieldProps) {
   const { control, setValue, watch } = useSellForm();
   const { brands, isBg, locale } = useSellFormContext();
+  const tSell = useTranslations("Sell")
 
   const brandId = watch("brandId");
   const brandName = watch("brandName");
@@ -91,10 +93,9 @@ export function BrandField({
 
             {/* Error Message */}
             {fieldState.invalid && (
-              <FieldError
-                errors={[fieldState.error]}
-                className="mt-2"
-              />
+              <FieldError className="mt-2">
+                {fieldState.error?.message ? tSell(fieldState.error.message as never) : null}
+              </FieldError>
             )}
           </FieldContent>
         </Field>

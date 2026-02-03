@@ -41,6 +41,34 @@ export async function POST(request: import("next/server").NextRequest) {
             return json({ error: "No Stripe customer found" }, { status: 400 })
         }
 
+        const { data: paymentRow, error: paymentRowError } = await supabase
+            .from('user_payment_methods')
+            .select('id, user_id, stripe_payment_method_id, stripe_customer_id')
+            .eq('id', dbId)
+            .single()
+
+        if (paymentRowError || !paymentRow) {
+            return json({ error: "Payment method not found" }, { status: 404 })
+        }
+
+        if (
+            paymentRow.user_id !== user.id ||
+            paymentRow.stripe_payment_method_id !== paymentMethodId ||
+            paymentRow.stripe_customer_id !== profile.stripe_customer_id
+        ) {
+            return json({ error: "Forbidden" }, { status: 403 })
+        }
+
+        const paymentMethod = await stripe.paymentMethods.retrieve(paymentMethodId)
+        const stripeCustomer =
+            typeof paymentMethod.customer === "string"
+                ? paymentMethod.customer
+                : paymentMethod.customer?.id
+
+        if (!stripeCustomer || stripeCustomer !== profile.stripe_customer_id) {
+            return json({ error: "Forbidden" }, { status: 403 })
+        }
+
         // Update default payment method in Stripe
         await stripe.customers.update(profile.stripe_customer_id, {
             invoice_settings: {

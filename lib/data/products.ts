@@ -3,8 +3,12 @@ import 'server-only'
 import { cacheTag, cacheLife } from 'next/cache'
 import { createStaticClient } from '@/lib/supabase/server'
 import { logger } from '@/lib/logger'
-import { isBoostActive } from '@/lib/boost/boost-status'
 import { getShippingFilter, productShipsToRegion, type ShippingRegion } from '@/lib/shipping'
+import {
+  PRODUCT_BY_ID_SELECT,
+  PRODUCT_LIST_BY_CATEGORY_SLUG_SELECT,
+  PRODUCT_LIST_SELECT,
+} from '@/lib/supabase/selects/products'
 import type { UIProduct } from '@/lib/types/products'
 
 export type { UIProduct }
@@ -31,7 +35,7 @@ export interface Product {
     display_order?: number | null
     is_primary?: boolean | null
   }> | null
-  /** True if product has an active boost (is_boosted=true AND boost_expires_at > now) */
+  /** True if product has a boost flag; check `boost_expires_at` for active boost status. */
   is_boosted?: boolean | null
   /** Boost expiration timestamp - used with is_boosted to determine active boost status */
   boost_expires_at?: string | null
@@ -84,6 +88,16 @@ export interface Product {
   }> | null
 }
 
+/**
+ * Public browsing surfaces must not show non-active listings.
+ *
+ * Temporary legacy allowance:
+ * - Some older rows may have `status = NULL`; treat them as "active" until a cleanup pass
+ *   normalizes them. (PROD-DATA-002)
+ */
+function applyPublicProductVisibilityFilter<Q extends { or: (filters: string) => Q }>(q: Q): Q {
+  return q.or('status.eq.active,status.is.null')
+}
 
 function normalizeCategoryNode(input: unknown): Product['categories'] {
   if (!input) return null
@@ -119,15 +133,11 @@ function mapRowToProduct(p: unknown): Product {
     ? (Array.isArray(seller.user_verification) ? seller.user_verification[0] : seller.user_verification) as Record<string, unknown>
     : null
 
-  const rawProduct = p as unknown as { is_boosted?: boolean | null; boost_expires_at?: string | null }
-  const activeBoost = isBoostActive({
-    is_boosted: rawProduct.is_boosted ?? null,
-    boost_expires_at: rawProduct.boost_expires_at ?? null,
-  })
+  const rawProduct = p as unknown as { is_boosted?: boolean | null }
 
   return {
     ...(p as unknown as Product),
-    is_boosted: activeBoost,
+    is_boosted: rawProduct.is_boosted ?? null,
     categories,
     category_slug: categories?.slug ?? null,
     store_slug: (typeof seller?.username === 'string') ? (seller.username as string) : null,
@@ -276,20 +286,16 @@ export async function getProductsByCategorySlug(
     const supabase = createStaticClient()
     // NOTE: NO new Date() here - would cause ISR write storm per Vercel docs
 
-    // Note: is_featured is a legacy field - we use is_boosted + boost_expires_at for promoted listings
-    const productSelect =
-      `id, title, price, seller_id, list_price, is_on_sale, sale_percent, sale_end_date, rating, review_count, images, is_boosted, boost_expires_at, created_at, ships_to_bulgaria, ships_to_uk, ships_to_europe, ships_to_usa, ships_to_worldwide, pickup_only, free_shipping, category_id, slug, 
-     seller:profiles!seller_id(id,username,avatar_url,tier,account_type,is_verified_business,user_verification(email_verified,phone_verified,id_verified)), 
-     categories!inner(id,slug,name,name_bg,icon)`
-
     const makeBaseQuery = () => {
       // OPTIMIZED: Flat category join - no 4-level nesting!
       // Use getCategoryPath() separately when breadcrumbs are needed.
       // Note: user_verification joins to profiles via user_id, and we join profiles via seller_id
       let q = supabase
         .from('products')
-        .select(productSelect)
+        .select(PRODUCT_LIST_BY_CATEGORY_SLUG_SELECT)
         .eq('categories.slug', categorySlug)
+
+      q = applyPublicProductVisibilityFilter(q)
 
       // Apply shipping zone filter (WW = show all, so no filter)
       if (zone && zone !== 'WW') {
@@ -332,19 +338,16 @@ export async function getProducts(type: QueryType, limit = 36, zone?: ShippingRe
     const supabase = createStaticClient()
     // NOTE: NO new Date() here - would cause ISR write storm per Vercel docs
 
-    // Note: is_featured is a legacy field - we use is_boosted + boost_expires_at for promoted listings
-    const productSelect = `id, title, price, seller_id, list_price, is_on_sale, sale_percent, sale_end_date, rating, review_count, images, is_boosted, boost_expires_at, created_at, ships_to_bulgaria, ships_to_uk, ships_to_europe, ships_to_usa, ships_to_worldwide, pickup_only, free_shipping, category_id, slug, 
-      seller:profiles!seller_id(id,username,avatar_url,tier,account_type,is_verified_business,user_verification(email_verified,phone_verified,id_verified)), 
-      categories(id,slug,name,name_bg,icon)`
-
     const makeBaseQuery = () => {
       // OPTIMIZED: Flat category join - no 4-level nesting!
       // Use getCategoryPath() separately when breadcrumbs are needed.
       // Note: user_verification joins to profiles via user_id, and we join profiles via seller_id
       let q =
         type === 'deals'
-          ? supabase.from('deal_products').select(productSelect)
-          : supabase.from('products').select(productSelect)
+          ? supabase.from('deal_products').select(PRODUCT_LIST_SELECT)
+          : supabase.from('products').select(PRODUCT_LIST_SELECT)
+
+      q = applyPublicProductVisibilityFilter(q)
 
       // Apply shipping zone filter (WW = show all, so no filter)
       if (zone && zone !== 'WW') {
@@ -410,7 +413,7 @@ export async function getProducts(type: QueryType, limit = 36, zone?: ShippingRe
     }
 
     // Map to Product type
-    // NOTE: For 'featured' type, caller must filter expired boosts post-cache using isBoostActive()
+    // NOTE: For 'featured' type, caller must filter expired boosts post-cache (boost_expires_at > now).
     // This keeps the cache deterministic (no new Date() in output)
     return (data || [])
       .map(mapRowToProduct)
@@ -433,14 +436,11 @@ async function getProductById(id: string): Promise<Product | null> {
 
   const supabase = createStaticClient()
 
-  // Note: is_featured is a legacy field - we use is_boosted + boost_expires_at for promoted listings
-  const productSelect =
-    'id,title,price,seller_id,category_id,slug,description,condition,brand_id,images,is_boosted,boost_expires_at,is_on_sale,list_price,sale_percent,sale_end_date,rating,review_count,pickup_only,ships_to_bulgaria,ships_to_uk,ships_to_europe,ships_to_usa,ships_to_worldwide,free_shipping,created_at,updated_at,status,stock,tags,seller_city,listing_type,meta_title,meta_description,track_inventory,weight,weight_unit,attributes' as const
-
   const { data, error } = await supabase
     .from('products')
-    .select(productSelect)
+    .select(PRODUCT_BY_ID_SELECT)
     .eq('id', id)
+    .or('status.eq.active,status.is.null')
     .single()
 
   if (error) return null
@@ -525,11 +525,6 @@ export function normalizeProductRow(p: {
     parent?: unknown
   } | null
 }): Product {
-  const activeBoost = isBoostActive({
-    is_boosted: p.is_boosted ?? null,
-    boost_expires_at: p.boost_expires_at ?? null,
-  })
-
   const result: Product = {
     id: p.id,
     title: p.title,
@@ -547,7 +542,9 @@ export function normalizeProductRow(p: {
     seller_city: p.seller_city ?? null,
     product_images: p.product_images ?? null,
     product_attributes: p.product_attributes ?? null,
-    is_boosted: activeBoost,
+    // NOTE: This is a raw flag. Active boost status depends on `boost_expires_at` vs "now",
+    // and must be computed outside cached functions to keep cache output deterministic.
+    is_boosted: p.is_boosted ?? null,
     boost_expires_at: p.boost_expires_at ?? null,
     slug: p.slug ?? null,
     store_slug: p.seller?.username ?? null,

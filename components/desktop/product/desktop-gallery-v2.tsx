@@ -60,6 +60,8 @@ export function DesktopGalleryV2({
   if (!images || images.length === 0) return null
 
   const activeImage = images[activeIndex] ?? images[0]
+  const getAlt = (img: GalleryImage) =>
+    t(img.altKey as never, img.altParams as never)
 
   return (
     <div className={cn("flex flex-col gap-3", className)}>
@@ -80,7 +82,7 @@ export function DesktopGalleryV2({
           >
             <Image
               src={activeImage?.src ?? "/placeholder.svg"}
-              alt={activeImage?.alt ?? "Product image"}
+              alt={activeImage ? getAlt(activeImage) : t("imagePreview")}
               fill
               className={cn(
                 "object-cover transition-transform duration-500 cursor-zoom-in",
@@ -148,7 +150,7 @@ export function DesktopGalleryV2({
             >
               <Image
                 src={img.src}
-                alt={img.alt}
+                alt={getAlt(img)}
                 fill
                 className="object-cover"
                 sizes="64px"

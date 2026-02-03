@@ -19,6 +19,7 @@
 | **Agent workflow** | [WORKFLOW.md](./WORKFLOW.md) |
 | Legacy agent fleet roadmap (deprecated) | [agents/AGENTS_PHASES.md](./agents/AGENTS_PHASES.md) |
 | Docs system plan | [DOCS-PLAN.md](./DOCS-PLAN.md) |
+| Refactor program overview | [refactor.md](./refactor.md) |
 | What is Treido? | [01-PRD.md](./01-PRD.md) |
 | What's built? | [02-FEATURES.md](./02-FEATURES.md) |
 | How is it structured? | [03-ARCHITECTURE.md](./03-ARCHITECTURE.md) |
@@ -49,6 +50,7 @@
 | — | [AGENTS.md](./AGENTS.md) | Reference | Agent entry + rails | ✅ |
 | — | [WORKFLOW.md](./WORKFLOW.md) | Reference | Agent workflow | ✅ |
 | — | [DOCS-PLAN.md](./DOCS-PLAN.md) | Reference | Documentation system plan | ✅ |
+| — | [refactor.md](./refactor.md) | Reference | Refactor program overview + pointers | ✅ |
 | 0 | [00-INDEX.md](./00-INDEX.md) | Index | Entry point | ✅ |
 | 1 | [01-PRD.md](./01-PRD.md) | Concept | Product vision & scope | ✅ |
 | 2 | [02-FEATURES.md](./02-FEATURES.md) | Reference | Feature checklist | ✅ |
@@ -113,9 +115,10 @@ Status:   See 02-FEATURES.md (progress summary at top)
 
 | Resource | Location |
 |----------|----------|
+| Refactor workspace (active) | `.codex/refactor/` |
 | UI refactor docs | `docs/archive/uirefactor/` (historical) |
-| Refactor snapshots | `docs/archive/refactor-2026-02-02/` |
-| Production snapshots | `docs/archive/production-2026-02-02/` |
+| Refactor snapshot (2026-02-02) | `docs/archive/refactor-2026-02-02/` |
+| Production snapshot (2026-02-02) | `docs/archive/production-2026-02-02/` |
 | Public docs | `docs-site/` (customer-facing) |
 | E2E tests | `e2e/` |
 | Unit tests | `__tests__/` |
@@ -136,4 +139,4 @@ Status:   See 02-FEATURES.md (progress summary at top)
 
 ---
 
-*Last updated: 2026-02-02*
+*Last updated: 2026-02-03*

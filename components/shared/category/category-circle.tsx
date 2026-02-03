@@ -4,7 +4,7 @@ import * as React from "react"
 
 import { Link } from "@/i18n/routing"
 import { cn } from "@/lib/utils"
-import { type IconSize } from "@/lib/category-icons"
+import { type IconSize } from "@/components/shared/category/category-icons"
 
 import { CategoryCircleVisual } from "./category-circle-visual"
 

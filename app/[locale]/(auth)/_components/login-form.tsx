@@ -107,7 +107,7 @@ export function LoginForm({
       <div className="flex flex-col gap-4">
         {state?.error && (
           <div className="p-3 text-sm text-destructive bg-destructive/10 border border-destructive/20 rounded-md">
-            {state.error}
+            {t(state.error as never)}
           </div>
         )}
 
@@ -142,7 +142,9 @@ export function LoginForm({
               <FieldError id="email-error">
                 {showClientEmailError
                   ? t("invalidEmail")
-                  : state?.fieldErrors?.email}
+                  : state?.fieldErrors?.email
+                    ? t(state.fieldErrors.email as never)
+                    : null}
               </FieldError>
             </FieldContent>
           </Field>
@@ -193,7 +195,7 @@ export function LoginForm({
                 </button>
               </div>
               <FieldError id="password-error">
-                {state?.fieldErrors?.password}
+                {state?.fieldErrors?.password ? t(state.fieldErrors.password as never) : null}
               </FieldError>
             </FieldContent>
           </Field>

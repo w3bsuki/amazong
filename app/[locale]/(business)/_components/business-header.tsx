@@ -8,6 +8,7 @@ import { SidebarTrigger } from "@/components/layout/sidebar/sidebar"
 import { Badge } from "@/components/ui/badge"
 import { BusinessCommandPalette } from "./business-command-palette"
 import { BusinessNotifications } from "./business-notifications"
+import { BUSINESS_PAGE_TITLES, type BusinessRoute } from "../dashboard/_lib/routes"
 import {
   IconPlus,
   IconExternalLink,
@@ -18,20 +19,6 @@ interface BusinessHeaderProps {
   isVerified?: boolean
   subscriptionTier?: string
   hasDashboardAccess?: boolean
-}
-
-// Map routes to page titles
-const PAGE_TITLES: Record<string, string> = {
-  "/dashboard": "Home",
-  "/dashboard/orders": "Orders",
-  "/dashboard/products": "Products",
-  "/dashboard/inventory": "Inventory",
-  "/dashboard/customers": "Customers",
-  "/dashboard/discounts": "Discounts",
-  "/dashboard/marketing": "Marketing",
-  "/dashboard/analytics": "Analytics",
-  "/dashboard/accounting": "Finances",
-  "/dashboard/settings": "Settings",
 }
 
 export function BusinessHeader({
@@ -47,16 +34,16 @@ export function BusinessHeader({
   // Get page title based on current route
   const getPageTitle = () => {
     // Check for exact match first
-    if (PAGE_TITLES[normalizedPath]) {
-      return PAGE_TITLES[normalizedPath]
+    if (normalizedPath in BUSINESS_PAGE_TITLES) {
+      return BUSINESS_PAGE_TITLES[normalizedPath as BusinessRoute]
     }
     // Check for partial match (e.g., /dashboard/orders/123)
-    for (const [route, title] of Object.entries(PAGE_TITLES)) {
+    for (const [route, title] of Object.entries(BUSINESS_PAGE_TITLES)) {
       if (normalizedPath.startsWith(route) && route !== "/dashboard") {
         return title
       }
     }
-    return "Home"
+    return BUSINESS_PAGE_TITLES["/dashboard"]
   }
 
   return (

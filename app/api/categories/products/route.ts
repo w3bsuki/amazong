@@ -95,6 +95,9 @@ async function getTopRatedProductsBySubcategoryCached(parentId: string): Promise
         category_id
       `
     )
+    // Public browsing surfaces must not show non-active listings.
+    // Temporary legacy allowance: status can be NULL for older rows.
+    .or("status.eq.active,status.is.null")
     .in("category_id", subcategoryIds)
     .order("rating", { ascending: false })
     .order("review_count", { ascending: false })

@@ -124,6 +124,7 @@
     },
     "Categories": {
         "title": "Categories",
+        "shortName": "{slug, select, electronics {Tech} automotive {Auto} home {Home} home_kitchen {Home} jewelry_watches {Jewelry} movies_music {Media} services {Services} collectibles {Collect} e_mobility {E-Mobility} health_wellness {Health} tools_home {Tools} baby_kids {Kids} baby {Kids} other {name}}",
         "headerTitleAll": "All Categories",
         "metaDescription": "Browse all product categories at Treido. Find electronics, fashion, home & garden, and more.",
         "bannerDescription": "Browse products in this category",
@@ -268,9 +269,34 @@
         "overnight": "Overnight",
         "condition": {
             "new": "New",
+            "newWithTags": "New with Tags",
+            "newWithoutTags": "New without Tags",
             "likeNew": "Like New",
+            "usedExcellent": "Used - Excellent",
+            "usedGood": "Used - Good",
+            "usedFair": "Used - Fair",
+            "refurbished": "Refurbished",
             "usedShort": "Used",
+            "used": "Used",
+            "good": "Good",
+            "fair": "Fair",
             "refurbShort": "Refurb"
+        },
+        "badges": {
+            "labels": {
+                "mileage": "Mileage",
+                "year": "Year",
+                "range": "Range",
+                "power": "Power",
+                "speed": "Speed",
+                "storage": "Storage",
+                "platform": "Platform",
+                "brand": "Brand",
+                "condition": "Condition"
+            },
+            "values": {
+                "kilometers": "{value} km"
+            }
         },
         "b2b": {
             "moqShort": "MOQ",
@@ -285,6 +311,7 @@
         "addToWishlist": "Add to wishlist",
         "removeFromWishlist": "Remove from wishlist",
         "noImage": "No image",
+        "imageAlt": "{title} — image {index}",
         "adBadge": "Promo",
         "inStock": "In Stock",
         "outOfStock": "Out of Stock",
@@ -1200,7 +1227,29 @@
         "oneNumber": "One number",
         "passwordSameAsOld": "New password must be different from your current password.",
         "somethingWentWrong": "Something went wrong. Please try again.",
-        "invalidEmail": "Please enter a valid email address."
+        "invalidEmail": "Please enter a valid email address.",
+        "errors": {
+            "emailRequired": "Email is required",
+            "emailInvalid": "Please enter a valid email address",
+            "passwordRequired": "Password is required",
+            "passwordMin": "Password must be at least 8 characters",
+            "passwordMax": "Password must be less than 72 characters",
+            "passwordLetter": "Password must contain at least one letter",
+            "passwordNumber": "Password must contain at least one number",
+            "passwordUppercase": "Password must contain at least one uppercase letter",
+            "passwordLowercase": "Password must contain at least one lowercase letter",
+            "nameRequired": "Name is required",
+            "nameMin": "Name must be at least 2 characters",
+            "nameMax": "Name must be less than 50 characters",
+            "usernameMin": "Username must be at least 3 characters",
+            "usernameMax": "Username must be less than 30 characters",
+            "usernameStart": "Username must start with a letter or number",
+            "usernameCharset": "Username can only contain lowercase letters, numbers, and underscores",
+            "usernameNoConsecutiveUnderscores": "Username cannot have consecutive underscores",
+            "usernameNoTrailingUnderscore": "Username cannot end with an underscore",
+            "usernameReserved": "This username is reserved",
+            "confirmPasswordRequired": "Please confirm your password"
+        }
     },
     "Account": {
         "title": "Your Account",
@@ -2548,7 +2597,79 @@
             "formProgressAriaLabel": "Form progress: {percent}%"
         },
         "checklistSidebar": {
-            "title": "Checklist"
+            "title": "Checklist",
+            "items": {
+                "photos": "Add photos",
+                "title": "Write title",
+                "category": "Select category",
+                "condition": "Choose condition",
+                "price": "Set price",
+                "description": "Add description",
+                "shipping": "Configure shipping"
+            }
+        },
+        "conditions": {
+            "newWithTags": {
+                "label": "New with tags",
+                "description": "Brand new, never worn, original tags attached"
+            },
+            "newWithoutTags": {
+                "label": "New without tags",
+                "description": "Brand new, never worn, tags removed"
+            },
+            "usedLikeNew": {
+                "label": "Like new",
+                "description": "Worn once or twice, no visible signs of wear"
+            },
+            "usedExcellent": {
+                "label": "Used - Excellent",
+                "description": "Gently used, minimal signs of wear"
+            },
+            "usedGood": {
+                "label": "Used - Good",
+                "description": "Used with some signs of wear"
+            },
+            "usedFair": {
+                "label": "Used - Fair",
+                "description": "Visible wear, may have minor flaws"
+            }
+        },
+        "formats": {
+            "fixed": {
+                "label": "Fixed price",
+                "description": "Buy it now"
+            },
+            "auction": {
+                "label": "Auction",
+                "description": "Accept bids"
+            }
+        },
+        "validation": {
+            "invalidImageUrl": "Invalid image URL",
+            "invalidThumbnailUrl": "Invalid thumbnail URL",
+            "attributeNameRequired": "Attribute name is required",
+            "attributeValueRequired": "Attribute value is required",
+            "photosRequired": "Add at least 1 photo",
+            "photosMax": "Maximum 12 photos allowed",
+            "titleMin": "Title must be at least 5 characters",
+            "titleMax": "Title can't exceed 80 characters",
+            "titleInvalidCharacters": "Title contains invalid characters",
+            "categoryRequired": "Select a category",
+            "conditionRequired": "Select a condition",
+            "descriptionRequired": "Description is required",
+            "descriptionMax": "Description can't exceed 4,000 characters",
+            "descriptionMin": "Description must be at least 50 characters",
+            "priceRequired": "Enter a price",
+            "priceInvalid": "Enter a valid price greater than 0",
+            "priceMax": "Price can't exceed 999,999.99",
+            "compareAtInvalid": "Invalid compare-at price",
+            "compareAtMustBeHigher": "Compare-at price must be higher than your price",
+            "quantityInteger": "Quantity must be a whole number",
+            "quantityMin": "Quantity must be at least 1",
+            "quantityMax": "Quantity can't exceed 9,999",
+            "shippingPriceInvalid": "Invalid shipping price",
+            "shippingRegionRequired": "Select at least one region",
+            "tagsMax": "Maximum 10 tags"
         },
         "brandCombobox": {
             "defaultPlaceholder": "Select brand...",
@@ -3268,6 +3389,9 @@
         "suggestionOne": "Find me a phone under 500 BGN",
         "suggestionTwo": "Show me running sneakers",
         "suggestionThree": "Best laptop for school",
+        "userLabel": "You",
+        "statusOnline": "Online",
+        "topBadge": "Top",
         "send": "Send",
         "stop": "Stop",
         "toolRunning": "Searching…",
@@ -3281,6 +3405,9 @@
         "sellAutofill": "Generate draft",
         "imageUrlPlaceholder": "https://…",
         "loading": "Finding products…",
+        "errorTitle": "Something went wrong",
+        "errorDescription": "Please try again. If the issue persists, come back later.",
+        "retry": "Retry",
         "requestFailed": "Request failed"
     },
     "AccountPlansUpgrade": {
@@ -3461,6 +3588,68 @@
             "startBrowsing": "Start browsing",
             "listFirstItem": "List your first item",
             "completeStore": "Complete your store"
+        }
+    },
+    "Orders": {
+        "status": {
+            "pending": {
+                "label": "Pending",
+                "description": "Waiting for seller confirmation"
+            },
+            "received": {
+                "label": "Received",
+                "description": "Seller confirmed the order"
+            },
+            "processing": {
+                "label": "Processing",
+                "description": "Order is being prepared"
+            },
+            "shipped": {
+                "label": "Shipped",
+                "description": "Order is on the way"
+            },
+            "delivered": {
+                "label": "Delivered",
+                "description": "Order has been delivered"
+            },
+            "cancelled": {
+                "label": "Cancelled",
+                "description": "Order was cancelled"
+            }
+        },
+        "actions": {
+            "markAsReceived": "Mark as Received",
+            "startProcessing": "Start Processing",
+            "markAsShipped": "Mark as Shipped",
+            "markAsDelivered": "Mark as Delivered",
+            "chat": "Chat",
+            "updating": "Updating...",
+            "shipOrder": "Ship Order",
+            "shipping": "Shipping..."
+        },
+        "shipping": {
+            "dialogDescription": "Add tracking information for this shipment (optional but recommended).",
+            "carrierLabel": "Shipping Carrier",
+            "carrierPlaceholder": "Select carrier",
+            "trackingNumberLabel": "Tracking Number",
+            "trackingNumberPlaceholder": "Enter tracking number"
+        },
+        "shippingCarriers": {
+            "speedy": "Speedy",
+            "econt": "Econt",
+            "dhl": "DHL",
+            "ups": "UPS",
+            "fedex": "FedEx",
+            "bulgarian_posts": "Bulgarian Posts",
+            "other": "Other"
+        },
+        "toasts": {
+            "orderMarkedAs": "Order marked as {status}",
+            "orderMarkedAsShipped": "Order marked as shipped!"
+        },
+        "errors": {
+            "failedToUpdateStatus": "Failed to update status",
+            "unexpectedError": "An error occurred"
         }
     }
 }

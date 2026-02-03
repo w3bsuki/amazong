@@ -510,6 +510,8 @@ async function deleteAccount(): Promise<{
       return { success: false, error: "Not authenticated" }
     }
 
+    const userId = user.id
+
     // Use admin client to delete user
     const adminClient = await createAdminClient()
     if (!adminClient) {
@@ -517,7 +519,7 @@ async function deleteAccount(): Promise<{
     }
 
     // Delete user from auth (this will cascade to profiles due to RLS)
-    const { error: deleteError } = await adminClient.auth.admin.deleteUser(user.id)
+    const { error: deleteError } = await adminClient.auth.admin.deleteUser(userId)
 
     if (deleteError) {
       console.error("deleteAccount error:", deleteError)

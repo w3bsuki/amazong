@@ -72,6 +72,9 @@ export default async function proxy(request: NextRequest) {
   return await updateSession(request, response);
 }
 
+// Named export for tests and internal usage.
+export { proxy }
+
 export const config = {
   // Run proxy only for actual app routes.
   // Avoid executing on:

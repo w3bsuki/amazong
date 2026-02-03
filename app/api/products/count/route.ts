@@ -96,6 +96,9 @@ export async function POST(request: NextRequest): Promise<NextResponse<CountResp
     let countQuery = supabase
       .from("products")
       .select("id", { count: "planned", head: true })
+      // Public browsing surfaces must not show non-active listings.
+      // Temporary legacy allowance: status can be NULL for older rows.
+      .or("status.eq.active,status.is.null")
 
     // Category filter via category_ancestors (GIN index)
     if (categoryId) {

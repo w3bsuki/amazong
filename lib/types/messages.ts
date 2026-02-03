@@ -168,24 +168,3 @@ export interface MessageContextValue {
   refreshUnreadCount: () => Promise<void>
   sendTypingIndicator: () => void
 }
-
-// Default context value for use outside provider
-export const DEFAULT_MESSAGE_CONTEXT: MessageContextValue = {
-  conversations: [],
-  currentConversation: null,
-  messages: [],
-  totalUnreadCount: 0,
-  isLoading: false,
-  isLoadingMessages: false,
-  error: null,
-  currentUserId: null,
-  isOtherUserTyping: false,
-  loadConversations: async () => {},
-  selectConversation: async () => {},
-  sendMessage: async () => {},
-  markAsRead: async () => {},
-  startConversation: async () => "",
-  closeConversation: async () => {},
-  refreshUnreadCount: async () => {},
-  sendTypingIndicator: () => {},
-}

@@ -3,7 +3,7 @@
 import { redirect } from "@/i18n/routing"
 import { headers } from "next/headers"
 import { createClient, createStaticClient } from "@/lib/supabase/server"
-import { loginSchema, signUpSchema } from "@/lib/validations/auth"
+import { loginSchema, signUpSchema } from "@/lib/validation/auth"
 import { logger } from "@/lib/logger"
 import { z } from "zod"
 
@@ -21,27 +21,23 @@ function sanitizeAuthError(error: Error | { message: string }): string {
   const msg = error.message.toLowerCase()
 
   if (msg.includes("invalid login credentials")) {
-    return "Invalid email or password"
+    return "invalidCredentials"
   }
   if (msg.includes("email not confirmed")) {
-    return "Please verify your email before signing in"
+    return "emailNotConfirmed"
   }
   if (msg.includes("rate limit") || msg.includes("too many requests")) {
-    return "Too many attempts. Please try again later."
+    return "rateLimitError"
   }
   if (msg.includes("user already registered") || msg.includes("already been registered")) {
-    return "An account with this email may already exist. Try signing in or resetting your password."
+    return "emailAlreadyRegistered"
   }
-  if (msg.includes("password")) {
-    return error.message // Password-specific errors are safe to show
-  }
-  if (msg.includes("network") || msg.includes("timeout") || msg.includes("fetch")) {
-    return "Connection error. Please check your internet and try again."
-  }
+  if (msg.includes("password")) return "error"
+  if (msg.includes("network") || msg.includes("timeout") || msg.includes("fetch")) return "error"
 
   // Log unexpected errors for debugging but return generic message
   logger.error("[Auth] Unexpected error", error, { originalMessage: error.message })
-  return "An error occurred. Please try again."
+  return "error"
 }
 
 async function getSiteUrlFromHeaders(): Promise<string | null> {
@@ -99,23 +95,8 @@ function stripLocalePrefixFromPath(path: string, locale: "en" | "bg"): string {
 }
 
 const forgotPasswordSchema = z.object({
-  email: z.string().email("Please enter a valid email address"),
+  email: z.string().email("invalidEmail"),
 })
-
-const resetPasswordSchema = z
-  .object({
-    password: z
-      .string()
-      .min(8, "Password must be at least 8 characters")
-      .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
-      .regex(/[a-z]/, "Password must contain at least one lowercase letter")
-      .regex(/[0-9]/, "Password must contain at least one number"),
-    confirmPassword: z.string(),
-  })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: "Passwords don't match",
-    path: ["confirmPassword"],
-  })
 
 export async function checkUsernameAvailability(username: string): Promise<{ available: boolean }>
 {
@@ -164,7 +145,7 @@ export async function login(
   if (isE2E && !allowRealAuthInE2E) {
     // Keep E2E runs stable and independent from external Supabase availability.
     // Opt into real auth explicitly via E2E_REAL_AUTH=true.
-    return { ...prevState, error: "Invalid login credentials", success: false }
+    return { ...prevState, error: "invalidCredentials", success: false }
   }
 
   let supabase
@@ -218,7 +199,7 @@ export async function signUp(
   const usernameLower = parsed.data.username.toLowerCase()
   const availability = await checkUsernameAvailability(usernameLower)
   if (!availability.available) {
-    return { ...prevState, error: "This username is already taken", success: false }
+    return { ...prevState, error: "usernameAlreadyTaken", success: false }
   }
 
   const supabase = await createClient()
@@ -268,7 +249,11 @@ export async function requestPasswordReset(
   })
 
   if (!parsed.success) {
-    return { ...prevState, fieldErrors: { email: parsed.error.issues[0]?.message ?? "Invalid email" }, success: false }
+    return {
+      ...prevState,
+      fieldErrors: { email: parsed.error.issues[0]?.message ?? "invalidEmail" },
+      success: false,
+    }
   }
 
   const supabase = await createClient()

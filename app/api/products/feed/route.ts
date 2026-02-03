@@ -111,6 +111,10 @@ export async function GET(request: NextRequest) {
         ? supabase.from("deal_products").select(dealsSelect, { count: "exact" })
         : supabase.from("products").select(baseSelect, { count: "exact" })
 
+    // Public browsing surfaces must not show non-active listings.
+    // Temporary legacy allowance: status can be NULL for older rows.
+    query = query.or("status.eq.active,status.is.null")
+
     // Apply Category Filter
     if (category && category !== 'all') {
       query = query.eq('categories.slug', category)

@@ -3,7 +3,6 @@
 import { useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { ArrowClockwise, WarningCircle } from "@phosphor-icons/react"
-import { PageShell } from "@/components/shared/page-shell"
 import {
   NextIntlClientProvider,
   useTranslations,
@@ -39,7 +38,7 @@ function GlobalErrorContent({
   }, [error])
 
   return (
-    <PageShell className="flex flex-col items-center justify-center p-4">
+    <div className="flex min-h-dvh flex-col items-center justify-center bg-background p-4">
       <div className="mx-auto max-w-md text-center">
         <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-card ring-1 ring-destructive">
           <WarningCircle className="h-10 w-10 text-destructive" weight="duotone" />
@@ -61,7 +60,7 @@ function GlobalErrorContent({
           </Button>
         </div>
       </div>
-    </PageShell>
+    </div>
   )
 }
 

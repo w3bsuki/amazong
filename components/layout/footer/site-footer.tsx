@@ -70,10 +70,10 @@ export function SiteFooter() {
     // Routes where footer should be visible on mobile
     const footerVisibleRoutes = [
         "/", // Homepage/landing
-        "/about", "/careers", "/blog", "/investors", // Company
+        "/about", // Company
         "/terms", "/privacy", "/cookies", "/accessibility", // Legal
         "/customer-service", "/contact", "/help", "/returns", "/security", "/feedback", // Support
-        "/affiliates", "/advertise", "/sellers", "/suppliers", // Business
+        "/sellers", // Business
     ]
     
     // Check if current route should show footer on mobile
@@ -92,9 +92,6 @@ export function SiteFooter() {
             title: t('company'),
             links: [
                 { label: t('aboutUsLink'), href: "/about" },
-                { label: t('careers'), href: "/careers" },
-                { label: t('newsAndBlog'), href: "/blog" },
-                { label: t('investors'), href: "/investors" },
             ]
         },
         {
@@ -114,10 +111,6 @@ export function SiteFooter() {
             title: t('sellAndBusiness'),
             links: [
                 { label: t('sellWithUs'), href: "/sell" },
-                { label: t('findStore'), href: "/store-locator" },
-                { label: t('affiliatesPartners'), href: "/affiliates" },
-                { label: t('advertise'), href: "/advertise" },
-                { label: t('suppliers'), href: "/suppliers" },
             ]
         },
         {
@@ -127,7 +120,6 @@ export function SiteFooter() {
                 { label: t('membershipProgram'), href: "/plans" },
                 { label: t('giftCards'), href: "/gift-cards" },
                 { label: t('giftRegistry'), href: "/registry" },
-                { label: t('freeShipping'), href: "/free-shipping" },
                 { label: t('accessibility'), href: "/accessibility" },
             ]
         },

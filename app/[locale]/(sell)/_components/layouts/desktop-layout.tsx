@@ -228,7 +228,7 @@ export function DesktopLayout({
           {/* Desktop Sidebar */}
           <aside className="hidden lg:block">
             <div className="sticky top-20 space-y-4">
-              <ChecklistSidebar items={progressItems} locale={isBg ? "bg" : "en"} />
+              <ChecklistSidebar items={progressItems} />
 
               {/* Tips Card */}
               <div className="p-4 rounded-md border border-border bg-background shadow-xs">

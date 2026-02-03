@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { useTranslations } from "next-intl"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -24,7 +25,7 @@ import {
 } from "@phosphor-icons/react"
 import { toast } from "sonner"
 import { createClient } from "@/lib/supabase/client"
-import { validatePassword, validateEmail } from "@/lib/validations/auth"
+import { validatePassword, validateEmail } from "@/lib/validation/auth"
 
 interface SecurityContentProps {
     locale: string
@@ -32,6 +33,7 @@ interface SecurityContentProps {
 }
 
 export function SecurityContent({ locale, userEmail }: SecurityContentProps) {
+    const tAuth = useTranslations("Auth")
     const [isChangePasswordOpen, setIsChangePasswordOpen] = useState(false)
     const [isChangeEmailOpen, setIsChangeEmailOpen] = useState(false)
     const [isLoading, setIsLoading] = useState(false)
@@ -52,14 +54,14 @@ export function SecurityContent({ locale, userEmail }: SecurityContentProps) {
 
     const handleChangePassword = async () => {
         // Validate password with Zod
-        const passwordValidation = validatePassword(passwordData.newPassword, locale)
+        const passwordValidation = validatePassword(passwordData.newPassword)
         if (!passwordValidation.valid) {
-            toast.error(passwordValidation.errors[0])
+            toast.error(tAuth(passwordValidation.errors[0] as never))
             return
         }
 
         if (passwordData.newPassword !== passwordData.confirmPassword) {
-            toast.error(locale === 'bg' ? 'Паролите не съвпадат' : 'Passwords do not match')
+            toast.error(tAuth("passwordsDoNotMatch"))
             return
         }
 
@@ -85,9 +87,9 @@ export function SecurityContent({ locale, userEmail }: SecurityContentProps) {
 
     const handleChangeEmail = async () => {
         // Validate email with Zod
-        const emailValidation = validateEmail(emailData.newEmail, locale)
+        const emailValidation = validateEmail(emailData.newEmail)
         if (!emailValidation.valid) {
-            toast.error(emailValidation.error!)
+            toast.error(tAuth(emailValidation.error as never))
             return
         }
 
@@ -163,13 +165,13 @@ export function SecurityContent({ locale, userEmail }: SecurityContentProps) {
 
     // Get password validation errors for display
     const passwordErrors = passwordData.newPassword.length > 0 
-        ? validatePassword(passwordData.newPassword, locale).errors 
+        ? validatePassword(passwordData.newPassword).errors 
         : []
 
     const passwordStrength = getPasswordStrength(passwordData.newPassword)
     
     // Check if password meets minimum requirements for submit button
-    const isPasswordValid = validatePassword(passwordData.newPassword, locale).valid
+    const isPasswordValid = validatePassword(passwordData.newPassword).valid
 
     return (
         <div className="space-y-4">
@@ -312,7 +314,7 @@ export function SecurityContent({ locale, userEmail }: SecurityContentProps) {
                             {passwordErrors.length > 0 && (
                                 <ul className="text-xs text-destructive space-y-0.5 mt-1">
                                     {passwordErrors.map((error, i) => (
-                                        <li key={i}>• {error}</li>
+                                        <li key={i}>• {tAuth(error as never)}</li>
                                     ))}
                                 </ul>
                             )}
@@ -328,7 +330,7 @@ export function SecurityContent({ locale, userEmail }: SecurityContentProps) {
                             />
                             {passwordData.confirmPassword && passwordData.newPassword !== passwordData.confirmPassword && (
                                 <p className="text-xs text-destructive">
-                                    {locale === 'bg' ? 'Паролите не съвпадат' : 'Passwords do not match'}
+                                    {tAuth("passwordsDoNotMatch")}
                                 </p>
                             )}
                         </div>
@@ -386,7 +388,7 @@ export function SecurityContent({ locale, userEmail }: SecurityContentProps) {
                         </Button>
                         <Button 
                             onClick={handleChangeEmail} 
-                            disabled={isLoading || !validateEmail(emailData.newEmail, locale).valid}
+                            disabled={isLoading || !validateEmail(emailData.newEmail).valid}
                         >
                             {isLoading && <SpinnerGap className="size-4 mr-2 animate-spin" />}
                             {locale === 'bg' ? 'Промени имейла' : 'Change Email'}

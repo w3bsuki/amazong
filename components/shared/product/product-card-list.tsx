@@ -114,6 +114,64 @@ export function ProductCardList({
     })
   }, [categorySlug, rootCategorySlug, condition, attributes])
 
+  const getConditionKey = (value: string): string | null => {
+    const normalized = value.toLowerCase().replace(/[\s_-]/g, "")
+    switch (normalized) {
+      case "new":
+      case "novo":
+      case "ново":
+        return "condition.new"
+      case "newwithtags":
+        return "condition.newWithTags"
+      case "newwithouttags":
+        return "condition.newWithoutTags"
+      case "likenew":
+      case "usedlikenew":
+      case "катоново":
+        return "condition.likeNew"
+      case "usedexcellent":
+        return "condition.usedExcellent"
+      case "usedgood":
+        return "condition.usedGood"
+      case "usedfair":
+        return "condition.usedFair"
+      case "refurbished":
+      case "refurb":
+      case "рефърбиш":
+        return "condition.refurbished"
+      case "used":
+      case "употребявано":
+        return "condition.used"
+      case "good":
+        return "condition.good"
+      case "fair":
+        return "condition.fair"
+      default:
+        return null
+    }
+  }
+
+  const formatBadgeValue = (badge: { key: string; value: string }): string => {
+    if (badge.key === "condition") {
+      const key = getConditionKey(badge.value)
+      return key ? t(key) : badge.value
+    }
+
+    if (badge.key === "mileage" || badge.key === "range") {
+      const numeric = Number(badge.value)
+      const formatted = Number.isFinite(numeric)
+        ? new Intl.NumberFormat(locale).format(numeric)
+        : badge.value
+      return t("badges.values.kilometers", { value: formatted })
+    }
+
+    return badge.value
+  }
+
+  const getBadgeLabel = (badgeKey: string): string => {
+    return t(`badges.labels.${badgeKey}` as never)
+  }
+
   // Fallback condition label for categories that show condition
   const conditionLabel = React.useMemo(() => {
     // If smart badges already include condition, don't duplicate
@@ -121,11 +179,8 @@ export function ProductCardList({
     // If this category shouldn't show condition, skip
     if (!shouldShowConditionBadge(categorySlug || null, rootCategorySlug || null)) return null
     if (!condition) return null
-    const c = condition.toLowerCase()
-    if (c === "new" || c === "novo" || c === "ново") return t("condition.new")
-    if (c === "like_new" || c === "like new" || c === "като ново") return t("condition.likeNew")
-    if (c === "used" || c === "употребявано") return t("condition.usedShort")
-    if (c === "refurbished" || c === "рефърбиш") return t("condition.refurbShort")
+    const key = getConditionKey(condition)
+    if (key) return t(key)
     return condition.slice(0, 8)
   }, [condition, t, smartBadges, categorySlug, rootCategorySlug])
 
@@ -233,10 +288,11 @@ export function ProductCardList({
           {smartBadges.map((badge) => (
             <Badge 
               key={badge.key} 
-              variant={badge.key === "condition" ? getConditionBadgeVariant(condition) : "condition"}
+              variant={badge.key === "condition" ? getConditionBadgeVariant(badge.value) : "condition"}
               className="text-2xs"
+              title={`${getBadgeLabel(badge.key)}: ${formatBadgeValue(badge)}`}
             >
-              {badge.value}
+              {formatBadgeValue(badge)}
             </Badge>
           ))}
           {/* Fallback condition badge if no smart badges and condition applies */}

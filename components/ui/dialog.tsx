@@ -56,7 +56,7 @@ const blurClasses: Record<DialogOverlayBlur, string> = {
   xl: "backdrop-blur-xl",
 }
 
-interface DialogOverlayProps extends React.ComponentProps<"button"> {
+interface DialogOverlayProps extends React.ComponentProps<typeof DialogPrimitive.Overlay> {
   /**
    * Blur intensity for the background overlay.
    * @default "sm" (matches original Dialog behavior)
@@ -64,37 +64,24 @@ interface DialogOverlayProps extends React.ComponentProps<"button"> {
   blur?: DialogOverlayBlur
 }
 
-/**
- * Custom Dialog Overlay - prevents scroll without react-remove-scroll
- * 
- * We intentionally do NOT use Radix's Overlay here (same pattern as Drawer).
- * Radix Dialog's overlay wraps in react-remove-scroll, which modifies body
- * styles and causes sticky header flash. Using our own overlay with manual
- * scroll prevention preserves sticky headers while keeping the dialog modal.
- */
 function DialogOverlay({
   className,
   blur = "sm",
   ...props
 }: DialogOverlayProps) {
   return (
-    <DialogClose asChild>
-      <button
-        type="button"
-        tabIndex={-1}
-        aria-hidden="true"
-        data-slot="dialog-overlay"
-        className={cn(
-          "fixed inset-0 z-50 bg-overlay-dark touch-none outline-none",
-          blurClasses[blur],
-          className,
-        )}
-        onWheel={(e) => {
-          e.preventDefault()
-        }}
-        {...props}
-      />
-    </DialogClose>
+    <DialogPrimitive.Overlay
+      data-slot="dialog-overlay"
+      className={cn(
+        "fixed inset-0 z-50 bg-overlay-dark",
+        "data-[state=open]:animate-in data-[state=closed]:animate-out",
+        "data-[state=open]:fade-in data-[state=closed]:fade-out",
+        "duration-200 ease-out",
+        blurClasses[blur],
+        className,
+      )}
+      {...props}
+    />
   )
 }
 
@@ -127,6 +114,10 @@ function DialogContent({
         data-slot="dialog-content"
         className={cn(
           'bg-background fixed top-1/2 left-1/2 z-50 grid w-full -translate-x-1/2 -translate-y-1/2 gap-2 border shadow-modal outline-none',
+          "data-[state=open]:animate-in data-[state=closed]:animate-out",
+          "data-[state=open]:fade-in data-[state=closed]:fade-out",
+          "data-[state=open]:zoom-in data-[state=closed]:zoom-out",
+          "duration-200 ease-out",
           // Size & shape variants
           variant === 'fullWidth'
             ? 'max-h-dialog w-dialog rounded-xl p-0 md:max-w-6xl lg:max-w-screen-xl'

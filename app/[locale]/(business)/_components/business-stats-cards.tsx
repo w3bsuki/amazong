@@ -1,6 +1,7 @@
 import { IconTrendingUp, IconBox, IconShoppingCart, IconCurrencyDollar, IconEye, IconStar } from "@tabler/icons-react"
 
 import { Badge } from "@/components/ui/badge"
+import { formatCurrency } from "@/app/[locale]/_lib/format-currency"
 import {
   Card,
   CardAction,
@@ -22,14 +23,6 @@ interface BusinessStatsProps {
 }
 
 export function BusinessStatsCards({ totals }: BusinessStatsProps) {
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'BGN',
-      maximumFractionDigits: 0,
-    }).format(value)
-  }
-
   return (
     <div className="grid grid-cols-2 gap-2 sm:gap-4 px-4 lg:px-6 @xl/main:grid-cols-2 @5xl/main:grid-cols-5">
       <Card className="@container/card">
@@ -39,7 +32,7 @@ export function BusinessStatsCards({ totals }: BusinessStatsProps) {
             Revenue (30d)
           </CardDescription>
           <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-            {formatCurrency(totals.revenue)}
+            {formatCurrency(totals.revenue, { locale: "en-US", maximumFractionDigits: 0 })}
           </CardTitle>
           <CardAction>
             <Badge variant="outline" className="border-success/20 bg-success/10 text-success">

@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server"
+import { NextRequest, NextResponse } from "next/server"
 import { streamText, convertToModelMessages, type ModelMessage, type UIMessage } from "ai"
 import { z } from "zod"
 
@@ -7,6 +7,7 @@ import { getAiChatModel, getAiFallbackModel } from "@/lib/ai/models"
 import { isAiAssistantEnabled, getGroqApiKey } from "@/lib/ai/env"
 import { isNextPrerenderInterrupted } from "@/lib/next/is-next-prerender-interrupted"
 import { logger } from "@/lib/logger"
+import { createRouteHandlerClient } from "@/lib/supabase/server"
 
 const AssistantChatRequestSchema = z.object({
   messages: z.array(z.any()).max(50),
@@ -45,9 +46,21 @@ function isRateLimitError(error: unknown): boolean {
   return false
 }
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
+  const { supabase, applyCookies } = createRouteHandlerClient(request)
+  const json = (body: unknown, init?: Parameters<typeof NextResponse.json>[1]) =>
+    applyCookies(NextResponse.json(body, init))
+
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) {
+    return json(
+      { error: { code: "UNAUTHORIZED" } },
+      { status: 401, headers: { "Cache-Control": "private, no-store" } },
+    )
+  }
+
   if (!isAiAssistantEnabled()) {
-    return NextResponse.json(
+    return json(
       { error: { code: "AI_DISABLED" } },
       { status: 503, headers: { "Cache-Control": "private, no-store" } },
     )
@@ -57,7 +70,7 @@ export async function POST(request: Request) {
     const body = await request.json()
     const parsed = AssistantChatRequestSchema.safeParse(body)
     if (!parsed.success) {
-      return NextResponse.json(
+      return json(
         { error: { code: "BAD_REQUEST" } },
         { status: 400, headers: { "Cache-Control": "private, no-store" } },
       )
@@ -125,9 +138,22 @@ export async function POST(request: Request) {
   } catch (error) {
     if (isNextPrerenderInterrupted(error)) throw error
     logger.error("[AI Assistant] chat route error", error)
-    return NextResponse.json(
+    return json(
       { error: { code: "INTERNAL" } },
       { status: 500, headers: { "Cache-Control": "private, no-store" } },
     )
   }
+}
+
+export async function GET() {
+  return NextResponse.json(
+    { error: { code: "METHOD_NOT_ALLOWED" } },
+    {
+      status: 405,
+      headers: {
+        Allow: "POST",
+        "Cache-Control": "private, no-store",
+      },
+    },
+  )
 }

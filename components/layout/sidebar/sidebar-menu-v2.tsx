@@ -294,10 +294,7 @@ export function SidebarMenuV2({ user, triggerClassName, userStats }: SidebarMenu
                 {/* ================================================================
                     MAIN CONTENT - App-focused account hub
                 ================================================================ */}
-                <div
-                    data-vaul-no-drag
-                    className="flex-1 min-h-0 overflow-y-auto overscroll-contain no-scrollbar touch-pan-y"
-                >
+                <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain no-scrollbar touch-pan-y">
                     {isLoggedIn ? (
                         <>
                             {/* My Listings Section - OLX style */}

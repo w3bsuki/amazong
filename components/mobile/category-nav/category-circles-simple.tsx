@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import type { CategoryTreeNode } from "@/lib/category-tree"
-import { getCategoryShortName } from "@/lib/category-display"
+import { getCategoryName, getCategorySlugKey } from "@/lib/category-display"
 import { CategoryCircle } from "@/components/shared/category/category-circle"
 import { cn } from "@/lib/utils"
 import { useTranslations } from "next-intl"
@@ -42,6 +42,7 @@ export function CategoryCirclesSimple({
   onCategorySelect,
 }: CategoryCirclesSimpleProps) {
   const tCommon = useTranslations("Common")
+  const tCategories = useTranslations("Categories")
   const drawer = useCategoryDrawerOptional()
 
   // Handle circle click - open drawer or call callback
@@ -99,7 +100,7 @@ export function CategoryCirclesSimple({
               fallbackIconSize={18}
               fallbackIconWeight="bold"
               variant="colorful"
-              label={getCategoryShortName(category, locale)}
+              label={tCategories("shortName", { slug: getCategorySlugKey(category.slug), name: getCategoryName(category, locale) })}
               className="flex-none w-(--spacing-category-item-lg)"
               labelClassName={cn(
                 "w-full text-2xs text-center leading-tight line-clamp-1 px-0 mt-0.5",

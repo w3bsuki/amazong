@@ -1,17 +1,5 @@
-import { AppHeader } from "@/components/layout/header/app-header";
-import { SiteFooter } from "@/components/layout/footer/site-footer";
-import { MobileTabBar } from "@/components/mobile/mobile-tab-bar";
-// MobileSearchBar is now integrated into AppHeader
-import { getCategoryHierarchy } from "@/lib/data/categories";
-import type { CategoryTreeNode } from "@/lib/category-tree";
-
 import { OnboardingProvider } from "./_providers/onboarding-provider";
-import { HeaderProvider } from "@/components/providers/header-context";
-import { Toaster } from "@/components/providers/sonner";
-import { GeoWelcomeModal } from "@/components/shared/geo-welcome-modal";
-import { CookieConsent } from "@/components/layout/cookie-consent";
-
-import { SkipLinks } from "@/components/shared/skip-links";
+import { StorefrontLayout } from "../_components/storefront-layout";
 
 /**
  * Main Layout
@@ -35,28 +23,12 @@ export default async function MainLayout({
 }) {
     const { locale } = await params;
 
-    const categories = await getCategoryHierarchy(null, 2);
-
     return (
-        <OnboardingProvider locale={locale}>
-            <HeaderProvider>
-                <div className="bg-background min-h-screen flex flex-col">      
-                    {/* Skip Links - Accessibility */}
-                    <SkipLinks />
-
-                    <AppHeader user={null} categories={categories} />
-
-                    <main id="main-content" role="main" className="flex-1 pb-20 md:pb-0">
-                        {children}
-                    </main>
-
-                    <SiteFooter />
-                    <MobileTabBar categories={categories} />
-                    <Toaster />
-                    <CookieConsent />
-                    <GeoWelcomeModal locale={locale} />
-                </div>
-            </HeaderProvider>
-        </OnboardingProvider>
+        <StorefrontLayout
+            locale={locale}
+            wrapShell={(shell) => <OnboardingProvider locale={locale}>{shell}</OnboardingProvider>}
+        >
+            {children}
+        </StorefrontLayout>
     );
 }

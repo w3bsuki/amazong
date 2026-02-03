@@ -1,4 +1,2 @@
-export default function Default() {
-  return null
-}
+export { default } from "@/app/[locale]/(main)/_components/modal-default"
 

@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useRef, useTransition } from "react"
+import { useTranslations } from "next-intl"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Field, FieldContent, FieldError, FieldLabel } from "@/components/shared/field"
@@ -38,7 +39,7 @@ import {
   GearSix,
 } from "@phosphor-icons/react"
 import { toast } from "sonner"
-import { validatePassword, validateEmail } from "@/lib/validations/auth"        
+import { validatePassword, validateEmail } from "@/lib/validation/auth"
 import { PublicProfileEditor, type PublicProfileEditorServerActions } from "./public-profile-editor"
 import { UserAvatar } from "@/components/shared/user-avatar"
 
@@ -133,6 +134,7 @@ export function ProfileContent({
   profileActions,
   publicProfileActions,
 }: ProfileContentProps) {
+  const tAuth = useTranslations("Auth")
   const [isPending, startTransition] = useTransition()
   const [isChangePasswordOpen, setIsChangePasswordOpen] = useState(false)
   const [isChangeEmailOpen, setIsChangeEmailOpen] = useState(false)
@@ -244,9 +246,9 @@ export function ProfileContent({
 
   // Handle email change
   const handleChangeEmail = async () => {
-    const emailValidation = validateEmail(emailData.newEmail, locale)
+    const emailValidation = validateEmail(emailData.newEmail)
     if (!emailValidation.valid) {
-      toast.error(emailValidation.error ?? (locale === "bg" ? "Невалиден имейл" : "Invalid email"))
+      toast.error(tAuth(emailValidation.error as never))
       return
     }
 
@@ -271,14 +273,14 @@ export function ProfileContent({
 
   // Handle password change
   const handleChangePassword = async () => {
-    const passwordValidation = validatePassword(passwordData.newPassword, locale)
+    const passwordValidation = validatePassword(passwordData.newPassword)
     if (!passwordValidation.valid) {
-      toast.error(passwordValidation.errors[0])
+      toast.error(tAuth(passwordValidation.errors[0] as never))
       return
     }
 
     if (passwordData.newPassword !== passwordData.confirmPassword) {
-      toast.error(locale === "bg" ? "Паролите не съвпадат" : "Passwords do not match")
+      toast.error(tAuth("passwordsDoNotMatch"))
       return
     }
 
@@ -322,7 +324,7 @@ export function ProfileContent({
   }
 
   const passwordStrength = getPasswordStrength(passwordData.newPassword)
-  const isPasswordValid = validatePassword(passwordData.newPassword, locale).valid
+  const isPasswordValid = validatePassword(passwordData.newPassword).valid
 
   return (
     <Tabs defaultValue="account" className="space-y-6">

@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server"
+import { NextRequest, NextResponse } from "next/server"
 import { generateObject } from "ai"
 
 import { getAiVisionModel } from "@/lib/ai/models"
@@ -11,21 +11,36 @@ import { isSafeUserProvidedUrl } from "@/lib/ai/safe-url"
 import { noStoreJson } from "@/lib/api/response-helpers"
 import { isNextPrerenderInterrupted } from "@/lib/next/is-next-prerender-interrupted"
 import { logger } from "@/lib/logger"
+import { createRouteHandlerClient } from "@/lib/supabase/server"
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
+  const { supabase, applyCookies } = createRouteHandlerClient(request)
+  const json = (body: unknown, init?: Parameters<typeof NextResponse.json>[1]) =>
+    applyCookies(NextResponse.json(body, init))
+  const noStore = (body: unknown, init?: Parameters<typeof noStoreJson>[1]) =>
+    applyCookies(noStoreJson(body, init))
+
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) {
+    return json(
+      { error: "Unauthorized" },
+      { status: 401, headers: { "Cache-Control": "private, no-store" } },
+    )
+  }
+
   if (!isAiAssistantEnabled()) {
-    return NextResponse.json({ error: "AI assistant disabled" }, { status: 404 })
+    return json({ error: "AI assistant disabled" }, { status: 404 })
   }
 
   try {
     const body = await request.json()
     const parsed = SellAutofillRequestSchema.safeParse(body)
     if (!parsed.success) {
-      return NextResponse.json({ error: "Invalid request" }, { status: 400 })
+      return json({ error: "Invalid request" }, { status: 400 })
     }
 
     if (!isSafeUserProvidedUrl(parsed.data.imageUrl)) {
-      return NextResponse.json({ error: "Invalid imageUrl" }, { status: 400 })
+      return json({ error: "Invalid imageUrl" }, { status: 400 })
     }
 
     const locale = parsed.data.locale ?? "en"
@@ -50,10 +65,10 @@ export async function POST(request: Request) {
       ],
     })
 
-    return noStoreJson({ draft: result.object })
+    return noStore({ draft: result.object })
   } catch (error) {
     if (isNextPrerenderInterrupted(error)) throw error
     logger.error("[AI Assistant] sell-autofill route error", error)
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 })
+    return json({ error: "Internal server error" }, { status: 500 })
   }
 }

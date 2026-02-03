@@ -34,6 +34,7 @@
 Always after each batch:
 
 ```bash
+pnpm -s docs:gate
 pnpm -s typecheck
 pnpm -s lint
 pnpm -s styles:gate

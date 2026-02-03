@@ -23,6 +23,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 import { formatOptions } from "@/lib/sell/schema-v4";
 import { useSellForm, useSellFormContext } from "../sell-form-provider";
+import { useTranslations } from "next-intl";
 
 // ============================================================================
 // STEP 4: PRICING - Clean iOS-style form
@@ -93,6 +94,7 @@ function QuantityStepper({
 export function StepPricing() {
   const { control, setValue, watch, formState: { errors } } = useSellForm();
   const { isBg } = useSellFormContext();
+  const tSell = useTranslations("Sell")
 
   const [currencyDrawerOpen, setCurrencyDrawerOpen] = useState(false);
 
@@ -125,7 +127,7 @@ export function StepPricing() {
         {formatOptions.map((option) => {
           const isSelected = format === option.value;
           const Icon = option.value === "fixed" ? Tag : Gavel;
-          const label = isBg ? option.labelBg : option.label;
+          const label = tSell(option.labelKey as never);
 
           return (
             <button

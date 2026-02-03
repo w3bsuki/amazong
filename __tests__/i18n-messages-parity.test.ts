@@ -39,6 +39,16 @@ function formatMissing(label: string, keys: string[]): string {
   return `${label} (${keys.length}):\n${lines.join('\n')}${suffix}`
 }
 
+function getValueAtPath(obj: Record<string, unknown>, path: string): unknown {
+  const parts = path.split('.').filter(Boolean)
+  let current: unknown = obj
+  for (const part of parts) {
+    if (current === null || typeof current !== 'object' || Array.isArray(current)) return undefined
+    current = (current as Record<string, unknown>)[part]
+  }
+  return current
+}
+
 describe('i18n messages', () => {
   it('keeps key parity between en.json and bg.json', () => {
     const en = readJsonObject('messages/en.json')
@@ -57,5 +67,35 @@ describe('i18n messages', () => {
       throw new Error(parts.join('\n\n'))
     }
   })
-})
 
+  it('includes critical UI keys (non-empty)', () => {
+    const en = readJsonObject('messages/en.json')
+    const bg = readJsonObject('messages/bg.json')
+
+    const requiredKeys = [
+      'Navigation.back',
+      'ProfilePage.listings',
+      'ProfilePage.forSale',
+      'ProfilePage.reviews',
+      'Seller.message',
+    ]
+
+    const failures: string[] = []
+
+    for (const key of requiredKeys) {
+      const enValue = getValueAtPath(en, key)
+      const bgValue = getValueAtPath(bg, key)
+
+      if (typeof enValue !== 'string' || enValue.trim().length === 0) {
+        failures.push(`messages/en.json missing or empty: ${key}`)
+      }
+      if (typeof bgValue !== 'string' || bgValue.trim().length === 0) {
+        failures.push(`messages/bg.json missing or empty: ${key}`)
+      }
+    }
+
+    if (failures.length > 0) {
+      throw new Error(failures.join('\n'))
+    }
+  })
+})

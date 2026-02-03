@@ -1,7 +1,6 @@
 import { routing, validateLocale, Link } from "@/i18n/routing"
 import { setRequestLocale, getTranslations } from "next-intl/server"
 import { getCategoryHierarchy } from "@/lib/data/categories"
-import { getCategoryShortName } from "@/lib/category-display"
 import { CaretRight, Storefront, Sparkle } from "@phosphor-icons/react/dist/ssr"
 import { CategoryCircleVisual } from "@/components/shared/category/category-circle-visual"
 import { PageShell } from "@/components/shared/page-shell"
@@ -55,6 +54,15 @@ export default async function CategoriesPage({
   // Header title for mobile contextual header
   const headerTitle = t("headerTitleAll")
 
+  const getCategoryShortName = (category: {
+    slug: string
+    name: string
+    name_bg?: string | null
+  }): string => {
+    const name = locale === "bg" ? category.name_bg ?? category.name : category.name
+    return t("shortName", { slug: category.slug, name })
+  }
+
   return (
     <PageShell>
       {/* Sync contextual header for mobile */}
@@ -95,12 +103,12 @@ export default async function CategoriesPage({
 
               <div className="flex-1 min-w-0 py-3">
                 <div className="font-medium text-sm text-foreground">
-                  {getCategoryShortName(cat, locale)}
+                  {getCategoryShortName(cat)}
                 </div>
                 {hasChildren && (
                   <div className="text-xs text-muted-foreground mt-0.5 line-clamp-2 leading-relaxed">
                     {children
-                      .map((c) => getCategoryShortName(c, locale))
+                      .map((c) => getCategoryShortName(c))
                       .join(' • ')}
                   </div>
                 )}
