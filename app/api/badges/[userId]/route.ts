@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 import { createStaticClient } from "@/lib/supabase/server"
 import { isNextPrerenderInterrupted } from "@/lib/next/is-next-prerender-interrupted"
+import { cachedJsonResponse } from "@/lib/api/response-helpers"
 
 interface RouteContext {
   params: Promise<{ userId: string }>
@@ -21,21 +22,6 @@ interface UserBadge {
   id: string
   awarded_at: string
   badge_definitions: BadgeDefinition | null
-}
-
-// Public, userId-keyed endpoint. Align caching with next.config.ts cacheLife.user.
-const CACHE_TTL_SECONDS = 60
-const CACHE_STALE_WHILE_REVALIDATE = 30
-
-function cachedJsonResponse(data: unknown, init?: ResponseInit) {
-  const res = NextResponse.json(data, init)
-  res.headers.set(
-    "Cache-Control",
-    `public, s-maxage=${CACHE_TTL_SECONDS}, stale-while-revalidate=${CACHE_STALE_WHILE_REVALIDATE}`
-  )
-  res.headers.set("CDN-Cache-Control", `public, max-age=${CACHE_TTL_SECONDS}`)
-  res.headers.set("Vercel-CDN-Cache-Control", `public, max-age=${CACHE_TTL_SECONDS}`)
-  return res
 }
 
 /**
@@ -91,7 +77,7 @@ export async function GET(request: Request, { params }: RouteContext) {
     return cachedJsonResponse({
       badges: transformedBadges,
       total: transformedBadges.length,
-    })
+    }, "shared")
     
   } catch (error) {
     if (isNextPrerenderInterrupted(error)) throw error

@@ -3,15 +3,11 @@ import { NextResponse } from "next/server"
 import { normalizeOptionalImageUrl } from "@/lib/normalize-image-url"
 import { cacheLife, cacheTag } from "next/cache"
 import { isNextPrerenderInterrupted } from "@/lib/next/is-next-prerender-interrupted"
+import { cachedJsonResponse } from "@/lib/api/response-helpers"
 
 // NOTE: This endpoint serves public data (no user cookies required).
 // In Cache Components mode, avoid Dynamic APIs like `connection()` and avoid
 // cookie-backed clients in route handlers to keep responses stable.
-
-// Align CDN cache headers with next.config.ts cacheLife.categories
-// (revalidate: 3600s, stale: 300s)
-const CACHE_TTL_SECONDS = 3600
-const CACHE_STALE_WHILE_REVALIDATE = 300
 
 const MAX_CHILDREN_DEPTH = 2
 const MAX_HIERARCHY_DEPTH = 5
@@ -102,17 +98,6 @@ function buildCategoryTree(rows: CategoryHierarchyRow[]): CategoryWithChildren[]
   }
 
   return sortChildren(rootCategories)
-}
-
-// Helper to create cached JSON response with proper headers
-function cachedJsonResponse(data: unknown) {
-  return NextResponse.json(data, {
-    headers: {
-      'Cache-Control': `public, s-maxage=${CACHE_TTL_SECONDS}, stale-while-revalidate=${CACHE_STALE_WHILE_REVALIDATE}`,
-      'CDN-Cache-Control': `public, max-age=${CACHE_TTL_SECONDS}`,
-      'Vercel-CDN-Cache-Control': `public, max-age=${CACHE_TTL_SECONDS}`,
-    }
-  })
 }
 
 async function getRootCategoriesCached() {
@@ -346,16 +331,16 @@ export async function GET(request: Request) {
 
     if (parentSlug) {
       const data = await getCategoryHierarchyCached(parentSlug, hierarchyDepth)
-      return cachedJsonResponse(data)
+      return cachedJsonResponse(data, "catalog")
     }
 
     if (includeChildren) {
       const data = await getRootWithChildrenCached(childrenDepth)
-      return cachedJsonResponse(data)
+      return cachedJsonResponse(data, "catalog")
     }
 
     const categories = await getRootCategoriesCached()
-    return cachedJsonResponse({ categories })
+    return cachedJsonResponse({ categories }, "catalog")
   } catch (error) {
     if (isNextPrerenderInterrupted(error)) throw error
     console.error("Categories API Error:", error)

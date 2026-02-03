@@ -11,6 +11,8 @@ export const CACHE_PROFILES = {
   deals: { ttl: 120, swr: 30 },
   /** Categories: 10 min cache, 2 min stale-while-revalidate (rarely changes) */
   categories: { ttl: 600, swr: 120 },
+  /** Catalog-like endpoints: 1 hour cache, 5 min stale-while-revalidate */
+  catalog: { ttl: 3600, swr: 300 },
   /** Shared/tokenized views: 1 min cache, 30s stale-while-revalidate */
   shared: { ttl: 60, swr: 30 },
   /** User data: no cache */

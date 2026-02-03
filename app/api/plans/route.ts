@@ -1,20 +1,6 @@
 import { NextResponse } from "next/server"
 import { createStaticClient } from "@/lib/supabase/server"
-
-// Public endpoint. Plans change rarely; align with next.config.ts cacheLife.categories.
-const CACHE_TTL_SECONDS = 3600
-const CACHE_STALE_WHILE_REVALIDATE = 300
-
-function cachedJsonResponse(data: unknown, init?: ResponseInit) {
-  const res = NextResponse.json(data, init)
-  res.headers.set(
-    "Cache-Control",
-    `public, s-maxage=${CACHE_TTL_SECONDS}, stale-while-revalidate=${CACHE_STALE_WHILE_REVALIDATE}`
-  )
-  res.headers.set("CDN-Cache-Control", `public, max-age=${CACHE_TTL_SECONDS}`)
-  res.headers.set("Vercel-CDN-Cache-Control", `public, max-age=${CACHE_TTL_SECONDS}`)
-  return res
-}
+import { cachedJsonResponse } from "@/lib/api/response-helpers"
 
 export async function GET() {
   try {
@@ -41,18 +27,18 @@ export async function GET() {
           : ""
 
       if (message.includes("During prerendering, fetch() rejects when the prerender is complete")) {
-        return cachedJsonResponse([])
+        return cachedJsonResponse([], "catalog")
       }
 
       console.error("Error fetching plans:", error)
       return NextResponse.json({ error: "Failed to fetch plans" }, { status: 500 })
     }
 
-    return cachedJsonResponse(plans)
+    return cachedJsonResponse(plans, "catalog")
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error)
     if (message.includes("During prerendering, fetch() rejects when the prerender is complete")) {
-      return cachedJsonResponse([])
+      return cachedJsonResponse([], "catalog")
     }
 
     console.error("Plans API error:", error)
