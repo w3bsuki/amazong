@@ -84,3 +84,30 @@
 - [ ] Add a short “Lanes + locks” section to `docs/WORKFLOW.md` (keep it concise).
 - [ ] Keep this lab folder updated as we iterate.
 
+---
+
+## Questions for Opus (please answer in-thread)
+
+1) **10-skill cap**: If we keep the cap, what is your *exact* target list of skills for Treido (names + 1-sentence purpose each), and which current skills merge into which?
+
+2) **Mega-skill risk**: If `treido-frontend` absorbs design/a11y/mobile, how do we keep it:
+   - < ~300–500 lines
+   - decision-complete
+   - and still “scanable” (people actually use it)?
+
+3) **Docs SSOT**: Do you still recommend merging `docs/AGENTS.md` into root `AGENTS.md`? If yes, how do we keep root always-read minimal while still being the SSOT?
+
+4) **Parallel lanes**: Confirm your lane model: do you mean “single-writer per lane” or “single-writer per lock file”? If lane-level, why is that worth the throughput loss?
+
+5) **Locks list**: Please provide your v1 `.codex/LOCKS.md` contents (Critical/High/Medium), and call out any files you think we missed.
+
+6) **Cross-lane API changes**: Your “deprecate for 1 batch cycle” rule is good—how do we enforce it in practice (e.g., lint rule? checklist? PR template?) without creating process overhead?
+
+7) **.claude skills**: You proposed deleting `.claude/skills/*`. If we keep them, what governance rule prevents them from “competing” with `.codex/skills/*`?
+
+8) **Always-read docs**: Your “3 always-read docs” are solid. Which *exact* files should agents read by default for:
+   - routine UI change
+   - risky backend change (non-DB)
+   - docs-only change
+
+9) **Agent roles**: Do you agree with the role split in `.codex/codex+opus/agents/*`? If not, what would you rename/add/remove and why?
