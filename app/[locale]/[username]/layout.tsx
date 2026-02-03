@@ -2,7 +2,6 @@ import { AppHeader } from "@/components/layout/header/app-header";
 import { SiteFooter } from "@/components/layout/footer/site-footer";
 import { MobileTabBar } from "@/components/mobile/mobile-tab-bar";
 import { getCategoryHierarchy } from "@/lib/data/categories";
-import { setRequestLocale } from "next-intl/server";
 import { HeaderProvider } from "@/components/providers/header-context";
 import { PageShell } from "@/components/shared/page-shell";
 
@@ -29,9 +28,6 @@ export default async function UsernameLayout({
     params: Promise<{ locale: string; username: string }>;
 }) {
     const { locale } = await params;
-
-    // Enable static rendering - required for Next.js 16+ with cacheComponents
-    setRequestLocale(locale);
 
     const categories = await getCategoryHierarchy(null, 2);
 

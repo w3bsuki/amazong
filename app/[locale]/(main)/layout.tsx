@@ -3,8 +3,6 @@ import { SiteFooter } from "@/components/layout/footer/site-footer";
 import { MobileTabBar } from "@/components/mobile/mobile-tab-bar";
 // MobileSearchBar is now integrated into AppHeader
 import { getCategoryHierarchy } from "@/lib/data/categories";
-import { setRequestLocale } from "next-intl/server";
-import { routing } from "@/i18n/routing";
 import type { CategoryTreeNode } from "@/lib/category-tree";
 
 import { OnboardingProvider } from "./_providers/onboarding-provider";
@@ -14,11 +12,6 @@ import { GeoWelcomeModal } from "@/components/shared/geo-welcome-modal";
 import { CookieConsent } from "@/components/layout/cookie-consent";
 
 import { SkipLinks } from "@/components/shared/skip-links";
-
-// Generate static params for all supported locales
-export function generateStaticParams() {
-    return routing.locales.map((locale) => ({ locale }));
-}
 
 /**
  * Main Layout
@@ -41,9 +34,6 @@ export default async function MainLayout({
     params: Promise<{ locale: string }>;
 }) {
     const { locale } = await params;
-
-    // Enable static rendering - required for Next.js 16+ with cacheComponents
-    setRequestLocale(locale);
 
     const categories = await getCategoryHierarchy(null, 2);
 
