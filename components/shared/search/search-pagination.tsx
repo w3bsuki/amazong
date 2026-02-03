@@ -1,6 +1,7 @@
 "use client"
 
 import { useTranslations } from "next-intl"
+import { useLocale } from "next-intl"
 import { useSearchParams } from "next/navigation"
 import { usePathname } from "@/i18n/routing"
 import {
@@ -25,6 +26,7 @@ export function SearchPagination({
   currentPage 
 }: SearchPaginationProps) {
   const tCommon = useTranslations("Common")
+  const locale = useLocale()
   const pathname = usePathname()
   const searchParams = useSearchParams()
   
@@ -42,7 +44,12 @@ export function SearchPagination({
       params.set("page", page.toString())
     }
     const queryString = params.toString()
-    return `${pathname}${queryString ? `?${queryString}` : ''}`
+
+    const localePath = pathname.startsWith(`/${locale}`)
+      ? pathname
+      : `/${locale}${pathname === "/" ? "" : pathname}`
+
+    return `${localePath}${queryString ? `?${queryString}` : ""}`
   }
   
   // Generate page numbers to show
@@ -104,7 +111,7 @@ export function SearchPagination({
           ) : (
             <PaginationPrevious 
               href="#" 
-              className="pointer-events-none opacity-50" 
+              className="pointer-events-none text-muted-foreground" 
               aria-disabled="true"
               label={tCommon("previous")}
               ariaLabel={tCommon("goToPreviousPage")}
@@ -139,7 +146,7 @@ export function SearchPagination({
           ) : (
             <PaginationNext 
               href="#" 
-              className="pointer-events-none opacity-50" 
+              className="pointer-events-none text-muted-foreground" 
               aria-disabled="true"
               label={tCommon("next")}
               ariaLabel={tCommon("goToNextPage")}

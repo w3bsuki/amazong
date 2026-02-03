@@ -54,7 +54,7 @@ export function ProfileShell({
   className,
 }: ProfileShellProps) {
   return (
-    <div className={cn("min-h-dvh bg-background", className)}>
+    <div className={cn("bg-background", className)}>
       {/* Banner */}
       <div className="relative h-24 sm:h-36 bg-muted">
         {bannerUrl && (
@@ -110,15 +110,15 @@ export function ProfileShell({
 
         {/* Action buttons */}
         {actions && (
-          <div className="flex gap-2 mb-4">
+          <div className="flex flex-col gap-2 mb-4 sm:flex-row">
             {actions}
           </div>
         )}
       </div>
 
-      {/* Sticky tabs */}
+      {/* Tabs */}
       {tabs && (
-        <div className="sticky top-0 z-40 bg-background py-2">
+        <div className="bg-background py-2">
           {tabs}
         </div>
       )}

@@ -15,6 +15,8 @@ import { routing } from './routing';
  * @see https://next-intl-docs.vercel.app/docs/usage/configuration
  */
 export default getRequestConfig(async ({ requestLocale }) => {
+    const isDev = process.env.NODE_ENV !== 'production';
+
     // This typically corresponds to the `[locale]` segment
     const requested = await requestLocale;
     
@@ -105,11 +107,17 @@ export default getRequestConfig(async ({ requestLocale }) => {
         onError(error) {
             if (error.code === IntlErrorCode.MISSING_MESSAGE) {
                 // Missing translations are expected during development
-                // Log warning but don't crash the app
-                console.warn(`[i18n] Missing translation: ${error.message}`);
+                // Avoid noisy logs in production (and never show raw keys to users)
+                if (isDev) {
+                    console.warn(`[i18n] Missing translation: ${error.message}`);
+                }
             } else {
                 // Other errors indicate bugs and should be investigated
-                console.error('[i18n] Translation error:', error);
+                if (isDev) {
+                    console.error('[i18n] Translation error:', error);
+                } else {
+                    console.error('[i18n] Translation error:', { code: error.code, message: error.message });
+                }
             }
         },
         
@@ -119,13 +127,15 @@ export default getRequestConfig(async ({ requestLocale }) => {
          */
         getMessageFallback({ namespace, key, error }) {
             const path = [namespace, key].filter(Boolean).join('.');
-            
+
+            // In production never render raw message keys (looks broken/scammy),
+            // but in development keep them visible for fast fixes.
+            if (!isDev) return '';
+
             if (error.code === IntlErrorCode.MISSING_MESSAGE) {
-                // Return the key path so it's visible what's missing
                 return `[${path}]`;
             }
-            
-            // For other errors, indicate the problem clearly
+
             return `⚠️ ${path}`;
         }
     };

@@ -1,6 +1,6 @@
 # AGENTS.md — Treido Agent Entry Point (SSOT)
 
-> **Read this first.** Single entry point for humans + AI agents working in this repo.
+> **Read this first.** Single entry point for humans + AI working in this repo.
 
 | Scope | Agent behavior, project rails, boundaries |
 |-------|------------------------------------------|
@@ -13,13 +13,13 @@
 
 | Need | Go To |
 |------|-------|
-| **How to prompt AI** | [PROMPT-GUIDE.md](./PROMPT-GUIDE.md) |
-| **All docs index** | [00-INDEX.md](./00-INDEX.md) |
-| **Workflow phases** | [WORKFLOW.md](./WORKFLOW.md) |
-| **Production push plan** | [13-PRODUCTION-PUSH.md](./13-PRODUCTION-PUSH.md) |
-| **Active tasks** | `.codex/TASKS.md` |
-| **Shipped work** | `.codex/SHIPPED.md` |
-| **Decisions log** | `.codex/DECISIONS.md` |
+| How to prompt | [PROMPT-GUIDE.md](./PROMPT-GUIDE.md) |
+| All docs index | [00-INDEX.md](./00-INDEX.md) |
+| Workflow | [WORKFLOW.md](./WORKFLOW.md) |
+| Skills | [11-SKILLS.md](./11-SKILLS.md) |
+| Active tasks (optional) | `.codex/TASKS.md` |
+| Shipped log (optional) | `.codex/SHIPPED.md` |
+| Decisions (optional) | `.codex/DECISIONS.md` |
 
 ---
 
@@ -27,42 +27,20 @@
 
 | Item | Value |
 |------|-------|
-| **Product** | Treido — Bulgarian-first marketplace (C2C + B2B/B2C) |
-| **Goal** | Ship production ASAP with clean boundaries and minimal bloat |
-| **Stack** | Next.js 16 (App Router) + React 19 + TypeScript + Tailwind v4 + shadcn/ui + Supabase (RLS/Auth/Storage) + Stripe (Checkout + Connect) + next-intl |
+| Product | Treido — Bulgarian-first marketplace (C2C + B2B/B2C) |
+| Goal | Ship production ASAP with clean boundaries and minimal bloat |
+| Stack | Next.js 16 (App Router) + React 19 + TypeScript + Tailwind v4 + shadcn/ui + Supabase + Stripe + next-intl |
 
 ---
 
-## 🚦 Work Routing (Docs → Skills → Verify)
+## How to Work (V2)
 
-| Work Type | Docs to Follow | Audit Skills | Executor | Verify |
-|-----------|----------------|--------------|----------|--------|
-| **UI/Styling** | [04-DESIGN](./04-DESIGN.md) | `spec-tailwind` + `spec-shadcn` | `treido-ui` | `styles:gate` |
-| **Components** | [04-DESIGN](./04-DESIGN.md), [03-ARCH](./03-ARCHITECTURE.md) | `spec-tailwind` + `spec-shadcn` | `treido-frontend` | All gates |
-| **Pages/Routes** | [05-ROUTES](./05-ROUTES.md), [03-ARCH](./03-ARCHITECTURE.md) | `spec-nextjs` | `treido-frontend` | All gates |
-| **Server Actions** | [07-API](./07-API.md) | `spec-nextjs` + `spec-supabase` | `treido-backend` | Gates + Unit |
-| **Webhooks** | [08-PAYMENTS](./08-PAYMENTS.md) | `spec-supabase` | `treido-backend` | Gates + Unit |
-| **Database/RLS** | [06-DATABASE](./06-DATABASE.md) | `spec-supabase` | `treido-backend` | RLS tests |
-| **Auth** | [09-AUTH](./09-AUTH.md) | `spec-supabase` + `spec-nextjs` | `treido-backend` | E2E |
-| **i18n** | [10-I18N](./10-I18N.md) | — | `treido-frontend` | All gates |
-| **Full Audit** | [00-INDEX](./00-INDEX.md) | ALL specialists | Both lanes | All |
-
----
-
-## Quick Start
-
-```bash
-pnpm install
-pnpm dev
-```
-
-Gates:
-
-```bash
-pnpm -s typecheck
-pnpm -s lint
-pnpm -s styles:gate
-```
+- No prefixes/triggers required — describe the task in plain language.
+- Apply skills automatically:
+  - **Always**: `treido-rails`
+  - UI/routes/i18n: `treido-frontend`
+  - server/actions/Supabase/Stripe: `treido-backend`
+- Ship in small batches (1–3 files) and run the gates.
 
 ---
 
@@ -72,24 +50,22 @@ pnpm -s styles:gate
 - [ ] All user-facing strings via `next-intl` (`messages/en.json`, `messages/bg.json`)
 - [ ] Tailwind v4 only: no gradients, no arbitrary values, no hardcoded colors (run `pnpm -s styles:gate`)
 - [ ] Default to Server Components; add `"use client"` only when required
-- [ ] Cached server code: always `cacheLife()` + `cacheTag()`; never use `cookies()`/`headers()` inside cached functions
-- [ ] Supabase: no `select('*')` in hot paths; project fields
+- [ ] Cached server code must be pure; never use `cookies()`/`headers()` inside cached functions
+- [ ] Supabase: no `select('*')` in hot paths; select explicit fields
 - [ ] Stripe webhooks are idempotent + signature-verified
 - [ ] Small batches (1–3 files), shippable, with verification
-- [ ] No new animations (keep UX stable and fast)
 
 ---
 
-## Do NOT
+## Pause Conditions (High Risk)
 
-| Action | Why |
-|--------|-----|
-| Add new features without PRD/FEATURES update | Scope creep |
-| Log secrets/PII | Security |
-| Hardcode user-facing strings | i18n compliance |
-| Use gradients/arbitrary Tailwind | Design system violation |
-| Import route-private code across groups | Boundary violation |
-| Read `cookies()`/`headers()` in cached functions | ISR storms |
+Stop and ask for explicit human approval before implementing:
+
+- DB schema/migrations/RLS (`supabase/migrations/*`)
+- Auth/access control/session changes
+- Payments/Stripe/webhooks
+- Destructive/bulk data operations
+- External integrations
 
 ---
 
@@ -103,25 +79,30 @@ pnpm -s styles:gate
 | `components/ui/*` | shadcn primitives only (no app logic) |
 | `components/shared/*` | Shared composites |
 | `components/layout/*` | Header, footer, sidebars |
-| `components/providers/*` | Context providers |
 | `hooks/*` | Reusable hooks |
 | `lib/*` | Pure utilities (no React) |
 
 ---
 
-## Agent Routing
+## Skills
 
-| Work Type | Agent | MCP Tools | Scope |
-|-----------|-------|-----------|-------|
-| Frontend UI/styling | `treido-frontend` | — | components, Tailwind, shadcn |
-| Design/UX | `treido-ui` | mcp__shadcn__* | pixel-perfect UI |
-| Frontend audit | `spec-tailwind` + `spec-shadcn` | — | token drift |
-| Data alignment | `treido-alignment` | mcp__supabase__* | contract gaps |
-| Next.js/RSC/caching | `spec-nextjs` → `treido-frontend` | — | App Router |
-| Backend/webhooks | `treido-backend` | mcp__supabase__* | server actions, Stripe |
-| Database/RLS | `spec-supabase` → `treido-backend` | mcp__supabase__* | schema, migrations |
-| Full audit | `ORCH:` | all | everything |
-| Verification | `treido-verify` | — | gates, tests |
+Skills live in `.codex/skills/`.
+
+| Skill | Purpose |
+|-------|---------|
+| `treido-rails` | Project rails + verification |
+| `treido-frontend` | Frontend rules (Tailwind, shadcn, next-intl, App Router) |
+| `treido-backend` | Backend rules (actions, Supabase, Stripe, caching) |
+| `codex-iteration` | Maintain the skill system itself |
+
+Legacy skills are kept only for reference under `.codex/skills/.archive/`.
+
+Sync/validate:
+
+```bash
+pnpm -s skills:sync
+pnpm -s validate:skills
+```
 
 ---
 
@@ -129,58 +110,7 @@ pnpm -s styles:gate
 
 | MCP | Prefix | Use For | Required? |
 |-----|--------|---------|-----------|
-| Supabase | `mcp__supabase__*` | DB schema, RLS, migrations | **Required** for DB work |
-| Codex | `mcp__codex__*` | Cross-agent discussion | Optional |
-| Next.js | `mcp__next-devtools__*` | Framework docs | Optional |
-| shadcn | `mcp__shadcn__*` | Component registry | Optional |
-
-**Preflight**: Before DB/RLS work, verify `mcp__supabase__*` tools available.
-
----
-
-## Skills
-
-Skills are vendored in `.codex/skills/`. Sync/validate:
-
-```bash
-pnpm -s skills:sync
-pnpm -s validate:skills
-```
-
-### Executor Skills (AUDIT + IMPL)
-
-| Skill | Trigger | Purpose |
-|-------|---------|---------|
-| `treido-orchestrator` | `ORCH:` | Coordinates workflow |
-| `treido-frontend` | `FRONTEND:` | UI/routing |
-| `treido-backend` | `BACKEND:` | Server actions/DB |
-| `treido-ui` | `UI:` / `DESIGN:` | Pixel-perfect design |
-| `treido-alignment` | `ALIGNMENT:AUDIT` | Contract gaps |
-| `treido-verify` | `VERIFY:` | Gates + tests |
-
-### Specialist Skills (AUDIT-ONLY)
-
-| Skill | Trigger | Domain |
-|-------|---------|--------|
-| `spec-nextjs` | `SPEC-NEXTJS:AUDIT` | App Router, caching |
-| `spec-tailwind` | `SPEC-TAILWIND:AUDIT` | Tailwind v4 tokens |
-| `spec-shadcn` | `SPEC-SHADCN:AUDIT` | shadcn boundaries |
-| `spec-supabase` | `SPEC-SUPABASE:AUDIT` | RLS, queries |
-| `spec-typescript` | `SPEC-TYPESCRIPT:AUDIT` | Type safety |
-
----
-
-## Bundle Matrix
-
-| User Intent | Bundle | Audit Lanes | Executor |
-|-------------|--------|-------------|----------|
-| "fix styling" | UI | `spec-tailwind` + `spec-shadcn` | `treido-frontend` |
-| "design", "pixel-perfect" | Design | `spec-tailwind` + `spec-shadcn` | `treido-ui` |
-| "missing data" | Alignment | `treido-alignment` | Both lanes |
-| "routing", "RSC" | Next.js | `spec-nextjs` | `treido-frontend` |
-| "backend", "webhook" | Backend | `spec-nextjs` + `spec-supabase` | `treido-backend` |
-| "RLS", "schema" | Supabase | `spec-supabase` | `treido-backend` |
-| "full audit" | Full | ALL | Both |
+| Supabase | `mcp__supabase__*` | DB schema, RLS, migrations | Required for DB/RLS work |
 
 ---
 
@@ -201,34 +131,14 @@ pnpm -s test:unit
 REUSE_EXISTING_SERVER=true pnpm -s test:e2e:smoke
 ```
 
-Weekly:
-
-```bash
-pnpm -s knip
-pnpm -s dupes
-```
-
----
-
-## Operational Docs
-
-| Resource | Location | Purpose |
-|----------|----------|---------|
-| Workflow spec | [WORKFLOW.md](./WORKFLOW.md) | How agents coordinate |
-| Active tasks | `.codex/TASKS.md` | Current work queue |
-| Shipped log | `.codex/SHIPPED.md` | Completed work |
-| Decisions | `.codex/DECISIONS.md` | ADR log |
-| Skill definitions | `.codex/skills/` | Full skill specs |
-| Debate thread | `.codex/CONVERSATION.md` | Active discussion |
-
 ---
 
 ## Autonomous Behavior
 
-- **Default**: Do not ask for confirmation. Make reasonable assumptions; note them.
-- **Pause for**: DB migrations, auth changes, payments/Stripe.
-- **End with**: `DONE` (no review prompt needed).
+- Default: make reasonable assumptions; note them.
+- Pause for: DB migrations, auth changes, payments/Stripe.
+- End responses with a clear status (e.g., what changed + what commands were run).
 
 ---
 
-*Last updated: 2026-02-01*
+*Last updated: 2026-02-03*

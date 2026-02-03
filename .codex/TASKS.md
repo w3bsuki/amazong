@@ -34,6 +34,50 @@ pnpm -s dupes
 
 ## 📋 Ready (≤15)
 
+### Dev department / agent system (2026-02-02) — SSOT + roles + maintenance
+
+- [x] ORCH-AGENTS-SSOT-001: De-duplicate SSOT by turning `.codex/AGENTS.md` + `.codex/WORKFLOW.md` into thin DEPRECATED pointers to docs
+  - Priority: High
+  - Owner: treido-orchestrator
+  - Verify: `rg -n \"^# AGENTS\\.md \\(DEPRECATED\\)|SSOT:\" .codex/AGENTS.md` · `rg -n \"^# WORKFLOW\\.md \\(DEPRECATED\\)|SSOT:\" .codex/WORKFLOW.md`
+  - Files: `.codex/AGENTS.md` · `.codex/WORKFLOW.md`
+  - Audit: `.codex/audit/2026-02-02_dev-department-agent-system.md`
+
+- [x] DOCS-DRIFT-001: Fix `docs/DOCS-PLAN.md` drift (SSOT vs archive rule; sync manifest status with reality)
+  - Priority: High
+  - Owner: treido-orchestrator
+  - Verify: `rg -n \"Every doc in `/docs`|Doc Manifest\" docs/DOCS-PLAN.md`
+  - Files: `docs/DOCS-PLAN.md`
+  - Audit: `.codex/audit/2026-02-02_dev-department-agent-system.md`
+
+- [x] FLEET-ROLES-001: Add missing roles as repo skills (`DOCS:` + `STRUCTURE:`) and wire them into SSOT docs
+  - Priority: High
+  - Owner: treido-orchestrator
+  - Verify: `pnpm -s validate:skills`
+  - Files: `.codex/skills/treido-docs/**` · `.codex/skills/treido-structure/**` · `docs/11-SKILLS.md` · `docs/AGENTS.md` · `docs/15-DEV-DEPARTMENT.md`
+  - Audit: `.codex/audit/2026-02-02_dev-department-agent-system.md`
+
+- [x] AGENTS-COVERAGE-001: Complete AGENTS layering for high-traffic boundary dirs (hooks/i18n/messages) + update root folder list
+  - Priority: Medium
+  - Owner: treido-orchestrator
+  - Verify: `rg --files -g \"AGENTS.md\" | rg -n \"^(hooks|i18n|messages)\\\\AGENTS\\.md$\"`
+  - Files: `hooks/AGENTS.md` · `i18n/AGENTS.md` · `messages/AGENTS.md` · `AGENTS.md`
+  - Audit: `.codex/audit/2026-02-02_dev-department-agent-system.md`
+
+- [ ] SKILLS-SSOT-002: Finish SSOT link migration in remaining `SKILL.md` files (use `docs/*` + `.codex/stack.yml`; keep `.codex/project/*` as pointers only)
+  - Priority: Medium
+  - Owner: codex-iteration
+  - Verify: `pnpm -s validate:skills` · `rg -n \"\\.codex/project/|\\.codex/AGENTS\\.md|\\.codex/WORKFLOW\\.md\" .codex/skills/*/SKILL.md`
+  - Files: `.codex/skills/treido-frontend/SKILL.md` · `.codex/skills/treido-backend/SKILL.md` · `.codex/skills/treido-verify/SKILL.md` · `.codex/skills/spec-supabase/SKILL.md` · `.codex/skills/treido-alignment/SKILL.md`
+  - Audit: `.codex/audit/2026-02-02_dev-department-agent-system.md`
+
+- [ ] SPEC-TYPESCRIPT-001: De-generic `spec-typescript` (move tutorial content into references; keep SKILL as audit checklist)
+  - Priority: Low
+  - Owner: codex-iteration
+  - Verify: `pnpm -s validate:skills`
+  - Files: `.codex/skills/spec-typescript/SKILL.md` · `.codex/skills/spec-typescript/references/**`
+  - Audit: `.codex/audit/2026-02-02_dev-department-agent-system.md`
+
 ### Production push (2026-02-02) — blockers + alignment
 
 - [x] PROD-000: Delete orphaned `temp-tradesphere-audit/` prototype folder
@@ -84,6 +128,71 @@ pnpm -s dupes
   - Verify: `pnpm -s typecheck` · `pnpm -s lint`
   - Files: `lib/data/plans.ts`
   - Audit: `.codex/audit/2026-02-02_supabase-audit.md`
+
+### Production push (2026-02-03) — Playwright production audit (treido.eu)
+
+- [ ] PROD-DATA-002: Purge/hide junk test listings from production + enforce listing-quality validation
+  - Priority: Critical
+  - Owner: treido-backend
+  - Verify: manual prod spot-check (`/bg/search`, `/bg/categories/fashion`) shows no junk listings; `REUSE_EXISTING_SERVER=true pnpm -s test:e2e:smoke`
+  - Files: (high-risk) requires Supabase data ops + listing validation (pause for approval)
+  - Audit: `.codex/audit/playwright/2026-02-03/issues/frontend.md` (ISSUE-001)
+
+- [ ] FE-I18N-PLAY-002: Fix store profile missing translations + React runtime error #419
+  - Priority: Critical
+  - Owner: treido-frontend
+  - Verify: no `MISSING_MESSAGE` in console on `/bg/tech_haven`; UI shows translated labels (no raw keys); `pnpm -s typecheck` · `pnpm -s lint`
+  - Files: `app/[locale]/[username]/profile-client.tsx` · `components/layout/header/mobile/profile-header.tsx` · `messages/bg.json` · `messages/en.json` · `i18n/request.ts`
+  - Audit: `.codex/audit/playwright/2026-02-03/issues/frontend.md` (ISSUE-002)
+
+- [ ] AI-PLAY-001: Disable AI mode in prod or ship `/api/assistant/chat` + user-facing error UI
+  - Priority: Critical
+  - Owner: treido-backend
+  - Verify: no 404s to `/api/assistant/chat`; on failure UI shows localized error + retry (no stuck disabled send); `pnpm -s typecheck` · `pnpm -s lint`
+  - Files: `components/shared/search/search-ai-chat.tsx` · `app/api/assistant/chat/route.ts` (create) · `app/[locale]/(main)/assistant/_components/assistant-playground.tsx`
+  - Audit: `.codex/audit/playwright/2026-02-03/issues/frontend.md` (ISSUE-003) · `.codex/audit/playwright/2026-02-03/issues/backend.md` (ISSUE-B01)
+
+- [ ] FE-NAV-PLAY-002: Fix mobile Profile tab client navigation landing on 404
+  - Priority: Critical
+  - Owner: treido-frontend
+  - Verify: `/bg/search?q=iphone` → bottom-nav Profile always renders login (no 404); add e2e regression; `REUSE_EXISTING_SERVER=true pnpm -s test:e2e:smoke`
+  - Files: `components/mobile/mobile-tab-bar.tsx` · `app/[locale]/(auth)/**` (redirect + next handling)
+  - Audit: `.codex/audit/playwright/2026-02-03/issues/frontend.md` (ISSUE-004)
+
+- [ ] FE-I18N-LINKS-002: Fix locale-less internal hrefs (search pagination + similar items)
+  - Priority: High
+  - Owner: treido-frontend
+  - Verify: rendered hrefs include `/bg/...` on BG pages; no redirect hops when paginating/clicking similar items; `REUSE_EXISTING_SERVER=true pnpm -s test:e2e:smoke`
+  - Files: `components/shared/search/search-pagination.tsx` · `components/shared/product/similar-items-grid.tsx`
+  - Audit: `.codex/audit/playwright/2026-02-03/issues/frontend.md` (ISSUE-005)
+
+- [ ] CHECKOUT-PLAY-002: Fix checkout auth gating + localization (remove browser `alert`) + cart state consistency
+  - Priority: High
+  - Owner: treido-backend
+  - Verify: user is gated before entering shipping; no English `alert`; `/bg/checkout` reflects `/bg/cart` items; `REUSE_EXISTING_SERVER=true pnpm -s test:e2e:smoke`
+  - Files: `app/[locale]/(checkout)/_actions/checkout.ts` · `app/[locale]/(checkout)/**`
+  - Audit: `.codex/audit/playwright/2026-02-03/issues/frontend.md` (ISSUE-006)
+
+- [ ] FE-HOME-NAV-002: Desktop home category navigation deep-links + “Виж всички” works
+  - Priority: High
+  - Owner: treido-frontend
+  - Verify: category selection updates URL to `/bg/categories/*` and back button works; `pnpm -s typecheck` · `pnpm -s lint`
+  - Files: `app/[locale]/(main)/page.tsx` · `components/category/subcategory-tabs.tsx` (if used)
+  - Audit: `.codex/audit/playwright/2026-02-03/issues/frontend.md` (ISSUE-007)
+
+- [ ] FE-POLISH-PLAY-002: Production polish batch (product counts, dialog a11y, safe-area overlap, broken images, metadata titles)
+  - Priority: Medium
+  - Owner: treido-frontend
+  - Verify: no `{count}` placeholders; no dialog a11y warnings; footer not overlapped by bottom nav; graceful image fallback; titles not duplicated; `pnpm -s typecheck` · `pnpm -s lint` · `pnpm -s styles:gate`
+  - Files: `components/shared/product/product-social-proof.tsx` (if used) · `components/layout/footer/site-footer.tsx` · `components/ui/dialog.tsx` · `messages/bg.json` · `messages/en.json`
+  - Audit: `.codex/audit/playwright/2026-02-03/issues/frontend.md` (ISSUE-008..ISSUE-012)
+
+- [ ] UI-IOS-001: iOS-native mobile polish spec + pass (after ship blockers)
+  - Priority: Medium
+  - Owner: treido-frontend
+  - Verify: mobile screens follow spec; no rails violations; `pnpm -s styles:gate`
+  - Files: `docs/04-DESIGN.md` (spec additions) · `components/mobile/**`
+  - Audit: `.codex/audit/playwright/2026-02-03/issues/frontend.md` (iOS-style polish backlog)
 
 ### ORCH cleanup + design refresh (2026-01-31) — round 1 (audit: `.codex/audit/2026-01-31_full_orch_cleanup.md`)
 

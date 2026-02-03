@@ -109,6 +109,9 @@
   --overlay-dark: oklch(0 0 0 / 50%);
   --overlay-light: oklch(1 0 0 / 80%);
 
+  /* Glass surface (frosted panels / floating chrome) */
+  --surface-glass: oklch(from var(--background) l c h / 0.85);
+
   /* Mobile Product Page Surfaces - Light Mode (Clean White 2026) */
   --surface-page: oklch(1 0 0);              /* Pure white - consistent pages */
   --surface-subtle: oklch(0.98 0 0);         /* Barely-there tint when needed */
@@ -275,6 +278,9 @@
   --overlay-dark: oklch(0 0 0 / 70%);
   --overlay-light: oklch(0.145 0 0 / 80%);
 
+  /* Glass surface (frosted panels / floating chrome) */
+  --surface-glass: oklch(from var(--background) l c h / 0.85);
+
   /* Mobile Product Page Surfaces - Dark Mode */
   --surface-page: oklch(0.12 0 0);
   --surface-subtle: oklch(0.16 0 0);
@@ -391,6 +397,7 @@
   --color-surface-gallery: var(--surface-gallery);
   --color-surface-overlay: var(--surface-overlay);
   --color-surface-floating: var(--surface-floating);
+  --color-surface-glass: var(--surface-glass);
 
   /* Mobile Product Page Text */
   --color-text-strong: var(--text-strong);

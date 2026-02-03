@@ -28,6 +28,8 @@ type CreateCheckoutSessionAction = (items: CartItem[], locale?: "en" | "bg") => 
 
 type GetCheckoutFeeQuoteAction = (items: CartItem[]) => Promise<CheckoutFeeQuoteResult>
 
+type CheckoutErrorKind = "authRequired" | "ownProducts" | "generic" | null
+
 export default function CheckoutPageClient({
   createCheckoutSessionAction,
   getCheckoutFeeQuoteAction,
@@ -35,9 +37,10 @@ export default function CheckoutPageClient({
   createCheckoutSessionAction: CreateCheckoutSessionAction
   getCheckoutFeeQuoteAction: GetCheckoutFeeQuoteAction
 }) {
-  const { items, totalItems, subtotal } = useCart()
+  const { items, totalItems, subtotal, isReady: isCartReady } = useCart()
   const locale = useLocale()
   const t = useTranslations("CheckoutPage")
+  const tAuth = useTranslations("Auth")
 
   const [isProcessing, setIsProcessing] = useState(false)
   const [buyerProtectionFee, setBuyerProtectionFee] = useState(0)
@@ -48,6 +51,7 @@ export default function CheckoutPageClient({
   const [useNewAddress, setUseNewAddress] = useState(false)
   const [isLoadingAddresses, setIsLoadingAddresses] = useState(true)
   const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const [checkoutError, setCheckoutError] = useState<CheckoutErrorKind>(null)
 
   const [newAddress, setNewAddress] = useState<NewAddressForm>({
     firstName: "",
@@ -71,7 +75,7 @@ export default function CheckoutPageClient({
 
     if (!user) {
       setIsLoadingAddresses(false)
-      setUseNewAddress(true)
+      setIsAuthenticated(false)
       return
     }
 
@@ -150,20 +154,42 @@ export default function CheckoutPageClient({
     [locale]
   )
 
+  const authLoginHref = "/auth/login?next=/checkout"
+  const isAuthGateActive = !isAuthenticated && !isLoadingAddresses
+
+  const getCheckoutErrorKind = useCallback(
+    (errorMessage: string): CheckoutErrorKind => {
+      const normalized = errorMessage.trim()
+      if (normalized === "Please sign in to checkout.") return "authRequired"
+      if (normalized.startsWith("You cannot purchase your own products:")) return "ownProducts"
+      return "generic"
+    },
+    []
+  )
+
   const handleCheckout = async () => {
     if (items.length === 0) return
+
+    setCheckoutError(null)
+
+    if (!isAuthenticated) {
+      setCheckoutError("authRequired")
+      window.scrollTo({ top: 0, behavior: "smooth" })
+      return
+    }
 
     setIsProcessing(true)
     try {
       const result = await createCheckoutSessionAction(items, locale === "bg" ? "bg" : "en")
       if (!result.ok) {
-        alert(result.error)
+        setCheckoutError(getCheckoutErrorKind(result.error))
+        window.scrollTo({ top: 0, behavior: "smooth" })
         return
       }
       window.location.href = result.url
-    } catch (error) {
-      console.error("Checkout error:", error)
-      alert(t("checkoutError"))
+    } catch {
+      setCheckoutError("generic")
+      window.scrollTo({ top: 0, behavior: "smooth" })
     } finally {
       setIsProcessing(false)
     }
@@ -226,6 +252,56 @@ export default function CheckoutPageClient({
     return false
   }, [useNewAddress, selectedAddressId, newAddress])
 
+  const checkoutNotice = (() => {
+    if (isAuthGateActive) {
+      return {
+        title: t("authRequiredTitle"),
+        description: t("authRequiredDescription"),
+        primaryAction: {
+          label: tAuth("signIn"),
+          href: authLoginHref,
+        },
+        showSecondaryCartAction: true,
+      }
+    }
+
+    if (!checkoutError) return null
+
+    if (checkoutError === "authRequired") {
+      return {
+        title: t("authRequiredTitle"),
+        description: t("authRequiredDescription"),
+        primaryAction: {
+          label: tAuth("signIn"),
+          href: authLoginHref,
+        },
+        showSecondaryCartAction: true,
+      }
+    }
+
+    if (checkoutError === "ownProducts") {
+      return {
+        title: t("ownProductsTitle"),
+        description: t("ownProductsDescription"),
+        primaryAction: {
+          label: t("backToCart"),
+          href: "/cart",
+        },
+        showSecondaryCartAction: false,
+      }
+    }
+
+    return {
+      title: t("checkoutErrorTitle"),
+      description: t("checkoutError"),
+      primaryAction: {
+        label: t("backToCart"),
+        href: "/cart",
+      },
+      showSecondaryCartAction: false,
+    }
+  })()
+
   // Loading state - only wait for mounted (hydration safety)
   // Cart items are loaded from localStorage immediately, so we can show checkout
   // content right away. Server sync happens in background.
@@ -237,9 +313,19 @@ export default function CheckoutPageClient({
     )
   }
 
-  // Empty cart state - show immediately if no items
-  // If user has items on server, they'll sync in and trigger a re-render
-  // This prevents infinite spinner while waiting for auth/server sync
+  // Loading cart state - prevents false "empty cart" UI when cart is still hydrating/syncing.
+  if (items.length === 0 && !isCartReady) {
+    return (
+      <div className="min-h-96 flex items-center justify-center">
+        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <SpinnerGap className="size-5 animate-spin" />
+          <span>{t("loading")}</span>
+        </div>
+      </div>
+    )
+  }
+
+  // Empty cart state
   if (items.length === 0) {
     return (
       <div className="min-h-96 flex items-center justify-center px-3">
@@ -265,55 +351,90 @@ export default function CheckoutPageClient({
         <h1 className="sr-only">{t("title")}</h1>
         
         <div className="space-y-3 p-4">
-          {/* Delivery */}
-          <Card>
-            <CardHeader className="border-b">
-              <div className="flex items-center justify-between">
-                <CardTitle className="flex items-center gap-2 text-sm">
-                  <MapPin className="size-4 text-primary" weight="fill" />
-                  {t("shippingAddress")}
-                </CardTitle>
-                {isAuthenticated && (
-                  <Link href="/account/addresses" className="text-xs text-primary font-medium">{t("manageAddresses")}</Link>
-                )}
+          {checkoutNotice && (
+            <div
+              role="alert"
+              className="rounded-lg border border-border bg-surface-subtle p-3"
+            >
+              <div className="flex gap-3">
+                <div className="mt-0.5 shrink-0">
+                  <Lock className="size-4 text-primary" weight="fill" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-medium text-foreground">
+                    {checkoutNotice.title}
+                  </p>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    {checkoutNotice.description}
+                  </p>
+                  <div className="mt-3 flex items-center gap-2">
+                    <Button asChild size="sm" className="flex-1">
+                      <Link href={checkoutNotice.primaryAction.href}>
+                        {checkoutNotice.primaryAction.label}
+                      </Link>
+                    </Button>
+                    {checkoutNotice.showSecondaryCartAction && (
+                      <Button asChild size="sm" variant="secondary" className="flex-1">
+                        <Link href="/cart">{t("backToCart")}</Link>
+                      </Button>
+                    )}
+                  </div>
+                </div>
               </div>
-            </CardHeader>
-            <CardContent>
-              <AddressSection
-                isLoadingAddresses={isLoadingAddresses}
-                savedAddresses={savedAddresses}
-                selectedAddressId={selectedAddressId}
-                setSelectedAddressId={setSelectedAddressId}
-                useNewAddress={useNewAddress}
-                setUseNewAddress={setUseNewAddress}
-                newAddress={newAddress}
-                updateNewAddress={updateNewAddress}
-                handleBlur={handleBlur}
-                errors={errors}
-                touched={touched}
-                showAddressSelector={showAddressSelector}
-                setShowAddressSelector={setShowAddressSelector}
-              />
-            </CardContent>
-          </Card>
+            </div>
+          )}
 
-          {/* Shipping */}
-          <Card>
-            <CardHeader className="border-b">
-              <CardTitle className="flex items-center gap-2 text-sm">
-                <Truck className="size-4 text-primary" weight="fill" />
-                {t("shippingMethod")}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ShippingMethodSection
-                shippingMethod={shippingMethod}
-                setShippingMethod={setShippingMethod}
-                formatPrice={formatPrice}
-                compact
-              />
-            </CardContent>
-          </Card>
+          {!isAuthGateActive && (
+            <Card>
+              <CardHeader className="border-b">
+                <div className="flex items-center justify-between">
+                  <CardTitle className="flex items-center gap-2 text-sm">
+                    <MapPin className="size-4 text-primary" weight="fill" />
+                    {t("shippingAddress")}
+                  </CardTitle>
+                  {isAuthenticated && (
+                    <Link href="/account/addresses" className="text-xs text-primary font-medium">{t("manageAddresses")}</Link>
+                  )}
+                </div>
+              </CardHeader>
+              <CardContent>
+                <AddressSection
+                  isLoadingAddresses={isLoadingAddresses}
+                  savedAddresses={savedAddresses}
+                  selectedAddressId={selectedAddressId}
+                  setSelectedAddressId={setSelectedAddressId}
+                  useNewAddress={useNewAddress}
+                  setUseNewAddress={setUseNewAddress}
+                  newAddress={newAddress}
+                  updateNewAddress={updateNewAddress}
+                  handleBlur={handleBlur}
+                  errors={errors}
+                  touched={touched}
+                  showAddressSelector={showAddressSelector}
+                  setShowAddressSelector={setShowAddressSelector}
+                />
+              </CardContent>
+            </Card>
+          )}
+
+          {!isAuthGateActive && (
+            <Card>
+              <CardHeader className="border-b">
+                <CardTitle className="flex items-center gap-2 text-sm">
+                  <Truck className="size-4 text-primary" weight="fill" />
+                  {t("shippingMethod")}
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ShippingMethodSection
+                  shippingMethod={shippingMethod}
+                  setShippingMethod={setShippingMethod}
+                  formatPrice={formatPrice}
+                  compact
+                />
+              </CardContent>
+            </Card>
+          )}
 
           {/* Items */}
           <Card>
@@ -370,7 +491,7 @@ export default function CheckoutPageClient({
 
       {/* Mobile sticky footer - hide when scrolled to bottom */}
       <div className={cn(
-        "lg:hidden fixed inset-x-0 bottom-0 z-40 bg-background/95 backdrop-blur-md border-t transition-transform duration-300",
+        "lg:hidden fixed inset-x-0 bottom-0 z-40 bg-surface-glass backdrop-blur-md border-t border-border transition-transform duration-300",
         isAtBottom ? "translate-y-full" : "translate-y-0"
       )}>
         <div className="px-4 py-3 pb-safe">
@@ -381,30 +502,72 @@ export default function CheckoutPageClient({
             <ShieldCheck className="size-3.5 text-success" weight="fill" />
             <span>{t("buyerProtection")}</span>
           </div>
-          <Button 
-            onClick={handleCheckout} 
-            disabled={isProcessing || !isFormValid()} 
-            size="lg"
-            className="w-full font-semibold"
-          >
-            {isProcessing ? (
-              <>
-                <SpinnerGap className="size-5 animate-spin mr-2" />
-                {t("processing")}
-              </>
-            ) : (
-              <>
+          {isAuthGateActive ? (
+            <Button asChild size="lg" className="w-full font-semibold">
+              <Link href={authLoginHref}>
                 <Lock className="size-4 mr-2" weight="fill" />
-                {t("completeOrder")} · {formatPrice(total)}
-              </>
-            )}
-          </Button>
+                {tAuth("signIn")}
+              </Link>
+            </Button>
+          ) : (
+            <Button 
+              onClick={handleCheckout} 
+              disabled={isProcessing || !isFormValid()} 
+              size="lg"
+              className="w-full font-semibold"
+            >
+              {isProcessing ? (
+                <>
+                  <SpinnerGap className="size-5 animate-spin mr-2" />
+                  {t("processing")}
+                </>
+              ) : (
+                <>
+                  <Lock className="size-4 mr-2" weight="fill" />
+                  {t("completeOrder")} · {formatPrice(total)}
+                </>
+              )}
+            </Button>
+          )}
         </div>
       </div>
 
       {/* Desktop */}
       <div className="hidden lg:block py-6">
         <div className="container max-w-5xl">
+          {checkoutNotice && (
+            <div
+              role="alert"
+              className="mb-5 rounded-lg border border-border bg-surface-subtle p-4"
+            >
+              <div className="flex items-start justify-between gap-4">
+                <div className="flex items-start gap-3">
+                  <Lock className="mt-0.5 size-5 text-primary" weight="fill" />
+                  <div className="min-w-0">
+                    <p className="text-sm font-medium text-foreground">
+                      {checkoutNotice.title}
+                    </p>
+                    <p className="mt-1 text-sm text-muted-foreground">
+                      {checkoutNotice.description}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex shrink-0 items-center gap-2">
+                  <Button asChild size="sm">
+                    <Link href={checkoutNotice.primaryAction.href}>
+                      {checkoutNotice.primaryAction.label}
+                    </Link>
+                  </Button>
+                  {checkoutNotice.showSecondaryCartAction && (
+                    <Button asChild size="sm" variant="secondary">
+                      <Link href="/cart">{t("backToCart")}</Link>
+                    </Button>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+
           <div className="flex items-center justify-between mb-5">
             <Link href="/cart" className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground">
               <ArrowLeft className="size-4" />{t("backToCart")}
@@ -416,52 +579,54 @@ export default function CheckoutPageClient({
           <div className="flex items-start gap-6 lg:gap-8">
             {/* Main */}
             <div className="flex-1 space-y-4">
-              {/* Address */}
-              <Card>
-                <CardHeader className="border-b px-5">
-                  <div className="flex items-center justify-between">
-                    <CardTitle className="flex items-center gap-2.5 text-base">
-                      <MapPin className="size-5 text-primary" weight="fill" />
-                      {t("shippingAddress")}
-                    </CardTitle>
-                    {isAuthenticated && <Link href="/account/addresses" className="text-xs text-primary font-medium">{t("manageAddresses")}</Link>}
-                  </div>
-                </CardHeader>
-                <CardContent className="p-5 pt-4">
-                  <AddressSection
-                    isLoadingAddresses={isLoadingAddresses}
-                    savedAddresses={savedAddresses}
-                    selectedAddressId={selectedAddressId}
-                    setSelectedAddressId={setSelectedAddressId}
-                    useNewAddress={useNewAddress}
-                    setUseNewAddress={setUseNewAddress}
-                    newAddress={newAddress}
-                    updateNewAddress={updateNewAddress}
-                    handleBlur={handleBlur}
-                    errors={errors}
-                    touched={touched}
-                    showAddressSelector={showAddressSelector}
-                    setShowAddressSelector={setShowAddressSelector}
-                  />
-                </CardContent>
-              </Card>
+              {!isAuthGateActive && (
+                <Card>
+                  <CardHeader className="border-b px-5">
+                    <div className="flex items-center justify-between">
+                      <CardTitle className="flex items-center gap-2.5 text-base">
+                        <MapPin className="size-5 text-primary" weight="fill" />
+                        {t("shippingAddress")}
+                      </CardTitle>
+                      {isAuthenticated && <Link href="/account/addresses" className="text-xs text-primary font-medium">{t("manageAddresses")}</Link>}
+                    </div>
+                  </CardHeader>
+                  <CardContent className="p-5 pt-4">
+                    <AddressSection
+                      isLoadingAddresses={isLoadingAddresses}
+                      savedAddresses={savedAddresses}
+                      selectedAddressId={selectedAddressId}
+                      setSelectedAddressId={setSelectedAddressId}
+                      useNewAddress={useNewAddress}
+                      setUseNewAddress={setUseNewAddress}
+                      newAddress={newAddress}
+                      updateNewAddress={updateNewAddress}
+                      handleBlur={handleBlur}
+                      errors={errors}
+                      touched={touched}
+                      showAddressSelector={showAddressSelector}
+                      setShowAddressSelector={setShowAddressSelector}
+                    />
+                  </CardContent>
+                </Card>
+              )}
 
-              {/* Shipping */}
-              <Card>
-                <CardHeader className="border-b px-5">
-                  <CardTitle className="flex items-center gap-2.5 text-base">
-                    <Truck className="size-5 text-primary" weight="fill" />
-                    {t("shippingMethod")}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="p-5 pt-4">
-                  <ShippingMethodSection
-                    shippingMethod={shippingMethod}
-                    setShippingMethod={setShippingMethod}
-                    formatPrice={formatPrice}
-                  />
-                </CardContent>
-              </Card>
+              {!isAuthGateActive && (
+                <Card>
+                  <CardHeader className="border-b px-5">
+                    <CardTitle className="flex items-center gap-2.5 text-base">
+                      <Truck className="size-5 text-primary" weight="fill" />
+                      {t("shippingMethod")}
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="p-5 pt-4">
+                    <ShippingMethodSection
+                      shippingMethod={shippingMethod}
+                      setShippingMethod={setShippingMethod}
+                      formatPrice={formatPrice}
+                    />
+                  </CardContent>
+                </Card>
+              )}
 
               {/* Items */}
               <Card>
@@ -514,24 +679,33 @@ export default function CheckoutPageClient({
                     </div>
                   </div>
 
-                  <Button 
-                    onClick={handleCheckout} 
-                    disabled={isProcessing || !isFormValid()} 
-                    size="lg"
-                    className="w-full font-semibold"
-                  >
-                    {isProcessing ? (
-                      <>
-                        <SpinnerGap className="size-5 animate-spin mr-2" />
-                        {t("processing")}
-                      </>
-                    ) : (
-                      <>
+                  {isAuthGateActive ? (
+                    <Button asChild size="lg" className="w-full font-semibold">
+                      <Link href={authLoginHref}>
                         <Lock className="size-4 mr-2" weight="fill" />
-                        {t("proceedToPayment")}
-                      </>
-                    )}
-                  </Button>
+                        {tAuth("signIn")}
+                      </Link>
+                    </Button>
+                  ) : (
+                    <Button 
+                      onClick={handleCheckout} 
+                      disabled={isProcessing || !isFormValid()} 
+                      size="lg"
+                      className="w-full font-semibold"
+                    >
+                      {isProcessing ? (
+                        <>
+                          <SpinnerGap className="size-5 animate-spin mr-2" />
+                          {t("processing")}
+                        </>
+                      ) : (
+                        <>
+                          <Lock className="size-4 mr-2" weight="fill" />
+                          {t("proceedToPayment")}
+                        </>
+                      )}
+                    </Button>
+                  )}
 
                   <div className="flex items-center justify-center gap-4 text-xs text-muted-foreground pt-2">
                     <div className="flex items-center gap-1.5">

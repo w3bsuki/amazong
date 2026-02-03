@@ -130,6 +130,50 @@ test.describe('Smoke Tests - Critical Path', () => {
     app.assertNoConsoleErrors()
   })
 
+  test('search pagination preserves locale @smoke @critical', async ({ page, app }) => {
+    await app.goto('/bg/search')
+    await app.waitForHydration()
+
+    const pagination = page
+      .locator('nav[data-slot="pagination"]:visible')
+      .filter({ has: page.locator('a[data-slot="pagination-link"][href*="page=2"]') })
+      .first()
+    await expect(pagination).toBeVisible()
+
+    const page2Link = pagination.locator('a[data-slot="pagination-link"][href*="page=2"]').first()
+    await expect(page2Link).toBeVisible()
+
+    const href = await page2Link.getAttribute('href')
+    expect(href).toBeTruthy()
+    expect(href!).toMatch(/^\/bg\/search/)
+
+    await page2Link.click()
+    await expect(page).toHaveURL(/\/bg\/search.*page=2/)
+    await assertNoErrorBoundary(page)
+
+    app.assertNoConsoleErrors()
+  })
+
+  test('mobile tab bar Profile routes to login (no 404) @smoke @critical', async ({ page, app }) => {
+    await page.setViewportSize({ width: 390, height: 844 })
+
+    await app.clearAuthSession()
+    await app.goto('/bg/search?q=iphone')
+    await app.waitForHydration()
+
+    await assertVisible(page.getByTestId('mobile-tab-bar'))
+
+    await page.getByTestId('mobile-tab-profile').click()
+
+    await assertNavigatedTo(page, /\/bg\/auth\/login/)
+    await expect(page.locator('form')).toHaveCount(1)
+    await assertVisible(page.locator('input[type="email"], input#email'))
+    await assertVisible(page.locator('input[type="password"], input#password'))
+    await assertNoErrorBoundary(page)
+
+    app.assertNoConsoleErrors()
+  })
+
   test('product page loads without errors @smoke @critical', async ({ page, app, request }) => {
     const response = await request.get('/api/products/newest')
     expect(response.status()).toBe(200)

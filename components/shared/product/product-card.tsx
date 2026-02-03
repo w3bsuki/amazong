@@ -17,7 +17,6 @@ import { buildHeroBadgeText } from "@/lib/product-card-hero-attributes"
 import { cva, type VariantProps } from "class-variance-authority"
 import { Truck } from "@phosphor-icons/react"
 import { useDrawer, type QuickViewProduct } from "@/components/providers/drawer-context"
-import { useIsMobile } from "@/hooks/use-mobile"
 import { isFeatureEnabled } from "@/lib/feature-flags"
 import { formatTimeAgo } from "@/lib/utils/format-time"
 
@@ -195,7 +194,6 @@ function ProductCard({
   const t = useTranslations("Product")
   const locale = useLocale()
   const pathname = usePathname() ?? "/"
-  const isMobile = useIsMobile()
   const { openProductQuickView, enabledDrawers, isDrawerSystemEnabled } = useDrawer()
   const isQuickViewEnabled = isDrawerSystemEnabled && enabledDrawers.productQuickView
 
@@ -223,10 +221,21 @@ function ProductCard({
     return segments.at(0) === "search"
   }, [pathname])
 
+  const isCategoriesRoute = React.useMemo(() => {
+    const rawSegments = pathname.split("/").filter(Boolean)
+    const segments = [...rawSegments]
+    const maybeLocale = segments[0]
+    if (maybeLocale && /^[a-z]{2}(-[A-Z]{2})?$/i.test(maybeLocale)) {
+      segments.shift()
+    }
+    return segments.at(0) === "categories"
+  }, [pathname])
+
+  const isBrowseRoute = isSearchRoute || isCategoriesRoute
+
   const isRouteModalQuickViewEnabled =
     isFeatureEnabled("routeModalProductQuickView") &&
-    !isMobile &&
-    isSearchRoute &&
+    isBrowseRoute &&
     productUrl !== "#"
 
   const shouldUseDrawerQuickView = isQuickViewEnabled && !isRouteModalQuickViewEnabled

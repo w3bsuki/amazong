@@ -1,23 +1,24 @@
-"use client";
+"use client"
 
-import { useTranslations } from "next-intl";
-import { ChevronRight, Heart, Package } from "lucide-react";
-import Link from "next/link";
-import type { CategorySummary } from "./meta-row";
+import { useLocale, useTranslations } from "next-intl"
+import { ChevronRight, Heart, Package } from "lucide-react"
+import { Link } from "@/i18n/routing"
+import { formatPrice } from "@/lib/format-price"
+import type { CategorySummary } from "./meta-row"
 
 interface SimilarProduct {
-  id: string;
-  title: string;
-  price: number;
-  image: string | null;
-  slug?: string | null;
-  storeSlug?: string | null;
+  id: string
+  title: string
+  price: number
+  image: string | null
+  slug?: string | null
+  storeSlug?: string | null
 }
 
 interface SimilarItemsGridProps {
-  products: SimilarProduct[];
-  rootCategory: CategorySummary | null;
-  maxItems?: number;
+  products: SimilarProduct[]
+  rootCategory: CategorySummary | null
+  maxItems?: number
 }
 
 /**
@@ -29,9 +30,10 @@ export function SimilarItemsGrid({
   rootCategory,
   maxItems = 4,
 }: SimilarItemsGridProps) {
-  const t = useTranslations("Product");
+  const locale = useLocale()
+  const t = useTranslations("Product")
 
-  if (!products || products.length === 0) return null;
+  if (!products || products.length === 0) return null
 
   return (
     <section className="px-4 py-4 bg-background border-t border-border">
@@ -51,12 +53,12 @@ export function SimilarItemsGrid({
         {products.slice(0, maxItems).map((item) => {
           const productHref = item.storeSlug
             ? `/${item.storeSlug}/${item.slug || item.id}`
-            : `#`;
+            : "#"
           return (
             <Link
               key={item.id}
               href={productHref}
-              className="group block rounded-xl border border-border bg-card overflow-hidden active:scale-[0.98] transition-transform"
+              className="group block overflow-hidden rounded-xl border border-border bg-card transition-colors hover:bg-hover active:bg-active"
             >
               {/* Image */}
               <div className="aspect-square relative bg-muted">
@@ -74,8 +76,11 @@ export function SimilarItemsGrid({
                 )}
                 {/* Wishlist button */}
                 <button
-                  className="absolute top-2 right-2 size-8 rounded-full bg-background backdrop-blur-sm flex items-center justify-center shadow-sm"
-                  onClick={(e) => e.preventDefault()}
+                  type="button"
+                  className="absolute top-2 right-2 size-8 rounded-full bg-surface-elevated border border-border flex items-center justify-center shadow-sm"
+                  onClick={(e) => {
+                    e.preventDefault()
+                  }}
                 >
                   <Heart className="size-4 text-muted-foreground" />
                 </button>
@@ -83,18 +88,18 @@ export function SimilarItemsGrid({
               {/* Info */}
               <div className="p-3">
                 <p className="text-sm font-bold text-foreground">
-                  €{item.price.toLocaleString()}
+                  {formatPrice(item.price, { locale })}
                 </p>
                 <p className="text-xs text-muted-foreground line-clamp-2 mt-1 leading-snug">
                   {item.title}
                 </p>
               </div>
             </Link>
-          );
+          )
         })}
       </div>
     </section>
-  );
+  )
 }
 
-export type { SimilarProduct, SimilarItemsGridProps };
+export type { SimilarProduct, SimilarItemsGridProps }

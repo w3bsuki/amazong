@@ -1,6 +1,6 @@
 # DOCS-PLAN.md — Treido Documentation System
 
-> **Purpose:** Master plan for all project documentation. Every doc in `/docs` is an AI-first SSOT (Single Source of Truth). Max 500 lines per file.
+> **Purpose:** Master plan for Treido documentation. **SSOT docs are the canonical ones linked from `docs/00-INDEX.md`.** `docs/archive/*` is explicitly **not SSOT** (historical/reference). Max 500 lines per file.
 
 ---
 
@@ -16,6 +16,9 @@ Create a **complete, AI-readable documentation system** that enables:
 ```
 /docs
 ├── DOCS-PLAN.md          ← You are here (this file)
+├── PROMPT-GUIDE.md       ← How to prompt AI effectively
+├── AGENTS.md             ← Agent entry point + rails (SSOT)
+├── WORKFLOW.md           ← Agent workflow ops (SSOT)
 ├── 00-INDEX.md           ← Entry point for agents (links to all docs)
 ├── 01-PRD.md             ← Product Requirements Document
 ├── 02-FEATURES.md        ← Feature checklist (✅/🚧/⬜)
@@ -27,9 +30,11 @@ Create a **complete, AI-readable documentation system** that enables:
 ├── 08-PAYMENTS.md        ← Stripe integration reference
 ├── 09-AUTH.md            ← Authentication flows
 ├── 10-I18N.md            ← Internationalization setup
-├── 11-SKILLS.md          ← AI Skill agents (treido-ui, etc.)
+├── 11-SKILLS.md          ← AI skills reference (V2)
 ├── 12-LAUNCH.md          ← Launch checklist & ops
-└── 13-CHANGELOG.md       ← Version history
+├── 13-PRODUCTION-PUSH.md ← Production push plan
+├── 14-UI-UX-PLAN.md      ← UI/UX roadmap
+└── 15-DEV-DEPARTMENT.md  ← Roles + ownership + maintenance cadence
 ```
 
 ---
@@ -40,32 +45,37 @@ Create a **complete, AI-readable documentation system** that enables:
 
 | # | File | Purpose | Status | Lines Est |
 |---|------|---------|--------|-----------|
-| 0 | `00-INDEX.md` | Agent entry point, links all docs | ⬜ | ~50 |
-| 1 | `01-PRD.md` | What Treido is, vision, scope | ⬜ | ~200 |
-| 2 | `02-FEATURES.md` | Feature status checklist | ⬜ | ~300 |
-| 3 | `03-ARCHITECTURE.md` | Module boundaries, caching, data flow | ⬜ | ~400 |
-| 4 | `04-DESIGN.md` | Tailwind v4, tokens, UI rules | ⬜ | ~300 |
+| 0 | `00-INDEX.md` | Docs hub + navigation | ✅ | ~50 |
+| 1 | `01-PRD.md` | What Treido is, vision, scope | ✅ | ~200 |
+| 2 | `02-FEATURES.md` | Feature status checklist | ✅ | ~300 |
+| 3 | `03-ARCHITECTURE.md` | Module boundaries, caching, data flow | ✅ | ~400 |
+| 4 | `04-DESIGN.md` | Tailwind v4, tokens, UI rules | ✅ | ~300 |
 
 ### Domain Docs (PRIORITY 2)
 
 | # | File | Purpose | Status | Lines Est |
 |---|------|---------|--------|-----------|
-| 5 | `05-ROUTES.md` | Route map with groups | ⬜ | ~200 |
-| 6 | `06-DATABASE.md` | Tables, RLS policies, key queries | ⬜ | ~400 |
-| 7 | `07-API.md` | Server actions, route handlers | ⬜ | ~300 |
-| 8 | `08-PAYMENTS.md` | Stripe Checkout, Connect, webhooks | ⬜ | ~250 |
-| 9 | `09-AUTH.md` | Auth flows, session, gating | ⬜ | ~200 |
-| 10 | `10-I18N.md` | Locales, messages, routing | ⬜ | ~150 |
+| 5 | `05-ROUTES.md` | Route map with groups | ✅ | ~200 |
+| 6 | `06-DATABASE.md` | Tables, RLS policies, key queries | ✅ | ~400 |
+| 7 | `07-API.md` | Server actions, route handlers | ✅ | ~300 |
+| 8 | `08-PAYMENTS.md` | Stripe Checkout, Connect, webhooks | ✅ | ~250 |
+| 9 | `09-AUTH.md` | Auth flows, session, gating | ✅ | ~200 |
+| 10 | `10-I18N.md` | Locales, messages, routing | ✅ | ~150 |
 
 ### Operations Docs (PRIORITY 3)
 
 | # | File | Purpose | Status | Lines Est |
 |---|------|---------|--------|-----------|
-| 11 | `11-SKILLS.md` | AI skill agents + triggers | ⬜ | ~200 |
-| 12 | `12-LAUNCH.md` | Launch checklist, ops | ⬜ | ~150 |
+| 11 | `11-SKILLS.md` | AI skills reference (V2) | ✅ | ~200 |
+| 12 | `12-LAUNCH.md` | Launch checklist, ops | ✅ | ~150 |
+| 13 | `13-PRODUCTION-PUSH.md` | Production push plan | ✅ | ~250 |
+| 14 | `14-UI-UX-PLAN.md` | App-feel UI/UX roadmap | ✅ | ~250 |
+| 15 | `15-DEV-DEPARTMENT.md` | Roles + ownership + maintenance | ✅ | ~200 |
 | — | `AGENTS.md` | Agent entry point + rails | ✅ | ~200 |
 | — | `WORKFLOW.md` | Agent workflow ops | ✅ | ~250 |
-| 13 | `13-CHANGELOG.md` | SKIPPED — use `.codex/SHIPPED.md` | ❌ | — |
+| — | `PROMPT-GUIDE.md` | How to prompt AI | ✅ | ~200 |
+| — | `DOCS-PLAN.md` | Docs system plan | ✅ | ~300 |
+| — | `13-CHANGELOG.md` | SKIPPED — use `.codex/SHIPPED.md` | ❌ | — |
 
 ---
 
@@ -130,7 +140,12 @@ Content in tables, code blocks, or compact prose.
 
 ## 🔗 Integration with AGENTS.md
 
-After docs are created, update `.codex/AGENTS.md`:
+After docs are created/changed, update:
+- `docs/00-INDEX.md` (hub + doc map)
+- `AGENTS.md` (root entry point)
+- `docs/AGENTS.md` (rails + routing)
+
+Note: `.codex/AGENTS.md` is a deprecated pointer for backwards compatibility — do not edit it.
 
 ```markdown
 ## Canonical Docs (SSOT)
@@ -164,8 +179,8 @@ Answer: Signup → Email Confirm → Session → Protected Routes
 
 ```
 Agent reads: docs/00-INDEX.md → docs/04-DESIGN.md
-Invokes: treido-ui skill
-Applies: Token rules, forbidden patterns
+Uses: treido-frontend + treido-rails
+Applies: Token rails, forbidden patterns, boundaries
 ```
 
 ### Example 4: "Add a new route"
@@ -307,7 +322,7 @@ Read /docs/DOCS-PLAN.md. Create 10-I18N.md — Locales, message files, routing s
 
 **11-SKILLS.md:**
 ```
-Read /docs/DOCS-PLAN.md. Create 11-SKILLS.md — AI skill agents, triggers, when to use. Source: .codex/AGENTS.md + .codex/skills/. Max 200 lines. Update checklist when done.
+Read /docs/DOCS-PLAN.md. Create 11-SKILLS.md — AI skill agents, triggers, when to use. Source: docs/AGENTS.md + .codex/skills/ + .codex/stack.yml. Max 200 lines. Update checklist when done.
 ```
 
 **12-LAUNCH.md:**
@@ -337,11 +352,15 @@ Read /docs/DOCS-PLAN.md. Create 13-CHANGELOG.md — Version history template, cu
 - [x] `10-I18N.md` created
 - [x] `11-SKILLS.md` created
 - [x] `12-LAUNCH.md` created
+- [x] `13-PRODUCTION-PUSH.md` created
+- [x] `14-UI-UX-PLAN.md` created
+- [x] `15-DEV-DEPARTMENT.md` created
 - [x] `AGENTS.md` created (moved from .codex/)
 - [x] `WORKFLOW.md` created (moved from .codex/)
 - [x] `PROMPT-GUIDE.md` created (human prompting guide)
 - [❌] `13-CHANGELOG.md` SKIPPED — use `.codex/SHIPPED.md` instead
 - [x] `.codex/AGENTS.md` now redirects to `/docs/AGENTS.md`
+- [x] `.codex/WORKFLOW.md` now redirects to `/docs/WORKFLOW.md`
 - [x] Old docs deprecated
 
 ---
@@ -358,4 +377,4 @@ Read /docs/DOCS-PLAN.md. Create 13-CHANGELOG.md — Version history template, cu
 ---
 
 *Created: 2026-02-01*
-*Status: IN PROGRESS (5/14 docs complete)*
+*Status: ACTIVE (SSOT established; keep docs in sync)*

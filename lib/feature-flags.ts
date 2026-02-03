@@ -22,7 +22,7 @@ export type FeatureFlagName =
   | "drawerCart"             // Cart drawer
   | "drawerMessages"         // Messages drawer
   | "drawerAccount"          // Account drawer
-  | "routeModalProductQuickView" // Desktop product quick view via intercepting route modal (search)
+  | "routeModalProductQuickView" // Product quick view via intercepting route modal (search/categories)
 
 export interface FeatureFlag {
   /** Whether the feature is enabled by default */
@@ -74,7 +74,7 @@ const FEATURE_FLAGS: Record<FeatureFlagName, FeatureFlag> = {
     enabled: true,
     rolloutPercentage: 100,
     envOverride: "NEXT_PUBLIC_FEATURE_ROUTE_MODAL_PRODUCT_QUICK_VIEW",
-    description: "Enable desktop product quick view modal via Next.js intercepting routes from search",
+    description: "Enable product quick view modal via Next.js intercepting routes from search/categories",
   },
 }
 

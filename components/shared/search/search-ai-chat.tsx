@@ -46,7 +46,13 @@ function AssistantAvatar({ size = "sm" }: { size?: "sm" | "md" }) {
 }
 
 /** User Avatar for chat */
-function UserChatAvatar({ size = "sm" }: { size?: "sm" | "md" }) {
+function UserChatAvatar({
+  label,
+  size = "sm",
+}: {
+  label: string
+  size?: "sm" | "md"
+}) {
   const sizeClasses = {
     sm: "size-7",
     md: "size-8",
@@ -54,7 +60,7 @@ function UserChatAvatar({ size = "sm" }: { size?: "sm" | "md" }) {
   return (
     <Avatar className={cn(sizeClasses[size], "shrink-0")}>
       <AvatarFallback className="bg-foreground text-background text-2xs font-semibold">
-        You
+        {label}
       </AvatarFallback>
     </Avatar>
   )
@@ -72,14 +78,14 @@ export function SearchAiChat({ className, onClose, compact = false }: SearchAiCh
   const messagesEndRef = React.useRef<HTMLDivElement>(null)
   const [input, setInput] = React.useState("")
 
-  const { messages, sendMessage, status, stop } = useChat({
+  const { messages, sendMessage, status, stop, error, clearError, regenerate } = useChat({
     transport: new DefaultChatTransport({
       api: "/api/assistant/chat",
       body: { locale },
     }),
   })
 
-  const isLoading = status === "streaming" || status === "submitted"
+  const isLoading = (status === "streaming" || status === "submitted") && !error
 
   // Auto-scroll to bottom on new messages
   React.useEffect(() => {
@@ -96,6 +102,7 @@ export function SearchAiChat({ className, onClose, compact = false }: SearchAiCh
     const trimmed = input.trim()
     if (!trimmed || isLoading) return
     
+    clearError?.()
     sendMessage({ text: trimmed })
     setInput("")
   }
@@ -147,11 +154,12 @@ export function SearchAiChat({ className, onClose, compact = false }: SearchAiCh
               {t("aiDescription")}
             </p>
             <div className="mt-4 flex flex-wrap gap-2 justify-center">
-              {["Find me a phone under 500 BGN", "What laptops do you have?", "Show me sneakers"].map((suggestion) => (
+              {[t("aiSuggestionOne"), t("aiSuggestionTwo"), t("aiSuggestionThree")].map((suggestion) => (
                 <button
                   key={suggestion}
                   type="button"
                   onClick={() => {
+                    clearError?.()
                     setInput(suggestion)
                     inputRef.current?.focus()
                   }}
@@ -173,7 +181,7 @@ export function SearchAiChat({ className, onClose, compact = false }: SearchAiCh
                   {!isUser && <AssistantAvatar size="sm" />}
                   
                   <div className={cn(
-                    "max-w-(--support-chat-message-max-w) space-y-2",
+                    "flex flex-col gap-2 max-w-sm sm:max-w-md",
                     isUser ? "items-end" : "items-start"
                   )}>
                     {/* Text parts */}
@@ -236,14 +244,14 @@ export function SearchAiChat({ className, onClose, compact = false }: SearchAiCh
                             className="shrink-0 w-28 h-28 flex flex-col items-center justify-center bg-surface-subtle rounded-lg text-muted-foreground hover:text-foreground hover:bg-hover active:bg-active"
                           >
                             <ArrowRight size={20} />
-                            <span className="text-xs mt-1">+{listings.length - 4} more</span>
+                            <span className="text-xs mt-1">{t("aiMoreResults", { count: listings.length - 4 })}</span>
                           </Link>
                         )}
                       </div>
                     )}
                   </div>
 
-                  {isUser && <UserChatAvatar size="sm" />}
+                  {isUser && <UserChatAvatar size="sm" label={t("aiUserLabel")} />}
                 </div>
               )
             })}
@@ -257,6 +265,27 @@ export function SearchAiChat({ className, onClose, compact = false }: SearchAiCh
                     <CircleNotch size={14} className="animate-spin" />
                     {t("aiThinking")}
                   </div>
+                </div>
+              </div>
+            )}
+
+            {/* Error state */}
+            {error && (
+              <div className="rounded-lg border border-border bg-card p-3">
+                <p className="text-sm font-medium text-foreground">{t("aiErrorTitle")}</p>
+                <p className="mt-1 text-sm text-muted-foreground">{t("aiErrorDescription")}</p>
+                <div className="mt-3 flex items-center justify-end gap-2">
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    size="sm"
+                    onClick={() => {
+                      clearError?.()
+                      void regenerate?.()
+                    }}
+                  >
+                    {t("aiRetry")}
+                  </Button>
                 </div>
               </div>
             )}

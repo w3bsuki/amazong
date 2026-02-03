@@ -1,6 +1,6 @@
 # 00-INDEX.md — Treido Documentation Hub
 
-> **Agent Entry Point.** Start here to find any doc.
+> **Docs Hub.** Start here to find any doc. For project rails + workflow, start at [AGENTS.md](./AGENTS.md).
 
 | Scope | Entire Treido platform |
 |-------|------------------------|
@@ -14,14 +14,20 @@
 | Need | Doc |
 |------|-----|
 | **How to prompt AI** | [PROMPT-GUIDE.md](./PROMPT-GUIDE.md) |
+| **Using AI Skills** | [SKILLS-GUIDE.md](./SKILLS-GUIDE.md) |
 | **Agent entry point** | [AGENTS.md](./AGENTS.md) |
 | **Agent workflow** | [WORKFLOW.md](./WORKFLOW.md) |
-| Agent fleet roadmap | [agents/AGENTS_PHASES.md](./agents/AGENTS_PHASES.md) |
+| Legacy agent fleet roadmap (deprecated) | [agents/AGENTS_PHASES.md](./agents/AGENTS_PHASES.md) |
 | Docs system plan | [DOCS-PLAN.md](./DOCS-PLAN.md) |
 | What is Treido? | [01-PRD.md](./01-PRD.md) |
 | What's built? | [02-FEATURES.md](./02-FEATURES.md) |
 | How is it structured? | [03-ARCHITECTURE.md](./03-ARCHITECTURE.md) |
 | How to style? | [04-DESIGN.md](./04-DESIGN.md) |
+| App-feel UI/UX roadmap | [14-UI-UX-PLAN.md](./14-UI-UX-PLAN.md) |
+| **App-feel transformation** | [APP-FEEL-GUIDE.md](./APP-FEEL-GUIDE.md) |
+| App-feel components | [APP-FEEL-COMPONENTS.md](./APP-FEEL-COMPONENTS.md) |
+| App-feel checklist | [APP-FEEL-CHECKLIST.md](./APP-FEEL-CHECKLIST.md) |
+| Dev department / AI team | [15-DEV-DEPARTMENT.md](./15-DEV-DEPARTMENT.md) |
 | What routes exist? | [05-ROUTES.md](./05-ROUTES.md) |
 | Database schema? | [06-DATABASE.md](./06-DATABASE.md) |
 | Server actions? | [07-API.md](./07-API.md) |
@@ -39,6 +45,7 @@
 | # | Doc | Type | Purpose | Status |
 |---|-----|------|---------|--------|
 | — | [PROMPT-GUIDE.md](./PROMPT-GUIDE.md) | How-To | How to prompt AI | ✅ |
+| — | [SKILLS-GUIDE.md](./SKILLS-GUIDE.md) | How-To | Using AI skills | ✅ |
 | — | [AGENTS.md](./AGENTS.md) | Reference | Agent entry + rails | ✅ |
 | — | [WORKFLOW.md](./WORKFLOW.md) | Reference | Agent workflow | ✅ |
 | — | [DOCS-PLAN.md](./DOCS-PLAN.md) | Reference | Documentation system plan | ✅ |
@@ -56,6 +63,11 @@
 | 11 | [11-SKILLS.md](./11-SKILLS.md) | Reference | AI agents | ✅ |
 | 12 | [12-LAUNCH.md](./12-LAUNCH.md) | Reference | Launch ops | ✅ |
 | 13 | [13-PRODUCTION-PUSH.md](./13-PRODUCTION-PUSH.md) | Plan | V1 ship plan | ✅ |
+| 14 | [14-UI-UX-PLAN.md](./14-UI-UX-PLAN.md) | Plan | App-feel UI/UX roadmap | ✅ |
+| 15 | [15-DEV-DEPARTMENT.md](./15-DEV-DEPARTMENT.md) | Reference | AI dev team roles + ownership | ✅ |
+| — | [APP-FEEL-GUIDE.md](./APP-FEEL-GUIDE.md) | Guide | App-like transformation | ✅ |
+| — | [APP-FEEL-COMPONENTS.md](./APP-FEEL-COMPONENTS.md) | Reference | Component patterns for app feel | ✅ |
+| — | [APP-FEEL-CHECKLIST.md](./APP-FEEL-CHECKLIST.md) | Checklist | Implementation tracking | ✅ |
 
 ---
 
@@ -64,7 +76,7 @@
 ```
 Product:  Treido — Bulgarian-first marketplace (C2C + B2B/B2C)
 Stack:    Next.js 16 + React 19 + Tailwind v4 + Supabase + Stripe
-Status:   ~86% V1 complete (see 02-FEATURES.md)
+Status:   See 02-FEATURES.md (progress summary at top)
 ```
 
 ### Core Flows

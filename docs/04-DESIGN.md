@@ -293,6 +293,40 @@ CSS Variables (:root/.dark) → @theme inline → Tailwind Classes
 
 ---
 
+## Part 8.5: App-feel (iOS-inspired) patterns
+
+Treido keeps its **Twitter Blue** theme and calm, premium styling. “iOS feel” is about **interaction + layout**, not copying iOS visuals.
+
+### Principles
+
+- Preserve browsing context: deep views open “on top” (not full navigation loss).
+- One clear primary action per screen.
+- Touch-first sizing: primary targets feel easy to hit.
+- Calm surfaces: use spacing + hierarchy, not decoration.
+
+### Default Patterns
+
+| Interaction | Mobile | Desktop |
+|-------------|--------|---------|
+| PDP / quick view | `Sheet` (bottom) | `Dialog` (modal) |
+| Filters | `Sheet` | `Dialog` or right panel |
+| Seller preview | `Sheet` | `Dialog` |
+| Multi-step flows (sell, upgrade, edit) | `Sheet` wizard | `Dialog` wizard |
+
+### Rules
+
+- Prefer **URL-as-state** overlays (Next.js intercepting routes) so deep links + back button work.
+- Sticky headers / bottom CTA bars should use **semantic surfaces** (`bg-surface-elevated`, `border-border`) and safe-area padding utilities from `app/utilities.css` (`pt-safe*`, `pb-safe*`).
+- Press feedback is subtle: `active:bg-active` / `active:opacity-90` + `tap-highlight-transparent` (no new animations).
+- Avoid “glass” via opacity modifiers (`bg-*/90`, `bg-*/10`). If a glass surface is truly needed, add a semantic token in `app/globals.css` and use it normally.
+
+### References
+
+- Roadmap: `docs/14-UI-UX-PLAN.md`
+- Existing modal route pattern: `app/[locale]/(main)/search/@modal/(..)[username]/[productSlug]/page.tsx`
+
+---
+
 ## Part 9: Accessibility
 
 **Non-negotiable:**

@@ -445,3 +445,43 @@ Links
 - Docs hub: docs/00-INDEX.md
 - Audits: .codex/audit/README.md
 - Tasks: .codex/TASKS.md
+
+---
+
+## DEC-2026-02-02-02
+
+Status: accepted
+Owners: treido-orchestrator | codex-iteration | treido-docs | treido-structure
+Supersedes: DEC-2026-01-30-02 (4-skill collapse intent)
+
+Context
+- Skills and SSOT docs were drifting (duplicate “SSOT” files, hardcoded stack facts, ambiguous entry points).
+- We need a small-but-complete “dev department” role model, plus a maintenance cadence so skills/docs don’t regress into generic advice.
+
+Decision
+- SSOT docs live in `docs/`:
+  - Rails + routing: `docs/AGENTS.md`
+  - Workflow: `docs/WORKFLOW.md`
+  - Stable docs hub: `docs/00-INDEX.md`
+- `.codex/AGENTS.md` and `.codex/WORKFLOW.md` are **deprecated pointers only** (backward compatibility).
+- Stack facts are centralized in `.codex/stack.yml` and skills should reference it instead of hardcoding versions.
+- Fleet roles are explicitly:
+  - ORCH (`ORCH:`) — control plane + planning
+  - FRONTEND (`FRONTEND:`), BACKEND (`BACKEND:`), UI/DESIGN (`UI:`/`DESIGN:`) — executors
+  - VERIFY (`VERIFY:`) — gates/tests (read-only)
+  - DOCS (`DOCS:`) — docs SSOT maintenance
+  - STRUCTURE (`STRUCTURE:`) — repo hygiene + safe moves/cleanup
+  - ITERATION (`ITERATION:`) — skill system maintenance (sync + drift prevention)
+
+Why
+- Reduces “which file is SSOT?” confusion.
+- Keeps skills short and repo-specific by pointing to real Treido artifacts (`docs/*`, `.codex/stack.yml`).
+- Establishes durable ownership so repo health doesn’t depend on human memory.
+
+Consequences
+- Skills changes should be followed by `pnpm -s skills:sync` and `pnpm -s validate:skills`.
+- New roles are added only when workload justifies them; prefer playbooks in docs over agent explosion.
+
+Links
+- Audit: .codex/audit/2026-02-02_dev-department-agent-system.md
+- Tasks: .codex/TASKS.md

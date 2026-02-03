@@ -35,7 +35,9 @@ export function MobileTabBar({ categories }: MobileTabBarProps) {
   // Get current user's username for profile navigation
   const { username: currentUsername } = useCurrentUsername()
   
-  // Profile href: navigate to own profile if username available, fallback to /account
+  // Profile href:
+  // - authenticated: navigate to own public profile
+  // - guest: navigate to /account (server redirects to localized login)
   const profileHref = currentUsername ? `/${currentUsername}` : "/account"
 
   // Avoid SSR/hydration mismatches caused by client-only UI (drawers/portals).
@@ -77,20 +79,20 @@ export function MobileTabBar({ categories }: MobileTabBarProps) {
   return (
     <>
       <nav
-        className="fixed bottom-0 left-0 right-0 z-50 bg-card/95 backdrop-blur-xl border-t border-border/60 pb-safe md:hidden"
+        className="fixed bottom-0 left-0 right-0 z-50 bg-surface-elevated border-t border-border pb-safe md:hidden"
         role="navigation"
         aria-label={t("mobileNavigation")}
         data-testid="mobile-tab-bar"
       >
         {/* Treido: 48px height, 5-column grid */}
-        <div className="grid grid-cols-5 h-(--spacing-touch-lg) items-center">
+        <div className="grid grid-cols-5 h-touch-lg items-center">
           {/* Home */}
           <Link
             href="/"
             prefetch={true}
             className={cn(
               "flex flex-col items-center justify-center gap-0.5 w-full h-full",
-              "tap-highlight-transparent active:opacity-50 transition-opacity",
+              "tap-highlight-transparent hover:bg-hover active:bg-active transition-colors",
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-md",
             )}
             aria-label={t("home")}
@@ -116,7 +118,7 @@ export function MobileTabBar({ categories }: MobileTabBarProps) {
             onClick={() => menuSheetRef.current?.open()}
             className={cn(
               "flex flex-col items-center justify-center gap-0.5 w-full h-full",
-              "tap-highlight-transparent active:opacity-50 transition-opacity",
+              "tap-highlight-transparent hover:bg-hover active:bg-active transition-colors",
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-md",
             )}
             aria-label={t("categories")}
@@ -160,10 +162,10 @@ export function MobileTabBar({ categories }: MobileTabBarProps) {
             onClick={openMessages}
             className={cn(
               "flex flex-col items-center justify-center gap-0.5 w-full h-full",
-              "tap-highlight-transparent active:opacity-50 transition-opacity",
+              "tap-highlight-transparent hover:bg-hover active:bg-active transition-colors",
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-md",
             )}
-            aria-label={`${t("chat")}${unreadCount > 0 ? ` (${unreadCount} unread)` : ""}`}
+            aria-label={`${t("chat")}${unreadCount > 0 ? ` (${unreadCount})` : ""}`}
             aria-haspopup="dialog"
           >
             <span className="relative">
@@ -195,11 +197,12 @@ export function MobileTabBar({ categories }: MobileTabBarProps) {
             prefetch={true}
             className={cn(
               "flex flex-col items-center justify-center gap-0.5 w-full h-full",
-              "tap-highlight-transparent active:opacity-50 transition-opacity",
+              "tap-highlight-transparent hover:bg-hover active:bg-active transition-colors",
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-md",
             )}
             aria-label={t("profile")}
             aria-current={isActive("/account") || (currentUsername && pathname.includes(`/${currentUsername}`)) ? "page" : undefined}
+            data-testid="mobile-tab-profile"
           >
             <UserCircle 
               size={24}

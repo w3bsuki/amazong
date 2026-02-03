@@ -20,6 +20,7 @@ import * as React from "react"
 import { useState, useCallback, useMemo, useRef, useEffect } from "react"
 
 import { useTranslations } from "next-intl"
+import { useRouter } from "@/i18n/routing"
 import { Button } from "@/components/ui/button"
 import { EmptyStateCTA } from "@/components/shared/empty-state-cta"
 import { useCategoryCounts } from "@/hooks/use-category-counts"
@@ -102,6 +103,7 @@ export function DesktopHome({
   user,
 }: DesktopHomeProps) {
   const t = useTranslations("TabbedProductFeed")
+  const router = useRouter()
 
   // State
   const [activeTab, setActiveTab] = useState<FeedTab>("newest")
@@ -324,10 +326,16 @@ export function DesktopHome({
     }
   }, [activeTab, activeCategorySlug, userCity, filters.quickFilters, fetchProducts])
 
-  const handleCategorySelect = (path: CategoryPath[], _cat: CategoryTreeNode | null) => {
-    setCategoryPath(path)
-    setPage(1)
-  }
+  const buildCategoryHref = useCallback((path: CategoryPath[]): string => {
+    if (path.length === 0) return "/"
+    if (path.length === 1) return `/categories/${path[0]?.slug}`
+    return `/categories/${path[0]?.slug}/${path[1]?.slug}`
+  }, [])
+
+  const handleCategorySelect = useCallback((path: CategoryPath[], _cat: CategoryTreeNode | null) => {
+    // Desktop home category interactions should deep-link for shareability and back-button UX.
+    router.push(buildCategoryHref(path))
+  }, [buildCategoryHref, router])
 
   const loadMore = () => {
     if (!isLoading && hasMore) {

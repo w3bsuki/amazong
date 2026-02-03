@@ -76,6 +76,9 @@ export function MobileSearchOverlay({
   const router = useRouter()
   const tNav = useTranslations("Navigation")
   const tSearch = useTranslations("SearchOverlay")
+  const isAiModeAvailable =
+    process.env.NEXT_PUBLIC_AI_ASSISTANT_ENABLED === "1" ||
+    process.env.NEXT_PUBLIC_AI_ASSISTANT_ENABLED === "true"
 
   // Use shared search hook
   const {
@@ -240,17 +243,21 @@ export function MobileSearchOverlay({
           {/* Search Header - Close above, full-width search below */}
           <header className="shrink-0 bg-background border-b border-border px-inset pt-2 pb-2">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Robot size={16} weight={aiMode ? "fill" : "regular"} className={aiMode ? "text-primary" : "text-muted-foreground"} />
-                <span className={cn("text-sm font-medium", aiMode ? "text-foreground" : "text-muted-foreground")}>
-                  {tSearch("aiMode")}
-                </span>
-                <Switch
-                  checked={aiMode}
-                  onCheckedChange={setAiMode}
-                  aria-label={tSearch("aiMode")}
-                />
-              </div>
+              {isAiModeAvailable ? (
+                <div className="flex items-center gap-2">
+                  <Robot size={16} weight={aiMode ? "fill" : "regular"} className={aiMode ? "text-primary" : "text-muted-foreground"} />
+                  <span className={cn("text-sm font-medium", aiMode ? "text-foreground" : "text-muted-foreground")}>
+                    {tSearch("aiMode")}
+                  </span>
+                  <Switch
+                    checked={aiMode}
+                    onCheckedChange={setAiMode}
+                    aria-label={tSearch("aiMode")}
+                  />
+                </div>
+              ) : (
+                <div />
+              )}
               <Button
                 type="button"
                 variant="ghost"
@@ -262,7 +269,7 @@ export function MobileSearchOverlay({
             </div>
 
             {/* Search Input - hidden in AI mode */}
-            {!aiMode && (
+            {(!isAiModeAvailable || !aiMode) && (
               <form
                 onSubmit={handleSubmit}
                 className="relative"
@@ -311,7 +318,7 @@ export function MobileSearchOverlay({
           {/* Search Content */}
           <main className="flex-1 overflow-y-auto overscroll-contain" role="region" aria-label={tSearch("search")}>
             {/* AI Chat Mode */}
-            {aiMode ? (
+            {isAiModeAvailable && aiMode ? (
               <SearchAiChat onClose={handleClose} className="h-full" />
             ) : (
             <>

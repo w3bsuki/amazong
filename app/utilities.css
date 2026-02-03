@@ -203,6 +203,11 @@
 .pl-safe { padding-left: env(safe-area-inset-left); }
 .pr-safe { padding-right: env(safe-area-inset-right); }
 
+/* Prevent fixed bottom tab bar from overlapping page content (mobile only). */
+@media (max-width: 767px) {
+  .pb-tabbar-safe { padding-bottom: calc(var(--spacing-touch-lg) + env(safe-area-inset-bottom)); }
+}
+
 /* ===== SIZE UTILITIES ===== */
 @utility w-18 {
   width: 4.5rem;
@@ -275,8 +280,9 @@
 }
 
 /* ===== MOBILE PDP UTILITIES ===== */
-/* Native press feedback for tap interactions */
+/* Native press feedback for tap interactions (iOS app-like feel) */
 .tap-highlight {
+  -webkit-tap-highlight-color: transparent;
   transition: opacity 100ms ease;
 }
 .tap-highlight:active {

@@ -154,7 +154,7 @@ export function SiteFooter() {
     return (
         <footer 
             id="footerHeader" 
-            className={`bg-foreground text-background mt-auto w-full ${
+            className={`bg-foreground text-background mt-auto w-full pb-tabbar-safe ${
                 isFooterVisibleOnMobile ? '' : 'hidden md:block'
             }`}
             role="contentinfo"

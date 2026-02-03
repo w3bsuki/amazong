@@ -43,12 +43,17 @@ function ProductCardImage({
 }: ProductCardImageProps) {
   const loadingStrategy = getImageLoadingStrategy(index, 4)
   const imageSrc = React.useMemo(() => getProductCardImageSrc(src), [src])
+  const [hasError, setHasError] = React.useState(false)
+
+  React.useEffect(() => {
+    setHasError(false)
+  }, [imageSrc])
 
   return (
     <>
       <AspectRatio ratio={1}>
         <Image
-          src={imageSrc}
+          src={hasError ? PLACEHOLDER_IMAGE_PATH : imageSrc}
           alt={alt}
           fill
           className={cn("object-cover", !inStock && "grayscale")}
@@ -57,6 +62,7 @@ function ProductCardImage({
           blurDataURL={productBlurDataURL()}
           loading={loadingStrategy.loading}
           priority={loadingStrategy.priority}
+          onError={() => setHasError(true)}
         />
       </AspectRatio>
 

@@ -116,7 +116,7 @@ export const MobileMenuSheet = forwardRef<MobileMenuSheetHandle, MobileMenuSheet
                       fallbackIconWeight="bold"
                       variant="menu"
                       label={getShortName(cat)}
-                      labelClassName="text-2xs font-medium text-center text-foreground leading-tight line-clamp-2 w-full max-w-none break-words hyphens-auto"
+                      labelClassName="text-2xs font-medium text-center text-foreground leading-tight line-clamp-2 w-full max-w-none break-normal hyphens-auto"
                     />
                   )
                 })}

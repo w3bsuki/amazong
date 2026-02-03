@@ -430,7 +430,7 @@ export function DesktopBuyBoxV2({
                   <>
                     <span>•</span>
                     <span>
-                      {seller.reviewCount.toLocaleString()} {t("reviews")}
+                      {t("reviews", { count: seller.reviewCount })}
                     </span>
                   </>
                 )}

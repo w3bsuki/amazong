@@ -1,0 +1,83 @@
+project:
+  name: treido
+  type: marketplace
+  locales: [bg, en]
+
+stack:
+  framework:
+    name: nextjs
+    version: "16.1.4"
+    router: app-router
+    default_component_type: rsc
+  react:
+    version: "19.2.3"
+  language:
+    typescript: "5.9.3"
+  styling:
+    tailwindcss: "4.1.18"
+    shadcn_ui: true
+  i18n:
+    library: next-intl
+    version: "4.7.0"
+  database:
+    provider: supabase
+    ssr_library: "@supabase/ssr@0.8.0"
+    rls: required
+  payments:
+    provider: stripe
+    version: "20.2.0"
+
+conventions:
+  request_routing_and_mutation:
+    primary_entrypoint: proxy.ts
+    note: "Treido centralizes request mutation/routing in proxy.ts. Do not introduce middleware.ts unless explicitly requested."
+  caching:
+    patterns:
+      - "Cached server functions use 'use cache' + cacheLife/cacheTag and never touch cookies()/headers()."
+      - "User-specific reads are dynamic (not cached)."
+  styling:
+    tailwind_v4_only: true
+    forbidden:
+      - gradients
+      - arbitrary_values
+      - palette_color_classes
+      - hardcoded_hex_rgb_colors
+  i18n:
+    rule: "All user-facing strings must come from next-intl messages."
+  database:
+    rule: "No select('*') on hot paths; project fields."
+    migrations:
+      rule: "Append-only mindset; no destructive migrations without human approval."
+
+paths:
+  docs_ssot:
+    agents: docs/AGENTS.md
+    workflow: docs/WORKFLOW.md
+    skills: docs/11-SKILLS.md
+    index: docs/00-INDEX.md
+  runtime_ssot:
+    tasks: .codex/TASKS.md
+    audit: .codex/audit/
+    decisions: .codex/DECISIONS.md
+  key_files:
+    request_hook: proxy.ts
+    tailwind_tokens: app/globals.css
+    shadcn_config: components.json
+    supabase_migrations: supabase/migrations/
+
+does_not_exist:
+  - "tailwind.config.ts (Tailwind v4 is CSS-first; tokens live in app/globals.css)"
+  - "root middleware.ts (Treido uses proxy.ts convention)"
+
+gates:
+  always:
+    - pnpm -s typecheck
+    - pnpm -s lint
+    - pnpm -s styles:gate
+  conditional:
+    - pnpm -s test:unit
+    - REUSE_EXISTING_SERVER=true pnpm -s test:e2e:smoke
+  periodic:
+    - pnpm -s knip
+    - pnpm -s dupes
+

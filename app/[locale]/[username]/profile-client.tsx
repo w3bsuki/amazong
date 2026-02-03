@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useCallback } from "react"
+import { useEffect, useState } from "react"
 import Image from "next/image"
 import { Link } from "@/i18n/routing"
 import { useLocale, useTranslations } from "next-intl"
@@ -198,9 +198,15 @@ export function PublicProfileClient({
   const tSeller = useTranslations("Seller")
   const { signOut } = useAuth()
 
+  // Avoid SSR/hydration mismatch for time-based + Intl-rendered text (React error 419 in prod).
+  const [isHydrated, setIsHydrated] = useState(false)
+  useEffect(() => {
+    setIsHydrated(true)
+  }, [])
+
   const [activeTab, setActiveTab] = useState(profile.is_seller ? "listings" : "reviews")
 
-  const displayName = profile.display_name || profile.username || 'User'
+  const displayName = profile.display_name || profile.username || tProfile("user")
   // Handle nullable created_at (ISR cache optimization)
   const memberSince = profile.created_at ? new Date(profile.created_at) : null
 
@@ -212,11 +218,12 @@ export function PublicProfileClient({
     youtube: <YoutubeLogo className="size-5" weight="fill" />,
   }
 
-  const memberSinceLabel = memberSince
-    ? tSeller("memberSince", {
-        date: new Intl.DateTimeFormat(locale, { month: "long", year: "numeric" }).format(memberSince),
-      })
-    : null
+  const memberSinceLabel =
+    isHydrated && memberSince
+      ? tSeller("memberSince", {
+          date: new Intl.DateTimeFormat(locale, { month: "long", year: "numeric" }).format(memberSince),
+        })
+      : null
 
   // Build stats for the horizontal row (Tradesphere pattern: 4 stats)
   const statsItems = profile.is_seller
@@ -276,7 +283,7 @@ export function PublicProfileClient({
             </>
           ) : (
             <div className="py-12 text-center text-muted-foreground">
-              <Package className="size-12 mx-auto mb-3 opacity-50" />
+              <Package className="size-12 mx-auto mb-3" />
               <p>{tProfile("noActiveListings")}</p>
             </div>
           )}
@@ -317,11 +324,11 @@ export function PublicProfileClient({
                               </Link>
                             ) : (
                               <span className="font-medium text-sm truncate">
-                                {review.buyer?.display_name || "Buyer"}
+                                {review.buyer?.display_name || tProfile("buyer")}
                               </span>
                             )}
                             <span className="text-xs text-muted-foreground flex-shrink-0">
-                              {formatTimeAgo(review.created_at, locale) ?? ""}
+                              {isHydrated ? formatTimeAgo(review.created_at, locale) ?? "" : ""}
                             </span>
                           </div>
                           <div className="mt-1">
@@ -338,7 +345,7 @@ export function PublicProfileClient({
               </div>
             ) : (
               <div className="py-12 text-center text-muted-foreground">
-                <Star className="size-12 mx-auto mb-3 opacity-50" />
+                <Star className="size-12 mx-auto mb-3" />
                 <p>{tProfile("noReviewsYet")}</p>
               </div>
             )
@@ -367,11 +374,11 @@ export function PublicProfileClient({
                               </Link>
                             ) : (
                               <span className="font-medium text-sm truncate">
-                                {review.seller?.display_name || "Seller"}
+                                {review.seller?.display_name || tProfile("seller")}
                               </span>
                             )}
                             <span className="text-xs text-muted-foreground flex-shrink-0">
-                              {formatTimeAgo(review.created_at, locale) ?? ""}
+                              {isHydrated ? formatTimeAgo(review.created_at, locale) ?? "" : ""}
                             </span>
                           </div>
                           <div className="mt-1">
@@ -388,7 +395,7 @@ export function PublicProfileClient({
               </div>
             ) : (
               <div className="py-12 text-center text-muted-foreground">
-                <Star className="size-12 mx-auto mb-3 opacity-50" />
+                <Star className="size-12 mx-auto mb-3" />
                 <p>{tProfile("noReviewsYet")}</p>
               </div>
             )
@@ -407,7 +414,7 @@ export function PublicProfileClient({
           {(profile.follower_count ?? 0) > 0 ? (
             <>
               <div className="py-8 text-center text-muted-foreground">
-                <Users className="size-12 mx-auto mb-3 opacity-50" />
+                <Users className="size-12 mx-auto mb-3" />
                 <p className="text-sm">
                   {tProfile("followersCount", { count: profile.follower_count ?? 0 })}
                 </p>
@@ -415,7 +422,7 @@ export function PublicProfileClient({
             </>
           ) : (
             <div className="py-12 text-center text-muted-foreground">
-              <Users className="size-12 mx-auto mb-3 opacity-50" />
+              <Users className="size-12 mx-auto mb-3" />
               <p>{tProfile("noFollowersYet")}</p>
             </div>
           )}
@@ -449,7 +456,7 @@ export function PublicProfileClient({
           </Badge>
         )}
         {profile.is_seller && (
-          <Badge variant="outline" className="gap-1 text-xs text-success border-success/20 bg-success/10">
+          <Badge variant="success-subtle" className="gap-1 text-xs">
             <Package className="size-3" />
             {tProfile("seller")}
           </Badge>
@@ -520,17 +527,47 @@ export function PublicProfileClient({
   )
 
   // Action buttons (Tradesphere style: rounded-xl, side-by-side)
+  const handleShareProfile = async () => {
+    const url = typeof window !== "undefined" ? window.location.href : ""
+    if (!url) return
+
+    if (typeof navigator !== "undefined" && navigator.share) {
+      try {
+        await navigator.share({
+          title: displayName,
+          url,
+        })
+        return
+      } catch {
+        // User cancelled or share failed - silently ignore
+      }
+    }
+
+    if (typeof navigator !== "undefined" && navigator.clipboard) {
+      try {
+        await navigator.clipboard.writeText(url)
+      } catch {
+        // Best-effort only
+      }
+    }
+  }
+
   const actions = isOwnProfile ? (
     <>
-      <Link href="/account/profile" className="flex-1">
-        <Button className="w-full py-2.5 rounded-xl gap-2">
+      <Link href="/account/profile" className="w-full sm:flex-1 min-w-0">
+        <Button className="w-full py-2.5 rounded-xl gap-2 min-w-0">
           <PencilSimple className="size-4" />
-          {tProfile("editProfile")}
+          <span className="truncate">{tProfile("editProfile")}</span>
         </Button>
       </Link>
-      <Button variant="secondary" className="flex-1 py-2.5 rounded-xl gap-2">
+      <Button
+        type="button"
+        variant="secondary"
+        className="w-full sm:flex-1 py-2.5 rounded-xl gap-2 min-w-0"
+        onClick={handleShareProfile}
+      >
         <ShareNetwork className="size-4" />
-        {tProfile("shareProfile")}
+        <span className="truncate">{tProfile("shareProfile")}</span>
       </Button>
     </>
   ) : (
@@ -541,18 +578,25 @@ export function PublicProfileClient({
           initialIsFollowing={isFollowing}
           actions={followActions}
           locale={locale}
-          className="flex-1 rounded-xl"
+          className="w-full sm:flex-1 rounded-xl"
         />
       ) : null}
       {!isOwnProfile && (
-        <Link href={`/chat?to=${profile.id}`} className="flex-1">
-          <Button variant="secondary" className="w-full py-2.5 rounded-xl gap-2">
+        <Link href={`/chat?to=${profile.id}`} className="w-full sm:flex-1 min-w-0">
+          <Button variant="secondary" className="w-full py-2.5 rounded-xl gap-2 min-w-0">
             <ChatCircle className="size-4" />
-            {tSeller("message")}
+            <span className="truncate">{tSeller("message")}</span>
           </Button>
         </Link>
       )}
-      <Button variant="ghost" size="icon" className="size-10 rounded-xl" aria-label={tProfile("share")}>
+      <Button
+        type="button"
+        variant="ghost"
+        size="icon"
+        className="hidden sm:inline-flex size-10 rounded-xl"
+        aria-label={tProfile("share")}
+        onClick={handleShareProfile}
+      >
         <ShareNetwork className="size-5" />
       </Button>
     </>
@@ -584,7 +628,6 @@ export function PublicProfileClient({
             onValueChange={setActiveTab}
           />
         }
-        className="pb-20 sm:pb-8"
       />
     </>
   )

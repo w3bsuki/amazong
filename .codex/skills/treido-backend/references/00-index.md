@@ -9,7 +9,7 @@
 ## Supabase (Auth/RLS/Storage/Perf)
 
 - `supabase.md` — practical policies + query patterns + migration workflow (MCP-first)
-- SSOT: `.codex/project/ARCHITECTURE.md`
+- SSOT: `docs/03-ARCHITECTURE.md` (deprecated pointer: `.codex/project/ARCHITECTURE.md`)
 
 ## Stripe (Checkout + webhooks)
 

@@ -35,7 +35,7 @@ export function MobileProfileHeader({
   const tNav = useTranslations("Navigation")
 
   // Display info
-  const name = displayName || username || "Profile"
+  const name = displayName || username || tProfile("profile")
   const profileUrl = typeof window !== "undefined" ? window.location.href : ""
 
   // Native share with fallback
@@ -60,36 +60,38 @@ export function MobileProfileHeader({
       className={cn(
         "md:hidden",
         "sticky top-0 z-50",
-        // Premium glass effect (matches product header)
-        "bg-background/80",
-        "backdrop-blur-xl backdrop-saturate-150",
-        // Subtle shadow instead of harsh border
-        "shadow-sm",
+        "bg-surface-elevated",
+        "border-b border-border",
         // Safe area for notch devices
         "pt-safe"
       )}
     >
-      <div className="h-14 flex items-center px-1">
-        {/* Back Button - Large touch target */}
-        <Button
-          type="button"
-          variant="ghost"
-          size="icon"
-          className={cn(
-            "size-touch rounded-full shrink-0",
-            "text-foreground",
-            "hover:bg-muted",
-            "active:scale-95 active:bg-muted",
-            "transition-all duration-150"
-          )}
-          aria-label={tNav("back")}
-          onClick={onBack}
-        >
-          <ArrowLeft className="size-icon-sm" weight="bold" />
-        </Button>
+      <div className="h-14 flex items-center px-2">
+        {/* Back Button - show only when viewing someone else */}
+        {!isOwnProfile && onBack ? (
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            className={cn(
+              "size-touch rounded-full shrink-0",
+              "text-foreground",
+              "hover:bg-muted",
+              "active:scale-95 active:bg-muted",
+              "transition-all duration-150"
+            )}
+            aria-label={tNav("back")}
+            onClick={onBack}
+          >
+            <ArrowLeft className="size-icon-sm" weight="bold" />
+          </Button>
+        ) : null}
 
         {/* Center Content: Avatar + Name */}
-        <div className="flex-1 flex items-center gap-2.5 min-w-0 pl-0.5 pr-1">
+        <div className={cn(
+          "flex-1 flex items-center gap-2.5 min-w-0 pr-1",
+          !isOwnProfile ? "pl-0.5" : "pl-1"
+        )}>
           {/* User Avatar */}
           <div
             className={cn(

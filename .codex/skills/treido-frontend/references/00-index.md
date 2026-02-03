@@ -10,7 +10,7 @@
 
 - `tailwind.md` — the rails + how to fix `styles:gate` findings
 - `tailwind-v4-tokens.md` — practical token mapping + common conversions (palette/arbitrary → semantic tokens)
-- SSOT: `.codex/project/DESIGN.md`
+- SSOT: `docs/04-DESIGN.md` (deprecated pointer: `.codex/project/DESIGN.md`)
 
 ## shadcn/ui composition
 

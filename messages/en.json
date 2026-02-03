@@ -574,7 +574,7 @@
     },
     "CustomerService": {
         "title": "Welcome to Treido Customer Service",
-        "metaTitle": "Customer Service | Treido",
+        "metaTitle": "Customer Service",
         "metaDescription": "Get help with orders, shipping, returns, payments, and account issues.",
         "helpTitle": "What would you like help with today?",
         "searchTitle": "Search our help library",
@@ -768,7 +768,12 @@
         "qty": "Qty",
         "backToCart": "Back to cart",
         "loading": "Loading checkout...",
+        "authRequiredTitle": "Sign in to checkout",
+        "authRequiredDescription": "To complete your order, please sign in. You'll be returned to checkout after signing in.",
+        "checkoutErrorTitle": "Couldn't start checkout",
         "checkoutError": "An error occurred during checkout. Please try again.",
+        "ownProductsTitle": "You can’t buy your own items",
+        "ownProductsDescription": "Remove your own listings from the cart and try again.",
         "payNow": "Pay Now",
         "buyerProtection": "Buyer Protection",
         "buyerProtectionDescription": "Secure payment and protection for order issues",
@@ -1328,10 +1333,18 @@
         "aiMode": "AI Mode",
         "aiWelcome": "Ask AI Assistant",
         "aiDescription": "Ask me anything about products. I can search, compare, and help you find what you need.",
+        "aiUserLabel": "You",
+        "aiSuggestionOne": "Find me a phone under €500",
+        "aiSuggestionTwo": "What laptops do you have?",
+        "aiSuggestionThree": "Show me sneakers",
         "aiPlaceholder": "Ask AI anything...",
         "aiThinking": "Thinking...",
+        "aiErrorTitle": "AI assistant is unavailable",
+        "aiErrorDescription": "Please try again in a moment.",
+        "aiRetry": "Retry",
         "stopGenerating": "Stop",
-        "sendMessage": "Send message"
+        "sendMessage": "Send message",
+        "aiMoreResults": "+{count} more"
     },
     "SearchFilters": {
         "department": "Department",
@@ -1569,7 +1582,7 @@
     },
     "Privacy": {
         "title": "Privacy Policy",
-        "metaTitle": "Privacy Policy | Treido",
+        "metaTitle": "Privacy Policy",
         "metaDescription": "Learn how Treido collects, uses, and protects your personal data.",
         "lastUpdated": "Last Updated",
         "lastUpdatedDate": "November 2025",
@@ -1645,7 +1658,7 @@
     },
     "Terms": {
         "title": "Terms of Service",
-        "metaTitle": "Terms of Service | Treido",
+        "metaTitle": "Terms of Service",
         "metaDescription": "Read Treido's terms of service, including user accounts, orders, payments, and policies.",
         "lastUpdated": "Last Updated",
         "lastUpdatedDate": "November 2025",
@@ -1790,7 +1803,7 @@
     },
     "Returns": {
         "title": "Returns & Refunds",
-        "metaTitle": "Returns & Refunds | Treido",
+        "metaTitle": "Returns & Refunds",
         "metaDescription": "Start a return and learn about Treido's returns and refunds policy.",
         "heroTitle": "Easy Returns, Hassle-Free Refunds",
         "heroSubtitle": "Changed your mind? No problem. We make returns simple with free shipping labels and fast refunds.",
@@ -1950,7 +1963,8 @@
         "listings": "Listings",
         "shippedLabel": "Ships",
         "sinceLabel": "Since",
-        "chatLabel": "Chat"
+        "chatLabel": "Chat",
+        "message": "Message"
     },
     "SellerVerification": {
         "verifiedBusiness": "Verified Business",
@@ -1965,10 +1979,14 @@
         "business": "Business"
     },
     "ProfilePage": {
+        "profile": "Profile",
+        "user": "User",
+        "buyer": "Buyer",
         "business": "Business",
         "seller": "Seller",
         "editProfile": "Edit Profile",
         "share": "Share",
+        "message": "Message",
         "shareProfile": "Share Profile",
         "about": "About",
         "stats": "Stats",
@@ -2471,6 +2489,7 @@
         }
     },
     "Sell": {
+        "metaTitle": "Sell",
         "payoutSetupRequired": "Set up payouts first",
         "payoutSetupDescription": "Before you can list items for sale, you need to connect your bank account to receive payments.",
         "setupPayouts": "Set up payouts",

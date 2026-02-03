@@ -47,14 +47,20 @@ function isRateLimitError(error: unknown): boolean {
 
 export async function POST(request: Request) {
   if (!isAiAssistantEnabled()) {
-    return NextResponse.json({ error: "AI assistant disabled" }, { status: 404 })
+    return NextResponse.json(
+      { error: { code: "AI_DISABLED" } },
+      { status: 503, headers: { "Cache-Control": "private, no-store" } },
+    )
   }
 
   try {
     const body = await request.json()
     const parsed = AssistantChatRequestSchema.safeParse(body)
     if (!parsed.success) {
-      return NextResponse.json({ error: "Invalid request" }, { status: 400 })
+      return NextResponse.json(
+        { error: { code: "BAD_REQUEST" } },
+        { status: 400, headers: { "Cache-Control": "private, no-store" } },
+      )
     }
 
     const locale = parsed.data.locale ?? "en"
@@ -119,6 +125,9 @@ export async function POST(request: Request) {
   } catch (error) {
     if (isNextPrerenderInterrupted(error)) throw error
     logger.error("[AI Assistant] chat route error", error)
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 })
+    return NextResponse.json(
+      { error: { code: "INTERNAL" } },
+      { status: 500, headers: { "Cache-Control": "private, no-store" } },
+    )
   }
 }
