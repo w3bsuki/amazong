@@ -36,10 +36,12 @@
 - Decisions: [.codex/DECISIONS.md](.codex/DECISIONS.md)
 - Refactor workspace: [.codex/refactor/](.codex/refactor/)
 
-## Skills (3 total, auto-applied by context)
+## Skills (primary, auto-applied by context)
 
 | Skill | File |
 |-------|------|
 | Frontend | `.codex/skills/treido-frontend/SKILL.md` |
 | Backend | `.codex/skills/treido-backend/SKILL.md` |
 | Rails | `.codex/skills/treido-rails/SKILL.md` |
+
+Full skill inventory: `docs/11-SKILLS.md`
