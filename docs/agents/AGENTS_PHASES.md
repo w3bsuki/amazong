@@ -1,15 +1,21 @@
 # Agent Fleet Roadmap (DEPRECATED)
 
-> Treido no longer uses a “fleet orchestration” model. The repo now follows **Skills V2**: a minimal, context-driven set of rules.
+> Treido no longer uses a “fleet orchestration” model. The repo now follows **Skills V4**: a small set of **specialist** `treido-*` skills.
 
-**Current (V2) skills:**
-- `treido-rails` — project rails + verification
-- `treido-frontend` — UI/routes/Tailwind/i18n rules
-- `treido-backend` — server/Supabase/Stripe rules
-- `codex-iteration` — skill system maintenance
+**Current (V4) skills:**
+- `treido-rails` — non-negotiables + pause conditions
+- `treido-structure` — file placement + boundaries
+- `treido-design` — UI/UX specs + polish
+- `treido-mobile-ux` — touch + safe areas + iOS feel
+- `treido-nextjs-16` — App Router + caching + request conventions
+- `treido-tailwind-v4` — tokens + forbidden patterns
+- `treido-shadcn-ui` — primitives + composition
+- `treido-supabase` — SSR clients + queries + RLS mindset
+- `treido-stripe` — webhooks + payments safety
+- `treido-skillsmith` — skill system maintenance
 
 **Legacy (V1) skills:**
-- Kept only for reference in `.codex/skills/.archive/`
+- Legacy skill artifacts are intentionally removed to keep the fleet small and current.
 
 For day-to-day work:
 - Start at `docs/AGENTS.md`

@@ -1,4 +1,4 @@
-# WORKFLOW.md — Shipping Loop (V2)
+# WORKFLOW.md — Shipping Loop (V4)
 
 > The chat is the workflow. Keep batches small, follow rails, run gates.
 
@@ -23,9 +23,11 @@
 
 - Work in **small batches** (1–3 files) when possible
 - Apply the relevant knowledge automatically:
-  - UI/routes/i18n → `treido-frontend`
-  - server/actions/Supabase/Stripe → `treido-backend`
   - always-on rails → `treido-rails`
+  - UI/UX → `treido-design`, `treido-mobile-ux`
+  - Frontend stack → `treido-nextjs-16`, `treido-tailwind-v4`, `treido-shadcn-ui`
+  - Backend stack → `treido-supabase`, `treido-stripe`
+  - File placement → `treido-structure`
 
 ### 3) Verify
 

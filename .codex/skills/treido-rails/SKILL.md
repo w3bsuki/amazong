@@ -1,87 +1,28 @@
 ---
 name: treido-rails
-description: Project-wide rules for Treido - file organization, naming, pause conditions, verification gates.
+description: Treido non-negotiables and safety rails. Use for pause conditions (DB/auth/payments), security/PII rules, i18n, Tailwind token rails, and caching constraints.
 ---
 
 # treido-rails
 
-Project conventions, verification gates, and pause conditions.
+Small set of invariants that should hold across the repo, regardless of which feature you’re changing.
 
 ## When to Apply
 
-- Starting any new work
-- Creating new files or components
-- Before implementing high-risk changes
-- After completing any change
+- Any time you touch Treido code
+- Especially when work involves auth, data access, payments, caching, UI copy, or styling
 
-## File Organization
+## Always True (Non-Negotiables)
 
-### App Structure
+- **No secrets/PII in logs** (server or client). Don’t log headers/cookies/tokens/user objects.
+- **All user-facing strings use `next-intl`**. Add keys to both `messages/en.json` and `messages/bg.json`.
+- **Tailwind v4 tokens only**. No palette classes, gradients, arbitrary values, or hardcoded colors.
+- **Default to Server Components**. Add `"use client"` only for hooks/events/browser APIs.
+- **Cached server code must be pure**. In `'use cache'` functions: never touch `cookies()`, `headers()`, or auth.
+- **Supabase queries select explicit fields** (avoid `select('*')` on hot paths).
+- **Stripe webhooks must be signature-verified and idempotent**.
 
-```
-app/
-├── [locale]/              # i18n routing
-│   ├── (main)/           # Main layout group
-│   │   ├── page.tsx      # Route page
-│   │   └── _components/  # Route-private UI
-│   ├── (auth)/           # Auth layout group
-│   └── (seller)/         # Seller layout group
-├── actions/              # Shared server actions
-├── api/                  # Route handlers
-└── globals.css           # Tailwind tokens SSOT
-```
-
-### Components Structure
-
-```
-components/
-├── ui/                   # shadcn primitives ONLY
-├── shared/              # Reusable composites
-└── layout/              # Layout shells
-```
-
-### Support Structure
-
-```
-lib/
-├── supabase/            # Supabase clients
-├── utils/               # Pure utilities
-└── data/                # Data fetching
-
-messages/
-├── en.json              # English
-└── bg.json              # Bulgarian
-
-supabase/
-└── migrations/          # DB migrations (append-only)
-```
-
-## Naming Conventions
-
-| Type | Convention | Example |
-|------|------------|---------|
-| Components | PascalCase | `ProductCard.tsx` |
-| Hooks | camelCase + `use` | `useCart.ts` |
-| Server actions | camelCase verb | `addToCart.ts` |
-| Route handlers | `route.ts` | `app/api/webhook/route.ts` |
-| Private folders | `_` prefix | `_components/` |
-
-## Import Rules
-
-| Rule | Description |
-|------|-------------|
-| Absolute imports | Use `@/` alias |
-| No barrel imports | Import directly from file |
-| Layer boundaries | `ui/` never imports from `app/`, `lib/` |
-
-## Routing Rules
-
-| Rule | Description |
-|------|-------------|
-| Use `proxy.ts` | All request routing/mutation logic |
-| No root middleware | Do NOT create `middleware.ts` in project root |
-
-## PAUSE CONDITIONS
+## Stop / Ask First (Pause Conditions)
 
 **STOP and request human approval before:**
 
@@ -106,56 +47,30 @@ supabase/
 - Data truncation
 - Bulk updates
 
-**How to pause:**
-1. Describe the proposed change
-2. Explain the risk
-3. Wait for explicit "proceed"
+### External Integrations
+- Adding new third-party APIs, OAuth flows, webhooks, or background jobs
 
-## Verification Gates
+## Repo Conventions (Stable)
 
-### After Every Change
+- **Request entrypoint**: `proxy.ts` (do not add root `middleware.ts` unless explicitly requested)
+- **Token SSOT**: `app/globals.css`
+- **shadcn config**: `components.json`
+- **Supabase migrations**: `supabase/migrations/*` (append-only mindset)
 
-```powershell
-pnpm -s typecheck      # TypeScript
-pnpm -s lint           # ESLint
-pnpm -s styles:gate    # Tailwind tokens
-```
+## Review Checklist
 
-### After UI Changes
+- No hardcoded user-facing strings (all via `next-intl`)
+- No Tailwind rail violations (tokens only)
+- No cached function touches request APIs (`cookies()`/`headers()`) or auth
+- No wildcard selects (`select('*')`) in hot paths
+- Webhooks: signature verification + idempotency + safe logging
 
-```powershell
-pnpm -s test:unit
-```
-
-### After Auth/Checkout/Routing Changes
-
-```powershell
-REUSE_EXISTING_SERVER=true pnpm -s test:e2e:smoke
-```
-
-### Before Deploy
-
-```powershell
-pnpm -s test:e2e
-```
-
-## Quick Commands
-
-| Task | Command |
-|------|---------|
-| Dev server | `pnpm dev` |
-| Type check | `pnpm -s typecheck` |
-| Lint | `pnpm -s lint` |
-| Style gate | `pnpm -s styles:gate` |
-| Unit tests | `pnpm -s test:unit` |
-| E2E smoke | `REUSE_EXISTING_SERVER=true pnpm -s test:e2e:smoke` |
-| Full E2E | `pnpm -s test:e2e` |
-| Build | `pnpm -s build` |
-
-## SSOT Documents
+## SSOT Documents (Stable Docs Live in /docs)
 
 | Topic | Location |
 |-------|----------|
+| Agent entry point | `docs/AGENTS.md` |
+| Workflow | `docs/WORKFLOW.md` |
 | Product requirements | `docs/01-PRD.md` |
 | Features | `docs/02-FEATURES.md` |
 | Architecture | `docs/03-ARCHITECTURE.md` |
@@ -166,15 +81,3 @@ pnpm -s test:e2e
 | Payments | `docs/08-PAYMENTS.md` |
 | Auth | `docs/09-AUTH.md` |
 | i18n | `docs/10-I18N.md` |
-
-## Non-Negotiables Summary
-
-| Category | Rule |
-|----------|------|
-| Tailwind | Semantic tokens only |
-| i18n | All strings via `next-intl` |
-| shadcn | `components/ui/*` = primitives only |
-| Auth | Verify user before mutations |
-| Webhooks | Verify signatures, be idempotent |
-| Schema | Pause for human approval |
-| Routing | Use `proxy.ts`, never root middleware |

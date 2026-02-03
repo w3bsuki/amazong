@@ -75,12 +75,27 @@ function safeRedirectPath(input: string | null | undefined): string | null {
 
 function stripLocalePrefixFromPath(path: string, locale: "en" | "bg"): string {
   const prefix = `/${locale}`
-  if (path === prefix) return "/"
-  if (path.startsWith(`${prefix}/`)) {
-    const rest = path.slice(prefix.length)
-    return rest.length > 0 ? rest : "/"
+  let result = path
+
+  // Some callers may accidentally pass `next` values that already include the locale prefix
+  // (or even include it twice). Since `redirect({ locale })` will add it back, strip any
+  // repeated prefix here to prevent `/<locale>/<locale>/...` redirects.
+  while (true) {
+    if (result === prefix) {
+      result = "/"
+      break
+    }
+
+    if (result.startsWith(`${prefix}/`)) {
+      const rest = result.slice(prefix.length)
+      result = rest.length > 0 ? rest : "/"
+      continue
+    }
+
+    break
   }
-  return path
+
+  return result
 }
 
 const forgotPasswordSchema = z.object({

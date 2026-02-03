@@ -6,7 +6,7 @@ import { House, SquaresFour, ChatCircle, UserCircle, Plus } from "@phosphor-icon
 import { Link, usePathname } from "@/i18n/routing"
 import { cn } from "@/lib/utils"
 import { CountBadge } from "@/components/shared/count-badge"
-import { useTranslations } from "next-intl"
+import { useLocale, useTranslations } from "next-intl"
 import { MobileMenuSheet, type MobileMenuSheetHandle } from "@/components/mobile/mobile-menu-sheet"
 import { useMessages } from "@/components/providers/message-context"
 import { useDrawer } from "@/components/providers/drawer-context"
@@ -22,6 +22,7 @@ export function MobileTabBar({ categories }: MobileTabBarProps) {
   useEffect(() => setMounted(true), [])
 
   const pathname = usePathname()
+  const locale = useLocale()
   const t = useTranslations("Navigation")
   const menuSheetRef = useRef<MobileMenuSheetHandle>(null)
 
@@ -35,10 +36,11 @@ export function MobileTabBar({ categories }: MobileTabBarProps) {
   // Get current user's username for profile navigation
   const { username: currentUsername } = useCurrentUsername()
   
-  // Profile href:
+  // Profile destination:
   // - authenticated: navigate to own public profile
-  // - guest: navigate to /account (server redirects to localized login)
-  const profileHref = currentUsername ? `/${currentUsername}` : "/account"
+  // - guest: force a hard navigation to auth (workaround: SPA nav can render a 404 in dev/prod for this transition)
+  const guestProfileHref = `/${locale}/auth/login?next=${encodeURIComponent("/account")}`
+  const profileHref = currentUsername ? `/${currentUsername}` : null
 
   // Avoid SSR/hydration mismatches caused by client-only UI (drawers/portals).
   if (!mounted) return null
@@ -191,32 +193,61 @@ export function MobileTabBar({ categories }: MobileTabBarProps) {
             )}>{t("chat")}</span>
           </button>
 
-          {/* Profile - Own profile page or account fallback */}
-          <Link
-            href={profileHref}
-            prefetch={true}
-            className={cn(
-              "flex flex-col items-center justify-center gap-0.5 w-full h-full",
-              "tap-highlight-transparent hover:bg-hover active:bg-active transition-colors",
-              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-md",
-            )}
-            aria-label={t("profile")}
-            aria-current={isActive("/account") || (currentUsername && pathname.includes(`/${currentUsername}`)) ? "page" : undefined}
-            data-testid="mobile-tab-profile"
-          >
-            <UserCircle 
-              size={24}
-              weight={isActive("/account") || (currentUsername && pathname.includes(`/${currentUsername}`)) ? "fill" : "regular"}
+          {/* Profile - Own profile page or auth fallback */}
+          {profileHref ? (
+            <Link
+              href={profileHref}
+              prefetch={true}
               className={cn(
-                "transition-colors",
-                isActive("/account") || (currentUsername && pathname.includes(`/${currentUsername}`)) ? "text-foreground" : "text-muted-foreground"
-              )} 
-            />
-            <span className={cn(
-              "text-2xs font-medium leading-none tracking-tight",
-              isActive("/account") || (currentUsername && pathname.includes(`/${currentUsername}`)) ? "text-foreground font-semibold" : "text-muted-foreground"
-            )}>{t("profile")}</span>
-          </Link>
+                "flex flex-col items-center justify-center gap-0.5 w-full h-full",
+                "tap-highlight-transparent hover:bg-hover active:bg-active transition-colors",
+                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-md",
+              )}
+              aria-label={t("profile")}
+              aria-current={pathname.includes(`/${currentUsername}`) ? "page" : undefined}
+              data-testid="mobile-tab-profile"
+            >
+              <UserCircle
+                size={24}
+                weight={pathname.includes(`/${currentUsername}`) ? "fill" : "regular"}
+                className={cn(
+                  "transition-colors",
+                  pathname.includes(`/${currentUsername}`) ? "text-foreground" : "text-muted-foreground",
+                )}
+              />
+              <span
+                className={cn(
+                  "text-2xs font-medium leading-none tracking-tight",
+                  pathname.includes(`/${currentUsername}`) ? "text-foreground font-semibold" : "text-muted-foreground",
+                )}
+              >
+                {t("profile")}
+              </span>
+            </Link>
+          ) : (
+            <button
+              type="button"
+              onClick={() => {
+                window.location.assign(guestProfileHref)
+              }}
+              className={cn(
+                "flex flex-col items-center justify-center gap-0.5 w-full h-full",
+                "tap-highlight-transparent hover:bg-hover active:bg-active transition-colors",
+                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-md",
+              )}
+              aria-label={t("profile")}
+              data-testid="mobile-tab-profile"
+            >
+              <UserCircle
+                size={24}
+                weight="regular"
+                className="transition-colors text-muted-foreground"
+              />
+              <span className="text-2xs font-medium leading-none tracking-tight text-muted-foreground">
+                {t("profile")}
+              </span>
+            </button>
+          )}
         </div>
       </nav>
 

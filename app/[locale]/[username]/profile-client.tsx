@@ -43,6 +43,7 @@ import { FollowSellerButton, type FollowSellerActions } from "@/components/selle
 import { SellerVerificationBadge } from "@/components/shared/product/seller-verification-badge"
 import { UserAvatar } from "@/components/shared/user-avatar"
 import { useAuth } from "@/components/providers/auth-state-manager"
+import { EmptyStateCTA } from "@/components/shared/empty-state-cta"
 
 // =============================================================================
 // Types - Match the data shape from lib/data/profile-page.ts
@@ -282,10 +283,11 @@ export function PublicProfileClient({
               )}
             </>
           ) : (
-            <div className="py-12 text-center text-muted-foreground">
-              <Package className="size-12 mx-auto mb-3" />
-              <p>{tProfile("noActiveListings")}</p>
-            </div>
+            <EmptyStateCTA
+              variant="no-listings"
+              title={tProfile("noActiveListings")}
+              showCTA={Boolean(isOwnProfile)}
+            />
           )}
         </div>
       ),
@@ -555,7 +557,7 @@ export function PublicProfileClient({
   const actions = isOwnProfile ? (
     <>
       <Link href="/account/profile" className="w-full sm:flex-1 min-w-0">
-        <Button className="w-full py-2.5 rounded-xl gap-2 min-w-0">
+        <Button className="w-full rounded-xl min-w-0">
           <PencilSimple className="size-4" />
           <span className="truncate">{tProfile("editProfile")}</span>
         </Button>
@@ -563,11 +565,11 @@ export function PublicProfileClient({
       <Button
         type="button"
         variant="secondary"
-        className="w-full sm:flex-1 py-2.5 rounded-xl gap-2 min-w-0"
+        size="icon"
+        className="hidden sm:inline-flex rounded-xl"
         onClick={handleShareProfile}
       >
         <ShareNetwork className="size-4" />
-        <span className="truncate">{tProfile("shareProfile")}</span>
       </Button>
     </>
   ) : (
@@ -578,12 +580,14 @@ export function PublicProfileClient({
           initialIsFollowing={isFollowing}
           actions={followActions}
           locale={locale}
+          variant="default"
+          size="default"
           className="w-full sm:flex-1 rounded-xl"
         />
       ) : null}
       {!isOwnProfile && (
         <Link href={`/chat?to=${profile.id}`} className="w-full sm:flex-1 min-w-0">
-          <Button variant="secondary" className="w-full py-2.5 rounded-xl gap-2 min-w-0">
+          <Button variant="secondary" className="w-full rounded-xl gap-2 min-w-0">
             <ChatCircle className="size-4" />
             <span className="truncate">{tSeller("message")}</span>
           </Button>
@@ -593,7 +597,7 @@ export function PublicProfileClient({
         type="button"
         variant="ghost"
         size="icon"
-        className="hidden sm:inline-flex size-10 rounded-xl"
+        className="hidden sm:inline-flex rounded-xl"
         aria-label={tProfile("share")}
         onClick={handleShareProfile}
       >

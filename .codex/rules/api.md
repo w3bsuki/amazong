@@ -118,11 +118,6 @@ return NextResponse.json({ error: 'message' }, { status: 404 });  // Not found
 return NextResponse.json({ error: 'message' }, { status: 500 });  // Server error
 ```
 
-## Gate
+## Verification
 
-After editing API routes:
-```powershell
-pnpm -s typecheck
-pnpm -s lint
-REUSE_EXISTING_SERVER=true pnpm -s test:e2e:smoke  # if webhook/auth touched
-```
+See `docs/WORKFLOW.md` for the standard gate checklist.

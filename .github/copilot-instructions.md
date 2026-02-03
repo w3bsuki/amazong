@@ -6,9 +6,16 @@
 
 | Skill | When | File |
 |-------|------|------|
-| Frontend | UI, routing, styling, i18n | `.codex/skills/treido-frontend/SKILL.md` |
-| Backend | Server actions, Supabase, Stripe | `.codex/skills/treido-backend/SKILL.md` |
-| Rails | Conventions, verification, pauses | `.codex/skills/treido-rails/SKILL.md` |
+| Rails | Non-negotiables + pauses | `.codex/skills/treido-rails/SKILL.md` |
+| Structure | File placement + boundaries | `.codex/skills/treido-structure/SKILL.md` |
+| Next.js 16 | App Router + caching | `.codex/skills/treido-nextjs-16/SKILL.md` |
+| Tailwind v4 | Token rails + forbidden patterns | `.codex/skills/treido-tailwind-v4/SKILL.md` |
+| shadcn/ui | UI primitives + composition | `.codex/skills/treido-shadcn-ui/SKILL.md` |
+| Design | UI/UX specs + polish | `.codex/skills/treido-design/SKILL.md` |
+| Mobile UX | Touch + safe areas + iOS feel | `.codex/skills/treido-mobile-ux/SKILL.md` |
+| Supabase | SSR clients + queries + RLS | `.codex/skills/treido-supabase/SKILL.md` |
+| Stripe | Webhooks + payments safety | `.codex/skills/treido-stripe/SKILL.md` |
+| Skill system | Skills/docs/tooling maintenance | `.codex/skills/treido-skillsmith/SKILL.md` |
 
 No prefixes needed. Context determines which rules apply.
 
@@ -38,11 +45,7 @@ Use `proxy.ts`. Never create root `middleware.ts`.
 
 ## Verification
 
-```powershell
-pnpm -s typecheck
-pnpm -s lint
-pnpm -s styles:gate
-```
+See `docs/WORKFLOW.md` for the current gate checklist.
 
 ## Pause Conditions
 

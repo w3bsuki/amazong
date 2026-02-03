@@ -53,74 +53,64 @@ export function ProfileShell({
   children,
   className,
 }: ProfileShellProps) {
+  const hasBanner = Boolean(bannerUrl)
+
   return (
     <div className={cn("bg-background", className)}>
-      {/* Banner */}
-      <div className="relative h-24 sm:h-36 bg-muted">
-        {bannerUrl && (
-          <Image
-            src={bannerUrl}
-            alt=""
-            fill
-            className="object-cover"
-            priority
-          />
-        )}
-      </div>
+      {/* Banner (optional) */}
+      {hasBanner ? (
+        <div className="relative h-24 sm:h-36 bg-muted">
+          <Image src={bannerUrl as string} alt="" fill className="object-cover" priority />
+        </div>
+      ) : null}
 
       {/* Profile Header */}
-      <div className="px-4 relative">
-        {/* Avatar - overlapping banner */}
-        <div className="relative -mt-12 sm:-mt-14 mb-3">
-          <UserAvatar
-            name={displayName}
-            avatarUrl={avatarUrl}
-            size="lg"
-            className="size-20 sm:size-24 border-4 border-background shadow-sm"
-            fallbackClassName="text-xl bg-primary text-primary-foreground"
-          />
-          {isVerifiedBusiness && (
-            <div className="absolute bottom-0 right-0 bg-primary rounded-full p-0.5 border-2 border-background">
-              <CheckCircle className="size-3.5 text-primary-foreground" weight="fill" />
-            </div>
-          )}
-        </div>
+      <div className={cn("px-4", hasBanner ? "relative" : "pt-4")}>
+        {/* Identity row */}
+        <div className={cn("flex items-start gap-3", hasBanner ? "-mt-10 sm:-mt-12" : "")}>
+          <div className="relative shrink-0">
+            <UserAvatar
+              name={displayName}
+              avatarUrl={avatarUrl}
+              size="xl"
+              className={cn(
+                "border-2 border-background shadow-sm",
+                hasBanner ? "bg-background" : "bg-muted"
+              )}
+              fallbackClassName="text-sm font-semibold bg-muted text-foreground"
+            />
+            {isVerifiedBusiness ? (
+              <div className="absolute -bottom-0.5 -right-0.5 bg-primary rounded-full p-0.5 border-2 border-background">
+                <CheckCircle className="size-3.5 text-primary-foreground" weight="fill" />
+              </div>
+            ) : null}
+          </div>
 
-        {/* Name and username */}
-        <div className="mb-2">
-          <h1 className="text-lg sm:text-xl font-bold leading-tight">{displayName}</h1>
-          {username && (
-            <p className="text-sm text-muted-foreground">@{username}</p>
-          )}
+          <div className="min-w-0 flex-1 pt-0.5">
+            <h1 className="text-xl font-semibold leading-tight truncate">{displayName}</h1>
+            {username ? <p className="text-sm text-muted-foreground truncate">@{username}</p> : null}
+          </div>
         </div>
 
         {/* Additional header content (bio, badges, etc.) */}
         {headerContent && (
-          <div className="mb-3">
-            {headerContent}
-          </div>
+          <div className="mt-3">{headerContent}</div>
         )}
 
         {/* Stats row - horizontal on mobile */}
         {stats && (
-          <div className="mb-3">
-            {stats}
-          </div>
+          <div className="mt-3">{stats}</div>
         )}
 
         {/* Action buttons */}
         {actions && (
-          <div className="flex flex-col gap-2 mb-4 sm:flex-row">
-            {actions}
-          </div>
+          <div className="mt-4 flex flex-col gap-2 sm:flex-row">{actions}</div>
         )}
       </div>
 
       {/* Tabs */}
       {tabs && (
-        <div className="bg-background py-2">
-          {tabs}
-        </div>
+        <div className="mt-4 bg-background border-t border-border py-3">{tabs}</div>
       )}
 
       {/* Tab content */}

@@ -42,7 +42,7 @@ function SettingsItem({
     <>
       <div className={cn(
         "size-10 rounded-lg flex items-center justify-center",
-        danger ? "bg-destructive/10" : "bg-muted"
+        danger ? "bg-destructive-subtle" : "bg-muted"
       )}>
         <span className={danger ? "text-destructive" : "text-foreground"}>
           {icon}

@@ -89,10 +89,6 @@ console.log('Order details:', orderData);   // Customer info
 | Never in actions | `createStaticClient()` (for cached reads only) |
 | Webhook only | `createAdminClient()` (with explicit guard) |
 
-## Gate
+## Verification
 
-After editing actions:
-```powershell
-pnpm -s typecheck
-pnpm -s lint
-```
+See `docs/WORKFLOW.md` for the standard gate checklist.

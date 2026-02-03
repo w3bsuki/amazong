@@ -115,11 +115,26 @@ export async function POST(
     }
 
     // Update profile. Service role bypasses column grants; fallback respects grants.
+    //
+    // Important: if the service-role client is present but misconfigured (bad key / bad env),
+    // onboarding should still be able to complete via the authed client (without `account_type`).
+    // Otherwise we can deadlock users into onboarding forever.
     const updateClient = adminSupabase ?? supabase
-    const { error: profileError } = await updateClient
-      .from("profiles")
-      .update(profileUpdate)
-      .eq("id", user.id)
+    const { error: profileError } = await updateClient.from("profiles").update(profileUpdate).eq("id", user.id)
+
+    if (profileError && adminSupabase) {
+      const fallbackUpdate: Record<string, unknown> = { ...profileUpdate }
+      delete fallbackUpdate.account_type
+
+      const { error: fallbackError } = await supabase
+        .from("profiles")
+        .update(fallbackUpdate)
+        .eq("id", user.id)
+
+      if (!fallbackError) {
+        return applyCookies(NextResponse.json({ success: true }))
+      }
+    }
 
     if (profileError) {
       // Friendly conflict for username collisions (race vs availability check).

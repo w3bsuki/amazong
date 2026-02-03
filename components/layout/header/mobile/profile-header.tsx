@@ -1,7 +1,6 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
-import { UserAvatar } from "@/components/shared/user-avatar"
 import { ArrowLeft, Export, Gear, UserPlus, ChatCircle } from "@phosphor-icons/react"
 import { cn } from "@/lib/utils"
 import { useTranslations } from "next-intl"
@@ -25,7 +24,6 @@ import type { ProfileHeaderProps } from "../types"
 export function MobileProfileHeader({
   displayName,
   username,
-  avatarUrl,
   isOwnProfile,
   isFollowing,
   sellerId,
@@ -34,8 +32,7 @@ export function MobileProfileHeader({
   const tProfile = useTranslations("ProfilePage")
   const tNav = useTranslations("Navigation")
 
-  // Display info
-  const name = displayName || username || tProfile("profile")
+  const title = displayName || username || tProfile("profile")
   const profileUrl = typeof window !== "undefined" ? window.location.href : ""
 
   // Native share with fallback
@@ -43,7 +40,7 @@ export function MobileProfileHeader({
     if (typeof navigator !== "undefined" && navigator.share) {
       try {
         await navigator.share({
-          title: name,
+          title,
           url: profileUrl,
         })
       } catch {
@@ -67,8 +64,8 @@ export function MobileProfileHeader({
       )}
     >
       <div className="h-14 flex items-center px-2">
-        {/* Back Button - show only when viewing someone else */}
-        {!isOwnProfile && onBack ? (
+        {/* Back Button */}
+        {onBack ? (
           <Button
             type="button"
             variant="ghost"
@@ -87,39 +84,10 @@ export function MobileProfileHeader({
           </Button>
         ) : null}
 
-        {/* Center Content: Avatar + Name */}
-        <div className={cn(
-          "flex-1 flex items-center gap-2.5 min-w-0 pr-1",
-          !isOwnProfile ? "pl-0.5" : "pl-1"
-        )}>
-          {/* User Avatar */}
-          <div
-            className={cn(
-              "shrink-0 rounded-full",
-              "ring-2 ring-background",
-              "shadow-sm"
-            )}
-          >
-            <UserAvatar
-              name={name}
-              avatarUrl={avatarUrl ?? null}
-              size="sm"
-              className="size-8"
-              fallbackClassName="text-xs font-semibold bg-muted text-muted-foreground"
-            />
-          </div>
-
-          {/* Display Name */}
-          <h1
-            className={cn(
-              "text-sm font-semibold leading-tight",
-              "text-foreground",
-              "truncate"
-            )}
-          >
-            {name}
-          </h1>
-        </div>
+        {/* Title */}
+        <h1 className={cn("flex-1 min-w-0 px-2 text-sm font-semibold text-foreground truncate")}>
+          {title}
+        </h1>
 
         {/* Action Buttons */}
         <div className="flex items-center shrink-0">

@@ -91,6 +91,7 @@
     "Navigation": {
         "deliverTo": "Доставка до",
             "auctionDurationRequired": "Моля, изберете продължителност на търга",
+        "back": "Назад",
         "searchPlaceholder": "Търсене в продукти, марки и още...",
         "searchPlaceholderShort": "Търсене...",
         "clearSearch": "Изчисти търсенето",
@@ -1928,6 +1929,7 @@
         "memberSince": "Член от {date}",
         "respondsWithin": "Обикновено отговаря до {hours} часа",
         "visitStore": "Посети магазина",
+        "message": "Съобщение",
         "saveSeller": "Запази продавача",
         "follow": "Следвай",
         "unfollow": "Отследвай",

@@ -179,7 +179,7 @@ Answer: Signup → Email Confirm → Session → Protected Routes
 
 ```
 Agent reads: docs/00-INDEX.md → docs/04-DESIGN.md
-Uses: treido-frontend + treido-rails
+Uses: treido-design + treido-tailwind-v4 + treido-shadcn-ui + treido-rails
 Applies: Token rails, forbidden patterns, boundaries
 ```
 

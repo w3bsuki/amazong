@@ -20,7 +20,7 @@ Transform Treido's agent system from **process-following automatons** into **kno
 ### Industry Standards Converging
 
 All major platforms now support the **AgentSkills standard** (agentskills.io):
-- **Anthropic Claude Code**: `.claude/skills/`, `.claude/agents/`, `.claude/rules/`
+- **Project skills**: `.codex/skills/` (Treido-maintained `treido-*`)
 - **OpenAI Codex**: `.codex/skills/`, `AGENTS.md` hierarchy
 - **GitHub Copilot**: `AGENTS.md` + skill collections
 - **skills.sh**: Community skill library with 87K+ installs on top skills

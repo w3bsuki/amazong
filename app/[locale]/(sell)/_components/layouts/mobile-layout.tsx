@@ -1,5 +1,6 @@
 "use client";
 
+import { useMemo } from "react";
 import { useSellForm, useSellFormContext } from "../sell-form-provider";
 import {
   StepWhat,
@@ -40,6 +41,44 @@ export function MobileLayout({ onSubmit, isSubmitting = false }: MobileLayoutPro
   const form = useSellForm();
   const { currentStep, setCurrentStep } = useSellFormContext();
 
+  const images = form.watch("images");
+  const title = form.watch("title");
+  const categoryId = form.watch("categoryId");
+  const condition = form.watch("condition");
+  const price = form.watch("price");
+
+  const canContinue = useMemo(() => {
+    if (currentStep === 1) {
+      const hasPhotos = Boolean(images && images.length > 0);
+      const hasTitle = Boolean(title && title.trim().length >= 5);
+      return hasPhotos && hasTitle;
+    }
+
+    if (currentStep === 2) {
+      return Boolean(categoryId);
+    }
+
+    if (currentStep === 3) {
+      return Boolean(condition);
+    }
+
+    if (currentStep === 4) {
+      const hasPrice = Boolean(price && Number.parseFloat(price) > 0);
+      return hasPrice;
+    }
+
+    return true;
+  }, [categoryId, condition, currentStep, images, price, title]);
+
+  const isPublishDisabled = useMemo(() => {
+    const hasPhotos = Boolean(images && images.length > 0);
+    const hasTitle = Boolean(title && title.trim().length >= 5);
+    const hasCategory = Boolean(categoryId);
+    const hasCondition = Boolean(condition);
+    const hasPrice = Boolean(price && Number.parseFloat(price) > 0);
+    return !(hasPhotos && hasTitle && hasCategory && hasCondition && hasPrice);
+  }, [categoryId, condition, images, price, title]);
+
   // Handle submission
   const handleSubmit = () => {
     form.handleSubmit(
@@ -79,6 +118,8 @@ export function MobileLayout({ onSubmit, isSubmitting = false }: MobileLayoutPro
       onSubmit={handleSubmit} 
       onNext={handleNext}
       isSubmitting={isSubmitting}
+      isNextDisabled={!canContinue}
+      isSubmitDisabled={isPublishDisabled}
     >
       {renderStepContent()}
     </StepperWrapper>

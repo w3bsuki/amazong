@@ -15,7 +15,7 @@ Rules:
 ## DEC-YYYY-MM-DD-##
 
 Status: accepted | superseded | deprecated
-Owners: treido-frontend | treido-backend | treido-supabase-mcp | treido-audit
+Owners: treido-* specialist(s) from docs/11-SKILLS.md (or HUMAN)
 
 Context
 - What problem are we solving?

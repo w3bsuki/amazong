@@ -91,6 +91,7 @@
     "Navigation": {
         "deliverTo": "Deliver to",
             "auctionDurationRequired": "Please choose an auction duration",
+        "back": "Back",
         "searchPlaceholder": "Search products, brands, and more...",
         "searchPlaceholderShort": "Search...",
         "clearSearch": "Clear search",
@@ -1928,6 +1929,7 @@
         "memberSince": "Joined {date}",
         "respondsWithin": "Usually responds within {hours} hours",
         "visitStore": "Visit store",
+        "message": "Message",
         "saveSeller": "Save seller",
         "follow": "Follow",
         "unfollow": "Unfollow",

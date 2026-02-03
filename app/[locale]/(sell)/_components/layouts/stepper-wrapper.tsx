@@ -51,6 +51,8 @@ interface StepperWrapperProps {
   onSubmit: () => void;
   onNext?: () => void | Promise<void>;
   isSubmitting?: boolean;
+  isNextDisabled?: boolean;
+  isSubmitDisabled?: boolean;
 }
 
 export function StepperWrapper({
@@ -59,6 +61,8 @@ export function StepperWrapper({
   onSubmit,
   onNext,
   isSubmitting = false,
+  isNextDisabled = false,
+  isSubmitDisabled = false,
 }: StepperWrapperProps) {
   const { currentStep, setCurrentStep, isBg } = useSellFormContext();
   const contentRef = useRef<HTMLDivElement>(null);
@@ -193,7 +197,7 @@ export function StepperWrapper({
             <Button
               type="button"
               onClick={onSubmit}
-              disabled={isSubmitting}
+              disabled={isSubmitting || isSubmitDisabled}
               size="lg"
               className="w-full h-12 rounded-md text-base font-bold gap-2.5"
             >
@@ -215,6 +219,7 @@ export function StepperWrapper({
               onClick={handleNext}
               size="lg"
               className="w-full h-12 rounded-md text-base font-bold gap-2.5"
+              disabled={isNextDisabled}
             >
               {isBg ? "Продължи" : "Continue"}
               <ArrowRight className="size-5" weight="bold" />

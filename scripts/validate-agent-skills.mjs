@@ -3,24 +3,7 @@ import path from "node:path";
 
 const repoRoot = path.resolve(process.cwd());
 const repoSkillsRoot = path.join(repoRoot, ".codex", "skills");
-const userHome = process.env.USERPROFILE || process.env.HOME || "";
-const codexHome = process.env.CODEX_HOME || "";
-const userCodexSkills = codexHome
-  ? path.join(codexHome, "skills")
-  : userHome
-    ? path.join(userHome, ".codex", "skills")
-    : "";
-const userClaudeSkills = userHome ? path.join(userHome, ".claude", "skills") : "";
-
-const skillsRoots = [
-  path.join(repoRoot, ".codex", "skills"),
-  path.join(repoRoot, ".claude", "skills"),
-  path.join(repoRoot, "docs-final", "archive", "folders", ".claude", "skills"),
-  userCodexSkills,
-  userClaudeSkills,
-].filter(Boolean);
-
-const existingRoots = [...new Set(skillsRoots.filter((p) => fs.existsSync(p)))];
+const claudeSkillsRoot = path.join(repoRoot, ".claude", "skills");
 
 function fail(message) {
   process.stderr.write(`\nAgent Skills validation failed: ${message}\n`);
@@ -38,31 +21,148 @@ function isLowercaseHyphenName(name) {
 
 function parseFrontmatter(markdown) {
   const normalized = markdown.replace(/^\uFEFF/, "").replace(/\r\n/g, "\n");
-  if (!normalized.startsWith("---\n")) {
-    return { ok: false, error: "Missing YAML frontmatter opening '---' on first line" };
+  const match = normalized.match(/^---\n([\s\S]*?)\n---\n?/);
+  if (!match) {
+    return {
+      ok: false,
+      error:
+        "Missing YAML frontmatter. SKILL.md must start with '---' and close with '---'.",
+    };
   }
 
-  const endIndex = normalized.indexOf("\n---\n", 4);
-  if (endIndex === -1) {
-    return { ok: false, error: "Missing YAML frontmatter closing '---'" };
-  }
-
-  const yaml = normalized.slice(4, endIndex).trimEnd();
+  const yaml = match[1].trimEnd();
   const lines = yaml.split("\n");
   const data = {};
 
-  for (const raw of lines) {
-    const line = raw.trim();
-    if (!line) continue;
-    if (line.startsWith("#")) continue;
+  /**
+   * Very small YAML subset parser for frontmatter:
+   * - `key: value` scalars
+   * - `key: |` / `key: >` block scalars (indented continuations)
+   * - `key:` + `- item` lists
+   *
+   * This is intentionally not a full YAML implementation; it exists only to
+   * reliably extract required fields like `name` and `description` without
+   * rejecting common frontmatter styles used across editors.
+   */
+  let activeKey = null;
+  let activeMode = null; // "block" | "list" | null
+  let blockIndent = null;
+  let blockLines = [];
+  let listItems = [];
 
-    const match = /^([A-Za-z0-9_-]+)\s*:\s*(.*)$/.exec(line);
-    if (!match) {
-      return { ok: false, error: `Unrecognized YAML line: '${raw}'` };
+  function commitActive() {
+    if (!activeKey) return { ok: true };
+    if (Object.prototype.hasOwnProperty.call(data, activeKey)) {
+      return { ok: false, error: `Duplicate YAML key: '${activeKey}'` };
     }
 
-    const [, key, valueRaw] = match;
-    const value = valueRaw.trim();
+    if (activeMode === "block") {
+      data[activeKey] = blockLines.join("\n").trim();
+    } else if (activeMode === "list") {
+      data[activeKey] = listItems.join(",").trim();
+    } else {
+      // Should never happen, but keep behavior safe.
+      data[activeKey] = "";
+    }
+
+    activeKey = null;
+    activeMode = null;
+    blockIndent = null;
+    blockLines = [];
+    listItems = [];
+    return { ok: true };
+  }
+
+  for (const raw of lines) {
+    const isBlank = raw.trim().length === 0;
+    const isComment = raw.trimStart().startsWith("#");
+
+    if (activeMode === "block") {
+      if (isBlank) {
+        blockLines.push("");
+        continue;
+      }
+      if (isComment) continue;
+
+      const indentMatch = /^(\s+)(.*)$/.exec(raw);
+      if (!indentMatch) {
+        const committed = commitActive();
+        if (!committed.ok) return committed;
+        // Fallthrough to parse this line as a new key.
+      } else {
+        const [, indent, content] = indentMatch;
+        if (blockIndent === null) blockIndent = indent.length;
+        if (indent.length < blockIndent) {
+          const committed = commitActive();
+          if (!committed.ok) return committed;
+          // Fallthrough to parse this line as a new key.
+        } else {
+          blockLines.push(raw.slice(blockIndent));
+          continue;
+        }
+      }
+    }
+
+    if (activeMode === "list") {
+      if (isBlank || isComment) continue;
+
+      const indentMatch = /^(\s+)(.*)$/.exec(raw);
+      if (!indentMatch) {
+        const committed = commitActive();
+        if (!committed.ok) return committed;
+        // Fallthrough to parse this line as a new key.
+      } else {
+        const [, , content] = indentMatch;
+        const itemMatch = /^-\s*(.*)$/.exec(content.trim());
+        if (!itemMatch) {
+          const committed = commitActive();
+          if (!committed.ok) return committed;
+          // Fallthrough to parse this line as a new key.
+        } else {
+          const item = itemMatch[1].trim();
+          if (item) listItems.push(item);
+          continue;
+        }
+      }
+    }
+
+    // Normal key parsing mode
+    if (isBlank || isComment) continue;
+
+    const keyMatch = /^([A-Za-z0-9_-]+)\s*:\s*(.*)$/.exec(raw.trimEnd());
+    if (!keyMatch) {
+      // Don't hard-fail on indented/unknown lines; frontmatter in the wild is messy.
+      // Only fail for non-indented garbage to keep signal high.
+      if (!/^\s+/.test(raw)) {
+        return { ok: false, error: `Unrecognized YAML line: '${raw}'` };
+      }
+      continue;
+    }
+
+    const [, key, valueRaw] = keyMatch;
+    let value = valueRaw.trim();
+
+    if (value === "|" || value === ">") {
+      activeKey = key;
+      activeMode = "block";
+      blockIndent = null;
+      blockLines = [];
+      continue;
+    }
+
+    if (value.length === 0) {
+      activeKey = key;
+      activeMode = "list";
+      listItems = [];
+      continue;
+    }
+
+    if (
+      (value.startsWith("\"") && value.endsWith("\"")) ||
+      (value.startsWith("'") && value.endsWith("'"))
+    ) {
+      value = value.slice(1, -1);
+    }
 
     if (Object.prototype.hasOwnProperty.call(data, key)) {
       return { ok: false, error: `Duplicate YAML key: '${key}'` };
@@ -70,6 +170,9 @@ function parseFrontmatter(markdown) {
 
     data[key] = value;
   }
+
+  const committed = commitActive();
+  if (!committed.ok) return committed;
 
   return { ok: true, data };
 }
@@ -105,7 +208,6 @@ function validateSkillDir(skillDir, options = {}) {
 
   const name = fm.data.name;
   const description = fm.data.description;
-  const version = fm.data.version;
 
   if (!name) {
     fail(`${dirName}: missing required frontmatter field 'name'`);
@@ -120,33 +222,6 @@ function validateSkillDir(skillDir, options = {}) {
   } else if (description.length < 1 || description.length > 1024) {
     fail(`${dirName}: 'description' must be 1-1024 characters`);
   }
-
-  if (options.requireVersion) {
-    if (!version) {
-      fail(`${dirName}: missing required frontmatter field 'version'`);
-    } else if (version.length < 1 || version.length > 64) {
-      fail(`${dirName}: 'version' must be 1-64 characters`);
-    }
-  }
-}
-
-function validateRepoSkillStructure(skillDir) {
-  const dirName = path.basename(skillDir);
-  const referencesDir = path.join(skillDir, "references");
-  const scriptsDir = path.join(skillDir, "scripts");
-
-  if (!fs.existsSync(referencesDir)) fail(`${dirName}: missing references/ directory`);
-  if (!fs.existsSync(scriptsDir)) fail(`${dirName}: missing scripts/ directory`);
-
-  const indexPath = path.join(referencesDir, "00-index.md");
-  if (!fs.existsSync(indexPath)) fail(`${dirName}: missing references/00-index.md`);
-
-  if (fs.existsSync(scriptsDir)) {
-    const hasScript = fs
-      .readdirSync(scriptsDir, { withFileTypes: true })
-      .some((e) => e.isFile() && (e.name.endsWith(".mjs") || e.name.endsWith(".js") || e.name.endsWith(".ts")));
-    if (!hasScript) fail(`${dirName}: scripts/ has no runnable script files`);
-  }
 }
 
 function displayPath(p) {
@@ -155,49 +230,22 @@ function displayPath(p) {
 }
 
 function main() {
-  if (fs.existsSync(repoSkillsRoot) && userCodexSkills) {
-    if (!fs.existsSync(userCodexSkills)) {
-      fail(
-        `Missing Codex user skills folder at ${userCodexSkills}. Run: pnpm -s skills:sync (from repo root)`,
-      );
-    } else {
-      const repoSkillNames = new Set(listSkillNames(repoSkillsRoot));
-      const userSkillNames = new Set(listSkillNames(userCodexSkills));
-      const missing = [...repoSkillNames].filter((name) => !userSkillNames.has(name));
-
-      if (missing.length > 0) {
-        fail(
-          `User Codex skills missing ${missing.length} repo skill(s): ${missing.join(
-            ", ",
-          )}. Run: pnpm -s skills:sync (from repo root)`,
-        );
-      }
-    }
-  }
-
-  if (existingRoots.length === 0) {
-    process.stdout.write(`No skills folder found at ${path.relative(repoRoot, skillsRoots[0])}\n`);
+  const roots = [repoSkillsRoot, claudeSkillsRoot].filter((root) => fs.existsSync(root));
+  if (roots.length === 0) {
+    process.stdout.write("No repo skills folders found (.codex/skills or .claude/skills).\n");
     return;
   }
 
-  let validatedAny = false;
-  for (const root of existingRoots) {
-    const isRepoSkillsRoot = path.resolve(root) === path.join(repoRoot, ".codex", "skills");
+  for (const root of roots) {
     const skillDirs = listSkillDirs(root);
     if (skillDirs.length === 0) {
       process.stdout.write(`No skill directories found under ${displayPath(root)}\n`);
       continue;
     }
 
-    validatedAny = true;
     process.stdout.write(`Validating ${skillDirs.length} skill(s) under ${displayPath(root)}...\n`);
-    for (const d of skillDirs) {
-      validateSkillDir(d, { requireVersion: isRepoSkillsRoot });
-      if (isRepoSkillsRoot) validateRepoSkillStructure(d);
-    }
+    for (const d of skillDirs) validateSkillDir(d);
   }
-
-  if (!validatedAny) return;
 
   if (process.exitCode && process.exitCode !== 0) {
     return;

@@ -1,6 +1,6 @@
-# 11-SKILLS.md — AI Skills Reference (V2)
+# 11-SKILLS.md — Treido Skill Fleet (V4)
 
-> Minimal skill set for Treido. **No prefixes required** — describe the task and the assistant applies the right rules automatically.
+> Treido-maintained skills are **specialists** and always prefixed `treido-*`. Ask in plain language; the assistant should apply the relevant specialist skills.
 
 | Scope | AI agent knowledge |
 |-------|---------------------|
@@ -9,78 +9,83 @@
 
 ---
 
-## Core Skills
+## Active Skills (18 total)
 
-| Skill | Use For | Verify With |
-|------|---------|-------------|
-| `treido-rails` | Project-wide rails: boundaries, pause conditions, verification | Gates (always) |
-| `treido-frontend` | UI, routes, RSC/client boundaries, Tailwind v4 tokens, next-intl | Gates + unit tests (as needed) |
-| `treido-backend` | Server actions, Supabase queries/RLS, Stripe/webhooks, caching/tagging | Gates + E2E smoke (as needed) |
-| `codex-iteration` | Maintaining `.codex/skills/**` and skill tooling | `validate:skills` + `skills:sync` |
+### Always-on rails
 
----
+| Skill | Use For |
+|------|---------|
+| `treido-rails` | Non-negotiables + pause conditions (PII, i18n, token rails, caching constraints) |
 
-## How to Use (No Triggers)
+### UI/UX
 
-Just ask in plain language:
+| Skill | Use For |
+|------|---------|
+| `treido-design` | UI/UX design specs, hierarchy, states, “anti-slop” polish |
+| `treido-ui-ux-pro-max` | Deep UI/UX guidance for building/reviewing premium UI (Tailwind v4 + shadcn/ui) |
+| `treido-mobile-ux` | Touch targets, safe areas, dvh/viewport issues, native-app interaction feel |
+| `treido-accessibility` | WCAG 2.2 AA, ARIA patterns, focus/keyboard navigation, screen reader support |
 
-- “Fix the button spacing on mobile” → `treido-frontend` + `treido-rails`
-- “Add a server action for X” → `treido-backend` + `treido-rails`
-- “Run the gates and tell me what failed” → `treido-rails`
+### Frontend stack specialists
 
----
+| Skill | Use For |
+|------|---------|
+| `treido-nextjs-16` | App Router, RSC vs client boundaries, caching (`'use cache'`), routing conventions |
+| `treido-tailwind-v4` | Tailwind v4 token usage, forbidden patterns, globals.css mapping |
+| `treido-tailwind-v4-shadcn` | Tailwind v4 + shadcn integration, templates, and known gotchas |
+| `treido-shadcn-ui` | `components/ui/*` boundaries, CVA variants, Radix composition |
+| `treido-i18n` | next-intl copy, translation structure, and hardcoded-string detection |
 
-## Pause Conditions (High Risk)
+### Backend stack specialists
 
-Human approval required before implementing:
+| Skill | Use For |
+|------|---------|
+| `treido-supabase` | SSR clients, RLS-safe queries, explicit selects, schema/RLS guardrails |
+| `treido-auth-supabase` | Supabase Auth + Next.js App Router session patterns |
+| `treido-stripe` | Webhooks correctness (signature + idempotency), payment flow safety |
 
-- DB schema/migrations/RLS (`supabase/migrations/*`)
-- Auth/access control/session changes
-- Payments/Stripe/webhooks
-- Destructive/bulk data operations
+### Testing
 
----
+| Skill | Use For |
+|------|---------|
+| `treido-testing` | Playwright E2E patterns, selectors, auth state, deflaking, CI stability |
 
-## Verification Gates
+### Orchestrators (routing only)
 
-Always after each batch:
+| Skill | Use For |
+|------|---------|
+| `treido-frontend` | Route UI tasks to the correct UI specialists |
+| `treido-backend` | Route backend/auth/payments tasks to the correct specialists |
 
-```bash
-pnpm -s typecheck
-pnpm -s lint
-pnpm -s styles:gate
-```
+### Repo structure + maintenance
 
-Conditional:
-
-```bash
-pnpm -s test:unit
-REUSE_EXISTING_SERVER=true pnpm -s test:e2e:smoke
-```
-
----
-
-## Legacy Skills (Archived)
-
-The previous “fleet” (orchestrator/spec/verify/UI/etc.) is kept only for reference at:
-
-```
-.codex/skills/.archive/
-```
-
-They are not validated/synced as active skills.
+| Skill | Use For |
+|------|---------|
+| `treido-structure` | File placement, boundaries, naming, imports |
+| `treido-skillsmith` | Skill system maintenance (skills + docs + tooling) |
 
 ---
 
-## Skill Tooling
+## How to Use (No Magic Phrases)
 
-```bash
-# Validate repo + user skills structure
-pnpm -s validate:skills
+- “Make this screen feel like a native iOS app” → `treido-mobile-ux` + `treido-design` (+ `treido-tailwind-v4`)
+- “Add a cached public product fetch” → `treido-nextjs-16` + `treido-supabase`
+- “Fix a Tailwind violation” → `treido-tailwind-v4`
+- “Create a new UI primitive” → `treido-shadcn-ui` (+ `treido-tailwind-v4`)
 
-# Sync repo skills to $CODEX_HOME/skills (or ~/.codex/skills)
-pnpm -s skills:sync
-```
+---
+
+## Where Commands Live
+
+Skills avoid command spam by design. Verification gates and exact commands live in:
+
+- `docs/WORKFLOW.md`
+
+---
+
+## Legacy Skills
+
+Legacy skill artifacts are intentionally removed to keep the fleet small and current.
 
 ---
 

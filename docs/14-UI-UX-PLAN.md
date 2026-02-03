@@ -267,15 +267,12 @@ The `temp-tradesphere-audit/` prototype is useful for **patterns**, not for code
 | Phase | Primary Skill | Support |
 |-------|---------------|---------|
 | Phase 0 | `treido-rails` | — |
-| Phase 1 | `treido-frontend` | `treido-rails` |
-| Phase 2 | `treido-frontend` | `treido-rails` |
-| Phase 3 | `treido-frontend` | `treido-rails` |
-| Phase 4 | `treido-rails` | `treido-frontend` |
+| Phase 1 | `treido-design` | `treido-mobile-ux`, `treido-tailwind-v4` |
+| Phase 2 | `treido-mobile-ux` | `treido-design`, `treido-tailwind-v4` |
+| Phase 3 | `treido-tailwind-v4` | `treido-shadcn-ui`, `treido-design` |
+| Phase 4 | `treido-rails` | `treido-design` |
 
-All phases require gates before merge:
-- `pnpm -s typecheck`
-- `pnpm -s lint`
-- `pnpm -s styles:gate`
+All phases require the standard gates before merge (see `docs/WORKFLOW.md`).
 
 ---
 

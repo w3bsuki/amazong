@@ -1,4 +1,4 @@
-# 15-DEV-DEPARTMENT.md — Ownership (V2)
+# 15-DEV-DEPARTMENT.md — Ownership (V4)
 
 > Treido is a single-user chat with a minimal set of always-on rails. “Roles” are just a routing mental model.
 
@@ -22,10 +22,16 @@
 
 | Domain | Skill | Owns |
 |--------|-------|------|
-| Rails (always-on) | `treido-rails` | Boundaries, pause conditions, verification gates |
-| Frontend | `treido-frontend` | UI, routes, RSC/client boundaries, Tailwind tokens, i18n |
-| Backend | `treido-backend` | Server actions, Supabase queries/RLS, Stripe/webhooks, caching/tagging |
-| Skill system | `codex-iteration` | `.codex/skills/**` + skill tooling |
+| Rails (always-on) | `treido-rails` | Non-negotiables + pause conditions |
+| UI/UX design | `treido-design` | Hierarchy, spacing, states, polish |
+| Mobile UX | `treido-mobile-ux` | Touch, safe areas, dvh/viewport, native feel |
+| Next.js 16 | `treido-nextjs-16` | App Router, caching, RSC/client boundaries |
+| Tailwind v4 | `treido-tailwind-v4` | Token rails + forbidden patterns |
+| shadcn/ui | `treido-shadcn-ui` | UI primitives boundaries + composition |
+| Supabase | `treido-supabase` | SSR clients, queries, RLS mindset |
+| Stripe | `treido-stripe` | Webhooks, idempotency, payments safety |
+| Structure | `treido-structure` | File placement + boundaries |
+| Skill system | `treido-skillsmith` | `.codex/skills/**` + docs + tooling |
 
 ---
 

@@ -33,14 +33,18 @@
 
 ---
 
-## How to Work (V2)
+## How to Work (V4)
 
 - No prefixes/triggers required — describe the task in plain language.
-- Apply skills automatically:
+- Apply specialist skills as needed:
   - **Always**: `treido-rails`
-  - UI/routes/i18n: `treido-frontend`
-  - server/actions/Supabase/Stripe: `treido-backend`
-- Ship in small batches (1–3 files) and run the gates.
+  - UI/UX + mobile feel: `treido-design`, `treido-ui-ux-pro-max`, `treido-mobile-ux`, `treido-accessibility`
+  - Frontend stack: `treido-nextjs-16`, `treido-tailwind-v4`, `treido-tailwind-v4-shadcn`, `treido-shadcn-ui`, `treido-i18n`
+  - Backend stack: `treido-supabase`, `treido-auth-supabase`, `treido-stripe`
+  - Testing: `treido-testing`
+  - File placement: `treido-structure`
+  - Skill maintenance: `treido-skillsmith`
+- Ship in small batches (1–3 files) and verify via `docs/WORKFLOW.md`.
 
 ---
 
@@ -90,19 +94,24 @@ Skills live in `.codex/skills/`.
 
 | Skill | Purpose |
 |-------|---------|
-| `treido-rails` | Project rails + verification |
-| `treido-frontend` | Frontend rules (Tailwind, shadcn, next-intl, App Router) |
-| `treido-backend` | Backend rules (actions, Supabase, Stripe, caching) |
-| `codex-iteration` | Maintain the skill system itself |
+| `treido-rails` | Non-negotiables + pause conditions |
+| `treido-structure` | File placement + boundaries |
+| `treido-nextjs-16` | App Router + caching + request conventions |
+| `treido-tailwind-v4` | Tailwind v4 tokens + forbidden patterns |
+| `treido-tailwind-v4-shadcn` | Tailwind v4 + shadcn integration gotchas |
+| `treido-shadcn-ui` | `components/ui/*` boundaries + composition |
+| `treido-design` | UI/UX design specs + polish |
+| `treido-ui-ux-pro-max` | Deep UI/UX guidance + patterns |
+| `treido-mobile-ux` | Mobile touch + safe areas + iOS feel |
+| `treido-accessibility` | WCAG 2.2 + ARIA patterns |
+| `treido-i18n` | next-intl copy + locale hygiene |
+| `treido-supabase` | Supabase SSR + queries + RLS mindset |
+| `treido-auth-supabase` | Auth/session patterns (Supabase + Next.js) |
+| `treido-stripe` | Stripe webhooks + payment safety |
+| `treido-testing` | Playwright E2E + deflaking |
+| `treido-skillsmith` | Maintain the skill system |
 
-Legacy skills are kept only for reference under `.codex/skills/.archive/`.
-
-Sync/validate:
-
-```bash
-pnpm -s skills:sync
-pnpm -s validate:skills
-```
+Validate: `pnpm -s validate:skills`
 
 ---
 
@@ -116,20 +125,7 @@ pnpm -s validate:skills
 
 ## Verification Gates
 
-Always:
-
-```bash
-pnpm -s typecheck
-pnpm -s lint
-pnpm -s styles:gate
-```
-
-Conditional:
-
-```bash
-pnpm -s test:unit
-REUSE_EXISTING_SERVER=true pnpm -s test:e2e:smoke
-```
+See `docs/WORKFLOW.md` for the current gate checklist and commands.
 
 ---
 

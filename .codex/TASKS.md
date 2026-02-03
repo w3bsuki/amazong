@@ -2,6 +2,17 @@
 
 > **Active work only.** Max **20 total** tasks listed below, keep **≤15 “Ready”** at any time.
 
+## Note (Skills V4)
+
+Treido’s skill owners were revamped in **Skills V4**. Older tasks may still reference legacy owners (e.g. `treido-frontend`, `treido-backend`, `codex-iteration`), but **new work** should use specialist owners such as:
+
+- `treido-rails`, `treido-structure`
+- `treido-design`, `treido-mobile-ux`
+- `treido-nextjs-16`, `treido-tailwind-v4`, `treido-shadcn-ui`
+- `treido-supabase`, `treido-stripe`
+- `treido-skillsmith`
+- `HUMAN` (for approval-required changes)
+
 ## Gates (Run After Every Batch)
 
 Always:
@@ -66,14 +77,14 @@ pnpm -s dupes
 
 - [ ] SKILLS-SSOT-002: Finish SSOT link migration in remaining `SKILL.md` files (use `docs/*` + `.codex/stack.yml`; keep `.codex/project/*` as pointers only)
   - Priority: Medium
-  - Owner: codex-iteration
+  - Owner: treido-skillsmith
   - Verify: `pnpm -s validate:skills` · `rg -n \"\\.codex/project/|\\.codex/AGENTS\\.md|\\.codex/WORKFLOW\\.md\" .codex/skills/*/SKILL.md`
-  - Files: `.codex/skills/treido-frontend/SKILL.md` · `.codex/skills/treido-backend/SKILL.md` · `.codex/skills/treido-verify/SKILL.md` · `.codex/skills/spec-supabase/SKILL.md` · `.codex/skills/treido-alignment/SKILL.md`
+  - Files: `.codex/skills/treido-frontend/SKILL.md` · `.codex/skills/treido-backend/SKILL.md`
   - Audit: `.codex/audit/2026-02-02_dev-department-agent-system.md`
 
 - [ ] SPEC-TYPESCRIPT-001: De-generic `spec-typescript` (move tutorial content into references; keep SKILL as audit checklist)
   - Priority: Low
-  - Owner: codex-iteration
+  - Owner: treido-skillsmith
   - Verify: `pnpm -s validate:skills`
   - Files: `.codex/skills/spec-typescript/SKILL.md` · `.codex/skills/spec-typescript/references/**`
   - Audit: `.codex/audit/2026-02-02_dev-department-agent-system.md`
@@ -716,7 +727,7 @@ Notes (2026-01-30):
 1. Each task references an issue: `(ISSUE-####)` when applicable
 2. Keep tasks small (≤ 1 day)
 3. If a task changes product scope, update `.codex/project/PRD.md` + `.codex/project/FEATURES.md`
-4. Every task should have an Owner (skill): `treido-frontend`, `treido-backend`, `treido-verify`, or `HUMAN`
+4. Every task should have an Owner (skill): pick the closest `treido-*` specialist from `docs/11-SKILLS.md`, or `HUMAN` for approval-required work.
 5. Ownership convention (to avoid task churn):
    - Owners update their own tasks (notes/status) and avoid editing other owners’ tasks.
    - `treido-orchestrator` may re-triage/reassign tasks, and may move tasks between sections.

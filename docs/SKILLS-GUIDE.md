@@ -1,267 +1,101 @@
-# Skills Guide - How to Use AI Skills for Treido
+# Skills Guide — Prompting the Treido Specialist Fleet
 
-This guide explains how to effectively prompt AI agents to leverage the installed skills for improving the Treido codebase.
+This guide explains how to prompt AI agents to leverage Treido’s **`treido-*` specialist skills**.
 
-## Installed Skills
+For the canonical inventory, see `docs/11-SKILLS.md`.
 
-| Skill | Trigger Keywords | Use Case |
-|-------|------------------|----------|
-| `vercel-react-best-practices` | react, performance, optimization, rendering | Optimize React components |
-| `web-design-guidelines` | design, UI review, layout, spacing | Review UI against best practices |
-| `tailwind-v4-shadcn` | tailwind, styling, shadcn, tokens | Tailwind v4 patterns |
-| `supabase-postgres-best-practices` | database, query, postgres, RLS | DB optimization |
-| `stripe-best-practices` | stripe, payment, checkout, webhook | Payment integration |
-| `frontend-design` | build UI, create component, design | Build polished UIs |
-| `ui-ux-pro-max` | UI/UX, user experience, design system | Advanced design patterns |
-| `mobile-ux-optimizer` | mobile, touch, responsive, native feel | Mobile optimization |
-| `pwa-expert` | PWA, offline, service worker, install | Progressive web app |
-| `nextjs-supabase-auth` | auth, login, session, middleware | Auth patterns |
-| `playwright` | test, e2e, playwright | E2E testing |
-| `accessibility-compliance` | a11y, accessibility, screen reader | Accessibility audit |
-| `i18n-localization` | i18n, translation, locale | Internationalization |
-| `typescript-advanced-types` | types, typescript, generics | Type patterns |
-| `seo-audit` | SEO, meta, ranking | SEO optimization |
+All Treido skills live in `.codex/skills/` and are prefixed `treido-*`.
+
+## Active Skills (Treido-maintained)
+
+| Skill | Use Case |
+|-------|----------|
+| `treido-rails` | Non-negotiables + pause conditions (PII/i18n/tokens/caching) |
+| `treido-structure` | File placement + boundaries |
+| `treido-design` | UI/UX design specs + polish |
+| `treido-mobile-ux` | Touch + safe areas + iOS feel |
+| `treido-nextjs-16` | App Router + caching + request conventions |
+| `treido-tailwind-v4` | Tailwind v4 tokens + forbidden patterns |
+| `treido-shadcn-ui` | UI primitives + Radix composition |
+| `treido-supabase` | SSR clients + queries + RLS mindset |
+| `treido-stripe` | Webhooks + payments safety |
+| `treido-skillsmith` | Skill system maintenance |
 
 ---
 
 ## Prompt Templates
 
-### 1. UI/UX Review & Improvement
+### 1) UI/UX Review (Design + Mobile)
 
 ```
-Review [component/page] for UI/UX best practices. 
-Check mobile responsiveness, touch targets, and native app feel.
+Review [component/page] for UI/UX quality and native-app feel.
+Focus on hierarchy, spacing rhythm, states (loading/empty/error), and touch targets.
 ```
 
-**Example:**
-```
-Review the ProductCard component for mobile UX. 
-Make it feel more like a native iOS app with proper touch feedback and animations.
-```
-
-### 2. Performance Optimization
+### 2) Tailwind Token Fix
 
 ```
-Analyze [file/component] for React performance issues.
-Apply Vercel best practices for rendering optimization.
+Scan [file/component] for Tailwind v4 rail violations.
+Replace palette/gradient/arbitrary values with semantic tokens and stable patterns.
 ```
 
-**Example:**
-```
-Optimize the product grid for performance. 
-Check for unnecessary re-renders and apply proper memoization.
-```
-
-### 3. Database Query Review
+### 3) Next.js 16 / Caching Review
 
 ```
-Review this Supabase query for performance.
-Apply Postgres best practices and proper indexing.
+Review [page/data function] for Next.js 16 App Router correctness.
+Validate RSC vs client boundaries and caching constraints ('use cache' purity).
 ```
 
-**Example:**
-```
-Optimize the products fetch query. Check for N+1 issues and suggest indexes.
-```
-
-### 4. Accessibility Audit
+### 4) Supabase Query Review
 
 ```
-Audit [component/page] for WCAG 2.2 compliance.
-Check keyboard navigation, screen reader support, and color contrast.
+Review this Supabase query for security and stability:
+- correct client (user/static/admin)
+- explicit select (no select('*') on hot paths)
+- RLS-safe identity checks
 ```
 
-**Example:**
-```
-Audit the checkout flow for accessibility. 
-Ensure it works with screen readers and keyboard-only navigation.
-```
-
-### 5. Mobile-First Optimization
+### 5) Stripe Webhook Review
 
 ```
-Make [component] feel like a native mobile app.
-Apply iOS-style interactions, gestures, and animations.
+Review the Stripe webhook handler for:
+- signature verification
+- idempotency (event.id dedupe)
+- safe logging (no PII/payloads)
 ```
 
-**Example:**
-```
-Transform the navigation into a native app-style bottom tab bar.
-Add swipe gestures and haptic-like feedback.
-```
-
-### 6. PWA Enhancement
+### 6) File Placement Question
 
 ```
-Add PWA capabilities to [feature].
-Implement offline support and install prompts.
-```
-
-**Example:**
-```
-Make the product browsing work offline with proper caching.
-Add an install prompt for mobile users.
-```
-
-### 7. Auth Flow Review
-
-```
-Review the auth implementation for security and UX.
-Check middleware, session handling, and protected routes.
-```
-
-**Example:**
-```
-Audit the login flow. Ensure proper session refresh 
-and secure token handling following Supabase+Next.js patterns.
-```
-
-### 8. Stripe Integration Review
-
-```
-Review Stripe integration for best practices.
-Check webhook handling, error states, and security.
-```
-
-**Example:**
-```
-Audit the checkout webhook handler. 
-Ensure idempotency and proper error handling.
-```
-
-### 9. i18n Completeness Check
-
-```
-Check [component/page] for i18n compliance.
-Find hardcoded strings and ensure translation parity.
-```
-
-**Example:**
-```
-Scan the seller dashboard for hardcoded strings.
-Add missing translations to en.json and bg.json.
-```
-
-### 10. E2E Test Writing
-
-```
-Write Playwright tests for [feature/flow].
-Follow testing best practices with proper selectors.
-```
-
-**Example:**
-```
-Write E2E tests for the checkout flow.
-Cover happy path, error states, and edge cases.
+Where should this new file/component live?
+Explain placement choice using Treido boundaries (ui/shared/_components/actions/api).
 ```
 
 ---
 
-## Power Prompts (Combining Multiple Skills)
+## Power Prompts (Multi-Skill)
 
-### Full Page Audit
+### Full Page “Ship Readiness” Pass
 ```
-Do a complete audit of the [page]:
-1. UI/UX review (mobile-first, native feel)
-2. Accessibility compliance (WCAG 2.2)
-3. Performance optimization
-4. i18n completeness
-```
-
-### Native App Transformation
-```
-Transform [component/page] to feel like a native iOS app:
-- Smooth animations and transitions
-- Touch-optimized interactions
-- Bottom sheet modals
-- Pull-to-refresh
-- Haptic-like feedback
+Audit this page for ship readiness:
+1) UI/UX + mobile feel
+2) Tailwind token rails
+3) Next.js boundaries + caching constraints
+4) i18n (no hardcoded user-facing strings)
 ```
 
-### Production Readiness Check
+### Payments Safety Pass
 ```
-Check [feature] for production readiness:
-- Security audit (auth, data access)
-- Performance review
-- Error handling
-- Accessibility
-- SEO optimization
+Audit checkout/webhooks for correctness:
+- Stripe signature + idempotency
+- Supabase client selection + explicit selects
+- No secrets/PII in logs
 ```
-
----
-
-## Quick Commands
-
-| Goal | Prompt |
-|------|--------|
-| Make component feel native | "Make this feel like iOS" |
-| Fix performance | "Optimize for performance" |
-| Add offline support | "Add PWA offline support" |
-| Audit accessibility | "Check a11y compliance" |
-| Review database | "Audit this query" |
-| Check translations | "Find missing i18n strings" |
-| Write tests | "Write Playwright tests for this" |
-| Review design | "Review against design guidelines" |
 
 ---
 
 ## Best Practices for Prompting
 
-### Be Specific
-❌ "Make it better"
-✅ "Optimize the ProductCard for mobile UX with native iOS feel"
-
-### Reference Files
-❌ "Fix the component"
-✅ "Review components/shared/ProductCard.tsx for performance"
-
-### Combine Skills
-❌ "Check everything"
-✅ "Audit for accessibility + mobile UX + performance"
-
-### Ask for Explanations
-✅ "Explain why this pattern is better before implementing"
-
-### Request Verification
-✅ "After changes, run typecheck and lint to verify"
-
----
-
-## Skill Activation Tips
-
-Skills are **automatically activated** based on:
-1. Keywords in your prompt
-2. Files you're working with
-3. Context of the conversation
-
-You don't need to explicitly mention skill names - just describe what you want to achieve.
-
-**Example triggers:**
-- "mobile" → activates `mobile-ux-optimizer`
-- "PWA" → activates `pwa-expert`  
-- "accessibility" → activates `accessibility-compliance`
-- "Supabase query" → activates `supabase-postgres-best-practices`
-
----
-
-## Treido-Specific Workflows
-
-### New Feature Development
-1. Design UI with `frontend-design` + `ui-ux-pro-max`
-2. Implement with `vercel-react-best-practices`
-3. Style with `tailwind-v4-shadcn`
-4. Add translations with `i18n-localization`
-5. Write tests with `playwright`
-6. Audit with `accessibility-compliance`
-
-### Mobile Optimization Sprint
-1. Audit with `mobile-ux-optimizer`
-2. Add PWA features with `pwa-expert`
-3. Review touch targets and gestures
-4. Test on real devices
-
-### Database Optimization
-1. Query analysis with `supabase-postgres-best-practices`
-2. Index recommendations
-3. RLS policy review
-4. Performance benchmarking
+- Be explicit about scope: file paths, routes, and what “done” means.
+- Ask for a short **design spec** before implementation for UI-heavy work.
+- For high-risk domains (DB/auth/payments/destructive ops), ask for a plan first (see `treido-rails` pause conditions).

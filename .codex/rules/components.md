@@ -50,10 +50,6 @@ import { getProduct } from '@/lib/data';   // data in component
 - Add `'use client'` only for: hooks, events, browser APIs
 - Keep client components small and focused
 
-## Gate
+## Verification
 
-After editing components:
-```powershell
-pnpm -s styles:gate
-pnpm -s typecheck
-```
+See `docs/WORKFLOW.md` for the standard gate checklist.
