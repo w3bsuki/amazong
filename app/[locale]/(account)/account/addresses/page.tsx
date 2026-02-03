@@ -2,9 +2,7 @@ import { createClient } from "@/lib/supabase/server"
 import { redirect } from "@/i18n/routing"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import { AddressesContent } from "./addresses-content"
-
-const USER_ADDRESSES_SELECT =
-    'id,label,full_name,phone,address_line1,address_line2,city,state,postal_code,country,is_default,created_at'
+import { USER_ADDRESSES_SELECT } from "./_lib/selects"
 
 export default async function AddressesPage({
     params,
