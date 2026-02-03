@@ -5,6 +5,7 @@ import { Inter } from "next/font/google";
 import "../globals.css";
 import type { Metadata } from 'next';
 import { Suspense, type ReactNode } from 'react';
+import { setRequestLocale } from 'next-intl/server';
 import LocaleProviders from './locale-providers';
 
 // Generate static params for all supported locales
@@ -103,6 +104,8 @@ export default async function LocaleLayout({
   if (!hasLocale(routing.locales, locale)) {
     notFound();
   }
+
+  setRequestLocale(locale);
 
   return (
     <html lang={locale} className={inter.variable} suppressHydrationWarning>
