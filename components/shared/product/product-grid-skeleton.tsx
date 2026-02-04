@@ -22,7 +22,7 @@ export function ProductGridSkeleton({ viewMode, count = 18 }: ProductGridSkeleto
     <div className={cn(
       viewMode === "list"
         ? "flex flex-col gap-3"
-        : "grid gap-3 grid-cols-2 @[520px]:grid-cols-3 @[720px]:grid-cols-4 @[960px]:grid-cols-5"
+        : "grid gap-3 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5"
     )}>
       {Array.from({ length: count }).map((_, i) =>
         viewMode === "list" ? (

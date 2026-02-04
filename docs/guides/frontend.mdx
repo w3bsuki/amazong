@@ -1,0 +1,134 @@
+# Frontend Guide
+
+Building UI components and pages in Treido.
+
+## Component Structure
+
+```tsx
+// components/shared/product/product-card.tsx
+'use client'
+
+import { Card, CardContent, CardFooter } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { useTranslations } from 'next-intl'
+
+interface ProductCardProps {
+  product: Product
+  onAddToCart?: () => void
+}
+
+export function ProductCard({ product, onAddToCart }: ProductCardProps) {
+  const t = useTranslations('products')
+  
+  return (
+    <Card>
+      <CardContent className="p-4">
+        <img 
+          src={product.image} 
+          alt={product.title}
+          className="aspect-square object-cover rounded-md"
+        />
+        <h3 className="mt-2 font-medium">{product.title}</h3>
+        <p className="text-muted-foreground">{product.price} лв.</p>
+      </CardContent>
+      <CardFooter>
+        <Button onClick={onAddToCart} className="w-full">
+          {t('addToCart')}
+        </Button>
+      </CardFooter>
+    </Card>
+  )
+}
+```
+
+## Adding a New Page
+
+1. Create route file:
+```tsx
+// app/[locale]/(public)/my-page/page.tsx
+import { getTranslations } from 'next-intl/server'
+
+export async function generateMetadata({ params }: Props) {
+  const t = await getTranslations('myPage')
+  return { title: t('title') }
+}
+
+export default async function MyPage() {
+  const t = await getTranslations('myPage')
+  return (
+    <main className="container py-8">
+      <h1 className="text-2xl font-bold">{t('heading')}</h1>
+    </main>
+  )
+}
+```
+
+2. Add translations:
+```json
+// messages/en.json
+{
+  "myPage": {
+    "title": "My Page",
+    "heading": "Welcome to My Page"
+  }
+}
+```
+
+## Form Handling
+
+```tsx
+'use client'
+
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { z } from 'zod'
+
+const schema = z.object({
+  email: z.string().email(),
+  password: z.string().min(8),
+})
+
+export function LoginForm() {
+  const form = useForm({
+    resolver: zodResolver(schema),
+  })
+
+  const onSubmit = async (data: z.infer<typeof schema>) => {
+    // Handle submission
+  }
+
+  return (
+    <form onSubmit={form.handleSubmit(onSubmit)}>
+      {/* Form fields */}
+    </form>
+  )
+}
+```
+
+## Data Fetching
+
+### Server Components (preferred)
+
+```tsx
+// Fetch in server component
+async function ProductList() {
+  const products = await getProducts()
+  return <ProductGrid products={products} />
+}
+```
+
+### Client Components
+
+```tsx
+'use client'
+
+import useSWR from 'swr'
+
+function ProductList() {
+  const { data, error, isLoading } = useSWR('/api/products', fetcher)
+  
+  if (isLoading) return <Skeleton />
+  if (error) return <Error />
+  return <ProductGrid products={data} />
+}
+```

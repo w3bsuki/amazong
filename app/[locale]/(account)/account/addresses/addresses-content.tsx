@@ -515,7 +515,7 @@ export function AddressesContent({ locale, initialAddresses }: AddressesContentP
                         </AlertDialogCancel>
                         <AlertDialogAction 
                             onClick={handleDelete}
-                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                            className="bg-destructive text-destructive-foreground hover:bg-destructive"
                         >
                             {isLoading && <SpinnerGap className="size-4 mr-2 animate-spin" />}
                             {locale === 'bg' ? 'Изтрий' : 'Delete'}

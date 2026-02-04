@@ -20,6 +20,9 @@
 | Legacy agent fleet roadmap (deprecated) | [agents/AGENTS_PHASES.md](./agents/AGENTS_PHASES.md) |
 | Docs system plan | [DOCS-PLAN.md](./DOCS-PLAN.md) |
 | Refactor program overview | [refactor.md](./refactor.md) |
+| Public docs (legal/policies/help) | [public/00-INDEX.md](./public/00-INDEX.md) |
+| Business docs (monetization/ops/specs) | [business/00-INDEX.md](./business/00-INDEX.md) |
+| Admin docs governance | [admin/00-INDEX.md](./admin/00-INDEX.md) |
 | What is Treido? | [01-PRD.md](./01-PRD.md) |
 | What's built? | [02-FEATURES.md](./02-FEATURES.md) |
 | How is it structured? | [03-ARCHITECTURE.md](./03-ARCHITECTURE.md) |
@@ -51,6 +54,9 @@
 | — | [WORKFLOW.md](./WORKFLOW.md) | Reference | Agent workflow | ✅ |
 | — | [DOCS-PLAN.md](./DOCS-PLAN.md) | Reference | Documentation system plan | ✅ |
 | — | [refactor.md](./refactor.md) | Reference | Refactor program overview + pointers | ✅ |
+| — | [public/00-INDEX.md](./public/00-INDEX.md) | Index | Public-facing docs hub | ✅ |
+| — | [business/00-INDEX.md](./business/00-INDEX.md) | Index | Business docs hub | ✅ |
+| — | [admin/00-INDEX.md](./admin/00-INDEX.md) | Reference | Admin docs governance | ✅ |
 | 0 | [00-INDEX.md](./00-INDEX.md) | Index | Entry point | ✅ |
 | 1 | [01-PRD.md](./01-PRD.md) | Concept | Product vision & scope | ✅ |
 | 2 | [02-FEATURES.md](./02-FEATURES.md) | Reference | Feature checklist | ✅ |
@@ -119,7 +125,8 @@ Status:   See 02-FEATURES.md (progress summary at top)
 | UI refactor docs | `docs/archive/uirefactor/` (historical) |
 | Refactor snapshot (2026-02-02) | `docs/archive/refactor-2026-02-02/` |
 | Production snapshot (2026-02-02) | `docs/archive/production-2026-02-02/` |
-| Public docs | `docs-site/` (customer-facing) |
+| Internal docs portal | `docs-site/` (internal-only; mirrors from `/docs`) |
+| Public legal/policies/help | Served by main app (`/[locale]/…`), sourced from `docs/public/**` |
 | E2E tests | `e2e/` |
 | Unit tests | `__tests__/` |
 

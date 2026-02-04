@@ -78,7 +78,10 @@ export default async function SharedWishlistPage({ params }: SharedWishlistPageP
         {/* Wishlist Items Grid */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {(wishlistItems as SharedWishlistItem[]).map((item) => (
-            <Card key={item.product_id} className="overflow-hidden hover:shadow-md transition-shadow">
+            <Card
+              key={item.product_id}
+              className="overflow-hidden transition-colors hover:bg-hover active:bg-active hover:border-hover-border"
+            >
               <Link href={`/product/${item.product_id}`}>
                 <div className="relative aspect-square bg-muted">
                   <Image
@@ -118,7 +121,7 @@ export default async function SharedWishlistPage({ params }: SharedWishlistPageP
         </div>
 
         {/* CTA Section */}
-        <div className="mt-12 text-center p-4 bg-surface-subtle rounded-lg">
+        <div className="mt-12 text-center p-4 bg-surface-subtle rounded-xl border border-border-subtle">
           <h2 className="text-xl font-semibold mb-2">{t('createYourOwn')}</h2>
           <p className="text-muted-foreground mb-4">{t('signUpToCreate')}</p>
           <Button asChild variant="cta" className="font-medium">

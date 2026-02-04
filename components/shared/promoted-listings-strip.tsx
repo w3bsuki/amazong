@@ -18,7 +18,7 @@ export function PromotedListingsStrip({ products, className }: PromotedListingsS
   if (!products || products.length === 0) return null;
 
   return (
-    <section className={cn("py-3", className)}>
+    <section className={cn("py-2", className)}>
       <div className="px-inset-md mb-2 flex items-center justify-between gap-2">
         <div className="flex items-center gap-2 min-w-0">
           <span
@@ -35,10 +35,9 @@ export function PromotedListingsStrip({ products, className }: PromotedListingsS
           href="/search?type=promoted"
           className={cn(
             "inline-flex items-center gap-1",
-            "h-(--spacing-touch-sm) px-2.5 rounded-full",
-            "border border-border/50 bg-background",
+            "min-h-(--spacing-touch-md) px-1.5 -mr-1 rounded-md",
             "text-xs font-medium text-muted-foreground",
-            "active:bg-muted active:text-foreground transition-colors"
+            "hover:text-foreground active:bg-active active:text-foreground transition-colors"
           )}
         >
           {t("mobile.seeAll")}
@@ -47,7 +46,7 @@ export function PromotedListingsStrip({ products, className }: PromotedListingsS
       </div>
 
       <div className="overflow-x-auto no-scrollbar">
-        <div className="flex gap-3 px-inset-md">
+        <div className="flex gap-2 px-inset-md">
           {products.slice(0, 8).map((product) => (
             <HorizontalProductCard key={product.id} product={product} />
           ))}

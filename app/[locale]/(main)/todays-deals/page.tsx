@@ -100,6 +100,9 @@ export default async function TodaysDealsPage({
                 {...(product.categoryPath ? { categoryPath: product.categoryPath } : {})}
                 {...(product.attributes ? { attributes: product.attributes } : {})}
                 index={index}
+                appearance="tile"
+                media="landscape"
+                density="compact"
               />
             ))}
           </div>

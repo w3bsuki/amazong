@@ -4,6 +4,7 @@ import { cacheTag, cacheLife } from 'next/cache'
 import { createStaticClient } from '@/lib/supabase/server'
 import { logger } from '@/lib/logger'
 import { getShippingFilter, productShipsToRegion, type ShippingRegion } from '@/lib/shipping'
+import { normalizeAttributeKey } from '@/lib/attributes/normalize-attribute-key'
 import {
   PRODUCT_BY_ID_SELECT,
   PRODUCT_LIST_BY_CATEGORY_SLUG_SELECT,
@@ -173,15 +174,6 @@ function buildCategoryPath(
 
   out.reverse()
   return out.length ? out : undefined
-}
-
-function normalizeAttributeKey(input: string): string {
-  return input
-    .trim()
-    .toLowerCase()
-    .replaceAll(/\([^)]*\)/g, '')
-    .replaceAll(/[^a-z0-9]+/g, '_')
-    .replaceAll(/^_+|_+$/g, '')
 }
 
 function buildAttributesMap(p: Product): Record<string, string> {

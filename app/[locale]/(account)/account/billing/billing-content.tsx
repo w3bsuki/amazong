@@ -280,7 +280,7 @@ export function BillingContent({
       case 'void':
       case 'failed':
         return (
-          <Badge variant="secondary" className="bg-destructive/10 text-destructive">
+          <Badge variant="secondary" className="bg-destructive-subtle text-destructive">
             <XCircle className="size-3 mr-1" weight="fill" />
             {t.void}
           </Badge>

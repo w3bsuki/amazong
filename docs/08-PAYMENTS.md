@@ -40,6 +40,10 @@ NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY  # Client-side (pk_*)
 | `app/actions/subscriptions.ts` | Subscription management |
 | `app/actions/payments.ts` | Saved payment methods |
 
+### Deep Dives (SSOT)
+
+- `docs/payments/index.mdx` — detailed payments docs (Connect, escrow flow, webhooks, ops)
+
 ---
 
 ## Architecture Overview

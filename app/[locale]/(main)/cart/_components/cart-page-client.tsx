@@ -5,6 +5,7 @@ import Image from "next/image"
 import { Link, useRouter } from "@/i18n/routing"
 import { useCart } from "@/components/providers/cart-context"
 import { Button } from "@/components/ui/button"
+import { IconButton } from "@/components/ui/icon-button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import { Badge } from "@/components/ui/badge"
@@ -229,44 +230,52 @@ export default function CartPageClient() {
                   {/* Right side: Delete + Quantity + Wishlist */}
                   <div className="flex flex-col items-end justify-between shrink-0">
                     {/* Delete */}
-                    <button
+                    <IconButton
                       onClick={() => removeFromCart(item.id, item.variantId)}
-                      className="size-touch-lg flex items-center justify-center rounded text-muted-foreground/50 hover:text-destructive transition-colors"
+                      size="icon-lg"
+                      variant="ghost"
+                      className="hover:bg-destructive-subtle text-muted-foreground/50 hover:text-destructive"
                       aria-label={t("delete")}
                     >
                       <Trash className="size-4" />
-                    </button>
+                    </IconButton>
 
                     {/* Quantity selector */}
-                    <div className="flex items-center h-touch-lg rounded-md border border-border bg-surface-subtle">
-                      <button
+                    <div className="flex items-center h-touch-lg rounded-xl border border-border bg-surface-subtle overflow-hidden">
+                      <IconButton
+                        size="icon-lg"
+                        variant="ghost"
                         onClick={() =>
                           item.quantity > 1 && updateQuantity(item.id, item.quantity - 1, item.variantId)
                         }
                         disabled={item.quantity <= 1}
-                        className="size-touch-lg flex items-center justify-center hover:bg-muted disabled:opacity-30 transition-colors rounded-l-md"
+                        className="rounded-none border-r border-border hover:bg-muted disabled:opacity-30"
                         aria-label={tCartDropdown("decreaseQuantity")}
                       >
                         <Minus className="size-3.5" weight="bold" />
-                      </button>
+                      </IconButton>
                       <span className="min-w-touch text-center text-sm font-semibold tabular-nums">{item.quantity}</span>
-                      <button
+                      <IconButton
+                        size="icon-lg"
+                        variant="ghost"
                         onClick={() => updateQuantity(item.id, item.quantity + 1, item.variantId)}
                         disabled={item.quantity >= 10}
-                        className="size-touch-lg flex items-center justify-center hover:bg-muted disabled:opacity-30 transition-colors rounded-r-md"
+                        className="rounded-none border-l border-border hover:bg-muted disabled:opacity-30"
                         aria-label={tCartDropdown("increaseQuantity")}
                       >
                         <Plus className="size-3.5" weight="bold" />
-                      </button>
+                      </IconButton>
                     </div>
 
                     {/* Wishlist */}
-                    <button
-                      className="size-touch-lg flex items-center justify-center rounded text-muted-foreground/50 hover:text-primary transition-colors"
+                    <IconButton
+                      size="icon-lg"
+                      variant="ghost"
+                      className="hover:bg-muted text-muted-foreground/50 hover:text-primary"
                       aria-label={t("saveForLater")}
                     >
                       <Heart className="size-4" />
-                    </button>
+                    </IconButton>
                   </div>
                 </div>
               </div>
@@ -276,7 +285,7 @@ export default function CartPageClient() {
           {/* Order Summary - Desktop Sidebar */}
           <div className="hidden lg:block">
             <div className="sticky top-24 space-y-4">
-              <Card className="border-border/50 shadow-sm">
+              <Card className="border-border-subtle">
                 <CardContent className="p-6">
                   <h2 className="font-semibold text-lg mb-4">
                     {t("orderSummaryTitle")}

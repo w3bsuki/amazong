@@ -238,7 +238,7 @@ export function FilterChips({
             "text-xs font-medium whitespace-nowrap",
             // Interaction
             "transition-colors duration-150",
-            "tap-highlight-transparent",
+            "tap-transparent",
             "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
             "group"
           )}
@@ -271,7 +271,7 @@ export function FilterChips({
             "text-xs font-medium whitespace-nowrap",
             "text-muted-foreground hover:text-destructive",
             "transition-colors duration-150",
-            "tap-highlight-transparent",
+            "tap-transparent",
             "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1"
           )}
         >

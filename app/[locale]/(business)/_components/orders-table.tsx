@@ -115,7 +115,7 @@ const STATUS_CONFIG = {
   },
   cancelled: {
     label: "Cancelled",
-    color: "bg-destructive/10 text-destructive border-destructive/20",
+    color: "bg-destructive-subtle text-destructive border-destructive/20",
     icon: IconX
   },
   paid: {
@@ -394,7 +394,7 @@ export function OrdersTable({
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
                   onClick={() => handleBulkStatusUpdate("cancelled")}
-                  className="text-destructive focus:bg-destructive/10 focus:text-destructive"
+                  className="text-destructive focus:bg-destructive-subtle focus:text-destructive"
                 >
                   <IconX className="size-4 mr-2" />
                   Cancel Orders
@@ -620,7 +620,7 @@ export function OrdersTable({
                             Mark Delivered
                           </DropdownMenuItem>
                           <DropdownMenuSeparator />
-                          <DropdownMenuItem className="text-destructive focus:bg-destructive/10 focus:text-destructive">
+                          <DropdownMenuItem className="text-destructive focus:bg-destructive-subtle focus:text-destructive">
                             <IconX className="size-4 mr-2" />
                             Cancel Order
                           </DropdownMenuItem>

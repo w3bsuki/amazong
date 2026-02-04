@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { useCallback, useEffect, useMemo } from "react"
+import { useCallback, useEffect, useMemo, useRef } from "react"
 import { useRouter } from "@/i18n/routing"
 import {
   Drawer,
@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/drawer"
 import { Input } from "@/components/ui/input"
 import { Skeleton } from "@/components/ui/skeleton"
+import { IconButton } from "@/components/ui/icon-button"
 import { cn } from "@/lib/utils"
 import { useCategoryDrawer } from "@/components/mobile/category-nav/category-drawer-context"
 import { getCategoryName } from "@/lib/category-display"
@@ -64,10 +65,14 @@ export function CategoryBrowseDrawer({
   } = useCategoryDrawer()
 
   const [query, setQuery] = React.useState("")
+  const [showSearch, setShowSearch] = React.useState(false)
+  const searchInputRef = useRef<HTMLInputElement>(null)
 
   // Handle drawer open state change
   const handleOpenChange = useCallback((open: boolean) => {
     if (!open) {
+      setQuery("")
+      setShowSearch(false)
       close()
     }
   }, [close])
@@ -97,12 +102,19 @@ export function CategoryBrowseDrawer({
   }, [activeCategory, fetchChildren, setChildren, setLoading])
 
   const rootCategory = path[0] ?? null
+  const rootCategoryName = rootCategory ? getCategoryName(rootCategory, locale) : null
 
   const filteredChildren = useMemo(() => {
     const q = query.trim().toLowerCase()
     if (!q) return children
     return children.filter((cat) => getCategoryName(cat, locale).toLowerCase().includes(q))
   }, [children, locale, query])
+
+  // Auto-focus the search input when it appears
+  useEffect(() => {
+    if (!showSearch) return
+    searchInputRef.current?.focus()
+  }, [showSearch])
 
   const handleNavigateToCategory = useCallback((slug: string) => {
     close()
@@ -114,6 +126,14 @@ export function CategoryBrowseDrawer({
     if (!rootCategory) return t("title")
     return getCategoryName(rootCategory, locale)
   }, [rootCategory, locale, t])
+
+  const toggleSearch = useCallback(() => {
+    setShowSearch((prev) => {
+      const next = !prev
+      if (!next) setQuery("")
+      return next
+    })
+  }, [])
 
   // Don't render anything when closed - prevents broken overlay
   if (!isOpen) {
@@ -134,42 +154,51 @@ export function CategoryBrowseDrawer({
           <DrawerTitle className="text-base font-semibold">
             {headerText}
           </DrawerTitle>
-          <DrawerClose asChild>
-            <button
-              type="button"
-              className={cn(
-                "p-2 -mr-2 rounded-full",
-                "hover:bg-muted transition-colors",
-                "shrink-0"
-              )}
-              aria-label={t("close")}
+          <div className="flex items-center gap-1">
+            <IconButton
+              aria-label={tCommon("search")}
+              variant="ghost"
+              onClick={toggleSearch}
+              className="shrink-0 text-muted-foreground hover:bg-muted hover:text-foreground active:bg-active"
             >
-              <X size={20} weight="bold" className="text-muted-foreground" />
-            </button>
-          </DrawerClose>
+              <MagnifyingGlass size={20} weight="regular" />
+            </IconButton>
+            <DrawerClose asChild>
+              <IconButton
+                aria-label={t("close")}
+                variant="ghost"
+                className="-mr-2 shrink-0 text-muted-foreground hover:bg-muted hover:text-foreground active:bg-active"
+              >
+                <X size={20} weight="bold" />
+              </IconButton>
+            </DrawerClose>
+          </div>
         </DrawerHeader>
         <DrawerDescription className="sr-only">{t("description")}</DrawerDescription>
 
         <DrawerBody className="pt-0 pb-safe-max">
-          {/* Search */}
-          <div className="px-inset pb-3">
-            <div className="relative">
-              <MagnifyingGlass
-                size={16}
-                weight="regular"
-                className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
-                aria-hidden="true"
-              />
-              <Input
-                type="search"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                placeholder={t("searchPlaceholder")}
-                aria-label={t("searchAriaLabel")}
-                className="pl-9"
-              />
+          {/* Search (collapsed by default) */}
+          {showSearch && (
+            <div className="px-inset pb-3">
+              <div className="relative">
+                <MagnifyingGlass
+                  size={16}
+                  weight="regular"
+                  className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+                  aria-hidden="true"
+                />
+                <Input
+                  ref={searchInputRef}
+                  type="search"
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  placeholder={t("searchPlaceholder")}
+                  aria-label={t("searchAriaLabel")}
+                  className="pl-9"
+                />
+              </div>
             </div>
-          </div>
+          )}
 
           {/* "All" - first row */}
           {rootCategory && (
@@ -186,7 +215,7 @@ export function CategoryBrowseDrawer({
                 {getCategoryIcon("all", { size: 18, weight: "bold" })}
               </span>
               <span className="flex-1 min-w-0 text-sm font-semibold text-foreground truncate">
-                {tCommon("all")}
+                {t("seeAllIn", { category: rootCategoryName ?? headerText })}
               </span>
               <CaretRight size={16} weight="bold" className="text-muted-foreground/60 shrink-0" aria-hidden="true" />
             </button>
@@ -194,7 +223,7 @@ export function CategoryBrowseDrawer({
 
           {/* Subcategory label */}
           {filteredChildren.length > 0 && (
-            <p className="px-inset text-xs text-muted-foreground font-medium uppercase tracking-wide pb-2">
+            <p className="px-inset text-2xs text-muted-foreground font-medium pb-2">
               {t("subcategories")}
             </p>
           )}

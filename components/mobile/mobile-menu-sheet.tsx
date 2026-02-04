@@ -11,6 +11,7 @@ import {
   DrawerBody,
 } from "@/components/ui/drawer"
 import { Link } from "@/i18n/routing"
+import { IconButton } from "@/components/ui/icon-button"
 import {
   X,
   CaretRight,
@@ -68,12 +69,13 @@ export const MobileMenuSheet = forwardRef<MobileMenuSheetHandle, MobileMenuSheet
                 </DrawerTitle>
               </div>
               <DrawerClose asChild>
-                <button
-                  className="flex items-center justify-center size-touch -mr-1 rounded-full text-foreground hover:bg-muted active:bg-active transition-colors touch-manipulation tap-transparent"
+                <IconButton
                   aria-label={t("closeMenu")}
+                  variant="ghost"
+                  className="-mr-1 text-foreground hover:bg-muted active:bg-active touch-manipulation"
                 >
                   <X size={20} weight="bold" />
-                </button>
+                </IconButton>
               </DrawerClose>
             </div>
             <DrawerDescription className="sr-only">
@@ -111,9 +113,9 @@ export const MobileMenuSheet = forwardRef<MobileMenuSheetHandle, MobileMenuSheet
                       category={cat}
                       href={`/categories/${cat.slug}`}
                       onClick={() => setOpen(false)}
-                      circleClassName="size-14"
+                      circleClassName="size-(--spacing-category-circle)"
                       fallbackIconSize={24}
-                      fallbackIconWeight="bold"
+                      fallbackIconWeight="duotone"
                       variant="menu"
                       label={getShortName(cat)}
                       labelClassName="text-2xs font-medium text-center text-foreground leading-tight line-clamp-2 w-full max-w-none break-normal hyphens-auto"

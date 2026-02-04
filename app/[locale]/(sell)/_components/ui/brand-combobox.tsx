@@ -255,6 +255,7 @@ export function BrandCombobox({
       type="button"
       role="combobox"
       aria-expanded={open}
+      onClick={isMobile ? () => setOpen(true) : undefined}
       disabled={disabled}
       className={cn(
         "relative w-full flex flex-col justify-center h-14 px-4 rounded-md border transition-all text-left",
@@ -318,7 +319,7 @@ export function BrandCombobox({
   if (isMobile) {
     return (
       <>
-        <div onClick={() => setOpen(true)}>{trigger}</div>
+        {trigger}
         <Drawer open={open} onOpenChange={setOpen}>
           <DrawerContent>
             <DrawerHeader className="text-left border-b border-border/50 pb-4">

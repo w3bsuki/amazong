@@ -70,7 +70,7 @@ export function AdminRecentActivity({ users, products, orders }: AdminRecentActi
       case "delivered":
         return "bg-success/10 text-success border-success/20"
       case "cancelled":
-        return "bg-destructive/10 text-destructive border-destructive/20"
+        return "bg-destructive-subtle text-destructive border-destructive/20"
       default:
         return "bg-muted text-muted-foreground border-border"
     }
@@ -98,7 +98,7 @@ export function AdminRecentActivity({ users, products, orders }: AdminRecentActi
   const getRoleBadge = (role: string | null) => {
     switch (role) {
       case "admin":
-        return "bg-destructive/10 text-destructive border-destructive/20"
+        return "bg-destructive-subtle text-destructive border-destructive/20"
       case "seller":
         return "bg-selected text-primary border-selected-border"
       default:

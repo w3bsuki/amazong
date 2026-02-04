@@ -326,7 +326,7 @@ export function PaymentsContent({
                         </AlertDialogCancel>
                         <AlertDialogAction 
                             onClick={handleDelete}
-                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                            className="bg-destructive text-destructive-foreground hover:bg-destructive"
                         >
                             {isLoading && <SpinnerGap className="size-4 mr-2 animate-spin" />}
                             {locale === 'bg' ? 'Премахни' : 'Remove'}

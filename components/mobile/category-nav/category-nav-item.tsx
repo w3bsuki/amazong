@@ -43,7 +43,7 @@ export const CategoryNavItem = forwardRef<
   const tabStyles = cn(
     "shrink-0 relative flex items-center justify-center min-w-10 h-10 px-1",
     "text-sm font-medium whitespace-nowrap",
-    "tap-highlight-transparent",
+    "tap-transparent",
     "transition-colors",
     isActive
       ? "text-foreground"

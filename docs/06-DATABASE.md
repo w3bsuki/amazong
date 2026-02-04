@@ -71,7 +71,7 @@ User profiles extending auth.users. Single identity for buyers and sellers.
 
 ### products
 
-Product listings with full-text search and JSONB attributes.
+Product listings with full-text search and JSONB attribute mirror (synced from EAV).
 
 | Column | Type | Notes |
 |--------|------|-------|
@@ -84,7 +84,7 @@ Product listings with full-text search and JSONB attributes.
 | list_price | numeric | Original/strike-through price |
 | stock | integer | Inventory count (≥ 0) |
 | images | text[] | Array of image URLs |
-| attributes | jsonb | Dynamic attributes for filtering |
+| attributes | jsonb | Denormalized mirror of `product_attributes` (use EAV for writes) |
 | condition | text | new, like_new, used, etc. |
 | status | text | active, draft, archived, out_of_stock |
 | is_boosted | boolean | Currently promoted |
@@ -175,19 +175,56 @@ Dynamic form fields per category (like eBay Item Specifics).
 | Column | Type | Notes |
 |--------|------|-------|
 | id | uuid | PK |
-| category_id | uuid | FK → categories |
+| category_id | uuid | FK → categories (nullable for global) |
 | name | text | English attribute name |
 | name_bg | text | Bulgarian name |
-| attribute_key | text | Normalized snake_case key |
+| attribute_key | text | Normalized key (auto-set by trigger) |
 | attribute_type | text | text, number, select, multiselect, boolean, date |
 | options | jsonb | Select options array |
+| options_bg | jsonb | Bulgarian options array |
+| placeholder | text | Input placeholder |
+| placeholder_bg | text | Bulgarian placeholder |
 | is_required | boolean | Mandatory field |
 | is_filterable | boolean | Show in filters |
 | is_hero_spec | boolean | Show in product highlights |
+| hero_priority | integer | Ordering for hero specs |
 | is_badge_spec | boolean | Show as badge on cards |
+| badge_priority | integer | Ordering for badge specs |
+| sort_order | integer | Form ordering |
 | unit_suffix | text | km, m², HP, L, etc. |
+| validation_rules | jsonb | Min/max/regex or custom rules |
+| inherit_scope | category_attribute_inherit_scope | self_only, inherit, global |
+| created_at | timestamptz | |
 
 **RLS:** Public read.
+
+---
+
+### product_attributes
+
+EAV storage for product attribute values (canonical write path).
+
+| Column | Type | Notes |
+|--------|------|-------|
+| id | uuid | PK |
+| product_id | uuid | FK → products |
+| attribute_id | uuid | FK → category_attributes (nullable for custom) |
+| name | text | Display name (normalized for category attrs) |
+| value | text | Raw value (stringified) |
+| is_custom | boolean | True when attribute_id is null |
+| created_at | timestamptz | |
+
+**RLS:** Public read.
+
+---
+
+### Attribute Contract (EAV + JSONB)
+
+- `category_attributes` defines metadata (types, options, filterability).
+- `product_attributes` is canonical storage for attribute values.
+- `products.attributes` is a JSONB mirror for filtering, synced by trigger.
+- `attribute_key` is normalized via `normalize_attribute_key(...)`.
+- `inherit_scope` controls attribute inheritance (self_only, inherit, global).
 
 ---
 
@@ -491,6 +528,17 @@ CREATE FUNCTION get_hero_specs(category_id uuid) RETURNS TABLE
 CREATE FUNCTION get_badge_specs(category_id uuid) RETURNS TABLE
 ```
 
+### Attributes
+
+```sql
+-- Normalize attribute keys on category_attributes insert/update
+CREATE FUNCTION normalize_attribute_key(name text) RETURNS text
+
+-- Sync EAV → JSONB mirror on products
+CREATE FUNCTION sync_product_attributes_jsonb(product_id uuid) RETURNS void
+-- Triggered after INSERT/UPDATE/DELETE on product_attributes
+```
+
 ### Stock Management
 
 ```sql
@@ -572,4 +620,4 @@ SELECT * FROM seller_stats WHERE seller_id = $id;
 
 ---
 
-*Last updated: 2026-02-01*
+*Last updated: 2026-02-04*

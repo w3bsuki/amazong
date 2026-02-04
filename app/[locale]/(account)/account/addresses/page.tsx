@@ -11,7 +11,7 @@ export default async function AddressesPage({
 }) {
     const { locale } = await params
     setRequestLocale(locale)
-    const t = await getTranslations({ locale, namespace: "SidebarMenuV2" })
+    const t = await getTranslations({ locale, namespace: "SidebarMenu" })
     const supabase = await createClient()
     
     if (!supabase) {

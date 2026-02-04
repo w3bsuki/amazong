@@ -56,7 +56,16 @@ const productSchema = z.object({
   images: z.array(z.string()).default([]),
 })
 
-export type ProductInput = z.infer<typeof productSchema>
+export interface ProductAttributeInput {
+  attributeId?: string | null
+  name: string
+  value: string
+  isCustom?: boolean
+}
+
+export type ProductInput = z.infer<typeof productSchema> & {
+  attributes?: ProductAttributeInput[]
+}
 
 interface ActionResult<T = void> {
   success: boolean
@@ -79,6 +88,24 @@ const LEAF_CATEGORY_ERROR_MESSAGE = "Please select a more specific category (lea
 
 function isLeafCategoryError(error: { code?: string | null; message?: string | null } | null | undefined): boolean {
   return error?.code === "23514" && typeof error.message === "string" && error.message.includes("Category must be a leaf category")
+}
+
+function normalizeProductAttributes(input: unknown): ProductAttributeInput[] {
+  if (!Array.isArray(input)) return []
+  const out: ProductAttributeInput[] = []
+  for (const raw of input) {
+    if (!raw || typeof raw !== "object") continue
+    const record = raw as Record<string, unknown>
+    const name = typeof record.name === "string" ? record.name.trim() : ""
+    const value = typeof record.value === "string" ? record.value.trim() : ""
+    if (!name || !value) continue
+    const attributeId = typeof record.attributeId === "string" && record.attributeId.length > 0
+      ? record.attributeId
+      : null
+    const isCustom = record.isCustom === true
+    out.push({ name, value, attributeId, isCustom })
+  }
+  return out
 }
 
 async function getCategorySlugsByIds(
@@ -176,6 +203,7 @@ export async function createProduct(input: ProductInput): Promise<ActionResult<{
     }
     
     const data = validated.data
+    const attributes = normalizeProductAttributes(input.attributes)
     
     // Check if user has a username (required to sell)
     const { data: profile, error: profileError } = await supabase
@@ -245,6 +273,26 @@ export async function createProduct(input: ProductInput): Promise<ActionResult<{
       console.error("[createProduct] Product private insert error:", privateError)
       await supabase.from("products").delete().eq("id", product.id)
       return { success: false, error: privateError.message || "Failed to save seller-only product fields" }
+    }
+
+    if (attributes.length > 0) {
+      const attributeRows = attributes.map((attr) => ({
+        product_id: product.id,
+        attribute_id: attr.attributeId ?? null,
+        name: attr.name,
+        value: attr.value,
+        is_custom: attr.isCustom ?? false,
+      }))
+
+      const { error: attrError } = await supabase
+        .from("product_attributes")
+        .insert(attributeRows)
+
+      if (attrError) {
+        console.error("[createProduct] Product attributes insert error:", attrError)
+        await supabase.from("products").delete().eq("id", product.id)
+        return { success: false, error: attrError.message || "Failed to create product" }
+      }
     }
 
     await revalidateProductCaches({
@@ -359,6 +407,40 @@ export async function updateProduct(
       if (privateError) {
         console.error("[updateProduct] Product private upsert error:", privateError)
         return { success: false, error: "Failed to save seller-only product fields" }
+      }
+    }
+
+    const shouldUpdateAttributes = Object.prototype.hasOwnProperty.call(input, "attributes")
+    if (shouldUpdateAttributes) {
+      const attributes = normalizeProductAttributes((input as ProductInput).attributes)
+
+      const { error: deleteError } = await supabase
+        .from("product_attributes")
+        .delete()
+        .eq("product_id", productId)
+
+      if (deleteError) {
+        console.error("[updateProduct] Product attributes delete error:", deleteError)
+        return { success: false, error: "Failed to update product" }
+      }
+
+      if (attributes.length > 0) {
+        const attributeRows = attributes.map((attr) => ({
+          product_id: productId,
+          attribute_id: attr.attributeId ?? null,
+          name: attr.name,
+          value: attr.value,
+          is_custom: attr.isCustom ?? false,
+        }))
+
+        const { error: insertError } = await supabase
+          .from("product_attributes")
+          .insert(attributeRows)
+
+        if (insertError) {
+          console.error("[updateProduct] Product attributes insert error:", insertError)
+          return { success: false, error: "Failed to update product" }
+        }
       }
     }
 

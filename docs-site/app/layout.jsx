@@ -14,6 +14,19 @@ export const metadata = {
 const logo = (
   <span style={{ fontWeight: 700, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
     Treido Docs
+    <span
+      style={{
+        fontSize: 12,
+        fontWeight: 800,
+        letterSpacing: '0.06em',
+        padding: '0.15rem 0.4rem',
+        borderRadius: 6,
+        background: 'rgb(250, 204, 21)',
+        color: 'rgb(17, 24, 39)',
+      }}
+    >
+      INTERNAL
+    </span>
   </span>
 )
 

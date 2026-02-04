@@ -538,7 +538,7 @@ export function SellingProductsList({ products, locale, actions }: SellingProduc
                         <Button
                           variant="ghost"
                           size="icon"
-                          className="size-8 text-destructive hover:bg-destructive/10"
+                          className="size-8 text-destructive hover:bg-destructive-subtle"
                           disabled={deletingId === product.id}
                         >
                           <Trash className="size-4" />
@@ -559,7 +559,7 @@ export function SellingProductsList({ products, locale, actions }: SellingProduc
                           </AlertDialogCancel>
                           <AlertDialogAction
                             onClick={() => handleDelete(product.id)}
-                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                            className="bg-destructive text-destructive-foreground hover:bg-destructive"
                           >
                             {t('deleteButton')}
                           </AlertDialogAction>
@@ -744,7 +744,7 @@ export function SellingProductsList({ products, locale, actions }: SellingProduc
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="size-9 text-destructive hover:bg-destructive/10"
+                      className="size-9 text-destructive hover:bg-destructive-subtle"
                       disabled={deletingId === product.id}
                     >
                       <Trash className="size-4" />
@@ -766,7 +766,7 @@ export function SellingProductsList({ products, locale, actions }: SellingProduc
                       </AlertDialogCancel>
                       <AlertDialogAction
                         onClick={() => handleDelete(product.id)}
-                        className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                        className="bg-destructive text-destructive-foreground hover:bg-destructive"
                       >
                         {t('deleteButton')}
                       </AlertDialogAction>

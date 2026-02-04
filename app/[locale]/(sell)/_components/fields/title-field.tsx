@@ -97,7 +97,7 @@ export function TitleField({
               <div className={cn(
                 "relative rounded-xl border bg-card overflow-hidden transition-all",
                 "focus-within:ring-2 focus-within:ring-ring focus-within:border-ring",
-                fieldState.invalid ? "border-destructive/50 bg-destructive/5" : "border-border"
+                fieldState.invalid ? "border-destructive/50 bg-destructive-subtle" : "border-border"
               )}>
                 <Input
                   {...field}

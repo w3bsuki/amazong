@@ -1,0 +1,61 @@
+# Unit Economics (Per Order)
+
+## Goal
+
+Prove the model can fund:
+
+- Stripe processing costs
+- support + dispute handling
+- fraud loss buffer
+- product development and growth
+
+…while keeping fees low enough to avoid off-platform leakage.
+
+## Fee model (plan-driven)
+
+Buyer fee:
+
+```
+buyer_fee = min(
+  item_price * buyer_protection_percent + buyer_protection_fixed,
+  buyer_protection_cap
+)
+```
+
+Business seller fee:
+
+```
+seller_fee = item_price * seller_fee_percent
+```
+
+## Example (Personal Free, €50 item)
+
+- Buyer fee: `min(€50×4% + €0.50, €15) = €2.50`
+- Buyer total: `€52.50`
+- Seller receives: `€50.00`
+- Platform gross revenue (before Stripe/support): `€2.50`
+
+## Cost buckets to track
+
+- Stripe processing (variable + fixed)
+- refunds/chargebacks (loss rate)
+- support cost per dispute (time + tooling)
+- fraud prevention costs (verification, monitoring)
+
+## Contribution margin (simple model)
+
+```
+contribution = buyer_fee + seller_fee - stripe_cost - refunds_loss - support_allocation
+```
+
+## Sensitivities to monitor
+
+- low-price orders are dominated by fixed Stripe fees → cap/fixed fee matters
+- fraud spikes can wipe margin → early risk controls are critical
+- support load scales with disputes, not GMV → keep dispute rate low
+
+## Implementation requirements
+
+- Store fee components per order at purchase time (no retroactive changes).
+- Keep plan config in DB (`subscription_plans`) and cache per seller when needed.
+

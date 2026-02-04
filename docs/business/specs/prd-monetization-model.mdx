@@ -1,0 +1,32 @@
+# PRD: Monetization Model
+
+## Objective
+
+Build a monetization model that is:
+
+- low-fee and transparent (reduces off-platform leakage)
+- strong enough to fund trust & safety operations
+- configurable (plan-driven), not hard-coded
+
+## Core model
+
+- Buyer pays Buyer Protection fee (percent + fixed, capped).
+- Business sellers pay a small seller fee.
+- Subscriptions reduce fees and unlock tooling.
+
+## Requirements
+
+- Fee calculation is deterministic and stored per order at purchase time.
+- Fees are visible to buyers before payment.
+- Webhooks are the source of truth for payment state.
+- Support tooling exists for refunds and disputes.
+
+## Acceptance criteria
+
+- Given a plan + item price, the checkout UI and DB calculation match.
+- Cap is enforced.
+- Fee changes do not retroactively alter existing orders.
+
+## Source of truth
+
+- `supabase/migrations/20260120000000_buyer_protection_fees.sql`

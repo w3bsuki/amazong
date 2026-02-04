@@ -271,7 +271,7 @@ export function AccountWishlistGrid({ items, locale, onRemove }: WishlistGridPro
                       handleRemove(item.product_id)
                     }}
                     disabled={removingId === item.product_id}
-                    className="flex size-7 items-center justify-center rounded-full text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
+                    className="flex size-7 items-center justify-center rounded-full text-muted-foreground hover:text-destructive hover:bg-destructive-subtle transition-colors"
                   >
                     <Trash className="size-4" />
                   </button>
@@ -280,8 +280,11 @@ export function AccountWishlistGrid({ items, locale, onRemove }: WishlistGridPro
             </div>
 
             {/* Detail Sheet */}
-            <SheetContent side="bottom" className="h-auto max-h-(--dialog-h-85vh) rounded-t-3xl">
-              <SheetHeader className="text-left pb-4">
+            <SheetContent
+              side="bottom"
+              className="h-auto max-h-(--dialog-h-85vh) rounded-t-2xl gap-0 overflow-hidden"
+            >
+              <SheetHeader className="text-left border-b border-border bg-background">
                 <SheetTitle className="line-clamp-2 text-lg">{item.title}</SheetTitle>
                 <SheetDescription className="flex items-center gap-2 flex-wrap">
                   {labels.addedOn} {formatDate(item.created_at)}
@@ -297,8 +300,8 @@ export function AccountWishlistGrid({ items, locale, onRemove }: WishlistGridPro
                 </SheetDescription>
               </SheetHeader>
 
-              <div className="py-4">
-                <div className="relative aspect-square w-full max-w-60 mx-auto rounded-md overflow-hidden bg-muted">
+              <div className="flex-1 overflow-y-auto px-4 py-4">
+                <div className="relative mx-auto aspect-square w-full max-w-60 overflow-hidden rounded-xl bg-muted">
                   <Image
                     src={item.image}
                     alt={item.title}
@@ -330,7 +333,7 @@ export function AccountWishlistGrid({ items, locale, onRemove }: WishlistGridPro
                 </div>
               </div>
 
-              <SheetFooter className="flex-col gap-2 sm:flex-col pt-4 border-t">
+              <SheetFooter className="flex-col gap-2 sm:flex-col border-t border-border bg-background pb-safe-max">
                 <Button
                   onClick={() => handleMoveToCart(item)}
                   disabled={item.stock <= 0}
@@ -489,7 +492,7 @@ export function AccountWishlistGrid({ items, locale, onRemove }: WishlistGridPro
                     variant="outline"
                     onClick={() => handleRemove(item.product_id)}
                     disabled={removingId === item.product_id}
-                    className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                    className="text-destructive hover:text-destructive hover:bg-destructive-subtle"
                   >
                     <Trash className="size-4" />
                   </Button>

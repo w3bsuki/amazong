@@ -6,6 +6,7 @@ import { cva, type VariantProps } from 'class-variance-authority'
 import { X } from 'lucide-react'
 
 import { cn } from '@/lib/utils'
+import { IconButton } from '@/components/ui/icon-button'
 
 const ToastProvider = ToastPrimitives.Provider
 
@@ -82,18 +83,16 @@ function ToastClose({
   const ariaLabel = closeLabel ?? props['aria-label']
 
   return (
-    <ToastPrimitives.Close
-      data-slot="toast-close"
-      className={cn(
-        'ui-toast-close absolute right-2 top-2 flex size-11 items-center justify-center rounded-full text-muted-foreground opacity-0 transition-opacity hover:text-foreground focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring group-hover:opacity-100',
-        className,
-      )}
-      toast-close=""
-      {...props}
-      aria-label={ariaLabel}
-    >
-      <X className="size-4" />
-      {ariaLabel ? <span className="sr-only">{ariaLabel}</span> : null}
+    <ToastPrimitives.Close asChild toast-close="" {...props}>
+      <IconButton
+        aria-label={ariaLabel ?? 'Close'}
+        className={cn(
+          'ui-toast-close absolute right-2 top-2 text-muted-foreground opacity-0 transition-opacity hover:text-foreground focus-visible:opacity-100 focus-visible:ring-2 focus-visible:ring-focus-ring group-hover:opacity-100',
+          className,
+        )}
+      >
+        <X className="size-4" />
+      </IconButton>
     </ToastPrimitives.Close>
   )
 }

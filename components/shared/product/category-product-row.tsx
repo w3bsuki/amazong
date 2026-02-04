@@ -6,6 +6,7 @@ import { HorizontalProductCard } from "@/components/shared/product/horizontal-pr
 import { ArrowRight, Fire, Tag, TShirt, Car, DeviceMobile, Baby, FlagBanner } from "@phosphor-icons/react"
 import type { UIProduct } from "@/lib/data/products"
 import type { ReactNode } from "react"
+import { useTranslations } from "next-intl"
 
 // =============================================================================
 // TYPES
@@ -67,24 +68,26 @@ export function CategoryProductRowMobile({
   title,
   products,
   seeAllHref,
-  seeAllText = "See all",
+  seeAllText,
   variant = "generic",
   icon,
   maxProducts = 8,
   className,
 }: Omit<CategoryProductRowProps, "useMobileCards" | "locale">) {
-  if (!products || products.length === 0) return null
+  const t = useTranslations("Common")
 
+  if (!products || products.length === 0) return null
   const displayIcon = icon ?? VARIANT_ICONS[variant]
   const displayProducts = products.slice(0, maxProducts)
+  const displaySeeAllText = seeAllText ?? t("viewAll")
 
   return (
-    <section className={cn("py-3", className)}>
+    <section className={cn("py-2", className)}>
       {/* Section header */}
       <div className="px-inset-md mb-2 flex items-center justify-between gap-2">
         <div className="flex items-center gap-2 min-w-0">
           <span
-            className="shrink-0 size-7 rounded-full bg-muted border border-border/50 flex items-center justify-center"
+            className="shrink-0 size-7 rounded-full bg-muted border border-border-subtle flex items-center justify-center"
             aria-hidden="true"
           >
             {displayIcon}
@@ -98,13 +101,12 @@ export function CategoryProductRowMobile({
             href={seeAllHref}
             className={cn(
               "inline-flex items-center gap-1",
-              "h-(--spacing-touch-sm) px-2.5 rounded-full",
-              "border border-border/50 bg-background",
+              "min-h-(--spacing-touch-md) px-1.5 -mr-1 rounded-md",
               "text-xs font-medium text-muted-foreground",
-              "active:bg-muted active:text-foreground transition-colors"
+              "hover:text-foreground active:bg-active active:text-foreground transition-colors"
             )}
           >
-            {seeAllText}
+            {displaySeeAllText}
             <ArrowRight size={14} weight="bold" />
           </Link>
         )}
@@ -112,7 +114,7 @@ export function CategoryProductRowMobile({
 
       {/* Horizontal scroll product cards */}
       <div className="overflow-x-auto no-scrollbar">
-        <div className="flex gap-3 px-inset-md">
+        <div className="flex gap-2 px-inset-md">
           {displayProducts.map((product) => (
             <HorizontalProductCard key={product.id} product={product} />
           ))}

@@ -4,6 +4,9 @@ import { useLocale, useTranslations } from "next-intl"
 import { ChevronRight, Heart, Package } from "lucide-react"
 import { Link } from "@/i18n/routing"
 import { formatPrice } from "@/lib/format-price"
+import { IconButton } from "@/components/ui/icon-button"
+import { Surface } from "@/components/ui/surface"
+import { cn } from "@/lib/utils"
 import type { CategorySummary } from "./meta-row"
 
 interface SimilarProduct {
@@ -55,11 +58,14 @@ export function SimilarItemsGrid({
             ? `/${item.storeSlug}/${item.slug || item.id}`
             : "#"
           return (
-            <Link
+            <Surface
               key={item.id}
-              href={productHref}
-              className="group block overflow-hidden rounded-xl border border-border bg-card transition-colors hover:bg-hover active:bg-active"
+              asChild
+              variant="card"
+              interactive
+              className="group block overflow-hidden outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
             >
+              <Link href={productHref}>
               {/* Image */}
               <div className="aspect-square relative bg-muted">
                 {item.image ? (
@@ -75,15 +81,22 @@ export function SimilarItemsGrid({
                   </div>
                 )}
                 {/* Wishlist button */}
-                <button
+                <IconButton
                   type="button"
-                  className="absolute top-2 right-2 size-8 rounded-full bg-surface-elevated border border-border flex items-center justify-center shadow-sm"
+                  variant="ghost"
+                  aria-label={t("addToWatchlist")}
+                  className={cn(
+                    "absolute top-2 right-2",
+                    "bg-surface-glass backdrop-blur-md",
+                    "hover:bg-surface-glass active:bg-surface-glass",
+                    "text-muted-foreground hover:text-foreground"
+                  )}
                   onClick={(e) => {
                     e.preventDefault()
                   }}
                 >
-                  <Heart className="size-4 text-muted-foreground" />
-                </button>
+                  <Heart className="size-4" />
+                </IconButton>
               </div>
               {/* Info */}
               <div className="p-3">
@@ -94,7 +107,8 @@ export function SimilarItemsGrid({
                   {item.title}
                 </p>
               </div>
-            </Link>
+              </Link>
+            </Surface>
           )
         })}
       </div>

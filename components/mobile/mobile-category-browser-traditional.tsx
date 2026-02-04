@@ -13,7 +13,7 @@ import {
   CategoryCircles,
   AllTabFilters,
   QuickFilterRow,
-  InlineFilterBar,
+  FilterSortBar,
 } from "./category-nav";
 import { ProductFeed } from "@/components/shared/product/product-feed";
 import { FilterHub } from "@/components/shared/filters/filter-hub";
@@ -243,7 +243,7 @@ export function MobileCategoryBrowserTraditional({
 
       {/* Inline Filter Bar (demo-style 50/50 split: Filters | Sort) */}
       {showInlineFilters && (
-        <InlineFilterBar
+        <FilterSortBar
           locale={locale}
           onAllFiltersClick={() => setFilterHubOpen(true)}
           attributes={filterableAttributes}

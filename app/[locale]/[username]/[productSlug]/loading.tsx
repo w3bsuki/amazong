@@ -55,7 +55,7 @@ export default function ProductPageLoading() {
                 <Skeleton className="h-8 w-20 rounded-md" />
               </div>
               {/* Seller metrics */}
-              <div className="grid grid-cols-3 gap-2 py-3 border-t border-border/50">
+              <div className="grid grid-cols-3 gap-2 py-3 border-t border-border-subtle">
                 {[...Array(3)].map((_, i) => (
                   <div key={i} className="text-center space-y-1">
                     <Skeleton className="h-2 w-12 mx-auto" />
@@ -66,7 +66,7 @@ export default function ProductPageLoading() {
             </div>
 
             {/* Shipping info */}
-            <div className="space-y-3 p-4 rounded-md border border-border/50">
+            <div className="space-y-3 p-4 rounded-md border border-border-subtle">
               <div className="flex items-center gap-3">
                 <Skeleton className="h-5 w-5 rounded" />
                 <Skeleton className="h-4 w-40" />
@@ -90,7 +90,7 @@ export default function ProductPageLoading() {
           <Skeleton className="h-6 w-32" />
           <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
             {[...Array(6)].map((_, i) => (
-              <div key={i} className="flex justify-between p-3 rounded-lg border border-border/50">
+              <div key={i} className="flex justify-between p-3 rounded-lg border border-border-subtle">
                 <Skeleton className="h-4 w-16" />
                 <Skeleton className="h-4 w-20" />
               </div>
@@ -114,14 +114,14 @@ export default function ProductPageLoading() {
         </div>
 
         {/* Reviews Skeleton */}
-        <div className="mt-12 rounded-md bg-surface-subtle p-4 border border-border/50">
+        <div className="mt-12 rounded-md bg-surface-subtle p-4 border border-border-subtle">
           <div className="flex items-center justify-between mb-8">
             <Skeleton className="h-7 w-40" />
             <Skeleton className="h-4 w-16" />
           </div>
-          <div className="grid grid-cols-1 gap-10 lg:grid-cols-[320px_1fr]">
+          <div className="flex flex-col gap-10 lg:flex-row">
             {/* Rating Summary */}
-            <div className="space-y-6">
+            <div className="space-y-6 lg:w-80 lg:shrink-0">
               <div className="flex items-center gap-4">
                 <Skeleton className="h-24 w-24 rounded-full" />
                 <div className="space-y-2">
@@ -130,7 +130,7 @@ export default function ProductPageLoading() {
                 </div>
               </div>
               {/* Rating bars */}
-              <div className="space-y-3 p-4 rounded-md border border-border/30">
+              <div className="space-y-3 p-4 rounded-md border border-border-subtle">
                 {[...Array(5)].map((_, i) => (
                   <div key={i} className="flex items-center gap-3">
                     <Skeleton className="h-3 w-10" />
@@ -141,9 +141,9 @@ export default function ProductPageLoading() {
               </div>
             </div>
             {/* Reviews list */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:flex-1">
               {[...Array(4)].map((_, i) => (
-                <div key={i} className="p-4 rounded-md border border-border/50 space-y-3">
+                <div key={i} className="p-4 rounded-md border border-border-subtle space-y-3">
                   <div className="flex items-center gap-3">
                     <Skeleton className="h-10 w-10 rounded-full" />
                     <div className="space-y-1">

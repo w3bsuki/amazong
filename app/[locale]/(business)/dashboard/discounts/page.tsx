@@ -73,7 +73,7 @@ export default async function BusinessDiscountsPage() {
       case 'expired':
         return <Badge variant="outline" className="bg-muted text-muted-foreground border-border">Expired</Badge>
       case 'disabled':
-        return <Badge variant="outline" className="bg-destructive/10 text-destructive border-destructive/20">Disabled</Badge>
+        return <Badge variant="outline" className="bg-destructive-subtle text-destructive border-destructive/20">Disabled</Badge>
       default:
         return <Badge variant="outline">{status}</Badge>
     }

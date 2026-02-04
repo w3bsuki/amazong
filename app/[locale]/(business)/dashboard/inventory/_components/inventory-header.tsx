@@ -34,7 +34,7 @@ export function InventoryHeader({ summary }: { summary: InventorySummary }) {
               </span>
             )}
             {summary.outOfStockCount > 0 && (
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-destructive/10 text-destructive">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-destructive-subtle text-destructive">
                 <IconX className="size-3" />
                 <span className="tabular-nums">{summary.outOfStockCount}</span>
                 <span className="opacity-70">out</span>

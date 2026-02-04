@@ -109,6 +109,8 @@ function getStaticPages(): MetadataRoute.Sitemap {
     { path: '/help', priority: 0.5, changeFrequency: 'monthly' as const },
     { path: '/terms', priority: 0.3, changeFrequency: 'yearly' as const },
     { path: '/privacy', priority: 0.3, changeFrequency: 'yearly' as const },
+    { path: '/cookies', priority: 0.3, changeFrequency: 'yearly' as const },
+    { path: '/returns', priority: 0.4, changeFrequency: 'yearly' as const },
   ]
 
   const entries: MetadataRoute.Sitemap = []

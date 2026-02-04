@@ -28,19 +28,12 @@ function isAllowedMarkdownPath(relPath) {
   if (p === "AGENTS.md" || p.endsWith("/AGENTS.md")) return true;
   if (p.startsWith("docs/")) return true;
   if (p.startsWith(".codex/")) return true;
+  if (p.startsWith("docs-site/")) return true; // internal portal (mirrors from /docs)
   if (p.startsWith(".github/")) return true; // repo metadata (templates, instructions)
+  if (p.startsWith(".claude/")) return true; // tooling config (allowed)
 
-  // Tooling skill packs / agent configs (not project docs; do not move into docs/)
-  if (p.startsWith(".agent/")) return true;
-  if (p.startsWith(".agents/")) return true;
-  if (p.startsWith(".claude/")) return true;
-  if (p.startsWith(".gemini/")) return true;
-  if (p.startsWith(".kiro/")) return true;
-  if (p.startsWith(".qoder/")) return true;
-  if (p.startsWith(".qwen/")) return true;
-  if (p.startsWith(".trae/")) return true;
-  if (p.startsWith(".windsurf/")) return true;
-  if (p.startsWith(".cursor/")) return true;
+  // Storybook docs live with components (allowed exception).
+  if (p.startsWith("components/storybook/")) return true;
 
   return false;
 }
@@ -57,7 +50,8 @@ function walkMarkdownFiles(dirAbs, out) {
     }
 
     if (!ent.isFile()) continue;
-    if (path.extname(ent.name).toLowerCase() !== ".md") continue;
+    const ext = path.extname(ent.name).toLowerCase();
+    if (ext !== ".md" && ext !== ".mdx") continue;
 
     out.push(abs);
   }
@@ -71,6 +65,45 @@ function looksLikeRepoPath(token) {
   if (token.startsWith("http://") || token.startsWith("https://")) return false;
 
   return token.includes("/") || token.endsWith(".md");
+}
+
+function stripMarkdownLinkTarget(raw) {
+  const trimmed = (raw ?? "").trim();
+  if (!trimmed) return "";
+
+  // `<./file.md>` form
+  const withoutAngle =
+    trimmed.startsWith("<") && trimmed.endsWith(">")
+      ? trimmed.slice(1, -1).trim()
+      : trimmed;
+
+  const first = withoutAngle.split(/\s+/)[0] ?? "";
+  return first.split("#")[0].split("?")[0] ?? "";
+}
+
+function findRelativeLinksInMarkdown(text) {
+  const links = [];
+  const normalized = String(text ?? "").replace(/^\uFEFF/, "").replace(/\r\n/g, "\n");
+
+  let inCodeFence = false;
+  for (const line of normalized.split("\n")) {
+    const trimmed = line.trimStart();
+    if (trimmed.startsWith("```")) {
+      inCodeFence = !inCodeFence;
+      continue;
+    }
+    if (inCodeFence) continue;
+
+    const re = /\[[^\]]*\]\(([^)]+)\)/g;
+    for (const match of line.matchAll(re)) {
+      const rawTarget = match[1] ?? "";
+      const target = stripMarkdownLinkTarget(rawTarget);
+      if (!target) continue;
+      links.push(target);
+    }
+  }
+
+  return links;
 }
 
 const markdownFiles = [];
@@ -105,6 +138,48 @@ if (fs.existsSync(indexAbs)) {
   }
 }
 
+const brokenRelativeLinks = [];
+for (const abs of markdownFiles) {
+  const rel = normalizePath(path.relative(projectRoot, abs));
+  if (!rel.startsWith("docs/")) continue;
+  if (rel.startsWith("docs/archive/")) continue; // non-SSOT history
+
+  const text = fs.readFileSync(abs, "utf8");
+  const targets = findRelativeLinksInMarkdown(text);
+
+  for (const target of targets) {
+    if (
+      target.startsWith("http://") ||
+      target.startsWith("https://") ||
+      target.startsWith("mailto:") ||
+      target.startsWith("tel:") ||
+      target.startsWith("#") ||
+      target.startsWith("/")
+    ) {
+      continue;
+    }
+
+    const targetAbs = path.resolve(path.dirname(abs), target);
+    const ext = path.extname(targetAbs);
+    const candidates = [targetAbs];
+
+    const endsWithSlash = target.endsWith("/");
+    const hasExt = Boolean(ext);
+
+    if (endsWithSlash) {
+      candidates.push(path.join(targetAbs, "index.md"), path.join(targetAbs, "index.mdx"));
+    } else if (!hasExt) {
+      candidates.push(`${targetAbs}.md`, `${targetAbs}.mdx`);
+      candidates.push(path.join(targetAbs, "index.md"), path.join(targetAbs, "index.mdx"));
+    }
+
+    const exists = candidates.some((p) => fs.existsSync(p));
+    if (!exists) {
+      brokenRelativeLinks.push({ from: rel, to: target });
+    }
+  }
+}
+
 let failed = false;
 
 if (disallowed.length) {
@@ -125,6 +200,14 @@ if (brokenIndexRefs.length) {
   failed = true;
   console.error("DOCS GATE FAIL: docs/00-INDEX.md references missing paths:");
   for (const p of brokenIndexRefs.sort()) console.error(`- ${p}`);
+}
+
+if (brokenRelativeLinks.length) {
+  failed = true;
+  console.error("DOCS GATE FAIL: broken relative markdown links in docs/**:");
+  for (const { from, to } of brokenRelativeLinks.sort((a, b) => (a.from + a.to).localeCompare(b.from + b.to))) {
+    console.error(`- ${from} -> ${to}`);
+  }
 }
 
 if (failed) {

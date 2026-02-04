@@ -97,7 +97,7 @@ export default async function BusinessInventoryPage() {
                           ? 'border-success/20 bg-success/10 text-success'
                           : product.stock > 0
                             ? 'border-warning/20 bg-warning/10 text-warning'
-                            : 'border-destructive/20 bg-destructive/10 text-destructive'
+                            : 'border-destructive/20 bg-destructive-subtle text-destructive'
                         }
                       >
                         {product.stock} units
@@ -110,7 +110,7 @@ export default async function BusinessInventoryPage() {
                     </TableCell>
                     <TableCell>
                       {product.stock === 0 ? (
-                        <Badge variant="outline" className="border-destructive/20 bg-destructive/10 text-destructive">
+                        <Badge variant="outline" className="border-destructive/20 bg-destructive-subtle text-destructive">
                           <IconX className="size-3 mr-1" />
                           Out of Stock
                         </Badge>

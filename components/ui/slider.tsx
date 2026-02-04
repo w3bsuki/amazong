@@ -57,7 +57,7 @@ function Slider({
           data-slot="slider-thumb"
           key={index}
           aria-label={thumbLabels?.[index]}
-          className="border-primary ring-ring/50 block size-4 shrink-0 rounded-full border bg-background shadow-none transition-colors focus-visible:ring-2 focus-visible:outline-hidden disabled:pointer-events-none disabled:opacity-50"
+          className="border-primary block size-4 shrink-0 rounded-full border bg-background shadow-none transition-colors focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:outline-hidden disabled:pointer-events-none disabled:opacity-50"
         />
       ))}
     </SliderPrimitive.Root>

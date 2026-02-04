@@ -74,15 +74,14 @@ export function CategoryCirclesSimple({
           label={tCommon("all")}
           active={!drawer?.isOpen}
           onClick={handleAllClick}
+          labelPlacement="inside"
           circleClassName="size-(--spacing-category-circle)"
-          fallbackIconSize={20}
-          fallbackIconWeight="bold"
+          fallbackIconSize={24}
+          fallbackIconWeight="duotone"
           variant="colorful"
-          preferIcon={false}
+          preferIcon={true}
           className="flex-none w-(--spacing-category-item-lg)"
-          labelClassName={cn(
-            "w-full text-xs text-center leading-tight line-clamp-1 px-0 mt-1",
-            "font-medium truncate",
+          insideLabelClassName={cn(
             !drawer?.isOpen ? "text-foreground" : "text-muted-foreground"
           )}
         />
@@ -97,16 +96,15 @@ export function CategoryCirclesSimple({
               category={category}
               onClick={() => handleCircleClick(category)}
               active={isActive}
+              labelPlacement="inside"
               circleClassName="size-(--spacing-category-circle)"
-              fallbackIconSize={20}
-              fallbackIconWeight="bold"
+              fallbackIconSize={24}
+              fallbackIconWeight="duotone"
               variant="colorful"
-              preferIcon={false}
+              preferIcon={true}
               label={tCategories("shortName", { slug: getCategorySlugKey(category.slug), name: getCategoryName(category, locale) })}
               className="flex-none w-(--spacing-category-item-lg)"
-              labelClassName={cn(
-                "w-full text-xs text-center leading-tight line-clamp-1 px-0 mt-1",
-                "font-medium truncate",
+              insideLabelClassName={cn(
                 isActive ? "text-foreground" : "text-muted-foreground"
               )}
             />

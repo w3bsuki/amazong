@@ -59,7 +59,7 @@ const notificationColors: Record<NotificationType, string> = {
   order: "bg-info/10 text-info",
   inventory: "bg-selected text-primary",
   review: "bg-warning/10 text-warning",
-  alert: "bg-destructive/10 text-destructive",
+  alert: "bg-destructive-subtle text-destructive",
   success: "bg-success/10 text-success",
 }
 

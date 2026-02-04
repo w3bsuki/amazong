@@ -90,17 +90,17 @@ function SellerVerificationBadge({
   // Build tooltip content showing all verification levels
   const tooltipContent = (
     <div className="space-y-1 text-xs">
-      <div className={cn("flex items-center gap-1.5", emailVerified ? "text-foreground" : "text-muted-foreground/50")}>
+      <div className={cn("flex items-center gap-1.5", emailVerified ? "text-foreground" : "text-muted-foreground opacity-50")}>
         <EnvelopeSimple size={12} weight={emailVerified ? "fill" : "regular"} />
         <span>{t("email")}</span>
         {emailVerified && <span className="text-muted-foreground">✓</span>}
       </div>
-      <div className={cn("flex items-center gap-1.5", phoneVerified ? "text-foreground" : "text-muted-foreground/50")}>
+      <div className={cn("flex items-center gap-1.5", phoneVerified ? "text-foreground" : "text-muted-foreground opacity-50")}>
         <Phone size={12} weight={phoneVerified ? "fill" : "regular"} />
         <span>{t("phone")}</span>
         {phoneVerified && <span className="text-muted-foreground">✓</span>}
       </div>
-      <div className={cn("flex items-center gap-1.5", idVerified ? "text-foreground" : "text-muted-foreground/50")}>
+      <div className={cn("flex items-center gap-1.5", idVerified ? "text-foreground" : "text-muted-foreground opacity-50")}>
         <IdentificationCard size={12} weight={idVerified ? "fill" : "regular"} />
         <span>{t("id")}</span>
         {idVerified && <span className="text-muted-foreground">✓</span>}
@@ -120,10 +120,10 @@ function SellerVerificationBadge({
         <TooltipTrigger asChild>
           <span className={cn(
             "inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-2xs font-medium",
-            tier === 4 && "bg-verify-business/15 text-verify-business",
-            tier === 3 && "bg-verify-id/15 text-verify-id",
-            tier === 2 && "bg-verify-phone/15 text-verify-phone",
-            tier === 1 && "bg-verify-email/15 text-verify-email",
+            tier === 4 && "bg-muted text-verify-business",
+            tier === 3 && "bg-muted text-verify-id",
+            tier === 2 && "bg-muted text-verify-phone",
+            tier === 1 && "bg-muted text-verify-email",
             className
           )}>
             <SealCheck size={iconSize} weight="fill" />

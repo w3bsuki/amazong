@@ -64,7 +64,7 @@ export function DropdownProductItem({
           e.preventDefault()
           onRemove()
         }}
-        className="size-6 flex items-center justify-center rounded-md hover:bg-destructive/10 text-muted-foreground hover:text-destructive self-start"
+        className="size-6 flex items-center justify-center rounded-md hover:bg-destructive-subtle text-muted-foreground hover:text-destructive self-start"
         aria-label={removeLabel}
       >
         <Trash size={14} weight="regular" />

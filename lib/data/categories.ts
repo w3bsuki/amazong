@@ -4,9 +4,9 @@ import { cacheTag, cacheLife } from 'next/cache'
 import { createStaticClient } from '@/lib/supabase/server'
 import { normalizeOptionalImageUrl } from '@/lib/normalize-image-url'
 import { logger } from '@/lib/logger'
-import { normalizeAttributeKey } from '@/lib/attributes/normalize-attribute-key'
+import { resolveCategoryAttributesWithClient } from '@/lib/data/category-attributes'
 import type { AttributeType, CategoryAttribute } from '@/lib/types/categories'
-import { CATEGORY_ATTRIBUTES_SELECT, CATEGORY_TREE_NODE_SELECT } from '@/lib/supabase/selects/categories'
+import { CATEGORY_TREE_NODE_SELECT } from '@/lib/supabase/selects/categories'
 
 // =============================================================================
 // Type Definitions
@@ -29,61 +29,6 @@ export interface CategoryWithParent extends Category {
 
 export type { AttributeType, CategoryAttribute }
 
-// Valid attribute types
-const VALID_ATTRIBUTE_TYPES: AttributeType[] = ['select', 'multiselect', 'boolean', 'number', 'text', 'date']
-
-// Helper to transform DB row to CategoryAttribute
-function toCategoryAttribute(row: {
-  id: string
-  category_id: string | null
-  name: string
-  name_bg: string | null
-  attribute_type: string
-  attribute_key?: string | null
-  options: unknown | null
-  options_bg: unknown | null
-  placeholder?: string | null
-  placeholder_bg?: string | null
-  is_filterable: boolean | null
-  is_required: boolean | null
-  is_hero_spec?: boolean | null
-  hero_priority?: number | null
-  is_badge_spec?: boolean | null
-  badge_priority?: number | null
-  unit_suffix?: string | null
-  sort_order: number | null
-  validation_rules?: unknown | null
-  created_at?: string | null
-}): CategoryAttribute {
-  // Validate and cast attribute_type - default to 'text' if invalid
-  const attrType = VALID_ATTRIBUTE_TYPES.includes(row.attribute_type as AttributeType)
-    ? row.attribute_type as AttributeType
-    : 'text'
-    
-  const attributeKey = row.attribute_key ?? (normalizeAttributeKey(row.name) || null)
-
-  return {
-    id: row.id,
-    category_id: row.category_id,
-    name: row.name,
-    name_bg: row.name_bg,
-    attribute_type: attrType,
-    attribute_key: attributeKey,
-    options: Array.isArray(row.options) ? row.options as string[] : null,
-    options_bg: Array.isArray(row.options_bg) ? row.options_bg as string[] : null,
-    placeholder: row.placeholder ?? null,
-    placeholder_bg: row.placeholder_bg ?? null,
-    is_filterable: row.is_filterable,
-    is_required: row.is_required,
-    is_hero_spec: row.is_hero_spec ?? null,
-    hero_priority: row.hero_priority ?? null,
-    is_badge_spec: row.is_badge_spec ?? null,
-    badge_priority: row.badge_priority ?? null,
-    unit_suffix: row.unit_suffix ?? null,
-    sort_order: row.sort_order,
-    validation_rules: row.validation_rules ?? null,
-  }
-}
 
 interface CategoryHierarchyRow {
   id: string
@@ -122,47 +67,6 @@ export interface CategoryContext {
   attributes: CategoryAttribute[]
 }
 
-function getCategoryAttributeKey(attr: Pick<CategoryAttribute, 'attribute_key' | 'name'>): string {
-  return (attr.attribute_key ?? normalizeAttributeKey(attr.name)).trim().toLowerCase()
-}
-
-function getCategoryAttributeMapKey(
-  attr: Pick<CategoryAttribute, 'attribute_key' | 'name' | 'attribute_type'>
-): string {
-  return `${getCategoryAttributeKey(attr)}::${attr.attribute_type}`.trim().toLowerCase()
-}
-
-function hasAnyOptions(attr: CategoryAttribute): boolean {
-  const hasEn = Array.isArray(attr.options) && attr.options.length > 0
-  const hasBg = Array.isArray(attr.options_bg) && attr.options_bg.length > 0
-  return hasEn || hasBg
-}
-
-function withFallbackOptions(
-  current: CategoryAttribute,
-  fallback: CategoryAttribute
-): CategoryAttribute {
-  const currentHasOptions = hasAnyOptions(current)
-  const fallbackHasOptions = hasAnyOptions(fallback)
-  if (currentHasOptions || !fallbackHasOptions) return current
-
-  return {
-    ...current,
-    // If the category-level attribute is effectively unconfigured, borrow the
-    // parent options so the UI can render a real list.
-    options: Array.isArray(current.options) && current.options.length > 0
-      ? current.options
-      : fallback.options,
-    options_bg: Array.isArray(current.options_bg) && current.options_bg.length > 0
-      ? current.options_bg
-      : fallback.options_bg,
-    // If the category-level attribute type is too generic, borrow parent's type.
-    attribute_type:
-      current.attribute_type === 'text' && fallback.attribute_type !== 'text'
-        ? fallback.attribute_type
-        : current.attribute_type,
-  }
-}
 
 // =============================================================================
 // Helper Functions
@@ -627,71 +531,6 @@ export async function getCategoryAncestry(slug: string): Promise<string[] | null
 }
 
 /**
- * Breadcrumb category with minimal fields for sidebar display
- */
-export interface BreadcrumbCategory {
-  slug: string
-  name: string
-  name_bg: string | null
-}
-
-/**
- * Get full ancestry chain with category objects (for breadcrumb display).
- * Returns array from root (L0) to target category with names for display.
- * 
- * @param slug - Category slug to get ancestry for
- * @returns Array of BreadcrumbCategory objects [L0, L1, L2?, L3?] or empty array
- */
-export async function getCategoryAncestryFull(slug: string): Promise<BreadcrumbCategory[]> {
-  'use cache'
-  cacheTag(`category:${slug}:ancestry`)
-  cacheLife('categories')
-  
-  const supabase = createStaticClient()
-  
-  // Recursively fetch category and its ancestors with names
-  const ancestry: BreadcrumbCategory[] = []
-  let currentSlug: string | null = slug
-  
-  while (currentSlug) {
-    const result = await supabase
-      .from('categories')
-      .select(`
-        slug,
-        name,
-        name_bg,
-        parent:parent_id (slug)
-      `)
-      .eq('slug', currentSlug)
-      .single()
-    
-    if (result.error || !result.data) {
-      break
-    }
-    
-    const catData = result.data as {
-      slug: string
-      name: string
-      name_bg: string | null
-      parent: { slug: string } | { slug: string }[] | null
-    }
-    
-    // Add to beginning (building from leaf to root)
-    ancestry.unshift({
-      slug: catData.slug,
-      name: catData.name,
-      name_bg: catData.name_bg,
-    })
-    
-    // Get parent slug if exists
-    const parentData = Array.isArray(catData.parent) ? catData.parent[0] : catData.parent
-    currentSlug = parentData?.slug ?? null
-  }
-  
-  return ancestry
-}
-
-/**
  * Fetch filterable attributes for a category.
  * Used to build dynamic filter UIs on category pages.
  * 
@@ -704,20 +543,14 @@ async function getCategoryAttributes(categoryId: string): Promise<CategoryAttrib
   cacheLife('categories')
   
   const supabase = createStaticClient()
-  
-  const { data, error } = await supabase
-    .from('category_attributes')
-    .select(CATEGORY_ATTRIBUTES_SELECT)
-    .eq('category_id', categoryId)
-    .eq('is_filterable', true)
-    .order('sort_order', { ascending: true })
-  
-  if (error) {
-    logger.error('[getCategoryAttributes] Query error', error)
-    return []
-  }
-  
-  return (data || []).map(toCategoryAttribute)
+
+  const { attributes } = await resolveCategoryAttributesWithClient(supabase, categoryId, {
+    includeParents: false,
+    includeGlobal: false,
+    filterableOnly: true,
+  })
+
+  return attributes
 }
 
 /**
@@ -849,108 +682,20 @@ export async function getCategoryContext(slug: string): Promise<CategoryContext 
     // filterForBrowse=false ensures all children show as navigation circles
     getSubcategoriesForBrowse(current.id, false),
     
-    // Filterable attributes for current category
-    supabase
-      .from('category_attributes')
-      .select(CATEGORY_ATTRIBUTES_SELECT)
-      .eq('category_id', current.id)
-      .eq('is_filterable', true)
-      .order('sort_order')
+    // Filterable attributes (current + inherited by scope)
+    resolveCategoryAttributesWithClient(supabase, current.id, {
+      includeParents: true,
+      includeGlobal: true,
+      filterableOnly: true,
+    }),
   ])
 
-  const currentAttributes = (attributesResult.data || []).map(toCategoryAttribute)
+  const { attributes, ancestorIds } = attributesResult
 
-  // ---------------------------------------------------------------------------
-  // Attribute Inheritance: Always merge ALL ancestor attrs with current.
-  // This ensures universal filters (Condition, Brand, Size, Color) are inherited
-  // even for deep leaf categories.
-  //
-  // Priority: current category attrs > parent attrs > ... > root attrs
-  // ---------------------------------------------------------------------------
-
-  // Collect ancestor category IDs (parent -> root).
-  const ancestorIds: string[] = []
-  let cursor: string | null = current.parent_id
-
-  for (let i = 0; i < 6 && cursor; i++) {
-    ancestorIds.push(cursor)
-
-    const { data: parentRow, error: parentRowError } = await supabase
-      .from('categories')
-      .select('parent_id')
-      .eq('id', cursor)
-      .maybeSingle()
-
-    if (parentRowError) {
-      logger.error('[getCategoryContext] Ancestor lookup error', parentRowError)
-      break
-    }
-
-    cursor = (parentRow as { parent_id?: string | null } | null)?.parent_id ?? null
+  for (const id of ancestorIds) {
+    cacheTag(`attrs:category:${id}`)
   }
-
-  let inheritedAttributes: CategoryAttribute[] = []
-  if (ancestorIds.length > 0) {
-    const { data: inheritedRaw, error: inheritedError } = await supabase
-      .from('category_attributes')
-      .select(CATEGORY_ATTRIBUTES_SELECT)
-      .in('category_id', ancestorIds)
-      .eq('is_filterable', true)
-      .order('sort_order')
-
-    if (inheritedError) {
-      logger.error('[getCategoryContext] Ancestor attributes query error', inheritedError)
-    } else {
-      inheritedAttributes = (inheritedRaw || []).map(toCategoryAttribute)
-    }
-  }
-
-  const depthByCategoryId = new Map<string, number>()
-  for (let i = 0; i < ancestorIds.length; i++) {
-    const ancestorId = ancestorIds[i]
-    if (ancestorId) depthByCategoryId.set(ancestorId, i)
-  }
-
-  // Sort inherited attrs root -> parent so nearer ancestors override farther ones.
-  const inheritedSorted = [...inheritedAttributes].sort((a, b) => {
-    const da = depthByCategoryId.get(a.category_id ?? '') ?? 0
-    const db = depthByCategoryId.get(b.category_id ?? '') ?? 0
-    if (da !== db) return db - da
-    return (a.sort_order ?? 999) - (b.sort_order ?? 999)
-  })
-
-  // Merge: Build map tracking which attrs are from current category vs inherited
-  // Key insight: category-specific attrs should come FIRST, inherited universal attrs second
-  const attrMap = new Map<string, CategoryAttribute & { isOwn: boolean }>()
-  
-  // Add ancestor attrs first (marked as inherited)
-  for (const attr of inheritedSorted) {
-    attrMap.set(getCategoryAttributeMapKey(attr), { ...attr, isOwn: false })
-  }
-  // Current category attrs override ancestors (marked as own)
-  for (const attr of currentAttributes) {
-    const key = getCategoryAttributeMapKey(attr)
-    const existing = attrMap.get(key)
-    attrMap.set(
-      key,
-      {
-        ...(existing ? withFallbackOptions(attr, existing) : attr),
-        isOwn: true
-      }
-    )
-  }
-
-  // Sort: category's OWN attrs first (by sort_order), then inherited (by sort_order)
-  // This ensures category-specific filters (Processor, RAM) appear before universal (Condition, Brand)
-  const attributes = Array.from(attrMap.values())
-    .sort((a, b) => {
-      // Own attrs come first
-      if (a.isOwn && !b.isOwn) return -1
-      if (!a.isOwn && b.isOwn) return 1
-      // Within same group, sort by sort_order
-      return (a.sort_order ?? 999) - (b.sort_order ?? 999)
-    })
-    .map(({ isOwn: _isOwn, ...attr }) => attr as CategoryAttribute) // Strip isOwn flag from output
+  cacheTag('attrs:global')
   
   return {
     current: {

@@ -11,6 +11,8 @@ import { Link } from "@/i18n/routing"
 import { AppBreadcrumb, type BreadcrumbItemData } from "@/components/navigation/app-breadcrumb"
 import type { Icon } from "@phosphor-icons/react"
 import { PageShell } from "@/components/shared/page-shell"
+import ReactMarkdown from "react-markdown"
+import remarkGfm from "remark-gfm"
 
 export interface LegalSection {
   id: string
@@ -148,7 +150,11 @@ export function LegalPageLayout({
                   <WarningCircle className={`size-5 shrink-0 mt-0.5 ${introIconColor}`} />
                   <p className="text-sm text-muted-foreground">{introNotice}</p>
                 </div>
-                <p className="text-muted-foreground leading-relaxed">{introText}</p>
+                <div className="richtext text-muted-foreground leading-relaxed">
+                  <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                    {introText}
+                  </ReactMarkdown>
+                </div>
               </CardContent>
             </Card>
 
@@ -169,8 +175,12 @@ export function LegalPageLayout({
                         </div>
                       </AccordionTrigger>
                       <AccordionContent>
-                        <div className="pl-11 pr-4 text-muted-foreground leading-relaxed whitespace-pre-line">
-                          {section.desc}
+                        <div className="pl-11 pr-4">
+                          <div className="richtext text-muted-foreground leading-relaxed">
+                            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                              {section.desc}
+                            </ReactMarkdown>
+                          </div>
                         </div>
                       </AccordionContent>
                     </AccordionItem>

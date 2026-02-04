@@ -1,16 +1,14 @@
 /**
- * ProductGrid — Container query-responsive product grid
+ * ProductGrid — Responsive product grid
  *
- * A responsive product grid that uses container queries (@container)
- * to adapt column count based on the container width rather than viewport.
- * This enables the grid to work correctly inside sidebars, modals, etc.
+ * A responsive product grid that adapts column count via standard breakpoints.
  *
- * Container Query Breakpoints:
+ * Breakpoints:
  * - Default: 2 columns
- * - @[520px]: 3 columns
- * - @[720px]: 4 columns
- * - @[960px]: 5 columns
- * - @[1200px]: 6 columns (dense mode)
+ * - sm: 3 columns
+ * - md: 4 columns
+ * - lg: 5 columns
+ * - xl: 6 columns (compact density)
  *
  * Usage:
  * ```tsx
@@ -25,6 +23,7 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 import { ProductCard } from "@/components/shared/product/product-card";
 import { ProductCardList } from "@/components/shared/product/product-card-list";
+import { AspectRatio } from "@/components/ui/aspect-ratio";
 
 export type ViewMode = "grid" | "list";
 
@@ -67,6 +66,14 @@ export interface ProductGridProps {
   viewMode?: ViewMode;
   /** Density - normal or compact for more columns */
   density?: "normal" | "compact";
+  /** ProductCard appearance (default: card). Useful for mobile browse tiles. */
+  cardAppearance?: "card" | "tile";
+  /** ProductCard media aspect ratio (default: square). */
+  cardMedia?: "square" | "landscape";
+  /** ProductCard density tuning (default: default). */
+  cardDensity?: "default" | "compact";
+  /** ProductCard title line clamp (default: 2). */
+  cardTitleLines?: 1 | 2;
   /** Additional className */
   className?: string;
   /** Loading state */
@@ -79,16 +86,16 @@ export interface ProductGridProps {
 const gridColumnClasses = {
   normal: [
     "grid-cols-2",
-    "@[520px]:grid-cols-3",
-    "@[720px]:grid-cols-4",
-    "@[960px]:grid-cols-5",
+    "sm:grid-cols-3",
+    "md:grid-cols-4",
+    "lg:grid-cols-5",
   ],
   compact: [
     "grid-cols-2",
-    "@[400px]:grid-cols-3",
-    "@[560px]:grid-cols-4",
-    "@[720px]:grid-cols-5",
-    "@[960px]:grid-cols-6",
+    "sm:grid-cols-3",
+    "md:grid-cols-4",
+    "lg:grid-cols-5",
+    "xl:grid-cols-6",
   ],
 } as const;
 
@@ -96,11 +103,21 @@ export function ProductGrid({
   products,
   viewMode = "grid",
   density = "normal",
+  cardAppearance,
+  cardMedia,
+  cardDensity,
+  cardTitleLines,
   className,
   isLoading = false,
 }: ProductGridProps) {
   if (isLoading) {
-    return <ProductGridSkeleton viewMode={viewMode} density={density} />;
+    return (
+      <ProductGridSkeleton
+        viewMode={viewMode}
+        density={density}
+        {...(cardMedia ? { cardMedia } : {})}
+      />
+    );
   }
 
   if (products.length === 0) {
@@ -171,6 +188,10 @@ export function ProductGrid({
                 {...(product.categoryRootSlug ? { categoryRootSlug: product.categoryRootSlug } : {})}
                 {...(product.categoryPath ? { categoryPath: product.categoryPath } : {})}
                 {...(product.attributes ? { attributes: product.attributes } : {})}
+                {...(cardAppearance ? { appearance: cardAppearance } : {})}
+                {...(cardMedia ? { media: cardMedia } : {})}
+                {...(cardDensity ? { density: cardDensity } : {})}
+                {...(cardTitleLines ? { titleLines: cardTitleLines } : {})}
               />
             )}
           </div>
@@ -187,11 +208,15 @@ export function ProductGridSkeleton({
   viewMode = "grid",
   density = "normal",
   count = 12,
+  cardMedia = "square",
 }: {
   viewMode?: ViewMode;
   density?: "normal" | "compact";
   count?: number;
+  cardMedia?: "square" | "landscape";
 }) {
+  const ratio = cardMedia === "landscape" ? 4 / 3 : 1;
+
   return (
     <div data-slot="product-grid-skeleton" className="@container">
       <div
@@ -216,7 +241,9 @@ export function ProductGridSkeleton({
             </div>
           ) : (
             <div key={i} className="space-y-2">
-              <div className="aspect-square w-full rounded-xl bg-muted animate-pulse" />
+              <div className="relative overflow-hidden rounded-xl bg-muted animate-pulse">
+                <AspectRatio ratio={ratio} />
+              </div>
               <div className="h-4 w-full bg-muted rounded-full animate-pulse" />
               <div className="h-4 w-2/3 bg-muted rounded-full animate-pulse" />
             </div>

@@ -434,7 +434,7 @@ export function DesktopFilterModal({
             className={cn(
               "text-sm font-medium transition-colors px-4 py-2 rounded-lg",
               hasPendingFilters 
-                ? "text-destructive hover:bg-destructive/10"
+                ? "text-destructive hover:bg-destructive-subtle"
                 : "text-muted-foreground cursor-not-allowed opacity-50"
             )}
           >

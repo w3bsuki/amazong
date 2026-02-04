@@ -3,7 +3,7 @@
 **Auditor**: Claude (GitHub Copilot)  
 **Test Device**: Playwright Mobile Emulation (Chrome)  
 **Viewport**: Mobile (~375px width)  
-**Test Account**: radevalentin@gmail.com  
+**Test Account**: [redacted]  
 
 ---
 
@@ -206,7 +206,7 @@ The site has significant critical issues that would block any user from completi
 - **Browser**: Chromium (Playwright)
 - **URL**: https://www.treido.eu
 - **Locale**: English (/en)
-- **Login**: radevalentin@gmail.com / 12345678
+- **Login**: [redacted] (use local env vars; never store credentials in repo)
 - **Session**: Authenticated user with business plan
 
 ---

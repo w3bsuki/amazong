@@ -564,7 +564,7 @@ export function AttributesField({ className, compact = false }: AttributesFieldP
                   <button
                     type="button"
                     onClick={() => handleRemoveCustom(index)}
-                    className="size-8 flex items-center justify-center rounded-lg hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors"
+                    className="size-8 flex items-center justify-center rounded-lg hover:bg-destructive-subtle text-muted-foreground hover:text-destructive transition-colors"
                     aria-label={isBg ? "Премахни" : "Remove"}
                   >
                     <X className="size-4" weight="bold" />

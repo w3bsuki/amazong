@@ -73,7 +73,8 @@ export default async function CategoriesPage({
       <div className="border-b border-border/30 bg-background">
         <div className="px-inset py-1.5">
           <div className="flex items-baseline justify-between gap-2">
-            <h1 className="text-sm font-bold text-foreground">{t("title")}</h1>
+            <h1 className="hidden lg:block text-sm font-bold text-foreground">{t("title")}</h1>
+            <h2 className="lg:hidden text-sm font-bold text-foreground">{t("title")}</h2>
             <p className="text-2xs text-muted-foreground whitespace-nowrap">
               {t("categoryCount", { count: categoriesWithChildren.length })}
             </p>
@@ -96,9 +97,9 @@ export default async function CategoriesPage({
               <CategoryCircleVisual
                 category={cat}
                 active={false}
-                className="size-14 shrink-0" // Treido: 56px (size-14) standard
+                className="size-(--spacing-category-circle) shrink-0"
                 fallbackIconSize={24}
-                fallbackIconWeight="bold"
+                fallbackIconWeight="duotone"
                 variant="muted"
               />
 

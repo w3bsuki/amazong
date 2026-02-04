@@ -48,6 +48,8 @@ export interface CategoryCircleProps {
 
   /** Listing count to display below the label */
   count?: number | undefined
+  /** When true, shows count even when label is rendered inside the circle. */
+  showCount?: boolean | undefined
 
   /** Size class for the circle itself (e.g. `size-12`, `size-14`). */
   circleClassName?: string
@@ -55,8 +57,13 @@ export interface CategoryCircleProps {
   className?: string
   /** Classes for the label text. */
   labelClassName?: string
+  /** Classes for the label when `labelPlacement="inside"`. */
+  insideLabelClassName?: string
   /** Classes for the count text. */
   countClassName?: string
+
+  /** Where to render the label. Defaults to `below` for backward compatibility. */
+  labelPlacement?: "below" | "inside"
 
   variant?: "muted" | "menu" | "rail" | "colorful"
   fallbackIconSize?: IconSize
@@ -80,10 +87,13 @@ export function CategoryCircle({
   dimmed,
   loading,
   count,
+  showCount,
   circleClassName,
   className,
   labelClassName,
+  insideLabelClassName,
   countClassName,
+  labelPlacement = "below",
   variant = "muted",
   fallbackIconSize = 24,
   fallbackIconWeight = "bold", // Bold for better visibility
@@ -100,6 +110,11 @@ export function CategoryCircle({
     className
   )
 
+  const renderCount =
+    typeof count === "number" &&
+    count > 0 &&
+    (showCount ?? labelPlacement === "below")
+
   const content = (
     <>
       <div className="relative">
@@ -108,6 +123,7 @@ export function CategoryCircle({
           active={!!active}
           className={cn(
             "mx-auto transition-opacity",
+            labelPlacement === "inside" && "pb-3",
             circleClassName,
             loading && "opacity-60"
           )}
@@ -116,6 +132,18 @@ export function CategoryCircle({
           variant={variant}
           preferIcon={preferIcon}
         />
+        {labelPlacement === "inside" && (
+          <span
+            className={cn(
+              "absolute inset-x-1 bottom-1 select-none text-center leading-none line-clamp-1",
+              "text-2xs font-medium",
+              active ? "text-foreground" : "text-muted-foreground",
+              insideLabelClassName
+            )}
+          >
+            {label}
+          </span>
+        )}
         {/* Loading spinner overlay - subtle ring pulse */}
         {loading && (
           <div className="absolute inset-0 flex items-center justify-center">
@@ -123,9 +151,16 @@ export function CategoryCircle({
           </div>
         )}
       </div>
-      <span className={cn("mt-1", labelClassName)}>{label}</span>
-      {typeof count === "number" && count > 0 && (
-        <span className={cn("text-2xs text-muted-foreground leading-none -mt-0.5", countClassName)}>
+      {labelPlacement === "below" && (
+        <span className={cn("mt-1", labelClassName)}>{label}</span>
+      )}
+      {renderCount && (
+        <span
+          className={cn(
+            "text-2xs text-muted-foreground leading-none -mt-0.5",
+            countClassName
+          )}
+        >
           {formatCount(count)}
         </span>
       )}

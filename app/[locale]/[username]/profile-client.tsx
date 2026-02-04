@@ -5,6 +5,7 @@ import Image from "next/image"
 import { Link } from "@/i18n/routing"
 import { useLocale, useTranslations } from "next-intl"
 import { Button } from "@/components/ui/button"
+import { IconButton } from "@/components/ui/icon-button"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
@@ -320,7 +321,7 @@ export function PublicProfileClient({
                             {review.buyer?.username ? (
                               <Link
                                 href={`/${review.buyer.username}`}
-                                className="font-medium text-sm truncate tap-highlight-transparent"
+                                className="font-medium text-sm truncate tap-transparent"
                               >
                                 {review.buyer.display_name || review.buyer.username}
                               </Link>
@@ -370,7 +371,7 @@ export function PublicProfileClient({
                             {review.seller?.username ? (
                               <Link
                                 href={`/${review.seller.username}`}
-                                className="font-medium text-sm truncate tap-highlight-transparent"
+                                className="font-medium text-sm truncate tap-transparent"
                               >
                                 {review.seller.display_name || review.seller.username}
                               </Link>
@@ -500,27 +501,33 @@ export function PublicProfileClient({
       {profile.social_links && Object.keys(profile.social_links).length > 0 && (
         <div className="flex gap-2 pt-1">
           {profile.website_url && (
-            <a
-              href={profile.website_url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="p-2 rounded-full bg-surface-subtle active:bg-active tap-highlight-transparent"
+            <IconButton
+              asChild
+              variant="outline"
+              aria-label={tProfile("openWebsite")}
+              className="rounded-full bg-surface-subtle"
             >
-              <Globe className="size-4" />
-            </a>
+              <a href={profile.website_url} target="_blank" rel="noopener noreferrer">
+                <Globe className="size-4" aria-hidden="true" />
+              </a>
+            </IconButton>
           )}
           {Object.entries(profile.social_links).map(([platform, url]) => {
             if (!url) return null
             return (
-              <a
+              <IconButton
                 key={platform}
-                href={url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="p-2 rounded-full bg-surface-subtle active:bg-active tap-highlight-transparent"
+                asChild
+                variant="outline"
+                aria-label={tProfile("openSocial", { platform })}
+                className="rounded-full bg-surface-subtle"
               >
-                {socialIcons[platform] || <Globe className="size-4" />}
-              </a>
+                <a href={url} target="_blank" rel="noopener noreferrer">
+                  <span aria-hidden="true">
+                    {socialIcons[platform] || <Globe className="size-4" />}
+                  </span>
+                </a>
+              </IconButton>
             )
           })}
         </div>

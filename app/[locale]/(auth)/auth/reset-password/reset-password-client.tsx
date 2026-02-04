@@ -134,7 +134,7 @@ export default function ResetPasswordPage() {
       <div className="min-h-dvh flex items-center justify-center p-4">
         <div className="w-full max-w-sm text-center">
           <div className="flex flex-col items-center gap-4 mb-6">
-            <div className="size-16 bg-destructive/15 rounded-full flex items-center justify-center">
+            <div className="size-16 bg-destructive-subtle rounded-full flex items-center justify-center">
               <Lock className="size-8 text-destructive" weight="bold" />
             </div>
             <h1 className="text-2xl font-bold text-foreground">{t("linkExpired")}</h1>
@@ -190,7 +190,7 @@ export default function ResetPasswordPage() {
     >
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
         {serverError && (
-          <div className="p-3 text-sm text-destructive bg-destructive/10 border border-destructive/20 rounded-md">
+          <div className="p-3 text-sm text-destructive bg-destructive-subtle border border-destructive/20 rounded-md">
             {serverError}
           </div>
         )}

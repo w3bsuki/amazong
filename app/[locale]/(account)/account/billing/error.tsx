@@ -21,7 +21,7 @@ export default function BillingError({
       <div className="max-w-5xl mx-auto">
         <Card className="border-destructive/50">
           <CardContent className="flex flex-col items-center justify-center py-12 text-center">
-            <div className="rounded-full bg-destructive/10 p-4 mb-4">
+            <div className="rounded-full bg-destructive-subtle p-4 mb-4">
               <WarningCircle className="size-8 text-destructive" weight="duotone" />
             </div>
             <h2 className="text-lg font-semibold mb-2">

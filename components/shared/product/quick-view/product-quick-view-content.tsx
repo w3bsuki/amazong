@@ -8,6 +8,7 @@ import { toast } from "sonner"
 
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import { IconButton } from "@/components/ui/icon-button"
 import type { QuickViewProduct } from "@/components/providers/drawer-context"
 import { useWishlist } from "@/components/providers/wishlist-context"
 import { PLACEHOLDER_IMAGE_PATH } from "@/lib/normalize-image-url"
@@ -128,16 +129,15 @@ export function ProductQuickViewContent({
         <h2 className="min-w-0 flex-1 truncate text-base font-semibold text-foreground">
           {titleText}
         </h2>
-        <Button
+        <IconButton
           type="button"
           variant="ghost"
-          size="icon"
-          className="size-11 rounded-xl border border-border bg-background"
+          className="border border-border-subtle bg-background hover:bg-muted active:bg-muted"
           onClick={() => onRequestClose?.()}
           aria-label={tDrawers("close")}
         >
           <X className="size-5" />
-        </Button>
+        </IconButton>
       </div>
 
       {/* Content */}
@@ -214,22 +214,18 @@ export function ProductQuickViewContent({
 
           {/* Actions */}
           <div className="flex items-center gap-2">
-            <Button
+            <IconButton
               type="button"
               variant="outline"
-              size="icon"
-              className="size-11"
               onClick={handleCopyLink}
               aria-label={tModal("copyLink")}
               disabled={!shareUrl}
             >
               <LinkSimple size={18} weight="bold" />
-            </Button>
-            <Button
+            </IconButton>
+            <IconButton
               type="button"
               variant="outline"
-              size="icon"
-              className="size-11"
               onClick={handleToggleWishlist}
               aria-label={inWishlist ? tProduct("removeFromWatchlist") : tProduct("addToWatchlist")}
               disabled={wishlistPending}
@@ -239,7 +235,7 @@ export function ProductQuickViewContent({
                 weight={inWishlist ? "fill" : "regular"}
                 className={cn(inWishlist ? "fill-primary text-primary" : "text-foreground")}
               />
-            </Button>
+            </IconButton>
 
             {!inStock && (
               <Badge

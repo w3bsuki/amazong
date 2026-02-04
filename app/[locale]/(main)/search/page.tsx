@@ -344,7 +344,13 @@ export default async function SearchPage({
           </div>
 
           {/* Mobile Product Grid */}
-          <ProductGrid products={gridProducts} viewMode="grid" />
+          <ProductGrid
+            products={gridProducts}
+            viewMode="grid"
+            cardAppearance="tile"
+            cardMedia="landscape"
+            cardDensity="compact"
+          />
 
           {products.length === 0 && (
             <EmptyStateCTA

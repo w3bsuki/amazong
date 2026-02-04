@@ -23,6 +23,7 @@ import {
   DrawerBody,
 } from "@/components/ui/drawer"
 import { Button } from "@/components/ui/button"
+import { IconButton } from "@/components/ui/icon-button"
 import { Link } from "@/i18n/routing"
 import { useTranslations, useLocale } from "next-intl"
 import { useAuth } from "@/components/providers/auth-state-manager"
@@ -219,7 +220,7 @@ export function AccountDrawer({ open, onOpenChange }: AccountDrawerProps) {
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
-      <DrawerContent className="rounded-t-xl max-h-dialog">
+      <DrawerContent className="max-h-dialog">
         <DrawerHeader className="pb-1.5 pt-0 border-b border-border text-left">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-1.5">
@@ -227,12 +228,13 @@ export function AccountDrawer({ open, onOpenChange }: AccountDrawerProps) {
               <DrawerTitle className="text-sm font-semibold">{tAccount("title")}</DrawerTitle>
             </div>
             <DrawerClose asChild>
-              <button
-                className="text-muted-foreground/60 hover:text-foreground transition-colors"
+              <IconButton
                 aria-label={tAccount("close")}
+                variant="ghost"
+                className="text-muted-foreground hover:text-foreground hover:bg-muted active:bg-muted"
               >
                 <X size={20} weight="light" />
-              </button>
+              </IconButton>
             </DrawerClose>
           </div>
           <DrawerDescription className="sr-only">{tAccount("description")}</DrawerDescription>
@@ -240,7 +242,7 @@ export function AccountDrawer({ open, onOpenChange }: AccountDrawerProps) {
 
         {!user || authLoading ? (
           <div className="flex flex-col items-center justify-center px-inset py-5">
-            <div className="size-11 bg-muted rounded-lg flex items-center justify-center mb-2">
+            <div className="size-11 bg-muted rounded-xl flex items-center justify-center mb-2">
               <User size={22} weight="regular" className="text-muted-foreground/50" />
             </div>
             <p className="text-sm text-foreground font-medium">
@@ -311,7 +313,7 @@ export function AccountDrawer({ open, onOpenChange }: AccountDrawerProps) {
                       <span
                         className={cn(
                           "text-xs px-1.5 py-0.5 rounded",
-                          link.badgeType === "destructive" && "text-destructive bg-destructive/10",
+                          link.badgeType === "destructive" && "text-destructive bg-destructive-subtle",
                           link.badgeType === "warning" && "text-status-warning bg-status-warning/10",
                           link.badgeType === "muted" && "text-muted-foreground bg-muted"
                         )}
@@ -350,7 +352,7 @@ export function AccountDrawer({ open, onOpenChange }: AccountDrawerProps) {
                         onClick={handleClose}
                         className="group"
                       >
-                        <div className="relative aspect-square bg-muted rounded-lg overflow-hidden border border-border">
+                        <div className="relative aspect-square bg-muted rounded-xl overflow-hidden border border-border">
                           <Image
                             src={imageUrl ?? PLACEHOLDER_IMAGE_PATH}
                             alt={listing.title}

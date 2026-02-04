@@ -34,7 +34,9 @@ Create a **complete, AI-readable documentation system** that enables:
 ├── 12-LAUNCH.md          ← Launch checklist & ops
 ├── 13-PRODUCTION-PUSH.md ← Production push plan
 ├── 14-UI-UX-PLAN.md      ← UI/UX roadmap
-└── 15-DEV-DEPARTMENT.md  ← Roles + ownership + maintenance cadence
+├── 15-DEV-DEPARTMENT.md  ← Roles + ownership + maintenance cadence
+├── public/               ← Public-facing SSOT (legal, policies, help)
+└── business/             ← Internal business SSOT (monetization, ops, investors)
 ```
 
 ### Source-of-truth rules (non-negotiable)
@@ -47,7 +49,25 @@ Create a **complete, AI-readable documentation system** that enables:
    - `**/AGENTS.md`
    - `README.md`
    - `.github/**` (repo meta: templates/instructions)
-   - `.agent/**`, `.agents/**`, `.claude/**`, `.cursor/**`, `.gemini/**`, `.kiro/**`, `.qoder/**`, `.qwen/**`, `.trae/**`, `.windsurf/**` (tooling skills/configs)
+   - `.claude/**` (tooling config)
+
+---
+
+## ✅ SSOT Matrix (No Ambiguity)
+
+| Surface | Status | Purpose | SSOT? |
+|---------|--------|---------|-------|
+| `docs/**` | Canonical | Stable product + engineering + business docs | ✅ Yes |
+| `docs/00-INDEX.md` | Canonical hub | Entry point + navigation for SSOT docs | ✅ Yes |
+| `docs-site/**` | Internal portal | Human-friendly browsing UI for internal docs (Nextra) | ❌ No |
+| `/admin/docs` (`admin_docs` table) | Runtime ops | Editable internal operational docs (SOPs, tasks, incident notes) | ❌ No |
+| `.codex/**` | Runtime state | Prompts, tasks, shipped log, decisions, audit notes | ❌ No |
+
+### Non-negotiables
+
+1) **Public legal/policy/help content is served from the main app** (`/[locale]/…`) and is **versioned** under `docs/public/**`.
+2) `docs-site/` is **internal-only** and must not be treated as SSOT (it mirrors/syncs from `docs/**`).
+3) `/admin/docs` is **DB-editable** and can link to SSOT docs, but must not duplicate canonical legal/policy text.
 
 ---
 
@@ -215,7 +235,7 @@ Follows: Route group conventions, boundary rules
 | `.codex/project/ARCHITECTURE.md` | `docs/03-ARCHITECTURE.md` | ✅ Done (`.codex/project/*` is now deprecated pointers) |
 | `.codex/project/DESIGN.md` | `docs/04-DESIGN.md` | ✅ Done (`.codex/project/*` is now deprecated pointers) |
 | `docs/archive/uirefactor/*` | Reference only | Extract patterns if needed |
-| `docs-site/content/business/*` | Reference only | Business context |
+| `docs-site/content/**` | `docs/business/**`, `docs/payments/**`, `docs/guides/**`, `docs/public/**` | 🚧 Migrate into `/docs` (then `docs-site/` becomes a mirror, not SSOT) |
 
 ### Retirement Plan
 
@@ -223,7 +243,8 @@ Current state (2026-02-02):
 1. `/docs` is the SSOT.
 2. `.codex/project/*` files are deprecated pointers to `/docs`.
 3. Historical planning docs are kept under `docs/archive/`.
-4. `docs-site/` remains for public-facing docs.
+4. `docs-site/` is internal-only and mirrors from `/docs`.
+5. Public legal/policy/help content is served by the main app and sourced from `docs/public/**`.
 
 ---
 

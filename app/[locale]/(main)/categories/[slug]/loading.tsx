@@ -37,7 +37,7 @@ export default function CategorySlugLoading() {
           </div>
         </div>
         
-        {/* Inline Filter Bar skeleton - 50/50 split matches InlineFilterBar */}
+        {/* Filter/Sort bar skeleton - 50/50 split matches FilterSortBar */}
         <div className="sticky top-12 z-20 bg-background border-b border-border/60">
           <div className="flex items-stretch divide-x divide-border/60 h-10">
             <div className="flex-1 flex items-center justify-center gap-1.5">

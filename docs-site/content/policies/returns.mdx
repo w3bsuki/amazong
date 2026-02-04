@@ -1,31 +1,39 @@
-# Returns & Refunds
+# Returns & Refunds Policy
 
-## Goals
+> Canonical Returns & Refunds policy for Treido. Served at `/[locale]/returns`.
 
-- Make outcomes predictable (buyers and sellers know the rules).
-- Reduce fraud while keeping the experience simple.
+---
 
-## Baseline rules (V1)
+## Overview
 
-- Payments happen **on-platform** (Stripe). COD is not supported.
-- Refunds are processed through Stripe (no off-platform refunds).
+Treido is a marketplace. Returns and refunds depend on the transaction, the item condition, and the evidence available.
 
-## Refund eligibility (examples)
+## Eligibility
 
-- Item not shipped within the allowed window → cancel + refund
-- Item not received (tracking shows failure) → dispute → refund if confirmed
-- Item not as described / damaged / counterfeit → dispute + evidence
+Returns/refunds may be available when:
 
-## Process
+- the item is not received,
+- the item is significantly not as described,
+- the item is damaged in transit (with supporting evidence),
+- other policy-defined conditions apply.
 
-1. Buyer opens dispute (reason + evidence)
-2. Seller responds within SLA
-3. Support reviews and decides:
-   - refund buyer, or
-   - release funds to seller, or
-   - partial refund
+## Timelines
 
-## Open decisions
+Users must report eligible issues within the timelines shown in Treido for the specific order.
 
-- Return shipping label policy (buyer-paid vs seller-paid vs platform-paid)
-- Default return window length (e.g. 48–72h after delivery)
+## Evidence
+
+Treido may request photos, packaging evidence, tracking information, and relevant messages to evaluate claims.
+
+## Outcomes
+
+Outcomes may include:
+
+- refund (full or partial),
+- return workflow (when applicable),
+- no refund when policy conditions are not met.
+
+---
+
+*Last updated: 2026-02-04*
+

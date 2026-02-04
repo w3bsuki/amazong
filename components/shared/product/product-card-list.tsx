@@ -4,9 +4,12 @@ import * as React from "react"
 import { Link } from "@/i18n/routing"
 import { useLocale, useTranslations } from "next-intl"
 import { cn } from "@/lib/utils"
+import { Surface } from "@/components/ui/surface"
 import { getConditionBadgeVariant } from "@/components/shared/product/_lib/condition-badges"
+import { getConditionKey } from "@/components/shared/product/_lib/condition"
 import { computeBadgeSpecsClient, shouldShowConditionBadge } from "@/lib/badges/category-badge-specs"
 import { ProductCardActions } from "./product-card-actions"
+import { ProductCardPrice } from "./product-card-price"
 import { FreshnessIndicator } from "./freshness-indicator"
 import { Truck, MapPin, ShieldCheck } from "@phosphor-icons/react"
 import Image from "next/image"
@@ -115,43 +118,6 @@ export function ProductCardList({
     })
   }, [categorySlug, rootCategorySlug, condition, attributes])
 
-  const getConditionKey = (value: string): string | null => {
-    const normalized = value.toLowerCase().replace(/[\s_-]/g, "")
-    switch (normalized) {
-      case "new":
-      case "novo":
-      case "ново":
-        return "condition.new"
-      case "newwithtags":
-        return "condition.newWithTags"
-      case "newwithouttags":
-        return "condition.newWithoutTags"
-      case "likenew":
-      case "usedlikenew":
-      case "катоново":
-        return "condition.likeNew"
-      case "usedexcellent":
-        return "condition.usedExcellent"
-      case "usedgood":
-        return "condition.usedGood"
-      case "usedfair":
-        return "condition.usedFair"
-      case "refurbished":
-      case "refurb":
-      case "рефърбиш":
-        return "condition.refurbished"
-      case "used":
-      case "употребявано":
-        return "condition.used"
-      case "good":
-        return "condition.good"
-      case "fair":
-        return "condition.fair"
-      default:
-        return null
-    }
-  }
-
   const formatBadgeValue = (badge: { key: string; value: string }): string => {
     if (badge.key === "condition") {
       const key = getConditionKey(badge.value)
@@ -185,19 +151,6 @@ export function ProductCardList({
     return condition.slice(0, 8)
   }, [condition, t, smartBadges, categorySlug, rootCategorySlug])
 
-  // Format price
-  const formattedPrice = new Intl.NumberFormat(locale, {
-    style: "currency",
-    currency: "EUR",
-  }).format(price)
-
-  const formattedOriginalPrice = originalPrice
-    ? new Intl.NumberFormat(locale, {
-        style: "currency",
-        currency: "EUR",
-      }).format(originalPrice)
-    : null
-
   const hasDiscount = originalPrice && originalPrice > price
   const discountPercent = hasDiscount
     ? Math.round(((originalPrice - price) / originalPrice) * 100)
@@ -205,9 +158,11 @@ export function ProductCardList({
   const showDiscountBadge = hasDiscount && discountPercent >= 1
 
   return (
-    <div
+    <Surface
+      variant="card"
+      interactive
       className={cn(
-        "group relative flex gap-4 rounded-xl border border-border bg-card p-3 transition-colors hover:bg-hover active:bg-active",
+        "group relative flex gap-4 p-3",
         className
       )}
     >
@@ -215,7 +170,7 @@ export function ProductCardList({
       <Link
         href={productUrl}
         scroll={false}
-        className="absolute inset-0 z-0"
+        className="absolute inset-0 z-0 rounded-xl outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
         aria-label={t("openProduct", { title })}
       >
         <span className="sr-only">{title}</span>
@@ -311,12 +266,13 @@ export function ProductCardList({
           <FreshnessIndicator createdAt={createdAt} showIcon />
         </div>
 
-        {/* Price row */}
-        <div className="flex items-baseline gap-2 mt-auto">
-          <span className="text-lg font-bold text-foreground">{formattedPrice}</span>
-          {hasDiscount && formattedOriginalPrice && (
-            <span className="text-sm text-muted-foreground line-through">{formattedOriginalPrice}</span>
-          )}
+        {/* Price */}
+        <div className="mt-auto">
+          <ProductCardPrice
+            price={price}
+            originalPrice={originalPrice}
+            locale={locale}
+          />
         </div>
 
         {/* Badges row */}
@@ -345,6 +301,6 @@ export function ProductCardList({
           </div>
         )}
       </div>
-    </div>
+    </Surface>
   )
 }

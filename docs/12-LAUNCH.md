@@ -288,7 +288,7 @@ curl https://treido.eu/robots.txt
 | Privacy Policy | `/[locale]/privacy` | ✅ |
 | Terms of Service | `/[locale]/terms` | ✅ |
 | Cookie Policy | `/[locale]/cookies` | ✅ |
-| Refund Policy | `/[locale]/refunds` | ✅ |
+| Returns & Refunds | `/[locale]/returns` | ✅ |
 
 ### GDPR Compliance
 

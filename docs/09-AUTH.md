@@ -187,6 +187,16 @@ The context listens to `supabase.auth.onAuthStateChange()` for:
 - `TOKEN_REFRESHED`
 - `USER_UPDATED`
 
+### Session Refresh
+
+To prevent session drift, `AuthStateManager` explicitly refreshes sessions:
+- On initial app load
+- When navigating away from `/auth` routes
+- On tab visibility change
+- Every 10 minutes for authenticated users
+
+Refreshes are throttled to avoid excessive calls.
+
 ---
 
 ## Environment Variables
@@ -260,4 +270,4 @@ Auth translations in `messages/[locale].json` under `"Auth"` namespace (~100 key
 
 ---
 
-*Last updated: 2026-02-01*
+*Last updated: 2026-02-04*

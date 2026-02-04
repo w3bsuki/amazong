@@ -4,6 +4,7 @@ import { createRouteHandlerClient } from "@/lib/supabase/server"
 import { ADMIN_DOC_TEMPLATES, ADMIN_DOC_TEMPLATES_BG } from "./templates"
 
 const SUPPORTED_LOCALES = new Set(["en", "bg"])
+const SEED_CATEGORIES = new Set(["ops", "guides"])
 
 export async function POST(request: NextRequest) {
   const { supabase, applyCookies } = createRouteHandlerClient(request)
@@ -48,7 +49,8 @@ export async function POST(request: NextRequest) {
   }
 
   const existingSlugs = new Set((existing ?? []).map((d) => d.slug))
-  const templates = locale === "bg" ? ADMIN_DOC_TEMPLATES_BG : ADMIN_DOC_TEMPLATES
+  const templatesAll = locale === "bg" ? ADMIN_DOC_TEMPLATES_BG : ADMIN_DOC_TEMPLATES
+  const templates = templatesAll.filter((t) => SEED_CATEGORIES.has(t.category))
   const toInsert = templates.filter((t) => !existingSlugs.has(t.slug)).map((t) => ({
     title: t.title,
     slug: t.slug,

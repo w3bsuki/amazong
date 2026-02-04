@@ -1,4 +1,5 @@
 export type AttributeType = 'select' | 'multiselect' | 'boolean' | 'number' | 'text' | 'date'
+export type CategoryAttributeInheritScope = 'self_only' | 'inherit' | 'global'
 
 export interface CategoryAttribute {
   id: string
@@ -8,6 +9,8 @@ export interface CategoryAttribute {
   attribute_type: AttributeType
   /** Canonical, normalized key (preferred over name for JSONB + URL params). */
   attribute_key: string | null
+  /** Inheritance scope for attribute propagation. */
+  inherit_scope: CategoryAttributeInheritScope | null
   options: string[] | null
   options_bg: string[] | null
   placeholder?: string | null

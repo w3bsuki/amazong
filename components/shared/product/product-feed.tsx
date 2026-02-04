@@ -117,6 +117,8 @@ export function ProductFeed({
         <ProductCardSkeletonGrid
           count={6}
           density="compact"
+          appearance="tile"
+          media="landscape"
           className="py-1"
         />
       ) : (
@@ -157,6 +159,9 @@ export function ProductFeed({
               {...(product.year ? { year: product.year } : {})}
               {...(product.location ? { location: product.location } : {})}
               {...(product.attributes ? { attributes: product.attributes } : {})}
+              appearance="tile"
+              media="landscape"
+              density="compact"
             />
           ))}
         </ProductGrid>
@@ -169,6 +174,8 @@ export function ProductFeed({
           <ProductCardSkeletonGrid
             count={4}
             density="compact"
+            appearance="tile"
+            media="landscape"
             className="py-1"
           />
         )}

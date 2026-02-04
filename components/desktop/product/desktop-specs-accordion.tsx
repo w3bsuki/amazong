@@ -103,7 +103,7 @@ export function DesktopSpecsAccordion({
                 {quickSpecs.map((spec) => (
                   <div
                     key={spec.key}
-                    className="flex items-center justify-between text-xs py-1 border-b border-border/40 last:border-0"
+                    className="flex items-center justify-between text-xs py-1 border-b border-border-subtle last:border-0"
                   >
                     <span className="text-muted-foreground">{getSpecLabel(spec.key)}</span>
                     <span className="font-medium text-foreground">
@@ -185,7 +185,7 @@ export function DesktopSpecsAccordion({
                 className={cn(
                   "flex items-center justify-between px-6 py-3 text-sm",
                   i % 2 === 0 ? "bg-card" : "bg-surface-subtle",
-                  "border-b border-border/50 last:border-0"
+                  "border-b border-border-subtle last:border-0"
                 )}
               >
                 <span className="text-muted-foreground">{getSpecLabel(spec.key)}</span>

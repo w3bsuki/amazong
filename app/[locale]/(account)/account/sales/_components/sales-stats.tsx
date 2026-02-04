@@ -59,7 +59,7 @@ export function SalesStats({
               className={`text-xs ${
                 revenueGrowth >= 0
                   ? "bg-success/10 text-success border-success/20"
-                  : "bg-destructive/10 text-destructive border-destructive/20"
+                  : "bg-destructive-subtle text-destructive border-destructive/20"
               }`}
             >
               {revenueGrowth >= 0 ? <TrendUp className="size-3" /> : <TrendDown className="size-3" />}
@@ -111,7 +111,7 @@ export function SalesStats({
               className={`text-xs ${
                 salesGrowth >= 0
                   ? "bg-success/10 text-success border-success/20"
-                  : "bg-destructive/10 text-destructive border-destructive/20"
+                  : "bg-destructive-subtle text-destructive border-destructive/20"
               }`}
             >
               {salesGrowth >= 0 ? <TrendUp className="size-3" /> : <TrendDown className="size-3" />}

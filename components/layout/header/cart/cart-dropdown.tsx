@@ -2,6 +2,7 @@
 
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card"
 import { Button } from "@/components/ui/button"
+import { IconButton } from "@/components/ui/icon-button"
 import { Link } from "@/i18n/routing"
 import { useTranslations, useLocale } from "next-intl"
 import { useCart, type CartItem } from "@/components/providers/cart-context"
@@ -120,7 +121,7 @@ export function CartDropdown() {
                     </div>
                     <div className="flex items-center justify-between gap-2 mt-1">
                       <div className="flex items-center gap-1">
-                        <button
+                        <IconButton
                           onClick={(e) => {
                             e.preventDefault()
                             if (item.quantity > 1) {
@@ -129,35 +130,41 @@ export function CartDropdown() {
                               removeFromCart(item.id, item.variantId)
                             }
                           }}
-                          className="size-touch-lg shrink-0 flex items-center justify-center rounded hover:bg-muted text-muted-foreground hover:text-foreground"
+                          size="icon-lg"
+                          variant="ghost"
+                          className="hover:bg-muted text-muted-foreground hover:text-foreground"
                           aria-label={t("decreaseQuantity")}
                         >
-                          <Minus size={10} weight="bold" />
-                        </button>
+                          <Minus weight="bold" />
+                        </IconButton>
                         <span className="text-xs font-medium text-foreground min-w-touch text-center">
                           {item.quantity}
                         </span>
-                        <button
+                        <IconButton
                           onClick={(e) => {
                             e.preventDefault()
                             updateQuantity(item.id, item.quantity + 1, item.variantId)
                           }}
-                          className="size-touch-lg shrink-0 flex items-center justify-center rounded hover:bg-muted text-muted-foreground hover:text-foreground"
+                          size="icon-lg"
+                          variant="ghost"
+                          className="hover:bg-muted text-muted-foreground hover:text-foreground"
                           aria-label={t("increaseQuantity")}
                         >
-                          <Plus size={10} weight="bold" />
-                        </button>
+                          <Plus weight="bold" />
+                        </IconButton>
                       </div>
-                      <button
+                      <IconButton
                         onClick={(e) => {
                           e.preventDefault()
                           removeFromCart(item.id, item.variantId)
                         }}
-                        className="size-touch-lg shrink-0 flex items-center justify-center rounded hover:bg-destructive/10 text-muted-foreground hover:text-destructive"
+                        size="icon-lg"
+                        variant="ghost"
+                        className="hover:bg-destructive-subtle text-muted-foreground hover:text-destructive"
                         aria-label={t("removeItem")}
                       >
-                        <Trash size={12} weight="regular" />
-                      </button>
+                        <Trash weight="regular" />
+                      </IconButton>
                     </div>
                   </div>
                 </div>

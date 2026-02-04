@@ -32,7 +32,7 @@ const statusColors: Record<string, string> = {
   processing: "bg-order-processing/10 text-order-processing",
   shipped: "bg-order-shipped/10 text-order-shipped",
   delivered: "bg-success/10 text-success",
-  cancelled: "bg-destructive/10 text-destructive",
+  cancelled: "bg-destructive-subtle text-destructive",
 }
 
 const statusLabels: Record<string, { en: string; bg: string }> = {

@@ -66,7 +66,7 @@ export function CustomerReviewsHybrid({
   const t = useTranslations("Reviews");
 
   return (
-    <section className="mt-4 rounded-xl bg-surface-subtle p-3 border border-border/50">
+    <section className="mt-4 rounded-xl bg-surface-subtle p-3 border border-border-subtle">
       <div className="flex items-center justify-between mb-3 gap-3 flex-wrap">
         <h2 className="text-lg font-bold text-foreground tracking-tight">{t("customerReviews")}</h2>
         <div className="flex items-center gap-3">
@@ -91,21 +91,21 @@ export function CustomerReviewsHybrid({
         </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-[240px_1fr]">
+      <div className="flex flex-col gap-4 lg:flex-row">
         {/* Summary */}
-        <div className="space-y-3">
+        <div className="space-y-3 lg:w-60 lg:shrink-0">
           <div className="flex items-center gap-2.5">
             <div className="relative flex h-12 w-12 items-center justify-center rounded-full border-2 border-border text-xl font-bold text-foreground">
               {safeRating.toFixed(1)}
             </div>
-            <div>
-              <div className="flex gap-0.5 text-muted-foreground mb-1" aria-label={`${safeRating.toFixed(1)} ${t("outOf5")}`}>
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} className={`h-4 w-4 ${i < Math.round(safeRating) ? "fill-current" : "text-muted-foreground/20"}`} />
-                ))}
-              </div>
-              <div className="text-2xs text-muted-foreground font-medium">
-                {t("globalRatings", { count: safeCount })}
+             <div>
+               <div className="flex gap-0.5 text-muted-foreground mb-1" aria-label={`${safeRating.toFixed(1)} ${t("outOf5")}`}>
+                 {[...Array(5)].map((_, i) => (
+                  <Star key={i} className={`h-4 w-4 ${i < Math.round(safeRating) ? "fill-current" : "text-border"}`} />
+                  ))}
+                </div>
+                <div className="text-2xs text-muted-foreground font-medium">
+                  {t("globalRatings", { count: safeCount })}
               </div>
             </div>
           </div>
@@ -120,7 +120,7 @@ export function CustomerReviewsHybrid({
                     <Star className="h-3 w-3 fill-current text-muted-foreground" />
                     <span className="font-medium text-foreground">{star}</span>
                   </div>
-                  <Progress value={pct} className="h-1.5 flex-1 bg-muted [&>div]:bg-muted-foreground" />
+                  <Progress value={pct} className="h-1.5 flex-1 bg-muted" indicatorClassName="bg-muted-foreground" />
                   <span className="w-6 text-right text-muted-foreground text-2xs">{count}</span>
                 </div>
               );
@@ -129,9 +129,9 @@ export function CustomerReviewsHybrid({
         </div>
 
         {/* Reviews */}
-        <div>
+        <div className="lg:flex-1">
           {reviews.length === 0 ? (
-            <div className="rounded-xl border border-border/50 bg-background p-3 text-center">
+            <div className="rounded-xl border border-border-subtle bg-background p-3 text-center">
               <p className="text-sm text-muted-foreground mb-3">{t("noReviews")}</p>
               {productId && submitReview && (
                 <WriteReviewDialog
@@ -156,12 +156,12 @@ export function CustomerReviewsHybrid({
                   review.user?.username ||
                   t("anonymousUser");
                 return (
-                  <Card key={review.id} className="border border-border/50 bg-background overflow-hidden">
+                  <Card key={review.id} className="border border-border-subtle bg-background overflow-hidden">
                     <CardContent className="p-3">
                       <div className="flex items-center justify-between mb-2">
                         <div className="flex text-muted-foreground gap-0.5" aria-label={`${review.rating} ${t("outOf5")}`}>
                           {[...Array(5)].map((_, i) => (
-                            <Star key={i} className={`h-3 w-3 ${i < review.rating ? "fill-current" : "text-muted-foreground/20"}`} />
+                            <Star key={i} className={`h-3 w-3 ${i < review.rating ? "fill-current" : "text-border"}`} />
                           ))}
                         </div>
                         <span className="text-2xs text-muted-foreground">

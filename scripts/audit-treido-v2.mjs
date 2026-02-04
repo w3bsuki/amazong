@@ -7,10 +7,18 @@ import { chromium } from '@playwright/test';
 import fs from 'fs';
 
 const BASE_URL = 'https://treido.eu';
-const TEST_USER = {
-  email: 'radevalentin@gmail.com',
-  password: '12345678'
-};
+
+function readEnv(name) {
+  const value = process.env[name];
+  if (!value) return null;
+  const trimmed = value.trim();
+  return trimmed.length > 0 ? trimmed : null;
+}
+
+const TEST_USER_EMAIL = readEnv('TEST_USER_EMAIL') ?? readEnv('E2E_USER_EMAIL');
+const TEST_USER_PASSWORD =
+  readEnv('TEST_USER_PASSWORD') ?? readEnv('E2E_USER_PASSWORD');
+const HAS_TEST_USER = Boolean(TEST_USER_EMAIL && TEST_USER_PASSWORD);
 
 const issues = [];
 const auditLog = [];
@@ -453,8 +461,18 @@ async function auditLogin(page) {
   const submitBtn = await page.$('button[type="submit"]');
   
   if (emailInput && passwordInput && submitBtn) {
-    await emailInput.fill(TEST_USER.email);
-    await passwordInput.fill(TEST_USER.password);
+    if (!HAS_TEST_USER) {
+      addIssue(
+        'Auth',
+        'HIGH',
+        'Skipping login: missing TEST_USER_EMAIL/TEST_USER_PASSWORD env vars',
+        '/auth/login'
+      );
+      return { success: false, skipped: true };
+    }
+
+    await emailInput.fill(TEST_USER_EMAIL);
+    await passwordInput.fill(TEST_USER_PASSWORD);
     await takeScreenshot(page, '04b-login-filled');
     
     await submitBtn.click();

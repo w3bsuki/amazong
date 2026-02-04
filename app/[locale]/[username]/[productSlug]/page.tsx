@@ -57,8 +57,8 @@ export async function generateStaticParams() {
   const boosted = boostedResult.data || []
 
   const remaining = 25 - boosted.length
-  const restResult = remaining > 0
-    ? await supabase
+  const rest = remaining > 0
+    ? ((await supabase
         .from("products")
         .select("slug, seller:profiles!products_seller_id_fkey(username)")
         .eq("status", "active")
@@ -66,10 +66,10 @@ export async function generateStaticParams() {
         .or(`boost_expires_at.is.null,boost_expires_at.lte.${nowIso}`)
         .order("review_count", { ascending: false, nullsFirst: false })
         .order("created_at", { ascending: false })
-        .limit(remaining)
-    : { data: [] as any[] }
+        .limit(remaining)).data || [])
+    : []
 
-  const products = [...boosted, ...(restResult.data || [])]
+  const products = [...boosted, ...rest]
 
   if (!products || products.length === 0) {
     return routing.locales.map((locale) => ({ 

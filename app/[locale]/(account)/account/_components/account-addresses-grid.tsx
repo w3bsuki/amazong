@@ -136,7 +136,7 @@ export function AccountAddressesGrid({
     return (
       <Sheet open={isOpen} onOpenChange={(open) => setOpenSheetId(open ? address.id : null)}>
         <SheetTrigger asChild>
-          <Card className={`cursor-pointer transition-colors hover:bg-hover ${address.is_default ? 'border-selected-border ring-1 ring-ring/20' : ''}`}>
+          <Card className={`cursor-pointer transition-colors hover:bg-hover ${address.is_default ? 'border-selected-border ring-1 ring-border-subtle' : ''}`}>
             <CardHeader className="pb-2">
               <div className="flex items-start justify-between gap-2">
                 <div className="flex items-center gap-2 min-w-0">
@@ -245,7 +245,7 @@ export function AccountAddressesGrid({
     const LabelIcon = getLabelIcon(address.label)
 
     return (
-      <Card className={`${address.is_default ? 'border-selected-border ring-1 ring-ring/20' : ''}`}>
+      <Card className={`${address.is_default ? 'border-selected-border ring-1 ring-border-subtle' : ''}`}>
         <CardHeader className="pb-3">
           <div className="flex items-start justify-between">
             <div className="flex items-center gap-2">

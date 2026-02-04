@@ -32,6 +32,7 @@ async function main() {
   const supabaseAnonKey = requireEnv('NEXT_PUBLIC_SUPABASE_ANON_KEY')
   const email = requireEnv('TEST_USER_EMAIL')
   const password = requireEnv('TEST_USER_PASSWORD')
+  const showSecrets = env('SHOW_SECRETS') === '1'
 
   const anon = createClient(supabaseUrl, supabaseAnonKey, {
     auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false },
@@ -43,8 +44,8 @@ async function main() {
   if (!data.session?.access_token) throw new Error('Sign-in succeeded but no access token returned')
 
   console.log('[verify-e2e-login] OK')
-  console.log(`[verify-e2e-login] email: ${email}`)
-  console.log(`[verify-e2e-login] user: ${data.user?.id ?? 'unknown'}`)
+  console.log(`[verify-e2e-login] email: ${showSecrets ? email : '[redacted]'}`)
+  console.log(`[verify-e2e-login] user: ${showSecrets ? (data.user?.id ?? 'unknown') : '[redacted]'}`)
 }
 
 main().catch((err) => {

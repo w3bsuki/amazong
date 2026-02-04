@@ -1,6 +1,6 @@
 "use client"
 
-import { SidebarMenuV2 as SidebarMenu } from "@/components/layout/sidebar/sidebar-menu-v2"
+import { SidebarMenu } from "@/components/layout/sidebar/sidebar-menu"
 import { MobileCartDropdown } from "@/components/layout/header/cart/mobile-cart-dropdown"
 import { MobileWishlistButton } from "@/components/shared/wishlist/mobile-wishlist-button"
 import { MagnifyingGlass } from "@phosphor-icons/react"

@@ -81,7 +81,7 @@ export function DescriptionField({
             <div className={cn(
               "rounded-md border shadow-xs overflow-hidden transition-colors bg-background",
               "focus-within:border-ring focus-within:ring-2 focus-within:ring-ring",
-              fieldState.invalid && "border-destructive focus-within:ring-destructive/5"
+              fieldState.invalid && "border-destructive focus-within:ring-destructive-subtle"
             )}>
               <div className="px-4 pt-3">
                 <label

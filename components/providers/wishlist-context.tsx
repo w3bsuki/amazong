@@ -37,7 +37,7 @@ interface WishlistContextType {
   addToWishlist: (product: { id: string; title: string; price: number; image: string }) => Promise<void>
   removeFromWishlist: (productId: string) => Promise<void>
   toggleWishlist: (product: { id: string; title: string; price: number; image: string }) => Promise<void>
-  refreshWishlist: () => Promise<void>
+  refreshWishlist: () => Promise<boolean>
   totalItems: number
 }
 
@@ -50,6 +50,7 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
   const [items, setItems] = useState<WishlistItem[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const hasSyncedRef = useRef<string | null>(null)
+  const lastUserIdRef = useRef<string | null>(null)
 
   // useOptimistic for instant heart toggle feedback
   type OptimisticAction = 
@@ -76,14 +77,15 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
     }
   )
 
-  const refreshWishlist = useCallback(async () => {
+  const refreshWishlist = useCallback(async (): Promise<boolean> => {
     if (!user) {
       setItems([])
       setIsLoading(false)
-      return
+      return false
     }
 
     try {
+      setIsLoading(true)
       const supabase = createClient()
 
       // Note: cleanup_sold_wishlist_items() is called server-side when the user
@@ -109,7 +111,7 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
 
       if (error) {
         console.error("Error fetching wishlist:", error)
-        setItems([])
+        return false
       } else if (data) {
         setItems(data.map((item: { 
           id: string
@@ -137,32 +139,51 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
             ...(username ? { username } : {}),
           }
         }))
+        return true
       }
     } catch (error) {
       console.error("Error in refreshWishlist:", error)
-      setItems([])
+      return false
     } finally {
       setIsLoading(false)
     }
+    return true
   }, [user])
 
   // Sync with server when auth state settles
   useEffect(() => {
     if (authLoading) return // Wait for auth to settle
 
-    if (!user) {
+    const activeUserId = user?.id ?? null
+
+    if (!activeUserId) {
       // User logged out - clear wishlist
       setItems([])
       hasSyncedRef.current = null
+      lastUserIdRef.current = null
       setIsLoading(false)
       return
     }
 
-    // Already synced for this user
-    if (hasSyncedRef.current === user.id) return
-    hasSyncedRef.current = user.id
+    if (lastUserIdRef.current && lastUserIdRef.current !== activeUserId) {
+      setItems([])
+      hasSyncedRef.current = null
+    }
+    lastUserIdRef.current = activeUserId
 
-    refreshWishlist()
+    // Already synced for this user
+    if (hasSyncedRef.current === activeUserId) return
+
+    const run = async () => {
+      const ok = await refreshWishlist()
+      if (ok) {
+        hasSyncedRef.current = activeUserId
+      } else {
+        hasSyncedRef.current = null
+      }
+    }
+
+    run()
   }, [user, authLoading, refreshWishlist])
 
   const isInWishlist = useCallback((productId: string) => {

@@ -1,8 +1,8 @@
 export default {
   index: 'Overview',
-  terms: 'Terms (Draft)',
-  privacy: 'Privacy (Draft)',
-  jurisdictions: 'Jurisdictions & Availability (Draft)',
+  terms: 'Terms of Service',
+  privacy: 'Privacy Policy',
+  jurisdictions: 'Jurisdictions & Availability',
   returns: 'Returns & Refunds',
   kyc: 'KYC / KYB / AML',
   'prohibited-items': 'Prohibited Items',

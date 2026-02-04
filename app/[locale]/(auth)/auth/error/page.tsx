@@ -30,7 +30,7 @@ export default async function AuthErrorPage({
           {/* Header */}
           <div className="flex flex-col items-center mb-6">
             {/* Error Icon */}
-            <div className="size-14 bg-destructive/15 rounded-full flex items-center justify-center mb-3">
+            <div className="size-14 bg-destructive-subtle rounded-full flex items-center justify-center mb-3">
               <WarningCircle className="size-8 text-destructive" weight="fill" />
             </div>
             
@@ -43,7 +43,7 @@ export default async function AuthErrorPage({
           </div>
 
           {/* Error Details */}
-          <div className="p-4 bg-destructive/10 border border-destructive/20 rounded-lg text-left mb-6">
+          <div className="p-4 bg-destructive-subtle border border-destructive/20 rounded-lg text-left mb-6">
             <p className="text-sm text-destructive">
               {getErrorMessage(params.error, params.error_description)}
             </p>

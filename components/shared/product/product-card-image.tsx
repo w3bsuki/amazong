@@ -17,6 +17,8 @@ interface ProductCardImageProps {
   index: number
   inStock: boolean
   outOfStockLabel: string
+  /** Image aspect ratio. Defaults to 1 (square). */
+  ratio?: number
 }
 
 // =============================================================================
@@ -40,6 +42,7 @@ function ProductCardImage({
   index,
   inStock,
   outOfStockLabel,
+  ratio = 1,
 }: ProductCardImageProps) {
   const loadingStrategy = getImageLoadingStrategy(index, 4)
   const imageSrc = React.useMemo(() => getProductCardImageSrc(src), [src])
@@ -51,7 +54,7 @@ function ProductCardImage({
 
   return (
     <>
-      <AspectRatio ratio={1}>
+      <AspectRatio ratio={ratio}>
         <Image
           src={hasError ? PLACEHOLDER_IMAGE_PATH : imageSrc}
           alt={alt}
@@ -69,7 +72,7 @@ function ProductCardImage({
       {/* Out of Stock overlay */}
       {!inStock && (
         <div className="absolute inset-0 z-10 flex items-center justify-center">
-          <span className="rounded-sm bg-foreground/80 px-2 py-1 text-xs font-semibold uppercase tracking-wide text-background">
+          <span className="rounded-sm bg-overlay-dark px-2 py-1 text-xs font-semibold uppercase tracking-wide text-overlay-text">
             {outOfStockLabel}
           </span>
         </div>

@@ -9,8 +9,8 @@ import {
 } from "@/lib/data/product-page"
 import { buildProductPageViewModel } from "@/lib/view-models/product-page"
 
-import { DesktopGalleryV2 } from "@/components/desktop/product/desktop-gallery-v2"
-import { DesktopBuyBoxV2 } from "@/components/desktop/product/desktop-buy-box-v2"
+import { DesktopGallery } from "@/components/desktop/product/desktop-gallery"
+import { DesktopBuyBox } from "@/components/desktop/product/desktop-buy-box"
 import { ResponsiveOverlay } from "@/components/shared/responsive-overlay"
 import { HeroSpecs } from "@/components/shared/product/hero-specs"
 import { Badge } from "@/components/ui/badge"
@@ -82,7 +82,7 @@ export async function ProductQuickViewRouteOverlay({
     <ResponsiveOverlay title={productData.title} backOnClose>
       <div className="grid gap-4 md:grid-cols-2 md:gap-6">
         <div className="min-w-0">
-          <DesktopGalleryV2 images={viewModel.galleryImages} />
+          <DesktopGallery images={viewModel.galleryImages} />
           {viewModel.heroSpecs.length > 0 && (
             <div className="mt-4">
               <HeroSpecs specs={viewModel.heroSpecs} variant="desktop" />
@@ -102,7 +102,7 @@ export async function ProductQuickViewRouteOverlay({
             )}
           </div>
 
-          <DesktopBuyBoxV2
+          <DesktopBuyBox
             productId={productData.id}
             productSlug={productSlug}
             title={productData.title}

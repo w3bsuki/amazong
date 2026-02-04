@@ -73,7 +73,7 @@ function SettingsItem({
 
   const baseClasses = cn(
     "w-full flex items-center gap-3 p-4 bg-card rounded-xl border border-border",
-    "tap-highlight-transparent active:bg-active transition-colors",
+    "tap-transparent active:bg-active transition-colors",
     danger && "text-destructive"
   )
 

@@ -569,13 +569,8 @@
         "subcategories": "Подкатегории",
         "noSubcategories": "Няма подкатегории",
         "noMatches": "Няма резултати",
-        "seeAllIn": "Виж всички в {category}",
+        "seeAllIn": "Всички в {category}",
         "close": "Затвори"
-    },
-    "QuickPicks": {
-        "trending": "Популярни",
-        "deals": "Намаления",
-        "topRated": "Най-добри"
     },
     "Freshness": {
         "justNow": "Току-що",
@@ -1436,6 +1431,9 @@
         "last30Days": "Последни 30 дни",
         "last90Days": "Последни 90 дни",
         "shopBySubcategory": "Пазарувай по подкатегория",
+        "subcategories": "Подкатегории",
+        "expandSubcategories": "Покажи подкатегориите за {category}",
+        "collapseSubcategories": "Скрий подкатегориите за {category}",
         "allIn": "Всички в",
         "quickFilters": "Бързи филтри",
         "deals": "Оферти",
@@ -2045,6 +2043,8 @@
         "share": "Сподели",
         "message": "Съобщение",
         "shareProfile": "Сподели профил",
+        "openWebsite": "Отвори уебсайт",
+        "openSocial": "{platform, select, facebook {Отвори Facebook} instagram {Отвори Instagram} twitter {Отвори Twitter} tiktok {Отвори TikTok} youtube {Отвори YouTube} other {Отвори линк}}",
         "about": "За мен",
         "stats": "Статистика",
         "settings": "Настройки",
@@ -3080,7 +3080,7 @@
         "notifications": "Известия",
         "logOut": "Изход"
     },
-    "SidebarMenuV2": {
+    "SidebarMenu": {
         "newListing": "Нова",
         "active": "Активни",
         "boosted": "Промотирани",

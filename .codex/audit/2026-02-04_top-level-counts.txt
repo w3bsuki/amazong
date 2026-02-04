@@ -1,0 +1,50 @@
+
+Count Name                         Group
+----- ----                         -----
+  447 app                          {app, app, app, app…}
+  374 .codex                       {.codex, .codex, .codex, .codex…}
+  299 components                   {components, components, components, components…}
+  217 docs-site                    {docs-site, docs-site, docs-site, docs-site…}
+  204 .claude                      {.claude, .claude, .claude, .claude…}
+  203 .agent                       {.agent, .agent, .agent, .agent…}
+  203 .agents                      {.agents, .agents, .agents, .agents…}
+  203 .qwen                        {.qwen, .qwen, .qwen, .qwen…}
+  203 .trae                        {.trae, .trae, .trae, .trae…}
+  203 .windsurf                    {.windsurf, .windsurf, .windsurf, .windsurf…}
+   89 supabase                     {supabase, supabase, supabase, supabase…}
+   71 lib                          {lib, lib, lib, lib…}
+   61 docs                         {docs, docs, docs, docs…}
+   39 public                       {public, public, public, public…}
+   26 __tests__                    {__tests__, __tests__, __tests__, __tests__…}
+   24 scripts                      {scripts, scripts, scripts, scripts…}
+   24 e2e                          {e2e, e2e, e2e, e2e…}
+   16 hooks                        {hooks, hooks, hooks, hooks…}
+    3 i18n                         {i18n, i18n, i18n}
+    3 messages                     {messages, messages, messages}
+    2 .storybook                   {.storybook, .storybook}
+    2 .github                      {.github, .github}
+    1 capacitor.config.ts          {capacitor.config.ts}
+    1 tmp-delete-test.txt          {tmp-delete-test.txt}
+    1 test                         {test}
+    1 .editorconfig                {.editorconfig}
+    1 .env.local.example           {.env.local.example}
+    1 README.md                    {README.md}
+    1 proxy.ts                     {proxy.ts}
+    1 postcss.config.mjs           {postcss.config.mjs}
+    1 pnpm-lock.yaml               {pnpm-lock.yaml}
+    1 playwright.config.ts         {playwright.config.ts}
+    1 next.config.ts               {next.config.ts}
+    1 package.json                 {package.json}
+    1 AGENTS.md                    {AGENTS.md}
+    1 next-env.d.ts                {next-env.d.ts}
+    1 .gitignore                   {.gitignore}
+    1 knip.json                    {knip.json}
+    1 eslint.config.mjs            {eslint.config.mjs}
+    1 tsconfig.json                {tsconfig.json}
+    1 .mcp.json                    {.mcp.json}
+    1 .npmrc                       {.npmrc}
+    1 components.json              {components.json}
+    1 playwright-profile-click.png {playwright-profile-click.png}
+    1 vitest.config.ts             {vitest.config.ts}
+
+

@@ -1,8 +1,8 @@
 "use client"
 
-import { Button } from "@/components/ui/button"
+import { IconButton } from "@/components/ui/icon-button"
 import { UserAvatar } from "@/components/shared/user-avatar"
-import { ArrowLeft, Export, Heart, DotsThree } from "@phosphor-icons/react"
+import { ArrowLeft, Export, Heart } from "@phosphor-icons/react"
 import { cn } from "@/lib/utils"
 import { useTranslations } from "next-intl"
 import { useWishlist } from "@/components/providers/wishlist-context"
@@ -77,23 +77,21 @@ export function MobileProductHeader({
       className={cn(
         "md:hidden",
         "sticky top-0 z-50",
-        // Premium glass effect
-        "bg-background/80",
-        "backdrop-blur-xl backdrop-saturate-150",
-        // Subtle shadow instead of harsh border
-        "shadow-sm",
+        // Glass surface + subtle divider
+        "bg-surface-glass",
+        "backdrop-blur-md backdrop-saturate-150",
+        "border-b border-border",
         // Safe area for notch devices
         "pt-safe"
       )}
     >
       <div className="h-14 flex items-center px-1">
         {/* Back Button - Large touch target */}
-        <Button
+        <IconButton
           type="button"
           variant="ghost"
-          size="icon"
           className={cn(
-            "size-touch rounded-full shrink-0",
+            "shrink-0",
             "text-foreground",
             "hover:bg-muted",
             "active:scale-95 active:bg-muted",
@@ -103,7 +101,7 @@ export function MobileProductHeader({
           onClick={onBack}
         >
           <ArrowLeft className="size-icon-sm" weight="bold" />
-        </Button>
+        </IconButton>
 
         {/* Center Content: Avatar + Title */}
         <div className="flex-1 flex items-center gap-2.5 min-w-0 pl-0.5 pr-1">
@@ -114,7 +112,6 @@ export function MobileProductHeader({
               className={cn(
                 "shrink-0 rounded-full",
                 "ring-2 ring-background",
-                "shadow-sm",
                 "active:scale-95 transition-transform"
               )}
             >
@@ -146,15 +143,13 @@ export function MobileProductHeader({
         <div className="flex items-center shrink-0">
           {/* Wishlist Button */}
           {productId && (
-            <Button
+            <IconButton
               type="button"
               variant="ghost"
-              size="icon"
               className={cn(
-                "size-touch-sm rounded-full",
                 "hover:bg-muted",
                 "active:scale-95 transition-all duration-150",
-                isWishlisted && "bg-selected hover:bg-hover"
+                "active:bg-muted"
               )}
               aria-label={isWishlisted ? tProduct("removeFromWishlist") : tProduct("addToWishlist")}
               aria-pressed={isWishlisted}
@@ -169,16 +164,14 @@ export function MobileProductHeader({
                 )} 
                 weight={isWishlisted ? "fill" : "regular"}
               />
-            </Button>
+            </IconButton>
           )}
 
           {/* Share Button */}
-            <Button
+            <IconButton
               type="button"
               variant="ghost"
-              size="icon"
               className={cn(
-              "size-touch-sm rounded-full",
               "text-foreground",
               "hover:bg-muted",
               "active:scale-95 transition-all duration-150"
@@ -187,7 +180,7 @@ export function MobileProductHeader({
             onClick={handleShare}
           >
             <Export className="size-icon-sm" weight="bold" />
-          </Button>
+          </IconButton>
         </div>
       </div>
     </header>

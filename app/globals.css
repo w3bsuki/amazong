@@ -12,7 +12,8 @@
 @import "./shadcn-components.css";
 @import "./legacy-vars.css";
 
-@custom-variant dark (&:is(.dark *));
+/* Tailwind v4: class-based dark mode applies to `.dark` root and descendants. */
+@custom-variant dark (&:where(.dark, .dark *));
 
 /* ===== iOS ZOOM PREVENTION ===== */
 @media screen and (-webkit-min-device-pixel-ratio: 0) {
@@ -28,6 +29,11 @@
   select {
     font-size: 16px !important;
   }
+}
+
+/* ===== Third-party Overrides ===== */
+.pswp--treido .pswp__bg {
+  background: var(--color-background) !important;
 }
 
 /* ===== UI THEME (OKLCH TOKENS) ===== */
@@ -60,8 +66,10 @@
   --destructive-foreground: 1 0 0;
 
   --border: 0.92 0.01 255;
+  --border-subtle: 0.96 0.005 255;
   --input: 0.92 0.01 255;
   --ring: 0.62 0.20 255;
+  --ring-subtle: var(--border-subtle);
   --category-ring: 0.18 0.02 255;
 
   /* Layout */
@@ -160,8 +168,10 @@
   --muted-foreground: 0.72 0.02 255;
 
   --border: 0.26 0.02 255;
+  --border-subtle: 0.22 0.02 255;
   --input: 0.26 0.02 255;
   --ring: 0.72 0.18 255;
+  --ring-subtle: var(--border-subtle);
 
   --primary: 0.72 0.18 255;
   --primary-foreground: 0.12 0.02 255;
@@ -269,8 +279,10 @@
   --color-info: oklch(var(--info));
   --color-info-foreground: oklch(var(--info-foreground));
   --color-border: oklch(var(--border));
+  --color-border-subtle: oklch(var(--border-subtle));
   --color-input: oklch(var(--input));
   --color-ring: oklch(var(--ring));
+  --color-ring-subtle: oklch(var(--ring-subtle));
   --color-category-ring: oklch(var(--category-ring));
   
   /* Interactive state colors (semantic - use these instead of primary/10) */
@@ -385,7 +397,7 @@
   --layout-gap: 1.5rem;
   --layout-gap-sm: 1rem;
   --product-card-min-w: 12.5rem;
-  --product-grid-gap: 0.625rem;
+  --product-grid-gap: 0.5rem;
 
   /* === TOUCH TARGETS (Dense Marketplace) === */
   --spacing-touch-xs: 2.75rem;   /* 44px - minimum */
@@ -422,11 +434,11 @@
   --size-icon-lg: 1.75rem;       /* 28px - large/bold */
 
   /* === CATEGORY NAVIGATION === */
-  --spacing-category-circle: 3.5rem; /* 56px - mobile-optimized circles (Instagram pattern) */
+  --spacing-category-circle: 3.75rem; /* 60px - mobile-optimized circles (label inside) */
   --spacing-category-circle-desktop: 4rem; /* 64px on desktop */
-  --spacing-category-item: 3.5rem; /* 56px - compact item width */
-  --spacing-category-item-mobile: 3.5rem; /* 56px - mobile subcategory buttons */
-  --spacing-category-item-lg: 3.5rem; /* 56px - uniform mobile width */
+  --spacing-category-item: 3.75rem; /* 60px - compact item width */
+  --spacing-category-item-mobile: 3.75rem; /* 60px - mobile subcategory buttons */
+  --spacing-category-item-lg: 3.75rem; /* 60px - uniform mobile width */
   --spacing-category-item-desktop: 5rem; /* 80px on desktop */
   --spacing-nav-row: 3rem;
 

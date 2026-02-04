@@ -67,6 +67,7 @@ export function SearchFilters({
   const searchParams = useSearchParams()
   const locale = useLocale()
   const t = useTranslations('SearchFilters')
+  const tCommon = useTranslations("Common")
 
   const currentMinPrice = searchParams.get("minPrice")
   const currentMaxPrice = searchParams.get("maxPrice")
@@ -247,7 +248,7 @@ export function SearchFilters({
               parentCategory ? (
                 <Link
                   href={`/categories/${parentCategory.slug}`}
-                  className="text-sm text-muted-foreground hover:text-primary hover:underline min-h-8 flex items-center gap-1 mb-2"
+                  className="text-sm text-muted-foreground hover:text-primary hover:underline min-h-11 flex items-center gap-1 mb-2"
                 >
                   <CaretRight size={14} weight="bold" className="rotate-180" />
                   {getCategoryName(parentCategory)}
@@ -255,11 +256,11 @@ export function SearchFilters({
               ) : (
                 <button
                   onClick={() => setShowAllCategories(!showAllCategories)}
-                  className="text-sm text-muted-foreground hover:text-primary min-h-8 flex items-center gap-1 w-full mb-2"
+                  className="text-sm text-muted-foreground hover:text-primary min-h-11 flex items-center gap-1 w-full mb-2"
                 >
                   <CaretRight size={14} weight="bold" className={showAllCategories ? "rotate-90" : "rotate-180"} />
                   <span className="hover:underline">
-                    {locale === 'bg' ? 'Всички категории' : 'All Categories'}
+                    {tCommon("allCategories")}
                   </span>
                 </button>
               )
@@ -272,7 +273,7 @@ export function SearchFilters({
                   <Link
                     key={cat.id}
                     href={`/categories/${cat.slug}`}
-                    className={`text-sm cursor-pointer min-h-8 flex items-center px-2 -mx-2 rounded-md transition-colors ${
+                    className={`text-sm cursor-pointer min-h-11 flex items-center px-2 -mx-2 rounded-md transition-colors ${
                       cat.id === currentCategory.id 
                         ? 'font-semibold text-sidebar-foreground bg-sidebar-accent' 
                         : 'text-sidebar-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'
@@ -288,14 +289,14 @@ export function SearchFilters({
             {validSubcategories.length > 0 && (
               <>
                 <h3 className="text-xs font-semibold text-sidebar-muted-foreground uppercase tracking-wide mb-2 mt-4">
-                  {locale === 'bg' ? 'Подкатегории' : 'Subcategories'}
+                  {t("subcategories")}
                 </h3>
                 <nav className="space-y-0.5">
                   {validSubcategories.map((subcat) => (
                     <Link
                       key={subcat.id}
                       href={`/categories/${subcat.slug}`}
-                      className="text-sm cursor-pointer text-sidebar-muted-foreground hover:text-sidebar-accent-foreground hover:bg-sidebar-accent min-h-9 flex items-center px-2 -mx-2 rounded-md transition-colors"
+                      className="text-sm cursor-pointer text-sidebar-muted-foreground hover:text-sidebar-accent-foreground hover:bg-sidebar-accent min-h-11 flex items-center px-2 -mx-2 rounded-md transition-colors"
                     >
                       {getCategoryName(subcat)}
                     </Link>
@@ -321,7 +322,7 @@ export function SearchFilters({
                     <div className="flex items-center justify-between group">
                       <Link
                         href={`/categories/${cat.slug}`}
-                        className="text-sm cursor-pointer hover:text-sidebar-accent-foreground flex-1 min-h-8 flex items-center text-sidebar-foreground"
+                        className="text-sm cursor-pointer hover:text-sidebar-accent-foreground flex-1 min-h-11 flex items-center text-sidebar-foreground"
                       >
                         {getCategoryName(cat)}
                       </Link>
@@ -331,8 +332,12 @@ export function SearchFilters({
                             e.preventDefault()
                             toggleCategory(cat.slug)
                           }}
-                          className="min-h-8 min-w-8 flex items-center justify-center hover:bg-sidebar-accent rounded-md transition-colors"
-                          aria-label={isExpanded ? `Collapse ${getCategoryName(cat)} subcategories` : `Expand ${getCategoryName(cat)} subcategories`}
+                          className="size-11 flex items-center justify-center hover:bg-sidebar-accent rounded-md transition-colors"
+                          aria-label={
+                            isExpanded
+                              ? t("collapseSubcategories", { category: getCategoryName(cat) })
+                              : t("expandSubcategories", { category: getCategoryName(cat) })
+                          }
                           aria-expanded={isExpanded}
                         >
                           {isExpanded ? (
@@ -351,7 +356,7 @@ export function SearchFilters({
                           <Link
                             key={subcat.id}
                             href={`/categories/${subcat.slug}`}
-                            className="text-sm cursor-pointer min-h-8 flex items-center px-2 -mx-2 rounded-md text-sidebar-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground transition-colors"
+                            className="text-sm cursor-pointer min-h-11 flex items-center px-2 -mx-2 rounded-md text-sidebar-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground transition-colors"
                           >
                             {getCategoryName(subcat)}
                           </Link>
@@ -426,7 +431,7 @@ export function SearchFilters({
                     value={priceMin}
                     onChange={(e) => setPriceMin(e.target.value)}
                     onKeyDown={(e) => e.key === "Enter" && applyPriceInputs()}
-                    className="h-9 text-sm"
+                    className="text-sm"
                     min={0}
                   />
                 </div>
@@ -438,15 +443,15 @@ export function SearchFilters({
                     value={priceMax}
                     onChange={(e) => setPriceMax(e.target.value)}
                     onKeyDown={(e) => e.key === "Enter" && applyPriceInputs()}
-                    className="h-9 text-sm"
+                    className="text-sm"
                     min={0}
                   />
                 </div>
                 <Button
-                  size="sm"
+                  size="default"
                   variant="secondary"
                   onClick={applyPriceInputs}
-                  className="h-9 px-3"
+                  className="px-3"
                 >
                   {t('go')}
                 </Button>
@@ -494,7 +499,7 @@ export function SearchFilters({
                 value={currentCity ?? "all"}
                 onValueChange={(value) => handleCityChange(value === "all" ? null : value)}
               >
-                <SelectTrigger className="w-full h-9">
+                <SelectTrigger className="w-full">
                   <SelectValue placeholder={t('selectCity')} />
                 </SelectTrigger>
                 <SelectContent className="max-h-64">
@@ -516,7 +521,7 @@ export function SearchFilters({
               <label
                 htmlFor="nearby"
                 className={cn(
-                  "flex items-center gap-3 py-2 px-2 -mx-2 rounded-md cursor-pointer transition-colors",
+                  "flex min-h-11 items-center gap-3 px-2 -mx-2 rounded-md cursor-pointer transition-colors",
                   currentNearby
                     ? "bg-sidebar-accent text-sidebar-accent-foreground"
                     : "hover:bg-sidebar-muted text-sidebar-foreground"
@@ -526,7 +531,6 @@ export function SearchFilters({
                   id="nearby"
                   checked={currentNearby}
                   onCheckedChange={toggleNearby}
-                  className="size-4 border-muted-foreground data-[state=checked]:bg-primary data-[state=checked]:border-primary"
                 />
                 <span className="text-sm flex items-center gap-1.5">
                   <Crosshair size={16} weight="regular" className="text-primary" />
@@ -546,7 +550,7 @@ export function SearchFilters({
             <label
               htmlFor="instock"
               className={cn(
-                "flex items-center gap-3 py-2 px-2 -mx-2 rounded-md cursor-pointer transition-colors",
+                "flex min-h-11 items-center gap-3 px-2 -mx-2 rounded-md cursor-pointer transition-colors",
                 currentAvailability === "instock"
                   ? "bg-sidebar-accent text-sidebar-accent-foreground"
                   : "hover:bg-sidebar-muted text-sidebar-foreground"
@@ -556,7 +560,6 @@ export function SearchFilters({
                 id="instock"
                 checked={currentAvailability === "instock"}
                 onCheckedChange={() => updateParams("availability", currentAvailability === "instock" ? null : "instock")}
-                className="size-4 border-muted-foreground data-[state=checked]:bg-primary data-[state=checked]:border-primary"
               />
               <span className="text-sm flex items-center gap-1.5">
                 <Package size={16} weight="regular" className="text-stock-available" />
@@ -568,16 +571,16 @@ export function SearchFilters({
       </Accordion>
 
       {/* Clear All Filters Button - Show at bottom when filters are active */}
-      {hasActiveFilters && (
-        <div className="pt-4 mt-2">
-          <button
-            onClick={clearAllFilters}
-            className="w-full text-sm text-center text-sidebar-primary hover:underline font-medium py-2"
-          >
-            {t('clearAllFilters')}
-          </button>
-        </div>
-      )}
+        {hasActiveFilters && (
+          <div className="pt-4 mt-2">
+            <button
+              onClick={clearAllFilters}
+              className="w-full min-h-11 text-sm text-center text-sidebar-primary hover:underline font-medium"
+            >
+              {t('clearAllFilters')}
+            </button>
+          </div>
+        )}
     </div>
   )
 }

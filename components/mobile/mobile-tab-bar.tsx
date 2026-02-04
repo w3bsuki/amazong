@@ -94,7 +94,7 @@ export function MobileTabBar({ categories }: MobileTabBarProps) {
             prefetch={true}
             className={cn(
               "flex flex-col items-center justify-center gap-0.5 w-full h-full",
-              "tap-highlight-transparent hover:bg-hover active:bg-active transition-colors",
+              "tap-transparent hover:bg-hover active:bg-active transition-colors",
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-md",
             )}
             aria-label={t("home")}
@@ -120,7 +120,7 @@ export function MobileTabBar({ categories }: MobileTabBarProps) {
             onClick={() => menuSheetRef.current?.open()}
             className={cn(
               "flex flex-col items-center justify-center gap-0.5 w-full h-full",
-              "tap-highlight-transparent hover:bg-hover active:bg-active transition-colors",
+              "tap-transparent hover:bg-hover active:bg-active transition-colors",
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-md",
             )}
             aria-label={t("categories")}
@@ -146,7 +146,7 @@ export function MobileTabBar({ categories }: MobileTabBarProps) {
             prefetch={true}
             className={cn(
               "flex flex-col items-center justify-center w-full h-full",
-              "tap-highlight-transparent active:scale-95 transition-transform",
+              "tap-transparent active:scale-95 transition-transform",
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-full",
             )}
             aria-label={t("sell")}
@@ -164,7 +164,7 @@ export function MobileTabBar({ categories }: MobileTabBarProps) {
             onClick={openMessages}
             className={cn(
               "flex flex-col items-center justify-center gap-0.5 w-full h-full",
-              "tap-highlight-transparent hover:bg-hover active:bg-active transition-colors",
+              "tap-transparent hover:bg-hover active:bg-active transition-colors",
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-md",
             )}
             aria-label={`${t("chat")}${unreadCount > 0 ? ` (${unreadCount})` : ""}`}
@@ -200,7 +200,7 @@ export function MobileTabBar({ categories }: MobileTabBarProps) {
               prefetch={true}
               className={cn(
                 "flex flex-col items-center justify-center gap-0.5 w-full h-full",
-                "tap-highlight-transparent hover:bg-hover active:bg-active transition-colors",
+                "tap-transparent hover:bg-hover active:bg-active transition-colors",
                 "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-md",
               )}
               aria-label={t("profile")}
@@ -232,7 +232,7 @@ export function MobileTabBar({ categories }: MobileTabBarProps) {
               }}
               className={cn(
                 "flex flex-col items-center justify-center gap-0.5 w-full h-full",
-                "tap-highlight-transparent hover:bg-hover active:bg-active transition-colors",
+                "tap-transparent hover:bg-hover active:bg-active transition-colors",
                 "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-md",
               )}
               aria-label={t("profile")}

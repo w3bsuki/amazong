@@ -1,0 +1,50 @@
+# Development Guides
+
+Step-by-step guides for common development tasks.
+
+## Available Guides
+
+- [Frontend](/guides/frontend) — React, components, styling
+- [Backend](/guides/backend) — Supabase, API routes, auth
+- [Testing](/guides/testing) — Unit tests, E2E tests
+- [Deployment](/guides/deployment) — CI/CD, Vercel
+
+## Quick Start
+
+```bash
+# Clone and install
+git clone <repo-url>
+cd <repo-folder>
+pnpm install
+
+# Set up environment
+cp .env.example .env.local
+# Fill in Supabase + Stripe keys
+
+# Start development
+pnpm dev
+```
+
+## Development Workflow
+
+1. Pick (or create) an issue in `ISSUES.md`, then take the next unchecked task in `TASKS.md`
+2. Create feature branch
+3. Make changes (scope to task)
+4. Run verification gates:
+   ```bash
+   pnpm -s exec tsc -p tsconfig.json --noEmit  # Types
+   pnpm test:unit                              # Unit tests
+   REUSE_EXISTING_SERVER=true pnpm test:e2e:smoke  # E2E
+   ```
+5. Create PR with clear description
+6. Address review feedback
+7. Merge when approved
+
+## Code Review Checklist
+
+- [ ] Types pass (`tsc --noEmit`)
+- [ ] Tests pass
+- [ ] No arbitrary Tailwind values
+- [ ] All strings via next-intl
+- [ ] No console.logs in prod code
+- [ ] Components in correct boundary

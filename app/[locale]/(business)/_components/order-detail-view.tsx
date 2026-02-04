@@ -110,7 +110,7 @@ const STATUS_CONFIG = {
   },
   cancelled: {
     label: "Cancelled",
-    color: "bg-destructive/10 text-destructive border-destructive/20",
+    color: "bg-destructive-subtle text-destructive border-destructive/20",
     icon: IconX,
     nextStatus: undefined,
   },
@@ -263,7 +263,7 @@ export function OrderDetailView({
               <DropdownMenuSeparator />
               <DropdownMenuItem
                 onClick={() => handleStatusUpdate("cancelled")}
-                className="text-destructive focus:bg-destructive/10 focus:text-destructive"
+                className="text-destructive focus:bg-destructive-subtle focus:text-destructive"
                 disabled={status === "cancelled" || status === "delivered"}
               >
                 <IconX className="size-4 mr-2" />

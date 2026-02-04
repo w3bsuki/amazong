@@ -36,7 +36,7 @@ import { useRouter, usePathname } from "@/i18n/routing"
 import { useLocale, useTranslations } from "next-intl"
 import type { User } from "@supabase/supabase-js"
 import type { CategoryTreeNode } from "@/lib/category-tree"
-import type { UserListingStats } from "@/components/layout/sidebar/sidebar-menu-v2"
+import type { UserListingStats } from "@/components/layout/sidebar/sidebar-menu"
 import type { HeaderVariant } from "./types"
 
 // =============================================================================
@@ -80,6 +80,8 @@ export interface AppHeaderProps {
   // Contextual variant props
   /** Title for contextual header (category name) */
   contextualTitle?: string
+  /** Active category slug (for subtle active highlight during instant navigation). */
+  contextualActiveSlug?: string
   /** Back href for contextual header */
   contextualBackHref?: string
   /** Back handler for instant navigation */
@@ -176,6 +178,7 @@ export function AppHeader({
   productImage,
   // Contextual props
   contextualTitle,
+  contextualActiveSlug,
   contextualBackHref = "/categories",
   onContextualBack,
   contextualSubcategories = [],
@@ -213,6 +216,8 @@ export function AppHeader({
   // before the header boundary itself hydrates (e.g., ProductHeaderSync on PDP).
   const hydratedContextualHeader = isHydrated ? headerContext?.contextualHeader : null
   const effectiveContextualTitle = hydratedContextualHeader?.title ?? contextualTitle
+  const effectiveContextualActiveSlug =
+    hydratedContextualHeader?.activeSlug ?? contextualActiveSlug
   const effectiveContextualBackHref = hydratedContextualHeader?.backHref ?? contextualBackHref
   const effectiveContextualBack = hydratedContextualHeader?.onBack ?? onContextualBack
   const effectiveContextualSubcategories =
@@ -340,6 +345,7 @@ export function AppHeader({
             categories={categories}
             userStats={userStats}
             title={effectiveContextualTitle}
+            activeSlug={effectiveContextualActiveSlug}
             backHref={effectiveContextualBackHref}
             onBack={effectiveContextualBack}
             subcategories={effectiveContextualSubcategories}

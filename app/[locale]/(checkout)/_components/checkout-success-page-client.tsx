@@ -83,7 +83,7 @@ export default function CheckoutSuccessPageClient({
     return (
       <div className="min-h-(--page-section-min-h) flex items-center justify-center px-3">
         <div className="text-center max-w-sm">
-          <div className="size-14 bg-destructive/10 rounded-full flex items-center justify-center mx-auto mb-3">
+          <div className="size-14 bg-destructive-subtle rounded-full flex items-center justify-center mx-auto mb-3">
             <XCircle className="size-7 text-destructive" weight="fill" />
           </div>
           <p className="text-sm font-semibold mb-1">{t("paymentFailed")}</p>

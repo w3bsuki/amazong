@@ -114,6 +114,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const { user, isLoading: authLoading } = useAuth()
   const [items, setItems] = useState<CartItem[]>([])
   const hasSyncedRef = useRef<string | null>(null)
+  const lastUserIdRef = useRef<string | null>(null)
   const [storageLoaded, setStorageLoaded] = useState(false)
   const [serverSyncDone, setServerSyncDone] = useState(false)
 
@@ -186,7 +187,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     })
     .filter((item): item is CartItem => Boolean(item))
 
-    setItems((prev) => (nextItems.length > 0 ? nextItems : prev))
+    setItems(nextItems)
   }, [])
 
   const syncLocalCartToServer = useCallback(async (activeUserId: string) => {
@@ -262,26 +263,52 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     if (authLoading) return // Wait for auth to settle
 
     const syncCart = async () => {
-      if (!user) {
-        // User logged out - keep localStorage cart, reset sync ref
-        hasSyncedRef.current = null
+      const activeUserId = user?.id ?? null
+      const previousUserId = lastUserIdRef.current
+
+      if (!activeUserId) {
+        if (previousUserId) {
+          // Signed out: clear local + in-memory cart to avoid cross-account drift.
+          hasSyncedRef.current = null
+          setItems([])
+          try {
+            localStorage.removeItem("cart")
+          } catch {
+            // Ignore storage access errors
+          }
+        }
+
+        lastUserIdRef.current = null
         setServerSyncDone(true)
         return
       }
 
+      if (previousUserId && previousUserId !== activeUserId) {
+        // Switching accounts: reset sync state and local cache.
+        hasSyncedRef.current = null
+        setItems([])
+        try {
+          localStorage.removeItem("cart")
+        } catch {
+          // Ignore storage access errors
+        }
+      }
+
+      lastUserIdRef.current = activeUserId
+
       // Already synced for this user
-      if (hasSyncedRef.current === user.id) {
+      if (hasSyncedRef.current === activeUserId) {
         setServerSyncDone(true)
         return
       }
-      hasSyncedRef.current = user.id
+      hasSyncedRef.current = activeUserId
       setServerSyncDone(false)
 
       try {
         // Sync local → server
-        await syncLocalCartToServer(user.id)
+        await syncLocalCartToServer(activeUserId)
         // Load server → state
-        await loadServerCart(user.id)
+        await loadServerCart(activeUserId)
       } finally {
         setServerSyncDone(true)
       }

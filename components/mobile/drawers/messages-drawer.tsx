@@ -13,6 +13,7 @@ import {
   DrawerBody,
 } from "@/components/ui/drawer"
 import { Button } from "@/components/ui/button"
+import { IconButton } from "@/components/ui/icon-button"
 import { Link } from "@/i18n/routing"
 import { useTranslations } from "next-intl"
 import { useMessages, type Conversation } from "@/components/providers/message-context"
@@ -97,7 +98,7 @@ export function MessagesDrawer({ open, onOpenChange }: MessagesDrawerProps) {
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
-      <DrawerContent className="rounded-t-xl max-h-dialog-sm">
+      <DrawerContent className="max-h-dialog-sm">
         <DrawerHeader className="pb-1.5 pt-0 border-b border-border text-left">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-1.5">
@@ -110,12 +111,13 @@ export function MessagesDrawer({ open, onOpenChange }: MessagesDrawerProps) {
               )}
             </div>
             <DrawerClose asChild>
-              <button
-                className="text-muted-foreground/60 hover:text-foreground transition-colors"
+              <IconButton
                 aria-label={t("close")}
+                variant="ghost"
+                className="text-muted-foreground hover:text-foreground hover:bg-muted active:bg-muted"
               >
                 <X size={20} weight="light" />
-              </button>
+              </IconButton>
             </DrawerClose>
           </div>
           <DrawerDescription className="sr-only">{t("description")}</DrawerDescription>
@@ -123,7 +125,7 @@ export function MessagesDrawer({ open, onOpenChange }: MessagesDrawerProps) {
 
         {!user ? (
           <div className="flex flex-col items-center justify-center px-inset py-5">
-            <div className="size-11 bg-muted rounded-lg flex items-center justify-center mb-2">
+            <div className="size-11 bg-muted rounded-xl flex items-center justify-center mb-2">
               <ChatCircle size={22} weight="regular" className="text-muted-foreground/50" />
             </div>
             <p className="text-sm text-foreground font-medium">
@@ -139,7 +141,7 @@ export function MessagesDrawer({ open, onOpenChange }: MessagesDrawerProps) {
           </div>
         ) : recentConversations.length === 0 ? (
           <div className="flex flex-col items-center justify-center px-inset py-5">
-            <div className="size-11 bg-muted rounded-lg flex items-center justify-center mb-2">
+            <div className="size-11 bg-muted rounded-xl flex items-center justify-center mb-2">
               <ChatCircle size={22} weight="regular" className="text-muted-foreground/50" />
             </div>
             <p className="text-sm text-foreground font-medium">{tMessages("noConversations")}</p>

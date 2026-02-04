@@ -363,7 +363,7 @@ export function AssistantPlayground({
       <header className="shrink-0 flex items-center gap-2 px-3 h-14 border-b border-border bg-background pt-safe">
         <Link
           href="/"
-          className="size-10 flex items-center justify-center rounded-full -ml-1 tap-highlight-transparent active:bg-muted transition-colors"
+          className="size-10 flex items-center justify-center rounded-full -ml-1 tap-transparent active:bg-muted transition-colors"
         >
           <ArrowLeft className="size-5" weight="bold" />
         </Link>
@@ -456,7 +456,7 @@ export function AssistantPlayground({
 
             {/* Error State */}
             {error && (
-              <Card className="border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive">
+              <Card className="border-destructive/30 bg-destructive-subtle p-3 text-sm text-destructive">
                 {error.message}
               </Card>
             )}
@@ -510,7 +510,7 @@ export function AssistantPlayground({
               variant="ghost"
               size="sm"
               onClick={() => void stop()}
-              className="w-full text-destructive hover:bg-destructive/10 hover:text-destructive"
+              className="w-full text-destructive hover:bg-destructive-subtle hover:text-destructive"
             >
               {copy.stop}
             </Button>

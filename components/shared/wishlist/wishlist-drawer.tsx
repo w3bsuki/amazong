@@ -14,6 +14,7 @@ import {
   DrawerBody,
 } from "@/components/ui/drawer"
 import { Button } from "@/components/ui/button"
+import { IconButton } from "@/components/ui/icon-button"
 import { Link } from "@/i18n/routing"
 import { useTranslations } from "next-intl"
 import { useWishlist } from "@/components/providers/wishlist-context"
@@ -62,7 +63,7 @@ export function WishlistDrawer({ className, children }: WishlistDrawerProps) {
   return (
     <Drawer open={open} onOpenChange={setOpen}>
       <DrawerTrigger asChild>{children}</DrawerTrigger>
-      <DrawerContent className={cn("rounded-t-xl", className)}>
+      <DrawerContent className={className}>
         <DrawerHeader className="pb-1.5 pt-0 border-b border-border text-left">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-1.5">
@@ -73,12 +74,13 @@ export function WishlistDrawer({ className, children }: WishlistDrawerProps) {
               </span>
             </div>
             <DrawerClose asChild>
-              <button
-                className="text-muted-foreground/60 hover:text-foreground transition-colors"
+              <IconButton
                 aria-label={t("close")}
+                variant="ghost"
+                className="text-muted-foreground hover:text-foreground hover:bg-muted active:bg-muted"
               >
                 <X size={20} weight="light" />
-              </button>
+              </IconButton>
             </DrawerClose>
           </div>
           <DrawerDescription className="sr-only">{t("description")}</DrawerDescription>
@@ -90,7 +92,7 @@ export function WishlistDrawer({ className, children }: WishlistDrawerProps) {
           </div>
         ) : items.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-5 px-inset text-center">
-            <div className="size-11 bg-muted rounded-lg flex items-center justify-center mb-2">
+            <div className="size-11 bg-muted rounded-xl flex items-center justify-center mb-2">
               <Heart size={22} weight="duotone" className="text-muted-foreground" />
             </div>
             <p className="text-sm text-foreground font-medium">{t("empty")}</p>
@@ -118,7 +120,7 @@ export function WishlistDrawer({ className, children }: WishlistDrawerProps) {
                     onClick={() => setOpen(false)}
                     className="shrink-0"
                   >
-                    <div className="size-14 bg-muted rounded-md overflow-hidden border border-border">
+                    <div className="size-14 bg-muted rounded-xl overflow-hidden border border-border">
                       <Image
                         src={item.image}
                         alt={item.title}
@@ -141,25 +143,27 @@ export function WishlistDrawer({ className, children }: WishlistDrawerProps) {
                   </div>
 
                   <div className="flex flex-col items-end justify-between">
-                    <button
+                    <IconButton
                       data-vaul-no-drag
                       onClick={() => handleMoveToCart(item)}
-                      className="flex items-center justify-center size-8 rounded-md text-foreground hover:bg-muted touch-manipulation tap-transparent"
+                      variant="ghost"
+                      className="text-foreground hover:bg-muted active:bg-muted"
                       aria-label={t("add")}
                     >
                       <ShoppingCart size={18} weight="regular" />
-                    </button>
-                    <button
+                    </IconButton>
+                    <IconButton
                       data-vaul-no-drag
                       onClick={() => {
                         removeFromWishlist(item.product_id)
                         toast.success(t("removed"))
                       }}
-                      className="flex items-center justify-center size-8 rounded-md text-muted-foreground hover:text-destructive hover:bg-hover touch-manipulation tap-transparent"
+                      variant="ghost"
+                      className="text-muted-foreground hover:text-destructive hover:bg-destructive-subtle active:bg-destructive-subtle"
                       aria-label={t("remove")}
                     >
                       <Trash size={16} weight="regular" />
-                    </button>
+                    </IconButton>
                   </div>
                 </div>
               ))}

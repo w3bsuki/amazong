@@ -1,6 +1,6 @@
 import type { User } from "@supabase/supabase-js"
 import type { CategoryTreeNode } from "@/lib/category-tree"
-import type { UserListingStats } from "@/components/layout/sidebar/sidebar-menu-v2"
+import type { UserListingStats } from "@/components/layout/sidebar/sidebar-menu"
 
 // =============================================================================
 // Header Types
@@ -50,6 +50,8 @@ export interface ProductHeaderProps extends BaseHeaderProps {
 export interface ContextualHeaderProps extends BaseHeaderProps {
   /** Title for contextual header (category name) */
   title?: string | undefined
+  /** Active category slug (used for subtle active circle highlight during instant navigation). */
+  activeSlug?: string | undefined
   /** Back href for contextual header */
   backHref?: string | undefined
   /** Back handler for instant navigation */

@@ -171,7 +171,7 @@ export function DesktopLayout({
 
               {/* Error Display */}
               {submitError && (
-                <div className="flex items-center gap-3 p-4 rounded-lg bg-destructive/10 text-destructive border border-destructive/20">
+                <div className="flex items-center gap-3 p-4 rounded-lg bg-destructive-subtle text-destructive border border-destructive/20">
                   <Warning className="size-5 shrink-0" />
                   <p className="text-sm flex-1">{submitError}</p>
                   <Button

@@ -1,7 +1,7 @@
 "use client"
 
-import { Button } from "@/components/ui/button"
-import { ArrowLeft, Export, Gear, UserPlus, ChatCircle } from "@phosphor-icons/react"
+import { IconButton } from "@/components/ui/icon-button"
+import { ArrowLeft, Export, Gear, ChatCircle } from "@phosphor-icons/react"
 import { cn } from "@/lib/utils"
 import { useTranslations } from "next-intl"
 import { Link } from "@/i18n/routing"
@@ -57,7 +57,8 @@ export function MobileProfileHeader({
       className={cn(
         "md:hidden",
         "sticky top-0 z-50",
-        "bg-surface-elevated",
+        "bg-surface-glass",
+        "backdrop-blur-md backdrop-saturate-150",
         "border-b border-border",
         // Safe area for notch devices
         "pt-safe"
@@ -66,12 +67,11 @@ export function MobileProfileHeader({
       <div className="h-14 flex items-center px-2">
         {/* Back Button */}
         {onBack ? (
-          <Button
+          <IconButton
             type="button"
             variant="ghost"
-            size="icon"
             className={cn(
-              "size-touch rounded-full shrink-0",
+              "shrink-0",
               "text-foreground",
               "hover:bg-muted",
               "active:scale-95 active:bg-muted",
@@ -81,7 +81,7 @@ export function MobileProfileHeader({
             onClick={onBack}
           >
             <ArrowLeft className="size-icon-sm" weight="bold" />
-          </Button>
+          </IconButton>
         ) : null}
 
         {/* Title */}
@@ -92,12 +92,10 @@ export function MobileProfileHeader({
         {/* Action Buttons */}
         <div className="flex items-center shrink-0">
           {/* Share Button */}
-          <Button
+          <IconButton
             type="button"
             variant="ghost"
-            size="icon"
             className={cn(
-              "size-touch-sm rounded-full",
               "text-foreground",
               "hover:bg-muted",
               "active:scale-95 transition-all duration-150"
@@ -106,46 +104,42 @@ export function MobileProfileHeader({
             onClick={handleShare}
           >
             <Export className="size-icon-sm" weight="bold" />
-          </Button>
+          </IconButton>
 
           {/* Context-aware action: Account for own profile, Follow for others */}
           {isOwnProfile ? (
-            <Link href="/account">
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                className={cn(
-                  "size-touch-sm rounded-full",
-                  "text-foreground",
-                  "hover:bg-muted",
-                  "active:scale-95 transition-all duration-150"
-                )}
-                aria-label={tProfile("settings")}
-              >
-                <Gear className="size-icon-sm" weight="bold" />
-              </Button>
-            </Link>
+            <IconButton
+              asChild
+              variant="ghost"
+              className={cn(
+                "text-foreground",
+                "hover:bg-muted",
+                "active:scale-95 transition-all duration-150"
+              )}
+              aria-label={tProfile("settings")}
+            >
+                <Link href="/account">
+                  <Gear className="size-icon-sm" weight="bold" />
+                </Link>
+            </IconButton>
           ) : (
             <>
               {/* Message Button */}
               {sellerId && (
-                <Link href={`/chat?to=${sellerId}`}>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    className={cn(
-                      "size-touch-sm rounded-full",
-                      "text-foreground",
-                      "hover:bg-muted",
-                      "active:scale-95 transition-all duration-150"
-                    )}
-                    aria-label={tProfile("message")}
-                  >
+                <IconButton
+                  asChild
+                  variant="ghost"
+                  className={cn(
+                    "text-foreground",
+                    "hover:bg-muted",
+                    "active:scale-95 transition-all duration-150"
+                  )}
+                  aria-label={tProfile("message")}
+                >
+                  <Link href={`/chat?to=${sellerId}`}>
                     <ChatCircle className="size-icon-sm" weight="bold" />
-                  </Button>
-                </Link>
+                  </Link>
+                </IconButton>
               )}
             </>
           )}

@@ -43,7 +43,8 @@ export function SearchHeader({ query, category, totalResults }: SearchHeaderProp
           <h1 className="text-2xl sm:text-3xl font-bold text-foreground mb-2">
             {query ? (
               <>
-                {t('resultsFor')} "<span className="text-primary">{query}</span>"
+                {t('resultsFor')}{" "}
+                <span className="text-primary">&quot;{query}&quot;</span>
               </>
             ) : (
               t('exploreAllProducts')

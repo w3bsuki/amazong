@@ -7,21 +7,25 @@ import { cva, type VariantProps } from "class-variance-authority"
 
 import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
+import { Surface } from "@/components/ui/surface"
 import { useDrawer, type QuickViewProduct } from "@/components/providers/drawer-context"
 import { isFeatureEnabled } from "@/lib/feature-flags"
 import { isBoostActiveNow } from "@/lib/boost/boost-status"
+import { shouldShowConditionBadge } from "@/lib/badges/category-badge-specs"
 
 import { ProductCardActions } from "./product-card-actions"
 import { ProductCardImage } from "./product-card-image"
 import { ProductCardPrice } from "./product-card-price"
 import { ProductCardSocialProof } from "./product-card-social-proof"
+import { FreshnessIndicator } from "./freshness-indicator"
+import { getConditionKey } from "./_lib/condition"
 
 // =============================================================================
 // CVA VARIANTS
 // =============================================================================
 
 const productCardVariants = cva(
-  "tap-transparent group relative flex h-full min-w-0 cursor-pointer flex-col rounded-xl border border-border bg-card p-2.5 transition-colors hover:bg-hover active:bg-active",
+  "tap-transparent group relative flex h-full min-w-0 cursor-pointer flex-col",
   {
     variants: {
       variant: {
@@ -92,6 +96,15 @@ interface ProductCardProps extends VariantProps<typeof productCardVariants> {
   /** Disable opening the product quick view overlay on click (force navigation). */
   disableQuickView?: boolean
 
+  /** Visual surface style: bordered card vs inline tile (mobile browse). */
+  appearance?: "card" | "tile"
+  /** Media aspect ratio (mobile browse uses landscape 4:3). */
+  media?: "square" | "landscape"
+  /** Density tuning for compact mobile browse. */
+  density?: "default" | "compact"
+  /** Title line clamp. Defaults to 2. */
+  titleLines?: 1 | 2
+
   // Context
   index?: number
   currentUserId?: string | null
@@ -151,7 +164,9 @@ function ProductCard({
   originalPrice,
   isOnSale,
   salePercent,
+  createdAt,
   categoryPath,
+  categoryRootSlug,
   sellerId,
   sellerName,
   sellerAvatarUrl,
@@ -163,6 +178,10 @@ function ProductCard({
   state,
   showWishlist = true,
   disableQuickView = false,
+  appearance = "card",
+  media = "square",
+  density = "default",
+  titleLines = 2,
   index = 0,
   currentUserId,
   inStock = true,
@@ -170,8 +189,10 @@ function ProductCard({
   ref,
   rating,
   reviews,
+  soldCount,
   condition,
   location,
+  categorySlug,
   // Promotion
   isBoosted,
   boostExpiresAt,
@@ -182,11 +203,37 @@ function ProductCard({
   const { openProductQuickView, enabledDrawers, isDrawerSystemEnabled } = useDrawer()
   const isQuickViewEnabled = isDrawerSystemEnabled && enabledDrawers.productQuickView
 
+  const isCompact = density === "compact"
+  const isTile = appearance === "tile"
+  const mediaRatio = media === "landscape" ? 4 / 3 : 1
+
   // Derived values
   const hasDiscount = originalPrice && originalPrice > price
   const discountPercent = hasDiscount
     ? Math.round(((originalPrice - price) / originalPrice) * 100)
     : (salePercent ?? 0)
+
+  const hasRating = typeof rating === "number" && rating > 0
+  const hasSoldCount = typeof soldCount === "number" && soldCount > 0
+  const hasSocialProof = hasRating || hasSoldCount
+
+  const shouldShowCondition =
+    condition != null &&
+    (categorySlug || categoryRootSlug
+      ? shouldShowConditionBadge(categorySlug ?? null, categoryRootSlug ?? null)
+      : true)
+
+  const conditionLabel = React.useMemo(() => {
+    if (!condition || !shouldShowCondition) return null
+    const key = getConditionKey(condition)
+    if (key) return t(key)
+    return condition
+  }, [condition, shouldShowCondition, t])
+
+  const locationLabel = React.useMemo(() => location?.trim() || null, [location])
+  const showFreshness =
+    !!createdAt &&
+    (conditionLabel ? 1 : 0) + (locationLabel ? 1 : 0) < 2
 
   // Resolve state
   const resolvedState = state ?? (isOnSale || hasDiscount ? "sale" : "default")
@@ -297,9 +344,15 @@ function ProductCard({
   )
 
   return (
-    <div
+    <Surface
       ref={ref}
-      className={cn(productCardVariants({ variant, state: resolvedState }), className)}
+      variant="card"
+      interactive
+      className={cn(
+        productCardVariants({ variant, state: resolvedState }),
+        isTile && "border-0 bg-transparent",
+        className
+      )}
     >
       {/* Full-card link for accessibility */}
       <Link
@@ -313,17 +366,18 @@ function ProductCard({
       </Link>
 
       <div className="relative">
-        <div className="relative aspect-square overflow-hidden rounded-xl bg-muted">
+        <div className="relative overflow-hidden rounded-xl bg-muted">
           <ProductCardImage
             src={image}
             alt={title}
             index={index}
             inStock={inStock}
             outOfStockLabel={t("outOfStock")}
+            ratio={mediaRatio}
           />
 
           {(isBoostedActive || (hasDiscount && discountPercent >= 5)) && (
-            <div className="absolute left-2 top-2 z-10 flex flex-col gap-1">
+            <div className="absolute left-1.5 top-1.5 z-10 flex flex-col gap-1">
               {isBoostedActive && (
                 <Badge variant="secondary" className="text-2xs px-2 py-0.5">
                   {t("adBadge")}
@@ -341,7 +395,7 @@ function ProductCard({
           )}
 
           {showWishlist && (
-            <div className="absolute right-2 top-2 z-10">
+            <div className="absolute right-1.5 top-1.5 z-10">
               <ProductCardActions
                 id={id}
                 title={title}
@@ -359,8 +413,23 @@ function ProductCard({
         </div>
       </div>
 
-      <div className="mt-2 space-y-1">
-        <h3 className="line-clamp-2 break-words text-sm font-medium leading-snug text-foreground">
+      <div
+        className={cn(
+          isTile
+            ? cn(
+                "px-0.5 pb-0.5 pt-2",
+                isCompact ? "space-y-0.5" : "space-y-1"
+              )
+            : "space-y-1 p-2.5 pt-2"
+        )}
+      >
+        <h3
+          className={cn(
+            "break-words font-medium text-foreground leading-snug",
+            titleLines === 1 ? "line-clamp-1" : "line-clamp-2",
+            isCompact ? "text-compact" : "text-sm"
+          )}
+        >
           {title}
         </h3>
 
@@ -368,16 +437,40 @@ function ProductCard({
           price={price}
           originalPrice={originalPrice}
           locale={locale}
+          compact={isCompact}
         />
 
-        <ProductCardSocialProof
-          rating={rating}
-          reviews={reviews}
-          soldCount={undefined}
-          soldLabel={t("sold")}
-        />
+        {hasSocialProof ? (
+          <ProductCardSocialProof
+            rating={rating}
+            reviews={reviews}
+            soldCount={soldCount}
+            soldLabel={t("sold")}
+          />
+        ) : (
+          (conditionLabel || locationLabel || showFreshness) && (
+            <div className="mt-1 flex min-w-0 items-center gap-1 text-2xs text-muted-foreground">
+              {conditionLabel && (
+                <span className="shrink-0">{conditionLabel}</span>
+              )}
+              {conditionLabel && locationLabel && <span aria-hidden="true">·</span>}
+              {locationLabel && (
+                <span className="min-w-0 truncate">{locationLabel}</span>
+              )}
+              {(conditionLabel || locationLabel) && showFreshness && <span aria-hidden="true">·</span>}
+              {showFreshness && (
+                <FreshnessIndicator
+                  createdAt={createdAt}
+                  variant="text"
+                  showIcon={false}
+                  className="text-2xs text-muted-foreground"
+                />
+              )}
+            </div>
+          )
+        )}
       </div>
-    </div>
+    </Surface>
   )
 }
 

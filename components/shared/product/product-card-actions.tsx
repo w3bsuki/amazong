@@ -7,6 +7,7 @@ import { toast } from "sonner"
 import { useTranslations } from "next-intl"
 import { cn } from "@/lib/utils"
 import { Heart, Plus, ShoppingCart } from "@phosphor-icons/react"
+import { IconButton } from "@/components/ui/icon-button"
 
 // =============================================================================
 // PRODUCT CARD ACTIONS - Client-only interactive elements
@@ -100,54 +101,52 @@ export function ProductCardActions({
     }, [id, title, price, image, isWishlistPending, toggleWishlist])
 
     return (
-        <div className={cn("flex items-center gap-2", className)}>
+        <div className={cn("flex items-center gap-1.5", className)}>
             {showWishlist && (
-                <button
+                <IconButton
                     type="button"
+                    variant="ghost"
                     className={cn(
-                        "inline-flex size-11 items-center justify-center rounded-xl border border-border outline-none transition-colors",
-                        "bg-surface-glass backdrop-blur-md",
+                        "rounded-full border border-border/50 bg-background/80 backdrop-blur-sm",
+                        "hover:bg-background/90 hover:border-border/60 active:bg-background/90",
+                        "![&_svg]:size-4",
                         inWishlist
                             ? "text-primary"
-                            : "text-muted-foreground hover:text-foreground active:text-primary",
-                        "focus-visible:ring-2 focus-visible:ring-focus-ring",
+                            : "text-muted-foreground hover:text-foreground active:text-foreground",
                         isWishlistPending && "pointer-events-none opacity-50",
                         isOwnProduct && "cursor-not-allowed opacity-50"
                     )}
                     onClick={handleWishlist}
                     disabled={isWishlistPending || isOwnProduct}
                     aria-label={inWishlist ? t("removeFromWatchlist") : t("addToWatchlist")}
-                    data-slot="wishlist"
                 >
                     <Heart
-                        className={cn("size-5", inWishlist && "fill-primary text-primary")}
+                        className={cn("size-4", inWishlist && "fill-primary text-primary")}
                         weight={inWishlist ? "fill" : "regular"}
                     />
-                </button>
+                </IconButton>
             )}
 
             {showQuickAdd && (
-                <button
+                <IconButton
                     type="button"
+                    variant={inCart ? "default" : "outline"}
                     className={cn(
-                        "inline-flex size-11 items-center justify-center rounded-xl border outline-none transition-colors",
-                        inCart
-                            ? "border-primary bg-primary text-primary-foreground"
-                            : "border-border bg-background text-muted-foreground hover:bg-muted active:bg-active",
-                        "focus-visible:ring-2 focus-visible:ring-focus-ring",
-                        (!inStock || isOwnProduct) && "cursor-not-allowed opacity-50"
+                      inCart
+                        ? "bg-primary text-primary-foreground hover:bg-interactive-hover"
+                        : "border-border bg-background text-muted-foreground hover:bg-muted active:bg-active",
+                      (!inStock || isOwnProduct) && "cursor-not-allowed opacity-50"
                     )}
                     onClick={handleAddToCart}
                     disabled={isOwnProduct || !inStock}
                     aria-label={inCart ? t("inCart") : t("addToCart")}
-                    data-slot="quick-add"
                 >
                     {inCart ? (
                         <ShoppingCart className="size-5" weight="fill" />
                     ) : (
                         <Plus className="size-5" weight="bold" />
                     )}
-                </button>
+                </IconButton>
             )}
         </div>
     )

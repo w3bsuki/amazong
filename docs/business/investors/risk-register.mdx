@@ -1,0 +1,21 @@
+# Risk Register
+
+This is a living register. Owners should review weekly during launch.
+
+| Risk | Likelihood | Impact | Owner | Mitigation |
+|------|------------|--------|-------|------------|
+| Fraud spike (buyers/sellers) | Med | High | Ops | verification, seller limits, dispute process, monitoring |
+| Chargeback rate too high | Low–Med | High | Payments | clear UX, evidence capture, quick support, policy alignment |
+| Webhook failures / idempotency gaps | Med | High | Eng | idempotent handlers, event storage, alerting, replay tooling |
+| Support overload | Med | High | Ops | macros, workflows, tooling in `/admin`, SLAs, self-serve help |
+| Regulatory / KYC ambiguity | Med | High | Legal/Ops | lean on Stripe Connect, define policy + retention, counsel review |
+| Off-platform leakage | High | Med | Product | keep fees low, improve trust messaging, reduce friction |
+| Counterfeit goods | Med | High | Trust | prohibited items policy, takedowns, evidence requirements |
+| Payment provider account risk | Low | High | Founders | keep dispute/chargeback low, compliance, quick response |
+
+## “Stop-the-line” triggers (draft)
+
+- chargeback rate spikes above a set threshold (define)
+- webhook lag > X minutes (define)
+- payout release bugs (any)
+

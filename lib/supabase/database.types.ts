@@ -622,6 +622,9 @@ export type Database = {
           created_at: string | null
           hero_priority: number | null
           id: string
+          inherit_scope:
+            | Database["public"]["Enums"]["category_attribute_inherit_scope"]
+            | null
           is_badge_spec: boolean | null
           is_filterable: boolean | null
           is_hero_spec: boolean | null
@@ -644,6 +647,9 @@ export type Database = {
           created_at?: string | null
           hero_priority?: number | null
           id?: string
+          inherit_scope?:
+            | Database["public"]["Enums"]["category_attribute_inherit_scope"]
+            | null
           is_badge_spec?: boolean | null
           is_filterable?: boolean | null
           is_hero_spec?: boolean | null
@@ -666,6 +672,9 @@ export type Database = {
           created_at?: string | null
           hero_priority?: number | null
           id?: string
+          inherit_scope?:
+            | Database["public"]["Enums"]["category_attribute_inherit_scope"]
+            | null
           is_badge_spec?: boolean | null
           is_filterable?: boolean | null
           is_hero_spec?: boolean | null
@@ -1123,6 +1132,9 @@ export type Database = {
       }
       private_profiles: {
         Row: {
+          business_category: string | null
+          business_name: string | null
+          business_website: string | null
           commission_rate: number | null
           created_at: string
           email: string | null
@@ -1136,6 +1148,9 @@ export type Database = {
           vat_number: string | null
         }
         Insert: {
+          business_category?: string | null
+          business_name?: string | null
+          business_website?: string | null
           commission_rate?: number | null
           created_at?: string
           email?: string | null
@@ -1149,6 +1164,9 @@ export type Database = {
           vat_number?: string | null
         }
         Update: {
+          business_category?: string | null
+          business_name?: string | null
+          business_website?: string | null
           commission_rate?: number | null
           created_at?: string
           email?: string | null
@@ -1574,6 +1592,7 @@ export type Database = {
           display_name: string | null
           full_name: string | null
           id: string
+          interests: string[] | null
           is_seller: boolean | null
           is_verified_business: boolean | null
           last_active: string | null
@@ -1606,6 +1625,7 @@ export type Database = {
           display_name?: string | null
           full_name?: string | null
           id: string
+          interests?: string[] | null
           is_seller?: boolean | null
           is_verified_business?: boolean | null
           last_active?: string | null
@@ -1638,6 +1658,7 @@ export type Database = {
           display_name?: string | null
           full_name?: string | null
           id?: string
+          interests?: string[] | null
           is_seller?: boolean | null
           is_verified_business?: boolean | null
           last_active?: string | null
@@ -2958,12 +2979,16 @@ export type Database = {
       }
       refresh_category_stats: { Args: never; Returns: undefined }
       reset_monthly_boosts: { Args: never; Returns: undefined }
+      sync_product_attributes_jsonb: {
+        Args: { p_product_id: string }
+        Returns: undefined
+      }
       transliterate_bulgarian: { Args: { input_text: string }; Returns: string }
       unblock_user: { Args: { p_user_to_unblock: string }; Returns: boolean }
       validate_username: { Args: { username: string }; Returns: boolean }
     }
     Enums: {
-      [_ in never]: never
+      category_attribute_inherit_scope: "self_only" | "inherit" | "global"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -3090,6 +3115,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      category_attribute_inherit_scope: ["self_only", "inherit", "global"],
+    },
   },
 } as const

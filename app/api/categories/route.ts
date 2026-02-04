@@ -69,11 +69,13 @@ function buildCategoryTree(rows: CategoryHierarchyRow[]): CategoryWithChildren[]
 
   // Second pass: build tree structure
   for (const row of activeRows) {
-    const category = categoryMap.get(row.id)!
+    const category = categoryMap.get(row.id)
+    if (!category) continue
 
     if (row.parent_id && categoryMap.has(row.parent_id)) {
       // Add to parent's children
-      const parent = categoryMap.get(row.parent_id)!
+      const parent = categoryMap.get(row.parent_id)
+      if (!parent) continue
       parent.children = parent.children || []
       parent.children.push(category)
     } else if (row.depth === 0) {
@@ -223,9 +225,11 @@ async function getRootWithChildrenCached(depth: number) {
   }
 
   for (const cat of cats) {
-    const category = categoryMap.get(cat.id)!
+    const category = categoryMap.get(cat.id)
+    if (!category) continue
     if (cat.parent_id && categoryMap.has(cat.parent_id)) {
-      const parent = categoryMap.get(cat.parent_id)!
+      const parent = categoryMap.get(cat.parent_id)
+      if (!parent) continue
       parent.children = parent.children || []
       parent.children.push(category)
     } else if (!cat.parent_id) {

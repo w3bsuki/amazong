@@ -44,7 +44,7 @@ export function ProfileTabs({
       className={cn("w-full px-4", className)}
     >
       <TabsList className={cn(
-        "w-full h-12 rounded-xl",
+        "w-full h-11 rounded-xl border-border",
         tabs.length === 4 && "grid grid-cols-4",
         tabs.length === 3 && "grid grid-cols-3",
         tabs.length === 2 && "grid grid-cols-2",
@@ -64,9 +64,9 @@ export function ProfileTabs({
               "leading-tight",
               "min-w-0 overflow-hidden",
               "whitespace-nowrap",
-              "data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm",
+              "data-[state=active]:bg-background data-[state=active]:text-foreground",
               "data-[state=active]:ring-1 data-[state=active]:ring-border",
-              "transition-transform active:scale-95"
+              "transition-colors active:bg-active"
             )}
           >
             {tab.icon}

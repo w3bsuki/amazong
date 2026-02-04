@@ -5,6 +5,7 @@ import * as DialogPrimitive from '@radix-ui/react-dialog'
 import { X } from 'lucide-react'
 
 import { cn } from '@/lib/utils'
+import { IconButton } from '@/components/ui/icon-button'
 
 /**
  * Dialog Root - wraps Radix Dialog with optional scroll lock bypass
@@ -129,24 +130,17 @@ function DialogContent({
       >
         {children}
         {showCloseButton && (
-          <DialogPrimitive.Close
-            data-slot="dialog-close"
-            className={cn(
-              'absolute z-10 transition-all duration-150',
-              // Position & size
-              'top-4 right-4 size-11',
-              // Styling - visible background for accessibility
-              'flex items-center justify-center rounded-full',
-              'bg-surface-subtle backdrop-blur-sm',
-              'text-foreground hover:bg-hover active:bg-active',
-              // Focus ring
-              'focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:outline-none',
-              // Disabled state
-              'disabled:pointer-events-none',
-            )}
-            aria-label={closeLabel ?? 'Close'}
-          >
-            <X className="size-5" />
+          <DialogPrimitive.Close asChild>
+            <IconButton
+              aria-label={closeLabel ?? 'Close'}
+              className={cn(
+                'absolute top-4 right-4 z-10 transition-all duration-150',
+                'bg-surface-subtle backdrop-blur-sm',
+                'text-foreground hover:bg-hover active:bg-active',
+              )}
+            >
+              <X className="size-5" />
+            </IconButton>
           </DialogPrimitive.Close>
         )}
       </DialogPrimitive.Content>

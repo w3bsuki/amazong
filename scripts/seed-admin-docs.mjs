@@ -6,6 +6,7 @@ import { createClient } from "@supabase/supabase-js";
 import ts from "typescript";
 
 const repoRoot = path.resolve(process.cwd());
+const SEED_CATEGORIES = new Set(["ops", "guides"]);
 
 function loadEnv() {
   dotenv.config({ path: path.join(repoRoot, ".env.local") });
@@ -70,7 +71,7 @@ async function getLocaleCount(supabase, locale) {
 async function seedLocale(supabase, locale, templates) {
   const before = await getLocaleCount(supabase, locale);
 
-  const rows = templates.map((t) => ({
+  const rows = templates.filter((t) => SEED_CATEGORIES.has(t.category)).map((t) => ({
     title: t.title,
     slug: t.slug,
     category: t.category,
@@ -112,4 +113,3 @@ main().catch((error) => {
   process.stderr.write(`${error instanceof Error ? error.message : String(error)}\n`);
   process.exitCode = 1;
 });
-

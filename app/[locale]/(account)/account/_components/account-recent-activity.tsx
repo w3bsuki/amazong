@@ -94,7 +94,7 @@ export function AccountRecentActivity({ orders, products, sales, locale }: Accou
       case 'delivered':
         return 'bg-success/10 text-success border-transparent'
       case 'cancelled':
-        return 'bg-destructive/10 text-destructive border-transparent'
+        return 'bg-destructive-subtle text-destructive border-transparent'
       default:
         return 'bg-muted text-muted-foreground border-transparent'
     }

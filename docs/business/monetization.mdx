@@ -1,0 +1,71 @@
+# Monetization Model
+
+How Treido earns revenue while keeping fees low enough to prevent off-platform leakage.
+
+## Principles (non-negotiable)
+
+- **Personal sellers keep 100% of item price** (0% seller fee)
+- Buyers pay a clear **Buyer Protection** fee for escrow + support + dispute handling
+- Businesses pay a **small seller fee** (they expect costs, want invoices, and need tooling)
+- **Subscriptions reduce fees** and unlock tools (especially for businesses)
+
+## Core fee model (Vinted-style hybrid)
+
+Buyer Protection fee formula (per order):
+
+```
+buyer_fee = min(
+  item_price * buyer_protection_percent + buyer_protection_fixed,
+  buyer_protection_cap
+)
+```
+
+Seller fee (business only):
+
+```
+seller_fee = item_price * seller_fee_percent
+```
+
+These values are **plan-driven** in `subscription_plans` (**locked for v1**):
+
+| Account | Plan | Seller fee | Buyer protection |
+|--------:|------|------------|------------------|
+| Personal | Free | 0% | 4% + €0.50 (cap €15) |
+| Personal | Plus | 0% | 3.5% + €0.40 (cap €14) |
+| Personal | Pro | 0% | 3% + €0.30 (cap €12) |
+| Business | Free | 1.5% | 3% + €0.35 (cap €12) |
+| Business | Pro | 1% | 2.5% + €0.25 (cap €10) |
+| Business | Enterprise | 0.5% | 2% + €0.20 (cap €8) |
+
+Source of truth: `supabase/migrations/20260120000000_buyer_protection_fees.sql`
+
+Example: €50 item (Personal Free seller)
+
+- Buyer pays: `€50 + (4% × €50) + €0.50 = €52.50`
+- Seller receives: `€50.00` (0% seller fee)
+- Platform collects: `€2.50` (covers Stripe processing + support + fraud loss buffer)
+
+## Secondary revenue
+
+### Subscriptions
+
+- Personal: mainly lower buyer fees + seller tools (more listings, boosts, visibility)
+- Business: lower fees + `/dashboard` tooling + invoicing/ops support
+
+### Promotions / boosts
+Optional add-ons to increase visibility (best as a-la-carte, not required for core revenue).
+
+See: [Boosts & Promotions](/business/boosts)
+
+## Limits & guardrails
+
+Monetization only works if outcomes are predictable (fees, refunds, disputes) and if boosts can’t be abused to spam feeds.
+
+See: [Limits & Guardrails](/business/guardrails)
+
+## Why this works (investor-friendly explanation)
+
+- **Low seller friction** (personal sellers keep 100% → less off-platform leakage)
+- **Transparent buyer value** (protection fee pays for trust, refunds, and dispute process)
+- **Businesses pay** for tooling and predictable operations
+- **Unit economics** scale with GMV while subscriptions stabilize revenue

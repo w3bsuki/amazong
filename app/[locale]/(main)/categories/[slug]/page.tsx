@@ -24,6 +24,7 @@ import type { Product } from "./_lib/types"
 import { ITEMS_PER_PAGE } from "../../_lib/pagination"
 import { MobileCategoryBrowser } from "@/components/mobile/mobile-category-browser"
 import type { UIProduct } from "@/lib/data/products"
+import type { CategoryAttribute } from "@/lib/types/categories"
 
 // =============================================================================
 // CATEGORY PAGE - HYBRID CACHING STRATEGY
@@ -214,7 +215,7 @@ function CategoryPageDynamicContent({
     : never
   /** DEC-002: Subcategories with product counts for curated browse UX */
   subcategoriesWithCounts: CategoryWithCount[]
-  filterableAttributes: any[]
+  filterableAttributes: CategoryAttribute[]
   categoryName: string
   defaultTab: string | null
   defaultSubTab: string | null

@@ -23,6 +23,7 @@ import {
   Dog,
   Lightbulb,
   DeviceMobile,
+  DeviceTablet,
   Watch,
   Headphones,
   Camera,
@@ -51,7 +52,7 @@ import {
   Tag,
   Truck,
   Flag,
-  Desktop,
+  DesktopTower,
   Lightning,
   Plant,
   Cpu,
@@ -93,8 +94,26 @@ const categoryIconComponents: Record<string, PhosphorIcon> = {
   // Electronics & Computers
   electronics: Monitor,
   computers: Laptop,
+  laptop: Laptop,
+  laptops: Laptop,
+  notebook: Laptop,
+  notebooks: Laptop,
+  tablet: DeviceTablet,
+  tablets: DeviceTablet,
+  monitor: Monitor,
+  monitors: Monitor,
+  desktop: DesktopTower,
+  desktops: DesktopTower,
+  "desktop-computer": DesktopTower,
+  "desktop-computers": DesktopTower,
+  "desktop-pc": DesktopTower,
+  "desktop-pcs": DesktopTower,
+  pc: DesktopTower,
+  pcs: DesktopTower,
   "smart-home": Lightbulb,
   phones: DeviceMobile,
+  smartphone: DeviceMobile,
+  smartphones: DeviceMobile,
   tv: Television,
   audio: Headphones,
   cameras: Camera,
@@ -199,16 +218,19 @@ const categoryIconComponents: Record<string, PhosphorIcon> = {
 }
 
 function getCategoryIconForSlug(slug: string): PhosphorIcon {
-  const direct = categoryIconComponents[slug]
+  const slugKey = slug.toLowerCase()
+  const direct = categoryIconComponents[slugKey]
   if (direct) return direct
 
-  const slugLower = slug.toLowerCase()
+  let best: { key: string; icon: PhosphorIcon } | null = null
   for (const [key, icon] of Object.entries(categoryIconComponents)) {
     if (key === "default") continue
-    if (slugLower.includes(key) || key.includes(slugLower)) return icon
+    if (slugKey.includes(key) || key.includes(slugKey)) {
+      if (!best || key.length > best.key.length) best = { key, icon }
+    }
   }
 
-  return categoryIconComponents.default ?? Package
+  return best?.icon ?? categoryIconComponents.default ?? Package
 }
 
 export type IconSize = 14 | 16 | 18 | 20 | 24 | 26 | 28 | 32 | 36 | 40
@@ -225,119 +247,8 @@ interface CategoryIconOptions {
 export function getCategoryIcon(slug: string, options: CategoryIconOptions = {}): React.ReactNode {
   const { size = 20, className = "", weight = "bold" } = options
 
-  const iconProps = { size, weight, className }
-
-  const iconMap: Record<string, React.ReactNode> = {
-    // Electronics & Computers
-    electronics: <Monitor {...iconProps} />,
-    computers: <Laptop {...iconProps} />,
-    "smart-home": <Lightbulb {...iconProps} />,
-    phones: <DeviceMobile {...iconProps} />,
-    tv: <Television {...iconProps} />,
-    audio: <Headphones {...iconProps} />,
-    cameras: <Camera {...iconProps} />,
-    software: <Code {...iconProps} />,
-    "software-services": <Code {...iconProps} />,
-
-    // Fashion & Accessories
-    fashion: <TShirt {...iconProps} />,
-    "jewelry-watches": <Diamond {...iconProps} />,
-    watches: <Watch {...iconProps} />,
-    // Fashion subcategories (gender) - match actual DB slugs
-    "fashion-mens": <GenderMale {...iconProps} />,
-    "fashion-womens": <GenderFemale {...iconProps} />,
-    "fashion-kids": <Baby {...iconProps} />,
-    "fashion-unisex": <Users {...iconProps} />,
-    // Alternative slug patterns
-    men: <GenderMale {...iconProps} />,
-    mens: <GenderMale {...iconProps} />,
-    "men-fashion": <GenderMale {...iconProps} />,
-    "mens-fashion": <GenderMale {...iconProps} />,
-    women: <GenderFemale {...iconProps} />,
-    womens: <GenderFemale {...iconProps} />,
-    "women-fashion": <GenderFemale {...iconProps} />,
-    "womens-fashion": <GenderFemale {...iconProps} />,
-    kids: <Baby {...iconProps} />,
-    children: <Baby {...iconProps} />,
-    "kids-fashion": <Baby {...iconProps} />,
-    "childrens-fashion": <Baby {...iconProps} />,
-    unisex: <Users {...iconProps} />,
-    "unisex-fashion": <Users {...iconProps} />,
-    // Fashion items
-    shoes: <Sneaker {...iconProps} />,
-    sneakers: <Sneaker {...iconProps} />,
-    boots: <Boot {...iconProps} />,
-    dresses: <Dress {...iconProps} />,
-    shirts: <TShirt {...iconProps} />,
-    pants: <Pants {...iconProps} />,
-    coats: <Hoodie {...iconProps} />,
-    jackets: <Hoodie {...iconProps} />,
-    bags: <Handbag {...iconProps} />,
-    handbags: <Handbag {...iconProps} />,
-    accessories: <CoatHanger {...iconProps} />,
-
-    // Home & Living
-    home: <House {...iconProps} />,
-    "home-kitchen": <ForkKnife {...iconProps} />,
-    garden: <Leaf {...iconProps} />,
-    "garden-outdoor": <Flower {...iconProps} />,
-    tools: <Wrench {...iconProps} />,
-    "tools-home": <Hammer {...iconProps} />,
-    lighting: <Lightbulb {...iconProps} />,
-    "real-estate": <Buildings {...iconProps} />,
-
-    // Sports & Gaming
-    gaming: <GameController {...iconProps} />,
-    sports: <Barbell {...iconProps} />,
-    "sports-outdoors": <Barbell {...iconProps} />,
-
-    // Health & Beauty
-    beauty: <PaintBrush {...iconProps} />,
-    health: <Heart {...iconProps} />,
-    "health-wellness": <Pill {...iconProps} />,
-    "cbd-wellness": <Leaf {...iconProps} />,
-
-    // Family & Pets
-    baby: <Baby {...iconProps} />,
-    "baby-kids": <Baby {...iconProps} />,
-    pets: <Dog {...iconProps} />,
-    "pet-supplies": <Dog {...iconProps} />,
-    toys: <Gift {...iconProps} />,
-
-    // Media & Entertainment
-    books: <BookOpen {...iconProps} />,
-    music: <MusicNotes {...iconProps} />,
-    "musical-instruments": <Guitar {...iconProps} />,
-    "movies-music": <FilmStrip {...iconProps} />,
-
-    // Business & Office
-    office: <Briefcase {...iconProps} />,
-    "office-school": <GraduationCap {...iconProps} />,
-    "industrial-scientific": <Flask {...iconProps} />,
-    services: <Briefcase {...iconProps} />,
-
-    // Shopping & Deals
-    deals: <Tag {...iconProps} />,
-    grocery: <ShoppingCart {...iconProps} />,
-    handmade: <Palette {...iconProps} />,
-    collectibles: <Trophy {...iconProps} />,
-    "gift-cards": <Gift {...iconProps} />,
-    tickets: <Ticket {...iconProps} />,
-
-    // Automotive & Transport
-    automotive: <Car {...iconProps} />,
-    "e-mobility": <Lightning {...iconProps} />,
-    wholesale: <Truck {...iconProps} />,
-
-    // Regional & Special
-    "bulgarian-traditional": <Flag {...iconProps} />,
-    hobbies: <Guitar {...iconProps} />,
-
-    // Navigation
-    all: <SquaresFour {...iconProps} />,
-  }
-
-  return iconMap[slug] || <Package {...iconProps} />
+  const Icon = getCategoryIconForSlug(slug)
+  return <Icon size={size} weight={weight} className={className} />
 }
 
 // ============================================================================
@@ -350,17 +261,16 @@ export type CategoryColorScheme = {
   ring: string // Active ring color class
 }
 
-const categoryColors: Record<string, CategoryColorScheme> = {
+const categoryColors = {
   // All categories use semantic neutral tokens; the visual distinction comes from icons, not colors.
   all: { bg: "bg-surface-subtle", text: "text-foreground", ring: "ring-ring" },
   default: { bg: "bg-surface-subtle", text: "text-foreground", ring: "ring-ring" },
-}
+} satisfies Record<"all" | "default", CategoryColorScheme>
 
 /**
  * Get the color scheme for a category slug.
  */
 export function getCategoryColor(slug: string): CategoryColorScheme {
-  if (slug === "all") return categoryColors.all!
-  return categoryColors.default!
+  if (slug === "all") return categoryColors.all
+  return categoryColors.default
 }
-

@@ -7,6 +7,7 @@ import {
 } from "@phosphor-icons/react/dist/ssr"
 import type { Metadata } from 'next'
 import { routing, validateLocale } from "@/i18n/routing"
+import { extractLastUpdatedDate, getPublicDoc, parsePublicDocIntro, parsePublicDocSections } from "@/lib/public-docs"
 import { LegalPageLayout, type LegalSection, type RelatedLink } from "../_components/legal-page-layout"
 
 export function generateStaticParams() {
@@ -30,21 +31,54 @@ export default async function TermsPage({ params }: { params: Promise<{ locale: 
   setRequestLocale(locale)
   const t = await getTranslations('Terms')
   const tBreadcrumbs = await getTranslations("Breadcrumbs")
+
+  const doc = await getPublicDoc({ docKey: "legal/terms", locale })
+  const intro = parsePublicDocIntro(doc.markdown)
+  const parsedSections = parsePublicDocSections(doc.markdown)
+  const lastUpdatedDate = extractLastUpdatedDate(doc.markdown) ?? t("lastUpdatedDate")
   
-  const sections: LegalSection[] = [
-    { id: 'acceptance', icon: CheckCircle, title: t('acceptance'), desc: t('acceptanceDesc') },
-    { id: 'use-of-service', icon: ShoppingBag, title: t('useOfService'), desc: t('useOfServiceDesc') },
-    { id: 'account', icon: Users, title: t('account'), desc: t('accountDesc') },
-    { id: 'orders', icon: ShoppingBag, title: t('orders'), desc: t('ordersDesc') },
-    { id: 'payments', icon: CreditCard, title: t('payments'), desc: t('paymentsDesc') },
-    { id: 'shipping', icon: Truck, title: t('shipping'), desc: t('shippingDesc') },
-    { id: 'returns', icon: ArrowCounterClockwise, title: t('returnsPolicy'), desc: t('returnsPolicyDesc') },
-    { id: 'prohibited', icon: Prohibit, title: t('prohibited'), desc: t('prohibitedDesc') },
-    { id: 'intellectual', icon: Shield, title: t('intellectual'), desc: t('intellectualDesc') },
-    { id: 'liability', icon: Scales, title: t('liability'), desc: t('liabilityDesc') },
-    { id: 'disputes', icon: Gavel, title: t('disputes'), desc: t('disputesDesc') },
-    { id: 'changes', icon: Warning, title: t('changes'), desc: t('changesDesc') },
+  const legacySections: LegalSection[] = [
+    { id: "acceptance", icon: CheckCircle, title: t("acceptance"), desc: t("acceptanceDesc") },
+    { id: "use-of-service", icon: ShoppingBag, title: t("useOfService"), desc: t("useOfServiceDesc") },
+    { id: "account", icon: Users, title: t("account"), desc: t("accountDesc") },
+    { id: "orders", icon: ShoppingBag, title: t("orders"), desc: t("ordersDesc") },
+    { id: "payments", icon: CreditCard, title: t("payments"), desc: t("paymentsDesc") },
+    { id: "shipping", icon: Truck, title: t("shipping"), desc: t("shippingDesc") },
+    { id: "returns", icon: ArrowCounterClockwise, title: t("returnsPolicy"), desc: t("returnsPolicyDesc") },
+    { id: "prohibited", icon: Prohibit, title: t("prohibited"), desc: t("prohibitedDesc") },
+    { id: "intellectual", icon: Shield, title: t("intellectual"), desc: t("intellectualDesc") },
+    { id: "liability", icon: Scales, title: t("liability"), desc: t("liabilityDesc") },
+    { id: "disputes", icon: Gavel, title: t("disputes"), desc: t("disputesDesc") },
+    { id: "changes", icon: Warning, title: t("changes"), desc: t("changesDesc") },
   ]
+
+  const iconsById = {
+    acceptance: CheckCircle,
+    "use-of-service": ShoppingBag,
+    account: Users,
+    orders: ShoppingBag,
+    payments: CreditCard,
+    shipping: Truck,
+    returns: ArrowCounterClockwise,
+    prohibited: Prohibit,
+    intellectual: Shield,
+    liability: Scales,
+    disputes: Gavel,
+    changes: Warning,
+  } as const
+
+  const sections: LegalSection[] =
+    parsedSections.length > 0
+      ? parsedSections.map((s) => ({
+          id: s.id,
+          icon: iconsById[s.id as keyof typeof iconsById] ?? FileText,
+          title: s.title,
+          desc: s.markdown,
+        }))
+      : legacySections
+
+  const defaultSection =
+    sections.find((s) => s.id === "acceptance")?.id ?? sections[0]?.id ?? "acceptance"
 
   const relatedLinks: RelatedLink[] = [
     { href: '/privacy', icon: Shield, title: t('privacyLink'), description: t('privacyLinkDesc') },
@@ -56,16 +90,16 @@ export default async function TermsPage({ params }: { params: Promise<{ locale: 
     <LegalPageLayout
       heroIcon={FileText}
       title={t('title')}
-      lastUpdated={`${t('lastUpdated')}: ${t('lastUpdatedDate')}`}
+      lastUpdated={`${t("lastUpdated")}: ${lastUpdatedDate}`}
       breadcrumbItems={breadcrumbPresets(tBreadcrumbs).terms}
       breadcrumbAriaLabel={tBreadcrumbs("ariaLabel")}
       breadcrumbHomeLabel={tBreadcrumbs("homeLabel")}
       tocLabel={t('tableOfContents')}
-      introNotice={t('importantNotice')}
-      introText={t('introText')}
+      introNotice={intro.notice || t("importantNotice")}
+      introText={intro.markdown || t("introText")}
       introVariant="warning"
       sections={sections}
-      defaultSection="acceptance"
+      defaultSection={defaultSection}
       questionsTitle={t('questionsTitle')}
       questionsDesc={t('questionsDesc')}
       contactButtonText={t('contactUs')}

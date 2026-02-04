@@ -93,7 +93,7 @@
   
   /* Product grid - container query responsive */
   --product-card-min-w: 12.5rem;              /* 200px - min card width */
-  --product-grid-gap: 1rem;                   /* 16px - product grid gap */
+  --product-grid-gap: 0.5rem;                 /* 8px - product grid gap */
   
   /* Grid template areas - for DesktopShell */
   --grid-template-desktop: "header header" "sidebar content" "sidebar footer";
@@ -117,7 +117,7 @@
   --text-measure-54ch: 54ch;
 
   /* Category */
-  --category-circle-mobile: 3.5rem;
+  --category-circle-mobile: 3.75rem;
   --deals-category-min-w: 4.375rem;
 
   /* Skeletons */

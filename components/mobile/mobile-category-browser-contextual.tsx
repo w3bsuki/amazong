@@ -7,7 +7,7 @@ import type { CategoryAttribute } from "@/lib/data/categories";
 import { useRouter } from "@/i18n/routing";
 import { useHeader } from "@/components/providers/header-context";
 import { useInstantCategoryBrowse } from "@/hooks/use-instant-category-browse";
-import { InlineFilterBar } from "./category-nav";
+import { FilterSortBar } from "./category-nav";
 import { FilterHub } from "@/components/shared/filters/filter-hub";
 import { FilterChips } from "@/components/shared/filters/filter-chips";
 import { ProductFeed } from "@/components/shared/product/product-feed";
@@ -146,6 +146,7 @@ export function MobileCategoryBrowserContextual({
       title: instant.categoryTitle || contextualInitialTitle,
       backHref,
       onBack: handleBack,
+      activeSlug: instant.activeSlug,
       subcategories: instant.children.length ? instant.children : contextualSubcategories,
       onSubcategoryClick: handleCircleClick,
     });
@@ -154,6 +155,7 @@ export function MobileCategoryBrowserContextual({
     instant.categoryTitle,
     contextualInitialTitle,
     backHref,
+    instant.activeSlug,
     instant.children,
     contextualSubcategories,
     setContextualHeader,
@@ -164,12 +166,12 @@ export function MobileCategoryBrowserContextual({
       {/* Header is rendered by layout with variant="contextual" */}
 
       {/* Inline Filter Bar (50/50 split: Filters | Sort) */}
-      <InlineFilterBar
+      <FilterSortBar
         locale={locale}
         onAllFiltersClick={() => setFilterHubOpen(true)}
         attributes={instant.attributes.length ? instant.attributes : filterableAttributes}
         appliedSearchParams={instant.appliedSearchParams}
-        stickyTop={48}
+        stickyTop="var(--app-header-offset)"
         sticky={true}
         className="z-30"
       />
@@ -214,4 +216,3 @@ export function MobileCategoryBrowserContextual({
 }
 
 export type { MobileCategoryBrowserContextualProps };
-

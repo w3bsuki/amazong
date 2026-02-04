@@ -8,7 +8,7 @@ export function TrustBadges(props: { verifiedSeller?: boolean }) {
   const t = useTranslations("Product")
 
   return (
-    <Card className="border border-border/50">
+    <Card className="border border-border-subtle">
       <CardContent className="p-3">
         <div className="grid grid-cols-1 gap-3">
           <div className="flex items-start gap-3">

@@ -143,7 +143,7 @@ export function BusinessPerformanceScore({
                   ? "bg-success/10 text-success border-success/20"
                   : overallScore >= 60
                     ? "bg-warning/10 text-warning border-warning/20"
-                    : "bg-destructive/10 text-destructive border-destructive/20"
+                    : "bg-destructive-subtle text-destructive border-destructive/20"
               )}
             >
               {getScoreLabel(overallScore)}

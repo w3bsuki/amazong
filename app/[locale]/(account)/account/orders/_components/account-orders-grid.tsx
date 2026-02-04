@@ -295,7 +295,7 @@ export function AccountOrdersGrid({ orders, locale, actions }: AccountOrdersGrid
                   </div>
                 </button>
               </SheetTrigger>
-              <SheetContent side="bottom" className="h-(--dialog-h-85vh) rounded-t-xl">
+              <SheetContent side="bottom" className="h-(--dialog-h-85vh) rounded-t-2xl">
                 <SheetHeader className="pb-4 border-b">
                   <SheetTitle className="flex items-center gap-2">
                     <IconPackage className="size-5" />

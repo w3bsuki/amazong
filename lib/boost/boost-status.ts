@@ -16,7 +16,3 @@ export function isBoostActiveAt(boost: BoostLike, now: Date): boolean {
 export function isBoostActiveNow(boost: BoostLike): boolean {
   return isBoostActiveAt(boost, new Date())
 }
-
-export function isBoostActive(boost: BoostLike, now: Date): boolean {
-  return isBoostActiveAt(boost, now)
-}

@@ -326,4 +326,4 @@ This form will:
 
 *Audit by: GitHub Copilot Agent*
 *Date: January 27, 2026*
-*Testing Account: radevalentin@gmail.com (shop4e)*
+*Testing Account: [redacted] (shop4e)*

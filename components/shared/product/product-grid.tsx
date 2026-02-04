@@ -46,22 +46,31 @@ function ProductGrid({ children, density = "default", className }: ProductGridPr
 
 type ProductCardSkeletonProps = {
   showQuickAdd?: boolean
+  appearance?: "card" | "tile"
+  media?: "square" | "landscape"
 }
 
-function ProductCardSkeleton({ showQuickAdd = true }: ProductCardSkeletonProps) {
+function ProductCardSkeleton({
+  showQuickAdd = true,
+  appearance = "card",
+  media = "square",
+}: ProductCardSkeletonProps) {
+  const isTile = appearance === "tile"
+  const ratio = media === "landscape" ? 4 / 3 : 1
+
   return (
-    <div className="rounded-xl border border-border bg-card p-2.5">
+    <div className={isTile ? "space-y-2" : "rounded-xl border border-border bg-card p-2.5"}>
       <div className="relative overflow-hidden rounded-xl bg-muted">
-        <AspectRatio ratio={1}>
+        <AspectRatio ratio={ratio}>
           <Skeleton className="h-full w-full" />
         </AspectRatio>
 
         {showQuickAdd && (
-          <Skeleton className="absolute top-2 right-2 size-11 rounded-xl" />
+          <Skeleton className="absolute top-1.5 right-1.5 size-11 rounded-full" />
         )}
       </div>
 
-      <div className="mt-2 space-y-1">
+      <div className={isTile ? "space-y-1 px-0.5" : "mt-2 space-y-1"}>
         <Skeleton className="h-5 w-20" />
         <Skeleton className="h-4 w-full" />
         <Skeleton className="h-4 w-2/3" />
@@ -80,17 +89,21 @@ interface ProductCardSkeletonGridProps {
   count?: number
   density?: "compact" | "default" | "comfortable"
   className?: string
+  appearance?: "card" | "tile"
+  media?: "square" | "landscape"
 }
 
 function ProductCardSkeletonGrid({
   count = 8,
   density = "default",
   className,
+  appearance = "card",
+  media = "square",
 }: ProductCardSkeletonGridProps) {
   return (
     <ProductGrid density={density} className={className ?? ""}>
       {Array.from({ length: count }).map((_, i) => (
-        <ProductCardSkeleton key={i} />
+        <ProductCardSkeleton key={i} appearance={appearance} media={media} />
       ))}
     </ProductGrid>
   )

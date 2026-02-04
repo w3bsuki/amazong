@@ -84,7 +84,7 @@ export function ConditionField({ className, compact = false }: ConditionFieldPro
                         "w-full flex items-center gap-3.5 min-h-16 px-4 py-3 rounded-xl border text-left transition-colors",
                         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
                         fieldState.invalid 
-                          ? "border-destructive/50 bg-destructive/5" 
+                          ? "border-destructive/50 bg-destructive-subtle" 
                           : selectedLabel 
                             ? "border-selected-border bg-selected" 
                             : "border-border bg-card hover:bg-hover"

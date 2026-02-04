@@ -13,8 +13,8 @@ import { formatDistanceToNow } from "date-fns";
 import { bg, enUS } from "date-fns/locale";
 
 // Mobile-specific components
-import { MobileGalleryV2 } from "./mobile-gallery-v2";
-import { MobileBottomBarV2 } from "./mobile-bottom-bar-v2";
+import { MobileGallery } from "./mobile-gallery";
+import { MobileBottomBar } from "./mobile-bottom-bar";
 import { MobileSellerPreviewCard } from "./mobile-seller-preview-card";
 import { MobileSafetyTips, MobileReportButton } from "./mobile-trust-sections";
 import { SellerProfileDrawer } from "@/components/mobile/drawers/seller-profile-drawer";
@@ -215,7 +215,7 @@ export function MobileProductSingleScroll(props: MobileProductSingleScrollProps)
       />
 
       {/* ========== GALLERY ========== */}
-      <MobileGalleryV2 images={viewModel.galleryImages} product={cartProduct} />
+      <MobileGallery images={viewModel.galleryImages} product={cartProduct} />
 
       {/* ========== CONTENT (Single Scroll) ========== */}
       <div className="bg-card space-y-4 py-4">
@@ -306,7 +306,7 @@ export function MobileProductSingleScroll(props: MobileProductSingleScrollProps)
       <SimilarItemsGrid products={relatedProducts} rootCategory={rootCategory} />
 
       {/* ========== BOTTOM BAR ========== */}
-      <MobileBottomBarV2
+      <MobileBottomBar
         categoryType={viewModel.categoryType}
         product={{
           id: cartProduct.id,

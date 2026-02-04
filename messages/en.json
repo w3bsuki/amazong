@@ -569,13 +569,8 @@
         "subcategories": "Subcategories",
         "noSubcategories": "No subcategories available",
         "noMatches": "No matches found",
-        "seeAllIn": "See all in {category}",
+        "seeAllIn": "All in {category}",
         "close": "Close"
-    },
-    "QuickPicks": {
-        "trending": "Trending",
-        "deals": "Deals",
-        "topRated": "Top Rated"
     },
     "Freshness": {
         "justNow": "Just now",
@@ -1436,6 +1431,9 @@
         "last30Days": "Last 30 days",
         "last90Days": "Last 90 days",
         "shopBySubcategory": "Shop by Subcategory",
+        "subcategories": "Subcategories",
+        "expandSubcategories": "Expand {category} subcategories",
+        "collapseSubcategories": "Collapse {category} subcategories",
         "allIn": "All in",
         "quickFilters": "Quick Filters",
         "deals": "Deals",
@@ -2045,6 +2043,8 @@
         "share": "Share",
         "message": "Message",
         "shareProfile": "Share Profile",
+        "openWebsite": "Open website",
+        "openSocial": "{platform, select, facebook {Open Facebook} instagram {Open Instagram} twitter {Open Twitter} tiktok {Open TikTok} youtube {Open YouTube} other {Open link}}",
         "about": "About",
         "stats": "Stats",
         "settings": "Settings",
@@ -3080,7 +3080,7 @@
         "notifications": "Notifications",
         "logOut": "Log out"
     },
-    "SidebarMenuV2": {
+    "SidebarMenu": {
         "newListing": "New",
         "active": "Active",
         "boosted": "Boosted",

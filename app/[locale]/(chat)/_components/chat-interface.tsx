@@ -426,7 +426,7 @@ export function ChatInterface({
                   <DropdownMenuItem
                     onClick={handleBlockUser}
                     disabled={isBlocking}
-                    className="text-destructive focus:text-destructive focus:bg-destructive/10"
+                    className="text-destructive focus:text-destructive focus:bg-destructive-subtle"
                   >
                     <ProhibitInset size={16} weight="regular" className="mr-2" />
                     {isBlocking

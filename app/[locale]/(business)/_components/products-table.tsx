@@ -536,7 +536,7 @@ export function ProductsTable({
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
-                <Button variant="outline" size="sm" className="h-7 text-xs text-destructive hover:text-destructive/90" onClick={handleBulkDelete} disabled={isLoading}>
+                <Button variant="outline" size="sm" className="h-7 text-xs text-destructive hover:text-destructive" onClick={handleBulkDelete} disabled={isLoading}>
                   <IconTrash className="size-3 mr-1" />
                   Delete
                 </Button>
@@ -651,7 +651,7 @@ export function ProductsTable({
                         "inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium",
                         product.status === "active" && "bg-success/10 text-success border border-success/20",
                         product.status === "draft" && "bg-muted text-muted-foreground border border-border",
-                        product.status === "archived" && "bg-destructive/10 text-destructive border border-destructive/20",
+                        product.status === "archived" && "bg-destructive-subtle text-destructive border border-destructive/20",
                         product.status === "out_of_stock" && "bg-warning/10 text-warning border border-warning/20",
                         !product.status && "bg-muted text-muted-foreground border border-border"
                       )}>

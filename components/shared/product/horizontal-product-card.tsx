@@ -33,6 +33,10 @@ export function HorizontalProductCard({
         isBoosted={Boolean(product.isBoosted)}
         boostExpiresAt={product.boostExpiresAt ?? null}
         disableQuickView={disableQuickView}
+        appearance="tile"
+        media="landscape"
+        density="compact"
+        titleLines={1}
       />
     </div>
   )

@@ -14,10 +14,10 @@ import { ProductHeaderSync } from "@/components/shared/product/product-header-sy
 import { Star } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { getConditionBadgeVariant } from "@/components/shared/product/_lib/condition-badges";
+import { getConditionKey } from "@/components/shared/product/_lib/condition";
 
-// V2 Desktop Components
-import { DesktopGalleryV2 } from "@/components/desktop/product/desktop-gallery-v2";
-import { DesktopBuyBoxV2 } from "@/components/desktop/product/desktop-buy-box-v2";
+import { DesktopGallery } from "@/components/desktop/product/desktop-gallery";
+import { DesktopBuyBox } from "@/components/desktop/product/desktop-buy-box";
 import { DesktopSpecsAccordion } from "@/components/desktop/product/desktop-specs-accordion";
 import { HeroSpecs } from "@/components/shared/product/hero-specs";
 
@@ -77,13 +77,13 @@ function RelatedProductsSkeleton() {
 function ReviewsSkeleton() {
   return (
     <div className="pb-8">
-      <div className="rounded-xl bg-surface-subtle p-4 border border-border/50">
+      <div className="rounded-xl bg-surface-subtle p-4 border border-border-subtle">
         <div className="flex items-center justify-between mb-8">
           <Skeleton className="h-7 w-40" />
           <Skeleton className="h-4 w-16" />
         </div>
-        <div className="grid grid-cols-1 gap-10 lg:grid-cols-[320px_1fr]">
-          <div className="space-y-6">
+        <div className="flex flex-col gap-10 lg:flex-row">
+          <div className="space-y-6 lg:w-80 lg:shrink-0">
             <div className="flex items-center gap-4">
               <Skeleton className="h-24 w-24 rounded-full" />
               <div className="space-y-2">
@@ -92,9 +92,9 @@ function ReviewsSkeleton() {
               </div>
             </div>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:flex-1">
             {[...Array(4)].map((_, i) => (
-              <div key={i} className="p-4 rounded-xl border border-border/50 space-y-3">
+              <div key={i} className="p-4 rounded-xl border border-border-subtle space-y-3">
                 <div className="flex items-center gap-3">
                   <Skeleton className="h-10 w-10 rounded-full" />
                   <div className="space-y-1">
@@ -132,37 +132,6 @@ interface ProductPageLayoutProps {
 
 export function ProductPageLayout(props: ProductPageLayoutProps) {
   const tProduct = useTranslations("Product");
-  const getConditionKey = (value: string): string | null => {
-    const normalized = value.toLowerCase().replace(/[\s_-]/g, "");
-    switch (normalized) {
-      case "new":
-        return "condition.new";
-      case "newwithtags":
-        return "condition.newWithTags";
-      case "newwithouttags":
-        return "condition.newWithoutTags";
-      case "likenew":
-      case "usedlikenew":
-        return "condition.likeNew";
-      case "usedexcellent":
-        return "condition.usedExcellent";
-      case "usedgood":
-        return "condition.usedGood";
-      case "usedfair":
-        return "condition.usedFair";
-      case "refurbished":
-      case "refurb":
-        return "condition.refurbished";
-      case "used":
-        return "condition.used";
-      case "good":
-        return "condition.good";
-      case "fair":
-        return "condition.fair";
-      default:
-        return null;
-    }
-  };
   const {
     locale,
     username,
@@ -267,15 +236,14 @@ export function ProductPageLayout(props: ProductPageLayoutProps) {
           {/* Main Product Card */}
           <div className="bg-background rounded-xl border border-border p-6 lg:p-8">
             {/* Two-column layout (gallery left, info right) */}
-            <div className="grid grid-cols-1 lg:grid-cols-[1.25fr_1fr] gap-8 lg:gap-12">
+            <div className="grid grid-cols-1 gap-8 lg:grid-cols-9 lg:gap-12">
               {/* LEFT: Gallery */}
-              <div className="space-y-4">
-                {/* V2 Gallery with horizontal thumbnails */}
-                <DesktopGalleryV2 images={viewModel.galleryImages} />
+              <div className="space-y-4 lg:col-span-5">
+                <DesktopGallery images={viewModel.galleryImages} />
               </div>
 
               {/* RIGHT: Product Info + Buy Box */}
-              <div className="space-y-4">
+              <div className="space-y-4 lg:col-span-4">
                 {/* Meta row: Category badge + Freshness */}
                 <div className="flex flex-wrap items-center gap-3">
                   <CategoryBadge
@@ -326,8 +294,7 @@ export function ProductPageLayout(props: ProductPageLayoutProps) {
                   <HeroSpecs specs={viewModel.heroSpecs} variant="desktop" />
                 )}
 
-                {/* V2 Buy Box with embedded seller card */}
-                <DesktopBuyBoxV2
+                <DesktopBuyBox
                   productId={product.id}
                   productSlug={productSlug}
                   title={product.title}

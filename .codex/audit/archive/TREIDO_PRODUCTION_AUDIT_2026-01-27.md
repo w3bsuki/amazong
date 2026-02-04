@@ -225,8 +225,8 @@ Suggests potential performance optimization issues with resource loading.
 ---
 
 ## Test Credentials Used
-- **Email:** radevalentin@gmail.com
-- **User was already logged in** during testing session
+- **Email:** [redacted]
+- **User was already logged in** during testing session (credentials not stored in repo)
 
 ---
 

@@ -150,8 +150,8 @@ export function DesktopFilterToolbar({
 
   // Get priority filters for this category (up to 4)
   const priorityFilters = useMemo(
-    () => getFilterPillsForCategory(categorySlug),
-    [categorySlug]
+    () => getFilterPillsForCategory(categorySlug, attributes),
+    [categorySlug, attributes]
   )
 
   // Build attribute dropdowns - show ALL filterable attributes with options, ordered by priority

@@ -1,21 +1,22 @@
-# KYC / KYB / AML
+# KYC / KYB / AML (Policy)
 
-## Goal
+> Identity and business verification posture for Treido.
 
-Prevent fraud and meet payment-provider requirements.
+---
 
-## What Stripe covers
+## Overview
 
-- Stripe Connect onboarding collects identity/banking info for payouts.
-- For businesses, Stripe can collect KYB details.
+Treido may require identity verification (KYC) or business verification (KYB) to comply with payment-provider and legal requirements.
 
-## What the platform should cover
+## Payment-provider verification
 
-- Phone verification (anti-spam, account recovery)
-- Risk scoring (new sellers, high-price items, rapid listing)
-- Manual review workflow (first sale, flagged disputes)
+Where available, onboarding and verification may be handled through payment-provider flows (for example, Stripe Connect onboarding).
 
-## Data handling
+## Data minimization
 
-- Minimize what we store (prefer Stripe-hosted onboarding).
-- Define retention for verification artifacts.
+Treido aims to minimize sensitive data stored on our systems and rely on providers for regulated verification flows when possible.
+
+---
+
+*Last updated: 2026-02-04*
+

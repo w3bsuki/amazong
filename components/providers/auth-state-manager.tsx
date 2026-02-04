@@ -40,6 +40,7 @@ export function AuthStateManager({ children }: { children: ReactNode }) {
   const isInitializedRef = useRef(false)
   const pendingRefreshRef = useRef<Promise<void> | null>(null)
   const lastPathnameRef = useRef<string | null>(null)
+  const lastRefreshRef = useRef<number>(0)
 
   const refreshSession = useCallback(async () => {
     // Prevent concurrent refreshes
@@ -75,6 +76,13 @@ export function AuthStateManager({ children }: { children: ReactNode }) {
     return pendingRefreshRef.current
   }, [])
 
+  const refreshWithThrottle = useCallback(async () => {
+    const now = Date.now()
+    if (now - lastRefreshRef.current < 30_000) return
+    lastRefreshRef.current = now
+    await refreshSession()
+  }, [refreshSession])
+
   const signOut = useCallback(async () => {
     const supabase = createClient()
     await supabase.auth.signOut()
@@ -91,7 +99,7 @@ export function AuthStateManager({ children }: { children: ReactNode }) {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(
-      async (event: AuthChangeEvent, session: Session | null) => {
+      async (_event: AuthChangeEvent, session: Session | null) => {
         setState({
           user: session?.user ?? null,
           session: session,
@@ -99,14 +107,6 @@ export function AuthStateManager({ children }: { children: ReactNode }) {
           isAuthenticated: !!session?.user,
         })
 
-        // Clear cart localStorage on sign out (server cart will be preserved)
-        if (event === "SIGNED_OUT") {
-          try {
-            localStorage.removeItem("cart")
-          } catch {
-            // Ignore storage access errors
-          }
-        }
       }
     )
 
@@ -135,9 +135,30 @@ export function AuthStateManager({ children }: { children: ReactNode }) {
     const isAuthRoute = pathname.includes("/auth")
 
     if (wasAuthRoute && !isAuthRoute) {
-      void refreshSession()
+      void refreshWithThrottle()
     }
-  }, [pathname, refreshSession])
+  }, [pathname, refreshWithThrottle])
+
+  useEffect(() => {
+    if (!state.isAuthenticated) return
+
+    const handleVisibility = () => {
+      if (document.visibilityState === "visible") {
+        void refreshWithThrottle()
+      }
+    }
+
+    const interval = window.setInterval(() => {
+      void refreshWithThrottle()
+    }, 10 * 60 * 1000)
+
+    document.addEventListener("visibilitychange", handleVisibility)
+
+    return () => {
+      clearInterval(interval)
+      document.removeEventListener("visibilitychange", handleVisibility)
+    }
+  }, [state.isAuthenticated, refreshWithThrottle])
 
   return (
     <AuthContext.Provider value={{ ...state, signOut, refreshSession }}>

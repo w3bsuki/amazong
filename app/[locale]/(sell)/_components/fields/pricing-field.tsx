@@ -289,7 +289,7 @@ export function PricingField({ className, categoryId, idPrefix = "sell-form", co
             <div className={cn(
               "rounded-xl border bg-card overflow-hidden transition-all",
               "focus-within:ring-2 focus-within:ring-ring focus-within:border-ring",
-              fieldState.invalid ? "border-destructive/50 bg-destructive/5" : "border-border"
+              fieldState.invalid ? "border-destructive/50 bg-destructive-subtle" : "border-border"
             )}>
               <div className="flex items-center h-16 px-4">
                 <span className="text-2xl font-bold text-muted-foreground mr-2">
