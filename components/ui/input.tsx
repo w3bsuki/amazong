@@ -9,9 +9,9 @@ function Input({ className, type, ...props }: React.ComponentProps<"input">) {
       data-slot="input"
       className={cn(
         // Treido pattern: h-11 touch targets; iOS zoom prevention handled globally in app/globals.css
-        "flex h-11 w-full rounded-md border border-input bg-background px-3 py-2 text-sm font-medium text-foreground placeholder:text-muted-foreground file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 tap-highlight-transparent transition-colors",
-        "focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-2 focus-visible:outline-none",
-        "aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40",
+        "flex h-11 w-full rounded-xl border border-input bg-background px-3 py-2 text-sm font-medium text-foreground placeholder:text-muted-foreground file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 tap-highlight-transparent transition-colors",
+        "focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:outline-none",
+        "aria-invalid:border-destructive aria-invalid:ring-2 aria-invalid:ring-destructive-subtle",
         className
       )}
       {...props}

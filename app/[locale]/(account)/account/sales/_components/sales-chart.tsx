@@ -16,11 +16,11 @@ interface SalesChartProps {
 const chartConfig = {
   revenue: {
     label: "Revenue",
-    color: "hsl(var(--chart-1))",
+    color: "var(--color-chart-1)",
   },
   orders: {
     label: "Orders",
-    color: "hsl(var(--chart-2))",
+    color: "var(--color-chart-2)",
   },
 } satisfies ChartConfig
 
@@ -80,7 +80,7 @@ export function SalesChart({ data, locale }: SalesChartProps) {
           className="text-xs text-muted-foreground"
         />
         <ChartTooltip
-          cursor={{ stroke: "var(--border)" }}
+          cursor={{ stroke: "var(--color-border)" }}
           content={
             <ChartTooltipContent
               labelFormatter={(_, payload) => {

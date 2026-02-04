@@ -93,7 +93,6 @@ export function formatDiscount(
     current: formatPrice(currentPrice, { locale }),
     original: formatPrice(originalPrice, { locale }),
     percentage: discountPercent,
-    label: `-${discountPercent}%`
   }
 }
 

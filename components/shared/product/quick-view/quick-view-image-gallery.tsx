@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import Image from "next/image"
-import { CaretRight, CaretLeft, MagnifyingGlassPlus } from "@phosphor-icons/react"
+import { CaretRight, CaretLeft } from "@phosphor-icons/react"
 import { useTranslations } from "next-intl"
 
 import { Badge } from "@/components/ui/badge"
@@ -31,7 +31,6 @@ export function QuickViewImageGallery({
   const tDrawers = useTranslations("Drawers")
   const tProduct = useTranslations("Product")
   const [currentIndex, setCurrentIndex] = React.useState(0)
-  const [isZoomed, setIsZoomed] = React.useState(false)
   
   const hasMultiple = images.length > 1
   const currentImage = images[currentIndex] ?? PLACEHOLDER_IMAGE_PATH
@@ -58,24 +57,19 @@ export function QuickViewImageGallery({
     return (
       <div className="flex flex-col gap-3">
         {/* Main image - larger aspect for desktop modal */}
-        <div className="group relative">
+        <div className="relative">
           <div className="relative aspect-square overflow-hidden rounded-xl bg-muted">
             <button
               type="button"
               onClick={onNavigateToProduct}
               className="absolute inset-0 size-full cursor-pointer focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
               aria-label={tDrawers("viewFullListing")}
-              onMouseEnter={() => setIsZoomed(true)}
-              onMouseLeave={() => setIsZoomed(false)}
             >
               <Image
                 src={normalizeImageUrl(currentImage) ?? PLACEHOLDER_IMAGE_PATH}
                 alt={title}
                 fill
-                className={cn(
-                  "object-contain transition-transform duration-500",
-                  isZoomed && "scale-105"
-                )}
+                className="object-contain"
                 sizes="(max-width: 1024px) 100vw, 800px"
                 priority
               />
@@ -89,7 +83,7 @@ export function QuickViewImageGallery({
                   variant="ghost"
                   size="icon"
                   onClick={(e) => { e.stopPropagation(); prevImage() }}
-                  className="absolute left-3 top-1/2 -translate-y-1/2 size-10 rounded-full bg-background/90 backdrop-blur-sm border border-border shadow-sm hover:bg-background opacity-0 group-hover:opacity-100 transition-opacity"
+                  className="absolute left-3 top-1/2 -translate-y-1/2 border border-border bg-surface-glass backdrop-blur-md"
                   aria-label={tProduct("previousImage")}
                 >
                   <CaretLeft size={20} weight="bold" />
@@ -99,7 +93,7 @@ export function QuickViewImageGallery({
                   variant="ghost"
                   size="icon"
                   onClick={(e) => { e.stopPropagation(); nextImage() }}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 size-10 rounded-full bg-background/90 backdrop-blur-sm border border-border shadow-sm hover:bg-background opacity-0 group-hover:opacity-100 transition-opacity"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 border border-border bg-surface-glass backdrop-blur-md"
                   aria-label={tProduct("nextImage")}
                 >
                   <CaretRight size={20} weight="bold" />
@@ -109,25 +103,17 @@ export function QuickViewImageGallery({
 
             {/* Discount badge */}
             {discountPercent && discountPercent > 0 && (
-              <Badge variant="discount" className="absolute top-3 left-3 text-sm px-2.5 py-1">
+              <Badge variant="destructive" className="absolute top-3 left-3 text-xs px-2 py-0.5 font-semibold">
                 -{discountPercent}%
               </Badge>
             )}
 
             {/* Image counter */}
             {hasMultiple && (
-              <div className="absolute bottom-3 left-3 px-2.5 py-1 rounded-full bg-foreground/80 backdrop-blur-sm text-background text-xs font-medium tabular-nums">
+              <div className="absolute bottom-3 left-3 rounded-full border border-border bg-surface-glass px-2.5 py-1 text-xs font-medium tabular-nums text-foreground backdrop-blur-md">
                 {currentIndex + 1}/{images.length}
               </div>
             )}
-
-            {/* Zoom hint */}
-            <div className="absolute bottom-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity">
-              <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full bg-background/90 backdrop-blur-sm border border-border text-xs font-medium">
-                <MagnifyingGlassPlus size={14} weight="bold" />
-                {tDrawers("viewFullListing")}
-              </div>
-            </div>
           </div>
         </div>
 
@@ -139,12 +125,11 @@ export function QuickViewImageGallery({
                 key={`thumb-${i}`}
                 type="button"
                 onClick={() => setCurrentIndex(i)}
-                onMouseEnter={() => setCurrentIndex(i)}
                 className={cn(
-                  "relative size-20 shrink-0 rounded-lg overflow-hidden transition-all duration-200",
+                  "relative size-20 shrink-0 rounded-xl overflow-hidden border border-border transition-colors",
                   i === currentIndex
-                    ? "ring-2 ring-foreground ring-offset-2 ring-offset-background"
-                    : "border border-border opacity-70 hover:opacity-100"
+                    ? "ring-2 ring-ring"
+                    : "opacity-70 hover:opacity-100"
                 )}
               >
                 <Image
@@ -190,7 +175,7 @@ export function QuickViewImageGallery({
               variant="ghost"
               size="icon"
               onClick={(e) => { e.stopPropagation(); prevImage() }}
-              className="absolute left-1.5 top-1/2 -translate-y-1/2 size-8 rounded-full bg-background/80 backdrop-blur-sm hover:bg-background/90 touch-manipulation"
+              className="absolute left-2 top-1/2 -translate-y-1/2 border border-border bg-surface-glass backdrop-blur-md touch-manipulation"
               aria-label={tProduct("previousImage")}
             >
               <CaretLeft size={18} weight="bold" />
@@ -200,7 +185,7 @@ export function QuickViewImageGallery({
               variant="ghost"
               size="icon"
               onClick={(e) => { e.stopPropagation(); nextImage() }}
-              className="absolute right-1.5 top-1/2 -translate-y-1/2 size-8 rounded-full bg-background/80 backdrop-blur-sm hover:bg-background/90 touch-manipulation"
+              className="absolute right-2 top-1/2 -translate-y-1/2 border border-border bg-surface-glass backdrop-blur-md touch-manipulation"
               aria-label={tProduct("nextImage")}
             >
               <CaretRight size={18} weight="bold" />
@@ -212,9 +197,9 @@ export function QuickViewImageGallery({
           <Button
             type="button"
             variant="ghost"
-            size="icon-sm"
+            size="icon"
             onClick={(e) => { e.stopPropagation(); onRequestClose() }}
-            className="absolute top-2 right-2 rounded-full bg-background/80 backdrop-blur-sm hover:bg-background/90 touch-manipulation"
+            className="absolute top-2 right-2 border border-border bg-surface-glass backdrop-blur-md touch-manipulation"
             aria-label={tProduct("close")}
           >
             <span className="sr-only">{tProduct("close")}</span>
@@ -225,14 +210,14 @@ export function QuickViewImageGallery({
         )}
 
         {discountPercent && discountPercent > 0 && (
-          <Badge variant="discount" className="absolute top-2 left-2 text-xs px-1.5 py-0.5">
+          <Badge variant="destructive" className="absolute top-2 left-2 text-xs px-2 py-0.5 font-semibold">
             -{discountPercent}%
           </Badge>
         )}
 
         {/* Image counter - compact */}
         {hasMultiple && (
-          <div className="absolute bottom-1.5 left-1.5 px-1.5 py-0.5 rounded-full bg-foreground/70 backdrop-blur-sm text-background text-2xs font-medium tabular-nums">
+          <div className="absolute bottom-2 left-2 rounded-full border border-border bg-surface-glass px-2 py-0.5 text-2xs font-medium tabular-nums text-foreground backdrop-blur-md">
             {currentIndex + 1}/{images.length}
           </div>
         )}
@@ -247,10 +232,10 @@ export function QuickViewImageGallery({
               type="button"
               onClick={() => setCurrentIndex(i)}
               className={cn(
-                "relative size-11 shrink-0 rounded-md overflow-hidden transition-all touch-manipulation",
+                "relative size-11 shrink-0 rounded-xl overflow-hidden border border-border transition-all touch-manipulation",
                 i === currentIndex
-                  ? "ring-2 ring-foreground ring-offset-1 ring-offset-background shadow-sm"
-                  : "border border-border opacity-60 hover:opacity-100"
+                  ? "ring-2 ring-ring"
+                  : "opacity-60 hover:opacity-100"
               )}
             >
               <Image

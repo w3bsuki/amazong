@@ -59,7 +59,7 @@ export function HeroSpecs({
         <div
           key={spec.label}
           className={cn(
-            "rounded-lg border border-border bg-surface-subtle",
+            "rounded-xl border border-border bg-surface-subtle",
             // Mobile: compact, centered layout
             // Desktop: slightly larger, centered
             isMobile

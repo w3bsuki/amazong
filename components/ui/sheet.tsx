@@ -65,25 +65,31 @@ function SheetContent({
       <SheetPrimitive.Content
         data-slot="sheet-content"
         className={cn(
-          "bg-background fixed z-50 flex flex-col gap-4 shadow-lg outline-none",
+          "bg-background fixed z-50 flex flex-col gap-4 border border-border shadow-modal outline-none",
           "data-[state=open]:animate-in data-[state=closed]:animate-out",
           "data-[state=open]:fade-in data-[state=closed]:fade-out",
           "duration-200 ease-out",
           side === "right" &&
-            "inset-y-0 right-0 h-full w-3/4 border-l sm:max-w-sm data-[state=open]:slide-in-from-right data-[state=closed]:slide-out-to-right",
+            "inset-y-0 right-0 h-full w-3/4 rounded-l-2xl border-l sm:max-w-sm data-[state=open]:slide-in-from-right data-[state=closed]:slide-out-to-right",
           side === "left" &&
-            "inset-y-0 left-0 h-full w-3/4 border-r sm:max-w-sm data-[state=open]:slide-in-from-left data-[state=closed]:slide-out-to-left",
+            "inset-y-0 left-0 h-full w-3/4 rounded-r-2xl border-r sm:max-w-sm data-[state=open]:slide-in-from-left data-[state=closed]:slide-out-to-left",
           side === "top" &&
-            "inset-x-0 top-0 h-auto border-b data-[state=open]:slide-in-from-top data-[state=closed]:slide-out-to-top",
+            "inset-x-0 top-0 h-auto rounded-b-2xl border-b data-[state=open]:slide-in-from-top data-[state=closed]:slide-out-to-top",
           side === "bottom" &&
-            "inset-x-0 bottom-0 h-auto border-t data-[state=open]:slide-in-from-bottom data-[state=closed]:slide-out-to-bottom",
+            "inset-x-0 bottom-0 h-auto rounded-t-2xl border-t data-[state=open]:slide-in-from-bottom data-[state=closed]:slide-out-to-bottom",
           className
         )}
         {...props}
       >
         {children}
         <SheetPrimitive.Close
-          className="ring-offset-background focus:ring-ring data-[state=open]:bg-secondary absolute top-4 right-4 rounded-xs opacity-70 transition-opacity hover:opacity-100 focus:ring-2 focus:ring-offset-2 focus:outline-hidden disabled:pointer-events-none"
+          className={cn(
+            "absolute top-4 right-4 z-10 flex size-11 items-center justify-center rounded-full",
+            "bg-surface-glass backdrop-blur-md border border-border shadow-sm",
+            "text-foreground hover:bg-hover active:bg-active",
+            "outline-none focus-visible:ring-2 focus-visible:ring-focus-ring",
+            "disabled:pointer-events-none"
+          )}
           aria-label={resolvedCloseLabel}
         >
           <XIcon className="size-4" />

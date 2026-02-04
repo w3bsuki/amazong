@@ -275,18 +275,10 @@ describe('lib/validation/auth', () => {
       expect(result.labelKey).toBe('strengthStrong')
     })
     
-    it('includes correct color classes', () => {
-      expect(getPasswordStrength('abc').color).toBe('bg-destructive')
-      expect(getPasswordStrength('password1').color).toBe('bg-status-warning')
-      expect(getPasswordStrength('Password123').color).toBe('bg-status-success/80')
-      expect(getPasswordStrength('Password123!').color).toBe('bg-status-success')
-    })
-    
-    it('includes correct width classes', () => {
-      expect(getPasswordStrength('abc').width).toBe('w-1/4')
-      expect(getPasswordStrength('password1').width).toBe('w-2/4')
-      expect(getPasswordStrength('Password123').width).toBe('w-3/4')
-      expect(getPasswordStrength('Password123!').width).toBe('w-full')
+    it('returns higher scores for stronger passwords', () => {
+      const weak = getPasswordStrength('abc').score
+      const strong = getPasswordStrength('Password123!').score
+      expect(strong).toBeGreaterThan(weak)
     })
   })
   

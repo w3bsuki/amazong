@@ -12,7 +12,7 @@ export function TrustBadges(props: { verifiedSeller?: boolean }) {
       <CardContent className="p-3">
         <div className="grid grid-cols-1 gap-3">
           <div className="flex items-start gap-3">
-            <div className="mt-0.5 rounded-md bg-surface-subtle p-2">
+            <div className="mt-0.5 rounded-xl bg-surface-subtle p-2">
               <ShieldCheck className="h-4 w-4 text-foreground" />
             </div>
             <div>
@@ -24,7 +24,7 @@ export function TrustBadges(props: { verifiedSeller?: boolean }) {
           </div>
 
           <div className="flex items-start gap-3">
-            <div className="mt-0.5 rounded-md bg-surface-subtle p-2">
+            <div className="mt-0.5 rounded-xl bg-surface-subtle p-2">
               <Truck className="h-4 w-4 text-foreground" />
             </div>
             <div>
@@ -34,7 +34,7 @@ export function TrustBadges(props: { verifiedSeller?: boolean }) {
           </div>
 
           <div className="flex items-start gap-3">
-            <div className="mt-0.5 rounded-md bg-surface-subtle p-2">
+            <div className="mt-0.5 rounded-xl bg-surface-subtle p-2">
               <RotateCcw className="h-4 w-4 text-foreground" />
             </div>
             <div>

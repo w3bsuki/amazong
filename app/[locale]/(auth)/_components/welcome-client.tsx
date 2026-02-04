@@ -184,7 +184,7 @@ export function WelcomeClient({ locale }: { locale: string }) {
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -20 }}
-              className="bg-card rounded-md border border-border shadow-sm overflow-hidden"
+              className="bg-card rounded-xl border border-border overflow-hidden"
             >
               <div className="relative bg-primary px-6 py-10 text-center text-primary-foreground overflow-hidden">
                 <div className="absolute inset-0 overflow-hidden">
@@ -254,7 +254,7 @@ export function WelcomeClient({ locale }: { locale: string }) {
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -20 }}
-              className="bg-card rounded-md border border-border shadow-sm overflow-hidden"
+              className="bg-card rounded-xl border border-border overflow-hidden"
             >
               <div className="p-4 border-b border-border">
                 <button
@@ -305,7 +305,7 @@ export function WelcomeClient({ locale }: { locale: string }) {
                           setUseCustomAvatar(false)
                         }}
                         className={cn(
-                          "p-2 rounded-md border-2 transition-colors",
+                          "p-2 rounded-xl border-2 transition-colors",
                           !useCustomAvatar && selectedVariant === variant
                             ? "border-primary bg-muted"
                             : "border-border hover:border-border/80"
@@ -384,7 +384,7 @@ export function WelcomeClient({ locale }: { locale: string }) {
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -20 }}
-              className="bg-card rounded-md border border-border shadow-sm overflow-hidden"
+              className="bg-card rounded-xl border border-border overflow-hidden"
             >
               <div className="p-4 border-b border-border">
                 <button
@@ -464,7 +464,7 @@ export function WelcomeClient({ locale }: { locale: string }) {
               key="complete"
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
-              className="bg-card rounded-md border border-border shadow-sm overflow-hidden"
+              className="bg-card rounded-xl border border-border overflow-hidden"
             >
               <div className="p-4 text-center">
                 <motion.div
@@ -484,9 +484,9 @@ export function WelcomeClient({ locale }: { locale: string }) {
                     <motion.div
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
-                      className="flex items-center gap-4 p-4 bg-surface-subtle hover:bg-hover active:bg-active rounded-md border border-border transition-colors group"
+                      className="flex items-center gap-4 p-4 bg-surface-subtle hover:bg-hover active:bg-active rounded-xl border border-border transition-colors group"
                     >
-                      <div className="size-12 bg-selected rounded-md flex items-center justify-center shrink-0">
+                      <div className="size-12 bg-selected rounded-xl flex items-center justify-center shrink-0">
                         <ShoppingBag className="size-6 text-primary" weight="duotone" />
                       </div>
                       <div className="flex-1 min-w-0">
@@ -501,9 +501,9 @@ export function WelcomeClient({ locale }: { locale: string }) {
                     <motion.div
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
-                      className="flex items-center gap-4 p-4 bg-surface-subtle hover:bg-hover active:bg-active rounded-md border border-border transition-colors group"
+                      className="flex items-center gap-4 p-4 bg-surface-subtle hover:bg-hover active:bg-active rounded-xl border border-border transition-colors group"
                     >
-                      <div className="size-12 bg-primary rounded-md flex items-center justify-center shrink-0">
+                      <div className="size-12 bg-primary rounded-xl flex items-center justify-center shrink-0">
                         <Storefront className="size-6 text-primary-foreground" weight="fill" />
                       </div>
                       <div className="flex-1 min-w-0">
@@ -518,9 +518,9 @@ export function WelcomeClient({ locale }: { locale: string }) {
                     <motion.div
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
-                      className="flex items-center gap-4 p-4 bg-surface-subtle hover:bg-hover active:bg-active rounded-md border border-border transition-colors group"
+                      className="flex items-center gap-4 p-4 bg-surface-subtle hover:bg-hover active:bg-active rounded-xl border border-border transition-colors group"
                     >
-                      <div className="size-12 bg-selected rounded-md flex items-center justify-center shrink-0">
+                      <div className="size-12 bg-selected rounded-xl flex items-center justify-center shrink-0">
                         <UserCircle className="size-6 text-primary" weight="duotone" />
                       </div>
                       <div className="flex-1 min-w-0">

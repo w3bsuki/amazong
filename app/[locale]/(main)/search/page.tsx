@@ -426,7 +426,7 @@ export default async function SearchPage({
         </div>
 
         {/* Product Grid with container queries */}
-        <div className="rounded-xl bg-card border border-border p-4">
+        <div>
           {products.length === 0 ? (
             <EmptyStateCTA
               variant={query ? "no-search" : "no-category"}

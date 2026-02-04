@@ -93,17 +93,17 @@ function SellerVerificationBadge({
       <div className={cn("flex items-center gap-1.5", emailVerified ? "text-foreground" : "text-muted-foreground/50")}>
         <EnvelopeSimple size={12} weight={emailVerified ? "fill" : "regular"} />
         <span>{t("email")}</span>
-        {emailVerified && <span className="text-success">✓</span>}
+        {emailVerified && <span className="text-muted-foreground">✓</span>}
       </div>
       <div className={cn("flex items-center gap-1.5", phoneVerified ? "text-foreground" : "text-muted-foreground/50")}>
         <Phone size={12} weight={phoneVerified ? "fill" : "regular"} />
         <span>{t("phone")}</span>
-        {phoneVerified && <span className="text-success">✓</span>}
+        {phoneVerified && <span className="text-muted-foreground">✓</span>}
       </div>
       <div className={cn("flex items-center gap-1.5", idVerified ? "text-foreground" : "text-muted-foreground/50")}>
         <IdentificationCard size={12} weight={idVerified ? "fill" : "regular"} />
         <span>{t("id")}</span>
-        {idVerified && <span className="text-success">✓</span>}
+        {idVerified && <span className="text-muted-foreground">✓</span>}
       </div>
       {isVerifiedBusiness && (
         <div className="flex items-center gap-1.5 text-verify-business font-medium pt-1 border-t border-border">

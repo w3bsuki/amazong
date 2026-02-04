@@ -20,7 +20,7 @@ export function ShippingReturnsInfo({ pickupOnly }: ShippingReturnsInfoProps) {
       </h3>
       <div className="space-y-2">
         {/* Shipping */}
-        <div className="flex items-start gap-3 p-3 rounded-lg bg-muted">
+        <div className="flex items-start gap-3 p-3 rounded-xl bg-muted">
           <Package className="size-5 text-muted-foreground shrink-0 mt-0.5" strokeWidth={1.5} />
           <div>
             <p className="text-sm font-medium text-foreground">{t("shippingTitle")}</p>
@@ -30,7 +30,7 @@ export function ShippingReturnsInfo({ pickupOnly }: ShippingReturnsInfoProps) {
           </div>
         </div>
         {/* Returns */}
-        <div className="flex items-start gap-3 p-3 rounded-lg bg-muted">
+        <div className="flex items-start gap-3 p-3 rounded-xl bg-muted">
           <RotateCcw className="size-5 text-muted-foreground shrink-0 mt-0.5" strokeWidth={1.5} />
           <div>
             <p className="text-sm font-medium text-foreground">{t("returnsTitle")}</p>
@@ -38,10 +38,10 @@ export function ShippingReturnsInfo({ pickupOnly }: ShippingReturnsInfoProps) {
           </div>
         </div>
         {/* Buyer Protection */}
-        <div className="flex items-start gap-3 p-3 rounded-lg bg-success-subtle border border-success/20">
-          <ShieldCheck className="size-5 text-success shrink-0 mt-0.5" strokeWidth={1.5} />
+        <div className="flex items-start gap-3 p-3 rounded-xl bg-muted border border-border">
+          <ShieldCheck className="size-5 text-muted-foreground shrink-0 mt-0.5" strokeWidth={1.5} />
           <div>
-            <p className="text-sm font-medium text-success">{t("buyerProtection")}</p>
+            <p className="text-sm font-medium text-foreground">{t("buyerProtection")}</p>
             <p className="text-xs text-muted-foreground mt-0.5">{t("buyerProtectionDesc")}</p>
           </div>
         </div>

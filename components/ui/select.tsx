@@ -58,8 +58,11 @@ function SelectTrigger({
       data-slot="select-trigger"
       data-size={size}
       className={cn(
-        // WCAG 2.2 AA: h-10 (40px) mobile, h-9 (36px) desktop for touch targets
-        "ui-select-trigger border-input flex w-fit items-center justify-between gap-2 rounded-md border bg-transparent px-3 py-2 text-sm whitespace-nowrap shadow-none outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background aria-invalid:border-destructive aria-invalid:ring-2 aria-invalid:ring-destructive disabled:cursor-not-allowed disabled:pointer-events-none disabled:bg-muted disabled:text-muted-foreground transition-colors",
+        "ui-select-trigger border-input flex w-fit items-center justify-between gap-2 rounded-xl border bg-transparent px-3 text-sm whitespace-nowrap shadow-none outline-none transition-colors",
+        "h-11 data-[size=sm]:h-10",
+        "focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:outline-none focus-visible:border-ring",
+        "aria-invalid:border-destructive aria-invalid:ring-2 aria-invalid:ring-destructive-subtle",
+        "disabled:cursor-not-allowed disabled:pointer-events-none disabled:bg-muted disabled:text-muted-foreground",
         className
       )}
       {...props}
@@ -84,7 +87,7 @@ function SelectContent({
       <SelectPrimitive.Content
         data-slot="select-content"
         className={cn(
-          "bg-popover text-popover-foreground ui-select-content relative z-50 max-h-(--radix-select-content-available-height) min-w-32 origin-(--radix-select-content-transform-origin) overflow-x-hidden overflow-y-auto rounded-md border shadow-none",
+          "bg-popover text-popover-foreground ui-select-content relative z-50 max-h-(--radix-select-content-available-height) min-w-32 origin-(--radix-select-content-transform-origin) overflow-x-hidden overflow-y-auto rounded-2xl border shadow-dropdown",
           position === "popper" && "ui-select-content--popper",
           className
         )}
@@ -117,7 +120,7 @@ function SelectItem({
     <SelectPrimitive.Item
       data-slot="select-item"
       className={cn(
-        "ui-select-item focus:bg-accent focus:text-accent-foreground relative flex w-full cursor-default items-center gap-2 rounded-md py-1.5 pr-8 pl-2 text-sm outline-hidden select-none",
+        "ui-select-item focus:bg-accent focus:text-accent-foreground relative flex w-full cursor-default items-center gap-2 rounded-xl py-1.5 pr-8 pl-2 text-sm outline-hidden select-none",
         className
       )}
       {...props}

@@ -40,7 +40,7 @@ export function MobileHomepageHeader({
           type="button"
           onClick={onSearchOpen}
           className={cn(
-            "flex-1 min-w-0 flex items-center gap-1.5 h-9 ml-2 px-3 rounded-full",
+            "flex-1 min-w-0 flex items-center gap-2 h-(--spacing-touch) ml-2 px-2.5 rounded-full",
             "bg-surface-subtle border border-border/30",
             "text-muted-foreground text-sm text-left",
             "active:bg-active transition-colors"
@@ -48,8 +48,8 @@ export function MobileHomepageHeader({
           aria-label={searchPlaceholder}
           aria-haspopup="dialog"
         >
-          <MagnifyingGlass size={16} weight="regular" className="text-muted-foreground shrink-0" />
-          <span className="flex-1 truncate font-normal text-xs">{searchPlaceholder}</span>
+          <MagnifyingGlass size={18} weight="regular" className="text-muted-foreground shrink-0" />
+          <span className="flex-1 truncate font-normal text-sm">{searchPlaceholder}</span>
         </button>
         <div className="flex items-center shrink-0 -space-x-2">
           <MobileWishlistButton />

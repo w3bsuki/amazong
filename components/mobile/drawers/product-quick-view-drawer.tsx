@@ -12,15 +12,11 @@ import { useRouter } from "@/i18n/routing"
 import { useTranslations } from "next-intl"
 import { toast } from "sonner"
 
-import { X } from "@phosphor-icons/react"
-
 import {
   Drawer,
   DrawerBody,
-  DrawerClose,
   DrawerContent,
   DrawerDescription,
-  DrawerTitle,
 } from "@/components/ui/drawer"
 import type { QuickViewProduct } from "@/components/providers/drawer-context"
 import { useCart } from "@/components/providers/cart-context"
@@ -103,20 +99,6 @@ export function ProductQuickViewDrawer({
         className="touch-pan-y"
         overlayBlur="sm"
       >
-        {/* Clean header with subtle styling */}
-        <div className="flex items-center justify-between px-4 pb-2 border-b border-border/30">
-          <DrawerTitle className="text-sm font-semibold text-foreground truncate pr-2">
-            {title || t("quickView")}
-          </DrawerTitle>
-          <DrawerClose asChild>
-            <button
-              className="shrink-0 text-muted-foreground/60 hover:text-foreground transition-colors"
-              aria-label={t("close")}
-            >
-              <X size={20} weight="light" />
-            </button>
-          </DrawerClose>
-        </div>
         <DrawerDescription className="sr-only">{description}</DrawerDescription>
         <DrawerBody className="px-0 py-0">
           {showSkeleton ? (

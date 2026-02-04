@@ -26,7 +26,7 @@ function ToastViewport({
 }
 
 const toastVariants = cva(
-  'ui-toast group pointer-events-auto relative flex w-full items-center justify-between space-x-3 overflow-hidden rounded-md border p-3 pr-8 shadow-sm',
+  'ui-toast group pointer-events-auto relative flex w-full items-center justify-between space-x-3 overflow-hidden rounded-2xl border p-3 pr-12 shadow-dropdown',
   {
     variants: {
       variant: {
@@ -64,7 +64,7 @@ function ToastAction({
     <ToastPrimitives.Action
       data-slot="toast-action"
       className={cn(
-        'ui-toast-action inline-flex h-8 shrink-0 items-center justify-center rounded-md border bg-transparent px-3 text-sm font-medium ring-offset-background transition-colors hover:bg-secondary focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none disabled:opacity-50',
+        'ui-toast-action inline-flex h-10 shrink-0 items-center justify-center rounded-xl border bg-transparent px-3 text-sm font-medium transition-colors hover:bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring disabled:pointer-events-none disabled:opacity-50',
         className,
       )}
       {...props}
@@ -85,7 +85,7 @@ function ToastClose({
     <ToastPrimitives.Close
       data-slot="toast-close"
       className={cn(
-        'ui-toast-close absolute right-2 top-2 rounded-md p-1 text-foreground/50 opacity-0 transition-opacity hover:text-foreground focus:opacity-100 focus:outline-none focus:ring-2 group-hover:opacity-100',
+        'ui-toast-close absolute right-2 top-2 flex size-11 items-center justify-center rounded-full text-muted-foreground opacity-0 transition-opacity hover:text-foreground focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring group-hover:opacity-100',
         className,
       )}
       toast-close=""
@@ -118,7 +118,7 @@ function ToastDescription({
   return (
     <ToastPrimitives.Description
       data-slot="toast-description"
-      className={cn('text-sm opacity-90', className)}
+      className={cn('text-sm text-muted-foreground', className)}
       {...props}
     />
   )

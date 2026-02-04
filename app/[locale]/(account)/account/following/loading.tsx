@@ -1,15 +1,13 @@
 import { Skeleton } from "@/components/ui/skeleton"
 import { Card, CardContent } from "@/components/ui/card"
+import { AccountPageHeaderSkeleton } from "../_components/account-page-header-skeleton"
 
 export default function FollowingLoading() {
   return (
     <div className="p-4 lg:p-4">
       <div className="max-w-4xl mx-auto space-y-6">
         {/* Header */}
-        <div className="space-y-2">
-          <Skeleton className="h-8 w-32" />
-          <Skeleton className="h-4 w-64" />
-        </div>
+        <AccountPageHeaderSkeleton action={null} />
 
         {/* Tabs */}
         <div className="flex gap-1 p-1 bg-muted rounded-lg w-fit">

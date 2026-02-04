@@ -33,7 +33,7 @@ function DropdownMenuContent({
         data-slot="dropdown-menu-content"
         sideOffset={sideOffset}
         className={cn(
-          "bg-popover text-popover-foreground z-50 max-h-(--radix-dropdown-menu-content-available-height) min-w-32 overflow-x-hidden overflow-y-auto rounded-md border p-1 shadow-none",
+          "bg-popover text-popover-foreground z-50 max-h-(--radix-dropdown-menu-content-available-height) min-w-32 overflow-x-hidden overflow-y-auto rounded-2xl border p-1 shadow-dropdown",
           className
         )}
         {...props}
@@ -63,9 +63,9 @@ function DropdownMenuItem({
     <DropdownMenuPrimitive.Item
       data-slot="dropdown-menu-item"
       className={cn(
-        "ui-dropdown-item focus:bg-accent focus:text-accent-foreground relative flex cursor-default items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-hidden select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+        "ui-dropdown-item focus:bg-accent focus:text-accent-foreground relative flex cursor-default items-center gap-2 rounded-xl px-2 py-1.5 text-sm outline-hidden select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
         inset && "pl-8",
-        variant === "destructive" && "ui-dropdown-item--destructive focus:bg-destructive/10 dark:focus:bg-destructive/20",
+        variant === "destructive" && "ui-dropdown-item--destructive focus:bg-destructive-subtle",
         className
       )}
       {...props}
@@ -124,7 +124,7 @@ function DropdownMenuSubTrigger({
     <DropdownMenuPrimitive.SubTrigger
       data-slot="dropdown-menu-sub-trigger"
       className={cn(
-        "ui-dropdown-item focus:bg-accent data-[state=open]:bg-accent flex cursor-default items-center rounded-sm px-2 py-1.5 text-sm outline-hidden select-none",
+        "ui-dropdown-item focus:bg-accent data-[state=open]:bg-accent flex cursor-default items-center rounded-xl px-2 py-1.5 text-sm outline-hidden select-none",
         inset && "pl-8",
         className
       )}
@@ -157,7 +157,7 @@ function DropdownMenuSubContent({
     <DropdownMenuPrimitive.SubContent
       data-slot="dropdown-menu-sub-content"
       className={cn(
-        "bg-popover text-popover-foreground z-50 min-w-32 overflow-hidden rounded-md border p-1 shadow-none",
+        "bg-popover text-popover-foreground z-50 min-w-32 overflow-hidden rounded-2xl border p-1 shadow-dropdown",
         className
       )}
       {...props}

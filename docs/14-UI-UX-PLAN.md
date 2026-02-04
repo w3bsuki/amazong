@@ -33,16 +33,17 @@
 
 ---
 
-## Current State (as of 2026-02-03)
+## Current State (as of 2026-02-04)
 
 | Component | Status | Notes |
 |-----------|--------|-------|
 | Search `@modal` slot | ✅ Done | `app/[locale]/(main)/search/@modal/(..)[username]/[productSlug]/page.tsx` |
 | Category `@modal` slot | ❌ Missing | Route exists but no parallel slot |
 | Seller preview modal | ❌ Missing | No intercepting route |
-| Touch target utilities | ✅ Done | `h-touch`, `h-touch-lg` in `globals.css` |
-| ResponsiveOverlay component | ❌ Missing | `Dialog` and `Drawer` are separate code paths |
-| Glass surface token | ❌ Missing | Using inline `bg-overlay-dark backdrop-blur-sm` |
+| Touch target utilities | ✅ Done | Tokenized: `--spacing-touch*` in `app/globals.css` (use `h-11` / `h-12`) |
+| Product quick view overlay | ✅ Done | Desktop `Dialog` + mobile bottom `Sheet` share one content component |
+| ResponsiveOverlay component | ❌ Missing | Still optional to generalize beyond product quick view |
+| Glass surface token | ✅ Done | Use `bg-surface-glass backdrop-blur-md` (SSOT: `app/globals.css`) |
 | Modal routing E2E test | ❌ Missing | No back-button verification |
 
 ---
@@ -122,22 +123,16 @@ SSOT: `docs/04-DESIGN.md`
 
 - **No palette classes** (`bg-gray-100`, `text-blue-500`).
 - **No arbitrary values** (`w-[560px]`, `text-[13px]`).
-- **No background opacity modifiers** (`bg-background/95`, `bg-primary/10`).
-- **Buttons are touch-safe** (`h-touch` / `h-touch-lg` + padding) and never feel tiny.
+- **No brand opacity tints** (`bg-primary/10`).
+- **Buttons are touch-safe** (`h-11` / `h-12`) and never feel tiny.
 - **shadcn primitives stay pure** (`components/ui/*` has no app logic).
 
 ### Glass Surface Token
 
-For translucent overlays (e.g., floating headers, bottom sheets), add to `app/globals.css`:
+For translucent overlays (e.g., floating headers, bottom sheets), use:
 
-```css
---surface-glass: oklch(from var(--background) l c h / 0.85);
---surface-glass-blur: theme(blur.md); /* 12px */
-```
-
-**Usage:** `bg-surface-glass backdrop-blur-md` instead of inline `bg-overlay-dark backdrop-blur-sm`.
-
-> **Status:** Token not yet added. Add in Phase 1 foundations work.
+- `bg-surface-glass backdrop-blur-md`
+- (SSOT tokens in `app/globals.css`)
 
 ---
 

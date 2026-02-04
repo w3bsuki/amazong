@@ -38,17 +38,17 @@ export function SubcategoryCircles({
   if (!subcategories || subcategories.length === 0) return null
 
   return (
-    <div className="py-1.5 overflow-x-auto no-scrollbar">
-      <div className="flex items-start gap-1 px-inset">
+    <div className="py-2 overflow-x-auto no-scrollbar">
+      <div className="flex items-start gap-1 px-inset-md">
         {/* View All - First circle */}
         <Link
           href={`/categories/${categorySlug}`}
           className="flex flex-col items-center gap-0.5 shrink-0 w-(--spacing-category-item-lg) active:opacity-80 transition-opacity"
         >
           <div className="size-(--spacing-category-circle) rounded-full bg-foreground text-background flex items-center justify-center">
-            <SquaresFour size={18} weight="fill" />
+            <SquaresFour size={20} weight="fill" />
           </div>
-          <span className="text-2xs text-center text-foreground font-semibold leading-tight line-clamp-1 truncate w-full">
+          <span className="text-xs text-center text-foreground font-semibold leading-tight line-clamp-1 truncate w-full">
             {viewAllLabel}
           </span>
         </Link>
@@ -66,13 +66,13 @@ export function SubcategoryCircles({
               category={sub}
               active={false}
               className="size-(--spacing-category-circle)"
-              fallbackIconSize={18}
+              fallbackIconSize={20}
               fallbackIconWeight="bold"
               variant="muted"
               preferIcon={preferIcon}
             />
             {/* Label */}
-            <span className="text-2xs text-center text-muted-foreground font-medium leading-tight line-clamp-1 truncate w-full">
+            <span className="text-xs text-center text-muted-foreground font-medium leading-tight line-clamp-1 truncate w-full">
               {getCategoryName(sub, locale)}
             </span>
           </button>

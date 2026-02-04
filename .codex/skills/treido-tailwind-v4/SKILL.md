@@ -21,6 +21,16 @@ Tailwind v4 is **CSS-first**. There is no `tailwind.config.js`.
 
 **Token SSOT**: `app/globals.css`
 
+### Treido UI Rails (2026 Clean)
+
+- **One accent only**: `primary` (blue) for CTAs/links/active/focus.
+- **Destructive red only** for discounts + error states.
+- **Cards/list rows are border-only** (no `shadow-*`); shadows are for overlays only (`shadow-modal`, `shadow-dropdown`).
+- **Dense marketplace defaults**:
+  - Listing grids: `gap-(--product-grid-gap)`
+  - Product cards: `p-2.5`
+  - Touch targets: `h-11`+
+
 ### Semantic Tokens (AUTHORITATIVE)
 
 | Token | Usage | CSS Variable |
@@ -47,9 +57,11 @@ Tailwind v4 is **CSS-first**. There is no `tailwind.config.js`.
 | `from-*`, `to-*` | Gradient stops | Remove |
 | `w-[500px]` | Arbitrary value | Use spacing scale |
 | `text-[13px]` | Arbitrary value | Use text scale |
-| `bg-primary/10` | Opacity hack | Use dedicated subtle token |
+| `bg-primary/10` | Brand tint opacity hack | Use `bg-hover`, `bg-selected`, or `bg-primary-subtle` |
 | `bg-white` | Hardcoded | `bg-background` |
 | `text-black` | Hardcoded | `text-foreground` |
+
+**Allowed (rare):** Token-based alpha for *glass* / *hairline* (e.g. `bg-background/95`, `border-border/30`).
 
 ### Spacing Scale (AUTHORITATIVE)
 
@@ -67,10 +79,10 @@ Use Tailwind's spacing scale, not arbitrary values:
 ## ✅ Do
 
 ```tsx
-<div className="bg-background text-foreground border border-border rounded-lg p-4">
+<div className="bg-background text-foreground border border-border rounded-xl p-2.5">
   <h2 className="text-lg font-semibold">Title</h2>
   <p className="text-muted-foreground text-sm">Description</p>
-  <button className="bg-primary text-primary-foreground px-4 py-2 rounded-md hover:bg-hover">
+  <button className="bg-primary text-primary-foreground h-11 px-4 rounded-xl">
     Action
   </button>
 </div>

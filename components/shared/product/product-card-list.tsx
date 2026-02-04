@@ -3,7 +3,8 @@
 import * as React from "react"
 import { Link } from "@/i18n/routing"
 import { useLocale, useTranslations } from "next-intl"
-import { cn, getConditionBadgeVariant } from "@/lib/utils"
+import { cn } from "@/lib/utils"
+import { getConditionBadgeVariant } from "@/components/shared/product/_lib/condition-badges"
 import { computeBadgeSpecsClient, shouldShowConditionBadge } from "@/lib/badges/category-badge-specs"
 import { ProductCardActions } from "./product-card-actions"
 import { FreshnessIndicator } from "./freshness-indicator"
@@ -206,7 +207,7 @@ export function ProductCardList({
   return (
     <div
       className={cn(
-        "group relative flex gap-4 rounded-lg border border-border bg-card p-3 transition-colors hover:bg-hover active:bg-active",
+        "group relative flex gap-4 rounded-xl border border-border bg-card p-3 transition-colors hover:bg-hover active:bg-active",
         className
       )}
     >
@@ -221,7 +222,7 @@ export function ProductCardList({
       </Link>
 
       {/* Image - Left side */}
-      <div className="relative shrink-0 w-32 h-32 sm:w-40 sm:h-40 rounded-md overflow-hidden bg-muted">
+      <div className="relative shrink-0 w-32 h-32 sm:w-40 sm:h-40 rounded-xl overflow-hidden bg-muted">
         <Image
           src={normalizeImageUrl(image)}
           alt={title}
@@ -262,7 +263,7 @@ export function ProductCardList({
 
         {/* Out of stock overlay */}
         {!inStock && (
-          <div className="absolute inset-0 flex items-center justify-center bg-background/70">
+          <div className="absolute inset-0 flex items-center justify-center bg-surface-glass">
             <span className="text-xs font-medium text-muted-foreground">{t("outOfStock")}</span>
           </div>
         )}
@@ -321,13 +322,13 @@ export function ProductCardList({
         {/* Badges row */}
         <div className="flex flex-wrap items-center gap-2 mt-1.5">
           {freeShipping && (
-            <span className="inline-flex items-center gap-1 text-xs text-shipping-free">
+            <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
               <Truck size={14} weight="bold" />
               {t("freeShipping")}
             </span>
           )}
           {showBuyerProtection && (
-            <span className="inline-flex items-center gap-1 text-xs text-verified">
+            <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
               <ShieldCheck size={14} weight="fill" />
               {t("buyerProtectionInline")}
             </span>
@@ -339,7 +340,7 @@ export function ProductCardList({
           <div className="flex items-center gap-1.5 mt-2 text-xs text-muted-foreground">
             <span>{sellerName}</span>
             {sellerVerified && (
-              <span className="text-verified">✓</span>
+              <span className="text-muted-foreground">✓</span>
             )}
           </div>
         )}

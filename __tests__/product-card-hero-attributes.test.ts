@@ -3,7 +3,7 @@ import {
   buildHeroBadgeText,
   getHeroAttributeConfig,
   shouldShowHeroBadge,
-} from "@/lib/product-card-hero-attributes"
+} from "@/components/shared/product/_lib/product-card-hero-attributes"
 
 describe("product-card-hero-attributes", () => {
   describe("getHeroAttributeConfig", () => {

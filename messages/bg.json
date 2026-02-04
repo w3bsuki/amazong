@@ -124,7 +124,7 @@
     },
     "Categories": {
         "title": "Категории",
-        "shortName": "{slug, select, electronics {Техника} automotive {Авто} home {Дом} home_kitchen {Дом} jewelry_watches {Бижута} movies_music {Медия} services {Услуги} collectibles {Колекции} e_mobility {Е-мобилност} health_wellness {Здраве} tools_home {Инструменти} baby_kids {Деца} baby {Деца} other {name}}",
+        "shortName": "{slug, select, electronics {Техника} automotive {Авто} home {Дом} home_kitchen {Дом} jewelry_watches {Бижута} movies_music {Медия} services {Услуги} collectibles {Колекции} e_mobility {Е-мобилност} health_wellness {Здраве} tools_home {Инструменти} baby_kids {Деца} baby {Деца} other {{name}}}",
         "headerTitleAll": "Всички категории",
         "metaDescription": "Разгледайте всички категории продукти в Treido. Намерете електроника, мода, дом и градина и още.",
         "bannerDescription": "Разгледай продуктите в тази категория",
@@ -188,10 +188,10 @@
             "newArrivals": "Новости в играчки",
             "fashionTrends": "Открий модни тенденции",
             "shopNow": "Пазарувай сега",
-            "deals": "Днешни оферти",
-            "fashion": "Мода на деня",
-            "electronics": "Електроника",
-            "automotive": "Автомобили",
+            "deals": "Оферти днес",
+            "fashion": "В тренд: Мода",
+            "electronics": "Техника на фокус",
+            "automotive": "Авто находки",
             "kids": "Деца и играчки",
             "bulgarian": "Произведено в България",
             "toys": "Играчки",
@@ -223,7 +223,7 @@
             "automotive": "Автомобили"
         },
         "mobile": {
-            "promotedListings": "Промотирани обяви",
+            "promotedListings": "На фокус",
             "seeAll": "Виж всички",
             "trustProtected": "Защитени",
             "trustFastShip": "Бърза доставка",
@@ -260,6 +260,8 @@
         }
     },
     "Product": {
+        "metaTitle": "{title} | {seller}",
+        "metaDescriptionFallback": "Купете {title} от {seller}",
         "price": "Цена",
         "listPrice": "Листова цена",
         "delivery": "Доставка",
@@ -561,8 +563,12 @@
     "CategoryDrawer": {
         "title": "Категории",
         "description": "Разгледайте категории продукти",
+        "ariaLabel": "Разглеждане на категории",
+        "searchPlaceholder": "Търси подкатегории",
+        "searchAriaLabel": "Търси подкатегории",
         "subcategories": "Подкатегории",
         "noSubcategories": "Няма подкатегории",
+        "noMatches": "Няма резултати",
         "seeAllIn": "Виж всички в {category}",
         "close": "Затвори"
     },
@@ -3092,6 +3098,7 @@
     },
     "Breadcrumbs": {
         "ariaLabel": "Навигация по пътя",
+        "home": "Начало",
         "homeLabel": "Treido",
         "todaysDeals": "Днешни оферти",
         "customerService": "Обслужване на клиенти",
@@ -3414,6 +3421,10 @@
         "backToPlans": "Назад към плановете",
         "title": "Надградете плана си",
         "description": "Изберете план с по-ниски такси и повече функции"
+    },
+    "CategoryPage": {
+        "metaTitle": "{categoryName} — Treido",
+        "metaDescription": "Разгледай обяви в {categoryName} в Treido."
     },
     "CategoryNotFound": {
         "title": "Категорията не е намерена",

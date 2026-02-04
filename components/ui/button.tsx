@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils"
 
 const buttonVariants = cva(
   // Treido: Remove ring-offset, use active:opacity-90 for native iOS feel, tap-highlight-transparent
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none shrink-0 [&_svg]:shrink-0 outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none active:opacity-90 tap-highlight-transparent",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-xl text-sm font-medium transition-colors disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none shrink-0 [&_svg]:shrink-0 outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:outline-none active:opacity-90 tap-highlight-transparent",
   {
     variants: {
       variant: {
@@ -22,13 +22,13 @@ const buttonVariants = cva(
           "hover:bg-accent hover:text-accent-foreground active:bg-active",
         // Desktop header actions - clean, borderless interaction (treido-ui)
         "header-ghost":
-          "text-header-text bg-transparent hover:bg-header-hover active:bg-header-active rounded-md transition-colors",
+          "text-header-text bg-transparent hover:bg-header-hover active:bg-header-active rounded-xl transition-colors",
         link: "text-link underline-offset-4 hover:underline hover:text-link-hover",
         // Marketplace CTA alias (kept for semantic readability)
         cta: "bg-primary text-primary-foreground hover:bg-interactive-hover",
-        deal: "bg-deal text-deal-foreground hover:bg-deal",
-        // Treido black CTA (primary marketplace action)
-        black: "bg-foreground text-background hover:bg-foreground border border-foreground",
+        deal: "bg-destructive text-destructive-foreground hover:bg-destructive",
+        // Legacy variants (aliased to token-safe styles)
+        black: "bg-primary text-primary-foreground hover:bg-interactive-hover",
         // Legacy alias (maps to primary)
         brand: "bg-primary text-primary-foreground hover:bg-interactive-hover",
       },

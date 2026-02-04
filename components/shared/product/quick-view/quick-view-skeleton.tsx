@@ -1,27 +1,23 @@
 "use client"
 
 import { Skeleton } from "@/components/ui/skeleton"
-import { useIsMobile } from "@/hooks/use-mobile"
 
 export function QuickViewSkeleton() {
-  const isMobile = useIsMobile()
-
   return (
     <div className="flex flex-col">
-      {/* Image skeleton - square to match QuickViewImageGallery compact mode */}
-      <Skeleton className={isMobile ? "aspect-square w-full rounded-none" : "aspect-square w-full rounded-none"} />
+      <div className="p-4 lg:p-6">
+        <Skeleton className="aspect-square w-full rounded-xl" />
+      </div>
       
       {/* Thumbnail strip skeleton - mobile only */}
-      {isMobile && (
-        <div className="flex gap-1.5 px-4 py-2">
-          {[...Array(4)].map((_, i) => (
-            <Skeleton key={i} className="size-12 shrink-0 rounded-md" />
-          ))}
-        </div>
-      )}
+      <div className="flex gap-1.5 px-4 pb-2 lg:hidden">
+        {Array.from({ length: 4 }).map((_, i) => (
+          <Skeleton key={i} className="size-11 shrink-0 rounded-xl" />
+        ))}
+      </div>
       
       {/* Content skeleton - simplified */}
-      <div className="px-4 py-3 space-y-2.5">
+      <div className="px-4 pb-4 space-y-2.5 lg:px-6 lg:pb-6">
         {/* Price */}
         <div className="flex items-baseline gap-2">
           <Skeleton className="h-6 w-20" />
@@ -40,22 +36,22 @@ export function QuickViewSkeleton() {
 
         {/* Actions row */}
         <div className="flex items-center justify-between gap-2">
-          <Skeleton className="h-8 w-32 rounded-md" />
+          <Skeleton className="h-11 w-32 rounded-xl" />
           <div className="flex gap-1">
-            <Skeleton className="size-8 rounded-full" />
-            <Skeleton className="size-8 rounded-full" />
+            <Skeleton className="size-11 rounded-xl" />
+            <Skeleton className="size-11 rounded-xl" />
           </div>
         </div>
 
         {/* Seller card */}
-        <Skeleton className="h-14 w-full rounded-lg" />
+        <Skeleton className="h-14 w-full rounded-xl" />
       </div>
 
       {/* CTA buttons */}
-      <div className="px-4 py-3 mt-auto border-t border-border">
-        <div className="grid grid-cols-2 gap-2.5">
-          <Skeleton className="h-11 rounded-md" />
-          <Skeleton className="h-11 rounded-md" />
+      <div className="px-4 py-3 mt-auto border-t border-border lg:px-6">
+        <div className="grid gap-2 lg:grid-cols-2">
+          <Skeleton className="h-12 rounded-xl" />
+          <Skeleton className="h-12 rounded-xl" />
         </div>
       </div>
     </div>

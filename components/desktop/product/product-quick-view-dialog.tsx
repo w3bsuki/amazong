@@ -4,16 +4,13 @@ import * as React from "react"
 import { useRouter } from "@/i18n/routing"
 import { useTranslations } from "next-intl"
 import { toast } from "sonner"
-import { X } from "lucide-react"
 
 import {
   Dialog,
-  DialogClose,
   DialogContent,
   DialogDescription,
   DialogTitle,
 } from "@/components/ui/dialog"
-import { Button } from "@/components/ui/button"
 import type { QuickViewProduct } from "@/components/providers/drawer-context"
 import { useCart } from "@/components/providers/cart-context"
 import { ProductQuickViewContent } from "@/components/shared/product/quick-view/product-quick-view-content"
@@ -94,19 +91,7 @@ export function ProductQuickViewDialog({
         <DialogTitle className="sr-only">{title || tDrawers("quickView")}</DialogTitle>
         <DialogDescription className="sr-only">{description}</DialogDescription>
 
-        {/* Floating close button - top right */}
-        <DialogClose asChild>
-          <Button 
-            variant="ghost" 
-            size="icon" 
-            className="absolute right-4 top-4 z-20 size-11 rounded-full bg-background/95 backdrop-blur-sm border border-border shadow-md hover:bg-background hover:scale-105 transition-all"
-          >
-            <X className="size-5" />
-            <span className="sr-only">{tDrawers("close")}</span>
-          </Button>
-        </DialogClose>
-
-        <div className="flex-1 min-h-0 overflow-hidden">
+        <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain">
           {showSkeleton ? (
             <QuickViewSkeleton />
           ) : resolvedProduct ? (

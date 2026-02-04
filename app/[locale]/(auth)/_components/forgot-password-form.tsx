@@ -36,8 +36,8 @@ export function ForgotPasswordForm({
       <div className="min-h-dvh flex items-center justify-center p-4">
         <div className="w-full max-w-sm text-center">
           <div className="flex flex-col items-center gap-4 mb-6">
-            <div className="size-16 bg-success/10 rounded-full flex items-center justify-center">
-              <Check className="size-8 text-success" weight="bold" />
+            <div className="size-16 bg-primary-subtle rounded-full flex items-center justify-center">
+              <Check className="size-8 text-primary" weight="bold" />
             </div>
             <h1 className="text-2xl font-bold text-foreground">{t("checkYourEmailTitle")}</h1>
             <p className="text-sm text-muted-foreground">
@@ -69,7 +69,7 @@ export function ForgotPasswordForm({
     >
       <form action={formAction} className="space-y-4">
         {state?.error && (
-          <div className="p-3 text-sm text-destructive bg-destructive/10 border border-destructive/20 rounded-md">
+          <div className="rounded-xl border border-destructive bg-destructive-subtle p-3 text-sm text-destructive">
             {t(state.error as never)}
           </div>
         )}
@@ -88,7 +88,7 @@ export function ForgotPasswordForm({
               aria-describedby={state?.fieldErrors?.email ? "email-error" : undefined}
               className={cn(
                 state?.fieldErrors?.email &&
-                  "border-destructive focus-visible:ring-destructive/20",
+                  "border-destructive",
               )}
             />
             <FieldError id="email-error">

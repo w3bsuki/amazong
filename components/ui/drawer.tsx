@@ -208,7 +208,7 @@ function DrawerContent({
         data-slot="drawer-content"
         aria-describedby={hasDescription ? ariaDescribedBy : undefined}
         className={cn(
-          "group/drawer-content bg-background fixed z-50 flex h-auto flex-col outline-none",
+          "group/drawer-content bg-background fixed z-50 flex h-auto flex-col shadow-modal outline-none",
           // Bottom drawer - standard mobile drawer (most common)
           "data-[vaul-drawer-direction=bottom]:inset-x-0 data-[vaul-drawer-direction=bottom]:bottom-0",
           "data-[vaul-drawer-direction=bottom]:mt-24 data-[vaul-drawer-direction=bottom]:max-h-dialog",

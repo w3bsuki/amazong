@@ -1,6 +1,7 @@
 import { routing, validateLocale, Link } from "@/i18n/routing"
 import { setRequestLocale, getTranslations } from "next-intl/server"
 import { getCategoryHierarchy } from "@/lib/data/categories"
+import { getCategoryName, getCategorySlugKey } from "@/lib/category-display"
 import { CaretRight, Storefront, Sparkle } from "@phosphor-icons/react/dist/ssr"
 import { CategoryCircleVisual } from "@/components/shared/category/category-circle-visual"
 import { PageShell } from "@/components/shared/page-shell"
@@ -55,12 +56,12 @@ export default async function CategoriesPage({
   const headerTitle = t("headerTitleAll")
 
   const getCategoryShortName = (category: {
+    id: string
     slug: string
     name: string
-    name_bg?: string | null
+    name_bg: string | null
   }): string => {
-    const name = locale === "bg" ? category.name_bg ?? category.name : category.name
-    return t("shortName", { slug: category.slug, name })
+    return t("shortName", { slug: getCategorySlugKey(category.slug), name: getCategoryName(category, locale) })
   }
 
   return (
@@ -125,9 +126,9 @@ export default async function CategoriesPage({
         <div className="grid grid-cols-2 gap-2">
           <Link
             href="/sell"
-            className="flex items-center gap-2 p-2 bg-background rounded-md border border-border/40"
+            className="flex items-center gap-2 p-2 bg-background rounded-xl border border-border"
           >
-            <div className="size-8 rounded-md bg-selected flex items-center justify-center">
+            <div className="size-8 rounded-xl bg-selected flex items-center justify-center">
               <Storefront size={16} weight="fill" className="text-primary" />
             </div>
             <div>
@@ -138,10 +139,10 @@ export default async function CategoriesPage({
 
           <Link
             href="/todays-deals"
-            className="flex items-center gap-2 p-2 bg-background rounded-md border border-border/40"
+            className="flex items-center gap-2 p-2 bg-background rounded-xl border border-border"
           >
-            <div className="size-8 rounded-md bg-deal/10 flex items-center justify-center">
-              <Sparkle size={16} weight="fill" className="text-deal" />
+            <div className="size-8 rounded-xl bg-primary-subtle flex items-center justify-center">
+              <Sparkle size={16} weight="fill" className="text-primary" />
             </div>
             <div>
               <div className="text-sm font-medium">{t("quickActions.deals.title")}</div>

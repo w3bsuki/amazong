@@ -120,8 +120,8 @@ function DialogContent({
           "duration-200 ease-out",
           // Size & shape variants
           variant === 'fullWidth'
-            ? 'max-h-dialog w-dialog rounded-xl p-0 md:max-w-6xl lg:max-w-screen-xl'
-            : 'max-w-dialog rounded-lg p-3 sm:max-w-lg md:p-4',
+            ? 'max-h-dialog w-dialog rounded-2xl p-0 md:max-w-6xl lg:max-w-screen-xl'
+            : 'max-w-dialog rounded-2xl p-3 sm:max-w-lg md:p-4',
           className,
         )}
         onCloseAutoFocus={onCloseAutoFocus}
@@ -134,19 +134,19 @@ function DialogContent({
             className={cn(
               'absolute z-10 transition-all duration-150',
               // Position & size
-              variant === 'fullWidth' ? 'top-3 right-3 size-10' : 'top-3 right-3 size-8',
+              'top-4 right-4 size-11',
               // Styling - visible background for accessibility
               'flex items-center justify-center rounded-full',
               'bg-surface-subtle backdrop-blur-sm',
               'text-foreground hover:bg-hover active:bg-active',
               // Focus ring
-              'focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none',
+              'focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:outline-none',
               // Disabled state
               'disabled:pointer-events-none',
             )}
             aria-label={closeLabel ?? 'Close'}
           >
-            <X className={variant === 'fullWidth' ? 'size-5' : 'size-4'} />
+            <X className="size-5" />
           </DialogPrimitive.Close>
         )}
       </DialogPrimitive.Content>

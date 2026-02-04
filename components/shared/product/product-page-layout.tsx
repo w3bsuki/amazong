@@ -12,6 +12,8 @@ import { ViewTracker } from "@/components/shared/product/view-tracker";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ProductHeaderSync } from "@/components/shared/product/product-header-sync";
 import { Star } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { getConditionBadgeVariant } from "@/components/shared/product/_lib/condition-badges";
 
 // V2 Desktop Components
 import { DesktopGalleryV2 } from "@/components/desktop/product/desktop-gallery-v2";
@@ -60,8 +62,8 @@ function RelatedProductsSkeleton() {
       <Skeleton className="h-6 w-48" />
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
         {[...Array(5)].map((_, i) => (
-          <div key={i} className="bg-card rounded-lg border border-border p-3">
-            <Skeleton className="aspect-square w-full rounded-lg mb-3" />
+          <div key={i} className="bg-card rounded-xl border border-border p-3">
+            <Skeleton className="aspect-square w-full rounded-xl mb-3" />
             <Skeleton className="h-4 w-full mb-1" />
             <Skeleton className="h-4 w-2/3 mb-2" />
             <Skeleton className="h-5 w-20" />
@@ -75,7 +77,7 @@ function RelatedProductsSkeleton() {
 function ReviewsSkeleton() {
   return (
     <div className="pb-8">
-      <div className="rounded-md bg-surface-subtle p-4 border border-border/50">
+      <div className="rounded-xl bg-surface-subtle p-4 border border-border/50">
         <div className="flex items-center justify-between mb-8">
           <Skeleton className="h-7 w-40" />
           <Skeleton className="h-4 w-16" />
@@ -92,7 +94,7 @@ function ReviewsSkeleton() {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {[...Array(4)].map((_, i) => (
-              <div key={i} className="p-4 rounded-md border border-border/50 space-y-3">
+              <div key={i} className="p-4 rounded-xl border border-border/50 space-y-3">
                 <div className="flex items-center gap-3">
                   <Skeleton className="h-10 w-10 rounded-full" />
                   <div className="space-y-1">
@@ -290,18 +292,18 @@ export function ProductPageLayout(props: ProductPageLayoutProps) {
                     {product.title}
                   </h1>
                   {product.condition && (
-                    <span className="inline-block px-2 py-0.5 rounded-full bg-success/10 text-success text-xs font-medium">
+                    <Badge variant={getConditionBadgeVariant(product.condition)}>
                       {(() => {
                         const key = getConditionKey(product.condition);
                         return key ? tProduct(key) : product.condition;
                       })()}
-                    </span>
+                    </Badge>
                   )}
 
                   {/* Rating */}
                   {Number(product.review_count ?? 0) > 0 && Number(product.rating ?? 0) > 0 && (
                     <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
-                      <Star className="size-4 fill-rating text-rating" strokeWidth={1.5} />
+                      <Star className="size-4 fill-current text-muted-foreground" strokeWidth={1.5} />
                       <span className="font-medium text-foreground">
                         {Number(product.rating ?? 0).toFixed(1)}
                       </span>

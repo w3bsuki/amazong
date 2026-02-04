@@ -38,7 +38,7 @@
 [data-slot="drawer-body"] {
   -webkit-overflow-scrolling: touch;
   scrollbar-width: thin;
-  scrollbar-color: var(--muted-foreground) transparent;
+  scrollbar-color: var(--color-muted-foreground) transparent;
 }
 
 [data-slot="drawer-body"]::-webkit-scrollbar {
@@ -50,7 +50,7 @@
 }
 
 [data-slot="drawer-body"]::-webkit-scrollbar-thumb {
-  background-color: var(--muted-foreground);
+  background-color: var(--color-muted-foreground);
   border-radius: 2px;
 }
 
@@ -224,17 +224,15 @@
 
 .destructive .ui-toast-action {
   @apply hover:bg-destructive hover:text-destructive-foreground focus:ring-destructive;
-  border-color: var(--toast-destructive-border);
+  border-color: var(--color-destructive-foreground);
 }
 
 .destructive .ui-toast-close {
   @apply hover:text-destructive-foreground focus:ring-destructive focus:ring-offset-destructive;
-  color: var(--toast-destructive-foreground-muted);
+  color: var(--color-destructive-foreground);
 }
 
-.destructive .ui-toast-action:hover {
-  border-color: var(--toast-destructive-border-hover);
-}
+/* Hover border is handled via token-safe Tailwind classes. */
 
 /* Switch */
 .ui-switch[data-state='checked'] {
@@ -242,7 +240,7 @@
 }
 
 .ui-switch[data-state='unchecked'] {
-  background-color: var(--switch-unchecked-bg);
+  background-color: var(--color-input);
 }
 
 .ui-switch-thumb[data-state='checked'] {

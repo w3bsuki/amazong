@@ -106,7 +106,7 @@ export function LoginForm({
     >
       <div className="flex flex-col gap-4">
         {state?.error && (
-          <div className="p-3 text-sm text-destructive bg-destructive/10 border border-destructive/20 rounded-md">
+          <div className="rounded-xl border border-destructive bg-destructive-subtle p-3 text-sm text-destructive">
             {t(state.error as never)}
           </div>
         )}
@@ -136,7 +136,7 @@ export function LoginForm({
                 }
                 className={cn(
                   (showClientEmailError || state?.fieldErrors?.email) &&
-                    "border-destructive focus-visible:ring-destructive/20",
+                    "border-destructive",
                 )}
               />
               <FieldError id="email-error">
@@ -156,7 +156,7 @@ export function LoginForm({
                 <FieldLabel htmlFor="password">{t("password")}</FieldLabel>
                 <Link
                   href="/auth/forgot-password"
-                  className="text-xs text-primary hover:underline min-h-7 flex items-center"
+                  className="text-xs text-primary hover:underline min-h-11 flex items-center"
                 >
                   {t("forgotPassword")}
                 </Link>
@@ -176,15 +176,15 @@ export function LoginForm({
                   }
                   onChange={(e) => setPassword(e.target.value)}
                   className={cn(
-                    "pr-10",
+                    "pr-12",
                     state?.fieldErrors?.password &&
-                      "border-destructive focus-visible:ring-destructive/20",
+                      "border-destructive",
                   )}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword((v) => !v)}
-                  className="absolute right-1 top-1/2 -translate-y-1/2 size-8 flex items-center justify-center text-muted-foreground hover:text-foreground rounded-md transition-colors"
+                  className="absolute right-0 top-1/2 -translate-y-1/2 size-11 inline-flex items-center justify-center text-muted-foreground hover:text-foreground rounded-xl transition-colors focus-visible:ring-2 focus-visible:ring-focus-ring"
                   aria-label={showPassword ? t("hidePassword") : t("showPassword")}
                 >
                   {showPassword ? (
@@ -211,7 +211,7 @@ export function LoginForm({
 
         {/* Remember Me */}
         <div className="flex items-center justify-between order-3">
-          <div className="flex items-center gap-2 min-h-9">
+          <div className="flex items-center gap-2 min-h-11">
             <Checkbox
               id="remember-me"
               checked={rememberMe}

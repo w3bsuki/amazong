@@ -169,7 +169,7 @@ export function DesktopBuyBoxV2({
   return (
     <div
       className={cn(
-        "sticky top-24 rounded-lg border border-border bg-card p-4 space-y-3",
+        "sticky top-24 rounded-xl border border-border bg-card p-4 space-y-3",
         className
       )}
     >
@@ -250,17 +250,12 @@ export function DesktopBuyBoxV2({
           )}
         </div>
         {condition && (
-          <Badge
-            variant="secondary"
-            className="text-xs bg-success/10 text-success border-success/20"
-          >
-            {condition}
-          </Badge>
+          <Badge variant="condition">{condition}</Badge>
         )}
       </div>
 
       {/* Shipping/Location Info */}
-      <div className="rounded-md border border-border bg-surface-subtle p-2.5 space-y-1.5">
+      <div className="rounded-xl border border-border bg-surface-subtle p-2.5 space-y-1.5">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2 text-sm">
             {isRealEstate ? (
@@ -273,16 +268,10 @@ export function DesktopBuyBoxV2({
             ) : (
               <>
                 <Truck
-                  className={cn(
-                    "size-4",
-                    freeShipping ? "text-shipping-free" : "text-foreground"
-                  )}
+                  className="size-4 text-muted-foreground"
                 />
                 <span
-                  className={cn(
-                    "font-medium",
-                    freeShipping ? "text-shipping-free" : "text-foreground"
-                  )}
+                  className="font-medium text-foreground"
                 >
                   {freeShipping ? t("freeShipping") : t("shippingAvailable")}
                 </span>
@@ -311,7 +300,7 @@ export function DesktopBuyBoxV2({
         <div className="flex items-center justify-between gap-3 py-2 border-y border-border">
           <div className="flex items-center gap-2">
             <span className="text-sm text-muted-foreground">{t("qty")}</span>
-            <div className="flex items-center border border-border rounded-md">
+            <div className="flex items-center border border-border rounded-xl">
               <button
                 type="button"
                 onClick={() => setQuantity(Math.max(1, quantity - 1))}
@@ -394,10 +383,10 @@ export function DesktopBuyBoxV2({
       {/* Protection Badges */}
       <div className="flex items-center justify-center gap-3 text-xs text-muted-foreground">
         <span className="flex items-center gap-1">
-          <ShieldCheck className="size-3 text-success" />
+          <ShieldCheck className="size-3 text-muted-foreground" />
           {t("buyerProtection")}
         </span>
-        <span className="text-border">|</span>
+        <span className="text-muted-foreground">|</span>
         <span className="flex items-center gap-1">
           <RotateCcw className="size-3" />
           {isRealEstate ? t("verifiedListing") : t("easyReturns")}
@@ -405,7 +394,7 @@ export function DesktopBuyBoxV2({
       </div>
 
       {/* Embedded Seller Card */}
-      <div className="rounded-md border border-border bg-surface-subtle p-3">
+      <div className="rounded-xl border border-border bg-surface-subtle p-3">
         <div className="flex items-center gap-2.5">
           <UserAvatar
             name={seller.name}
@@ -419,12 +408,12 @@ export function DesktopBuyBoxV2({
                 {seller.name}
               </span>
               {seller.verified && (
-                <BadgeCheck className="size-3.5 text-verified shrink-0" />
+                <BadgeCheck className="size-3.5 text-muted-foreground shrink-0" />
               )}
             </div>
             {seller.rating != null && (
               <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                <span className="text-rating">★</span>
+                <span className="text-muted-foreground">★</span>
                 <span>{seller.rating.toFixed(1)}</span>
                 {seller.reviewCount != null && (
                   <>

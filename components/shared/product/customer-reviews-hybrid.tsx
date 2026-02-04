@@ -66,7 +66,7 @@ export function CustomerReviewsHybrid({
   const t = useTranslations("Reviews");
 
   return (
-    <section className="mt-4 rounded-md bg-surface-subtle p-3 border border-border/50">
+    <section className="mt-4 rounded-xl bg-surface-subtle p-3 border border-border/50">
       <div className="flex items-center justify-between mb-3 gap-3 flex-wrap">
         <h2 className="text-lg font-bold text-foreground tracking-tight">{t("customerReviews")}</h2>
         <div className="flex items-center gap-3">
@@ -78,7 +78,7 @@ export function CustomerReviewsHybrid({
               submitReview={submitReview}
               onReviewSubmitted={() => router.refresh()}
               trigger={
-                <Button variant="default" size="sm" className="gap-2">
+                <Button variant="default" size="default" className="gap-2">
                   <PencilLine className="h-4 w-4" />
                   {t("writeReview")}
                 </Button>
@@ -95,11 +95,11 @@ export function CustomerReviewsHybrid({
         {/* Summary */}
         <div className="space-y-3">
           <div className="flex items-center gap-2.5">
-            <div className="relative flex h-12 w-12 items-center justify-center rounded-full border-2 border-primary text-xl font-bold text-foreground">
+            <div className="relative flex h-12 w-12 items-center justify-center rounded-full border-2 border-border text-xl font-bold text-foreground">
               {safeRating.toFixed(1)}
             </div>
             <div>
-              <div className="flex gap-0.5 text-rating mb-1" aria-label={`Rating ${safeRating.toFixed(1)} out of 5`}>
+              <div className="flex gap-0.5 text-muted-foreground mb-1" aria-label={`${safeRating.toFixed(1)} ${t("outOf5")}`}>
                 {[...Array(5)].map((_, i) => (
                   <Star key={i} className={`h-4 w-4 ${i < Math.round(safeRating) ? "fill-current" : "text-muted-foreground/20"}`} />
                 ))}
@@ -110,17 +110,17 @@ export function CustomerReviewsHybrid({
             </div>
           </div>
 
-          <div className="space-y-2 bg-background/50 p-3 rounded-md border border-border/30">
+          <div className="space-y-2 bg-background p-3 rounded-xl border border-border">
             {[5, 4, 3, 2, 1].map((star) => {
               const count = distribution[star - 1] ?? 0;
               const pct = safeCount > 0 ? (count / safeCount) * 100 : 0;
               return (
                 <div key={star} className="flex items-center gap-2 text-xs">
                   <div className="flex items-center gap-0.5 w-8">
-                    <Star className="h-3 w-3 fill-rating text-rating" />
+                    <Star className="h-3 w-3 fill-current text-muted-foreground" />
                     <span className="font-medium text-foreground">{star}</span>
                   </div>
-                  <Progress value={pct} className="h-1.5 flex-1 bg-muted [&>div]:bg-primary" />
+                  <Progress value={pct} className="h-1.5 flex-1 bg-muted [&>div]:bg-muted-foreground" />
                   <span className="w-6 text-right text-muted-foreground text-2xs">{count}</span>
                 </div>
               );
@@ -131,7 +131,7 @@ export function CustomerReviewsHybrid({
         {/* Reviews */}
         <div>
           {reviews.length === 0 ? (
-            <div className="rounded-md border border-border/50 bg-background p-3 text-center">
+            <div className="rounded-xl border border-border/50 bg-background p-3 text-center">
               <p className="text-sm text-muted-foreground mb-3">{t("noReviews")}</p>
               {productId && submitReview && (
                 <WriteReviewDialog
@@ -141,7 +141,7 @@ export function CustomerReviewsHybrid({
                   submitReview={submitReview}
                   onReviewSubmitted={() => router.refresh()}
                   trigger={
-                    <Button variant="outline" size="sm">
+                    <Button variant="outline" size="default">
                       {t("beFirst")}
                     </Button>
                   }
@@ -156,10 +156,10 @@ export function CustomerReviewsHybrid({
                   review.user?.username ||
                   t("anonymousUser");
                 return (
-                  <Card key={review.id} className="border border-border/50 bg-background rounded-md overflow-hidden">
+                  <Card key={review.id} className="border border-border/50 bg-background overflow-hidden">
                     <CardContent className="p-3">
                       <div className="flex items-center justify-between mb-2">
-                        <div className="flex text-rating gap-0.5" aria-label={`${review.rating} out of 5`}>
+                        <div className="flex text-muted-foreground gap-0.5" aria-label={`${review.rating} ${t("outOf5")}`}>
                           {[...Array(5)].map((_, i) => (
                             <Star key={i} className={`h-3 w-3 ${i < review.rating ? "fill-current" : "text-muted-foreground/20"}`} />
                           ))}

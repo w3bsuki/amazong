@@ -114,7 +114,6 @@ export function ProductGrid({
       className="@container"
       role="list"
       aria-live="polite"
-      aria-label={`Product ${viewMode} with ${products.length} items`}
       tabIndex={-1}
     >
       <div
@@ -206,20 +205,20 @@ export function ProductGridSkeleton({
           viewMode === "list" ? (
             <div
               key={i}
-              className="flex gap-3 p-3 rounded-lg border border-border bg-card"
+              className="flex gap-3 p-2.5 rounded-xl border border-border bg-card"
             >
-              <div className="aspect-square w-24 rounded-md bg-muted animate-pulse shrink-0" />
+              <div className="aspect-square w-24 rounded-xl bg-muted animate-pulse shrink-0" />
               <div className="flex-1 space-y-2">
-                <div className="h-4 w-3/4 bg-muted rounded animate-pulse" />
-                <div className="h-4 w-1/2 bg-muted rounded animate-pulse" />
-                <div className="h-5 w-1/4 bg-muted rounded animate-pulse" />
+                <div className="h-4 w-3/4 bg-muted rounded-full animate-pulse" />
+                <div className="h-4 w-1/2 bg-muted rounded-full animate-pulse" />
+                <div className="h-5 w-1/4 bg-muted rounded-full animate-pulse" />
               </div>
             </div>
           ) : (
             <div key={i} className="space-y-2">
-              <div className="aspect-square w-full rounded-md bg-muted animate-pulse" />
-              <div className="h-4 w-full bg-muted rounded animate-pulse" />
-              <div className="h-4 w-2/3 bg-muted rounded animate-pulse" />
+              <div className="aspect-square w-full rounded-xl bg-muted animate-pulse" />
+              <div className="h-4 w-full bg-muted rounded-full animate-pulse" />
+              <div className="h-4 w-2/3 bg-muted rounded-full animate-pulse" />
             </div>
           )
         )}

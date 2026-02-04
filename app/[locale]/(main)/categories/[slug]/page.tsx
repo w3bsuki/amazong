@@ -3,12 +3,11 @@ import { SubcategoryTabs } from "@/components/category/subcategory-tabs"
 import { DesktopFilterToolbar } from "@/components/desktop/desktop-filter-toolbar"
 import { FilterChips } from "@/components/shared/filters/filter-chips"
 import { SearchPagination } from "@/components/shared/search/search-pagination"
-import { SearchFilters } from "@/components/shared/search/search-filters"
 import { EmptyStateCTA } from "@/components/shared/empty-state-cta"
 import { DesktopShell } from "@/components/layout/desktop-shell.server"
 import { ProductGrid, type ProductGridProduct } from "@/components/grid"
 import { Suspense, use } from "react"
-import { setRequestLocale } from "next-intl/server"
+import { getTranslations, setRequestLocale } from "next-intl/server"
 import { notFound } from "next/navigation"
 import type { Metadata } from 'next'
 import CategorySlugLoading from "./loading"
@@ -16,11 +15,8 @@ import { normalizeAttributeKey } from "@/lib/attributes/normalize-attribute-key"
 import {
   getCategoryBySlug,
   getCategoryContext,
-  getCategoryHierarchy,
   getCategoryAncestry,
-  getCategoryAncestryFull,
   getSubcategoriesForBrowse,
-  type BreadcrumbCategory,
   type CategoryWithCount,
 } from "@/lib/data/categories"
 import { searchProducts } from "./_lib/search-products"
@@ -53,8 +49,9 @@ export async function generateMetadata({
   const category = await getCategoryBySlug(slug)
 
   if (!category) {
+    const tNotFound = await getTranslations({ locale, namespace: "CategoryNotFound" })
     return {
-      title: "Category Not Found",
+      title: tNotFound("title"),
     }
   }
 
@@ -62,12 +59,14 @@ export async function generateMetadata({
     ? category.name_bg
     : category.name
 
+  const t = await getTranslations({ locale, namespace: "CategoryPage" })
+
   return {
-    title: `${categoryName} - Shop`,
-    description: `Browse our wide selection of ${categoryName} products. Find the best deals with fast shipping and great prices.`,
+    title: t("metaTitle", { categoryName }),
+    description: t("metaDescription", { categoryName }),
     openGraph: {
-      title: `${categoryName} - Shop`,
-      description: `Browse our wide selection of ${categoryName} products.`,
+      title: t("metaTitle", { categoryName }),
+      description: t("metaDescription", { categoryName }),
     },
   }
 }
@@ -127,25 +126,17 @@ function CategoryPageContent({
 
   // Cached category shell data
   const categoryContext = use(getCategoryContext(slug))
-  const categoriesWithChildren = use(getCategoryHierarchy(null, 2))
   const ancestry = use(getCategoryAncestry(slug))
-  const ancestryFull = use(getCategoryAncestryFull(slug))
 
   if (!categoryContext) {
     notFound()
   }
 
-  const { current: currentCategory, parent: parentCategory, children: subcategories } = categoryContext
+  const { current: currentCategory, parent: parentCategory } = categoryContext
   
   // Fetch subcategories with counts - NEVER filter on category browse pages
   // All children should show as circles; sorting handles curated-first ordering
   const subcategoriesWithCounts = use(getSubcategoriesForBrowse(currentCategory.id, false))
-  
-  const allCategoriesWithSubs = categoriesWithChildren.map((c) => ({
-    category: c,
-    subs: c.children ?? [],
-  }))
-  const allCategories = allCategoriesWithSubs.map((c) => c.category)
 
   const categoryId = currentCategory.id
 
@@ -167,12 +158,8 @@ function CategoryPageContent({
       slug={slug}
       categoryId={categoryId}
       searchParamsPromise={searchParamsPromise}
-      categoriesWithChildren={categoriesWithChildren}
-      allCategoriesWithSubs={allCategoriesWithSubs}
-      allCategories={allCategories}
       currentCategory={currentCategory}
       parentCategory={parentCategory}
-      subcategories={subcategories}
       subcategoriesWithCounts={subcategoriesWithCounts}
       filterableAttributes={filterableAttributes}
       categoryName={categoryName}
@@ -180,7 +167,6 @@ function CategoryPageContent({
       defaultSubTab={defaultSubTab}
       defaultL2={defaultL2}
       defaultL3={defaultL3}
-      ancestryFull={ancestryFull}
     />
   )
 }
@@ -190,12 +176,8 @@ function CategoryPageDynamicContent({
   slug,
   categoryId,
   searchParamsPromise,
-  categoriesWithChildren,
-  allCategoriesWithSubs,
-  allCategories,
   currentCategory,
   parentCategory,
-  subcategories,
   subcategoriesWithCounts,
   filterableAttributes,
   categoryName,
@@ -203,7 +185,6 @@ function CategoryPageDynamicContent({
   defaultSubTab,
   defaultL2,
   defaultL3,
-  ancestryFull,
 }: {
   locale: string
   slug: string
@@ -221,9 +202,6 @@ function CategoryPageDynamicContent({
     page?: string
     [key: string]: string | string[] | undefined
   }>
-  categoriesWithChildren: any
-  allCategoriesWithSubs: any
-  allCategories: any
   currentCategory: Awaited<ReturnType<typeof getCategoryContext>> extends infer T
     ? T extends { current: infer C }
       ? C
@@ -234,11 +212,6 @@ function CategoryPageDynamicContent({
       ? P
       : never
     : never
-  subcategories: Awaited<ReturnType<typeof getCategoryContext>> extends infer T
-    ? T extends { children: infer CH }
-      ? CH
-      : never
-    : never
   /** DEC-002: Subcategories with product counts for curated browse UX */
   subcategoriesWithCounts: CategoryWithCount[]
   filterableAttributes: any[]
@@ -247,7 +220,6 @@ function CategoryPageDynamicContent({
   defaultSubTab: string | null
   defaultL2: string | null
   defaultL3: string | null
-  ancestryFull: BreadcrumbCategory[]
 }) {
   // React/Next can only stream partial prerenders when request-bound data is
   // accessed via Suspense. `use()` will suspend this segment properly.
@@ -331,7 +303,6 @@ function CategoryPageDynamicContent({
         <MobileCategoryBrowser
           initialProducts={mobileInitialProducts}
           initialProductsSlug={slug}
-          initialCategories={categoriesWithChildren}
           defaultTab={defaultTab}
           defaultSubTab={defaultSubTab}
           defaultL2={defaultL2}
@@ -368,21 +339,6 @@ function CategoryPageDynamicContent({
       <DesktopShell
         variant="muted"
         className="hidden lg:block"
-        sidebar={
-          <div className="bg-sidebar rounded-lg p-4">
-            <SearchFilters
-              categories={allCategories}
-              subcategories={subcategories}
-              currentCategory={currentCategory}
-              parentCategory={parentCategory}
-              allCategoriesWithSubs={allCategoriesWithSubs}
-              brands={[]}
-              basePath={`/categories/${slug}`}
-              ancestry={ancestryFull}
-            />
-          </div>
-        }
-        sidebarSticky
       >
         {/* Subcategory circles - full width above grid (DEC-002: curated ordering + counts) */}
         <SubcategoryTabs
@@ -405,10 +361,10 @@ function CategoryPageDynamicContent({
         />
 
         {/* Active filter chips */}
-        <FilterChips currentCategory={currentCategory} basePath={`/categories/${slug}`} className="mb-4" />
+        <FilterChips currentCategory={currentCategory} basePath={`/categories/${slug}`} className="mb-3" />
 
         {/* Product grid with container queries */}
-        <div className="rounded-xl bg-card border border-border p-4">
+        <div>
           {products.length === 0 ? (
             <EmptyStateCTA variant="no-category" categoryName={categoryName} className="mt-4" />
           ) : (

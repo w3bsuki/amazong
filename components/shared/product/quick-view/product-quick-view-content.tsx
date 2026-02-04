@@ -1,7 +1,8 @@
 "use client"
 
 import * as React from "react"
-import { ArrowSquareOut, Heart, LinkSimple, Minus, Plus, ShoppingCart, Star, Tag, Truck, ShieldCheck, ArrowsClockwise, MapPin } from "@phosphor-icons/react"
+import { ArrowSquareOut, Heart, LinkSimple, ShieldCheck, ArrowsClockwise, MapPin, Truck } from "@phosphor-icons/react"
+import { X } from "lucide-react"
 import { useLocale, useTranslations } from "next-intl"
 import { toast } from "sonner"
 
@@ -11,8 +12,8 @@ import type { QuickViewProduct } from "@/components/providers/drawer-context"
 import { useWishlist } from "@/components/providers/wishlist-context"
 import { PLACEHOLDER_IMAGE_PATH } from "@/lib/normalize-image-url"
 import { formatPrice, getDiscountPercentage, hasDiscount as checkHasDiscount } from "@/lib/format-price"
-import { cn, getConditionBadgeVariant } from "@/lib/utils"
-import { useIsMobile } from "@/hooks/use-mobile"
+import { cn } from "@/lib/utils"
+import { getConditionBadgeVariant } from "@/components/shared/product/_lib/condition-badges"
 
 import { QuickViewImageGallery } from "./quick-view-image-gallery"
 import { QuickViewSellerCard } from "./quick-view-seller-card"
@@ -53,8 +54,6 @@ export function ProductQuickViewContent({
   const tModal = useTranslations("ProductModal")
   const locale = useLocale()
   const { isInWishlist, toggleWishlist } = useWishlist()
-  const isMobile = useIsMobile()
-  const [quantity, setQuantity] = React.useState(1)
 
   const {
     id,
@@ -82,7 +81,6 @@ export function ProductQuickViewContent({
     showDiscount && typeof originalPrice === "number"
       ? getDiscountPercentage(originalPrice, price)
       : 0
-  const hasRating = typeof rating === "number" && rating > 0
 
   const inWishlist = isInWishlist(id)
   const [wishlistPending, setWishlistPending] = React.useState(false)
@@ -114,269 +112,116 @@ export function ProductQuickViewContent({
     }
   }, [wishlistPending, toggleWishlist, id, title, price, primaryImage])
 
-  const handleAddToCartWithQuantity = React.useCallback(() => {
-    for (let i = 0; i < quantity; i++) {
-      onAddToCart()
-    }
-  }, [quantity, onAddToCart])
-
   const formattedPrice = formatPrice(price, { locale })
-  const totalPrice = formatPrice(price * quantity, { locale })
 
-  // Mobile layout - ultra-compact, everything visible without scrolling
-  if (isMobile) {
-    return (
-      <div className="flex flex-col h-full touch-pan-y">
-        {/* Compact hero image - wide aspect for more content space */}
-        <QuickViewImageGallery
-          images={allImages}
-          title={title}
-          discountPercent={showDiscount ? discountPercent : undefined}
-          onNavigateToProduct={onNavigateToProduct}
-          compact
-        />
+  const formattedOriginalPrice =
+    showDiscount && typeof originalPrice === "number"
+      ? formatPrice(originalPrice, { locale })
+      : null
 
-        {/* Content area - clean card-like styling */}
-        <div className="flex flex-col flex-1 px-4 pt-3 pb-2 gap-2">
-          {/* Price row - prominent */}
-          <div className="flex items-baseline gap-2">
-            <span className={cn("text-xl font-bold tabular-nums tracking-tight", showDiscount ? "text-price-sale" : "text-foreground")}>
-              {formattedPrice}
-            </span>
-            {showDiscount && originalPrice && (
-              <span className="text-sm text-muted-foreground line-through tabular-nums">
-                {formatPrice(originalPrice, { locale })}
-              </span>
-            )}
-          </div>
+  const titleText = title || tDrawers("quickView")
 
-          {/* Title - two lines max with proper weight */}
-          <h2 className="text-base font-semibold leading-snug text-foreground line-clamp-2">{title}</h2>
-
-          {/* Condition + shipping badges - fixed height prevents CLS */}
-          <div className="flex items-center gap-2 h-6">
-            {condition && (
-              <Badge variant={getConditionBadgeVariant(condition)} className="text-xs">
-                <Tag size={10} />
-                {condition}
-              </Badge>
-            )}
-            {freeShipping && (
-              <Badge variant="shipping" className="text-xs">
-                <Truck size={10} weight="fill" />
-                {tProduct("freeShipping")}
-              </Badge>
-            )}
-          </div>
-
-          {/* Seller card with rating */}
-          <QuickViewSellerCard
-            sellerName={sellerName}
-            sellerAvatarUrl={sellerAvatarUrl}
-            sellerVerified={sellerVerified}
-            rating={rating}
-            reviews={reviews}
-            onNavigateToProduct={onNavigateToProduct}
-            compact
-          />
-        </div>
-
-        {/* CTA footer - polished */}
-        <div className="border-t border-border px-4 py-3 bg-background pb-safe-max">
-          <div className="grid grid-cols-2 gap-2.5">
-            <Button
-              variant="black"
-              size="lg"
-              className="gap-2 touch-manipulation"
-              onClick={onAddToCart}
-              disabled={!inStock}
-            >
-              <ShoppingCart size={18} weight="bold" />
-              {tDrawers("addToCart")}
-            </Button>
-            <Button
-              variant="cta"
-              size="lg"
-              className="touch-manipulation"
-              onClick={onBuyNow}
-              disabled={!inStock}
-            >
-              {tProduct("buyNow")}
-            </Button>
-          </div>
-        </div>
-      </div>
-    )
-  }
-
-  // Desktop layout - clean, modern product dialog
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-5 min-h-full">
-      {/* LEFT: Gallery - larger, better proportions */}
-      <div className="relative bg-surface-subtle flex items-center justify-center p-6 lg:p-8 lg:col-span-3">
-        <div className="w-full max-w-xl">
-          <QuickViewImageGallery
-            images={allImages}
-            title={title}
-            discountPercent={showDiscount ? discountPercent : undefined}
-            onNavigateToProduct={onNavigateToProduct}
-            compact={false}
-          />
-        </div>
+    <div className="flex min-h-full flex-col">
+      {/* Header */}
+      <div className="sticky top-0 z-20 flex items-center gap-3 border-b border-border bg-surface-glass backdrop-blur-md px-4 py-3">
+        <h2 className="min-w-0 flex-1 truncate text-base font-semibold text-foreground">
+          {titleText}
+        </h2>
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          className="size-11 rounded-xl border border-border bg-background"
+          onClick={() => onRequestClose?.()}
+          aria-label={tDrawers("close")}
+        >
+          <X className="size-5" />
+        </Button>
       </div>
 
-      {/* RIGHT: Product Info - scrollable, better hierarchy */}
-      <div className="flex flex-col bg-background lg:col-span-2">
-        {/* Scrollable content */}
-        <div className="flex-1 overflow-y-auto p-6 lg:p-8 space-y-6">
-          {/* Header: Title + badges */}
-          <div className="space-y-3 pr-10">
-            <h2 className="text-2xl font-bold leading-tight text-foreground">
-              {title}
-            </h2>
-            
-            {/* Meta: Rating + Condition */}
-            <div className="flex flex-wrap items-center gap-3">
-              {condition && (
-                <Badge variant={getConditionBadgeVariant(condition)} className="gap-1.5">
-                  <Tag size={12} weight="fill" />
-                  {condition}
-                </Badge>
-              )}
-              {hasRating && (
-                <div className="flex items-center gap-1.5 text-sm">
-                  <Star size={16} weight="fill" className="fill-rating text-rating" />
-                  <span className="font-semibold tabular-nums">{rating.toFixed(1)}</span>
-                  {typeof reviews === "number" && reviews > 0 && (
-                    <span className="text-muted-foreground">({reviews})</span>
-                  )}
-                </div>
-              )}
+      {/* Content */}
+      <div className="grid grid-cols-1 lg:grid-cols-5">
+        <div className="bg-surface-subtle lg:col-span-3 lg:border-r lg:border-border">
+          <div className="p-4 lg:p-6">
+            <div className="lg:hidden">
+              <QuickViewImageGallery
+                images={allImages}
+                title={titleText}
+                discountPercent={showDiscount ? discountPercent : undefined}
+                onNavigateToProduct={onNavigateToProduct}
+                compact
+              />
+            </div>
+            <div className="hidden lg:block">
+              <QuickViewImageGallery
+                images={allImages}
+                title={titleText}
+                discountPercent={showDiscount ? discountPercent : undefined}
+                onNavigateToProduct={onNavigateToProduct}
+                compact={false}
+              />
             </div>
           </div>
+        </div>
 
-          {/* Price Section - prominent */}
-          <div className="rounded-xl border border-border bg-card p-5 space-y-4">
-            <div className="flex items-baseline gap-3 flex-wrap">
-              <span className={cn(
-                "text-4xl font-bold tabular-nums tracking-tight",
-                showDiscount ? "text-price-sale" : "text-foreground",
-              )}>
+        <div className="flex flex-col gap-4 px-4 py-4 lg:col-span-2 lg:px-6 lg:py-6">
+          {/* Price */}
+          <div className="rounded-xl border border-border bg-card p-4 space-y-3">
+            <div className="flex items-baseline gap-2 flex-wrap">
+              <span className="text-2xl font-bold tabular-nums tracking-tight text-foreground">
                 {formattedPrice}
               </span>
-              {showDiscount && originalPrice && (
-                <>
-                  <span className="text-xl text-muted-foreground line-through tabular-nums">
-                    {formatPrice(originalPrice, { locale })}
-                  </span>
-                  <Badge variant="destructive" className="text-sm font-bold px-2.5 py-0.5">
-                    -{discountPercent}%
-                  </Badge>
-                </>
+              {formattedOriginalPrice && (
+                <span className="text-sm text-muted-foreground line-through tabular-nums">
+                  {formattedOriginalPrice}
+                </span>
+              )}
+              {showDiscount && discountPercent > 0 && (
+                <Badge variant="destructive" className="text-xs font-semibold tabular-nums">
+                  -{discountPercent}%
+                </Badge>
               )}
             </div>
 
-            {/* Shipping & location inline */}
-            <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm">
+            <div className="flex flex-col gap-2 text-sm text-muted-foreground">
               {freeShipping ? (
-                <span className="flex items-center gap-1.5 text-shipping-free font-semibold">
-                  <Truck size={18} weight="fill" />
+                <span className="flex items-center gap-2">
+                  <Truck size={18} />
                   {tProduct("freeShipping")}
                 </span>
               ) : (
-                <span className="flex items-center gap-1.5 text-muted-foreground">
+                <span className="flex items-center gap-2">
                   <Truck size={18} />
-                  {tProduct("shippingAvailable") || "Shipping available"}
+                  {tProduct("shippingAvailable")}
                 </span>
               )}
               {location && (
-                <span className="flex items-center gap-1.5 text-muted-foreground">
+                <span className="flex items-center gap-2">
                   <MapPin size={16} />
                   {location}
                 </span>
               )}
-            </div>
-          </div>
-
-          {/* Quantity Selector - cleaner */}
-          {inStock && (
-            <div className="flex items-center gap-4 py-2">
-              <span className="text-sm font-medium text-muted-foreground min-w-12">{tProduct("qty") || "Qty"}</span>
-              <div className="flex items-center rounded-lg border border-border bg-surface-subtle">
-                <button
-                  type="button"
-                  onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                  className="size-touch-lg flex items-center justify-center hover:bg-muted transition-colors rounded-l-lg disabled:opacity-30"
-                  disabled={quantity <= 1}
-                  aria-label="Decrease quantity"
-                >
-                  <Minus size={16} weight="bold" />
-                </button>
-                <span className="px-5 py-2.5 text-base font-semibold min-w-14 text-center tabular-nums border-x border-border bg-background">
-                  {quantity}
-                </span>
-                <button
-                  type="button"
-                  onClick={() => setQuantity(Math.min(99, quantity + 1))}
-                  className="size-touch-lg flex items-center justify-center hover:bg-muted transition-colors rounded-r-lg"
-                  aria-label="Increase quantity"
-                >
-                  <Plus size={16} weight="bold" />
-                </button>
-              </div>
-              {quantity > 1 && (
-                <div className="ml-auto text-right">
-                  <span className="text-xs text-muted-foreground block">{tProduct("total") || "Total"}</span>
-                  <span className="text-lg font-bold tabular-nums">{totalPrice}</span>
+              {condition && (
+                <div className="flex flex-wrap items-center gap-2">
+                  <Badge variant={getConditionBadgeVariant(condition)} className="text-xs">
+                    {condition}
+                  </Badge>
                 </div>
               )}
             </div>
-          )}
-
-          {/* Seller Card */}
-          <QuickViewSellerCard
-            sellerName={sellerName}
-            sellerAvatarUrl={sellerAvatarUrl}
-            sellerVerified={sellerVerified}
-            onNavigateToProduct={onNavigateToProduct}
-          />
-
-          {/* Trust Badges - more prominent */}
-          <div className="flex items-center justify-center gap-6 py-4 px-4 rounded-lg bg-success/5 border border-success/20">
-            <span className="flex items-center gap-2 text-sm font-medium text-success">
-              <ShieldCheck size={18} weight="fill" />
-              {tProduct("buyerProtection") || "Buyer Protection"}
-            </span>
-            <span className="w-px h-4 bg-border" />
-            <span className="flex items-center gap-2 text-sm text-muted-foreground">
-              <ArrowsClockwise size={18} />
-              {tProduct("easyReturns") || "Easy Returns"}
-            </span>
           </div>
 
-          {/* View full listing link */}
-          <button
-            type="button"
-            onClick={onNavigateToProduct}
-            className="w-full flex items-center justify-center gap-2 py-3 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-          >
-            {tModal("viewFullPage")}
-            <ArrowSquareOut size={16} weight="bold" />
-          </button>
-        </div>
-
-        {/* Sticky footer with CTAs */}
-        <div className="sticky bottom-0 border-t border-border bg-background/95 backdrop-blur-sm px-6 lg:px-8 py-5">
-          {/* Quick actions row */}
-          <div className="flex items-center gap-3 mb-4">
+          {/* Actions */}
+          <div className="flex items-center gap-2">
             <Button
               type="button"
               variant="outline"
               size="icon"
+              className="size-11"
               onClick={handleCopyLink}
               aria-label={tModal("copyLink")}
               disabled={!shareUrl}
-              className="size-touch-lg shrink-0"
             >
               <LinkSimple size={18} weight="bold" />
             </Button>
@@ -384,47 +229,87 @@ export function ProductQuickViewContent({
               type="button"
               variant="outline"
               size="icon"
+              className="size-11"
               onClick={handleToggleWishlist}
               aria-label={inWishlist ? tProduct("removeFromWatchlist") : tProduct("addToWatchlist")}
               disabled={wishlistPending}
-              className="size-touch-lg shrink-0"
             >
               <Heart
                 size={18}
-                weight={inWishlist ? "fill" : "bold"}
-                className={cn(
-                  inWishlist ? "fill-wishlist-active text-wishlist-active" : "text-foreground",
-                  wishlistPending && "opacity-50",
-                )}
+                weight={inWishlist ? "fill" : "regular"}
+                className={cn(inWishlist ? "fill-primary text-primary" : "text-foreground")}
               />
             </Button>
+
             {!inStock && (
-              <Badge variant="secondary" className="ml-auto text-destructive bg-destructive/10 font-medium">
-                {tProduct("outOfStock") || "Out of Stock"}
+              <Badge
+                variant="outline"
+                className="ml-auto border-destructive bg-destructive-subtle text-destructive"
+              >
+                {tProduct("outOfStock")}
               </Badge>
             )}
           </div>
 
-          {/* Main CTAs - full width, stacked or side by side */}
-          <div className="grid grid-cols-2 gap-3">
+          {/* Seller */}
+          <QuickViewSellerCard
+            sellerName={sellerName}
+            sellerAvatarUrl={sellerAvatarUrl}
+            sellerVerified={sellerVerified}
+            rating={rating}
+            reviews={reviews}
+            onNavigateToProduct={onNavigateToProduct}
+          />
+
+          {/* Trust */}
+          <div className="rounded-xl border border-border bg-card p-3 text-sm text-muted-foreground">
+            <div className="flex items-start gap-2">
+              <ShieldCheck size={18} weight="fill" className="mt-0.5 shrink-0" />
+              <div className="flex-1">
+                <p className="font-medium text-foreground">{tProduct("buyerProtection")}</p>
+                <p className="text-sm text-muted-foreground">{tProduct("buyerProtectionBadgeSubtitle")}</p>
+              </div>
+            </div>
+            <div className="mt-3 flex items-center gap-2">
+              <ArrowsClockwise size={18} className="shrink-0" />
+              <span>{tProduct("easyReturns")}</span>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            onClick={onNavigateToProduct}
+            className="w-full inline-flex items-center justify-center gap-2 rounded-xl border border-border bg-background px-4 py-3 text-sm font-medium text-foreground hover:bg-hover active:bg-active"
+          >
+            {tModal("viewFullPage")}
+            <ArrowSquareOut size={16} weight="bold" />
+          </button>
+        </div>
+      </div>
+
+      {/* Sticky bottom CTA */}
+      <div className="sticky bottom-0 z-20 border-t border-border bg-surface-glass backdrop-blur-md pb-safe-max">
+        <div className="px-4 py-3 lg:px-6">
+          <div className="grid gap-2 lg:grid-cols-2">
             <Button
-              variant="black"
+              type="button"
+              variant="default"
               size="lg"
-              className="gap-2.5 font-semibold h-12"
-              onClick={handleAddToCartWithQuantity}
-              disabled={!inStock}
-            >
-              <ShoppingCart size={20} weight="bold" />
-              {tDrawers("addToCart")}
-            </Button>
-            <Button
-              variant="cta"
-              size="lg"
-              className="font-semibold h-12"
+              className="h-12 w-full"
               onClick={onBuyNow}
               disabled={!inStock}
             >
               {tProduct("buyNow")}
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              size="lg"
+              className="h-12 w-full"
+              onClick={onAddToCart}
+              disabled={!inStock}
+            >
+              {tDrawers("addToCart")}
             </Button>
           </div>
         </div>

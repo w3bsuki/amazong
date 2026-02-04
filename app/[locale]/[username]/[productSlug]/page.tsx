@@ -9,7 +9,6 @@ import { submitReview } from "@/app/actions/reviews"
 
 import { ProductPageLayout } from "@/components/shared/product/product-page-layout"
 import {
-  buildProductPageMetadata,
   buildProductPageViewModel,
   isUuid,
 } from "@/lib/view-models/product-page"
@@ -128,13 +127,58 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
     }
   }
 
-  return buildProductPageMetadata({
-    locale,
-    username,
-    productSlug,
-    product,
-    seller: product.seller ?? null,
-  })
+  const tProduct = await getTranslations({ locale, namespace: "Product" })
+  const tBreadcrumbs = await getTranslations({ locale, namespace: "Breadcrumbs" })
+
+  const displayName = product.seller?.display_name || product.seller?.username || username
+  const canonicalUrl = `/${locale}/${username}/${productSlug}`
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://treido.eu"
+  const fullCanonicalUrl = `${siteUrl}${canonicalUrl}`
+
+  const description = product.meta_description
+    || (product.description ? product.description.slice(0, 155) : null)
+    || tProduct("metaDescriptionFallback", { title: product.title, seller: displayName })
+
+  const ogImage = Array.isArray(product.images) && product.images?.[0]
+    ? (product.images[0] as string)
+    : null
+
+  return {
+    title: tProduct("metaTitle", { title: product.title, seller: displayName }),
+    description,
+    alternates: {
+      canonical: fullCanonicalUrl,
+      languages: {
+        en: `${siteUrl}/en/${username}/${productSlug}`,
+        bg: `${siteUrl}/bg/${username}/${productSlug}`,
+      },
+    },
+    openGraph: {
+      title: product.title,
+      type: "website",
+      url: fullCanonicalUrl,
+      siteName: tBreadcrumbs("homeLabel"),
+      description,
+      images: ogImage
+        ? [{
+            url: ogImage,
+            alt: product.title,
+            width: 1200,
+            height: 630,
+          }]
+        : [],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: product.title,
+      description,
+      images: ogImage ? [ogImage] : [],
+    },
+    robots: {
+      index: true,
+      follow: true,
+    },
+  }
 }
 
 export default async function ProductPage({ params }: ProductPageProps) {
@@ -167,6 +211,79 @@ export default async function ProductPage({ params }: ProductPageProps) {
   }
 
   const rootCategory = parentCategory?.parent_id ? parentCategory : parentCategory ?? category
+  const tBreadcrumbs = await getTranslations({ locale, namespace: "Breadcrumbs" })
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://treido.eu"
+  const sellerName = seller.display_name || seller.username || username
+  const productAttributes = productData.attributes as Record<string, unknown> | null | undefined
+
+  // IMPORTANT: Keep key order/structure identical to the original JSON-LD output.
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: productData.title,
+    description: productData.description,
+    image: (Array.isArray(productData.images) ? productData.images : []) || [],
+    sku: productData.id,
+    brand: productAttributes?.brand
+      ? { "@type": "Brand", name: productAttributes.brand as string }
+      : undefined,
+    offers: {
+      "@type": "Offer",
+      price: productData.price,
+      priceCurrency: "EUR",
+      availability: Number(productData.stock ?? 0) > 0
+        ? "https://schema.org/InStock"
+        : "https://schema.org/OutOfStock",
+      seller: {
+        "@type": "Organization",
+        name: sellerName,
+        url: `${siteUrl}/${locale}/${seller.username ?? username}`,
+      },
+      url: `${siteUrl}/${locale}/${username}/${productSlug}`,
+    },
+    aggregateRating: Number(productData.review_count ?? 0) > 0
+      ? {
+          "@type": "AggregateRating",
+          ratingValue: (productData.rating as number | null | undefined) || 0,
+          reviewCount: productData.review_count,
+        }
+      : undefined,
+  }
+
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: tBreadcrumbs("home"),
+        item: `${siteUrl}/${locale}`,
+      },
+      ...(parentCategory
+        ? [{
+            "@type": "ListItem",
+            position: 2,
+            name: parentCategory.name,
+            item: `${siteUrl}/${locale}/categories/${parentCategory.slug}`,
+          }]
+        : []),
+      ...(category
+        ? [{
+            "@type": "ListItem",
+            position: parentCategory ? 3 : 2,
+            name: category.name,
+            item: `${siteUrl}/${locale}/categories/${category.slug}`,
+          }]
+        : []),
+      {
+        "@type": "ListItem",
+        position: (parentCategory ? 3 : 2) + (category ? 1 : 0),
+        name: productData.title,
+        item: `${siteUrl}/${locale}/${username}/${productSlug}`,
+      },
+    ],
+  }
 
   // Fetch related products, favorites count, and hero specs in parallel
   const [relatedProductsRaw, favoritesCount, heroSpecs] = await Promise.all([
@@ -180,15 +297,15 @@ export default async function ProductPage({ params }: ProductPageProps) {
     : []
 
   const viewModel = buildProductPageViewModel({
-    locale,
     username,
-    productSlug,
     product: productData,
     seller,
     category,
     parentCategory,
     relatedProductsRaw: relatedProductsRaw || [],
     heroSpecs, // Pass database-driven hero specs
+    jsonLd,
+    breadcrumbJsonLd,
   })
 
   return (

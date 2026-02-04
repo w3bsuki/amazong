@@ -163,9 +163,7 @@ function getProductImages(product: ProductPageProductLike): string[] {
 }
 
 export function buildProductPageViewModel(args: {
-  locale: string;
   username: string;
-  productSlug: string;
   product: ProductPageProductLike;
   seller: ProductPageSellerLike;
   category: ProductPageCategoryLike | null;
@@ -173,8 +171,10 @@ export function buildProductPageViewModel(args: {
   relatedProductsRaw: unknown[];
   /** Database-driven hero specs (preferred). Falls back to config-based if not provided. */
   heroSpecs?: HeroSpec[];
+  jsonLd: Record<string, unknown>;
+  breadcrumbJsonLd: Record<string, unknown>;
 }): ProductPageViewModel {
-  const { locale, username, productSlug, product, seller, category, parentCategory, relatedProductsRaw, heroSpecs: dbHeroSpecs } = args;
+  const { username, product, seller, category, parentCategory, relatedProductsRaw, heroSpecs: dbHeroSpecs, jsonLd, breadcrumbJsonLd } = args;
 
   const sellerName = seller.display_name || seller.username || username;
   const sellerAvatarUrl = seller.avatar_url || "";
@@ -212,78 +212,6 @@ export function buildProductPageViewModel(args: {
     } satisfies SellerProductsGridItem;
   });
 
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://treido.eu";
-
-  // IMPORTANT: Keep key order/structure identical to the original page.tsx JSON-LD.
-  const productAttributes = product.attributes as Record<string, unknown> | null | undefined;
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "Product",
-    name: product.title,
-    description: product.description,
-    image: (Array.isArray(product.images) ? product.images : []) || [],
-    sku: product.id,
-    brand: productAttributes?.brand
-      ? { "@type": "Brand", name: productAttributes.brand as string }
-      : undefined,
-    offers: {
-      "@type": "Offer",
-      price: product.price,
-      priceCurrency: "EUR",
-      availability: Number(product.stock ?? 0) > 0
-        ? "https://schema.org/InStock"
-        : "https://schema.org/OutOfStock",
-      seller: {
-        "@type": "Organization",
-        name: sellerName,
-        url: `${siteUrl}/${locale}/${seller?.username}`,
-      },
-      url: `${siteUrl}/${locale}/${username}/${productSlug}`,
-    },
-    aggregateRating: Number(product.review_count ?? 0) > 0
-      ? {
-          "@type": "AggregateRating",
-          ratingValue: (product.rating as number | null | undefined) || 0,
-          reviewCount: product.review_count,
-        }
-      : undefined,
-  };
-
-  const breadcrumbJsonLd = {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    itemListElement: [
-      {
-        "@type": "ListItem",
-        position: 1,
-        name: "Home",
-        item: `${siteUrl}/${locale}`,
-      },
-      ...(parentCategory
-        ? [{
-            "@type": "ListItem",
-            position: 2,
-            name: parentCategory.name,
-            item: `${siteUrl}/${locale}/categories/${parentCategory.slug}`,
-          }]
-        : []),
-      ...(category
-        ? [{
-            "@type": "ListItem",
-            position: parentCategory ? 3 : 2,
-            name: category.name,
-            item: `${siteUrl}/${locale}/categories/${category.slug}`,
-          }]
-        : []),
-      {
-        "@type": "ListItem",
-        position: (parentCategory ? 3 : 2) + (category ? 1 : 0),
-        name: product.title,
-        item: `${siteUrl}/${locale}/${username}/${productSlug}`,
-      },
-    ],
-  };
-
   // Hero specs are database-driven via get_hero_specs RPC
   // Returns up to 4 key attributes based on category_attributes.is_hero_spec
   const heroSpecs: ResolvedHeroSpec[] = (dbHeroSpecs ?? []).map(spec => ({
@@ -307,65 +235,5 @@ export function buildProductPageViewModel(args: {
     breadcrumbJsonLd,
     heroSpecs,
     categoryType,
-  };
-}
-
-export function buildProductPageMetadata(args: {
-  locale: string;
-  username: string;
-  productSlug: string;
-  product: ProductPageProductLike;
-  seller: ProductPageSellerLike | null;
-}): Metadata {
-  const { locale, username, productSlug, product, seller } = args;
-
-  const displayName = seller?.display_name || seller?.username || username;
-  const canonicalUrl = `/${locale}/${username}/${productSlug}`;
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://treido.eu";
-  const fullCanonicalUrl = `${siteUrl}${canonicalUrl}`;
-
-  const description = product.meta_description
-    || (product.description ? product.description.slice(0, 155) : null)
-    || `Shop ${product.title} from ${displayName}`;
-
-  const ogImage = Array.isArray(product.images) && product.images?.[0]
-    ? (product.images[0] as string)
-    : null;
-
-  return {
-    title: `${product.title} | ${displayName}`,
-    description,
-    alternates: {
-      canonical: fullCanonicalUrl,
-      languages: {
-        en: `${siteUrl}/en/${username}/${productSlug}`,
-        bg: `${siteUrl}/bg/${username}/${productSlug}`,
-      },
-    },
-    openGraph: {
-      title: product.title,
-      type: "website",
-      url: fullCanonicalUrl,
-      siteName: "Treido",
-      description,
-      images: ogImage
-        ? [{
-            url: ogImage,
-            alt: product.title,
-            width: 1200,
-            height: 630,
-          }]
-        : [],
-    },
-    twitter: {
-      card: "summary_large_image",
-      title: product.title,
-      description,
-      images: ogImage ? [ogImage] : [],
-    },
-    robots: {
-      index: true,
-      follow: true,
-    },
   };
 }

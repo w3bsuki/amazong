@@ -7,8 +7,6 @@ export type PasswordStrengthLabelKey =
 export function getPasswordStrength(password: string): {
   score: number
   labelKey: PasswordStrengthLabelKey
-  color: string
-  width: string
 } {
   let score = 0
 
@@ -20,14 +18,13 @@ export function getPasswordStrength(password: string): {
   if (/[^A-Za-z0-9]/.test(password)) score++
 
   if (score <= 2) {
-    return { score, labelKey: "strengthWeak", color: "bg-destructive", width: "w-1/4" }
+    return { score, labelKey: "strengthWeak" }
   }
   if (score <= 4) {
-    return { score, labelKey: "strengthFair", color: "bg-status-warning", width: "w-2/4" }
+    return { score, labelKey: "strengthFair" }
   }
   if (score <= 5) {
-    return { score, labelKey: "strengthGood", color: "bg-status-success/80", width: "w-3/4" }
+    return { score, labelKey: "strengthGood" }
   }
-  return { score, labelKey: "strengthStrong", color: "bg-status-success", width: "w-full" }
+  return { score, labelKey: "strengthStrong" }
 }
-

@@ -3,8 +3,8 @@
 import { CaretRight, CheckCircle, Star } from "@phosphor-icons/react"
 import { useTranslations } from "next-intl"
 
-import { VerifiedAvatar } from "@/components/shared/verified-avatar"
-import { cn } from "@/lib/utils"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { cn, safeAvatarSrc } from "@/lib/utils"
 
 interface QuickViewSellerCardProps {
   sellerName?: string | null | undefined
@@ -39,89 +39,53 @@ export function QuickViewSellerCard({
 }: QuickViewSellerCardProps) {
   const tProduct = useTranslations("Product")
   
-  // Backwards compatibility: if only sellerVerified is passed, treat as email verified
   const hasVerification = emailVerified || phoneVerified || idVerified || isVerifiedBusiness || sellerVerified
   const safeSellerName = sellerName ?? tProduct("seller")
   const hasRating = typeof rating === "number" && rating > 0
+  const avatarSrc = safeAvatarSrc(sellerAvatarUrl)
 
-  // Compact card mode for mobile - smaller but still a proper card
-  if (compact) {
-    return (
-      <button
-        type="button"
-        onClick={onNavigateToProduct}
-        className={cn(
-          "group w-full flex items-center gap-2.5 p-2.5 rounded-lg text-left",
-          "bg-surface-subtle border border-border/50",
-          "hover:bg-muted hover:border-border transition-colors",
-          "focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1"
-        )}
-      >
-        <VerifiedAvatar
-          name={safeSellerName}
-          avatarUrl={sellerAvatarUrl ?? null}
-          size="sm"
-          emailVerified={emailVerified ?? sellerVerified}
-          phoneVerified={phoneVerified}
-          idVerified={idVerified}
-          isVerifiedBusiness={isVerifiedBusiness}
-        />
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2">
-            <p className="text-sm font-medium truncate">{safeSellerName}</p>
-            {hasRating && (
-              <span className="flex items-center gap-0.5 text-xs tabular-nums shrink-0">
-                <Star size={12} weight="fill" className="fill-rating text-rating" />
-                {rating.toFixed(1)}
-                {typeof reviews === "number" && reviews > 0 && (
-                  <span className="text-muted-foreground">({reviews})</span>
-                )}
-              </span>
-            )}
-          </div>
-          {hasVerification && (
-            <span className="flex items-center gap-1 text-tiny text-muted-foreground">
-              <CheckCircle size={10} weight="fill" className="text-success" />
-              {tProduct("verifiedSeller")}
-            </span>
-          )}
-        </div>
-        <CaretRight size={16} className="text-muted-foreground group-hover:text-foreground shrink-0" />
-      </button>
-    )
-  }
-
-  // Desktop card layout
   return (
     <button
       type="button"
       onClick={onNavigateToProduct}
       className={cn(
-        "group w-full flex items-center gap-4 p-4 rounded-xl text-left",
-        "bg-card border border-border",
-        "hover:border-foreground/20 hover:shadow-sm transition-all duration-200",
-        "focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+        "w-full rounded-xl border border-border bg-card text-left transition-colors",
+        compact ? "p-2.5" : "p-3",
+        "hover:bg-hover active:bg-active",
+        "focus-visible:ring-2 focus-visible:ring-focus-ring"
       )}
     >
-      <VerifiedAvatar
-        name={safeSellerName}
-        avatarUrl={sellerAvatarUrl ?? null}
-        size="lg"
-        emailVerified={emailVerified ?? sellerVerified}
-        phoneVerified={phoneVerified}
-        idVerified={idVerified}
-        isVerifiedBusiness={isVerifiedBusiness}
-      />
-      <div className="flex-1 min-w-0">
-        <p className="text-base font-semibold truncate group-hover:text-foreground transition-colors">{safeSellerName}</p>
-        {hasVerification && (
-          <span className="flex items-center gap-1.5 text-sm text-muted-foreground">
-            <CheckCircle size={14} weight="fill" className="text-success shrink-0" />
-            {tProduct("verifiedSeller")}
-          </span>
-        )}
+      <div className="flex items-center gap-3">
+        <Avatar className="size-10">
+          {avatarSrc ? <AvatarImage src={avatarSrc} alt={safeSellerName} /> : null}
+          <AvatarFallback className="text-sm font-semibold">
+            {(safeSellerName.trim()[0] ?? "?").toUpperCase()}
+          </AvatarFallback>
+        </Avatar>
+
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center justify-between gap-2">
+            <p className="truncate text-sm font-medium text-foreground">{safeSellerName}</p>
+            <CaretRight size={18} className="shrink-0 text-muted-foreground" />
+          </div>
+
+          <div className="mt-0.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
+            {hasVerification && (
+              <span className="inline-flex items-center gap-1">
+                <CheckCircle size={12} weight="fill" />
+                {tProduct("verifiedSeller")}
+              </span>
+            )}
+            {hasRating && (
+              <span className="inline-flex items-center gap-1 tabular-nums">
+                <Star size={12} weight="fill" className="text-muted-foreground" />
+                <span>{rating.toFixed(1)}</span>
+                {typeof reviews === "number" && reviews > 0 ? <span>({reviews})</span> : null}
+              </span>
+            )}
+          </div>
+        </div>
       </div>
-      <CaretRight size={20} className="text-muted-foreground group-hover:text-foreground group-hover:translate-x-0.5 transition-all shrink-0" />
     </button>
   )
 }

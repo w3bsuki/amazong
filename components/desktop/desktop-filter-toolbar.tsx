@@ -14,7 +14,6 @@ import {
   SquaresFour,
   Rows,
   Check,
-  MapPin,
   Package,
   Star,
   Percent,
@@ -31,7 +30,7 @@ import {
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 import { SortSelect } from "@/components/shared/search/sort-select"
 import { DesktopFilterModal } from "@/components/desktop/desktop-filter-modal"
-import { getFilterPillsForCategory } from "@/lib/filter-priority"
+import { getFilterPillsForCategory } from "@/components/shared/filters/_lib/filter-priority"
 import { getCategoryAttributeKey } from "@/lib/filters/category-attribute"
 
 // =============================================================================
@@ -78,20 +77,18 @@ const QUICK_FILTERS: Array<{
 // =============================================================================
 
 const pillBase = cn(
-  "h-8 px-3 gap-1.5 rounded-lg",
-  "text-xs font-medium whitespace-nowrap",
+  "h-11 px-4 gap-2 rounded-full",
+  "text-sm font-medium whitespace-nowrap",
   "flex items-center justify-center",
   "border transition-colors",
-  "focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:ring-ring"
+  "focus-visible:ring-2 focus-visible:ring-focus-ring"
 )
 const pillInactive = cn(
-  "border-border bg-surface-subtle",
-  "text-muted-foreground",
+  "border-border bg-muted text-muted-foreground",
   "hover:bg-hover hover:text-foreground"
 )
 const pillActive = cn(
-  "border-selected-border bg-selected",
-  "text-primary"
+  "border-selected-border bg-selected text-primary"
 )
 
 // =============================================================================
@@ -236,6 +233,8 @@ export function DesktopFilterToolbar({
 
   // Total active filter count for badge
   const totalActiveFilters = activeQuickFilters.length + activeAttributeCount
+  const overflowCount =
+    activeQuickFilters.length > 0 ? activeQuickFilters.length : QUICK_FILTERS.length
 
   return (
     <div
@@ -276,11 +275,11 @@ export function DesktopFilterToolbar({
           return (
             <DropdownMenu key={dropdown.key}>
               <DropdownMenuTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className={cn(pillBase, hasValue ? pillActive : pillInactive)}
-                >
+            <Button
+              variant="ghost"
+              size="default"
+              className={cn(pillBase, hasValue ? pillActive : pillInactive)}
+            >
                   <span className="max-w-20 truncate">
                     {hasValue ? selectedValue : dropdown.label}
                   </span>
@@ -330,7 +329,7 @@ export function DesktopFilterToolbar({
             trigger={
               <Button
                 variant="ghost"
-                size="sm"
+                size="default"
                 className={cn(pillBase, totalActiveFilters > 0 ? pillActive : pillInactive)}
               >
                 <Sliders size={14} weight="regular" className="shrink-0" />
@@ -350,15 +349,11 @@ export function DesktopFilterToolbar({
           <DropdownMenuTrigger asChild>
             <Button
               variant="ghost"
-              size="sm"
+              size="default"
               className={cn(pillBase, activeQuickFilters.length > 0 ? pillActive : pillInactive)}
             >
               <DotsThree size={14} weight="bold" className="shrink-0" />
-              <span>
-                {activeQuickFilters.length > 0
-                  ? `+${activeQuickFilters.length} ${locale === "bg" ? "още" : "more"}`
-                  : `+${QUICK_FILTERS.length} ${locale === "bg" ? "още" : "more"}`}
-              </span>
+              <span>{t("tabs.moreFilters", { count: overflowCount })}</span>
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="min-w-44">
@@ -387,19 +382,19 @@ export function DesktopFilterToolbar({
         type="single"
         value={viewMode}
         onValueChange={(value) => value && updateParams({ view: value })}
-        className="h-8 bg-surface-subtle p-0.5 rounded-lg shrink-0 border border-border"
+        className="h-11 bg-muted p-0 rounded-full shrink-0 border border-border"
       >
         <ToggleGroupItem
           value="grid"
           aria-label={tViewMode("gridView")}
-          className="size-7 p-0 rounded-md data-[state=on]:bg-background data-[state=on]:shadow-sm"
+          className="size-11 p-0 rounded-full data-[state=on]:bg-background"
         >
           <SquaresFour size={16} weight={viewMode === "grid" ? "fill" : "regular"} />
         </ToggleGroupItem>
         <ToggleGroupItem
           value="list"
           aria-label={tViewMode("listView")}
-          className="size-7 p-0 rounded-md data-[state=on]:bg-background data-[state=on]:shadow-sm"
+          className="size-11 p-0 rounded-full data-[state=on]:bg-background"
         >
           <Rows size={16} weight={viewMode === "list" ? "fill" : "regular"} />
         </ToggleGroupItem>

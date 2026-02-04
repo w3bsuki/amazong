@@ -15,7 +15,11 @@ function Checkbox({
       data-slot="checkbox"
       className={cn(
         // WCAG 2.2 AA: 20px (size-5) with label gap creates 24px+ touch target
-        "peer border-input dark:bg-input/30 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground dark:data-[state=checked]:bg-primary data-[state=checked]:border-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive size-5 shrink-0 rounded border shadow-xs transition-shadow outline-none focus-visible:ring-2 disabled:cursor-not-allowed disabled:opacity-50",
+        "peer size-5 shrink-0 rounded-xl border border-input bg-background text-primary-foreground outline-none transition-colors",
+        "data-[state=checked]:border-primary data-[state=checked]:bg-primary",
+        "focus-visible:ring-2 focus-visible:ring-focus-ring",
+        "aria-invalid:border-destructive aria-invalid:ring-2 aria-invalid:ring-destructive-subtle",
+        "disabled:cursor-not-allowed disabled:opacity-50",
         className
       )}
       {...props}

@@ -18,8 +18,7 @@ interface ProductGridProps {
 
 /**
  * ProductGrid - Responsive CSS Grid
- * Mobile: 2 cols, gap-2 (8px)
- * Desktop: 4-5 cols, gap-3 (12px)
+ * Uses tokenized gap via `--product-grid-gap` (dense marketplace default).
  */
 function ProductGrid({ children, density = "default", className }: ProductGridProps) {
   const densityClasses = {
@@ -31,7 +30,7 @@ function ProductGrid({ children, density = "default", className }: ProductGridPr
   return (
     <div
       className={cn(
-        "grid gap-1 px-inset md:gap-2 md:px-inset-md lg:px-inset-lg",
+        "grid gap-(--product-grid-gap) px-inset md:px-inset-md lg:px-inset-lg",
         densityClasses[density],
         className
       )}
@@ -51,38 +50,21 @@ type ProductCardSkeletonProps = {
 
 function ProductCardSkeleton({ showQuickAdd = true }: ProductCardSkeletonProps) {
   return (
-    <div className="overflow-hidden">
-      <div className="relative overflow-hidden rounded-(--radius-card) bg-muted">
+    <div className="rounded-xl border border-border bg-card p-2.5">
+      <div className="relative overflow-hidden rounded-xl bg-muted">
         <AspectRatio ratio={1}>
           <Skeleton className="h-full w-full" />
         </AspectRatio>
 
         {showQuickAdd && (
-          <Skeleton className="absolute top-1.5 right-1.5 size-8 rounded-full" />
+          <Skeleton className="absolute top-2 right-2 size-11 rounded-xl" />
         )}
       </div>
 
-      <div className="pt-1">
-        <div className="flex items-baseline gap-1.5">
-          <Skeleton className="h-5 w-16" />
-          <Skeleton className="h-3 w-10" />
-        </div>
-
-        <Skeleton className="mt-1 h-4 w-full" />
-        <Skeleton className="mt-0.5 h-4 w-2/3" />
-
-        <div className="mt-1 flex items-center gap-1">
-          <Skeleton className="size-3 rounded-full" />
-          <Skeleton className="h-2.5 w-16" />
-        </div>
-
-        <div className="mt-1 flex items-center justify-between">
-          <div className="flex items-center gap-1">
-            <Skeleton className="size-5 rounded-full" />
-            <Skeleton className="h-2.5 w-14" />
-          </div>
-          <Skeleton className="size-7 rounded" />
-        </div>
+      <div className="mt-2 space-y-1">
+        <Skeleton className="h-5 w-20" />
+        <Skeleton className="h-4 w-full" />
+        <Skeleton className="h-4 w-2/3" />
       </div>
     </div>
   )

@@ -37,6 +37,11 @@ export interface UseCategoryNavigationProps {
   initialProductsSlug?: string
   locale: string
   activeAllFilter: string
+  /**
+   * When false, ignore `?tab`/`?sub` URL state and do not write it.
+   * Useful on the homepage where category navigation is drawer-based.
+   */
+  syncTabsToUrl?: boolean
 }
 
 export interface UseCategoryNavigationReturn {
@@ -104,6 +109,7 @@ export function useCategoryNavigation({
   initialProductsSlug = "all",
   locale,
   activeAllFilter,
+  syncTabsToUrl = true,
 }: UseCategoryNavigationProps): UseCategoryNavigationReturn {
   const pathname = usePathname()
   const searchParams = useSearchParams()
@@ -121,8 +127,8 @@ export function useCategoryNavigation({
   const [activeL3, setActiveL3] = useState<string | null>(null)
 
   // Initialize from URL params or props
-  const urlInitialTab = searchParams.get("tab")
-  const urlInitialSubTab = searchParams.get("sub")
+  const urlInitialTab = syncTabsToUrl ? searchParams.get("tab") : null
+  const urlInitialSubTab = syncTabsToUrl ? searchParams.get("sub") : null
   // Always default to "all" tab so promoted listings/recommendations show
   const pillsDefaultTab = "all"
 
@@ -140,10 +146,28 @@ export function useCategoryNavigation({
   const [activeL2, setActiveL2] = useState<string | null>(initialL2)
   const [selectedPill, setSelectedPill] = useState<string | null>(initialL3)
 
+  // If tab/sub URL state is disabled, strip it from the URL and keep state internal.
+  useEffect(() => {
+    if (syncTabsToUrl) return
+
+    const tab = searchParams.get("tab")
+    const sub = searchParams.get("sub")
+    if (!tab && !sub) return
+
+    const params = new URLSearchParams(searchParams.toString())
+    params.delete("tab")
+    params.delete("sub")
+
+    const queryString = params.toString()
+    const newUrl = queryString ? `${pathname}?${queryString}` : pathname
+    window.history.replaceState(null, "", newUrl)
+  }, [syncTabsToUrl, pathname, searchParams])
+
   // Sync state with URL params when they change
   const urlTab = searchParams.get("tab")
   const urlSub = searchParams.get("sub")
   useEffect(() => {
+    if (!syncTabsToUrl) return
     if (urlTab === null) return
 
     if (urlTab !== activeTab) {
@@ -159,7 +183,7 @@ export function useCategoryNavigation({
       setActiveL3(null)
       setSelectedPill(null)
     }
-  }, [urlTab, urlSub]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [syncTabsToUrl, urlTab, urlSub]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // Filter state - detect filter/sort URL changes
   const filterQueryKey = useMemo(() => {
@@ -500,6 +524,7 @@ export function useCategoryNavigation({
 
   const updateUrl = useCallback(
     (tab: string, l1: string | null) => {
+      if (!syncTabsToUrl) return
       const params = new URLSearchParams(searchParams.toString())
       if (tab !== "all") params.set("tab", tab)
       else params.delete("tab")
@@ -511,7 +536,7 @@ export function useCategoryNavigation({
       const newUrl = queryString ? `${pathname}?${queryString}` : pathname
       window.history.replaceState(null, "", newUrl)
     },
-    [pathname, searchParams]
+    [pathname, searchParams, syncTabsToUrl]
   )
 
   const handleTabChange = useCallback(

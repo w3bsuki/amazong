@@ -41,7 +41,6 @@ describe('lib/format-price', () => {
 
     const discount = formatDiscount(80, 100, 'en')
     expect(discount.percentage).toBe(20)
-    expect(discount.label).toBe('-20%')
 
     expect(getDiscountPercentage(100, 80)).toBe(20)
     expect(getDiscountPercentage(0, 80)).toBe(0)

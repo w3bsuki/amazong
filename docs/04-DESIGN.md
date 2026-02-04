@@ -15,13 +15,23 @@
 
 | Question | Answer |
 |----------|--------|
-| What color is primary? | Twitter Blue `oklch(0.65 0.17 230)` |
-| What's the default radius? | `6px` (`--radius: 0.375rem`) |
+| What color is primary? | Brand blue via `--primary` (`oklch(0.62 0.20 255)` in `app/globals.css`) |
+| What's the default radius? | Base token `--radius: 0.5rem` (8px). Standard components use `rounded-xl` (~12px). |
 | Can I use `bg-primary/10`? | **No.** Use `bg-hover` or `bg-selected` |
 | Can I use `bg-gray-100`? | **No.** Use `bg-muted` |
 | Where are tokens defined? | `app/globals.css` `:root` and `.dark` |
 | Where are primitives? | `components/ui/*` |
 | Gate command? | `pnpm -s styles:gate` |
+
+---
+
+## 2026 Clean Marketplace Rails (Follow These)
+
+- **One accent only**: use `primary` for CTAs, links, active states, focus rings.
+- **Destructive red only**: discounts and error states (no orange/brown “deal” styling).
+- **Minimal elevation**: cards/list rows are border-only; shadows are for overlays only (`shadow-modal`, `shadow-dropdown`).
+- **Dense but tappable**: listing grids use `gap-(--product-grid-gap)` (SSOT: `app/globals.css`), cards use `p-2.5`, buttons/inputs are `h-11`+.
+- **No hover-only UX**: core actions must be reachable without hover.
 
 ---
 
@@ -90,11 +100,13 @@ CSS Variables (:root/.dark) → @theme inline → Tailwind Classes
 | Palette colors | `bg-gray-100`, `text-blue-500` | `bg-muted`, `text-primary` |
 | Gradients | `bg-gradient-to-r` | Solid `bg-muted` |
 | Arbitrary values | `w-[560px]`, `text-[13px]` | `w-full`, `text-sm` |
-| Opacity modifiers | `bg-primary/10`, `bg-muted/30` | `bg-hover`, `bg-selected` |
+| Opacity tints (brand) | `bg-primary/10` | `bg-hover`, `bg-selected`, or `bg-primary-subtle` |
 | Hardcoded colors | `#ff0000`, `oklch()` in TSX | Semantic token |
 | White/black | `bg-white`, `text-black` | `bg-background`, `text-foreground` |
 
 **Exception:** Product color swatches in `components/shared/filters/color-swatches.tsx` may use hex.
+
+**Allowed (rare):** Token-based alpha for *glass* / *hairline* (e.g. `bg-background/95`, `border-border/30`).
 
 ### Surface Tokens
 
@@ -152,11 +164,10 @@ CSS Variables (:root/.dark) → @theme inline → Tailwind Classes
 
 ### Layout Tokens
 
-| Token | Value | Usage |
-|-------|-------|-------|
-| `h-touch` | 40px | Standard buttons |
-| `h-touch-lg` | 48px | Primary CTAs |
-| `h-touch-sm` | 36px | Compact buttons |
+| Token / Class | Value | Usage |
+|--------------|-------|-------|
+| `h-11` / `h-(--spacing-touch)` | 44px | Standard buttons + inputs |
+| `h-12` / `h-(--spacing-touch-md)` | 48px | Primary CTAs |
 | `--spacing-header` | 48px | Header height |
 | `--spacing-bottom-nav` | 48px | Bottom nav |
 
@@ -194,13 +205,14 @@ CSS Variables (:root/.dark) → @theme inline → Tailwind Classes
 
 ## Part 6: Border Radius
 
-| Token | Value | Usage |
-|-------|-------|-------|
-| `rounded-sm` | 4px | Badges, chips |
-| `rounded-md` | 6px | Buttons, inputs, cards |
-| `rounded-lg` | 8px | Dialogs |
-| `rounded-xl` | 10px | Hero sections |
-| `rounded-full` | 9999px | Avatars, pills |
+| Token | Value (light mode) | Usage |
+|-------|--------------------|-------|
+| `rounded-sm` | ~6px | Small internal surfaces |
+| `rounded-md` | ~8px | Legacy/default |
+| `rounded-lg` | ~10px | Secondary containers |
+| `rounded-xl` | ~12px | **Cards / list rows / buttons / inputs** |
+| `rounded-2xl` | ~14px | **Sheets / dialogs / popovers** |
+| `rounded-full` | 9999px | Chips / badges / pills |
 
 ---
 

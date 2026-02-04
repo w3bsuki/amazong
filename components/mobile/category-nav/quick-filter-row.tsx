@@ -11,7 +11,7 @@ import {
 } from "@phosphor-icons/react"
 import { cn } from "@/lib/utils"
 import { useTranslations } from "next-intl"
-import { getFilterPillsForCategory, isBaseFilter } from "@/lib/filter-priority"
+import { getFilterPillsForCategory, isBaseFilter } from "@/components/shared/filters/_lib/filter-priority"
 import { FilterHub } from "@/components/shared/filters/filter-hub"
 import { FilterModal, type FilterModalSection } from "@/components/shared/filters/filter-modal"
 import { SortModal } from "@/components/shared/filters/sort-modal"

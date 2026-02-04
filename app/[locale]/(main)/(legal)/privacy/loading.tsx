@@ -1,44 +1,15 @@
-import { Skeleton } from "@/components/ui/skeleton"
-import { PageShell } from "@/components/shared/page-shell"
+import { LegalDocLoading } from "../_components/legal-doc-loading"
 
 export default function PrivacyLoading() {
   return (
-    <PageShell className="pb-20 sm:pb-12">
-      {/* Hero */}
-      <div className="bg-muted py-8 sm:py-12">
-        <div className="container">
-          <Skeleton className="h-8 sm:h-10 w-48 mb-2" />
-          <Skeleton className="h-5 w-64" />
-        </div>
-      </div>
-
-      <div className="container py-8 max-w-4xl">
-        <div className="richtext max-w-none text-sm">
-          {/* Table of Contents */}
-          <div className="bg-card rounded-lg border border-border p-4 mb-8">
-            <Skeleton className="h-5 w-40 mb-4" />
-            <div className="space-y-2">
-              {[1, 2, 3, 4, 5, 6].map((i) => (
-                <Skeleton key={i} className="h-4 w-56" />
-              ))}
-            </div>
-          </div>
-
-          {/* Sections */}
-          {[1, 2, 3, 4, 5].map((i) => (
-            <div key={i} className="mb-8">
-              <Skeleton className="h-7 w-64 mb-4" />
-              <div className="space-y-3">
-                <Skeleton className="h-4 w-full" />
-                <Skeleton className="h-4 w-full" />
-                <Skeleton className="h-4 w-5/6" />
-                <Skeleton className="h-4 w-full" />
-                <Skeleton className="h-4 w-3/4" />
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </PageShell>
+    <LegalDocLoading
+      heroTitleWidthClassName="w-48"
+      tocItemsCount={6}
+      tocItemWidthClassName="w-56"
+      sectionsCount={5}
+      sectionTitleWidthClassName="w-64"
+      sectionLine3WidthClassName="w-5/6"
+      sectionLine5WidthClassName="w-3/4"
+    />
   )
 }

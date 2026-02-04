@@ -1,18 +1,13 @@
 import { Skeleton } from "@/components/ui/skeleton"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
+import { AccountPageHeaderSkeleton } from "../_components/account-page-header-skeleton"
 
 export default function ProfileLoading() {
   return (
     <div className="p-4 lg:p-4">
       <div className="max-w-4xl mx-auto space-y-6">
         {/* Header */}
-        <div className="flex items-center justify-between">
-          <div className="space-y-2">
-            <Skeleton className="h-8 w-32" />
-            <Skeleton className="h-4 w-64" />
-          </div>
-          <Skeleton className="h-9 w-24" />
-        </div>
+        <AccountPageHeaderSkeleton actionSkeletonClassName="h-9 w-24" />
 
         {/* Profile Banner & Avatar Card */}
         <Card>

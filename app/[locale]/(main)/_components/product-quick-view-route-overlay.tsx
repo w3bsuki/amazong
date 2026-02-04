@@ -49,15 +49,15 @@ export async function ProductQuickViewRouteOverlay({
   const heroSpecs = await fetchProductHeroSpecs(productData.id, locale)
 
   const viewModel = buildProductPageViewModel({
-    locale,
     username,
-    productSlug,
     product: productData,
     seller,
     category,
     parentCategory,
     relatedProductsRaw: [],
     heroSpecs,
+    jsonLd: {},
+    breadcrumbJsonLd: {},
   })
 
   const primaryImageSrc = viewModel.galleryImages?.[0]?.src ?? null

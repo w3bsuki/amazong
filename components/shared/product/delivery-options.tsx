@@ -20,19 +20,19 @@ export function DeliveryOptions({ pickupOnly, freeShipping }: DeliveryOptionsPro
         {t("delivery")}
       </h3>
       <div className="flex flex-wrap gap-1.5">
-        <span className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-muted text-xs">
+        <span className="inline-flex items-center gap-1.5 rounded-full bg-muted px-3 py-1.5 text-xs font-medium text-foreground">
           <MapPin className="size-3.5 text-muted-foreground" strokeWidth={1.5} />
           {pickupOnly ? t("pickupOnly") : t("meetup")}
         </span>
         {!pickupOnly && (
-          <span className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-muted text-xs">
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-muted px-3 py-1.5 text-xs font-medium text-foreground">
             <Truck className="size-3.5 text-muted-foreground" strokeWidth={1.5} />
             {t("shipping")}
           </span>
         )}
         {freeShipping && (
-          <span className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-shipping-free/10 text-shipping-free text-xs font-medium">
-            <Truck className="size-3.5" strokeWidth={1.5} />
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-muted px-3 py-1.5 text-xs font-medium text-foreground">
+            <Truck className="size-3.5 text-muted-foreground" strokeWidth={1.5} />
             {t("freeShipping")}
           </span>
         )}

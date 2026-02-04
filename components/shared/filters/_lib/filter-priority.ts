@@ -74,4 +74,3 @@ export function getFilterPillsForCategory(
 export function isBaseFilter(filterKey: string): boolean {
     return BASE_FILTERS.includes(filterKey as (typeof BASE_FILTERS)[number])
 }
-

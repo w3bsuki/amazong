@@ -63,7 +63,7 @@ export function MobileCartDropdown() {
                 aria-label={tNav('cart')}
             >
                 <span className="relative" aria-hidden="true">
-                    <ShoppingCart className="size-icon text-header-text" weight="regular" />
+                    <ShoppingCart className="size-icon-header text-header-text" weight="regular" />
                 </span>
             </Link>
         )
@@ -77,7 +77,7 @@ export function MobileCartDropdown() {
                     aria-label={tNav('cart')}
                 >
                     <span className="relative" aria-hidden="true">
-                        <ShoppingCart className="size-icon text-header-text" weight="regular" />
+                        <ShoppingCart className="size-icon-header text-header-text" weight="regular" />
                         {displayItems > 0 && (
                             <CountBadge
                                 count={displayItems}

@@ -38,7 +38,7 @@ export function SpecificationsList({ specifications }: SpecificationsListProps) 
       <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
         {t("specifications")}
       </h3>
-      <div className="rounded-lg border border-border overflow-hidden divide-y divide-border">
+      <div className="rounded-xl border border-border overflow-hidden divide-y divide-border">
         {validSpecs.map((spec, index) => (
           <div
             key={`${spec.key}-${index}`}

@@ -3,7 +3,7 @@
 import { useTranslations } from "next-intl";
 import { Truck } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { getConditionBadgeVariant } from "@/lib/utils";
+import { getConditionBadgeVariant } from "@/components/shared/product/_lib/condition-badges";
 
 interface ProductHeaderProps {
   title: string;
@@ -77,9 +77,7 @@ export function ProductHeader({
         <div className="flex items-center gap-2">
           <p className="text-2xl font-bold text-foreground">{formatPrice(price)}</p>
           {isNegotiable && (
-            <span className="px-2 py-0.5 rounded-md bg-primary-subtle text-primary text-xs font-medium">
-              {t("negotiable")}
-            </span>
+            <Badge variant="default">{t("negotiable")}</Badge>
           )}
         </div>
       )}

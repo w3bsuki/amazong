@@ -30,7 +30,7 @@ export interface CategoryCirclesSimpleProps {
 /**
  * Instagram Stories-style category circles for homepage (2026 pattern).
  * 
- * - Compact 48px circles optimized for mobile thumb reach
+ * - Compact 56px circles optimized for mobile thumb reach
  * - Tapping opens the CategoryBrowseDrawer for subcategory navigation
  * - Horizontal scroll with momentum, no visible scrollbar
  * - Active state shows ring highlight (familiar from Stories)
@@ -66,7 +66,7 @@ export function CategoryCirclesSimple({
   }
 
   return (
-    <div className={cn("px-inset py-1.5 overflow-x-auto no-scrollbar", className)}>
+    <div className={cn("px-inset-md py-2 overflow-x-auto no-scrollbar", className)}>
       <div className="flex items-start gap-1">
         {/* 'All' Circle */}
         <CategoryCircle
@@ -75,13 +75,13 @@ export function CategoryCirclesSimple({
           active={!drawer?.isOpen}
           onClick={handleAllClick}
           circleClassName="size-(--spacing-category-circle)"
-          fallbackIconSize={18}
+          fallbackIconSize={20}
           fallbackIconWeight="bold"
           variant="colorful"
           preferIcon={false}
           className="flex-none w-(--spacing-category-item-lg)"
           labelClassName={cn(
-            "w-full text-2xs text-center leading-tight line-clamp-1 px-0 mt-0.5",
+            "w-full text-xs text-center leading-tight line-clamp-1 px-0 mt-1",
             "font-medium truncate",
             !drawer?.isOpen ? "text-foreground" : "text-muted-foreground"
           )}
@@ -98,14 +98,14 @@ export function CategoryCirclesSimple({
               onClick={() => handleCircleClick(category)}
               active={isActive}
               circleClassName="size-(--spacing-category-circle)"
-              fallbackIconSize={18}
+              fallbackIconSize={20}
               fallbackIconWeight="bold"
               variant="colorful"
               preferIcon={false}
               label={tCategories("shortName", { slug: getCategorySlugKey(category.slug), name: getCategoryName(category, locale) })}
               className="flex-none w-(--spacing-category-item-lg)"
               labelClassName={cn(
-                "w-full text-2xs text-center leading-tight line-clamp-1 px-0 mt-0.5",
+                "w-full text-xs text-center leading-tight line-clamp-1 px-0 mt-1",
                 "font-medium truncate",
                 isActive ? "text-foreground" : "text-muted-foreground"
               )}

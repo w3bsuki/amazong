@@ -30,391 +30,301 @@
   }
 }
 
-/* ===== PROFESSIONAL E-COMMERCE THEME - Twitter Theme (Clean White 2026) ===== */
+/* ===== UI THEME (OKLCH TOKENS) ===== */
+/* Rules: token-based colors only, one accent (primary blue), minimal shadows. */
 :root {
-  /* Core palette - Twitter theme with clean white surfaces */
-  --background: oklch(1 0 0);                /* #ffffff - pure white */
-  --foreground: oklch(0.15 0.01 250);        /* #0f1419 - Twitter dark */
-  --card: oklch(1 0 0);                      /* #ffffff - pure white (was gray) */
-  --card-foreground: oklch(0.15 0.01 250);   /* #0f1419 */
-  --popover: oklch(1 0 0);                   /* #ffffff */
-  --popover-foreground: oklch(0.15 0.01 250);/* #0f1419 */
-  --primary: oklch(0.65 0.17 230);           /* #1e9df1 - Twitter blue */
-  --primary-foreground: oklch(1 0 0);        /* #ffffff */
-  --secondary: oklch(0.15 0.01 250);         /* #0f1419 - dark */
-  --secondary-foreground: oklch(1 0 0);      /* #ffffff */
-  --muted: oklch(0.96 0 0);                  /* Softer gray for subtle UI (was too dark) */
-  --muted-foreground: oklch(0.45 0 0);       /* Proper contrast muted text */
-  --accent: oklch(0.97 0 0);                 /* Very subtle gray for hover/focus */
-  --accent-foreground: oklch(0.15 0.01 250); /* Near-black for accent text */
-  --destructive: oklch(0.55 0.24 25);        /* #f4212e */
-  --destructive-foreground: oklch(1 0 0);    /* #ffffff */
-  --border: oklch(0.93 0.01 230);            /* #e1eaef - blue-gray */
-  --input: oklch(0.98 0 0);                  /* #f7f9fa */
-  --ring: oklch(0.65 0.17 230);              /* #1da1f2 */
-  --category-ring: var(--foreground);        /* Black ring for category selection */
+  /* Use raw OKLCH components; Tailwind mapping wraps with `oklch(var(--...))`. */
+  --background: 1 0 0;              /* white */
+  --foreground: 0.18 0.02 255;      /* near-black */
+  --card: 1 0 0;
+  --card-foreground: 0.18 0.02 255;
+  --popover: 1 0 0;
+  --popover-foreground: 0.18 0.02 255;
+
+  /* Brand blue (primary) */
+  --primary: 0.62 0.20 255;
+  --primary-foreground: 1 0 0;
+
+  /* Secondary surfaces */
+  --secondary: 0.96 0.01 255;
+  --secondary-foreground: 0.22 0.02 255;
+
+  --muted: 0.97 0.005 255;
+  --muted-foreground: 0.52 0.02 255;
+
+  --accent: 0.96 0.01 255;
+  --accent-foreground: 0.22 0.02 255;
+
+  /* Destructive (discount/error) */
+  --destructive: 0.62 0.22 30;
+  --destructive-foreground: 1 0 0;
+
+  --border: 0.92 0.01 255;
+  --input: 0.92 0.01 255;
+  --ring: 0.62 0.20 255;
+  --category-ring: 0.18 0.02 255;
 
   /* Layout */
   /* Updated at runtime by AppHeader (measured px) to keep fixed mobile header from overlapping content. */
   --app-header-offset: calc(var(--header-h-mobile, 3.5rem) + env(safe-area-inset-top));
 
-  /* === SEMANTIC STATUS (Light) - Professional, desaturated === */
-  --success: oklch(0.52 0.14 155);
-  --success-foreground: oklch(1 0 0);
-  --warning: oklch(0.68 0.14 75);
-  --warning-foreground: oklch(0.25 0.05 75);
-  --error: oklch(0.52 0.20 27);
-  --error-foreground: oklch(1 0 0);
-  --info: oklch(0.55 0.15 255);
-  --info-foreground: oklch(1 0 0);
+  /* Interactive states (avoid opacity hacks in class names) */
+  --hover: 0.985 0.005 255;
+  --active: 0.96 0.01 255;
+  --selected: 0.96 0.01 255;
+  --selected-foreground: 0.18 0.02 255;
+  --selected-border: 0.62 0.20 255;
+  --hover-border: 0.92 0.01 255;
 
-  /* Subtle background variants for semantic colors */
-  --primary-subtle: oklch(0.97 0.03 243);    /* Light primary tint for highlights */
-  --success-subtle: oklch(0.97 0.03 155);    /* Light green for buyer protection etc */
-  --destructive-subtle: oklch(0.96 0.02 25); /* Light red for destructive hover states */
+  /* Legacy semantic aliases (keep visuals within blue/red system) */
+  --success: var(--primary);
+  --success-foreground: var(--primary-foreground);
+  --warning: var(--primary);
+  --warning-foreground: var(--primary-foreground);
+  --info: var(--primary);
+  --info-foreground: var(--primary-foreground);
+  --error: var(--destructive);
+  --error-foreground: var(--destructive-foreground);
 
-  /* === INTERACTIVE STATES === */
-  --selected: oklch(0.97 0 0);
-  --selected-foreground: var(--foreground);
-  --selected-border: var(--primary);
-  --hover: oklch(0.975 0 0);
-  --hover-border: oklch(0.85 0 0);
-  --active: oklch(0.94 0 0);
-  --focus-ring: oklch(0.62 0.19 243 / 30%);
-  --checked: var(--primary);
-  --checked-foreground: oklch(1 0 0);
-  --switch-unchecked-bg: var(--input);
-  --toast-destructive-border: oklch(0.94 0.03 25);
-  --toast-destructive-border-hover: oklch(0.86 0.07 25);
-  --toast-destructive-foreground-muted: oklch(0.86 0 0);
+  --primary-subtle: 0.97 0.02 255;
+  --destructive-subtle: 0.96 0.02 30;
 
-  /* Marketplace radius - slightly larger for modern feel */
-  --radius: 0.375rem;
+  /* Sidebar */
+  --sidebar: var(--background);
+  --sidebar-foreground: var(--foreground);
+  --sidebar-muted: var(--muted);
+  --sidebar-muted-foreground: var(--muted-foreground);
+  --sidebar-primary: var(--primary);
+  --sidebar-primary-foreground: var(--primary-foreground);
+  --sidebar-accent: var(--accent);
+  --sidebar-accent-foreground: var(--accent-foreground);
+  --sidebar-border: var(--border);
+  --sidebar-ring: var(--ring);
 
-  /* Sidebar - Clean white version */
-  --sidebar: oklch(1 0 0);                   /* Pure white sidebar */
-  --sidebar-foreground: oklch(0.15 0.01 250);/* #0f1419 */
-  --sidebar-muted: oklch(0.97 0 0);          /* Subdued sidebar background */
-  --sidebar-muted-foreground: oklch(0.45 0.01 250); /* Subdued sidebar text */
-  --sidebar-primary: oklch(0.65 0.17 230);   /* #1e9df1 */
-  --sidebar-primary-foreground: oklch(1 0 0);/* #ffffff */
-  --sidebar-accent: oklch(0.97 0 0);         /* Subtle hover state */
-  --sidebar-accent-foreground: oklch(0.15 0.01 250);
-  --sidebar-border: oklch(0.92 0.01 230);    /* #e1e8ed */
-  --sidebar-ring: oklch(0.65 0.17 230);      /* #1da1f2 */
-
-  /* Charts - Balanced color palette */
-  --chart-1: oklch(0.62 0.19 243);
-  --chart-2: oklch(0.52 0.14 155);
-  --chart-3: oklch(0.68 0.14 75);
-  --chart-4: oklch(0.58 0.20 300);
-  --chart-5: oklch(0.55 0.18 27);
+  /* Charts: keep within blue/neutral range */
+  --chart-1: var(--primary);
+  --chart-2: 0.72 0.06 255;
+  --chart-3: 0.62 0.03 255;
+  --chart-4: 0.52 0.02 255;
+  --chart-5: 0.42 0.01 255;
 
   /* Overlays (drawer/sheet/dialog backdrops) */
-  --overlay-dark: oklch(0 0 0 / 50%);
-  --overlay-light: oklch(1 0 0 / 80%);
+  --overlay-dark: 0 0 0 / 50%;
+  --overlay-light: 1 0 0 / 80%;
 
   /* Glass surface (frosted panels / floating chrome) */
-  --surface-glass: oklch(from var(--background) l c h / 0.85);
+  --surface-glass: 1 0 0 / 0.88;
 
-  /* Mobile Product Page Surfaces - Light Mode (Clean White 2026) */
-  --surface-page: oklch(1 0 0);              /* Pure white - consistent pages */
-  --surface-subtle: oklch(0.98 0 0);         /* Barely-there tint when needed */
-  --surface-card: var(--background);         /* White cards */
-  --surface-elevated: var(--background);     /* White elevated surfaces */
-  --surface-gallery: oklch(0.10 0 0);        /* Dark gallery backdrop */
-  --surface-overlay: oklch(0 0 0 / 60%);
+  /* App surfaces */
+  --surface-page: var(--background);
+  --surface-subtle: var(--muted);
+  --surface-card: var(--card);
+  --surface-elevated: var(--background);
+  --surface-gallery: 0.10 0 0;
+  --surface-overlay: 0 0 0 / 60%;
   --surface-floating: var(--background);
 
-  /* Mobile Product Page Text - Light Mode */
+  /* Overlay/Gallery Text */
+  --overlay-text: 1 0 0;
+  --overlay-text-muted: 0.85 0 0;
+  --gallery-ring: 1 0 0;
+  --gallery-ring-offset: 0.10 0 0;
+
+  /* Text aliases (used in a few legacy components) */
   --text-strong: var(--foreground);
   --text-default: var(--foreground);
   --text-muted-alt: var(--muted-foreground);
   --text-subtle: var(--muted-foreground);
 
-  /* Overlay/Gallery Text */
-  --overlay-text: oklch(1 0 0);
-  --overlay-text-muted: oklch(0.85 0 0);
-  --gallery-ring: oklch(1 0 0);
-  --gallery-ring-offset: oklch(0.10 0 0);
-  --font-sans: Inter, system-ui, -apple-system, sans-serif;
-  --font-serif: Georgia, serif;
-  --font-mono: "SF Mono", Menlo, monospace;
-  --shadow-color: oklch(0 0 0 / 6%);
-  --shadow-opacity: 1;
-  --shadow-blur: 8px;
-  --shadow-spread: -2px;
-  --shadow-offset-x: 0px;
-  --shadow-offset-y: 4px;
-  --letter-spacing: 0em;
-  --spacing: 0.25rem;
-  --shadow-2xs: 0 1px 2px 0 oklch(0 0 0 / 3%);
-  --shadow-xs: 0 1px 3px 0 oklch(0 0 0 / 5%);
-  --shadow-sm: 0 1px 3px 0 oklch(0 0 0 / 8%), 0 1px 2px -1px oklch(0 0 0 / 5%);
-  --shadow: 0 2px 5px -1px oklch(0 0 0 / 8%), 0 1px 3px -1px oklch(0 0 0 / 6%);
-  --shadow-md: 0 4px 8px -2px oklch(0 0 0 / 8%), 0 2px 4px -2px oklch(0 0 0 / 6%);
-  --shadow-lg: 0 8px 16px -4px oklch(0 0 0 / 10%), 0 4px 8px -4px oklch(0 0 0 / 6%);
-  --shadow-xl: 0 16px 32px -8px oklch(0 0 0 / 12%), 0 8px 16px -8px oklch(0 0 0 / 8%);
-  --shadow-2xl: 0 24px 48px -12px oklch(0 0 0 / 18%);
-  --tracking-normal: 0em;
+  /* Focus/checked helpers */
+  --focus-ring: 0.62 0.20 255 / 30%;
+  --checked: var(--primary);
+  --checked-foreground: var(--primary-foreground);
+  --switch-unchecked-bg: var(--input);
+  --success-subtle: var(--primary-subtle);
+
+  /* Consistent radii */
+  --radius: 0.5rem; /* iOS-like baseline */
 }
 
-/* ===== DARK MODE - Pure Neutral + Twitter Blue CTAs ===== */
+/* ===== DARK MODE (Optional) ===== */
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.68 0.16 243);
-  --primary-foreground: oklch(0.145 0 0);
-  --secondary: oklch(0.27 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.27 0 0);
-  --muted-foreground: oklch(0.64 0 0);
-  --accent: oklch(0.27 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.65 0.20 25);
-  --destructive-foreground: oklch(0.145 0 0);
-  --border: oklch(0.27 0 0);
-  --input: oklch(0.27 0 0);
-  --ring: oklch(0.68 0.16 243);
+  --background: 0.14 0.02 255;
+  --foreground: 0.98 0 0;
+  --card: 0.16 0.02 255;
+  --card-foreground: 0.98 0 0;
+  --popover: 0.16 0.02 255;
+  --popover-foreground: 0.98 0 0;
 
-  /* === SEMANTIC STATUS (Dark) === */
-  --success: oklch(0.62 0.14 155);
-  --success-foreground: oklch(0.15 0 0);
-  --warning: oklch(0.75 0.14 75);
-  --warning-foreground: oklch(0.20 0 0);
-  --error: oklch(0.65 0.18 25);
-  --error-foreground: oklch(0.145 0 0);
-  --info: oklch(0.68 0.16 243);
-  --info-foreground: oklch(0.145 0 0);
+  --muted: 0.20 0.02 255;
+  --muted-foreground: 0.72 0.02 255;
 
-  /* Subtle background variants for semantic colors (dark) */
-  --primary-subtle: oklch(0.25 0.04 243);    /* Dark primary tint */
-  --success-subtle: oklch(0.25 0.04 155);    /* Dark green tint */
-  --destructive-subtle: oklch(0.28 0.04 25); /* Dark red tint for destructive hover states */
+  --border: 0.26 0.02 255;
+  --input: 0.26 0.02 255;
+  --ring: 0.72 0.18 255;
 
-  /* === INTERACTIVE STATES - Dark Mode === */
-  --selected: oklch(0.27 0 0);
-  --selected-foreground: var(--foreground);
-  --selected-border: var(--primary);
-  --hover: oklch(0.25 0 0);
-  --hover-border: oklch(0.35 0 0);
-  --active: oklch(0.30 0 0);
-  --focus-ring: oklch(0.68 0.16 243 / 40%);
-  --checked: var(--primary);
-  --checked-foreground: oklch(0.145 0 0);
-  --switch-unchecked-bg: oklch(0.24 0 0);
-  --toast-destructive-border: oklch(0.45 0.10 25);
-  --toast-destructive-border-hover: oklch(0.55 0.15 25);
-  --toast-destructive-foreground-muted: oklch(0.30 0 0);
+  --primary: 0.72 0.18 255;
+  --primary-foreground: 0.12 0.02 255;
 
-  /* Sidebar dark */
-  --sidebar: oklch(0.145 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-muted: oklch(0.20 0 0);          /* Subdued sidebar background */
-  --sidebar-muted-foreground: oklch(0.60 0 0); /* Subdued sidebar text */
-  --sidebar-primary: oklch(0.985 0 0);
-  --sidebar-primary-foreground: oklch(0.145 0 0);
-  --sidebar-accent: oklch(0.27 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(0.27 0 0);
-  --sidebar-ring: oklch(0.68 0.16 243);
+  --secondary: 0.22 0.02 255;
+  --secondary-foreground: 0.98 0 0;
 
-  /* Charts dark */
-  --chart-1: oklch(0.68 0.16 243);
-  --chart-2: oklch(0.62 0.14 155);
-  --chart-3: oklch(0.75 0.14 75);
-  --chart-4: oklch(0.65 0.18 300);
-  --chart-5: oklch(0.60 0.18 27);
+  --destructive: 0.68 0.22 30;
+  --destructive-foreground: 0.98 0 0;
 
-  /* === COLORS: Badge System - Dark Mode === */
-  /* Solid Badges (stay high contrast) */
-  --color-badge-success-solid: oklch(0.45 0.13 155);
-  --color-badge-warning-solid: oklch(0.58 0.15 70);
-  --color-badge-critical-solid: oklch(0.55 0.19 25);
-  --color-badge-info-solid: oklch(0.56 0.15 245);
-  --color-badge-neutral-solid: oklch(0.55 0 0);
-  --color-badge-fg-on-solid: oklch(1 0 0);
-  
-  /* Subtle Badges (darker bg for dark mode) */
-  --color-badge-success-subtle-bg: oklch(0.22 0.06 155);
-  --color-badge-success-subtle-fg: oklch(0.72 0.13 155);
-  --color-badge-warning-subtle-bg: oklch(0.24 0.07 85);
-  --color-badge-warning-subtle-fg: oklch(0.78 0.14 70);
-  --color-badge-critical-subtle-bg: oklch(0.22 0.07 25);
-  --color-badge-critical-subtle-fg: oklch(0.75 0.17 25);
-  --color-badge-info-subtle-bg: oklch(0.22 0.06 245);
-  --color-badge-info-subtle-fg: oklch(0.72 0.14 245);
-  --color-badge-neutral-subtle-bg: oklch(0.27 0 0);
-  --color-badge-neutral-subtle-fg: oklch(0.75 0 0);
-  
-  /* Condition Badges - Slightly brighter for dark mode */
-  --color-badge-condition-new: oklch(0.58 0.14 245);
-  --color-badge-condition-likenew: oklch(0.58 0.12 180);
-  --color-badge-condition-good: oklch(0.55 0.12 155);
-  --color-badge-condition-fair: oklch(0.60 0.12 70);
-  --color-badge-condition-used: oklch(0.55 0 0);
-  --color-badge-condition-refurb: oklch(0.58 0.14 290);
-  
-  /* Legacy aliases */
-  --color-badge-condition-bg: oklch(0.95 0 0);
-  --color-badge-condition-text: oklch(0.15 0 0);
-  --color-badge-promoted-bg: oklch(0.25 0.04 50);
-  --color-badge-promoted-border: oklch(0.38 0.08 50);
-  --color-badge-promoted-text: oklch(0.75 0.12 50);
-  
-  /* Promoted Section (desktop) - Dark Mode */
-  --surface-promoted: oklch(0.22 0.04 50);
-  --surface-promoted-accent: oklch(0.65 0.18 50);
-  --border-promoted: oklch(0.35 0.08 50);
-  --text-promoted: oklch(0.88 0.10 50);
-  --text-promoted-muted: oklch(0.70 0.06 50);
-  --color-badge-shipping-bg: var(--color-badge-success-subtle-bg);
-  --color-badge-shipping-border: oklch(0.35 0.06 155);
-  --color-badge-shipping-text: var(--color-badge-success-subtle-fg);
-  --color-badge-stock-bg: var(--color-badge-warning-subtle-bg);
-  --color-badge-stock-border: oklch(0.38 0.06 75);
-  --color-badge-stock-text: var(--color-badge-warning-subtle-fg);
+  --accent: 0.22 0.02 255;
+  --accent-foreground: 0.98 0 0;
 
-  /* Overlays dark */
-  --overlay-dark: oklch(0 0 0 / 70%);
-  --overlay-light: oklch(0.145 0 0 / 80%);
+  --category-ring: 0.98 0 0;
 
-  /* Glass surface (frosted panels / floating chrome) */
-  --surface-glass: oklch(from var(--background) l c h / 0.85);
+  --hover: 0.18 0.02 255;
+  --active: 0.22 0.02 255;
+  --selected: 0.22 0.02 255;
+  --selected-foreground: 0.98 0 0;
+  --selected-border: 0.72 0.18 255;
+  --hover-border: 0.26 0.02 255;
 
-  /* Mobile Product Page Surfaces - Dark Mode */
-  --surface-page: oklch(0.12 0 0);
-  --surface-subtle: oklch(0.16 0 0);
-  --surface-card: var(--card);
-  --surface-elevated: var(--card);
-  --surface-gallery: oklch(0.08 0 0);
-  --surface-overlay: oklch(0 0 0 / 70%);
-  --surface-floating: var(--card);
+  --success: var(--primary);
+  --success-foreground: var(--primary-foreground);
+  --warning: var(--primary);
+  --warning-foreground: var(--primary-foreground);
+  --info: var(--primary);
+  --info-foreground: var(--primary-foreground);
+  --error: var(--destructive);
+  --error-foreground: var(--destructive-foreground);
 
-  /* Mobile Product Page Text - Dark Mode */
+  --primary-subtle: 0.25 0.04 255;
+  --destructive-subtle: 0.28 0.04 30;
+  --success-subtle: var(--primary-subtle);
+
+  /* Text aliases (used in a few legacy components) */
   --text-strong: var(--foreground);
   --text-default: var(--foreground);
   --text-muted-alt: var(--muted-foreground);
   --text-subtle: var(--muted-foreground);
 
-  /* Overlay/Gallery Text - Dark Mode */
-  --overlay-text: oklch(1 0 0);
-  --overlay-text-muted: oklch(0.85 0 0);
-  --gallery-ring: oklch(1 0 0);
-  --gallery-ring-offset: oklch(0.10 0 0);
-  --radius: 0.375rem;
-  --font-sans: Inter, system-ui, -apple-system, sans-serif;
-  --font-serif: Georgia, serif;
-  --font-mono: "SF Mono", Menlo, monospace;
-  --shadow-color: oklch(0 0 0 / 25%);
-  --shadow-opacity: 1;
-  --shadow-blur: 8px;
-  --shadow-spread: -2px;
-  --shadow-offset-x: 0px;
-  --shadow-offset-y: 4px;
-  --letter-spacing: 0em;
-  --spacing: 0.25rem;
-  --shadow-2xs: 0 1px 2px 0 oklch(0 0 0 / 15%);
-  --shadow-xs: 0 1px 3px 0 oklch(0 0 0 / 20%);
-  --shadow-sm: 0 1px 3px 0 oklch(0 0 0 / 25%), 0 1px 2px -1px oklch(0 0 0 / 18%);
-  --shadow: 0 2px 5px -1px oklch(0 0 0 / 25%), 0 1px 3px -1px oklch(0 0 0 / 20%);
-  --shadow-md: 0 4px 8px -2px oklch(0 0 0 / 25%), 0 2px 4px -2px oklch(0 0 0 / 20%);
-  --shadow-lg: 0 8px 16px -4px oklch(0 0 0 / 30%), 0 4px 8px -4px oklch(0 0 0 / 20%);
-  --shadow-xl: 0 16px 32px -8px oklch(0 0 0 / 35%), 0 8px 16px -8px oklch(0 0 0 / 25%);
-  --shadow-2xl: 0 24px 48px -12px oklch(0 0 0 / 40%);
+  /* Focus/checked helpers */
+  --focus-ring: 0.72 0.18 255 / 40%;
+  --checked: var(--primary);
+  --checked-foreground: var(--primary-foreground);
+  --switch-unchecked-bg: var(--input);
+
+  --overlay-dark: 0 0 0 / 70%;
+  --overlay-light: 0.14 0.02 255 / 80%;
+  --surface-glass: 0.14 0.02 255 / 0.88;
+
+  --surface-page: var(--background);
+  --surface-subtle: var(--muted);
+  --surface-card: var(--card);
+  --surface-elevated: var(--card);
+  --surface-gallery: 0.08 0 0;
+  --surface-overlay: 0 0 0 / 70%;
+  --surface-floating: var(--card);
+
+  --overlay-text: 1 0 0;
+  --overlay-text-muted: 0.85 0 0;
+  --gallery-ring: 1 0 0;
+  --gallery-ring-offset: 0.08 0 0;
+
+  --radius: 0.5rem;
+
+  /* Charts: keep within blue/neutral range */
+  --chart-1: var(--primary);
+  --chart-2: 0.80 0.06 255;
+  --chart-3: 0.70 0.03 255;
+  --chart-4: 0.60 0.02 255;
+  --chart-5: 0.50 0.01 255;
+
+  /* Overlays/surfaces/text/shadows are defined earlier in this block. */
 }
 
 /* ===== TAILWIND V4 THEME BRIDGE ===== */
 @theme inline {
   /* Map CSS vars to Tailwind */
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-card: var(--card);
-  --color-card-foreground: var(--card-foreground);
-  --color-popover: var(--popover);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-primary: var(--primary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-secondary: var(--secondary);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-muted: var(--muted);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-accent: var(--accent);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-destructive: var(--destructive);
-  --color-destructive-foreground: var(--destructive-foreground);
-  --color-success: var(--success);
-  --color-success-foreground: var(--success-foreground);
-  --color-success-subtle: var(--success-subtle);
-  --color-destructive-subtle: var(--destructive-subtle);
-  --color-primary-subtle: var(--primary-subtle);
-  --color-warning: var(--warning);
-  --color-warning-foreground: var(--warning-foreground);
-  --color-error: var(--error);
-  --color-error-foreground: var(--error-foreground);
-  --color-info: var(--info);
-  --color-info-foreground: var(--info-foreground);
-  --color-border: var(--border);
-  --color-input: var(--input);
-  --color-ring: var(--ring);
-  --color-category-ring: var(--category-ring);
+  --color-background: oklch(var(--background));
+  --color-foreground: oklch(var(--foreground));
+  --color-card: oklch(var(--card));
+  --color-card-foreground: oklch(var(--card-foreground));
+  --color-popover: oklch(var(--popover));
+  --color-popover-foreground: oklch(var(--popover-foreground));
+  --color-primary: oklch(var(--primary));
+  --color-primary-foreground: oklch(var(--primary-foreground));
+  --color-secondary: oklch(var(--secondary));
+  --color-secondary-foreground: oklch(var(--secondary-foreground));
+  --color-muted: oklch(var(--muted));
+  --color-muted-foreground: oklch(var(--muted-foreground));
+  --color-accent: oklch(var(--accent));
+  --color-accent-foreground: oklch(var(--accent-foreground));
+  --color-destructive: oklch(var(--destructive));
+  --color-destructive-foreground: oklch(var(--destructive-foreground));
+  --color-success: oklch(var(--success));
+  --color-success-foreground: oklch(var(--success-foreground));
+  --color-success-subtle: oklch(var(--success-subtle));
+  --color-destructive-subtle: oklch(var(--destructive-subtle));
+  --color-primary-subtle: oklch(var(--primary-subtle));
+  --color-warning: oklch(var(--warning));
+  --color-warning-foreground: oklch(var(--warning-foreground));
+  --color-error: oklch(var(--error));
+  --color-error-foreground: oklch(var(--error-foreground));
+  --color-info: oklch(var(--info));
+  --color-info-foreground: oklch(var(--info-foreground));
+  --color-border: oklch(var(--border));
+  --color-input: oklch(var(--input));
+  --color-ring: oklch(var(--ring));
+  --color-category-ring: oklch(var(--category-ring));
   
   /* Interactive state colors (semantic - use these instead of primary/10) */
-  --color-selected: var(--selected);
-  --color-selected-foreground: var(--selected-foreground);
-  --color-selected-border: var(--selected-border);
-  --color-hover: var(--hover);
-  --color-hover-border: var(--hover-border);
-  --color-active: var(--active);
-  --color-focus-ring: var(--focus-ring);
-  --color-checked: var(--checked);
-  --color-checked-foreground: var(--checked-foreground);
+  --color-selected: oklch(var(--selected));
+  --color-selected-foreground: oklch(var(--selected-foreground));
+  --color-selected-border: oklch(var(--selected-border));
+  --color-hover: oklch(var(--hover));
+  --color-hover-border: oklch(var(--hover-border));
+  --color-active: oklch(var(--active));
+  --color-focus-ring: oklch(var(--focus-ring));
+  --color-checked: oklch(var(--checked));
+  --color-checked-foreground: oklch(var(--checked-foreground));
   
-  --color-chart-1: var(--chart-1);
-  --color-chart-2: var(--chart-2);
-  --color-chart-3: var(--chart-3);
-  --color-chart-4: var(--chart-4);
-  --color-chart-5: var(--chart-5);
-  --color-sidebar: var(--sidebar);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar-muted: var(--sidebar-muted);
-  --color-sidebar-muted-foreground: var(--sidebar-muted-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-ring: var(--sidebar-ring);
+  --color-chart-1: oklch(var(--chart-1));
+  --color-chart-2: oklch(var(--chart-2));
+  --color-chart-3: oklch(var(--chart-3));
+  --color-chart-4: oklch(var(--chart-4));
+  --color-chart-5: oklch(var(--chart-5));
+  --color-sidebar: oklch(var(--sidebar));
+  --color-sidebar-foreground: oklch(var(--sidebar-foreground));
+  --color-sidebar-muted: oklch(var(--sidebar-muted));
+  --color-sidebar-muted-foreground: oklch(var(--sidebar-muted-foreground));
+  --color-sidebar-primary: oklch(var(--sidebar-primary));
+  --color-sidebar-primary-foreground: oklch(var(--sidebar-primary-foreground));
+  --color-sidebar-accent: oklch(var(--sidebar-accent));
+  --color-sidebar-accent-foreground: oklch(var(--sidebar-accent-foreground));
+  --color-sidebar-border: oklch(var(--sidebar-border));
+  --color-sidebar-ring: oklch(var(--sidebar-ring));
 
   /* Overlay colors (backdrop for drawers/sheets/dialogs) */
-  --color-overlay-dark: var(--overlay-dark);
-  --color-overlay-light: var(--overlay-light);
+  --color-overlay-dark: oklch(var(--overlay-dark));
+  --color-overlay-light: oklch(var(--overlay-light));
 
   /* Mobile Product Page Surfaces */
-  --color-surface-page: var(--surface-page);
-  --color-surface-subtle: var(--surface-subtle);
-  --color-surface-card: var(--surface-card);
-  --color-surface-elevated: var(--surface-elevated);
-  --color-surface-gallery: var(--surface-gallery);
-  --color-surface-overlay: var(--surface-overlay);
-  --color-surface-floating: var(--surface-floating);
-  --color-surface-glass: var(--surface-glass);
+  --color-surface-page: oklch(var(--surface-page));
+  --color-surface-subtle: oklch(var(--surface-subtle));
+  --color-surface-card: oklch(var(--surface-card));
+  --color-surface-elevated: oklch(var(--surface-elevated));
+  --color-surface-gallery: oklch(var(--surface-gallery));
+  --color-surface-overlay: oklch(var(--surface-overlay));
+  --color-surface-floating: oklch(var(--surface-floating));
+  --color-surface-glass: oklch(var(--surface-glass));
 
   /* Mobile Product Page Text */
-  --color-text-strong: var(--text-strong);
-  --color-text-default: var(--text-default);
-  --color-text-muted-alt: var(--text-muted-alt);
-  --color-text-subtle: var(--text-subtle);
+  --color-text-strong: oklch(var(--text-strong));
+  --color-text-default: oklch(var(--text-default));
+  --color-text-muted-alt: oklch(var(--text-muted-alt));
+  --color-text-subtle: oklch(var(--text-subtle));
 
   /* Overlay/Gallery Text (for dark backgrounds) */
-  --color-overlay-text: var(--overlay-text);
-  --color-overlay-text-muted: var(--overlay-text-muted);
-  --color-gallery-ring: var(--gallery-ring);
-  --color-gallery-ring-offset: var(--gallery-ring-offset);
+  --color-overlay-text: oklch(var(--overlay-text));
+  --color-overlay-text-muted: oklch(var(--overlay-text-muted));
+  --color-gallery-ring: oklch(var(--gallery-ring));
+  --color-gallery-ring-offset: oklch(var(--gallery-ring-offset));
 
   /* Tight radius scale for marketplace */
   --radius-sm: calc(var(--radius) - 2px);
@@ -428,8 +338,7 @@
   --radius-3xl: calc(var(--radius) + 8px);
   --radius-4xl: calc(var(--radius) + 12px);
 
-  /* Tailwind shadow-color hook */
-  --color-shadow-color: var(--shadow-color);
+  /* Tailwind shadow-color hook (disabled: cards/lists are border-only) */
 }
 
 /* ===== MARKETPLACE-SPECIFIC TOKENS ===== */
@@ -476,13 +385,13 @@
   --layout-gap: 1.5rem;
   --layout-gap-sm: 1rem;
   --product-card-min-w: 12.5rem;
-  --product-grid-gap: 1rem;
+  --product-grid-gap: 0.625rem;
 
   /* === TOUCH TARGETS (Dense Marketplace) === */
-  --spacing-touch-xs: 2rem;      /* 32px - minimum WCAG */
-  --spacing-touch-sm: 2.25rem;   /* 36px - compact */
-  --spacing-touch: 2.5rem;       /* 40px - default */
-  --spacing-touch-md: 2.75rem;   /* 44px - Apple minimum (header icons) */
+  --spacing-touch-xs: 2.75rem;   /* 44px - minimum */
+  --spacing-touch-sm: 2.75rem;   /* 44px - compact */
+  --spacing-touch: 2.75rem;      /* 44px - default */
+  --spacing-touch-md: 3rem;      /* 48px - large */
   --spacing-touch-lg: 3rem;      /* 48px - bottom nav */
 
   /* === PAGE INSETS (responsive edge padding) === */
@@ -513,7 +422,7 @@
   --size-icon-lg: 1.75rem;       /* 28px - large/bold */
 
   /* === CATEGORY NAVIGATION === */
-  --spacing-category-circle: 3.25rem; /* 52px - mobile-optimized circles (Instagram pattern) */
+  --spacing-category-circle: 3.5rem; /* 56px - mobile-optimized circles (Instagram pattern) */
   --spacing-category-circle-desktop: 4rem; /* 64px on desktop */
   --spacing-category-item: 3.5rem; /* 56px - compact item width */
   --spacing-category-item-mobile: 3.5rem; /* 56px - mobile subcategory buttons */
@@ -549,16 +458,16 @@
   --width-modal-lg: 56.25rem;
 
   /* === SHADOWS (Professional depth) === */
-  --shadow-2xs: 0 1px 2px 0 oklch(0 0 0 / 3%);
-  --shadow-xs: 0 1px 3px 0 oklch(0 0 0 / 5%);
-  --shadow-sm: 0 1px 3px 0 oklch(0 0 0 / 8%), 0 1px 2px -1px oklch(0 0 0 / 5%);
-  --shadow-md: 0 4px 8px -2px oklch(0 0 0 / 8%), 0 2px 4px -2px oklch(0 0 0 / 6%);
-  --shadow-lg: 0 8px 16px -4px oklch(0 0 0 / 10%), 0 4px 8px -4px oklch(0 0 0 / 6%);
-  --shadow-xl: 0 16px 32px -8px oklch(0 0 0 / 12%), 0 8px 16px -8px oklch(0 0 0 / 8%);
-  --shadow-2xl: 0 24px 48px -12px oklch(0 0 0 / 18%);
+  --shadow-2xs: none;
+  --shadow-xs: none;
+  --shadow-sm: none;
+  --shadow-md: none;
+  --shadow-lg: none;
+  --shadow-xl: none;
+  --shadow-2xl: none;
   --shadow-dropdown: 0 4px 12px -2px oklch(0 0 0 / 10%);
   --shadow-modal: 0 12px 40px -8px oklch(0 0 0 / 15%);
-  --shadow-card: 0 1px 4px 0 oklch(0 0 0 / 6%);
+  --shadow-card: none;
 
   /* === TRANSITIONS === */
   --ease-snappy: cubic-bezier(0.2, 0, 0, 1);
@@ -572,14 +481,14 @@
   /* Defined in :root/.dark as --success/--warning/--error/--info (see @theme inline bridge). */
 
   /* === COLORS: Marketplace Semantic === */
-  --color-verified: oklch(0.55 0.15 243);            /* Professional blue */
-  --color-shipping-free: oklch(0.52 0.14 155);       /* Green - free shipping */
+  --color-verified: var(--color-muted-foreground);
+  --color-shipping-free: var(--color-muted-foreground);
 
   /* === COLORS: Category Badge === */
-  --color-category-badge-bg: var(--muted);
-  --color-category-badge-border: var(--border);
-  --color-category-badge-text: var(--foreground);
-  --color-category-badge-icon: var(--muted-foreground);
+  --color-category-badge-bg: var(--color-muted);
+  --color-category-badge-border: var(--color-border);
+  --color-category-badge-text: var(--color-foreground);
+  --color-category-badge-icon: var(--color-muted-foreground);
 
   /* === COLORS: Badge System - Professional E-commerce === */
   /* 
@@ -589,174 +498,174 @@
    */
   
   /* Solid Badges (white text on dark bg - 4.5:1+ contrast) */
-  --color-badge-success-solid: oklch(0.38 0.12 155);
-  --color-badge-warning-solid: oklch(0.50 0.14 70);
-  --color-badge-critical-solid: oklch(0.48 0.18 25);
-  --color-badge-info-solid: oklch(0.50 0.14 245);
-  --color-badge-neutral-solid: oklch(0.35 0 0);
-  --color-badge-fg-on-solid: oklch(1 0 0);
+  --color-badge-success-solid: var(--color-primary);
+  --color-badge-warning-solid: var(--color-primary);
+  --color-badge-critical-solid: var(--color-destructive);
+  --color-badge-info-solid: var(--color-primary);
+  --color-badge-neutral-solid: var(--color-primary);
+  --color-badge-fg-on-solid: var(--color-primary-foreground);
   
   /* Subtle Badges (dark text on tinted bg) */
-  --color-badge-success-subtle-bg: oklch(0.96 0.04 155);
-  --color-badge-success-subtle-fg: oklch(0.30 0.10 155);
-  --color-badge-warning-subtle-bg: oklch(0.97 0.06 85);
-  --color-badge-warning-subtle-fg: oklch(0.38 0.12 70);
-  --color-badge-critical-subtle-bg: oklch(0.96 0.04 25);
-  --color-badge-critical-subtle-fg: oklch(0.42 0.16 25);
-  --color-badge-info-subtle-bg: oklch(0.96 0.04 245);
-  --color-badge-info-subtle-fg: oklch(0.42 0.12 245);
-  --color-badge-neutral-subtle-bg: oklch(0.965 0 0);
-  --color-badge-neutral-subtle-fg: oklch(0.35 0 0);
+  --color-badge-success-subtle-bg: var(--color-primary-subtle);
+  --color-badge-success-subtle-fg: var(--color-primary);
+  --color-badge-warning-subtle-bg: var(--color-primary-subtle);
+  --color-badge-warning-subtle-fg: var(--color-primary);
+  --color-badge-critical-subtle-bg: var(--color-destructive-subtle);
+  --color-badge-critical-subtle-fg: var(--color-destructive);
+  --color-badge-info-subtle-bg: var(--color-primary-subtle);
+  --color-badge-info-subtle-fg: var(--color-primary);
+  --color-badge-neutral-subtle-bg: var(--color-muted);
+  --color-badge-neutral-subtle-fg: var(--color-muted-foreground);
   
   /* Condition Badges - Solid dark bg + white text (eBay style) */
-  --color-badge-condition-new: oklch(0.50 0.14 245);
-  --color-badge-condition-likenew: oklch(0.52 0.12 180);
-  --color-badge-condition-good: oklch(0.48 0.12 155);
-  --color-badge-condition-fair: oklch(0.52 0.12 70);
-  --color-badge-condition-used: oklch(0.45 0 0);
-  --color-badge-condition-refurb: oklch(0.52 0.14 290);
+  --color-badge-condition-new: var(--color-muted-foreground);
+  --color-badge-condition-likenew: var(--color-muted-foreground);
+  --color-badge-condition-good: var(--color-muted-foreground);
+  --color-badge-condition-fair: var(--color-muted-foreground);
+  --color-badge-condition-used: var(--color-muted-foreground);
+  --color-badge-condition-refurb: var(--color-muted-foreground);
   
   /* Legacy aliases for existing code */
-  --color-badge-condition-bg: var(--foreground);
+  --color-badge-condition-bg: var(--color-muted);
   --color-badge-condition-border: transparent;
-  --color-badge-condition-text: var(--background);
-  --color-badge-promoted-bg: oklch(0.97 0.04 50);
-  --color-badge-promoted-border: oklch(0.88 0.08 50);
-  --color-badge-promoted-text: oklch(0.42 0.14 50);
+  --color-badge-condition-text: var(--color-foreground);
+  --color-badge-promoted-bg: var(--color-muted);
+  --color-badge-promoted-border: var(--color-border);
+  --color-badge-promoted-text: var(--color-muted-foreground);
   
   /* Promoted Section (desktop) - Light Mode */
-  --surface-promoted: oklch(0.96 0.04 55);
-  --surface-promoted-accent: oklch(0.68 0.16 50);
-  --border-promoted: oklch(0.85 0.08 50);
-  --text-promoted: oklch(0.30 0.12 50);
-  --text-promoted-muted: oklch(0.50 0.08 50);
-  --color-badge-shipping-bg: var(--color-badge-success-subtle-bg);
-  --color-badge-shipping-border: oklch(0.88 0.06 155);
-  --color-badge-shipping-text: var(--color-badge-success-subtle-fg);
-  --color-badge-stock-bg: var(--color-badge-warning-subtle-bg);
-  --color-badge-stock-border: oklch(0.90 0.06 75);
-  --color-badge-stock-text: var(--color-badge-warning-subtle-fg);
+  --surface-promoted: var(--color-muted);
+  --surface-promoted-accent: var(--color-primary-subtle);
+  --border-promoted: var(--color-border);
+  --text-promoted: var(--color-foreground);
+  --text-promoted-muted: var(--color-muted-foreground);
+  --color-badge-shipping-bg: var(--color-muted);
+  --color-badge-shipping-border: var(--color-border);
+  --color-badge-shipping-text: var(--color-muted-foreground);
+  --color-badge-stock-bg: var(--color-muted);
+  --color-badge-stock-border: var(--color-border);
+  --color-badge-stock-text: var(--color-muted-foreground);
 
   /* === COLORS: Prices - Professional === */
-  --color-price-regular: var(--foreground);
-  --color-price-sale: oklch(0.48 0.18 27);
-  --color-price-original: var(--muted-foreground);
-  --color-price-savings: oklch(0.48 0.14 155);
+  --color-price-regular: var(--color-foreground);
+  --color-price-sale: var(--color-foreground);
+  --color-price-original: var(--color-muted-foreground);
+  --color-price-savings: var(--color-muted-foreground);
 
   /* === COLORS: Deals/Urgency === */
-  --color-deal: oklch(0.50 0.20 27);
-  --color-deal-light: oklch(0.97 0.02 27);
-  --color-deal-foreground: oklch(1 0 0);
+  --color-deal: var(--color-primary);
+  --color-deal-light: var(--color-primary-subtle);
+  --color-deal-foreground: var(--color-primary-foreground);
 
   /* === COLORS: Condition Badges (C2C Marketplace) - Professional === */
-  --color-condition-new: oklch(0.50 0.14 155);
-  --color-condition-new-bg: oklch(0.96 0.02 155);
-  --color-condition-likenew: oklch(0.52 0.12 230);
-  --color-condition-likenew-bg: oklch(0.96 0.02 230);
-  --color-condition-good: oklch(0.55 0.12 80);
-  --color-condition-good-bg: oklch(0.96 0.02 80);
-  --color-condition-fair: oklch(0.52 0.12 50);
-  --color-condition-fair-bg: oklch(0.96 0.02 50);
-  --color-condition-used: oklch(0.50 0 0);
-  --color-condition-used-bg: oklch(0.96 0 0);
-  --color-condition-refurb: oklch(0.52 0.12 290);
-  --color-condition-refurb-bg: oklch(0.96 0.02 290);
+  --color-condition-new: var(--color-foreground);
+  --color-condition-new-bg: var(--color-muted);
+  --color-condition-likenew: var(--color-foreground);
+  --color-condition-likenew-bg: var(--color-muted);
+  --color-condition-good: var(--color-foreground);
+  --color-condition-good-bg: var(--color-muted);
+  --color-condition-fair: var(--color-foreground);
+  --color-condition-fair-bg: var(--color-muted);
+  --color-condition-used: var(--color-foreground);
+  --color-condition-used-bg: var(--color-muted);
+  --color-condition-refurb: var(--color-foreground);
+  --color-condition-refurb-bg: var(--color-muted);
 
   /* === COLORS: Verification Tiers === */
-  --color-verify-email: oklch(0.60 0.12 230);
-  --color-verify-phone: oklch(0.58 0.15 145);
-  --color-verify-id: oklch(0.55 0.16 155);
-  --color-verify-business: oklch(0.55 0.16 250);
+  --color-verify-email: var(--color-muted-foreground);
+  --color-verify-phone: var(--color-muted-foreground);
+  --color-verify-id: var(--color-muted-foreground);
+  --color-verify-business: var(--color-muted-foreground);
 
   /* === COLORS: Freshness Indicators === */
-  --color-fresh: oklch(0.55 0.16 155);
-  --color-fresh-bg: oklch(0.95 0.03 155);
-  --color-recent: oklch(0.55 0.14 230);
-  --color-recent-bg: oklch(0.95 0.03 230);
+  --color-fresh: var(--color-muted-foreground);
+  --color-fresh-bg: var(--color-muted);
+  --color-recent: var(--color-muted-foreground);
+  --color-recent-bg: var(--color-muted);
 
   /* === COLORS: Social Proof === */
-  --color-hot: oklch(0.58 0.18 40);
-  --color-hot-bg: oklch(0.95 0.03 40);
-  --color-favorite: oklch(0.58 0.22 15);
+  --color-hot: var(--color-muted-foreground);
+  --color-hot-bg: var(--color-muted);
+  --color-favorite: var(--color-muted-foreground);
 
   /* === COLORS: Ratings - Golden yellow === */
-  --color-rating: oklch(0.75 0.16 90);
-  --color-rating-empty: oklch(0.90 0 0);
+  --color-rating: var(--color-muted-foreground);
+  --color-rating-empty: var(--color-border);
 
   /* === COLORS: Notification badges === */
-  --color-notification: oklch(0.50 0.20 27);
-  --color-cart-badge: oklch(0.50 0.20 27);
+  --color-notification: var(--color-primary);
+  --color-cart-badge: var(--color-primary);
 
   /* === COLORS: Wishlist - Warm red === */
-  --color-wishlist: oklch(0.52 0.20 20);
-  --color-wishlist-active: oklch(0.55 0.22 20);
+  --color-wishlist: var(--color-muted-foreground);
+  --color-wishlist-active: var(--color-primary);
 
   /* === COLORS: Order Status === */
   --color-order-pending: var(--color-warning);
-  --color-order-processing: oklch(0.55 0.18 250);
-  --color-order-shipped: oklch(0.55 0.18 200);
+  --color-order-processing: var(--color-primary);
+  --color-order-shipped: var(--color-primary);
   --color-order-delivered: var(--color-success);
   --color-order-cancelled: var(--color-error);
 
   /* === COLORS: Header (Desktop) - Professional containment === */
-  --color-header-bg: var(--surface-subtle);
-  --color-header-border: var(--border);
-  --color-header-text: var(--foreground);
-  --color-header-text-muted: var(--muted-foreground);
-  --color-header-hover: var(--hover);
-  --color-header-active: var(--active);
-  --color-header-nav-bg: var(--background);
-  --color-subheader-hover: var(--accent);
+  --color-header-bg: var(--color-surface-subtle);
+  --color-header-border: var(--color-border);
+  --color-header-text: var(--color-foreground);
+  --color-header-text-muted: var(--color-muted-foreground);
+  --color-header-hover: var(--color-hover);
+  --color-header-active: var(--color-active);
+  --color-header-nav-bg: var(--color-background);
+  --color-subheader-hover: var(--color-accent);
 
   /* === COLORS: Search Bar (Twitter-style) === */
-  --color-search-bg: var(--muted);
-  --color-search-border: var(--border);
-  --color-search-text: var(--foreground);
-  --color-search-placeholder: var(--muted-foreground);
-  --color-search-focus-border: var(--primary);
-  --color-search-focus-ring: var(--primary);
+  --color-search-bg: var(--color-muted);
+  --color-search-border: var(--color-border);
+  --color-search-text: var(--color-foreground);
+  --color-search-placeholder: var(--color-muted-foreground);
+  --color-search-focus-border: var(--color-primary);
+  --color-search-focus-ring: var(--color-primary);
 
   /* === COLORS: CTA Buttons - Professional === */
-  --color-cta-primary: var(--primary);
+  --color-cta-primary: var(--color-primary);
   --color-cta-primary-hover: oklch(0.55 0.19 243);
-  --color-cta-primary-text: var(--primary-foreground);
-  --color-cta-secondary: var(--secondary);
+  --color-cta-primary-text: var(--color-primary-foreground);
+  --color-cta-secondary: var(--color-secondary);
   --color-cta-secondary-hover: oklch(0.94 0 0);
-  --color-cta-secondary-text: var(--secondary-foreground);
+  --color-cta-secondary-text: var(--color-secondary-foreground);
 
   /* === LEGACY ALIASES === */
-  --color-brand: var(--primary);
+  --color-brand: var(--color-primary);
   --color-brand-dark: oklch(0.50 0.19 243);
   --color-brand-light: oklch(0.80 0.10 243);
-  --color-interactive: var(--primary);
+  --color-interactive: var(--color-primary);
   --color-interactive-hover: oklch(0.55 0.19 243);
-  --color-link: var(--primary);
+  --color-link: var(--color-primary);
   --color-link-hover: oklch(0.50 0.19 243);
 
   /* === COLORS: Seller UI === */
-  --color-seller-card: var(--card);
-  --color-seller-card-border: var(--border);
-  --color-seller-banner: var(--muted);
-  --color-seller-banner-pill: var(--background);
+  --color-seller-card: var(--color-card);
+  --color-seller-card-border: var(--color-border);
+  --color-seller-banner: var(--color-muted);
+  --color-seller-banner-pill: var(--color-background);
 
   /* === COLORS: Urgency Banners === */
-  --color-urgency-stock-bg: oklch(0.96 0.03 85);
-  --color-urgency-stock-border: oklch(0.90 0.06 85);
-  --color-urgency-stock-text: oklch(0.45 0.12 85);
-  --color-urgency-stock-icon: oklch(0.55 0.15 85);
-  --color-urgency-stock-icon-bg: oklch(0.92 0.05 85);
+  --color-urgency-stock-bg: var(--color-muted);
+  --color-urgency-stock-border: var(--color-border);
+  --color-urgency-stock-text: var(--color-foreground);
+  --color-urgency-stock-icon: var(--color-primary);
+  --color-urgency-stock-icon-bg: var(--color-primary-subtle);
 
-  --color-urgency-sale-bg: oklch(0.96 0.03 27);
-  --color-urgency-sale-border: oklch(0.90 0.06 27);
-  --color-urgency-sale-text: oklch(0.50 0.18 27);
-  --color-urgency-sale-icon: oklch(0.55 0.22 27);
-  --color-urgency-sale-icon-bg: oklch(0.92 0.05 27);
+  --color-urgency-sale-bg: var(--color-muted);
+  --color-urgency-sale-border: var(--color-border);
+  --color-urgency-sale-text: var(--color-foreground);
+  --color-urgency-sale-icon: var(--color-primary);
+  --color-urgency-sale-icon-bg: var(--color-primary-subtle);
 
-  --color-urgency-viewers-bg: oklch(0.96 0.02 250);
-  --color-urgency-viewers-border: oklch(0.90 0.04 250);
-  --color-urgency-viewers-text: oklch(0.45 0.12 250);
-  --color-urgency-viewers-icon: oklch(0.55 0.16 250);
-  --color-urgency-viewers-icon-bg: oklch(0.92 0.04 250);
+  --color-urgency-viewers-bg: var(--color-muted);
+  --color-urgency-viewers-border: var(--color-border);
+  --color-urgency-viewers-text: var(--color-foreground);
+  --color-urgency-viewers-icon: var(--color-primary);
+  --color-urgency-viewers-icon-bg: var(--color-primary-subtle);
 
   /* === COLORS: Mobile Product Page Surfaces & Text === */
   /* REMOVED: Hardcoded duplicates. These tokens are now correctly derived
@@ -778,39 +687,39 @@
   --color-status-info: var(--color-info);
 
   /* === COLORS: Order Received (additional status) === */
-  --color-order-received: oklch(0.55 0.16 155);
+  --color-order-received: var(--color-primary);
 
   /* === COLORS: Admin/Kanban Status Badges === */
-  --color-admin-draft: oklch(0.75 0.16 85);           /* Yellow/warning */
-  --color-admin-draft-bg: oklch(0.95 0.03 85);
-  --color-admin-published: oklch(0.60 0.18 145);      /* Green/success */
-  --color-admin-published-bg: oklch(0.95 0.03 145);
-  --color-admin-in-progress: oklch(0.55 0.18 250);    /* Blue/info */
-  --color-admin-in-progress-bg: oklch(0.95 0.03 250);
-  --color-admin-review: oklch(0.55 0.18 290);         /* Purple */
-  --color-admin-review-bg: oklch(0.95 0.03 290);
-  --color-admin-urgent: oklch(0.55 0.25 27);          /* Red/error */
-  --color-admin-high: oklch(0.65 0.18 50);            /* Orange */
-  --color-admin-high-bg: oklch(0.95 0.03 50);
-  --color-admin-medium: oklch(0.75 0.16 85);          /* Yellow */
+  --color-admin-draft: var(--color-primary);
+  --color-admin-draft-bg: var(--color-primary-subtle);
+  --color-admin-published: var(--color-primary);
+  --color-admin-published-bg: var(--color-primary-subtle);
+  --color-admin-in-progress: var(--color-primary);
+  --color-admin-in-progress-bg: var(--color-primary-subtle);
+  --color-admin-review: var(--color-primary);
+  --color-admin-review-bg: var(--color-primary-subtle);
+  --color-admin-urgent: var(--color-destructive);
+  --color-admin-high: var(--color-primary);
+  --color-admin-high-bg: var(--color-primary-subtle);
+  --color-admin-medium: var(--color-primary);
 
   /* === COLORS: Promoted/Fire icon === */
-  --color-fire: oklch(0.65 0.20 50);                  /* Orange for fire/promoted */
+  --color-fire: var(--color-primary);
 }
 
 /* ===== BASE LAYER ===== */
 @layer base {
   * {
-    @apply border-border outline-ring/50;
+    @apply border-border outline-ring;
   }
 
   ::selection {
-    background: var(--foreground);
-    color: var(--background);
+    background: var(--color-foreground);
+    color: var(--color-background);
   }
 
   :where(a, button, input, select, textarea, summary, [role="button"], [role="link"], [tabindex]:not([tabindex="-1"])):focus-visible:not(.no-focus-ring) {
-    outline: 2px solid var(--ring) !important;
+    outline: 2px solid var(--color-ring) !important;
     outline-offset: 2px !important;
   }
 

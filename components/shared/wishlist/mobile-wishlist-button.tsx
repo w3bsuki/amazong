@@ -26,7 +26,7 @@ export function MobileWishlistButton() {
         aria-label={tNav("wishlist")}
       >
         <span className="relative" aria-hidden="true">
-          <Heart weight="regular" className="size-icon text-header-text" />
+          <Heart weight="regular" className="size-icon-header text-header-text" />
         </span>
       </span>
     )
@@ -39,7 +39,7 @@ export function MobileWishlistButton() {
         aria-label={tNav("wishlist")}
       >
         <span className="relative" aria-hidden="true">
-          <Heart weight="regular" className="size-icon text-header-text" />
+          <Heart weight="regular" className="size-icon-header text-header-text" />
           {totalItems > 0 && (
             <CountBadge
               count={totalItems}

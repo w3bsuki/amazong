@@ -124,7 +124,7 @@
     },
     "Categories": {
         "title": "Categories",
-        "shortName": "{slug, select, electronics {Tech} automotive {Auto} home {Home} home_kitchen {Home} jewelry_watches {Jewelry} movies_music {Media} services {Services} collectibles {Collect} e_mobility {E-Mobility} health_wellness {Health} tools_home {Tools} baby_kids {Kids} baby {Kids} other {name}}",
+        "shortName": "{slug, select, electronics {Tech} automotive {Auto} home {Home} home_kitchen {Home} jewelry_watches {Jewelry} movies_music {Media} services {Services} collectibles {Collect} e_mobility {E-Mobility} health_wellness {Health} tools_home {Tools} baby_kids {Kids} baby {Kids} other {{name}}}",
         "headerTitleAll": "All Categories",
         "metaDescription": "Browse all product categories at Treido. Find electronics, fashion, home & garden, and more.",
         "bannerDescription": "Browse products in this category",
@@ -188,10 +188,10 @@
             "newArrivals": "New Arrivals in Toys",
             "fashionTrends": "Discover Fashion Trends",
             "shopNow": "Shop now",
-            "deals": "Today's Offers",
-            "fashion": "Trending in Fashion",
-            "electronics": "Electronics",
-            "automotive": "Automotive Deals",
+            "deals": "Deals Today",
+            "fashion": "Trending: Fashion",
+            "electronics": "Tech Picks",
+            "automotive": "Auto Finds",
             "kids": "Kids & Toys",
             "bulgarian": "Made in Bulgaria",
             "toys": "Toys",
@@ -223,7 +223,7 @@
             "automotive": "Automotive"
         },
         "mobile": {
-            "promotedListings": "Promoted Listings",
+            "promotedListings": "In Focus",
             "seeAll": "See all",
             "trustProtected": "Protected",
             "trustFastShip": "Fast Ship",
@@ -260,6 +260,8 @@
         }
     },
     "Product": {
+        "metaTitle": "{title} | {seller}",
+        "metaDescriptionFallback": "Shop {title} from {seller}",
         "price": "Price",
         "listPrice": "List Price",
         "delivery": "Delivery",
@@ -561,8 +563,12 @@
     "CategoryDrawer": {
         "title": "Categories",
         "description": "Browse product categories",
+        "ariaLabel": "Browse categories",
+        "searchPlaceholder": "Search subcategories",
+        "searchAriaLabel": "Search subcategories",
         "subcategories": "Subcategories",
         "noSubcategories": "No subcategories available",
+        "noMatches": "No matches found",
         "seeAllIn": "See all in {category}",
         "close": "Close"
     },
@@ -3092,6 +3098,7 @@
     },
     "Breadcrumbs": {
         "ariaLabel": "Breadcrumb",
+        "home": "Home",
         "homeLabel": "Treido",
         "todaysDeals": "Today's Deals",
         "customerService": "Customer Service",
@@ -3414,6 +3421,10 @@
         "backToPlans": "Back to plans",
         "title": "Upgrade your plan",
         "description": "Choose a plan with lower fees and more features"
+    },
+    "CategoryPage": {
+        "metaTitle": "{categoryName} — Treido",
+        "metaDescription": "Explore {categoryName} listings on Treido."
     },
     "CategoryNotFound": {
         "title": "Category not found",

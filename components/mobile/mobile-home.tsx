@@ -1,13 +1,10 @@
 "use client"
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
-import { Tag } from "@phosphor-icons/react"
 import { PageShell } from "@/components/shared/page-shell"
 import { MobileSearchOverlay } from "@/components/shared/search/mobile-search-overlay"
 import { SortModal } from "@/components/shared/filters/sort-modal"
 import { ProductFeed } from "@/components/shared/product/product-feed"
-import { SubcategoryCircles } from "@/components/mobile/subcategory-circles"
-import { ContextualFilterBar } from "@/components/mobile/category-nav/contextual-filter-bar"
 import { StickyCategoryBar } from "@/components/mobile/sticky-category-bar"
 import { CategoryProductRowMobile } from "@/components/shared/product/category-product-row"
 import { useHeader } from "@/components/providers/header-context"
@@ -19,7 +16,6 @@ import { useTranslations } from "next-intl"
 // New drawer-based navigation
 import {
   CategoryDrawerProvider,
-  useCategoryDrawer,
   CategoryCirclesSimple,
 } from "@/components/mobile/category-nav"
 import { CategoryBrowseDrawer } from "@/components/mobile/drawers/category-browse-drawer"
@@ -80,10 +76,6 @@ export function MobileHome({
   curatedSections,
   initialCategories,
   locale,
-  user,
-  activeCategory,
-  onCategorySelect,
-  onSearchOpen,
 }: MobileHomeProps) {
   const t = useTranslations("Home")
   const [searchOpen, setSearchOpen] = useState(false)
@@ -92,9 +84,9 @@ export function MobileHome({
   
   // Ref for intersection observer sentinel (marks end of promo sections)
   const feedStartRef = useRef<HTMLDivElement>(null)
-  
-  // Drawer-selected category for filtering
-  const [drawerCategory, setDrawerCategory] = useState<CategoryTreeNode | null>(null)
+
+  // Homepage category navigation is drawer-based; avoid legacy `?tab=` URL state.
+  const handleHeaderCategorySelect = useCallback((_slug: string) => {}, [])
 
   const activePromotedProducts = useMemo(() => {
     const now = Date.now()
@@ -106,21 +98,13 @@ export function MobileHome({
     })
   }, [promotedProducts])
   
-  // Handle drawer category change
-  const handleDrawerCategoryChange = useCallback((
-    category: CategoryTreeNode | null,
-    path: CategoryTreeNode[]
-  ) => {
-    setDrawerCategory(category)
-  }, [])
-  
   // Get header context to provide dynamic state to layout's header
   const { setHomepageHeader } = useHeader()
 
   // Use the navigation hook that handles all product loading
   const nav = useCategoryNavigation({
     initialCategories,
-    defaultTab: drawerCategory?.slug ?? null,
+    defaultTab: null,
     defaultSubTab: null,
     defaultL2: null,
     defaultL3: null,
@@ -130,18 +114,19 @@ export function MobileHome({
     initialProductsSlug: "all",
     locale,
     activeAllFilter: "newest",
+    syncTabsToUrl: false,
   })
   
   // Provide homepage header state to layout via context
   useEffect(() => {
     setHomepageHeader({
       activeCategory: nav.activeTab,
-      onCategorySelect: nav.handleTabChange,
+      onCategorySelect: handleHeaderCategorySelect,
       onSearchOpen: () => setSearchOpen(true),
       categories: initialCategories,
     })
     return () => setHomepageHeader(null)
-  }, [nav.activeTab, nav.handleTabChange, initialCategories, setHomepageHeader])
+  }, [nav.activeTab, handleHeaderCategorySelect, initialCategories, setHomepageHeader])
 
   // Show sticky filter bar when user scrolls past promo sections (downward only)
   useEffect(() => {
@@ -166,10 +151,7 @@ export function MobileHome({
   }, [])
 
   return (
-    <CategoryDrawerProvider
-      rootCategories={initialCategories}
-      onCategoryChange={handleDrawerCategoryChange}
-    >
+    <CategoryDrawerProvider rootCategories={initialCategories}>
       <PageShell variant="muted" className="pb-24">
         {/* Search Overlay */}
         <MobileSearchOverlay
@@ -188,43 +170,6 @@ export function MobileHome({
 
         {/* Main Content */}
       <div className="pb-4">
-        {/* Leaf Category Banner - Shows when at deepest level (no more subcategories) */}
-        {!nav.isAllTab && nav.isLeafCategory && nav.activeCategoryName && (
-          <div className="mx-inset my-3 rounded-xl bg-selected p-4 border border-selected-border">
-            <div className="flex items-center gap-3">
-              <div className="flex size-10 items-center justify-center rounded-full bg-hover">
-                <Tag size={20} weight="fill" className="text-primary" />
-              </div>
-              <div>
-                <h3 className="font-semibold text-foreground">{nav.activeCategoryName}</h3>
-                <p className="text-sm text-muted-foreground">{t("mobile.browseCategorySubtitle")}</p>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Subcategory Circles - Visual drill-down (Temu-style) */}
-        {/* L0 → L1 → L2 → L3 → L4 circles, until leaf category reached */}
-        {!nav.isAllTab && !nav.isLeafCategory && nav.circlesToDisplay.length > 0 && (
-          <SubcategoryCircles
-            subcategories={nav.circlesToDisplay}
-            categorySlug={nav.activeSlug}
-            locale={locale}
-            onSubcategoryClick={nav.handleCircleClick}
-          />
-        )}
-
-        {/* Contextual Filter Bar - Smart category-aware filters */}
-        {/* Shows: Filter/Sort + Category-specific attribute pills (Size, Color, Brand) */}
-        {!nav.isAllTab && (
-          <ContextualFilterBar
-            locale={locale}
-            categorySlug={nav.activeSlug}
-            categoryId={nav.currentL0?.id}
-            className="sticky top-13 z-20"
-          />
-        )}
-
         {/* Promoted Listings - Only on "All" tab */}
         {nav.isAllTab && activePromotedProducts.length > 0 && (
           <PromotedListingsStrip products={activePromotedProducts} />
@@ -298,8 +243,6 @@ export function MobileHome({
         {nav.isAllTab && showStickyFilters && (
           <StickyCategoryBar
             categories={initialCategories}
-            activeCategory={nav.activeTab === "all" ? null : nav.activeTab}
-            onCategorySelect={(slug) => nav.handleTabChange(slug ?? "all")}
             onFilterClick={() => setSortModalOpen(true)}
             locale={locale}
             className="fixed top-13 left-0 right-0 animate-in slide-in-from-top-2 duration-200"
@@ -337,11 +280,6 @@ export function MobileHome({
       <CategoryBrowseDrawer
         locale={locale}
         fetchChildren={fetchCategoryChildren}
-        onCategoryChange={(cat) => {
-          if (cat) {
-            nav.handleTabChange(cat.slug)
-          }
-        }}
       />
     </PageShell>
     </CategoryDrawerProvider>

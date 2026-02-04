@@ -1,5 +1,7 @@
 "use client"
 
+import { Badge } from "@/components/ui/badge"
+
 // =============================================================================
 // TYPES
 // =============================================================================
@@ -32,19 +34,19 @@ function ProductCardB2BBadges({
   return (
     <div className="mt-0.5 hidden lg:flex flex-wrap gap-1">
       {showMoq && (
-        <span className="rounded-sm bg-info/10 px-1 py-px text-2xs font-medium text-info">
+        <Badge variant="secondary" className="text-2xs">
           {labels.moq}:{minOrderQuantity}
-        </span>
+        </Badge>
       )}
       {samplesAvailable && (
-        <span className="rounded-sm bg-warning/10 px-1 py-px text-2xs font-medium text-warning">
+        <Badge variant="secondary" className="text-2xs">
           {labels.samples}
-        </span>
+        </Badge>
       )}
       {businessVerified && (
-        <span className="rounded-sm bg-success/10 px-1 py-px text-2xs font-medium text-success">
+        <Badge variant="secondary" className="text-2xs">
           {labels.verified}
-        </span>
+        </Badge>
       )}
     </div>
   )

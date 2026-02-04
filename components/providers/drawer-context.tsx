@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { createContext, useContext, useCallback, useState, useMemo, useEffect } from "react"
-import { trackDrawerOpen, trackDrawerClose } from "@/lib/analytics-drawer"
+import { trackDrawerOpen, trackDrawerClose } from "@/components/providers/_lib/analytics-drawer"
 import { isDrawerSystemEnabled, getEnabledDrawers } from "@/lib/feature-flags"
 
 // =============================================================================

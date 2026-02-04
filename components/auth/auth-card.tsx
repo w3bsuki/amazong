@@ -20,7 +20,7 @@ export function AuthCard({
 }: AuthCardProps) {
   return (
     <div className="min-h-dvh flex items-center justify-center p-4">
-      <Card className="w-full max-w-sm py-0 gap-0">
+      <Card className="w-full max-w-sm py-0 gap-0 overflow-hidden">
         <CardHeader className="text-center pt-6 pb-4 px-6 gap-3">
           {showLogo && (
             <Link href="/" className="mx-auto hover:opacity-80 transition-opacity">
@@ -36,7 +36,7 @@ export function AuthCard({
         </CardHeader>
         <CardContent className="px-6 pb-4">{children}</CardContent>
         {footer && (
-          <CardFooter className="flex-col gap-4 bg-surface-subtle border-t py-4 px-6 rounded-b-md">
+          <CardFooter className="flex-col gap-4 bg-surface-subtle border-t py-4 px-6">
             {footer}
           </CardFooter>
         )}

@@ -20,6 +20,10 @@ Senior product designer expertise for marketplace UX. Produces clean, premium UI
 - **Tailwind v4 tokens only** (no palette classes, no gradients, no arbitrary values)
 - **All copy must be i18n-ready** (keys via `next-intl`, no hardcoded user-facing strings)
 - Prefer shadcn/ui primitives + composable patterns (no bespoke one-off widgets unless required)
+- **One accent only**: `primary` (blue) for CTAs/links/active/focus; no rainbow status UI
+- **Destructive red only** for discounts + error states
+- **Minimal elevation**: cards/list rows are border-only; shadows are for overlays only (`shadow-modal`, `shadow-dropdown`)
+- **Dense but tappable**: listing grids use `gap-(--product-grid-gap)`, product cards default to `p-2.5`, and tap targets are ≥44px (`h-11`+)
 
 ## Domain Expertise
 
@@ -118,9 +122,9 @@ When asked to “design” a component/screen, output a short spec like:
 
 **Tokens**: bg-card, text-foreground, text-muted-foreground, border-border
 
-**States**: Default, Hover (shadow-sm), Focus (ring-2), Loading (skeleton)
+**States**: Default, Hover (bg-hover), Focus (ring-2 ring-ring), Loading (skeleton)
 
-**Spacing**: p-4 internal, gap-2 between elements
+**Spacing**: p-2.5 internal, grid uses gap-(--product-grid-gap)
 ```
 
 ## ❌ Don't

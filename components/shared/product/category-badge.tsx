@@ -49,7 +49,7 @@ export function CategoryBadge(props: {
     <Badge
       variant="category"
       className={cn(
-        "inline-flex items-center gap-2 rounded-md hover:bg-muted transition-colors cursor-pointer",
+        "inline-flex items-center gap-2",
         sizeClass,
         className
       )}

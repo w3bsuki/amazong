@@ -39,7 +39,7 @@ const tabButtonStyles = cn(
   "transition-colors duration-150",
   "active:bg-muted",
   // Focus (shadcn pattern)
-  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-0"
+  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-0"
 )
 
 export interface InlineFilterBarProps {
@@ -134,7 +134,7 @@ export function InlineFilterBar({
             onClick={onAllFiltersClick}
             className={cn(
               tabButtonStyles,
-              "rounded-lg",
+              "rounded-xl",
               hasActiveFilters && "bg-selected border-selected-border"
             )}
             aria-haspopup="dialog"
@@ -155,7 +155,7 @@ export function InlineFilterBar({
             onClick={openSort}
             className={cn(
               tabButtonStyles,
-              "rounded-lg",
+              "rounded-xl",
               isSorted && "bg-selected border-selected-border"
             )}
             aria-haspopup="dialog"

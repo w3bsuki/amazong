@@ -5,6 +5,7 @@ import { SlidersHorizontal } from "@phosphor-icons/react"
 import { useTranslations } from "next-intl"
 import type { CategoryTreeNode } from "@/lib/category-tree"
 import { getCategoryName, getCategorySlugKey } from "@/lib/category-display"
+import { useCategoryDrawerOptional } from "@/components/mobile/category-nav/category-drawer-context"
 
 // =============================================================================
 // Types
@@ -14,9 +15,9 @@ interface StickyCategoryBarProps {
   /** L0 categories to display as pills */
   categories: CategoryTreeNode[]
   /** Currently active category slug (null = "All") */
-  activeCategory: string | null
+  activeCategory?: string | null
   /** Callback when category is selected */
-  onCategorySelect: (slug: string | null) => void
+  onCategorySelect?: (slug: string | null) => void
   /** Callback when filter button is clicked */
   onFilterClick: () => void
   /** Number of active filters (shows badge) */
@@ -43,9 +44,14 @@ export function StickyCategoryBar({
   locale,
   className,
 }: StickyCategoryBarProps) {
+  const drawer = useCategoryDrawerOptional()
   const t = useTranslations("Common")
   const tHome = useTranslations("Home")
   const tCategories = useTranslations("Categories")
+
+  const effectiveActiveCategory = drawer
+    ? (drawer.path[0]?.slug ?? null)
+    : (activeCategory ?? null)
 
   return (
     <div className={cn("bg-background z-30 border-b border-border/50", className)}>
@@ -81,13 +87,19 @@ export function StickyCategoryBar({
             {/* "All" Pill */}
             <button
               type="button"
-              onClick={() => onCategorySelect(null)}
+              onClick={() => {
+                if (drawer) {
+                  drawer.close()
+                  return
+                }
+                onCategorySelect?.(null)
+              }}
               className={cn(
                 "h-7 px-3 rounded-full shrink-0",
                 "text-xs font-medium whitespace-nowrap",
                 "transition-all duration-150",
                 "active:opacity-90",
-                activeCategory === null
+                effectiveActiveCategory === null
                   ? "bg-foreground text-background"
                   : "bg-surface-subtle text-muted-foreground border border-border/40"
               )}
@@ -97,12 +109,18 @@ export function StickyCategoryBar({
 
             {/* Category Pills */}
             {categories.map((cat) => {
-              const isActive = activeCategory === cat.slug
+              const isActive = effectiveActiveCategory === cat.slug
               return (
                 <button
                   key={cat.slug}
                   type="button"
-                  onClick={() => onCategorySelect(cat.slug)}
+                  onClick={() => {
+                    if (drawer) {
+                      drawer.openCategory(cat)
+                      return
+                    }
+                    onCategorySelect?.(cat.slug)
+                  }}
                   className={cn(
                     "h-7 px-3 rounded-full shrink-0",
                     "text-xs font-medium whitespace-nowrap",
