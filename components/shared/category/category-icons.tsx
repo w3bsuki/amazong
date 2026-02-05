@@ -91,6 +91,10 @@ type PhosphorIcon = typeof Monitor
 // Component-level icon mapping used by card/circle UIs.
 // Returns the icon component so callers can control size/weight/className.
 const categoryIconComponents: Record<string, PhosphorIcon> = {
+  // Navigation / Meta
+  all: SquaresFour,
+  categories: SquaresFour,
+
   // Electronics & Computers
   electronics: Monitor,
   computers: Laptop,

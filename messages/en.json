@@ -222,6 +222,10 @@
             "books": "Books",
             "automotive": "Automotive"
         },
+        "sort": {
+            "title": "Sort",
+            "description": "Choose how to order the feed"
+        },
         "mobile": {
             "promotedListings": "In Focus",
             "seeAll": "See all",
@@ -564,9 +568,11 @@
         "title": "Categories",
         "description": "Browse product categories",
         "ariaLabel": "Browse categories",
-        "searchPlaceholder": "Search subcategories",
-        "searchAriaLabel": "Search subcategories",
+        "searchPlaceholder": "Search categories",
+        "searchAriaLabel": "Search categories",
+        "categories": "Categories",
         "subcategories": "Subcategories",
+        "noCategories": "No categories available",
         "noSubcategories": "No subcategories available",
         "noMatches": "No matches found",
         "seeAllIn": "All in {category}",
@@ -1254,6 +1260,7 @@
     },
     "Account": {
         "title": "Your Account",
+        "tabBarAriaLabel": "Account navigation",
         "header": {
             "overview": "Account Overview",
             "orders": "Orders",

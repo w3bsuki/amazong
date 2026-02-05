@@ -1,0 +1,11 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+/* Put your :root and .dark tokens here.
+   See: 03-theming-and-tokens.md for a full example. */
+
+@theme inline {
+  /* Map your tokens to Tailwind theme variables here. */
+}

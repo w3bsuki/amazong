@@ -110,7 +110,7 @@ export function MobileTabBar({ categories }: MobileTabBarProps) {
             />
             <span className={cn(
               "text-2xs font-medium leading-none tracking-tight",
-              pathname === "/" ? "text-foreground font-semibold" : "text-muted-foreground"
+              pathname === "/" ? "text-foreground" : "text-muted-foreground"
             )}>{t("home")}</span>
           </Link>
 
@@ -136,25 +136,37 @@ export function MobileTabBar({ categories }: MobileTabBarProps) {
             />
             <span className={cn(
               "text-2xs font-medium leading-none tracking-tight",
-              isActive("/categories") ? "text-foreground font-semibold" : "text-muted-foreground"
+              isActive("/categories") ? "text-foreground" : "text-muted-foreground"
             )}>{t("categories")}</span>
           </button>
 
-          {/* Sell - Central action button - Large inverted circle (Vinted/Depop pattern) */}
+          {/* Sell */}
           <Link
             href="/sell"
             prefetch={true}
             className={cn(
-              "flex flex-col items-center justify-center w-full h-full",
-              "tap-transparent active:scale-95 transition-transform",
-              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-full",
+              "flex flex-col items-center justify-center gap-0.5 w-full h-full",
+              "tap-transparent hover:bg-hover active:bg-active transition-colors",
+              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-md",
             )}
             aria-label={t("sell")}
             aria-current={isActive("/sell") ? "page" : undefined}
           >
-            {/* Large inverted circle - primary CTA */}
-            <span className="size-10 flex items-center justify-center bg-foreground text-background rounded-full shadow-sm">
-              <Plus size={24} weight="bold" />
+            <Plus
+              size={24}
+              weight={isActive("/sell") ? "fill" : "regular"}
+              className={cn(
+                "transition-colors",
+                isActive("/sell") ? "text-foreground" : "text-muted-foreground"
+              )}
+            />
+            <span
+              className={cn(
+                "text-2xs font-medium leading-none tracking-tight",
+                isActive("/sell") ? "text-foreground" : "text-muted-foreground"
+              )}
+            >
+              {t("sell")}
             </span>
           </Link>
 
@@ -189,7 +201,7 @@ export function MobileTabBar({ categories }: MobileTabBarProps) {
             </span>
             <span className={cn(
               "text-2xs font-medium leading-none tracking-tight",
-              isActive("/chat") ? "text-foreground font-semibold" : "text-muted-foreground"
+              isActive("/chat") ? "text-foreground" : "text-muted-foreground"
             )}>{t("chat")}</span>
           </button>
 
@@ -218,7 +230,7 @@ export function MobileTabBar({ categories }: MobileTabBarProps) {
               <span
                 className={cn(
                   "text-2xs font-medium leading-none tracking-tight",
-                  pathname.includes(`/${currentUsername}`) ? "text-foreground font-semibold" : "text-muted-foreground",
+                  pathname.includes(`/${currentUsername}`) ? "text-foreground" : "text-muted-foreground",
                 )}
               >
                 {t("profile")}

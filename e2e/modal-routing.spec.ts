@@ -1,4 +1,4 @@
-import { test, expect, assertNoErrorBoundary, assertVisible, assertNavigatedTo } from "./fixtures/base"
+import { test, expect, assertNoErrorBoundary, assertVisible } from "./fixtures/base"
 
 function pickSearchTerm(title: string | null | undefined): string {
   if (!title) return "test"
@@ -28,7 +28,7 @@ async function clickAnyProductCard(page: import("@playwright/test").Page) {
   const grid = page.locator("#product-grid:visible").first()
   await assertVisible(grid)
 
-  const productLink = grid.locator("a[aria-label]").first()
+  const productLink = grid.locator('a[data-slot="product-card-link"], a[aria-label]').first()
   const hasLink = await productLink.isVisible({ timeout: 10_000 }).catch(() => false)
   test.skip(!hasLink, "No product cards visible in #product-grid")
 
@@ -38,15 +38,13 @@ async function clickAnyProductCard(page: import("@playwright/test").Page) {
   const scrollYBefore = await page.evaluate(() => window.scrollY)
   await productLink.click()
 
-  await page.waitForURL((url) => url.toString() !== urlBefore, { timeout: 15_000 })
-
-  return { scrollYBefore }
+  return { urlBefore, scrollYBefore }
 }
 
-test.describe("Modal routing - product quick view", () => {
+test.describe("Product quick view overlay (no route change)", () => {
   test.describe.configure({ timeout: 60_000 })
 
-  test("search → product opens dialog on desktop; back preserves scroll", async ({ page, app, request }) => {
+  test("search → opens dialog on desktop; close preserves scroll", async ({ page, app, request }) => {
     await page.setViewportSize({ width: 1280, height: 720 })
 
     const first = await pickAnyProductFromApi(request)
@@ -57,15 +55,13 @@ test.describe("Modal routing - product quick view", () => {
 
     await assertNoErrorBoundary(page)
 
-    const { scrollYBefore } = await clickAnyProductCard(page)
+    const { urlBefore, scrollYBefore } = await clickAnyProductCard(page)
 
-    await assertNavigatedTo(page, /\/en\/[^/]+\/[^/]+/)
-    expect(page.url()).not.toContain("/en/search")
     await assertVisible(page.locator('[data-slot="dialog-content"]').first())
+    expect(page.url()).toBe(urlBefore)
 
-    await page.goBack({ waitUntil: "domcontentloaded" })
-    await assertNavigatedTo(page, /\/en\/search/)
-    await app.waitForHydration()
+    await page.keyboard.press("Escape")
+    await expect(page.locator('[data-slot="dialog-content"]').first()).toBeHidden({ timeout: 10_000 })
 
     const scrollYAfter = await page.evaluate(() => window.scrollY)
     expect(Math.abs(scrollYAfter - scrollYBefore)).toBeLessThan(200)
@@ -74,7 +70,7 @@ test.describe("Modal routing - product quick view", () => {
     app.assertNoConsoleErrors()
   })
 
-  test("search → product opens drawer on mobile; back preserves scroll", async ({ page, app, request }) => {
+  test("search → opens drawer on mobile; close preserves scroll", async ({ page, app, request }) => {
     await page.setViewportSize({ width: 390, height: 844 })
 
     const first = await pickAnyProductFromApi(request)
@@ -85,15 +81,13 @@ test.describe("Modal routing - product quick view", () => {
 
     await assertNoErrorBoundary(page)
 
-    const { scrollYBefore } = await clickAnyProductCard(page)
+    const { urlBefore, scrollYBefore } = await clickAnyProductCard(page)
 
-    await assertNavigatedTo(page, /\/en\/[^/]+\/[^/]+/)
-    expect(page.url()).not.toContain("/en/search")
     await assertVisible(page.locator('[data-slot="drawer-content"]').first())
+    expect(page.url()).toBe(urlBefore)
 
-    await page.goBack({ waitUntil: "domcontentloaded" })
-    await assertNavigatedTo(page, /\/en\/search/)
-    await app.waitForHydration()
+    await page.keyboard.press("Escape")
+    await expect(page.locator('[data-slot="drawer-content"]').first()).toBeHidden({ timeout: 10_000 })
 
     const scrollYAfter = await page.evaluate(() => window.scrollY)
     expect(Math.abs(scrollYAfter - scrollYBefore)).toBeLessThan(200)
@@ -102,7 +96,7 @@ test.describe("Modal routing - product quick view", () => {
     app.assertNoConsoleErrors()
   })
 
-  test("categories → product opens dialog; back returns to category", async ({ page, app, request }) => {
+  test("categories → opens dialog; URL stays on category", async ({ page, app, request }) => {
     await page.setViewportSize({ width: 1280, height: 720 })
 
     const first = await pickAnyProductFromApi(request)
@@ -121,15 +115,13 @@ test.describe("Modal routing - product quick view", () => {
 
     await assertNoErrorBoundary(page)
 
-    await clickAnyProductCard(page)
+    const { urlBefore } = await clickAnyProductCard(page)
 
-    await assertNavigatedTo(page, /\/en\/[^/]+\/[^/]+/)
-    expect(page.url()).not.toContain("/en/categories/")
     await assertVisible(page.locator('[data-slot="dialog-content"]').first())
+    expect(page.url()).toBe(urlBefore)
 
-    await page.goBack({ waitUntil: "domcontentloaded" })
-    await assertNavigatedTo(page, new RegExp(`/en/categories/${categorySlug}`))
-    await app.waitForHydration()
+    await page.keyboard.press("Escape")
+    await expect(page.locator('[data-slot="dialog-content"]').first()).toBeHidden({ timeout: 10_000 })
 
     await assertNoErrorBoundary(page)
     app.assertNoConsoleErrors()

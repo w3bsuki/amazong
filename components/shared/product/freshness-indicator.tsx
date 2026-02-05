@@ -1,6 +1,5 @@
 "use client"
 
-import { useEffect, useState } from "react"
 import { useLocale, useTranslations } from "next-intl"
 import { Clock } from "@phosphor-icons/react"
 import { cn } from "@/lib/utils"
@@ -83,13 +82,10 @@ export function FreshnessIndicator({
 }: FreshnessIndicatorProps) {
   const locale = useLocale()
   const t = useTranslations("Freshness")
-  const [hydrated, setHydrated] = useState(false)
 
-  useEffect(() => {
-    setHydrated(true)
-  }, [])
-
-  if (!createdAt || !hydrated) return null
+  // Render on SSR for stable layout. Relative time can differ across server/client
+  // (timezone, time passing), so we suppress hydration warnings on the wrapper.
+  if (!createdAt) return null
 
   const { label, isFresh, isToday } = formatFreshness(createdAt, locale, t)
 
@@ -98,6 +94,7 @@ export function FreshnessIndicator({
   if (variant === "badge") {
     return (
       <span
+        suppressHydrationWarning
         className={cn(
           "inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-2xs font-medium uppercase tracking-wide",
           isToday && "bg-fresh-bg text-fresh",
@@ -114,6 +111,7 @@ export function FreshnessIndicator({
 
   return (
     <span
+      suppressHydrationWarning
       className={cn(
         "inline-flex items-center gap-0.5 text-tiny",
         isFresh ? "font-medium text-fresh" : "text-muted-foreground",

@@ -41,6 +41,7 @@ export interface SearchProductFilters {
   tag?: string | undefined
   minRating?: string | undefined
   deals?: string | undefined
+  promoted?: string | undefined
   verified?: string | undefined
   availability?: string | undefined
   sort?: string | undefined

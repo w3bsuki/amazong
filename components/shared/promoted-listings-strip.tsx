@@ -1,38 +1,30 @@
-"use client";
+"use client"
 
-import { useTranslations } from "next-intl";
-import { Link } from "@/i18n/routing";
-import { Fire, ArrowRight } from "@phosphor-icons/react";
-import { HorizontalProductCard } from "@/components/shared/product/horizontal-product-card";
-import type { UIProduct } from "@/lib/types/products";
-import { cn } from "@/lib/utils";
+import { useTranslations } from "next-intl"
+import { Link } from "@/i18n/routing"
+import { ArrowRight } from "@phosphor-icons/react"
+import { HorizontalProductCard } from "@/components/shared/product/horizontal-product-card"
+import type { UIProduct } from "@/lib/types/products"
+import { cn } from "@/lib/utils"
 
 interface PromotedListingsStripProps {
-  products: UIProduct[];
-  className?: string;
+  products: UIProduct[]
+  className?: string
 }
 
 export function PromotedListingsStrip({ products, className }: PromotedListingsStripProps) {
-  const t = useTranslations("Home");
+  const t = useTranslations("Home")
 
-  if (!products || products.length === 0) return null;
+  if (!products || products.length === 0) return null
 
   return (
-    <section className={cn("py-2", className)}>
-      <div className="px-inset-md mb-2 flex items-center justify-between gap-2">
-        <div className="flex items-center gap-2 min-w-0">
-          <span
-            className="shrink-0 size-7 rounded-full bg-muted border border-border/50 flex items-center justify-center"
-            aria-hidden="true"
-          >
-            <Fire size={18} weight="fill" className="text-fire" />
-          </span>
-          <h2 className="text-sm font-semibold tracking-tight text-foreground truncate">
-            {t("mobile.promotedListings")}
-          </h2>
-        </div>
+    <section className={cn("py-3", className)}>
+      <div className="px-inset-md mb-3 flex items-center justify-between gap-2">
+        <h2 className="min-w-0 truncate text-base font-semibold tracking-tight text-foreground">
+          {t("mobile.promotedListings")}
+        </h2>
         <Link
-          href="/search?type=promoted"
+          href="/search?promoted=true&sort=newest"
           className={cn(
             "inline-flex items-center gap-1",
             "min-h-(--spacing-touch-md) px-1.5 -mr-1 rounded-md",
@@ -41,19 +33,23 @@ export function PromotedListingsStrip({ products, className }: PromotedListingsS
           )}
         >
           {t("mobile.seeAll")}
-          <ArrowRight size={14} weight="bold" />
+          <ArrowRight size={14} weight="bold" aria-hidden="true" />
         </Link>
       </div>
 
       <div className="overflow-x-auto no-scrollbar">
-        <div className="flex gap-2 px-inset-md">
+        <div className="flex gap-3.5 px-inset-md">
           {products.slice(0, 8).map((product) => (
-            <HorizontalProductCard key={product.id} product={product} />
+            <HorizontalProductCard
+              key={product.id}
+              product={product}
+              uiVariant="home"
+            />
           ))}
         </div>
       </div>
     </section>
-  );
+  )
 }
 
-export type { PromotedListingsStripProps };
+export type { PromotedListingsStripProps }

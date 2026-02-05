@@ -169,8 +169,7 @@ export function ProductCardList({
       {/* Full-card link for accessibility */}
       <Link
         href={productUrl}
-        scroll={false}
-        className="absolute inset-0 z-0 rounded-xl outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
+        className="absolute inset-0 z-10 rounded-xl outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
         aria-label={t("openProduct", { title })}
       >
         <span className="sr-only">{title}</span>
@@ -183,7 +182,7 @@ export function ProductCardList({
           alt={title}
           fill
           sizes="(max-width: 640px) 128px, 160px"
-          className="object-cover"
+          className="object-cover pointer-events-none"
         />
 
         {/* Status badges (Promo / Discount) */}
@@ -201,7 +200,7 @@ export function ProductCardList({
         )}
 
         {/* Wishlist button overlay */}
-        <div className="absolute top-1.5 right-1.5 z-10">
+        <div className="absolute top-1.5 right-1.5 z-20">
           <ProductCardActions
             id={id}
             title={title}
@@ -218,7 +217,7 @@ export function ProductCardList({
 
         {/* Out of stock overlay */}
         {!inStock && (
-          <div className="absolute inset-0 flex items-center justify-center bg-surface-glass">
+          <div className="absolute inset-0 flex items-center justify-center bg-surface-glass pointer-events-none">
             <span className="text-xs font-medium text-muted-foreground">{t("outOfStock")}</span>
           </div>
         )}
@@ -227,7 +226,7 @@ export function ProductCardList({
       {/* Content - Right side */}
       <div className="relative z-1 flex-1 min-w-0 flex flex-col">
         {/* Title */}
-        <h3 className="font-medium text-sm sm:text-base line-clamp-2 text-foreground mb-1">
+        <h3 className="min-w-0 truncate font-medium text-sm sm:text-base text-foreground mb-1">
           {title}
         </h3>
 

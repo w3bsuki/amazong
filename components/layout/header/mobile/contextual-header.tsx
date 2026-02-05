@@ -72,7 +72,7 @@ export function MobileContextualHeader({
           </div>
         )}
       </div>
-      {/* Subcategory circles - Same spacing as homepage CategoryCirclesSimple */}
+      {/* Subcategory circles */}
       {subcategories.length > 0 && (
         <div className="bg-background border-b border-border">
           <div className="px-inset py-1.5 overflow-x-auto no-scrollbar">

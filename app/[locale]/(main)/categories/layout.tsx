@@ -10,11 +10,9 @@ import { validateLocale } from "@/i18n/routing"
 
 export default async function CategoriesLayout({
   children,
-  modal,
   params
 }: {
   children: React.ReactNode
-  modal: React.ReactNode
   params: Promise<{ locale: string }>
 }) {
   const { locale: localeParam } = await params
@@ -25,9 +23,6 @@ export default async function CategoriesLayout({
   // positioning of tabs in MobileHomeTabs. The page content should handle
   // any overflow needs locally.
   return (
-    <>
-      {children}
-      {modal}
-    </>
+    children
   )
 }

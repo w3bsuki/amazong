@@ -24,7 +24,6 @@ export type FeatureFlagName =
   | "drawerCart"             // Cart drawer
   | "drawerMessages"         // Messages drawer
   | "drawerAccount"          // Account drawer
-  | "routeModalProductQuickView" // Product quick view via intercepting route modal (search/categories)
 
 export interface FeatureFlag {
   /** Whether the feature is enabled by default */
@@ -72,17 +71,26 @@ const FEATURE_FLAGS: Record<FeatureFlagName, FeatureFlag> = {
     envOverride: "NEXT_PUBLIC_FEATURE_DRAWER_ACCOUNT",
     description: "Enable account drawer on mobile",
   },
-  routeModalProductQuickView: {
-    enabled: true,
-    rolloutPercentage: 100,
-    envOverride: "NEXT_PUBLIC_FEATURE_ROUTE_MODAL_PRODUCT_QUICK_VIEW",
-    description: "Enable product quick view modal via Next.js intercepting routes from search/categories",
-  },
 }
 
 // =============================================================================
 // HELPERS
 // =============================================================================
+
+/**
+ * Next.js only inlines `process.env.NEXT_PUBLIC_*` when accessed statically.
+ * Dynamic access like `process.env[flag.envOverride]` will be `undefined` in
+ * the browser bundle, causing SSR/client mismatches.
+ *
+ * Keep a single static map so env overrides work consistently in SSR + client.
+ */
+const PUBLIC_ENV_OVERRIDES: Record<string, string | undefined> = {
+  NEXT_PUBLIC_FEATURE_DRAWER_SYSTEM: process.env.NEXT_PUBLIC_FEATURE_DRAWER_SYSTEM,
+  NEXT_PUBLIC_FEATURE_DRAWER_PRODUCT_QUICK_VIEW: process.env.NEXT_PUBLIC_FEATURE_DRAWER_PRODUCT_QUICK_VIEW,
+  NEXT_PUBLIC_FEATURE_DRAWER_CART: process.env.NEXT_PUBLIC_FEATURE_DRAWER_CART,
+  NEXT_PUBLIC_FEATURE_DRAWER_MESSAGES: process.env.NEXT_PUBLIC_FEATURE_DRAWER_MESSAGES,
+  NEXT_PUBLIC_FEATURE_DRAWER_ACCOUNT: process.env.NEXT_PUBLIC_FEATURE_DRAWER_ACCOUNT,
+}
 
 /**
  * Get a stable user identifier for percentage-based rollouts.
@@ -136,10 +144,12 @@ export function isFeatureEnabled(flagName: FeatureFlagName): boolean {
     console.warn(`[FeatureFlags] Unknown flag: ${flagName}`)
     return false
   }
+
+  const isServer = typeof window === "undefined"
   
   // Check env override first
   if (flag.envOverride) {
-    const envValue = process.env[flag.envOverride]
+    const envValue = PUBLIC_ENV_OVERRIDES[flag.envOverride]
     if (envValue !== undefined) {
       return envValue === "true" || envValue === "1"
     }
@@ -152,6 +162,8 @@ export function isFeatureEnabled(flagName: FeatureFlagName): boolean {
   
   // Check percentage rollout
   if (flag.rolloutPercentage < 100) {
+    // Avoid SSR/client mismatches: only apply percentage logic on the client.
+    if (isServer) return false
     const userId = getStableUserId()
     const userPercentile = hashToPercentage(userId, flagName)
     return userPercentile < flag.rolloutPercentage

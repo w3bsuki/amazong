@@ -27,7 +27,7 @@ export function StorefrontShell({
 
         <AppHeader user={null} categories={categories} />
 
-        <main id="main-content" role="main" className="flex-1 pb-20 md:pb-0 pt-app-header">
+        <main id="main-content" role="main" className="flex-1 pb-tabbar-safe md:pb-0 pt-app-header">
           {children}
         </main>
 

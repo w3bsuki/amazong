@@ -87,8 +87,8 @@ export function SimilarItemsGrid({
                   aria-label={t("addToWatchlist")}
                   className={cn(
                     "absolute top-2 right-2",
-                    "bg-surface-glass backdrop-blur-md",
-                    "hover:bg-surface-glass active:bg-surface-glass",
+                    "bg-background border border-border-subtle",
+                    "hover:bg-hover active:bg-active",
                     "text-muted-foreground hover:text-foreground"
                   )}
                   onClick={(e) => {

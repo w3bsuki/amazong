@@ -49,7 +49,7 @@ export function QuickViewSellerCard({
       type="button"
       onClick={onNavigateToProduct}
       className={cn(
-        "w-full rounded-xl border border-border bg-card text-left transition-colors",
+        "w-full rounded-xl border border-border-subtle bg-surface-subtle text-left transition-colors",
         compact ? "p-2.5" : "p-3",
         "hover:bg-hover active:bg-active",
         "focus-visible:ring-2 focus-visible:ring-focus-ring"

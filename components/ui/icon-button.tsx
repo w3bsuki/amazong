@@ -11,7 +11,7 @@ export type IconButtonProps = Omit<ButtonProps, "size"> & {
   /**
    * Defaults to 44px (`size="icon"`). Avoid smaller icon buttons on mobile.
    */
-  size?: Extract<ButtonProps["size"], "icon" | "icon-lg">
+  size?: Extract<ButtonProps["size"], "icon" | "icon-sm" | "icon-lg">
 }
 
 const IconButton = React.forwardRef<HTMLButtonElement, IconButtonProps>(function IconButton(

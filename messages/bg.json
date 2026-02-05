@@ -222,6 +222,10 @@
             "books": "Книги",
             "automotive": "Автомобили"
         },
+        "sort": {
+            "title": "Подреди",
+            "description": "Избери как да се подредят обявите"
+        },
         "mobile": {
             "promotedListings": "На фокус",
             "seeAll": "Виж всички",
@@ -564,9 +568,11 @@
         "title": "Категории",
         "description": "Разгледайте категории продукти",
         "ariaLabel": "Разглеждане на категории",
-        "searchPlaceholder": "Търси подкатегории",
-        "searchAriaLabel": "Търси подкатегории",
+        "searchPlaceholder": "Търси категории",
+        "searchAriaLabel": "Търси категории",
+        "categories": "Категории",
         "subcategories": "Подкатегории",
+        "noCategories": "Няма налични категории",
         "noSubcategories": "Няма подкатегории",
         "noMatches": "Няма резултати",
         "seeAllIn": "Всички в {category}",
@@ -1254,6 +1260,7 @@
     },
     "Account": {
         "title": "Твоят акаунт",
+        "tabBarAriaLabel": "Навигация в акаунта",
         "header": {
             "overview": "Преглед на акаунта",
             "orders": "Поръчки",

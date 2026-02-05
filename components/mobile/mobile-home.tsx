@@ -1,17 +1,15 @@
 "use client"
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react"
+import { useCallback, useEffect, useMemo, useState } from "react"
 import { PageShell } from "@/components/shared/page-shell"
 import { MobileSearchOverlay } from "@/components/shared/search/mobile-search-overlay"
-import { SortModal } from "@/components/shared/filters/sort-modal"
-import { ProductFeed } from "@/components/shared/product/product-feed"
-import { StickyCategoryBar } from "@/components/mobile/sticky-category-bar"
-import { CategoryProductRowMobile } from "@/components/shared/product/category-product-row"
+import { ProductCard, ProductGrid } from "@/components/shared/product/product-card"
 import { useHeader } from "@/components/providers/header-context"
 import type { UIProduct } from "@/lib/types/products"
 import type { CategoryTreeNode } from "@/lib/category-tree"
-import { useCategoryNavigation } from "@/hooks/use-category-navigation"
 import { useTranslations } from "next-intl"
+import { Link } from "@/i18n/routing"
+import { CaretRight } from "@phosphor-icons/react"
 
 // New drawer-based navigation
 import {
@@ -20,8 +18,6 @@ import {
 } from "@/components/mobile/category-nav"
 import { CategoryBrowseDrawer } from "@/components/mobile/drawers/category-browse-drawer"
 import { PromotedListingsStrip } from "@/components/shared/promoted-listings-strip"
-import { TrustBadgesInline } from "@/components/shared/trust-badges-inline"
-import { SellPromoBanner } from "@/components/shared/sell-promo-banner"
 
 // =============================================================================
 // Types
@@ -41,12 +37,6 @@ interface MobileHomeProps {
   initialCategories: CategoryTreeNode[]
   locale: string
   user?: { id: string } | null
-  /** Active category for header pills - passed to layout via context or searchParams */
-  activeCategory?: string
-  /** Callback when category pill is selected - passed to layout via context */
-  onCategorySelect?: (slug: string) => void
-  /** Callback to open search overlay - passed to layout via context */
-  onSearchOpen?: () => void
 }
 
 // =============================================================================
@@ -55,9 +45,7 @@ interface MobileHomeProps {
 
 async function fetchCategoryChildren(parentId: string): Promise<CategoryTreeNode[]> {
   try {
-    const res = await fetch(`/api/categories/${parentId}/children`, {
-      next: { revalidate: 3600 },
-    })
+    const res = await fetch(`/api/categories/${parentId}/children`)
     if (!res.ok) return []
     const data = await res.json()
     return data.children ?? []
@@ -73,17 +61,13 @@ async function fetchCategoryChildren(parentId: string): Promise<CategoryTreeNode
 export function MobileHome({
   initialProducts,
   promotedProducts,
-  curatedSections,
   initialCategories,
   locale,
 }: MobileHomeProps) {
   const t = useTranslations("Home")
+  const tMobile = useTranslations("Home.mobile")
+  const tTabs = useTranslations("TabbedProductFeed.tabs")
   const [searchOpen, setSearchOpen] = useState(false)
-  const [sortModalOpen, setSortModalOpen] = useState(false)
-  const [showStickyFilters, setShowStickyFilters] = useState(false)
-  
-  // Ref for intersection observer sentinel (marks end of promo sections)
-  const feedStartRef = useRef<HTMLDivElement>(null)
 
   // Homepage category navigation is drawer-based; avoid legacy `?tab=` URL state.
   const handleHeaderCategorySelect = useCallback((_slug: string) => {}, [])
@@ -101,58 +85,20 @@ export function MobileHome({
   // Get header context to provide dynamic state to layout's header
   const { setHomepageHeader } = useHeader()
 
-  // Use the navigation hook that handles all product loading
-  const nav = useCategoryNavigation({
-    initialCategories,
-    defaultTab: null,
-    defaultSubTab: null,
-    defaultL2: null,
-    defaultL3: null,
-    tabsNavigateToPages: false,
-    l0Style: "pills",
-    initialProducts,
-    initialProductsSlug: "all",
-    locale,
-    activeAllFilter: "newest",
-    syncTabsToUrl: false,
-  })
-  
   // Provide homepage header state to layout via context
   useEffect(() => {
     setHomepageHeader({
-      activeCategory: nav.activeTab,
+      activeCategory: "all",
       onCategorySelect: handleHeaderCategorySelect,
       onSearchOpen: () => setSearchOpen(true),
       categories: initialCategories,
     })
     return () => setHomepageHeader(null)
-  }, [nav.activeTab, handleHeaderCategorySelect, initialCategories, setHomepageHeader])
-
-  // Show sticky filter bar when user scrolls past promo sections (downward only)
-  useEffect(() => {
-    if (!feedStartRef.current) return
-    
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (!entry) return
-        // Only show when sentinel is ABOVE viewport (scrolled past it)
-        // boundingClientRect.top < 0 means it's above the viewport
-        const scrolledPast = !entry.isIntersecting && entry.boundingClientRect.top < 52
-        setShowStickyFilters(scrolledPast)
-      },
-      { 
-        threshold: 0,
-        rootMargin: "-52px 0px 0px 0px" // Account for header height
-      }
-    )
-    
-    observer.observe(feedStartRef.current)
-    return () => observer.disconnect()
-  }, [])
+  }, [handleHeaderCategorySelect, initialCategories, setHomepageHeader])
 
   return (
     <CategoryDrawerProvider rootCategories={initialCategories}>
-      <PageShell variant="muted" className="pb-24">
+      <PageShell variant="default" className="pb-4">
         {/* Search Overlay */}
         <MobileSearchOverlay
           hideDefaultTrigger
@@ -161,121 +107,95 @@ export function MobileHome({
         />
 
         {/* Header is rendered by layout - passes variant="homepage" with category pills */}
-        
-        {/* L0 Category Circles - Tapping opens drawer for L1+ navigation */}
-        <CategoryCirclesSimple
-          categories={initialCategories}
-          locale={locale}
-        />
+        <div className="bg-background border-b border-border-subtle">
+          <CategoryCirclesSimple
+            categories={initialCategories}
+            locale={locale}
+          />
+        </div>
 
-        {/* Main Content */}
-      <div className="pb-4">
-        {/* Promoted Listings - Only on "All" tab */}
-        {nav.isAllTab && activePromotedProducts.length > 0 && (
+         {/* Main Content */}
+       <div className="pb-4 space-y-4">
+        {/* Curated carousels (no sorting UI on Home) */}
+        {activePromotedProducts.length > 0 && (
           <PromotedListingsStrip products={activePromotedProducts} />
         )}
 
-        {/* CURATED CATEGORY SECTIONS - Only on "All" tab, after promoted */}
-        {nav.isAllTab && curatedSections && (
-          <>
-            {/* Today's Deals */}
-            {curatedSections.deals.length > 0 && (
-              <CategoryProductRowMobile
-                title={t("sections.deals")}
-                products={curatedSections.deals}
-                variant="deals"
-                seeAllHref="/todays-deals"
-                seeAllText={t("sections.seeAll")}
-              />
-            )}
+        {initialProducts.length > 0 && (
+          <section className="pt-1">
+            <div className="mb-3 flex items-center justify-between gap-2 px-inset-md">
+              <h2 className="min-w-0 truncate text-base font-semibold tracking-tight text-foreground">
+                {tTabs("newest")}
+              </h2>
+              <Link
+                href="/search?sort=newest"
+                className="inline-flex items-center gap-1 text-xs font-medium text-muted-foreground hover:text-foreground active:text-foreground transition-colors"
+              >
+                {t("sections.seeAll")}
+              </Link>
+            </div>
 
-            {/* Fashion */}
-            {curatedSections.fashion.length > 0 && (
-              <CategoryProductRowMobile
-                title={t("sections.fashion")}
-                products={curatedSections.fashion}
-                variant="fashion"
-                seeAllHref="/categories/fashion"
-                seeAllText={t("sections.seeAll")}
-              />
-            )}
-
-            {/* Electronics */}
-            {curatedSections.electronics.length > 0 && (
-              <CategoryProductRowMobile
-                title={t("sections.electronics")}
-                products={curatedSections.electronics}
-                variant="electronics"
-                seeAllHref="/categories/electronics"
-                seeAllText={t("sections.seeAll")}
-              />
-            )}
-
-            {/* Automotive */}
-            {curatedSections.automotive.length > 0 && (
-              <CategoryProductRowMobile
-                title={t("sections.automotive")}
-                products={curatedSections.automotive}
-                variant="automotive"
-                seeAllHref="/categories/automotive"
-                seeAllText={t("sections.seeAll")}
-              />
-            )}
-          </>
+            <ProductGrid density="compact" className="px-inset-md pb-2">
+              {initialProducts.map((product, index) => (
+                <ProductCard
+                  key={product.id}
+                  id={product.id}
+                  title={product.title}
+                  price={product.price}
+                  createdAt={product.createdAt ?? null}
+                  originalPrice={product.listPrice ?? null}
+                  image={product.image}
+                  rating={product.rating}
+                  reviews={product.reviews}
+                  {...(product.freeShipping ? { freeShipping: true } : {})}
+                  {...(product.isBoosted ? { isBoosted: true } : {})}
+                  {...(product.boostExpiresAt ? { boostExpiresAt: product.boostExpiresAt } : {})}
+                  index={index}
+                  slug={product.slug ?? null}
+                  username={product.storeSlug ?? null}
+                  sellerId={product.sellerId ?? null}
+                  {...((product.sellerName || product.storeSlug)
+                    ? { sellerName: product.sellerName || product.storeSlug || "" }
+                    : {})}
+                  sellerAvatarUrl={product.sellerAvatarUrl || null}
+                  sellerTier={product.sellerTier ?? "basic"}
+                  sellerVerified={Boolean(product.sellerVerified)}
+                  sellerEmailVerified={Boolean(product.sellerEmailVerified)}
+                  sellerPhoneVerified={Boolean(product.sellerPhoneVerified)}
+                  sellerIdVerified={Boolean(product.sellerIdVerified)}
+                  {...(product.condition ? { condition: product.condition } : {})}
+                  {...(product.brand ? { brand: product.brand } : {})}
+                  {...(product.categorySlug ? { categorySlug: product.categorySlug } : {})}
+                  {...(product.categoryRootSlug ? { categoryRootSlug: product.categoryRootSlug } : {})}
+                  {...(product.categoryPath ? { categoryPath: product.categoryPath } : {})}
+                  {...(product.make ? { make: product.make } : {})}
+                  {...(product.model ? { model: product.model } : {})}
+                  {...(product.year ? { year: product.year } : {})}
+                  {...(product.location ? { location: product.location } : {})}
+                  {...(product.attributes ? { attributes: product.attributes } : {})}
+                  appearance="tile"
+                  media="square"
+                  density="compact"
+                  uiVariant="home"
+                  radius="xl"
+                />
+              ))}
+            </ProductGrid>
+          </section>
         )}
 
-        {/* Sentinel - marks where feed starts, triggers sticky filter bar */}
-        {nav.isAllTab && <div ref={feedStartRef} className="h-px" />}
-
-        {/* Section divider before product grid */}
-        {nav.isAllTab && (
-          <div className="flex items-center justify-between px-inset pt-4 pb-2">
-            <h2 className="text-sm font-medium text-foreground">
-              {t("mobile.allListings")}
-            </h2>
-            <span className="text-xs text-muted-foreground tabular-nums">
-              {nav.activeFeed.products.length > 0 && t("mobile.listingsCount", { count: nav.activeFeed.products.length })}
-            </span>
-          </div>
-        )}
-
-        {/* Sticky Category Bar - appears when scrolled past promo sections */}
-        {nav.isAllTab && showStickyFilters && (
-          <StickyCategoryBar
-            categories={initialCategories}
-            onFilterClick={() => setSortModalOpen(true)}
-            locale={locale}
-            className="fixed top-13 left-0 right-0 animate-in slide-in-from-top-2 duration-200"
-          />
-        )}
-
-        {/* Product Feed (reuse existing component) */}
-        <ProductFeed
-          products={nav.activeFeed.products}
-          hasMore={nav.activeFeed.hasMore}
-          isLoading={nav.isLoading}
-          activeSlug={nav.activeSlug}
-          locale={locale}
-          isAllTab={nav.isAllTab}
-          activeCategoryName={nav.isAllTab ? null : nav.activeCategoryName}
-          onLoadMore={nav.loadMoreProducts}
-        />
-
-        {/* Trust Badges after first batch */}
-        {nav.activeFeed.products.length >= 4 && <TrustBadgesInline />}
+        {/* Final CTA: Browse all listings */}
+        <section className="px-inset-md py-3">
+          <Link
+            href="/search?sort=newest"
+            className="inline-flex w-full items-center justify-between gap-3 rounded-xl bg-surface-subtle px-4 py-3 text-sm font-semibold text-foreground border border-border-subtle active:bg-active transition-colors"
+          >
+            <span className="min-w-0 truncate">{tMobile("allListings")}</span>
+            <CaretRight size={18} weight="bold" className="text-muted-foreground shrink-0" aria-hidden="true" />
+          </Link>
+        </section>
       </div>
-
-      {/* Sell CTA */}
-      <SellPromoBanner />
-
-      {/* Sort Modal - for additional sort options beyond the segmented tabs */}
-      <SortModal
-        open={sortModalOpen}
-        onOpenChange={setSortModalOpen}
-        locale={locale}
-        excludeOptions={nav.isAllTab ? ["newest"] : undefined}
-      />
-      
+        
       {/* Category Browse Drawer - Native app-style category navigation */}
       <CategoryBrowseDrawer
         locale={locale}

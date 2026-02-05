@@ -72,7 +72,7 @@ export interface ProductGridProps {
   cardMedia?: "square" | "landscape";
   /** ProductCard density tuning (default: default). */
   cardDensity?: "default" | "compact";
-  /** ProductCard title line clamp (default: 2). */
+  /** ProductCard title line clamp (default: 1). */
   cardTitleLines?: 1 | 2;
   /** Additional className */
   className?: string;

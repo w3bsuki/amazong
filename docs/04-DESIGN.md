@@ -119,6 +119,10 @@ CSS Variables (:root/.dark) → @theme inline → Tailwind Classes
 | Popover | `bg-popover` | Dropdowns, sheets |
 | Gallery | `bg-surface-gallery` | Dark image backgrounds |
 
+**Page canvas (use `PageShell`)**
+- Default pages: `bg-background`
+- Grid/feed pages: `PageShell variant="muted"` → `bg-surface-subtle` (cards pop; premium depth)
+
 ### Text Tokens
 
 | Token | Class | Usage |

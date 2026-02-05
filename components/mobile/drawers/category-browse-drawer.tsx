@@ -16,10 +16,9 @@ import { Input } from "@/components/ui/input"
 import { Skeleton } from "@/components/ui/skeleton"
 import { IconButton } from "@/components/ui/icon-button"
 import { cn } from "@/lib/utils"
-import { useCategoryDrawer } from "@/components/mobile/category-nav/category-drawer-context"
+import { useCategoryDrawer, type DrawerSnap } from "@/components/mobile/category-nav/category-drawer-context"
 import { getCategoryName } from "@/lib/category-display"
-import { getCategoryIcon } from "@/components/shared/category/category-icons"
-import { CaretRight, MagnifyingGlass, X } from "@phosphor-icons/react"
+import { ArrowLeft, CaretRight, MagnifyingGlass, X } from "@phosphor-icons/react"
 import { useTranslations } from "next-intl"
 import type { CategoryTreeNode } from "@/lib/category-tree"
 
@@ -40,6 +39,15 @@ export interface CategoryBrowseDrawerProps {
 // Component
 // =============================================================================
 
+const CATEGORY_DRAWER_SNAP_COLLAPSED = "20rem"
+const CATEGORY_DRAWER_SNAP_HALF = "50dvh"
+const CATEGORY_DRAWER_SNAP_FULL = 1
+const CATEGORY_DRAWER_SNAP_POINTS: (string | number)[] = [
+  CATEGORY_DRAWER_SNAP_COLLAPSED,
+  CATEGORY_DRAWER_SNAP_HALF,
+  CATEGORY_DRAWER_SNAP_FULL,
+]
+
 /**
  * Simplified category drawer - shows L1 categories only.
  * Tapping an L1 pill navigates to /categories/[slug] for full-screen browsing.
@@ -55,11 +63,16 @@ export function CategoryBrowseDrawer({
   const tCommon = useTranslations("Common")
   const {
     isOpen,
+    snap,
+    rootCategories,
     activeCategory,
     path,
     children,
     isLoading,
+    openRoot,
+    openCategory,
     close,
+    setSnap,
     setChildren,
     setLoading,
   } = useCategoryDrawer()
@@ -67,12 +80,14 @@ export function CategoryBrowseDrawer({
   const [query, setQuery] = React.useState("")
   const [showSearch, setShowSearch] = React.useState(false)
   const searchInputRef = useRef<HTMLInputElement>(null)
+  const snapBeforeSearchRef = useRef<DrawerSnap | null>(null)
 
   // Handle drawer open state change
   const handleOpenChange = useCallback((open: boolean) => {
     if (!open) {
       setQuery("")
       setShowSearch(false)
+      snapBeforeSearchRef.current = null
       close()
     }
   }, [close])
@@ -104,11 +119,13 @@ export function CategoryBrowseDrawer({
   const rootCategory = path[0] ?? null
   const rootCategoryName = rootCategory ? getCategoryName(rootCategory, locale) : null
 
+  const listItems = rootCategory ? children : rootCategories
+
   const filteredChildren = useMemo(() => {
     const q = query.trim().toLowerCase()
-    if (!q) return children
-    return children.filter((cat) => getCategoryName(cat, locale).toLowerCase().includes(q))
-  }, [children, locale, query])
+    if (!q) return listItems
+    return listItems.filter((cat) => getCategoryName(cat, locale).toLowerCase().includes(q))
+  }, [listItems, locale, query])
 
   // Auto-focus the search input when it appears
   useEffect(() => {
@@ -121,6 +138,14 @@ export function CategoryBrowseDrawer({
     router.push(`/categories/${slug}`)
   }, [close, router])
 
+  const handleOpenScopedCategory = useCallback((category: CategoryTreeNode) => {
+    openCategory(category)
+  }, [openCategory])
+
+  const handleBackToRoot = useCallback(() => {
+    openRoot()
+  }, [openRoot])
+
   // Header text (L0 category name)
   const headerText = useMemo(() => {
     if (!rootCategory) return t("title")
@@ -130,10 +155,35 @@ export function CategoryBrowseDrawer({
   const toggleSearch = useCallback(() => {
     setShowSearch((prev) => {
       const next = !prev
-      if (!next) setQuery("")
+      if (next) {
+        snapBeforeSearchRef.current = snap
+        setSnap("full")
+      } else {
+        setQuery("")
+        const restoreTo = snapBeforeSearchRef.current
+        snapBeforeSearchRef.current = null
+        if (restoreTo) setSnap(restoreTo)
+      }
       return next
     })
-  }, [])
+  }, [snap, setSnap])
+
+  const activeSnapPoint = useMemo(() => {
+    if (snap === "full") return CATEGORY_DRAWER_SNAP_FULL
+    if (snap === "collapsed") return CATEGORY_DRAWER_SNAP_COLLAPSED
+    return CATEGORY_DRAWER_SNAP_HALF
+  }, [snap])
+
+  const handleSnapPointChange = useCallback((sp: string | number | null) => {
+    if (sp === null) return
+    setSnap(
+      sp === CATEGORY_DRAWER_SNAP_FULL
+        ? "full"
+        : sp === CATEGORY_DRAWER_SNAP_COLLAPSED
+          ? "collapsed"
+          : "half"
+    )
+  }, [setSnap])
 
   // Don't render anything when closed - prevents broken overlay
   if (!isOpen) {
@@ -145,15 +195,30 @@ export function CategoryBrowseDrawer({
       open={isOpen}
       onOpenChange={handleOpenChange}
       modal={true}
+      snapPoints={CATEGORY_DRAWER_SNAP_POINTS}
+      activeSnapPoint={activeSnapPoint}
+      setActiveSnapPoint={handleSnapPointChange}
     >
       <DrawerContent
         className={className}
         aria-label={t("ariaLabel")}
       >
         <DrawerHeader className="flex-row items-center justify-between gap-2 py-2">
-          <DrawerTitle className="text-base font-semibold">
-            {headerText}
-          </DrawerTitle>
+          <div className="flex min-w-0 items-center gap-1">
+            {rootCategory && (
+              <IconButton
+                aria-label={tCommon("back")}
+                variant="ghost"
+                onClick={handleBackToRoot}
+                className="-ml-2 shrink-0 text-muted-foreground hover:bg-muted hover:text-foreground active:bg-active"
+              >
+                <ArrowLeft size={20} weight="bold" aria-hidden="true" />
+              </IconButton>
+            )}
+            <DrawerTitle className="min-w-0 truncate text-base font-semibold">
+              {headerText}
+            </DrawerTitle>
+          </div>
           <div className="flex items-center gap-1">
             <IconButton
               aria-label={tCommon("search")}
@@ -176,10 +241,10 @@ export function CategoryBrowseDrawer({
         </DrawerHeader>
         <DrawerDescription className="sr-only">{t("description")}</DrawerDescription>
 
-        <DrawerBody className="pt-0 pb-safe-max">
+        <DrawerBody className="px-0 pt-0 pb-safe-max">
           {/* Search (collapsed by default) */}
           {showSearch && (
-            <div className="px-inset pb-3">
+            <div className="px-inset pb-3 pt-2">
               <div className="relative">
                 <MagnifyingGlass
                   size={16}
@@ -200,76 +265,86 @@ export function CategoryBrowseDrawer({
             </div>
           )}
 
-          {/* "All" - first row */}
-          {rootCategory && (
-            <button
-              type="button"
-              onClick={() => handleNavigateToCategory(rootCategory.slug)}
-              className={cn(
-                "w-full flex items-center gap-3 px-inset",
-                "min-h-(--spacing-touch-md) rounded-lg",
-                "active:bg-active transition-colors"
-              )}
-            >
-              <span className="flex items-center justify-center rounded-full bg-surface-subtle border border-border/40 size-(--spacing-touch-sm) text-foreground shrink-0">
-                {getCategoryIcon("all", { size: 18, weight: "bold" })}
-              </span>
-              <span className="flex-1 min-w-0 text-sm font-semibold text-foreground truncate">
-                {t("seeAllIn", { category: rootCategoryName ?? headerText })}
-              </span>
-              <CaretRight size={16} weight="bold" className="text-muted-foreground/60 shrink-0" aria-hidden="true" />
-            </button>
-          )}
-
-          {/* Subcategory label */}
+          {/* Label */}
           {filteredChildren.length > 0 && (
-            <p className="px-inset text-2xs text-muted-foreground font-medium pb-2">
-              {t("subcategories")}
+            <p className="px-inset pb-3 text-2xs font-medium text-muted-foreground">
+              {rootCategory ? t("subcategories") : t("categories")}
             </p>
           )}
 
-          {/* Subcategory list */}
+          {/* List */}
           {isLoading ? (
-            <div className="px-inset space-y-2">
+            <div className="divide-y divide-border-subtle">
               {Array.from({ length: 6 }).map((_, i) => (
-                <Skeleton key={i} className="h-(--spacing-touch-md) rounded-lg" />
+                <div key={i} className="flex min-h-(--spacing-touch-md) items-center px-inset">
+                  <Skeleton className="h-4 w-44" />
+                </div>
               ))}
             </div>
           ) : (
-            <div className="space-y-1">
+            <div className="divide-y divide-border-subtle">
+              {/* "All" - first row */}
+              {rootCategory && (
+                <button
+                  type="button"
+                  onClick={() => handleNavigateToCategory(rootCategory.slug)}
+                  className={cn(
+                    "w-full flex min-h-(--spacing-touch-md) items-center justify-between gap-3 px-inset",
+                    "tap-transparent transition-colors",
+                    "hover:bg-hover active:bg-active",
+                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
+                  )}
+                >
+                  <span className="flex-1 min-w-0 truncate text-left text-sm font-semibold text-foreground">
+                    {t("seeAllIn", { category: rootCategoryName ?? headerText })}
+                  </span>
+                  <CaretRight
+                    size={16}
+                    weight="bold"
+                    className="shrink-0 text-muted-foreground"
+                    aria-hidden="true"
+                  />
+                </button>
+              )}
+
               {filteredChildren.map((cat) => (
                 <button
                   key={cat.id}
                   type="button"
-                  onClick={() => handleNavigateToCategory(cat.slug)}
+                  onClick={() =>
+                    rootCategory ? handleNavigateToCategory(cat.slug) : handleOpenScopedCategory(cat)
+                  }
                   className={cn(
-                    "w-full flex items-center gap-3",
-                    "min-h-(--spacing-touch-md) rounded-lg px-inset",
-                    "active:bg-active transition-colors"
+                    "w-full flex min-h-(--spacing-touch-md) items-center justify-between gap-3 px-inset",
+                    "tap-transparent transition-colors",
+                    "hover:bg-hover active:bg-active",
+                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
                   )}
                 >
-                  <span className="flex items-center justify-center rounded-full bg-surface-subtle border border-border/40 size-(--spacing-touch-sm) text-muted-foreground shrink-0">
-                    {getCategoryIcon(cat.slug, { size: 18, weight: "bold" })}
-                  </span>
-                  <span className="flex-1 min-w-0 text-sm font-medium text-foreground line-clamp-2 text-left">
+                  <span className="flex-1 min-w-0 truncate text-left text-sm font-medium text-foreground">
                     {getCategoryName(cat, locale)}
                   </span>
-                  <CaretRight size={16} weight="bold" className="text-muted-foreground/60 shrink-0" aria-hidden="true" />
+                  <CaretRight
+                    size={16}
+                    weight="bold"
+                    className="shrink-0 text-muted-foreground"
+                    aria-hidden="true"
+                  />
                 </button>
               ))}
             </div>
           )}
 
           {/* Empty state */}
-          {!isLoading && children.length === 0 && (
+          {!isLoading && listItems.length === 0 && (
             <div className="py-8 text-center">
               <p className="text-sm text-muted-foreground">
-                {t("noSubcategories")}
+                {rootCategory ? t("noSubcategories") : t("noCategories")}
               </p>
             </div>
           )}
 
-          {!isLoading && children.length > 0 && filteredChildren.length === 0 && (
+          {!isLoading && listItems.length > 0 && filteredChildren.length === 0 && (
             <div className="py-8 text-center">
               <p className="text-sm text-muted-foreground">
                 {t("noMatches")}

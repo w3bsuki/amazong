@@ -84,6 +84,23 @@
   --selected-border: 0.62 0.20 255;
   --hover-border: 0.92 0.01 255;
 
+  /* Brand/CTA accents (raw components; mapped to `--color-*` tokens in @theme) */
+  --cta-primary-hover: 0.55 0.19 243;
+  --cta-secondary-hover: 0.94 0 0;
+  --brand-dark: 0.50 0.19 243;
+  --brand-light: 0.80 0.10 243;
+
+  /* Social / activity */
+  --social-instagram: 0.60 0.22 350;
+  --social-tiktok: 0.15 0 0;
+  --social-youtube: 0.55 0.25 27;
+  --social-twitter: 0.15 0 0;
+  --live-dot: 0.60 0.20 145;
+
+  /* Shadows */
+  --shadow-ink-subtle: 0 0 0 / 10%;
+  --shadow-ink-strong: 0 0 0 / 15%;
+
   /* Legacy semantic aliases (keep visuals within blue/red system) */
   --success: var(--primary);
   --success-foreground: var(--primary-foreground);
@@ -193,6 +210,23 @@
   --selected-foreground: 0.98 0 0;
   --selected-border: 0.72 0.18 255;
   --hover-border: 0.26 0.02 255;
+
+  /* Brand/CTA accents */
+  --cta-primary-hover: 0.66 0.18 255;
+  --cta-secondary-hover: 0.26 0.02 255;
+  --brand-dark: 0.66 0.18 255;
+  --brand-light: 0.80 0.10 255;
+
+  /* Social / activity */
+  --social-instagram: 0.60 0.22 350;
+  --social-tiktok: 1 0 0;
+  --social-youtube: 0.55 0.25 27;
+  --social-twitter: 1 0 0;
+  --live-dot: 0.60 0.20 145;
+
+  /* Shadows */
+  --shadow-ink-subtle: 0 0 0 / 40%;
+  --shadow-ink-strong: 0 0 0 / 55%;
 
   --success: var(--primary);
   --success-foreground: var(--primary-foreground);
@@ -375,6 +409,14 @@
   --text-price: 1rem;
   --text-price--line-height: 1.25rem;
 
+  /* === RICH TEXT HEADINGS (CMS) === */
+  --text-heading-1: 1.125rem;
+  --text-heading-1--line-height: 1.5rem;
+  --text-heading-2: 1.0625rem;
+  --text-heading-2--line-height: 1.5rem;
+  --text-heading-3: 1rem;
+  --text-heading-3--line-height: 1.5rem;
+
   /* === LETTER SPACING === */
   --letter-spacing-tight: -0.01em;
   --letter-spacing-normal: 0;
@@ -470,16 +512,16 @@
   --width-modal-lg: 56.25rem;
 
   /* === SHADOWS (Professional depth) === */
-  --shadow-2xs: none;
-  --shadow-xs: none;
-  --shadow-sm: none;
-  --shadow-md: none;
-  --shadow-lg: none;
-  --shadow-xl: none;
-  --shadow-2xl: none;
-  --shadow-dropdown: 0 4px 12px -2px oklch(0 0 0 / 10%);
-  --shadow-modal: 0 12px 40px -8px oklch(0 0 0 / 15%);
-  --shadow-card: none;
+  --shadow-2xs: 0 1px 1px -1px oklch(var(--shadow-ink-subtle));
+  --shadow-xs: 0 1px 2px -1px oklch(var(--shadow-ink-subtle));
+  --shadow-sm: 0 1px 3px 0 oklch(var(--shadow-ink-subtle));
+  --shadow-md: 0 8px 24px -18px oklch(var(--shadow-ink-subtle));
+  --shadow-lg: 0 16px 40px -28px oklch(var(--shadow-ink-strong));
+  --shadow-xl: 0 24px 60px -36px oklch(var(--shadow-ink-strong));
+  --shadow-2xl: 0 40px 96px -48px oklch(var(--shadow-ink-strong));
+  --shadow-dropdown: 0 4px 12px -2px oklch(var(--shadow-ink-subtle));
+  --shadow-modal: 0 12px 40px -8px oklch(var(--shadow-ink-strong));
+  --shadow-card: var(--shadow-sm);
 
   /* === TRANSITIONS === */
   --ease-snappy: cubic-bezier(0.2, 0, 0, 1);
@@ -639,20 +681,20 @@
 
   /* === COLORS: CTA Buttons - Professional === */
   --color-cta-primary: var(--color-primary);
-  --color-cta-primary-hover: oklch(0.55 0.19 243);
+  --color-cta-primary-hover: oklch(var(--cta-primary-hover));
   --color-cta-primary-text: var(--color-primary-foreground);
   --color-cta-secondary: var(--color-secondary);
-  --color-cta-secondary-hover: oklch(0.94 0 0);
+  --color-cta-secondary-hover: oklch(var(--cta-secondary-hover));
   --color-cta-secondary-text: var(--color-secondary-foreground);
 
   /* === LEGACY ALIASES === */
   --color-brand: var(--color-primary);
-  --color-brand-dark: oklch(0.50 0.19 243);
-  --color-brand-light: oklch(0.80 0.10 243);
+  --color-brand-dark: oklch(var(--brand-dark));
+  --color-brand-light: oklch(var(--brand-light));
   --color-interactive: var(--color-primary);
-  --color-interactive-hover: oklch(0.55 0.19 243);
+  --color-interactive-hover: oklch(var(--cta-primary-hover));
   --color-link: var(--color-primary);
-  --color-link-hover: oklch(0.50 0.19 243);
+  --color-link-hover: oklch(var(--brand-dark));
 
   /* === COLORS: Seller UI === */
   --color-seller-card: var(--color-card);
@@ -684,13 +726,13 @@
      from CSS vars via @theme inline block (respects .dark mode) */
 
   /* === COLORS: Social Platforms === */
-  --color-social-instagram: oklch(0.60 0.22 350);
-  --color-social-tiktok: oklch(0.15 0 0);
-  --color-social-youtube: oklch(0.55 0.25 27);
-  --color-social-twitter: oklch(0.15 0 0);
+  --color-social-instagram: oklch(var(--social-instagram));
+  --color-social-tiktok: oklch(var(--social-tiktok));
+  --color-social-youtube: oklch(var(--social-youtube));
+  --color-social-twitter: oklch(var(--social-twitter));
 
   /* === COLORS: Live/Activity === */
-  --color-live-dot: oklch(0.60 0.20 145);
+  --color-live-dot: oklch(var(--live-dot));
 
   /* === COLORS: Status (aliases to semantic) === */
   --color-status-success: var(--color-success);

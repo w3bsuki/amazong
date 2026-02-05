@@ -205,7 +205,8 @@
 }
 
 .ui-dropdown-sub-trigger[data-state='open'] {
-  @apply bg-accent text-accent-foreground;
+  background-color: var(--color-accent);
+  color: var(--color-accent-foreground);
 }
 
 /* Toast */
@@ -223,13 +224,24 @@
 }
 
 .destructive .ui-toast-action {
-  @apply hover:bg-destructive hover:text-destructive-foreground focus:ring-destructive;
   border-color: var(--color-destructive-foreground);
 }
 
-.destructive .ui-toast-close {
-  @apply hover:text-destructive-foreground focus:ring-destructive focus:ring-offset-destructive;
+.destructive .ui-toast-action:hover {
+  background-color: var(--color-destructive);
   color: var(--color-destructive-foreground);
+}
+
+.destructive .ui-toast-action:focus-visible {
+  outline-color: var(--color-destructive) !important;
+}
+
+.destructive .ui-toast-close {
+  color: var(--color-destructive-foreground);
+}
+
+.destructive .ui-toast-close:focus-visible {
+  outline-color: var(--color-destructive) !important;
 }
 
 /* Hover border is handled via token-safe Tailwind classes. */

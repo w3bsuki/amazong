@@ -27,9 +27,6 @@
   --spacing-scroll-lg: 25rem;
   --spacing-scroll-xl: 31.25rem;
 
-  /* Sheet/drawer */
-  --sheet-w-mobile: 85vw;
-
   /* Page sections */
   --page-section-min-h: 60vh;
   --page-section-min-h-lg: 80vh;
@@ -46,11 +43,6 @@
 
   /* Support chat */
   --support-chat-message-max-w: 80%;
-
-  /* Onboarding modal */
-  --onboarding-modal-w: calc(100vw - 2rem);
-  --onboarding-modal-max-h: 85vh;
-  --onboarding-modal-max-h-sm: 90vh;
 
   /* Product page modal */
   --product-modal-h: calc(100dvh - 2rem);
@@ -86,14 +78,9 @@
 
   /* ===== LAYOUT GRID SYSTEM (Desktop Shell) ===== */
   /* Content constraints */
-  --layout-content-max-w: 87.5rem;            /* 1400px - max content width */
   --layout-container-px: 1rem;                /* 16px - container padding */
-  --layout-gap: 1.5rem;                       /* 24px - grid gap */
-  --layout-gap-sm: 1rem;                      /* 16px - tight grid gap */
   
   /* Product grid - container query responsive */
-  --product-card-min-w: 12.5rem;              /* 200px - min card width */
-  --product-grid-gap: 0.5rem;                 /* 8px - product grid gap */
   
   /* Grid template areas - for DesktopShell */
   --grid-template-desktop: "header header" "sidebar content" "sidebar footer";

@@ -167,7 +167,7 @@ export function ProductQuickViewContent({
 
         <div className="flex flex-col gap-4 px-4 py-4 lg:col-span-2 lg:px-6 lg:py-6">
           {/* Price */}
-          <div className="rounded-xl border border-border bg-card p-4 space-y-3">
+          <div className="rounded-2xl border border-border-subtle bg-card p-5 space-y-3">
             <div className="flex items-baseline gap-2 flex-wrap">
               <span className="text-2xl font-bold tabular-nums tracking-tight text-foreground">
                 {formattedPrice}
@@ -216,24 +216,38 @@ export function ProductQuickViewContent({
           <div className="flex items-center gap-2">
             <IconButton
               type="button"
-              variant="outline"
+              variant="ghost"
               onClick={handleCopyLink}
               aria-label={tModal("copyLink")}
               disabled={!shareUrl}
+              className={cn(
+                "rounded-full border border-border-subtle bg-background/80 backdrop-blur-sm",
+                "hover:bg-background/90 hover:border-border active:bg-background/90",
+                "text-muted-foreground hover:text-foreground active:text-foreground",
+                "![&_svg]:size-4"
+              )}
             >
               <LinkSimple size={18} weight="bold" />
             </IconButton>
             <IconButton
               type="button"
-              variant="outline"
+              variant="ghost"
               onClick={handleToggleWishlist}
               aria-label={inWishlist ? tProduct("removeFromWatchlist") : tProduct("addToWatchlist")}
               disabled={wishlistPending}
+              className={cn(
+                "rounded-full border border-border-subtle bg-background/80 backdrop-blur-sm",
+                "hover:bg-background/90 hover:border-border active:bg-background/90",
+                "![&_svg]:size-4",
+                inWishlist
+                  ? "text-primary"
+                  : "text-muted-foreground hover:text-foreground active:text-foreground"
+              )}
             >
               <Heart
                 size={18}
                 weight={inWishlist ? "fill" : "regular"}
-                className={cn(inWishlist ? "fill-primary text-primary" : "text-foreground")}
+                className={cn(inWishlist && "fill-primary text-primary")}
               />
             </IconButton>
 
@@ -258,7 +272,7 @@ export function ProductQuickViewContent({
           />
 
           {/* Trust */}
-          <div className="rounded-xl border border-border bg-card p-3 text-sm text-muted-foreground">
+          <div className="rounded-xl border border-border-subtle bg-surface-subtle p-4 text-sm text-muted-foreground">
             <div className="flex items-start gap-2">
               <ShieldCheck size={18} weight="fill" className="mt-0.5 shrink-0" />
               <div className="flex-1">
@@ -275,7 +289,7 @@ export function ProductQuickViewContent({
           <button
             type="button"
             onClick={onNavigateToProduct}
-            className="w-full inline-flex items-center justify-center gap-2 rounded-xl border border-border bg-background px-4 py-3 text-sm font-medium text-foreground hover:bg-hover active:bg-active"
+            className="w-full inline-flex items-center justify-center gap-2 rounded-xl border border-border-subtle bg-background px-4 py-3 text-sm font-medium text-foreground hover:bg-hover active:bg-active"
           >
             {tModal("viewFullPage")}
             <ArrowSquareOut size={16} weight="bold" />

@@ -6,6 +6,7 @@ import { CaretRight, CaretLeft } from "@phosphor-icons/react"
 import { useTranslations } from "next-intl"
 
 import { Badge } from "@/components/ui/badge"
+import { AspectRatio } from "@/components/ui/aspect-ratio"
 import { Button } from "@/components/ui/button"
 import { normalizeImageUrl, PLACEHOLDER_IMAGE_PATH } from "@/lib/normalize-image-url"
 import { cn } from "@/lib/utils"
@@ -16,7 +17,7 @@ interface QuickViewImageGalleryProps {
   discountPercent?: number | undefined
   onNavigateToProduct: () => void
   onRequestClose?: () => void
-  /** Use compact layout with 4:3 aspect ratio + thumbnail strip (better for mobile) */
+  /** Use compact layout with a square hero + thumbnail strip (better for mobile drawers) */
   compact?: boolean
 }
 
@@ -147,10 +148,11 @@ export function QuickViewImageGallery({
     )
   }
 
-  // Mobile/compact layout - optimized touch handling, wide aspect for space efficiency
+  // Mobile/compact layout - optimized touch handling with a square hero (fills drawer better)
   return (
-    <div className="relative touch-pan-x">
-      <div className="relative aspect-16-10 bg-muted">
+    <div className="touch-pan-x">
+      <div className="relative overflow-hidden rounded-2xl border border-border-subtle bg-surface-gallery">
+        <AspectRatio ratio={1} className="relative">
         <button
           type="button"
           onClick={onNavigateToProduct}
@@ -161,7 +163,7 @@ export function QuickViewImageGallery({
             src={normalizeImageUrl(currentImage) ?? PLACEHOLDER_IMAGE_PATH}
             alt={title}
             fill
-            className="object-contain pointer-events-none"
+            className="object-cover pointer-events-none"
             sizes="(max-width: 768px) 100vw, 400px"
             priority
             draggable={false}
@@ -221,18 +223,19 @@ export function QuickViewImageGallery({
             {currentIndex + 1}/{images.length}
           </div>
         )}
+        </AspectRatio>
       </div>
 
       {/* Thumbnail strip - styled for better UX */}
       {hasMultiple && (
-        <div className="flex gap-1.5 overflow-x-auto px-4 py-2 scrollbar-hide touch-pan-x bg-surface-subtle">
+        <div className="mt-3 flex gap-2 overflow-x-auto scrollbar-hide pb-1 touch-pan-x">
           {images.map((img, i) => (
             <button
               key={`thumb-${i}`}
               type="button"
               onClick={() => setCurrentIndex(i)}
               className={cn(
-                "relative size-11 shrink-0 rounded-xl overflow-hidden border border-border transition-all touch-manipulation",
+                "relative size-12 shrink-0 rounded-xl overflow-hidden border border-border-subtle bg-muted transition-all touch-manipulation",
                 i === currentIndex
                   ? "ring-2 ring-ring"
                   : "opacity-60 hover:opacity-100"
@@ -243,7 +246,7 @@ export function QuickViewImageGallery({
                 alt=""
                 fill
                 className="object-cover pointer-events-none"
-                sizes="44px"
+                sizes="48px"
                 draggable={false}
               />
             </button>

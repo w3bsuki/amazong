@@ -9,9 +9,6 @@ import { StorefrontLayout } from "../_components/storefront-layout";
  * - Site footer with links and info
  * - Cookie consent banner
  * 
- * Note: Product modal slot is at [locale] level to intercept [username]/[productSlug]
- * routes which are siblings of (main), not children.
- * 
  * Used for: Homepage, products, categories, cart, checkout, etc.
  */
 export default async function MainLayout({

@@ -1,0 +1,85 @@
+# Home (Mobile) UI Spec — Premium, Calm, Fast
+
+This spec defines the **mobile Home/Landing** layout and UI rules for Treido.
+
+## Goals
+
+- Feel **premium, calm, and fast** to browse.
+- Minimal chrome, strict hierarchy, low cognitive load.
+- **Tailwind v4 semantic tokens only** (no palette classes, gradients, arbitrary values).
+- **All copy via `next-intl`**.
+
+## Non‑negotiables
+
+1) **No big segmented controls on Home.** Sorting belongs on Browse/Search results.
+2) Above‑the‑fold: **Header + ONE lightweight category row + content**.
+3) Product image overlays: **max 2**.
+   - Keep **one** promo/discount badge (single).
+   - Keep **wishlist** button (single).
+4) Wishlist button: same container style always; only icon fill changes when active.
+5) Categories: compact chips, horizontal scroll; active = filled surface + font-medium.
+6) Typography: price strongest, title medium (**always 1 line**), meta muted.
+7) Spacing rhythm: page padding `px-4` equivalent (`px-inset-md`), consistent gaps (`gap-3` / `gap-4`).
+8) Bottom nav: low emphasis; safe-area padding so content never sits under it.
+
+---
+
+## A) Header (existing)
+
+- Source: `components/layout/header/mobile/homepage-header.tsx`
+- Structure: hamburger + logo + inline search trigger + wishlist/cart.
+- Constraint: no extra stacked controls under the header.
+- Search opens the mobile search overlay via `HeaderProvider` state.
+
+## B) Category row (chips) — single row
+
+- Source: `components/mobile/category-nav/category-chips-simple.tsx`
+- One horizontally scrollable row: `overflow-x-auto no-scrollbar`
+- Chip sizing: `min-h-touch-sm` (44px) with `rounded-full`
+- First chip: **Categories / More** → opens root category drawer view.
+- Remaining chips: L0 categories → open scoped drawer for that category.
+- Active styling:
+  - `bg-muted text-foreground font-medium`
+  - no thick borders (`border-2` forbidden)
+
+## C) Sections (curated only; no infinite feed on Home)
+
+Home is **curated-only** and links out to Search for “see all”.
+
+Order + links:
+
+1) **На фокус** (promoted/boosted) carousel  
+   - “See all” → `/search?promoted=true&sort=newest`
+2) **Най-нови** carousel  
+   - “See all” → `/search?sort=newest`
+3) **Оферти днес** carousel  
+   - “See all” → `/search?deals=true&sort=newest`
+4) Final CTA row  
+   - “All listings” → `/search?sort=newest`
+
+## D) Product card (Home rules)
+
+- Use `ProductCard` with:
+  - `uiVariant="home"`, `radius="2xl"`, `media="landscape"`
+- Overlays max 2:
+  - Top-left: **single** badge (discount OR promo).
+  - Top-right: wishlist button (consistent container).
+
+## E) Bottom nav (existing)
+
+- Source: `components/mobile/mobile-tab-bar.tsx`
+- Safe-area handled by `pb-tabbar-safe` on `<main>` in `app/[locale]/_components/storefront-shell.tsx`.
+
+---
+
+## Do / Don’t
+
+✅ Do
+- Keep Home curated (carousels + clear CTAs).
+- Use token surfaces (`bg-background`, `bg-muted`, `bg-surface-subtle`) and hairline borders.
+- Keep touch targets ≥ `min-h-touch` (44px) for icon-only controls.
+
+❌ Don’t
+- Add sorting UI on Home (segmented, sort drawers, etc.).
+- Add 3+ overlays on product images.
+- Use gradients, heavy shadows, thick borders, or palette classes.

@@ -59,7 +59,7 @@ function ProductCardImage({
           src={hasError ? PLACEHOLDER_IMAGE_PATH : imageSrc}
           alt={alt}
           fill
-          className={cn("object-cover", !inStock && "grayscale")}
+          className={cn("object-cover pointer-events-none", !inStock && "grayscale")}
           sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
           placeholder="blur"
           blurDataURL={productBlurDataURL()}
@@ -71,7 +71,7 @@ function ProductCardImage({
 
       {/* Out of Stock overlay */}
       {!inStock && (
-        <div className="absolute inset-0 z-10 flex items-center justify-center">
+        <div className="absolute inset-0 z-10 flex items-center justify-center pointer-events-none">
           <span className="rounded-sm bg-overlay-dark px-2 py-1 text-xs font-semibold uppercase tracking-wide text-overlay-text">
             {outOfStockLabel}
           </span>

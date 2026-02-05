@@ -34,6 +34,7 @@ export interface ProductCardActionsProps {
 
     // Styling
     className?: string
+    size?: "icon" | "icon-sm" | "icon-lg"
 }
 
 /**
@@ -54,6 +55,7 @@ export function ProductCardActions({
     inStock = true,
     isOwnProduct = false,
     className,
+    size = "icon",
 }: ProductCardActionsProps) {
     const { addToCart, items: cartItems } = useCart()
     const { isInWishlist, toggleWishlist } = useWishlist()
@@ -106,9 +108,11 @@ export function ProductCardActions({
                 <IconButton
                     type="button"
                     variant="ghost"
+                    size={size}
                     className={cn(
-                        "rounded-full border border-border/50 bg-background/80 backdrop-blur-sm",
-                        "hover:bg-background/90 hover:border-border/60 active:bg-background/90",
+                        // Clean token-only chip (no glass/blur/shadows).
+                        "rounded-full bg-background border border-border-subtle",
+                        "hover:bg-hover active:bg-active",
                         "![&_svg]:size-4",
                         inWishlist
                             ? "text-primary"
@@ -131,6 +135,7 @@ export function ProductCardActions({
                 <IconButton
                     type="button"
                     variant={inCart ? "default" : "outline"}
+                    size={size}
                     className={cn(
                       inCart
                         ? "bg-primary text-primary-foreground hover:bg-interactive-hover"

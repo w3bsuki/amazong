@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { Link, usePathname } from "@/i18n/routing"
+import { Link } from "@/i18n/routing"
 import { useLocale, useTranslations } from "next-intl"
 import { cva, type VariantProps } from "class-variance-authority"
 
@@ -9,7 +9,6 @@ import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
 import { Surface } from "@/components/ui/surface"
 import { useDrawer, type QuickViewProduct } from "@/components/providers/drawer-context"
-import { isFeatureEnabled } from "@/lib/feature-flags"
 import { isBoostActiveNow } from "@/lib/boost/boost-status"
 import { shouldShowConditionBadge } from "@/lib/badges/category-badge-specs"
 
@@ -25,7 +24,7 @@ import { getConditionKey } from "./_lib/condition"
 // =============================================================================
 
 const productCardVariants = cva(
-  "tap-transparent group relative flex h-full min-w-0 cursor-pointer flex-col",
+  "tap-highlight tap-transparent group relative flex h-full min-w-0 cursor-pointer flex-col",
   {
     variants: {
       variant: {
@@ -102,8 +101,13 @@ interface ProductCardProps extends VariantProps<typeof productCardVariants> {
   media?: "square" | "landscape"
   /** Density tuning for compact mobile browse. */
   density?: "default" | "compact"
-  /** Title line clamp. Defaults to 2. */
+  /** Title line clamp. Defaults to 1. */
   titleLines?: 1 | 2
+
+  /** UI styling variant. Defaults to "default". */
+  uiVariant?: "default" | "home"
+  /** Radius scale. Defaults to "xl". */
+  radius?: "xl" | "2xl"
 
   // Context
   index?: number
@@ -181,7 +185,9 @@ function ProductCard({
   appearance = "card",
   media = "square",
   density = "default",
-  titleLines = 2,
+  titleLines = 1,
+  uiVariant = "default",
+  radius = "xl",
   index = 0,
   currentUserId,
   inStock = true,
@@ -199,13 +205,15 @@ function ProductCard({
 }: ProductCardProps & { ref?: React.Ref<HTMLDivElement> }) {
   const t = useTranslations("Product")
   const locale = useLocale()
-  const pathname = usePathname() ?? "/"
   const { openProductQuickView, enabledDrawers, isDrawerSystemEnabled } = useDrawer()
   const isQuickViewEnabled = isDrawerSystemEnabled && enabledDrawers.productQuickView
 
   const isCompact = density === "compact"
   const isTile = appearance === "tile"
   const mediaRatio = media === "landscape" ? 4 / 3 : 1
+  const radiusClass = radius === "2xl" ? "rounded-2xl" : "rounded-xl"
+  const actionSize = uiVariant === "home" ? "icon-sm" : "icon"
+  const radiusTopClass = radius === "2xl" ? "rounded-t-2xl" : "rounded-t-xl"
 
   // Derived values
   const hasDiscount = originalPrice && originalPrice > price
@@ -231,9 +239,7 @@ function ProductCard({
   }, [condition, shouldShowCondition, t])
 
   const locationLabel = React.useMemo(() => location?.trim() || null, [location])
-  const showFreshness =
-    !!createdAt &&
-    (conditionLabel ? 1 : 0) + (locationLabel ? 1 : 0) < 2
+  const hasFreshness = !!createdAt
 
   // Resolve state
   const resolvedState = state ?? (isOnSale || hasDiscount ? "sale" : "default")
@@ -246,36 +252,7 @@ function ProductCard({
 
   // URLs
   const productUrl = username ? `/${username}/${slug || id}` : "#"
-
-  const isSearchRoute = React.useMemo(() => {
-    const rawSegments = pathname.split("/").filter(Boolean)
-    const segments = [...rawSegments]
-    const maybeLocale = segments[0]
-    if (maybeLocale && /^[a-z]{2}(-[A-Z]{2})?$/i.test(maybeLocale)) {
-      segments.shift()
-    }
-    return segments.at(0) === "search"
-  }, [pathname])
-
-  const isCategoriesRoute = React.useMemo(() => {
-    const rawSegments = pathname.split("/").filter(Boolean)
-    const segments = [...rawSegments]
-    const maybeLocale = segments[0]
-    if (maybeLocale && /^[a-z]{2}(-[A-Z]{2})?$/i.test(maybeLocale)) {
-      segments.shift()
-    }
-    return segments.at(0) === "categories"
-  }, [pathname])
-
-  const isBrowseRoute = isSearchRoute || isCategoriesRoute
-
-  const isRouteModalQuickViewEnabled =
-    isFeatureEnabled("routeModalProductQuickView") &&
-    isBrowseRoute &&
-    productUrl !== "#"
-
-  const shouldUseDrawerQuickView =
-    isQuickViewEnabled && !isRouteModalQuickViewEnabled && !disableQuickView
+  const shouldUseDrawerQuickView = isQuickViewEnabled && !disableQuickView
 
   // Check if own product
   const isOwnProduct = !!(currentUserId && sellerId && currentUserId === sellerId)
@@ -346,19 +323,22 @@ function ProductCard({
   return (
     <Surface
       ref={ref}
-      variant="card"
-      interactive
+      variant={isTile ? "tile" : "card"}
+      interactive={!isTile}
       className={cn(
         productCardVariants({ variant, state: resolvedState }),
-        isTile && "border-0 bg-transparent",
+        radiusClass,
         className
       )}
     >
       {/* Full-card link for accessibility */}
       <Link
         href={productUrl}
-        scroll={false}
-        className="absolute inset-0 z-0 rounded-xl outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
+        data-slot="product-card-link"
+        className={cn(
+          "absolute inset-0 z-10 outline-none focus-visible:ring-2 focus-visible:ring-focus-ring",
+          radiusClass
+        )}
         aria-label={t("openProduct", { title })}
         onClick={handleCardClick}
       >
@@ -366,7 +346,13 @@ function ProductCard({
       </Link>
 
       <div className="relative">
-        <div className="relative overflow-hidden rounded-xl bg-muted">
+        <div
+          className={cn(
+            "relative overflow-hidden bg-muted",
+            isTile ? radiusClass : cn(radiusTopClass, "rounded-b-none"),
+            !isTile && "border-b border-border-subtle"
+          )}
+        >
           <ProductCardImage
             src={image}
             alt={title}
@@ -376,26 +362,45 @@ function ProductCard({
             ratio={mediaRatio}
           />
 
-          {(isBoostedActive || (hasDiscount && discountPercent >= 5)) && (
-            <div className="absolute left-1.5 top-1.5 z-10 flex flex-col gap-1">
-              {isBoostedActive && (
-                <Badge variant="secondary" className="text-2xs px-2 py-0.5">
-                  {t("adBadge")}
-                </Badge>
-              )}
-              {hasDiscount && discountPercent >= 5 && (
-                <Badge
-                  variant="destructive"
-                  className="text-2xs px-2 py-0.5 font-semibold tabular-nums"
-                >
-                  -{discountPercent}%
-                </Badge>
-              )}
-            </div>
+          {uiVariant === "home" ? (
+            inStock && (isBoostedActive || (hasDiscount && discountPercent >= 5)) ? (
+              <div className="absolute left-1.5 top-1.5 z-10 pointer-events-none">
+                {isBoostedActive ? (
+                  <Badge variant="secondary" className="text-2xs px-2 py-0.5">
+                    {t("adBadge")}
+                  </Badge>
+                ) : (
+                  <Badge
+                    variant="destructive"
+                    className="text-2xs px-2 py-0.5 font-semibold tabular-nums"
+                  >
+                    -{discountPercent}%
+                  </Badge>
+                )}
+              </div>
+            ) : null
+          ) : (
+              (isBoostedActive || (hasDiscount && discountPercent >= 5)) && (
+                <div className="absolute left-1.5 top-1.5 z-10 flex flex-col gap-1 pointer-events-none">
+                  {isBoostedActive && (
+                    <Badge variant="secondary" className="text-2xs px-2 py-0.5">
+                      {t("adBadge")}
+                    </Badge>
+                  )}
+                {hasDiscount && discountPercent >= 5 && (
+                  <Badge
+                    variant="destructive"
+                    className="text-2xs px-2 py-0.5 font-semibold tabular-nums"
+                  >
+                    -{discountPercent}%
+                  </Badge>
+                )}
+              </div>
+            )
           )}
 
           {showWishlist && (
-            <div className="absolute right-1.5 top-1.5 z-10">
+            <div className="absolute right-1.5 top-1.5 z-20">
               <ProductCardActions
                 id={id}
                 title={title}
@@ -407,6 +412,7 @@ function ProductCard({
                 showWishlist
                 inStock={inStock}
                 isOwnProduct={isOwnProduct}
+                size={actionSize}
               />
             </div>
           )}
@@ -417,16 +423,16 @@ function ProductCard({
         className={cn(
           isTile
             ? cn(
-                "px-0.5 pb-0.5 pt-2",
-                isCompact ? "space-y-0.5" : "space-y-1"
+                "px-1.5 pb-1.5 pt-2",
+                isCompact ? "space-y-1" : "space-y-1.5"
               )
-            : "space-y-1 p-2.5 pt-2"
+            : "space-y-1.5 p-3 pt-2.5"
         )}
       >
         <h3
           className={cn(
-            "break-words font-medium text-foreground leading-snug",
-            titleLines === 1 ? "line-clamp-1" : "line-clamp-2",
+            "min-w-0 font-medium text-foreground leading-tight",
+            titleLines === 1 ? "truncate" : "line-clamp-2 break-words",
             isCompact ? "text-compact" : "text-sm"
           )}
         >
@@ -440,34 +446,47 @@ function ProductCard({
           compact={isCompact}
         />
 
-        {hasSocialProof ? (
-          <ProductCardSocialProof
-            rating={rating}
-            reviews={reviews}
-            soldCount={soldCount}
-            soldLabel={t("sold")}
-          />
-        ) : (
-          (conditionLabel || locationLabel || showFreshness) && (
-            <div className="mt-1 flex min-w-0 items-center gap-1 text-2xs text-muted-foreground">
-              {conditionLabel && (
-                <span className="shrink-0">{conditionLabel}</span>
-              )}
-              {conditionLabel && locationLabel && <span aria-hidden="true">·</span>}
-              {locationLabel && (
-                <span className="min-w-0 truncate">{locationLabel}</span>
-              )}
-              {(conditionLabel || locationLabel) && showFreshness && <span aria-hidden="true">·</span>}
-              {showFreshness && (
-                <FreshnessIndicator
-                  createdAt={createdAt}
-                  variant="text"
-                  showIcon={false}
-                  className="text-2xs text-muted-foreground"
+        {(hasSocialProof || conditionLabel || locationLabel || hasFreshness) && (
+          <div className="mt-1 flex min-w-0 items-center gap-1 text-2xs text-muted-foreground">
+            {hasSocialProof ? (
+              <>
+                <ProductCardSocialProof
+                  rating={rating}
+                  reviews={reviews}
+                  soldCount={soldCount}
+                  soldLabel={t("sold")}
                 />
-              )}
-            </div>
-          )
+                {hasFreshness && <span aria-hidden="true">·</span>}
+                {hasFreshness && (
+                  <FreshnessIndicator
+                    createdAt={createdAt}
+                    variant="text"
+                    showIcon={false}
+                    className="text-2xs text-muted-foreground"
+                  />
+                )}
+              </>
+            ) : (
+              <>
+                {conditionLabel && (
+                  <span className="shrink-0">{conditionLabel}</span>
+                )}
+                {conditionLabel && locationLabel && <span aria-hidden="true">·</span>}
+                {locationLabel && (
+                  <span className="min-w-0 truncate">{locationLabel}</span>
+                )}
+                {(conditionLabel || locationLabel) && hasFreshness && <span aria-hidden="true">·</span>}
+                {hasFreshness && (
+                  <FreshnessIndicator
+                    createdAt={createdAt}
+                    variant="text"
+                    showIcon={false}
+                    className="text-2xs text-muted-foreground"
+                  />
+                )}
+              </>
+            )}
+          </div>
         )}
       </div>
     </Surface>

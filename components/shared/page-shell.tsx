@@ -10,7 +10,7 @@ import { cn } from "@/lib/utils";
  *
  * Variants:
  * - `default`: Clean white/dark canvas (`bg-background`) — used for most pages
- * - `muted`: Alternate canvas (`bg-surface-page`) — used for desktop home, search grids
+ * - `muted`: Subtle tinted canvas (`bg-surface-subtle`) — used for grids/feeds so cards pop
  *
  * Usage:
  * ```tsx
@@ -30,7 +30,7 @@ interface PageShellProps extends React.ComponentProps<"div"> {
   /**
    * Surface variant:
    * - `default`: bg-background (clean white/dark)
-   * - `muted`: bg-surface-page (alternate canvas for grid pages)
+   * - `muted`: bg-surface-subtle (tinted canvas for grid pages)
    */
   variant?: PageShellVariant;
   /**
@@ -46,7 +46,7 @@ interface PageShellProps extends React.ComponentProps<"div"> {
 
 const variantStyles: Record<PageShellVariant, string> = {
   default: "bg-background",
-  muted: "bg-surface-page",
+  muted: "bg-surface-subtle",
 };
 
 export function PageShell({

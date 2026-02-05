@@ -68,8 +68,8 @@
 @layer components {
   .richtext {
     color: var(--color-foreground);
-    font-size: 0.875rem;
-    line-height: 1.25rem;
+    font-size: var(--text-body);
+    line-height: var(--text-body--line-height);
     max-width: none;
   }
 
@@ -103,8 +103,8 @@
 
   .richtext :where(pre):not(:where(.richtext-skip *)) {
     font-family: var(--font-mono);
-    font-size: 0.8125rem;
-    line-height: 1.25rem;
+    font-size: var(--text-compact);
+    line-height: var(--text-body--line-height);
     white-space: pre-wrap;
     background: color-mix(in oklch, var(--color-card), var(--color-foreground) 6%);
     border: 1px solid var(--color-border);
@@ -120,18 +120,18 @@
   }
 
   .richtext :where(h1):not(:where(.richtext-skip *)) {
-    font-size: 1.125rem;
-    line-height: 1.5rem;
+    font-size: var(--text-heading-1);
+    line-height: var(--text-heading-1--line-height);
   }
 
   .richtext :where(h2):not(:where(.richtext-skip *)) {
-    font-size: 1.0625rem;
-    line-height: 1.5rem;
+    font-size: var(--text-heading-2);
+    line-height: var(--text-heading-2--line-height);
   }
 
   .richtext :where(h3):not(:where(.richtext-skip *)) {
-    font-size: 1rem;
-    line-height: 1.5rem;
+    font-size: var(--text-heading-3);
+    line-height: var(--text-heading-3--line-height);
   }
 
   .richtext :where(hr):not(:where(.richtext-skip *)) {
@@ -296,7 +296,7 @@
 
 /* Marketplace card shadow */
 .shadow-card {
-  box-shadow: none;
+  box-shadow: var(--shadow-card);
 }
 
 /* Promoted listing glow */

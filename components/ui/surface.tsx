@@ -4,15 +4,19 @@ import { cva, type VariantProps } from "class-variance-authority"
 
 import { cn } from "@/lib/utils"
 
-const surfaceVariants = cva("rounded-xl border border-border shadow-none", {
+const surfaceVariants = cva("rounded-xl", {
   variants: {
     variant: {
-      card: "bg-card text-card-foreground",
+      // Cards/list rows are border-only in Treido (no elevation).
+      card: "bg-card text-card-foreground border border-border-subtle shadow-none",
+      // Tiles are inline/unstyled by default. Interactivity is opt-in via `interactive`.
+      tile: "bg-transparent text-foreground shadow-none",
       subtle: "bg-surface-subtle text-foreground",
       background: "bg-background text-foreground",
     },
     interactive: {
-      true: "transition-colors hover:bg-hover active:bg-active",
+      // Only color transitions; elevation is reserved for overlays (dropdowns/modals).
+      true: "transition-colors hover:bg-hover active:bg-active hover:border-border",
       false: "",
     },
   },

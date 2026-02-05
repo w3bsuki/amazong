@@ -15,8 +15,7 @@ import type { HomepageHeaderProps } from "../types"
  * Minimal, content-focused header with:
  * - Hamburger + Logo + Inline search + Cart/Wishlist
  * 
- * Category navigation moved to CategoryCirclesSimple below header,
- * following the Instagram Stories pattern for familiar mobile UX.
+ * Category navigation is rendered as calm chips below the header (see MobileHome).
  * 
  * Used for: Homepage (mobile only)
  */
@@ -30,21 +29,21 @@ export function MobileHomepageHeader({
   const searchPlaceholder = tNav("searchPlaceholderShort")
 
   return (
-    <div className="md:hidden bg-background/95 backdrop-blur-md pt-safe">
-      <div className="h-13 px-1 flex items-center">
+    <div className="md:hidden bg-background border-b border-border pt-safe">
+      <div className="h-(--header-h-mobile) px-inset-md flex items-center">
         <SidebarMenu user={user} categories={categories} triggerClassName="-ml-2" {...(userStats && { userStats })} />
-        <Link href="/" className="shrink-0 -ml-1">
+        <Link href="/" className="shrink-0">
           <span className="text-lg font-extrabold tracking-tight text-foreground">treido.</span>
         </Link>
         <button
           type="button"
           onClick={onSearchOpen}
-          className={cn(
-            "flex-1 min-w-0 flex items-center gap-2 h-(--spacing-touch) ml-2 px-2.5 rounded-full",
-            "bg-surface-subtle border border-border/30",
-            "text-muted-foreground text-sm text-left",
-            "active:bg-active transition-colors"
-          )}
+            className={cn(
+              "flex-1 min-w-0 flex items-center gap-2 h-(--spacing-touch) ml-2 px-2.5 rounded-full",
+              "bg-surface-subtle border border-border-subtle",
+              "text-muted-foreground text-sm text-left",
+              "active:bg-active transition-colors"
+            )}
           aria-label={searchPlaceholder}
           aria-haspopup="dialog"
         >

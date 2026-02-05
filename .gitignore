@@ -92,6 +92,7 @@ cleanup/*.json
 cleanup/*.log
 cleanup/*.txt
 cleanup/archive/
+cleanup/ux-snapshots/
 
 # Local scratch docs (keep SSOT in /audit)
 supabase-codex/

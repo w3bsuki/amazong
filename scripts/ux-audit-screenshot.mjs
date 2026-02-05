@@ -12,25 +12,46 @@ function hasFlag(flag) {
   return process.argv.includes(flag)
 }
 
+function parseViewportPreset(raw) {
+  if (!raw) return { width: 1280, height: 720 }
+
+  const normalized = String(raw).trim().toLowerCase()
+  if (normalized === "desktop") return { width: 1280, height: 720 }
+  if (normalized === "mobile" || normalized === "iphone") return { width: 390, height: 844 }
+
+  const match = normalized.match(/^(\d{2,4})x(\d{2,4})$/)
+  if (match) {
+    const width = Number.parseInt(match[1], 10)
+    const height = Number.parseInt(match[2], 10)
+    if (Number.isFinite(width) && Number.isFinite(height)) {
+      return { width, height }
+    }
+  }
+
+  return { width: 1280, height: 720 }
+}
+
 const url = getArg('--url')
 const outPath = getArg('--out')
 const waitForSelector = getArg('--wait-for')
+const viewportPreset = getArg('--viewport')
 const timeoutMs = Number(getArg('--timeout') ?? '60000')
 const fullPage = !hasFlag('--no-full-page')
 const headless = !hasFlag('--headed')
 
 if (!url || !outPath) {
-  console.error('Usage: pnpm -s exec node scripts/ux-audit-screenshot.mjs --url <url> --out <path> [--wait-for <css>] [--timeout <ms>] [--headed] [--no-full-page]')
+  console.error('Usage: pnpm -s exec node scripts/ux-audit-screenshot.mjs --url <url> --out <path> [--wait-for <css>] [--viewport desktop|mobile|<WxH>] [--timeout <ms>] [--headed] [--no-full-page]')
   process.exit(2)
 }
 
 const outAbs = path.isAbsolute(outPath) ? outPath : path.join(process.cwd(), outPath)
 const consoleOutAbs = outAbs.replace(/\.png$/i, '') + '.console.json'
+const viewport = parseViewportPreset(viewportPreset)
 
 await mkdir(path.dirname(outAbs), { recursive: true })
 
 const browser = await chromium.launch({ headless })
-const context = await browser.newContext({ viewport: { width: 1280, height: 720 } })
+const context = await browser.newContext({ viewport })
 const page = await context.newPage()
 
 const consoleMessages = []

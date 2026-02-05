@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { createContext, useContext, useState, useCallback, useMemo } from "react"
+import { createContext, useContext, useState, useCallback, useEffect, useMemo } from "react"
 import type { CategoryTreeNode } from "@/lib/category-tree"
 
 // =============================================================================
@@ -15,6 +15,8 @@ export interface CategoryDrawerState {
   isOpen: boolean
   /** Current snap point */
   snap: DrawerSnap
+  /** Root L0 categories (passed from server) */
+  rootCategories: CategoryTreeNode[]
   /** Currently selected category (deepest level) */
   activeCategory: CategoryTreeNode | null
   /** Full breadcrumb path from L0 to current */
@@ -26,6 +28,8 @@ export interface CategoryDrawerState {
 }
 
 export interface CategoryDrawerActions {
+  /** Open drawer at the root ("All categories") view */
+  openRoot: () => void
   /** Open drawer with a specific L0 category */
   openCategory: (category: CategoryTreeNode) => void
   /** Drill down into a subcategory */
@@ -87,15 +91,29 @@ export function CategoryDrawerProvider({
   // State
   const [isOpen, setIsOpen] = useState(false)
   const [snap, setSnapState] = useState<DrawerSnap>("half")
+  const [rootCats, setRootCats] = useState<CategoryTreeNode[]>(rootCategories)
   const [activeCategory, setActiveCategory] = useState<CategoryTreeNode | null>(null)
   const [path, setPath] = useState<CategoryTreeNode[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [categoryChildren, setCategoryChildren] = useState<CategoryTreeNode[]>([])
 
+  useEffect(() => {
+    setRootCats(rootCategories)
+  }, [rootCategories])
+
   // Actions
-  const openCategory = useCallback((category: CategoryTreeNode) => {
+  const openRoot = useCallback(() => {
     setIsOpen(true)
     setSnapState("half")
+    setActiveCategory(null)
+    setPath([])
+    setCategoryChildren(rootCats)
+    onCategoryChange?.(null, [])
+  }, [onCategoryChange, rootCats])
+
+  const openCategory = useCallback((category: CategoryTreeNode) => {
+    setIsOpen(true)
+    setSnapState("collapsed")
     setActiveCategory(category)
     setPath([category])
     setCategoryChildren(category.children ?? [])
@@ -104,10 +122,13 @@ export function CategoryDrawerProvider({
 
   const drillDown = useCallback((category: CategoryTreeNode) => {
     setActiveCategory(category)
-    setPath(prev => [...prev, category])
+    setPath((prev) => {
+      const nextPath = [...prev, category]
+      onCategoryChange?.(category, nextPath)
+      return nextPath
+    })
     setCategoryChildren(category.children ?? [])
-    onCategoryChange?.(category, [...path, category])
-  }, [onCategoryChange, path])
+  }, [onCategoryChange])
 
   const goBack = useCallback(() => {
     if (path.length <= 1) {
@@ -163,11 +184,13 @@ export function CategoryDrawerProvider({
     // State
     isOpen,
     snap,
+    rootCategories: rootCats,
     activeCategory,
     path,
     isLoading,
     children: categoryChildren,
     // Actions
+    openRoot,
     openCategory,
     drillDown,
     goBack,
@@ -180,10 +203,12 @@ export function CategoryDrawerProvider({
   }), [
     isOpen,
     snap,
+    rootCats,
     activeCategory,
     path,
     isLoading,
     categoryChildren,
+    openRoot,
     openCategory,
     drillDown,
     goBack,
