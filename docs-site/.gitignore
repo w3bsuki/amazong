@@ -8,3 +8,7 @@ out/
 # Misc
 .DS_Store
 *.log
+
+# Generated search index
+public/_pagefind/
+

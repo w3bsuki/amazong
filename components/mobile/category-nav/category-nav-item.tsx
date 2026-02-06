@@ -39,9 +39,9 @@ export const CategoryNavItem = forwardRef<
   { href, onClick, isActive, variant, children, className, ...props },
   ref
 ) {
-  // Tab variant: Treido underline-style - text-sm, h-10
+  // Tab variant: Treido underline-style - touch-safe 44px minimum
   const tabStyles = cn(
-    "shrink-0 relative flex items-center justify-center min-w-10 h-10 px-1",
+    "shrink-0 relative flex items-center justify-center min-w-touch-sm h-11 px-2",
     "text-sm font-medium whitespace-nowrap",
     "tap-transparent",
     "transition-colors",
@@ -50,14 +50,14 @@ export const CategoryNavItem = forwardRef<
       : "text-muted-foreground hover:text-foreground"
   )
 
-  // Pill variant: Treido chip style - text-xs, h-8, with icon support
+  // Pill variant: touch-safe chip style
   const pillStyles = cn(
-    "shrink-0 h-8 px-3 text-xs font-medium rounded-full whitespace-nowrap",
+    "shrink-0 h-11 px-3.5 text-xs font-medium rounded-full whitespace-nowrap",
     "flex items-center justify-center gap-1.5",
     "border transition-colors",
     isActive
       ? "border-foreground bg-foreground text-background"
-      : "border-border/50 bg-surface-subtle text-muted-foreground hover:bg-hover hover:text-foreground"
+      : "border-border-subtle bg-surface-subtle text-muted-foreground hover:bg-hover hover:text-foreground"
   )
 
   const styles = variant === "tab" ? tabStyles : pillStyles

@@ -29,7 +29,7 @@ export interface CategoryCirclesSimpleProps {
 // =============================================================================
 
 /**
- * Simple horizontal category circles for homepage (icon + label inside).
+ * Simple horizontal category circles for homepage (icon + label below).
  *
  * - Horizontal scroll with momentum, no visible scrollbar
  * - Active state uses a clear ring (native app feel)
@@ -59,7 +59,7 @@ export function CategoryCirclesSimple({
   if (categories.length === 0) return null
 
   const circleSize = "size-(--spacing-category-circle)"
-  const itemWidth = "flex-none w-(--spacing-category-item-lg)"
+  const itemWidth = "flex-none w-(--spacing-category-item-nav)"
 
   const rootActive = Boolean(drawer?.isOpen && drawer.path.length === 0)
   const rootLabel = tDrawer("title")
@@ -74,14 +74,14 @@ export function CategoryCirclesSimple({
           label={rootLabel}
           active={rootActive}
           {...(drawer ? { onClick: drawer.openRoot } : { href: rootHref, prefetch: true })}
-          labelPlacement="inside"
+          labelPlacement="below"
           circleClassName={circleSize}
           fallbackIconSize={24}
           fallbackIconWeight="duotone"
-          variant="colorful"
+          variant="rail"
           preferIcon
           className={itemWidth}
-          insideLabelClassName={rootActive ? "text-foreground" : "text-muted-foreground"}
+          labelClassName={cn("truncate", rootActive ? "text-foreground" : "text-muted-foreground")}
         />
 
         {/* L0 categories */}
@@ -101,14 +101,14 @@ export function CategoryCirclesSimple({
                 ? { onClick: () => handleCategoryClick(category) }
                 : { href: (`/categories/${category.slug}` as const), prefetch: true })}
               active={isActive}
-              labelPlacement="inside"
+              labelPlacement="below"
               circleClassName={circleSize}
               fallbackIconSize={24}
               fallbackIconWeight="duotone"
-              variant="colorful"
+              variant="rail"
               preferIcon
               className={itemWidth}
-              insideLabelClassName={isActive ? "text-foreground" : "text-muted-foreground"}
+              labelClassName={cn("truncate", isActive ? "text-foreground" : "text-muted-foreground")}
             />
           )
         })}

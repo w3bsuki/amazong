@@ -1,0 +1,282 @@
+# FEATURES.md — Feature Status Checklist
+
+> V1 feature implementation status. Single source of truth for what's built.
+
+| Scope | V1 Launch Features |
+|-------|-------------------|
+| Audience | AI agents, developers |
+| Type | Reference |
+
+---
+
+## Quick Reference
+
+**Progress: 103/119 features (~87%)** | **Launch Blockers:** see `docs/status/LAUNCH-READINESS.yaml`
+
+Machine-readable launch ledger: `docs/status/LAUNCH-READINESS.yaml`
+
+Legend: ✅ Done | 🚧 In Progress | ⬜ Not Started
+
+---
+
+## 1. Authentication & Accounts (8/8) ✅
+
+1. ✅ Email/password signup
+2. ✅ Email/password login
+3. ✅ Email confirmation flow
+4. ✅ OAuth callback
+5. ✅ Password reset
+6. ✅ Session persistence
+7. ✅ Post-signup onboarding
+8. ✅ Protected route gating
+
+---
+
+## 2. Cart & Checkout (8/8) ✅
+
+1. ✅ Add/update/remove cart items
+2. ✅ Cart page
+3. ✅ Checkout page
+4. ✅ Stripe payment intent
+5. ✅ Buyer Protection fee calculation
+6. ✅ Success/cancel handling
+7. ✅ Webhook processing (idempotent)
+8. ✅ Order creation
+
+---
+
+## 3. Orders — Buyer (5/6)
+
+1. ✅ Orders list
+2. ✅ Order detail view
+3. ✅ Order status tracking
+4. ✅ Report issue (buyer protection)
+5. 🚧 Cancel order — pre-shipment only
+6. ✅ Confirm received → triggers payout
+
+---
+
+## 4. Orders — Seller (5/6)
+
+1. ✅ Seller orders list
+2. ✅ Seller order detail
+3. ✅ Mark as shipped
+4. ✅ Mark as delivered
+5. 🚧 Process refund — admin-assisted
+6. ✅ Inventory updates (DB triggers)
+
+---
+
+## 5. Selling / Listings (7/8)
+
+1. ✅ Sell entry (auth-gated)
+2. ✅ Create listing wizard (multi-step)
+3. ✅ Image upload
+4. ✅ Category + attributes
+5. ✅ Draft → publish flow
+6. ✅ Edit listing
+7. ✅ Delete/unpublish
+8. ⬜ Listing analytics — business tier only
+
+---
+
+## 6. Stripe Connect / Payouts (6/6) ✅
+
+1. ✅ Connect onboarding
+2. ✅ Individual accounts
+3. ✅ Business accounts
+4. ✅ Payout eligibility gating
+5. ✅ Payout status display
+6. ✅ Delayed payout release (escrow)
+
+---
+
+## 7. Marketplace Discovery (6/7)
+
+1. ✅ Home feed
+2. ✅ Category pages
+3. ✅ Subcategory navigation
+4. ✅ Search page
+5. ✅ Search filters (price, condition, location)
+6. ✅ Search sorting (relevance, price, date)
+7. 🚧 Saved searches — client-only (localStorage)
+
+---
+
+## 8. Product Pages / PDP (7/8)
+
+1. ✅ Product detail page
+2. ✅ Image gallery (swiper + thumbnails)
+3. ✅ Price display with currency
+4. ✅ Seller info card
+5. ✅ Product attributes
+6. ✅ Share/copy link
+7. ⬜ Related items — V1.1
+8. ✅ Recently viewed
+
+---
+
+## 9. Wishlist (4/5)
+
+1. ✅ Add to wishlist
+2. ✅ Remove from wishlist
+3. ✅ Wishlist page
+4. ✅ Wishlist count indicator
+5. ⬜ Wishlist sharing — DB exists, UI not exposed
+
+---
+
+## 10. Messaging (7/7) ✅
+
+1. ✅ Start conversation
+2. ✅ Chat list
+3. ✅ Chat thread (real-time)
+4. ✅ Unread indicators
+5. ✅ Image attachments
+6. ✅ Report conversation
+7. ✅ Block user
+
+---
+
+## 11. Reviews & Ratings (8/8) ✅
+
+1. ✅ Leave product review
+2. ✅ Seller feedback
+3. ✅ Buyer feedback
+4. ✅ Display on PDP
+5. ✅ Display on profile
+6. ✅ Helpful vote
+7. ✅ Delete own review
+8. ✅ Validation rules (no duplicates)
+
+---
+
+## 12. Profiles & Account (4/6)
+
+1. ✅ Public profile page
+2. ✅ Profile editing
+3. ✅ Account settings
+4. ✅ Address book
+5. 🚧 Notifications (in-app) — DB exists, UI partial
+6. ⬜ Email notifications — backend only
+
+---
+
+## 13. Trust & Safety (4/6)
+
+1. ✅ Report product
+2. ✅ Report user
+3. ✅ Report conversation
+4. ✅ Block user
+5. 🚧 Admin moderation — basic
+6. 🚧 Prohibited items — manual enforcement
+
+---
+
+## 14. Business Dashboard (5/6)
+
+1. ✅ Dashboard access gating
+2. ✅ Business profile setup
+3. ✅ Business listings view
+4. ✅ Business orders view
+5. 🚧 Analytics dashboard — basic
+6. ✅ Subscription management
+
+---
+
+## 15. Admin (2/5)
+
+1. ✅ Admin route gating
+2. 🚧 Admin metrics
+3. 🚧 User management
+4. 🚧 Content moderation
+5. ✅ System health endpoint
+
+---
+
+## 16. Internationalization (5/5) ✅
+
+1. ✅ English locale
+2. ✅ Bulgarian locale
+3. ✅ Locale routing
+4. ✅ Dynamic locale switching
+5. ✅ Currency display (BGN/EUR)
+
+---
+
+## 17. Accessibility (3/5)
+
+1. ✅ Keyboard navigation
+2. ✅ Focus management
+3. ✅ Touch targets ≥32px
+4. 🚧 Screen reader labels — partial
+5. 🚧 WCAG 2.1 AA — in progress
+
+---
+
+## 18. Infrastructure (6/6) ✅
+
+1. ✅ Vercel deployment
+2. ✅ Supabase production
+3. ✅ Stripe integration
+4. ✅ Error boundaries
+5. ✅ Health endpoint
+6. ✅ Revalidation endpoint
+
+---
+
+## Summary
+
+| # | Category | Done | WIP | Todo | % |
+|---|----------|------|-----|------|---|
+| 1 | Auth & Accounts | 8 | 0 | 0 | 100% |
+| 2 | Cart & Checkout | 8 | 0 | 0 | 100% |
+| 3 | Orders (Buyer) | 5 | 1 | 0 | 83% |
+| 4 | Orders (Seller) | 5 | 1 | 0 | 83% |
+| 5 | Selling | 7 | 0 | 1 | 88% |
+| 6 | Payouts | 6 | 0 | 0 | 100% |
+| 7 | Discovery | 6 | 1 | 0 | 86% |
+| 8 | Product Pages | 7 | 0 | 1 | 88% |
+| 9 | Wishlist | 4 | 0 | 1 | 80% |
+| 10 | Messaging | 7 | 0 | 0 | 100% |
+| 11 | Reviews | 8 | 0 | 0 | 100% |
+| 12 | Profiles | 4 | 1 | 1 | 67% |
+| 13 | Trust & Safety | 4 | 2 | 0 | 67% |
+| 14 | Business Dashboard | 5 | 1 | 0 | 83% |
+| 15 | Admin | 2 | 3 | 0 | 40% |
+| 16 | i18n | 5 | 0 | 0 | 100% |
+| 17 | Accessibility | 3 | 2 | 0 | 60% |
+| 18 | Infrastructure | 6 | 0 | 0 | 100% |
+| | **TOTAL** | **103** | **11** | **5** | **87%** |
+
+---
+
+## Post-V1 Roadmap
+
+**V1.1**
+- Saved searches (email alerts)
+- Related items
+- Shipping tracking
+- Seller verification badges
+
+**V2**
+- Advanced analytics
+- AI Listing Assistant
+- AI Search Assistant
+
+**V3**
+- Mobile apps (iOS/Android)
+- Auctions/bidding
+- B2B networking
+
+---
+
+## See Also
+
+- [PRD.md](./PRD.md) — Product vision & scope
+- [ARCHITECTURE.md](./ARCHITECTURE.md) — System design
+
+---
+
+*Last updated: 2026-02-01*
+

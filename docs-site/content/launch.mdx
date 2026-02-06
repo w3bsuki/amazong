@@ -1,0 +1,462 @@
+# LAUNCH.md — Launch Operations Reference
+
+> Pre-launch checklist, environment configuration, deployment, and post-launch monitoring.
+
+| Scope | Production deployment & operations |
+|-------|-----------------------------------|
+| Audience | AI agents, developers, ops |
+| Type | Reference + How-To |
+
+---
+
+## Quick Reference
+
+| Item | Status |
+|------|--------|
+| **Hosting** | Vercel |
+| **Domain** | treido.eu |
+| **Database** | Supabase (Production) |
+| **Payments** | Stripe Live |
+| **CDN** | Vercel Edge Network |
+| **Monitoring** | Sentry + Vercel Analytics |
+
+Canonical machine-readable launch state: `docs/status/LAUNCH-READINESS.yaml`
+
+### Commands
+
+```bash
+# Build production
+pnpm build
+
+# Run locally
+pnpm start
+
+# Deploy to Vercel
+vercel --prod
+
+# Run all gates
+pnpm -s lint && pnpm -s typecheck && pnpm -s styles:gate && pnpm -s test:unit
+```
+
+---
+
+## 1. Environment Variables
+
+### Required (All Environments)
+
+| Variable | Description | Where |
+|----------|-------------|-------|
+| `NEXT_PUBLIC_SUPABASE_URL` | Supabase project URL | Vercel + .env.local |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase anon (public) key | Vercel + .env.local |
+| `SUPABASE_SERVICE_ROLE_KEY` | Supabase admin key (server-only) | Vercel only |
+| `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | Stripe public key | Vercel + .env.local |
+| `STRIPE_SECRET_KEY` | Stripe secret key | Vercel only |
+| `STRIPE_WEBHOOK_SECRET` | Order webhook signing | Vercel only |
+| `STRIPE_SUBSCRIPTION_WEBHOOK_SECRET` | Subscription webhook signing | Vercel only |
+| `STRIPE_CONNECT_WEBHOOK_SECRET` | Connect webhook signing | Vercel only |
+
+### Optional (Features)
+
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `NEXT_PUBLIC_APP_URL` | Canonical URL | Auto-detect |
+| `AI_ASSISTANT_ENABLED` | Enable AI features | `false` |
+| `AI_GATEWAY_API_KEY` | Vercel AI Gateway key | — |
+| `AI_CHAT_MODEL` | Chat model | `openai/gpt-4o-mini` |
+| `AI_VISION_MODEL` | Vision model | `google/gemini-2.0-flash` |
+| `SUPABASE_ACCESS_TOKEN` | Supabase CLI/MCP | — |
+| `SHADCNBLOCKS_API_KEY` | Premium components | — |
+
+### Environment Separation
+
+| Environment | Stripe Mode | Supabase | Domain |
+|-------------|-------------|----------|--------|
+| Development | Test (`sk_test_*`) | Local or staging | localhost:3000 |
+| Preview | Test | Staging | *.vercel.app |
+| Production | Live (`sk_live_*`) | Production | treido.eu |
+
+**Critical:** Never use `sk_live_*` keys in development.
+
+---
+
+## 2. Pre-Launch Checklist
+
+### Infrastructure ✅
+
+| Check | Command/Action | Status |
+|-------|----------------|--------|
+| Supabase production project | Dashboard | ✅ |
+| RLS enabled on all user tables | `DATABASE.md` reference | ✅ |
+| Stripe live mode configured | Dashboard | ✅ |
+| Stripe webhooks registered | 4 endpoints | ✅ |
+| Domain + SSL | Vercel settings | ✅ |
+| CDN enabled | Vercel default | ✅ |
+| Error tracking (Sentry) | Vercel integration | ✅ |
+
+### Security ✅
+
+| Check | Validation | Status |
+|-------|------------|--------|
+| RLS policies tested | E2E tests | ✅ |
+| No secrets in client bundle | Build + audit | ✅ |
+| Webhook signature validation | Code review | ✅ |
+| HTTPS only | Vercel default | ✅ |
+| HttpOnly cookies | Supabase SSR | ✅ |
+| Rate limiting | Vercel/Supabase | ✅ |
+| No PII in logs | Code review | ✅ |
+
+### Performance ✅
+
+| Metric | Target | Validation |
+|--------|--------|------------|
+| LCP | < 2.0s | Lighthouse |
+| TTI | < 3.0s | Lighthouse |
+| Search response | < 500ms | Monitoring |
+| Lighthouse score | > 90 | `pnpm test:lighthouse` |
+| Bundle size | Analyzed | `pnpm analyze` |
+| Images optimized | next/image | Review |
+
+### Quality Gates
+
+```bash
+# Run all gates before deploy
+pnpm -s lint
+pnpm -s typecheck
+pnpm -s styles:gate
+pnpm -s test:unit
+pnpm build
+```
+
+---
+
+## 3. Deployment
+
+### Vercel (Primary)
+
+```bash
+# Production deploy
+vercel --prod
+
+# Preview deploy (auto on PR)
+vercel
+```
+
+### Build Configuration
+
+| Setting | Value |
+|---------|-------|
+| Framework | Next.js |
+| Build Command | `pnpm build` |
+| Output Directory | `.next` |
+| Install Command | `pnpm install` |
+| Node Version | 22.x |
+
+### Vercel Project Settings
+
+| Setting | Value |
+|---------|-------|
+| Root Directory | `.` |
+| Include source maps | No (production) |
+| Analytics | Enabled |
+| Speed Insights | Enabled |
+
+---
+
+## 4. Stripe Configuration
+
+### Webhook Endpoints
+
+| Endpoint | Events | Secret Var |
+|----------|--------|------------|
+| `/api/checkout/webhook` | `checkout.session.completed`, `payment_intent.*` | `STRIPE_WEBHOOK_SECRET` |
+| `/api/payments/webhook` | `checkout.session.completed` (boosts), `payment_method.detached` | `STRIPE_WEBHOOK_SECRET` |
+| `/api/subscriptions/webhook` | `checkout.session.completed`, `customer.subscription.*`, `invoice.*` | `STRIPE_SUBSCRIPTION_WEBHOOK_SECRET` |
+| `/api/connect/webhook` | `account.updated`, `account.application.deauthorized` | `STRIPE_CONNECT_WEBHOOK_SECRET` |
+
+### Webhook Setup (Dashboard)
+
+1. Go to Stripe Dashboard → Developers → Webhooks
+2. Add endpoint for each route above
+3. Select relevant events
+4. Copy signing secret to Vercel env vars
+
+### Key Rotation
+
+Webhook secrets support rotation (comma-separated):
+
+```bash
+STRIPE_WEBHOOK_SECRET=whsec_new_key,whsec_old_key
+```
+
+Both secrets validate during transition window.
+
+---
+
+## 5. Supabase Configuration
+
+### Production Settings
+
+| Setting | Recommendation |
+|---------|----------------|
+| Plan | Pro or higher |
+| Region | Match Vercel region |
+| Pooler | Transaction mode |
+| Connection limit | Monitor usage |
+
+### Database Indexes
+
+Critical indexes (verify exist):
+
+| Table | Index |
+|-------|-------|
+| `products` | `idx_products_search` (FTS) |
+| `products` | `idx_products_category` |
+| `products` | `idx_products_seller` |
+| `orders` | `idx_orders_user` |
+| `orders` | `idx_orders_stripe_pi` (unique) |
+
+### RLS Verification
+
+All user-data tables must have RLS:
+
+```sql
+-- Check RLS enabled
+SELECT tablename, rowsecurity 
+FROM pg_tables 
+WHERE schemaname = 'public';
+```
+
+---
+
+## 6. Monitoring
+
+### Error Tracking (Sentry)
+
+| Config | Value |
+|--------|-------|
+| DSN | Vercel integration auto-config |
+| Environment | `production` / `preview` |
+| Sample rate | 1.0 (100%) |
+| Ignored | 404s, rate limits |
+
+### Alerts
+
+| Alert | Threshold | Channel |
+|-------|-----------|---------|
+| Error spike | > 10/min | Slack/Email |
+| Checkout failures | > 5% | Immediate |
+| Response time | > 3s p95 | Daily |
+| DB connection errors | Any | Immediate |
+
+### Key Metrics
+
+| Metric | Target | Source |
+|--------|--------|--------|
+| Uptime | 99.9% | Vercel |
+| Error rate | < 0.1% | Sentry |
+| p95 latency | < 2s | Vercel Analytics |
+| Checkout success | > 95% | Stripe |
+| Dispute rate | < 2% | Stripe |
+
+---
+
+## 7. SEO Checklist
+
+| Item | Implementation |
+|------|----------------|
+| Meta tags | Per-page via `generateMetadata()` |
+| Open Graph | Dynamic images |
+| `sitemap.xml` | `app/sitemap.ts` |
+| `robots.txt` | `app/robots.txt` |
+| Canonical URLs | Auto via next-intl |
+| Structured data | JSON-LD for products |
+
+### Verification
+
+```bash
+# Check sitemap
+curl https://treido.eu/sitemap.xml
+
+# Check robots
+curl https://treido.eu/robots.txt
+```
+
+---
+
+## 8. Legal Requirements
+
+| Page | Route | Status |
+|------|-------|--------|
+| Privacy Policy | `/[locale]/privacy` | ✅ |
+| Terms of Service | `/[locale]/terms` | ✅ |
+| Cookie Policy | `/[locale]/cookies` | ✅ |
+| Returns & Refunds | `/[locale]/returns` | ✅ |
+
+### GDPR Compliance
+
+| Requirement | Implementation |
+|-------------|----------------|
+| Cookie consent | Banner component |
+| Data export | Account settings |
+| Account deletion | Support request |
+| Privacy by design | RLS + minimal data |
+
+---
+
+## 9. Launch Day Runbook
+
+### T-24 Hours
+
+- [ ] Final E2E tests on production
+- [ ] Verify Stripe live mode
+- [ ] Check all webhooks active
+- [ ] Confirm monitoring alerts
+- [ ] Team on standby
+
+### T-0 (Launch)
+
+- [ ] Enable production traffic
+- [ ] Monitor error rates (15 min intervals)
+- [ ] Test checkout flow end-to-end
+- [ ] Test Connect payout flow
+- [ ] Verify email delivery
+
+### T+1 Hour
+
+- [ ] Review error logs
+- [ ] Check payment success rates
+- [ ] Verify new user signups work
+- [ ] Check listing creation flow
+
+### T+24 Hours
+
+- [ ] Full metrics review
+- [ ] Dispute rate check
+- [ ] Performance audit
+- [ ] Team debrief
+
+---
+
+## 10. Post-Launch Monitoring
+
+### Daily Checks
+
+| Check | Tool | Threshold |
+|-------|------|-----------|
+| Error rate | Sentry | < 0.1% |
+| Checkout success | Stripe | > 95% |
+| Response time | Vercel | < 2s p95 |
+| Support tickets | Zendesk | Trending |
+
+### Weekly Reviews
+
+| Metric | Source |
+|--------|--------|
+| GMV | Stripe Dashboard |
+| Active users | Analytics |
+| New signups | Supabase |
+| Dispute rate | Stripe |
+| Chargeback rate | Stripe |
+
+### Incident Response
+
+| Severity | Response | Escalation |
+|----------|----------|------------|
+| P0 (Down) | 15 min | Immediate |
+| P1 (Degraded) | 1 hour | Within 2h |
+| P2 (Bug) | 24 hours | Next business day |
+
+---
+
+## 11. Rollback Procedure
+
+### Vercel Rollback
+
+```bash
+# List deployments
+vercel ls
+
+# Rollback to previous
+vercel rollback <deployment-url>
+```
+
+### Database Rollback
+
+1. Identify breaking migration
+2. Apply reverse migration via Supabase Dashboard
+3. Test locally first
+
+### Stripe Rollback
+
+- Webhooks: Disable problematic endpoint
+- API version: Cannot rollback (test in sandbox first)
+
+---
+
+## 12. Support Playbooks
+
+### Common Issues
+
+| Issue | Resolution |
+|-------|------------|
+| Checkout fails | Check Stripe Dashboard → Payments |
+| Payout not received | Verify Connect status, check balance |
+| Order not created | Check webhook logs |
+| Login issues | Check Supabase Auth logs |
+| Missing product | Check RLS, product status |
+
+### Escalation Path
+
+```
+User Report → Support L1 → Support L2 → Engineering → On-call
+    ↓            ↓             ↓            ↓
+  < 1h        < 4h          < 24h        < 4h
+```
+
+---
+
+## 13. Verification Commands
+
+### Full Pre-Deploy Check
+
+```bash
+# All quality gates
+pnpm -s lint
+pnpm -s typecheck
+pnpm -s styles:gate
+pnpm -s test:unit
+pnpm build
+
+# E2E (requires dev server)
+pnpm -s test:e2e:smoke
+```
+
+### Quick Health Check
+
+```bash
+# Production health endpoint
+curl https://treido.eu/api/health
+
+# Expected: { "status": "ok" }
+```
+
+### Stripe CLI Testing
+
+```bash
+stripe listen --forward-to localhost:3000/api/checkout/webhook
+stripe trigger checkout.session.completed
+```
+
+---
+
+## See Also
+
+- [PRD.md](/platform) — Product requirements
+- [FEATURES.md](/features) — Feature status
+- [PAYMENTS.md](/payments-overview) — Stripe details
+- [DATABASE.md](/database) — Schema + RLS
+
+---
+
+*Last updated: 2026-02-01*
+

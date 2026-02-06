@@ -107,7 +107,7 @@ export function CategoryCircles({
           type="button"
           onClick={onBack}
           className={cn(
-            "shrink-0 flex items-center gap-1.5 pl-2 pr-3 py-1.5",
+            "shrink-0 flex h-11 items-center gap-1.5 pl-2 pr-3",
             "bg-foreground text-background rounded-full",
             "text-xs font-medium",
             "active:opacity-90 transition-opacity"
@@ -119,17 +119,14 @@ export function CategoryCircles({
             {activeIcon}
           </div>
           <span className="max-w-20 truncate">{backLabel}</span>
-          <X size={12} weight="bold" className="ml-0.5 opacity-60" />
+          <X size={12} weight="bold" className="ml-0.5" />
         </button>
-
-        {/* Divider */}
-        <div className="w-px h-4 bg-border shrink-0" />
 
         {/* L3 Pills (inline with back button) */}
         {isL3Loading ? (
           <div className="flex gap-1.5 items-center">
             {Array.from({ length: 4 }).map((_, i) => (
-              <Skeleton key={i} className="h-7 w-14 rounded-full" />
+              <Skeleton key={i} className="h-11 w-16 rounded-full" />
             ))}
           </div>
         ) : (
@@ -139,10 +136,10 @@ export function CategoryCircles({
               type="button"
               onClick={onAllPillClick}
               className={cn(
-                "shrink-0 whitespace-nowrap px-3 py-1.5 rounded-full text-xs font-medium border transition-all",
+                "shrink-0 whitespace-nowrap h-11 px-3.5 rounded-full text-xs font-medium border transition-colors",
                 selectedPill === null
                   ? "bg-foreground text-background border-foreground"
-                  : "bg-background text-muted-foreground border-border hover:border-border"
+                  : "bg-background text-muted-foreground border-border-subtle hover:border-border"
               )}
             >
               {allLabel}
@@ -157,10 +154,10 @@ export function CategoryCircles({
                   type="button"
                   onClick={() => onPillClick?.(cat)}
                   className={cn(
-                    "shrink-0 whitespace-nowrap px-3 py-1.5 rounded-full text-xs font-medium border transition-all",
+                    "shrink-0 whitespace-nowrap h-11 px-3.5 rounded-full text-xs font-medium border transition-colors",
                     isSelected
                       ? "bg-foreground text-background border-foreground"
-                      : "bg-background text-muted-foreground border-border hover:border-border"
+                      : "bg-background text-muted-foreground border-border-subtle hover:border-border"
                   )}
                 >
                   {getCategoryName(cat, locale)}
@@ -195,14 +192,15 @@ export function CategoryCircles({
           label={tCommon("all")}
           active={!activeL2}
           onClick={() => onBack()}
-          labelPlacement="inside"
+          labelPlacement="below"
           circleClassName="size-(--spacing-category-circle)"
           fallbackIconSize={24}
           fallbackIconWeight="duotone"
-          variant="colorful"
+          variant="rail"
           preferIcon={preferIcon}
-          className="flex-none w-(--spacing-category-item-lg)"
-          insideLabelClassName={cn(
+          className="flex-none w-(--spacing-category-item-nav)"
+          labelClassName={cn(
+            "truncate",
             !activeL2 ? "text-foreground" : "text-muted-foreground"
           )}
         />
@@ -221,15 +219,16 @@ export function CategoryCircles({
               {...(href ? { href, prefetch: true } : { onClick: () => onCircleClick(sub) })}
               active={isActive}
               loading={isLoading}
-              labelPlacement="inside"
+              labelPlacement="below"
               circleClassName="size-(--spacing-category-circle)"
               fallbackIconSize={24}
               fallbackIconWeight="duotone"
-              variant="colorful"
+              variant="rail"
               preferIcon={preferIcon}
               label={tCategories("shortName", { slug: getCategorySlugKey(sub.slug), name: getCategoryName(sub, locale) })}
-              className="flex-none w-(--spacing-category-item-lg)"
-              insideLabelClassName={cn(
+              className="flex-none w-(--spacing-category-item-nav)"
+              labelClassName={cn(
+                "truncate",
                 isActive ? "text-foreground" : "text-muted-foreground"
               )}
             />

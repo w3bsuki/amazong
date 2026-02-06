@@ -537,7 +537,7 @@ className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ri
 
 ## Related Documents
 
-- [04-DESIGN.md](./04-DESIGN.md) — Token SSOT
+- [DESIGN.md](./DESIGN.md) — Token SSOT
 - [14-UI-UX-PLAN.md](./14-UI-UX-PLAN.md) — UX Roadmap
 - [APP-FEEL-COMPONENTS.md](./APP-FEEL-COMPONENTS.md) — Component specs
 - [APP-FEEL-CHECKLIST.md](./APP-FEEL-CHECKLIST.md) — Implementation checklist
@@ -545,3 +545,4 @@ className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ri
 ---
 
 *Last updated: 2026-02-03*
+

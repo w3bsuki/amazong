@@ -16,7 +16,7 @@ import { Input } from "@/components/ui/input"
 import { Skeleton } from "@/components/ui/skeleton"
 import { IconButton } from "@/components/ui/icon-button"
 import { cn } from "@/lib/utils"
-import { useCategoryDrawer, type DrawerSnap } from "@/components/mobile/category-nav/category-drawer-context"
+import { useCategoryDrawer } from "@/components/mobile/category-nav/category-drawer-context"
 import { getCategoryName } from "@/lib/category-display"
 import { ArrowLeft, CaretRight, MagnifyingGlass, X } from "@phosphor-icons/react"
 import { useTranslations } from "next-intl"
@@ -39,15 +39,6 @@ export interface CategoryBrowseDrawerProps {
 // Component
 // =============================================================================
 
-const CATEGORY_DRAWER_SNAP_COLLAPSED = "20rem"
-const CATEGORY_DRAWER_SNAP_HALF = "50dvh"
-const CATEGORY_DRAWER_SNAP_FULL = 1
-const CATEGORY_DRAWER_SNAP_POINTS: (string | number)[] = [
-  CATEGORY_DRAWER_SNAP_COLLAPSED,
-  CATEGORY_DRAWER_SNAP_HALF,
-  CATEGORY_DRAWER_SNAP_FULL,
-]
-
 /**
  * Simplified category drawer - shows L1 categories only.
  * Tapping an L1 pill navigates to /categories/[slug] for full-screen browsing.
@@ -63,7 +54,6 @@ export function CategoryBrowseDrawer({
   const tCommon = useTranslations("Common")
   const {
     isOpen,
-    snap,
     rootCategories,
     activeCategory,
     path,
@@ -72,7 +62,6 @@ export function CategoryBrowseDrawer({
     openRoot,
     openCategory,
     close,
-    setSnap,
     setChildren,
     setLoading,
   } = useCategoryDrawer()
@@ -80,14 +69,12 @@ export function CategoryBrowseDrawer({
   const [query, setQuery] = React.useState("")
   const [showSearch, setShowSearch] = React.useState(false)
   const searchInputRef = useRef<HTMLInputElement>(null)
-  const snapBeforeSearchRef = useRef<DrawerSnap | null>(null)
 
   // Handle drawer open state change
   const handleOpenChange = useCallback((open: boolean) => {
     if (!open) {
       setQuery("")
       setShowSearch(false)
-      snapBeforeSearchRef.current = null
       close()
     }
   }, [close])
@@ -154,50 +141,18 @@ export function CategoryBrowseDrawer({
 
   const toggleSearch = useCallback(() => {
     setShowSearch((prev) => {
-      const next = !prev
-      if (next) {
-        snapBeforeSearchRef.current = snap
-        setSnap("full")
-      } else {
+      if (prev) {
         setQuery("")
-        const restoreTo = snapBeforeSearchRef.current
-        snapBeforeSearchRef.current = null
-        if (restoreTo) setSnap(restoreTo)
       }
-      return next
+      return !prev
     })
-  }, [snap, setSnap])
-
-  const activeSnapPoint = useMemo(() => {
-    if (snap === "full") return CATEGORY_DRAWER_SNAP_FULL
-    if (snap === "collapsed") return CATEGORY_DRAWER_SNAP_COLLAPSED
-    return CATEGORY_DRAWER_SNAP_HALF
-  }, [snap])
-
-  const handleSnapPointChange = useCallback((sp: string | number | null) => {
-    if (sp === null) return
-    setSnap(
-      sp === CATEGORY_DRAWER_SNAP_FULL
-        ? "full"
-        : sp === CATEGORY_DRAWER_SNAP_COLLAPSED
-          ? "collapsed"
-          : "half"
-    )
-  }, [setSnap])
-
-  // Don't render anything when closed - prevents broken overlay
-  if (!isOpen) {
-    return null
-  }
+  }, [])
 
   return (
     <Drawer
       open={isOpen}
       onOpenChange={handleOpenChange}
       modal={true}
-      snapPoints={CATEGORY_DRAWER_SNAP_POINTS}
-      activeSnapPoint={activeSnapPoint}
-      setActiveSnapPoint={handleSnapPointChange}
     >
       <DrawerContent
         className={className}

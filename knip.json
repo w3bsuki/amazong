@@ -18,7 +18,9 @@
     "scripts/**",
     "__tests__/**",
     "test/**",
-    "lib/supabase/database.types.ts"
+    "lib/supabase/database.types.ts",
+    "shadcn-tailwind-v4-ecommerce-ui-guide/**",
+    ".codex/skills/**"
   ],
   "ignoreDependencies": [
     "@capacitor/android",

@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useEffect, useMemo, startTransition } from "react"
 import { useSearchParams, type ReadonlyURLSearchParams } from "next/navigation"
-import { usePathname, useRouter, Link } from "@/i18n/routing"
+import { usePathname, useRouter } from "@/i18n/routing"
 import {
   CaretLeft,
   CaretRight,
@@ -29,17 +29,18 @@ import {
   getCategoryAttributeOptions,
   shouldForceMultiSelectCategoryAttribute,
 } from "@/lib/filters/category-attribute"
-import { setPendingAttributeValues } from "@/lib/filters/pending-attributes"
 import { BULGARIAN_CITIES } from "@/lib/bulgarian-cities"
-import { ColorSwatches } from "./color-swatches"
-import { SizeTiles } from "./size-tiles"
-import { FilterList } from "./filter-list"
+import { usePendingFilters } from "./use-pending-filters"
+import { FilterAttributeSectionContent } from "./filter-attribute-section-content"
 import { PriceSlider } from "./price-slider"
 import { FilterRatingSection } from "./filter-rating-section"
 import { FilterAvailabilitySection } from "./filter-availability-section"
 import { FilterCategorySection } from "./filter-category-section"
-import { FilterCheckboxItem, FilterCheckboxList } from "./filter-checkbox-item"
+import { FilterCheckboxItem } from "./filter-checkbox-item"
 import { FilterRadioGroup, FilterRadioItem } from "./filter-radio-group"
+import {
+  isHiddenFilterAttribute,
+} from "./filter-attribute-config"
 
 // =============================================================================
 // FILTER HUB — Main filtering modal with pending/applied state
@@ -54,22 +55,6 @@ import { FilterRadioGroup, FilterRadioItem } from "./filter-radio-group"
 // - Live result count on sticky CTA
 // - L2+ category refinement lives inside the hub (Phase 3)
 // =============================================================================
-
-// Hidden attributes (too space-consuming as filter sections)
-const HIDDEN_ATTRIBUTE_NAMES = [
-  "Cruelty Free",
-  "Vegan",
-  "cruelty_free",
-  "vegan",
-]
-
-// Force multiselect for these attribute names
-const FORCE_MULTISELECT_NAMES = ["brand", "make", "model"]
-
-// Use specialized selectors for these attributes
-const COLOR_ATTRIBUTE_NAMES = ["color", "colour", "цвят"]
-const SIZE_ATTRIBUTE_NAMES = ["size", "sizes", "размер"]
-const SEARCHABLE_ATTRIBUTE_NAMES = ["brand", "brands", "марка", "condition", "състояние"]
 
 /** Subcategory for L2+ drill-down in Filter Hub */
 export interface FilterHubSubcategory {
@@ -130,18 +115,6 @@ interface FilterHubProps {
 // Types
 // =============================================================================
 
-interface PendingFilters {
-  minPrice: string | null
-  maxPrice: string | null
-  minRating: string | null
-  availability: string | null
-  deals: string | null
-  verified: string | null
-  city: string | null
-  nearby: string | null
-  attributes: Record<string, string[]>
-}
-
 type BaseFilterSection = {
   id: string
   label: string
@@ -187,7 +160,7 @@ export function FilterHub({
 
   // Filter out hidden attributes
   const visibleAttributes = useMemo(
-    () => attributes.filter((attr) => !HIDDEN_ATTRIBUTE_NAMES.includes(attr.name)),
+    () => attributes.filter((attr) => !isHiddenFilterAttribute(attr.name)),
     [attributes]
   )
 
@@ -197,17 +170,18 @@ export function FilterHub({
   // Pending category slug (for L2+ refinement - Phase 3)
   const [pendingCategorySlug, setPendingCategorySlug] = useState<string | null>(null)
 
-  // Pending filter state (changes here, only applied on "Apply")
-  const [pending, setPending] = useState<PendingFilters>({
-    minPrice: null,
-    maxPrice: null,
-    minRating: null,
-    availability: null,
-    deals: null,
-    verified: null,
-    city: null,
-    nearby: null,
-    attributes: {},
+  const {
+    pending,
+    setPending,
+    getPendingAttrValues,
+    setPendingAttrValues,
+    clearPendingFilters,
+    hasPendingFilterValues,
+  } = usePendingFilters({
+    open,
+    searchParams,
+    attributes: visibleAttributes,
+    includeExtendedFields: true,
   })
 
   // Build count params for live count hook
@@ -251,34 +225,7 @@ export function FilterHub({
     // In full mode, start at the list view (null)
     setActiveSection(mode === "single" && initialSection ? initialSection : null)
     setPendingCategorySlug(null) // Reset pending category
-    setPending({
-      minPrice: searchParams.get("minPrice"),
-      maxPrice: searchParams.get("maxPrice"),
-      minRating: searchParams.get("minRating"),
-      availability: searchParams.get("availability"),
-      deals: searchParams.get("deals"),
-      verified: searchParams.get("verified"),
-      city: searchParams.get("city"),
-      nearby: searchParams.get("nearby"),
-      attributes: visibleAttributes.reduce(
-        (acc, attr) => {
-          const attrKey = getCategoryAttributeKey(attr)
-          const values = Array.from(
-            new Set([
-              ...searchParams.getAll(`attr_${attrKey}`),
-              // Backward-compat: old links used the raw name (e.g. attr_Brand).
-              ...searchParams.getAll(`attr_${attr.name}`),
-            ]),
-          )
-          if (values.length > 0) {
-            acc[attrKey] = values
-          }
-          return acc
-        },
-        {} as Record<string, string[]>
-      ),
-    })
-  }, [open, searchParams, visibleAttributes, mode, initialSection])
+  }, [open, mode, initialSection])
 
   // Build filter sections
   const filterSections: FilterSection[] = useMemo(() => {
@@ -320,51 +267,16 @@ export function FilterHub({
   )
 
   // Pending state helpers
-  const getPendingAttrValues = useCallback(
-    (attrName: string): string[] => pending.attributes[attrName] || [],
-    [pending.attributes]
-  )
-
-  const setPendingAttrValues = useCallback((attrName: string, values: string[]) => {
-    setPending((prev) => {
-      return {
-        ...prev,
-        attributes: setPendingAttributeValues(prev.attributes, attrName, values),
-      }
-    })
-  }, [])
-
   // Clear all pending filters (including pending category)
   const clearAllPending = useCallback(() => {
     setPendingCategorySlug(null)
-    setPending({
-      minPrice: null,
-      maxPrice: null,
-      minRating: null,
-      availability: null,
-      deals: null,
-      verified: null,
-      city: null,
-      nearby: null,
-      attributes: {},
-    })
-  }, [])
+    clearPendingFilters()
+  }, [clearPendingFilters])
 
   // Check if any pending filters or category is set
   const hasPendingFilters = useMemo(() => {
-    return (
-      pendingCategorySlug !== null ||
-      pending.minPrice !== null ||
-      pending.maxPrice !== null ||
-      pending.minRating !== null ||
-      pending.availability !== null ||
-      pending.deals !== null ||
-      pending.verified !== null ||
-      pending.city !== null ||
-      pending.nearby !== null ||
-      Object.keys(pending.attributes).length > 0
-    )
-  }, [pendingCategorySlug, pending])
+    return pendingCategorySlug !== null || hasPendingFilterValues
+  }, [pendingCategorySlug, hasPendingFilterValues])
 
   // Apply pending filters to URL
   const applyFilters = useCallback(() => {
@@ -516,7 +428,7 @@ export function FilterHub({
                   <button
                     type="button"
                     onClick={() => onOpenChange(false)}
-                    className="size-8 flex items-center justify-center rounded-full hover:bg-hover active:bg-active transition-colors"
+                    className="size-11 flex items-center justify-center rounded-full hover:bg-hover active:bg-active transition-colors"
                     aria-label={tHub("close")}
                   >
                     <X size={18} weight="bold" />
@@ -569,7 +481,7 @@ export function FilterHub({
                     key={section.id}
                     type="button"
                     onClick={() => setActiveSection(section.id)}
-                    className="w-full flex items-center justify-between px-inset h-10 active:bg-active transition-colors text-left"
+                    className="w-full flex items-center justify-between px-inset h-11 active:bg-active transition-colors text-left"
                   >
                     <div className="flex flex-col">
                       <span className="text-sm text-foreground">
@@ -683,104 +595,22 @@ export function FilterHub({
 
                 const attr = section.attribute
                 const attrKey = getCategoryAttributeKey(attr)
-                const attrNameLower = attrKey
                 const options = getAttrOptions(attr) ?? []
 
-                // Boolean attribute
-                if (attr.attribute_type === "boolean") {
-                  const isChecked = getPendingAttrValues(attrKey).includes("true")
-                  return (
-                    <div className="-mx-inset">
-                      <FilterCheckboxItem
-                        checked={isChecked}
-                        onCheckedChange={(checked) => setPendingAttrValues(attrKey, checked ? ["true"] : [])}
-                        fullBleed
-                      >
-                        {tCommon("yes")}
-                      </FilterCheckboxItem>
-                    </div>
-                  )
-                }
-
-                // Color attribute - use color swatches
-                if (COLOR_ATTRIBUTE_NAMES.includes(attrNameLower) && options.length > 0) {
-                  return (
-                    <ColorSwatches
-                      options={options}
-                      selected={getPendingAttrValues(attrKey)}
-                      onSelect={(values) => setPendingAttrValues(attrKey, values)}
-                    />
-                  )
-                }
-
-                // Size attribute - use size tiles (no dropdown per codex)
-                if (SIZE_ATTRIBUTE_NAMES.includes(attrNameLower) && options.length > 0) {
-                  return (
-                    <SizeTiles
-                      options={options}
-                      selected={getPendingAttrValues(attrKey)}
-                      onSelect={(values) => setPendingAttrValues(attrKey, values)}
-                    />
-                  )
-                }
-
-                // Searchable attributes (brand, condition) - use filter list with search
-                if (SEARCHABLE_ATTRIBUTE_NAMES.includes(attrNameLower) && options.length > 0) {
-                  const allowMulti =
-                    attr.attribute_type === "multiselect" ||
-                    shouldForceMultiSelect(attr)
-                  return (
-                    <FilterList
-                      options={options}
-                      selected={getPendingAttrValues(attrKey)}
-                      onSelect={(values) => setPendingAttrValues(attrKey, values)}
-                      multiSelect={allowMulti}
-                      searchThreshold={8}
-                    />
-                  )
-                }
-
-                // Select/Multiselect attribute - default list rendering
-                if (
-                  (attr.attribute_type === "select" ||
-                    attr.attribute_type === "multiselect") &&
-                  options.length > 0
-                ) {
-                  const allowMulti =
-                    attr.attribute_type === "multiselect" ||
-                    shouldForceMultiSelect(attr)
-
-                  return (
-                    <FilterCheckboxList className="-mx-inset">
-                      {options.map((option, idx) => {
-                        const currentValues = getPendingAttrValues(attrKey)
-                        const isActive = currentValues.includes(option)
-
-                        return (
-                          <FilterCheckboxItem
-                            key={idx}
-                            checked={isActive}
-                            onCheckedChange={(checked) => {
-                              if (!allowMulti) {
-                                setPendingAttrValues(attrKey, checked ? [option] : [])
-                                return
-                              }
-                              const newValues = checked
-                                ? [...currentValues, option]
-                                : currentValues.filter((v) => v !== option)
-                              setPendingAttrValues(attrKey, newValues)
-                            }}
-                            fullBleed
-                          >
-                            {option}
-                          </FilterCheckboxItem>
-                        )
-                      })}
-                    </FilterCheckboxList>
-                  )
-                }
-
-                return null
+                return (
+                  <FilterAttributeSectionContent
+                    attribute={attr}
+                    attrKey={attrKey}
+                    options={options}
+                    selectedValues={getPendingAttrValues(attrKey)}
+                    onSelectedValuesChange={(values) => setPendingAttrValues(attrKey, values)}
+                    shouldForceMultiSelect={shouldForceMultiSelect}
+                    yesLabel={tCommon("yes")}
+                    checkboxListClassName="-mx-inset"
+                    checkboxItemsFullBleed
+                    booleanFullBleed
+                  />
+                )
               })()}
             </div>
           )}

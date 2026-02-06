@@ -130,7 +130,7 @@ export function QuickViewImageGallery({
                   "relative size-20 shrink-0 rounded-xl overflow-hidden border border-border transition-colors",
                   i === currentIndex
                     ? "ring-2 ring-ring"
-                    : "opacity-70 hover:opacity-100"
+                    : "hover:border-hover-border"
                 )}
               >
                 <Image
@@ -238,7 +238,7 @@ export function QuickViewImageGallery({
                 "relative size-12 shrink-0 rounded-xl overflow-hidden border border-border-subtle bg-muted transition-all touch-manipulation",
                 i === currentIndex
                   ? "ring-2 ring-ring"
-                  : "opacity-60 hover:opacity-100"
+                  : "hover:border-hover-border"
               )}
             >
               <Image

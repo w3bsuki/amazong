@@ -78,17 +78,17 @@ export function PromotedSection({
     <section
       aria-label={t("tabs.promoted")}
       className={cn(
-        "mb-6 rounded-xl border border-border overflow-hidden",
+        "mb-6 rounded-xl border border-promoted overflow-hidden",
         className
       )}
     >
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-3 bg-deal">
+      <div className="flex items-center justify-between px-4 py-3 bg-promoted">
         <div className="flex items-center gap-3">
-          <div className="flex items-center justify-center size-9 rounded-lg bg-deal-foreground/20">
-            <Megaphone size={20} weight="fill" className="text-deal-foreground" />
+          <div className="flex items-center justify-center size-9 rounded-lg bg-promoted-muted">
+            <Megaphone size={20} weight="fill" className="text-promoted" />
           </div>
-          <h2 className="text-lg font-bold tracking-tight text-deal-foreground">
+          <h2 className="text-lg font-bold tracking-tight text-promoted-foreground">
             {t("promotedTitle")}
           </h2>
         </div>
@@ -98,7 +98,7 @@ export function PromotedSection({
           variant="outline"
           size="sm"
           asChild
-          className="bg-deal-foreground border-deal-foreground text-deal hover:bg-deal-light"
+          className="border-promoted-foreground bg-promoted-foreground text-promoted hover:bg-background hover:text-promoted"
         >
           <Link href={`/${locale}?tab=promoted`}>
             {t("viewAll")}

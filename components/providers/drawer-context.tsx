@@ -4,33 +4,37 @@ import * as React from "react"
 import { createContext, useContext, useCallback, useState, useMemo, useEffect } from "react"
 import { trackDrawerOpen, trackDrawerClose } from "@/components/providers/_lib/analytics-drawer"
 import { isDrawerSystemEnabled, getEnabledDrawers } from "@/lib/feature-flags"
+import type { ProductCardData } from "@/components/shared/product/product-card.types"
 
 // =============================================================================
 // TYPES
 // =============================================================================
 
-/** Product data passed to quick view drawer (reuses ProductCard props) */
-export interface QuickViewProduct {
-  id: string
-  title: string
-  price: number
-  image: string
-  images?: string[]
-  originalPrice?: number | null
-  description?: string | null
-  categoryPath?: Array<{ slug: string; name: string; nameBg?: string | null; icon?: string | null }>
-  condition?: string | null
-  location?: string | null
-  freeShipping?: boolean
-  rating?: number
-  reviews?: number
-  inStock?: boolean
-  slug?: string | null
-  username?: string | null
-  sellerId?: string | null
-  sellerName?: string | null
-  sellerAvatarUrl?: string | null
-  sellerVerified?: boolean
+/** Product data passed to quick view drawer. */
+export interface QuickViewProduct extends Pick<
+  ProductCardData,
+  | "id"
+  | "title"
+  | "price"
+  | "image"
+  | "images"
+  | "originalPrice"
+  | "description"
+  | "categoryPath"
+  | "condition"
+  | "location"
+  | "freeShipping"
+  | "rating"
+  | "reviews"
+  | "inStock"
+  | "slug"
+  | "username"
+  | "sellerId"
+  | "sellerName"
+  | "sellerAvatarUrl"
+  | "sellerVerified"
+> {
+  sourceScrollY?: number
 }
 
 interface DrawerState {
@@ -114,20 +118,35 @@ export function DrawerProvider({ children }: { children: React.ReactNode }) {
   // Product quick view actions
   const openProductQuickView = useCallback((product: QuickViewProduct) => {
     if (!featureFlags.enabledDrawers.productQuickView) return
+    const scrollY = typeof window !== "undefined" ? window.scrollY : undefined
     trackDrawerOpen({ type: "product_quick_view", productId: product.id })
     setState((prev) => ({
       ...prev,
-      productQuickView: { open: true, product },
+      productQuickView: {
+        open: true,
+        product: {
+          ...product,
+          ...(product.sourceScrollY == null && scrollY != null ? { sourceScrollY: scrollY } : {}),
+        },
+      },
     }))
   }, [featureFlags.enabledDrawers.productQuickView])
 
   const closeProductQuickView = useCallback(() => {
+    const restoreY = state.productQuickView.product?.sourceScrollY
+    if (typeof window !== "undefined" && restoreY != null) {
+      ;[0, 120, 280, 520].forEach((delay) => {
+        window.setTimeout(() => {
+          window.scrollTo({ top: restoreY, behavior: "auto" })
+        }, delay)
+      })
+    }
     trackDrawerClose({ type: "product_quick_view", method: "button" })
     setState((prev) => ({
       ...prev,
       productQuickView: { open: false, product: null },
     }))
-  }, [])
+  }, [state.productQuickView.product?.sourceScrollY])
 
   // Cart actions
   const openCart = useCallback(() => {

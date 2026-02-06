@@ -124,7 +124,7 @@ function SellerHeader({ seller }: { seller: SellerProfileData }) {
         <div className="flex items-center gap-1.5 flex-wrap">
           <h2 className="text-base font-bold text-foreground truncate">{seller.name}</h2>
           {seller.verified && (
-            <Badge variant="verified" className="shrink-0 text-2xs px-1.5 py-0">
+            <Badge variant="verified-personal" className="shrink-0 text-2xs px-1.5 py-0">
               {t("verified")}
             </Badge>
           )}
@@ -207,7 +207,7 @@ function SellerStats({ seller }: { seller: SellerProfileData }) {
 
       {/* Joined Date */}
       {joinedText && (
-        <div className="flex items-center gap-1.5 text-xs text-muted-foreground pt-1 border-t border-border/50">
+        <div className="flex items-center gap-1.5 text-xs text-muted-foreground pt-1 border-t border-border-subtle">
           <Calendar className="size-3" strokeWidth={1.5} />
           <span>{t("memberSince", { date: joinedText })}</span>
         </div>
@@ -270,7 +270,7 @@ function SellerListings({
           <button
             key={product.id}
             onClick={() => handleProductClick(getProductHref(product))}
-            className="shrink-0 w-28 rounded-lg border border-border/50 bg-card overflow-hidden active:scale-[0.98] transition-transform text-left"
+            className="shrink-0 w-28 rounded-lg border border-border-subtle bg-card overflow-hidden text-left transition-colors hover:bg-hover"
           >
             {/* Image */}
             <div className="aspect-square relative bg-muted">
@@ -348,14 +348,14 @@ export function SellerProfileDrawer({
         overlayBlur="sm"
       >
         {/* Header with close button */}
-        <div className="flex items-center justify-between px-4 pb-2 border-b border-border/30">
+        <div className="flex items-center justify-between px-4 pb-2 border-b border-border-subtle">
           <DrawerTitle className="text-sm font-semibold text-foreground">
             {t("sellerInfo")}
           </DrawerTitle>
           <DrawerClose asChild>
             <Button
               variant="ghost"
-              size="icon-sm"
+              size="icon"
               className="shrink-0 -mr-2 rounded-full hover:bg-muted touch-manipulation"
             >
               <X className="size-4" />
@@ -387,7 +387,7 @@ export function SellerProfileDrawer({
         </DrawerBody>
 
         {/* Footer with actions */}
-        <DrawerFooter className="border-t border-border/30">
+        <DrawerFooter className="border-t border-border-subtle">
           {/* Action buttons */}
           <div className="flex gap-2">
             <Button

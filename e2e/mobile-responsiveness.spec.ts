@@ -431,9 +431,7 @@ test.describe("Mobile Responsiveness - Phase 11", () => {
       const tabBar = page.getByTestId("mobile-tab-bar")
       await expect(tabBar).toBeVisible({ timeout: 15000 })
       
-      // Check that buttons are at least 40px in height (design system standard)
-      // Note: WCAG 2.2 recommends 44px for enhanced targets, 24px for minimum
-      // Our design system uses 40px which exceeds WCAG minimum requirements
+      // Check that high-frequency navigation controls are at least 44px.
       const buttons = tabBar.locator("a, button")
       const count = await buttons.count()
       
@@ -441,10 +439,71 @@ test.describe("Mobile Responsiveness - Phase 11", () => {
         const button = buttons.nth(i)
         const box = await button.boundingBox()
         if (box) {
-          // Minimum touch target should be 40px (design system: --spacing-touch)
-          expect(box.height).toBeGreaterThanOrEqual(40)
+          expect(box.height).toBeGreaterThanOrEqual(44)
         }
       }
+    })
+  })
+
+  test.describe("Mobile Browse Flow", () => {
+    test("quick view opens from product card and closing preserves scroll context", async ({ page }) => {
+      await page.goto("/en")
+      await dismissOverlays(page)
+      await page.waitForLoadState("networkidle")
+
+      await page.evaluate(() => window.scrollTo(0, 520))
+      await page.waitForTimeout(250)
+      const beforeOpen = await page.evaluate(() => window.scrollY)
+
+      const productHrefInViewport = await page.evaluate(() => {
+        const links = Array.from(
+          document.querySelectorAll<HTMLAnchorElement>('a[data-slot="product-card-link"]')
+        )
+        const visibleLink = links.find((link) => {
+          const rect = link.getBoundingClientRect()
+          return rect.top >= 0 && rect.bottom <= window.innerHeight
+        })
+        return visibleLink?.getAttribute("href") ?? null
+      })
+
+      expect(productHrefInViewport).toBeTruthy()
+
+      const visibleProductCardLink = page
+        .locator(`a[data-slot="product-card-link"][href="${productHrefInViewport}"]`)
+        .first()
+      await expect(visibleProductCardLink).toBeVisible({ timeout: 15_000 })
+      await visibleProductCardLink.click()
+
+      const quickViewDrawer = page.locator('[data-slot="drawer-content"]').first()
+      await expect(quickViewDrawer).toBeVisible({ timeout: 15_000 })
+      await expect(
+        quickViewDrawer.getByRole("button", { name: /buy now|купи сега/i }).first()
+      ).toBeVisible({ timeout: 15_000 })
+
+      await quickViewDrawer.getByRole("button", { name: /close|затвори/i }).first().click()
+      await expect(quickViewDrawer).toBeHidden({ timeout: 15_000 })
+      await expect.poll(
+        async () => {
+          const afterClose = await page.evaluate(() => window.scrollY)
+          return Math.abs(afterClose - beforeOpen)
+        },
+        { timeout: 3_000, intervals: [100, 200, 400] }
+      ).toBeLessThan(12)
+    })
+
+    test("contextual category search keeps category context in URL", async ({ page }) => {
+      await page.goto("/en/categories/fashion")
+      await dismissOverlays(page)
+      await page.waitForLoadState("networkidle")
+
+      const searchLink = page.locator('a[aria-label*="Search"], a[aria-label*="Търсене"]').first()
+      const hasSearchLink = await searchLink.isVisible({ timeout: 15_000 }).catch(() => false)
+      test.skip(!hasSearchLink, "Contextual header search link is not available for this route setup")
+
+      const href = await searchLink.getAttribute("href")
+      expect(href).toBeTruthy()
+      expect(href ?? "").toContain("/search")
+      expect(href ?? "").toContain("category=")
     })
   })
 

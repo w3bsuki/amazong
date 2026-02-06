@@ -27,12 +27,10 @@ import {
 } from "@/components/ui/dialog"
 import type { CategoryAttribute } from "@/lib/data/categories"
 import { getCategoryAttributeKey, getCategoryAttributeOptions, shouldForceMultiSelectCategoryAttribute } from "@/lib/filters/category-attribute"
-import { setPendingAttributeValues } from "@/lib/filters/pending-attributes"
-import { ColorSwatches } from "./color-swatches"
-import { SizeTiles } from "./size-tiles"
-import { FilterList } from "./filter-list"
+import { usePendingFilters } from "./use-pending-filters"
 import { PriceSlider } from "./price-slider"
-import { FilterCheckboxItem, FilterCheckboxList } from "./filter-checkbox-item"
+import { FilterCheckboxItem } from "./filter-checkbox-item"
+import { FilterAttributeSectionContent } from "./filter-attribute-section-content"
 import { FilterRadioGroup, FilterRadioItem } from "./filter-radio-group"
 
 // =============================================================================
@@ -45,12 +43,6 @@ import { FilterRadioGroup, FilterRadioItem } from "./filter-radio-group"
 // - Same pending/applied state model as FilterHub
 // - Live result count on Apply CTA
 // =============================================================================
-
-// Attribute detection helpers
-const COLOR_ATTRIBUTE_NAMES = ["color", "colour", "цвят"]
-const SIZE_ATTRIBUTE_NAMES = ["size", "sizes", "размер"]
-const SEARCHABLE_ATTRIBUTE_NAMES = ["brand", "brands", "марка", "condition", "състояние"]
-const FORCE_MULTISELECT_NAMES = ["brand", "make", "model"]
 
 export type FilterModalSection =
   | "price"
@@ -98,14 +90,6 @@ interface FilterModalProps {
   }) => void
 }
 
-interface PendingFilters {
-  minPrice: string | null
-  maxPrice: string | null
-  minRating: string | null
-  availability: string | null
-  attributes: Record<string, string[]>
-}
-
 export function FilterModal({
   open,
   onOpenChange,
@@ -147,17 +131,24 @@ export function FilterModal({
     if (!categoryParamKey) return null
     return searchParams.get(categoryParamKey)
   }, [categoryParamKey, searchParams])
+  const filterAttributes = useMemo(
+    () => (attribute ? [attribute] : []),
+    [attribute]
+  )
 
   // Pending category slug (for category section)
   const [pendingCategorySlug, setPendingCategorySlug] = useState<string | null>(null)
 
-  // Pending filter state
-  const [pending, setPending] = useState<PendingFilters>({
-    minPrice: null,
-    maxPrice: null,
-    minRating: null,
-    availability: null,
-    attributes: {},
+  const {
+    pending,
+    setPending,
+    getPendingAttrValues,
+    setPendingAttrValues,
+  } = usePendingFilters({
+    open,
+    searchParams,
+    attributes: filterAttributes,
+    includeExtendedFields: false,
   })
 
   // Effective category for count
@@ -205,25 +196,7 @@ export function FilterModal({
     } else {
       setPendingCategorySlug(null)
     }
-    setPending({
-      minPrice: searchParams.get("minPrice"),
-      maxPrice: searchParams.get("maxPrice"),
-      minRating: searchParams.get("minRating"),
-      availability: searchParams.get("availability"),
-      attributes:
-        attribute && attributeKey && attributeParamKey
-          ? {
-              [attributeKey]: Array.from(
-                new Set([
-                  ...searchParams.getAll(attributeParamKey),
-                  // Backward-compat: old links used the raw name (e.g. attr_Brand).
-                  ...searchParams.getAll(`attr_${attribute.name}`),
-                ]),
-              ),
-            }
-          : {},
-    })
-  }, [open, searchParams, attribute, attributeKey, attributeParamKey, categoryParamKey, section])
+  }, [open, searchParams, categoryParamKey, section])
 
   // Attribute helpers
   const shouldForceMultiSelect = useCallback((attr: CategoryAttribute) => {
@@ -236,20 +209,6 @@ export function FilterModal({
     },
     [locale]
   )
-
-  const getPendingAttrValues = useCallback(
-    (attrName: string): string[] => pending.attributes[attrName] || [],
-    [pending.attributes]
-  )
-
-  const setPendingAttrValues = useCallback((attrName: string, values: string[]) => {
-    setPending((prev) => {
-      return {
-        ...prev,
-        attributes: setPendingAttributeValues(prev.attributes, attrName, values),
-      }
-    })
-  }, [])
 
   // Check if any pending changes
   const hasPendingFilters = useMemo(() => {
@@ -279,7 +238,7 @@ export function FilterModal({
     } else if (section.startsWith("attr_") && attribute) {
       if (attributeKey) setPendingAttrValues(attributeKey, [])
     }
-  }, [section, attribute, attributeKey, setPendingAttrValues])
+  }, [section, attribute, attributeKey, setPending, setPendingAttrValues])
 
   // Apply filters
   const applyFilters = useCallback(() => {
@@ -347,98 +306,21 @@ export function FilterModal({
     if (!attribute) return null
 
     const attrKey = attributeKey ?? getCategoryAttributeKey(attribute)
-    const attrNameLower = attrKey
     const options = getAttrOptions(attribute) ?? []
 
-    // Boolean attribute
-    if (attribute.attribute_type === "boolean") {
-      const isChecked = getPendingAttrValues(attrKey).includes("true")
-      return (
-        <FilterCheckboxItem
-          checked={isChecked}
-          onCheckedChange={(checked) => setPendingAttrValues(attrKey, checked ? ["true"] : [])}
-        >
-          {tCommon("yes")}
-        </FilterCheckboxItem>
-      )
-    }
-
-    // Color attribute
-    if (COLOR_ATTRIBUTE_NAMES.includes(attrNameLower) && options.length > 0) {
-      return (
-        <ColorSwatches
-          options={options}
-          selected={getPendingAttrValues(attrKey)}
-          onSelect={(values) => setPendingAttrValues(attrKey, values)}
-        />
-      )
-    }
-
-    // Size attribute
-    if (SIZE_ATTRIBUTE_NAMES.includes(attrNameLower) && options.length > 0) {
-      return (
-        <SizeTiles
-          options={options}
-          selected={getPendingAttrValues(attrKey)}
-          onSelect={(values) => setPendingAttrValues(attrKey, values)}
-        />
-      )
-    }
-
-    // Searchable attributes (brand, condition)
-    if (SEARCHABLE_ATTRIBUTE_NAMES.includes(attrNameLower) && options.length > 0) {
-      const allowMulti =
-        attribute.attribute_type === "multiselect" || shouldForceMultiSelect(attribute)
-      return (
-        <FilterList
-          options={options}
-          selected={getPendingAttrValues(attrKey)}
-          onSelect={(values) => setPendingAttrValues(attrKey, values)}
-          multiSelect={allowMulti}
-          searchThreshold={8}
-        />
-      )
-    }
-
-    // Default select/multiselect list
-    if (
-      (attribute.attribute_type === "select" || attribute.attribute_type === "multiselect") &&
-      options.length > 0
-    ) {
-      const allowMulti =
-        attribute.attribute_type === "multiselect" || shouldForceMultiSelect(attribute)
-
-      return (
-        <FilterCheckboxList className={listBleedClass}>
-          {options.map((option, idx) => {
-            const currentValues = getPendingAttrValues(attrKey)
-            const isActive = currentValues.includes(option)
-
-            return (
-              <FilterCheckboxItem
-                key={idx}
-                checked={isActive}
-                onCheckedChange={(checked) => {
-                  if (!allowMulti) {
-                    setPendingAttrValues(attrKey, checked ? [option] : [])
-                    return
-                  }
-                  const newValues = checked
-                    ? [...currentValues, option]
-                    : currentValues.filter((v) => v !== option)
-                  setPendingAttrValues(attrKey, newValues)
-                }}
-                fullBleed={isMobile}
-              >
-                {option}
-              </FilterCheckboxItem>
-            )
-          })}
-        </FilterCheckboxList>
-      )
-    }
-
-    return null
+    return (
+      <FilterAttributeSectionContent
+        attribute={attribute}
+        attrKey={attrKey}
+        options={options}
+        selectedValues={getPendingAttrValues(attrKey)}
+        onSelectedValuesChange={(values) => setPendingAttrValues(attrKey, values)}
+        shouldForceMultiSelect={shouldForceMultiSelect}
+        yesLabel={tCommon("yes")}
+        checkboxListClassName={listBleedClass}
+        checkboxItemsFullBleed={isMobile}
+      />
+    )
   }
 
   const body = (
@@ -543,7 +425,7 @@ export function FilterModal({
                 <Link
                   href="/categories"
                   onClick={() => onOpenChange(false)}
-                  className="size-8 flex items-center justify-center rounded-full bg-muted hover:bg-destructive-subtle hover:text-destructive transition-colors shrink-0 ml-2"
+                  className="size-11 flex items-center justify-center rounded-full bg-muted hover:bg-destructive-subtle hover:text-destructive transition-colors shrink-0 ml-2"
                   aria-label={t("browseAllCategories")}
                   title={t("browseAllCategories")}
                 >
@@ -594,7 +476,7 @@ export function FilterModal({
                 <button
                   type="button"
                   onClick={() => onOpenChange(false)}
-                  className="size-8 flex items-center justify-center rounded-full hover:bg-hover active:bg-active transition-colors"
+                  className="size-11 flex items-center justify-center rounded-full hover:bg-hover active:bg-active transition-colors"
                   aria-label={tHub("close")}
                 >
                   <X size={18} weight="bold" />
@@ -652,7 +534,7 @@ export function FilterModal({
               <DialogClose asChild>
                 <button
                   type="button"
-                  className="size-8 flex items-center justify-center rounded-full hover:bg-hover active:bg-active transition-colors"
+                  className="size-11 flex items-center justify-center rounded-full hover:bg-hover active:bg-active transition-colors"
                   aria-label={tHub("close")}
                 >
                   <X size={18} weight="bold" />

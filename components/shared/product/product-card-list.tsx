@@ -15,6 +15,7 @@ import { Truck, MapPin, ShieldCheck } from "@phosphor-icons/react"
 import Image from "next/image"
 import { normalizeImageUrl } from "@/lib/normalize-image-url"
 import { Badge } from "@/components/ui/badge"
+import { getListingOverlayBadgeVariants, getSellerVerificationBadgeVariant } from "@/lib/ui/badge-intent"
 
 interface ProductCardListProps {
   // Required
@@ -155,7 +156,15 @@ export function ProductCardList({
   const discountPercent = hasDiscount
     ? Math.round(((originalPrice - price) / originalPrice) * 100)
     : 0
-  const showDiscountBadge = hasDiscount && discountPercent >= 1
+  const overlayBadgeVariants = getListingOverlayBadgeVariants({
+    isPromoted: isBoosted,
+    discountPercent,
+    minDiscountPercent: 1,
+  })
+  const sellerVerificationVariant = getSellerVerificationBadgeVariant({
+    isVerified: Boolean(sellerVerified),
+    isBusiness: false,
+  })
 
   return (
     <Surface
@@ -186,16 +195,15 @@ export function ProductCardList({
         />
 
         {/* Status badges (Promo / Discount) */}
-        {(isBoosted || showDiscountBadge) && (
+        {overlayBadgeVariants.length > 0 && (
           <div className="pointer-events-none absolute left-1.5 top-1.5 z-10 flex flex-col gap-1">
-            {isBoosted && (
-              <Badge variant="promoted">{t("adBadge")}</Badge>
-            )}
-            {showDiscountBadge && (
-              <Badge variant="discount">
-                -{discountPercent}%
-              </Badge>
-            )}
+            {overlayBadgeVariants.map((variant) => (
+              variant === "promoted" ? (
+                <Badge key="promoted" variant="promoted">{t("adBadge")}</Badge>
+              ) : (
+                <Badge key="discount" variant="discount">-{discountPercent}%</Badge>
+              )
+            ))}
           </div>
         )}
 
@@ -294,8 +302,10 @@ export function ProductCardList({
         {sellerName && (
           <div className="flex items-center gap-1.5 mt-2 text-xs text-muted-foreground">
             <span>{sellerName}</span>
-            {sellerVerified && (
-              <span className="text-muted-foreground">✓</span>
+            {sellerVerificationVariant && (
+              <Badge variant={sellerVerificationVariant} className="text-2xs px-1.5 py-0">
+                {t("verified")}
+              </Badge>
             )}
           </div>
         )}

@@ -1,5 +1,4 @@
 "use client"
-
 import { SidebarMenu } from "@/components/layout/sidebar/sidebar-menu"
 import { MobileCartDropdown } from "@/components/layout/header/cart/mobile-cart-dropdown"
 import { MobileWishlistButton } from "@/components/shared/wishlist/mobile-wishlist-button"
@@ -13,8 +12,7 @@ import type { HomepageHeaderProps } from "../types"
  * Mobile Homepage Header (2026 Clean Pattern)
  * 
  * Minimal, content-focused header with:
- * - Hamburger + Logo + Inline search + Cart/Wishlist
- * 
+ * - Hamburger + Logo + Inline search + Cart
  * Category navigation is rendered as calm chips below the header (see MobileHome).
  * 
  * Used for: Homepage (mobile only)
@@ -29,26 +27,26 @@ export function MobileHomepageHeader({
   const searchPlaceholder = tNav("searchPlaceholderShort")
 
   return (
-    <div className="md:hidden bg-background border-b border-border pt-safe">
-      <div className="h-(--header-h-mobile) px-inset-md flex items-center">
+    <div className="md:hidden bg-background/95 backdrop-blur-md pt-safe">
+      <div className="h-12 px-1 flex items-center">
         <SidebarMenu user={user} categories={categories} triggerClassName="-ml-2" {...(userStats && { userStats })} />
-        <Link href="/" className="shrink-0">
+        <Link href="/" className="shrink-0 -ml-1">
           <span className="text-lg font-extrabold tracking-tight text-foreground">treido.</span>
         </Link>
         <button
           type="button"
           onClick={onSearchOpen}
-            className={cn(
-              "flex-1 min-w-0 flex items-center gap-2 h-(--spacing-touch) ml-2 px-2.5 rounded-full",
-              "bg-surface-subtle border border-border-subtle",
-              "text-muted-foreground text-sm text-left",
-              "active:bg-active transition-colors"
-            )}
+          className={cn(
+            "flex-1 min-w-0 flex items-center gap-1.5 h-9 ml-2 px-3 rounded-full",
+            "bg-surface-subtle border border-border/30",
+            "text-muted-foreground text-sm text-left",
+            "active:bg-active transition-colors"
+          )}
           aria-label={searchPlaceholder}
           aria-haspopup="dialog"
         >
-          <MagnifyingGlass size={18} weight="regular" className="text-muted-foreground shrink-0" />
-          <span className="flex-1 truncate font-normal text-sm">{searchPlaceholder}</span>
+          <MagnifyingGlass size={16} weight="regular" className="text-muted-foreground shrink-0" />
+          <span className="flex-1 truncate font-normal text-xs">{searchPlaceholder}</span>
         </button>
         <div className="flex items-center shrink-0 -space-x-2">
           <MobileWishlistButton />

@@ -18,7 +18,7 @@ const excludeFiles = new Set([
 // - Tailwind arbitrary values: w-[560px], text-[13px], max-w-[900px], rounded-[10px]
 // - Color literals: #fff, #ffffff, oklch(...)
 // We deliberately do NOT attempt to fully parse Tailwind className strings.
-const reArbitrary = /\b(?:h|w|min-h|min-w|max-h|max-w|p|px|py|pt|pr|pb|pl|m|mx|my|mt|mr|mb|ml|gap|space-x|space-y|rounded|text|leading|tracking|top|right|bottom|left|inset|translate-x|translate-y|shadow|z)-\[[^\]]+\]/g;
+const reArbitrary = /\b(?:h|w|min-h|min-w|max-h|max-w|basis|p|px|py|pt|pr|pb|pl|m|mx|my|mt|mr|mb|ml|gap|space-x|space-y|rounded|text|leading|tracking|top|right|bottom|left|inset|translate-x|translate-y|shadow|z|grid-cols|col-span|row-span)-\[[^\]]+\]/g;
 const reHex = /#[0-9a-fA-F]{3}(?:[0-9a-fA-F]{3})?\b/g;
 const reOklch = /\boklch\([^)]*\)/gi;
 

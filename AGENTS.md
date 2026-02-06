@@ -1,65 +1,49 @@
 # AGENTS.md
 
-**All stable documentation lives in `/docs/`.**
+Project-level router for humans and AI agents.
 
-## Project (Quick Context)
+## Canonical Sources
 
-- **Product**: Treido marketplace (BG-first)
-- **Stack**: Next.js 16 (App Router) + React 19 + TypeScript + Tailwind v4 + shadcn/ui + Supabase + Stripe + next-intl
-- **Non-negotiables**: next-intl for copy, Tailwind v4 tokens only, cached-server rules, no secrets/PII
+- Docs SSOT: `docs/INDEX.md`
+- Agent rails and boundaries: `docs/AGENTS.md`
+- Workflow and gates: `docs/WORKFLOW.md`
+- Skill inventory: `docs/SKILLS.md`
+- Skill routing table: `docs/AGENT-MAP.md`
 
-## FORBIDDEN — Never Create These Folders
+## Runtime State
 
-**DO NOT create, copy, or mirror skills/config to these folders:**
-- `.agent/`, `.agents/`, `.cursor/`, `.gemini/`, `.kiro/`, `.qoder/`, `.qwen/`, `.trae/`, `.windsurf/`
+- Active queue: `.codex/TASKS.md`
+- Decisions: `.codex/DECISIONS.md`
+- Shipped log: `.codex/SHIPPED.md`
 
-**Allowed AI config folders (ONLY these):**
-- `.claude/` — Claude/Anthropic config
-- `.codex/` — Treido agent skills and operational state
+## Skill Source of Truth
 
-Creating folders for "other AI tools" is bloat and forbidden. This repo uses `.claude/` and `.codex/` only.
+- Canonical authored skills: `.codex/skills/*`
+- `.claude/skills/*` is a mirror target, not an independent source.
 
-## Start Here
+## Non-Negotiables (Minimal)
 
-- **How to prompt AI**: [docs/PROMPT-GUIDE.md](docs/PROMPT-GUIDE.md)
-- **Agent entry point**: [docs/AGENTS.md](docs/AGENTS.md)
-- **Dev department (roles/ownership)**: [docs/15-DEV-DEPARTMENT.md](docs/15-DEV-DEPARTMENT.md)
-- **All docs index**: [docs/00-INDEX.md](docs/00-INDEX.md)
-- **Workflow spec**: [docs/WORKFLOW.md](docs/WORKFLOW.md)
+- No secrets or PII in logs.
+- All user-facing copy via `next-intl`.
+- Tailwind v4 semantic tokens only.
+- Default to Server Components; use client components only when required.
+- Pause and request approval for DB/auth/payments/destructive operations.
 
-## Docs (SSOT)
+## Folder Policy
 
-- **SSOT**: `docs/**` (start at `docs/00-INDEX.md`)
-- **Internal portal (not SSOT)**: `docs-site/` (mirrors from `/docs`)
-- **Admin ops docs (not SSOT)**: `/admin/docs` (Supabase `admin_docs`, editable)
-- **Public legal/policies/help**: main app routes (`/[locale]/…`), sourced from `docs/public/**`
+Allowed AI config folders in this repo:
 
-## Folder Rules (AGENTS.md)
+- `.codex/`
+- `.claude/`
 
-- `app/AGENTS.md`
-- `app/actions/AGENTS.md`
-- `components/AGENTS.md`
-- `components/ui/AGENTS.md`
-- `hooks/AGENTS.md`
-- `i18n/AGENTS.md`
-- `messages/AGENTS.md`
-- `lib/AGENTS.md`
-- `lib/supabase/AGENTS.md`
-- `supabase/AGENTS.md`
+Do not create other AI tool folders (`.agent`, `.agents`, `.cursor`, `.gemini`, `.kiro`, `.qoder`, `.qwen`, `.trae`, `.windsurf`).
 
-## Operational State (Runtime)
+## docs-site Policy
 
-- Active tasks: [.codex/TASKS.md](.codex/TASKS.md)
-- Shipped log: [.codex/SHIPPED.md](.codex/SHIPPED.md)
-- Decisions: [.codex/DECISIONS.md](.codex/DECISIONS.md)
-- Refactor workspace: [.codex/refactor/](.codex/refactor/)
+- `docs-site/` is internal browsing UI only.
+- Authoring SSOT remains in `docs/**`.
+- Keep generated artifacts (for example `docs-site/public/_pagefind`) out of git tracking.
 
-## Skills (primary, auto-applied by context)
+---
 
-| Skill | File |
-|-------|------|
-| Frontend | `.codex/skills/treido-frontend/SKILL.md` |
-| Backend | `.codex/skills/treido-backend/SKILL.md` |
-| Rails | `.codex/skills/treido-rails/SKILL.md` |
-
-Full skill inventory: `docs/11-SKILLS.md`
+*Last updated: 2026-02-06*

@@ -22,9 +22,9 @@ pnpm -s test:e2e:smoke
 ## Docs / Instructions
 
 - Agent entry point (always read): `AGENTS.md`
-- Docs hub (SSOT): `docs/00-INDEX.md`
+- Docs hub (SSOT): `docs/INDEX.md`
 - Workflow + gates: `docs/WORKFLOW.md`
-- Launch/env notes: `docs/12-LAUNCH.md`
+- Launch/env notes: `docs/LAUNCH.md`
 
 ## Storybook
 

@@ -243,7 +243,7 @@ export function AccountDrawer({ open, onOpenChange }: AccountDrawerProps) {
         {!user || authLoading ? (
           <div className="flex flex-col items-center justify-center px-inset py-5">
             <div className="size-11 bg-muted rounded-xl flex items-center justify-center mb-2">
-              <User size={22} weight="regular" className="text-muted-foreground/50" />
+              <User size={22} weight="regular" className="text-muted-foreground" />
             </div>
             <p className="text-sm text-foreground font-medium">
               {tAccount("signInPrompt")}
@@ -257,7 +257,7 @@ export function AccountDrawer({ open, onOpenChange }: AccountDrawerProps) {
           </div>
         ) : isLoadingData ? (
           <div className="flex items-center justify-center py-8">
-            <div className="size-6 border-2 border-muted-foreground/30 border-t-foreground rounded-full animate-spin" />
+            <div className="size-6 border-2 border-border-subtle border-t-foreground rounded-full animate-spin" />
           </div>
         ) : (
           <DrawerBody className="px-0">
@@ -314,7 +314,7 @@ export function AccountDrawer({ open, onOpenChange }: AccountDrawerProps) {
                         className={cn(
                           "text-xs px-1.5 py-0.5 rounded",
                           link.badgeType === "destructive" && "text-destructive bg-destructive-subtle",
-                          link.badgeType === "warning" && "text-status-warning bg-status-warning/10",
+                          link.badgeType === "warning" && "text-status-warning bg-primary-subtle",
                           link.badgeType === "muted" && "text-muted-foreground bg-muted"
                         )}
                       >

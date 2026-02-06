@@ -86,7 +86,7 @@ export function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
         {items.length === 0 ? (
           <div className="flex flex-col items-center justify-center px-inset py-5">
             <div className="size-11 bg-muted rounded-xl flex items-center justify-center mb-2">
-              <ShoppingCart size={22} weight="regular" className="text-muted-foreground/50" />
+              <ShoppingCart size={22} weight="regular" className="text-muted-foreground" />
             </div>
             <p className="text-sm text-foreground font-medium">{t("empty")}</p>
             <p className="text-xs text-muted-foreground mt-0.5">

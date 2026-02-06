@@ -1,57 +1,56 @@
 ---
 name: treido-supabase
-description: Supabase + Postgres specialist for Treido. Use for schema/query design, performance, and RLS-safe patterns. Not for UI styling.
+description: Supabase + Postgres specialist for Treido. Use for RLS-safe query shape, selecting the correct client, and performance hygiene (explicit selects, avoid select('*')). Not for UI styling.
 ---
 
-# Supabase Postgres Best Practices
+# treido-supabase
 
-Comprehensive performance optimization guide for Postgres, maintained by Supabase. Contains rules across 8 categories, prioritized by impact to guide automated query optimization and schema design.
+Treido Supabase/Postgres specialist for query safety, RLS-aware patterns, and performance hygiene.
 
 ## When to Apply
 
-Reference these guidelines when:
-- Writing SQL queries or designing schemas
-- Implementing indexes or query optimization
-- Reviewing database performance issues
-- Configuring connection pooling or scaling
-- Optimizing for Postgres-specific features
-- Working with Row-Level Security (RLS)
+- Designing or reviewing Supabase query shape in app/server code.
+- Performance-sensitive query tuning (indexes, filters, payload size).
+- Choosing static/user/admin Supabase client in server code.
+- Reviewing schema and policy impact of backend changes.
 
-## Rule Categories by Priority
+## When NOT to Apply
 
-| Priority | Category | Impact | Prefix |
-|----------|----------|--------|--------|
-| 1 | Query Performance | CRITICAL | `query-` |
-| 2 | Connection Management | CRITICAL | `conn-` |
-| 3 | Security & RLS | CRITICAL | `security-` |
-| 4 | Schema Design | HIGH | `schema-` |
-| 5 | Concurrency & Locking | MEDIUM-HIGH | `lock-` |
-| 6 | Data Access Patterns | MEDIUM | `data-` |
-| 7 | Monitoring & Diagnostics | LOW-MEDIUM | `monitor-` |
-| 8 | Advanced Features | LOW | `advanced-` |
+- Pure UI styling or layout concerns.
+- Stripe payment flow design with no DB impact.
+- Generic Next.js layout/routing work with no data layer decisions.
 
-## How to Use
+## Non-Negotiables
 
-Read individual rule files for detailed explanations and SQL examples:
+- Avoid `select('*')` in hot paths; project explicit fields.
+- Respect RLS assumptions for user-scoped data.
+- Use the minimum-privilege client for each context.
+- Treat schema/RLS changes as high-risk and require explicit approval.
 
+## Treido Query Hygiene
+
+- Keep API payloads narrow and stable.
+- Avoid unbounded scans for list endpoints.
+- Prefer indexed filters/sorts for user-facing search/list routes.
+
+## Output Template
+
+```md
+## Query Plan
+- <client choice + select fields + filters>
+
+## Risk
+- <rls / perf / policy risk>
+
+## Verification
+- <queries/tests/manual checks>
 ```
-references/query-missing-indexes.md
-references/schema-partial-indexes.md
-references/_sections.md
-```
-
-Each rule file contains:
-- Brief explanation of why it matters
-- Incorrect SQL example with explanation
-- Correct SQL example with explanation
-- Optional EXPLAIN output or metrics
-- Additional context and references
-- Supabase-specific notes (when applicable)
 
 ## References
 
-- https://www.postgresql.org/docs/current/
-- https://supabase.com/docs
-- https://wiki.postgresql.org/wiki/Performance_Optimization
-- https://supabase.com/docs/guides/database/overview
-- https://supabase.com/docs/guides/auth/row-level-security
+- `docs/DATABASE.md`
+- `docs/API.md`
+- `docs/ARCHITECTURE.md`
+- `docs/AGENTS.md`
+- `docs/WORKFLOW.md`
+- `.codex/skills/treido-supabase/references/_sections.md`

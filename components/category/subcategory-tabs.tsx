@@ -112,7 +112,7 @@ function CategoryBannerCompact({ category }: { category: Category }) {
         className="size-10 shrink-0"
         fallbackIconSize={20}
         fallbackIconWeight="bold"
-        variant="colorful"
+        variant="rail"
       />
       <div className="min-w-0">
         <h2 className="text-base font-semibold text-foreground truncate">{name}</h2>

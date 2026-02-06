@@ -8,8 +8,7 @@ import type { CategoryAttribute } from "@/lib/data/categories";
 import { StartSellingBanner } from "@/components/sections/start-selling-banner";
 import { useCategoryNavigation } from "@/hooks/use-category-navigation";
 import {
-  CategoryTabs,
-  CategoryQuickPills,
+  CategoryNavBar,
   CategoryCircles,
   AllTabFilters,
   QuickFilterRow,
@@ -86,6 +85,8 @@ export function MobileCategoryBrowserTraditional({
 
   // Filter Hub state (inline filter mode)
   const [filterHubOpen, setFilterHubOpen] = useState(false);
+  const controlRowMode = showInlineFilters ? "inline" : showQuickFilters ? "quick" : null
+  const shouldShowFilterChips = controlRowMode === "inline"
 
   // Use the extracted navigation hook
   const nav = useCategoryNavigation({
@@ -152,19 +153,9 @@ export function MobileCategoryBrowserTraditional({
   return (
     <PageShell variant="muted" className="w-full">
       {/* 1. Sticky Tabs Header (L0) - Two variants: tabs or pills */}
-      {showL0Tabs && l0Style === "tabs" && (
-        <CategoryTabs
-          categories={initialCategories}
-          activeTab={nav.activeTab}
-          locale={locale}
-          headerHeight={headerHeight}
-          tabsNavigateToPages={tabsNavigateToPages}
-          onTabChange={nav.handleTabChange}
-        />
-      )}
-
-      {showL0Tabs && l0Style === "pills" && (
-        <CategoryQuickPills
+      {showL0Tabs && (
+        <CategoryNavBar
+          variant={l0Style}
           categories={initialCategories}
           activeTab={nav.activeTab}
           locale={locale}
@@ -183,7 +174,7 @@ export function MobileCategoryBrowserTraditional({
 
       {/* Optional Page Title (for category pages) */}
       {pageTitle && (
-        <div className="bg-background px-inset py-3 border-b border-border/40">
+        <div className="bg-background px-inset py-3 border-b border-border-subtle">
           <h1 className="text-lg font-bold">{pageTitle}</h1>
         </div>
       )}
@@ -215,8 +206,8 @@ export function MobileCategoryBrowserTraditional({
         )}
       </div>
 
-      {/* Quick Filter Pills (enabled per-page) */}
-      {showQuickFilters && (
+      {/* Primary Control Row: quick pills OR filter/sort bar (never stacked) */}
+      {controlRowMode === "quick" && (
         <QuickFilterRow
           locale={locale}
           {...(nav.activeSlug !== "all" ? { categorySlug: nav.activeSlug } : {})}
@@ -241,8 +232,7 @@ export function MobileCategoryBrowserTraditional({
         />
       )}
 
-      {/* Inline Filter Bar (demo-style 50/50 split: Filters | Sort) */}
-      {showInlineFilters && (
+      {controlRowMode === "inline" && (
         <FilterSortBar
           locale={locale}
           onAllFiltersClick={() => setFilterHubOpen(true)}
@@ -252,9 +242,11 @@ export function MobileCategoryBrowserTraditional({
       )}
 
       {/* Active Filter Chips (Tiny Badges) */}
-      <div className="bg-background px-inset pb-1">
-        <FilterChips />
-      </div>
+      {shouldShowFilterChips && (
+        <div className="bg-background px-inset pb-1">
+          <FilterChips />
+        </div>
+      )}
 
       {/* Product Feed */}
       <ProductFeed

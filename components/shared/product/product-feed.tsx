@@ -67,6 +67,7 @@ export function ProductFeed({
     : null
 
   const loadingLabel = tFeed("loadingProducts")
+  const showInlineRefreshSkeleton = showLoadingOverlay && isLoading && products.length > 0
 
   // Intersection Observer for infinite scroll
   // Only observe if we have products AND hasMore - avoid spam on empty categories
@@ -99,15 +100,6 @@ export function ProductFeed({
       </div>
 
       <div aria-busy={isLoading} aria-label={isLoading ? loadingLabel : undefined} className="relative">
-      {/* Loading overlay for smooth category transitions */}
-      {showLoadingOverlay && isLoading && products.length > 0 && (
-        <div className="absolute inset-0 bg-background z-10 flex items-start justify-center pt-20">
-          <div className="flex flex-col items-center gap-2">
-            <div className="size-8 border-2 border-muted-foreground border-t-foreground rounded-full animate-spin" />
-            <span className="text-xs text-muted-foreground">{loadingLabel}</span>
-          </div>
-        </div>
-      )}
       {products.length === 0 && !isLoading ? (
         <EmptyStateCTA
           variant={isAllTab ? "no-listings" : "no-category"}
@@ -122,49 +114,61 @@ export function ProductFeed({
           className="py-1"
         />
       ) : (
-        <ProductGrid density="compact" className={cn("py-1 transition-opacity duration-200", showLoadingOverlay && isLoading && "opacity-50")}>
-          {products.map((product, index) => (
-            <ProductCard
-              key={`${product.id}-${activeSlug}`}
-              id={product.id}
-              title={product.title}
-              price={product.price}
-              createdAt={product.createdAt ?? null}
-              originalPrice={product.listPrice ?? null}
-              image={product.image}
-              rating={product.rating}
-              reviews={product.reviews}
-              {...(product.freeShipping ? { freeShipping: true } : {})}
-              {...(product.isBoosted ? { isBoosted: true } : {})}
-              index={index}
-              slug={product.slug ?? null}
-              username={product.storeSlug ?? null}
-              sellerId={product.sellerId ?? null}
-              {...((product.sellerName || product.storeSlug)
-                ? { sellerName: product.sellerName || product.storeSlug || "" }
-                : {})}
-              sellerAvatarUrl={product.sellerAvatarUrl || null}
-              sellerTier={product.sellerTier ?? "basic"}
-              sellerVerified={Boolean(product.sellerVerified)}
-              sellerEmailVerified={Boolean(product.sellerEmailVerified)}
-              sellerPhoneVerified={Boolean(product.sellerPhoneVerified)}
-              sellerIdVerified={Boolean(product.sellerIdVerified)}
-              {...(product.condition ? { condition: product.condition } : {})}
-              {...(product.brand ? { brand: product.brand } : {})}
-              {...(product.categorySlug ? { categorySlug: product.categorySlug } : {})}
-              {...(product.categoryRootSlug ? { categoryRootSlug: product.categoryRootSlug } : {})}
-              {...(product.categoryPath ? { categoryPath: product.categoryPath } : {})}
-              {...(product.make ? { make: product.make } : {})}
-              {...(product.model ? { model: product.model } : {})}
-              {...(product.year ? { year: product.year } : {})}
-              {...(product.location ? { location: product.location } : {})}
-              {...(product.attributes ? { attributes: product.attributes } : {})}
+        <>
+          <ProductGrid density="compact" className={cn("py-1 transition-colors duration-200")}>
+            {products.map((product, index) => (
+              <ProductCard
+                key={`${product.id}-${activeSlug}`}
+                id={product.id}
+                title={product.title}
+                price={product.price}
+                createdAt={product.createdAt ?? null}
+                originalPrice={product.listPrice ?? null}
+                image={product.image}
+                rating={product.rating}
+                reviews={product.reviews}
+                {...(product.freeShipping ? { freeShipping: true } : {})}
+                {...(product.isBoosted ? { isBoosted: true } : {})}
+                index={index}
+                slug={product.slug ?? null}
+                username={product.storeSlug ?? null}
+                sellerId={product.sellerId ?? null}
+                {...((product.sellerName || product.storeSlug)
+                  ? { sellerName: product.sellerName || product.storeSlug || "" }
+                  : {})}
+                sellerAvatarUrl={product.sellerAvatarUrl || null}
+                sellerTier={product.sellerTier ?? "basic"}
+                sellerVerified={Boolean(product.sellerVerified)}
+                sellerEmailVerified={Boolean(product.sellerEmailVerified)}
+                sellerPhoneVerified={Boolean(product.sellerPhoneVerified)}
+                sellerIdVerified={Boolean(product.sellerIdVerified)}
+                {...(product.condition ? { condition: product.condition } : {})}
+                {...(product.brand ? { brand: product.brand } : {})}
+                {...(product.categorySlug ? { categorySlug: product.categorySlug } : {})}
+                {...(product.categoryRootSlug ? { categoryRootSlug: product.categoryRootSlug } : {})}
+                {...(product.categoryPath ? { categoryPath: product.categoryPath } : {})}
+                {...(product.make ? { make: product.make } : {})}
+                {...(product.model ? { model: product.model } : {})}
+                {...(product.year ? { year: product.year } : {})}
+                {...(product.location ? { location: product.location } : {})}
+                {...(product.attributes ? { attributes: product.attributes } : {})}
+                appearance="tile"
+                media="landscape"
+                density="compact"
+              />
+            ))}
+          </ProductGrid>
+
+          {showInlineRefreshSkeleton && (
+            <ProductCardSkeletonGrid
+              count={2}
+              density="compact"
               appearance="tile"
               media="landscape"
-              density="compact"
+              className="py-1"
             />
-          ))}
-        </ProductGrid>
+          )}
+        </>
       )}
 
       </div>

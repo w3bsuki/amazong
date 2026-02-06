@@ -63,6 +63,9 @@ const bannedPatterns = [
   /^(?:bg|text|ring)-primary\/\d{1,3}$/i,
   /^(?:bg|text|ring)-destructive\/\d{1,3}$/i,
   /^ring-ring\/\d{1,3}$/i,
+  /^(?:bg|text|ring|border)-[a-z0-9-]+-foreground\/\d{1,3}$/i,
+  /^(?:bg|text|ring|border)-[a-z0-9-]+-subtle\/\d{1,3}$/i,
+  /^(?:bg|text|ring|border)-(?:promoted|promoted-muted|verified|verified-business|verified-personal|top-rated|category-[a-z0-9-]+|deal|deal-light|deal-foreground|surface-[a-z0-9-]+)\/\d{1,3}$/i,
 ];
 
 const allFiles = [];

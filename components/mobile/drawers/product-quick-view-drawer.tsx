@@ -43,7 +43,36 @@ export function ProductQuickViewDrawer({
   const router = useRouter()
   const { addToCart } = useCart()
   const isMobile = useIsMobile()
+  const scrollBeforeOpenRef = React.useRef<number | null>(null)
+  const wasOpenRef = React.useRef(false)
   const { product: resolvedProduct, isLoading: detailsLoading } = useProductQuickViewDetails(open, product)
+
+  React.useEffect(() => {
+    if (typeof window === "undefined") return undefined
+
+    if (open && !wasOpenRef.current) {
+      scrollBeforeOpenRef.current = product?.sourceScrollY ?? window.scrollY
+      wasOpenRef.current = true
+      return undefined
+    }
+
+    if (!open && wasOpenRef.current) {
+      const restoreY = scrollBeforeOpenRef.current
+      wasOpenRef.current = false
+      if (restoreY != null) {
+        const restoreScroll = () => {
+          window.scrollTo({ top: restoreY, behavior: "auto" })
+        }
+        const rafId = requestAnimationFrame(restoreScroll)
+        const timeoutId = window.setTimeout(restoreScroll, 260)
+        return () => {
+          cancelAnimationFrame(rafId)
+          clearTimeout(timeoutId)
+        }
+      }
+    }
+    return undefined
+  }, [open, product?.sourceScrollY])
 
   const handleAddToCart = React.useCallback(() => {
     if (!resolvedProduct) return

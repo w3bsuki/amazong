@@ -137,7 +137,7 @@ export function CategoryCircle({
             className={cn(
               "absolute inset-x-1 bottom-1 select-none text-center leading-none line-clamp-1",
               "text-2xs font-medium",
-              active ? "text-foreground" : "text-muted-foreground",
+              "text-foreground",
               insideLabelClassName
             )}
           >
@@ -152,7 +152,14 @@ export function CategoryCircle({
         )}
       </div>
       {labelPlacement === "below" && (
-        <span className={cn("mt-1", labelClassName)}>{label}</span>
+        <span
+          className={cn(
+            "mt-1 w-full text-center text-2xs font-medium leading-tight line-clamp-1",
+            labelClassName
+          )}
+        >
+          {label}
+        </span>
       )}
       {renderCount && (
         <span

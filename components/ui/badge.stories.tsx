@@ -24,10 +24,10 @@ const meta: Meta<typeof Badge> = {
         "success", "warning", "critical", "info",
         "success-subtle", "warning-subtle", "critical-subtle", "info-subtle", "neutral-subtle",
         "condition-new", "condition-likenew", "condition-good", "condition-fair", "condition-used", "condition-refurb",
-        "shipping", "shipping-subtle", "shipping-express",
+        "shipping", "shipping-free", "shipping-subtle", "shipping-express",
         "stock-available", "stock-low", "stock-out",
         "promo", "discount", "deal", "sale", "limited-time", "promoted", "sponsored",
-        "verified", "verified-solid", "top-rated",
+        "verified-business", "verified-personal", "verified", "verified-solid", "top-rated",
         "category",
       ],
     },
@@ -145,10 +145,10 @@ export const ECommerce: Story = {
       <div>
         <div className="text-sm font-medium text-muted-foreground mb-2">Shipping & Trust</div>
         <div className="flex flex-wrap gap-2">
-          <Badge variant="shipping"><Truck className="size-3" />Free Shipping</Badge>
+          <Badge variant="shipping-free"><Truck className="size-3" />Free Shipping</Badge>
           <Badge variant="shipping-express"><Zap className="size-3" />Express</Badge>
-          <Badge variant="verified"><ShieldCheck className="size-3" />Verified Seller</Badge>
-          <Badge variant="verified-solid"><ShieldCheck className="size-3" />Verified</Badge>
+          <Badge variant="verified-business"><ShieldCheck className="size-3" />Verified Business</Badge>
+          <Badge variant="verified-personal"><ShieldCheck className="size-3" />Verified Seller</Badge>
           <Badge variant="top-rated"><Star className="size-3" />Top Rated</Badge>
         </div>
       </div>
@@ -207,8 +207,8 @@ export const ProductCardExample: Story = {
           <span className="text-sm text-muted-foreground line-through">$1,199</span>
         </div>
         <div className="flex flex-wrap gap-1.5">
-          <Badge variant="shipping-subtle"><Truck className="size-3" />Free</Badge>
-          <Badge variant="verified"><ShieldCheck className="size-3" />Verified</Badge>
+          <Badge variant="shipping-free"><Truck className="size-3" />Free</Badge>
+          <Badge variant="verified-personal"><ShieldCheck className="size-3" />Verified</Badge>
         </div>
         <Badge variant="stock-low">Only 2 left</Badge>
       </div>

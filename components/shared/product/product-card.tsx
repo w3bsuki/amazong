@@ -11,6 +11,7 @@ import { Surface } from "@/components/ui/surface"
 import { useDrawer, type QuickViewProduct } from "@/components/providers/drawer-context"
 import { isBoostActiveNow } from "@/lib/boost/boost-status"
 import { shouldShowConditionBadge } from "@/lib/badges/category-badge-specs"
+import { getListingOverlayBadgeVariants } from "@/lib/ui/badge-intent"
 
 import { ProductCardActions } from "./product-card-actions"
 import { ProductCardImage } from "./product-card-image"
@@ -18,6 +19,7 @@ import { ProductCardPrice } from "./product-card-price"
 import { ProductCardSocialProof } from "./product-card-social-proof"
 import { FreshnessIndicator } from "./freshness-indicator"
 import { getConditionKey } from "./_lib/condition"
+import type { ProductCardData, ProductCardViewConfig } from "./product-card.types"
 
 // =============================================================================
 // CVA VARIANTS
@@ -48,94 +50,25 @@ const productCardVariants = cva(
 // TYPES - Essential props + B2B support
 // =============================================================================
 
-interface ProductCardProps extends VariantProps<typeof productCardVariants> {
-  // Required
-  id: string
-  title: string
-  price: number
-  image: string
-
-  // Meta
-  createdAt?: string | null
-
-  // Pricing
-  originalPrice?: number | null
-  isOnSale?: boolean
-  salePercent?: number
-
-  // Product info - for smart badge
-  categoryRootSlug?: string
-  categoryPath?: Array<{ slug: string; name: string; nameBg?: string | null; icon?: string | null }>
-  attributes?: Record<string, unknown>
-
-  // Additional images & description (for quick view drawer)
-  images?: string[]
-  description?: string | null
-
-  // Seller
-  sellerId?: string | null
-  sellerName?: string | undefined
-  sellerAvatarUrl?: string | null
-  sellerVerified?: boolean
-  sellerEmailVerified?: boolean
-  sellerPhoneVerified?: boolean
-  sellerIdVerified?: boolean
-
-  // Shipping
-  freeShipping?: boolean
-
-  // URLs
-  slug?: string | null
-  username?: string | null
-
-  // Feature toggles
-  showQuickAdd?: boolean
-  showWishlist?: boolean
-  showSeller?: boolean
-  /** Disable opening the product quick view overlay on click (force navigation). */
-  disableQuickView?: boolean
-
-  /** Visual surface style: bordered card vs inline tile (mobile browse). */
-  appearance?: "card" | "tile"
-  /** Media aspect ratio (mobile browse uses landscape 4:3). */
-  media?: "square" | "landscape"
-  /** Density tuning for compact mobile browse. */
-  density?: "default" | "compact"
-  /** Title line clamp. Defaults to 1. */
-  titleLines?: 1 | 2
-
-  /** UI styling variant. Defaults to "default". */
-  uiVariant?: "default" | "home"
-  /** Radius scale. Defaults to "xl". */
-  radius?: "xl" | "2xl"
-
+interface ProductCardProps
+  extends ProductCardData,
+    ProductCardViewConfig,
+    VariantProps<typeof productCardVariants> {
+  // NOTE: ProductCardData + ProductCardViewConfig are the preferred input contracts.
+  // ProductCardProps remains as a compatibility superset during incremental migration.
   // Context
   index?: number
   currentUserId?: string | null
-  inStock?: boolean
   className?: string
 
   // Rating & social proof (Pro Commerce style)
-  rating?: number
-  reviews?: number
-  soldCount?: number
-  favoritesCount?: number
-
-  // Trust indicators
   showBuyerProtection?: boolean
-
-  // Condition for C2C
-  condition?: "new" | "like_new" | "used" | "refurbished" | string
 
   // B2B specific
   minOrderQuantity?: number
   bulkPricing?: { qty: number; price: number }[]
   businessVerified?: boolean
   samplesAvailable?: boolean
-
-  // Promotion (boosted listing)
-  isBoosted?: boolean
-  boostExpiresAt?: string | null
 
   // Legacy props (accepted but ignored for backwards compat)
   brand?: string
@@ -211,9 +144,9 @@ function ProductCard({
   const isCompact = density === "compact"
   const isTile = appearance === "tile"
   const mediaRatio = media === "landscape" ? 4 / 3 : 1
-  const radiusClass = radius === "2xl" ? "rounded-2xl" : "rounded-xl"
-  const actionSize = uiVariant === "home" ? "icon-sm" : "icon"
-  const radiusTopClass = radius === "2xl" ? "rounded-t-2xl" : "rounded-t-xl"
+  const radiusClass = radius === "2xl" ? "rounded-xl" : "rounded-lg"
+  const actionSize = "icon"
+  const radiusTopClass = radius === "2xl" ? "rounded-t-xl" : "rounded-t-lg"
 
   // Derived values
   const hasDiscount = originalPrice && originalPrice > price
@@ -250,6 +183,16 @@ function ProductCard({
     return isBoostActiveNow({ is_boosted: true, boost_expires_at: boostExpiresAt })
   }, [boostExpiresAt, isBoosted])
 
+  const overlayBadgeVariants = React.useMemo(
+    () =>
+      getListingOverlayBadgeVariants({
+        isPromoted: isBoostedActive,
+        discountPercent,
+        minDiscountPercent: 5,
+      }),
+    [discountPercent, isBoostedActive]
+  )
+
   // URLs
   const productUrl = username ? `/${username}/${slug || id}` : "#"
   const shouldUseDrawerQuickView = isQuickViewEnabled && !disableQuickView
@@ -275,6 +218,7 @@ function ProductCard({
         title,
         price,
         image,
+        ...(typeof window !== "undefined" ? { sourceScrollY: window.scrollY } : {}),
         ...(images ? { images } : {}),
         ...(originalPrice != null ? { originalPrice } : {}),
         ...(description != null ? { description } : {}),
@@ -362,41 +306,23 @@ function ProductCard({
             ratio={mediaRatio}
           />
 
-          {uiVariant === "home" ? (
-            inStock && (isBoostedActive || (hasDiscount && discountPercent >= 5)) ? (
-              <div className="absolute left-1.5 top-1.5 z-10 pointer-events-none">
-                {isBoostedActive ? (
-                  <Badge variant="secondary" className="text-2xs px-2 py-0.5">
-                    {t("adBadge")}
-                  </Badge>
-                ) : (
-                  <Badge
-                    variant="destructive"
-                    className="text-2xs px-2 py-0.5 font-semibold tabular-nums"
-                  >
-                    -{discountPercent}%
-                  </Badge>
-                )}
-              </div>
-            ) : null
-          ) : (
-              (isBoostedActive || (hasDiscount && discountPercent >= 5)) && (
-                <div className="absolute left-1.5 top-1.5 z-10 flex flex-col gap-1 pointer-events-none">
-                  {isBoostedActive && (
-                    <Badge variant="secondary" className="text-2xs px-2 py-0.5">
+          {inStock && overlayBadgeVariants.length > 0 && (
+            <div className="absolute left-1.5 top-1.5 z-10 flex flex-col gap-1 pointer-events-none">
+              {overlayBadgeVariants.map((variant) => {
+                if (variant === "promoted") {
+                  return (
+                    <Badge key="promoted" variant="promoted" className="text-2xs px-2 py-0.5">
                       {t("adBadge")}
                     </Badge>
-                  )}
-                {hasDiscount && discountPercent >= 5 && (
-                  <Badge
-                    variant="destructive"
-                    className="text-2xs px-2 py-0.5 font-semibold tabular-nums"
-                  >
+                  )
+                }
+                return (
+                  <Badge key="discount" variant="discount" className="text-2xs px-2 py-0.5">
                     -{discountPercent}%
                   </Badge>
-                )}
-              </div>
-            )
+                )
+              })}
+            </div>
           )}
 
           {showWishlist && (
@@ -511,3 +437,4 @@ export {
 // =============================================================================
 
 export { ProductCard, productCardVariants, type ProductCardProps }
+export type { ProductCardData, ProductCardViewConfig } from "./product-card.types"

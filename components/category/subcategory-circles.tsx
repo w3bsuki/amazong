@@ -225,7 +225,7 @@ export function SubcategoryCircles({
                 )}
                 fallbackIconSize={isDesktop ? 28 : 24}
                 fallbackIconWeight="bold"
-                variant={isActive ? "colorful" : "muted"}
+                variant={isActive ? "rail" : "muted"}
                 preferIcon={preferIcon}
               />
             )

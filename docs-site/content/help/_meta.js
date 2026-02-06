@@ -1,7 +1,7 @@
 export default {
-  index: "Overview",
-  "buyer-protection": "Buyer Protection",
-  disputes: "Disputes",
-  shipping: "Shipping",
+  "index": "Overview",
   "account-security": "Account Security",
+  "buyer-protection": "Buyer Protection",
+  "disputes": "Disputes",
+  "shipping": "Shipping",
 }

@@ -560,8 +560,9 @@ const inputVariants = cva(
 
 - [APP-FEEL-GUIDE.md](./APP-FEEL-GUIDE.md) — Main transformation guide
 - [APP-FEEL-CHECKLIST.md](./APP-FEEL-CHECKLIST.md) — Implementation checklist
-- [04-DESIGN.md](./04-DESIGN.md) — Token SSOT
+- [DESIGN.md](./DESIGN.md) — Token SSOT
 
 ---
 
 *Last updated: 2026-02-03*
+

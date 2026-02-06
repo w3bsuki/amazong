@@ -5,9 +5,10 @@ import { MobileWishlistButton } from "@/components/shared/wishlist/mobile-wishli
 import { CategoryCircle } from "@/components/shared/category/category-circle"
 import { getCategoryName, getCategorySlugKey } from "@/lib/category-display"
 import { MagnifyingGlass, ArrowLeft } from "@phosphor-icons/react"
-import { Link } from "@/i18n/routing"
+import { Link, usePathname } from "@/i18n/routing"
 import { useTranslations } from "next-intl"
 import { cn } from "@/lib/utils"
+import { buildSearchHref } from "@/components/shared/search/search-context"
 import type { ContextualHeaderProps } from "../types"
 
 /**
@@ -31,6 +32,15 @@ export function MobileContextualHeader({
 }: ContextualHeaderProps) {
   const tCommon = useTranslations("Common")
   const tCategories = useTranslations("Categories")
+  const pathname = usePathname()
+  const pathCategorySlug = pathname.match(/\/categories\/([^/?#]+)/)?.[1] ?? null
+  const effectiveCategorySlug = activeSlug ?? pathCategorySlug
+  const searchHref = buildSearchHref({
+    context: {
+      categorySlug: effectiveCategorySlug,
+      source: "contextual-header",
+    },
+  })
 
   return (
     <div className="md:hidden bg-background pt-safe">
@@ -61,7 +71,7 @@ export function MobileContextualHeader({
         {!hideActions && (
           <div className="flex items-center gap-1">
             <Link
-              href="/search"
+              href={searchHref}
               className="size-11 flex items-center justify-center rounded-full tap-transparent active:bg-active transition-colors"
               aria-label={tCommon("search")}
             >
@@ -86,17 +96,18 @@ export function MobileContextualHeader({
                     category={cat}
                     onClick={() => onSubcategoryClick?.(cat)}
                     active={isActive}
-                    labelPlacement="inside"
+                    labelPlacement="below"
                     circleClassName="size-(--spacing-category-circle)"
                     fallbackIconSize={24}
                     fallbackIconWeight="duotone"
-                    variant="colorful"
+                    variant="rail"
                     label={tCategories("shortName", {
                       slug: getCategorySlugKey(cat.slug),
                       name: getCategoryName(cat, locale),
                     })}
-                    className="flex-none w-(--spacing-category-item-lg) tap-transparent"
-                    insideLabelClassName={cn(
+                    className="flex-none w-(--spacing-category-item-nav) tap-transparent"
+                    labelClassName={cn(
+                      "truncate",
                       isActive ? "text-foreground" : "text-muted-foreground"
                     )}
                   />

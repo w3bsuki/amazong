@@ -1,4 +1,4 @@
-# 04-DESIGN.md — Treido Design System
+# DESIGN.md — Treido Design System
 
 > **SSOT for UI/UX + Tailwind v4 + shadcn/ui.** Premium = restraint.
 
@@ -118,6 +118,10 @@ CSS Variables (:root/.dark) → @theme inline → Tailwind Classes
 | Elevated | `bg-surface-elevated` | Sticky elements |
 | Popover | `bg-popover` | Dropdowns, sheets |
 | Gallery | `bg-surface-gallery` | Dark image backgrounds |
+
+**Page canvas (use `PageShell`)**
+- Default pages: `bg-background`
+- Grid/feed pages: `PageShell variant="muted"` → `bg-surface-subtle` (cards pop; premium depth)
 
 ### Text Tokens
 
@@ -419,12 +423,13 @@ pnpm -s lint           # ESLint
 
 ## See Also
 
-- [Tokens SSOT](../app/globals.css)
-- [Button Component](../components/ui/button.tsx)
-- [PageShell](../components/shared/page-shell.tsx)
-- [01-PRD.md](./01-PRD.md) — Product context
-- [03-ARCHITECTURE.md](./03-ARCHITECTURE.md) — Module boundaries
+- Tokens SSOT (`app/globals.css`)
+- Button Component (`components/ui/button.tsx`)
+- PageShell (`components/shared/page-shell.tsx`)
+- [PRD.md](/platform) — Product context
+- [ARCHITECTURE.md](/engineering) — Module boundaries
 
 ---
 
 *Last updated: 2026-02-01*
+

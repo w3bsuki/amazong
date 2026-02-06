@@ -129,7 +129,7 @@ export function MobileHome({
               </h2>
               <Link
                 href="/search?sort=newest"
-                className="inline-flex items-center gap-1 text-xs font-medium text-muted-foreground hover:text-foreground active:text-foreground transition-colors"
+                className="inline-flex items-center gap-1 min-h-(--spacing-touch-md) px-1.5 -mr-1 rounded-md text-xs font-medium text-muted-foreground hover:text-foreground active:bg-active active:text-foreground transition-colors"
               >
                 {t("sections.seeAll")}
               </Link>

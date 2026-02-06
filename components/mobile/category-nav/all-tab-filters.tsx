@@ -51,19 +51,19 @@ export function AllTabFilters({
               key={filter.id}
               onClick={() => onFilterClick(filter.id)}
               className={cn(
-                "flex items-center gap-1.5 h-8 px-3 shrink-0 snap-start rounded-full text-xs font-medium",
+                "flex items-center gap-1.5 h-11 px-3.5 shrink-0 snap-start rounded-full text-xs font-medium",
                 "border border-transparent transition-colors",
                 "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
                 isActive
                   ? "bg-foreground text-background border-foreground"
-                  : "bg-muted text-muted-foreground hover:bg-hover hover:text-foreground border-border/40"
+                  : "bg-muted text-muted-foreground hover:bg-hover hover:text-foreground border-border-subtle"
               )}
               aria-pressed={isActive}
             >
               <Icon
                 size={14}
                 weight={isActive ? "fill" : "regular"}
-                className={isActive ? "" : "opacity-70"}
+                className={isActive ? "text-background" : "text-muted-foreground"}
               />
               <span className="whitespace-nowrap">
                 {filter.label[locale as "en" | "bg"] || filter.label.en}

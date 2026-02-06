@@ -185,8 +185,8 @@ export function QuickFilterRow({
     }, [searchParams, attributes])
 
     // Pill styles matching CategoryNavItem pill variant
-    const pillBase = "shrink-0 h-8 px-3 text-xs font-medium rounded-full whitespace-nowrap flex items-center justify-center gap-1.5 border transition-colors tap-transparent"
-    const pillInactive = "border-border bg-surface-subtle text-muted-foreground hover:bg-hover hover:text-foreground"
+    const pillBase = "shrink-0 h-11 px-3.5 text-xs font-medium rounded-full whitespace-nowrap flex items-center justify-center gap-1.5 border transition-colors tap-transparent"
+    const pillInactive = "border-border-subtle bg-surface-subtle text-muted-foreground hover:bg-hover hover:text-foreground"
     const pillActive = "border-foreground bg-foreground text-background"
 
     return (

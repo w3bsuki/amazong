@@ -126,7 +126,7 @@ export function MessagesDrawer({ open, onOpenChange }: MessagesDrawerProps) {
         {!user ? (
           <div className="flex flex-col items-center justify-center px-inset py-5">
             <div className="size-11 bg-muted rounded-xl flex items-center justify-center mb-2">
-              <ChatCircle size={22} weight="regular" className="text-muted-foreground/50" />
+              <ChatCircle size={22} weight="regular" className="text-muted-foreground" />
             </div>
             <p className="text-sm text-foreground font-medium">
               {t("signInPrompt")}
@@ -137,12 +137,12 @@ export function MessagesDrawer({ open, onOpenChange }: MessagesDrawerProps) {
           </div>
         ) : isLoading ? (
           <div className="flex items-center justify-center py-8">
-            <div className="size-6 border-2 border-muted-foreground/30 border-t-foreground rounded-full animate-spin" />
+            <div className="size-6 border-2 border-border-subtle border-t-foreground rounded-full animate-spin" />
           </div>
         ) : recentConversations.length === 0 ? (
           <div className="flex flex-col items-center justify-center px-inset py-5">
             <div className="size-11 bg-muted rounded-xl flex items-center justify-center mb-2">
-              <ChatCircle size={22} weight="regular" className="text-muted-foreground/50" />
+              <ChatCircle size={22} weight="regular" className="text-muted-foreground" />
             </div>
             <p className="text-sm text-foreground font-medium">{tMessages("noConversations")}</p>
             <p className="text-xs text-muted-foreground mt-0.5">

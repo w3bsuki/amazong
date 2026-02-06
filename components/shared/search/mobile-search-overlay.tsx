@@ -21,6 +21,7 @@ import { useTranslations } from "next-intl"
 import Image from "next/image"
 import { cn } from "@/lib/utils"
 import { useProductSearch } from "@/hooks/use-product-search"
+import { buildSearchHref, type SearchLaunchContext } from "./search-context"
 
 interface MobileSearchOverlayProps {
   className?: string
@@ -30,6 +31,8 @@ interface MobileSearchOverlayProps {
   externalOpen?: boolean
   /** Callback when overlay should close (for external control) */
   onOpenChange?: (open: boolean) => void
+  /** Optional category context preserved when launching search results */
+  searchContext?: SearchLaunchContext
 }
 
 /** Focus delay in milliseconds after overlay opens */
@@ -49,6 +52,7 @@ export function MobileSearchOverlay({
   hideDefaultTrigger = false,
   externalOpen,
   onOpenChange,
+  searchContext,
 }: MobileSearchOverlayProps) {
   // Generate unique IDs for accessibility
   const searchInputId = useId()
@@ -160,9 +164,14 @@ export function MobileSearchOverlay({
 
       saveSearch(trimmedValue)
       handleClose()
-      router.push(`/search?q=${encodeURIComponent(trimmedValue)}`)
+      router.push(
+        buildSearchHref({
+          query: trimmedValue,
+          ...(searchContext ? { context: searchContext } : {}),
+        })
+      )
     },
-    [saveSearch, handleClose, router]
+    [saveSearch, handleClose, router, searchContext]
   )
 
   // Build SEO-friendly product URL
@@ -262,7 +271,7 @@ export function MobileSearchOverlay({
                 type="button"
                 variant="ghost"
                 onClick={handleClose}
-                className="h-8 px-2 text-link font-medium hover:bg-transparent hover:text-link-hover"
+                className="h-11 px-3 text-link font-medium hover:bg-transparent hover:text-link-hover"
               >
                 {tSearch("close")}
               </Button>
@@ -294,7 +303,7 @@ export function MobileSearchOverlay({
                   placeholder={tNav("searchPlaceholder")}
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
-                  className="h-9 w-full pl-9 pr-10 text-base bg-background rounded-full border border-border focus-visible:ring-0"
+                  className="h-11 w-full pl-9 pr-10 text-base bg-background rounded-full border border-border focus-visible:ring-0"
                   autoComplete="off"
                   autoCapitalize="off"
                   autoCorrect="off"

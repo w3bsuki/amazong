@@ -31,6 +31,7 @@ function isAllowedMarkdownPath(relPath) {
   if (p.startsWith("docs-site/")) return true; // internal portal (mirrors from /docs)
   if (p.startsWith(".github/")) return true; // repo metadata (templates, instructions)
   if (p.startsWith(".claude/")) return true; // tooling config (allowed)
+  if (p.startsWith("shadcn-tailwind-v4-ecommerce-ui-guide/")) return true; // temporary inspiration guide (kept intentionally)
 
   // Storybook docs live with components (allowed exception).
   if (p.startsWith("components/storybook/")) return true;
@@ -117,7 +118,7 @@ for (const abs of markdownFiles) {
 }
 
 const brokenIndexRefs = [];
-const indexAbs = path.resolve(projectRoot, "docs/00-INDEX.md");
+const indexAbs = path.resolve(projectRoot, "docs/INDEX.md");
 if (fs.existsSync(indexAbs)) {
   const text = fs.readFileSync(indexAbs, "utf8");
   const seen = new Set();
@@ -193,12 +194,13 @@ if (disallowed.length) {
   console.error("- **/AGENTS.md");
   console.error("- README.md");
   console.error("- .github/**");
-  console.error("- .agent/**, .agents/**, .claude/**, .qwen/**, .trae/**, .windsurf/**, .cursor/**");
+  console.error("- .claude/**");
+  console.error("- shadcn-tailwind-v4-ecommerce-ui-guide/** (temporary inspiration guide)");
 }
 
 if (brokenIndexRefs.length) {
   failed = true;
-  console.error("DOCS GATE FAIL: docs/00-INDEX.md references missing paths:");
+  console.error("DOCS GATE FAIL: docs/INDEX.md references missing paths:");
   for (const p of brokenIndexRefs.sort()) console.error(`- ${p}`);
 }
 
@@ -210,8 +212,71 @@ if (brokenRelativeLinks.length) {
   }
 }
 
+const canonicalAliasWarnings = [];
+const canonicalDocsForAliasScan = [
+  "docs/INDEX.md",
+  "docs/PRD.md",
+  "docs/FEATURES.md",
+  "docs/ARCHITECTURE.md",
+  "docs/DESIGN.md",
+  "docs/ROUTES.md",
+  "docs/DATABASE.md",
+  "docs/API.md",
+  "docs/PAYMENTS.md",
+  "docs/AUTH.md",
+  "docs/I18N.md",
+  "docs/SKILLS.md",
+  "docs/LAUNCH.md",
+  "docs/PRODUCTION-PUSH.md",
+  "docs/DEV-DEPARTMENT.md",
+];
+const aliasPattern =
+  /\b(00-INDEX\.md|01-PRD\.md|02-FEATURES\.md|03-ARCHITECTURE\.md|04-DESIGN\.md|05-ROUTES\.md|06-DATABASE\.md|07-API\.md|08-PAYMENTS\.md|09-AUTH\.md|10-I18N\.md|11-SKILLS\.md|12-LAUNCH\.md|13-PRODUCTION-PUSH\.md|15-DEV-DEPARTMENT\.md)\b/g;
+
+for (const rel of canonicalDocsForAliasScan) {
+  const abs = path.resolve(projectRoot, rel);
+  if (!fs.existsSync(abs)) continue;
+  const text = fs.readFileSync(abs, "utf8");
+  const matches = [...text.matchAll(aliasPattern)]
+    .filter((m) => {
+      const index = typeof m.index === "number" ? m.index : -1;
+      if (index <= 0) return true;
+      return text[index - 1] !== "/";
+    })
+    .map((m) => m[1])
+    .filter(Boolean);
+  if (matches.length > 0) {
+    canonicalAliasWarnings.push(`${rel}: ${[...new Set(matches)].join(", ")}`);
+  }
+}
+
 if (failed) {
   process.exitCode = 1;
 } else {
+  const rootAgentsPath = path.resolve(projectRoot, "AGENTS.md");
+  if (!fs.existsSync(rootAgentsPath)) {
+    console.error("DOCS GATE FAIL: missing root AGENTS.md");
+    process.exitCode = 1;
+  } else {
+    const agentsText = fs.readFileSync(rootAgentsPath, "utf8");
+    const lineCount = agentsText.replace(/\r\n/g, "\n").split("\n").length;
+    if (lineCount > 120) {
+      console.error(`DOCS GATE FAIL: root AGENTS.md is too large (${lineCount} lines, max 120).`);
+      process.exitCode = 1;
+    }
+    if (!/docs\/AGENTS\.md/.test(agentsText)) {
+      console.error("DOCS GATE FAIL: root AGENTS.md must link to docs/AGENTS.md");
+      process.exitCode = 1;
+    }
+  }
+}
+
+if (!process.exitCode) {
+  if (canonicalAliasWarnings.length > 0) {
+    console.warn("DOCS GATE WARN: canonical docs still reference numbered alias files:");
+    for (const warning of canonicalAliasWarnings) {
+      console.warn(`- ${warning}`);
+    }
+  }
   console.log("DOCS GATE OK");
 }

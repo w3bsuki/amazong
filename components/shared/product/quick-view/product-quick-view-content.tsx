@@ -221,8 +221,8 @@ export function ProductQuickViewContent({
               aria-label={tModal("copyLink")}
               disabled={!shareUrl}
               className={cn(
-                "rounded-full border border-border-subtle bg-background/80 backdrop-blur-sm",
-                "hover:bg-background/90 hover:border-border active:bg-background/90",
+                "rounded-full border border-border-subtle bg-surface-glass backdrop-blur-sm",
+                "hover:bg-background hover:border-border active:bg-active",
                 "text-muted-foreground hover:text-foreground active:text-foreground",
                 "![&_svg]:size-4"
               )}
@@ -236,8 +236,8 @@ export function ProductQuickViewContent({
               aria-label={inWishlist ? tProduct("removeFromWatchlist") : tProduct("addToWatchlist")}
               disabled={wishlistPending}
               className={cn(
-                "rounded-full border border-border-subtle bg-background/80 backdrop-blur-sm",
-                "hover:bg-background/90 hover:border-border active:bg-background/90",
+                "rounded-full border border-border-subtle bg-surface-glass backdrop-blur-sm",
+                "hover:bg-background hover:border-border active:bg-active",
                 "![&_svg]:size-4",
                 inWishlist
                   ? "text-primary"

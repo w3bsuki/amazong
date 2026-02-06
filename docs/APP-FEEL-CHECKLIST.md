@@ -292,9 +292,10 @@ REUSE_EXISTING_SERVER=true pnpm -s test:e2e:smoke
 
 - [APP-FEEL-GUIDE.md](./APP-FEEL-GUIDE.md) — Main transformation guide
 - [APP-FEEL-COMPONENTS.md](./APP-FEEL-COMPONENTS.md) — Component specs
-- [04-DESIGN.md](./04-DESIGN.md) — Token SSOT
+- [DESIGN.md](./DESIGN.md) — Token SSOT
 - [14-UI-UX-PLAN.md](./14-UI-UX-PLAN.md) — UX Roadmap
 
 ---
 
 *Last updated: 2026-02-03*
+

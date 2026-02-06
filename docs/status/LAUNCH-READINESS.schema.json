@@ -1,0 +1,145 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Treido Launch Readiness",
+  "type": "object",
+  "required": [
+    "meta",
+    "readiness"
+  ],
+  "properties": {
+    "meta": {
+      "type": "object",
+      "required": [
+        "generated_at",
+        "version",
+        "canonical_sources"
+      ],
+      "properties": {
+        "generated_at": {
+          "type": "string"
+        },
+        "version": {
+          "type": "string"
+        },
+        "canonical_sources": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1
+        }
+      }
+    },
+    "readiness": {
+      "type": "object",
+      "required": [
+        "status",
+        "documented_progress",
+        "critical_blockers",
+        "criteria"
+      ],
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": [
+            "blocked",
+            "at_risk",
+            "in_progress",
+            "launch_ready"
+          ]
+        },
+        "documented_progress": {
+          "type": "object",
+          "required": [
+            "implemented",
+            "total",
+            "percent"
+          ],
+          "properties": {
+            "implemented": {
+              "type": "number",
+              "minimum": 0
+            },
+            "total": {
+              "type": "number",
+              "minimum": 1
+            },
+            "percent": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 100
+            }
+          }
+        },
+        "critical_blockers": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "id",
+              "title",
+              "priority",
+              "owner"
+            ],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "title": {
+                "type": "string"
+              },
+              "priority": {
+                "type": "string"
+              },
+              "owner": {
+                "type": "string"
+              },
+              "audit": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "criteria": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "id",
+              "title",
+              "status",
+              "evidence"
+            ],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "title": {
+                "type": "string"
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "ready",
+                  "at_risk",
+                  "blocked",
+                  "unknown"
+                ]
+              },
+              "evidence": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "notes": {
+                "type": "string"
+              }
+            }
+          },
+          "minItems": 1
+        }
+      }
+    }
+  }
+}
