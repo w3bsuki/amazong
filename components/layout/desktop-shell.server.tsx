@@ -70,7 +70,7 @@ export function DesktopShell({
           className={cn(
             "grid items-start",
             hasSidebar
-              ? "grid-cols-1 lg:grid-cols-[var(--shell-sidebar-w)_1fr] gap-4 lg:gap-(--layout-gap)"
+              ? "grid-cols-1 lg:grid-cols-shell gap-4 lg:gap-(--layout-gap)"
               : "grid-cols-1",
           )}
         >

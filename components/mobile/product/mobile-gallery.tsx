@@ -126,7 +126,7 @@ export function MobileGallery({
               <button
                 type="button"
                 onClick={onBack}
-                className="size-touch-lg rounded-full bg-surface-floating/90 shadow-sm flex items-center justify-center active:bg-background"
+                className="size-touch-lg rounded-full bg-surface-floating shadow-sm flex items-center justify-center active:bg-background"
                 aria-label={t("back")}
               >
                 <ChevronLeft className="size-5 text-text-strong" />
@@ -144,7 +144,7 @@ export function MobileGallery({
                     "size-touch-lg rounded-full shadow-sm flex items-center justify-center",
                     isWishlisted 
                       ? "bg-destructive text-destructive-foreground" 
-                      : "bg-surface-floating/90 active:bg-background"
+                      : "bg-surface-floating active:bg-background"
                   )}
                   aria-label={isWishlisted ? t("removeFromWishlist") : t("addToWishlist")}
                 >
@@ -244,7 +244,7 @@ export function MobileGallery({
             <button
               type="button"
               onClick={() => setViewerOpen(false)}
-              className="size-10 rounded-full bg-surface-floating/20 flex items-center justify-center"
+              className="size-10 rounded-full bg-surface-overlay flex items-center justify-center"
               aria-label={t("closeViewer")}
             >
               <X className="size-6 text-overlay-text" />
@@ -254,7 +254,7 @@ export function MobileGallery({
             </span>
             <button
               type="button"
-              className="size-10 rounded-full bg-surface-floating/20 flex items-center justify-center"
+              className="size-10 rounded-full bg-surface-overlay flex items-center justify-center"
               aria-label={t("moreOptions")}
             >
               <MoreHorizontal className="size-5 text-overlay-text" />

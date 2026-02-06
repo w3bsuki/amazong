@@ -299,12 +299,12 @@ export function SupportChatWidget({
         {/* Header */}
         <SheetHeader className="px-4 py-3 border-b bg-primary text-primary-foreground">
           <div className="flex items-center gap-3">
-            <div className="size-10 bg-primary-foreground/20 rounded-full flex items-center justify-center">
+            <div className="size-10 bg-muted rounded-full flex items-center justify-center">
               <Headphones className="size-5" weight="fill" />
             </div>
             <div className="flex-1">
               <SheetTitle className="text-primary-foreground text-lg">{t("contactUs")}</SheetTitle>
-              <p className="text-primary-foreground/80 text-sm">{t("needMoreHelp")}</p>
+              <p className="text-foreground text-sm">{t("needMoreHelp")}</p>
             </div>
           </div>
         </SheetHeader>
@@ -366,7 +366,7 @@ export function SupportChatWidget({
                     <p
                       className={cn(
                         "text-2xs mt-1",
-                        msg.is_support ? "text-muted-foreground" : "text-primary-foreground/70"
+                        msg.is_support ? "text-muted-foreground" : "text-foreground"
                       )}
                     >
                       {formatTime(msg.created_at)}

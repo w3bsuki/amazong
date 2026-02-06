@@ -133,7 +133,7 @@ export function AccountOrdersToolbar({
           aria-label={labels.search}
         />
         {isPending && (
-          <div className="absolute right-3 top-2.5 h-4 w-4 animate-spin rounded-full border-2 border-muted-foreground/40 border-t-transparent" />
+          <div className="absolute right-3 top-2.5 h-4 w-4 animate-spin rounded-full border-2 border-border border-t-transparent" />
         )}
       </div>
     </div>

@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useEffect, useMemo, useState } from "react"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { PageShell } from "@/components/shared/page-shell"
 import { MobileSearchOverlay } from "@/components/shared/search/mobile-search-overlay"
 import { ProductCard, ProductGrid } from "@/components/shared/product/product-card"
@@ -10,6 +10,7 @@ import type { CategoryTreeNode } from "@/lib/category-tree"
 import { useTranslations } from "next-intl"
 import { Link } from "@/i18n/routing"
 import { CaretRight } from "@phosphor-icons/react"
+import { HomeSectionHeader } from "@/components/mobile/home-section-header"
 
 // New drawer-based navigation
 import {
@@ -18,6 +19,7 @@ import {
 } from "@/components/mobile/category-nav"
 import { CategoryBrowseDrawer } from "@/components/mobile/drawers/category-browse-drawer"
 import { PromotedListingsStrip } from "@/components/shared/promoted-listings-strip"
+import { HomeStickyCategoryPills } from "@/components/mobile/home-sticky-category-pills"
 
 // =============================================================================
 // Types
@@ -68,6 +70,8 @@ export function MobileHome({
   const tMobile = useTranslations("Home.mobile")
   const tTabs = useTranslations("TabbedProductFeed.tabs")
   const [searchOpen, setSearchOpen] = useState(false)
+  const [showStickyCategoryPills, setShowStickyCategoryPills] = useState(false)
+  const categoryCirclesRef = useRef<HTMLDivElement | null>(null)
 
   // Homepage category navigation is drawer-based; avoid legacy `?tab=` URL state.
   const handleHeaderCategorySelect = useCallback((_slug: string) => {}, [])
@@ -96,6 +100,38 @@ export function MobileHome({
     return () => setHomepageHeader(null)
   }, [handleHeaderCategorySelect, initialCategories, setHomepageHeader])
 
+  useEffect(() => {
+    const target = categoryCirclesRef.current
+    if (!target || typeof window === "undefined") return
+
+    let rafId = 0
+
+    const updateStickyVisibility = () => {
+      rafId = 0
+      const rect = target.getBoundingClientRect()
+      // Show only after circles are fully out of viewport.
+      const shouldShow = rect.bottom <= 0
+      setShowStickyCategoryPills((prev) => (prev === shouldShow ? prev : shouldShow))
+    }
+
+    const queueUpdate = () => {
+      if (rafId !== 0) return
+      rafId = window.requestAnimationFrame(updateStickyVisibility)
+    }
+
+    updateStickyVisibility()
+    window.addEventListener("scroll", queueUpdate, { passive: true })
+    window.addEventListener("resize", queueUpdate)
+
+    return () => {
+      window.removeEventListener("scroll", queueUpdate)
+      window.removeEventListener("resize", queueUpdate)
+      if (rafId !== 0) {
+        window.cancelAnimationFrame(rafId)
+      }
+    }
+  }, [])
+
   return (
     <CategoryDrawerProvider rootCategories={initialCategories}>
       <PageShell variant="default" className="pb-4">
@@ -107,33 +143,33 @@ export function MobileHome({
         />
 
         {/* Header is rendered by layout - passes variant="homepage" with category pills */}
-        <div className="bg-background border-b border-border-subtle">
+        <div ref={categoryCirclesRef} className="bg-background border-b border-border-subtle">
           <CategoryCirclesSimple
             categories={initialCategories}
             locale={locale}
           />
         </div>
 
+        <HomeStickyCategoryPills
+          visible={showStickyCategoryPills}
+          categories={initialCategories}
+          locale={locale}
+        />
+
          {/* Main Content */}
-       <div className="pb-4 space-y-4">
+       <div className="pt-2 pb-4 space-y-2">
         {/* Curated carousels (no sorting UI on Home) */}
         {activePromotedProducts.length > 0 && (
           <PromotedListingsStrip products={activePromotedProducts} />
         )}
 
         {initialProducts.length > 0 && (
-          <section className="pt-1">
-            <div className="mb-3 flex items-center justify-between gap-2 px-inset-md">
-              <h2 className="min-w-0 truncate text-base font-semibold tracking-tight text-foreground">
-                {tTabs("newest")}
-              </h2>
-              <Link
-                href="/search?sort=newest"
-                className="inline-flex items-center gap-1 min-h-(--spacing-touch-md) px-1.5 -mr-1 rounded-md text-xs font-medium text-muted-foreground hover:text-foreground active:bg-active active:text-foreground transition-colors"
-              >
-                {t("sections.seeAll")}
-              </Link>
-            </div>
+          <section className="pt-0">
+            <HomeSectionHeader
+              title={tTabs("newest")}
+              href="/search?sort=newest"
+              actionLabel={t("sections.seeAll")}
+            />
 
             <ProductGrid density="compact" className="px-inset-md pb-2">
               {initialProducts.map((product, index) => (

@@ -113,7 +113,7 @@ function ProductCardPrice({
 
       {/* Condition / Protection badges - separate row for clarity (desktop only in compact mode) */}
       {(conditionLabel || (showBuyerProtection && buyerProtectionLabel)) && (
-        <div className={cn("flex items-center gap-1.5", compact && "hidden lg:flex")}>
+        <div className={cn("flex items-center gap-1", compact && "hidden lg:flex")}>
           {conditionLabel && (
             <span className="text-2xs font-medium text-muted-foreground">
               {conditionLabel}

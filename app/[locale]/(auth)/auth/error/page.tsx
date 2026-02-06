@@ -95,7 +95,7 @@ export default async function AuthErrorPage({
             <Link href="/privacy" className="hover:text-primary transition-colors">{t('privacyNotice')}</Link>
             <Link href="/help" className="hover:text-primary transition-colors">{t('help')}</Link>
           </div>
-          <p className="text-xs text-center text-muted-foreground/70 mt-2">
+          <p className="text-xs text-center text-muted-foreground mt-2">
             {t('copyright', { year: new Date().getFullYear() })}
           </p>
         </div>

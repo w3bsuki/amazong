@@ -114,7 +114,7 @@ export function AccountStatsCards({ totals, locale }: AccountStatsProps) {
                 {action.count}
               </span>
             )}
-            <IconChevronRight className="size-3.5 text-muted-foreground/50 group-hover:translate-x-0.5 transition-transform" />
+            <IconChevronRight className="size-3.5 text-muted-foreground group-hover:translate-x-0.5 transition-transform" />
           </Link>
         ))}
       </div>

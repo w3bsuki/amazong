@@ -1,11 +1,10 @@
 "use client"
 
 import { useTranslations } from "next-intl"
-import { Link } from "@/i18n/routing"
-import { ArrowRight } from "@phosphor-icons/react"
 import { HorizontalProductCard } from "@/components/shared/product/horizontal-product-card"
 import type { UIProduct } from "@/lib/types/products"
 import { Badge } from "@/components/ui/badge"
+import { HomeSectionHeader } from "@/components/mobile/home-section-header"
 import { cn } from "@/lib/utils"
 
 interface PromotedListingsStripProps {
@@ -20,32 +19,20 @@ export function PromotedListingsStrip({ products, className }: PromotedListingsS
   if (!products || products.length === 0) return null
 
   return (
-    <section className={cn("py-4", className)}>
-      <div className="px-inset-md mb-3.5 flex items-center justify-between gap-2">
-        <div className="min-w-0 flex items-center gap-2">
+    <section className={cn("py-0", className)}>
+      <HomeSectionHeader
+        title={t("mobile.promotedListings")}
+        href="/search?promoted=true&sort=newest"
+        actionLabel={t("mobile.seeAll")}
+        leading={
           <Badge variant="promoted" className="shrink-0 px-2 py-0.5 text-2xs">
             {tProduct("adBadge")}
           </Badge>
-          <h2 className="min-w-0 truncate text-lg font-semibold tracking-tight text-foreground">
-            {t("mobile.promotedListings")}
-          </h2>
-        </div>
-        <Link
-          href="/search?promoted=true&sort=newest"
-          className={cn(
-            "inline-flex items-center gap-1",
-            "min-h-(--spacing-touch-md) px-1.5 -mr-1 rounded-md",
-            "text-xs font-medium text-muted-foreground",
-            "hover:text-foreground active:bg-active active:text-foreground transition-colors"
-          )}
-        >
-          {t("mobile.seeAll")}
-          <ArrowRight size={14} weight="bold" aria-hidden="true" />
-        </Link>
-      </div>
+        }
+      />
 
       <div className="overflow-x-auto no-scrollbar">
-        <div className="flex gap-4 px-inset-md">
+        <div className="flex gap-3 px-inset-md">
           {products.slice(0, 8).map((product) => (
             <HorizontalProductCard
               key={product.id}

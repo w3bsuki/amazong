@@ -121,7 +121,7 @@ export default function SignUpSuccessClient() {
               {t("help")}
             </Link>
           </div>
-          <p className="text-xs text-center text-muted-foreground/70 mt-2">
+          <p className="text-xs text-center text-muted-foreground mt-2">
             {t("copyright", { year: new Date().getFullYear() })}
           </p>
         </div>

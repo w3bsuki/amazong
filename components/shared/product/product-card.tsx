@@ -350,9 +350,9 @@ function ProductCard({
           isTile
             ? cn(
                 "px-1.5 pb-1.5 pt-2",
-                isCompact ? "space-y-1" : "space-y-1.5"
+                "space-y-1"
               )
-            : "space-y-1.5 p-3 pt-2.5"
+            : "space-y-1 p-2.5 pt-2"
         )}
       >
         <h3

@@ -1,9 +1,10 @@
+import { getCategoryHierarchy, type CategoryWithChildren } from "@/lib/data/categories"
 import { createStaticClient } from "@/lib/supabase/server"
 import { NextResponse } from "next/server"
 import { cacheLife, cacheTag } from "next/cache"
 import { isNextPrerenderInterrupted } from "@/lib/next/is-next-prerender-interrupted"
 
-// This endpoint returns product counts for ALL categories (L0, L1, L2)
+// This endpoint returns product counts for ALL categories (L0, L1, L2).
 // Used for sidebar category navigation to show listing counts
 
 // Cache for 1 hour, stale for 5 min (counts don't need to be real-time)
@@ -15,11 +16,35 @@ interface CategoryCount {
   count: number
 }
 
+interface FlatCategoryRef {
+  id: string
+  slug: string
+}
+
+function flattenCategories(nodes: CategoryWithChildren[]): FlatCategoryRef[] {
+  const out: FlatCategoryRef[] = []
+  const stack = [...nodes]
+
+  while (stack.length > 0) {
+    const current = stack.pop()
+    if (!current) continue
+
+    out.push({ id: current.id, slug: current.slug })
+
+    if (current.children && current.children.length > 0) {
+      for (const child of current.children) {
+        stack.push(child)
+      }
+    }
+  }
+
+  return out
+}
+
 /**
  * Get product counts for all categories.
- * Reads from `category_stats` (view backed by a materialized view) for speed.
- * Filters to L0, L1, L2 categories using the precomputed `depth`.
- * Returns empty array on failure (graceful degradation).
+ * Reads category scope from canonical hierarchy (L0→L2) and merges stats by category_id.
+ * Always returns all active scoped categories; missing stats fallback to 0.
  */
 async function getCategoryCountsCached(): Promise<CategoryCount[]> {
   'use cache'
@@ -27,26 +52,40 @@ async function getCategoryCountsCached(): Promise<CategoryCount[]> {
   cacheLife('categories')
 
   try {
-    const supabase = createStaticClient()
-
-    const { data: stats, error: statsError } = await supabase
-      .from('category_stats')
-      .select('slug, depth, subtree_product_count')
-      .lte('depth', 2)
-
-    if (statsError || !stats) {
-      if (process.env.NODE_ENV === "development") {
-        console.debug("Category counts: Error fetching category_stats:", statsError?.message)
-      }
+    const scopedHierarchy = await getCategoryHierarchy(null, 2)
+    if (!scopedHierarchy || scopedHierarchy.length === 0) {
       return []
     }
 
-    return stats
-      .filter((row) => typeof row.slug === "string")
-      .map((row) => ({
-        slug: row.slug as string,
-        count: row.subtree_product_count ?? 0,
-      }))
+    const scopedCategories = flattenCategories(scopedHierarchy)
+    if (scopedCategories.length === 0) {
+      return []
+    }
+
+    const supabase = createStaticClient()
+    const categoryIds = scopedCategories.map((cat) => cat.id)
+
+    const { data: stats, error: statsError } = await supabase
+      .from('category_stats')
+      .select('category_id, subtree_product_count')
+      .in('category_id', categoryIds)
+
+    if (statsError) {
+      if (process.env.NODE_ENV === "development") {
+        console.debug("Category counts: Error fetching category_stats:", statsError?.message)
+      }
+    }
+
+    const countByCategoryId = new Map<string, number>()
+    for (const row of stats ?? []) {
+      if (!row.category_id) continue
+      countByCategoryId.set(row.category_id, row.subtree_product_count ?? 0)
+    }
+
+    return scopedCategories.map((cat) => ({
+      slug: cat.slug,
+      count: countByCategoryId.get(cat.id) ?? 0,
+    }))
   } catch (error) {
     // Allow prerender interruptions to propagate
     if (isNextPrerenderInterrupted(error)) throw error

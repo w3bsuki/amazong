@@ -37,7 +37,7 @@ export function MobileHomepageHeader({
           type="button"
           onClick={onSearchOpen}
           className={cn(
-            "flex-1 min-w-0 flex items-center gap-1.5 h-9 ml-2 px-3 rounded-full",
+            "flex-1 min-w-0 flex items-center gap-1 h-9 ml-2 px-3 rounded-full",
             "bg-surface-subtle border border-border/30",
             "text-muted-foreground text-sm text-left",
             "active:bg-active transition-colors"

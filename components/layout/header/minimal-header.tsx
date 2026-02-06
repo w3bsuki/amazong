@@ -52,9 +52,9 @@ export function MinimalHeader({
       className
     )}>
       <div className="container">
-        <div className="flex h-14 items-center justify-between gap-4">
+        <div className="flex h-14 items-center justify-between gap-3">
           {/* Left: Back button or Logo */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2.5">
             {showBack && (
               <Button variant="ghost" size="sm" asChild className="-ml-2">
                 <Link href={resolvedBackHref}>

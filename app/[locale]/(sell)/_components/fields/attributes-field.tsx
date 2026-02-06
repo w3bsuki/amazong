@@ -102,12 +102,12 @@ function AttributeSelect({
             </span>
             <span className={cn(
               "text-sm font-semibold truncate",
-              displayValue ? "text-foreground" : "text-muted-foreground/50"
+              displayValue ? "text-foreground" : "text-muted-foreground"
             )}>
               {displayValue || placeholder || (isBg ? "Изберете..." : "Select...")}
             </span>
           </div>
-          <CaretRight className="size-4 text-muted-foreground/50 shrink-0 ml-2" weight="bold" />
+          <CaretRight className="size-4 text-muted-foreground shrink-0 ml-2" weight="bold" />
         </button>
         <SelectDrawer
           isOpen={isOpen}

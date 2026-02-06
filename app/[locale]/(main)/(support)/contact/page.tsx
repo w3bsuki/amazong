@@ -53,7 +53,7 @@ export default async function ContactPage({
       {/* Hero Section */}
       <div className="bg-primary text-primary-foreground">
         <div className="container py-10 md:py-16">
-          <div className="[&_nav]:border-primary-foreground/20 [&_nav]:mb-4 [&_a]:text-primary-foreground/80 [&_a:hover]:text-primary-foreground [&_span[aria-current]]:text-primary-foreground [&_svg]:text-primary-foreground/50">
+          <div className="[&_nav]:border-border-subtle [&_nav]:mb-4 [&_a]:text-foreground [&_a:hover]:text-primary-foreground [&_span[aria-current]]:text-primary-foreground [&_svg]:text-muted-foreground">
             <AppBreadcrumb
               items={breadcrumbPresets(tBreadcrumbs).contact}
               ariaLabel={tBreadcrumbs("ariaLabel")}
@@ -62,7 +62,7 @@ export default async function ContactPage({
           </div>
           <div className="max-w-2xl">
             <h1 className="text-2xl md:text-4xl font-bold mb-3">{t('heroTitle')}</h1>
-            <p className="text-primary-foreground/80 text-lg">{t('heroSubtitle')}</p>
+            <p className="text-foreground text-lg">{t('heroSubtitle')}</p>
           </div>
         </div>
       </div>

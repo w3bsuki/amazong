@@ -166,7 +166,7 @@ export default function MembersPageClient({
     <PageShell variant="muted" className="pb-20 sm:pb-8">
       <div className="bg-primary text-primary-foreground py-6 sm:py-10">
         <div className="container">
-          <div className="[&_nav]:border-primary-foreground/20 [&_nav]:mb-2 [&_a]:text-primary-foreground/80 [&_a:hover]:text-primary-foreground [&_span[aria-current]]:text-primary-foreground [&_svg]:text-primary-foreground/50">
+          <div className="[&_nav]:border-border-subtle [&_nav]:mb-2 [&_a]:text-foreground [&_a:hover]:text-primary-foreground [&_span[aria-current]]:text-primary-foreground [&_svg]:text-muted-foreground">
             <AppBreadcrumb
               items={[
                 { label: locale === "bg" ? "Начало" : "Home", href: "/" },
@@ -177,12 +177,12 @@ export default function MembersPageClient({
           </div>
 
           <div className="flex items-center gap-3 mb-2">
-            <div className="size-12 sm:size-14 bg-primary-foreground/10 rounded-full flex items-center justify-center">
+            <div className="size-12 sm:size-14 bg-hover rounded-full flex items-center justify-center">
               <Users className="size-6 sm:size-7 text-primary-foreground" weight="fill" />
             </div>
             <div>
               <h1 className="text-2xl sm:text-4xl font-bold">{locale === "bg" ? "Общност" : "Community"}</h1>
-              <p className="text-primary-foreground/80 text-sm sm:text-base mt-1">
+              <p className="text-foreground text-sm sm:text-base mt-1">
                 {locale === "bg" ? "Открий продавачи и купувачи" : "Discover sellers and buyers"}
               </p>
             </div>
@@ -191,11 +191,11 @@ export default function MembersPageClient({
           <div className="flex gap-4 mt-4 text-sm">
             <div>
               <span className="text-2xl font-bold">{totalMembers.toLocaleString()}</span>
-              <p className="text-primary-foreground/70">{locale === "bg" ? "членове" : "members"}</p>
+              <p className="text-foreground">{locale === "bg" ? "членове" : "members"}</p>
             </div>
             <div>
               <span className="text-2xl font-bold">{totalSellers.toLocaleString()}</span>
-              <p className="text-primary-foreground/70">{locale === "bg" ? "продавачи" : "sellers"}</p>
+              <p className="text-foreground">{locale === "bg" ? "продавачи" : "sellers"}</p>
             </div>
           </div>
         </div>

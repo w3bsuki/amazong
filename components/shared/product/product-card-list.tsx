@@ -171,7 +171,7 @@ export function ProductCardList({
       variant="card"
       interactive
       className={cn(
-        "group relative flex gap-4 p-3",
+        "group relative flex gap-3 p-2.5",
         className
       )}
     >
@@ -283,7 +283,7 @@ export function ProductCardList({
         </div>
 
         {/* Badges row */}
-        <div className="flex flex-wrap items-center gap-2 mt-1.5">
+        <div className="mt-1 flex flex-wrap items-center gap-2">
           {freeShipping && (
             <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
               <Truck size={14} weight="bold" />
@@ -300,7 +300,7 @@ export function ProductCardList({
 
         {/* Seller row */}
         {sellerName && (
-          <div className="flex items-center gap-1.5 mt-2 text-xs text-muted-foreground">
+          <div className="mt-1.5 flex items-center gap-1 text-xs text-muted-foreground">
             <span>{sellerName}</span>
             {sellerVerificationVariant && (
               <Badge variant={sellerVerificationVariant} className="text-2xs px-1.5 py-0">

@@ -77,12 +77,12 @@ function SelectionRow({
         </span>
         <span className={cn(
           "text-reading font-medium truncate block -mt-0.5",
-          value ? "text-foreground" : "text-muted-foreground/50"
+          value ? "text-foreground" : "text-muted-foreground"
         )}>
           {value || placeholder}
         </span>
       </div>
-      <CaretRight className="size-4 text-muted-foreground/40 shrink-0" weight="bold" />
+      <CaretRight className="size-4 text-muted-foreground shrink-0" weight="bold" />
     </button>
   );
 }
@@ -250,7 +250,7 @@ export function StepDetails() {
         <div className="space-y-2">
           <span className="text-tiny font-semibold uppercase tracking-wide text-muted-foreground px-1">
             {isBg ? "Основни характеристики" : "Main specifics"}
-            <span className="ml-1.5 text-muted-foreground/60">
+            <span className="ml-1.5 text-muted-foreground">
               {requiredAttrs.filter(a => isAttributeFilled(getAttrValue(a.id))).length}/{requiredAttrs.length}
             </span>
           </span>
@@ -271,11 +271,11 @@ export function StepDetails() {
                     <div className="flex items-center gap-2">
                       <span className={cn(
                         "text-reading",
-                        displayValue ? "text-foreground font-medium" : "text-muted-foreground/50"
+                        displayValue ? "text-foreground font-medium" : "text-muted-foreground"
                       )}>
                         {displayValue || (isBg ? "Избери" : "Select")}
                       </span>
-                      <CaretRight className="size-4 text-muted-foreground/40" weight="bold" />
+                      <CaretRight className="size-4 text-muted-foreground" weight="bold" />
                     </div>
                   </button>
                 );
@@ -290,7 +290,7 @@ export function StepDetails() {
                     onChange={(e) => handleAttrChange(attr, e.target.value)}
                     placeholder={isBg ? "Въведи..." : "Enter..."}
                     type={attr.attribute_type === "number" ? "number" : "text"}
-                    className="border-none bg-transparent h-full p-0 text-reading text-right font-medium focus-visible:ring-0 w-32 placeholder:text-muted-foreground/40"
+                    className="border-none bg-transparent h-full p-0 text-reading text-right font-medium focus-visible:ring-0 w-32 placeholder:text-muted-foreground"
                   />
                 </div>
               );
@@ -305,7 +305,7 @@ export function StepDetails() {
           <span className="text-tiny font-semibold uppercase tracking-wide text-muted-foreground">
             {isBg ? "Описание" : "Description"}
           </span>
-          <span className="text-tiny font-medium tabular-nums text-muted-foreground/60">
+          <span className="text-tiny font-medium tabular-nums text-muted-foreground">
             {description.length}/2000
           </span>
         </div>
@@ -321,7 +321,7 @@ export function StepDetails() {
                   : "Describe your item: brand, size, why you're selling..."}
                 rows={4}
                 maxLength={2000}
-                className="border-none bg-transparent resize-none text-reading px-4 py-3 focus-visible:ring-0 placeholder:text-muted-foreground/40"
+                className="border-none bg-transparent resize-none text-reading px-4 py-3 focus-visible:ring-0 placeholder:text-muted-foreground"
               />
             </div>
           )}
@@ -334,7 +334,7 @@ export function StepDetails() {
           <span className="text-tiny font-semibold uppercase tracking-wide text-muted-foreground">
             {isBg ? "Снимки" : "Photos"}
           </span>
-          <span className="text-tiny font-medium tabular-nums text-muted-foreground/60">
+          <span className="text-tiny font-medium tabular-nums text-muted-foreground">
             {images.length}/12
           </span>
         </div>

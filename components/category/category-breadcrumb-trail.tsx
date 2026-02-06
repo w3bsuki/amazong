@@ -76,7 +76,7 @@ export function CategoryBreadcrumbTrail({ ancestry, className }: CategoryBreadcr
             <CaretRight
               size={10}
               weight="bold"
-              className="text-muted-foreground/50 mr-1 shrink-0"
+              className="text-muted-foreground mr-1 shrink-0"
             />
             <Link
               href={`/categories/${cat.slug}`}

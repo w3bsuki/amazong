@@ -13,8 +13,8 @@ interface UseCategoryCountsResult {
   refetch: () => void
 }
 
-// Cache key for localStorage - v3 invalidates stale empty payloads from older cache logic.
-const CACHE_KEY = "category-counts-v3"
+// Cache key for localStorage - v4 invalidates older partial payloads.
+const CACHE_KEY = "category-counts-v4"
 const CACHE_TTL_MS = 60 * 60 * 1000 // 1 hour
 
 // Retry configuration

@@ -97,7 +97,7 @@ export function LegalPageLayout({
       {/* Hero Section */}
       <div className="bg-primary text-primary-foreground">
         <div className="container py-10 md:py-14">
-          <div className="[&_nav]:border-primary-foreground/20 [&_nav]:mb-4 [&_a]:text-primary-foreground/80 [&_a:hover]:text-primary-foreground [&_span[aria-current]]:text-primary-foreground [&_svg]:text-primary-foreground/50">
+          <div className="[&_nav]:border-border-subtle [&_nav]:mb-4 [&_a]:text-foreground [&_a:hover]:text-primary-foreground [&_span[aria-current]]:text-primary-foreground [&_svg]:text-muted-foreground">
             <AppBreadcrumb
               items={breadcrumbItems}
               ariaLabel={breadcrumbAriaLabel}
@@ -105,12 +105,12 @@ export function LegalPageLayout({
             />
           </div>
           <div className="flex items-start gap-4">
-            <div className="size-14 bg-primary-foreground/10 flex items-center justify-center shrink-0">
+            <div className="size-14 bg-hover flex items-center justify-center shrink-0">
               <HeroIcon className="size-7 text-primary-foreground" />
             </div>
             <div>
               <h1 className="text-2xl md:text-4xl font-bold mb-2">{title}</h1>
-              <p className="text-primary-foreground/70">{lastUpdated}</p>
+              <p className="text-foreground">{lastUpdated}</p>
             </div>
           </div>
         </div>

@@ -7,9 +7,9 @@ export function AboutPageSkeleton() {
       <div className="bg-primary text-primary-foreground relative">
         <div className="absolute inset-0 bg-overlay-dark/20" />
         <div className="container py-12 md:py-20 relative z-10">
-          <Skeleton className="h-8 w-48 mb-4 bg-primary-foreground/20" />
-          <Skeleton className="h-12 w-96 mb-4 bg-primary-foreground/20" />
-          <Skeleton className="h-6 w-80 bg-primary-foreground/20" />
+          <Skeleton className="h-8 w-48 mb-4 bg-muted" />
+          <Skeleton className="h-12 w-96 mb-4 bg-muted" />
+          <Skeleton className="h-6 w-80 bg-muted" />
         </div>
       </div>
       <div className="container py-12">

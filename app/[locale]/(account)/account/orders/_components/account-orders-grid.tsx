@@ -260,7 +260,7 @@ export function AccountOrdersGrid({ orders, locale, actions }: AccountOrdersGrid
                             />
                           ) : (
                             <div className="flex size-full items-center justify-center">
-                              <IconPackage className="size-6 text-muted-foreground/40" strokeWidth={1.5} />
+                              <IconPackage className="size-6 text-muted-foreground" strokeWidth={1.5} />
                             </div>
                           )}
                           {item.quantity > 1 && (

@@ -107,7 +107,7 @@ export default function CartPageClient() {
 
           <div className="mt-8 lg:mt-12 max-w-md mx-auto text-center">
             <div className="size-24 bg-surface-subtle rounded-full flex items-center justify-center mx-auto mb-6">
-              <ShoppingCart className="size-10 text-muted-foreground/60" weight="duotone" />
+              <ShoppingCart className="size-10 text-muted-foreground" weight="duotone" />
             </div>
             <h1 className="text-2xl font-semibold mb-2">{t("emptyTitle")}</h1>
             <p className="text-muted-foreground mb-8">{t("emptyDescription")}</p>
@@ -175,13 +175,13 @@ export default function CartPageClient() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-8">
+        <div className="grid grid-cols-1 gap-3 lg:grid-cols-3 lg:gap-6">
           {/* Cart Items List */}
           <div className="lg:col-span-2 space-y-3">
             {items.map((item, index) => (
               <div 
                 key={`${item.id}:${item.variantId ?? ""}`} 
-                className="bg-card rounded-lg border border-border/50 p-3"
+                className="bg-card rounded-lg border border-border/50 p-2.5"
               >
                 <div className="flex gap-3">
                   {/* Image */}
@@ -234,7 +234,7 @@ export default function CartPageClient() {
                       onClick={() => removeFromCart(item.id, item.variantId)}
                       size="icon-lg"
                       variant="ghost"
-                      className="hover:bg-destructive-subtle text-muted-foreground/50 hover:text-destructive"
+                      className="hover:bg-destructive-subtle text-muted-foreground hover:text-destructive"
                       aria-label={t("delete")}
                     >
                       <Trash className="size-4" />
@@ -271,7 +271,7 @@ export default function CartPageClient() {
                     <IconButton
                       size="icon-lg"
                       variant="ghost"
-                      className="hover:bg-muted text-muted-foreground/50 hover:text-primary"
+                      className="hover:bg-muted text-muted-foreground hover:text-primary"
                       aria-label={t("saveForLater")}
                     >
                       <Heart className="size-4" />
@@ -286,7 +286,7 @@ export default function CartPageClient() {
           <div className="hidden lg:block">
             <div className="sticky top-24 space-y-4">
               <Card className="border-border-subtle">
-                <CardContent className="p-6">
+                <CardContent className="p-5">
                   <h2 className="font-semibold text-lg mb-4">
                     {t("orderSummaryTitle")}
                   </h2>
@@ -342,7 +342,7 @@ export default function CartPageClient() {
 
       {/* Mobile Sticky Footer */}
       <div className="fixed bottom-0 inset-x-0 bg-background border-t border-border z-40 lg:hidden pb-safe">
-        <div className="px-4 py-3 flex items-center gap-4">
+        <div className="flex items-center gap-3 px-4 py-3">
           <div className="flex-1 min-w-0">
             <p className="text-xs text-muted-foreground mb-0.5">
               {t("totalLabel")}

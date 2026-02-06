@@ -320,7 +320,7 @@ export function NotificationsContent({
           </div>
         ) : visibleNotifications.length === 0 ? (
           <div className="p-4 text-center">
-            <Bell size={40} weight="thin" className="mx-auto mb-2 text-muted-foreground/50" />
+            <Bell size={40} weight="thin" className="mx-auto mb-2 text-muted-foreground" />
             <p className="text-sm text-muted-foreground">
               {locale === "bg" ? "Няма известия" : "No notifications"}
             </p>

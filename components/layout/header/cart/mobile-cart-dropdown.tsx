@@ -117,7 +117,7 @@ export function MobileCartDropdown() {
                 {items.length === 0 ? (
                     <div className="flex flex-col items-center justify-center px-inset py-5">
                         <div className="size-11 bg-muted rounded-xl flex items-center justify-center mb-2">
-                            <ShoppingCart size={22} weight="regular" className="text-muted-foreground/50" />
+                            <ShoppingCart size={22} weight="regular" className="text-muted-foreground" />
                         </div>
                         <p className="text-sm text-foreground font-medium">{t('empty')}</p>
                         <p className="text-xs text-muted-foreground mt-0.5">
@@ -130,7 +130,7 @@ export function MobileCartDropdown() {
                             <div
                                 key={`${item.id}:${item.variantId ?? ""}`}
                                 className={cn(
-                                    "flex gap-2 py-2",
+                                    "flex gap-1.5 py-2",
                                     index !== items.length - 1 && "border-b border-border"
                                 )}
                             >
@@ -170,7 +170,7 @@ export function MobileCartDropdown() {
                                             {item.variantName}
                                         </span>
                                     )}
-                                    <div className="mt-auto flex flex-col gap-2 pt-2">
+                                    <div className="mt-auto flex flex-col gap-1.5 pt-2">
                                         <div className="flex items-center justify-between">
                                             <span className="text-sm font-semibold tabular-nums text-foreground">{formatPrice(item.price)}</span>
                                             <IconButton
@@ -219,7 +219,7 @@ export function MobileCartDropdown() {
                     </DrawerBody>
                 )}
 
-                <DrawerFooter className="border-t border-border gap-1.5">
+                <DrawerFooter className="border-t border-border gap-1">
                     {items.length === 0 ? (
                         <Button variant="cta" size="default" className="w-full" asChild>
                             <Link href="/search" onClick={() => setOpen(false)}>

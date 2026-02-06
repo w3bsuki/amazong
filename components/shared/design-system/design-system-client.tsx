@@ -226,14 +226,14 @@ export function DesignSystemClient() {
               </div>
               <div>
                 <h1 className="font-semibold text-sidebar-foreground">Treido</h1>
-                <p className="text-xs text-sidebar-foreground/60">Design System</p>
+                <p className="text-xs text-sidebar-muted-foreground">Design System</p>
               </div>
             </div>
             <Button
               variant="ghost"
               size="icon-sm"
               onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-              className="text-sidebar-foreground/60 hover:text-sidebar-foreground hover:bg-sidebar-accent"
+              className="text-sidebar-muted-foreground hover:text-sidebar-foreground hover:bg-sidebar-accent"
             >
               <Sun className="size-4 rotate-0 scale-100 transition-transform dark:-rotate-90 dark:scale-0" />
               <Moon className="absolute size-4 rotate-90 scale-0 transition-transform dark:rotate-0 dark:scale-100" />
@@ -255,7 +255,7 @@ export function DesignSystemClient() {
                     "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors",
                     activeSection === id
                       ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium"
-                      : "text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-foreground"
+                      : "text-sidebar-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground"
                   )}
                 >
                   <Icon className="size-4" />
@@ -271,7 +271,7 @@ export function DesignSystemClient() {
             <div className="px-3">
               <Link
                 href="/"
-                className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-foreground transition-colors"
+                className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-sidebar-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground transition-colors"
               >
                 <ArrowRight className="size-4 rotate-180" />
                 Back to Site
@@ -282,7 +282,7 @@ export function DesignSystemClient() {
           {/* Footer */}
           <div className="border-t border-sidebar-border p-4">
             <div className="rounded-lg bg-sidebar-accent px-3 py-2.5 text-center">
-              <p className="text-xs text-sidebar-foreground/70">
+              <p className="text-xs text-sidebar-muted-foreground">
                 Tailwind v4 + shadcn/ui
               </p>
             </div>
@@ -370,11 +370,11 @@ function OverviewSection() {
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <div className="rounded-xl bg-primary p-6 text-center">
           <div className="text-primary-foreground font-semibold">Primary</div>
-          <div className="text-primary-foreground/70 text-sm mt-1">Twitter Blue</div>
+          <div className="text-foreground text-sm mt-1">Twitter Blue</div>
         </div>
         <div className="rounded-xl bg-secondary p-6 text-center">
           <div className="text-secondary-foreground font-semibold">Secondary</div>
-          <div className="text-secondary-foreground/70 text-sm mt-1">Dark Neutral</div>
+          <div className="text-muted-foreground text-sm mt-1">Dark Neutral</div>
         </div>
         <div className="rounded-xl bg-muted p-6 text-center border border-border">
           <div className="text-foreground font-semibold">Muted</div>
@@ -382,7 +382,7 @@ function OverviewSection() {
         </div>
         <div className="rounded-xl bg-destructive p-6 text-center">
           <div className="text-destructive-foreground font-semibold">Destructive</div>
-          <div className="text-destructive-foreground/70 text-sm mt-1">Error States</div>
+          <div className="text-destructive-foreground text-sm mt-1">Error States</div>
         </div>
       </div>
 
@@ -850,7 +850,7 @@ function CardsSection() {
             {/* Image Area */}
             <div className="relative aspect-square bg-muted">
               <div className="absolute inset-0 flex items-center justify-center">
-                <Package className="size-12 text-muted-foreground/30" />
+                <Package className="size-12 text-muted-foreground" />
               </div>
               <Badge 
                 variant={

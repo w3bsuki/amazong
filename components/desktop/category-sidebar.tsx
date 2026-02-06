@@ -245,7 +245,7 @@ export function CompactCategorySidebar({
                 <span className="text-xs tabular-nums opacity-70">{count}</span>
               )}
               {hasChildren && (
-                <CaretRight size={14} weight="bold" className={cn("shrink-0", selected ? "text-background/70" : "text-muted-foreground/50")} />
+                <CaretRight size={14} weight="bold" className={cn("shrink-0", selected ? "text-background/70" : "text-muted-foreground")} />
               )}
             </button>
           )

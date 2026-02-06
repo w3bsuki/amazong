@@ -120,7 +120,7 @@ export function DesktopLayout({
 
       {/* Main Content */}
       <PageContainer size="wide" className="py-4">
-        <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_20rem] xl:grid-cols-[minmax(0,1fr)_22rem]">
+        <div className="grid gap-4 lg:grid-cols-sell-main xl:grid-cols-sell-main-xl">
           {/* Main Form */}
           <div className="min-w-0">
             <form

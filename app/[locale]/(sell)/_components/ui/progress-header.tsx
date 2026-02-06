@@ -85,7 +85,7 @@ export function ProgressHeader({
                   key={i}
                   className={cn(
                     "h-1 rounded-full transition-all duration-300",
-                    i + 1 === currentStep ? "w-6 bg-primary" : "w-2 bg-muted-foreground/20"
+                    i + 1 === currentStep ? "w-6 bg-primary" : "w-2 bg-hover"
                   )}
                 />
               ))}
@@ -139,7 +139,7 @@ export function ProgressHeader({
             <Progress value={progressPercent} className="h-1 flex-1" />
             <span className={cn(
               "text-sm font-semibold tabular-nums",
-              isComplete ? "text-primary" : "text-muted-foreground/60"
+              isComplete ? "text-primary" : "text-muted-foreground"
             )}>
               {progressPercent}%
             </span>

@@ -346,7 +346,7 @@ export function EditProductClient({ productId, locale }: EditProductClientProps)
               {/* Sale Toggle */}
               <div className="flex items-center justify-between p-4 bg-muted rounded-lg">
                 <div className="flex items-center gap-3">
-                  <div className="size-10 rounded-full bg-deal/10 flex items-center justify-center">
+                  <div className="size-10 rounded-full bg-destructive-subtle flex items-center justify-center">
                     <Percent className="size-5 text-deal" />
                   </div>
                   <div>
@@ -369,7 +369,7 @@ export function EditProductClient({ productId, locale }: EditProductClientProps)
 
               {/* Original Price (visible when sale is on) */}
               {isOnSale && (
-                <div className="space-y-4 p-4 bg-deal/5 border border-deal/20 rounded-lg">
+                <div className="space-y-4 p-4 bg-destructive-subtle border border-destructive rounded-lg">
                   <div className="space-y-2">
                     <Label htmlFor="originalPrice" className="text-deal font-medium">
                       {locale === 'bg' ? 'Оригинална цена' : 'Original Price'} (лв)
@@ -386,7 +386,7 @@ export function EditProductClient({ productId, locale }: EditProductClientProps)
                   </div>
 
                   {calculateDiscount() > 0 && (
-                    <div className="flex items-center gap-2 p-3 bg-deal/10 rounded-md">
+                    <div className="flex items-center gap-2 p-3 bg-destructive-subtle rounded-md">
                       <Tag className="size-4 text-deal" weight="fill" />
                       <span className="text-sm font-medium text-deal">
                         {locale === 'bg'

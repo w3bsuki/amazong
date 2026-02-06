@@ -457,7 +457,7 @@ export function ProductsTable({
                   "px-3 py-2.5 text-sm font-medium border-b-2 transition-colors",
                   statusFilter === tab.value
                     ? "border-primary text-foreground"
-                    : "border-transparent text-muted-foreground hover:text-foreground hover:border-muted-foreground/30"
+                    : "border-transparent text-muted-foreground hover:text-foreground hover:border-border"
                 )}
               >
                 {tab.label}
@@ -523,7 +523,7 @@ export function ProductsTable({
                       Active
                     </DropdownMenuItem>
                     <DropdownMenuItem onClick={() => handleBulkStatusUpdate("draft")}>
-                      <span className="size-2 rounded-full bg-muted-foreground/50 mr-2" />
+                      <span className="size-2 rounded-full bg-muted mr-2" />
                       Draft
                     </DropdownMenuItem>
                     <DropdownMenuItem onClick={() => handleBulkStatusUpdate("archived")}>
@@ -557,7 +557,7 @@ export function ProductsTable({
         <div className="flex-1 overflow-auto">
           {filteredProducts.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-20 text-center">
-              <IconPackage className="size-12 text-muted-foreground/50 mb-4" />
+              <IconPackage className="size-12 text-muted-foreground mb-4" />
               <h3 className="font-medium mb-1">
                 {searchQuery ? "No products found" : "No products yet"}
               </h3>

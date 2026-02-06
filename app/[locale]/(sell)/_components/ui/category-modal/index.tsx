@@ -60,7 +60,7 @@ function CategorySearchInput({
       <MagnifyingGlass 
         className={cn(
           "absolute top-1/2 -translate-y-1/2 text-muted-foreground",
-          compact ? "left-2.5 size-4" : "left-3.5 size-5 text-muted-foreground/50"
+          compact ? "left-2.5 size-4" : "left-3.5 size-5 text-muted-foreground"
         )} 
         weight="bold" 
       />
@@ -93,7 +93,7 @@ function CategoryEmptyState({ locale, compact = false }: { locale: string; compa
   return (
     <div className="py-12 text-center">
       <div className="size-16 rounded-full bg-surface-subtle flex items-center justify-center mx-auto mb-4">
-        <MagnifyingGlass className="size-8 text-muted-foreground/30" />
+        <MagnifyingGlass className="size-8 text-muted-foreground" />
       </div>
       <p className="text-sm font-bold text-muted-foreground uppercase tracking-widest">
         {locale === "bg" ? "Няма намерени резултати" : "No results found"}

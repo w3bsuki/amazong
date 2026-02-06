@@ -388,7 +388,7 @@ export function BillingContent({
             </div>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 lg:grid-cols-[1fr_auto] items-center gap-4">
+            <div className="grid grid-cols-1 lg:grid-cols-content-auto items-center gap-4">
               {/* Plan Info */}
               <div className="grid gap-3">
                 <div className="flex items-center gap-3">
@@ -520,9 +520,9 @@ export function BillingContent({
                   </div>
                 ) : invoices.length === 0 && charges.length === 0 ? (
                   <div className="text-center py-8">
-                    <Receipt className="size-12 text-muted-foreground/50 mx-auto mb-3" />
+                    <Receipt className="size-12 text-muted-foreground mx-auto mb-3" />
                     <p className="text-muted-foreground">{t.noInvoices}</p>
-                    <p className="text-sm text-muted-foreground/70 mt-1">
+                    <p className="text-sm text-muted-foreground mt-1">
                       {t.noBillingYet}
                     </p>
                   </div>
@@ -671,9 +671,9 @@ export function BillingContent({
               <CardContent>
                 {boosts.length === 0 ? (
                   <div className="text-center py-8">
-                    <Lightning className="size-12 text-muted-foreground/50 mx-auto mb-3" />
+                    <Lightning className="size-12 text-muted-foreground mx-auto mb-3" />
                     <p className="text-muted-foreground">{t.noBoosts}</p>
-                    <p className="text-sm text-muted-foreground/70 mt-1">
+                    <p className="text-sm text-muted-foreground mt-1">
                       {locale === 'bg'
                         ? 'Промотирайте продуктите си за повече видимост'
                         : 'Boost your products for more visibility'}

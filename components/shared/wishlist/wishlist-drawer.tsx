@@ -66,7 +66,7 @@ export function WishlistDrawer({ className, children }: WishlistDrawerProps) {
       <DrawerContent className={className}>
         <DrawerHeader className="pb-1.5 pt-0 border-b border-border text-left">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-1.5">
+              <div className="flex items-center gap-1">
               <Heart size={16} weight="fill" className="text-wishlist" />
               <DrawerTitle className="text-sm font-semibold">{t("title")}</DrawerTitle>
               <span className="text-xs text-muted-foreground" suppressHydrationWarning>
@@ -98,7 +98,7 @@ export function WishlistDrawer({ className, children }: WishlistDrawerProps) {
             <p className="text-sm text-foreground font-medium">{t("empty")}</p>
             <p className="text-xs text-muted-foreground mt-0.5 mb-3">{t("emptyDescription")}</p>
             <Button asChild variant="cta" size="default" onClick={() => setOpen(false)}>
-              <Link href="/search" className="gap-1.5">
+              <Link href="/search" className="gap-1">
                 {t("startShopping")}
                 <ArrowRight size={14} />
               </Link>
@@ -111,7 +111,7 @@ export function WishlistDrawer({ className, children }: WishlistDrawerProps) {
                 <div
                   key={item.id}
                   className={cn(
-                    "grid grid-cols-[56px_1fr_auto] gap-2 py-2",
+                    "grid grid-cols-wishlist-item gap-1.5 py-2",
                     index !== items.length - 1 && "border-b border-border"
                   )}
                 >
@@ -169,9 +169,9 @@ export function WishlistDrawer({ className, children }: WishlistDrawerProps) {
               ))}
             </DrawerBody>
 
-            <DrawerFooter className="border-t border-border gap-1.5">
+            <DrawerFooter className="border-t border-border gap-1">
               <Button asChild variant="cta" size="default" className="w-full" onClick={() => setOpen(false)}>
-                <Link href="/account/wishlist" className="gap-1.5">
+                <Link href="/account/wishlist" className="gap-1">
                   {t("viewAll")}
                   <ArrowRight size={14} />
                 </Link>

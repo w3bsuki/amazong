@@ -15,10 +15,10 @@ export function SearchHeader({ query, category, totalResults }: SearchHeaderProp
   const t = useTranslations('SearchFilters')
 
   return (
-    <div className="mb-6">
+    <div className="mb-5">
       {/* Target-style Breadcrumb - Full width with underlines */}
-      <nav className="w-full border-b border-border py-3 mb-6">
-        <ol className="flex items-center gap-1.5 text-sm">
+      <nav className="mb-5 w-full border-b border-border py-2.5">
+        <ol className="flex items-center gap-1 text-sm">
           <li>
             <Link 
               href="/" 
@@ -27,9 +27,9 @@ export function SearchHeader({ query, category, totalResults }: SearchHeaderProp
               Treido
             </Link>
           </li>
-          <li className="flex items-center gap-1.5">
+          <li className="flex items-center gap-1">
             <CaretRight size={14} weight="regular" className="text-muted-foreground" />
-            <span className="text-muted-foreground flex items-center gap-1.5">
+            <span className="text-muted-foreground flex items-center gap-1">
               <MagnifyingGlass size={14} weight="regular" />
               {query ? t('searchResults') : t('allProducts')}
             </span>
@@ -38,9 +38,9 @@ export function SearchHeader({ query, category, totalResults }: SearchHeaderProp
       </nav>
 
       {/* Page Header with Save Search button */}
-      <div className="flex items-start justify-between gap-4">
+      <div className="flex items-start justify-between gap-3">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-foreground mb-2">
+          <h1 className="mb-1.5 text-2xl font-bold text-foreground sm:text-3xl">
             {query ? (
               <>
                 {t('resultsFor')}{" "}

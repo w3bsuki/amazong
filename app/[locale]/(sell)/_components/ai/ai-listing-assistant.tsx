@@ -270,7 +270,7 @@ export function AiListingAssistant() {
           if (canGenerate) generate();
         }}
         disabled={images.length === 0}
-        className="w-full h-11 gap-2 border-dashed border-muted-foreground/30"
+        className="w-full h-11 gap-2 border-dashed border-border"
       >
         <Sparkle className="size-4" weight="fill" />
         <span className="text-sm">
@@ -364,7 +364,7 @@ export function AiListingAssistant() {
                   form.setValue("title", title, { shouldValidate: true, shouldDirty: true });
                   toast.success(isBg ? "Заглавието е приложено" : "Title applied");
                 }}
-                className="w-full flex items-center justify-between gap-2 px-3 py-2 rounded-lg border border-dashed border-muted-foreground/30 text-left hover:bg-accent"
+                className="w-full flex items-center justify-between gap-2 px-3 py-2 rounded-lg border border-dashed border-border text-left hover:bg-accent"
               >
                 <div className="min-w-0">
                   <div className="text-xs text-muted-foreground">{isBg ? "Заглавие" : "Title"}</div>
@@ -382,7 +382,7 @@ export function AiListingAssistant() {
                   form.setValue("categoryPath", matchedCategory.path, { shouldDirty: true });
                   toast.success(isBg ? "Категорията е приложена" : "Category applied");
                 }}
-                className="w-full flex items-center justify-between gap-2 px-3 py-2 rounded-lg border border-dashed border-muted-foreground/30 text-left hover:bg-accent"
+                className="w-full flex items-center justify-between gap-2 px-3 py-2 rounded-lg border border-dashed border-border text-left hover:bg-accent"
               >
                 <div className="min-w-0">
                   <div className="text-xs text-muted-foreground">{isBg ? "Категория" : "Category"}</div>
@@ -399,7 +399,7 @@ export function AiListingAssistant() {
                   form.setValue("condition", condition, { shouldValidate: true, shouldDirty: true });
                   toast.success(isBg ? "Състоянието е приложено" : "Condition applied");
                 }}
-                className="w-full flex items-center justify-between gap-2 px-3 py-2 rounded-lg border border-dashed border-muted-foreground/30 text-left hover:bg-accent"
+                className="w-full flex items-center justify-between gap-2 px-3 py-2 rounded-lg border border-dashed border-border text-left hover:bg-accent"
               >
                 <div className="min-w-0">
                   <div className="text-xs text-muted-foreground">{isBg ? "Състояние" : "Condition"}</div>
@@ -416,7 +416,7 @@ export function AiListingAssistant() {
                   form.setValue("price", suggestedPrice.toFixed(2), { shouldValidate: true, shouldDirty: true });
                   toast.success(isBg ? "Цената е приложена" : "Price applied");
                 }}
-                className="w-full flex items-center justify-between gap-2 px-3 py-2 rounded-lg border border-dashed border-muted-foreground/30 text-left hover:bg-accent"
+                className="w-full flex items-center justify-between gap-2 px-3 py-2 rounded-lg border border-dashed border-border text-left hover:bg-accent"
               >
                 <div className="min-w-0">
                   <div className="text-xs text-muted-foreground">{isBg ? "Цена" : "Price"}</div>

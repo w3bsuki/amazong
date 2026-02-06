@@ -632,7 +632,7 @@ export function ChatInterface({
                       <span className="text-xs text-muted-foreground">
                         {message.content.replaceAll('**', "").replaceAll('_', "").split("\n")[0]}
                       </span>
-                      <span className="text-2xs text-muted-foreground/70">
+                      <span className="text-2xs text-muted-foreground">
                         {format(new Date(message.created_at), "HH:mm")}
                       </span>
                     </div>
@@ -707,16 +707,16 @@ export function ChatInterface({
                         <span
                           className={cn(
                             "text-2xs",
-                            isOwn ? "text-primary-foreground/70" : "text-muted-foreground"
+                            isOwn ? "text-foreground" : "text-muted-foreground"
                           )}
                         >
                           {format(new Date(message.created_at), "HH:mm")}
                         </span>
                         {isOwn &&
                           (message.is_read ? (
-                            <Checks size={12} weight="bold" className="text-primary-foreground/70" />
+                            <Checks size={12} weight="bold" className="text-foreground" />
                           ) : (
-                            <Check size={12} weight="regular" className="text-primary-foreground/70" />
+                            <Check size={12} weight="regular" className="text-foreground" />
                           ))}
                       </div>
                     )}
@@ -745,15 +745,15 @@ export function ChatInterface({
           <div className="flex items-center gap-2 text-xs text-muted-foreground">
             <div className="flex gap-1">
               <span
-                className="size-1.5 rounded-full bg-muted-foreground/50 animate-bounce"
+                className="size-1.5 rounded-full bg-muted animate-bounce"
                 style={{ animationDelay: "0ms" }}
               />
               <span
-                className="size-1.5 rounded-full bg-muted-foreground/50 animate-bounce"
+                className="size-1.5 rounded-full bg-muted animate-bounce"
                 style={{ animationDelay: "150ms" }}
               />
               <span
-                className="size-1.5 rounded-full bg-muted-foreground/50 animate-bounce"
+                className="size-1.5 rounded-full bg-muted animate-bounce"
                 style={{ animationDelay: "300ms" }}
               />
             </div>

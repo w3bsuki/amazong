@@ -120,7 +120,7 @@ export function CookieConsent() {
                     <div className="flex items-center justify-between gap-4">
                         <div className="flex-1 flex items-center gap-3">
                             <Cookie size={20} weight="regular" className="text-accent shrink-0" />
-                            <p className="text-sm text-primary-foreground/80">
+                            <p className="text-sm text-foreground">
                                 <span className="font-semibold text-primary-foreground">{t('title')}</span>
                                 {" "}{t('descriptionShort')}
                                 <Link href="/cookies" className="text-accent hover:underline underline-offset-2 ml-1 transition-colors">
@@ -131,7 +131,7 @@ export function CookieConsent() {
                         <div className="flex items-center gap-4 shrink-0">
                             <button 
                                 onClick={handleManagePreferences}
-                                className="text-sm text-primary-foreground/90 hover:text-primary-foreground hover:underline underline-offset-2 whitespace-nowrap transition-colors"
+                                className="text-sm text-foreground hover:text-primary-foreground hover:underline underline-offset-2 whitespace-nowrap transition-colors"
                             >
                                 {t('managePreferences')}
                             </button>
@@ -139,7 +139,7 @@ export function CookieConsent() {
                                 variant="outline"
                                 size="sm"
                                 onClick={handleDecline}
-                                className="border-primary-foreground/30 text-primary-foreground/80 hover:bg-primary-foreground/10 hover:text-primary-foreground bg-transparent"
+                                className="border-border-subtle text-foreground hover:bg-hover hover:text-primary-foreground bg-transparent"
                             >
                                 {t('declineOptional')}
                             </Button>

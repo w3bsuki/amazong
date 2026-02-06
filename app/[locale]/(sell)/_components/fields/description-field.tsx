@@ -102,7 +102,7 @@ export function DescriptionField({
                 rows={minRows}
                 className={cn(
                   "block w-full resize-none border-0 bg-transparent px-4 py-2 text-sm font-semibold",
-                  "placeholder:text-muted-foreground/50 focus:ring-0 focus:outline-none",
+                  "placeholder:text-muted-foreground focus:ring-0 focus:outline-none",
                   "min-h-32"
                 )}
               />
@@ -140,7 +140,7 @@ export function DescriptionField({
                     "text-2xs font-bold tabular-nums uppercase tracking-widest",
                     charCount >= maxLength
                       ? "text-destructive"
-                      : "text-muted-foreground/60"
+                      : "text-muted-foreground"
                   )}
                 >
                   {charCount.toLocaleString()} / {maxLength.toLocaleString()}

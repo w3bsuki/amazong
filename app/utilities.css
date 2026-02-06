@@ -258,6 +258,47 @@
   aspect-ratio: 4 / 3;
 }
 
+/* ===== GRID TEMPLATE UTILITIES ===== */
+@utility grid-cols-alert-base {
+  grid-template-columns: 0 minmax(0, 1fr);
+}
+
+@utility grid-cols-alert-icon {
+  grid-template-columns: calc(var(--spacing) * 4) minmax(0, 1fr);
+}
+
+@utility grid-cols-shell {
+  grid-template-columns: var(--shell-sidebar-w) minmax(0, 1fr);
+}
+
+@utility grid-cols-layout-sidebar {
+  grid-template-columns: var(--layout-sidebar-w) minmax(0, 1fr);
+}
+
+@utility grid-cols-sell-main {
+  grid-template-columns: minmax(0, 1fr) 20rem;
+}
+
+@utility grid-cols-sell-main-xl {
+  grid-template-columns: minmax(0, 1fr) 22rem;
+}
+
+@utility grid-cols-sell-main-plain {
+  grid-template-columns: 1fr 20rem;
+}
+
+@utility grid-cols-sell-main-plain-xl {
+  grid-template-columns: 1fr 22rem;
+}
+
+@utility grid-cols-content-auto {
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+@utility grid-cols-wishlist-item {
+  grid-template-columns: 56px minmax(0, 1fr) auto;
+}
+
 /* ===== MISC UTILITIES ===== */
 .rounded-inherit {
   border-radius: inherit;

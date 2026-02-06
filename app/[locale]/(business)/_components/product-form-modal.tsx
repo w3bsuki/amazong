@@ -421,7 +421,7 @@ export function ProductFormModal({
               <SelectContent>
                 <SelectItem value="draft">
                   <div className="flex items-center gap-2">
-                    <div className="size-2 rounded-full bg-muted-foreground/40" />
+                    <div className="size-2 rounded-full bg-muted" />
                     Draft
                   </div>
                 </SelectItem>
@@ -554,7 +554,7 @@ export function ProductFormModal({
                       </div>
                     ))}
                     
-                    <label className="aspect-square rounded-lg border-2 border-dashed border-muted-foreground/25 hover:border-hover-border hover:bg-hover active:bg-active cursor-pointer transition-all flex flex-col items-center justify-center gap-1 text-muted-foreground hover:text-primary">
+                    <label className="aspect-square rounded-lg border-2 border-dashed border-border-subtle hover:border-hover-border hover:bg-hover active:bg-active cursor-pointer transition-all flex flex-col items-center justify-center gap-1 text-muted-foreground hover:text-primary">
                       <input
                         type="file"
                         accept="image/*"

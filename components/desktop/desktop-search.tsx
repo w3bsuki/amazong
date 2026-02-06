@@ -406,7 +406,7 @@ export function DesktopSearch() {
             {/* No Results */}
             {!isSearching && query && query.length >= minSearchLength && products.length === 0 && (
               <div className="px-4 py-8 text-center">
-                <Package size={40} weight="regular" className="text-muted-foreground/30 mx-auto mb-2" />
+                <Package size={40} weight="regular" className="text-muted-foreground mx-auto mb-2" />
                 <p className="text-sm text-muted-foreground">
                   {tSearch("noResultsFor", { query })}
                 </p>

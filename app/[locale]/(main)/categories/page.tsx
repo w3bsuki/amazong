@@ -116,7 +116,7 @@ export default async function CategoriesPage({
                 )}
               </div>
 
-              <CaretRight size={14} weight="bold" className="text-muted-foreground/50 shrink-0" />
+              <CaretRight size={14} weight="bold" className="text-muted-foreground shrink-0" />
             </Link>
           )
         })}

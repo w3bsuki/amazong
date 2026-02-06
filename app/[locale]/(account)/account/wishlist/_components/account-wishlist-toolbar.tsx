@@ -166,7 +166,7 @@ export function AccountWishlistToolbar({
             </button>
           )}
           {isPending && (
-            <div className="absolute right-3 top-1/2 -translate-y-1/2 size-4 animate-spin rounded-full border-2 border-muted-foreground/40 border-t-transparent" />
+            <div className="absolute right-3 top-1/2 -translate-y-1/2 size-4 animate-spin rounded-full border-2 border-border border-t-transparent" />
           )}
         </div>
 
@@ -304,7 +304,7 @@ export function AccountWishlistToolbar({
             </button>
           )}
           {isPending && !query && (
-            <div className="absolute right-3 top-1/2 -translate-y-1/2 size-4 animate-spin rounded-full border-2 border-muted-foreground/40 border-t-transparent" />
+            <div className="absolute right-3 top-1/2 -translate-y-1/2 size-4 animate-spin rounded-full border-2 border-border border-t-transparent" />
           )}
         </div>
 

@@ -107,7 +107,7 @@ export function TitleField({
                     ? "Напр. iPhone 15 Pro Max 256GB"
                     : "e.g., iPhone 15 Pro Max 256GB"}
                   maxLength={maxLength}
-                  className="border-none bg-transparent h-14 px-4 text-base font-medium placeholder:text-muted-foreground/40 focus-visible:ring-0"
+                  className="border-none bg-transparent h-14 px-4 text-base font-medium placeholder:text-muted-foreground focus-visible:ring-0"
                 />
               </div>
             </div>

@@ -631,7 +631,7 @@ export default function PlansPageClient(props: {
                         {plan.priority_support ? (
                           <Check weight="bold" className="mx-auto size-5 text-primary" />
                         ) : (
-                          <span className="text-muted-foreground/40">—</span>
+                          <span className="text-muted-foreground">—</span>
                         )}
                       </TableCell>
                     </TableRow>

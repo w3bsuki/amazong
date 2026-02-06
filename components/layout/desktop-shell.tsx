@@ -99,7 +99,7 @@ export function DesktopShell({
           className={cn(
             "grid items-start",
             hasSidebar
-              ? "grid-cols-1 lg:grid-cols-[var(--shell-sidebar-w)_1fr] gap-4 lg:gap-(--layout-gap)"
+              ? "grid-cols-1 lg:grid-cols-shell gap-4 lg:gap-(--layout-gap)"
               : "grid-cols-1"
           )}
         >
@@ -163,7 +163,7 @@ export function DesktopShellSkeleton({
           className={cn(
             "grid items-start",
             showSidebar
-              ? "grid-cols-1 lg:grid-cols-[var(--layout-sidebar-w)_1fr] gap-4 lg:gap-(--layout-gap)"
+              ? "grid-cols-1 lg:grid-cols-layout-sidebar gap-4 lg:gap-(--layout-gap)"
               : "grid-cols-1"
           )}
         >

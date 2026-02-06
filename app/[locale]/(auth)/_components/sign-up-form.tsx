@@ -150,7 +150,7 @@ export function SignUpForm({
           {t("help")}
         </Link>
       </div>
-      <p className="text-xs text-center text-muted-foreground/70">{t("copyright", { year: new Date().getFullYear() })}</p>
+      <p className="text-xs text-center text-muted-foreground">{t("copyright", { year: new Date().getFullYear() })}</p>
     </>
   )
 

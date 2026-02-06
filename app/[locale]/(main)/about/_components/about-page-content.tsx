@@ -28,7 +28,7 @@ export async function AboutPageContent() {
         {/* Overlay for better text contrast */}
         <div className="absolute inset-0 bg-overlay-dark/20" aria-hidden="true" />
         <div className="container py-12 md:py-20 relative z-10">
-          <div className="[&_nav]:border-primary-foreground/20 [&_nav]:mb-4 [&_a]:text-primary-foreground/80 [&_a:hover]:text-primary-foreground [&_span[aria-current]]:text-primary-foreground [&_svg]:text-primary-foreground/50">
+          <div className="[&_nav]:border-border-subtle [&_nav]:mb-4 [&_a]:text-foreground [&_a:hover]:text-primary-foreground [&_span[aria-current]]:text-primary-foreground [&_svg]:text-muted-foreground">
             <AppBreadcrumb
               items={breadcrumbPresets(tBreadcrumbs).about}
               ariaLabel={tBreadcrumbs("ariaLabel")}
@@ -39,7 +39,7 @@ export async function AboutPageContent() {
             <h1 className="text-3xl md:text-5xl font-bold mb-4">
               {t("heroTitle")}
             </h1>
-            <p className="text-lg md:text-xl text-primary-foreground/90 leading-relaxed">
+            <p className="text-lg md:text-xl text-foreground leading-relaxed">
               {t("heroSubtitle")}
             </p>
           </div>

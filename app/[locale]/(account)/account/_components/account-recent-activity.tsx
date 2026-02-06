@@ -179,7 +179,7 @@ export function AccountRecentActivity({ orders, products, sales, locale }: Accou
                           </>
                         ) : (
                           <div className="flex size-full items-center justify-center">
-                            <IconShoppingBag className="size-8 text-muted-foreground/40" strokeWidth={1.5} />
+                            <IconShoppingBag className="size-8 text-muted-foreground" strokeWidth={1.5} />
                           </div>
                         )}
                       </div>
@@ -290,7 +290,7 @@ export function AccountRecentActivity({ orders, products, sales, locale }: Accou
                       />
                     ) : (
                       <div className="flex size-full items-center justify-center">
-                        <IconPhoto className="size-8 text-muted-foreground/40" strokeWidth={1.5} />
+                        <IconPhoto className="size-8 text-muted-foreground" strokeWidth={1.5} />
                       </div>
                     )}
                     {/* Stock badge */}

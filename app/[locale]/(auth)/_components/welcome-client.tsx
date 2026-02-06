@@ -188,10 +188,10 @@ export function WelcomeClient({ locale }: { locale: string }) {
             >
               <div className="relative bg-primary px-6 py-10 text-center text-primary-foreground overflow-hidden">
                 <div className="absolute inset-0 overflow-hidden">
-                  <div className="absolute -top-4 -right-4 w-24 h-24 bg-primary-foreground/10 rounded-full" />
-                  <div className="absolute -bottom-8 -left-8 w-32 h-32 bg-primary-foreground/10 rounded-full" />
-                  <Confetti className="absolute top-4 right-4 size-8 text-primary-foreground/80 opacity-80" weight="fill" />
-                  <Confetti className="absolute bottom-4 left-4 size-6 text-primary-foreground/80 opacity-80" weight="fill" />
+                  <div className="absolute -top-4 -right-4 w-24 h-24 bg-hover rounded-full" />
+                  <div className="absolute -bottom-8 -left-8 w-32 h-32 bg-hover rounded-full" />
+                  <Confetti className="absolute top-4 right-4 size-8 text-foreground opacity-80" weight="fill" />
+                  <Confetti className="absolute bottom-4 left-4 size-6 text-foreground opacity-80" weight="fill" />
                 </div>
 
                 <div className="relative">
@@ -199,7 +199,7 @@ export function WelcomeClient({ locale }: { locale: string }) {
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
                     transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
-                    className="size-20 bg-primary-foreground/20 rounded-full flex items-center justify-center mx-auto mb-4"
+                    className="size-20 bg-muted rounded-full flex items-center justify-center mx-auto mb-4"
                   >
                     <CheckCircle className="size-12 text-primary-foreground" weight="fill" />
                   </motion.div>
@@ -215,7 +215,7 @@ export function WelcomeClient({ locale }: { locale: string }) {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: 0.4 }}
-                    className="text-primary-foreground/80"
+                    className="text-foreground"
                   >
                     Your email has been verified
                   </motion.p>

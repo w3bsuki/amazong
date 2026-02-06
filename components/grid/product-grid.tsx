@@ -136,7 +136,7 @@ export function ProductGrid({
       <div
         className={cn(
           viewMode === "list"
-            ? "flex flex-col gap-3"
+            ? "flex flex-col gap-2"
             : ["grid gap-(--product-grid-gap)", ...gridColumnClasses[density]],
           className
         )}
@@ -222,7 +222,7 @@ export function ProductGridSkeleton({
       <div
         className={cn(
           viewMode === "list"
-            ? "flex flex-col gap-3"
+            ? "flex flex-col gap-2"
             : ["grid gap-(--product-grid-gap)", ...gridColumnClasses[density]]
         )}
       >
@@ -230,7 +230,7 @@ export function ProductGridSkeleton({
           viewMode === "list" ? (
             <div
               key={i}
-              className="flex gap-3 p-2.5 rounded-xl border border-border bg-card"
+              className="flex gap-2.5 p-2 rounded-xl border border-border bg-card"
             >
               <div className="aspect-square w-24 rounded-xl bg-muted animate-pulse shrink-0" />
               <div className="flex-1 space-y-2">

@@ -415,7 +415,7 @@ export function SellingProductsList({ products, locale, actions }: SellingProduc
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center">
-                    <Package className="size-8 text-muted-foreground/40" weight="duotone" />
+                    <Package className="size-8 text-muted-foreground" weight="duotone" />
                   </div>
                 )}
                 {boosted && (
@@ -442,7 +442,7 @@ export function SellingProductsList({ products, locale, actions }: SellingProduc
                         {formatCurrency(Number(product.price))}
                       </span>
                       {saleActive && salePercent > 0 && (
-                        <Badge variant="secondary" className="bg-deal/10 text-deal border-0 text-2xs px-1.5 py-0">
+                        <Badge variant="secondary" className="bg-destructive-subtle text-deal border-0 text-2xs px-1.5 py-0">
                           <Tag weight="fill" className="size-2.5 mr-0.5" />
                           -{salePercent}%
                         </Badge>
@@ -601,7 +601,7 @@ export function SellingProductsList({ products, locale, actions }: SellingProduc
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center">
-                    <Package className="size-6 text-muted-foreground/40" weight="duotone" />
+                    <Package className="size-6 text-muted-foreground" weight="duotone" />
                   </div>
                 )}
                 {boosted && (
@@ -623,7 +623,7 @@ export function SellingProductsList({ products, locale, actions }: SellingProduc
                     {product.title}
                   </Link>
                   {saleActive && salePercent > 0 && (
-                    <Badge variant="secondary" className="bg-deal/10 text-deal border-0 text-xs shrink-0">
+                    <Badge variant="secondary" className="bg-destructive-subtle text-deal border-0 text-xs shrink-0">
                       <Tag weight="fill" className="size-3 mr-0.5" />
                       -{salePercent}%
                     </Badge>
@@ -690,7 +690,7 @@ export function SellingProductsList({ products, locale, actions }: SellingProduc
                       <Button
                         variant="outline"
                         size="sm"
-                        className={`gap-1.5 ${boostExpired ? 'text-muted-foreground border-muted-foreground/30 hover:text-primary hover:border-selected-border' : 'text-primary border-selected-border'} hover:bg-hover h-9 px-3 rounded-full`}
+                        className={`gap-1.5 ${boostExpired ? 'text-muted-foreground border-border hover:text-primary hover:border-selected-border' : 'text-primary border-selected-border'} hover:bg-hover h-9 px-3 rounded-full`}
                       >
                         <Lightning className="size-4" weight="bold" />
                         {boostExpired ? tBoost('reboost') : tBoost('trigger')}

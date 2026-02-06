@@ -43,14 +43,14 @@ export function ChecklistSidebar({
               "size-5.5 rounded-md flex items-center justify-center shrink-0 transition-all border",
               item.completed 
                 ? "bg-primary border-primary text-primary-foreground" 
-                : "bg-background border-border text-muted-foreground/40"
+                : "bg-background border-border text-muted-foreground"
             )}>
               {item.completed && <Check className="size-3" weight="bold" />}
               {!item.completed && <span className="text-xs font-semibold">{index + 1}</span>}
             </div>
             <span className={cn(
               "text-xs font-bold tracking-tight transition-colors",
-              item.completed ? "text-foreground" : "text-muted-foreground/70"
+              item.completed ? "text-foreground" : "text-muted-foreground"
             )}>
               {t(item.labelKey as never)}
             </span>

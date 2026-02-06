@@ -81,7 +81,7 @@ export function WishlistDropdown() {
           <div className="p-4 text-center text-muted-foreground text-sm">{t("loading")}</div>
         ) : items.length === 0 ? (
           <div className="p-4 text-center">
-            <Heart size={36} weight="light" className="text-muted-foreground/30 mx-auto mb-2" />
+            <Heart size={36} weight="light" className="text-muted-foreground mx-auto mb-2" />
             <p className="text-muted-foreground text-sm mb-3">{t("empty")}</p>
             <Link href="/search">
               <Button variant="cta" size="default" className="w-full">

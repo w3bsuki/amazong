@@ -100,7 +100,7 @@ export function CategoryBrowseDrawer({
 
   const rootCategory = path[0] ?? null
   const rootCategoryName = rootCategory ? getCategoryName(rootCategory, locale) : null
-  const rootCategoryCount = rootCategory ? categoryCounts[rootCategory.slug] : undefined
+  const rootCategoryCount = rootCategory ? (categoryCounts[rootCategory.slug] ?? 0) : undefined
 
   const listItems = rootCategory ? children : rootCategories
 
@@ -149,30 +149,32 @@ export function CategoryBrowseDrawer({
         className={cn("max-h-dialog rounded-t-2xl", className)}
         aria-label={t("ariaLabel")}
       >
-        <DrawerHeader className="border-b border-border px-inset py-2.5">
-          <div className="flex items-center justify-between gap-2">
-            <div className="flex min-w-0 items-center gap-1.5">
-              {rootCategory && (
-                <IconButton
-                  aria-label={tCommon("back")}
-                  variant="ghost"
-                  size="icon-sm"
-                  onClick={handleBackToRoot}
-                  className="border border-border-subtle bg-background text-muted-foreground hover:bg-hover hover:text-foreground active:bg-active ![&_svg]:size-4"
-                >
-                  <ArrowLeft size={16} weight="bold" aria-hidden="true" />
-                </IconButton>
-              )}
-              <DrawerTitle className="min-w-0 truncate text-base font-semibold">
-                {headerText}
-              </DrawerTitle>
-            </div>
+        <DrawerHeader className="border-b border-border-subtle px-inset py-2.5">
+          <div className="flex min-w-0 items-center gap-2">
+            {rootCategory ? (
+              <IconButton
+                aria-label={tCommon("back")}
+                variant="ghost"
+                size="icon-sm"
+                onClick={handleBackToRoot}
+                className="size-9 shrink-0 text-muted-foreground hover:bg-hover hover:text-foreground active:bg-active focus-visible:ring-2 focus-visible:ring-focus-ring ![&_svg]:size-4"
+              >
+                <ArrowLeft size={16} weight="bold" aria-hidden="true" />
+              </IconButton>
+            ) : (
+              <span className="size-9 shrink-0" aria-hidden="true" />
+            )}
+
+            <DrawerTitle className="min-w-0 flex-1 truncate text-center text-base font-semibold text-foreground">
+              {headerText}
+            </DrawerTitle>
+
             <DrawerClose asChild>
               <IconButton
                 aria-label={t("close")}
                 variant="ghost"
                 size="icon-sm"
-                className="border border-border-subtle bg-background text-muted-foreground hover:bg-hover hover:text-foreground active:bg-active ![&_svg]:size-4"
+                className="size-9 shrink-0 text-muted-foreground hover:bg-hover hover:text-foreground active:bg-active focus-visible:ring-2 focus-visible:ring-focus-ring ![&_svg]:size-4"
               >
                 <X size={16} />
               </IconButton>
@@ -183,9 +185,9 @@ export function CategoryBrowseDrawer({
         <DrawerDescription className="sr-only">{t("description")}</DrawerDescription>
 
         <DrawerBody className="px-inset py-3 pb-4">
-          {listItems.length > 0 && (
+          {rootCategory && listItems.length > 0 && (
             <p className="pb-2 text-2xs font-medium text-muted-foreground">
-              {rootCategory ? t("subcategories") : t("categories")}
+              {t("subcategories")}
             </p>
           )}
 
@@ -217,7 +219,7 @@ export function CategoryBrowseDrawer({
                   )}
                 >
                   <span className="min-w-0 flex-1 truncate text-sm font-medium text-foreground">
-                    {formatCategoryWithCount(getCategoryName(cat, locale), categoryCounts[cat.slug])}
+                    {formatCategoryWithCount(getCategoryName(cat, locale), categoryCounts[cat.slug] ?? 0)}
                   </span>
                   <CaretRight
                     size={16}

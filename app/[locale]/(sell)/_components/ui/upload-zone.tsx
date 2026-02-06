@@ -79,7 +79,7 @@ export function UploadZone({
               {t("uploadZone.fileHint")}
             </span>
           </div>
-          <span className="mt-4 text-xs font-medium text-muted-foreground/60">
+          <span className="mt-4 text-xs font-medium text-muted-foreground">
             {remaining > 0 
               ? t("uploadZone.remaining", { count: remaining })
               : t("uploadZone.maxReached")}

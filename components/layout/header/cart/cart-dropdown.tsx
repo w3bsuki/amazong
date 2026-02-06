@@ -73,8 +73,8 @@ export function CartDropdown() {
         </div>
 
         {items.length === 0 ? (
-          <div className="p-4 text-center">
-            <ShoppingCart size={36} weight="light" className="text-muted-foreground/30 mx-auto mb-2" />
+          <div className="p-3 text-center">
+            <ShoppingCart size={36} weight="light" className="text-muted-foreground mx-auto mb-2" />
             <p className="text-muted-foreground text-sm mb-3">{t("empty")}</p>
             <Button variant="cta" size="default" className="w-full" asChild>
               <Link href="/search">
@@ -86,7 +86,7 @@ export function CartDropdown() {
           <>
             <div className="max-h-(--spacing-scroll-md) overflow-y-auto">
               {items.slice(0, 4).map((item) => (
-                <div key={`${item.id}:${item.variantId ?? ""}`} className="flex gap-2 p-2 border-b border-border hover:bg-hover active:bg-active">
+                <div key={`${item.id}:${item.variantId ?? ""}`} className="flex gap-1.5 p-1.5 border-b border-border hover:bg-hover active:bg-active">
                   <Link href={buildProductUrl(item)} className="shrink-0">
                     <div className="size-12 bg-muted rounded-md overflow-hidden border border-border">
                       {item.image ? (
@@ -116,7 +116,7 @@ export function CartDropdown() {
                         {item.variantName}
                       </div>
                     )}
-                    <div className="flex items-center gap-1.5 mt-1">
+                    <div className="mt-1 flex items-center gap-1">
                       <span className="text-sm font-semibold text-foreground">{formatPrice(item.price)}</span>
                     </div>
                     <div className="flex items-center justify-between gap-2 mt-1">
@@ -181,7 +181,7 @@ export function CartDropdown() {
                 <span className="text-xs text-muted-foreground">{t("subtotal")}</span>
                 <span className="text-base font-semibold text-foreground">{formatPrice(subtotal)}</span>
               </div>
-              <div className="flex gap-2">
+              <div className="flex gap-1.5">
                 <Button variant="outline" size="default" className="w-full flex-1" asChild>
                   <Link href="/cart">
                     {t("viewCart")}
