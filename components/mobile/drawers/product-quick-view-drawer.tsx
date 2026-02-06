@@ -48,15 +48,13 @@ export function ProductQuickViewDrawer({
   const { product: resolvedProduct, isLoading: detailsLoading } = useProductQuickViewDetails(open, product)
 
   React.useEffect(() => {
-    if (typeof window === "undefined") return undefined
+    if (typeof window === "undefined") return
+    let cleanup: (() => void) | undefined
 
     if (open && !wasOpenRef.current) {
       scrollBeforeOpenRef.current = product?.sourceScrollY ?? window.scrollY
       wasOpenRef.current = true
-      return undefined
-    }
-
-    if (!open && wasOpenRef.current) {
+    } else if (!open && wasOpenRef.current) {
       const restoreY = scrollBeforeOpenRef.current
       wasOpenRef.current = false
       if (restoreY != null) {
@@ -65,13 +63,14 @@ export function ProductQuickViewDrawer({
         }
         const rafId = requestAnimationFrame(restoreScroll)
         const timeoutId = window.setTimeout(restoreScroll, 260)
-        return () => {
+        cleanup = () => {
           cancelAnimationFrame(rafId)
           clearTimeout(timeoutId)
         }
       }
     }
-    return undefined
+
+    return cleanup
   }, [open, product?.sourceScrollY])
 
   const handleAddToCart = React.useCallback(() => {
@@ -118,19 +117,19 @@ export function ProductQuickViewDrawer({
     return null
   }
 
-  const showSkeleton = isLoading || detailsLoading || (open && !resolvedProduct)
+  const showOnlyBlockingSkeleton = isLoading || (open && !resolvedProduct && !product)
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
       <DrawerContent
         aria-label={t("quickView")}
         showHandle
-        className="touch-pan-y"
+        className="touch-pan-y max-h-dialog rounded-t-2xl"
         overlayBlur="sm"
       >
         <DrawerDescription className="sr-only">{description}</DrawerDescription>
         <DrawerBody className="px-0 py-0">
-          {showSkeleton ? (
+          {showOnlyBlockingSkeleton ? (
             <QuickViewSkeleton />
           ) : resolvedProduct ? (
             <ProductQuickViewContent
@@ -140,6 +139,7 @@ export function ProductQuickViewDrawer({
               onAddToCart={handleAddToCart}
               onBuyNow={handleBuyNow}
               onNavigateToProduct={handleNavigateToProduct}
+              detailsLoading={detailsLoading}
             />
           ) : null}
         </DrawerBody>

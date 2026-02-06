@@ -1,0 +1,151 @@
+# Ecommerce UI Guide (shadcn + Tailwind v4)
+
+Canonical implementation guide for Treido ecommerce UI patterns.
+
+## Purpose
+
+Use this guide when building or refactoring buyer-facing UI in Treido:
+
+- mobile drawers/sheets
+- quick view experiences
+- category browse/navigation surfaces
+- card/list/action hierarchy for ecommerce tasks
+
+This guide is intentionally concrete and implementation-ready for this repo.
+
+## Stack Contract
+
+- UI primitives: `shadcn/ui` + Radix + Vaul (`components/ui/*`)
+- Styling: Tailwind CSS v4 + semantic tokens from `app/globals.css`
+- App copy: `next-intl` only (`messages/en.json` + `messages/bg.json`)
+
+### Versions (Current Repo)
+
+- `tailwindcss`: `4.1.18`
+- `next`: `16.1.4`
+- `vaul`: `1.1.2`
+- `@radix-ui/*`: Radix primitives used via local shadcn-style wrappers in `components/ui/*`
+
+## Non-Negotiables
+
+1. Tailwind v4 semantic tokens only.
+2. No palette classes (`bg-gray-*`, `text-blue-*`, etc.).
+3. No arbitrary values (`w-[...]`, `text-[...]`, etc.).
+4. No gradient styling in marketplace surfaces.
+5. Touch targets must be 44px minimum.
+6. Focus-visible states must be present for all actionable controls.
+7. `components/ui/*` stays primitive-only (no domain/business logic).
+
+## Tailwind v4 Theming Rules
+
+1. Token source of truth is `app/globals.css`.
+2. Use semantic classes:
+   - surfaces: `bg-background`, `bg-card`, `bg-surface-elevated`, `bg-surface-subtle`
+   - text: `text-foreground`, `text-muted-foreground`, `text-primary`
+   - borders/rings: `border-border`, `border-border-subtle`, `ring-ring`, `ring-focus-ring`
+3. Prefer utility + semantic tokens over custom one-off CSS.
+4. If a new surface state is needed, add a semantic token first, then consume it.
+
+## shadcn Boundary Rules
+
+1. Keep primitives generic and composable in `components/ui/*`.
+2. Domain composition belongs in:
+   - `components/shared/*`
+   - route-private `app/**/_components/*`
+3. Variants should be expressed through CVA/props, not one-off duplicated class clusters.
+
+## Ecommerce Interaction Patterns
+
+## 1) Mobile Quick View
+
+Use bottom drawer for mobile quick view and dialog on desktop.
+
+### Required structure
+
+1. Sticky top chrome:
+   - title
+   - secondary icon actions (share, wishlist)
+   - close control
+2. Image-first content:
+   - large product media before dense details
+3. Compact information:
+   - price + strike-through original + discount
+   - shipping/location/condition
+   - seller summary card
+4. Sticky bottom CTAs:
+   - always two columns (`grid-cols-2`)
+   - primary + outline pair (`buyNow`, `addToCart`)
+
+### Progressive loading contract
+
+Do not replace the entire drawer with a full skeleton when card-level data already exists.
+
+1. Render stable shell immediately from card payload.
+2. Hydrate richer details in-place.
+3. Use section-level skeletons only for missing detail fragments.
+
+This avoids "layout jump" and improves perceived quality.
+
+## 2) Mobile Category Browse Drawer
+
+Category browse drawer should be fast and simple:
+
+1. No in-drawer search for this flow.
+2. Strong row affordance:
+   - outlined/tactile rows (`rounded-xl border border-border-subtle`)
+   - explicit chevron affordance
+3. Keep category drilling model unchanged (root -> scoped list).
+4. In scoped mode, place "All in {category}" as footer CTA:
+   - separate footer bar with border top
+   - safe-area aware bottom padding
+
+This keeps the list clean while preserving a clear "see all" action.
+
+## 3) Drawer Chrome Baseline
+
+Shared baseline from `components/ui/drawer.tsx` and `app/shadcn-components.css`:
+
+1. Calm overlay/drag-handle treatment.
+2. Bottom sheets should be overflow-safe for sticky header/footer patterns.
+3. Scroll should be contained to drawer body (`overscroll-contain`).
+4. Keep safe-area compatibility for bottom CTAs/footers.
+
+## Surface + Hierarchy Guidance
+
+1. Primary hierarchy is content and spacing, not decoration.
+2. Cards/list rows stay border-first; elevation is reserved for overlays.
+3. Keep one dominant action group per viewport section.
+4. Avoid stacking too many similar white blocks without separators or borders.
+
+## Accessibility and Mobile UX
+
+1. Minimum tap area: 44x44.
+2. Keyboard focus visible with ring token.
+3. Maintain valid title/description semantics in drawers/dialogs.
+4. Preserve scroll position and navigation continuity when opening/closing overlays.
+
+## Implementation Checklist
+
+- [ ] `pnpm -s typecheck`
+- [ ] `pnpm -s lint`
+- [ ] `pnpm -s styles:gate`
+- [ ] targeted quick-view/category unit checks
+- [ ] mobile smoke e2e (`pnpm -s test:e2e:smoke`)
+
+## File Patterns (Current Repo)
+
+- Quick view mobile entry: `components/mobile/drawers/product-quick-view-drawer.tsx`
+- Quick view shared content: `components/shared/product/quick-view/product-quick-view-content.tsx`
+- Quick view media: `components/shared/product/quick-view/quick-view-image-gallery.tsx`
+- Category drawer: `components/mobile/drawers/category-browse-drawer.tsx`
+- Drawer primitive: `components/ui/drawer.tsx`
+- Global component CSS: `app/shadcn-components.css`
+
+## References
+
+- shadcn Tailwind v4: https://ui.shadcn.com/docs/tailwind-v4
+- shadcn drawer docs: https://ui.shadcn.com/docs/components/drawer
+- Vaul API: https://vaul.emilkowal.ski/api
+- Tailwind theme/functions: https://tailwindcss.com/docs/theme
+- Tailwind directives/functions: https://tailwindcss.com/docs/functions-and-directives
+- Baymard quick view research: https://baymard.com/blog/current-state-of-quick-view

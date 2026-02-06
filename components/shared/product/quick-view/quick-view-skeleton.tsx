@@ -4,52 +4,52 @@ import { Skeleton } from "@/components/ui/skeleton"
 
 export function QuickViewSkeleton() {
   return (
-    <div className="flex flex-col">
-      <div className="p-4 lg:p-6">
-        <Skeleton className="aspect-square w-full rounded-xl" />
-      </div>
-      
-      {/* Thumbnail strip skeleton - mobile only */}
-      <div className="flex gap-1.5 px-4 pb-2 lg:hidden">
-        {Array.from({ length: 4 }).map((_, i) => (
-          <Skeleton key={i} className="size-11 shrink-0 rounded-xl" />
-        ))}
-      </div>
-      
-      {/* Content skeleton - simplified */}
-      <div className="px-4 pb-4 space-y-2.5 lg:px-6 lg:pb-6">
-        {/* Price */}
-        <div className="flex items-baseline gap-2">
-          <Skeleton className="h-6 w-20" />
-          <Skeleton className="h-4 w-14" />
+    <div className="flex min-h-full flex-col bg-surface-elevated">
+      <div className="border-b border-border px-4 py-3 lg:px-6">
+        <div className="flex items-center gap-2">
+          <Skeleton className="h-5 flex-1" />
+          <Skeleton className="size-9 rounded-full" />
+          <Skeleton className="size-9 rounded-full" />
+          <Skeleton className="size-9 rounded-full" />
         </div>
+      </div>
 
-        {/* Title */}
-        <Skeleton className="h-5 w-full" />
-        <Skeleton className="h-5 w-3/4" />
+      <div className="min-h-0 flex-1 overflow-y-auto">
+        <div className="grid grid-cols-1 gap-4 px-4 py-3 lg:grid-cols-5 lg:gap-6 lg:px-6 lg:py-5">
+          <div className="space-y-4 lg:col-span-3">
+            <Skeleton className="aspect-square w-full rounded-xl" />
 
-        {/* Badges row */}
-        <div className="flex flex-wrap gap-1.5">
-          <Skeleton className="h-5 w-14 rounded-full" />
-          <Skeleton className="h-5 w-20 rounded-full" />
-        </div>
+            <div className="space-y-3 rounded-xl border border-border-subtle bg-card p-4">
+              <div className="flex items-baseline gap-2">
+                <Skeleton className="h-7 w-28" />
+                <Skeleton className="h-4 w-16" />
+              </div>
+              <div className="space-y-2">
+                <Skeleton className="h-4 w-32" />
+                <Skeleton className="h-4 w-24" />
+                <Skeleton className="h-5 w-20 rounded-full" />
+              </div>
+            </div>
+          </div>
 
-        {/* Actions row */}
-        <div className="flex items-center justify-between gap-2">
-          <Skeleton className="h-11 w-32 rounded-xl" />
-          <div className="flex gap-1">
-            <Skeleton className="size-11 rounded-xl" />
-            <Skeleton className="size-11 rounded-xl" />
+          <div className="space-y-3 lg:col-span-2">
+            <div className="rounded-xl border border-border-subtle bg-surface-subtle p-3">
+              <div className="flex items-center gap-3">
+                <Skeleton className="size-10 rounded-full" />
+                <div className="min-w-0 flex-1 space-y-1.5">
+                  <Skeleton className="h-4 w-32" />
+                  <Skeleton className="h-3 w-24" />
+                </div>
+              </div>
+            </div>
+            <Skeleton className="h-20 w-full rounded-xl" />
+            <Skeleton className="h-11 w-full rounded-xl" />
           </div>
         </div>
-
-        {/* Seller card */}
-        <Skeleton className="h-14 w-full rounded-xl" />
       </div>
 
-      {/* CTA buttons */}
-      <div className="px-4 py-3 mt-auto border-t border-border lg:px-6">
-        <div className="grid gap-2 lg:grid-cols-2">
+      <div className="shrink-0 border-t border-border bg-surface-elevated px-4 py-3 pb-safe-max lg:px-6">
+        <div className="grid grid-cols-2 gap-2">
           <Skeleton className="h-12 rounded-xl" />
           <Skeleton className="h-12 rounded-xl" />
         </div>

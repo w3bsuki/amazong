@@ -190,7 +190,7 @@ function DrawerContent({
   className,
   children,
   showHandle,
-  overlayBlur = "md",
+  overlayBlur = "sm",
   onCloseAutoFocus,
   ...props
 }: DrawerContentProps) {
@@ -208,7 +208,7 @@ function DrawerContent({
         data-slot="drawer-content"
         aria-describedby={hasDescription ? ariaDescribedBy : undefined}
         className={cn(
-          "group/drawer-content bg-background fixed z-50 flex h-auto flex-col shadow-modal outline-none",
+          "group/drawer-content fixed z-50 flex h-auto min-h-0 flex-col overflow-hidden bg-surface-elevated shadow-modal outline-none",
           // Bottom drawer - standard mobile drawer (most common)
           "data-[vaul-drawer-direction=bottom]:inset-x-0 data-[vaul-drawer-direction=bottom]:bottom-0",
           "data-[vaul-drawer-direction=bottom]:mt-24 data-[vaul-drawer-direction=bottom]:max-h-dialog",
@@ -249,12 +249,12 @@ function DrawerContent({
               "hidden",
               "group-data-[vaul-drawer-direction=bottom]/drawer-content:flex",
               "group-data-[vaul-drawer-direction=top]/drawer-content:flex",
-              "justify-center pt-4 pb-2"
+              "justify-center pt-3 pb-1"
             )}
           >
             <div
               aria-hidden="true"
-              className="h-1.5 w-12 shrink-0 cursor-grab rounded-full bg-muted transition-colors active:cursor-grabbing hover:bg-muted-foreground"
+              className="h-1 w-10 shrink-0 rounded-full bg-border transition-colors hover:bg-muted-foreground"
             />
           </div>
         )}
@@ -269,9 +269,7 @@ function DrawerHeader({ className, ...props }: React.ComponentProps<"div">) {
     <div
       data-slot="drawer-header"
       className={cn(
-        "flex flex-col gap-1.5 px-4 py-3",
-        "group-data-[vaul-drawer-direction=bottom]/drawer-content:text-center",
-        "group-data-[vaul-drawer-direction=top]/drawer-content:text-center",
+        "flex flex-col gap-1.5 px-4 py-3 text-left",
         className
       )}
       {...props}
@@ -319,7 +317,7 @@ function DrawerBody({ className, noDrag = false, ...props }: DrawerBodyProps) {
       data-slot="drawer-body"
       {...(noDrag && { "data-vaul-no-drag": true })}
       className={cn(
-        "flex-1 overflow-y-auto overscroll-contain touch-pan-y px-4",
+        "min-h-0 flex-1 overflow-y-auto overscroll-contain touch-pan-y px-4",
         className
       )}
       {...props}

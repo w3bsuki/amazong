@@ -20,13 +20,13 @@ export function PromotedListingsStrip({ products, className }: PromotedListingsS
   if (!products || products.length === 0) return null
 
   return (
-    <section className={cn("py-3", className)}>
-      <div className="px-inset-md mb-3 flex items-center justify-between gap-2">
+    <section className={cn("py-4", className)}>
+      <div className="px-inset-md mb-3.5 flex items-center justify-between gap-2">
         <div className="min-w-0 flex items-center gap-2">
-          <Badge variant="promoted" className="shrink-0 text-2xs px-2 py-0.5">
+          <Badge variant="promoted" className="shrink-0 px-2 py-0.5 text-2xs">
             {tProduct("adBadge")}
           </Badge>
-          <h2 className="min-w-0 truncate text-base font-semibold tracking-tight text-foreground">
+          <h2 className="min-w-0 truncate text-lg font-semibold tracking-tight text-foreground">
             {t("mobile.promotedListings")}
           </h2>
         </div>
@@ -45,7 +45,7 @@ export function PromotedListingsStrip({ products, className }: PromotedListingsS
       </div>
 
       <div className="overflow-x-auto no-scrollbar">
-        <div className="flex gap-3.5 px-inset-md">
+        <div className="flex gap-4 px-inset-md">
           {products.slice(0, 8).map((product) => (
             <HorizontalProductCard
               key={product.id}

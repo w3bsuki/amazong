@@ -12,16 +12,16 @@
 
 [data-vaul-drawer][data-vaul-drawer-direction="bottom"] {
   /* iOS-style spring animation */
-  transition: transform 0.5s cubic-bezier(0.32, 0.72, 0, 1);
+  transition: transform 0.42s cubic-bezier(0.32, 0.72, 0, 1);
 }
 
 [data-vaul-drawer][data-vaul-drawer-direction="top"] {
-  transition: transform 0.5s cubic-bezier(0.32, 0.72, 0, 1);
+  transition: transform 0.42s cubic-bezier(0.32, 0.72, 0, 1);
 }
 
 [data-vaul-drawer][data-vaul-drawer-direction="left"],
 [data-vaul-drawer][data-vaul-drawer-direction="right"] {
-  transition: transform 0.4s cubic-bezier(0.32, 0.72, 0, 1);
+  transition: transform 0.32s cubic-bezier(0.32, 0.72, 0, 1);
 }
 
 /* Prevent scrolling underneath drawer when open */
@@ -34,11 +34,16 @@
   user-select: none;
 }
 
+[data-slot="drawer-content"] {
+  overscroll-behavior: contain;
+  contain: layout style paint;
+}
+
 /* Drawer body scroll containment - prevents scroll leaking to parent */
 [data-slot="drawer-body"] {
   -webkit-overflow-scrolling: touch;
   scrollbar-width: thin;
-  scrollbar-color: var(--color-muted-foreground) transparent;
+  scrollbar-color: var(--color-border) transparent;
 }
 
 [data-slot="drawer-body"]::-webkit-scrollbar {
@@ -50,7 +55,7 @@
 }
 
 [data-slot="drawer-body"]::-webkit-scrollbar-thumb {
-  background-color: var(--color-muted-foreground);
+  background-color: var(--color-border);
   border-radius: 2px;
 }
 

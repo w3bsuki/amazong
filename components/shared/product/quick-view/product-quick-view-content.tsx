@@ -1,7 +1,15 @@
 "use client"
 
 import * as React from "react"
-import { ArrowSquareOut, Heart, LinkSimple, ShieldCheck, ArrowsClockwise, MapPin, Truck } from "@phosphor-icons/react"
+import {
+  ArrowSquareOut,
+  ArrowsClockwise,
+  Heart,
+  LinkSimple,
+  MapPin,
+  ShieldCheck,
+  Truck,
+} from "@phosphor-icons/react"
 import { X } from "lucide-react"
 import { useLocale, useTranslations } from "next-intl"
 import { toast } from "sonner"
@@ -9,6 +17,7 @@ import { toast } from "sonner"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { IconButton } from "@/components/ui/icon-button"
+import { Skeleton } from "@/components/ui/skeleton"
 import type { QuickViewProduct } from "@/components/providers/drawer-context"
 import { useWishlist } from "@/components/providers/wishlist-context"
 import { PLACEHOLDER_IMAGE_PATH } from "@/lib/normalize-image-url"
@@ -42,6 +51,7 @@ export function ProductQuickViewContent({
   onAddToCart,
   onBuyNow,
   onNavigateToProduct,
+  detailsLoading = false,
 }: {
   product: QuickViewProduct
   productPath: string
@@ -49,6 +59,7 @@ export function ProductQuickViewContent({
   onAddToCart: () => void
   onBuyNow: () => void
   onNavigateToProduct: () => void
+  detailsLoading?: boolean
 }) {
   const tDrawers = useTranslations("Drawers")
   const tProduct = useTranslations("Product")
@@ -121,207 +132,200 @@ export function ProductQuickViewContent({
       : null
 
   const titleText = title || tDrawers("quickView")
+  const hasSellerData = Boolean(sellerName || sellerAvatarUrl)
+  const showSellerSkeleton = detailsLoading && !hasSellerData
+  const showLocationSkeleton = detailsLoading && !location
+  const showConditionSkeleton = detailsLoading && !condition
 
   return (
-    <div className="flex min-h-full flex-col">
+    <div className="flex min-h-full flex-col bg-surface-elevated">
       {/* Header */}
-      <div className="sticky top-0 z-20 flex items-center gap-3 border-b border-border bg-surface-glass backdrop-blur-md px-4 py-3">
-        <h2 className="min-w-0 flex-1 truncate text-base font-semibold text-foreground">
-          {titleText}
-        </h2>
-        <IconButton
-          type="button"
-          variant="ghost"
-          className="border border-border-subtle bg-background hover:bg-muted active:bg-muted"
-          onClick={() => onRequestClose?.()}
-          aria-label={tDrawers("close")}
-        >
-          <X className="size-5" />
-        </IconButton>
+      <div className="sticky top-0 z-20 border-b border-border bg-surface-elevated px-4 py-3 lg:px-6">
+        <div className="flex items-center gap-2">
+          <h2 className="min-w-0 flex-1 truncate text-base font-semibold text-foreground">
+            {titleText}
+          </h2>
+          <IconButton
+            type="button"
+            variant="ghost"
+            size="icon-sm"
+            onClick={handleCopyLink}
+            aria-label={tModal("copyLink")}
+            disabled={!shareUrl}
+            className="border border-border-subtle bg-background text-muted-foreground hover:bg-hover hover:text-foreground active:bg-active ![&_svg]:size-4"
+          >
+            <LinkSimple size={16} weight="bold" />
+          </IconButton>
+          <IconButton
+            type="button"
+            variant="ghost"
+            size="icon-sm"
+            onClick={handleToggleWishlist}
+            aria-label={inWishlist ? tProduct("removeFromWatchlist") : tProduct("addToWatchlist")}
+            disabled={wishlistPending}
+            className={cn(
+              "border border-border-subtle bg-background ![&_svg]:size-4",
+              inWishlist
+                ? "text-primary hover:bg-hover active:bg-active"
+                : "text-muted-foreground hover:bg-hover hover:text-foreground active:bg-active"
+            )}
+          >
+            <Heart
+              size={16}
+              weight={inWishlist ? "fill" : "regular"}
+              className={cn(inWishlist && "fill-primary text-primary")}
+            />
+          </IconButton>
+          <IconButton
+            type="button"
+            variant="ghost"
+            size="icon-sm"
+            className="border border-border-subtle bg-background text-muted-foreground hover:bg-hover hover:text-foreground active:bg-active ![&_svg]:size-4"
+            onClick={() => onRequestClose?.()}
+            aria-label={tDrawers("close")}
+          >
+            <X className="size-4" />
+          </IconButton>
+        </div>
       </div>
 
       {/* Content */}
-      <div className="grid grid-cols-1 lg:grid-cols-5">
-        <div className="bg-surface-subtle lg:col-span-3 lg:border-r lg:border-border">
-          <div className="p-4 lg:p-6">
-            <div className="lg:hidden">
-              <QuickViewImageGallery
-                images={allImages}
-                title={titleText}
-                discountPercent={showDiscount ? discountPercent : undefined}
-                onNavigateToProduct={onNavigateToProduct}
-                compact
-              />
-            </div>
-            <div className="hidden lg:block">
-              <QuickViewImageGallery
-                images={allImages}
-                title={titleText}
-                discountPercent={showDiscount ? discountPercent : undefined}
-                onNavigateToProduct={onNavigateToProduct}
-                compact={false}
-              />
-            </div>
-          </div>
-        </div>
+      <div className="min-h-0 flex-1 overflow-y-auto">
+        <div className="grid grid-cols-1 gap-4 px-4 py-3 lg:grid-cols-5 lg:gap-6 lg:px-6 lg:py-5">
+          <div className="space-y-4 lg:col-span-3">
+            <QuickViewImageGallery
+              images={allImages}
+              title={titleText}
+              discountPercent={showDiscount ? discountPercent : undefined}
+              onNavigateToProduct={onNavigateToProduct}
+              compact
+            />
 
-        <div className="flex flex-col gap-4 px-4 py-4 lg:col-span-2 lg:px-6 lg:py-6">
-          {/* Price */}
-          <div className="rounded-2xl border border-border-subtle bg-card p-5 space-y-3">
-            <div className="flex items-baseline gap-2 flex-wrap">
-              <span className="text-2xl font-bold tabular-nums tracking-tight text-foreground">
-                {formattedPrice}
-              </span>
-              {formattedOriginalPrice && (
-                <span className="text-sm text-muted-foreground line-through tabular-nums">
-                  {formattedOriginalPrice}
+            <div className="space-y-3 rounded-xl border border-border-subtle bg-card p-4">
+              <div className="flex flex-wrap items-baseline gap-2">
+                <span className="text-2xl font-bold tabular-nums tracking-tight text-foreground">
+                  {formattedPrice}
                 </span>
-              )}
-              {showDiscount && discountPercent > 0 && (
-                <Badge variant="destructive" className="text-xs font-semibold tabular-nums">
-                  -{discountPercent}%
-                </Badge>
-              )}
-            </div>
-
-            <div className="flex flex-col gap-2 text-sm text-muted-foreground">
-              {freeShipping ? (
-                <span className="flex items-center gap-2">
-                  <Truck size={18} />
-                  {tProduct("freeShipping")}
-                </span>
-              ) : (
-                <span className="flex items-center gap-2">
-                  <Truck size={18} />
-                  {tProduct("shippingAvailable")}
-                </span>
-              )}
-              {location && (
-                <span className="flex items-center gap-2">
-                  <MapPin size={16} />
-                  {location}
-                </span>
-              )}
-              {condition && (
-                <div className="flex flex-wrap items-center gap-2">
-                  <Badge variant={getConditionBadgeVariant(condition)} className="text-xs">
-                    {condition}
+                {formattedOriginalPrice && (
+                  <span className="text-sm tabular-nums text-muted-foreground line-through">
+                    {formattedOriginalPrice}
+                  </span>
+                )}
+                {showDiscount && discountPercent > 0 && (
+                  <Badge variant="destructive" className="text-xs font-semibold tabular-nums">
+                    -{discountPercent}%
                   </Badge>
-                </div>
-              )}
-            </div>
-          </div>
+                )}
+                {!inStock && (
+                  <Badge
+                    variant="outline"
+                    className="ml-auto border-destructive bg-destructive-subtle text-destructive"
+                  >
+                    {tProduct("outOfStock")}
+                  </Badge>
+                )}
+              </div>
 
-          {/* Actions */}
-          <div className="flex items-center gap-2">
-            <IconButton
-              type="button"
-              variant="ghost"
-              onClick={handleCopyLink}
-              aria-label={tModal("copyLink")}
-              disabled={!shareUrl}
-              className={cn(
-                "rounded-full border border-border-subtle bg-surface-glass backdrop-blur-sm",
-                "hover:bg-background hover:border-border active:bg-active",
-                "text-muted-foreground hover:text-foreground active:text-foreground",
-                "![&_svg]:size-4"
-              )}
-            >
-              <LinkSimple size={18} weight="bold" />
-            </IconButton>
-            <IconButton
-              type="button"
-              variant="ghost"
-              onClick={handleToggleWishlist}
-              aria-label={inWishlist ? tProduct("removeFromWatchlist") : tProduct("addToWatchlist")}
-              disabled={wishlistPending}
-              className={cn(
-                "rounded-full border border-border-subtle bg-surface-glass backdrop-blur-sm",
-                "hover:bg-background hover:border-border active:bg-active",
-                "![&_svg]:size-4",
-                inWishlist
-                  ? "text-primary"
-                  : "text-muted-foreground hover:text-foreground active:text-foreground"
-              )}
-            >
-              <Heart
-                size={18}
-                weight={inWishlist ? "fill" : "regular"}
-                className={cn(inWishlist && "fill-primary text-primary")}
-              />
-            </IconButton>
+              <div className="space-y-2 text-sm text-muted-foreground">
+                <span className="flex items-center gap-2">
+                  <Truck size={17} />
+                  {freeShipping ? tProduct("freeShipping") : tProduct("shippingAvailable")}
+                </span>
 
-            {!inStock && (
-              <Badge
-                variant="outline"
-                className="ml-auto border-destructive bg-destructive-subtle text-destructive"
-              >
-                {tProduct("outOfStock")}
-              </Badge>
-            )}
-          </div>
+                {location ? (
+                  <span className="flex items-center gap-2">
+                    <MapPin size={16} />
+                    {location}
+                  </span>
+                ) : showLocationSkeleton ? (
+                  <Skeleton className="h-4 w-28" />
+                ) : null}
 
-          {/* Seller */}
-          <QuickViewSellerCard
-            sellerName={sellerName}
-            sellerAvatarUrl={sellerAvatarUrl}
-            sellerVerified={sellerVerified}
-            rating={rating}
-            reviews={reviews}
-            onNavigateToProduct={onNavigateToProduct}
-          />
-
-          {/* Trust */}
-          <div className="rounded-xl border border-border-subtle bg-surface-subtle p-4 text-sm text-muted-foreground">
-            <div className="flex items-start gap-2">
-              <ShieldCheck size={18} weight="fill" className="mt-0.5 shrink-0" />
-              <div className="flex-1">
-                <p className="font-medium text-foreground">{tProduct("buyerProtection")}</p>
-                <p className="text-sm text-muted-foreground">{tProduct("buyerProtectionBadgeSubtitle")}</p>
+                {condition ? (
+                  <div className="flex flex-wrap items-center gap-2">
+                    <Badge variant={getConditionBadgeVariant(condition)} className="text-xs">
+                      {condition}
+                    </Badge>
+                  </div>
+                ) : showConditionSkeleton ? (
+                  <Skeleton className="h-5 w-20 rounded-full" />
+                ) : null}
               </div>
             </div>
-            <div className="mt-3 flex items-center gap-2">
-              <ArrowsClockwise size={18} className="shrink-0" />
-              <span>{tProduct("easyReturns")}</span>
-            </div>
           </div>
 
-          <button
-            type="button"
-            onClick={onNavigateToProduct}
-            className="w-full inline-flex items-center justify-center gap-2 rounded-xl border border-border-subtle bg-background px-4 py-3 text-sm font-medium text-foreground hover:bg-hover active:bg-active"
-          >
-            {tModal("viewFullPage")}
-            <ArrowSquareOut size={16} weight="bold" />
-          </button>
+          <div className="space-y-3 lg:col-span-2">
+            {showSellerSkeleton ? (
+              <div className="rounded-xl border border-border-subtle bg-surface-subtle p-3">
+                <div className="flex items-center gap-3">
+                  <Skeleton className="size-10 rounded-full" />
+                  <div className="min-w-0 flex-1 space-y-1.5">
+                    <Skeleton className="h-4 w-36" />
+                    <Skeleton className="h-3 w-24" />
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <QuickViewSellerCard
+                compact
+                sellerName={sellerName}
+                sellerAvatarUrl={sellerAvatarUrl}
+                sellerVerified={sellerVerified}
+                rating={rating}
+                reviews={reviews}
+                onNavigateToProduct={onNavigateToProduct}
+              />
+            )}
+
+            <div className="rounded-xl border border-border-subtle bg-surface-subtle p-3 text-sm text-muted-foreground">
+              <div className="flex items-start gap-2">
+                <ShieldCheck size={17} weight="fill" className="mt-0.5 shrink-0" />
+                <div className="min-w-0 flex-1">
+                  <p className="font-medium text-foreground">{tProduct("buyerProtection")}</p>
+                  <p className="text-xs text-muted-foreground">{tProduct("buyerProtectionBadgeSubtitle")}</p>
+                </div>
+              </div>
+              <div className="mt-2 flex items-center gap-2 text-xs">
+                <ArrowsClockwise size={16} className="shrink-0" />
+                <span>{tProduct("easyReturns")}</span>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={onNavigateToProduct}
+              className="inline-flex min-h-(--spacing-touch-md) w-full items-center justify-center gap-2 rounded-xl border border-border-subtle bg-background px-4 text-sm font-medium text-foreground hover:bg-hover active:bg-active"
+            >
+              {tModal("viewFullPage")}
+              <ArrowSquareOut size={16} weight="bold" />
+            </button>
+          </div>
         </div>
       </div>
 
       {/* Sticky bottom CTA */}
-      <div className="sticky bottom-0 z-20 border-t border-border bg-surface-glass backdrop-blur-md pb-safe-max">
-        <div className="px-4 py-3 lg:px-6">
-          <div className="grid gap-2 lg:grid-cols-2">
-            <Button
-              type="button"
-              variant="default"
-              size="lg"
-              className="h-12 w-full"
-              onClick={onBuyNow}
-              disabled={!inStock}
-            >
-              {tProduct("buyNow")}
-            </Button>
-            <Button
-              type="button"
-              variant="outline"
-              size="lg"
-              className="h-12 w-full"
-              onClick={onAddToCart}
-              disabled={!inStock}
-            >
-              {tDrawers("addToCart")}
-            </Button>
-          </div>
+      <div className="shrink-0 border-t border-border bg-surface-elevated px-4 py-3 pb-safe-max lg:px-6">
+        <div className="grid grid-cols-2 gap-2">
+          <Button
+            type="button"
+            variant="default"
+            size="lg"
+            className="h-12 w-full"
+            onClick={onBuyNow}
+            disabled={!inStock}
+          >
+            {tProduct("buyNow")}
+          </Button>
+          <Button
+            type="button"
+            variant="outline"
+            size="lg"
+            className="h-12 w-full"
+            onClick={onAddToCart}
+            disabled={!inStock}
+          >
+            {tDrawers("addToCart")}
+          </Button>
         </div>
       </div>
     </div>

@@ -13,8 +13,8 @@ interface UseCategoryCountsResult {
   refetch: () => void
 }
 
-// Cache key for localStorage - v2 includes L1/L2 subcategory counts
-const CACHE_KEY = "category-counts-v2"
+// Cache key for localStorage - v3 invalidates stale empty payloads from older cache logic.
+const CACHE_KEY = "category-counts-v3"
 const CACHE_TTL_MS = 60 * 60 * 1000 // 1 hour
 
 // Retry configuration
@@ -26,6 +26,10 @@ interface CacheEntry {
   timestamp: number
 }
 
+function isCountsMapUsable(counts: CategoryCounts): boolean {
+  return Object.keys(counts).length > 0
+}
+
 function getFromCache(): CategoryCounts | null {
   if (typeof window === "undefined") return null
   
@@ -34,6 +38,10 @@ function getFromCache(): CategoryCounts | null {
     if (!cached) return null
     
     const entry: CacheEntry = JSON.parse(cached)
+    if (!isCountsMapUsable(entry.counts)) {
+      return null
+    }
+
     const age = Date.now() - entry.timestamp
     
     // Return cached data if still fresh
@@ -100,8 +108,12 @@ export function useCategoryCounts(): UseCategoryCountsResult {
       const data = await res.json()
       
       if (data.counts && typeof data.counts === "object") {
-        setCounts(data.counts)
-        saveToCache(data.counts)
+        const nextCounts = data.counts as CategoryCounts
+        if (!isCountsMapUsable(nextCounts)) {
+          throw new Error("Empty counts payload")
+        }
+        setCounts(nextCounts)
+        saveToCache(nextCounts)
         retryCountRef.current = 0 // Reset retry count on success
       }
     } catch (e) {
@@ -160,8 +172,8 @@ export function useCategoryCounts(): UseCategoryCountsResult {
         const entry: CacheEntry = JSON.parse(cached)
         const age = Date.now() - entry.timestamp
         
-        // If cache is fresh, don't refetch
-        if (age < CACHE_TTL_MS) {
+        // If cache is fresh and has usable data, don't refetch.
+        if (age < CACHE_TTL_MS && isCountsMapUsable(entry.counts)) {
           return
         }
       } catch {

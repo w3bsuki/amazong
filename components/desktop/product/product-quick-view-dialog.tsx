@@ -36,7 +36,7 @@ export function ProductQuickViewDialog({
   const router = useRouter()
   const { addToCart } = useCart()
   const isMobile = useIsMobile()
-  const { product: resolvedProduct } = useProductQuickViewDetails(open, product)
+  const { product: resolvedProduct, isLoading: detailsLoading } = useProductQuickViewDetails(open, product)
 
   const handleAddToCart = React.useCallback(() => {
     if (!resolvedProduct) return
@@ -79,7 +79,7 @@ export function ProductQuickViewDialog({
 
   if (isMobile) return null
 
-  const showSkeleton = isLoading || (open && !resolvedProduct)
+  const showSkeleton = isLoading || (open && !resolvedProduct && !product)
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -102,6 +102,7 @@ export function ProductQuickViewDialog({
               onAddToCart={handleAddToCart}
               onBuyNow={handleBuyNow}
               onNavigateToProduct={handleNavigateToProduct}
+              detailsLoading={detailsLoading}
             />
           ) : null}
         </div>

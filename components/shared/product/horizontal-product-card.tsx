@@ -27,10 +27,10 @@ export function HorizontalProductCard({
   radius = "xl",
   appearance = "tile",
   density = "compact",
-  titleLines = 1,
+  titleLines = 2,
 }: HorizontalProductStripCardProps) {
   return (
-    <div className="shrink-0 w-40">
+    <div className="shrink-0 w-44">
       <ProductCard
         id={product.id}
         title={product.title}

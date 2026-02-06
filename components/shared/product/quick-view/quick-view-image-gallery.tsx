@@ -150,8 +150,8 @@ export function QuickViewImageGallery({
 
   // Mobile/compact layout - optimized touch handling with a square hero (fills drawer better)
   return (
-    <div className="touch-pan-x">
-      <div className="relative overflow-hidden rounded-2xl border border-border-subtle bg-surface-gallery">
+    <div className="touch-pan-y">
+      <div className="relative overflow-hidden rounded-xl border border-border-subtle bg-muted">
         <AspectRatio ratio={1} className="relative">
         <button
           type="button"
@@ -163,7 +163,7 @@ export function QuickViewImageGallery({
             src={normalizeImageUrl(currentImage) ?? PLACEHOLDER_IMAGE_PATH}
             alt={title}
             fill
-            className="object-cover pointer-events-none"
+            className="pointer-events-none object-contain p-3"
             sizes="(max-width: 768px) 100vw, 400px"
             priority
             draggable={false}
@@ -177,20 +177,20 @@ export function QuickViewImageGallery({
               variant="ghost"
               size="icon"
               onClick={(e) => { e.stopPropagation(); prevImage() }}
-              className="absolute left-2 top-1/2 -translate-y-1/2 border border-border bg-surface-glass backdrop-blur-md touch-manipulation"
+              className="absolute left-2 top-1/2 size-9 -translate-y-1/2 rounded-full border border-border-subtle bg-background text-foreground shadow-sm touch-manipulation hover:bg-hover active:bg-active"
               aria-label={tProduct("previousImage")}
             >
-              <CaretLeft size={18} weight="bold" />
+              <CaretLeft size={16} weight="bold" />
             </Button>
             <Button
               type="button"
               variant="ghost"
               size="icon"
               onClick={(e) => { e.stopPropagation(); nextImage() }}
-              className="absolute right-2 top-1/2 -translate-y-1/2 border border-border bg-surface-glass backdrop-blur-md touch-manipulation"
+              className="absolute right-2 top-1/2 size-9 -translate-y-1/2 rounded-full border border-border-subtle bg-background text-foreground shadow-sm touch-manipulation hover:bg-hover active:bg-active"
               aria-label={tProduct("nextImage")}
             >
-              <CaretRight size={18} weight="bold" />
+              <CaretRight size={16} weight="bold" />
             </Button>
           </>
         )}
@@ -201,7 +201,7 @@ export function QuickViewImageGallery({
             variant="ghost"
             size="icon"
             onClick={(e) => { e.stopPropagation(); onRequestClose() }}
-            className="absolute top-2 right-2 border border-border bg-surface-glass backdrop-blur-md touch-manipulation"
+            className="absolute right-2 top-2 size-9 rounded-full border border-border-subtle bg-background text-foreground shadow-sm touch-manipulation hover:bg-hover active:bg-active"
             aria-label={tProduct("close")}
           >
             <span className="sr-only">{tProduct("close")}</span>
@@ -219,7 +219,7 @@ export function QuickViewImageGallery({
 
         {/* Image counter - compact */}
         {hasMultiple && (
-          <div className="absolute bottom-2 left-2 rounded-full border border-border bg-surface-glass px-2 py-0.5 text-2xs font-medium tabular-nums text-foreground backdrop-blur-md">
+          <div className="absolute bottom-2 left-2 rounded-full border border-border-subtle bg-background px-2 py-0.5 text-2xs font-medium tabular-nums text-foreground">
             {currentIndex + 1}/{images.length}
           </div>
         )}
@@ -228,14 +228,14 @@ export function QuickViewImageGallery({
 
       {/* Thumbnail strip - styled for better UX */}
       {hasMultiple && (
-        <div className="mt-3 flex gap-2 overflow-x-auto scrollbar-hide pb-1 touch-pan-x">
+        <div className="mt-2.5 flex gap-1.5 overflow-x-auto scrollbar-hide pb-0.5 touch-pan-x">
           {images.map((img, i) => (
             <button
               key={`thumb-${i}`}
               type="button"
               onClick={() => setCurrentIndex(i)}
               className={cn(
-                "relative size-12 shrink-0 rounded-xl overflow-hidden border border-border-subtle bg-muted transition-all touch-manipulation",
+                "relative size-10 shrink-0 overflow-hidden rounded-lg border border-border-subtle bg-muted transition-all touch-manipulation",
                 i === currentIndex
                   ? "ring-2 ring-ring"
                   : "hover:border-hover-border"
