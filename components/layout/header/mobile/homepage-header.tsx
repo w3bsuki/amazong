@@ -48,7 +48,7 @@ export function MobileHomepageHeader({
           <MagnifyingGlass size={16} weight="regular" className="shrink-0 text-muted-foreground" />
           <span className="flex-1 truncate font-medium text-xs text-muted-foreground">{searchPlaceholder}</span>
         </button>
-        <div className="flex shrink-0 items-center gap-0.5">
+        <div className="flex shrink-0 items-center -space-x-1">
           <MobileWishlistButton />
           <MobileCartDropdown />
         </div>

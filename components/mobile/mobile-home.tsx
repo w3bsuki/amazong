@@ -232,38 +232,29 @@ export function MobileHome({
       />
 
       {/* Main Content */}
-      <div className="pt-0 pb-4 space-y-(--spacing-home-section-gap)">
+      <div className="pt-0 pb-4 space-y-(--spacing-section-gap)">
         <section
           data-testid="home-section-promoted-banner"
-          className="px-(--spacing-home-inset) pt-(--spacing-home-section-gap)"
+          className="px-(--spacing-home-inset) pt-(--spacing-section-gap)"
         >
-          <div className="rounded-2xl border border-border-subtle bg-foreground px-3.5 py-3 shadow-2xs">
-            <div className="flex items-center justify-between gap-3">
-              <div className="min-w-0 flex items-start gap-2.5">
-                <span className="mt-0.5 inline-flex size-(--control-xs) shrink-0 items-center justify-center rounded-full bg-background text-foreground">
-                  <Lightning size={12} weight="fill" aria-hidden="true" />
-                </span>
-                <div className="min-w-0">
-                  <p className="text-2xs font-medium text-background">
-                    {tMobile("promoBannerEyebrow")}
-                  </p>
-                  <p className="truncate text-sm font-semibold text-background">
-                    {tMobile("promoBannerTitle")}
-                  </p>
-                  <p className="truncate text-xs text-background">
-                    {tMobile("promoBannerSubtitle")}
-                  </p>
-                </div>
+          <Link
+            href="/search?promoted=true&sort=newest"
+            className="block rounded-2xl border border-border-subtle bg-primary px-3 py-2.5 transition-opacity hover:opacity-95 active:opacity-90"
+          >
+            <div className="flex items-center gap-2.5">
+              <span className="inline-flex size-(--control-compact) shrink-0 items-center justify-center rounded-full bg-primary-foreground text-primary">
+                <Lightning size={16} weight="fill" aria-hidden="true" />
+              </span>
+              <div className="min-w-0">
+                <p className="truncate text-sm font-semibold text-primary-foreground">
+                  {tMobile("promoBannerTitle")}
+                </p>
+                <p className="truncate text-2xs text-primary-foreground">
+                  {tMobile("promoBannerSubtitle")}
+                </p>
               </div>
-              <Link
-                href="/search?promoted=true&sort=newest"
-                className="inline-flex min-h-(--spacing-touch-sm) shrink-0 items-center gap-1 rounded-full border border-background bg-background px-2.5 text-xs font-semibold text-foreground transition-colors hover:bg-background active:bg-background"
-              >
-                {tMobile("promoBannerCta")}
-                <CaretRight size={12} weight="bold" aria-hidden="true" />
-              </Link>
             </div>
-          </div>
+          </Link>
         </section>
 
         {promotedRail.length > 0 && (
@@ -277,70 +268,61 @@ export function MobileHome({
         )}
 
         {initialProducts.length > 0 && (
-          <section data-testid="home-section-newest" className="pt-(--spacing-home-section-gap)">
+          <section data-testid="home-section-newest" className="pt-1">
             <div
               data-testid="home-section-for-you-banner"
               className="px-(--spacing-home-inset)"
             >
-              <div className="rounded-2xl border border-border-subtle bg-background px-3.5 py-3 shadow-2xs">
-                <div className="flex items-center justify-between gap-3">
-                  <div className="min-w-0 flex items-start gap-2.5">
-                    <span className="mt-0.5 inline-flex size-(--control-xs) shrink-0 items-center justify-center rounded-full bg-foreground text-background">
-                      <Lightning size={12} weight="fill" aria-hidden="true" />
-                    </span>
-                    <div className="min-w-0">
-                      <p className="text-2xs font-medium text-muted-foreground">
-                        {tMobile("forYouBannerEyebrow")}
-                      </p>
-                      <p className="truncate text-sm font-semibold text-foreground">
-                        {tMobile("forYouBannerTitle")}
-                      </p>
-                      <p className="truncate text-xs text-muted-foreground">
-                        {tMobile("forYouBannerSubtitle")}
-                      </p>
-                    </div>
+              <div className="rounded-2xl bg-surface-subtle px-3 py-2">
+                <Link
+                  href="/search?sort=newest"
+                  className="flex items-start gap-2 tap-transparent transition-colors hover:text-foreground active:text-foreground"
+                >
+                  <span className="inline-flex size-(--control-compact) shrink-0 items-center justify-center rounded-full bg-foreground text-background">
+                    <Lightning size={14} weight="fill" aria-hidden="true" />
+                  </span>
+                  <div className="min-w-0">
+                    <p className="truncate text-base font-semibold leading-tight text-foreground">
+                      {tMobile("forYouBannerTitle")}
+                    </p>
+                    <p className="truncate text-2xs text-muted-foreground">
+                      {tMobile("forYouBannerSubtitle")}
+                    </p>
                   </div>
-                  <Link
-                    href="/search?sort=newest"
-                    className="inline-flex min-h-(--spacing-touch-sm) shrink-0 items-center gap-1 rounded-full border border-border-subtle bg-background px-2.5 text-xs font-semibold text-foreground transition-colors hover:bg-hover active:bg-active"
-                  >
-                    {tMobile("forYouBannerCta")}
-                    <CaretRight size={12} weight="bold" aria-hidden="true" />
-                  </Link>
+                </Link>
+
+                <div className="mt-1">
+                  <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
+                    <Link
+                      href="/search?sort=newest"
+                      className="inline-flex min-h-(--spacing-touch-sm) shrink-0 items-center rounded-full border border-foreground bg-foreground px-2.5 text-xs font-semibold text-background transition-colors hover:bg-foreground active:bg-foreground"
+                    >
+                      {tMobile("sort.newest")}
+                    </Link>
+                    <Link
+                      href="/search?sort=price-asc"
+                      className="inline-flex min-h-(--spacing-touch-sm) shrink-0 items-center rounded-full border border-border-subtle bg-background px-2.5 text-xs font-medium text-foreground transition-colors hover:bg-hover active:bg-active"
+                    >
+                      {tMobile("sort.priceLow")}
+                    </Link>
+                    <Link
+                      href="/search?sort=price-desc"
+                      className="inline-flex min-h-(--spacing-touch-sm) shrink-0 items-center rounded-full border border-border-subtle bg-background px-2.5 text-xs font-medium text-foreground transition-colors hover:bg-hover active:bg-active"
+                    >
+                      {tMobile("sort.priceHigh")}
+                    </Link>
+                    <Link
+                      href="/search?nearby=true"
+                      className="inline-flex min-h-(--spacing-touch-sm) shrink-0 items-center rounded-full border border-border-subtle bg-background px-2.5 text-xs font-medium text-foreground transition-colors hover:bg-hover active:bg-active"
+                    >
+                      {tMobile("sort.nearby")}
+                    </Link>
+                  </div>
                 </div>
               </div>
             </div>
 
-            <div className="mt-2 px-(--spacing-home-inset)">
-              <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
-                <Link
-                  href="/search?sort=newest"
-                  className="inline-flex min-h-(--spacing-touch-sm) shrink-0 items-center rounded-full border border-foreground bg-foreground px-3 text-xs font-semibold text-background transition-colors hover:bg-foreground active:bg-foreground"
-                >
-                  {tMobile("sort.newest")}
-                </Link>
-                <Link
-                  href="/search?sort=price-asc"
-                  className="inline-flex min-h-(--spacing-touch-sm) shrink-0 items-center rounded-full border border-border-subtle bg-background px-3 text-xs font-medium text-muted-foreground transition-colors hover:bg-hover hover:text-foreground active:bg-active active:text-foreground"
-                >
-                  {tMobile("sort.priceLow")}
-                </Link>
-                <Link
-                  href="/search?sort=price-desc"
-                  className="inline-flex min-h-(--spacing-touch-sm) shrink-0 items-center rounded-full border border-border-subtle bg-background px-3 text-xs font-medium text-muted-foreground transition-colors hover:bg-hover hover:text-foreground active:bg-active active:text-foreground"
-                >
-                  {tMobile("sort.priceHigh")}
-                </Link>
-                <Link
-                  href="/search?nearby=true"
-                  className="inline-flex min-h-(--spacing-touch-sm) shrink-0 items-center rounded-full border border-border-subtle bg-background px-3 text-xs font-medium text-muted-foreground transition-colors hover:bg-hover hover:text-foreground active:bg-active active:text-foreground"
-                >
-                  {tMobile("sort.nearby")}
-                </Link>
-              </div>
-            </div>
-
-            <div className="mt-2 grid grid-cols-2 gap-(--spacing-home-card-gap) px-(--spacing-home-inset) pb-1">
+            <div className="mt-1 grid grid-cols-2 gap-(--spacing-home-card-gap) px-(--spacing-home-inset) pb-1">
               {initialProducts.map((product, index) =>
                 renderHomeCard(product, index, {
                   appearance: "card",

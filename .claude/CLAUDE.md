@@ -1,6 +1,7 @@
 # Treido Skills
 
-Treido’s project skills live in `.codex/skills/` and are prefixed `treido-*`.
+Treido project skills live in `.claude/skills/` and are mirrored to `.agents/skills/` for Codex compatibility.
 
-- Skills SSOT: `docs/11-SKILLS.md`
+- Skills SSOT: `docs/SKILLS.md`
 - Workflow SSOT: `docs/WORKFLOW.md`
+- Runtime contract SSOT: `AGENTS.md` and `docs/AGENTS.md`

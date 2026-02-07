@@ -81,8 +81,8 @@ export function MobileTabBar(_: MobileTabBarProps) {
     cn(
       tabItemBase,
       active
-        ? "bg-background text-foreground shadow-2xs"
-        : "text-muted-foreground hover:bg-hover active:bg-active"
+        ? "text-foreground"
+        : "text-muted-foreground hover:bg-surface-subtle active:bg-hover"
     )
 
   // Don't render on product pages - let the sticky buy box take over
@@ -93,13 +93,14 @@ export function MobileTabBar(_: MobileTabBarProps) {
   return (
     <>
       <nav
-        className="fixed inset-x-0 bottom-0 z-40 border-t border-border-subtle bg-background md:hidden"
+        className="pointer-events-none fixed inset-x-0 bottom-0 z-40 md:hidden"
         role="navigation"
         aria-label={t("mobileNavigation")}
         data-testid="mobile-tab-bar"
       >
-        <div className="mx-auto max-w-screen-sm px-2 pt-1.5 pb-safe-max-xs">
-          <div className="grid grid-cols-5 items-end gap-1 rounded-2xl border border-border-subtle bg-background p-1 shadow-sm">
+        <div className="mx-auto max-w-screen-sm px-2 pb-safe-max-xs">
+          <div className="pointer-events-auto mb-1 rounded-2xl border border-border-subtle bg-surface-elevated p-1 shadow-2xs">
+            <div className="grid grid-cols-5 items-end gap-1">
           {/* Home */}
           <Link
             href="/"
@@ -156,27 +157,28 @@ export function MobileTabBar(_: MobileTabBarProps) {
             href="/sell"
             prefetch={true}
             className={cn(
-              tabItemClass(isActive("/sell")),
-              "bg-surface-subtle",
-              isActive("/sell")
-                ? "bg-background text-foreground shadow-2xs"
-                : "text-foreground hover:bg-hover active:bg-active"
+              tabItemBase,
+              "bg-foreground text-background hover:bg-foreground active:opacity-90"
             )}
             aria-label={t("sell")}
             aria-current={isActive("/sell") ? "page" : undefined}
           >
-            <Plus
-              size={20}
-              weight={isActive("/sell") ? "fill" : "regular"}
+            <span
               className={cn(
-                "transition-colors",
-                "text-foreground"
+                "inline-flex size-7 items-center justify-center rounded-full transition-colors",
+                "bg-background text-foreground"
               )}
-            />
+            >
+              <Plus
+                size={16}
+                weight="bold"
+                className="transition-colors text-foreground"
+              />
+            </span>
             <span
               className={cn(
                 "text-2xs font-medium leading-none tracking-tight",
-                "text-foreground"
+                "text-background"
               )}
             >
               {t("sell")}
@@ -261,6 +263,7 @@ export function MobileTabBar(_: MobileTabBarProps) {
               </span>
             </button>
           )}
+            </div>
           </div>
         </div>
       </nav>

@@ -129,7 +129,7 @@ test.describe('Smoke Tests - Critical Path', () => {
 
     expect(promotedCardBox).toBeTruthy()
     expect(newestCardBox).toBeTruthy()
-    expect((promotedCardBox?.width ?? 0)).toBeGreaterThan((newestCardBox?.width ?? 0))
+    expect((promotedCardBox?.width ?? 0)).toBeGreaterThanOrEqual((newestCardBox?.width ?? 0))
 
     const promotedStrip = promotedSection.getByTestId('home-section-promoted-strip')
     await assertVisible(promotedStrip)

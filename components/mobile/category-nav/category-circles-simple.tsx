@@ -65,31 +65,31 @@ export function CategoryCirclesSimple({
 
   const itemWidth = "flex-none w-(--spacing-category-item-nav)"
   const iconShellSize = "size-(--control-default)"
-  const labelClass = "text-compact font-semibold leading-tight tracking-tight"
+  const labelClass = "text-2xs font-semibold leading-tight tracking-tight"
   const itemBase =
-    "group inline-flex min-h-(--spacing-touch-md) flex-col items-center justify-start gap-1.5 rounded-2xl border px-1.5 py-2 tap-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground focus-visible:ring-offset-1"
+    "group inline-flex min-h-(--spacing-touch-md) flex-col items-center justify-start gap-1.5 rounded-2xl px-1.5 py-2 tap-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground focus-visible:ring-offset-1"
   const itemState = (active: boolean) =>
     active
-      ? "border-foreground bg-background shadow-2xs"
-      : "border-border-subtle bg-background hover:bg-hover active:bg-active"
+      ? "bg-foreground"
+      : "bg-surface-subtle hover:bg-hover active:bg-active"
   const iconShellState = (active: boolean) =>
     cn(
-      "flex items-center justify-center rounded-xl border transition-colors",
+      "flex items-center justify-center rounded-xl transition-colors",
       iconShellSize,
       active
-        ? "border-foreground bg-foreground text-background"
-        : "border-border-subtle bg-surface-subtle text-foreground group-hover:bg-hover group-hover:border-border"
+        ? "bg-background text-foreground"
+        : "bg-background text-foreground group-hover:bg-hover"
     )
   const iconTone = (active: boolean) =>
-    cn("transition-colors", active ? "text-background" : "text-foreground")
+    cn("transition-colors", active ? "text-foreground" : "text-muted-foreground")
   const moreIconShellState = (active: boolean) =>
     cn(
-      "flex items-center justify-center rounded-xl border border-border-subtle bg-background transition-colors",
+      "flex items-center justify-center rounded-xl bg-background transition-colors",
       iconShellSize,
-      active ? "border-foreground text-foreground" : "text-muted-foreground group-hover:text-foreground"
+      active ? "text-foreground" : "text-foreground"
     )
 
-  const rootActive = Boolean(drawer ? drawer.path.length === 0 : true)
+  const rootActive = Boolean(drawer?.isOpen && drawer.path.length === 0)
   const rootLabel = tCategories("all")
   const rootHref = "/categories" as const
   const visibleCategories = categories.slice(0, Math.max(1, maxVisible))
@@ -113,7 +113,7 @@ export function CategoryCirclesSimple({
                 className: iconTone(rootActive),
               })}
             </span>
-            <span className={cn(labelClass, "w-full text-center", rootActive ? "text-foreground" : "text-muted-foreground")}>
+            <span className={cn(labelClass, "w-full text-center", rootActive ? "text-background" : "text-muted-foreground")}>
               {rootLabel}
             </span>
           </button>
@@ -131,7 +131,7 @@ export function CategoryCirclesSimple({
                 className: iconTone(false),
               })}
             </span>
-            <span className={cn(labelClass, "w-full text-center text-muted-foreground")}>
+            <span className={cn(labelClass, "w-full text-center text-foreground")}>
               {rootLabel}
             </span>
           </Link>
@@ -139,7 +139,7 @@ export function CategoryCirclesSimple({
 
         {/* Top L0 categories */}
         {visibleCategories.map((category) => {
-          const isActive = drawer?.path[0]?.slug === category.slug
+          const isActive = Boolean(drawer?.isOpen && drawer.path[0]?.slug === category.slug)
           const label = tCategories("shortName", {
             slug: getCategorySlugKey(category.slug),
             name: getCategoryName(category, locale),
@@ -162,7 +162,7 @@ export function CategoryCirclesSimple({
                     className: iconTone(Boolean(isActive)),
                   })}
                 </span>
-                <span className={cn(labelClass, "w-full text-center", isActive ? "text-foreground" : "text-muted-foreground")}>
+                <span className={cn(labelClass, "w-full text-center", isActive ? "text-background" : "text-muted-foreground")}>
                   {label}
                 </span>
               </button>
@@ -184,7 +184,7 @@ export function CategoryCirclesSimple({
                   className: iconTone(false),
                 })}
               </span>
-              <span className={cn(labelClass, "w-full text-center text-muted-foreground")}>
+              <span className={cn(labelClass, "w-full text-center text-foreground")}>
                 {label}
               </span>
             </Link>
@@ -206,7 +206,7 @@ export function CategoryCirclesSimple({
             <span className={moreIconShellState(false)}>
               <DotsThree size={22} weight="bold" className="text-foreground" />
             </span>
-            <span className={cn(labelClass, "w-full text-center text-muted-foreground")}>
+            <span className={cn(labelClass, "w-full text-center text-foreground")}>
               {tMobile("moreCategories")}
             </span>
           </button>
@@ -220,7 +220,7 @@ export function CategoryCirclesSimple({
             <span className={moreIconShellState(false)}>
               <DotsThree size={22} weight="bold" className="text-foreground" />
             </span>
-            <span className={cn(labelClass, "w-full text-center text-muted-foreground")}>
+            <span className={cn(labelClass, "w-full text-center text-foreground")}>
               {tMobile("moreCategories")}
             </span>
           </Link>

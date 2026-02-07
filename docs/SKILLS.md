@@ -27,6 +27,8 @@
 
 - Do not route to skills/subagents by default.
 - Use `docs/AGENT-MAP.md` only when the user explicitly requests this (for example, `run subagents`) or when specialist knowledge is genuinely required.
+- Skills are reference rails, not mandatory workflow stages.
+- The main agent remains responsible for final technical decisions and all code edits unless the user explicitly asks to delegate.
 - Root `AGENTS.md` non-negotiables always apply.
 
 ---
