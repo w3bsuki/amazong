@@ -157,14 +157,15 @@ export function MobileTabBar(_: MobileTabBarProps) {
             href="/sell"
             prefetch={true}
             className={cn(
-              tabItemBase,
-              "bg-foreground text-background hover:bg-foreground active:opacity-90"
+              "mx-auto inline-flex size-(--control-default) items-center justify-center rounded-xl",
+              "bg-foreground text-background tap-transparent transition-colors hover:bg-foreground active:opacity-90",
+              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
             )}
             aria-label={t("sell")}
             aria-current={isActive("/sell") ? "page" : undefined}
           >
             <Plus
-              size={18}
+              size={17}
               weight="bold"
               className="transition-colors text-background"
             />

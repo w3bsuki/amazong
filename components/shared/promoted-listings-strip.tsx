@@ -135,7 +135,7 @@ export function PromotedListingsStrip({
                   appearance="card"
                   media="portrait"
                   density="compact"
-                  titleLines={2}
+                  titleLines={1}
                   uiVariant="home"
                   showCategoryBadge={true}
                   radius="2xl"
@@ -187,7 +187,7 @@ export function PromotedListingsStrip({
               appearance="card"
               media="portrait"
               density="compact"
-              titleLines={2}
+              titleLines={1}
               uiVariant="home"
               showCategoryBadge={true}
               radius="2xl"

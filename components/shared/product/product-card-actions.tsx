@@ -35,6 +35,7 @@ export interface ProductCardActionsProps {
     // Styling
     className?: string
     size?: "icon-sm" | "icon" | "icon-lg" | "icon-compact" | "icon-default" | "icon-primary"
+    overlayDensity?: "default" | "compact"
 }
 
 /**
@@ -56,6 +57,7 @@ export function ProductCardActions({
     isOwnProduct = false,
     className,
     size = "icon-default",
+    overlayDensity = "default",
 }: ProductCardActionsProps) {
     const { addToCart, items: cartItems } = useCart()
     const { isInWishlist, toggleWishlist } = useWishlist()
@@ -66,6 +68,7 @@ export function ProductCardActions({
 
     const inWishlist = isInWishlist(id)
     const inCart = React.useMemo(() => cartItems.some((item) => item.id === id), [cartItems, id])
+    const overlaySizeClass = overlayDensity === "compact" ? "size-7 [&_svg]:size-3.5" : ""
 
     const handleAddToCart = React.useCallback((e: React.MouseEvent) => {
         e.preventDefault()
@@ -109,9 +112,10 @@ export function ProductCardActions({
                     type="button"
                     variant="ghost"
                     size={size}
-                className={cn(
+                    className={cn(
                         "rounded-full border border-border-subtle bg-surface-card shadow-none",
                         "hover:bg-hover active:bg-active",
+                        overlaySizeClass,
                         inWishlist
                             ? "border-selected-border text-primary"
                             : "text-muted-foreground hover:text-foreground active:text-foreground",
@@ -123,7 +127,7 @@ export function ProductCardActions({
                     aria-label={inWishlist ? t("removeFromWatchlist") : t("addToWatchlist")}
                 >
                     <Heart
-                        className={cn("size-4", inWishlist && "fill-primary text-primary")}
+                        className={cn(overlayDensity === "compact" ? "size-3.5" : "size-4", inWishlist && "fill-primary text-primary")}
                         weight={inWishlist ? "fill" : "regular"}
                     />
                 </IconButton>
@@ -138,6 +142,7 @@ export function ProductCardActions({
                       inCart
                         ? "bg-primary text-primary-foreground hover:bg-interactive-hover"
                         : "border-border-subtle bg-background text-muted-foreground hover:bg-hover active:bg-active",
+                      overlaySizeClass,
                       (!inStock || isOwnProduct) && "cursor-not-allowed opacity-50"
                     )}
                     onClick={handleAddToCart}
@@ -145,9 +150,9 @@ export function ProductCardActions({
                     aria-label={inCart ? t("inCart") : t("addToCart")}
                 >
                     {inCart ? (
-                        <ShoppingCart className="size-5" weight="fill" />
+                        <ShoppingCart className={overlayDensity === "compact" ? "size-4" : "size-5"} weight="fill" />
                     ) : (
-                        <Plus className="size-5" weight="bold" />
+                        <Plus className={overlayDensity === "compact" ? "size-4" : "size-5"} weight="bold" />
                     )}
                 </IconButton>
             )}

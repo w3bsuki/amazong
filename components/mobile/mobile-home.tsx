@@ -171,16 +171,20 @@ export function MobileHome({
       <div data-testid={testId} className="w-full border-y border-border-subtle bg-surface-subtle">
         <Link
           href={href}
-          className="block tap-transparent transition-colors hover:bg-hover active:bg-active focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
+          className="group block bg-foreground tap-transparent transition-colors hover:bg-foreground active:bg-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
         >
-          <div className="flex min-h-(--spacing-touch-md) items-center gap-2 px-(--spacing-home-inset) py-0.5">
-            <span className="inline-flex size-7 shrink-0 items-center justify-center rounded-full bg-foreground text-background">
+          <div className="flex min-h-(--spacing-touch-md) items-center gap-2.5 px-(--spacing-home-inset) py-1">
+            <span className="inline-flex size-7 shrink-0 items-center justify-center rounded-full bg-background text-foreground">
               {icon}
             </span>
-            <p className="min-w-0 flex-1 truncate text-base font-semibold text-foreground">
+            <p className="min-w-0 flex-1 truncate text-base font-semibold text-background">
               {title}
             </p>
-            <Badge variant="outline" size="prominent" className="shrink-0 border-transparent bg-foreground text-background">
+            <Badge
+              variant="outline"
+              size="prominent"
+              className="shrink-0 border-border-subtle bg-background text-foreground transition-colors group-hover:bg-surface-subtle group-active:bg-hover"
+            >
               <span>{cta}</span>
               <CaretRight size={11} weight="bold" aria-hidden="true" />
             </Badge>
@@ -287,6 +291,7 @@ export function MobileHome({
             maxItems={10}
             showHeader={false}
             showQuickScopes={false}
+            className="pt-1.5"
           />
         )}
 
@@ -300,12 +305,12 @@ export function MobileHome({
               icon: <Clock size={13} weight="bold" aria-hidden="true" />,
             })}
 
-            <div className="mt-0.5 grid grid-cols-2 gap-(--spacing-home-card-gap) px-(--spacing-home-inset) pb-1">
+            <div className="mt-2 grid grid-cols-2 gap-(--spacing-home-card-gap) px-(--spacing-home-inset) pb-1">
               {initialProducts.map((product, index) =>
                 renderHomeCard(product, index, {
                   appearance: "card",
                   media: "portrait",
-                  titleLines: 2,
+                  titleLines: 1,
                   showCategoryBadge: true,
                   radius: "2xl",
                   maxOverlayBadges: 2,
@@ -333,7 +338,7 @@ export function MobileHome({
                     {renderHomeCard(product, index, {
                       appearance: "card",
                       media: "landscape",
-                      titleLines: 2,
+                      titleLines: 1,
                       showCategoryBadge: true,
                       radius: "2xl",
                       maxOverlayBadges: 2,

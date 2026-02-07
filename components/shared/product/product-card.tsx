@@ -319,8 +319,11 @@ function ProductCard({
     maxOverlayBadges ?? (isHomeUi ? 2 : 2)
   )
   const visibleOverlayBadgeVariants = React.useMemo(
-    () => overlayBadgeVariants.slice(0, resolvedMaxOverlayBadges),
-    [overlayBadgeVariants, resolvedMaxOverlayBadges]
+    () =>
+      overlayBadgeVariants
+        .slice(0, resolvedMaxOverlayBadges)
+        .filter((variant) => !(isHomeUi && variant === "discount")),
+    [isHomeUi, overlayBadgeVariants, resolvedMaxOverlayBadges]
   )
   const hasPromotedOverlay = visibleOverlayBadgeVariants.includes("promoted")
   const showOverlayVerified = isHomeUi && sellerVerified && !hasPromotedOverlay
@@ -331,8 +334,7 @@ function ProductCard({
     isHomeUi
       ? false
       : Boolean(conditionLabel || locationLabel || hasTrustSignals)
-  const hasDiscountOverlay = visibleOverlayBadgeVariants.includes("discount")
-  const showInlineDiscount = isHomeUi && hasDiscount && discountPercent >= 5 && !hasDiscountOverlay
+  const showInlineDiscount = isHomeUi && hasDiscount && discountPercent >= 5
 
   // URLs
   const productUrl = username ? `/${username}/${slug || id}` : "#"
@@ -456,11 +458,14 @@ function ProductCard({
                   return (
                     <span
                       key="promoted"
-                      className="flex size-6 items-center justify-center rounded-full bg-promoted text-promoted-foreground shadow-sm"
+                      className={cn(
+                        "flex items-center justify-center rounded-full bg-promoted text-promoted-foreground shadow-sm",
+                        isHomeUi ? "size-7" : "size-6"
+                      )}
                       role="img"
                       aria-label={t("adBadge")}
                     >
-                      <Lightning size={14} weight="fill" />
+                      <Lightning size={isHomeUi ? 15 : 14} weight="fill" />
                     </span>
                   )
                 }
@@ -474,7 +479,7 @@ function ProductCard({
                 <VerifiedSellerBadge
                   label={t("b2b.verifiedShort")}
                   variant="icon"
-                  size="sm"
+                  size={isHomeUi ? "md" : "sm"}
                 />
               )}
             </div>
@@ -494,6 +499,7 @@ function ProductCard({
                 inStock={inStock}
                 isOwnProduct={isOwnProduct}
                 size={actionSize}
+                overlayDensity={isHomeUi ? "compact" : "default"}
               />
             </div>
           )}
