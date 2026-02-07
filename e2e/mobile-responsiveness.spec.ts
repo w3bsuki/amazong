@@ -135,6 +135,14 @@ test.describe("Mobile Responsiveness - Phase 11", () => {
       const categoryButtons = categoriesRow.getByRole("button")
       const tabCount = await categoryButtons.count()
       expect(tabCount).toBeGreaterThan(3)
+
+      const sampleCount = Math.min(5, tabCount)
+      for (let index = 0; index < sampleCount; index += 1) {
+        const buttonBox = await categoryButtons.nth(index).boundingBox()
+        expect(buttonBox).toBeTruthy()
+        expect(buttonBox!.height).toBeGreaterThanOrEqual(44)
+        expect(buttonBox!.width).toBeGreaterThanOrEqual(44)
+      }
     })
 
     test("home product cards render on mobile", async ({ page }) => {
@@ -146,6 +154,29 @@ test.describe("Mobile Responsiveness - Phase 11", () => {
       await expect(page.getByTestId("home-section-newest")).toBeVisible({ timeout: 15000 })
       const productLinks = page.locator('a[aria-label^="Open product:"]')
       await expect(productLinks.first()).toBeVisible({ timeout: 15000 })
+    })
+
+    test("sticky category pills switch to tokenized grey inactive style", async ({ page }) => {
+      await page.goto("/en")
+      await page.waitForLoadState("networkidle")
+
+      await page.evaluate(() => {
+        window.scrollTo({ top: 900, behavior: "auto" })
+      })
+
+      const stickyPills = page.getByTestId("home-sticky-category-pills")
+      await expect(stickyPills).toBeVisible({ timeout: 15000 })
+
+      const inactivePill = page.getByTestId("home-sticky-pill-inactive").first()
+      await expect(inactivePill).toBeVisible({ timeout: 15000 })
+
+      const className = (await inactivePill.getAttribute("class")) ?? ""
+      expect(className).toContain("bg-surface-subtle")
+      expect(className).not.toContain("bg-background")
+
+      const inactivePillBox = await inactivePill.boundingBox()
+      expect(inactivePillBox).toBeTruthy()
+      expect(inactivePillBox!.height).toBeGreaterThanOrEqual(44)
     })
 
     test("no horizontal overflow on homepage", async ({ page }) => {

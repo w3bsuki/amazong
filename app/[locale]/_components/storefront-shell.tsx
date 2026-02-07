@@ -7,6 +7,7 @@ import { CookieConsent } from "@/components/layout/cookie-consent"
 import { Toaster } from "@/components/providers/sonner"
 import { HeaderProvider } from "@/components/providers/header-context"
 import { GeoWelcomeModal } from "@/components/shared/geo-welcome-modal"
+import { GuestSellCta } from "@/components/shared/auth/guest-sell-cta"
 import { SkipLinks } from "@/components/shared/skip-links"
 import { PageShell } from "@/components/shared/page-shell"
 import { CategoryDrawerProvider } from "@/components/mobile/category-nav"
@@ -40,6 +41,7 @@ export function StorefrontShell({
           <Toaster />
           <CookieConsent />
           <GeoWelcomeModal locale={locale} />
+          <GuestSellCta />
         </PageShell>
       </HeaderProvider>
     </CategoryDrawerProvider>

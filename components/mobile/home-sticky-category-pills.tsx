@@ -42,15 +42,16 @@ export function HomeStickyCategoryPills({
     ? pathWithoutLocale.replace(`${categoriesPathPrefix}/`, "").split("/")[0] ?? null
     : null
   const pillBase =
-    "inline-flex min-h-(--spacing-touch-sm) shrink-0 items-center gap-1.5 rounded-full border px-3 whitespace-nowrap"
+    "inline-flex min-h-(--spacing-touch-md) shrink-0 items-center gap-1.5 rounded-full border px-3.5 whitespace-nowrap"
   const pillText = "text-xs font-medium leading-none"
   const pillActive = "border-foreground bg-foreground text-background"
-  const pillIdle = "border-border-subtle bg-background text-foreground"
+  const pillIdle = "border-border-subtle bg-surface-subtle text-foreground hover:border-hover-border hover:bg-hover"
   const pillInteractive =
-    "tap-transparent transition-colors hover:bg-hover hover:text-foreground active:bg-active active:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
+    "tap-transparent transition-colors active:bg-active focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
 
   return (
     <div
+      data-testid="home-sticky-category-pills"
       className={cn(
         "fixed inset-x-0 z-30 border-b border-border-subtle bg-background transition-all duration-200 md:hidden",
         visible ? "pointer-events-auto translate-y-0 opacity-100" : "pointer-events-none -translate-y-1 opacity-0",
@@ -59,8 +60,8 @@ export function HomeStickyCategoryPills({
       style={{ top: "var(--app-header-offset)" }}
       aria-hidden={!visible}
     >
-      <div className="overflow-x-auto no-scrollbar px-inset-md py-1.5">
-        <div className="flex items-center gap-1">
+      <div className="overflow-x-auto no-scrollbar px-(--spacing-home-inset) py-1.5">
+        <div className="flex items-center gap-1.5">
           {drawer ? (
             <button
               type="button"
@@ -73,6 +74,7 @@ export function HomeStickyCategoryPills({
                 isCategoriesIndexActive ? pillActive : pillIdle,
                 pillInteractive
               )}
+              {...(!isCategoriesIndexActive ? { "data-testid": "home-sticky-pill-inactive" } : {})}
             >
               {getCategoryIcon("categories", { size: 14, weight: "regular" })}
               <span>{tDrawer("title")}</span>
@@ -88,6 +90,7 @@ export function HomeStickyCategoryPills({
                 isCategoriesIndexActive ? pillActive : pillIdle,
                 pillInteractive
               )}
+              {...(!isCategoriesIndexActive ? { "data-testid": "home-sticky-pill-inactive" } : {})}
             >
               {getCategoryIcon("categories", { size: 14, weight: "regular" })}
               <span>{tDrawer("title")}</span>

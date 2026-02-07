@@ -17,6 +17,7 @@ interface ProductRowWithRelations {
   rating: number | null
   review_count: number | null
   images: string[] | null
+  seller_city: string | null
   product_images?: Array<{
     image_url: string
     thumbnail_url: string | null
@@ -76,6 +77,9 @@ export async function GET(request: NextRequest) {
   const category = searchParams.get("category")
   const sort = searchParams.get("sort") || "newest"
   const type = searchParams.get("type") || "newest"
+  const city = searchParams.get("city")?.trim() || null
+  const nearby = searchParams.get("nearby") === "true"
+  const effectiveCity = nearby && !city ? null : city
 
   const minPrice = searchParams.get("minPrice")
   const maxPrice = searchParams.get("maxPrice")
@@ -119,6 +123,7 @@ export async function GET(request: NextRequest) {
       review_count, 
       images,
       free_shipping,
+      seller_city,
       category_ancestors, 
       is_boosted,
       boost_expires_at,
@@ -185,6 +190,10 @@ export async function GET(request: NextRequest) {
       if (maxPrice) query = query.lte('price', Number(maxPrice))
       if (minRating) query = query.gte('rating', Number(minRating))
       if (availability === 'instock') query = query.gt('stock', 0)
+      if (effectiveCity) {
+        // Nearby mode on Home resolves to the same city constraint.
+        query = query.ilike("seller_city", effectiveCity)
+      }
 
       // Attribute filters (JSONB "attributes")
       for (const [attrName, values] of Object.entries(attributeFilters)) {
@@ -256,6 +265,10 @@ export async function GET(request: NextRequest) {
       if (maxPrice) query = query.lte('price', Number(maxPrice))
       if (minRating) query = query.gte('rating', Number(minRating))
       if (availability === 'instock') query = query.gt('stock', 0)
+      if (effectiveCity) {
+        // Nearby mode on Home resolves to the same city constraint.
+        query = query.ilike("seller_city", effectiveCity)
+      }
 
       // Attribute filters
       for (const [attrName, values] of Object.entries(attributeFilters)) {

@@ -29,7 +29,7 @@ export function MobileHomepageHeader({
   return (
     <div className="bg-background pt-safe md:hidden">
       <div className="flex h-(--control-primary) items-center px-2">
-        <SidebarMenu user={user} categories={categories} triggerClassName="-ml-2" {...(userStats && { userStats })} />
+        <SidebarMenu user={user} categories={categories} triggerClassName="-ml-1" {...(userStats && { userStats })} />
         <Link href="/" className="shrink-0 -ml-1">
           <span className="text-xl font-extrabold tracking-tight text-foreground">treido.</span>
         </Link>
@@ -39,14 +39,15 @@ export function MobileHomepageHeader({
           className={cn(
             "ml-2 flex h-9 min-w-0 flex-1 items-center gap-1.5 rounded-full px-3",
             "bg-surface-subtle",
-            "text-muted-foreground text-left",
-            "transition-colors hover:bg-hover active:bg-active"
+            "text-left text-muted-foreground",
+            "transition-colors hover:bg-hover active:bg-active",
+            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
           )}
           aria-label={searchPlaceholder}
           aria-haspopup="dialog"
         >
           <MagnifyingGlass size={16} weight="regular" className="shrink-0 text-muted-foreground" />
-          <span className="flex-1 truncate font-medium text-xs text-muted-foreground">{searchPlaceholder}</span>
+          <span className="flex-1 truncate text-xs font-medium text-muted-foreground">{searchPlaceholder}</span>
         </button>
         <div className="flex shrink-0 items-center -space-x-1">
           <MobileWishlistButton />

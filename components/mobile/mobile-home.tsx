@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react"
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react"
 import { PageShell } from "@/components/shared/page-shell"
 import { MobileSearchOverlay } from "@/components/shared/search/mobile-search-overlay"
 import { ProductCard } from "@/components/shared/product/product-card"
@@ -9,8 +9,9 @@ import type { UIProduct } from "@/lib/types/products"
 import type { CategoryTreeNode } from "@/lib/category-tree"
 import { useTranslations } from "next-intl"
 import { Link } from "@/i18n/routing"
-import { CaretRight, Lightning } from "@phosphor-icons/react"
+import { CaretRight, Clock, Lightning } from "@phosphor-icons/react"
 import { HomeSectionHeader } from "@/components/mobile/home-section-header"
+import { Badge } from "@/components/ui/badge"
 
 import { CategoryCirclesSimple } from "@/components/mobile/category-nav"
 import { PromotedListingsStrip } from "@/components/shared/promoted-listings-strip"
@@ -45,6 +46,14 @@ interface HomeCardConfig {
   showCategoryBadge: boolean
   radius: "xl" | "2xl"
   maxOverlayBadges: number
+}
+
+interface HomeBannerConfig {
+  testId: string
+  href: string
+  title: string
+  cta: string
+  icon: ReactNode
 }
 
 const CURATED_RAIL_PRIORITY: CuratedRailKey[] = ["fashion", "electronics", "automotive", "deals"]
@@ -157,6 +166,31 @@ export function MobileHome({
     []
   )
 
+  const renderHomeBanner = useCallback(
+    ({ testId, href, title, cta, icon }: HomeBannerConfig) => (
+      <div data-testid={testId} className="w-full border-y border-border-subtle bg-surface-subtle">
+        <Link
+          href={href}
+          className="block tap-transparent transition-colors hover:bg-hover active:bg-active focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
+        >
+          <div className="flex min-h-(--spacing-touch-md) items-center gap-2 px-(--spacing-home-inset) py-0.5">
+            <span className="inline-flex size-7 shrink-0 items-center justify-center rounded-full bg-foreground text-background">
+              {icon}
+            </span>
+            <p className="min-w-0 flex-1 truncate text-base font-semibold text-foreground">
+              {title}
+            </p>
+            <Badge variant="outline" size="prominent" className="shrink-0 border-transparent bg-foreground text-background">
+              <span>{cta}</span>
+              <CaretRight size={11} weight="bold" aria-hidden="true" />
+            </Badge>
+          </div>
+        </Link>
+      </div>
+    ),
+    []
+  )
+
   // Get header context to provide dynamic state to layout's header
   const { setHomepageHeader } = useHeader()
 
@@ -235,29 +269,15 @@ export function MobileHome({
       <div className="pt-0 pb-4 space-y-2">
         <section
           data-testid="home-section-promoted-banner"
-          className="pt-2"
+          className="pt-1.5"
         >
-          <Link
-            href="/search?promoted=true&sort=newest"
-            className="block w-full bg-primary py-2.5 transition-opacity hover:opacity-95 active:opacity-90"
-          >
-            <div className="flex items-center gap-2.5 px-(--spacing-home-inset)">
-              <span className="inline-flex size-5 shrink-0 items-center justify-center text-primary-foreground">
-                <Lightning size={14} weight="fill" aria-hidden="true" />
-              </span>
-              <div className="min-w-0">
-                <p className="truncate text-2xs font-medium text-primary-foreground">
-                  {tMobile("promoBannerEyebrow")}
-                </p>
-                <p className="truncate text-sm font-semibold leading-tight text-primary-foreground">
-                  {tMobile("promoBannerTitle")}
-                </p>
-                <p className="truncate text-xs text-primary-foreground">
-                  {tMobile("promoBannerSubtitle")}
-                </p>
-              </div>
-            </div>
-          </Link>
+          {renderHomeBanner({
+            testId: "home-section-promoted-banner-link",
+            href: "/search?promoted=true&sort=newest",
+            title: tMobile("promoBannerTitle"),
+            cta: tMobile("promoBannerCta"),
+            icon: <Lightning size={13} weight="fill" aria-hidden="true" />,
+          })}
         </section>
 
         {promotedRail.length > 0 && (
@@ -271,52 +291,14 @@ export function MobileHome({
         )}
 
         {initialProducts.length > 0 && (
-          <section data-testid="home-section-newest" className="pt-0.5">
-            <div
-              data-testid="home-section-for-you-banner"
-              className="w-full bg-surface-subtle py-2"
-            >
-              <Link
-                href="/search?sort=newest"
-                className="block px-(--spacing-home-inset) tap-transparent transition-colors hover:text-foreground active:text-foreground"
-              >
-                <p className="truncate text-base font-semibold leading-tight text-foreground">
-                  {tMobile("forYouBannerTitle")}
-                </p>
-                <p className="truncate pt-0.5 text-xs leading-tight text-muted-foreground">
-                  {tMobile("forYouBannerSubtitle")}
-                </p>
-              </Link>
-            </div>
-
-            <div className="px-(--spacing-home-inset) pt-1.5">
-              <div className="flex items-center gap-2 overflow-x-auto no-scrollbar">
-                <Link
-                  href="/search?sort=newest"
-                  className="inline-flex min-h-(--spacing-touch-sm) shrink-0 items-center rounded-full border border-foreground bg-foreground px-3 text-sm font-semibold text-background transition-colors hover:bg-foreground active:bg-foreground"
-                >
-                  {tMobile("sort.newest")}
-                </Link>
-                <Link
-                  href="/search?sort=price-asc"
-                  className="inline-flex min-h-(--spacing-touch-sm) shrink-0 items-center rounded-full border border-border-subtle bg-surface-subtle px-3 text-sm font-medium text-foreground transition-colors hover:bg-hover active:bg-active"
-                >
-                  {tMobile("sort.priceLow")}
-                </Link>
-                <Link
-                  href="/search?sort=price-desc"
-                  className="inline-flex min-h-(--spacing-touch-sm) shrink-0 items-center rounded-full border border-border-subtle bg-surface-subtle px-3 text-sm font-medium text-foreground transition-colors hover:bg-hover active:bg-active"
-                >
-                  {tMobile("sort.priceHigh")}
-                </Link>
-                <Link
-                  href="/search?nearby=true"
-                  className="inline-flex min-h-(--spacing-touch-sm) shrink-0 items-center rounded-full border border-border-subtle bg-surface-subtle px-3 text-sm font-medium text-foreground transition-colors hover:bg-hover active:bg-active"
-                >
-                  {tMobile("sort.nearby")}
-                </Link>
-              </div>
-            </div>
+          <section data-testid="home-section-newest" className="pt-1">
+            {renderHomeBanner({
+              testId: "home-section-for-you-banner",
+              href: "/search?sort=newest",
+              title: tMobile("forYouBannerTitle"),
+              cta: tMobile("forYouBannerCta"),
+              icon: <Clock size={13} weight="bold" aria-hidden="true" />,
+            })}
 
             <div className="mt-0.5 grid grid-cols-2 gap-(--spacing-home-card-gap) px-(--spacing-home-inset) pb-1">
               {initialProducts.map((product, index) =>

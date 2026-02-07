@@ -263,9 +263,9 @@
             "listingsCount": "{count, plural, one {# обява} other {# обяви}}",
             "moreCategories": "Още",
             "promoBannerEyebrow": "Промо селекция",
-            "promoBannerTitle": "Най-актуалните промотирани обяви",
+            "promoBannerTitle": "Промотирани обяви",
             "promoBannerSubtitle": "Подбрани оферти от продавачи с доверие",
-            "promoBannerCta": "View",
+            "promoBannerCta": "Виж всички",
             "forYouBannerEyebrow": "За теб",
             "forYouBannerTitle": "Най-нови за теб",
             "forYouBannerSubtitle": "Използвай бързите филтри за по-бърз избор",
@@ -2250,6 +2250,13 @@
             "US": "САЩ",
             "WW": "Целият свят"
         }
+    },
+    "GuestSellCTA": {
+        "title": "Регистрирай се, за да продаваш",
+        "description": "Създай обява за минути. Достигни купувачи.",
+        "signUp": "Регистрирай се, за да продаваш",
+        "signIn": "Влез",
+        "dismissAriaLabel": "Затвори подканата за продажба"
     },
     "FilterHub": {
         "refineSearch": "Прецизирай търсенето",

@@ -18,6 +18,7 @@ const COOKIE_NAMES = {
   ZONE: 'user-zone',
   LOCALE: 'NEXT_LOCALE',
 } as const;
+const GEO_WELCOME_COMPLETE_EVENT = "treido:geo-welcome-complete";
 
 const SUPPORTED_LOCALES: readonly Locale[] = ['en', 'bg'] as const;
 
@@ -118,6 +119,11 @@ function setLocalStorage(key: string, value: string) {
   } catch {
     // Silently fail for incognito mode or storage full
   }
+}
+
+function dispatchGeoWelcomeCompleteEvent() {
+  if (typeof window === "undefined") return;
+  window.dispatchEvent(new CustomEvent(GEO_WELCOME_COMPLETE_EVENT));
 }
 
 /**
@@ -247,6 +253,7 @@ export function useGeoWelcome(options: UseGeoWelcomeOptions = {}): UseGeoWelcome
 
     // Close modal
     setState(prev => ({ ...prev, isOpen: false }));
+    dispatchGeoWelcomeCompleteEvent();
 
     // Navigate to the correct locale route (BUG-001 fix).
     // This also refreshes server components with the updated cookies.
@@ -268,6 +275,7 @@ export function useGeoWelcome(options: UseGeoWelcomeOptions = {}): UseGeoWelcome
 
     // Close modal
     setState(prev => ({ ...prev, isOpen: false }));
+    dispatchGeoWelcomeCompleteEvent();
 
     // Navigate to /en to reflect "show all" behavior.
     window.location.assign(getPathWithLocale('en'));
@@ -279,6 +287,7 @@ export function useGeoWelcome(options: UseGeoWelcomeOptions = {}): UseGeoWelcome
   const closeModal = useCallback(() => {
     setLocalStorage(STORAGE_KEYS.DISMISSED, 'true');
     setState(prev => ({ ...prev, isOpen: false }));
+    dispatchGeoWelcomeCompleteEvent();
   }, []);
 
   return {

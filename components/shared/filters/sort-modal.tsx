@@ -28,6 +28,10 @@ interface SortModalProps {
   basePath?: string | undefined
   /** Sort options to hide from the list (e.g., when already handled by UI tabs) */
   excludeOptions?: string[] | undefined
+  /** Controlled selected sort value (non-navigation mode). */
+  value?: string | undefined
+  /** Controlled change callback (non-navigation mode). */
+  onValueChange?: ((value: string) => void) | undefined
 }
 
 const SORT_OPTIONS = [
@@ -44,13 +48,15 @@ export function SortModal({
   locale,
   basePath,
   excludeOptions = [],
+  value,
+  onValueChange,
 }: SortModalProps) {
   const t = useTranslations("SearchFilters")
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
 
-  const currentSort = searchParams.get("sort") || "featured"
+  const currentSort = value ?? searchParams.get("sort") ?? "featured"
   
   // Filter out excluded options
   const visibleOptions = SORT_OPTIONS.filter(
@@ -69,6 +75,12 @@ export function SortModal({
 
   const handleSortChange = useCallback(
     (value: string) => {
+      if (onValueChange) {
+        onValueChange(value)
+        onOpenChange(false)
+        return
+      }
+
       const params = new URLSearchParams(searchParams.toString())
 
       if (value === "featured") {
@@ -84,7 +96,7 @@ export function SortModal({
       router.push(queryString ? `${resolvedBasePath}?${queryString}` : resolvedBasePath)
       onOpenChange(false)
     },
-    [router, resolvedBasePath, searchParams, onOpenChange]
+    [onValueChange, onOpenChange, router, resolvedBasePath, searchParams]
   )
 
   return (

@@ -263,7 +263,7 @@
             "listingsCount": "{count, plural, one {# listing} other {# listings}}",
             "moreCategories": "More",
             "promoBannerEyebrow": "Promoted picks",
-            "promoBannerTitle": "Top highlighted listings today",
+            "promoBannerTitle": "Promoted listings",
             "promoBannerSubtitle": "Curated boosted offers from trusted sellers",
             "promoBannerCta": "View",
             "forYouBannerEyebrow": "For you",
@@ -2250,6 +2250,13 @@
             "US": "United States",
             "WW": "Worldwide"
         }
+    },
+    "GuestSellCTA": {
+        "title": "Sign up to start selling",
+        "description": "List in minutes. Reach buyers faster.",
+        "signUp": "Sign up to start selling",
+        "signIn": "Sign in",
+        "dismissAriaLabel": "Dismiss start selling prompt"
     },
     "FilterHub": {
         "refineSearch": "Refine Your Search",

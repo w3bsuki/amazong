@@ -168,14 +168,6 @@ export function MobileTabBar(_: MobileTabBarProps) {
               weight="bold"
               className="transition-colors text-background"
             />
-            <span
-              className={cn(
-                "text-2xs font-medium leading-none tracking-tight",
-                "text-background"
-              )}
-            >
-              {t("sell")}
-            </span>
           </Link>
 
           {/* Chat - Opens messages drawer */}
