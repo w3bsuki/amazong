@@ -1,49 +1,49 @@
 # AGENTS.md
 
-Project-level router for humans and AI agents.
+Canonical Treido contract for humans and AI agents.
 
-## Canonical Sources
+## Default execution mode
 
-- Docs SSOT: `docs/INDEX.md`
-- Agent rails and boundaries: `docs/AGENTS.md`
-- Workflow and gates: `docs/WORKFLOW.md`
-- Skill inventory: `docs/SKILLS.md`
-- Skill routing table: `docs/AGENT-MAP.md`
+- Implement directly for normal tasks (UI, styling, refactoring, tests, docs).
+- Do not require skill-routing chains before coding.
+- Use skills only when requested or when specialist knowledge is required.
+- Do not use subagents by default. Use subagents only when the user explicitly asks (e.g. `run subagents`).
 
-## Runtime State
-
-- Active queue: `.codex/TASKS.md`
-- Decisions: `.codex/DECISIONS.md`
-- Shipped log: `.codex/SHIPPED.md`
-
-## Skill Source of Truth
-
-- Canonical authored skills: `.codex/skills/*`
-- `.claude/skills/*` is a mirror target, not an independent source.
-
-## Non-Negotiables (Minimal)
+## Non-negotiables (SSOT)
 
 - No secrets or PII in logs.
 - All user-facing copy via `next-intl`.
-- Tailwind v4 semantic tokens only.
-- Default to Server Components; use client components only when required.
+- Tailwind v4 semantic tokens only (no palette classes, gradients, arbitrary values, hardcoded colors).
+- Default to Server Components; use Client Components only when required.
 - Pause and request approval for DB/auth/payments/destructive operations.
 
-## Folder Policy
+## Skills policy
 
-Allowed AI config folders in this repo:
+- Canonical skills live in `.claude/skills/*`.
+- Codex compatibility lives in `.agents/skills/*` (mirror of canonical skills).
+- `.codex/skills/*` is legacy and scheduled for removal.
+- Active consolidated skills:
+  - `treido-styling`
+  - `treido-design`
+  - `treido-nextjs`
+  - `treido-data`
+  - `treido-payments`
+  - `treido-testing`
+  - `treido-a11y`
 
-- `.codex/`
-- `.claude/`
+## Pointers (read when needed)
 
-Do not create other AI tool folders (`.agent`, `.agents`, `.cursor`, `.gemini`, `.kiro`, `.qoder`, `.qwen`, `.trae`, `.windsurf`).
+- Boundaries and output contract: `docs/AGENTS.md`
+- Workflow and verification: `docs/WORKFLOW.md`
+- Skill index: `docs/SKILLS.md`
+- Optional routing table: `docs/AGENT-MAP.md`
 
-## docs-site Policy
+## Folder policy
 
-- `docs-site/` is internal browsing UI only.
-- Authoring SSOT remains in `docs/**`.
-- Keep generated artifacts (for example `docs-site/public/_pagefind`) out of git tracking.
+Allowed AI config folders: `.claude/`, `.agents/`, `.codex/` (legacy).
+
+Do not create: `.agent`, `.cursor`, `.gemini`, `.kiro`, `.qoder`, `.qwen`, `.trae`, `.windsurf`.
 
 ---
 
-*Last updated: 2026-02-06*
+*Last updated: 2026-02-07*

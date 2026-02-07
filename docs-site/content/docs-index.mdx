@@ -44,9 +44,7 @@ If you read only three docs, read:
 
 | State | File |
 |---|---|
-| Active work queue | `.codex/TASKS.md` |
-| Decisions/ADRs | `.codex/DECISIONS.md` |
-| Shipped history | `.codex/SHIPPED.md` |
+| Optional runtime state files | `.codex/` |
 | Launch readiness machine state | `docs/status/LAUNCH-READINESS.yaml` |
 
 ## Non-Canonical and Generated Zones
@@ -70,4 +68,4 @@ If you read only three docs, read:
 - "Which skill should handle this?"
   - use `docs/AGENT-MAP.md` and `docs/SKILLS.md`.
 
-Last updated: 2026-02-06
+Last updated: 2026-02-07

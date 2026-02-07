@@ -269,7 +269,7 @@ function DrawerHeader({ className, ...props }: React.ComponentProps<"div">) {
     <div
       data-slot="drawer-header"
       className={cn(
-        "flex flex-col gap-1.5 px-4 py-3 text-left",
+        "shrink-0 border-b border-border px-4 py-3 text-left",
         className
       )}
       {...props}
@@ -282,7 +282,8 @@ function DrawerFooter({ className, ...props }: React.ComponentProps<"div">) {
     <div
       data-slot="drawer-footer"
       className={cn(
-        "mt-auto flex flex-col gap-2 px-4 py-4",
+        "mt-auto shrink-0 border-t border-border bg-surface-elevated px-4 py-3",
+        "flex flex-col gap-2",
         // Safe area padding for bottom drawers on iOS
         "group-data-[vaul-drawer-direction=bottom]/drawer-content:pb-safe-max",
         className
@@ -317,7 +318,7 @@ function DrawerBody({ className, noDrag = false, ...props }: DrawerBodyProps) {
       data-slot="drawer-body"
       {...(noDrag && { "data-vaul-no-drag": true })}
       className={cn(
-        "min-h-0 flex-1 overflow-y-auto overscroll-contain touch-pan-y px-4",
+        "min-h-0 flex-1 overflow-y-auto overscroll-contain touch-pan-y px-4 py-3",
         className
       )}
       {...props}

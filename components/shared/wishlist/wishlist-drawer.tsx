@@ -77,6 +77,7 @@ export function WishlistDrawer({ className, children }: WishlistDrawerProps) {
               <IconButton
                 aria-label={t("close")}
                 variant="ghost"
+                size="icon-compact"
                 className="text-muted-foreground hover:text-foreground hover:bg-muted active:bg-muted"
               >
                 <X size={20} weight="light" />
@@ -126,7 +127,7 @@ export function WishlistDrawer({ className, children }: WishlistDrawerProps) {
                         alt={item.title}
                         width={56}
                         height={56}
-                        className="size-full object-contain p-0.5"
+                        className="size-full object-cover"
                       />
                     </div>
                   </Link>
@@ -147,6 +148,7 @@ export function WishlistDrawer({ className, children }: WishlistDrawerProps) {
                       data-vaul-no-drag
                       onClick={() => handleMoveToCart(item)}
                       variant="ghost"
+                      size="icon-compact"
                       className="text-foreground hover:bg-muted active:bg-muted"
                       aria-label={t("add")}
                     >
@@ -159,6 +161,7 @@ export function WishlistDrawer({ className, children }: WishlistDrawerProps) {
                         toast.success(t("removed"))
                       }}
                       variant="ghost"
+                      size="icon-compact"
                       className="text-muted-foreground hover:text-destructive hover:bg-destructive-subtle active:bg-destructive-subtle"
                       aria-label={t("remove")}
                     >

@@ -3,9 +3,10 @@
 import { useMemo, useCallback } from "react"
 import { useSearchParams, type ReadonlyURLSearchParams } from "next/navigation"
 import { useRouter } from "@/i18n/routing"
-import { X, Star, Truck, Package, Percent, Tag } from "lucide-react"
+import { X, Star, Truck, Package, Percent, Tag, MapPin, Navigation } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { useTranslations } from "next-intl"
+import { useLocale, useTranslations } from "next-intl"
+import { BULGARIAN_CITIES } from "@/lib/bulgarian-cities"
 
 // =============================================================================
 // ACTIVE FILTER CHIPS — Removable pills showing applied filters
@@ -45,6 +46,7 @@ export function FilterChips({
   const searchParamsFromRouter = useSearchParams()
   const searchParams = appliedSearchParams ?? searchParamsFromRouter
   const t = useTranslations("SearchFilters")
+  const locale = useLocale()
 
   // Determine if we're in "instant" mode (external params + callbacks)
   const isInstantMode = Boolean(appliedSearchParams && onRemoveFilter)
@@ -55,6 +57,8 @@ export function FilterChips({
   const currentDeals = searchParams.get("deals")
   const currentAvailability = searchParams.get("availability")
   const currentFreeShipping = searchParams.get("freeShipping")
+  const currentCity = searchParams.get("city")
+  const currentNearby = searchParams.get("nearby") === "true"
 
   // Collect all attr_* params for attribute filter chips
   const attributeFilters = useMemo(() => {
@@ -173,6 +177,26 @@ export function FilterChips({
       key: "availability",
       label: t("inStock"),
       icon: <Package className="size-3.5" />,
+    })
+  }
+
+  if (currentCity) {
+    const city = BULGARIAN_CITIES.find((entry) => entry.value === currentCity)
+    const cityLabel = city
+      ? (locale === "bg" ? city.labelBg : city.label)
+      : currentCity
+    chips.push({
+      key: "city",
+      label: cityLabel,
+      icon: <MapPin className="size-3.5" />,
+    })
+  }
+
+  if (currentNearby) {
+    chips.push({
+      key: "nearby",
+      label: t("nearMe"),
+      icon: <Navigation className="size-3.5" />,
     })
   }
 

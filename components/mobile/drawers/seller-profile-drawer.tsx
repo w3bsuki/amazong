@@ -36,6 +36,7 @@ import {
   DrawerTitle,
 } from "@/components/ui/drawer"
 import { Button } from "@/components/ui/button"
+import { IconButton } from "@/components/ui/icon-button"
 import { Badge } from "@/components/ui/badge"
 import { UserAvatar } from "@/components/shared/user-avatar"
 import { cn } from "@/lib/utils"
@@ -353,14 +354,14 @@ export function SellerProfileDrawer({
             {t("sellerInfo")}
           </DrawerTitle>
           <DrawerClose asChild>
-            <Button
+            <IconButton
+              aria-label={t("close")}
               variant="ghost"
-              size="icon"
+              size="icon-compact"
               className="shrink-0 -mr-2 rounded-full hover:bg-muted touch-manipulation"
             >
               <X className="size-4" />
-              <span className="sr-only">{t("close")}</span>
-            </Button>
+            </IconButton>
           </DrawerClose>
         </div>
         <DrawerDescription className="sr-only">
@@ -392,7 +393,8 @@ export function SellerProfileDrawer({
           <div className="flex gap-2">
             <Button
               variant={isFollowing ? "secondary" : "outline"}
-              className="flex-1 h-11 gap-1.5"
+              size="default"
+              className="flex-1 gap-1.5"
               onClick={handleFollow}
             >
               <Users className="size-4" />
@@ -400,7 +402,8 @@ export function SellerProfileDrawer({
             </Button>
             <Button
               variant="default"
-              className="flex-1 h-11 gap-1.5"
+              size="default"
+              className="flex-1 gap-1.5"
               onClick={handleChat}
             >
               <MessageCircle className="size-4" />
@@ -412,7 +415,8 @@ export function SellerProfileDrawer({
           {seller.username && (
             <Button
               variant="ghost"
-              className="w-full h-9 text-sm text-primary"
+              size="compact"
+              className="w-full text-sm text-primary"
               onClick={handleViewFullProfile}
             >
               {t("viewFullProfile")}

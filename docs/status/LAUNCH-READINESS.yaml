@@ -1,77 +1,20 @@
 {
   "meta": {
-    "generated_at": "2026-02-06",
+    "generated_at": "2026-02-07",
     "version": "1.0.0",
     "canonical_sources": [
       "docs/PRD.md",
-      "docs/FEATURES.md",
-      ".codex/TASKS.md"
+      "docs/FEATURES.md"
     ]
   },
   "readiness": {
-    "status": "blocked",
+    "status": "in_progress",
     "documented_progress": {
       "implemented": 103,
       "total": 119,
       "percent": 87
     },
-    "critical_blockers": [
-      {
-        "id": "FE-PLAY-001",
-        "title": "Public routes must not be gated by onboarding (guest can browse)",
-        "priority": "Critical",
-        "owner": "treido-frontend",
-        "audit": "`.codex/audit/playwright/2026-02-02/issues/frontend.md` (ISSUE-002)"
-      },
-      {
-        "id": "AUTH-PLAY-001",
-        "title": "Fix post-login redirect duplicating locale (`/<locale>/<locale>/account`)",
-        "priority": "Critical",
-        "owner": "treido-frontend",
-        "audit": "`.codex/audit/playwright/2026-02-02/issues/frontend.md` (ISSUE-004)"
-      },
-      {
-        "id": "BE-ONBOARD-001",
-        "title": "Fix onboarding completion 500 (unblock cart/checkout)",
-        "priority": "Critical",
-        "owner": "treido-backend",
-        "audit": "`.codex/audit/playwright/2026-02-02/issues/backend.md` (ISSUE-001) · `.codex/audit/playwright/2026-02-02/issues/frontend.md` (ISSUE-005)"
-      },
-      {
-        "id": "PROD-DATA-002",
-        "title": "Purge/hide junk test listings from production + enforce listing-quality validation",
-        "priority": "Critical",
-        "owner": "treido-backend",
-        "audit": "`.codex/audit/playwright/2026-02-03/issues/frontend.md` (ISSUE-001)"
-      },
-      {
-        "id": "FE-I18N-PLAY-002",
-        "title": "Fix store profile missing translations + React runtime error #419",
-        "priority": "Critical",
-        "owner": "treido-frontend",
-        "audit": "`.codex/audit/playwright/2026-02-03/issues/frontend.md` (ISSUE-002)"
-      },
-      {
-        "id": "AI-PLAY-001",
-        "title": "Disable AI mode in prod or ship `/api/assistant/chat` + user-facing error UI",
-        "priority": "Critical",
-        "owner": "treido-backend",
-        "audit": "`.codex/audit/playwright/2026-02-03/issues/frontend.md` (ISSUE-003) · `.codex/audit/playwright/2026-02-03/issues/backend.md` (ISSUE-B01)"
-      },
-      {
-        "id": "FE-NAV-PLAY-002",
-        "title": "Fix mobile Profile tab client navigation landing on 404",
-        "priority": "Critical",
-        "owner": "treido-frontend",
-        "audit": "`.codex/audit/playwright/2026-02-03/issues/frontend.md` (ISSUE-004)"
-      },
-      {
-        "id": "ORCH-AUD-013",
-        "title": "Fix priority audit findings (NEXTJS/TW4/SHADCN)",
-        "priority": "Critical",
-        "owner": "treido-orchestrator"
-      }
-    ],
+    "critical_blockers": [],
     "criteria": [
       {
         "id": "LC-01",
@@ -79,8 +22,7 @@
         "status": "at_risk",
         "evidence": [
           "docs/PRD.md",
-          "docs/FEATURES.md",
-          ".codex/TASKS.md"
+          "docs/FEATURES.md"
         ],
         "notes": "Status is auto-derived from documented progress and active critical blockers."
       },
@@ -90,19 +32,17 @@
         "status": "unknown",
         "evidence": [
           "docs/PRD.md",
-          "docs/FEATURES.md",
-          ".codex/TASKS.md"
+          "docs/FEATURES.md"
         ],
         "notes": "Status is auto-derived from documented progress and active critical blockers."
       },
       {
         "id": "LC-03",
         "title": "RLS enabled on all user-data tables",
-        "status": "blocked",
+        "status": "unknown",
         "evidence": [
           "docs/PRD.md",
-          "docs/FEATURES.md",
-          ".codex/TASKS.md"
+          "docs/FEATURES.md"
         ],
         "notes": "Status is auto-derived from documented progress and active critical blockers."
       },
@@ -112,8 +52,7 @@
         "status": "unknown",
         "evidence": [
           "docs/PRD.md",
-          "docs/FEATURES.md",
-          ".codex/TASKS.md"
+          "docs/FEATURES.md"
         ],
         "notes": "Status is auto-derived from documented progress and active critical blockers."
       },
@@ -123,8 +62,7 @@
         "status": "unknown",
         "evidence": [
           "docs/PRD.md",
-          "docs/FEATURES.md",
-          ".codex/TASKS.md"
+          "docs/FEATURES.md"
         ],
         "notes": "Status is auto-derived from documented progress and active critical blockers."
       },
@@ -134,19 +72,17 @@
         "status": "unknown",
         "evidence": [
           "docs/PRD.md",
-          "docs/FEATURES.md",
-          ".codex/TASKS.md"
+          "docs/FEATURES.md"
         ],
         "notes": "Status is auto-derived from documented progress and active critical blockers."
       },
       {
         "id": "LC-07",
         "title": "Security audit passed (no secrets in logs)",
-        "status": "blocked",
+        "status": "unknown",
         "evidence": [
           "docs/PRD.md",
-          "docs/FEATURES.md",
-          ".codex/TASKS.md"
+          "docs/FEATURES.md"
         ],
         "notes": "Status is auto-derived from documented progress and active critical blockers."
       }

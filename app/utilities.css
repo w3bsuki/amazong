@@ -241,12 +241,27 @@
 
 /* ===== TOUCH UTILITIES ===== */
 .touch-target {
-  min-width: 40px;
-  min-height: 40px;
+  min-width: var(--control-default);
+  min-height: var(--control-default);
 }
 
 .tap-transparent {
   -webkit-tap-highlight-color: transparent;
+}
+
+@utility control-compact {
+  min-height: var(--control-compact);
+  min-width: var(--control-compact);
+}
+
+@utility control-default {
+  min-height: var(--control-default);
+  min-width: var(--control-default);
+}
+
+@utility control-primary {
+  min-height: var(--control-primary);
+  min-width: var(--control-primary);
 }
 
 /* ===== ASPECT UTILITIES ===== */
@@ -256,6 +271,18 @@
 
 @utility aspect-4-3 {
   aspect-ratio: 4 / 3;
+}
+
+@utility aspect-product-card {
+  aspect-ratio: var(--ratio-product-card-mobile);
+}
+
+@utility aspect-product-strip {
+  aspect-ratio: var(--ratio-product-strip);
+}
+
+@utility aspect-quick-view-hero {
+  aspect-ratio: var(--ratio-quick-view-hero);
 }
 
 /* ===== GRID TEMPLATE UTILITIES ===== */

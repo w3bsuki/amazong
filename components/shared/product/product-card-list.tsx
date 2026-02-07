@@ -11,11 +11,12 @@ import { computeBadgeSpecsClient, shouldShowConditionBadge } from "@/lib/badges/
 import { ProductCardActions } from "./product-card-actions"
 import { ProductCardPrice } from "./product-card-price"
 import { FreshnessIndicator } from "./freshness-indicator"
+import { VerifiedSellerBadge } from "./verified-seller-badge"
 import { Truck, MapPin, ShieldCheck } from "@phosphor-icons/react"
 import Image from "next/image"
 import { normalizeImageUrl } from "@/lib/normalize-image-url"
 import { Badge } from "@/components/ui/badge"
-import { getListingOverlayBadgeVariants, getSellerVerificationBadgeVariant } from "@/lib/ui/badge-intent"
+import { getListingOverlayBadgeVariants } from "@/lib/ui/badge-intent"
 
 interface ProductCardListProps {
   // Required
@@ -161,10 +162,6 @@ export function ProductCardList({
     discountPercent,
     minDiscountPercent: 1,
   })
-  const sellerVerificationVariant = getSellerVerificationBadgeVariant({
-    isVerified: Boolean(sellerVerified),
-    isBusiness: false,
-  })
 
   return (
     <Surface
@@ -216,16 +213,17 @@ export function ProductCardList({
             image={image}
             slug={slug ?? null}
             username={username ?? null}
-            showQuickAdd={false}
-            showWishlist={showWishlist}
-            inStock={inStock}
-            isOwnProduct={isOwnProduct}
-          />
-        </div>
+                showQuickAdd={false}
+                showWishlist={showWishlist}
+                inStock={inStock}
+                isOwnProduct={isOwnProduct}
+                size="icon-compact"
+              />
+            </div>
 
         {/* Out of stock overlay */}
         {!inStock && (
-          <div className="absolute inset-0 flex items-center justify-center bg-surface-glass pointer-events-none">
+          <div className="absolute inset-0 flex items-center justify-center bg-surface-overlay pointer-events-none">
             <span className="text-xs font-medium text-muted-foreground">{t("outOfStock")}</span>
           </div>
         )}
@@ -249,18 +247,19 @@ export function ProductCardList({
         <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground mb-2">
           {/* Category-aware smart badges (mileage for cars, condition for clothing, etc.) */}
           {smartBadges.map((badge) => (
-            <Badge 
-              key={badge.key} 
-              variant={badge.key === "condition" ? getConditionBadgeVariant(badge.value) : "condition"}
-              className="text-2xs"
-              title={`${getBadgeLabel(badge.key)}: ${formatBadgeValue(badge)}`}
+                <Badge 
+                  key={badge.key} 
+                  size="compact"
+                  variant={badge.key === "condition" ? getConditionBadgeVariant(badge.value) : "condition"}
+                  className="text-2xs"
+                  title={`${getBadgeLabel(badge.key)}: ${formatBadgeValue(badge)}`}
             >
               {formatBadgeValue(badge)}
             </Badge>
           ))}
           {/* Fallback condition badge if no smart badges and condition applies */}
           {smartBadges.length === 0 && conditionLabel && (
-            <Badge variant={getConditionBadgeVariant(condition)} className="text-2xs">
+            <Badge size="compact" variant={getConditionBadgeVariant(condition)} className="text-2xs">
               {conditionLabel}
             </Badge>
           )}
@@ -302,10 +301,11 @@ export function ProductCardList({
         {sellerName && (
           <div className="mt-1.5 flex items-center gap-1 text-xs text-muted-foreground">
             <span>{sellerName}</span>
-            {sellerVerificationVariant && (
-              <Badge variant={sellerVerificationVariant} className="text-2xs px-1.5 py-0">
-                {t("verified")}
-              </Badge>
+            {sellerVerified && (
+              <VerifiedSellerBadge
+                label={t("verified")}
+                className="shrink-0"
+              />
             )}
           </div>
         )}

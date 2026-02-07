@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { useCallback, useEffect, useMemo } from "react"
+import { useCallback, useEffect, useMemo, useState } from "react"
 import { useRouter } from "@/i18n/routing"
 import {
   Drawer,
@@ -14,11 +14,12 @@ import {
 } from "@/components/ui/drawer"
 import { Skeleton } from "@/components/ui/skeleton"
 import { IconButton } from "@/components/ui/icon-button"
+import { Input } from "@/components/ui/input"
 import { cn } from "@/lib/utils"
 import { useCategoryDrawer } from "@/components/mobile/category-nav/category-drawer-context"
 import { getCategoryName } from "@/lib/category-display"
 import { useCategoryCounts } from "@/hooks/use-category-counts"
-import { ArrowLeft, CaretRight, X } from "@phosphor-icons/react"
+import { ArrowLeft, CaretRight, MagnifyingGlass, X } from "@phosphor-icons/react"
 import { useTranslations } from "next-intl"
 import type { CategoryTreeNode } from "@/lib/category-tree"
 
@@ -66,17 +67,32 @@ export function CategoryBrowseDrawer({
     setChildren,
     setLoading,
   } = useCategoryDrawer()
+  const [query, setQuery] = useState("")
 
   // Handle drawer open state change
   const handleOpenChange = useCallback((open: boolean) => {
     if (!open) {
+      setQuery("")
       close()
     }
   }, [close])
 
+  const fetchChildrenFallback = useCallback(async (parentId: string) => {
+    try {
+      const res = await fetch(`/api/categories/${parentId}/children`)
+      if (!res.ok) return []
+      const data = await res.json()
+      return (data.children ?? []) as CategoryTreeNode[]
+    } catch {
+      return []
+    }
+  }, [])
+
+  const fetchChildrenSafe = fetchChildren ?? fetchChildrenFallback
+
   // Fetch children when category changes
   useEffect(() => {
-    if (!activeCategory || !fetchChildren) return
+    if (!activeCategory) return
     if (activeCategory.children && activeCategory.children.length > 0) {
       // Already have children from initial data
       setChildren(activeCategory.children)
@@ -85,7 +101,7 @@ export function CategoryBrowseDrawer({
 
     // Lazy load children
     setLoading(true)
-    fetchChildren(activeCategory.id)
+    fetchChildrenSafe(activeCategory.id)
       .then((fetched) => {
         setChildren(fetched)
       })
@@ -96,24 +112,36 @@ export function CategoryBrowseDrawer({
       .finally(() => {
         setLoading(false)
       })
-  }, [activeCategory, fetchChildren, setChildren, setLoading])
+  }, [activeCategory, fetchChildrenSafe, setChildren, setLoading])
 
   const rootCategory = path[0] ?? null
   const rootCategoryName = rootCategory ? getCategoryName(rootCategory, locale) : null
   const rootCategoryCount = rootCategory ? (categoryCounts[rootCategory.slug] ?? 0) : undefined
 
   const listItems = rootCategory ? children : rootCategories
+  const normalizedQuery = query.trim().toLocaleLowerCase(locale)
+
+  const filteredListItems = useMemo(() => {
+    if (!normalizedQuery) return listItems
+    return listItems.filter((cat) => {
+      const localizedName = getCategoryName(cat, locale).toLocaleLowerCase(locale)
+      return localizedName.includes(normalizedQuery)
+    })
+  }, [listItems, locale, normalizedQuery])
 
   const handleNavigateToCategory = useCallback((slug: string) => {
+    setQuery("")
     close()
     router.push(`/categories/${slug}`)
   }, [close, router])
 
   const handleOpenScopedCategory = useCallback((category: CategoryTreeNode) => {
+    setQuery("")
     openCategory(category)
   }, [openCategory])
 
   const handleBackToRoot = useCallback(() => {
+    setQuery("")
     openRoot()
   }, [openRoot])
 
@@ -127,6 +155,11 @@ export function CategoryBrowseDrawer({
     if (!isOpen) return
     refetchCategoryCounts()
   }, [isOpen, refetchCategoryCounts])
+
+  useEffect(() => {
+    if (!isOpen) return
+    setQuery("")
+  }, [isOpen, rootCategory?.id])
 
   // Header text (L0 category name)
   const headerText = useMemo(() => {
@@ -148,6 +181,7 @@ export function CategoryBrowseDrawer({
       <DrawerContent
         className={cn("max-h-dialog rounded-t-2xl", className)}
         aria-label={t("ariaLabel")}
+        data-testid="mobile-category-drawer"
       >
         <DrawerHeader className="border-b border-border-subtle px-inset py-2.5">
           <div className="flex min-w-0 items-center gap-2">
@@ -155,14 +189,14 @@ export function CategoryBrowseDrawer({
               <IconButton
                 aria-label={tCommon("back")}
                 variant="ghost"
-                size="icon-sm"
+                size="icon-compact"
                 onClick={handleBackToRoot}
-                className="size-9 shrink-0 text-muted-foreground hover:bg-hover hover:text-foreground active:bg-active focus-visible:ring-2 focus-visible:ring-focus-ring ![&_svg]:size-4"
+                className="shrink-0 text-muted-foreground hover:bg-hover hover:text-foreground active:bg-active focus-visible:ring-2 focus-visible:ring-focus-ring"
               >
                 <ArrowLeft size={16} weight="bold" aria-hidden="true" />
               </IconButton>
             ) : (
-              <span className="size-9 shrink-0" aria-hidden="true" />
+              <span className="size-(--control-compact) shrink-0" aria-hidden="true" />
             )}
 
             <DrawerTitle className="min-w-0 flex-1 truncate text-center text-base font-semibold text-foreground">
@@ -173,8 +207,8 @@ export function CategoryBrowseDrawer({
               <IconButton
                 aria-label={t("close")}
                 variant="ghost"
-                size="icon-sm"
-                className="size-9 shrink-0 text-muted-foreground hover:bg-hover hover:text-foreground active:bg-active focus-visible:ring-2 focus-visible:ring-focus-ring ![&_svg]:size-4"
+                size="icon-compact"
+                className="shrink-0 text-muted-foreground hover:bg-hover hover:text-foreground active:bg-active focus-visible:ring-2 focus-visible:ring-focus-ring"
               >
                 <X size={16} />
               </IconButton>
@@ -185,6 +219,33 @@ export function CategoryBrowseDrawer({
         <DrawerDescription className="sr-only">{t("description")}</DrawerDescription>
 
         <DrawerBody className="px-inset py-3 pb-4">
+          <div className="pb-3">
+            <div className="relative">
+              <MagnifyingGlass
+                size={16}
+                className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+                aria-hidden="true"
+              />
+              <Input
+                value={query}
+                onChange={(event) => setQuery(event.target.value)}
+                placeholder={t("searchPlaceholder")}
+                aria-label={t("searchAriaLabel")}
+                className="h-10 rounded-full border-border-subtle bg-surface-subtle pl-9 pr-9 text-sm"
+              />
+              {query.length > 0 && (
+                <button
+                  type="button"
+                  onClick={() => setQuery("")}
+                  className="absolute right-1.5 top-1/2 inline-flex size-7 -translate-y-1/2 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-hover hover:text-foreground active:bg-active"
+                  aria-label={tCommon("clearSearch")}
+                >
+                  <X size={14} />
+                </button>
+              )}
+            </div>
+          </div>
+
           {rootCategory && listItems.length > 0 && (
             <p className="pb-2 text-2xs font-medium text-muted-foreground">
               {t("subcategories")}
@@ -204,7 +265,7 @@ export function CategoryBrowseDrawer({
             </div>
           ) : (
             <div className="space-y-2">
-              {listItems.map((cat) => (
+              {filteredListItems.map((cat) => (
                 <button
                   key={cat.id}
                   type="button"
@@ -232,10 +293,10 @@ export function CategoryBrowseDrawer({
             </div>
           )}
 
-          {!isLoading && listItems.length === 0 && (
+          {!isLoading && filteredListItems.length === 0 && (
             <div className="py-8 text-center">
               <p className="text-sm text-muted-foreground">
-                {rootCategory ? t("noSubcategories") : t("noCategories")}
+                {normalizedQuery ? t("noMatches") : rootCategory ? t("noSubcategories") : t("noCategories")}
               </p>
             </div>
           )}

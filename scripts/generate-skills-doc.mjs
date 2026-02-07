@@ -2,7 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 
 const repoRoot = process.cwd();
-const skillsRoot = path.join(repoRoot, ".codex", "skills");
+const skillsRoot = path.join(repoRoot, ".claude", "skills");
 const outputPath = path.join(repoRoot, "docs", "SKILLS.md");
 
 function parseFrontmatter(markdown) {
@@ -46,10 +46,11 @@ function normalizePath(p) {
 }
 
 function buildMarkdown(skills) {
+  const updatedAt = new Date().toISOString().slice(0, 10);
   const lines = [];
   lines.push("# SKILLS.md — Treido Skill Fleet");
   lines.push("");
-  lines.push("> Canonical skill inventory generated from `.codex/skills/*`.");
+  lines.push("> Canonical skill inventory generated from `.claude/skills/*`.");
   lines.push("");
   lines.push("| Scope | AI skills and routing surfaces |");
   lines.push("|-------|--------------------------------|");
@@ -71,11 +72,11 @@ function buildMarkdown(skills) {
   lines.push("## Routing");
   lines.push("");
   lines.push("- Start from `docs/AGENT-MAP.md` for intent-to-skill routing.");
-  lines.push("- Apply `treido-rails` constraints for all implementation tasks.");
+  lines.push("- Root `AGENTS.md` non-negotiables always apply.");
   lines.push("");
   lines.push("---");
   lines.push("");
-  lines.push("*Last updated: 2026-02-06*");
+  lines.push(`*Last updated: ${updatedAt}*`);
   lines.push("");
   return lines.join("\n");
 }

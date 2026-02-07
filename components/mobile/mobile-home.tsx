@@ -3,21 +3,16 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { PageShell } from "@/components/shared/page-shell"
 import { MobileSearchOverlay } from "@/components/shared/search/mobile-search-overlay"
-import { ProductCard, ProductGrid } from "@/components/shared/product/product-card"
+import { ProductCard } from "@/components/shared/product/product-card"
 import { useHeader } from "@/components/providers/header-context"
 import type { UIProduct } from "@/lib/types/products"
 import type { CategoryTreeNode } from "@/lib/category-tree"
 import { useTranslations } from "next-intl"
 import { Link } from "@/i18n/routing"
-import { CaretRight } from "@phosphor-icons/react"
+import { CaretRight, Lightning } from "@phosphor-icons/react"
 import { HomeSectionHeader } from "@/components/mobile/home-section-header"
 
-// New drawer-based navigation
-import {
-  CategoryDrawerProvider,
-  CategoryCirclesSimple,
-} from "@/components/mobile/category-nav"
-import { CategoryBrowseDrawer } from "@/components/mobile/drawers/category-browse-drawer"
+import { CategoryCirclesSimple } from "@/components/mobile/category-nav"
 import { PromotedListingsStrip } from "@/components/shared/promoted-listings-strip"
 import { HomeStickyCategoryPills } from "@/components/mobile/home-sticky-category-pills"
 
@@ -41,19 +36,24 @@ interface MobileHomeProps {
   user?: { id: string } | null
 }
 
-// =============================================================================
-// Fetch Children Helper (for lazy-loading subcategories)
-// =============================================================================
+type CuratedRailKey = keyof CuratedSections
 
-async function fetchCategoryChildren(parentId: string): Promise<CategoryTreeNode[]> {
-  try {
-    const res = await fetch(`/api/categories/${parentId}/children`)
-    if (!res.ok) return []
-    const data = await res.json()
-    return data.children ?? []
-  } catch {
-    return []
-  }
+interface HomeCardConfig {
+  appearance: "card" | "tile"
+  media: "square" | "portrait" | "landscape"
+  titleLines: 1 | 2
+  showCategoryBadge: boolean
+  radius: "xl" | "2xl"
+  maxOverlayBadges: number
+}
+
+const CURATED_RAIL_PRIORITY: CuratedRailKey[] = ["fashion", "electronics", "automotive", "deals"]
+
+const CURATED_RAIL_HREF: Record<CuratedRailKey, string> = {
+  fashion: "/categories/fashion",
+  electronics: "/categories/electronics",
+  automotive: "/categories/automotive",
+  deals: "/todays-deals",
 }
 
 // =============================================================================
@@ -63,12 +63,12 @@ async function fetchCategoryChildren(parentId: string): Promise<CategoryTreeNode
 export function MobileHome({
   initialProducts,
   promotedProducts,
+  curatedSections,
   initialCategories,
   locale,
 }: MobileHomeProps) {
   const t = useTranslations("Home")
   const tMobile = useTranslations("Home.mobile")
-  const tTabs = useTranslations("TabbedProductFeed.tabs")
   const [searchOpen, setSearchOpen] = useState(false)
   const [showStickyCategoryPills, setShowStickyCategoryPills] = useState(false)
   const categoryCirclesRef = useRef<HTMLDivElement | null>(null)
@@ -85,7 +85,78 @@ export function MobileHome({
       return Number.isFinite(expiresAt) && expiresAt > now
     })
   }, [promotedProducts])
-  
+
+  const promotedRail = useMemo(() => activePromotedProducts.slice(0, 10), [activePromotedProducts])
+
+  const curatedRail = useMemo(() => {
+    const sections = curatedSections ?? {
+      deals: [],
+      fashion: [],
+      electronics: [],
+      automotive: [],
+    }
+
+    for (const key of CURATED_RAIL_PRIORITY) {
+      const products = sections[key]
+      if (Array.isArray(products) && products.length > 0) {
+        return { key, products, href: CURATED_RAIL_HREF[key] }
+      }
+    }
+
+    return null
+  }, [curatedSections])
+
+  const renderHomeCard = useCallback(
+    (product: UIProduct, index: number, config: HomeCardConfig) => (
+      <ProductCard
+        key={product.id}
+        id={product.id}
+        title={product.title}
+        price={product.price}
+        createdAt={product.createdAt ?? null}
+        originalPrice={product.listPrice ?? null}
+        image={product.image}
+        rating={product.rating}
+        reviews={product.reviews}
+        {...(product.freeShipping === true ? { freeShipping: true } : {})}
+        {...(product.isBoosted ? { isBoosted: true } : {})}
+        {...(product.boostExpiresAt ? { boostExpiresAt: product.boostExpiresAt } : {})}
+        index={index}
+        slug={product.slug ?? null}
+        username={product.storeSlug ?? null}
+        sellerId={product.sellerId ?? null}
+        {...((product.sellerName || product.storeSlug)
+          ? { sellerName: product.sellerName || product.storeSlug || "" }
+          : {})}
+        sellerAvatarUrl={product.sellerAvatarUrl || null}
+        sellerTier={product.sellerTier ?? "basic"}
+        sellerVerified={Boolean(product.sellerVerified)}
+        sellerEmailVerified={Boolean(product.sellerEmailVerified)}
+        sellerPhoneVerified={Boolean(product.sellerPhoneVerified)}
+        sellerIdVerified={Boolean(product.sellerIdVerified)}
+        {...(product.condition ? { condition: product.condition } : {})}
+        {...(product.brand ? { brand: product.brand } : {})}
+        {...(product.categorySlug ? { categorySlug: product.categorySlug } : {})}
+        {...(product.categoryRootSlug ? { categoryRootSlug: product.categoryRootSlug } : {})}
+        {...(product.categoryPath ? { categoryPath: product.categoryPath } : {})}
+        {...(product.make ? { make: product.make } : {})}
+        {...(product.model ? { model: product.model } : {})}
+        {...(product.year ? { year: product.year } : {})}
+        {...(product.location ? { location: product.location } : {})}
+        {...(product.attributes ? { attributes: product.attributes } : {})}
+        appearance={config.appearance}
+        media={config.media}
+        density="compact"
+        titleLines={config.titleLines}
+        uiVariant="home"
+        showCategoryBadge={config.showCategoryBadge}
+        radius={config.radius}
+        maxOverlayBadges={config.maxOverlayBadges}
+      />
+    ),
+    []
+  )
+
   // Get header context to provide dynamic state to layout's header
   const { setHomepageHeader } = useHeader()
 
@@ -133,111 +204,198 @@ export function MobileHome({
   }, [])
 
   return (
-    <CategoryDrawerProvider rootCategories={initialCategories}>
-      <PageShell variant="default" className="pb-4">
-        {/* Search Overlay */}
-        <MobileSearchOverlay
-          hideDefaultTrigger
-          externalOpen={searchOpen}
-          onOpenChange={setSearchOpen}
-        />
+    <PageShell variant="default" className="pb-4">
+      {/* Search Overlay */}
+      <MobileSearchOverlay
+        hideDefaultTrigger
+        externalOpen={searchOpen}
+        onOpenChange={setSearchOpen}
+      />
 
-        {/* Header is rendered by layout - passes variant="homepage" with category pills */}
-        <div ref={categoryCirclesRef} className="bg-background border-b border-border-subtle">
-          <CategoryCirclesSimple
-            categories={initialCategories}
-            locale={locale}
-          />
-        </div>
-
-        <HomeStickyCategoryPills
-          visible={showStickyCategoryPills}
+      {/* Header is rendered by layout - passes variant="homepage" with category pills */}
+      <div
+        ref={categoryCirclesRef}
+        data-testid="home-category-circles"
+        className="bg-background border-b border-border-subtle"
+      >
+        <CategoryCirclesSimple
           categories={initialCategories}
           locale={locale}
+          maxVisible={7}
         />
+      </div>
 
-         {/* Main Content */}
-       <div className="pt-2 pb-4 space-y-2">
-        {/* Curated carousels (no sorting UI on Home) */}
-        {activePromotedProducts.length > 0 && (
-          <PromotedListingsStrip products={activePromotedProducts} />
+      <HomeStickyCategoryPills
+        visible={showStickyCategoryPills}
+        categories={initialCategories}
+        locale={locale}
+      />
+
+      {/* Main Content */}
+      <div className="pt-0 pb-4 space-y-(--spacing-home-section-gap)">
+        <section
+          data-testid="home-section-promoted-banner"
+          className="px-(--spacing-home-inset) pt-(--spacing-home-section-gap)"
+        >
+          <div className="rounded-2xl border border-border-subtle bg-foreground px-3.5 py-3 shadow-2xs">
+            <div className="flex items-center justify-between gap-3">
+              <div className="min-w-0 flex items-start gap-2.5">
+                <span className="mt-0.5 inline-flex size-(--control-xs) shrink-0 items-center justify-center rounded-full bg-background text-foreground">
+                  <Lightning size={12} weight="fill" aria-hidden="true" />
+                </span>
+                <div className="min-w-0">
+                  <p className="text-2xs font-medium text-background">
+                    {tMobile("promoBannerEyebrow")}
+                  </p>
+                  <p className="truncate text-sm font-semibold text-background">
+                    {tMobile("promoBannerTitle")}
+                  </p>
+                  <p className="truncate text-xs text-background">
+                    {tMobile("promoBannerSubtitle")}
+                  </p>
+                </div>
+              </div>
+              <Link
+                href="/search?promoted=true&sort=newest"
+                className="inline-flex min-h-(--spacing-touch-sm) shrink-0 items-center gap-1 rounded-full border border-background bg-background px-2.5 text-xs font-semibold text-foreground transition-colors hover:bg-background active:bg-background"
+              >
+                {tMobile("promoBannerCta")}
+                <CaretRight size={12} weight="bold" aria-hidden="true" />
+              </Link>
+            </div>
+          </div>
+        </section>
+
+        {promotedRail.length > 0 && (
+          <PromotedListingsStrip
+            products={promotedRail}
+            layout="strip"
+            maxItems={10}
+            showHeader={false}
+            showQuickScopes={false}
+          />
         )}
 
         {initialProducts.length > 0 && (
-          <section className="pt-0">
+          <section data-testid="home-section-newest" className="pt-(--spacing-home-section-gap)">
+            <div
+              data-testid="home-section-for-you-banner"
+              className="px-(--spacing-home-inset)"
+            >
+              <div className="rounded-2xl border border-border-subtle bg-background px-3.5 py-3 shadow-2xs">
+                <div className="flex items-center justify-between gap-3">
+                  <div className="min-w-0 flex items-start gap-2.5">
+                    <span className="mt-0.5 inline-flex size-(--control-xs) shrink-0 items-center justify-center rounded-full bg-foreground text-background">
+                      <Lightning size={12} weight="fill" aria-hidden="true" />
+                    </span>
+                    <div className="min-w-0">
+                      <p className="text-2xs font-medium text-muted-foreground">
+                        {tMobile("forYouBannerEyebrow")}
+                      </p>
+                      <p className="truncate text-sm font-semibold text-foreground">
+                        {tMobile("forYouBannerTitle")}
+                      </p>
+                      <p className="truncate text-xs text-muted-foreground">
+                        {tMobile("forYouBannerSubtitle")}
+                      </p>
+                    </div>
+                  </div>
+                  <Link
+                    href="/search?sort=newest"
+                    className="inline-flex min-h-(--spacing-touch-sm) shrink-0 items-center gap-1 rounded-full border border-border-subtle bg-background px-2.5 text-xs font-semibold text-foreground transition-colors hover:bg-hover active:bg-active"
+                  >
+                    {tMobile("forYouBannerCta")}
+                    <CaretRight size={12} weight="bold" aria-hidden="true" />
+                  </Link>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-2 px-(--spacing-home-inset)">
+              <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
+                <Link
+                  href="/search?sort=newest"
+                  className="inline-flex min-h-(--spacing-touch-sm) shrink-0 items-center rounded-full border border-foreground bg-foreground px-3 text-xs font-semibold text-background transition-colors hover:bg-foreground active:bg-foreground"
+                >
+                  {tMobile("sort.newest")}
+                </Link>
+                <Link
+                  href="/search?sort=price-asc"
+                  className="inline-flex min-h-(--spacing-touch-sm) shrink-0 items-center rounded-full border border-border-subtle bg-background px-3 text-xs font-medium text-muted-foreground transition-colors hover:bg-hover hover:text-foreground active:bg-active active:text-foreground"
+                >
+                  {tMobile("sort.priceLow")}
+                </Link>
+                <Link
+                  href="/search?sort=price-desc"
+                  className="inline-flex min-h-(--spacing-touch-sm) shrink-0 items-center rounded-full border border-border-subtle bg-background px-3 text-xs font-medium text-muted-foreground transition-colors hover:bg-hover hover:text-foreground active:bg-active active:text-foreground"
+                >
+                  {tMobile("sort.priceHigh")}
+                </Link>
+                <Link
+                  href="/search?nearby=true"
+                  className="inline-flex min-h-(--spacing-touch-sm) shrink-0 items-center rounded-full border border-border-subtle bg-background px-3 text-xs font-medium text-muted-foreground transition-colors hover:bg-hover hover:text-foreground active:bg-active active:text-foreground"
+                >
+                  {tMobile("sort.nearby")}
+                </Link>
+              </div>
+            </div>
+
+            <div className="mt-2 grid grid-cols-2 gap-(--spacing-home-card-gap) px-(--spacing-home-inset) pb-1">
+              {initialProducts.map((product, index) =>
+                renderHomeCard(product, index, {
+                  appearance: "card",
+                  media: "portrait",
+                  titleLines: 2,
+                  showCategoryBadge: true,
+                  radius: "2xl",
+                  maxOverlayBadges: 2,
+                })
+              )}
+            </div>
+          </section>
+        )}
+
+        {curatedRail && (
+          <section data-testid="home-section-curated-rail" className="pt-(--spacing-home-section-gap)">
             <HomeSectionHeader
-              title={tTabs("newest")}
-              href="/search?sort=newest"
-              actionLabel={t("sections.seeAll")}
+              title={t(`sections.${curatedRail.key}`)}
+              href={curatedRail.href}
+              actionLabel={tMobile("seeAll")}
             />
 
-            <ProductGrid density="compact" className="px-inset-md pb-2">
-              {initialProducts.map((product, index) => (
-                <ProductCard
-                  key={product.id}
-                  id={product.id}
-                  title={product.title}
-                  price={product.price}
-                  createdAt={product.createdAt ?? null}
-                  originalPrice={product.listPrice ?? null}
-                  image={product.image}
-                  rating={product.rating}
-                  reviews={product.reviews}
-                  {...(product.freeShipping ? { freeShipping: true } : {})}
-                  {...(product.isBoosted ? { isBoosted: true } : {})}
-                  {...(product.boostExpiresAt ? { boostExpiresAt: product.boostExpiresAt } : {})}
-                  index={index}
-                  slug={product.slug ?? null}
-                  username={product.storeSlug ?? null}
-                  sellerId={product.sellerId ?? null}
-                  {...((product.sellerName || product.storeSlug)
-                    ? { sellerName: product.sellerName || product.storeSlug || "" }
-                    : {})}
-                  sellerAvatarUrl={product.sellerAvatarUrl || null}
-                  sellerTier={product.sellerTier ?? "basic"}
-                  sellerVerified={Boolean(product.sellerVerified)}
-                  sellerEmailVerified={Boolean(product.sellerEmailVerified)}
-                  sellerPhoneVerified={Boolean(product.sellerPhoneVerified)}
-                  sellerIdVerified={Boolean(product.sellerIdVerified)}
-                  {...(product.condition ? { condition: product.condition } : {})}
-                  {...(product.brand ? { brand: product.brand } : {})}
-                  {...(product.categorySlug ? { categorySlug: product.categorySlug } : {})}
-                  {...(product.categoryRootSlug ? { categoryRootSlug: product.categoryRootSlug } : {})}
-                  {...(product.categoryPath ? { categoryPath: product.categoryPath } : {})}
-                  {...(product.make ? { make: product.make } : {})}
-                  {...(product.model ? { model: product.model } : {})}
-                  {...(product.year ? { year: product.year } : {})}
-                  {...(product.location ? { location: product.location } : {})}
-                  {...(product.attributes ? { attributes: product.attributes } : {})}
-                  appearance="tile"
-                  media="square"
-                  density="compact"
-                  uiVariant="home"
-                  radius="xl"
-                />
-              ))}
-            </ProductGrid>
+            <div className="overflow-x-auto scroll-smooth no-scrollbar">
+              <div className="flex snap-x snap-mandatory gap-(--spacing-home-card-gap) px-(--spacing-home-inset) pb-1.5">
+                {curatedRail.products.slice(0, 10).map((product, index) => (
+                  <div
+                    key={product.id}
+                    className="w-(--spacing-home-curated-card-w) shrink-0 snap-start"
+                  >
+                    {renderHomeCard(product, index, {
+                      appearance: "card",
+                      media: "landscape",
+                      titleLines: 2,
+                      showCategoryBadge: true,
+                      radius: "2xl",
+                      maxOverlayBadges: 2,
+                    })}
+                  </div>
+                ))}
+              </div>
+            </div>
           </section>
         )}
 
         {/* Final CTA: Browse all listings */}
-        <section className="px-inset-md py-3">
+        <section className="px-(--spacing-home-inset) pt-1">
           <Link
             href="/search?sort=newest"
-            className="inline-flex w-full items-center justify-between gap-3 rounded-xl bg-surface-subtle px-4 py-3 text-sm font-semibold text-foreground border border-border-subtle active:bg-active transition-colors"
+            className="inline-flex min-h-(--spacing-touch-md) w-full items-center justify-between gap-3 rounded-xl border border-border-subtle bg-background px-4 py-3 text-sm font-semibold text-foreground transition-colors hover:bg-hover active:bg-active"
           >
             <span className="min-w-0 truncate">{tMobile("allListings")}</span>
             <CaretRight size={18} weight="bold" className="text-muted-foreground shrink-0" aria-hidden="true" />
           </Link>
         </section>
       </div>
-        
-      {/* Category Browse Drawer - Native app-style category navigation */}
-      <CategoryBrowseDrawer
-        locale={locale}
-        fetchChildren={fetchCategoryChildren}
-      />
     </PageShell>
-    </CategoryDrawerProvider>
   )
 }

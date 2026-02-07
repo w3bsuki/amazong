@@ -3,6 +3,7 @@
 import * as React from "react"
 import { cn } from "@/lib/utils"
 import { useCurrencyOptional, EUR_TO_BGN_RATE } from "@/components/providers/currency-context"
+import { Badge } from "@/components/ui/badge"
 
 // =============================================================================
 // TYPES
@@ -19,6 +20,16 @@ interface ProductCardPriceProps {
   showDualCurrency?: boolean
   /** Compact mode for mobile - smaller typography */
   compact?: boolean
+  /** Slightly stronger hierarchy for home feed cards */
+  homeEmphasis?: boolean
+  /** Price hierarchy preset */
+  priceEmphasis?: "default" | "strong"
+  /** Controls compare-at strike-through rendering */
+  showOriginalPrice?: boolean
+  /** Optional compact trailing label in the main price row (e.g. "-25%") */
+  trailingLabel?: string
+  /** Render trailing label as discount badge */
+  discountAsBadge?: boolean
 }
 
 // =============================================================================
@@ -34,12 +45,17 @@ function ProductCardPrice({
   buyerProtectionLabel,
   showDualCurrency = false,
   compact = false,
+  homeEmphasis = false,
+  priceEmphasis = "default",
+  showOriginalPrice = true,
+  trailingLabel,
+  discountAsBadge = false,
 }: ProductCardPriceProps) {
   const currencyCtx = useCurrencyOptional()
   const selectedCurrency = currencyCtx?.currency ?? "EUR"
 
   // Derived values
-  const hasDiscount = originalPrice && originalPrice > price
+  const hasDiscount = Boolean(showOriginalPrice && originalPrice && originalPrice > price)
 
   // Convert price based on selected currency
   const displayPrice = selectedCurrency === "BGN" ? price * EUR_TO_BGN_RATE : price
@@ -83,12 +99,14 @@ function ProductCardPrice({
   return (
     <div className="flex flex-col">
       {/* Price row - clean compact style */}
-      <div className="flex items-baseline gap-1 flex-wrap">
+      <div className={cn("flex items-baseline gap-1", homeEmphasis ? "flex-nowrap" : "flex-wrap")}>
         {/* Primary price */}
         <span
           className={cn(
-            "font-semibold tracking-tight tabular-nums",
-            compact ? "text-compact" : "text-base font-bold",
+            "tabular-nums whitespace-nowrap tracking-tight",
+            compact ? "text-sm" : "text-price",
+            priceEmphasis === "strong" && "text-price",
+            priceEmphasis === "strong" ? "font-bold text-foreground" : "font-semibold text-foreground",
             "text-foreground"
           )}
         >
@@ -98,7 +116,9 @@ function ProductCardPrice({
         {hasDiscount && formattedOriginalPrice && (
           <span className={cn(
             "text-muted-foreground line-through tabular-nums",
-            compact ? "text-2xs" : "text-compact"
+            compact
+              ? (homeEmphasis ? "text-compact" : "text-2xs")
+              : "text-compact"
           )}>
             {formattedOriginalPrice}
           </span>
@@ -108,6 +128,17 @@ function ProductCardPrice({
           <span className="text-2xs text-muted-foreground tabular-nums">
             ({formattedSecondaryPrice})
           </span>
+        )}
+        {trailingLabel && (
+          discountAsBadge ? (
+            <Badge variant="discount" size="compact" className="shrink-0">
+              {trailingLabel}
+            </Badge>
+          ) : (
+            <span className="shrink-0 whitespace-nowrap text-compact font-semibold text-destructive">
+              {trailingLabel}
+            </span>
+          )
         )}
       </div>
 

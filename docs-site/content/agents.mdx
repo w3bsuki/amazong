@@ -1,85 +1,65 @@
 # AGENTS.md — Treido Operating Contract
 
-Single operating contract for AI agents and developers.
+Detailed boundaries, pause rules, and delivery contract.
 
-## Read Order
+## Canonical policy
 
-1. `AGENTS.md` (repo root) for fast routing.
-2. `docs/AGENTS.md` (this file) for execution policy.
-3. `docs/WORKFLOW.md` for build/review loop.
-4. Path-local `*/AGENTS.md` for folder boundaries.
+Root `AGENTS.md` is the single source of truth for non-negotiables.
+This file adds execution detail and folder boundaries.
 
-## How Any Prompt Is Processed
+## Default mode
 
-1. Parse intent:
-   - implement, fix, refactor, review, explain, plan, or audit.
-2. Parse scope:
-   - explicit paths, "do not touch" constraints, risk domain.
-3. Resolve constraints in this order:
-   - system/developer instructions
-   - repo root `AGENTS.md`
-   - this file
-   - path-local `AGENTS.md` files
-   - user request details
-4. Select minimal skills by intent using `docs/AGENT-MAP.md`.
-5. Gather local truth first:
-   - search files, inspect current implementation, avoid guessing.
-6. Decide risk lane:
-   - low-risk: UI/docs/refactor/tests
-   - high-risk: DB/auth/payments/destructive operations
-7. Execute in small batches with verification.
-8. Report:
-   - changed files, commands run, results, remaining risks.
+Implement directly for normal tasks. Skills are optional specialist tools, not mandatory middleware.
 
-## Source Precedence (Truth Model)
+## High-risk pause domains
 
-1. Code and migrations are runtime truth.
-2. `docs/status/LAUNCH-READINESS.yaml` is launch-status truth.
-3. `docs/**` is writing SSOT.
-4. `docs-site/**` is generated browse mirror only.
-5. `.codex/TASKS.md`, `.codex/DECISIONS.md`, `.codex/SHIPPED.md` are runtime working state.
-
-If docs and code disagree, treat code/runtime as current truth and update docs.
-
-## Non-Negotiables
-
-- No secrets or PII in logs.
-- User-facing copy uses `next-intl` keys.
-- Tailwind v4 semantic tokens only.
-- Prefer Server Components; use client components only when needed.
-- Keep shared UI free of direct data fetching and server actions.
-
-## High-Risk Pause Domains
-
-Stop and explicitly align with a human before finalizing these changes:
+Stop and explicitly align with a human before finalizing:
 
 - DB schema, migrations, or RLS policies.
 - Auth/session/access-control behavior.
-- Payments, Stripe, webhook behavior.
+- Payments/webhooks/billing behavior.
 - Destructive or bulk data operations.
 
-## Skill Routing
-
-- Use `docs/AGENT-MAP.md` for intent-to-skill mapping.
-- `treido-rails` applies to all implementation tasks.
-- Use orchestrator skills only when multiple domains are coupled.
-
-## Folder Boundaries
+## Folder boundaries
 
 - `app/**/_components/*` and `app/**/_actions/*`: route-private.
 - `app/actions/*`: shared server actions.
 - `components/ui/*`: primitives only.
-- `components/shared/*`: shared composites, no direct Supabase/Stripe calls.
-- `lib/*`: pure utilities.
+- `components/shared/*`: reusable composites only; no direct Supabase/Stripe calls.
+- `lib/*`: pure utilities/domain helpers.
 
-## Output Contract
+## Skills inventory (consolidated)
 
-For implementation work, always include:
+Canonical location: `.claude/skills/*`  
+Codex compatibility mirror: `.agents/skills/*`
+
+- `treido-styling`
+- `treido-design`
+- `treido-nextjs`
+- `treido-data`
+- `treido-payments`
+- `treido-testing`
+- `treido-a11y`
+
+## Source precedence
+
+1. Code and migrations are runtime truth.
+2. `docs/**` is written SSOT.
+3. If docs and code disagree, treat code as current truth and update docs.
+
+## Output contract
+
+For implementation work provide:
 
 1. Files changed.
 2. Verification commands and outcomes.
-3. Any assumptions, limitations, or deferred risks.
+3. Assumptions, risks, and deferred follow-ups.
 
-For review requests, findings come first (ordered by severity with file references).
+## Read order
 
-Last updated: 2026-02-06
+1. `AGENTS.md` (root) for canonical rails.
+2. `docs/AGENTS.md` (this file) for boundaries and contract.
+3. `docs/WORKFLOW.md` for verification gates.
+4. Path-local `*/AGENTS.md` for folder-specific rules.
+
+Last updated: 2026-02-07

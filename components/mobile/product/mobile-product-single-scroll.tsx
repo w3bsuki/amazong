@@ -187,7 +187,7 @@ export function MobileProductSingleScroll(props: MobileProductSingleScrollProps)
   };
 
   const pickupOnly = product.pickup_only ?? false;
-  const freeShipping = Boolean(product.free_shipping);
+  const freeShipping = product.free_shipping === true;
   const isNegotiable = Boolean(product.is_negotiable);
 
   return (

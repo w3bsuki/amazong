@@ -4,55 +4,52 @@ This guide explains how to prompt AI agents to leverage Treido’s **`treido-*` 
 
 For the canonical inventory, see `docs/SKILLS.md`.
 
-All Treido skills live in `.codex/skills/` and are prefixed `treido-*`.
+Canonical Treido skills live in `.claude/skills/` and are mirrored to `.agents/skills/` for Codex compatibility.
 
-## Active Skills (Treido-maintained)
+## Active Skills (Consolidated, 7)
 
 | Skill | Use Case |
 |-------|----------|
-| `treido-rails` | Non-negotiables + pause conditions (PII/i18n/tokens/caching) |
-| `treido-structure` | File placement + boundaries |
+| `treido-styling` | Tailwind v4 semantic-token rails + shadcn boundary-safe styling |
 | `treido-design` | UI/UX design specs + polish |
-| `treido-mobile-ux` | Touch + safe areas + iOS feel |
-| `treido-nextjs-16` | App Router + caching + request conventions |
-| `treido-tailwind-v4` | Tailwind v4 tokens + forbidden patterns |
-| `treido-shadcn-ui` | UI primitives + Radix composition |
-| `treido-supabase` | SSR clients + queries + RLS mindset |
-| `treido-stripe` | Webhooks + payments safety |
-| `treido-skillsmith` | Skill system maintenance |
+| `treido-nextjs` | App Router boundaries, Server vs Client, caching purity, request conventions |
+| `treido-data` | Supabase data + auth query/client patterns |
+| `treido-payments` | Stripe checkout/webhooks/idempotency safety |
+| `treido-testing` | Playwright + Next.js reliability and CI stability |
+| `treido-a11y` | WCAG 2.2 AA semantics, focus, keyboard, and screen-reader support |
 
 ---
 
-## Prompt Templates
+## Prompt Templates (By Domain)
 
-### 1) UI/UX Review (Design + Mobile)
+### 1) UI/UX + Accessibility Review
 
 ```
 Review [component/page] for UI/UX quality and native-app feel.
-Focus on hierarchy, spacing rhythm, states (loading/empty/error), and touch targets.
+Focus on hierarchy, spacing rhythm, states (loading/empty/error), touch targets, and WCAG 2.2 AA issues.
 ```
 
-### 2) Tailwind Token Fix
+### 2) Styling Rail Fix (Tailwind v4 + shadcn)
 
 ```
 Scan [file/component] for Tailwind v4 rail violations.
 Replace palette/gradient/arbitrary values with semantic tokens and stable patterns.
 ```
 
-### 3) Next.js 16 / Caching Review
+### 3) Next.js App Router / Caching Review
 
 ```
-Review [page/data function] for Next.js 16 App Router correctness.
+Review [page/data function] for Next.js App Router correctness.
 Validate RSC vs client boundaries and caching constraints ('use cache' purity).
 ```
 
-### 4) Supabase Query Review
+### 4) Data + Auth Boundary Review
 
 ```
-Review this Supabase query for security and stability:
-- correct client (user/static/admin)
-- explicit select (no select('*') on hot paths)
-- RLS-safe identity checks
+Review this Supabase access path for security and stability:
+- correct client selection
+- explicit select shape on hot paths
+- safe auth/session handling
 ```
 
 ### 5) Stripe Webhook Review
@@ -64,11 +61,13 @@ Review the Stripe webhook handler for:
 - safe logging (no PII/payloads)
 ```
 
-### 6) File Placement Question
+### 6) Test Reliability Pass
 
 ```
-Where should this new file/component live?
-Explain placement choice using Treido boundaries (ui/shared/_components/actions/api).
+Review this test or flow for stability:
+- selector quality
+- auth state strategy
+- flake risk and CI reliability
 ```
 
 ---
@@ -78,17 +77,17 @@ Explain placement choice using Treido boundaries (ui/shared/_components/actions/
 ### Full Page “Ship Readiness” Pass
 ```
 Audit this page for ship readiness:
-1) UI/UX + mobile feel
-2) Tailwind token rails
+1) Styling rails (Tailwind v4 semantic tokens only)
+2) UI/UX + accessibility quality
 3) Next.js boundaries + caching constraints
-4) i18n (no hardcoded user-facing strings)
+4) i18n copy hygiene (no hardcoded user-facing strings)
 ```
 
 ### Payments Safety Pass
 ```
 Audit checkout/webhooks for correctness:
 - Stripe signature + idempotency
-- Supabase client selection + explicit selects
+- Supabase client selection + query safety
 - No secrets/PII in logs
 ```
 
@@ -98,5 +97,5 @@ Audit checkout/webhooks for correctness:
 
 - Be explicit about scope: file paths, routes, and what “done” means.
 - Ask for a short **design spec** before implementation for UI-heavy work.
-- For high-risk domains (DB/auth/payments/destructive ops), ask for a plan first (see `treido-rails` pause conditions).
+- For high-risk domains (DB/auth/payments/destructive ops), request a plan first and follow root `AGENTS.md` pause rules.
 

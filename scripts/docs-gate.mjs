@@ -15,7 +15,7 @@ const skipDirNames = new Set([
   "build",
 ]);
 
-const allowedExact = new Set(["README.md"]);
+const allowedExact = new Set(["README.md", "TASKS.md"]);
 
 function normalizePath(p) {
   return p.replaceAll("\\", "/");
@@ -31,6 +31,7 @@ function isAllowedMarkdownPath(relPath) {
   if (p.startsWith("docs-site/")) return true; // internal portal (mirrors from /docs)
   if (p.startsWith(".github/")) return true; // repo metadata (templates, instructions)
   if (p.startsWith(".claude/")) return true; // tooling config (allowed)
+  if (p.startsWith(".agents/")) return true; // Codex compatibility mirror (allowed)
   if (p.startsWith("shadcn-tailwind-v4-ecommerce-ui-guide/")) return true; // temporary inspiration guide (kept intentionally)
 
   // Storybook docs live with components (allowed exception).
@@ -193,8 +194,10 @@ if (disallowed.length) {
   console.error("- .codex/**");
   console.error("- **/AGENTS.md");
   console.error("- README.md");
+  console.error("- TASKS.md");
   console.error("- .github/**");
   console.error("- .claude/**");
+  console.error("- .agents/**");
   console.error("- shadcn-tailwind-v4-ecommerce-ui-guide/** (temporary inspiration guide)");
 }
 

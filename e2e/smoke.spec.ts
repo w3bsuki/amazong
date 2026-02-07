@@ -88,6 +88,81 @@ test.describe('Smoke Tests - Critical Path', () => {
     app.assertNoConsoleErrors()
   })
 
+  test('homepage mobile landing hierarchy and geometry stay consistent @smoke @home', async ({ page, app }) => {
+    await page.setViewportSize({ width: 390, height: 844 })
+    await app.goto('/en')
+    await app.waitForHydration()
+
+    const categoriesRow = page.getByTestId('home-category-circles')
+    const promotedSection = page.getByTestId('home-section-promoted')
+    const newestSection = page.getByTestId('home-section-newest')
+    const curatedRail = page.getByTestId('home-section-curated-rail')
+
+    await assertVisible(categoriesRow)
+    await assertVisible(newestSection)
+    await expect(page.getByTestId('home-section-featured-hero')).toHaveCount(0)
+
+    const hasPromoted = await promotedSection.isVisible({ timeout: 2_000 }).catch(() => false)
+    test.skip(!hasPromoted, 'No promoted listings rendered on homepage')
+
+    await assertVisible(promotedSection)
+
+    const categoryBox = await categoriesRow.boundingBox()
+    const promotedBox = await promotedSection.boundingBox()
+    const newestBox = await newestSection.boundingBox()
+
+    expect(categoryBox).toBeTruthy()
+    expect(promotedBox).toBeTruthy()
+    expect(newestBox).toBeTruthy()
+
+    expect(promotedBox!.y).toBeGreaterThan(categoryBox!.y)
+    expect(newestBox!.y).toBeGreaterThan(promotedBox!.y)
+
+    const promotedCard = promotedSection.locator('[data-slot="surface"]').first()
+    const newestCard = newestSection.locator('[data-slot="surface"]').first()
+
+    await assertVisible(promotedCard)
+    await assertVisible(newestCard)
+
+    const promotedCardBox = await promotedCard.boundingBox()
+    const newestCardBox = await newestCard.boundingBox()
+
+    expect(promotedCardBox).toBeTruthy()
+    expect(newestCardBox).toBeTruthy()
+    expect((promotedCardBox?.width ?? 0)).toBeGreaterThan((newestCardBox?.width ?? 0))
+
+    const promotedStrip = promotedSection.getByTestId('home-section-promoted-strip')
+    await assertVisible(promotedStrip)
+
+    const stripIsHorizontallyScrollable = await promotedStrip.evaluate((element) => {
+      return element.scrollWidth > element.clientWidth + 8
+    })
+    expect(stripIsHorizontallyScrollable).toBe(true)
+
+    const categoryButtons = categoriesRow.getByRole('button')
+    const buttonCount = await categoryButtons.count()
+    expect(buttonCount).toBeGreaterThan(0)
+
+    const sampleCount = Math.min(5, buttonCount)
+    for (let index = 0; index < sampleCount; index += 1) {
+      const buttonBox = await categoryButtons.nth(index).boundingBox()
+      expect(buttonBox).toBeTruthy()
+      expect(buttonBox!.height).toBeGreaterThanOrEqual(44)
+      expect(buttonBox!.width).toBeGreaterThanOrEqual(44)
+    }
+
+    const hasCuratedRail = await curatedRail.isVisible({ timeout: 2_000 }).catch(() => false)
+    if (hasCuratedRail) {
+      await assertVisible(curatedRail)
+      const curatedBox = await curatedRail.boundingBox()
+      expect(curatedBox).toBeTruthy()
+      expect(curatedBox!.y).toBeGreaterThan(newestBox!.y)
+    }
+
+    await assertNoErrorBoundary(page)
+    app.assertNoConsoleErrors()
+  })
+
   // ==========================================================================
   // Navigation
   // ==========================================================================
@@ -169,6 +244,25 @@ test.describe('Smoke Tests - Critical Path', () => {
     await expect(page.locator('form')).toHaveCount(1)
     await assertVisible(page.locator('input[type="email"], input#email'))
     await assertVisible(page.locator('input[type="password"], input#password'))
+    await assertNoErrorBoundary(page)
+
+    app.assertNoConsoleErrors()
+  })
+
+  test('mobile categories tab opens unified category drawer @smoke @critical', async ({ page, app }) => {
+    await page.setViewportSize({ width: 390, height: 844 })
+
+    await app.goto('/en/search?q=iphone')
+    await app.waitForHydration()
+
+    const tabBar = page.getByTestId('mobile-tab-bar')
+    await assertVisible(tabBar)
+
+    await tabBar.getByRole('button', { name: /categories/i }).click()
+
+    const categoryDrawer = page.getByTestId('mobile-category-drawer')
+    await assertVisible(categoryDrawer)
+    await assertVisible(categoryDrawer.getByRole('textbox', { name: /search categories/i }))
     await assertNoErrorBoundary(page)
 
     app.assertNoConsoleErrors()

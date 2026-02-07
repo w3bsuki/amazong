@@ -1,30 +1,28 @@
 "use client"
 
 import * as React from "react"
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useState } from "react"
 import { House, SquaresFour, ChatCircle, UserCircle, Plus } from "@phosphor-icons/react"
-import { Link, usePathname } from "@/i18n/routing"
+import { Link, usePathname, useRouter } from "@/i18n/routing"
 import { cn } from "@/lib/utils"
 import { CountBadge } from "@/components/shared/count-badge"
 import { useLocale, useTranslations } from "next-intl"
-import { MobileMenuSheet, type MobileMenuSheetHandle } from "@/components/mobile/mobile-menu-sheet"
 import { useMessages } from "@/components/providers/message-context"
 import { useDrawer } from "@/components/providers/drawer-context"
 import { useCurrentUsername } from "@/hooks/use-current-username"
-import type { CategoryTreeNode } from "@/lib/category-tree"
+import { useCategoryDrawerOptional } from "@/components/mobile/category-nav"
 
-interface MobileTabBarProps {
-  categories: CategoryTreeNode[]
-}
+interface MobileTabBarProps {}
 
-export function MobileTabBar({ categories }: MobileTabBarProps) {
+export function MobileTabBar(_: MobileTabBarProps) {
   const [mounted, setMounted] = useState(false)
   useEffect(() => setMounted(true), [])
 
+  const router = useRouter()
   const pathname = usePathname()
   const locale = useLocale()
   const t = useTranslations("Navigation")
-  const menuSheetRef = useRef<MobileMenuSheetHandle>(null)
+  const categoryDrawer = useCategoryDrawerOptional()
 
   // Get unread message count from message context
   const { totalUnreadCount } = useMessages()
@@ -73,6 +71,20 @@ export function MobileTabBar({ categories }: MobileTabBarProps) {
     return pathname.startsWith(path)
   }
 
+  const tabItemBase = cn(
+    "flex min-h-(--spacing-touch-md) w-full flex-col items-center justify-center gap-0.5 rounded-xl px-1",
+    "tap-transparent transition-colors",
+    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground"
+  )
+
+  const tabItemClass = (active: boolean) =>
+    cn(
+      tabItemBase,
+      active
+        ? "bg-background text-foreground shadow-2xs"
+        : "text-muted-foreground hover:bg-hover active:bg-active"
+    )
+
   // Don't render on product pages - let the sticky buy box take over
   // Don't render on cart page - it has its own sticky checkout footer
   // Don't render on assistant page - it has its own chat input
@@ -81,27 +93,23 @@ export function MobileTabBar({ categories }: MobileTabBarProps) {
   return (
     <>
       <nav
-        className="fixed bottom-0 left-0 right-0 z-40 bg-surface-elevated border-t border-border pb-safe md:hidden"
+        className="fixed inset-x-0 bottom-0 z-40 border-t border-border-subtle bg-background md:hidden"
         role="navigation"
         aria-label={t("mobileNavigation")}
         data-testid="mobile-tab-bar"
       >
-        {/* Treido: 48px height, 5-column grid */}
-        <div className="grid grid-cols-5 h-touch-lg items-center">
+        <div className="mx-auto max-w-screen-sm px-2 pt-1.5 pb-safe-max-xs">
+          <div className="grid grid-cols-5 items-end gap-1 rounded-2xl border border-border-subtle bg-background p-1 shadow-sm">
           {/* Home */}
           <Link
             href="/"
             prefetch={true}
-            className={cn(
-              "flex flex-col items-center justify-center gap-0.5 w-full h-full",
-              "tap-transparent hover:bg-hover active:bg-active transition-colors",
-              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-md",
-            )}
+            className={tabItemClass(pathname === "/")}
             aria-label={t("home")}
             aria-current={pathname === "/" ? "page" : undefined}
           >
             <House 
-              size={24}
+              size={20}
               weight={pathname === "/" ? "fill" : "regular"}
               className={cn(
                 "transition-colors",
@@ -117,26 +125,29 @@ export function MobileTabBar({ categories }: MobileTabBarProps) {
           {/* Categories - Opens drawer sheet */}
           <button
             type="button"
-            onClick={() => menuSheetRef.current?.open()}
-            className={cn(
-              "flex flex-col items-center justify-center gap-0.5 w-full h-full",
-              "tap-transparent hover:bg-hover active:bg-active transition-colors",
-              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-md",
-            )}
+            onClick={() => {
+              if (categoryDrawer) {
+                categoryDrawer.openRoot()
+                return
+              }
+              router.push("/categories")
+            }}
+            className={tabItemClass(isActive("/categories") || Boolean(categoryDrawer?.isOpen))}
             aria-label={t("categories")}
             aria-haspopup="dialog"
+            aria-expanded={categoryDrawer?.isOpen}
           >
             <SquaresFour 
-              size={24}
-              weight={isActive("/categories") ? "fill" : "regular"}
+              size={20}
+              weight={isActive("/categories") || categoryDrawer?.isOpen ? "fill" : "regular"}
               className={cn(
                 "transition-colors",
-                isActive("/categories") ? "text-foreground" : "text-muted-foreground"
+                isActive("/categories") || categoryDrawer?.isOpen ? "text-foreground" : "text-muted-foreground"
               )} 
             />
             <span className={cn(
               "text-2xs font-medium leading-none tracking-tight",
-              isActive("/categories") ? "text-foreground" : "text-muted-foreground"
+              isActive("/categories") || categoryDrawer?.isOpen ? "text-foreground" : "text-muted-foreground"
             )}>{t("categories")}</span>
           </button>
 
@@ -145,25 +156,27 @@ export function MobileTabBar({ categories }: MobileTabBarProps) {
             href="/sell"
             prefetch={true}
             className={cn(
-              "flex flex-col items-center justify-center gap-0.5 w-full h-full",
-              "tap-transparent hover:bg-hover active:bg-active transition-colors",
-              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-md",
+              tabItemClass(isActive("/sell")),
+              "bg-surface-subtle",
+              isActive("/sell")
+                ? "bg-background text-foreground shadow-2xs"
+                : "text-foreground hover:bg-hover active:bg-active"
             )}
             aria-label={t("sell")}
             aria-current={isActive("/sell") ? "page" : undefined}
           >
             <Plus
-              size={24}
+              size={20}
               weight={isActive("/sell") ? "fill" : "regular"}
               className={cn(
                 "transition-colors",
-                isActive("/sell") ? "text-foreground" : "text-muted-foreground"
+                "text-foreground"
               )}
             />
             <span
               className={cn(
                 "text-2xs font-medium leading-none tracking-tight",
-                isActive("/sell") ? "text-foreground" : "text-muted-foreground"
+                "text-foreground"
               )}
             >
               {t("sell")}
@@ -174,17 +187,13 @@ export function MobileTabBar({ categories }: MobileTabBarProps) {
           <button
             type="button"
             onClick={openMessages}
-            className={cn(
-              "flex flex-col items-center justify-center gap-0.5 w-full h-full",
-              "tap-transparent hover:bg-hover active:bg-active transition-colors",
-              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-md",
-            )}
+            className={tabItemClass(isActive("/chat"))}
             aria-label={`${t("chat")}${unreadCount > 0 ? ` (${unreadCount})` : ""}`}
             aria-haspopup="dialog"
           >
             <span className="relative">
               <ChatCircle 
-                size={24}
+                size={20}
                 weight={isActive("/chat") ? "fill" : "regular"}
                 className={cn(
                   "transition-colors",
@@ -194,7 +203,7 @@ export function MobileTabBar({ categories }: MobileTabBarProps) {
               {unreadCount > 0 && (
                 <CountBadge
                   count={unreadCount}
-                  className="absolute -top-1 -right-1.5 bg-notification text-primary-foreground text-2xs min-w-3.5 h-3.5 px-0.5"
+                  className="absolute -top-1 -right-1.5 h-3.5 min-w-3.5 bg-notification px-0.5 text-2xs text-primary-foreground"
                   aria-hidden="true"
                 />
               )}
@@ -210,17 +219,13 @@ export function MobileTabBar({ categories }: MobileTabBarProps) {
             <Link
               href={profileHref}
               prefetch={true}
-              className={cn(
-                "flex flex-col items-center justify-center gap-0.5 w-full h-full",
-                "tap-transparent hover:bg-hover active:bg-active transition-colors",
-                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-md",
-              )}
+              className={tabItemClass(pathname.includes(`/${currentUsername}`))}
               aria-label={t("profile")}
               aria-current={pathname.includes(`/${currentUsername}`) ? "page" : undefined}
               data-testid="mobile-tab-profile"
             >
               <UserCircle
-                size={24}
+                size={20}
                 weight={pathname.includes(`/${currentUsername}`) ? "fill" : "regular"}
                 className={cn(
                   "transition-colors",
@@ -242,16 +247,12 @@ export function MobileTabBar({ categories }: MobileTabBarProps) {
               onClick={() => {
                 window.location.assign(guestProfileHref)
               }}
-              className={cn(
-                "flex flex-col items-center justify-center gap-0.5 w-full h-full",
-                "tap-transparent hover:bg-hover active:bg-active transition-colors",
-                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-md",
-              )}
+              className={tabItemClass(false)}
               aria-label={t("profile")}
               data-testid="mobile-tab-profile"
             >
               <UserCircle
-                size={24}
+                size={20}
                 weight="regular"
                 className="transition-colors text-muted-foreground"
               />
@@ -260,11 +261,9 @@ export function MobileTabBar({ categories }: MobileTabBarProps) {
               </span>
             </button>
           )}
+          </div>
         </div>
       </nav>
-
-      {/* Mobile Menu Sheet with category circles */}
-      <MobileMenuSheet ref={menuSheetRef} categories={categories} />
     </>
   )
 }

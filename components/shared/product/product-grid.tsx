@@ -47,16 +47,16 @@ function ProductGrid({ children, density = "default", className }: ProductGridPr
 type ProductCardSkeletonProps = {
   showQuickAdd?: boolean
   appearance?: "card" | "tile"
-  media?: "square" | "landscape"
+  media?: "portrait" | "square" | "landscape"
 }
 
 function ProductCardSkeleton({
   showQuickAdd = true,
   appearance = "card",
-  media = "square",
+  media = "portrait",
 }: ProductCardSkeletonProps) {
   const isTile = appearance === "tile"
-  const ratio = media === "landscape" ? 4 / 3 : 1
+  const ratio = media === "landscape" ? 4 / 3 : media === "square" ? 1 : 4 / 5
 
   return (
     <div className={isTile ? "space-y-2" : "rounded-xl border border-border bg-card p-2.5"}>
@@ -90,7 +90,7 @@ interface ProductCardSkeletonGridProps {
   density?: "compact" | "default" | "comfortable"
   className?: string
   appearance?: "card" | "tile"
-  media?: "square" | "landscape"
+  media?: "portrait" | "square" | "landscape"
 }
 
 function ProductCardSkeletonGrid({
@@ -98,7 +98,7 @@ function ProductCardSkeletonGrid({
   density = "default",
   className,
   appearance = "card",
-  media = "square",
+  media = "portrait",
 }: ProductCardSkeletonGridProps) {
   return (
     <ProductGrid density={density} className={className ?? ""}>

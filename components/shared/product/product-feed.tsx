@@ -110,7 +110,7 @@ export function ProductFeed({
           count={6}
           density="compact"
           appearance="tile"
-          media="landscape"
+          media="portrait"
           className="py-1"
         />
       ) : (
@@ -127,7 +127,7 @@ export function ProductFeed({
                 image={product.image}
                 rating={product.rating}
                 reviews={product.reviews}
-                {...(product.freeShipping ? { freeShipping: true } : {})}
+                {...(product.freeShipping === true ? { freeShipping: true } : {})}
                 {...(product.isBoosted ? { isBoosted: true } : {})}
                 index={index}
                 slug={product.slug ?? null}
@@ -153,7 +153,7 @@ export function ProductFeed({
                 {...(product.location ? { location: product.location } : {})}
                 {...(product.attributes ? { attributes: product.attributes } : {})}
                 appearance="tile"
-                media="landscape"
+                media="portrait"
                 density="compact"
               />
             ))}
@@ -164,7 +164,7 @@ export function ProductFeed({
               count={2}
               density="compact"
               appearance="tile"
-              media="landscape"
+              media="portrait"
               className="py-1"
             />
           )}
@@ -179,7 +179,7 @@ export function ProductFeed({
             count={4}
             density="compact"
             appearance="tile"
-            media="landscape"
+            media="portrait"
             className="py-1"
           />
         )}

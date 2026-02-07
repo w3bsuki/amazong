@@ -148,23 +148,23 @@ export function ProductQuickViewContent({
           <IconButton
             type="button"
             variant="ghost"
-            size="icon-sm"
+            size="icon-compact"
             onClick={handleCopyLink}
             aria-label={tModal("copyLink")}
             disabled={!shareUrl}
-            className="border border-border-subtle bg-background text-muted-foreground hover:bg-hover hover:text-foreground active:bg-active ![&_svg]:size-4"
+            className="border border-border-subtle bg-background text-muted-foreground hover:bg-hover hover:text-foreground active:bg-active"
           >
             <LinkSimple size={16} weight="bold" />
           </IconButton>
           <IconButton
             type="button"
             variant="ghost"
-            size="icon-sm"
+            size="icon-compact"
             onClick={handleToggleWishlist}
             aria-label={inWishlist ? tProduct("removeFromWatchlist") : tProduct("addToWatchlist")}
             disabled={wishlistPending}
             className={cn(
-              "border border-border-subtle bg-background ![&_svg]:size-4",
+              "border border-border-subtle bg-background",
               inWishlist
                 ? "text-primary hover:bg-hover active:bg-active"
                 : "text-muted-foreground hover:bg-hover hover:text-foreground active:bg-active"
@@ -179,8 +179,8 @@ export function ProductQuickViewContent({
           <IconButton
             type="button"
             variant="ghost"
-            size="icon-sm"
-            className="border border-border-subtle bg-background text-muted-foreground hover:bg-hover hover:text-foreground active:bg-active ![&_svg]:size-4"
+            size="icon-compact"
+            className="border border-border-subtle bg-background text-muted-foreground hover:bg-hover hover:text-foreground active:bg-active"
             onClick={() => onRequestClose?.()}
             aria-label={tDrawers("close")}
           >
@@ -190,9 +190,9 @@ export function ProductQuickViewContent({
       </div>
 
       {/* Content */}
-      <div className="min-h-0 flex-1 overflow-y-auto">
-        <div className="grid grid-cols-1 gap-4 px-4 py-3 lg:grid-cols-5 lg:gap-6 lg:px-6 lg:py-5">
-          <div className="space-y-4 lg:col-span-3">
+      <div className="flex-1">
+        <div className="grid grid-cols-1 gap-3 px-4 py-3 lg:grid-cols-5 lg:gap-6 lg:px-6 lg:py-5">
+          <div className="space-y-3 lg:col-span-3">
             <QuickViewImageGallery
               images={allImages}
               title={titleText}
@@ -201,7 +201,7 @@ export function ProductQuickViewContent({
               compact
             />
 
-            <div className="space-y-3 rounded-xl border border-border-subtle bg-card p-4">
+            <div className="space-y-3 rounded-2xl border border-border-subtle bg-card p-4">
               <div className="flex flex-wrap items-baseline gap-2">
                 <span className="text-2xl font-bold tabular-nums tracking-tight text-foreground">
                   {formattedPrice}
@@ -212,7 +212,7 @@ export function ProductQuickViewContent({
                   </span>
                 )}
                 {showDiscount && discountPercent > 0 && (
-                  <Badge variant="destructive" className="text-xs font-semibold tabular-nums">
+                  <Badge variant="destructive" size="compact" className="tabular-nums">
                     -{discountPercent}%
                   </Badge>
                 )}
@@ -243,7 +243,7 @@ export function ProductQuickViewContent({
 
                 {condition ? (
                   <div className="flex flex-wrap items-center gap-2">
-                    <Badge variant={getConditionBadgeVariant(condition)} className="text-xs">
+                    <Badge size="compact" variant={getConditionBadgeVariant(condition)}>
                       {condition}
                     </Badge>
                   </div>
@@ -258,7 +258,7 @@ export function ProductQuickViewContent({
             {showSellerSkeleton ? (
               <div className="rounded-xl border border-border-subtle bg-surface-subtle p-3">
                 <div className="flex items-center gap-3">
-                  <Skeleton className="size-10 rounded-full" />
+                  <Skeleton className="size-(--control-default) rounded-full" />
                   <div className="min-w-0 flex-1 space-y-1.5">
                     <Skeleton className="h-4 w-36" />
                     <Skeleton className="h-3 w-24" />
@@ -291,26 +291,28 @@ export function ProductQuickViewContent({
               </div>
             </div>
 
-            <button
+            <Button
               type="button"
+              variant="outline"
+              size="default"
               onClick={onNavigateToProduct}
-              className="inline-flex min-h-(--spacing-touch-md) w-full items-center justify-center gap-2 rounded-xl border border-border-subtle bg-background px-4 text-sm font-medium text-foreground hover:bg-hover active:bg-active"
+              className="w-full justify-center gap-2"
             >
               {tModal("viewFullPage")}
               <ArrowSquareOut size={16} weight="bold" />
-            </button>
+            </Button>
           </div>
         </div>
       </div>
 
       {/* Sticky bottom CTA */}
-      <div className="shrink-0 border-t border-border bg-surface-elevated px-4 py-3 pb-safe-max lg:px-6">
+      <div className="sticky bottom-0 z-20 shrink-0 border-t border-border bg-surface-elevated px-4 py-3 pb-safe-max lg:px-6">
         <div className="grid grid-cols-2 gap-2">
           <Button
             type="button"
             variant="default"
-            size="lg"
-            className="h-12 w-full"
+            size="primary"
+            className="w-full"
             onClick={onBuyNow}
             disabled={!inStock}
           >
@@ -319,8 +321,8 @@ export function ProductQuickViewContent({
           <Button
             type="button"
             variant="outline"
-            size="lg"
-            className="h-12 w-full"
+            size="primary"
+            className="w-full"
             onClick={onAddToCart}
             disabled={!inStock}
           >

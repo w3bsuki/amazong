@@ -204,7 +204,7 @@ export function buildProductPageViewModel(args: {
       sellerVerified,
       sellerAvatarUrl,
       condition: String(row.condition || ""),
-      freeShipping: Boolean(row.free_shipping),
+      freeShipping: row.free_shipping === true,
       categorySlug: String(row.category_id || ""),
       attributes: (toRecord(row.attributes) as Record<string, string>) ?? {},
       storeSlug: (seller.username ?? username) ?? null,

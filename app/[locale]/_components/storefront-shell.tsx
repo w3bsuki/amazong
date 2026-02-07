@@ -9,6 +9,8 @@ import { HeaderProvider } from "@/components/providers/header-context"
 import { GeoWelcomeModal } from "@/components/shared/geo-welcome-modal"
 import { SkipLinks } from "@/components/shared/skip-links"
 import { PageShell } from "@/components/shared/page-shell"
+import { CategoryDrawerProvider } from "@/components/mobile/category-nav"
+import { CategoryBrowseDrawer } from "@/components/mobile/drawers/category-browse-drawer"
 import type { CategoryTreeNode } from "@/lib/category-tree"
 
 export function StorefrontShell({
@@ -21,22 +23,25 @@ export function StorefrontShell({
   categories: CategoryTreeNode[]
 }) {
   return (
-    <HeaderProvider>
-      <PageShell className="flex flex-col">
-        <SkipLinks />
+    <CategoryDrawerProvider rootCategories={categories}>
+      <HeaderProvider>
+        <PageShell className="flex flex-col">
+          <SkipLinks />
 
-        <AppHeader user={null} categories={categories} />
+          <AppHeader user={null} categories={categories} />
 
-        <main id="main-content" role="main" className="flex-1 pb-tabbar-safe md:pb-0 pt-app-header">
-          {children}
-        </main>
+          <main id="main-content" role="main" className="flex-1 pb-tabbar-safe md:pb-0 pt-app-header">
+            {children}
+          </main>
 
-        <SiteFooter />
-        <MobileTabBar categories={categories} />
-        <Toaster />
-        <CookieConsent />
-        <GeoWelcomeModal locale={locale} />
-      </PageShell>
-    </HeaderProvider>
+          <SiteFooter />
+          <MobileTabBar />
+          <CategoryBrowseDrawer locale={locale} />
+          <Toaster />
+          <CookieConsent />
+          <GeoWelcomeModal locale={locale} />
+        </PageShell>
+      </HeaderProvider>
+    </CategoryDrawerProvider>
   )
 }

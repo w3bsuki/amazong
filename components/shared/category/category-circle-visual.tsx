@@ -47,7 +47,7 @@ export function CategoryCircleVisual({
   className,
   fallbackIconSize = 24,
   fallbackIconWeight = "bold", // Bold for better visibility
-  variant = "colorful", // Default to colorful OLX-style
+  variant = "rail",
   preferIcon = true, // Default to Phosphor icons (set to false to show images/emojis)
 }: CategoryCircleVisualProps) {
   // When preferIcon is true, skip image_url AND icon (emoji) checks - go straight to Phosphor
@@ -57,23 +57,31 @@ export function CategoryCircleVisual({
   // Get category-specific colors
   const colors = getCategoryColor(category.slug)
   
-  // Determine background and ring styles based on variant
   const isColorful = variant === "colorful"
-  const bgClass = isColorful ? colors.bg : "bg-surface-subtle"
+  const surfaceClass = (() => {
+    if (variant === "colorful") return colors.bg
+    if (active) return "bg-selected"
+    return "bg-surface-subtle group-hover:bg-hover"
+  })()
   const iconColorClass = isColorful ? colors.text : "text-foreground"
-  
-  // Ring style: strong foreground ring when active, subtle neutral ring when inactive.
   const ringClass = active
-    ? "ring-2 ring-foreground ring-offset-1 ring-offset-background"
-    : cn("ring-1 ring-border-subtle group-hover:ring-2", isColorful ? colors.hoverRing : "group-hover:ring-ring-subtle")
+    ? cn("ring-2 ring-offset-1 ring-offset-background", isColorful ? colors.ring : "ring-selected-border")
+    : cn(
+        "ring-1 ring-border-subtle",
+        isColorful ? colors.hoverRing : "group-hover:ring-hover-border"
+      )
+
+  // Filled circles for app-like browsing. No visible outlines.
+  const depthClass = active ? "shadow-sm" : "shadow-2xs"
 
   return (
     <div
       className={cn(
         "rounded-full flex items-center justify-center overflow-hidden",
-        bgClass,
+        surfaceClass,
         "transition-shadow duration-150",
         ringClass,
+        depthClass,
         className
       )}
     >

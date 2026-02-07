@@ -75,27 +75,16 @@ export function MobileProductHeader({
   return (
     <header 
       className={cn(
-        "md:hidden",
-        "sticky top-0 z-50",
-        // Glass surface + subtle divider
-        "bg-surface-glass",
-        "backdrop-blur-md backdrop-saturate-150",
-        "border-b border-border",
-        // Safe area for notch devices
-        "pt-safe"
+        "sticky top-0 z-50 border-b border-border-subtle bg-background pt-safe md:hidden"
       )}
     >
-      <div className="h-14 flex items-center px-1">
+      <div className="flex h-(--control-primary) items-center px-1">
         {/* Back Button - Large touch target */}
         <IconButton
           type="button"
           variant="ghost"
           className={cn(
-            "shrink-0",
-            "text-foreground",
-            "hover:bg-muted",
-            "active:scale-95 active:bg-muted",
-            "transition-all duration-150"
+            "shrink-0 border border-transparent text-foreground hover:bg-hover active:bg-active"
           )}
           aria-label={tProduct("back")}
           onClick={onBack}
@@ -111,8 +100,7 @@ export function MobileProductHeader({
               href={profileHref} 
               className={cn(
                 "shrink-0 rounded-full",
-                "ring-2 ring-background",
-                "active:scale-95 transition-transform"
+                "ring-1 ring-border-subtle"
               )}
             >
               <UserAvatar
@@ -147,19 +135,17 @@ export function MobileProductHeader({
               type="button"
               variant="ghost"
               className={cn(
-                "hover:bg-muted",
-                "active:scale-95 transition-all duration-150",
-                "active:bg-muted"
+                "border border-transparent hover:bg-hover active:bg-active"
               )}
               aria-label={isWishlisted ? tProduct("removeFromWishlist") : tProduct("addToWishlist")}
               aria-pressed={isWishlisted}
               onClick={handleWishlistToggle}
             >
               <Heart 
-                className={cn(
-                  "size-icon-sm transition-all duration-200",
+              className={cn(
+                  "size-icon-sm transition-colors",
                   isWishlisted 
-                    ? "fill-wishlist-active text-wishlist-active scale-110" 
+                    ? "fill-wishlist-active text-wishlist-active" 
                     : "text-foreground"
                 )} 
                 weight={isWishlisted ? "fill" : "regular"}
@@ -172,9 +158,7 @@ export function MobileProductHeader({
               type="button"
               variant="ghost"
               className={cn(
-              "text-foreground",
-              "hover:bg-muted",
-              "active:scale-95 transition-all duration-150"
+              "border border-transparent text-foreground hover:bg-hover active:bg-active"
             )}
             aria-label={tProduct("share")}
             onClick={handleShare}

@@ -126,8 +126,8 @@ export function MobileBottomBar({
           <>
             <Button
               variant="outline"
-              size="lg"
-              className="flex-1 h-12 gap-2"
+              size="primary"
+              className="flex-1 gap-2"
               onClick={handleCall}
               disabled={!seller?.phone}
             >
@@ -135,8 +135,8 @@ export function MobileBottomBar({
               <span>{t("callSeller")}</span>
             </Button>
             <Button
-              size="lg"
-              className="flex-1 h-12 gap-2"
+              size="primary"
+              className="flex-1 gap-2"
               onClick={handleContact}
               disabled={!seller}
             >
@@ -151,8 +151,8 @@ export function MobileBottomBar({
           <>
             <Button
               variant="outline"
-              size="lg"
-              className="flex-1 h-12 gap-2"
+              size="primary"
+              className="flex-1 gap-2"
               onClick={handleScheduleVisit}
               disabled={!seller}
             >
@@ -160,8 +160,8 @@ export function MobileBottomBar({
               <span>{t("scheduleVisit")}</span>
             </Button>
             <Button
-              size="lg"
-              className="flex-1 h-12 gap-2"
+              size="primary"
+              className="flex-1 gap-2"
               onClick={handleContact}
               disabled={!seller}
             >
@@ -176,8 +176,8 @@ export function MobileBottomBar({
           <>
             <Button
               variant="outline"
-              size="lg"
-              className="flex-1 h-12 gap-2"
+              size="primary"
+              className="flex-1 gap-2"
               onClick={handleChat}
               disabled={!seller}
             >
@@ -185,8 +185,8 @@ export function MobileBottomBar({
               <span>{t("chat")}</span>
             </Button>
             <Button
-              size="lg"
-              className="flex-[1.5] h-12 gap-2"
+              size="primary"
+              className="flex-[1.5] gap-2"
               onClick={handleAddToCart}
             >
               <ShoppingCart className="size-5" />
@@ -201,7 +201,7 @@ export function MobileBottomBar({
     <div
       className={cn(
         "fixed bottom-0 left-0 right-0 z-50",
-        "bg-background/95 backdrop-blur-sm border-t border-border",
+        "border-t border-border bg-background",
         "pb-safe",
         className
       )}

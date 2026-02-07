@@ -22,7 +22,7 @@ export function MobileWishlistButton() {
     return (
       <span
         role="button"
-        className="flex items-center justify-center size-touch-md p-0 rounded-md relative hover:bg-header-hover active:bg-header-active transition-colors touch-manipulation tap-transparent cursor-pointer"
+        className="relative flex size-touch-md cursor-pointer items-center justify-center rounded-md p-0 tap-transparent transition-colors hover:bg-header-hover active:bg-header-active touch-manipulation"
         aria-label={tNav("wishlist")}
       >
         <span className="relative" aria-hidden="true">
@@ -35,7 +35,7 @@ export function MobileWishlistButton() {
   return (
     <WishlistDrawer>
       <button
-        className="flex items-center justify-center size-touch-md p-0 rounded-md relative hover:bg-header-hover active:bg-header-active transition-colors touch-manipulation tap-transparent"
+        className="relative flex size-touch-md appearance-none items-center justify-center rounded-md border-0 bg-transparent p-0 tap-transparent transition-colors hover:bg-header-hover active:bg-header-active touch-manipulation"
         aria-label={tNav("wishlist")}
       >
         <span className="relative" aria-hidden="true">
@@ -43,7 +43,7 @@ export function MobileWishlistButton() {
           {totalItems > 0 && (
             <CountBadge
               count={totalItems}
-              className="absolute -top-1 -right-1 bg-wishlist-active text-primary-foreground ring-1 ring-header-bg h-3.5 min-w-3.5 px-0.5 text-2xs leading-none"
+              className="absolute -top-1 -right-1 h-4 min-w-4 bg-wishlist-active px-1 text-2xs leading-none text-primary-foreground ring-1 ring-header-bg"
               aria-hidden="true"
             />
           )}

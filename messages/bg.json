@@ -2,8 +2,8 @@
     "Header": {
         "helloSignIn": "Здравей, влез",
         "hello": "Здравей",
-            "listingType": "Тип обява",
-            "auctionDuration": "Продължителност",
+        "listingType": "Тип обява",
+        "auctionDuration": "Продължителност",
         "signOut": "Изход",
         "accountAndLists": "Акаунт и списъци",
         "signIn": "Влез",
@@ -90,7 +90,7 @@
     },
     "Navigation": {
         "deliverTo": "Доставка до",
-            "auctionDurationRequired": "Моля, изберете продължителност на търга",
+        "auctionDurationRequired": "Моля, изберете продължителност на търга",
         "back": "Назад",
         "searchPlaceholder": "Търсене в продукти, марки и още...",
         "searchPlaceholderShort": "Търсене...",
@@ -119,8 +119,7 @@
         "chat": "Чат",
         "categories": "Обяви",
         "profile": "Профил",
-        "mobileNavigation": "Мобилна навигация",
-        "back": "Назад"
+        "mobileNavigation": "Мобилна навигация"
     },
     "Categories": {
         "title": "Категории",
@@ -227,7 +226,7 @@
             "description": "Избери как да се подредят обявите"
         },
         "mobile": {
-            "promotedListings": "На фокус",
+            "promotedListings": "Промо",
             "seeAll": "Виж всички",
             "trustProtected": "Защитени",
             "trustFastShip": "Бърза доставка",
@@ -248,7 +247,8 @@
                 "newest": "Най-нови",
                 "popular": "Популярни",
                 "priceLow": "Цена: Ниска",
-                "priceHigh": "Цена: Висока"
+                "priceHigh": "Цена: Висока",
+                "nearby": "Наблизо"
             },
             "quickPills": {
                 "offers": "Оферти",
@@ -260,7 +260,19 @@
             "sortOptions": "Сортиране и филтри",
             "filtersActive": "{count, plural, one {# активен филтър} other {# активни филтъра}}",
             "allListings": "Всички обяви",
-            "listingsCount": "{count, plural, one {# обява} other {# обяви}}"
+            "listingsCount": "{count, plural, one {# обява} other {# обяви}}",
+            "moreCategories": "Още",
+            "promoBannerEyebrow": "Промо селекция",
+            "promoBannerTitle": "Най-актуалните промотирани обяви",
+            "promoBannerSubtitle": "Подбрани оферти от продавачи с доверие",
+            "promoBannerCta": "View",
+            "forYouBannerEyebrow": "За теб",
+            "forYouBannerTitle": "Най-нови за теб",
+            "forYouBannerSubtitle": "Използвай бързите филтри за по-бърз избор",
+            "forYouBannerCta": "Виж всички",
+            "featuredTitle": "На фокус",
+            "featuredSubtitle": "Промотиран продавач с високо доверие от купувачите",
+            "featuredAction": "Виж промотираните"
         }
     },
     "Product": {
@@ -357,7 +369,7 @@
         "priceLabel": "Цена: {price}",
         "returns": "Връщания",
         "returnsPolicy": "30-дневна гаранция",
-        "shipping": "Доставка:",
+        "shipping": "Доставка",
         "deliveryLabel": "Доставка:",
         "returnsLabel": "Връщане:",
         "payments": "Плащания:",
@@ -379,7 +391,7 @@
         "of": "от",
         "popularItem": "Популярно.",
         "watchlistCount": "добавили в списъка.",
-        "freeShipping": "БЕЗПЛАТНА",
+        "freeShipping": "Безплатна доставка",
         "locatedIn": "Местоположение:",
         "estimatedDelivery": "Очаквано между",
         "returns30Days": "30 дни безплатно връщане.",
@@ -437,12 +449,20 @@
         "viewAll": "Виж всички",
         "proSeller": "Про продавач",
         "topRated": "Топ оценен",
-        "seller": "Продавач",
+        "seller": {
+            "respondsWithinHour": "Обикновено отговаря до 1 час",
+            "respondsWithinHours": "Обикновено отговаря до {hours} часа",
+            "listings": "Обяви",
+            "reviews": "отзиви",
+            "memberSince": "Член от",
+            "viewProfile": "Виж профила",
+            "follow": "Последвай",
+            "following": "Следвате"
+        },
         "businessSeller": "Бизнес продавач",
         "promoted": "Промотирано",
         "productDetails": "Характеристики",
         "shippingReturns": "Доставка и връщане",
-        "freeShipping": "Безплатна доставка",
         "freeShippingSubtitle": "Проследяване и поддръжка",
         "defaultShipping": "Доставката се изчислява при поръчка",
         "defaultReturns": "30 дни връщане. Купувачът плаща за връщане.",
@@ -471,7 +491,6 @@
         "close": "Затвори",
         "meetup": "Среща",
         "pickupOnly": "Само на място",
-        "shipping": "Доставка",
         "lowStock": "Остават {count} бр.",
         "delivery2to3Days": "Доставка за 2-3 дни",
         "pickupAvailable": "Може да се вземе на място",
@@ -508,16 +527,6 @@
         },
         "report": {
             "listing": "Докладвай тази обява"
-        },
-        "seller": {
-            "respondsWithinHour": "Обикновено отговаря до 1 час",
-            "respondsWithinHours": "Обикновено отговаря до {hours} часа",
-            "listings": "Обяви",
-            "reviews": "отзиви",
-            "memberSince": "Член от",
-            "viewProfile": "Виж профила",
-            "follow": "Последвай",
-            "following": "Следвате"
         }
     },
     "ProductModal": {
@@ -1514,18 +1523,6 @@
         "removeItem": "Премахни артикул"
     },
     "MessagesDropdown": {
-        "title": "Твоите съобщения",
-        "signInToView": "Влез, за да видиш съобщенията си",
-        "signIn": "Влез",
-        "inbox": "Входящи",
-        "inboxDesc": "Виж всички съобщения",
-        "sellerMessages": "Съобщения от продавачи",
-        "sellerMessagesDesc": "Въпроси относно поръчки и продукти",
-        "notifications": "Известия",
-        "notificationsDesc": "Актуализации за поръчки и сигнали",
-        "viewAllMessages": "Виж всички съобщения"
-    },
-    "MessagesDropdown": {
         "title": "Съобщения",
         "unreadDescription": "{count, plural, one {Имаш # непрочетено съобщение} other {Имаш # непрочетени съобщения}}",
         "noMessages": "Няма нови съобщения",
@@ -2025,8 +2022,7 @@
         "listings": "Обяви",
         "shippedLabel": "Изпраща",
         "sinceLabel": "От",
-        "chatLabel": "Чат",
-        "message": "Съобщение"
+        "chatLabel": "Чат"
     },
     "SellerVerification": {
         "verifiedBusiness": "Верифициран бизнес",
@@ -3489,10 +3485,18 @@
             "collectibles": "Collectibles"
         },
         "products": {
-            "iphone": { "title": "iPhone 15 Pro Max 256GB" },
-            "nike": { "title": "Nike Air Max 90 — Size 10" },
-            "dualsense": { "title": "PS5 DualSense Controller" },
-            "books": { "title": "Vintage Book Collection (12pc)" }
+            "iphone": {
+                "title": "iPhone 15 Pro Max 256GB"
+            },
+            "nike": {
+                "title": "Nike Air Max 90 — Size 10"
+            },
+            "dualsense": {
+                "title": "PS5 DualSense Controller"
+            },
+            "books": {
+                "title": "Vintage Book Collection (12pc)"
+            }
         },
         "conditions": {
             "new": "New",

@@ -2,11 +2,10 @@
 
 These rules apply to everything under `app/`.
 
-## Non‑negotiables
+## Root policy first
 
-- Default to **Server Components**; add `"use client"` only when required (hooks, event handlers, browser APIs).
-- All user-facing strings must use `next-intl` message keys (no hardcoded copy).
-- Tailwind v4 rails only: **no gradients, no arbitrary values, no palette classes, no hardcoded colors**.
+- Root `AGENTS.md` is the canonical source for non-negotiables.
+- This file adds only `app/`-specific boundaries.
 
 ## App Router boundaries
 
@@ -21,8 +20,7 @@ These rules apply to everything under `app/`.
 
 ## See SSOT
 
+- `AGENTS.md` (root)
 - `docs/AGENTS.md`
 - `docs/03-ARCHITECTURE.md`
 - `docs/05-ROUTES.md`
-- `docs/10-I18N.md`
-

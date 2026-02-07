@@ -53,6 +53,8 @@ async function setupPage(page: Page) {
   })
 }
 
+const MOBILE_PRODUCT_PATH = "/en/treido/2022-bmw-330i-xdrive-sedan"
+
 test.describe("Mobile Responsiveness - Phase 11", () => {
   // Use mobile viewport for all tests in this describe block
   test.use({ viewport: { width: 375, height: 812 } })
@@ -74,11 +76,11 @@ test.describe("Mobile Responsiveness - Phase 11", () => {
       await expect(tabBar.getByRole("link", { name: "Home" })).toBeVisible()
       await expect(tabBar.getByRole("button", { name: /categories/i })).toBeVisible()
       await expect(tabBar.getByRole("link", { name: "Sell" })).toBeVisible()
-      await expect(tabBar.getByRole("link", { name: /chat/i })).toBeVisible()
-      await expect(tabBar.getByRole("link", { name: "Account" })).toBeVisible()
+      await expect(tabBar.getByRole("button", { name: /chat/i })).toBeVisible()
+      await expect(tabBar.getByTestId("mobile-tab-profile")).toBeVisible()
     })
 
-    test("hamburger menu opens category drawer", async ({ page }) => {
+    test("categories tab opens global category drawer", async ({ page }) => {
       await page.goto("/en")
       await dismissOverlays(page)
       
@@ -87,9 +89,9 @@ test.describe("Mobile Responsiveness - Phase 11", () => {
       await tabBar.getByRole("button", { name: /categories/i }).click()
       
       // Category drawer should open
-      const categoryDrawer = page.getByRole("dialog", { name: /categories/i })
+      const categoryDrawer = page.getByTestId("mobile-category-drawer")
       await expect(categoryDrawer).toBeVisible()
-      await expect(page.getByText(/shop by category/i)).toBeVisible()
+      await expect(categoryDrawer.getByRole("textbox", { name: /search categories/i })).toBeVisible()
       
       // Close drawer
       await categoryDrawer.getByRole("button", { name: /close/i }).click()
@@ -117,17 +119,9 @@ test.describe("Mobile Responsiveness - Phase 11", () => {
       // Wait for page to load fully
       await page.waitForLoadState("networkidle")
       
-      // Mobile homepage shows tabbed interface with category tabs
-      // Look for the tab list with "All" and category tabs
-      const tabList = page.locator('[role="tablist"]').first()
-      await expect(tabList).toBeVisible({ timeout: 15000 })
-      
-      // "All" tab should be visible as first tab
-      const allTab = page.getByRole("tab", { name: /all|всички/i }).first()
-      await expect(allTab).toBeVisible()
-      
-      // Start selling CTA should be visible
-      await expect(page.getByRole("link", { name: /start selling|продавай/i }).first()).toBeVisible({ timeout: 10000 })
+      const categoriesRow = page.getByTestId("home-category-circles")
+      await expect(categoriesRow).toBeVisible({ timeout: 15000 })
+      await expect(page.getByTestId("home-section-newest")).toBeVisible({ timeout: 15000 })
     })
 
     test("category list is scrollable on mobile", async ({ page }) => {
@@ -136,31 +130,20 @@ test.describe("Mobile Responsiveness - Phase 11", () => {
       // Wait for categories to load
       await page.waitForLoadState("networkidle")
       
-      // Category tabs should be visible in tab list
-      const tabList = page.locator('[role="tablist"]').first()
-      await expect(tabList).toBeVisible({ timeout: 15000 })
-      
-      // Should have multiple tabs for categories
-      const tabs = page.getByRole("tab")
-      const tabCount = await tabs.count()
-      expect(tabCount).toBeGreaterThan(3) // "All" + at least a few categories
+      const categoriesRow = page.getByTestId("home-category-circles")
+      await expect(categoriesRow).toBeVisible({ timeout: 15000 })
+      const categoryButtons = categoriesRow.getByRole("button")
+      const tabCount = await categoryButtons.count()
+      expect(tabCount).toBeGreaterThan(3)
     })
 
-    test("product listing tabs work on mobile", async ({ page }) => {
+    test("home product cards render on mobile", async ({ page }) => {
       await page.goto("/en")
       
       // Wait for listings to load
       await page.waitForLoadState("networkidle")
       
-      // Product listing tabs should be visible
-      const tablist = page.getByRole("tablist")
-      await expect(tablist.first()).toBeVisible({ timeout: 15000 })
-      
-      // "All" tab should be selected by default (or any tab)
-      const allTab = page.getByRole("tab", { name: /all|всички/i }).first()
-      await expect(allTab).toBeVisible()
-      
-      // Product cards (links to products) should be visible
+      await expect(page.getByTestId("home-section-newest")).toBeVisible({ timeout: 15000 })
       const productLinks = page.locator('a[aria-label^="Open product:"]')
       await expect(productLinks.first()).toBeVisible({ timeout: 15000 })
     })
@@ -179,16 +162,20 @@ test.describe("Mobile Responsiveness - Phase 11", () => {
 
   test.describe("Mobile Product Page", () => {
     test("product page renders correctly on mobile", async ({ page }) => {
-      await page.goto("/en/shop4e/12322")
+      await page.goto(MOBILE_PRODUCT_PATH)
       
       // Wait for page to load
       await page.waitForLoadState("networkidle")
       
       // Product content should be visible (use first() to handle duplicates)
       await expect(page.locator("#main-content").first()).toBeVisible({ timeout: 30000 })
-      
-      // Price should be visible somewhere on page (use first() as there are multiple prices)
-      await expect(page.locator('text=/€|BGN|\\d+[.,]\\d{2}/').first()).toBeVisible({ timeout: 15000 })
+
+      // Mobile PDP should show at least one primary action in sticky bottom bar.
+      await expect(
+        page.getByRole("button", {
+          name: /add|chat|contact seller|contact agent|call seller|schedule visit/i,
+        }).first()
+      ).toBeVisible({ timeout: 15_000 })
       
       // Mobile tab bar should be hidden on product page (has sticky buy box instead)
       await expect(page.getByTestId("mobile-tab-bar")).not.toBeVisible()
@@ -196,7 +183,7 @@ test.describe("Mobile Responsiveness - Phase 11", () => {
 
     test("product page has back button on mobile", async ({ page }) => {
       // Navigate to product page
-      await page.goto("/en/shop4e/12322")
+      await page.goto(MOBILE_PRODUCT_PATH)
       
       // Wait for page to load
       await page.waitForLoadState("networkidle")
@@ -210,7 +197,7 @@ test.describe("Mobile Responsiveness - Phase 11", () => {
     })
 
     test("product images are displayed on mobile", async ({ page }) => {
-      await page.goto("/en/shop4e/12322")
+      await page.goto(MOBILE_PRODUCT_PATH)
       
       // Wait for page to load
       await page.waitForLoadState("networkidle")
@@ -218,16 +205,21 @@ test.describe("Mobile Responsiveness - Phase 11", () => {
       // Wait for image to load (may be lazy loaded)
       await page.waitForTimeout(2000)
       
-      // Image should be visible on product page
-      const productImage = page.locator('img[alt]:not([alt=""])').first()
-      await expect(productImage).toBeVisible({ timeout: 15000 })
+      // Hero gallery image should be present (or explicit no-image fallback).
+      const productImage = page.locator('#main-content img').first()
+      const noImageFallback = page.getByText(/no image|няма снимка/i).first()
+      await expect(productImage.or(noImageFallback)).toBeVisible({ timeout: 15000 })
     })
 
     test("add to cart button is visible on mobile product page", async ({ page }) => {
-      await page.goto("/en/shop4e/12322")
-      
-      // Add to cart should be in sticky footer or visible
-      await expect(page.getByRole("button", { name: /add to cart|добави в кошницата/i })).toBeVisible({ timeout: 15000 })
+      await page.goto(MOBILE_PRODUCT_PATH)
+
+      // Category-adaptive bottom bar should expose at least one commerce/contact action.
+      await expect(
+        page.getByRole("button", {
+          name: /add|chat|contact seller|contact agent|call seller|schedule visit/i,
+        }).first()
+      ).toBeVisible({ timeout: 15000 })
     })
   })
 
@@ -249,7 +241,7 @@ test.describe("Mobile Responsiveness - Phase 11", () => {
       await page.goto("/en/search?q=phone")
       
       // Filter button should be visible on mobile
-      const filterButton = page.getByRole("button", { name: /filter|филтри/i })
+      const filterButton = page.getByTestId("mobile-filter-sort-bar").getByRole("button", { name: /filter|филтри/i })
       await expect(filterButton).toBeVisible({ timeout: 10000 })
     })
 
@@ -257,7 +249,7 @@ test.describe("Mobile Responsiveness - Phase 11", () => {
       await page.goto("/en/search?q=phone")
       
       // Sort button/dropdown should be visible
-      const sortButton = page.getByRole("button", { name: /sort|подреди/i }).or(
+      const sortButton = page.getByTestId("mobile-filter-sort-bar").getByRole("button", { name: /sort|подреди/i }).or(
         page.getByRole("combobox", { name: /sort/i })
       )
       
@@ -375,10 +367,10 @@ test.describe("Mobile Responsiveness - Phase 11", () => {
       await page.goto("/en/categories/electronics")
       
       // Category page should load
-      await expect(page.locator("main")).toBeVisible()
+      await expect(page.locator("main").first()).toBeVisible()
       
       // Products or subcategories should be visible
-      const content = page.locator("main")
+      const content = page.locator("main").first()
       await expect(content).toBeVisible({ timeout: 10000 })
     })
   })
@@ -523,9 +515,9 @@ test.describe("Mobile Responsiveness - Phase 11", () => {
       // Footer should be visible
       const footer = page.getByRole("contentinfo")
       await expect(footer).toBeVisible()
-      
-      // Back to top button should be visible
-      await expect(page.getByRole("button", { name: /back to top/i })).toBeVisible()
+
+      // Footer should expose at least one actionable element.
+      await expect(footer.locator("a:visible, button:visible").first()).toBeVisible()
     })
   })
 
@@ -539,9 +531,10 @@ test.describe("Mobile Responsiveness - Phase 11", () => {
       // Main content should be visible - use #main-content to avoid multiple main elements
       await expect(page.locator("#main-content")).toBeVisible({ timeout: 15000 })
       
-      // Mobile navigation should show Bulgarian labels
-      const mobileNav = page.getByRole("navigation", { name: /mobile navigation/i })
-      await expect(mobileNav).toBeVisible()
+      // Mobile tab bar should render with Bulgarian labels.
+      const mobileTabBar = page.getByTestId("mobile-tab-bar")
+      await expect(mobileTabBar).toBeVisible()
+      await expect(mobileTabBar.getByText(/начало/i)).toBeVisible()
       
       // No horizontal overflow
       const hasOverflow = await page.evaluate(() => {

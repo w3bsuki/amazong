@@ -44,10 +44,10 @@ function ProductCardSocialProof({
   if (!hasRating && !hasSoldCount) return null
 
   return (
-    <span className="inline-flex items-center gap-1 text-2xs text-muted-foreground">
+    <span className="inline-flex items-center gap-1 text-2xs font-medium text-muted-foreground">
       {hasRating && (
         <>
-          <Star size={10} weight="fill" className="text-rating" />
+          <Star size={11} weight="fill" className="text-top-rated" />
           <span className="font-medium tabular-nums">
             {rating.toFixed(1)}
           </span>

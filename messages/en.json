@@ -2,8 +2,8 @@
     "Header": {
         "helloSignIn": "Hello, sign in",
         "hello": "Hello",
-            "listingType": "Listing type",
-            "auctionDuration": "Duration",
+        "listingType": "Listing type",
+        "auctionDuration": "Duration",
         "signOut": "Sign out",
         "accountAndLists": "Account & Lists",
         "signIn": "Sign in",
@@ -90,7 +90,7 @@
     },
     "Navigation": {
         "deliverTo": "Deliver to",
-            "auctionDurationRequired": "Please choose an auction duration",
+        "auctionDurationRequired": "Please choose an auction duration",
         "back": "Back",
         "searchPlaceholder": "Search products, brands, and more...",
         "searchPlaceholderShort": "Search...",
@@ -119,8 +119,7 @@
         "chat": "Chat",
         "categories": "Categories",
         "profile": "Profile",
-        "mobileNavigation": "Mobile navigation",
-        "back": "Back"
+        "mobileNavigation": "Mobile navigation"
     },
     "Categories": {
         "title": "Categories",
@@ -227,7 +226,7 @@
             "description": "Choose how to order the feed"
         },
         "mobile": {
-            "promotedListings": "In Focus",
+            "promotedListings": "Promoted",
             "seeAll": "See all",
             "trustProtected": "Protected",
             "trustFastShip": "Fast Ship",
@@ -248,7 +247,8 @@
                 "newest": "Newest",
                 "popular": "Popular",
                 "priceLow": "Price: Low",
-                "priceHigh": "Price: High"
+                "priceHigh": "Price: High",
+                "nearby": "Nearby"
             },
             "quickPills": {
                 "offers": "Offers",
@@ -260,7 +260,19 @@
             "sortOptions": "Sort and filter",
             "filtersActive": "{count, plural, one {# filter active} other {# filters active}}",
             "allListings": "All Listings",
-            "listingsCount": "{count, plural, one {# listing} other {# listings}}"
+            "listingsCount": "{count, plural, one {# listing} other {# listings}}",
+            "moreCategories": "More",
+            "promoBannerEyebrow": "Promoted picks",
+            "promoBannerTitle": "Top highlighted listings today",
+            "promoBannerSubtitle": "Curated boosted offers from trusted sellers",
+            "promoBannerCta": "View",
+            "forYouBannerEyebrow": "For you",
+            "forYouBannerTitle": "Newest picks for you",
+            "forYouBannerSubtitle": "Use quick filters to explore faster",
+            "forYouBannerCta": "View all",
+            "featuredTitle": "Featured listing",
+            "featuredSubtitle": "Promoted seller with high buyer trust signals",
+            "featuredAction": "Browse promoted"
         }
     },
     "Product": {
@@ -357,7 +369,7 @@
         "priceLabel": "Price: {price}",
         "returns": "Returns",
         "returnsPolicy": "30-day refund/replacement",
-        "shipping": "Shipping:",
+        "shipping": "Shipping",
         "deliveryLabel": "Delivery:",
         "returnsLabel": "Returns:",
         "payments": "Payments:",
@@ -379,7 +391,7 @@
         "of": "of",
         "popularItem": "People are checking this out.",
         "watchlistCount": "have added this to their watchlist.",
-        "freeShipping": "FREE",
+        "freeShipping": "Free Shipping",
         "locatedIn": "Located in:",
         "estimatedDelivery": "Est.",
         "returns30Days": "30 days returns.",
@@ -437,12 +449,20 @@
         "viewAll": "View all",
         "proSeller": "Pro Seller",
         "topRated": "Top Rated",
-        "seller": "Seller",
+        "seller": {
+            "respondsWithinHour": "Usually responds within 1 hour",
+            "respondsWithinHours": "Usually responds within {hours} hours",
+            "listings": "Listings",
+            "reviews": "reviews",
+            "memberSince": "Member since",
+            "viewProfile": "View Profile",
+            "follow": "Follow",
+            "following": "Following"
+        },
         "businessSeller": "Business Seller",
         "promoted": "Promoted",
         "productDetails": "Product Details",
         "shippingReturns": "Shipping & Returns",
-        "freeShipping": "Free Shipping",
         "freeShippingSubtitle": "Tracking and support",
         "defaultShipping": "Shipping calculated at checkout",
         "defaultReturns": "30 days returns. Buyer pays for return shipping.",
@@ -471,7 +491,6 @@
         "close": "Close",
         "meetup": "Meetup",
         "pickupOnly": "Pickup Only",
-        "shipping": "Shipping",
         "lowStock": "Only {count} left",
         "delivery2to3Days": "Delivery in 2-3 days",
         "pickupAvailable": "Pickup available",
@@ -508,16 +527,6 @@
         },
         "report": {
             "listing": "Report this listing"
-        },
-        "seller": {
-            "respondsWithinHour": "Usually responds within 1 hour",
-            "respondsWithinHours": "Usually responds within {hours} hours",
-            "listings": "Listings",
-            "reviews": "reviews",
-            "memberSince": "Member since",
-            "viewProfile": "View Profile",
-            "follow": "Follow",
-            "following": "Following"
         }
     },
     "ProductModal": {
@@ -1514,18 +1523,6 @@
         "removeItem": "Remove item"
     },
     "MessagesDropdown": {
-        "title": "Your Messages",
-        "signInToView": "Sign in to view your messages",
-        "signIn": "Sign In",
-        "inbox": "Inbox",
-        "inboxDesc": "View all your messages",
-        "sellerMessages": "Seller Messages",
-        "sellerMessagesDesc": "Questions about orders and products",
-        "notifications": "Notifications",
-        "notificationsDesc": "Order updates and alerts",
-        "viewAllMessages": "View All Messages"
-    },
-    "MessagesDropdown": {
         "title": "Messages",
         "unreadDescription": "{count, plural, one {You have # unread message} other {You have # unread messages}}",
         "noMessages": "No new messages",
@@ -2025,8 +2022,7 @@
         "listings": "Listings",
         "shippedLabel": "Ships",
         "sinceLabel": "Since",
-        "chatLabel": "Chat",
-        "message": "Message"
+        "chatLabel": "Chat"
     },
     "SellerVerification": {
         "verifiedBusiness": "Verified Business",
@@ -3489,10 +3485,18 @@
             "collectibles": "Collectibles"
         },
         "products": {
-            "iphone": { "title": "iPhone 15 Pro Max 256GB" },
-            "nike": { "title": "Nike Air Max 90 — Size 10" },
-            "dualsense": { "title": "PS5 DualSense Controller" },
-            "books": { "title": "Vintage Book Collection (12pc)" }
+            "iphone": {
+                "title": "iPhone 15 Pro Max 256GB"
+            },
+            "nike": {
+                "title": "Nike Air Max 90 — Size 10"
+            },
+            "dualsense": {
+                "title": "PS5 DualSense Controller"
+            },
+            "books": {
+                "title": "Vintage Book Collection (12pc)"
+            }
         },
         "conditions": {
             "new": "New",

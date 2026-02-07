@@ -7,7 +7,11 @@ const prdPath = path.join(repoRoot, "docs", "PRD.md");
 const tasksPath = path.join(repoRoot, ".codex", "TASKS.md");
 const outPath = path.join(repoRoot, "docs", "status", "LAUNCH-READINESS.yaml");
 
-function readFile(filePath) {
+function readFile(filePath, { optional = false } = {}) {
+  if (!fs.existsSync(filePath)) {
+    if (optional) return "";
+    throw new Error(`Required source file not found: ${path.relative(repoRoot, filePath)}`);
+  }
   return fs.readFileSync(filePath, "utf8").replace(/^\uFEFF/, "").replace(/\r\n/g, "\n");
 }
 
@@ -153,7 +157,11 @@ function criterionStatusFromContext(criterion, progress, criticalBlockers) {
 function buildReadiness() {
   const featuresMarkdown = readFile(featuresPath);
   const prdMarkdown = readFile(prdPath);
-  const tasksMarkdown = readFile(tasksPath);
+  const tasksMarkdown = readFile(tasksPath, { optional: true });
+  const hasTasksSource = fs.existsSync(tasksPath);
+  const canonicalSources = hasTasksSource
+    ? ["docs/PRD.md", "docs/FEATURES.md", ".codex/TASKS.md"]
+    : ["docs/PRD.md", "docs/FEATURES.md"];
 
   const progress = parseProgress(featuresMarkdown);
   const criteria = parseLaunchCriteria(prdMarkdown);
@@ -173,7 +181,7 @@ function buildReadiness() {
     id: criterion.id,
     title: criterion.title,
     status: criterionStatusFromContext(criterion, progress, criticalBlockers),
-    evidence: ["docs/PRD.md", "docs/FEATURES.md", ".codex/TASKS.md"],
+    evidence: canonicalSources,
     notes: "Status is auto-derived from documented progress and active critical blockers.",
   }));
 
@@ -181,7 +189,7 @@ function buildReadiness() {
     meta: {
       generated_at: new Date().toISOString().slice(0, 10),
       version: "1.0.0",
-      canonical_sources: ["docs/PRD.md", "docs/FEATURES.md", ".codex/TASKS.md"],
+      canonical_sources: canonicalSources,
     },
     readiness: {
       status: classifyOverallStatus(progress, criticalBlockers),

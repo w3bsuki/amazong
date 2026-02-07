@@ -52,7 +52,7 @@ export function HomeStickyCategoryPills({
   return (
     <div
       className={cn(
-        "fixed inset-x-0 z-30 border-b border-border-subtle bg-background/95 backdrop-blur-md transition-all duration-200 md:hidden",
+        "fixed inset-x-0 z-30 border-b border-border-subtle bg-background transition-all duration-200 md:hidden",
         visible ? "pointer-events-auto translate-y-0 opacity-100" : "pointer-events-none -translate-y-1 opacity-0",
         className
       )}
@@ -60,7 +60,7 @@ export function HomeStickyCategoryPills({
       aria-hidden={!visible}
     >
       <div className="overflow-x-auto no-scrollbar px-inset-md py-1.5">
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-1">
           {drawer ? (
             <button
               type="button"

@@ -1,17 +1,15 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import type { CategoryTreeNode } from "@/lib/category-tree";
 import type { UIProduct } from "@/lib/data/products";
 import type { CategoryAttribute } from "@/lib/data/categories";
 import { useRouter } from "@/i18n/routing";
 import { useHeader } from "@/components/providers/header-context";
 import { useInstantCategoryBrowse } from "@/hooks/use-instant-category-browse";
-import { FilterSortBar } from "./category-nav";
-import { FilterHub } from "@/components/shared/filters/filter-hub";
-import { FilterChips } from "@/components/shared/filters/filter-chips";
 import { ProductFeed } from "@/components/shared/product/product-feed";
 import { PageShell } from "@/components/shared/page-shell";
+import { MobileFilterControls } from "@/components/mobile/filters/mobile-filter-controls";
 
 type Category = CategoryTreeNode;
 
@@ -65,9 +63,6 @@ export function MobileCategoryBrowserContextual({
 }: MobileCategoryBrowserContextualProps) {
   const router = useRouter();
   const { setContextualHeader } = useHeader();
-
-  // Filter Hub state
-  const [filterHubOpen, setFilterHubOpen] = useState(false);
 
   const contextualInitialTitle = contextualCategoryName || "";
 
@@ -165,25 +160,27 @@ export function MobileCategoryBrowserContextual({
     <PageShell variant="muted" className="w-full">
       {/* Header is rendered by layout with variant="contextual" */}
 
-      {/* Inline Filter Bar (50/50 split: Filters | Sort) */}
-      <FilterSortBar
+      <MobileFilterControls
         locale={locale}
-        onAllFiltersClick={() => setFilterHubOpen(true)}
         attributes={instant.attributes.length ? instant.attributes : filterableAttributes}
+        {...(instant.categorySlug !== "all" ? { categorySlug: instant.categorySlug } : {})}
+        {...(instant.categoryId ? { categoryId: instant.categoryId } : {})}
+        subcategories={(instant.children.length ? instant.children : contextualSubcategories).map((child) => ({
+          id: child.id,
+          name: child.name,
+          name_bg: child.name_bg,
+          slug: child.slug,
+        }))}
+        {...(instant.activeCategoryName ? { categoryName: instant.activeCategoryName } : {})}
+        basePath={`/categories/${instant.categorySlug}`}
         appliedSearchParams={instant.appliedSearchParams}
+        onApply={handleApplyFilters}
+        onRemoveFilter={handleRemoveFilter}
+        onClearAll={handleClearAllFilters}
         stickyTop="var(--app-header-offset)"
         sticky={true}
         className="z-30"
       />
-
-      {/* Active Filter Chips (removable pills) */}
-      <div className="bg-background px-inset py-1">
-        <FilterChips
-          appliedSearchParams={instant.appliedSearchParams}
-          onRemoveFilter={handleRemoveFilter}
-          onClearAll={handleClearAllFilters}
-        />
-      </div>
 
       {/* Product Feed */}
       <ProductFeed
@@ -196,20 +193,6 @@ export function MobileCategoryBrowserContextual({
         activeCategoryName={instant.activeCategoryName}
         onLoadMore={instant.loadMore}
         showLoadingOverlay={true}
-      />
-
-      {/* FilterHub Drawer (fallback for complex filters) */}
-      <FilterHub
-        open={filterHubOpen}
-        onOpenChange={setFilterHubOpen}
-        locale={locale}
-        {...(instant.categorySlug !== "all" ? { categorySlug: instant.categorySlug } : {})}
-        {...(instant.categoryId ? { categoryId: instant.categoryId } : {})}
-        attributes={instant.attributes.length ? instant.attributes : filterableAttributes}
-        appliedSearchParams={instant.appliedSearchParams}
-        onApply={handleApplyFilters}
-        mode="full"
-        initialSection={null}
       />
     </PageShell>
   );

@@ -29,6 +29,7 @@ const A11Y_ROUTES = [
   { name: 'Homepage (EN)', path: '/en' },
   { name: 'Homepage (BG)', path: '/bg' },
   { name: 'Categories', path: '/en/categories' },
+  { name: 'Category Detail', path: '/en/categories/electronics' },
   { name: 'Search Results', path: '/en/search?q=phone' },
   { name: 'Cart', path: '/en/cart' },
 ] as const
@@ -141,6 +142,18 @@ test.describe('Accessibility - Navigation @accessibility', () => {
     })
 
     expect(['a', 'button', 'input', 'select', 'textarea', 'body']).toContain(laterFocused)
+  })
+
+  test('mobile filter controls expose accessible buttons', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 })
+    await page.goto('/en/search?q=phone')
+    await waitForPageReady(page)
+
+    const filterBar = page.getByTestId('mobile-filter-sort-bar')
+    await expect(filterBar).toBeVisible()
+    await expect(filterBar.getByRole('button', { name: /filters/i })).toBeVisible()
+    await expect(filterBar.getByRole('button', { name: /sort/i })).toBeVisible()
+    await expect(page.getByTestId('mobile-location-chip')).toBeVisible()
   })
 })
 

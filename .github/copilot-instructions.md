@@ -1,24 +1,32 @@
 # Copilot Instructions (Treido)
 
-Keep this file **thin** to avoid drift. SSOT lives in `docs/`.
+## Canonical contract
 
-## Start here
+- Follow root `AGENTS.md` as the single source of truth for non-negotiables.
+- Use `docs/AGENTS.md` for detailed boundaries/output contract.
 
-- Always-read repo entry: `AGENTS.md`
-- Docs hub: `docs/00-INDEX.md`
-- Rails + boundaries: `docs/AGENTS.md`
-- Workflow + gates: `docs/WORKFLOW.md`
-- Skills index: `docs/11-SKILLS.md` (definitions in `.codex/skills/`)
+## Default mode
 
-## Non-negotiables (quick)
-
-- Tailwind v4 semantic tokens only (no palette classes, no gradients, no arbitrary values)
-- All user-facing copy via `next-intl` (`messages/en.json` + `messages/bg.json`)
-- `components/ui/*` primitives only; app composites live in `components/shared/*`
-- Default to Server Components; `"use client"` only when required
-- Use `proxy.ts` (no root `middleware.ts`)
-- Pause for approval on DB/auth/payments/destructive ops
+- Implement directly for normal tasks (UI, styling, components, refactoring, tests, docs).
+- Skills are optional and only needed for specialist domains or explicit user request.
+- Do not use subagents by default. Use subagents only when explicitly requested (for example, `run subagents`).
 
 ## Verification
 
-Use the gate checklist in `docs/WORKFLOW.md`.
+```bash
+pnpm -s typecheck
+pnpm -s lint
+pnpm -s styles:gate
+```
+
+Risk-based (when touching business logic):
+```bash
+pnpm -s test:unit
+REUSE_EXISTING_SERVER=true pnpm -s test:e2e:smoke
+```
+
+## Reference (read only when needed)
+
+- Boundaries/pause rules: `docs/AGENTS.md`
+- Workflow/gates: `docs/WORKFLOW.md`
+- Skill index: `docs/SKILLS.md`

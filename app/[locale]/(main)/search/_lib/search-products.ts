@@ -13,6 +13,7 @@ type SearchQuery = {
   select: (columns: string, options?: Record<string, unknown>) => SearchQuery
   or: (filters: string) => SearchQuery
   in: (column: string, values: string[]) => SearchQuery
+  ilike: (column: string, pattern: string) => SearchQuery
   gte: (column: string, value: number) => SearchQuery
   lte: (column: string, value: number) => SearchQuery
   contains: (column: string, value: unknown) => SearchQuery
@@ -68,6 +69,14 @@ export async function searchProducts(
     if (filters.maxPrice) next = next.lte("price", Number(filters.maxPrice))
     if (filters.tag) next = next.contains("tags", [filters.tag])
     if (filters.minRating) next = next.gte("rating", Number(filters.minRating))
+    if (filters.nearby === "true") {
+      const normalizedCity = filters.city?.trim().toLowerCase()
+      const targetCity =
+        normalizedCity && normalizedCity !== "undefined" && normalizedCity !== "null"
+          ? normalizedCity
+          : "sofia"
+      next = next.ilike("seller_city", targetCity)
+    }
 
     // Verified sellers (business verification)
     if (filters.verified === "true") next = next.eq("profiles.is_verified_business", true)

@@ -34,7 +34,7 @@ export interface ProductCardActionsProps {
 
     // Styling
     className?: string
-    size?: "icon" | "icon-sm" | "icon-lg"
+    size?: "icon-sm" | "icon" | "icon-lg" | "icon-compact" | "icon-default" | "icon-primary"
 }
 
 /**
@@ -55,7 +55,7 @@ export function ProductCardActions({
     inStock = true,
     isOwnProduct = false,
     className,
-    size = "icon",
+    size = "icon-default",
 }: ProductCardActionsProps) {
     const { addToCart, items: cartItems } = useCart()
     const { isInWishlist, toggleWishlist } = useWishlist()
@@ -103,19 +103,17 @@ export function ProductCardActions({
     }, [id, title, price, image, isWishlistPending, toggleWishlist])
 
     return (
-        <div className={cn("flex items-center gap-1.5", className)}>
+        <div className={cn("flex items-center gap-2", className)}>
             {showWishlist && (
                 <IconButton
                     type="button"
                     variant="ghost"
                     size={size}
-                    className={cn(
-                        // Clean token-only chip (no glass/blur/shadows).
-                        "rounded-full bg-background border border-border-subtle",
+                className={cn(
+                        "rounded-full border border-border-subtle bg-surface-card shadow-none",
                         "hover:bg-hover active:bg-active",
-                        "![&_svg]:size-4",
                         inWishlist
-                            ? "text-primary"
+                            ? "border-selected-border text-primary"
                             : "text-muted-foreground hover:text-foreground active:text-foreground",
                         isWishlistPending && "pointer-events-none opacity-50",
                         isOwnProduct && "cursor-not-allowed opacity-50"
@@ -139,7 +137,7 @@ export function ProductCardActions({
                     className={cn(
                       inCart
                         ? "bg-primary text-primary-foreground hover:bg-interactive-hover"
-                        : "border-border bg-background text-muted-foreground hover:bg-muted active:bg-active",
+                        : "border-border-subtle bg-background text-muted-foreground hover:bg-hover active:bg-active",
                       (!inStock || isOwnProduct) && "cursor-not-allowed opacity-50"
                     )}
                     onClick={handleAddToCart}

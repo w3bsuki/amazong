@@ -12,8 +12,8 @@ import type { MinimalHeaderProps } from "../types"
  */
 export function MobileMinimalHeader({ locale }: MinimalHeaderProps) {
   return (
-    <div className="md:hidden bg-background border-b border-border/50 pt-safe">
-      <div className="h-12 px-4 flex items-center justify-center">
+    <div className="border-b border-border-subtle bg-background pt-safe md:hidden">
+      <div className="flex h-(--control-primary) items-center justify-center px-4">
         <Link href="/">
           <span className="text-lg font-extrabold tracking-tight text-foreground">treido.</span>
         </Link>

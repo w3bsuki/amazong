@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useCallback } from "react"
 import { useSearchParams, type ReadonlyURLSearchParams } from "next/navigation"
-import { SlidersHorizontal, ArrowUpDown } from "lucide-react"
+import { SlidersHorizontal, ArrowUpDown, MapPin } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useTranslations } from "next-intl"
 import { SortModal } from "@/components/shared/filters/sort-modal"
@@ -40,6 +40,12 @@ export interface FilterSortBarProps {
   basePath?: string | undefined
   /** Additional CSS classes */
   className?: string
+  /** Optional compact location button shown above filter/sort row */
+  locationChipLabel?: string | null
+  /** Whether location has explicit city/nearby filters applied */
+  locationChipActive?: boolean
+  /** Called when location chip is clicked */
+  onLocationChipClick?: () => void
 }
 
 /** Sort option keys */
@@ -55,6 +61,9 @@ export function FilterSortBar({
   sticky = true,
   basePath,
   className,
+  locationChipLabel,
+  locationChipActive = false,
+  onLocationChipClick,
 }: FilterSortBarProps) {
   const t = useTranslations("SearchFilters")
   const searchParamsFromRouter = useSearchParams()
@@ -70,6 +79,8 @@ export function FilterSortBar({
     if (searchParams.get("availability")) count++
     if (searchParams.get("deals") === "true") count++
     if (searchParams.get("verified") === "true") count++
+    if (searchParams.get("city")) count++
+    if (searchParams.get("nearby") === "true") count++
     // Count attribute filters
     for (const attr of attributes) {
       if (searchParams.getAll(`attr_${getCategoryAttributeKey(attr)}`).length > 0) count++
@@ -106,7 +117,27 @@ export function FilterSortBar({
           className
         )}
         style={sticky ? { top: stickyTop } : undefined}
+        data-testid="mobile-filter-sort-bar"
       >
+        {onLocationChipClick && locationChipLabel && (
+          <button
+            type="button"
+            onClick={onLocationChipClick}
+            className={cn(
+              "mb-2 inline-flex min-h-10 max-w-full items-center gap-1.5 rounded-full border px-3 text-sm font-medium",
+              "transition-colors tap-transparent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+              locationChipActive
+                ? "border-selected-border bg-selected text-selected-foreground"
+                : "border-border-subtle bg-surface-subtle text-muted-foreground hover:bg-hover hover:text-foreground active:bg-active"
+            )}
+            aria-haspopup="dialog"
+            data-testid="mobile-location-chip"
+          >
+            <MapPin className="size-4 shrink-0" aria-hidden="true" />
+            <span className="min-w-0 truncate">{locationChipLabel}</span>
+          </button>
+        )}
+
         {/* 50/50 Tab Bar */}
         <div className="flex items-stretch gap-2" role="group" aria-label={t("filters")}>
           {/* Filters Tab */}

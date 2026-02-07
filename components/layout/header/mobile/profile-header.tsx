@@ -55,27 +55,17 @@ export function MobileProfileHeader({
   return (
     <header
       className={cn(
-        "md:hidden",
-        "sticky top-0 z-50",
-        "bg-surface-glass",
-        "backdrop-blur-md backdrop-saturate-150",
-        "border-b border-border",
-        // Safe area for notch devices
-        "pt-safe"
+        "sticky top-0 z-50 border-b border-border-subtle bg-background pt-safe md:hidden"
       )}
     >
-      <div className="h-14 flex items-center px-2">
+      <div className="flex h-(--control-primary) items-center px-2">
         {/* Back Button */}
         {onBack ? (
           <IconButton
             type="button"
             variant="ghost"
             className={cn(
-              "shrink-0",
-              "text-foreground",
-              "hover:bg-muted",
-              "active:scale-95 active:bg-muted",
-              "transition-all duration-150"
+              "shrink-0 text-foreground hover:bg-hover active:bg-active"
             )}
             aria-label={tNav("back")}
             onClick={onBack}
@@ -96,9 +86,7 @@ export function MobileProfileHeader({
             type="button"
             variant="ghost"
             className={cn(
-              "text-foreground",
-              "hover:bg-muted",
-              "active:scale-95 transition-all duration-150"
+              "text-foreground hover:bg-hover active:bg-active"
             )}
             aria-label={tProfile("share")}
             onClick={handleShare}
@@ -112,9 +100,7 @@ export function MobileProfileHeader({
               asChild
               variant="ghost"
               className={cn(
-                "text-foreground",
-                "hover:bg-muted",
-                "active:scale-95 transition-all duration-150"
+                "text-foreground hover:bg-hover active:bg-active"
               )}
               aria-label={tProfile("settings")}
             >
@@ -130,9 +116,7 @@ export function MobileProfileHeader({
                   asChild
                   variant="ghost"
                   className={cn(
-                    "text-foreground",
-                    "hover:bg-muted",
-                    "active:scale-95 transition-all duration-150"
+                    "text-foreground hover:bg-hover active:bg-active"
                   )}
                   aria-label={tProfile("message")}
                 >

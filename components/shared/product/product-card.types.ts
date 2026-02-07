@@ -45,11 +45,13 @@ export interface ProductCardViewConfig {
   showQuickAdd?: boolean
   showWishlist?: boolean
   showSeller?: boolean
+  showCategoryBadge?: boolean
   disableQuickView?: boolean
   appearance?: "card" | "tile"
-  media?: "square" | "landscape"
+  media?: "portrait" | "square" | "landscape"
   density?: "default" | "compact"
   titleLines?: 1 | 2
   uiVariant?: "default" | "home"
   radius?: "xl" | "2xl"
+  maxOverlayBadges?: number
 }

@@ -4,7 +4,6 @@ import { SubcategoryTabs } from "@/components/category/subcategory-tabs"
 import { SearchHeader } from "./_components/search-header"
 import { searchProducts } from "./_lib/search-products"
 import type { Category, Product } from "./_lib/types"
-import { QuickFilterRow } from "@/components/mobile/category-nav/quick-filter-row"
 import { DesktopFilters } from "@/components/shared/filters/desktop-filters"
 import { FilterChips } from "@/components/shared/filters/filter-chips"
 import { SortSelect } from "@/components/shared/search/sort-select"
@@ -22,6 +21,7 @@ import { ITEMS_PER_PAGE } from "../_lib/pagination"
 import { getCategoryContext } from "@/lib/data/categories"
 import type { CategoryAttribute } from "@/lib/data/categories"
 import { normalizeAttributeKey } from "@/lib/attributes/normalize-attribute-key"
+import { MobileFilterControls } from "@/components/mobile/filters/mobile-filter-controls"
 
 export async function generateMetadata({ params, searchParams }: {
   params: Promise<{ locale: string }>
@@ -64,6 +64,8 @@ export default async function SearchPage({
     tag?: string
     deals?: string
     promoted?: string
+    nearby?: string
+    city?: string
     verified?: string
     brand?: string
     availability?: string
@@ -183,6 +185,8 @@ export default async function SearchPage({
             minRating: searchParams.minRating,
             deals: searchParams.deals,
             promoted: searchParams.promoted,
+            nearby: searchParams.nearby,
+            city: searchParams.city,
             verified: searchParams.verified,
             availability: searchParams.availability,
             sort: searchParams.sort,
@@ -217,6 +221,8 @@ export default async function SearchPage({
           minRating: searchParams.minRating,
           deals: searchParams.deals,
           promoted: searchParams.promoted,
+          nearby: searchParams.nearby,
+          city: searchParams.city,
           verified: searchParams.verified,
           availability: searchParams.availability,
           sort: searchParams.sort,
@@ -308,29 +314,34 @@ export default async function SearchPage({
             </Suspense>
           )}
 
-          {/* Active Filter Pills */}
-          <div className="mb-4">
-            <Suspense>
-              <FilterChips currentCategory={currentCategory} />
-            </Suspense>
-          </div>
-
-          {/* Mobile Control Bar */}
+          {/* Mobile Filter Controls */}
           <Suspense>
-            <QuickFilterRow
+            <MobileFilterControls
               locale={locale}
               {...(currentCategory?.slug ? { categorySlug: currentCategory.slug } : {})}
               {...(categoryIdForFilters ? { categoryId: categoryIdForFilters } : {})}
               {...(query ? { searchQuery: query } : {})}
               attributes={filterableAttributes}
-              subcategories={allCategories.map((c) => ({
+              subcategories={subcategories.map((c) => ({
                 id: c.id,
                 name: c.name,
                 name_bg: c.name_bg,
                 slug: c.slug,
               }))}
+              {...(categoryName ? { categoryName } : {})}
+              {...(currentCategory
+                ? {
+                    currentCategory: {
+                      name: categoryName ?? currentCategory.name,
+                      slug: currentCategory.slug,
+                    },
+                  }
+                : {})}
               basePath="/search"
-              categoryParamKey="category"
+              stickyTop="var(--app-header-offset)"
+              sticky={true}
+              userZone={userZone ?? null}
+              className="mb-3"
             />
           </Suspense>
 

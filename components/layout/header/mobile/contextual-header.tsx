@@ -43,14 +43,14 @@ export function MobileContextualHeader({
   })
 
   return (
-    <div className="md:hidden bg-background pt-safe">
-      <div className="flex items-center justify-between px-3 h-12 border-b border-border">
+    <div className="bg-background pt-safe md:hidden">
+      <div className="flex h-(--control-primary) items-center justify-between border-b border-border-subtle px-2.5">
         <div className="flex items-center">
           {onBack ? (
             <button
               type="button"
               onClick={onBack}
-              className="size-11 flex items-center justify-center rounded-full -ml-1 tap-transparent active:bg-active transition-colors"
+              className="size-(--control-default) -ml-1 flex items-center justify-center rounded-full tap-transparent transition-colors active:bg-active"
               aria-label={tCommon("back")}
             >
               <ArrowLeft className="size-6" weight="bold" />
@@ -58,13 +58,13 @@ export function MobileContextualHeader({
           ) : (
             <Link
               href={backHref}
-              className="size-11 flex items-center justify-center rounded-full -ml-1 tap-transparent active:bg-active transition-colors"
+              className="size-(--control-default) -ml-1 flex items-center justify-center rounded-full tap-transparent transition-colors active:bg-active"
               aria-label={tCommon("back")}
             >
               <ArrowLeft className="size-6" weight="bold" />
             </Link>
           )}
-          <h1 className="text-base font-bold text-foreground ml-1 truncate max-w-48">
+          <h1 className="ml-1 max-w-48 truncate text-base font-semibold text-foreground">
             {title}
           </h1>
         </div>
@@ -72,7 +72,7 @@ export function MobileContextualHeader({
           <div className="flex items-center gap-1">
             <Link
               href={searchHref}
-              className="size-11 flex items-center justify-center rounded-full tap-transparent active:bg-active transition-colors"
+              className="size-(--control-default) flex items-center justify-center rounded-full tap-transparent transition-colors active:bg-active"
               aria-label={tCommon("search")}
             >
               <MagnifyingGlass className="size-6" weight="regular" />
@@ -84,9 +84,9 @@ export function MobileContextualHeader({
       </div>
       {/* Subcategory circles */}
       {subcategories.length > 0 && (
-        <div className="bg-background border-b border-border">
-          <div className="px-inset py-1.5 overflow-x-auto no-scrollbar">
-            <div className="flex items-start gap-1">
+        <div className="border-b border-border-subtle bg-background">
+          <div className="overflow-x-auto px-inset py-1.5 no-scrollbar">
+            <div className="flex items-start gap-1.5">
               {subcategories.map((cat) => {
                 const isActive = !!activeSlug && cat.slug === activeSlug
 
@@ -99,7 +99,7 @@ export function MobileContextualHeader({
                     labelPlacement="below"
                     circleClassName="size-(--spacing-category-circle)"
                     fallbackIconSize={24}
-                    fallbackIconWeight="duotone"
+                    fallbackIconWeight="bold"
                     variant="rail"
                     label={tCategories("shortName", {
                       slug: getCategorySlugKey(cat.slug),

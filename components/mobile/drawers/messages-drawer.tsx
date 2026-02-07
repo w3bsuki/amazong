@@ -99,7 +99,7 @@ export function MessagesDrawer({ open, onOpenChange }: MessagesDrawerProps) {
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
       <DrawerContent className="max-h-dialog-sm">
-        <DrawerHeader className="pb-1.5 pt-0 border-b border-border text-left">
+        <DrawerHeader className="pb-1.5 pt-0 text-left">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-1.5">
               <ChatCircle size={16} weight="regular" className="text-muted-foreground" />
@@ -114,6 +114,7 @@ export function MessagesDrawer({ open, onOpenChange }: MessagesDrawerProps) {
               <IconButton
                 aria-label={t("close")}
                 variant="ghost"
+                size="icon-compact"
                 className="text-muted-foreground hover:text-foreground hover:bg-muted active:bg-muted"
               >
                 <X size={20} weight="light" />
@@ -125,7 +126,7 @@ export function MessagesDrawer({ open, onOpenChange }: MessagesDrawerProps) {
 
         {!user ? (
           <div className="flex flex-col items-center justify-center px-inset py-5">
-            <div className="size-11 bg-muted rounded-xl flex items-center justify-center mb-2">
+            <div className="mb-2 flex size-(--control-default) items-center justify-center rounded-xl bg-muted">
               <ChatCircle size={22} weight="regular" className="text-muted-foreground" />
             </div>
             <p className="text-sm text-foreground font-medium">
@@ -141,7 +142,7 @@ export function MessagesDrawer({ open, onOpenChange }: MessagesDrawerProps) {
           </div>
         ) : recentConversations.length === 0 ? (
           <div className="flex flex-col items-center justify-center px-inset py-5">
-            <div className="size-11 bg-muted rounded-xl flex items-center justify-center mb-2">
+            <div className="mb-2 flex size-(--control-default) items-center justify-center rounded-xl bg-muted">
               <ChatCircle size={22} weight="regular" className="text-muted-foreground" />
             </div>
             <p className="text-sm text-foreground font-medium">{tMessages("noConversations")}</p>

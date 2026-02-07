@@ -5,7 +5,7 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 const buttonVariants = cva(
-  // Treido: Remove ring-offset, use active:opacity-90 for native iOS feel, tap-transparent
+  // Treido: tokenized controls (36/44/48), no ad-hoc sizing in callers.
   "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-xl text-sm font-medium transition-colors disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none shrink-0 [&_svg]:shrink-0 outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:outline-none active:opacity-90 tap-transparent",
   {
     variants: {
@@ -33,14 +33,19 @@ const buttonVariants = cva(
         brand: "bg-primary text-primary-foreground hover:bg-interactive-hover",
       },
       size: {
-        xs: "h-8 px-2 text-xs gap-1 [&_svg]:size-3",           /* 32px - minimum for density */
-        sm: "h-9 px-3 text-xs gap-1.5 [&_svg]:size-3.5",       /* 36px - compact */
-        default: "h-11 px-5 text-sm gap-2 [&_svg]:size-4",     /* 44px - Treido standard */
-        lg: "h-12 px-8 text-sm gap-2 [&_svg]:size-4",          /* 48px - touch-safe large */
-        xl: "h-14 px-8 text-base font-bold gap-2 [&_svg]:size-5", /* 56px - hero CTA */
-        icon: "size-11 [&_svg]:size-5",                        /* 44px - Treido touch */
-        "icon-sm": "size-9 [&_svg]:size-4",                    /* 36px */
-        "icon-lg": "size-12 [&_svg]:size-6",                   /* 48px */
+        xs: "h-8 px-2 text-xs gap-1 [&_svg]:size-3",
+        sm: "h-(--control-compact) px-3 text-xs gap-1.5 [&_svg]:size-4",
+        compact: "h-(--control-compact) px-3 text-xs gap-1.5 [&_svg]:size-4",
+        default: "h-(--control-default) px-4 text-sm gap-2 [&_svg]:size-4",
+        lg: "h-(--control-primary) px-5 text-sm gap-2 [&_svg]:size-5",
+        primary: "h-(--control-primary) px-5 text-sm gap-2 [&_svg]:size-5",
+        xl: "h-14 px-8 text-base font-bold gap-2 [&_svg]:size-5",
+        "icon-sm": "size-(--control-compact) [&_svg]:size-4",
+        "icon-compact": "size-(--control-compact) [&_svg]:size-4",
+        icon: "size-(--control-default) [&_svg]:size-5",
+        "icon-default": "size-(--control-default) [&_svg]:size-5",
+        "icon-lg": "size-(--control-primary) [&_svg]:size-5",
+        "icon-primary": "size-(--control-primary) [&_svg]:size-5",
       },
     },
     defaultVariants: {

@@ -56,7 +56,7 @@ export function CategoryQuickPills({
 
   return (
     <div
-      className="sticky z-30 bg-surface-glass backdrop-blur-md border-b border-border-subtle"
+      className="sticky z-30 border-b border-border-subtle bg-background"
       style={{ top: headerHeight }}
     >
       <div

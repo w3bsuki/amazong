@@ -59,7 +59,7 @@ export function QuickViewImageGallery({
       <div className="flex flex-col gap-3">
         {/* Main image - larger aspect for desktop modal */}
         <div className="relative">
-          <div className="relative aspect-square overflow-hidden rounded-xl bg-muted">
+          <div className="relative aspect-square overflow-hidden rounded-2xl bg-surface-subtle">
             <button
               type="button"
               onClick={onNavigateToProduct}
@@ -70,7 +70,7 @@ export function QuickViewImageGallery({
                 src={normalizeImageUrl(currentImage) ?? PLACEHOLDER_IMAGE_PATH}
                 alt={title}
                 fill
-                className="object-contain"
+                className="object-cover"
                 sizes="(max-width: 1024px) 100vw, 800px"
                 priority
               />
@@ -82,9 +82,9 @@ export function QuickViewImageGallery({
                 <Button
                   type="button"
                   variant="ghost"
-                  size="icon"
+                  size="icon-compact"
                   onClick={(e) => { e.stopPropagation(); prevImage() }}
-                  className="absolute left-3 top-1/2 -translate-y-1/2 border border-border bg-surface-glass backdrop-blur-md"
+                  className="absolute left-3 top-1/2 -translate-y-1/2 rounded-full border border-border-subtle bg-background hover:bg-hover active:bg-active"
                   aria-label={tProduct("previousImage")}
                 >
                   <CaretLeft size={20} weight="bold" />
@@ -92,9 +92,9 @@ export function QuickViewImageGallery({
                 <Button
                   type="button"
                   variant="ghost"
-                  size="icon"
+                  size="icon-compact"
                   onClick={(e) => { e.stopPropagation(); nextImage() }}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 border border-border bg-surface-glass backdrop-blur-md"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full border border-border-subtle bg-background hover:bg-hover active:bg-active"
                   aria-label={tProduct("nextImage")}
                 >
                   <CaretRight size={20} weight="bold" />
@@ -104,14 +104,14 @@ export function QuickViewImageGallery({
 
             {/* Discount badge */}
             {discountPercent && discountPercent > 0 && (
-              <Badge variant="destructive" className="absolute top-3 left-3 text-xs px-2 py-0.5 font-semibold">
+              <Badge variant="destructive" size="compact" className="absolute top-3 left-3">
                 -{discountPercent}%
               </Badge>
             )}
 
             {/* Image counter */}
             {hasMultiple && (
-              <div className="absolute bottom-3 left-3 rounded-full border border-border bg-surface-glass px-2.5 py-1 text-xs font-medium tabular-nums text-foreground backdrop-blur-md">
+              <div className="absolute bottom-3 left-3 rounded-full border border-border-subtle bg-background px-2.5 py-1 text-xs font-medium tabular-nums text-foreground">
                 {currentIndex + 1}/{images.length}
               </div>
             )}
@@ -151,7 +151,7 @@ export function QuickViewImageGallery({
   // Mobile/compact layout - optimized touch handling with a square hero (fills drawer better)
   return (
     <div className="touch-pan-y">
-      <div className="relative overflow-hidden rounded-xl border border-border-subtle bg-muted">
+      <div className="relative overflow-hidden rounded-2xl border border-border-subtle bg-surface-subtle">
         <AspectRatio ratio={1} className="relative">
         <button
           type="button"
@@ -163,7 +163,7 @@ export function QuickViewImageGallery({
             src={normalizeImageUrl(currentImage) ?? PLACEHOLDER_IMAGE_PATH}
             alt={title}
             fill
-            className="pointer-events-none object-contain p-3"
+            className="pointer-events-none object-cover"
             sizes="(max-width: 768px) 100vw, 400px"
             priority
             draggable={false}
@@ -175,9 +175,9 @@ export function QuickViewImageGallery({
             <Button
               type="button"
               variant="ghost"
-              size="icon"
+              size="icon-compact"
               onClick={(e) => { e.stopPropagation(); prevImage() }}
-              className="absolute left-2 top-1/2 size-9 -translate-y-1/2 rounded-full border border-border-subtle bg-background text-foreground shadow-sm touch-manipulation hover:bg-hover active:bg-active"
+              className="absolute left-2 top-1/2 -translate-y-1/2 rounded-full border border-border-subtle bg-background text-foreground touch-manipulation hover:bg-hover active:bg-active"
               aria-label={tProduct("previousImage")}
             >
               <CaretLeft size={16} weight="bold" />
@@ -185,9 +185,9 @@ export function QuickViewImageGallery({
             <Button
               type="button"
               variant="ghost"
-              size="icon"
+              size="icon-compact"
               onClick={(e) => { e.stopPropagation(); nextImage() }}
-              className="absolute right-2 top-1/2 size-9 -translate-y-1/2 rounded-full border border-border-subtle bg-background text-foreground shadow-sm touch-manipulation hover:bg-hover active:bg-active"
+              className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full border border-border-subtle bg-background text-foreground touch-manipulation hover:bg-hover active:bg-active"
               aria-label={tProduct("nextImage")}
             >
               <CaretRight size={16} weight="bold" />
@@ -199,9 +199,9 @@ export function QuickViewImageGallery({
           <Button
             type="button"
             variant="ghost"
-            size="icon"
+            size="icon-compact"
             onClick={(e) => { e.stopPropagation(); onRequestClose() }}
-            className="absolute right-2 top-2 size-9 rounded-full border border-border-subtle bg-background text-foreground shadow-sm touch-manipulation hover:bg-hover active:bg-active"
+            className="absolute right-2 top-2 rounded-full border border-border-subtle bg-background text-foreground touch-manipulation hover:bg-hover active:bg-active"
             aria-label={tProduct("close")}
           >
             <span className="sr-only">{tProduct("close")}</span>
@@ -212,7 +212,7 @@ export function QuickViewImageGallery({
         )}
 
         {discountPercent && discountPercent > 0 && (
-          <Badge variant="destructive" className="absolute top-2 left-2 text-xs px-2 py-0.5 font-semibold">
+          <Badge variant="destructive" size="compact" className="absolute top-2 left-2">
             -{discountPercent}%
           </Badge>
         )}
@@ -234,8 +234,8 @@ export function QuickViewImageGallery({
               key={`thumb-${i}`}
               type="button"
               onClick={() => setCurrentIndex(i)}
-              className={cn(
-                "relative size-10 shrink-0 overflow-hidden rounded-lg border border-border-subtle bg-muted transition-all touch-manipulation",
+                className={cn(
+                "relative size-(--control-default) shrink-0 overflow-hidden rounded-lg border border-border-subtle bg-surface-subtle transition-all touch-manipulation",
                 i === currentIndex
                   ? "ring-2 ring-ring"
                   : "hover:border-hover-border"

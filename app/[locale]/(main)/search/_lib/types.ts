@@ -42,6 +42,8 @@ export interface SearchProductFilters {
   minRating?: string | undefined
   deals?: string | undefined
   promoted?: string | undefined
+  nearby?: string | undefined
+  city?: string | undefined
   verified?: string | undefined
   availability?: string | undefined
   sort?: string | undefined

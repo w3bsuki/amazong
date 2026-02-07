@@ -94,7 +94,7 @@ export function CategoryCircle({
   insideLabelClassName,
   countClassName,
   labelPlacement = "below",
-  variant = "muted",
+  variant = "rail",
   fallbackIconSize = 24,
   fallbackIconWeight = "bold", // Bold for better visibility
   preferIcon = true, // Default to Phosphor icons
@@ -102,6 +102,7 @@ export function CategoryCircle({
   const baseClasses = cn(
     "group",
     "flex flex-col items-center justify-start",
+    "gap-0.5",
     "rounded-md p-0.5",
     "transition-colors",
     "touch-manipulation",
@@ -136,7 +137,7 @@ export function CategoryCircle({
           <span
             className={cn(
               "absolute inset-x-1 bottom-1 select-none text-center leading-none line-clamp-1",
-              "text-2xs font-medium",
+              "text-compact font-semibold",
               "text-foreground",
               insideLabelClassName
             )}
@@ -154,7 +155,7 @@ export function CategoryCircle({
       {labelPlacement === "below" && (
         <span
           className={cn(
-            "mt-1 w-full text-center text-2xs font-medium leading-tight line-clamp-1",
+            "mt-1 w-full text-center text-xs font-medium leading-tight line-clamp-1",
             labelClassName
           )}
         >
@@ -164,7 +165,7 @@ export function CategoryCircle({
       {renderCount && (
         <span
           className={cn(
-            "text-2xs text-muted-foreground leading-none -mt-0.5",
+            "text-tiny text-muted-foreground leading-none -mt-0.5",
             countClassName
           )}
         >

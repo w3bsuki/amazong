@@ -9,13 +9,16 @@ export type IconButtonProps = Omit<ButtonProps, "size"> & {
    */
   "aria-label": string
   /**
-   * Defaults to 44px (`size="icon"`). Avoid smaller icon buttons on mobile.
+   * Defaults to 44px (`size="icon-default"`). Use compact size only for dense overlays.
    */
-  size?: Extract<ButtonProps["size"], "icon" | "icon-sm" | "icon-lg">
+  size?: Extract<
+    ButtonProps["size"],
+    "icon" | "icon-sm" | "icon-lg" | "icon-compact" | "icon-default" | "icon-primary"
+  >
 }
 
 const IconButton = React.forwardRef<HTMLButtonElement, IconButtonProps>(function IconButton(
-  { variant = "ghost", size = "icon", className, ...props }: IconButtonProps,
+  { variant = "ghost", size = "icon-default", className, ...props }: IconButtonProps,
   ref
 ) {
   return (

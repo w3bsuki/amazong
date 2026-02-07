@@ -1,33 +1,17 @@
-# AGENT-MAP.md — Intent to Skill Routing
+# AGENT-MAP.md — Skill Reference (Optional)
 
-> Quick router for humans and agents. Use this when deciding which specialist to apply first.
+> **This is a reference table, not a mandatory routing step.** For standard tasks, implement directly following the non-negotiables. Only consult this when you need specialist knowledge or the user explicitly asks to use skills/subagents.
 
 | Intent | Primary Skill | Secondary Skills | Notes |
 |-------|---------------|------------------|-------|
-| Repo rails, pause conditions, safety checks | `treido-rails` | — | Always apply first |
-| UI hierarchy, spacing, states, visual polish | `treido-design` | `treido-ui-ux-pro-max`, `treido-accessibility` | Product/UI only |
-| Mobile behavior, touch targets, safe-area, native feel | `treido-mobile-ux` | `treido-design`, `treido-accessibility` | Mobile-first surfaces |
-| App Router, RSC/client boundaries, caching | `treido-nextjs-16` | `treido-structure` | `proxy.ts` conventions |
-| Tailwind v4 token compliance | `treido-tailwind-v4` | `treido-tailwind-v4-shadcn` | No palette/arbitrary/gradients |
-| shadcn primitive composition and boundaries | `treido-shadcn-ui` | `treido-tailwind-v4` | `components/ui/*` only |
-| i18n/next-intl copy and locale hygiene | `treido-i18n` | `treido-rails` | No hardcoded user copy |
-| Supabase query shape, RLS-safe patterns | `treido-supabase` | `treido-auth-supabase` | Explicit selects on hot paths |
-| Auth/session boundaries (Supabase + Next.js) | `treido-auth-supabase` | `treido-nextjs-16` | Protected routes/session flow |
-| Payments/webhooks/idempotency | `treido-stripe` | `treido-backend` | Signature + idempotency required |
+| Tailwind token compliance + shadcn boundaries | `treido-styling` | `treido-design` | No palette/arbitrary/gradient classes |
+| UI hierarchy, states, and mobile-native polish | `treido-design` | `treido-a11y` | Product/UI behavior |
+| App Router, RSC/client boundaries, caching | `treido-nextjs` | `treido-data` | `proxy.ts` conventions |
+| Supabase query shape + auth/session boundaries | `treido-data` | `treido-nextjs` | RLS-safe reads/writes |
+| Payments, webhooks, and idempotency | `treido-payments` | `treido-data` | Signature + dedupe required |
 | Test strategy, E2E stability, deflaking | `treido-testing` | — | Verification-focused |
-| File placement / module boundaries | `treido-structure` | `treido-nextjs-16` | Keep boundaries strict |
-| Frontend task orchestration | `treido-frontend` | All frontend specialists | Routing skill only |
-| Backend task orchestration | `treido-backend` | Supabase/Auth/Stripe | Routing skill only |
-| Skill system maintenance | `treido-skillsmith` | `treido-rails` | `.codex/skills` governance |
+| Accessibility semantics/focus/keyboard/screen reader | `treido-a11y` | `treido-design` | WCAG 2.2 AA baseline |
 
 ---
 
-## Decision Rule
-
-1. Pick one primary skill based on the highest-risk domain.
-2. Add only the minimal secondary skills needed for correctness.
-3. If task crosses DB/auth/payments, apply `treido-rails` pause rules.
-
----
-
-*Last updated: 2026-02-06*
+*Last updated: 2026-02-07*

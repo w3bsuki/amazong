@@ -22,16 +22,13 @@
 
 | Domain | Skill | Owns |
 |--------|-------|------|
-| Rails (always-on) | `treido-rails` | Non-negotiables + pause conditions |
+| Styling | `treido-styling` | Tailwind v4 semantic token rails + shadcn-safe patterns |
 | UI/UX design | `treido-design` | Hierarchy, spacing, states, polish |
-| Mobile UX | `treido-mobile-ux` | Touch, safe areas, dvh/viewport, native feel |
-| Next.js 16 | `treido-nextjs-16` | App Router, caching, RSC/client boundaries |
-| Tailwind v4 | `treido-tailwind-v4` | Token rails + forbidden patterns |
-| shadcn/ui | `treido-shadcn-ui` | UI primitives boundaries + composition |
-| Supabase | `treido-supabase` | SSR clients, queries, RLS mindset |
-| Stripe | `treido-stripe` | Webhooks, idempotency, payments safety |
-| Structure | `treido-structure` | File placement + boundaries |
-| Skill system | `treido-skillsmith` | `.codex/skills/**` + docs + tooling |
+| Next.js App Router | `treido-nextjs` | Route/layout boundaries, Server vs Client, cache-safe request patterns |
+| Data + auth | `treido-data` | Supabase client selection, query shape, auth/session boundaries |
+| Payments | `treido-payments` | Checkout/webhooks/idempotency safety |
+| Testing | `treido-testing` | Playwright + Next.js deflaking and CI stability |
+| Accessibility | `treido-a11y` | WCAG 2.2 AA semantics, keyboard/focus, screen-reader support |
 
 ---
 

@@ -73,6 +73,7 @@ export type FilterHubSection =
   | "category"
   | "rating"
   | "price"
+  | "location"
   | "availability"
   | `attr_${string}`
 

@@ -13,6 +13,10 @@ This file defines the docs architecture and the minimum command set.
    - machine-readable launch state.
 4. `.codex/**`:
    - runtime work state (`TASKS`, `DECISIONS`, `SHIPPED`).
+5. Skill sources:
+   - `.claude/skills/**` is canonical.
+   - `.agents/skills/**` is the Codex compatibility mirror.
+   - `$CODEX_HOME/skills/.system/**` holds Codex built-in system skills.
 
 ## Canonical Naming
 
@@ -62,7 +66,8 @@ pnpm -s docs
 Use maintenance commands only when needed:
 
 - `docs:status:build` when readiness inputs changed.
-- `skills:sync` when `.codex/skills/**` changed.
+- `skills:sync` when `.claude/skills/**` changed.
+  Use `--home` only when intentionally syncing user-home skills.
 - `docs` when browsing docs-site locally.
 
 ## Rules
@@ -72,4 +77,4 @@ Use maintenance commands only when needed:
 - Keep generated artifacts out of git tracking (`docs-site/public/_pagefind`).
 - Do not add new doc systems outside this architecture.
 
-Last updated: 2026-02-06
+Last updated: 2026-02-07

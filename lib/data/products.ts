@@ -595,7 +595,7 @@ export function toUI(p: Product): UIProduct {
     sellerEmailVerified: p.seller_profile?.email_verified ?? false,
     sellerPhoneVerified: p.seller_profile?.phone_verified ?? false,
     sellerIdVerified: p.seller_profile?.id_verified ?? false,
-    freeShipping: Boolean(p.free_shipping),
+    freeShipping: p.free_shipping === true,
     ...(Object.keys(attrs).length ? { attributes: attrs } : {}),
     ...(typeof attrs.condition === "string" ? { condition: attrs.condition } : {}),
     ...(typeof attrs.brand === "string" ? { brand: attrs.brand } : {}),

@@ -1,13 +1,14 @@
 import fs from "node:fs";
 import path from "node:path";
+import crypto from "node:crypto";
 
 const args = new Set(process.argv.slice(2));
 const warnOnly = args.has("--warn-only");
 const strictRubric = args.has("--strict-rubric");
 
 const repoRoot = path.resolve(process.cwd());
-const repoSkillsRoot = path.join(repoRoot, ".codex", "skills");
 const claudeSkillsRoot = path.join(repoRoot, ".claude", "skills");
+const agentsSkillsRoot = path.join(repoRoot, ".agents", "skills");
 
 const errors = new Set();
 const warnings = new Set();
@@ -68,6 +69,15 @@ function listSkillDirs(root) {
     .filter((entry) => entry.isDirectory() && !entry.name.startsWith("."))
     .map((entry) => path.join(root, entry.name))
     .sort((a, b) => a.localeCompare(b));
+}
+
+function listSkillNames(root) {
+  return listSkillDirs(root).map((skillDir) => path.basename(skillDir));
+}
+
+function hashFile(filePath) {
+  const content = fs.readFileSync(filePath);
+  return crypto.createHash("sha256").update(content).digest("hex");
 }
 
 function scanDocLikePaths(content) {
@@ -174,16 +184,48 @@ function validateRoot(root) {
   }
 }
 
+function validateMirrorParity() {
+  if (!fs.existsSync(claudeSkillsRoot) || !fs.existsSync(agentsSkillsRoot)) return;
+
+  const claudeNames = listSkillNames(claudeSkillsRoot);
+  const agentNames = listSkillNames(agentsSkillsRoot);
+  const claudeSet = new Set(claudeNames);
+  const agentSet = new Set(agentNames);
+
+  for (const name of claudeNames) {
+    if (!agentSet.has(name)) {
+      addError(`mirror parity: missing '${name}' in .agents/skills`);
+    }
+  }
+
+  for (const name of agentNames) {
+    if (!claudeSet.has(name)) {
+      addError(`mirror parity: extra '${name}' found in .agents/skills`);
+    }
+  }
+
+  for (const name of claudeNames) {
+    if (!agentSet.has(name)) continue;
+    const claudeSkill = path.join(claudeSkillsRoot, name, "SKILL.md");
+    const agentSkill = path.join(agentsSkillsRoot, name, "SKILL.md");
+    if (!fs.existsSync(claudeSkill) || !fs.existsSync(agentSkill)) continue;
+    if (hashFile(claudeSkill) !== hashFile(agentSkill)) {
+      addError(`mirror parity: SKILL.md differs for '${name}' between .claude and .agents`);
+    }
+  }
+}
+
 function main() {
-  const roots = [repoSkillsRoot, claudeSkillsRoot].filter((root) => fs.existsSync(root));
+  const roots = [claudeSkillsRoot, agentsSkillsRoot].filter((root) => fs.existsSync(root));
   if (roots.length === 0) {
-    process.stdout.write("No skills folders found (.codex/skills or .claude/skills).\n");
+    process.stdout.write("No skills folders found (.claude/skills or .agents/skills).\n");
     return;
   }
 
   for (const root of roots) {
     validateRoot(root);
   }
+  validateMirrorParity();
 
   if (warnings.size > 0) {
     process.stdout.write(`\nSkill validation warnings (${warnings.size}):\n`);

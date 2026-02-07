@@ -60,7 +60,7 @@ export function MobileCartDropdown() {
         return (
             <Link
                 href="/cart"
-                className="flex items-center justify-center size-touch-md rounded-xl relative hover:bg-header-hover active:bg-header-active touch-manipulation tap-transparent"
+                className="relative flex size-touch-md items-center justify-center rounded-md tap-transparent hover:bg-header-hover active:bg-header-active touch-manipulation"
                 aria-label={tNav('cart')}
             >
                 <span className="relative" aria-hidden="true">
@@ -74,7 +74,7 @@ export function MobileCartDropdown() {
         <Drawer open={open} onOpenChange={setOpen}>
             <DrawerTrigger asChild>
                 <button
-                    className="flex items-center justify-center size-touch-md rounded-xl relative hover:bg-header-hover active:bg-header-active touch-manipulation tap-transparent"
+                    className="relative flex size-touch-md appearance-none items-center justify-center rounded-md border-0 bg-transparent tap-transparent hover:bg-header-hover active:bg-header-active touch-manipulation"
                     aria-label={tNav('cart')}
                 >
                     <span className="relative" aria-hidden="true">
@@ -82,7 +82,7 @@ export function MobileCartDropdown() {
                         {displayItems > 0 && (
                             <CountBadge
                                 count={displayItems}
-                                className="absolute -top-1 -right-1 bg-cart-badge text-primary-foreground ring-1 ring-header-bg h-3.5 min-w-3.5 px-0.5 text-2xs leading-none"
+                                className="absolute -top-1 -right-1 h-4 min-w-4 bg-cart-badge px-1 text-2xs leading-none text-primary-foreground ring-1 ring-header-bg"
                                 aria-hidden="true"
                             />
                         )}
@@ -103,6 +103,7 @@ export function MobileCartDropdown() {
                             <IconButton
                                 aria-label={t('close')}
                                 variant="ghost"
+                                size="icon-compact"
                                 className="text-muted-foreground hover:text-foreground hover:bg-muted active:bg-muted"
                             >
                                 <X size={20} weight="light" />
@@ -116,7 +117,7 @@ export function MobileCartDropdown() {
 
                 {items.length === 0 ? (
                     <div className="flex flex-col items-center justify-center px-inset py-5">
-                        <div className="size-11 bg-muted rounded-xl flex items-center justify-center mb-2">
+                        <div className="mb-2 flex size-(--control-default) items-center justify-center rounded-xl bg-muted">
                             <ShoppingCart size={22} weight="regular" className="text-muted-foreground" />
                         </div>
                         <p className="text-sm text-foreground font-medium">{t('empty')}</p>
@@ -177,6 +178,7 @@ export function MobileCartDropdown() {
                                                 data-vaul-no-drag
                                                 aria-label={t('removeItem')}
                                                 variant="ghost"
+                                                size="icon-compact"
                                                 className="hover:bg-destructive-subtle text-muted-foreground hover:text-destructive"
                                                 onClick={() => removeFromCart(item.id, item.variantId)}
                                             >
@@ -188,6 +190,7 @@ export function MobileCartDropdown() {
                                                 data-vaul-no-drag
                                                 aria-label={t('decreaseQuantity')}
                                                 variant="ghost"
+                                                size="icon-compact"
                                                 className="hover:bg-muted text-muted-foreground hover:text-foreground"
                                                 onClick={() => {
                                                     if (item.quantity > 1) {
@@ -206,6 +209,7 @@ export function MobileCartDropdown() {
                                                 data-vaul-no-drag
                                                 aria-label={t('increaseQuantity')}
                                                 variant="ghost"
+                                                size="icon-compact"
                                                 className="hover:bg-muted text-muted-foreground hover:text-foreground"
                                                 onClick={() => updateQuantity(item.id, item.quantity + 1, item.variantId)}
                                             >
@@ -237,7 +241,7 @@ export function MobileCartDropdown() {
                                     {t('checkout')}
                                 </Link>
                             </Button>
-                            <Button variant="outline" size="sm" className="w-full" asChild>
+                            <Button variant="outline" size="default" className="w-full" asChild>
                                 <Link href="/cart" onClick={() => setOpen(false)}>
                                     {t('viewCart')}
                                 </Link>

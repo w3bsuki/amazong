@@ -5,9 +5,14 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 const badgeVariants = cva(
-  "inline-flex items-center justify-center gap-1 rounded-full border px-2 py-0.5 text-xs font-medium leading-tight w-fit whitespace-nowrap shrink-0 select-none transition-colors [&>svg]:size-3 [&>svg]:shrink-0",
+  "inline-flex w-fit shrink-0 select-none items-center justify-center whitespace-nowrap rounded-full border font-medium leading-none transition-colors [&>svg]:shrink-0",
   {
     variants: {
+      size: {
+        compact: "min-h-4.5 gap-1 px-1.5 text-2xs [&>svg]:size-2.5",
+        default: "min-h-5 gap-1 px-2 text-2xs [&>svg]:size-3",
+        prominent: "min-h-6 gap-1.5 px-2.5 text-xs [&>svg]:size-3.5",
+      },
       variant: {
         // Base (shadcn-like)
         default: "border-transparent bg-secondary text-secondary-foreground",
@@ -73,6 +78,7 @@ const badgeVariants = cva(
       },
     },
     defaultVariants: {
+      size: "default",
       variant: "default",
     },
   }
@@ -84,6 +90,7 @@ const badgeVariants = cva(
 function Badge({
   className,
   variant,
+  size,
   asChild = false,
   ...props
 }: React.ComponentProps<"span"> &
@@ -93,7 +100,7 @@ function Badge({
   return (
     <Comp
       data-slot="badge"
-      className={cn(badgeVariants({ variant }), className)}
+      className={cn(badgeVariants({ variant, size }), className)}
       {...props}
     />
   )
