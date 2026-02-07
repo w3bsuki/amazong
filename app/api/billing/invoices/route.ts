@@ -1,31 +1,34 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { errorEnvelope, successEnvelope } from '@/lib/api/envelope'
 import { createRouteHandlerClient } from '@/lib/supabase/server'
+import { STRIPE_CUSTOMER_ID_SELECT } from '@/lib/supabase/selects/billing'
 import { stripe } from '@/lib/stripe'
 import { isNextPrerenderInterrupted } from '@/lib/next/is-next-prerender-interrupted'
 
 export async function GET(request: NextRequest) {
   if (process.env.NEXT_PHASE === 'phase-production-build') {
-    const res = NextResponse.json({ skipped: true }, { status: 200 })
+    const res = NextResponse.json(successEnvelope({ skipped: true }), { status: 200 })
     res.headers.set('Cache-Control', 'private, no-store')
     res.headers.set('CDN-Cache-Control', 'private, no-store')
     res.headers.set('Vercel-CDN-Cache-Control', 'private, no-store')
     return res
   }
+
+  const { supabase, applyCookies } = createRouteHandlerClient(request)
+  const json = (body: unknown, init?: Parameters<typeof NextResponse.json>[1]) =>
+    applyCookies(NextResponse.json(body, init))
+
   try {
-    const { supabase, applyCookies } = createRouteHandlerClient(request)
-    const json = (body: unknown, init?: Parameters<typeof NextResponse.json>[1]) =>
-      applyCookies(NextResponse.json(body, init))
-    
     const { data: { user } } = await supabase.auth.getUser()
     
     if (!user) {
-      return json({ error: 'Unauthorized' }, { status: 401 })
+      return json(errorEnvelope({ error: 'Unauthorized' }), { status: 401 })
     }
 
     // Get user's stripe_customer_id from private profile (PII/billing surface)
     const { data: profile } = await supabase
       .from('private_profiles')
-      .select('stripe_customer_id')
+      .select(STRIPE_CUSTOMER_ID_SELECT)
       .eq('id', user.id)
       .single()
 
@@ -34,7 +37,7 @@ export async function GET(request: NextRequest) {
     ].filter(Boolean) as string[]
 
     if (customerIds.length === 0) {
-      return json({ invoices: [], charges: [] })
+      return json(successEnvelope({ invoices: [], charges: [] }))
     }
 
     // Fetch invoices and charges from all customer IDs
@@ -118,20 +121,20 @@ export async function GET(request: NextRequest) {
     allInvoices.sort((a, b) => b.created - a.created)
     allCharges.sort((a, b) => b.created - a.created)
 
-    return json({ 
+    return json(successEnvelope({ 
       invoices: allInvoices,
       charges: allCharges,
-    })
+    }))
   } catch (error) {
     if (isNextPrerenderInterrupted(error)) {
-      const res = NextResponse.json({ skipped: true }, { status: 200 })
+      const res = NextResponse.json(successEnvelope({ skipped: true }), { status: 200 })
       res.headers.set('Cache-Control', 'private, no-store')
       return res
     }
     console.error('Error fetching billing data:', error)
 
-    return NextResponse.json(
-      { error: 'Failed to fetch billing data' },
+    return json(
+      errorEnvelope({ error: 'Failed to fetch billing data' }),
       { status: 500 }
     )
   }

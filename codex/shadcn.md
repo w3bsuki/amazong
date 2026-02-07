@@ -1,3 +1,7 @@
+
+> Execution Status: Reference Only
+> This playbook is an input reference. Active execution tracking lives in codex/master-refactor-plan.md and codex/phases/*.md.
+
 # Task: Component Library (shadcn/ui) Audit & Refactor
 
 > **Read `codex/AGENTS.md` first.** It contains the project context, folder map, non-negotiables, and verification gates.

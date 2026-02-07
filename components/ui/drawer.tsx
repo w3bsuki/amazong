@@ -119,7 +119,7 @@ function DrawerOverlay({
     <DrawerPrimitive.Overlay
       data-slot="drawer-overlay"
       className={cn(
-        "fixed inset-0 z-50 bg-overlay-dark",
+        "fixed inset-0 z-60 bg-overlay-dark",
         blurClasses[blur],
         className
       )}
@@ -208,7 +208,7 @@ function DrawerContent({
         data-slot="drawer-content"
         aria-describedby={hasDescription ? ariaDescribedBy : undefined}
         className={cn(
-          "group/drawer-content fixed z-50 flex h-auto min-h-0 flex-col overflow-hidden bg-surface-elevated shadow-modal outline-none",
+          "group/drawer-content fixed z-60 flex h-auto min-h-0 flex-col overflow-hidden bg-surface-elevated shadow-modal outline-none",
           // Bottom drawer - standard mobile drawer (most common)
           "data-[vaul-drawer-direction=bottom]:inset-x-0 data-[vaul-drawer-direction=bottom]:bottom-0",
           "data-[vaul-drawer-direction=bottom]:mt-24 data-[vaul-drawer-direction=bottom]:max-h-dialog",

@@ -101,8 +101,9 @@ const MockDrawerContext = createContext({
     cart: { open: false },
     messages: { open: false },
     account: { open: false },
+    auth: { open: false, mode: "login" as const, entrypoint: "other" as const },
   },
-  enabledDrawers: { productQuickView: true, cart: true, messages: true, account: true },
+  enabledDrawers: { productQuickView: true, cart: true, messages: true, account: true, auth: true },
   isDrawerSystemEnabled: true,
   openProductQuickView: () => {},
   closeProductQuickView: () => {},
@@ -112,6 +113,9 @@ const MockDrawerContext = createContext({
   closeMessages: () => {},
   openAccount: () => {},
   closeAccount: () => {},
+  openAuth: () => {},
+  setAuthMode: () => {},
+  closeAuth: () => {},
 });
 const MockDrawerProvider = ({ children }: { children: React.ReactNode }) => {
   const value = useMemo(() => ({
@@ -120,8 +124,9 @@ const MockDrawerProvider = ({ children }: { children: React.ReactNode }) => {
       cart: { open: false },
       messages: { open: false },
       account: { open: false },
+      auth: { open: false, mode: "login" as const, entrypoint: "other" as const },
     },
-    enabledDrawers: { productQuickView: true, cart: true, messages: true, account: true },
+    enabledDrawers: { productQuickView: true, cart: true, messages: true, account: true, auth: true },
     isDrawerSystemEnabled: true,
     openProductQuickView: () => console.log("[Storybook] openProductQuickView called"),
     closeProductQuickView: () => {},
@@ -131,6 +136,9 @@ const MockDrawerProvider = ({ children }: { children: React.ReactNode }) => {
     closeMessages: () => {},
     openAccount: () => console.log("[Storybook] openAccount called"),
     closeAccount: () => {},
+    openAuth: () => console.log("[Storybook] openAuth called"),
+    setAuthMode: () => {},
+    closeAuth: () => {},
   }), []);
   return <MockDrawerContext.Provider value={value}>{children}</MockDrawerContext.Provider>;
 };

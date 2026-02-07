@@ -9,7 +9,6 @@ const withBundleAnalyzer = bundleAnalyzer({
 });
 
 const isE2E = process.env.NEXT_PUBLIC_E2E === 'true'
-const isWindows = process.platform === 'win32'
 
 const nextConfig: NextConfig = {
   // ============================================
@@ -113,20 +112,11 @@ const nextConfig: NextConfig = {
     ],
   },
 
-  // Experimental features for better performance
+  // Keep experimental config minimal and production-relevant.
   experimental: {
-    // Server Actions configuration - Allow up to 10MB for image uploads
     serverActions: {
       bodySizeLimit: '10mb',
     },
-    // Windows stability: avoid over-parallelizing the build workers and worker_threads.
-    // This mitigates intermittent build-worker crashes and filesystem cleanup races.
-    ...(isWindows ? { cpus: 4, workerThreads: false } : {}),
-    // Persist Turbopack compiler artifacts across restarts for faster local dev.
-    turbopackFileSystemCacheForDev: true,
-    // Enable optimistic updates for faster navigation
-    optimisticClientCache: true,
-    // Optimize package imports for smaller bundles
     optimizePackageImports: ['@phosphor-icons/react', 'date-fns', 'recharts'],
   },
 

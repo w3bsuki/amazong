@@ -1,5 +1,10 @@
 import { createRouteHandlerClient } from "@/lib/supabase/server"
+import { errorEnvelope, successEnvelope } from "@/lib/api/envelope"
 import { stripe } from "@/lib/stripe"
+import {
+    STRIPE_CUSTOMER_ID_SELECT,
+    USER_PAYMENT_METHOD_VERIFICATION_SELECT,
+} from "@/lib/supabase/selects/billing"
 import { logError } from "@/lib/structured-log"
 import { NextResponse } from "next/server"
 import { z } from "zod"
@@ -20,12 +25,19 @@ export async function POST(request: import("next/server").NextRequest) {
         const { data: { user } } = await supabase.auth.getUser()
         
         if (!user) {
-            return json({ error: "Not authenticated" }, { status: 401 })
+            return json(errorEnvelope({ error: "Not authenticated" }), { status: 401 })
         }
 
-        const parseResult = BodySchema.safeParse(await request.json())
+        let body: unknown
+        try {
+            body = await request.json()
+        } catch {
+            return json(errorEnvelope({ error: "Missing required fields" }), { status: 400 })
+        }
+
+        const parseResult = BodySchema.safeParse(body)
         if (!parseResult.success) {
-            return json({ error: "Missing required fields" }, { status: 400 })
+            return json(errorEnvelope({ error: "Missing required fields" }), { status: 400 })
         }
 
         const { paymentMethodId, dbId } = parseResult.data
@@ -33,22 +45,22 @@ export async function POST(request: import("next/server").NextRequest) {
         // Get profile with Stripe customer ID
         const { data: profile } = await supabase
             .from('private_profiles')
-            .select('stripe_customer_id')
+            .select(STRIPE_CUSTOMER_ID_SELECT)
             .eq('id', user.id)
             .single()
 
         if (!profile?.stripe_customer_id) {
-            return json({ error: "No Stripe customer found" }, { status: 400 })
+            return json(errorEnvelope({ error: "No Stripe customer found" }), { status: 400 })
         }
 
         const { data: paymentRow, error: paymentRowError } = await supabase
             .from('user_payment_methods')
-            .select('id, user_id, stripe_payment_method_id, stripe_customer_id')
+            .select(USER_PAYMENT_METHOD_VERIFICATION_SELECT)
             .eq('id', dbId)
             .single()
 
         if (paymentRowError || !paymentRow) {
-            return json({ error: "Payment method not found" }, { status: 404 })
+            return json(errorEnvelope({ error: "Payment method not found" }), { status: 404 })
         }
 
         if (
@@ -56,7 +68,7 @@ export async function POST(request: import("next/server").NextRequest) {
             paymentRow.stripe_payment_method_id !== paymentMethodId ||
             paymentRow.stripe_customer_id !== profile.stripe_customer_id
         ) {
-            return json({ error: "Forbidden" }, { status: 403 })
+            return json(errorEnvelope({ error: "Forbidden" }), { status: 403 })
         }
 
         const paymentMethod = await stripe.paymentMethods.retrieve(paymentMethodId)
@@ -66,7 +78,7 @@ export async function POST(request: import("next/server").NextRequest) {
                 : paymentMethod.customer?.id
 
         if (!stripeCustomer || stripeCustomer !== profile.stripe_customer_id) {
-            return json({ error: "Forbidden" }, { status: 403 })
+            return json(errorEnvelope({ error: "Forbidden" }), { status: 403 })
         }
 
         // Update default payment method in Stripe
@@ -96,13 +108,13 @@ export async function POST(request: import("next/server").NextRequest) {
             throw updateError
         }
 
-        return json({ success: true })
+        return json(successEnvelope())
     } catch (error) {
         logError("payments_set_default_handler_failed", error, {
             route: "api/payments/set-default",
         })
         return json(
-            { error: "Failed to set default payment method" },
+            errorEnvelope({ error: "Failed to set default payment method" }),
             { status: 500 }
         )
     }

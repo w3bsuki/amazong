@@ -1,22 +1,26 @@
 import { createRouteHandlerClient } from "@/lib/supabase/server"
+import { errorEnvelope, successEnvelope } from "@/lib/api/envelope"
 import { stripe } from "@/lib/stripe"
+import { STRIPE_CUSTOMER_ID_SELECT } from "@/lib/supabase/selects/billing"
 import { NextResponse } from "next/server"
 import { buildLocaleUrl, inferLocaleFromRequest } from "@/lib/stripe-locale"
 
 export async function POST(request: import("next/server").NextRequest) {
-    try {
-        const { supabase, applyCookies } = createRouteHandlerClient(request)
+    const { supabase, applyCookies } = createRouteHandlerClient(request)
+    const json = (body: unknown, init?: Parameters<typeof NextResponse.json>[1]) =>
+        applyCookies(NextResponse.json(body, init))
 
+    try {
         const { data: { user } } = await supabase.auth.getUser()
         
         if (!user) {
-            return applyCookies(NextResponse.json({ error: "Not authenticated" }, { status: 401 }))
+            return json(errorEnvelope({ error: "Not authenticated" }), { status: 401 })
         }
 
         // Get or create Stripe customer
         const { data: profile } = await supabase
             .from('private_profiles')
-            .select('stripe_customer_id')
+            .select(STRIPE_CUSTOMER_ID_SELECT)
             .eq('id', user.id)
             .single()
 
@@ -39,9 +43,9 @@ export async function POST(request: import("next/server").NextRequest) {
                 .eq('id', user.id)
         }
 
-            if (!stripeCustomerId) {
-                return applyCookies(NextResponse.json({ error: "Stripe customer creation failed" }, { status: 500 }))
-            }
+        if (!stripeCustomerId) {
+            return json(errorEnvelope({ error: "Stripe customer creation failed" }), { status: 500 })
+        }
 
         const locale = inferLocaleFromRequest(request)
 
@@ -57,11 +61,11 @@ export async function POST(request: import("next/server").NextRequest) {
             }
         })
 
-        return applyCookies(NextResponse.json({ url: session.url }))
+        return json(successEnvelope({ url: session.url }))
     } catch (error) {
         console.error("Error creating setup session:", error)
-        return NextResponse.json(
-            { error: "Failed to create setup session" },
+        return json(
+            errorEnvelope({ error: "Failed to create setup session" }),
             { status: 500 }
         )
     }

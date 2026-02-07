@@ -1,4 +1,4 @@
-import { routing, validateLocale } from "@/i18n/routing"
+import { validateLocale } from "@/i18n/routing"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import type { Metadata } from "next"
 import MembersPageClient from "./_components/members-page-client"
@@ -22,10 +22,6 @@ interface MembersPageProps {
   searchParams: Promise<MembersSearchParams>
 }
 
-export function generateStaticParams() {
-  return routing.locales.map((locale) => ({ locale }))
-}
-
 export default async function MembersPage({ params, searchParams }: MembersPageProps) {
   const { locale: localeParam } = await params
   const locale = validateLocale(localeParam)
@@ -38,3 +34,4 @@ export default async function MembersPage({ params, searchParams }: MembersPageP
     <MembersPageClient {...data} locale={locale} />
   )
 }
+

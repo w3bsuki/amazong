@@ -24,6 +24,7 @@ export type FeatureFlagName =
   | "drawerCart"             // Cart drawer
   | "drawerMessages"         // Messages drawer
   | "drawerAccount"          // Account drawer
+  | "drawerAuth"             // Auth drawer
 
 export interface FeatureFlag {
   /** Whether the feature is enabled by default */
@@ -71,6 +72,12 @@ const FEATURE_FLAGS: Record<FeatureFlagName, FeatureFlag> = {
     envOverride: "NEXT_PUBLIC_FEATURE_DRAWER_ACCOUNT",
     description: "Enable account drawer on mobile",
   },
+  drawerAuth: {
+    enabled: true,
+    rolloutPercentage: 100,
+    envOverride: "NEXT_PUBLIC_FEATURE_DRAWER_AUTH",
+    description: "Enable auth drawer on mobile",
+  },
 }
 
 // =============================================================================
@@ -90,6 +97,7 @@ const PUBLIC_ENV_OVERRIDES: Record<string, string | undefined> = {
   NEXT_PUBLIC_FEATURE_DRAWER_CART: process.env.NEXT_PUBLIC_FEATURE_DRAWER_CART,
   NEXT_PUBLIC_FEATURE_DRAWER_MESSAGES: process.env.NEXT_PUBLIC_FEATURE_DRAWER_MESSAGES,
   NEXT_PUBLIC_FEATURE_DRAWER_ACCOUNT: process.env.NEXT_PUBLIC_FEATURE_DRAWER_ACCOUNT,
+  NEXT_PUBLIC_FEATURE_DRAWER_AUTH: process.env.NEXT_PUBLIC_FEATURE_DRAWER_AUTH,
 }
 
 /**
@@ -190,5 +198,6 @@ export function getEnabledDrawers() {
     cart: isFeatureEnabled("drawerCart"),
     messages: isFeatureEnabled("drawerMessages"),
     account: isFeatureEnabled("drawerAccount"),
+    auth: isFeatureEnabled("drawerAuth"),
   }
 }

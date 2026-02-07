@@ -1,7 +1,6 @@
 import { Suspense } from "react"
 import type { Metadata } from "next"
 import { getTranslations, setRequestLocale } from "next-intl/server"
-import { routing } from "@/i18n/routing"
 import { MobileHome } from "@/components/mobile/mobile-home"
 import { 
   getNewestProducts, 
@@ -15,10 +14,6 @@ import {
   DesktopHome, 
   DesktopHomeSkeleton 
 } from "@/components/desktop/desktop-home"
-
-export function generateStaticParams() {
-  return routing.locales.map((locale) => ({ locale }))
-}
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
@@ -112,3 +107,4 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
     </div>
   )
 }
+

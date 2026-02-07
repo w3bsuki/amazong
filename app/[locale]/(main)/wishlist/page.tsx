@@ -1,11 +1,7 @@
-import { routing, validateLocale } from "@/i18n/routing"
+import { validateLocale } from "@/i18n/routing"
 import { setRequestLocale, getTranslations } from "next-intl/server"
 import WishlistPageClient from "./_components/wishlist-page-client"
 import type { Metadata } from "next"
-
-export function generateStaticParams() {
-  return routing.locales.map((locale) => ({ locale }))
-}
 
 export async function generateMetadata({
   params,
@@ -31,3 +27,4 @@ export default async function WishlistPage({
   setRequestLocale(locale)
   return <WishlistPageClient />
 }
+

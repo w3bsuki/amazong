@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { errorEnvelope, successEnvelope } from '@/lib/api/envelope'
 import { createRouteHandlerClient } from '@/lib/supabase/server'
+import { STRIPE_CUSTOMER_ID_SELECT } from '@/lib/supabase/selects/billing'
 import { stripe } from '@/lib/stripe'
 
 function getAppUrl() {
@@ -41,20 +43,20 @@ export async function POST(req: NextRequest) {
     const { data: { user } } = await supabase.auth.getUser()
     
     if (!user) {
-      return json({ error: 'Unauthorized' }, { status: 401 })
+      return json(errorEnvelope({ error: 'Unauthorized' }), { status: 401 })
     }
 
     // Get seller's subscription to find the Stripe customer ID
     const { data: subscription } = await supabase
       .from('subscriptions')
-      .select('stripe_customer_id')
+      .select(STRIPE_CUSTOMER_ID_SELECT)
       .eq('seller_id', user.id)
       .eq('status', 'active')
       .single()
 
     if (!subscription?.stripe_customer_id) {
       return json(
-        { error: 'No active subscription found' },
+        errorEnvelope({ error: 'No active subscription found' }),
         { status: 404 }
       )
     }
@@ -68,11 +70,11 @@ export async function POST(req: NextRequest) {
       return_url: accountPlansUrl,
     })
 
-    return json({ url: portalSession.url })
+    return json(successEnvelope({ url: portalSession.url }))
   } catch (error) {
     console.error('Portal session error:', error)
     return json(
-      { error: 'Failed to create portal session' },
+      errorEnvelope({ error: 'Failed to create portal session' }),
       { status: 500 }
     )
   }

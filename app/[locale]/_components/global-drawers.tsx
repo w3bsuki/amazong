@@ -1,7 +1,13 @@
 "use client"
 
 import { useDrawer } from "@/components/providers/drawer-context"
-import { ProductQuickViewDrawer, CartDrawer, MessagesDrawer, AccountDrawer } from "@/components/mobile/drawers"
+import {
+  ProductQuickViewDrawer,
+  CartDrawer,
+  MessagesDrawer,
+  AccountDrawer,
+  AuthDrawer,
+} from "@/components/mobile/drawers"
 import { ProductQuickViewDialog } from "@/components/desktop/product/product-quick-view-dialog"
 
 /**
@@ -9,7 +15,15 @@ import { ProductQuickViewDialog } from "@/components/desktop/product/product-qui
  * Mount once at the app root (inside DrawerProvider).
  */
 export function GlobalDrawers() {
-  const { state, closeProductQuickView, closeCart, closeMessages, closeAccount } = useDrawer()
+  const {
+    state,
+    closeProductQuickView,
+    closeCart,
+    closeMessages,
+    closeAccount,
+    closeAuth,
+    setAuthMode,
+  } = useDrawer()
 
   return (
     <>
@@ -44,6 +58,14 @@ export function GlobalDrawers() {
         onOpenChange={(open) => {
           if (!open) closeAccount()
         }}
+      />
+      <AuthDrawer
+        open={state.auth.open}
+        mode={state.auth.mode}
+        onOpenChange={(open) => {
+          if (!open) closeAuth()
+        }}
+        onModeChange={setAuthMode}
       />
     </>
   )

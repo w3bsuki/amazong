@@ -1,53 +1,65 @@
 import { createRouteHandlerClient } from "@/lib/supabase/server"
+import { errorEnvelope, successEnvelope } from "@/lib/api/envelope"
 import { stripe } from "@/lib/stripe"
+import {
+    STRIPE_CUSTOMER_ID_SELECT,
+    USER_PAYMENT_METHOD_VERIFICATION_SELECT,
+} from "@/lib/supabase/selects/billing"
 import { logError } from "@/lib/structured-log"
-import { NextResponse } from "next/server"
+import { NextRequest, NextResponse } from "next/server"
 import { z } from "zod"
 
-export async function POST(request: import("next/server").NextRequest) {
+const BodySchema = z
+    .object({
+        paymentMethodId: z.string().regex(/^pm_/),
+        dbId: z.string().uuid(),
+    })
+    .strict()
+
+async function handleDeletePaymentMethod(request: NextRequest) {
     const { supabase, applyCookies } = createRouteHandlerClient(request)
     const json = (body: unknown, init?: Parameters<typeof NextResponse.json>[1]) =>
         applyCookies(NextResponse.json(body, init))
-
-    const BodySchema = z
-        .object({
-            paymentMethodId: z.string().regex(/^pm_/),
-            dbId: z.string().uuid(),
-        })
-        .strict()
 
     try {
         const { data: { user } } = await supabase.auth.getUser()
         
         if (!user) {
-            return json({ error: "Not authenticated" }, { status: 401 })
+            return json(errorEnvelope({ error: "Not authenticated" }), { status: 401 })
         }
 
-        const parseResult = BodySchema.safeParse(await request.json())
+        let body: unknown
+        try {
+            body = await request.json()
+        } catch {
+            return json(errorEnvelope({ error: "Missing required fields" }), { status: 400 })
+        }
+
+        const parseResult = BodySchema.safeParse(body)
         if (!parseResult.success) {
-            return json({ error: "Missing required fields" }, { status: 400 })
+            return json(errorEnvelope({ error: "Missing required fields" }), { status: 400 })
         }
 
         const { paymentMethodId, dbId } = parseResult.data
 
         const { data: profile } = await supabase
             .from('private_profiles')
-            .select('stripe_customer_id')
+            .select(STRIPE_CUSTOMER_ID_SELECT)
             .eq('id', user.id)
             .single()
 
         if (!profile?.stripe_customer_id) {
-            return json({ error: "No Stripe customer found" }, { status: 400 })
+            return json(errorEnvelope({ error: "No Stripe customer found" }), { status: 400 })
         }
 
         const { data: paymentRow, error: paymentRowError } = await supabase
             .from('user_payment_methods')
-            .select('id, user_id, stripe_payment_method_id, stripe_customer_id')
+            .select(USER_PAYMENT_METHOD_VERIFICATION_SELECT)
             .eq('id', dbId)
             .single()
 
         if (paymentRowError || !paymentRow) {
-            return json({ error: "Payment method not found" }, { status: 404 })
+            return json(errorEnvelope({ error: "Payment method not found" }), { status: 404 })
         }
 
         if (
@@ -55,7 +67,7 @@ export async function POST(request: import("next/server").NextRequest) {
             paymentRow.stripe_payment_method_id !== paymentMethodId ||
             paymentRow.stripe_customer_id !== profile.stripe_customer_id
         ) {
-            return json({ error: "Forbidden" }, { status: 403 })
+            return json(errorEnvelope({ error: "Forbidden" }), { status: 403 })
         }
 
         const paymentMethod = await stripe.paymentMethods.retrieve(paymentMethodId)
@@ -65,7 +77,7 @@ export async function POST(request: import("next/server").NextRequest) {
                 : paymentMethod.customer?.id
 
         if (!stripeCustomer || stripeCustomer !== profile.stripe_customer_id) {
-            return json({ error: "Forbidden" }, { status: 403 })
+            return json(errorEnvelope({ error: "Forbidden" }), { status: 403 })
         }
 
         // Detach payment method from Stripe
@@ -82,14 +94,22 @@ export async function POST(request: import("next/server").NextRequest) {
             throw deleteError
         }
 
-        return json({ success: true })
+        return json(successEnvelope())
     } catch (error) {
         logError("payments_delete_handler_failed", error, {
             route: "api/payments/delete",
         })
         return json(
-            { error: "Failed to delete payment method" },
+            errorEnvelope({ error: "Failed to delete payment method" }),
             { status: 500 }
         )
     }
+}
+
+export async function POST(request: NextRequest) {
+    return handleDeletePaymentMethod(request)
+}
+
+export async function DELETE(request: NextRequest) {
+    return handleDeletePaymentMethod(request)
 }

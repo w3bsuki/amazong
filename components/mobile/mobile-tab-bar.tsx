@@ -1,16 +1,15 @@
 "use client"
 
-import * as React from "react"
 import { useEffect, useState } from "react"
 import { House, SquaresFour, ChatCircle, UserCircle, Plus } from "@phosphor-icons/react"
 import { Link, usePathname, useRouter } from "@/i18n/routing"
 import { cn } from "@/lib/utils"
 import { CountBadge } from "@/components/shared/count-badge"
-import { useLocale, useTranslations } from "next-intl"
+import { useTranslations } from "next-intl"
 import { useMessages } from "@/components/providers/message-context"
 import { useDrawer } from "@/components/providers/drawer-context"
-import { useCurrentUsername } from "@/hooks/use-current-username"
 import { useCategoryDrawerOptional } from "@/components/mobile/category-nav"
+import { useAuthOptional } from "@/components/providers/auth-state-manager"
 
 interface MobileTabBarProps {}
 
@@ -20,25 +19,16 @@ export function MobileTabBar(_: MobileTabBarProps) {
 
   const router = useRouter()
   const pathname = usePathname()
-  const locale = useLocale()
   const t = useTranslations("Navigation")
   const categoryDrawer = useCategoryDrawerOptional()
+  const auth = useAuthOptional()
 
   // Get unread message count from message context
   const { totalUnreadCount } = useMessages()
   const unreadCount = totalUnreadCount
 
-  // Get drawer actions for chat button
-  const { openMessages } = useDrawer()
-
-  // Get current user's username for profile navigation
-  const { username: currentUsername } = useCurrentUsername()
-  
-  // Profile destination:
-  // - authenticated: navigate to own public profile
-  // - guest: force a hard navigation to auth (workaround: SPA nav can render a 404 in dev/prod for this transition)
-  const guestProfileHref = `/${locale}/auth/login?next=${encodeURIComponent("/account")}`
-  const profileHref = currentUsername ? `/${currentUsername}` : null
+  // Get drawer actions for chat/account/auth buttons
+  const { openMessages, openAccount, openAuth, state: drawerState } = useDrawer()
 
   // Avoid SSR/hydration mismatches caused by client-only UI (drawers/portals).
   if (!mounted) return null
@@ -84,6 +74,9 @@ export function MobileTabBar(_: MobileTabBarProps) {
         ? "text-foreground"
         : "text-muted-foreground hover:bg-surface-subtle active:bg-hover"
     )
+
+  const isAuthenticated = Boolean(auth?.user)
+  const isProfileActive = drawerState.account.open || drawerState.auth.open || isActive("/account")
 
   // Don't render on product pages - let the sticky buy box take over
   // Don't render on cart page - it has its own sticky checkout footer
@@ -203,53 +196,39 @@ export function MobileTabBar(_: MobileTabBarProps) {
             )}>{t("chat")}</span>
           </button>
 
-          {/* Profile - Own profile page or auth fallback */}
-          {profileHref ? (
-            <Link
-              href={profileHref}
-              prefetch={true}
-              className={tabItemClass(pathname.includes(`/${currentUsername}`))}
-              aria-label={t("profile")}
-              aria-current={pathname.includes(`/${currentUsername}`) ? "page" : undefined}
-              data-testid="mobile-tab-profile"
+          {/* Profile - Authenticated opens account drawer; guest opens auth drawer */}
+          <button
+            type="button"
+            onClick={() => {
+              if (isAuthenticated) {
+                openAccount()
+                return
+              }
+              openAuth({ mode: "login", entrypoint: "profile_tab" })
+            }}
+            className={tabItemClass(isProfileActive)}
+            aria-label={t("profile")}
+            aria-haspopup="dialog"
+            aria-expanded={drawerState.account.open || drawerState.auth.open}
+            data-testid="mobile-tab-profile"
+          >
+            <UserCircle
+              size={20}
+              weight={isProfileActive ? "fill" : "regular"}
+              className={cn(
+                "transition-colors",
+                isProfileActive ? "text-foreground" : "text-muted-foreground"
+              )}
+            />
+            <span
+              className={cn(
+                "text-2xs font-medium leading-none tracking-tight",
+                isProfileActive ? "text-foreground" : "text-muted-foreground"
+              )}
             >
-              <UserCircle
-                size={20}
-                weight={pathname.includes(`/${currentUsername}`) ? "fill" : "regular"}
-                className={cn(
-                  "transition-colors",
-                  pathname.includes(`/${currentUsername}`) ? "text-foreground" : "text-muted-foreground",
-                )}
-              />
-              <span
-                className={cn(
-                  "text-2xs font-medium leading-none tracking-tight",
-                  pathname.includes(`/${currentUsername}`) ? "text-foreground" : "text-muted-foreground",
-                )}
-              >
-                {t("profile")}
-              </span>
-            </Link>
-          ) : (
-            <button
-              type="button"
-              onClick={() => {
-                window.location.assign(guestProfileHref)
-              }}
-              className={tabItemClass(false)}
-              aria-label={t("profile")}
-              data-testid="mobile-tab-profile"
-            >
-              <UserCircle
-                size={20}
-                weight="regular"
-                className="transition-colors text-muted-foreground"
-              />
-              <span className="text-2xs font-medium leading-none tracking-tight text-muted-foreground">
-                {t("profile")}
-              </span>
-            </button>
-          )}
+              {t("profile")}
+            </span>
+          </button>
             </div>
           </div>
         </div>

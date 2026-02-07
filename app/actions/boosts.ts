@@ -1,8 +1,10 @@
 "use server"
 
 import { createClient, createAdminClient } from "@/lib/supabase/server"
+import { errorEnvelope, successEnvelope, type Envelope } from "@/lib/api/envelope"
 import { stripe } from "@/lib/stripe"
-import { revalidatePath } from "next/cache"
+import { STRIPE_CUSTOMER_ID_SELECT } from "@/lib/supabase/selects/billing"
+import { revalidateTag } from "next/cache"
 
 // =============================================================================
 // TYPES
@@ -14,16 +16,30 @@ export interface BoostResult {
   boostsRemaining?: number
 }
 
-export interface CreateBoostCheckoutResult {
-  url?: string
-  error?: string
-}
+export type CreateBoostCheckoutResult = Envelope<
+  { url: string },
+  { error: string }
+>
 
 // Helper to get boost columns (not in generated types yet)
 interface ProfileBoostData {
   boosts_remaining: number
   boosts_allocated: number
   boosts_reset_at: string | null
+}
+
+function revalidateBoostCaches(productId: string, userId: string) {
+  const tags = [
+    "products:list",
+    "profiles",
+    `product:${productId}`,
+    `seller-${userId}`,
+    `seller-products-${userId}`,
+  ]
+
+  for (const tag of tags) {
+    revalidateTag(tag, "max")
+  }
 }
 
 async function getProfileBoosts(userId: string): Promise<ProfileBoostData | null> {
@@ -145,9 +161,7 @@ export async function useSubscriptionBoost(productId: string): Promise<BoostResu
       currency: "EUR",
     })
 
-  // Revalidate relevant paths
-  revalidatePath("/[locale]/(account)/account", "layout")
-  revalidatePath("/[locale]/products", "layout")
+  revalidateBoostCaches(productId, userId)
 
   return {
     success: true,
@@ -167,19 +181,19 @@ export async function createBoostCheckoutSession(args: {
 }): Promise<CreateBoostCheckoutResult> {
   if (!process.env.STRIPE_SECRET_KEY) {
     console.error("STRIPE_SECRET_KEY is missing")
-    return { error: "Payment configuration is missing" }
+    return errorEnvelope({ error: "Payment configuration is missing" })
   }
 
   const { productId, durationDays, locale = "en" } = args
 
   const supabase = await createClient()
   if (!supabase) {
-    return { error: "Database connection failed" }
+    return errorEnvelope({ error: "Database connection failed" })
   }
 
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) {
-    return { error: "Not authenticated" }
+    return errorEnvelope({ error: "Not authenticated" })
   }
 
   // Verify product ownership
@@ -190,15 +204,15 @@ export async function createBoostCheckoutSession(args: {
     .single()
 
   if (productError || !product) {
-    return { error: "Product not found" }
+    return errorEnvelope({ error: "Product not found" })
   }
 
   if (product.seller_id !== user.id) {
-    return { error: "You can only boost your own products" }
+    return errorEnvelope({ error: "You can only boost your own products" })
   }
 
   if (product.is_boosted) {
-    return { error: "Product is already boosted" }
+    return errorEnvelope({ error: "Product is already boosted" })
   }
 
   // Get boost price
@@ -210,14 +224,14 @@ export async function createBoostCheckoutSession(args: {
     .single()
 
   if (priceError || !boostPrice) {
-    return { error: "Boost price not found" }
+    return errorEnvelope({ error: "Boost price not found" })
   }
 
   try {
     // Get or create Stripe customer
     const { data: privateProfile } = await supabase
       .from("private_profiles")
-      .select("stripe_customer_id")
+      .select(STRIPE_CUSTOMER_ID_SELECT)
       .eq("id", user.id)
       .single()
 
@@ -267,10 +281,12 @@ export async function createBoostCheckoutSession(args: {
       cancel_url: `${returnUrl}?boost=cancelled`,
     })
 
-    return session.url ? { url: session.url } : { error: "Failed to create checkout" }
+    return session.url
+      ? successEnvelope({ url: session.url })
+      : errorEnvelope({ error: "Failed to create checkout" })
   } catch (error) {
     console.error("Boost checkout error:", error)
-    return { error: "Failed to create payment session" }
+    return errorEnvelope({ error: "Failed to create payment session" })
   }
 }
 

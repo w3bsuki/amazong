@@ -11,12 +11,8 @@ import {
 } from "@phosphor-icons/react/dist/ssr"
 import { Link } from "@/i18n/routing"
 import type { Metadata } from 'next'
-import { routing, validateLocale } from "@/i18n/routing"
+import { validateLocale } from "@/i18n/routing"
 import { PageShell } from "@/components/shared/page-shell"
-
-export function generateStaticParams() {
-  return routing.locales.map((locale) => ({ locale }))
-}
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale: localeParam } = await params
@@ -168,3 +164,4 @@ export default async function FeedbackPage({
     </PageShell>
   )
 }
+

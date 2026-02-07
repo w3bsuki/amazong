@@ -13,7 +13,7 @@ import { Link } from "@/i18n/routing"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import { AppBreadcrumb } from "@/components/navigation/app-breadcrumb"
 import type { Metadata } from 'next'
-import { routing, validateLocale } from "@/i18n/routing"
+import { validateLocale } from "@/i18n/routing"
 import {
   Accordion,
   AccordionContent,
@@ -23,10 +23,6 @@ import {
 import { PageShell } from "@/components/shared/page-shell"
 
 // Generate static params for all locales
-export function generateStaticParams() {
-  return routing.locales.map((locale) => ({ locale }))
-}
-
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale: localeParam } = await params
   const locale = validateLocale(localeParam)
@@ -286,3 +282,4 @@ export default async function FAQPage({ params }: { params: Promise<{ locale: st
     </PageShell>
   )
 }
+

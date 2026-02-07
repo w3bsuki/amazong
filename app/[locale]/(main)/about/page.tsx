@@ -1,15 +1,11 @@
 import type { Metadata } from "next"
 import { Suspense } from "react"
 import { setRequestLocale } from "next-intl/server"
-import { routing, validateLocale } from "@/i18n/routing"
+import { validateLocale } from "@/i18n/routing"
 import { AboutPageContent } from "./_components/about-page-content"
 import { AboutPageSkeleton } from "./_components/about-page-skeleton"
 
 // Generate static params for all locales - required for Next.js 16 Cache Components
-export function generateStaticParams() {
-  return routing.locales.map((locale) => ({ locale }))
-}
-
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale: localeParam } = await params;
   const locale = validateLocale(localeParam)
@@ -37,3 +33,4 @@ export default async function AboutPage({
     </Suspense>
   )
 }
+

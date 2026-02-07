@@ -28,16 +28,24 @@ import { toast } from "sonner"
 
 export type PaymentsContentServerActions = {
     createPaymentMethodSetupSession: (input?: { locale?: "en" | "bg" }) => Promise<{
-        url: string | null | undefined
+        success: boolean
+        url?: string | null | undefined
+        error?: string
     }>
     deletePaymentMethod: (input: {
         paymentMethodId: string
         dbId: string
-    }) => Promise<{ success: boolean }>
+    }) => Promise<{
+        success: boolean
+        error?: string
+    }>
     setDefaultPaymentMethod: (input: {
         paymentMethodId: string
         dbId: string
-    }) => Promise<{ success: boolean }>
+    }) => Promise<{
+        success: boolean
+        error?: string
+    }>
 }
 
 interface PaymentMethod {
@@ -80,13 +88,19 @@ export function PaymentsContent({
     const handleAddCard = async () => {
         setIsAddingCard(true)
         try {
-            const { url } = await actions.createPaymentMethodSetupSession({
+            const result = await actions.createPaymentMethodSetupSession({
                 locale: locale === "bg" ? "bg" : "en",
             })
 
+            if (!result.success) {
+                throw new Error(result.error || "Failed to create setup session")
+            }
+
             // Redirect to Stripe's hosted payment method collection page
-            if (url) {
-                window.location.href = url
+            if (result.url) {
+                window.location.href = result.url
+            } else {
+                throw new Error("Missing setup session URL")
             }
         } catch (error) {
             console.error('Error adding card:', error)
@@ -104,10 +118,14 @@ export function PaymentsContent({
 
         setIsLoading(true)
         try {
-            await actions.deletePaymentMethod({
+            const result = await actions.deletePaymentMethod({
                 paymentMethodId: method.stripe_payment_method_id,
                 dbId: method.id,
             })
+
+            if (!result.success) {
+                throw new Error(result.error || "Failed to delete payment method")
+            }
 
             toast.success(locale === 'bg' ? 'Картата е премахната' : 'Card removed')
             setIsDeleteDialogOpen(false)
@@ -130,10 +148,14 @@ export function PaymentsContent({
             const method = paymentMethods.find(m => m.id === methodId)
             if (!method) return
 
-            await actions.setDefaultPaymentMethod({
+            const result = await actions.setDefaultPaymentMethod({
                 paymentMethodId: method.stripe_payment_method_id,
                 dbId: method.id,
             })
+
+            if (!result.success) {
+                throw new Error(result.error || "Failed to set default payment method")
+            }
 
             toast.success(locale === 'bg' ? 'Картата по подразбиране е променена' : 'Default card updated')
             

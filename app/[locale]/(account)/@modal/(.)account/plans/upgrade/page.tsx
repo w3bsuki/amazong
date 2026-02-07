@@ -1,6 +1,6 @@
 import { Modal } from "@/components/shared/modal"
 import { createClient } from "@/lib/supabase/server"
-import { redirect, routing } from "@/i18n/routing"
+import { redirect } from "@/i18n/routing"
 import { getLocale, getTranslations } from "next-intl/server"
 import { UpgradeContent } from "@/app/[locale]/(account)/account/plans/upgrade/upgrade-content"
 import { Suspense } from "react"
@@ -10,10 +10,6 @@ import { getPlansForUpgrade, PRIVATE_PROFILE_SELECT_FOR_UPGRADE, PROFILE_SELECT_
 import { createSubscriptionCheckoutSession } from "@/app/actions/subscriptions"
 
 // Generate static params for all locales - required for Next.js 16 Cache Components
-export function generateStaticParams() {
-  return routing.locales.map((locale) => ({ locale }))
-}
-
 async function UpgradeModalContent() {
   // Ensure this runs dynamically, not during static generation
   await connection()
@@ -104,3 +100,4 @@ export default async function InterceptedUpgradePage() {
     </Suspense>
   )
 }
+

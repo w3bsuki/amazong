@@ -29,6 +29,7 @@ import { useTranslations, useLocale } from "next-intl"
 import { useAuth } from "@/components/providers/auth-state-manager"
 import { useMessages } from "@/components/providers/message-context"
 import { useWishlist } from "@/components/providers/wishlist-context"
+import { useDrawer } from "@/components/providers/drawer-context"
 import { createClient } from "@/lib/supabase/client"
 import Image from "next/image"
 import { cn } from "@/lib/utils"
@@ -75,8 +76,10 @@ export function AccountDrawer({ open, onOpenChange }: AccountDrawerProps) {
   const { user, isLoading: authLoading } = useAuth()
   const { totalUnreadCount } = useMessages()
   const { totalItems: wishlistCount } = useWishlist()
+  const { openAuth } = useDrawer()
   const t = useTranslations("Drawers")
   const tAccount = useTranslations("AccountDrawer")
+  const tAuth = useTranslations("Auth")
   const locale = useLocale()
 
   const [profile, setProfile] = useState<UserProfile | null>(null)
@@ -220,8 +223,8 @@ export function AccountDrawer({ open, onOpenChange }: AccountDrawerProps) {
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
-      <DrawerContent className="max-h-dialog">
-        <DrawerHeader className="pb-1.5 pt-0 text-left">
+      <DrawerContent className="max-h-dialog rounded-t-2xl" data-testid="mobile-account-drawer">
+        <DrawerHeader className="border-b border-border-subtle px-inset py-2.5 text-left">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-1.5">
               <User size={16} weight="regular" className="text-muted-foreground" />
@@ -232,9 +235,9 @@ export function AccountDrawer({ open, onOpenChange }: AccountDrawerProps) {
                 aria-label={tAccount("close")}
                 variant="ghost"
                 size="icon-compact"
-                className="text-muted-foreground hover:text-foreground hover:bg-muted active:bg-muted"
+                className="text-muted-foreground hover:bg-hover hover:text-foreground active:bg-active focus-visible:ring-2 focus-visible:ring-focus-ring"
               >
-                <X size={20} weight="light" />
+                <X size={16} weight="bold" />
               </IconButton>
             </DrawerClose>
           </div>
@@ -242,87 +245,111 @@ export function AccountDrawer({ open, onOpenChange }: AccountDrawerProps) {
         </DrawerHeader>
 
         {!user || authLoading ? (
-          <div className="flex flex-col items-center justify-center px-inset py-5">
-            <div className="mb-2 flex size-(--control-default) items-center justify-center rounded-xl bg-muted">
-              <User size={22} weight="regular" className="text-muted-foreground" />
+          <DrawerBody className="px-inset py-3 pb-4">
+            <div className="rounded-2xl border border-border-subtle bg-background px-4 py-5">
+              <div className="flex flex-col items-center justify-center text-center">
+                <div className="mb-2 flex size-(--control-default) items-center justify-center rounded-xl bg-surface-subtle">
+                  <User size={22} weight="regular" className="text-muted-foreground" />
+                </div>
+                <p className="text-sm font-medium text-foreground">{tAccount("signInPrompt")}</p>
+                <p className="mt-0.5 text-xs text-muted-foreground">{tAccount("signInDescription")}</p>
+              </div>
+              <div className="mt-4 flex w-full flex-col gap-2">
+                <Button
+                  size="default"
+                  className="w-full"
+                  onClick={() => {
+                    handleClose()
+                    openAuth({ mode: "login", entrypoint: "account_drawer" })
+                  }}
+                >
+                  {tAccount("signIn")}
+                </Button>
+                <Button
+                  variant="outline"
+                  size="default"
+                  className="w-full"
+                  onClick={() => {
+                    handleClose()
+                    openAuth({ mode: "signup", entrypoint: "account_drawer" })
+                  }}
+                >
+                  {tAuth("createAccount")}
+                </Button>
+              </div>
             </div>
-            <p className="text-sm text-foreground font-medium">
-              {tAccount("signInPrompt")}
-            </p>
-            <p className="text-xs text-muted-foreground mt-0.5 text-center">
-              {tAccount("signInDescription")}
-            </p>
-            <Link href="/auth/login" onClick={handleClose} className="mt-3">
-              <Button size="default">{tAccount("signIn")}</Button>
-            </Link>
-          </div>
+          </DrawerBody>
         ) : isLoadingData ? (
           <div className="flex items-center justify-center py-8">
             <div className="size-6 border-2 border-border-subtle border-t-foreground rounded-full animate-spin" />
           </div>
         ) : (
-          <DrawerBody className="px-0">
+          <DrawerBody className="px-inset py-3 pb-4">
             {/* Profile summary */}
-            <div className="flex items-center gap-3 px-inset py-4 border-b border-border">
-              <UserAvatar
-                name={displayName}
-                avatarUrl={avatarUrl ?? null}
-                size="xl"
-                className="border border-border bg-muted"
-                fallbackClassName="text-lg"
-              />
-              <div className="min-w-0 flex-1">
-                <p className="text-base font-semibold truncate">{displayName}</p>
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  {rating > 0 && (
-                    <span className="inline-flex items-center gap-0.5">
-                      <Star size={14} weight="fill" className="text-rating" />
-                      {rating.toFixed(1)}
-                    </span>
-                  )}
-                  {totalSales > 0 && (
-                    <span>
-                      · {totalSales} {tAccount("sales")}
-                    </span>
+            <div className="rounded-2xl border border-border-subtle bg-background px-3.5 py-3.5">
+              <div className="flex items-center gap-3">
+                <UserAvatar
+                  name={displayName}
+                  avatarUrl={avatarUrl ?? null}
+                  size="xl"
+                  className="border border-border-subtle bg-surface-subtle"
+                  fallbackClassName="text-lg"
+                />
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-base font-semibold text-foreground">{displayName}</p>
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    {rating > 0 && (
+                      <span className="inline-flex items-center gap-0.5">
+                        <Star size={14} weight="fill" className="text-rating" />
+                        {rating.toFixed(1)}
+                      </span>
+                    )}
+                    {totalSales > 0 && (
+                      <span>
+                        · {totalSales} {tAccount("sales")}
+                      </span>
+                    )}
+                  </div>
+                  {user.email && (
+                    <p className="mt-0.5 truncate text-xs text-muted-foreground">{user.email}</p>
                   )}
                 </div>
-                {user.email && (
-                  <p className="text-xs text-muted-foreground truncate mt-0.5">{user.email}</p>
-                )}
               </div>
             </div>
 
             {/* Quick links */}
-            <div className="border-b border-border">
+            <div className="mt-3 space-y-2" data-testid="account-drawer-quick-links">
               {quickLinks.map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}
                   onClick={handleClose}
+                  data-testid="account-drawer-quick-link"
                   className={cn(
-                    "flex items-center justify-between px-inset py-3",
-                    "hover:bg-hover active:bg-active transition-colors",
-                    "touch-manipulation tap-transparent"
+                    "flex min-h-(--spacing-touch-md) w-full items-center justify-between gap-3 rounded-xl border border-border-subtle bg-background px-3.5 text-left",
+                    "tap-transparent transition-colors",
+                    "hover:border-border hover:bg-hover active:bg-active",
+                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
                   )}
                 >
-                  <div className="flex items-center gap-3">
-                    <link.icon size={20} weight="regular" className="text-muted-foreground" />
-                    <span className="text-sm font-medium">{link.label}</span>
+                  <div className="flex min-w-0 items-center gap-3">
+                    <link.icon size={20} weight="regular" className="shrink-0 text-muted-foreground" />
+                    <span className="truncate text-sm font-medium text-foreground">{link.label}</span>
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex shrink-0 items-center gap-2">
                     {link.badge && (
                       <span
                         className={cn(
-                          "text-xs px-1.5 py-0.5 rounded",
+                          "rounded-full px-2 py-0.5 text-2xs font-medium",
                           link.badgeType === "destructive" && "text-destructive bg-destructive-subtle",
-                          link.badgeType === "warning" && "text-status-warning bg-primary-subtle",
-                          link.badgeType === "muted" && "text-muted-foreground bg-muted"
+                          link.badgeType === "warning" && "text-primary bg-primary-subtle",
+                          link.badgeType === "muted" && "text-muted-foreground bg-surface-subtle"
                         )}
                       >
                         {link.badge}
                       </span>
                     )}
-                    <CaretRight size={16} className="text-muted-foreground" />
+                    <CaretRight size={16} className="text-muted-foreground" aria-hidden="true" />
                   </div>
                 </Link>
               ))}
@@ -330,11 +357,11 @@ export function AccountDrawer({ open, onOpenChange }: AccountDrawerProps) {
 
             {/* Recent listings */}
             {recentListings.length > 0 && (
-              <div className="px-inset py-4">
-                <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-3">
+              <div className="mt-3 rounded-2xl border border-border-subtle bg-background px-3.5 py-3.5">
+                <h3 className="mb-3 text-xs font-medium uppercase tracking-wide text-muted-foreground">
                   {tAccount("recentListings")}
                 </h3>
-                <div className="grid grid-cols-3 gap-2">
+                <div className="grid grid-cols-3 gap-2.5">
                   {recentListings.map((listing) => {
                     const imageUrl = listing.images?.[0]
                       ? normalizeImageUrl(listing.images[0])
@@ -351,9 +378,9 @@ export function AccountDrawer({ open, onOpenChange }: AccountDrawerProps) {
                         key={listing.id}
                         href={href}
                         onClick={handleClose}
-                        className="group"
+                        className="group rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
                       >
-                        <div className="relative aspect-square bg-muted rounded-xl overflow-hidden border border-border">
+                        <div className="relative aspect-square overflow-hidden rounded-xl border border-border-subtle bg-surface-subtle">
                           <Image
                             src={imageUrl ?? PLACEHOLDER_IMAGE_PATH}
                             alt={listing.title}
@@ -362,7 +389,7 @@ export function AccountDrawer({ open, onOpenChange }: AccountDrawerProps) {
                             sizes="(max-width: 640px) 33vw, 100px"
                           />
                         </div>
-                        <p className="text-xs font-semibold mt-1 text-center">
+                        <p className="mt-1 text-center text-xs font-semibold text-foreground">
                           {formatPrice(listing.price)}
                         </p>
                       </Link>
@@ -374,7 +401,7 @@ export function AccountDrawer({ open, onOpenChange }: AccountDrawerProps) {
           </DrawerBody>
         )}
 
-        <DrawerFooter className="border-t border-border">
+        <DrawerFooter className="border-t border-border-subtle px-inset py-3 pb-safe-max">
           <Link href="/account" onClick={handleClose} className="w-full">
             <Button variant="outline" size="default" className="w-full">
               {t("viewFullProfile")}

@@ -1,6 +1,6 @@
 import type { Metadata } from "next"
 
-import { routing, validateLocale } from "@/i18n/routing"
+import { validateLocale } from "@/i18n/routing"
 import { createClient } from "@/lib/supabase/server"
 import { setRequestLocale } from "next-intl/server"
 import { getTranslations } from "next-intl/server"
@@ -24,10 +24,6 @@ export async function generateMetadata({
     title: t("title"),
     description: t("description"),
   }
-}
-
-export function generateStaticParams() {
-  return routing.locales.map((locale) => ({ locale }))
 }
 
 export default async function SellersPage({
@@ -72,3 +68,4 @@ export default async function SellersPage({
     </PageShell>
   )
 }
+

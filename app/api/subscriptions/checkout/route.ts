@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { errorEnvelope, successEnvelope } from '@/lib/api/envelope'
 import { stripe } from '@/lib/stripe'
 import { createRouteHandlerClient } from '@/lib/supabase/server'
+import { ID_AND_STRIPE_CUSTOMER_ID_SELECT } from '@/lib/supabase/selects/billing'
 import { buildLocaleUrl, inferLocaleFromRequest } from '@/lib/stripe-locale'
 import type Stripe from 'stripe'
 
-const PROFILE_SELECT_FOR_STRIPE = 'id,stripe_customer_id'
 const SUBSCRIPTION_PLAN_SELECT_FOR_CHECKOUT =
   'id,tier,name,price_monthly,price_yearly,stripe_price_monthly_id,stripe_price_yearly_id,commission_rate,final_value_fee'
 
@@ -17,7 +18,7 @@ export async function POST(req: NextRequest) {
   try {
     body = await req.json()
   } catch {
-    return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 })
+    return NextResponse.json(errorEnvelope({ error: 'Invalid JSON body' }), { status: 400 })
   }
 
   const { planId, billingPeriod, locale } = body
@@ -26,10 +27,13 @@ export async function POST(req: NextRequest) {
 
   // Validate required fields (4xx for bad input)
   if (!planId || typeof planId !== 'string') {
-    return NextResponse.json({ error: 'Missing or invalid planId' }, { status: 400 })
+    return NextResponse.json(errorEnvelope({ error: 'Missing or invalid planId' }), { status: 400 })
   }
   if (!billingPeriod || (billingPeriod !== 'monthly' && billingPeriod !== 'yearly')) {
-    return NextResponse.json({ error: 'Missing or invalid billingPeriod (expected "monthly" or "yearly")' }, { status: 400 })
+    return NextResponse.json(
+      errorEnvelope({ error: 'Missing or invalid billingPeriod (expected "monthly" or "yearly")' }),
+      { status: 400 }
+    )
   }
 
   const { supabase, applyCookies } = createRouteHandlerClient(req)
@@ -40,18 +44,18 @@ export async function POST(req: NextRequest) {
     const { data: { user } } = await supabase.auth.getUser()
     
     if (!user) {
-      return json({ error: 'Unauthorized' }, { status: 401 })
+      return json(errorEnvelope({ error: 'Unauthorized' }), { status: 401 })
     }
 
     // Get profile info
     const { data: profile } = await supabase
       .from('private_profiles')
-      .select(PROFILE_SELECT_FOR_STRIPE)
+      .select(ID_AND_STRIPE_CUSTOMER_ID_SELECT)
       .eq('id', user.id)
       .single()
 
     if (!profile) {
-      return json({ error: 'Profile not found' }, { status: 404 })
+      return json(errorEnvelope({ error: 'Profile not found' }), { status: 404 })
     }
 
     // Get the subscription plan by ID
@@ -63,12 +67,12 @@ export async function POST(req: NextRequest) {
       .single()
 
     if (!plan) {
-      return json({ error: 'Plan not found' }, { status: 404 })
+      return json(errorEnvelope({ error: 'Plan not found' }), { status: 404 })
     }
 
     // Can't subscribe to free tier via Stripe
     if (plan.price_monthly === 0) {
-      return json({ error: 'Cannot subscribe to free tier' }, { status: 400 })
+      return json(errorEnvelope({ error: 'Cannot subscribe to free tier' }), { status: 400 })
     }
 
     const price = billingPeriod === 'yearly' ? plan.price_yearly : plan.price_monthly
@@ -136,7 +140,7 @@ export async function POST(req: NextRequest) {
       line_items: lineItems,
     })
 
-    return json({ sessionId: session.id, url: session.url })
+    return json(successEnvelope({ sessionId: session.id, url: session.url }))
   } catch (error) {
     // Log error details server-side (no secrets - Stripe SDK doesn't expose keys in errors)
     // Sanitize: only log error type + message, not full stack with potential request data
@@ -149,7 +153,9 @@ export async function POST(req: NextRequest) {
       (error.message.includes('Stripe') || 'type' in error || 'statusCode' in error)
 
     return json(
-      { error: isStripeError ? 'Payment service error. Please try again.' : 'Internal server error' },
+      errorEnvelope({
+        error: isStripeError ? 'Payment service error. Please try again.' : 'Internal server error'
+      }),
       { status: 500 }
     )
   }

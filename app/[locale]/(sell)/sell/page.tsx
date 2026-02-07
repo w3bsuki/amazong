@@ -1,16 +1,11 @@
 import { createClient } from "@/lib/supabase/server";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { routing } from "@/i18n/routing";
 import { SellPageClient } from "./client";
 import { getSellCategories } from "./_lib/categories";
 import { createListing } from "../_actions/sell";
 import type { Metadata } from "next";
 
 // Generate static params for all supported locales
-export function generateStaticParams() {
-  return routing.locales.map((locale) => ({ locale }));
-}
-
 export async function generateMetadata({
   params,
 }: {
@@ -117,3 +112,4 @@ export default async function SellPage({
     />
   );
 }
+

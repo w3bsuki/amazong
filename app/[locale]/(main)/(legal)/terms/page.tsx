@@ -6,13 +6,9 @@ import {
   Gavel, CheckCircle
 } from "@phosphor-icons/react/dist/ssr"
 import type { Metadata } from 'next'
-import { routing, validateLocale } from "@/i18n/routing"
+import { validateLocale } from "@/i18n/routing"
 import { extractLastUpdatedDate, getPublicDoc, parsePublicDocIntro, parsePublicDocSections } from "@/lib/public-docs"
 import { LegalPageLayout, type LegalSection, type RelatedLink } from "../_components/legal-page-layout"
-
-export function generateStaticParams() {
-  return routing.locales.map((locale) => ({ locale }))
-}
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale: localeParam } = await params
@@ -108,3 +104,4 @@ export default async function TermsPage({ params }: { params: Promise<{ locale: 
     />
   )
 }
+

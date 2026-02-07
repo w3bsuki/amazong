@@ -1,14 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { errorEnvelope, successEnvelope } from '@/lib/api/envelope'
 import { stripe } from '@/lib/stripe'
 import { createRouteHandlerClient, createStaticClient } from '@/lib/supabase/server'
 import { eurToBgnApprox } from '@/lib/currency'
 import { isBoostActiveNow } from '@/lib/boost/boost-status'
 import { buildLocaleUrl } from '@/lib/stripe-locale'
 import { logError } from '@/lib/structured-log'
+import { ID_AND_STRIPE_CUSTOMER_ID_SELECT } from '@/lib/supabase/selects/billing'
 import { getTranslations } from 'next-intl/server'
 import { z } from 'zod'
-
-const PROFILE_SELECT_FOR_STRIPE = 'id,stripe_customer_id'
 
 const DEFAULT_BOOST_PRICING = {
   1: { priceEur: 0.99, durationKey: 'duration24h', sku: 'boost_24h' },
@@ -67,12 +67,12 @@ export async function POST(req: NextRequest) {
     const { data: { user } } = await supabase.auth.getUser()
     
     if (!user) {
-      return json({ errorKey: 'errors.unauthorized' }, { status: 401 })
+      return json(errorEnvelope({ errorKey: 'errors.unauthorized' }), { status: 401 })
     }
 
     const parseResult = BoostCheckoutBodySchema.safeParse(await req.json())
     if (!parseResult.success) {
-      return json({ errorKey: 'errors.missingFields' }, { status: 400 })
+      return json(errorEnvelope({ errorKey: 'errors.missingFields' }), { status: 400 })
     }
 
     const { productId, durationDays, locale } = parseResult.data
@@ -81,7 +81,7 @@ export async function POST(req: NextRequest) {
 
     const parsedDuration = parseDurationDays(durationDays)
     if (!parsedDuration) {
-      return json({ errorKey: 'errors.invalidDuration' }, { status: 400 })
+      return json(errorEnvelope({ errorKey: 'errors.invalidDuration' }), { status: 400 })
     }
 
     const pricingMeta = DEFAULT_BOOST_PRICING[parsedDuration]
@@ -91,12 +91,12 @@ export async function POST(req: NextRequest) {
     // Get billing profile info (private surface)
     const { data: profile } = await supabase
       .from('private_profiles')
-      .select(PROFILE_SELECT_FOR_STRIPE)
+      .select(ID_AND_STRIPE_CUSTOMER_ID_SELECT)
       .eq('id', user.id)
       .single()
 
     if (!profile) {
-      return json({ errorKey: 'errors.profileNotFound' }, { status: 404 })
+      return json(errorEnvelope({ errorKey: 'errors.profileNotFound' }), { status: 404 })
     }
 
     // Verify product belongs to seller
@@ -108,12 +108,12 @@ export async function POST(req: NextRequest) {
       .single()
 
     if (!product) {
-      return json({ errorKey: 'errors.productNotFound' }, { status: 404 })      
+      return json(errorEnvelope({ errorKey: 'errors.productNotFound' }), { status: 404 })      
     }
 
     // Check if already boosted
     if (isBoostActiveNow({ is_boosted: product.is_boosted, boost_expires_at: product.boost_expires_at })) {
-      return json({ errorKey: 'errors.alreadyBoosted' }, { status: 400 })       
+      return json(errorEnvelope({ errorKey: 'errors.alreadyBoosted' }), { status: 400 })       
     }
 
     // Create or get Stripe customer
@@ -178,7 +178,7 @@ export async function POST(req: NextRequest) {
       ),
     })
 
-    return json({ 
+    return json(successEnvelope({ 
       sessionId: session.id, 
       url: session.url,
       sku: pricingMeta.sku,
@@ -186,13 +186,13 @@ export async function POST(req: NextRequest) {
       priceBgn: eurToBgnApprox(priceEur),
       durationKey: pricingMeta.durationKey,
       locale: resolvedLocale,
-    })
+    }))
   } catch (error) {
     logError("boost_checkout_handler_failed", error, {
       route: "api/boost/checkout",
     })
     return json(
-      { errorKey: 'errors.internal' },
+      errorEnvelope({ errorKey: 'errors.internal' }),
       { status: 500 }
     )
   }
@@ -232,7 +232,7 @@ export async function GET() {
     source = {}
   }
 
-  return NextResponse.json({
+  return NextResponse.json(successEnvelope({
     options: (Object.entries(DEFAULT_BOOST_PRICING) as Array<
       [unknown, { priceEur: number; durationKey: string; sku: string }]
     >).map(([daysRaw, { priceEur: fallbackPriceEur, durationKey, sku }]) => {
@@ -247,5 +247,5 @@ export async function GET() {
         currency: "EUR",
       }
     }),
-  })
+  }))
 }

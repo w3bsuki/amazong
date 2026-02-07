@@ -573,6 +573,12 @@
         "signIn": "Sign In",
         "sales": "sales"
     },
+    "AuthDrawer": {
+        "title": "Account access",
+        "description": "Sign in or create an account without leaving this page.",
+        "tabsLabel": "Authentication tabs",
+        "continueBrowsing": "Continue browsing"
+    },
     "CategoryDrawer": {
         "title": "Categories",
         "description": "Browse product categories",

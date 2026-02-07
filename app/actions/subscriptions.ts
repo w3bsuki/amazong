@@ -1,8 +1,10 @@
 "use server"
 
 import { z } from "zod"
+import { errorEnvelope, successEnvelope, type Envelope } from "@/lib/api/envelope"
 import { createAdminClient, createClient } from "@/lib/supabase/server"
 import { stripe } from "@/lib/stripe"
+import { ID_AND_STRIPE_CUSTOMER_ID_SELECT, STRIPE_CUSTOMER_ID_SELECT } from "@/lib/supabase/selects/billing"
 import { revalidateTag } from "next/cache"
 import type Stripe from "stripe"
 
@@ -36,13 +38,26 @@ export interface SubscriptionDetails {
   cancel_at_period_end: boolean
 }
 
-export interface ActionResult<T = void> {
-  success: boolean
-  error?: string
-  data?: T
-}
+export type ActionResult<T = void> = Envelope<
+  { data?: T },
+  { error: string }
+>
 
-const PROFILE_SELECT_FOR_BILLING = "id,stripe_customer_id" as const
+type CheckoutSessionResult = Envelope<
+  { url: string },
+  { error: string }
+>
+
+type BillingPortalSessionResult = Envelope<
+  { url: string },
+  { error: string }
+>
+
+type DowngradeResult = Envelope<
+  { tier: "free" },
+  { error: string }
+>
+
 const SUBSCRIPTION_PLAN_SELECT_FOR_CHECKOUT =
   "id,name,tier,is_active,price_monthly,price_yearly,stripe_price_monthly_id,stripe_price_yearly_id,final_value_fee,commission_rate" as const
 const SUBSCRIPTION_SELECT_FOR_DETAILS =
@@ -81,15 +96,15 @@ export async function createSubscriptionCheckoutSession(args: {
   planId: string
   billingPeriod: BillingPeriod
   locale?: "en" | "bg"
-}): Promise<{ url?: string; error?: string }> {
+}): Promise<CheckoutSessionResult> {
   if (!process.env.STRIPE_SECRET_KEY) {
     console.error("STRIPE_SECRET_KEY is missing")
-    return { error: "Stripe configuration is missing. Please check your server logs." }
+    return errorEnvelope({ error: "Stripe configuration is missing. Please check your server logs." })
   }
 
   const parsedArgs = subscriptionCheckoutArgsSchema.safeParse(args)
   if (!parsedArgs.success) {
-    return { error: "Invalid input" }
+    return errorEnvelope({ error: "Invalid input" })
   }
 
   const { planId, billingPeriod, locale } = parsedArgs.data
@@ -102,17 +117,17 @@ export async function createSubscriptionCheckoutSession(args: {
     } = await supabase.auth.getUser()
 
     if (!user) {
-      return { error: "Unauthorized" }
+      return errorEnvelope({ error: "Unauthorized" })
     }
 
     const { data: profile } = await supabase
       .from("private_profiles")
-      .select(PROFILE_SELECT_FOR_BILLING)
+      .select(ID_AND_STRIPE_CUSTOMER_ID_SELECT)
       .eq("id", user.id)
       .single()
 
     if (!profile) {
-      return { error: "Profile not found" }
+      return errorEnvelope({ error: "Profile not found" })
     }
 
     const { data: plan } = await supabase
@@ -123,11 +138,11 @@ export async function createSubscriptionCheckoutSession(args: {
       .single()
 
     if (!plan) {
-      return { error: "Plan not found" }
+      return errorEnvelope({ error: "Plan not found" })
     }
 
     if ((plan.price_monthly ?? 0) === 0) {
-      return { error: "Cannot subscribe to free tier" }
+      return errorEnvelope({ error: "Cannot subscribe to free tier" })
     }
 
     const price = billingPeriod === "yearly" ? plan.price_yearly : plan.price_monthly
@@ -197,20 +212,24 @@ export async function createSubscriptionCheckoutSession(args: {
       line_items: lineItems,
     })
 
-    return session.url ? { url: session.url } : { error: "Failed to start checkout" }
+    return session.url
+      ? successEnvelope({ url: session.url })
+      : errorEnvelope({ error: "Failed to start checkout" })
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : "Internal server error"
     const errorType = error instanceof Error ? error.constructor.name : typeof error
     console.error(`[subscriptions] ${errorType}: ${errorMessage}`)
-    return { error: errorMessage }
+    return errorEnvelope({ error: errorMessage })
   }
 }
 
-export async function createBillingPortalSession(args?: { locale?: "en" | "bg" }): Promise<{ url?: string; error?: string }> {
+export async function createBillingPortalSession(
+  args?: { locale?: "en" | "bg" }
+): Promise<BillingPortalSessionResult> {
     const accountPlansUrl = getAbsoluteAccountPlansUrl(args?.locale)
   if (!process.env.STRIPE_SECRET_KEY) {
     console.error("STRIPE_SECRET_KEY is missing")
-    return { error: "Stripe configuration is missing. Please check your server logs." }
+    return errorEnvelope({ error: "Stripe configuration is missing. Please check your server logs." })
   }
 
   try {
@@ -221,12 +240,12 @@ export async function createBillingPortalSession(args?: { locale?: "en" | "bg" }
     } = await supabase.auth.getUser()
 
     if (!user) {
-      return { error: "Unauthorized" }
+      return errorEnvelope({ error: "Unauthorized" })
     }
 
     const { data: activeSubscription } = await supabase
       .from("subscriptions")
-      .select("stripe_customer_id")
+      .select(STRIPE_CUSTOMER_ID_SELECT)
       .eq("seller_id", user.id)
       .eq("status", "active")
       .single()
@@ -239,12 +258,12 @@ export async function createBillingPortalSession(args?: { locale?: "en" | "bg" }
       // Fallback: profile might have a customer id even if subscription row isn't present
       const { data: profile } = await supabase
         .from("private_profiles")
-        .select("stripe_customer_id")
+        .select(STRIPE_CUSTOMER_ID_SELECT)
         .eq("id", user.id)
         .single()
 
       if (!profile?.stripe_customer_id) {
-        return { error: "No active subscription found" }
+        return errorEnvelope({ error: "No active subscription found" })
       }
 
       const portalSession = await stripe.billingPortal.sessions.create({
@@ -252,7 +271,7 @@ export async function createBillingPortalSession(args?: { locale?: "en" | "bg" }
         return_url: accountPlansUrl,
       })
 
-      return { url: portalSession.url }
+      return successEnvelope({ url: portalSession.url })
     }
 
     const portalSession = await stripe.billingPortal.sessions.create({
@@ -260,14 +279,14 @@ export async function createBillingPortalSession(args?: { locale?: "en" | "bg" }
       return_url: accountPlansUrl,
     })
 
-    return { url: portalSession.url }
+    return successEnvelope({ url: portalSession.url })
   } catch (error) {
     console.error("Portal session error:", error)
-    return { error: "Failed to create portal session" }
+    return errorEnvelope({ error: "Failed to create portal session" })
   }
 }
 
-export async function downgradeToFreeTier(): Promise<{ tier?: "free"; error?: string }> {
+export async function downgradeToFreeTier(): Promise<DowngradeResult> {
   try {
     const supabase = await createClient()
     const adminSupabase = createAdminClient()
@@ -277,7 +296,7 @@ export async function downgradeToFreeTier(): Promise<{ tier?: "free"; error?: st
     } = await supabase.auth.getUser()
 
     if (!user) {
-      return { error: "Unauthorized" }
+      return errorEnvelope({ error: "Unauthorized" })
     }
 
     const userId = user.id
@@ -288,13 +307,13 @@ export async function downgradeToFreeTier(): Promise<{ tier?: "free"; error?: st
       .eq("id", userId)
 
     if (error) {
-      return { error: error.message }
+      return errorEnvelope({ error: error.message })
     }
 
-    return { tier: "free" as const }
+    return successEnvelope({ tier: "free" as const })
   } catch (error) {
     console.error("Downgrade to free error:", error)
-    return { error: "Failed to change plan. Please try again." }
+    return errorEnvelope({ error: "Failed to change plan. Please try again." })
   }
 }
 

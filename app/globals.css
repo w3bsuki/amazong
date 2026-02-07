@@ -31,6 +31,19 @@
   }
 }
 
+/* Normalize Chrome/Safari autofill paint to token rails (prevents blue/yellow field fills). */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill,
+select:-webkit-autofill {
+  -webkit-text-fill-color: oklch(var(--foreground));
+  caret-color: oklch(var(--foreground));
+  box-shadow: inset 0 0 0 1000px oklch(var(--background));
+  -webkit-box-shadow: inset 0 0 0 1000px oklch(var(--background));
+  transition: background-color 9999s ease-out 0s;
+}
+
 /* ===== Third-party Overrides ===== */
 .pswp--treido .pswp__bg {
   background: var(--color-background) !important;

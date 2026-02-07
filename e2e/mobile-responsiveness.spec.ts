@@ -1,4 +1,5 @@
 import { test, expect, Page } from "@playwright/test"
+import { getTestUserCredentials, loginWithPassword } from "./fixtures/auth"
 
 /**
  * Phase 11: Mobile Responsiveness Testing
@@ -96,6 +97,63 @@ test.describe("Mobile Responsiveness - Phase 11", () => {
       // Close drawer
       await categoryDrawer.getByRole("button", { name: /close/i }).click()
       await expect(categoryDrawer).not.toBeVisible()
+    })
+
+    test("profile tab opens auth drawer for guests with 44px auth controls", async ({ page }) => {
+      await page.goto("/en")
+      await dismissOverlays(page)
+
+      const tabBar = page.getByTestId("mobile-tab-bar")
+      await tabBar.getByTestId("mobile-tab-profile").click()
+
+      const authDrawer = page.getByTestId("mobile-auth-drawer")
+      await expect(authDrawer).toBeVisible()
+      await expect(page).not.toHaveURL(/auth\/login/)
+      await expect(authDrawer.locator('input[type="email"], input#email').first()).toBeVisible()
+      await expect(authDrawer.locator('input[type="password"], input#password').first()).toBeVisible()
+
+      const authTabs = authDrawer.getByRole("tab")
+      await expect(authTabs).toHaveCount(2)
+      for (let i = 0; i < 2; i += 1) {
+        const box = await authTabs.nth(i).boundingBox()
+        expect(box).toBeTruthy()
+        expect(box!.height).toBeGreaterThanOrEqual(44)
+      }
+
+      const signInButton = authDrawer.getByRole("button", { name: /sign in|вход/i }).first()
+      const signInButtonBox = await signInButton.boundingBox()
+      expect(signInButtonBox).toBeTruthy()
+      expect(signInButtonBox!.height).toBeGreaterThanOrEqual(44)
+    })
+
+    test("profile tab opens account drawer for authenticated users with buttonized quick links", async ({ page }) => {
+      const creds = getTestUserCredentials()
+      test.skip(!creds, "Set TEST_USER_EMAIL/TEST_USER_PASSWORD to run authenticated account drawer test")
+
+      await loginWithPassword(page, creds!)
+      await page.goto("/en")
+      await dismissOverlays(page)
+
+      const tabBar = page.getByTestId("mobile-tab-bar")
+      await tabBar.getByTestId("mobile-tab-profile").click()
+
+      const accountDrawer = page.getByTestId("mobile-account-drawer")
+      await expect(accountDrawer).toBeVisible()
+
+      const quickLinks = accountDrawer.getByTestId("account-drawer-quick-link")
+      await expect(quickLinks.first()).toBeVisible()
+      const quickLinkCount = await quickLinks.count()
+      expect(quickLinkCount).toBeGreaterThanOrEqual(5)
+
+      const sampleCount = Math.min(5, quickLinkCount)
+      for (let index = 0; index < sampleCount; index += 1) {
+        const quickLinkBox = await quickLinks.nth(index).boundingBox()
+        expect(quickLinkBox).toBeTruthy()
+        expect(quickLinkBox!.height).toBeGreaterThanOrEqual(44)
+      }
+
+      const firstQuickLinkClasses = await quickLinks.first().getAttribute("class")
+      expect(firstQuickLinkClasses ?? "").toContain("focus-visible:ring-focus-ring")
     })
 
     test("mobile search overlay opens", async ({ page }) => {

@@ -1,8 +1,4 @@
-import { redirect, routing } from "@/i18n/routing"
-
-export function generateStaticParams() {
-  return routing.locales.map((locale) => ({ locale }))
-}
+import { redirect } from "@/i18n/routing"
 
 /**
  * Old Seller Dashboard - Redirects to new Business Dashboard
@@ -25,3 +21,4 @@ export default async function OldSellerDashboard({
   const { locale } = await params
   return redirect({ href: "/dashboard", locale })
 }
+

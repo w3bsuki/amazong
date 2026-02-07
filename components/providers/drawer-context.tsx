@@ -37,6 +37,14 @@ export interface QuickViewProduct extends Pick<
   sourceScrollY?: number
 }
 
+export type AuthDrawerMode = "login" | "signup"
+export type AuthDrawerEntrypoint =
+  | "profile_tab"
+  | "account_drawer"
+  | "messages_drawer"
+  | "cart_drawer"
+  | "other"
+
 interface DrawerState {
   productQuickView: {
     open: boolean
@@ -51,6 +59,11 @@ interface DrawerState {
   account: {
     open: boolean
   }
+  auth: {
+    open: boolean
+    mode: AuthDrawerMode
+    entrypoint: AuthDrawerEntrypoint | null
+  }
 }
 
 interface DrawerContextValue {
@@ -61,6 +74,7 @@ interface DrawerContextValue {
     cart: boolean
     messages: boolean
     account: boolean
+    auth: boolean
   }
   /** Whether the drawer system is enabled at all */
   isDrawerSystemEnabled: boolean
@@ -76,6 +90,10 @@ interface DrawerContextValue {
   // Account drawer
   openAccount: () => void
   closeAccount: () => void
+  // Auth drawer
+  openAuth: (options?: { mode?: AuthDrawerMode; entrypoint?: AuthDrawerEntrypoint }) => void
+  setAuthMode: (mode: AuthDrawerMode) => void
+  closeAuth: () => void
 }
 
 // =============================================================================
@@ -94,6 +112,7 @@ export function DrawerProvider({ children }: { children: React.ReactNode }) {
     cart: { open: false },
     messages: { open: false },
     account: { open: false },
+    auth: { open: false, mode: "login", entrypoint: null },
   })
 
   // Feature flags state (computed once on mount for consistency during session)
@@ -104,6 +123,7 @@ export function DrawerProvider({ children }: { children: React.ReactNode }) {
       cart: true,
       messages: true,
       account: true,
+      auth: true,
     },
   })
 
@@ -191,6 +211,7 @@ export function DrawerProvider({ children }: { children: React.ReactNode }) {
     setState((prev) => ({
       ...prev,
       account: { open: true },
+      auth: { ...prev.auth, open: false },
     }))
   }, [featureFlags.enabledDrawers.account])
 
@@ -200,6 +221,57 @@ export function DrawerProvider({ children }: { children: React.ReactNode }) {
       ...prev,
       account: { open: false },
     }))
+  }, [])
+
+  // Auth actions
+  const openAuth = useCallback(
+    (options?: { mode?: AuthDrawerMode; entrypoint?: AuthDrawerEntrypoint }) => {
+      if (!featureFlags.enabledDrawers.auth) return
+      const mode = options?.mode ?? "login"
+      const entrypoint = options?.entrypoint
+      trackDrawerOpen({
+        type: "auth",
+        metadata: { mode, entrypoint },
+      })
+      setState((prev) => ({
+        ...prev,
+        account: { open: false },
+        auth: {
+          open: true,
+          mode,
+          entrypoint: entrypoint ?? null,
+        },
+      }))
+    },
+    [featureFlags.enabledDrawers.auth]
+  )
+
+  const setAuthMode = useCallback((mode: AuthDrawerMode) => {
+    setState((prev) => ({
+      ...prev,
+      auth: {
+        ...prev.auth,
+        mode,
+      },
+    }))
+  }, [])
+
+  const closeAuth = useCallback(() => {
+    setState((prev) => {
+      if (!prev.auth.open) return prev
+      trackDrawerClose({
+        type: "auth",
+        method: "button",
+        metadata: { mode: prev.auth.mode, entrypoint: prev.auth.entrypoint },
+      })
+      return {
+        ...prev,
+        auth: {
+          ...prev.auth,
+          open: false,
+        },
+      }
+    })
   }, [])
 
   const value = useMemo<DrawerContextValue>(
@@ -215,6 +287,9 @@ export function DrawerProvider({ children }: { children: React.ReactNode }) {
       closeMessages,
       openAccount,
       closeAccount,
+      openAuth,
+      setAuthMode,
+      closeAuth,
     }),
     [
       state,
@@ -228,6 +303,9 @@ export function DrawerProvider({ children }: { children: React.ReactNode }) {
       closeMessages,
       openAccount,
       closeAccount,
+      openAuth,
+      setAuthMode,
+      closeAuth,
     ]
   )
 

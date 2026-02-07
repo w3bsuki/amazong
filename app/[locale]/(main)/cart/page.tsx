@@ -1,11 +1,7 @@
-import { routing, validateLocale } from "@/i18n/routing"
+import { validateLocale } from "@/i18n/routing"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import CartPageClient from "./_components/cart-page-client"
 import type { Metadata } from "next"
-
-export function generateStaticParams() {
-  return routing.locales.map((locale) => ({ locale }))
-}
 
 export async function generateMetadata({
   params,
@@ -27,3 +23,4 @@ export default async function CartPage({ params }: { params: Promise<{ locale: s
   setRequestLocale(locale)
   return <CartPageClient />
 }
+

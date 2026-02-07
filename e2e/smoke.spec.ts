@@ -229,7 +229,7 @@ test.describe('Smoke Tests - Critical Path', () => {
     app.assertNoConsoleErrors()
   })
 
-  test('mobile tab bar Profile routes to login (no 404) @smoke @critical', async ({ page, app }) => {
+  test('mobile tab bar Profile opens auth drawer for guests @smoke @critical', async ({ page, app }) => {
     await page.setViewportSize({ width: 390, height: 844 })
 
     await app.clearAuthSession()
@@ -240,12 +240,38 @@ test.describe('Smoke Tests - Critical Path', () => {
 
     await page.getByTestId('mobile-tab-profile').click()
 
-    await assertNavigatedTo(page, /\/bg\/auth\/login/)
-    await expect(page.locator('form')).toHaveCount(1)
-    await assertVisible(page.locator('input[type="email"], input#email'))
-    await assertVisible(page.locator('input[type="password"], input#password'))
+    const authDrawer = page.getByTestId('mobile-auth-drawer')
+    await assertVisible(authDrawer)
+    await expect(page).toHaveURL(/\/bg\/search\?q=iphone/)
+    await assertVisible(authDrawer.locator('input[type="email"], input#email'))
+    await assertVisible(authDrawer.locator('input[type="password"], input#password'))
     await assertNoErrorBoundary(page)
 
+    app.assertNoConsoleErrors()
+  })
+
+  test('mobile tab bar Profile opens account drawer when authenticated @smoke', async ({ page, app }) => {
+    const creds = getTestUserCredentials()
+    test.skip(!creds, 'Set TEST_USER_EMAIL/TEST_USER_PASSWORD to run authenticated profile drawer smoke test')
+
+    await page.setViewportSize({ width: 390, height: 844 })
+    await app.clearAuthSession()
+    await loginWithPassword(page, creds!)
+    await app.goto('/en/search?q=iphone')
+    await app.waitForHydration()
+
+    await assertVisible(page.getByTestId('mobile-tab-bar'))
+    await page.getByTestId('mobile-tab-profile').click()
+
+    const accountDrawer = page.getByTestId('mobile-account-drawer')
+    await assertVisible(accountDrawer)
+    await assertVisible(accountDrawer.getByTestId('account-drawer-quick-link').first())
+
+    const firstQuickLinkBox = await accountDrawer.getByTestId('account-drawer-quick-link').first().boundingBox()
+    expect(firstQuickLinkBox).toBeTruthy()
+    expect(firstQuickLinkBox!.height).toBeGreaterThanOrEqual(44)
+
+    await assertNoErrorBoundary(page)
     app.assertNoConsoleErrors()
   })
 
