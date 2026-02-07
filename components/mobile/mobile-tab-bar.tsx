@@ -74,7 +74,7 @@ export function MobileTabBar(_: MobileTabBarProps) {
   const tabItemBase = cn(
     "flex min-h-(--spacing-touch-md) w-full flex-col items-center justify-center gap-0.5 rounded-xl px-1",
     "tap-transparent transition-colors",
-    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground"
+    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
   )
 
   const tabItemClass = (active: boolean) =>
@@ -99,8 +99,8 @@ export function MobileTabBar(_: MobileTabBarProps) {
         data-testid="mobile-tab-bar"
       >
         <div className="mx-auto max-w-screen-sm px-2 pb-safe-max-xs">
-          <div className="pointer-events-auto mb-1 rounded-2xl border border-border-subtle bg-surface-elevated p-1 shadow-2xs">
-            <div className="grid grid-cols-5 items-end gap-1">
+          <div className="pointer-events-auto mb-1 rounded-2xl border border-border-subtle bg-surface-elevated p-0.5 shadow-2xs">
+            <div className="grid grid-cols-5 items-end gap-0.5">
           {/* Home */}
           <Link
             href="/"
@@ -157,18 +157,19 @@ export function MobileTabBar(_: MobileTabBarProps) {
             href="/sell"
             prefetch={true}
             className={cn(
-              "mx-auto inline-flex size-(--control-default) items-center justify-center rounded-xl",
-              "bg-foreground text-background tap-transparent transition-colors hover:bg-foreground active:opacity-90",
-              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
+              tabItemBase,
+              "text-foreground hover:bg-surface-subtle active:bg-hover"
             )}
             aria-label={t("sell")}
             aria-current={isActive("/sell") ? "page" : undefined}
           >
-            <Plus
-              size={17}
-              weight="bold"
-              className="transition-colors text-background"
-            />
+            <span className="inline-flex size-(--control-compact) items-center justify-center rounded-xl bg-foreground text-background transition-colors hover:bg-foreground active:opacity-90">
+              <Plus
+                size={16}
+                weight="bold"
+                className="transition-colors text-background"
+              />
+            </span>
           </Link>
 
           {/* Chat - Opens messages drawer */}

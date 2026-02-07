@@ -78,10 +78,10 @@ export function CategoryCirclesSimple({
       iconShellSize,
       active
         ? "bg-background text-foreground"
-        : "bg-background text-muted-foreground group-hover:bg-hover group-hover:text-foreground"
+        : "bg-background text-foreground group-hover:bg-hover group-hover:text-foreground"
     )
   const iconTone = (active: boolean) =>
-    cn("transition-colors", active ? "text-foreground" : "text-muted-foreground")
+    cn("transition-colors", active ? "text-foreground" : "text-foreground")
   const moreIconShellState = (active: boolean) =>
     cn(
       "flex items-center justify-center rounded-lg bg-background transition-colors",
