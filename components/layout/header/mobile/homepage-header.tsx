@@ -27,7 +27,7 @@ export function MobileHomepageHeader({
   const searchPlaceholder = tNav("searchPlaceholderShort")
 
   return (
-    <div className="border-b border-border-subtle bg-background pt-safe md:hidden">
+    <div className="bg-background pt-safe md:hidden">
       <div className="flex h-(--control-primary) items-center px-2">
         <SidebarMenu user={user} categories={categories} triggerClassName="-ml-2" {...(userStats && { userStats })} />
         <Link href="/" className="shrink-0 -ml-1">

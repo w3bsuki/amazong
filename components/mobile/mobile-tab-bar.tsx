@@ -163,18 +163,11 @@ export function MobileTabBar(_: MobileTabBarProps) {
             aria-label={t("sell")}
             aria-current={isActive("/sell") ? "page" : undefined}
           >
-            <span
-              className={cn(
-                "inline-flex size-7 items-center justify-center rounded-full transition-colors",
-                "bg-background text-foreground"
-              )}
-            >
-              <Plus
-                size={16}
-                weight="bold"
-                className="transition-colors text-foreground"
-              />
-            </span>
+            <Plus
+              size={18}
+              weight="bold"
+              className="transition-colors text-background"
+            />
             <span
               className={cn(
                 "text-2xs font-medium leading-none tracking-tight",
