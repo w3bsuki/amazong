@@ -237,6 +237,8 @@ test.describe('Smoke Tests - Critical Path', () => {
     await app.waitForHydration()
 
     await assertVisible(page.getByTestId('mobile-tab-bar'))
+    await assertVisible(page.getByTestId('mobile-tab-bar-dock'))
+    await assertVisible(page.getByTestId('mobile-tab-sell'))
 
     await page.getByTestId('mobile-tab-profile').click()
 
@@ -261,6 +263,7 @@ test.describe('Smoke Tests - Critical Path', () => {
     await app.waitForHydration()
 
     await assertVisible(page.getByTestId('mobile-tab-bar'))
+    await assertVisible(page.getByTestId('mobile-tab-bar-dock'))
     await page.getByTestId('mobile-tab-profile').click()
 
     const accountDrawer = page.getByTestId('mobile-account-drawer')

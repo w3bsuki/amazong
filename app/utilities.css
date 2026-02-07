@@ -210,7 +210,13 @@
 
 /* Prevent fixed bottom tab bar from overlapping page content (mobile only). */
 @media (max-width: 767px) {
-  .pb-tabbar-safe { padding-bottom: calc(var(--spacing-touch-lg) + env(safe-area-inset-bottom)); }
+  .pb-tabbar-safe {
+    padding-bottom: calc(var(--spacing-bottom-nav) + env(safe-area-inset-bottom) + var(--spacing-inset));
+  }
+
+  .bottom-tabbar-offset {
+    bottom: calc(var(--spacing-bottom-nav) + env(safe-area-inset-bottom) + var(--spacing-inset));
+  }
 }
 
 /* ===== SIZE UTILITIES ===== */

@@ -524,7 +524,7 @@ export function AccountWishlistGrid({ items, locale, onRemove }: WishlistGridPro
 
       {/* Mobile: Floating Add All button */}
       {items.some(item => item.stock > 0) && items.length > 2 && (
-        <div className="fixed bottom-20 left-4 right-4 md:hidden z-40">
+        <div className="fixed bottom-tabbar-offset left-4 right-4 z-40 md:hidden">
           <Button
             onClick={handleAddAllToCart}
             className="w-full h-12 rounded-full"

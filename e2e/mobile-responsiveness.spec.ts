@@ -72,13 +72,23 @@ test.describe("Mobile Responsiveness - Phase 11", () => {
       // Tab bar should be visible on mobile
       const tabBar = page.getByTestId("mobile-tab-bar")
       await expect(tabBar).toBeVisible()
+      const dock = tabBar.getByTestId("mobile-tab-bar-dock")
+      await expect(dock).toBeVisible()
       
       // Verify all tab bar items are present (use tabBar as parent to avoid ambiguity)
       await expect(tabBar.getByRole("link", { name: "Home" })).toBeVisible()
       await expect(tabBar.getByRole("button", { name: /categories/i })).toBeVisible()
       await expect(tabBar.getByRole("link", { name: "Sell" })).toBeVisible()
+      await expect(tabBar.getByTestId("mobile-tab-sell")).toBeVisible()
       await expect(tabBar.getByRole("button", { name: /chat/i })).toBeVisible()
       await expect(tabBar.getByTestId("mobile-tab-profile")).toBeVisible()
+
+      const dockBox = await dock.boundingBox()
+      const viewport = page.viewportSize()
+      expect(dockBox).toBeTruthy()
+      expect(viewport).toBeTruthy()
+      const dockBottom = (dockBox?.y ?? 0) + (dockBox?.height ?? 0)
+      expect(Math.abs(dockBottom - (viewport?.height ?? 0))).toBeLessThanOrEqual(2)
     })
 
     test("categories tab opens global category drawer", async ({ page }) => {

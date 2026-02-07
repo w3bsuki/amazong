@@ -63,7 +63,7 @@ export function CookieConsent() {
 
     return (
         <div 
-            className="fixed bottom-20 left-0 right-0 z-50 pointer-events-none md:bottom-0"
+            className="fixed bottom-tabbar-offset left-0 right-0 z-50 pointer-events-none md:bottom-0"
             role="dialog"
             aria-labelledby="cookie-consent-title"
             aria-describedby="cookie-consent-description"

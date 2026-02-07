@@ -62,7 +62,7 @@ export function MobileTabBar(_: MobileTabBarProps) {
   }
 
   const tabItemBase = cn(
-    "flex min-h-(--spacing-touch-md) w-full flex-col items-center justify-center gap-0.5 rounded-xl px-1",
+    "flex min-h-(--control-default) w-full flex-col items-center justify-center gap-0.5 rounded-xl border border-transparent px-1.5 py-1",
     "tap-transparent transition-colors",
     "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
   )
@@ -71,8 +71,14 @@ export function MobileTabBar(_: MobileTabBarProps) {
     cn(
       tabItemBase,
       active
-        ? "text-foreground"
-        : "text-muted-foreground hover:bg-surface-subtle active:bg-hover"
+        ? "bg-surface-subtle text-foreground"
+        : "text-muted-foreground hover:bg-hover active:bg-active"
+    )
+
+  const tabLabelClass = (active: boolean) =>
+    cn(
+      "text-2xs font-medium leading-none tracking-tight",
+      active ? "text-foreground" : "text-muted-foreground"
     )
 
   const isAuthenticated = Boolean(auth?.user)
@@ -91,8 +97,11 @@ export function MobileTabBar(_: MobileTabBarProps) {
         aria-label={t("mobileNavigation")}
         data-testid="mobile-tab-bar"
       >
-        <div className="mx-auto max-w-screen-sm px-2 pb-safe-max-xs">
-          <div className="pointer-events-auto mb-1 rounded-2xl border border-border-subtle bg-surface-elevated p-0.5 shadow-2xs">
+        <div className="mx-auto max-w-screen-sm px-2">
+          <div
+            data-testid="mobile-tab-bar-dock"
+            className="pointer-events-auto rounded-2xl border border-border-subtle bg-surface-elevated px-1 py-1 pb-safe-max-xs shadow-md"
+          >
             <div className="grid grid-cols-5 items-end gap-0.5">
           {/* Home */}
           <Link
@@ -111,8 +120,7 @@ export function MobileTabBar(_: MobileTabBarProps) {
               )} 
             />
             <span className={cn(
-              "text-2xs font-medium leading-none tracking-tight",
-              pathname === "/" ? "text-foreground" : "text-muted-foreground"
+              tabLabelClass(pathname === "/")
             )}>{t("home")}</span>
           </Link>
 
@@ -140,8 +148,7 @@ export function MobileTabBar(_: MobileTabBarProps) {
               )} 
             />
             <span className={cn(
-              "text-2xs font-medium leading-none tracking-tight",
-              isActive("/categories") || categoryDrawer?.isOpen ? "text-foreground" : "text-muted-foreground"
+              tabLabelClass(isActive("/categories") || Boolean(categoryDrawer?.isOpen))
             )}>{t("categories")}</span>
           </button>
 
@@ -151,16 +158,29 @@ export function MobileTabBar(_: MobileTabBarProps) {
             prefetch={true}
             className={cn(
               tabItemBase,
-              "text-foreground hover:bg-surface-subtle active:bg-hover"
+              isActive("/sell")
+                ? "bg-surface-subtle text-foreground"
+                : "text-muted-foreground hover:bg-hover active:bg-active"
             )}
             aria-label={t("sell")}
             aria-current={isActive("/sell") ? "page" : undefined}
+            data-testid="mobile-tab-sell"
           >
-            <span className="inline-flex size-(--control-compact) items-center justify-center rounded-xl bg-foreground text-background transition-colors hover:bg-foreground active:opacity-90">
+            <span
+              className={cn(
+                "inline-flex size-(--control-default) items-center justify-center rounded-full border transition-colors",
+                isActive("/sell")
+                  ? "border-foreground bg-foreground text-background"
+                  : "border-border-subtle bg-background text-foreground hover:bg-hover active:bg-active"
+              )}
+            >
               <Plus
-                size={16}
+                size={17}
                 weight="bold"
-                className="transition-colors text-background"
+                className={cn(
+                  "transition-colors",
+                  isActive("/sell") ? "text-background" : "text-foreground"
+                )}
               />
             </span>
           </Link>
@@ -191,8 +211,7 @@ export function MobileTabBar(_: MobileTabBarProps) {
               )}
             </span>
             <span className={cn(
-              "text-2xs font-medium leading-none tracking-tight",
-              isActive("/chat") ? "text-foreground" : "text-muted-foreground"
+              tabLabelClass(isActive("/chat"))
             )}>{t("chat")}</span>
           </button>
 
@@ -222,8 +241,7 @@ export function MobileTabBar(_: MobileTabBarProps) {
             />
             <span
               className={cn(
-                "text-2xs font-medium leading-none tracking-tight",
-                isProfileActive ? "text-foreground" : "text-muted-foreground"
+                tabLabelClass(isProfileActive)
               )}
             >
               {t("profile")}

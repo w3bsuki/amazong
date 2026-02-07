@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { PageShell } from "@/components/shared/page-shell"
 import { MobileSearchOverlay } from "@/components/shared/search/mobile-search-overlay"
 import { ProductCard } from "@/components/shared/product/product-card"
@@ -9,9 +9,9 @@ import type { UIProduct } from "@/lib/types/products"
 import type { CategoryTreeNode } from "@/lib/category-tree"
 import { useTranslations } from "next-intl"
 import { Link } from "@/i18n/routing"
-import { CaretRight, Clock, Lightning } from "@phosphor-icons/react"
+import { CaretRight } from "@phosphor-icons/react"
 import { HomeSectionHeader } from "@/components/mobile/home-section-header"
-import { Badge } from "@/components/ui/badge"
+import { cn } from "@/lib/utils"
 
 import { CategoryCirclesSimple } from "@/components/mobile/category-nav"
 import { PromotedListingsStrip } from "@/components/shared/promoted-listings-strip"
@@ -53,7 +53,7 @@ interface HomeBannerConfig {
   href: string
   title: string
   cta: string
-  icon: ReactNode
+  variant: "promoted" | "forYou"
 }
 
 const CURATED_RAIL_PRIORITY: CuratedRailKey[] = ["fashion", "electronics", "automotive", "deals"]
@@ -167,27 +167,51 @@ export function MobileHome({
   )
 
   const renderHomeBanner = useCallback(
-    ({ testId, href, title, cta, icon }: HomeBannerConfig) => (
-      <div data-testid={testId} className="w-full border-y border-border-subtle bg-surface-subtle">
+    ({ testId, href, title, cta, variant }: HomeBannerConfig) => (
+      <div
+        data-testid={testId}
+        className={cn(
+          "w-full border-y",
+          variant === "promoted"
+            ? "border-foreground bg-foreground"
+            : "border-border-subtle bg-surface-subtle"
+        )}
+      >
         <Link
           href={href}
-          className="group block bg-foreground tap-transparent transition-colors hover:bg-foreground active:bg-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
+          className={cn(
+            "group block tap-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring",
+            variant === "promoted"
+              ? "hover:bg-foreground active:opacity-95"
+              : "hover:bg-hover active:bg-active"
+          )}
         >
-          <div className="flex min-h-(--spacing-touch-md) items-center gap-2.5 px-(--spacing-home-inset) py-1">
-            <span className="inline-flex size-7 shrink-0 items-center justify-center rounded-full bg-background text-foreground">
-              {icon}
-            </span>
-            <p className="min-w-0 flex-1 truncate text-base font-semibold text-background">
+          <div className="flex min-h-(--control-primary) items-center gap-3 px-(--spacing-home-inset)">
+            <span
+              aria-hidden="true"
+              className={cn(
+                "h-5 w-0.5 shrink-0 rounded-full",
+                variant === "promoted" ? "bg-background/75" : "bg-foreground/35"
+              )}
+            />
+            <p
+              className={cn(
+                "min-w-0 flex-1 truncate text-base font-semibold leading-tight tracking-tight",
+                variant === "promoted" ? "text-background" : "text-foreground"
+              )}
+            >
               {title}
             </p>
-            <Badge
-              variant="outline"
-              size="prominent"
-              className="shrink-0 border-border-subtle bg-background text-foreground transition-colors group-hover:bg-surface-subtle group-active:bg-hover"
+            <span
+              className={cn(
+                "inline-flex shrink-0 items-center text-sm font-semibold transition-colors",
+                variant === "promoted"
+                  ? "text-background/90 group-hover:text-background"
+                  : "text-muted-foreground group-hover:text-foreground"
+              )}
             >
               <span>{cta}</span>
-              <CaretRight size={11} weight="bold" aria-hidden="true" />
-            </Badge>
+            </span>
           </div>
         </Link>
       </div>
@@ -280,7 +304,7 @@ export function MobileHome({
             href: "/search?promoted=true&sort=newest",
             title: tMobile("promoBannerTitle"),
             cta: tMobile("promoBannerCta"),
-            icon: <Lightning size={13} weight="fill" aria-hidden="true" />,
+            variant: "promoted",
           })}
         </section>
 
@@ -302,7 +326,7 @@ export function MobileHome({
               href: "/search?sort=newest",
               title: tMobile("forYouBannerTitle"),
               cta: tMobile("forYouBannerCta"),
-              icon: <Clock size={13} weight="bold" aria-hidden="true" />,
+              variant: "forYou",
             })}
 
             <div className="mt-2 grid grid-cols-2 gap-(--spacing-home-card-gap) px-(--spacing-home-inset) pb-1">
