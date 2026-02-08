@@ -52,9 +52,6 @@ If you read only three docs, read:
 - `docs-site/**`:
   - internal browse portal generated from `docs/**`.
   - not an authoring source.
-- `docs/archive/**`:
-  - historical snapshots and deprecated material.
-  - not active SSOT.
 - numbered docs such as `docs/01-PRD.md`:
   - compatibility stubs only.
   - do not use as canonical links.

@@ -18,22 +18,24 @@ export function CookieConsent() {
     const [isVisible, setIsVisible] = useState(false)
 
     useEffect(() => {
-        // Never block E2E runs with consent UI.
-        if (isE2E) {
-            return
+        let timer: ReturnType<typeof setTimeout> | undefined
+
+        if (!isE2E) {
+            // Check if consent was already given
+            const storedConsent = localStorage.getItem(COOKIE_CONSENT_KEY)
+            if (!storedConsent) {
+                // Show banner after a short delay for better UX
+                timer = setTimeout(() => setIsVisible(true), 1000)
+            } else {
+                setConsent(storedConsent as ConsentValue)
+            }
         }
 
-        // Check if consent was already given
-        const storedConsent = localStorage.getItem(COOKIE_CONSENT_KEY)
-        if (!storedConsent) {
-            // Show banner after a short delay for better UX
-            const timer = setTimeout(() => setIsVisible(true), 1000)
-            return () => clearTimeout(timer)
-        } else {
-            setConsent(storedConsent as ConsentValue)
+        return () => {
+            if (timer !== undefined) {
+                clearTimeout(timer)
+            }
         }
-
-        return
     }, [isE2E])
 
     const handleAccept = () => {
@@ -50,11 +52,6 @@ export function CookieConsent() {
         setIsVisible(false)
         window.dispatchEvent(new CustomEvent(COOKIE_CONSENT_EVENT))
         // Here you would disable non-essential cookies
-    }
-
-    const handleManagePreferences = () => {
-        // This could open a modal with granular cookie preferences
-        // For now, we'll just navigate to the cookie policy page
     }
 
     if (isE2E || !isVisible || consent) {
@@ -105,12 +102,12 @@ export function CookieConsent() {
                             {t('declineOptional')}
                         </Button>
                     </div>
-                    <button 
-                        onClick={handleManagePreferences}
-                        className="w-full text-center text-sm text-muted-foreground hover:text-foreground mt-3 py-2 transition-colors"
+                    <Link
+                        href="/cookies"
+                        className="block w-full text-center text-sm text-muted-foreground hover:text-foreground mt-3 py-2 transition-colors"
                     >
                         {t('managePreferences')}
-                    </button>
+                    </Link>
                 </div>
             </div>
 
@@ -129,12 +126,12 @@ export function CookieConsent() {
                             </p>
                         </div>
                         <div className="flex items-center gap-4 shrink-0">
-                            <button 
-                                onClick={handleManagePreferences}
+                            <Link
+                                href="/cookies"
                                 className="text-sm text-foreground hover:text-primary-foreground hover:underline underline-offset-2 whitespace-nowrap transition-colors"
                             >
                                 {t('managePreferences')}
-                            </button>
+                            </Link>
                             <Button 
                                 variant="outline"
                                 size="sm"

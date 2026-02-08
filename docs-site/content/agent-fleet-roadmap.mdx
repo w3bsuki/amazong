@@ -1,27 +1,13 @@
-# Agent Fleet Roadmap (DEPRECATED)
+# AGENTS_PHASES.md (DEPRECATED)
 
-> Treido no longer uses a “fleet orchestration” model. The repo now follows **Skills V4**: a small set of **specialist** `treido-*` skills.
+Legacy fleet-phase document kept for historical context only.
 
-**Current (V4) skills:**
-- `treido-rails` — non-negotiables + pause conditions
-- `treido-structure` — file placement + boundaries
-- `treido-design` — UI/UX specs + polish
-- `treido-mobile-ux` — touch + safe areas + iOS feel
-- `treido-nextjs-16` — App Router + caching + request conventions
-- `treido-tailwind-v4` — tokens + forbidden patterns
-- `treido-shadcn-ui` — primitives + composition
-- `treido-supabase` — SSR clients + queries + RLS mindset
-- `treido-stripe` — webhooks + payments safety
-- `treido-skillsmith` — skill system maintenance
+Do not use this file for runtime routing or execution behavior.
 
-**Legacy (V1) skills:**
-- Legacy skill artifacts are intentionally removed to keep the fleet small and current.
+Active SSOT:
+- `AGENTS.md` (root)
+- `docs/AGENTS.md`
+- `docs/WORKFLOW.md`
+- `docs/SKILLS.md`
 
-For day-to-day work:
-- Start at `docs/AGENTS.md`
-- Follow `docs/WORKFLOW.md`
-- Reference `docs/SKILLS.md`
-
----
-
-*Last updated: 2026-02-06*
+Last updated: 2026-02-07

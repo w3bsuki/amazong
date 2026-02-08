@@ -27,7 +27,7 @@ import {
   type OrderItemStatus, 
   type ShippingCarrier 
 } from "@/lib/order-status"
-import { ORDER_STATUS_CONFIG } from "@/components/orders/order-status-config"
+import { ORDER_STATUS_CONFIG } from "@/components/shared/orders/order-status-config"
 import { toast } from "sonner"
 import { Link, useRouter } from "@/i18n/routing"
 
@@ -69,6 +69,7 @@ export function OrderStatusActions({
 
   const config = ORDER_STATUS_CONFIG[currentStatus]
   const canUpdate = isSeller && canSellerUpdateStatus(currentStatus)
+  const nextStatus = config.nextStatus
 
   async function handleStatusUpdate(newStatus: OrderItemStatus) {
     // If shipping, show dialog for tracking info
@@ -139,16 +140,16 @@ export function OrderStatusActions({
       )}
 
       {/* Status Actions */}
-      {canUpdate && config.nextStatus && (
+      {canUpdate && nextStatus && (
         <Button
           size="sm"
-          onClick={() => handleStatusUpdate(config.nextStatus!)}
+          onClick={() => handleStatusUpdate(nextStatus)}
           disabled={isPending}
         >
           {isPending ? (
             <Loader2 className="h-4 w-4 mr-1.5 animate-spin" />
           ) : (
-            getActionIcon(config.nextStatus)
+            getActionIcon(nextStatus)
           )}
           {isPending ? tOrders("actions.updating") : config.nextActionKey ? tOrders(config.nextActionKey) : null}
         </Button>

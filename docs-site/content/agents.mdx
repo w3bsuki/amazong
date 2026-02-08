@@ -10,6 +10,9 @@ This file adds execution detail and folder boundaries.
 ## Default mode
 
 Implement directly for normal tasks. Skills are optional specialist tools, not mandatory middleware.
+Do not use subagents by default; use them only when the user explicitly requests them (for example, `run subagents`).
+The main agent is the implementation owner for planning, decisions, and code changes.
+If subagents are requested, default them to audit/search support only unless the user explicitly requests delegated code edits.
 
 ## High-risk pause domains
 
@@ -40,6 +43,11 @@ Codex compatibility mirror: `.agents/skills/*`
 - `treido-payments`
 - `treido-testing`
 - `treido-a11y`
+
+## Legacy exclusion
+
+- `.codex/agents/*` and old orchestration playbooks are legacy archives, not runtime policy.
+- If legacy docs conflict with root `AGENTS.md` or this file, ignore legacy docs and follow active SSOT.
 
 ## Source precedence
 

@@ -1,6 +1,3 @@
-// For more info, see https://github.com/storybookjs/eslint-plugin-storybook#configuration-flat-config-format
-import storybook from "eslint-plugin-storybook";
-
 import next from "eslint-config-next";
 import sonarjs from "eslint-plugin-sonarjs";
 import unicorn from "eslint-plugin-unicorn";
@@ -342,6 +339,6 @@ const config = [...next, {
     "sonarjs/no-duplicate-string": "off", // Config files often repeat paths
     "unicorn/prefer-module": "off", // Some configs need CJS
   },
-}, ...storybook.configs["flat/recommended"]];
+}];
 
 export default config;

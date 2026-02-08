@@ -165,6 +165,18 @@ export function ChartAreaInteractive() {
     return date >= startDate
   })
 
+  const formatDisplayDate = (value: unknown): string => {
+    if (!(typeof value === "string" || typeof value === "number" || value instanceof Date)) {
+      return ""
+    }
+    const date = new Date(value)
+    if (Number.isNaN(date.getTime())) return ""
+    return date.toLocaleDateString(locale, {
+      month: "short",
+      day: "numeric",
+    })
+  }
+
   return (
     <Card className="@container/card">
       <CardHeader>
@@ -248,24 +260,13 @@ export function ChartAreaInteractive() {
               axisLine={false}
               tickMargin={8}
               minTickGap={32}
-              tickFormatter={(value) => {
-                const date = new Date(value)
-                return date.toLocaleDateString(locale, {
-                  month: "short",
-                  day: "numeric",
-                })
-              }}
+              tickFormatter={(value) => formatDisplayDate(value)}
             />
             <ChartTooltip
               cursor={false}
               content={
                 <ChartTooltipContent
-                  labelFormatter={(value) => {
-                    return new Date(value).toLocaleDateString(locale, {
-                      month: "short",
-                      day: "numeric",
-                    })
-                  }}
+                  labelFormatter={(value) => formatDisplayDate(value)}
                   indicator="dot"
                 />
               }

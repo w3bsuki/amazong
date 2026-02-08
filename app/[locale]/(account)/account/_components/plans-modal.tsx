@@ -24,7 +24,7 @@ import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
 
 // Reuse shared components from plan-card
-import { PlansGrid, PlansGridSkeleton, type Plan } from "@/components/pricing/plan-card"
+import { PlansGrid, PlansGridSkeleton, type Plan } from "./plan-card"
 
 export type PlansModalServerActions = {
   createSubscriptionCheckoutSession: (args: {
@@ -85,6 +85,20 @@ const translations = {
   },
 }
 
+function isPlanRecord(value: unknown): value is Plan {
+  if (!value || typeof value !== "object") return false
+  const candidate = value as Record<string, unknown>
+  return (
+    typeof candidate.id === "string" &&
+    typeof candidate.name === "string" &&
+    typeof candidate.tier === "string" &&
+    (candidate.account_type === "personal" || candidate.account_type === "business") &&
+    typeof candidate.price_monthly === "number" &&
+    typeof candidate.price_yearly === "number" &&
+    Array.isArray(candidate.features)
+  )
+}
+
 // =============================================================================
 // Main PlansModal Component
 // =============================================================================
@@ -102,7 +116,8 @@ export function PlansModal({
 }: PlansModalProps) {
   const router = useRouter()
   const locale = useLocale()
-  const t = translations[locale as keyof typeof translations] || translations.en
+  const localeKey = locale === "bg" ? "bg" : "en"
+  const t = translations[localeKey]
 
   // Internal open state for uncontrolled mode
   const [internalOpen, setInternalOpen] = useState(false)
@@ -128,8 +143,12 @@ export function PlansModal({
       try {
         const res = await fetch("/api/plans")
         if (res.ok) {
-          const data = await res.json()
-          setPlans(data)
+          const payload: unknown = await res.json()
+          if (Array.isArray(payload)) {
+            setPlans(payload.filter(isPlanRecord))
+          } else {
+            setPlans([])
+          }
         }
       } catch (error) {
         console.error("Failed to fetch plans:", error)
@@ -179,7 +198,7 @@ export function PlansModal({
     } finally {
       setSubscribingPlan(null)
     }
-  }, [currentTier, billingPeriod, router, setIsOpen, locale])
+  }, [actions, currentTier, billingPeriod, router, setIsOpen, locale])
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -312,7 +331,8 @@ function PlansModalTrigger({
   children?: React.ReactNode
 }) {
   const locale = useLocale()
-  const t = translations[locale as keyof typeof translations] || translations.en
+  const localeKey = locale === "bg" ? "bg" : "en"
+  const t = translations[localeKey]
 
   return (
     <Button variant={variant} size={size} className={className} {...props}>

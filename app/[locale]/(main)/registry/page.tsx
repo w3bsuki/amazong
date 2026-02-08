@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Gift, UserPlus } from "@phosphor-icons/react/dist/ssr"
-import { AppBreadcrumb, breadcrumbPresets } from "@/components/navigation/app-breadcrumb"
+import { AppBreadcrumb, breadcrumbPresets } from "@/components/shared/navigation/app-breadcrumb"
 import { validateLocale } from "@/i18n/routing"
 import { setRequestLocale, getTranslations } from "next-intl/server"
 import type { Metadata } from "next"

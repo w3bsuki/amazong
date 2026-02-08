@@ -1,6 +1,6 @@
 import { getTranslations } from "next-intl/server"
 import { Card, CardContent } from "@/components/ui/card"
-import { AppBreadcrumb, breadcrumbPresets } from "@/components/navigation/app-breadcrumb"
+import { AppBreadcrumb, breadcrumbPresets } from "@/components/shared/navigation/app-breadcrumb"
 import { PageShell } from "@/components/shared/page-shell"
 import {
   Users,

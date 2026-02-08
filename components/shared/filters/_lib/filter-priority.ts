@@ -2,7 +2,7 @@
  * Filter Priority Mapping
  *
  * Maps category roots to their priority filter attributes.
- * Used by QuickFilterRow to display relevant quick pills.
+ * Used by desktop and shared filter surfaces for quick pills ordering.
  */
 
 import type { CategoryAttribute } from "@/lib/data/categories"
@@ -96,11 +96,4 @@ export function getFilterPillsForCategory(
     }
 
     return DEFAULT_FILTERS
-}
-
-/**
- * Check if a filter is a base filter (price, category) vs an attribute filter.
- */
-export function isBaseFilter(filterKey: string): boolean {
-    return BASE_FILTERS.includes(filterKey as (typeof BASE_FILTERS)[number])
 }

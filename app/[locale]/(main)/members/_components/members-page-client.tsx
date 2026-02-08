@@ -18,7 +18,7 @@ import {
   Users,
 } from "@phosphor-icons/react"
 
-import { AppBreadcrumb } from "@/components/navigation/app-breadcrumb"
+import { AppBreadcrumb } from "@/components/shared/navigation/app-breadcrumb"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"

@@ -147,6 +147,7 @@ export function OrderDetailView({
   const status = order.status || "pending"
   const statusConfig = getStatusConfig(status)
   const StatusIcon = statusConfig.icon
+  const nextStatus = statusConfig.nextStatus
 
   const shippingCost = 0 // Shipping cost not stored in orders table yet
   const total = order.total_amount || (subtotal + shippingCost)
@@ -233,15 +234,15 @@ export function OrderDetailView({
 
         {/* Actions */}
         <div className="flex items-center gap-2 flex-wrap">
-          {statusConfig.nextStatus && (
+          {nextStatus && (
             <Button
-              onClick={() => handleStatusUpdate(statusConfig.nextStatus!)}
+              onClick={() => handleStatusUpdate(nextStatus)}
               disabled={isLoading}
               size="sm"
             >
-              {statusConfig.nextStatus === "processing" && "Start Processing"}
-              {statusConfig.nextStatus === "shipped" && "Mark as Shipped"}
-              {statusConfig.nextStatus === "delivered" && "Mark as Delivered"}
+              {nextStatus === "processing" && "Start Processing"}
+              {nextStatus === "shipped" && "Mark as Shipped"}
+              {nextStatus === "delivered" && "Mark as Delivered"}
             </Button>
           )}
           <DropdownMenu>

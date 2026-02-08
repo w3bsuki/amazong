@@ -20,7 +20,7 @@ import {
 import { Lightning, X, ArrowsClockwise, CalendarBlank, Warning } from "@phosphor-icons/react"
 import { cn } from "@/lib/utils"
 import { toast } from "sonner"
-import { PlansGrid, type Plan } from "@/components/pricing/plan-card"
+import { PlansGrid, type Plan } from "../_components/plan-card"
 
 export type PlansContentServerActions = {
   cancelSubscription: () => Promise<{ success: boolean; error?: string }>

@@ -60,6 +60,15 @@ export function MobileTabBar(_: MobileTabBarProps) {
     if (path === "/") return pathname === "/"
     return pathname.startsWith(path)
   }
+  const activeTextClass = "text-foreground"
+  const inactiveTextClass = "text-muted-foreground"
+  const iconClass = (active: boolean) =>
+    cn("transition-colors", active ? activeTextClass : inactiveTextClass)
+  const isHomeActive = pathname === "/"
+  const isCategoriesActive = isActive("/categories") || Boolean(categoryDrawer?.isOpen)
+  const isSellActive = isActive("/sell")
+  const isChatActive = isActive("/chat")
+  const chatAriaLabel = unreadCount > 0 ? `${t("chat")} (${unreadCount})` : t("chat")
 
   const tabItemBase = cn(
     "flex min-h-(--control-default) w-full flex-col items-center justify-center gap-0.5 rounded-xl border border-transparent px-1.5 py-1",
@@ -78,7 +87,7 @@ export function MobileTabBar(_: MobileTabBarProps) {
   const tabLabelClass = (active: boolean) =>
     cn(
       "text-2xs font-medium leading-none tracking-tight",
-      active ? "text-foreground" : "text-muted-foreground"
+      active ? activeTextClass : inactiveTextClass
     )
 
   const isAuthenticated = Boolean(auth?.user)
@@ -107,20 +116,17 @@ export function MobileTabBar(_: MobileTabBarProps) {
           <Link
             href="/"
             prefetch={true}
-            className={tabItemClass(pathname === "/")}
+            className={tabItemClass(isHomeActive)}
             aria-label={t("home")}
-            aria-current={pathname === "/" ? "page" : undefined}
+            aria-current={isHomeActive ? "page" : undefined}
           >
             <House 
               size={20}
-              weight={pathname === "/" ? "fill" : "regular"}
-              className={cn(
-                "transition-colors",
-                pathname === "/" ? "text-foreground" : "text-muted-foreground"
-              )} 
+              weight={isHomeActive ? "fill" : "regular"}
+              className={iconClass(isHomeActive)} 
             />
             <span className={cn(
-              tabLabelClass(pathname === "/")
+              tabLabelClass(isHomeActive)
             )}>{t("home")}</span>
           </Link>
 
@@ -134,21 +140,18 @@ export function MobileTabBar(_: MobileTabBarProps) {
               }
               router.push("/categories")
             }}
-            className={tabItemClass(isActive("/categories") || Boolean(categoryDrawer?.isOpen))}
+            className={tabItemClass(isCategoriesActive)}
             aria-label={t("categories")}
             aria-haspopup="dialog"
             aria-expanded={categoryDrawer?.isOpen}
           >
             <SquaresFour 
               size={20}
-              weight={isActive("/categories") || categoryDrawer?.isOpen ? "fill" : "regular"}
-              className={cn(
-                "transition-colors",
-                isActive("/categories") || categoryDrawer?.isOpen ? "text-foreground" : "text-muted-foreground"
-              )} 
+              weight={isCategoriesActive ? "fill" : "regular"}
+              className={iconClass(isCategoriesActive)} 
             />
             <span className={cn(
-              tabLabelClass(isActive("/categories") || Boolean(categoryDrawer?.isOpen))
+              tabLabelClass(isCategoriesActive)
             )}>{t("categories")}</span>
           </button>
 
@@ -158,12 +161,12 @@ export function MobileTabBar(_: MobileTabBarProps) {
             prefetch={true}
             className={cn(
               tabItemBase,
-              isActive("/sell")
+              isSellActive
                 ? "bg-surface-subtle text-foreground"
                 : "text-muted-foreground hover:bg-hover active:bg-active"
             )}
             aria-label={t("sell")}
-            aria-current={isActive("/sell") ? "page" : undefined}
+            aria-current={isSellActive ? "page" : undefined}
             data-testid="mobile-tab-sell"
           >
             <span
@@ -177,10 +180,7 @@ export function MobileTabBar(_: MobileTabBarProps) {
               <Plus
                 size={17}
                 weight="bold"
-                className={cn(
-                  "transition-colors",
-                  isActive("/sell") ? "text-background" : "text-foreground"
-                )}
+                className={cn("transition-colors", isSellActive ? "text-background" : activeTextClass)}
               />
             </span>
           </Link>
@@ -189,18 +189,15 @@ export function MobileTabBar(_: MobileTabBarProps) {
           <button
             type="button"
             onClick={openMessages}
-            className={tabItemClass(isActive("/chat"))}
-            aria-label={`${t("chat")}${unreadCount > 0 ? ` (${unreadCount})` : ""}`}
+            className={tabItemClass(isChatActive)}
+            aria-label={chatAriaLabel}
             aria-haspopup="dialog"
           >
             <span className="relative">
               <ChatCircle 
                 size={20}
-                weight={isActive("/chat") ? "fill" : "regular"}
-                className={cn(
-                  "transition-colors",
-                  isActive("/chat") ? "text-foreground" : "text-muted-foreground"
-                )} 
+                weight={isChatActive ? "fill" : "regular"}
+                className={iconClass(isChatActive)} 
               />
               {unreadCount > 0 && (
                 <CountBadge
@@ -211,7 +208,7 @@ export function MobileTabBar(_: MobileTabBarProps) {
               )}
             </span>
             <span className={cn(
-              tabLabelClass(isActive("/chat"))
+              tabLabelClass(isChatActive)
             )}>{t("chat")}</span>
           </button>
 
@@ -234,10 +231,7 @@ export function MobileTabBar(_: MobileTabBarProps) {
             <UserCircle
               size={20}
               weight={isProfileActive ? "fill" : "regular"}
-              className={cn(
-                "transition-colors",
-                isProfileActive ? "text-foreground" : "text-muted-foreground"
-              )}
+              className={iconClass(isProfileActive)}
             />
             <span
               className={cn(

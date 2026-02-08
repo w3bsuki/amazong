@@ -547,9 +547,9 @@ test.describe("Mobile Responsiveness - Phase 11", () => {
       const beforeOpen = await page.evaluate(() => window.scrollY)
 
       const productHrefInViewport = await page.evaluate(() => {
-        const links = Array.from(
-          document.querySelectorAll<HTMLAnchorElement>('a[data-slot="product-card-link"]')
-        )
+        const links = [
+          ...document.querySelectorAll<HTMLAnchorElement>('a[data-slot="product-card-link"]'),
+        ]
         const visibleLink = links.find((link) => {
           const rect = link.getBoundingClientRect()
           return rect.top >= 0 && rect.bottom <= window.innerHeight

@@ -6,7 +6,7 @@ import { useLocale, useTranslations } from "next-intl"
 import { Check, ShoppingBag, Storefront, Package, SpinnerGap } from "@phosphor-icons/react"
 
 import { Button } from "@/components/ui/button"
-import { OnboardingShell } from "@/components/onboarding/onboarding-shell"
+import { OnboardingShell } from "../_components/onboarding-shell"
 
 interface OnboardingProfile {
   username?: string

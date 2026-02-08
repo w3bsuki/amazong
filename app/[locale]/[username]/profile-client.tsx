@@ -40,7 +40,7 @@ import {
   CheckCircle as Verified,
 } from "@phosphor-icons/react"
 import { ProductCard } from "@/components/shared/product/product-card"
-import { FollowSellerButton, type FollowSellerActions } from "@/components/seller/follow-seller-button"
+import { FollowSellerButton, type FollowSellerActions } from "@/components/shared/seller/follow-seller-button"
 import { SellerVerificationBadge } from "@/components/shared/product/seller-verification-badge"
 import { UserAvatar } from "@/components/shared/user-avatar"
 import { useAuth } from "@/components/providers/auth-state-manager"

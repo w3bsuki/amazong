@@ -10,7 +10,7 @@ import { IconChevronRight, IconPackage, IconShoppingBag, IconMessageCircle } fro
 import { Badge } from "@/components/ui/badge"
 import { BuyerOrderActions, type BuyerOrderActionsServerActions } from "./buyer-order-actions"
 import { Button } from "@/components/ui/button"
-import { OrderStatusBadge } from "@/components/orders/order-status-badge"
+import { OrderStatusBadge } from "@/components/shared/orders/order-status-badge"
 import type { OrderItemStatus, OrderStatusKey } from "@/lib/order-status"
 import { getOrderStatusFromItems } from "@/lib/order-status"
 import {

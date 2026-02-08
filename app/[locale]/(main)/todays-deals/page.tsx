@@ -2,7 +2,7 @@ import { setRequestLocale, getTranslations } from "next-intl/server"
 import { Lightning as Zap } from "@phosphor-icons/react/dist/ssr"
 import type { Metadata } from 'next'
 import { validateLocale } from "@/i18n/routing"
-import { AppBreadcrumb, breadcrumbPresets } from "@/components/navigation/app-breadcrumb"
+import { AppBreadcrumb, breadcrumbPresets } from "@/components/shared/navigation/app-breadcrumb"
 import { getProducts, toUI } from "@/lib/data/products"
 import { ProductCard } from "@/components/shared/product/product-card"
 import { PageShell } from "@/components/shared/page-shell"

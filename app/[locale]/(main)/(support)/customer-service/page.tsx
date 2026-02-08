@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input"
 import { Package, ArrowsClockwise, CreditCard, User, Shield, Question, MagnifyingGlass as Search } from "@phosphor-icons/react/dist/ssr"
 import { Link } from "@/i18n/routing"
 import { getTranslations, setRequestLocale } from "next-intl/server"
-import { AppBreadcrumb, breadcrumbPresets } from "@/components/navigation/app-breadcrumb"
+import { AppBreadcrumb, breadcrumbPresets } from "@/components/shared/navigation/app-breadcrumb"
 import type { Metadata } from 'next'
 import { validateLocale } from "@/i18n/routing"
 import { CustomerServiceChat } from "@/components/support/customer-service-chat"

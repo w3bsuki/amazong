@@ -15,9 +15,10 @@ export const COLOR_PALETTES: string[][] = [
   ["#FF7675", "#74B9FF", "#55EFC4", "#FFEAA7", "#DFE6E9"],
 ]
 
-export const DEFAULT_PALETTE = COLOR_PALETTES[0]
+const FALLBACK_PALETTE = ["#92A1C6", "#146A7C", "#F0AB3D", "#C271B4", "#C20D90"]
+export const DEFAULT_PALETTE = COLOR_PALETTES[0] ?? FALLBACK_PALETTE
 
 export function getColorPalette(index: number): string[] {
   const palette = COLOR_PALETTES[index % COLOR_PALETTES.length]
-  return palette ? [...palette] : [...DEFAULT_PALETTE!]
+  return palette ? [...palette] : [...DEFAULT_PALETTE]
 }

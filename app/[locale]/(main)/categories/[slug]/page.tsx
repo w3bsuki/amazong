@@ -15,7 +15,6 @@ import { normalizeAttributeKey } from "@/lib/attributes/normalize-attribute-key"
 import {
   getCategoryBySlug,
   getCategoryContext,
-  getCategoryAncestry,
   getSubcategoriesForBrowse,
   type CategoryWithCount,
 } from "@/lib/data/categories"
@@ -127,8 +126,6 @@ function CategoryPageContent({
 
   // Cached category shell data
   const categoryContext = use(getCategoryContext(slug))
-  const ancestry = use(getCategoryAncestry(slug))
-
   if (!categoryContext) {
     notFound()
   }
@@ -148,11 +145,6 @@ function CategoryPageContent({
   // Extract filterable attributes for the filter toolbar
   const filterableAttributes = categoryContext.attributes.filter(attr => attr.is_filterable)
 
-  const defaultTab = ancestry?.[0] ?? null
-  const defaultSubTab = ancestry?.[1] ?? null
-  const defaultL2 = ancestry?.[2] ?? null
-  const defaultL3 = ancestry?.[3] ?? null
-
   return (
     <CategoryPageDynamicContent
       locale={locale}
@@ -164,10 +156,6 @@ function CategoryPageContent({
       subcategoriesWithCounts={subcategoriesWithCounts}
       filterableAttributes={filterableAttributes}
       categoryName={categoryName}
-      defaultTab={defaultTab}
-      defaultSubTab={defaultSubTab}
-      defaultL2={defaultL2}
-      defaultL3={defaultL3}
     />
   )
 }
@@ -182,10 +170,6 @@ function CategoryPageDynamicContent({
   subcategoriesWithCounts,
   filterableAttributes,
   categoryName,
-  defaultTab,
-  defaultSubTab,
-  defaultL2,
-  defaultL3,
 }: {
   locale: string
   slug: string
@@ -217,10 +201,6 @@ function CategoryPageDynamicContent({
   subcategoriesWithCounts: CategoryWithCount[]
   filterableAttributes: CategoryAttribute[]
   categoryName: string
-  defaultTab: string | null
-  defaultSubTab: string | null
-  defaultL2: string | null
-  defaultL3: string | null
 }) {
   // React/Next can only stream partial prerenders when request-bound data is
   // accessed via Suspense. `use()` will suspend this segment properly.
@@ -238,7 +218,7 @@ function CategoryPageDynamicContent({
         attributeFilters[attrKey] = nextValues
       } else {
         const existingValues = Array.isArray(existing) ? existing : [existing]
-        attributeFilters[attrKey] = Array.from(new Set([...existingValues, ...nextValues]))
+        attributeFilters[attrKey] = [...new Set([...existingValues, ...nextValues])]
       }
     }
   }
@@ -304,20 +284,8 @@ function CategoryPageDynamicContent({
         <MobileCategoryBrowser
           initialProducts={mobileInitialProducts}
           initialProductsSlug={slug}
-          defaultTab={defaultTab}
-          defaultSubTab={defaultSubTab}
-          defaultL2={defaultL2}
-          defaultL3={defaultL3}
-          showBanner={false}
-          l0Style="tabs"
-          showQuickFilters={false}
-          showL3Pills={false}
-          tabsNavigateToPages={false}
-          circlesNavigateToPages={false}
           locale={locale}
           filterableAttributes={filterableAttributes}
-          // Phase 2: Enable contextual mode (Vinted-style)
-          contextualMode={true}
           contextualCategoryName={categoryName}
           contextualBackHref={
             parentCategory

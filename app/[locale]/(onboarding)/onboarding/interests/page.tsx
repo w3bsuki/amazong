@@ -22,8 +22,8 @@ import {
 } from "@phosphor-icons/react"
 
 import { Button } from "@/components/ui/button"
-import { InterestChip } from "@/components/onboarding/interest-chip"
-import { OnboardingShell } from "@/components/onboarding/onboarding-shell"
+import { InterestChip } from "../_components/interest-chip"
+import { OnboardingShell } from "../_components/onboarding-shell"
 import { cn } from "@/lib/utils"
 
 const CATEGORY_ITEMS = [

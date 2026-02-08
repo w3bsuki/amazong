@@ -22,6 +22,12 @@ import { IconPackage, IconAlertTriangle, IconX, IconCheck, IconPencil } from "@t
 import { InventoryHeader } from "./_components/inventory-header"
 import { formatCurrencyBGN } from "./_lib/format-currency"
 
+function getVariantCount(product: unknown): number {
+  if (!product || typeof product !== "object") return 0
+  const value = (product as Record<string, unknown>).variant_count
+  return typeof value === "number" ? value : 0
+}
+
 export default async function BusinessInventoryPage() {
   // Requires paid business subscription
   const businessSeller = await requireDashboardAccess()
@@ -85,7 +91,7 @@ export default async function BusinessInventoryPage() {
                       </p>
                     </TableCell>
                     <TableCell className="text-muted-foreground font-mono text-sm">
-                      {(product as any).variant_count > 0 ? '-' : (product.sku || '-')}
+                      {getVariantCount(product) > 0 ? '-' : (product.sku || '-')}
                     </TableCell>
                     <TableCell className="font-medium text-success">
                       {formatCurrencyBGN(product.price)}
@@ -102,9 +108,9 @@ export default async function BusinessInventoryPage() {
                       >
                         {product.stock} units
                       </Badge>
-                      {(product as any).variant_count > 0 && (
+                      {getVariantCount(product) > 0 && (
                         <div className="mt-1 text-xs text-muted-foreground">
-                          {(product as any).variant_count} variants
+                          {getVariantCount(product)} variants
                         </div>
                       )}
                     </TableCell>

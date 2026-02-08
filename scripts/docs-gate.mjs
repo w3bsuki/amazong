@@ -27,15 +27,12 @@ function isAllowedMarkdownPath(relPath) {
   if (allowedExact.has(p)) return true;
   if (p === "AGENTS.md" || p.endsWith("/AGENTS.md")) return true;
   if (p.startsWith("docs/")) return true;
+  if (p.startsWith("codex/")) return true;
   if (p.startsWith(".codex/")) return true;
   if (p.startsWith("docs-site/")) return true; // internal portal (mirrors from /docs)
   if (p.startsWith(".github/")) return true; // repo metadata (templates, instructions)
   if (p.startsWith(".claude/")) return true; // tooling config (allowed)
   if (p.startsWith(".agents/")) return true; // Codex compatibility mirror (allowed)
-  if (p.startsWith("shadcn-tailwind-v4-ecommerce-ui-guide/")) return true; // temporary inspiration guide (kept intentionally)
-
-  // Storybook docs live with components (allowed exception).
-  if (p.startsWith("components/storybook/")) return true;
 
   return false;
 }
@@ -144,8 +141,6 @@ const brokenRelativeLinks = [];
 for (const abs of markdownFiles) {
   const rel = normalizePath(path.relative(projectRoot, abs));
   if (!rel.startsWith("docs/")) continue;
-  if (rel.startsWith("docs/archive/")) continue; // non-SSOT history
-
   const text = fs.readFileSync(abs, "utf8");
   const targets = findRelativeLinksInMarkdown(text);
 
@@ -191,6 +186,7 @@ if (disallowed.length) {
   console.error("");
   console.error("Allowed:");
   console.error("- docs/**");
+  console.error("- codex/**");
   console.error("- .codex/**");
   console.error("- **/AGENTS.md");
   console.error("- README.md");
@@ -198,7 +194,6 @@ if (disallowed.length) {
   console.error("- .github/**");
   console.error("- .claude/**");
   console.error("- .agents/**");
-  console.error("- shadcn-tailwind-v4-ecommerce-ui-guide/** (temporary inspiration guide)");
 }
 
 if (brokenIndexRefs.length) {

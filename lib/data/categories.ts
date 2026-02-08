@@ -488,49 +488,6 @@ export async function getCategoryBySlug(slug: string): Promise<CategoryWithParen
 }
 
 /**
- * Get full ancestry path for a category.
- * Returns an array of slugs from root (L0) to the target category.
- * 
- * @param slug - Category slug to get ancestry for
- * @returns Array of slugs [L0, L1, L2?, L3?] or null if not found
- */
-export async function getCategoryAncestry(slug: string): Promise<string[] | null> {
-  'use cache'
-  cacheTag(`category:${slug}`)
-  cacheLife('categories')
-  
-  const supabase = createStaticClient()
-  
-  // Recursively fetch category and its ancestors
-  const ancestry: string[] = []
-  let currentSlug: string | null = slug
-  
-  while (currentSlug) {
-    const result = await supabase
-      .from('categories')
-      .select(`
-        slug,
-        parent:parent_id (slug)
-      `)
-      .eq('slug', currentSlug)
-      .single()
-    
-    if (result.error || !result.data) {
-      break
-    }
-    
-    const catData = result.data as { slug: string; parent: { slug: string } | { slug: string }[] | null }
-    ancestry.unshift(catData.slug) // Add to beginning (building from leaf to root)
-    
-    // Get parent slug if exists
-    const parentData = Array.isArray(catData.parent) ? catData.parent[0] : catData.parent
-    currentSlug = parentData?.slug ?? null
-  }
-  
-  return ancestry.length > 0 ? ancestry : null
-}
-
-/**
  * Fetch filterable attributes for a category.
  * Used to build dynamic filter UIs on category pages.
  * 

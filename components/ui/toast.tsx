@@ -3,28 +3,8 @@
 import * as React from 'react'
 import * as ToastPrimitives from '@radix-ui/react-toast'
 import { cva, type VariantProps } from 'class-variance-authority'
-import { X } from 'lucide-react'
 
 import { cn } from '@/lib/utils'
-import { IconButton } from '@/components/ui/icon-button'
-
-const ToastProvider = ToastPrimitives.Provider
-
-function ToastViewport({
-  className,
-  ...props
-}: React.ComponentProps<typeof ToastPrimitives.Viewport>) {
-  return (
-    <ToastPrimitives.Viewport
-      data-slot="toast-viewport"
-      className={cn(
-        'fixed top-0 z-50 flex max-h-screen w-full flex-col-reverse p-4 sm:bottom-0 sm:right-0 sm:top-auto sm:flex-col md:max-w-(--container-modal-sm)',
-        className,
-      )}
-      {...props}
-    />
-  )
-}
 
 const toastVariants = cva(
   'ui-toast group pointer-events-auto relative flex w-full items-center justify-between space-x-3 overflow-hidden rounded-2xl border p-3 pr-12 shadow-dropdown',
@@ -73,68 +53,13 @@ function ToastAction({
   )
 }
 
-function ToastClose({
-  className,
-  closeLabel,
-  ...props
-}: React.ComponentProps<typeof ToastPrimitives.Close> & {
-  closeLabel?: string
-}) {
-  const ariaLabel = closeLabel ?? props['aria-label']
-
-  return (
-    <ToastPrimitives.Close asChild toast-close="" {...props}>
-      <IconButton
-        aria-label={ariaLabel ?? 'Close'}
-        className={cn(
-          'ui-toast-close absolute right-2 top-2 text-muted-foreground opacity-0 transition-opacity hover:text-foreground focus-visible:opacity-100 focus-visible:ring-2 focus-visible:ring-focus-ring group-hover:opacity-100',
-          className,
-        )}
-      >
-        <X className="size-4" />
-      </IconButton>
-    </ToastPrimitives.Close>
-  )
-}
-
-function ToastTitle({
-  className,
-  ...props
-}: React.ComponentProps<typeof ToastPrimitives.Title>) {
-  return (
-    <ToastPrimitives.Title
-      data-slot="toast-title"
-      className={cn('text-sm font-semibold', className)}
-      {...props}
-    />
-  )
-}
-
-function ToastDescription({
-  className,
-  ...props
-}: React.ComponentProps<typeof ToastPrimitives.Description>) {
-  return (
-    <ToastPrimitives.Description
-      data-slot="toast-description"
-      className={cn('text-sm text-muted-foreground', className)}
-      {...props}
-    />
-  )
-}
-
 type ToastProps = React.ComponentProps<typeof Toast>
 type ToastActionElement = React.ReactElement<typeof ToastAction>
 
 export {
   type ToastProps,
   type ToastActionElement,
-  ToastProvider,
-  ToastViewport,
   Toast,
   ToastAction,
-  ToastClose,
-  ToastTitle,
-  ToastDescription,
 }
 

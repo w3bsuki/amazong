@@ -1,5 +1,5 @@
 import { getTranslations, setRequestLocale } from "next-intl/server"
-import { breadcrumbPresets } from "@/components/navigation/app-breadcrumb"
+import { breadcrumbPresets } from "@/components/shared/navigation/app-breadcrumb"
 import { 
   Cookie, Shield, Gear, Eye, Bell, 
   ChartBar, Lock

@@ -8,7 +8,7 @@
 
 - **Active refactor workspace (runtime):** `.codex/refactor/`
 - **Active task queue:** `.codex/TASKS.md`
-- **Historical snapshots:** `docs/archive/refactor-*/` and `docs/archive/production-*/`
+- **Historical snapshots:** use VCS history (archive docs were removed from runtime SSOT)
 
 ---
 

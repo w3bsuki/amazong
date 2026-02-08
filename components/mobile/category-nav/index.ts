@@ -1,17 +1,5 @@
-export { CategoryNavItem, TabContent } from "./category-nav-item"
-export { CategoryTabs } from "./category-tabs"
-export type { CategoryTabsProps } from "./category-tabs"
-export { CategoryQuickPills } from "./category-quick-pills"
-export type { CategoryQuickPillsProps } from "./category-quick-pills"
-export { CategoryNavBar } from "./category-nav-bar"
-export type { CategoryNavBarProps, CategoryNavBarVariant } from "./category-nav-bar"
-export { CategoryCircles } from "./category-circles"
-export type { CategoryCirclesProps } from "./category-circles"
 export { CategoryCirclesSimple } from "./category-circles-simple"
 export type { CategoryCirclesSimpleProps } from "./category-circles-simple"
-export { AllTabFilters } from "./all-tab-filters"
-export type { AllTabFiltersProps } from "./all-tab-filters"
-export { QuickFilterRow } from "./quick-filter-row"
 
 // Phase 1: Contextual category navigation (Vinted-style)
 // ContextualCategoryHeader is handled by AppHeader

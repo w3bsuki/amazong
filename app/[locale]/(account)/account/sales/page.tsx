@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/server"
 import { Link, redirect } from "@/i18n/routing"
-import { AppBreadcrumb } from "@/components/navigation/app-breadcrumb"
+import { AppBreadcrumb } from "@/components/shared/navigation/app-breadcrumb"
 import { PageShell } from "@/components/shared/page-shell"
 import { SalesChart } from "./_components/sales-chart"
 import { SalesStats } from "./_components/sales-stats"

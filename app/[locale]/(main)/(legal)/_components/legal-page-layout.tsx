@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/accordion"
 import { Envelope, WarningCircle } from "@phosphor-icons/react/dist/ssr"
 import { Link } from "@/i18n/routing"
-import { AppBreadcrumb, type BreadcrumbItemData } from "@/components/navigation/app-breadcrumb"
+import { AppBreadcrumb, type BreadcrumbItemData } from "@/components/shared/navigation/app-breadcrumb"
 import type { Icon } from "@phosphor-icons/react"
 import { PageShell } from "@/components/shared/page-shell"
 import ReactMarkdown from "react-markdown"

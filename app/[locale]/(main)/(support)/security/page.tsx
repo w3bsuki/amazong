@@ -1,5 +1,5 @@
 import { getTranslations, setRequestLocale } from "next-intl/server"
-import { AppBreadcrumb } from "@/components/navigation/app-breadcrumb"
+import { AppBreadcrumb } from "@/components/shared/navigation/app-breadcrumb"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { 
   ShieldCheck, CreditCard, Lock, Eye, 

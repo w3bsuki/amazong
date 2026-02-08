@@ -5,8 +5,8 @@ import { useRouter } from "next/navigation"
 import { useLocale, useTranslations } from "next-intl"
 import { ArrowRight } from "@phosphor-icons/react"
 import { Button } from "@/components/ui/button"
-import { AccountTypeCard, type AccountType } from "@/components/onboarding/account-type-card"
-import { OnboardingShell } from "@/components/onboarding/onboarding-shell"
+import { AccountTypeCard, type AccountType } from "../_components/account-type-card"
+import { OnboardingShell } from "../_components/onboarding-shell"
 
 export default function AccountTypePage() {
   const router = useRouter()

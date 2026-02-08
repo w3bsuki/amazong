@@ -169,7 +169,7 @@ export function OrderTimeline({ locale, orderCreatedAt, orderStatus, orderItems 
                         </p>
                         {isDone ? (
                           <Badge variant="secondary" className="shrink-0">
-                            {formatDateTime(step.at!, locale)}
+                            {step.at ? formatDateTime(step.at, locale) : null}
                           </Badge>
                         ) : (
                           <span className="text-xs text-muted-foreground">{locale === "bg" ? "Очаква се" : "Pending"}</span>

@@ -11,7 +11,7 @@ import {
 } from "@phosphor-icons/react/dist/ssr"
 import { Link } from "@/i18n/routing"
 import { getTranslations, setRequestLocale } from "next-intl/server"
-import { AppBreadcrumb } from "@/components/navigation/app-breadcrumb"
+import { AppBreadcrumb } from "@/components/shared/navigation/app-breadcrumb"
 import type { Metadata } from 'next'
 import { validateLocale } from "@/i18n/routing"
 import {

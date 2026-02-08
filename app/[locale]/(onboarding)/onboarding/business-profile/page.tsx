@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { OnboardingShell } from "@/components/onboarding/onboarding-shell"
+import { OnboardingShell } from "../_components/onboarding-shell"
 import { type AvatarVariant, getColorPalette } from "@/lib/avatar-palettes"
 import { createClient } from "@/lib/supabase/client"
 

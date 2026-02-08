@@ -50,11 +50,6 @@
     "test",
     "playwright-report",
     "test-results",
-    "supabase/functions",
-    "inspiration",
-    "temp-tradesphere-audit",
-    "refactor",
-    "shadcn-tailwind-v4-ecommerce-ui-guide",
-    "docs/archive"
+    "supabase/functions"
   ]
 }
