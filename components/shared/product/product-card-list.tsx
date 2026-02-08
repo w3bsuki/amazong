@@ -182,7 +182,7 @@ export function ProductCardList({
       </Link>
 
       {/* Image - Left side */}
-      <div className="relative shrink-0 w-32 h-32 sm:w-40 sm:h-40 rounded-xl overflow-hidden bg-muted">
+      <div className="relative shrink-0 w-32 h-32 sm:w-40 sm:h-40 rounded-xl overflow-hidden bg-surface-subtle">
         <Image
           src={normalizeImageUrl(image)}
           alt={title}
@@ -244,7 +244,7 @@ export function ProductCardList({
         )}
 
         {/* Meta row: smart badges, location, freshness */}
-        <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground mb-2">
+        <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted-foreground mb-2">
           {/* Category-aware smart badges (mileage for cars, condition for clothing, etc.) */}
           {smartBadges.map((badge) => (
                 <Badge 
@@ -282,15 +282,15 @@ export function ProductCardList({
         </div>
 
         {/* Badges row */}
-        <div className="mt-1 flex flex-wrap items-center gap-2">
+        <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1">
           {freeShipping && (
-            <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
+            <span className="inline-flex items-center gap-1 text-xs font-medium text-success">
               <Truck size={14} weight="bold" />
               {t("freeShipping")}
             </span>
           )}
           {showBuyerProtection && (
-            <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
+            <span className="inline-flex items-center gap-1 text-xs font-medium text-muted-foreground">
               <ShieldCheck size={14} weight="fill" />
               {t("buyerProtectionInline")}
             </span>
@@ -299,8 +299,8 @@ export function ProductCardList({
 
         {/* Seller row */}
         {sellerName && (
-          <div className="mt-1.5 flex items-center gap-1 text-xs text-muted-foreground">
-            <span>{sellerName}</span>
+          <div className="mt-1.5 flex items-center gap-1.5 text-xs text-muted-foreground">
+            <span className="truncate">{sellerName}</span>
             {sellerVerified && (
               <VerifiedSellerBadge
                 label={t("verified")}

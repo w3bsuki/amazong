@@ -45,6 +45,7 @@ export interface ProductGridProduct {
   sellerId?: string | null | undefined;
   sellerName?: string | null | undefined;
   sellerAvatarUrl?: string | null | undefined;
+  sellerTier?: "basic" | "premium" | "business" | undefined;
   sellerVerified?: boolean | undefined;
   location?: string | undefined;
   condition?: string | undefined;
@@ -74,6 +75,8 @@ export interface ProductGridProps {
   cardDensity?: "default" | "compact";
   /** ProductCard title line clamp (default: 1). */
   cardTitleLines?: 1 | 2;
+  /** ProductCard UI variant (default/home/mobile-clean). */
+  cardUiVariant?: "default" | "home" | "mobile-clean";
   /** Additional className */
   className?: string;
   /** Loading state */
@@ -107,6 +110,7 @@ export function ProductGrid({
   cardMedia,
   cardDensity,
   cardTitleLines,
+  cardUiVariant,
   className,
   isLoading = false,
 }: ProductGridProps) {
@@ -179,6 +183,7 @@ export function ProductGrid({
                 sellerName={product.sellerName || product.storeSlug || undefined}
                 sellerAvatarUrl={product.sellerAvatarUrl ?? null}
                 sellerVerified={Boolean(product.sellerVerified)}
+                {...(product.sellerTier ? { sellerTier: product.sellerTier } : {})}
                 {...(product.location ? { location: product.location } : {})}
                 {...(product.condition ? { condition: product.condition } : {})}
                 tags={product.tags ?? []}
@@ -192,6 +197,7 @@ export function ProductGrid({
                 {...(cardMedia ? { media: cardMedia } : {})}
                 {...(cardDensity ? { density: cardDensity } : {})}
                 {...(cardTitleLines ? { titleLines: cardTitleLines } : {})}
+                {...(cardUiVariant ? { uiVariant: cardUiVariant } : {})}
               />
             )}
           </div>

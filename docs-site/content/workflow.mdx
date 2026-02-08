@@ -1,6 +1,6 @@
 # WORKFLOW.md — Treido Shipping Workflow
 
-Default workflow for both AI agents and developers.
+Default workflow for maintainers and contributors.
 
 ## 1. Frame
 
@@ -17,7 +17,6 @@ Define in one short block before edits:
 
 - Work in small, reviewable batches.
 - Keep changes scoped to the declared paths.
-- Respect path-local `AGENTS.md` boundaries.
 - Prefer direct fixes over speculative rewrites.
 
 ## 3. Verify
@@ -32,7 +31,7 @@ pnpm -s lint
 pnpm -s styles:gate
 ```
 
-### Docs and agent-system changes
+### Docs and policy changes
 
 ```bash
 pnpm -s docs:check
@@ -68,4 +67,4 @@ Pause and align with a human before finalizing:
 - Decisions: `.codex/DECISIONS.md`
 - Shipped log: `.codex/SHIPPED.md`
 
-Last updated: 2026-02-06
+Last updated: 2026-02-08

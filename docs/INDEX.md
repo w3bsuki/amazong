@@ -1,6 +1,6 @@
 # INDEX.md — Treido Docs Map
 
-Canonical docs map for humans and AI agents.
+Canonical docs map for humans and maintainers.
 
 ## Start Here
 
@@ -25,19 +25,17 @@ If you read only three docs, read:
 | Payments | `docs/PAYMENTS.md` |
 | Auth | `docs/AUTH.md` |
 | i18n | `docs/I18N.md` |
-| Skills inventory | `docs/SKILLS.md` |
 | Launch operations | `docs/LAUNCH.md` |
 | Production push | `docs/PRODUCTION-PUSH.md` |
 | Team roles | `docs/DEV-DEPARTMENT.md` |
 
-## Agent and Workflow Docs
+## Workflow Docs
 
 | Need | Doc |
 |---|---|
 | Prompting standards | `docs/PROMPT-GUIDE.md` |
-| Agent execution contract | `docs/AGENTS.md` |
+| Execution contract | `docs/AGENTS.md` |
 | Shipping workflow | `docs/WORKFLOW.md` |
-| Skill routing by intent | `docs/AGENT-MAP.md` |
 | Docs architecture | `docs/DOCS-PLAN.md` |
 
 ## Runtime State (Operational)
@@ -62,7 +60,5 @@ If you read only three docs, read:
   - use `docs/PRD.md`, `docs/FEATURES.md`, and `docs/status/LAUNCH-READINESS.yaml`.
 - "What should I change for this feature?"
   - use `docs/PRD.md`, `docs/ARCHITECTURE.md`, `docs/ROUTES.md`, and `docs/WORKFLOW.md`.
-- "Which skill should handle this?"
-  - use `docs/AGENT-MAP.md` and `docs/SKILLS.md`.
 
-Last updated: 2026-02-07
+Last updated: 2026-02-08

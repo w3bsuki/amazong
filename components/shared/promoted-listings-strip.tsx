@@ -136,7 +136,7 @@ export function PromotedListingsStrip({
                   media="portrait"
                   density="compact"
                   titleLines={1}
-                  uiVariant="home"
+                  uiVariant="mobile-clean"
                   showCategoryBadge={true}
                   radius="2xl"
                   maxOverlayBadges={2}
@@ -188,7 +188,7 @@ export function PromotedListingsStrip({
               media="portrait"
               density="compact"
               titleLines={1}
-              uiVariant="home"
+              uiVariant="mobile-clean"
               showCategoryBadge={true}
               radius="2xl"
               maxOverlayBadges={2}

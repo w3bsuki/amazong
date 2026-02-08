@@ -39,7 +39,7 @@ Produce final production-ready verification and delta report.
 ## Decision log
 
 - Final pass kept auth/payment behavior unchanged (wrapper/path cleanup only).
-- No subagents used for execution.
+- No delegated workers used for execution.
 - Per request, iterative edit batches avoided `pnpm`; full gate commands were run in the final hardening phase.
 
 ## Done

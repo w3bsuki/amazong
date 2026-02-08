@@ -1,4 +1,5 @@
-import next from "eslint-config-next";
+import nextVitals from "eslint-config-next/core-web-vitals";
+import nextTs from "eslint-config-next/typescript";
 import sonarjs from "eslint-plugin-sonarjs";
 import unicorn from "eslint-plugin-unicorn";
 import tsParser from "@typescript-eslint/parser";
@@ -71,7 +72,7 @@ const appImportLeakPatterns = [
   },
 ];
 
-const config = [...next, {
+const config = [...nextVitals, ...nextTs, {
   files: ["**/*.{js,jsx,ts,tsx}"],
   rules: {
     // These rules are extremely strict and currently produce many false

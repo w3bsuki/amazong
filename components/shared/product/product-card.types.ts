@@ -19,6 +19,7 @@ export interface ProductCardData {
   sellerId?: string | null
   sellerName?: string | undefined
   sellerAvatarUrl?: string | null
+  sellerTier?: "basic" | "premium" | "business"
   sellerVerified?: boolean
   sellerEmailVerified?: boolean
   sellerPhoneVerified?: boolean
@@ -51,7 +52,7 @@ export interface ProductCardViewConfig {
   media?: "portrait" | "square" | "landscape"
   density?: "default" | "compact"
   titleLines?: 1 | 2
-  uiVariant?: "default" | "home"
+  uiVariant?: "default" | "home" | "mobile-clean"
   radius?: "xl" | "2xl"
   maxOverlayBadges?: number
 }

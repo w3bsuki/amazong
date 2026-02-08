@@ -13,10 +13,6 @@ This file defines the docs architecture and the minimum command set.
    - machine-readable launch state.
 4. `.codex/**`:
    - runtime work state (`TASKS`, `DECISIONS`, `SHIPPED`).
-5. Skill sources:
-   - `.claude/skills/**` is canonical.
-   - `.agents/skills/**` is the Codex compatibility mirror.
-   - `$CODEX_HOME/skills/.system/**` holds Codex built-in system skills.
 
 ## Canonical Naming
 
@@ -33,7 +29,6 @@ Use semantic files as canonical links:
 - `docs/PAYMENTS.md`
 - `docs/AUTH.md`
 - `docs/I18N.md`
-- `docs/SKILLS.md`
 - `docs/LAUNCH.md`
 - `docs/PRODUCTION-PUSH.md`
 - `docs/DEV-DEPARTMENT.md`
@@ -42,7 +37,7 @@ Numbered docs (for example `docs/01-PRD.md`) are compatibility stubs only.
 
 ## Command Set (Minimal)
 
-### Required checks for docs/agent changes
+### Required checks for docs/policy changes
 
 ```bash
 pnpm -s docs:check
@@ -53,21 +48,17 @@ This runs:
 1. `docs:gate`
 2. `docs:site:check`
 3. `docs:status:check`
-4. `validate:skills -- --warn-only`
 
 ### Maintenance commands
 
 ```bash
 pnpm -s docs:status:build
-pnpm -s skills:sync -- --prune
 pnpm -s docs
 ```
 
 Use maintenance commands only when needed:
 
 - `docs:status:build` when readiness inputs changed.
-- `skills:sync` when `.claude/skills/**` changed.
-  Use `--home` only when intentionally syncing user-home skills.
 - `docs` when browsing docs-site locally.
 
 ## Rules
@@ -77,4 +68,4 @@ Use maintenance commands only when needed:
 - Keep generated artifacts out of git tracking (`docs-site/public/_pagefind`).
 - Do not add new doc systems outside this architecture.
 
-Last updated: 2026-02-07
+Last updated: 2026-02-08

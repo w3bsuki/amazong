@@ -31,8 +31,6 @@ function isAllowedMarkdownPath(relPath) {
   if (p.startsWith(".codex/")) return true;
   if (p.startsWith("docs-site/")) return true; // internal portal (mirrors from /docs)
   if (p.startsWith(".github/")) return true; // repo metadata (templates, instructions)
-  if (p.startsWith(".claude/")) return true; // tooling config (allowed)
-  if (p.startsWith(".agents/")) return true; // Codex compatibility mirror (allowed)
 
   return false;
 }
@@ -192,8 +190,6 @@ if (disallowed.length) {
   console.error("- README.md");
   console.error("- TASKS.md");
   console.error("- .github/**");
-  console.error("- .claude/**");
-  console.error("- .agents/**");
 }
 
 if (brokenIndexRefs.length) {
@@ -223,7 +219,6 @@ const canonicalDocsForAliasScan = [
   "docs/PAYMENTS.md",
   "docs/AUTH.md",
   "docs/I18N.md",
-  "docs/SKILLS.md",
   "docs/LAUNCH.md",
   "docs/PRODUCTION-PUSH.md",
   "docs/DEV-DEPARTMENT.md",
@@ -260,10 +255,6 @@ if (failed) {
     const lineCount = agentsText.replace(/\r\n/g, "\n").split("\n").length;
     if (lineCount > 120) {
       console.error(`DOCS GATE FAIL: root AGENTS.md is too large (${lineCount} lines, max 120).`);
-      process.exitCode = 1;
-    }
-    if (!/docs\/AGENTS\.md/.test(agentsText)) {
-      console.error("DOCS GATE FAIL: root AGENTS.md must link to docs/AGENTS.md");
       process.exitCode = 1;
     }
   }

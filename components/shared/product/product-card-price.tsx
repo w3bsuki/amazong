@@ -30,6 +30,8 @@ interface ProductCardPriceProps {
   trailingLabel?: string
   /** Render trailing label as discount badge */
   discountAsBadge?: boolean
+  /** Visual presentation style for the price row */
+  presentation?: "default" | "soft-strip"
 }
 
 // =============================================================================
@@ -50,6 +52,7 @@ function ProductCardPrice({
   showOriginalPrice = true,
   trailingLabel,
   discountAsBadge = false,
+  presentation = "default",
 }: ProductCardPriceProps) {
   const currencyCtx = useCurrencyOptional()
   const selectedCurrency = currencyCtx?.currency ?? "EUR"
@@ -96,51 +99,57 @@ function ProductCardPrice({
     }).format(secondaryPrice)
   }, [showDualCurrency, secondaryPrice, locale, secondaryCurrency])
 
-  return (
-    <div className="flex flex-col">
-      {/* Price row - clean compact style */}
-      <div className={cn("flex items-baseline gap-1", homeEmphasis ? "flex-nowrap" : "flex-wrap")}>
-        {/* Primary price */}
-        <span
-          className={cn(
-            "tabular-nums whitespace-nowrap tracking-tight",
-            compact ? "text-sm" : "text-price",
-            priceEmphasis === "strong" && "text-price",
-            priceEmphasis === "strong" ? "font-bold text-foreground" : "font-semibold text-foreground",
-            "text-foreground"
-          )}
-        >
-          {formattedPrice}
+  const priceRow = (
+    <div className={cn("flex items-baseline gap-1", homeEmphasis ? "flex-nowrap" : "flex-wrap")}>
+      {/* Primary price */}
+      <span
+        className={cn(
+          "tabular-nums whitespace-nowrap tracking-tight text-foreground",
+          compact && priceEmphasis !== "strong" ? "text-sm" : "text-price",
+          priceEmphasis === "strong" ? "font-bold" : "font-semibold"
+        )}
+      >
+        {formattedPrice}
+      </span>
+      {/* Original price struck through */}
+      {hasDiscount && formattedOriginalPrice && (
+        <span className={cn(
+          "line-through tabular-nums text-muted-foreground",
+          compact && !homeEmphasis ? "text-2xs" : "text-compact"
+        )}>
+          {formattedOriginalPrice}
         </span>
-        {/* Original price struck through */}
-        {hasDiscount && formattedOriginalPrice && (
-          <span className={cn(
-            "text-muted-foreground line-through tabular-nums",
-            compact
-              ? (homeEmphasis ? "text-compact" : "text-2xs")
-              : "text-compact"
-          )}>
-            {formattedOriginalPrice}
+      )}
+      {/* Secondary currency (dual currency mode) */}
+      {showDualCurrency && formattedSecondaryPrice && (
+        <span className="text-2xs text-muted-foreground tabular-nums">
+          ({formattedSecondaryPrice})
+        </span>
+      )}
+      {trailingLabel && (
+        discountAsBadge ? (
+          <Badge variant="discount" size="compact" className="shrink-0">
+            {trailingLabel}
+          </Badge>
+        ) : (
+          <span className="shrink-0 whitespace-nowrap text-compact font-semibold text-destructive">
+            {trailingLabel}
           </span>
-        )}
-        {/* Secondary currency (dual currency mode) */}
-        {showDualCurrency && formattedSecondaryPrice && (
-          <span className="text-2xs text-muted-foreground tabular-nums">
-            ({formattedSecondaryPrice})
-          </span>
-        )}
-        {trailingLabel && (
-          discountAsBadge ? (
-            <Badge variant="discount" size="compact" className="shrink-0">
-              {trailingLabel}
-            </Badge>
-          ) : (
-            <span className="shrink-0 whitespace-nowrap text-compact font-semibold text-destructive">
-              {trailingLabel}
-            </span>
-          )
-        )}
-      </div>
+        )
+      )}
+    </div>
+  )
+
+  return (
+    <div className={cn("flex flex-col", presentation === "soft-strip" && "gap-0.5")}>
+      {/* Price row - clean compact style */}
+      {presentation === "soft-strip" ? (
+        <div className="flex w-full max-w-full items-baseline rounded-lg bg-muted px-2 py-1">
+          {priceRow}
+        </div>
+      ) : (
+        priceRow
+      )}
 
       {/* Condition / Protection badges - separate row for clarity (desktop only in compact mode) */}
       {(conditionLabel || (showBuyerProtection && buyerProtectionLabel)) && (

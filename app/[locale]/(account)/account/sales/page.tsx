@@ -75,7 +75,7 @@ export default async function SalesPage({ params, searchParams }: SalesPageProps
 
   // Calculate date range
   const now = new Date()
-  let startDate = new Date()
+  const startDate = new Date()
 
   switch (period) {
     case "7d":

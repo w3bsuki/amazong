@@ -4,9 +4,11 @@ import * as React from "react"
 import { Link } from "@/i18n/routing"
 import { useLocale, useTranslations } from "next-intl"
 import { cva, type VariantProps } from "class-variance-authority"
+import { Check } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
+import { UserAvatar } from "@/components/shared/user-avatar"
 import { Surface } from "@/components/ui/surface"
 import { Lightning } from "@phosphor-icons/react"
 import { useDrawer, type QuickViewProduct } from "@/components/providers/drawer-context"
@@ -19,7 +21,6 @@ import { ProductCardImage } from "./product-card-image"
 import { ProductCardPrice } from "./product-card-price"
 import { ProductCardSocialProof } from "./product-card-social-proof"
 import { FreshnessIndicator } from "./freshness-indicator"
-import { CategoryBadge } from "./category-badge"
 import { VerifiedSellerBadge } from "./verified-seller-badge"
 import { getConditionKey } from "./_lib/condition"
 import type { ProductCardData, ProductCardViewConfig } from "./product-card.types"
@@ -49,8 +50,6 @@ const productCardVariants = cva(
   }
 )
 
-const HOME_MIN_RATING_REVIEWS = 8
-
 type ProductCardPresetKey =
   `${NonNullable<ProductCardViewConfig["uiVariant"]>}:${NonNullable<ProductCardViewConfig["appearance"]>}:${NonNullable<ProductCardViewConfig["density"]>}`
 
@@ -62,6 +61,7 @@ interface ProductCardPreset {
   titleClass: string
   metaClass: string
   priceEmphasis: "default" | "strong"
+  pricePresentation: "default" | "soft-strip"
   discountAsBadge: boolean
 }
 
@@ -74,6 +74,7 @@ const PRODUCT_CARD_PRESETS: Record<ProductCardPresetKey, ProductCardPreset> = {
     titleClass: "text-sm font-semibold",
     metaClass: "mt-1 flex min-w-0 items-center gap-1.5 text-tiny text-muted-foreground",
     priceEmphasis: "default",
+    pricePresentation: "default",
     discountAsBadge: false,
   },
   "default:card:compact": {
@@ -84,6 +85,7 @@ const PRODUCT_CARD_PRESETS: Record<ProductCardPresetKey, ProductCardPreset> = {
     titleClass: "text-compact font-semibold",
     metaClass: "mt-1 flex min-w-0 items-center gap-1.5 text-tiny text-muted-foreground",
     priceEmphasis: "default",
+    pricePresentation: "default",
     discountAsBadge: false,
   },
   "default:tile:default": {
@@ -94,6 +96,7 @@ const PRODUCT_CARD_PRESETS: Record<ProductCardPresetKey, ProductCardPreset> = {
     titleClass: "text-sm font-medium",
     metaClass: "mt-1 flex min-w-0 items-center gap-1 text-2xs text-muted-foreground",
     priceEmphasis: "default",
+    pricePresentation: "default",
     discountAsBadge: false,
   },
   "default:tile:compact": {
@@ -104,47 +107,96 @@ const PRODUCT_CARD_PRESETS: Record<ProductCardPresetKey, ProductCardPreset> = {
     titleClass: "text-compact font-medium",
     metaClass: "mt-1 flex min-w-0 items-center gap-1 text-2xs text-muted-foreground",
     priceEmphasis: "default",
+    pricePresentation: "default",
     discountAsBadge: false,
   },
   "home:card:default": {
     surfaceVariant: "tile",
     surfaceInteractive: false,
     showImageDivider: false,
-    bodyClass: "space-y-1 px-1 py-1.5",
+    bodyClass: "flex flex-col gap-1.5 px-1 pt-2 pb-1",
     titleClass: "text-compact font-medium",
-    metaClass: "mt-0.5 flex min-w-0 items-center gap-1 text-2xs text-muted-foreground",
+    metaClass: "flex min-w-0 items-center gap-1 text-2xs text-muted-foreground",
     priceEmphasis: "strong",
-    discountAsBadge: true,
+    pricePresentation: "soft-strip",
+    discountAsBadge: false,
   },
   "home:card:compact": {
     surfaceVariant: "tile",
     surfaceInteractive: false,
     showImageDivider: false,
-    bodyClass: "space-y-1 px-1 py-1.5",
+    bodyClass: "flex flex-col gap-1.5 px-1 pt-2 pb-1",
     titleClass: "text-compact font-medium",
-    metaClass: "mt-0.5 flex min-w-0 items-center gap-1 text-2xs text-muted-foreground",
+    metaClass: "flex min-w-0 items-center gap-1 text-2xs text-muted-foreground",
     priceEmphasis: "strong",
-    discountAsBadge: true,
+    pricePresentation: "soft-strip",
+    discountAsBadge: false,
   },
   "home:tile:default": {
     surfaceVariant: "tile",
     surfaceInteractive: false,
     showImageDivider: false,
-    bodyClass: "space-y-1 px-1 py-1.5",
+    bodyClass: "flex flex-col gap-1.5 px-1 pt-2 pb-1",
     titleClass: "text-compact font-medium",
-    metaClass: "mt-0.5 flex min-w-0 items-center gap-1 text-2xs text-muted-foreground",
+    metaClass: "flex min-w-0 items-center gap-1 text-2xs text-muted-foreground",
     priceEmphasis: "strong",
-    discountAsBadge: true,
+    pricePresentation: "soft-strip",
+    discountAsBadge: false,
   },
   "home:tile:compact": {
     surfaceVariant: "tile",
     surfaceInteractive: false,
     showImageDivider: false,
-    bodyClass: "space-y-1 px-1 py-1.5",
+    bodyClass: "flex flex-col gap-1.5 px-1 pt-2 pb-1",
     titleClass: "text-compact font-medium",
-    metaClass: "mt-0.5 flex min-w-0 items-center gap-1 text-2xs text-muted-foreground",
+    metaClass: "flex min-w-0 items-center gap-1 text-2xs text-muted-foreground",
     priceEmphasis: "strong",
-    discountAsBadge: true,
+    pricePresentation: "soft-strip",
+    discountAsBadge: false,
+  },
+  "mobile-clean:card:default": {
+    surfaceVariant: "tile",
+    surfaceInteractive: false,
+    showImageDivider: false,
+    bodyClass: "flex flex-col gap-1 px-1 pt-1.5 pb-1",
+    titleClass: "text-compact font-medium",
+    metaClass: "flex min-w-0 items-center gap-1 text-2xs text-muted-foreground",
+    priceEmphasis: "strong",
+    pricePresentation: "default",
+    discountAsBadge: false,
+  },
+  "mobile-clean:card:compact": {
+    surfaceVariant: "tile",
+    surfaceInteractive: false,
+    showImageDivider: false,
+    bodyClass: "flex flex-col gap-1 px-1 pt-1.5 pb-1",
+    titleClass: "text-compact font-medium",
+    metaClass: "flex min-w-0 items-center gap-1 text-2xs text-muted-foreground",
+    priceEmphasis: "strong",
+    pricePresentation: "default",
+    discountAsBadge: false,
+  },
+  "mobile-clean:tile:default": {
+    surfaceVariant: "tile",
+    surfaceInteractive: false,
+    showImageDivider: false,
+    bodyClass: "flex flex-col gap-1 px-1 pt-1.5 pb-1",
+    titleClass: "text-compact font-medium",
+    metaClass: "flex min-w-0 items-center gap-1 text-2xs text-muted-foreground",
+    priceEmphasis: "strong",
+    pricePresentation: "default",
+    discountAsBadge: false,
+  },
+  "mobile-clean:tile:compact": {
+    surfaceVariant: "tile",
+    surfaceInteractive: false,
+    showImageDivider: false,
+    bodyClass: "flex flex-col gap-1 px-1 pt-1.5 pb-1",
+    titleClass: "text-compact font-medium",
+    metaClass: "flex min-w-0 items-center gap-1 text-2xs text-muted-foreground",
+    priceEmphasis: "strong",
+    pricePresentation: "default",
+    discountAsBadge: false,
   },
 }
 
@@ -183,7 +235,6 @@ interface ProductCardProps
   color?: string | null
   size?: string | null
   sellerRating?: number
-  sellerTier?: "basic" | "premium" | "business"
   initialIsFollowingSeller?: boolean
   saleEndDate?: string | null
   showRating?: boolean
@@ -209,6 +260,7 @@ function ProductCard({
   sellerId,
   sellerName,
   sellerAvatarUrl,
+  sellerTier,
   sellerVerified,
   freeShipping = false,
   slug,
@@ -216,7 +268,6 @@ function ProductCard({
   variant = "default",
   state,
   showWishlist = true,
-  showCategoryBadge = true,
   disableQuickView = false,
   appearance = "card",
   media = "square",
@@ -247,7 +298,8 @@ function ProductCard({
 
   const isCompact = density === "compact"
   const isTile = appearance === "tile"
-  const isHomeUi = uiVariant === "home"
+  const isLegacyHomeUi = uiVariant === "home"
+  const isMobileCleanUi = uiVariant === "mobile-clean" || isLegacyHomeUi
   const mediaRatio = media === "landscape" ? 4 / 3 : media === "square" ? 1 : 4 / 5
   const radiusClass = radius === "2xl" ? "rounded-2xl" : "rounded-xl"
   const actionSize = "icon-compact"
@@ -261,12 +313,12 @@ function ProductCard({
     ? Math.round(((originalPrice - price) / originalPrice) * 100)
     : (salePercent ?? 0)
 
-  const reviewCount = typeof reviews === "number" ? reviews : 0
   const hasRating = typeof rating === "number" && rating > 0
-  const hasHomeRating = hasRating && reviewCount >= HOME_MIN_RATING_REVIEWS
-  const showRating = isHomeUi ? hasHomeRating : hasRating
+  const showRating = hasRating
   const hasSoldCount = typeof soldCount === "number" && soldCount > 0
-  const hasSocialProof = showRating || hasSoldCount
+  const hasSocialProof = isMobileCleanUi
+    ? false
+    : (showRating || hasSoldCount)
 
   const shouldShowCondition =
     condition != null &&
@@ -283,18 +335,12 @@ function ProductCard({
 
   const locationLabel = React.useMemo(() => location?.trim() || null, [location])
   const hasFreshness = !!createdAt
-  const showFreshness = hasFreshness && !isHomeUi
-
-  const rootCategoryBadge = React.useMemo(() => {
-    const root = categoryPath?.[0]
-    if (!root) return null
-    return {
-      slug: root.slug,
-      name: root.name,
-      name_bg: root.nameBg ?? null,
-      icon: root.icon ?? null,
-    }
-  }, [categoryPath])
+  const showFreshness = hasFreshness && !isMobileCleanUi
+  const showMobileFreshness = hasFreshness
+  const sellerNameLabel = React.useMemo(() => {
+    const normalized = sellerName?.trim()
+    return normalized && normalized.length > 0 ? normalized : null
+  }, [sellerName])
 
   // Resolve state
   const resolvedState = state ?? (isOnSale || hasDiscount ? "sale" : "default")
@@ -316,25 +362,25 @@ function ProductCard({
   )
   const resolvedMaxOverlayBadges = Math.max(
     0,
-    maxOverlayBadges ?? (isHomeUi ? 2 : 2)
+    maxOverlayBadges ?? 2
   )
   const visibleOverlayBadgeVariants = React.useMemo(
     () =>
       overlayBadgeVariants
         .slice(0, resolvedMaxOverlayBadges)
-        .filter((variant) => !(isHomeUi && variant === "discount")),
-    [isHomeUi, overlayBadgeVariants, resolvedMaxOverlayBadges]
+        .filter((variant) => !(isMobileCleanUi && variant === "discount")),
+    [isMobileCleanUi, overlayBadgeVariants, resolvedMaxOverlayBadges]
   )
-  const hasPromotedOverlay = visibleOverlayBadgeVariants.includes("promoted")
-  const showOverlayVerified = isHomeUi && sellerVerified && !hasPromotedOverlay
-  const showVerifiedInMeta = sellerVerified && !isHomeUi
-  const showHomeShipping = isHomeUi && freeShipping === true
+  const isVerifiedBusinessSeller = sellerTier === "business" && Boolean(sellerVerified)
+  const showVerifiedInMeta = sellerVerified && !isMobileCleanUi
+  const showMobileSellerIdentity = isMobileCleanUi && Boolean(sellerNameLabel)
+  const showMobileTopRow = Boolean(showMobileSellerIdentity)
   const hasTrustSignals = Boolean(freeShipping || showVerifiedInMeta)
   const hasInfoMeta =
-    isHomeUi
+    isMobileCleanUi
       ? false
       : Boolean(conditionLabel || locationLabel || hasTrustSignals)
-  const showInlineDiscount = isHomeUi && hasDiscount && discountPercent >= 5
+  const showInlineDiscount = false
 
   // URLs
   const productUrl = username ? `/${username}/${slug || id}` : "#"
@@ -451,21 +497,34 @@ function ProductCard({
             ratio={mediaRatio}
           />
 
-          {inStock && (visibleOverlayBadgeVariants.length > 0 || showOverlayVerified) && (
+          {inStock && visibleOverlayBadgeVariants.length > 0 && (
             <div className="absolute left-1.5 top-1.5 z-10 flex flex-col gap-1 pointer-events-none">
               {visibleOverlayBadgeVariants.map((variant) => {
                 if (variant === "promoted") {
+                  if (isMobileCleanUi) {
+                    return (
+                      <Badge
+                        key="promoted"
+                        size="compact"
+                        variant="promoted"
+                        data-testid="product-card-ad-badge"
+                      >
+                        {t("adBadge")}
+                      </Badge>
+                    )
+                  }
+
                   return (
                     <span
                       key="promoted"
                       className={cn(
                         "flex items-center justify-center rounded-full bg-promoted text-promoted-foreground shadow-sm",
-                        isHomeUi ? "size-7" : "size-6"
+                        isMobileCleanUi ? "size-7" : "size-6"
                       )}
                       role="img"
                       aria-label={t("adBadge")}
                     >
-                      <Lightning size={isHomeUi ? 15 : 14} weight="fill" />
+                      <Lightning size={isMobileCleanUi ? 15 : 14} weight="fill" />
                     </span>
                   )
                 }
@@ -475,13 +534,6 @@ function ProductCard({
                   </Badge>
                 )
               })}
-              {showOverlayVerified && (
-                <VerifiedSellerBadge
-                  label={t("b2b.verifiedShort")}
-                  variant="icon"
-                  size={isHomeUi ? "md" : "sm"}
-                />
-              )}
             </div>
           )}
 
@@ -499,7 +551,7 @@ function ProductCard({
                 inStock={inStock}
                 isOwnProduct={isOwnProduct}
                 size={actionSize}
-                overlayDensity={isHomeUi ? "compact" : "default"}
+                overlayDensity={isMobileCleanUi ? "compact" : "default"}
               />
             </div>
           )}
@@ -511,77 +563,133 @@ function ProductCard({
           visualPreset.bodyClass
         )}
       >
-        {isHomeUi && showCategoryBadge && rootCategoryBadge && (
-          <CategoryBadge
-            locale={locale}
-            category={rootCategoryBadge}
-            size="sm"
-            className="w-fit max-w-full border-border-subtle bg-surface-subtle text-foreground"
-          />
+        {isMobileCleanUi ? (
+          <>
+            {showMobileTopRow && (
+              <div className="flex min-w-0 items-center gap-1.5 text-2xs text-muted-foreground">
+                {sellerNameLabel && (
+                  <div className="flex min-w-0 items-center gap-1.5" data-testid="product-card-seller-row">
+                    <span className="relative shrink-0">
+                      <UserAvatar
+                        name={sellerNameLabel}
+                        avatarUrl={sellerAvatarUrl ?? null}
+                        size="sm"
+                        className="size-5 border border-border-subtle"
+                        fallbackClassName="text-[9px] font-semibold"
+                      />
+                      {isVerifiedBusinessSeller && (
+                        <span
+                          className="absolute -bottom-0.5 -right-0.5 inline-flex size-3 items-center justify-center rounded-full border border-background bg-verified-business text-verified-business-foreground"
+                          aria-label={t("b2b.verifiedShort")}
+                        >
+                          <Check className="size-2" aria-hidden="true" />
+                        </span>
+                      )}
+                    </span>
+                    <span className="truncate text-2xs font-medium text-foreground">
+                      {sellerNameLabel}
+                    </span>
+                  </div>
+                )}
+              </div>
+            )}
+
+            <h3
+              className={cn(
+                "min-w-0 text-foreground leading-tight tracking-tight",
+                titleLines === 1 ? "truncate" : "line-clamp-2 break-words",
+                visualPreset.titleClass
+              )}
+            >
+              {title}
+            </h3>
+
+            <div className="flex min-w-0 items-end justify-between gap-2">
+              <div className="min-w-0 flex-1">
+                <ProductCardPrice
+                  price={price}
+                  originalPrice={originalPrice}
+                  locale={locale}
+                  compact={isCompact}
+                  homeEmphasis={isMobileCleanUi}
+                  priceEmphasis={visualPreset.priceEmphasis}
+                  presentation={visualPreset.pricePresentation}
+                  showOriginalPrice={isMobileCleanUi ? false : !showInlineDiscount}
+                  discountAsBadge={visualPreset.discountAsBadge}
+                  {...(showInlineDiscount ? { trailingLabel: `-${discountPercent}%` } : {})}
+                />
+              </div>
+              {showMobileFreshness && (
+                <FreshnessIndicator
+                  createdAt={createdAt}
+                  variant="text"
+                  showIcon={false}
+                  className="shrink-0 text-2xs text-muted-foreground"
+                />
+              )}
+            </div>
+          </>
+        ) : (
+          <>
+            <h3
+              className={cn(
+                "min-w-0 text-foreground leading-tight tracking-tight",
+                titleLines === 1 ? "truncate" : "line-clamp-2 break-words",
+                visualPreset.titleClass
+              )}
+            >
+              {title}
+            </h3>
+
+            <ProductCardPrice
+              price={price}
+              originalPrice={originalPrice}
+              locale={locale}
+              compact={isCompact}
+              homeEmphasis={isMobileCleanUi}
+              priceEmphasis={visualPreset.priceEmphasis}
+              presentation={visualPreset.pricePresentation}
+              showOriginalPrice={isMobileCleanUi ? false : !showInlineDiscount}
+              discountAsBadge={visualPreset.discountAsBadge}
+              {...(showInlineDiscount ? { trailingLabel: `-${discountPercent}%` } : {})}
+            />
+          </>
         )}
 
-        <h3
-          className={cn(
-            "min-w-0 text-foreground leading-tight tracking-tight",
-            titleLines === 1 ? "truncate" : "line-clamp-2 break-words",
-            visualPreset.titleClass
-          )}
-        >
-          {title}
-        </h3>
-
-        <ProductCardPrice
-          price={price}
-          originalPrice={originalPrice}
-          locale={locale}
-          compact={isCompact}
-          homeEmphasis={isHomeUi}
-          priceEmphasis={visualPreset.priceEmphasis}
-          showOriginalPrice={!showInlineDiscount}
-          discountAsBadge={visualPreset.discountAsBadge}
-          {...(showInlineDiscount ? { trailingLabel: `-${discountPercent}%` } : {})}
-        />
-
-        {(hasSocialProof || showFreshness || showHomeShipping) && (
-          <div className={visualPreset.metaClass}>
-            {hasSocialProof && (
-              <>
+        {!isMobileCleanUi && (
+          (hasSocialProof || showFreshness) && (
+            <div className={visualPreset.metaClass}>
+              {hasSocialProof && (
                 <ProductCardSocialProof
                   rating={showRating ? rating : undefined}
                   reviews={showRating ? reviews : undefined}
                   soldCount={soldCount}
                   soldLabel={t("sold")}
                 />
-              </>
-            )}
-            {hasSocialProof && showFreshness && <span aria-hidden="true">·</span>}
-            {showFreshness && (
-              <FreshnessIndicator
-                createdAt={createdAt}
-                variant="text"
-                showIcon={false}
-                className="text-tiny text-muted-foreground"
-              />
-            )}
-            {(hasSocialProof || showFreshness) && showHomeShipping && <span aria-hidden="true">·</span>}
-            {showHomeShipping && (
-              <Badge variant="shipping" size="compact" className="shrink-0">
-                {t("freeDeliveryShort")}
-              </Badge>
-            )}
-          </div>
+              )}
+              {hasSocialProof && showFreshness && <span aria-hidden="true">·</span>}
+              {showFreshness && (
+                <FreshnessIndicator
+                  createdAt={createdAt}
+                  variant="text"
+                  showIcon={false}
+                  className="text-tiny text-muted-foreground"
+                />
+              )}
+            </div>
+          )
         )}
-
+ 
         {hasInfoMeta && (
-          <div className="flex min-w-0 flex-wrap items-center gap-1.5 text-tiny text-muted-foreground">
-            {conditionLabel && <span className="shrink-0">{conditionLabel}</span>}
-            {conditionLabel && locationLabel && <span aria-hidden="true">·</span>}
+          <div className="flex min-w-0 flex-wrap items-center gap-x-1.5 gap-y-0.5 text-tiny text-muted-foreground">
+            {conditionLabel && <span className="shrink-0 font-medium">{conditionLabel}</span>}
+            {conditionLabel && locationLabel && <span aria-hidden="true" className="text-border">·</span>}
             {locationLabel && <span className="min-w-0 truncate">{locationLabel}</span>}
-            {(conditionLabel || locationLabel) && hasTrustSignals && <span aria-hidden="true">·</span>}
+            {(conditionLabel || locationLabel) && hasTrustSignals && <span aria-hidden="true" className="text-border">·</span>}
             {freeShipping && (
-              <span className="shrink-0 font-medium text-foreground">{t("freeDeliveryShort")}</span>
+              <span className="shrink-0 font-medium text-success">{t("freeDeliveryShort")}</span>
             )}
-            {freeShipping && showVerifiedInMeta && <span aria-hidden="true">·</span>}
+            {freeShipping && showVerifiedInMeta && <span aria-hidden="true" className="text-border">·</span>}
             {showVerifiedInMeta && (
               <VerifiedSellerBadge
                 label={t("b2b.verifiedShort")}

@@ -1,37 +1,158 @@
-# Repository Guidelines
+# AGENTS.md — Treido AI Execution Contract
 
-Canonical boundaries and output contract: `docs/AGENTS.md`.
+> Single entry point for any AI agent. No hop chains — everything you need to find context is here.
 
-## Project Structure & Module Organization
-- Application code lives in `app/` (Next.js App Router), grouped by locale and route groups (for example `app/[locale]/(main)` and `app/[locale]/(account)`).
-- Shared UI primitives are in `components/ui/`; cross-feature composites are in `components/shared/`; reusable logic lives in `lib/` and `hooks/`.
-- Unit tests live in `__tests__/` and alongside modules as `*.test.ts(x)`; end-to-end tests are in `e2e/`.
-- Database artifacts are in `supabase/` (`migrations/`, `schema.sql`, seeds). Product and ops documentation lives in `docs/` and `docs-site/`.
+---
 
-## Build, Test, and Development Commands
-- `pnpm dev`: run local Next.js dev server.
-- `pnpm build` / `pnpm start`: build and run production bundle.
-- `pnpm -s lint`: run ESLint across repo.
-- `pnpm -s typecheck`: run strict TypeScript checks (`tsc --noEmit`).
-- `pnpm -s styles:gate`: enforce Tailwind/token style constraints.
-- `pnpm -s test:unit`: run Vitest suite.
-- `pnpm -s test:e2e` or `pnpm -s test:e2e:smoke`: run Playwright coverage/smoke tests.
-- `pnpm -s test:all`: full pre-merge gate (lint, TS, unit, e2e, a11y).
+## Context Loading
 
-## Coding Style & Naming Conventions
-- Follow `.editorconfig`: UTF-8, LF endings, final newline, 2-space indentation for JS/TS/CSS/JSON/YAML.
-- Prefer TypeScript with strict typing; avoid `any` unless justified.
-- File naming: kebab-case for files (`product-card.tsx`), hooks as `use-*.ts`, tests as `*.test.ts(x)` or `*.spec.ts`.
-- Keep route-local UI in route folders (`_components/`, `_lib/`) and promote only truly shared code to `components/shared` or `lib`.
-- Use `proxy.ts` conventions for request entry behavior (do not introduce `middleware.ts`).
+Read these files for full project understanding:
 
-## Testing Guidelines
-- Frameworks: Vitest (`jsdom`) for unit/integration, Playwright for e2e, axe project for accessibility checks.
-- Coverage thresholds (Vitest): lines/statements 80%, functions 70%, branches 60%.
-- Add/update tests with behavior changes; prefer deterministic selectors (`data-testid`) in e2e paths.
+| Topic | File | What you'll find |
+|-------|------|------------------|
+| What to build | `REQUIREMENTS.md` (root) | 119 features with R{n}.{m} IDs, status, deep-dive pointers |
+| What's active now | `TASKS.md` (root) | Current sprint / work queue |
+| Design system | `DESIGN.md` (root) | Tokens, spacing, typography, components, app-feel §8.5 |
+| Production status | `docs/PRODUCTION.md` | What's shipped, what's blocked, launch checklist |
+| Feature deep-dives | `docs/features/{area}.md` | Per-feature specs (selling, buying, chat, etc.) |
+| Architecture | `docs/ARCHITECTURE.md` | Directory structure, code patterns, module boundaries |
+| Database schema | `docs/DATABASE.md` | 60+ tables, RLS policies, functions, triggers |
+| API reference | `docs/API.md` | Server actions, API endpoints |
+| Auth | `docs/AUTH.md` | Auth flows, protected routes, roles |
+| Payments | `docs/PAYMENTS.md` | Stripe Connect, escrow, webhooks, refunds |
+| Internationalization | `docs/I18N.md` | Locales (en/bg), namespaces, ICU patterns |
+| Routes | `docs/ROUTES.md` | All routes with auth levels |
 
-## Commit & Pull Request Guidelines
-- Use Conventional Commit style seen in history: `feat: ...`, `fix: ...`, `refactor: ...`, `chore: ...`, `docs: ...`, `style: ...`.
-- Keep commits focused and reviewable; include affected area in subject when useful (example: `refactor(ui): extract category grid`).
-- PRs should include: goal, scope, risk level, files changed summary, and verification commands with pass/fail notes.
-- Link related issues and include screenshots/GIFs for user-visible UI changes.
+---
+
+## Execution Rules
+
+### Default Mode
+
+- Implement directly for normal tasks (UI, styling, components, refactoring, tests, docs).
+- Single-implementer workflow: the current agent owns planning, decisions, and code edits.
+- Do not use delegated subagent or skill-fleet routing workflows.
+
+### Verification (run after every change)
+
+**Always:**
+
+```bash
+pnpm -s typecheck
+pnpm -s lint
+pnpm -s styles:gate
+```
+
+**Risk-based (when touching business logic):**
+
+```bash
+pnpm -s test:unit
+REUSE_EXISTING_SERVER=true pnpm -s test:e2e:smoke
+```
+
+### High-Risk Pause Domains
+
+**Stop and explicitly align with a human before finalizing:**
+
+- DB schema, migrations, or RLS policies
+- Auth / session / access-control behavior
+- Payments / webhooks / billing behavior
+- Destructive or bulk data operations
+
+### Source Precedence
+
+1. Code and migrations are runtime truth.
+2. `docs/**` is written SSOT.
+3. If docs and code disagree, treat code as current truth and update docs.
+
+### Legacy Exclusion
+
+If legacy or numbered docs (e.g. `docs/01-PRD.md`) conflict with root files or `docs/*.md`, ignore legacy and follow active SSOT.
+
+---
+
+## Coding Conventions
+
+### Project Structure
+
+| Directory | Purpose | Rules |
+|-----------|---------|-------|
+| `app/` | Next.js App Router routes, layouts | Route-local logic only |
+| `app/**/_components/` | Route-private components | Not importable outside route |
+| `app/**/_actions/` | Route-private server actions | Not importable outside route |
+| `app/actions/` | Shared server actions | Cross-route reuse |
+| `components/ui/` | Primitives (shadcn/Radix) | No domain logic, no API calls |
+| `components/shared/` | Reusable composites | No direct Supabase/Stripe calls |
+| `lib/` | Pure utilities / domain helpers | No React, no side effects |
+| `hooks/` | Shared React hooks | Client-only |
+| `i18n/`, `messages/` | Localization config + translations | ICU message format |
+| `__tests__/`, `test/` | Unit tests (Vitest) | `.test.ts(x)` suffix |
+| `e2e/` | E2E tests (Playwright) | `.spec.ts` suffix |
+| `public/` | Static assets | — |
+| `supabase/` | DB config, migrations | High-risk (pause rule) |
+| `scripts/` | Build/dev tooling | — |
+| `docs/` | Documentation SSOT | — |
+
+### Style
+
+- 2-space indent, LF line endings, trailing whitespace trimmed, final newline (`.editorconfig`).
+- TypeScript + React; lint with ESLint (`eslint.config.mjs`).
+- Tailwind v4 semantic tokens only — see `DESIGN.md` for forbidden patterns.
+
+### Testing
+
+- Vitest in `jsdom` with setup in `test/setup.ts`.
+- Coverage thresholds: lines 80%, functions 70%, branches 60%, statements 80%.
+- Use `pnpm -s test:unit:coverage` when changing `lib/` or `hooks/`.
+
+### Commits
+
+Format: `<type>: <summary>` — short, imperative.
+Types: `feat:`, `fix:`, `refactor:`, `style:`, `chore:`, `polish:`, `docs:`, `test:`.
+
+---
+
+## Build & Dev Commands
+
+| Command | Purpose |
+|---------|---------|
+| `pnpm install` | Install dependencies (pnpm@9.x, Node 20) |
+| `pnpm dev` | Next.js dev server |
+| `pnpm -s lint` | ESLint |
+| `pnpm -s typecheck` | TypeScript `tsc --noEmit` |
+| `pnpm -s ts:gate` | TypeScript CI gate |
+| `pnpm -s styles:gate` | Tailwind palette/token scan |
+| `pnpm -s test:unit` | Vitest unit tests |
+| `pnpm -s test:unit:coverage` | Unit tests with coverage |
+| `pnpm -s test:e2e` | Full Playwright E2E |
+| `pnpm -s test:e2e:smoke` | Smoke suite only |
+| `pnpm -s test:a11y` | Accessibility tests |
+| `pnpm -s build` | Production build |
+| `pnpm storybook` | Component explorer |
+
+---
+
+## Output Contract
+
+Every implementation response must include:
+
+1. **Files changed** — list of paths modified/created/deleted.
+2. **Verification commands and outcomes** — which gates were run and pass/fail.
+3. **Assumptions, risks, and deferred follow-ups** — anything not fully resolved.
+
+---
+
+## Workflow
+
+Follow the 4-step shipping loop for every task:
+
+1. **Frame** — Goal, Scope (paths/routes), Non-goals, Risk lane (low/high).
+2. **Implement** — Small batches, scoped changes, direct fixes over rewrites.
+3. **Verify** — Run appropriate gates (see Verification section above).
+4. **Report** — Deliver the Output Contract items above.
+
+See `docs/WORKFLOW.md` for the full workflow reference and prompt formatting guide.
+
+---
+
+*Last updated: 2026-02-08*

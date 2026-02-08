@@ -61,6 +61,7 @@ interface Product {
   sellerId?: string | null
   sellerName?: string | null
   sellerAvatarUrl?: string | null
+  sellerTier?: "basic" | "premium" | "business"
   sellerVerified?: boolean
   location?: string
   condition?: string
@@ -259,6 +260,12 @@ export function DesktopHome({
           sellerId: typeof p.sellerId === "string" ? p.sellerId : null,
           sellerName: typeof p.sellerName === "string" ? p.sellerName : null,
           sellerAvatarUrl: typeof p.sellerAvatarUrl === "string" ? p.sellerAvatarUrl : null,
+          sellerTier:
+            p.sellerTier === "business"
+              ? "business"
+              : p.sellerTier === "premium"
+                ? "premium"
+                : "basic",
           sellerVerified: Boolean(p.sellerVerified),
           isBoosted: Boolean(p.isBoosted || p.is_boosted),
           listPrice: typeof p.listPrice === "number" ? p.listPrice : typeof p.list_price === "number" ? p.list_price : undefined,
@@ -354,6 +361,7 @@ export function DesktopHome({
     sellerId: product.sellerId,
     sellerName: product.sellerName,
     sellerAvatarUrl: product.sellerAvatarUrl,
+    sellerTier: product.sellerTier,
     sellerVerified: product.sellerVerified,
     location: product.location,
     condition: product.condition,
@@ -396,6 +404,7 @@ export function DesktopHome({
         sellerId: p.sellerId,
         sellerName: p.sellerName,
         sellerAvatarUrl: p.sellerAvatarUrl,
+        sellerTier: p.sellerTier,
         sellerVerified: p.sellerVerified,
         location: p.location,
         condition: p.condition,

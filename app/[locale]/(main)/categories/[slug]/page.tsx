@@ -351,6 +351,12 @@ function CategoryPageDynamicContent({
                 sellerId: product.sellers?.id ?? null,
                 sellerName: product.sellers?.display_name || product.sellers?.business_name || product.sellers?.store_slug || undefined,
                 sellerAvatarUrl: product.sellers?.avatar_url ?? null,
+                sellerTier:
+                  product.sellers?.account_type === "business"
+                    ? "business"
+                    : product.sellers?.tier === "premium"
+                      ? "premium"
+                      : "basic",
                 sellerVerified: Boolean(product.sellers?.is_verified_business),
                 condition: product.attributes?.condition,
                 tags: product.tags ?? [],

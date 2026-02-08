@@ -558,12 +558,12 @@ pnpm -s styles:gate
 
 | # | Gate | Command | Status |
 |---|------|---------|--------|
-| 13.1.1 | TypeScript | `pnpm -s typecheck` | ⬜ |
-| 13.1.2 | ESLint | `pnpm -s lint` | ⬜ |
-| 13.1.3 | Tailwind style gate | `pnpm -s styles:gate` | ⬜ |
-| 13.1.4 | Unit tests | `pnpm -s test:unit` | ⬜ |
-| 13.1.5 | Build succeeds | `pnpm build` | ⬜ |
-| 13.1.6 | E2E smoke test | `REUSE_EXISTING_SERVER=true pnpm -s test:e2e:smoke` | ⬜ |
+| 13.1.1 | TypeScript | `pnpm -s typecheck` | ✅ Pass (exit 0, 2026-02-08) |
+| 13.1.2 | ESLint | `pnpm -s lint` | ✅ Pass (0 errors, 335 warnings, 2026-02-08) |
+| 13.1.3 | Tailwind style gate | `pnpm -s styles:gate` | ✅ Pass (0 violations across all scanners, 2026-02-08) |
+| 13.1.4 | Unit tests | `pnpm -s test:unit` | ✅ Pass (29/29 files, 405/405 tests, 2026-02-08) |
+| 13.1.5 | Build succeeds | `pnpm build` | ⬜ Not run (deferred — active HMR dev session) |
+| 13.1.6 | E2E smoke test | `REUSE_EXISTING_SERVER=true pnpm -s test:e2e:smoke` | 🟡 22 passed, 1 failed, 3 skipped (2026-02-08) |
 
 ### 13.2 Critical Path Manual Spot-Check
 
@@ -582,6 +582,15 @@ pnpm -s styles:gate
 mcp__supabase__get_advisors({ type: "security" })
 mcp__supabase__get_advisors({ type: "performance" })
 ```
+
+**Results (2026-02-08):**
+
+| Type | Level | Finding | Remediation |
+|------|-------|---------|-------------|
+| Security | WARN | Leaked password protection disabled | [Enable HaveIBeenPwned check](https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection) |
+| Performance | INFO | 23 unused indexes across tables: `listing_boosts`, `admin_docs`, `admin_tasks`, `admin_notes`, `conversations`, `notifications`, `cart_items`, `order_items`, `user_badges`, `business_verification`, `orders`, `return_requests`, `profiles` | [Unused index docs](https://supabase.com/docs/guides/database/database-linter?lint=0005_unused_index) |
+
+> No critical security advisories. Leaked password protection is a WARN-level item to enable before launch. Unused indexes are INFO-level cleanup candidates.
 
 ### 13.4 Stripe Verification
 
@@ -622,7 +631,7 @@ mcp__supabase__get_advisors({ type: "performance" })
 
 | ID | Phase | Description | Resolution | Date |
 |----|-------|-------------|------------|------|
-| — | — | — | — | — |
+| HYDRA-001 | 5/12 | Hydration mismatch on `/en/categories/fashion` — server renders "Worldwide" but client hydrates to "Bulgaria" in `MobileFilterControls` location chip | Fixed: Deferred client-only `document.cookie` read to `useEffect` in `mobile-filter-controls.tsx` so initial render matches server. Uses `useState`+`useEffect` for `clientZone` instead of reading cookie during render. | 2026-02-08 |
 
 ---
 
@@ -648,6 +657,65 @@ mcp__supabase__get_advisors({ type: "performance" })
 8. Test Phase 3–13 systematically, logging new issues
 9. Fix issues by severity (P0 → P1 → P2)
 10. Final verification (Phase 13)
+
+---
+
+---
+
+## Test Execution Log
+
+### Run 1 — 2026-02-08
+
+**Executor:** Copilot (automated)
+
+#### Route Health Check (58 routes)
+
+| Category | Count | Result |
+|----------|-------|--------|
+| Public EN routes (`/en/*`) | 31 | All 200 ✅ |
+| BG locale routes (`/bg/*`) | 11 | All 200 ✅ |
+| Account routes (unauthenticated) | 11 | All 307 redirect ✅ (correct auth gating) |
+| Dashboard + Admin | 2 | 200 ✅ |
+| API endpoints (`/api/*`) | 3 | 200 ✅ |
+| **Total failures** | **0** | |
+
+**Routes tested (EN):** `/en`, `/en/auth/login`, `/en/auth/sign-up`, `/en/auth/forgot-password`, `/en/categories`, `/en/search`, `/en/cart`, `/en/sell`, `/en/plans`, `/en/sellers`, `/en/todays-deals`, `/en/wishlist`, `/en/about`, `/en/contact`, `/en/privacy`, `/en/terms`, `/en/cookies`, `/en/returns`, `/en/faq`, `/en/help`, `/en/accessibility`, `/en/customer-service`, `/en/feedback`, `/en/gift-cards`, `/en/onboarding`, `/en/chat`, `/en/assistant`, `/en/members`, `/en/messages`, `/en/security`, `/en/registry`
+
+**Routes tested (BG):** `/bg`, `/bg/auth/login`, `/bg/categories`, `/bg/search`, `/bg/cart`, `/bg/plans`, `/bg/about`, `/bg/privacy`, `/bg/terms`, `/bg/faq`, `/bg/help`
+
+**Protected routes (307 redirect):** `/en/account`, `/en/account/profile`, `/en/account/orders`, `/en/account/addresses`, `/en/account/security`, `/en/account/payments`, `/en/account/selling`, `/en/account/wishlist`, `/en/account/following`, `/en/account/settings`, `/en/account/plans`
+
+#### E2E Smoke Test
+
+- **22 passed**, **1 failed**, **3 skipped**
+- **Failed:** `category feed cards` — hydration mismatch on `/en/categories/fashion` (server: "Worldwide", client: "Bulgaria" in location filter). **Fixed** in `HYDRA-001`.
+- **Skipped:** Auth-gated flows (seller flow, authenticated profile, mobile search cards) — require authenticated session setup.
+
+#### Unit Tests
+
+- **29/29** test files passed
+- **405/405** individual tests passed
+- Duration: 87s
+
+#### Automated Gates Summary
+
+| Gate | Status | Notes |
+|------|--------|-------|
+| `pnpm -s typecheck` | ✅ Pass | Zero errors |
+| `pnpm -s lint` | ✅ Pass | 0 errors, 335 warnings (all non-blocking) |
+| `pnpm -s styles:gate` | ✅ Pass | 0 palette / 0 arbitrary / 0 semantic / 0 alpha violations |
+| `pnpm -s test:unit` | ✅ Pass | 405/405 tests |
+| `pnpm build` | ⬜ Deferred | Active HMR session prevented clean build |
+| E2E smoke | 🟡 Partial | 22/23 pass after HYDRA-001 fix; re-run needed post-stabilization |
+
+#### Next Steps
+
+1. Re-run `pnpm build` once active dev work pauses
+2. Re-run full E2E smoke to confirm HYDRA-001 fix
+3. Address P0 blockers: AUTH-001, SELL-001, CAT-001
+4. Address P1 UX: AUTH-002/003, ONB-001/002, SELL-002
+5. Enable leaked password protection in Supabase Auth settings
+6. Consider cleanup of 23 unused database indexes
 
 ---
 

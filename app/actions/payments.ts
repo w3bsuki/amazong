@@ -19,6 +19,7 @@ type PaymentSetupSessionResult = Envelope<
   { error: string }
 >
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type -- intentionally empty: no extra success payload
 type PaymentMethodMutationResult = Envelope<{}, { error: string }>
 
 export async function createPaymentMethodSetupSession(

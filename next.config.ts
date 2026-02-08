@@ -22,6 +22,9 @@ const nextConfig: NextConfig = {
     } : false,
   },
 
+  // Statically type <Link href> and router.push() against real routes
+  typedRoutes: true,
+
   // Enable cache components for e-commerce performance
   cacheComponents: true,
 
@@ -118,6 +121,8 @@ const nextConfig: NextConfig = {
       bodySizeLimit: '10mb',
     },
     optimizePackageImports: ['@phosphor-icons/react', 'date-fns', 'recharts'],
+    // Auto-generate .d.ts for loaded env vars (IntelliSense in editor)
+    typedEnv: true,
   },
 
   // Compression for production builds

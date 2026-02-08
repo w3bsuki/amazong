@@ -304,12 +304,10 @@ export async function getCheckoutFeeQuote(items: CartItem[]): Promise<CheckoutFe
 
   try {
     const supabase = await createClient()
-    let userId: string | undefined
-
     const {
       data: { user },
     } = await supabase.auth.getUser()
-    userId = user?.id
+    const userId = user?.id
 
     const productIds = items.map((item) => item.id).filter(Boolean)
 

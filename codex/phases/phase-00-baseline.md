@@ -61,7 +61,7 @@ Establish execution SSOT files and capture a verified starting baseline before r
 
 - Behavior-safe mode enforced.
 - One phase per run/chat enforced.
-- No subagents.
+- No delegated workers.
 - Full verification gates required per phase.
 
 ## Done

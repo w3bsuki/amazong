@@ -48,17 +48,17 @@ function ProductCardSocialProof({
       {hasRating && (
         <>
           <Star size={11} weight="fill" className="text-top-rated" />
-          <span className="font-medium tabular-nums">
+          <span className="tabular-nums text-foreground">
             {rating.toFixed(1)}
           </span>
-          {reviewCount > 0 && <span>({formatCount(reviewCount)})</span>}
+          {reviewCount > 0 && <span className="tabular-nums">({formatCount(reviewCount)})</span>}
         </>
       )}
 
-      {hasRating && hasSoldCount && <span className="text-muted-foreground">·</span>}
+      {hasRating && hasSoldCount && <span className="text-border">·</span>}
 
       {hasSoldCount && (
-        <span>
+        <span className="tabular-nums">
           {formatCount(soldCount)} {soldLabel}
         </span>
       )}

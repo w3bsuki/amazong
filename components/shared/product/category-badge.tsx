@@ -32,9 +32,10 @@ export function CategoryBadge(props: {
   category: Category | null
   subcategory?: Category | null | undefined
   size?: "sm" | "md" | "lg"
+  showIcon?: boolean
   className?: string
 }) {
-  const { locale, category, subcategory, size = "sm", className } = props
+  const { locale, category, subcategory, size = "sm", showIcon = true, className } = props
   if (!category) return null
 
   const label = getDisplayName(category, locale)
@@ -54,12 +55,14 @@ export function CategoryBadge(props: {
         className
       )}
     >
-      {icon && isEmojiLike(icon) ? (
-        <span aria-hidden className="text-base">
-          {icon}
-        </span>
-      ) : (
-        <Folder className={cn("text-category-badge-icon", size === "lg" ? "size-4" : "size-3.5")} />
+      {showIcon && (
+        icon && isEmojiLike(icon) ? (
+          <span aria-hidden className="text-base">
+            {icon}
+          </span>
+        ) : (
+          <Folder className={cn("text-category-badge-icon", size === "lg" ? "size-4" : "size-3.5")} />
+        )
       )}
       <span className="font-medium">
         {label}

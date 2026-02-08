@@ -134,8 +134,7 @@ export async function POST(req: NextRequest) {
       cancel_url: `${accountPlansUrl}?canceled=true`,
     }
 
-    let session: Awaited<ReturnType<typeof stripe.checkout.sessions.create>>
-    session = await stripe.checkout.sessions.create({
+    const session = await stripe.checkout.sessions.create({
       ...checkoutParams,
       line_items: lineItems,
     })

@@ -157,7 +157,7 @@ export function MobileHome({
         media={config.media}
         density="compact"
         titleLines={config.titleLines}
-        uiVariant="home"
+        uiVariant="mobile-clean"
         showCategoryBadge={config.showCategoryBadge}
         radius={config.radius}
         maxOverlayBadges={config.maxOverlayBadges}
@@ -333,7 +333,7 @@ export function MobileHome({
               {initialProducts.map((product, index) =>
                 renderHomeCard(product, index, {
                   appearance: "card",
-                  media: "portrait",
+                  media: "landscape",
                   titleLines: 1,
                   showCategoryBadge: true,
                   radius: "2xl",
@@ -357,7 +357,7 @@ export function MobileHome({
                 {curatedRail.products.slice(0, 10).map((product, index) => (
                   <div
                     key={product.id}
-                    className="w-(--spacing-home-curated-card-w) shrink-0 snap-start"
+                    className="w-(--spacing-home-card-column-w) shrink-0 snap-start"
                   >
                     {renderHomeCard(product, index, {
                       appearance: "card",

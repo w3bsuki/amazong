@@ -153,8 +153,9 @@ export function ProductFeed({
                 {...(product.location ? { location: product.location } : {})}
                 {...(product.attributes ? { attributes: product.attributes } : {})}
                 appearance="tile"
-                media="portrait"
+                media="landscape"
                 density="compact"
+                uiVariant="mobile-clean"
               />
             ))}
           </ProductGrid>

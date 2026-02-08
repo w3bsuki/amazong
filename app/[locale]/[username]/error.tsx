@@ -1,6 +1,7 @@
 'use client'
 
 import { useTranslations } from 'next-intl'
+import Link from 'next/link'
 
 export default function ProfileError({
   error,
@@ -34,12 +35,12 @@ export default function ProfileError({
             {t('tryAgain')}
           </button>
 
-          <a
+          <Link
             href="/"
             className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-interactive-hover"
           >
             {t('goToHomepage')}
-          </a>
+          </Link>
         </div>
       </div>
     </div>

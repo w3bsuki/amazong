@@ -39,9 +39,6 @@ jobs:
       - name: Launch readiness check
         run: pnpm -s docs:status:check
 
-      - name: Skills validation (warning window)
-        run: pnpm -s validate:skills -- --warn-only
-
       - name: TS safety gate
         run: pnpm -s ts:gate
 

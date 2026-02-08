@@ -11,6 +11,7 @@ import { useDrawer } from "@/components/providers/drawer-context"
 import { useCategoryDrawerOptional } from "@/components/mobile/category-nav"
 import { useAuthOptional } from "@/components/providers/auth-state-manager"
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 interface MobileTabBarProps {}
 
 export function MobileTabBar(_: MobileTabBarProps) {
@@ -71,7 +72,7 @@ export function MobileTabBar(_: MobileTabBarProps) {
   const chatAriaLabel = unreadCount > 0 ? `${t("chat")} (${unreadCount})` : t("chat")
 
   const tabItemBase = cn(
-    "flex min-h-(--control-default) w-full flex-col items-center justify-center gap-0.5 rounded-xl border border-transparent px-1.5 py-1",
+    "flex min-h-(--control-default) w-full flex-col items-center justify-center gap-0 rounded-xl border border-transparent px-1.5 py-0.5",
     "tap-transparent transition-colors",
     "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
   )
@@ -109,7 +110,7 @@ export function MobileTabBar(_: MobileTabBarProps) {
         <div className="mx-auto max-w-screen-sm px-2">
           <div
             data-testid="mobile-tab-bar-dock"
-            className="pointer-events-auto rounded-2xl border border-border-subtle bg-surface-elevated px-1 py-1 pb-safe-max-xs shadow-md"
+            className="pointer-events-auto rounded-xl border border-border-subtle bg-surface-elevated px-1 py-0.5 pb-safe shadow-sm"
           >
             <div className="grid grid-cols-5 items-end gap-0.5">
           {/* Home */}

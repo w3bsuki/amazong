@@ -69,7 +69,7 @@ export async function GET(request: NextRequest) {
         seller_city,
         slug,
         attributes,
-        seller:profiles(id,username,avatar_url,tier),
+        seller:profiles(id,username,display_name,business_name,avatar_url,tier,account_type,is_verified_business),
         categories!inner(
           id,slug,name,name_bg,icon,
           parent:categories!parent_id(id,slug,name,name_bg,icon,
@@ -97,7 +97,7 @@ export async function GET(request: NextRequest) {
         seller_city,
         slug,
         attributes,
-        seller:profiles(id,username,avatar_url,tier),
+        seller:profiles(id,username,display_name,business_name,avatar_url,tier,account_type,is_verified_business),
         categories!inner(
           id,slug,name,name_bg,icon,
           parent:categories!parent_id(id,slug,name,name_bg,icon,

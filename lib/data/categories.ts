@@ -294,7 +294,7 @@ export async function getCategoryHierarchy(
     }
 
     // Fetch L2 categories if depth >= 2 (batched to avoid large IN clauses)
-    let l2Cats: typeof l1Cats = []
+    const l2Cats: typeof l1Cats = []
     if (effectiveDepth >= 2 && l1Cats && l1Cats.length > 0) {
       const l1Ids = l1Cats.map(c => c.id)
       const BATCH_SIZE = 50

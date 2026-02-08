@@ -21,7 +21,7 @@ pnpm -s test:e2e:smoke
 
 ## Docs / Instructions
 
-- Agent entry point (always read): `AGENTS.md`
+- Project contract: `AGENTS.md`
 - Docs hub (SSOT): `docs/INDEX.md`
 - Workflow + gates: `docs/WORKFLOW.md`
 - Launch/env notes: `docs/LAUNCH.md`

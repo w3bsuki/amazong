@@ -6,7 +6,7 @@ import path from 'node:path'
 
 export * from './test'
 
-export const test = baseTest.extend<{}, { workerStorageState: string }>({
+export const test = baseTest.extend<Record<string, never>, { workerStorageState: string }>({
   // Reuse the same storage state for all tests in this worker.
   storageState: ({ workerStorageState }, runFixture) => runFixture(workerStorageState),
 

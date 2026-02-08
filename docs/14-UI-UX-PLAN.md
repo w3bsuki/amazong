@@ -275,15 +275,15 @@ The `temp-tradesphere-audit/` prototype is useful for **patterns**, not for code
 
 ---
 
-## Ownership (Skills)
+## Ownership
 
-| Phase | Primary Skill | Support |
+| Phase | Primary Owner | Support |
 |-------|---------------|---------|
-| Phase 0 | `treido-rails` | — |
-| Phase 1 | `treido-design` | `treido-mobile-ux`, `treido-tailwind-v4` |
-| Phase 2 | `treido-mobile-ux` | `treido-design`, `treido-tailwind-v4` |
-| Phase 3 | `treido-tailwind-v4` | `treido-shadcn-ui`, `treido-design` |
-| Phase 4 | `treido-rails` | `treido-design` |
+| Phase 0 | Platform owner | — |
+| Phase 1 | Design owner | Mobile UX + styling owner |
+| Phase 2 | Mobile UX owner | Design + styling owner |
+| Phase 3 | Styling owner | Component + design owner |
+| Phase 4 | Platform owner | Design owner |
 
 All phases require the standard gates before merge (see `docs/WORKFLOW.md`).
 

@@ -512,7 +512,7 @@ Guidance:
     if (tags.length > 0) {
       // 1) Prefer array overlap on tags.
       try {
-        // @ts-ignore
+        // @ts-expect-error - overlaps typing not available in this Supabase client version
         const { data, error } = await buildBaseQuery().overlaps("tags", tags);
         matched = data ?? null;
         matchError = error;

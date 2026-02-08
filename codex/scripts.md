@@ -43,9 +43,6 @@ Verify each is referenced by `pnpm -s styles:scan` and `pnpm -s styles:gate`. Ke
 - `check-docs-site.mjs` — Check docs-site
 - `build-launch-readiness.mjs` — Launch readiness dashboard
 - `validate-launch-readiness.mjs` — Launch readiness validation
-- `sync-agent-skills.mjs` — Sync skills across agent folders
-- `validate-agent-skills.mjs` — Validate agent skills
-- `generate-skills-doc.mjs` — Generate skills documentation
 - `seed-admin-docs.mjs` — Seed admin docs content
 - `export-admin-docs.mjs` — Export admin docs
 

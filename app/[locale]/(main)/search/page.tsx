@@ -97,7 +97,7 @@ export default async function SearchPage({
   let subcategories: Category[] = []
   let allCategories: Category[] = []
   let allCategoriesWithSubs: { category: Category; subs: Category[] }[] = []
-  let brands: string[] = []
+  const brands: string[] = []
   let filterableAttributes: CategoryAttribute[] = []
   let categoryIdForFilters: string | undefined = undefined
 
@@ -264,6 +264,12 @@ export default async function SearchPage({
     sellerId: product.profiles?.id ?? null,
     sellerName: product.profiles?.display_name || product.profiles?.business_name || product.profiles?.username || undefined,
     sellerAvatarUrl: product.profiles?.avatar_url ?? null,
+    sellerTier:
+      product.profiles?.account_type === "business"
+        ? "business"
+        : product.profiles?.tier === "premium"
+          ? "premium"
+          : "basic",
     sellerVerified: Boolean(product.profiles?.is_verified_business),
     condition: product.attributes?.condition,
     tags: product.tags ?? [],
@@ -364,6 +370,7 @@ export default async function SearchPage({
             cardAppearance="tile"
             cardMedia="landscape"
             cardDensity="compact"
+            cardUiVariant="mobile-clean"
           />
 
           {products.length === 0 && (

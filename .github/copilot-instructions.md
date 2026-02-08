@@ -8,10 +8,7 @@
 ## Default mode
 
 - Implement directly for normal tasks (UI, styling, components, refactoring, tests, docs).
-- Main agent owns planning, decisions, and code edits.
-- Skills are optional and only needed for specialist domains or explicit user request.
-- Do not use subagents by default. Use subagents only when explicitly requested (for example, `run subagents`), and keep them audit/read-only unless the user explicitly asks for delegated code edits.
-- Ignore legacy `.codex/agents/*` orchestration docs if present.
+- The current implementer owns planning, decisions, and code edits.
 
 ## Verification
 
@@ -31,4 +28,3 @@ REUSE_EXISTING_SERVER=true pnpm -s test:e2e:smoke
 
 - Boundaries/pause rules: `docs/AGENTS.md`
 - Workflow/gates: `docs/WORKFLOW.md`
-- Skill index: `docs/SKILLS.md`

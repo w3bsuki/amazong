@@ -1,8 +1,6 @@
 export default {
   "index": "Overview",
   "admin-docs-governance": "Admin Docs Governance",
-  "agent-fleet-roadmap": "Agent Fleet Roadmap",
-  "agent-map": "Agent Map",
   "agents": "Agents",
   "api": "Api",
   "app-feel-checklist": "App Feel Checklist",
@@ -31,8 +29,6 @@ export default {
   "public-docs": "Public Docs",
   "refactor": "Refactor",
   "routes": "Routes",
-  "skills-guide": "Skills Guide",
-  "skills": "Skills",
   "ui-ux-plan": "Ui Ux Plan",
   "workflow": "Workflow",
 }

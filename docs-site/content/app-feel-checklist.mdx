@@ -280,11 +280,11 @@ REUSE_EXISTING_SERVER=true pnpm -s test:e2e:smoke
 
 | Phase | Status | Owner | ETA |
 |-------|--------|-------|-----|
-| Phase 1: Foundation | ⬜ Not Started | `treido-mobile-ux` | 1-2 days |
-| Phase 2: Components | ⬜ Not Started | `treido-design` | 3-5 days |
-| Phase 3: Navigation | ⬜ Not Started | `treido-mobile-ux` | 2-3 days |
-| Phase 4: Forms | ⬜ Not Started | `treido-design` | 3-5 days |
-| Phase 5: Polish | ⬜ Not Started | `treido-design` | Ongoing |
+| Phase 1: Foundation | ⬜ Not Started | Mobile UX owner | 1-2 days |
+| Phase 2: Components | ⬜ Not Started | Design owner | 3-5 days |
+| Phase 3: Navigation | ⬜ Not Started | Mobile UX owner | 2-3 days |
+| Phase 4: Forms | ⬜ Not Started | Design owner | 3-5 days |
+| Phase 5: Polish | ⬜ Not Started | Design owner | Ongoing |
 
 ---
 

@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useMemo, useState } from "react"
+import { useCallback, useEffect, useMemo, useState } from "react"
 import { useTranslations, useLocale } from "next-intl"
 import { useSearchParams, type ReadonlyURLSearchParams } from "next/navigation"
 import { cn } from "@/lib/utils"
@@ -85,10 +85,19 @@ export function MobileFilterControls({
     return resolvedLocale === "bg" ? city.labelBg : city.label
   }, [cityParam, resolvedLocale])
 
-  const regionFromCookie = useMemo(() => {
-    const zone = userZone ?? getCookieValue("user-zone")
-    return parseShippingRegion(zone)
+  // Defer client-only cookie read to after mount to avoid hydration mismatch.
+  // When `userZone` is provided as a server-prop the cookie fallback is skipped.
+  const [clientZone, setClientZone] = useState<string | null>(null)
+  useEffect(() => {
+    if (userZone == null) {
+      setClientZone(getCookieValue("user-zone"))
+    }
   }, [userZone])
+
+  const regionFromCookie = useMemo(() => {
+    const zone = userZone ?? clientZone
+    return parseShippingRegion(zone)
+  }, [userZone, clientZone])
 
   const regionLabel = useMemo(() => {
     if (!regionFromCookie) return null

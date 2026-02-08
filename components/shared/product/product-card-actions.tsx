@@ -113,12 +113,12 @@ export function ProductCardActions({
                     variant="ghost"
                     size={size}
                     className={cn(
-                        "rounded-full border border-border-subtle bg-surface-card shadow-none",
+                        "rounded-full border border-border-subtle bg-surface-card",
                         "hover:bg-hover active:bg-active",
                         overlaySizeClass,
                         inWishlist
                             ? "border-selected-border text-primary"
-                            : "text-muted-foreground hover:text-foreground active:text-foreground",
+                            : "text-muted-foreground hover:text-foreground",
                         isWishlistPending && "pointer-events-none opacity-50",
                         isOwnProduct && "cursor-not-allowed opacity-50"
                     )}

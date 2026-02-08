@@ -1,10 +1,10 @@
 # DEV-DEPARTMENT.md — Ownership (V4)
 
-> Treido is a single-user chat with a minimal set of always-on rails. “Roles” are just a routing mental model.
+> Treido ships through a single implementation workflow. “Departments” are responsibility zones, not separate executors.
 
 | Scope | Ownership + how we ship |
 |-------|--------------------------|
-| Audience | AI agents, developers |
+| Audience | Developers, maintainers |
 | Type | Reference |
 
 ---
@@ -20,15 +20,15 @@
 
 ## Domains (Routing)
 
-| Domain | Skill | Owns |
-|--------|-------|------|
-| Styling | `treido-styling` | Tailwind v4 semantic token rails + shadcn-safe patterns |
-| UI/UX design | `treido-design` | Hierarchy, spacing, states, polish |
-| Next.js App Router | `treido-nextjs` | Route/layout boundaries, Server vs Client, cache-safe request patterns |
-| Data + auth | `treido-data` | Supabase client selection, query shape, auth/session boundaries |
-| Payments | `treido-payments` | Checkout/webhooks/idempotency safety |
-| Testing | `treido-testing` | Playwright + Next.js deflaking and CI stability |
-| Accessibility | `treido-a11y` | WCAG 2.2 AA semantics, keyboard/focus, screen-reader support |
+| Domain | Ownership | Owns |
+|--------|-----------|------|
+| Styling | Current implementer | Tailwind v4 semantic token rails + shadcn-safe patterns |
+| UI/UX design | Current implementer | Hierarchy, spacing, states, polish |
+| Next.js App Router | Current implementer | Route/layout boundaries, Server vs Client, cache-safe request patterns |
+| Data + auth | Current implementer | Supabase client selection, query shape, auth/session boundaries |
+| Payments | Current implementer | Checkout/webhooks/idempotency safety |
+| Testing | Current implementer | Playwright + Next.js reliability and CI stability |
+| Accessibility | Current implementer | WCAG 2.2 AA semantics, keyboard/focus, screen-reader support |
 
 ---
 
@@ -44,5 +44,4 @@
 
 - [AGENTS.md](./AGENTS.md) — entry point + non-negotiables
 - [WORKFLOW.md](./WORKFLOW.md) — default shipping loop
-- [SKILLS.md](./SKILLS.md) — skill inventory
 

@@ -214,7 +214,7 @@ export async function getSellerOrders(
     // Get buyer profiles for each unique buyer
     const buyerIds = [...new Set(orderItems?.map(item => item.order?.user_id).filter(Boolean))]
     
-    let buyersMap = new Map<string, { id: string; full_name: string | null; avatar_url: string | null }>()
+    const buyersMap = new Map<string, { id: string; full_name: string | null; avatar_url: string | null }>()
     
     if (buyerIds.length > 0) {
       const { data: buyers } = await supabase

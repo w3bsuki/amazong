@@ -1,7 +1,7 @@
 # Treido Production Refactor Master Plan
 
 Last updated: 2026-02-07
-Owner: single-agent execution (no subagents)
+Owner: single-implementer execution
 
 ## Objective
 

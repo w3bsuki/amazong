@@ -31,7 +31,16 @@ interface ProductRowWithRelations {
   slug: string | null
   attributes?: Record<string, unknown> | null
   category_ancestors: string[] | null
-  seller: { username: string | null } | null
+  seller: {
+    id: string | null
+    username: string | null
+    display_name: string | null
+    business_name: string | null
+    avatar_url: string | null
+    tier: string | null
+    account_type: string | null
+    is_verified_business: boolean | null
+  } | null
   categories: {
     id: string
     slug: string
@@ -129,7 +138,7 @@ export async function GET(request: NextRequest) {
       boost_expires_at,
       created_at, 
       slug,
-      seller:profiles(id,username,avatar_url,tier),
+      seller:profiles(id,username,display_name,business_name,avatar_url,tier,account_type,is_verified_business),
       categories(id,slug,name,name_bg,icon)
     `
 

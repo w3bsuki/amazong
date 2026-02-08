@@ -72,7 +72,7 @@ Audit which set is canonical (likely the numbered set since it's more organized)
 Additionally audit:
 - `docs/archive/` — Contains `cleanup/`, `legal-drafts/`, `production-2026-02-02/`, `refactor-2026-02-02/`, `uirefactor/`. This is all archived material. Delete the entire `docs/archive/` folder.
 - `docs/refactor.md` — Likely an old refactor plan. Delete if superseded by `docs/PROJECT-CLEANUP-MASTER-PLAN.md`.
-- `docs/DOCS-PLAN.md`, `docs/PROMPT-GUIDE.md`, `docs/SKILLS-GUIDE.md` — Audit for relevance. Delete if they're meta-docs about the agent system rather than the product.
+- `docs/DOCS-PLAN.md`, `docs/PROMPT-GUIDE.md` — Audit for relevance. Delete if they're meta-docs rather than product docs.
 
 ### 2.4 Binary Assets in Wrong Locations
 
@@ -80,7 +80,7 @@ Additionally audit:
 
 ### 2.5 Legacy Agent Configuration
 
-- `.codex/` folder — Already marked as legacy in root `AGENTS.md`. Contains `agents/`, `rules/`, and a deprecated `AGENTS.md`. The skills have been superseded by `.claude/skills/` and `.agents/skills/`. Delete the entire `.codex/` folder since the new `codex/` (no dot) replaces its purpose.
+- `.codex/` folder — Already marked as legacy in root `AGENTS.md`. Contains `agents/`, `rules/`, and a deprecated `AGENTS.md`. Delete the entire `.codex/` folder since the new `codex/` (no dot) replaces its purpose.
 
 ### 2.6 TSConfig Excludes Pointing to Nonexistent Folders
 

@@ -129,7 +129,20 @@ test.describe('Smoke Tests - Critical Path', () => {
 
     expect(promotedCardBox).toBeTruthy()
     expect(newestCardBox).toBeTruthy()
-    expect((promotedCardBox?.width ?? 0)).toBeGreaterThanOrEqual((newestCardBox?.width ?? 0))
+    const promotedCardWidth = promotedCardBox?.width ?? 0
+    const newestCardWidth = newestCardBox?.width ?? 0
+    expect(promotedCardWidth).toBeGreaterThan(newestCardWidth * 1.08)
+
+    const newestImage = newestCard.locator('[data-slot="aspect-ratio"]').first()
+    await assertVisible(newestImage)
+    const newestImageBox = await newestImage.boundingBox()
+    expect(newestImageBox).toBeTruthy()
+    expect(newestImageBox!.width).toBeGreaterThan(newestImageBox!.height)
+
+    const discountBadgesInNewest = newestSection
+      .locator('[data-slot="badge"]')
+      .filter({ hasText: /^-\d+%$/ })
+    await expect(discountBadgesInNewest).toHaveCount(0)
 
     const promotedStrip = promotedSection.getByTestId('home-section-promoted-strip')
     await assertVisible(promotedStrip)
@@ -250,6 +263,54 @@ test.describe('Smoke Tests - Critical Path', () => {
     await assertNoErrorBoundary(page)
 
     app.assertNoConsoleErrors()
+  })
+
+  test('mobile search cards use clean landscape layout @smoke @search', async ({ page, app }) => {
+    await page.setViewportSize({ width: 390, height: 844 })
+    await app.goto('/en/search?q=test')
+    await app.waitForHydration()
+
+    const firstCardLink = page.locator('a[data-slot="product-card-link"]').first()
+    const hasCard = await firstCardLink.isVisible({ timeout: 2_000 }).catch(() => false)
+    test.skip(!hasCard, 'No product cards rendered on mobile search')
+
+    const firstCardSurface = firstCardLink.locator('xpath=ancestor::*[@data-slot="surface"][1]')
+    const firstCardImage = firstCardSurface.locator('[data-slot="aspect-ratio"]').first()
+    await assertVisible(firstCardImage)
+    const firstCardImageRect = await firstCardImage.evaluate((element) => {
+      const rect = element.getBoundingClientRect()
+      return { width: rect.width, height: rect.height }
+    })
+    expect(firstCardImageRect.width).toBeGreaterThan(firstCardImageRect.height)
+
+    const discountBadges = firstCardSurface.locator('[data-slot="badge"]').filter({ hasText: /^-\d+%$/ })
+    await expect(discountBadges).toHaveCount(0)
+
+    await assertNoErrorBoundary(page)
+  })
+
+  test('mobile category feed cards use clean landscape layout @smoke @category', async ({ page, app }) => {
+    await page.setViewportSize({ width: 390, height: 844 })
+    await app.goto('/en/categories/fashion')
+    await app.waitForHydration()
+
+    const firstCardLink = page.locator('a[data-slot="product-card-link"]').first()
+    const hasCard = await firstCardLink.isVisible({ timeout: 2_000 }).catch(() => false)
+    test.skip(!hasCard, 'No product cards rendered in mobile category feed')
+
+    const firstCardSurface = firstCardLink.locator('xpath=ancestor::*[@data-slot="surface"][1]')
+    const firstCardImage = firstCardSurface.locator('[data-slot="aspect-ratio"]').first()
+    await assertVisible(firstCardImage)
+    const firstCardImageRect = await firstCardImage.evaluate((element) => {
+      const rect = element.getBoundingClientRect()
+      return { width: rect.width, height: rect.height }
+    })
+    expect(firstCardImageRect.width).toBeGreaterThan(firstCardImageRect.height)
+
+    const discountBadges = firstCardSurface.locator('[data-slot="badge"]').filter({ hasText: /^-\d+%$/ })
+    await expect(discountBadges).toHaveCount(0)
+
+    await assertNoErrorBoundary(page)
   })
 
   test('mobile tab bar Profile opens account drawer when authenticated @smoke', async ({ page, app }) => {
