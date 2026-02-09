@@ -4,7 +4,7 @@ import { getCategoryHierarchy } from "@/lib/data/categories"
 import { getCategoryName, getCategorySlugKey } from "@/lib/category-display"
 import { CaretRight, Storefront, Sparkle } from "@phosphor-icons/react/dist/ssr"
 import { CategoryCircleVisual } from "@/components/shared/category/category-circle-visual"
-import { PageShell } from "@/components/shared/page-shell"
+import { PageShell } from "../../_components/page-shell"
 import { CategoriesHeaderSync } from "./_components/categories-header-sync"
 import type { Metadata } from "next"
 
@@ -151,4 +151,5 @@ export default async function CategoriesPage({
     </PageShell>
   )
 }
+
 

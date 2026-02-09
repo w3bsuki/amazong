@@ -1,5 +1,5 @@
 import { getTranslations, setRequestLocale } from "next-intl/server"
-import { AppBreadcrumb } from "@/components/shared/navigation/app-breadcrumb"
+import { AppBreadcrumb } from "../../../_components/navigation/app-breadcrumb"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Field, FieldContent, FieldDescription, FieldLabel } from "@/components/shared/field"
@@ -12,7 +12,7 @@ import {
 import { Link } from "@/i18n/routing"
 import type { Metadata } from 'next'
 import { validateLocale } from "@/i18n/routing"
-import { PageShell } from "@/components/shared/page-shell"
+import { PageShell } from "../../../_components/page-shell"
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale: localeParam } = await params
@@ -164,4 +164,5 @@ export default async function FeedbackPage({
     </PageShell>
   )
 }
+
 

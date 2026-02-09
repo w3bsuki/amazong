@@ -11,7 +11,7 @@ import {
   X,
 } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
-import { PageContainer } from "@/components/shared/page-container";
+import { PageContainer } from "../layout/page-container";
 import { cn } from "@/lib/utils";
 
 import { useSellForm, useSellFormContext } from "../sell-form-provider";

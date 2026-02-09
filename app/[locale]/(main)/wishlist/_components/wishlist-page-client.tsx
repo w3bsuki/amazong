@@ -9,7 +9,7 @@ import { Link } from "@/i18n/routing"
 import { useTranslations, useLocale } from "next-intl"
 import { toast } from "sonner"
 import { useState } from "react"
-import { PageShell } from "@/components/shared/page-shell"
+import { PageShell } from "../../../_components/page-shell"
 
 export default function WishlistPageClient() {
   const { items, isLoading, removeFromWishlist } = useWishlist()
@@ -268,3 +268,4 @@ export default function WishlistPageClient() {
     </PageShell>
   )
 }
+

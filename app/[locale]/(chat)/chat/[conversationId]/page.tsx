@@ -5,7 +5,7 @@ import { validateLocale, routing } from "@/i18n/routing"
 import { ConversationPageClient } from "../../_components/conversation-page-client"
 import { blockUser } from "@/app/actions/blocked-users"
 import { reportConversation } from "../../_actions/report-conversation"
-import { AuthGateCard } from "@/components/shared/auth/auth-gate-card"
+import { AuthGateCard } from "../../../_components/auth/auth-gate-card"
 
 // Generate static params for build validation (required by cacheComponents)
 // Actual pages are rendered server-side for authenticated users

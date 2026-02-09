@@ -3,7 +3,7 @@ import { Link } from "@/i18n/routing"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { SidebarTrigger } from "@/components/layout/sidebar/sidebar"
-import { LocaleSwitcher } from "@/components/shared/locale-switcher"
+import { LocaleSwitcher } from "./locale-switcher"
 
 export async function DashboardHeader() {
   const t = await getTranslations("AdminHeader")

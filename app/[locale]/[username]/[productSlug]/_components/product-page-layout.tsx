@@ -25,7 +25,7 @@ import type { ProductPageViewModel } from "@/lib/view-models/product-page";
 import type { Database } from "@/lib/supabase/database.types";
 import type { CustomerReview } from "./pdp/customer-reviews-hybrid";
 import type { SubmitReviewFn } from "./pdp/write-review-dialog";
-import { PageShell } from "@/components/shared/page-shell";
+import { PageShell } from "../../../_components/page-shell";
 
 type ProductRow = Database["public"]["Tables"]["products"]["Row"];
 type SellerStatsRow = Database["public"]["Tables"]["seller_stats"]["Row"];
@@ -351,3 +351,4 @@ export function ProductPageLayout(props: ProductPageLayoutProps) {
     </>
   );
 }
+

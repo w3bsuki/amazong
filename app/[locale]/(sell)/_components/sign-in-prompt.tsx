@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl"
-import { AuthGateCard } from "@/components/shared/auth/auth-gate-card"
+import { AuthGateCard } from "../../_components/auth/auth-gate-card"
 
 export function SignInPrompt() {
   const tSelling = useTranslations("SellingDropdown")

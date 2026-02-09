@@ -27,7 +27,7 @@ import {
   type OrderItemStatus, 
   type ShippingCarrier 
 } from "@/lib/order-status"
-import { ORDER_STATUS_CONFIG } from "@/components/shared/orders/order-status-config"
+import { ORDER_STATUS_CONFIG } from "../../../../_components/orders/order-status-config"
 import { toast } from "sonner"
 import { Link, useRouter } from "@/i18n/routing"
 
@@ -234,3 +234,4 @@ export function OrderStatusActions({
     </div>
   )
 }
+

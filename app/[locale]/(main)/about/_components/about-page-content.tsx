@@ -1,7 +1,7 @@
 import { getTranslations } from "next-intl/server"
 import { Card, CardContent } from "@/components/ui/card"
-import { AppBreadcrumb, breadcrumbPresets } from "@/components/shared/navigation/app-breadcrumb"
-import { PageShell } from "@/components/shared/page-shell"
+import { AppBreadcrumb, breadcrumbPresets } from "../../../_components/navigation/app-breadcrumb"
+import { PageShell } from "../../../_components/page-shell"
 import {
   Users,
   Heart,
@@ -254,3 +254,4 @@ export async function AboutPageContent() {
     </PageShell>
   )
 }
+

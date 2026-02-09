@@ -1,5 +1,5 @@
 import { Skeleton } from "@/components/ui/skeleton"
-import { PageShell } from "@/components/shared/page-shell"
+import { PageShell } from "../../_components/page-shell"
 
 /**
  * /categories loading skeleton
@@ -54,3 +54,4 @@ export default function CategoriesLoading() {
     </PageShell>
   )
 }
+

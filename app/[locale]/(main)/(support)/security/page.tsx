@@ -1,5 +1,5 @@
 import { getTranslations, setRequestLocale } from "next-intl/server"
-import { AppBreadcrumb } from "@/components/shared/navigation/app-breadcrumb"
+import { AppBreadcrumb } from "../../../_components/navigation/app-breadcrumb"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { 
   ShieldCheck, CreditCard, Lock, Eye, 
@@ -8,7 +8,7 @@ import {
 } from "@phosphor-icons/react/dist/ssr"
 import { Link } from "@/i18n/routing"
 import { Button } from "@/components/ui/button"
-import { PageShell } from "@/components/shared/page-shell"
+import { PageShell } from "../../../_components/page-shell"
 import type { Metadata } from 'next'
 import { validateLocale } from "@/i18n/routing"
 
@@ -248,4 +248,5 @@ export default async function SecurityPage({
     </PageShell>
   )
 }
+
 

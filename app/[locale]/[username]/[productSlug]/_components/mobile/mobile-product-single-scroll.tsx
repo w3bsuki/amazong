@@ -28,7 +28,7 @@ import { DeliveryOptions } from "../pdp/delivery-options";
 import { ShippingReturnsInfo } from "../pdp/shipping-returns-info";
 import { SimilarItemsGrid } from "../pdp/similar-items-grid";
 import { RecentlyViewedTracker } from "../pdp/recently-viewed-tracker";
-import { PageShell } from "@/components/shared/page-shell";
+import { PageShell } from "../../../../_components/page-shell";
 import { HeroSpecs } from "../pdp/hero-specs";
 import { CustomerReviewsHybrid } from "../pdp/customer-reviews-hybrid";
 
@@ -334,3 +334,4 @@ export function MobileProductSingleScroll(props: MobileProductSingleScrollProps)
     </PageShell>
   );
 }
+

@@ -1,12 +1,12 @@
 import { getTranslations, setRequestLocale } from "next-intl/server"
-import { AppBreadcrumb, breadcrumbPresets } from "@/components/shared/navigation/app-breadcrumb"
+import { AppBreadcrumb, breadcrumbPresets } from "../../_components/navigation/app-breadcrumb"
 import { validateLocale } from "@/i18n/routing"
 import type { Metadata } from "next"
 
 import GiftCardsFeaturedDesigns from "./_components/gift-cards-featured-designs"
 import GiftCardsHero from "./_components/gift-cards-hero"
 import GiftCardsQuickActions from "./_components/gift-cards-quick-actions"
-import { PageShell } from "@/components/shared/page-shell"
+import { PageShell } from "../../_components/page-shell"
 
 // Generate static params for all locales - required for Next.js 16 Cache Components
 export async function generateMetadata({
@@ -51,4 +51,5 @@ export default async function GiftCardsPage({ params }: { params: Promise<{ loca
     </PageShell>
   )
 }
+
 

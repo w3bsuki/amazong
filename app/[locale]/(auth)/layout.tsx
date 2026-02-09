@@ -1,6 +1,6 @@
 import { setRequestLocale } from 'next-intl/server'
 import { routing, validateLocale } from '@/i18n/routing'
-import { PageShell } from "@/components/shared/page-shell"
+import { PageShell } from "../_components/page-shell"
 
 // Generate static params for all supported locales
 export function generateStaticParams() {
@@ -28,3 +28,4 @@ export default async function AuthLayout({
     </PageShell>
   )
 }
+

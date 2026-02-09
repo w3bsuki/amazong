@@ -1,6 +1,6 @@
 import { Skeleton } from "@/components/ui/skeleton"
 import { getTranslations } from "next-intl/server"
-import { PageShell } from "@/components/shared/page-shell"
+import { PageShell } from "../../../../_components/page-shell"
 
 export default async function SellerDashboardLoadingSkeleton() {
   const tCommon = await getTranslations("Common")
@@ -69,3 +69,4 @@ export default async function SellerDashboardLoadingSkeleton() {
     </PageShell>
   )
 }
+

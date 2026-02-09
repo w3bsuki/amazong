@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef } from "react"
 import type { UIProduct } from "@/lib/data/products"
 import { ProductGrid, ProductGridSkeleton, type ProductGridProduct } from "@/components/grid"
-import { EmptyStateCTA } from "@/components/shared/empty-state-cta"
+import { EmptyStateCTA } from "../../../../../_components/empty-state-cta"
 import { useTranslations } from "next-intl"
 
 export interface ProductFeedProps {

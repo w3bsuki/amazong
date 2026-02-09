@@ -9,7 +9,7 @@ import { getTopSellers } from "./_lib/get-top-sellers"
 import SellersEmptyState from "./_components/sellers-empty-state"
 import SellersDirectoryClient from "./_components/sellers-directory-client"
 import TopSellersHero from "./_components/top-sellers-hero"
-import { PageShell } from "@/components/shared/page-shell"
+import { PageShell } from "../../_components/page-shell"
 
 export async function generateMetadata({
   params,
@@ -68,4 +68,5 @@ export default async function SellersPage({
     </PageShell>
   )
 }
+
 

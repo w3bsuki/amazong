@@ -1,7 +1,7 @@
 "use client"
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
-import { PageShell } from "@/components/shared/page-shell"
+import { PageShell } from "../../_components/page-shell"
 import { MobileSearchOverlay } from "../../_components/search/mobile-search-overlay"
 import { MobileProductCard } from "@/components/shared/product/card/mobile"
 import { useHeader } from "@/components/providers/header-context"
@@ -349,3 +349,4 @@ export function MobileHome({
     </PageShell>
   )
 }
+

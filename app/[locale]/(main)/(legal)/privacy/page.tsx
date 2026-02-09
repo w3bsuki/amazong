@@ -1,5 +1,5 @@
 import { getTranslations, setRequestLocale } from "next-intl/server"
-import { breadcrumbPresets } from "@/components/shared/navigation/app-breadcrumb"
+import { breadcrumbPresets } from "../../../_components/navigation/app-breadcrumb"
 import { 
   Shield, Eye, Lock, FileText, Database, Bell, 
   Cookie, UserCheck, Globe, Gear
@@ -96,4 +96,5 @@ export default async function PrivacyPage({ params }: { params: Promise<{ locale
     />
   )
 }
+
 

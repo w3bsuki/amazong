@@ -1,5 +1,5 @@
 import { getTranslations, setRequestLocale } from "next-intl/server"
-import { AppBreadcrumb, breadcrumbPresets } from "@/components/shared/navigation/app-breadcrumb"
+import { AppBreadcrumb, breadcrumbPresets } from "../../../_components/navigation/app-breadcrumb"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Field, FieldContent, FieldDescription, FieldLabel } from "@/components/shared/field"
@@ -10,7 +10,7 @@ import {
   Headphones, Package, CreditCard, Question,
   CaretRight, PaperPlaneTilt, ShieldCheck
 } from "@phosphor-icons/react/dist/ssr"
-import { PageShell } from "@/components/shared/page-shell"
+import { PageShell } from "../../../_components/page-shell"
 import { Link } from "@/i18n/routing"
 import type { Metadata } from 'next'
 import { validateLocale } from "@/i18n/routing"
@@ -319,4 +319,5 @@ export default async function ContactPage({
     </PageShell>
   )
 }
+
 

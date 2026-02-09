@@ -1,5 +1,5 @@
-import { AppBreadcrumb } from "@/components/shared/navigation/app-breadcrumb"
-import type { BreadcrumbItemData } from "@/components/shared/navigation/app-breadcrumb"
+import { AppBreadcrumb } from "../../../_components/navigation/app-breadcrumb"
+import type { BreadcrumbItemData } from "../../../_components/navigation/app-breadcrumb"
 
 export default function TopSellersHero({
   breadcrumbItems,
@@ -42,3 +42,4 @@ export default function TopSellersHero({
     </div>
   )
 }
+

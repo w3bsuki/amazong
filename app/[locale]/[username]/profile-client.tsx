@@ -43,7 +43,7 @@ import { FollowSellerButton, type FollowSellerActions } from "./_components/foll
 import { SellerVerificationBadge } from "./_components/seller-verification-badge"
 import { UserAvatar } from "@/components/shared/user-avatar"
 import { useAuth } from "@/components/providers/auth-state-manager"
-import { EmptyStateCTA } from "@/components/shared/empty-state-cta"
+import { EmptyStateCTA } from "../_components/empty-state-cta"
 
 // =============================================================================
 // Types - Match the data shape from lib/data/profile-page.ts

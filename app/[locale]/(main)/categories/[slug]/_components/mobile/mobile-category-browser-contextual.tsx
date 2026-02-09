@@ -8,7 +8,7 @@ import { useRouter } from "@/i18n/routing";
 import { useHeader } from "@/components/providers/header-context";
 import { useInstantCategoryBrowse } from "@/hooks/use-instant-category-browse";
 import { ProductFeed } from "./product-feed";
-import { PageShell } from "@/components/shared/page-shell";
+import { PageShell } from "../../../../../_components/page-shell";
 import { MobileFilterControls } from "../../../../_components/filters/mobile-filter-controls";
 
 type Category = CategoryTreeNode;
@@ -199,3 +199,4 @@ export function MobileCategoryBrowserContextual({
 }
 
 export type { MobileCategoryBrowserContextualProps };
+

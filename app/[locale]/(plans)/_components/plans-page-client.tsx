@@ -37,7 +37,7 @@ import * as PricingCard from "./pricing-card"
 import { cn } from "@/lib/utils"
 import { toast } from "sonner"
 import { useTranslations } from "next-intl"
-import { PageShell } from "@/components/shared/page-shell"
+import { PageShell } from "../../_components/page-shell"
 
 interface SubscriptionPlanRow {
   id: string
@@ -710,3 +710,4 @@ export default function PlansPageClient(props: {
     </PageShell>
   )
 }
+

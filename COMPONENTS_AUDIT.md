@@ -1,13 +1,13 @@
 # Components Audit
 
-Generated: 2026-02-09T11:45:38.421Z
+Generated: 2026-02-09T12:10:23.317Z
 
 ## Snapshot
 
-- Total directories in `components/`: 38
-- Total files in `components/`: 148
-- Code files in `components/`: 148
-- Used files: 148
+- Total directories in `components/`: 35
+- Total files in `components/`: 136
+- Code files in `components/`: 136
+- Used files: 136
 - Unused files: 0
 - Status rule: `used` means static inbound import/export/require count >= 1.
 - `used` != `well-structured`; architecture findings are listed below.
@@ -23,8 +23,8 @@ Generated: 2026-02-09T11:45:38.421Z
 | `grid` | 1 | 2 | 2 | 0 |
 | `layout` | 6 | 15 | 15 | 0 |
 | `mobile` | 3 | 10 | 10 | 0 |
-| `providers` | 3 | 12 | 12 | 0 |
-| `shared` | 20 | 61 | 61 | 0 |
+| `providers` | 3 | 11 | 11 | 0 |
+| `shared` | 17 | 50 | 50 | 0 |
 | `ui` | 1 | 36 | 36 | 0 |
 
 ## Architecture Findings
@@ -65,7 +65,7 @@ Generated: 2026-02-09T11:45:38.421Z
 | 123 | `components/layout/header/mobile/contextual-header.tsx` | `components/layout/header/mobile/index.ts` |
 | 122 | `components/shared/filters/controls/filter-list.tsx` | `components/shared/filters/sections/filter-attribute-section-content.tsx` |
 | 121 | `components/shared/profile/profile-shell.tsx` | `components/shared/profile/index.ts` |
-| 112 | `components/ui/breadcrumb.tsx` | `components/shared/navigation/app-breadcrumb.tsx` |
+| 112 | `components/ui/breadcrumb.tsx` | `app/[locale]/_components/navigation/app-breadcrumb.tsx` |
 | 98 | `components/desktop/quick-filter-pills.tsx` | `components/desktop/feed-toolbar.tsx` |
 | 93 | `components/layout/header/desktop/standard-header.tsx` | `components/layout/header/desktop/index.ts` |
 | 92 | `components/shared/product/quick-view/quick-view-seller-card.tsx` | `components/shared/product/quick-view/product-quick-view-content.tsx` |
@@ -77,12 +77,12 @@ Generated: 2026-02-09T11:45:38.421Z
 | 65 | `components/shared/filters/controls/size-tiles.tsx` | `components/shared/filters/sections/filter-attribute-section-content.tsx` |
 | 62 | `components/shared/profile/profile-header-sync.tsx` | `components/shared/profile/index.ts` |
 | 60 | `components/layout/header/mobile/homepage-header.tsx` | `components/layout/header/mobile/index.ts` |
-| 57 | `components/shared/locale-switcher.tsx` | `app/[locale]/(admin)/_components/dashboard-header.tsx` |
 | 54 | `components/shared/filters/sections/filter-rating-section.tsx` | `components/shared/filters/filter-hub.tsx` |
 | 52 | `components/shared/profile/profile-stats.tsx` | `components/shared/profile/index.ts` |
-| 38 | `components/shared/modal.tsx` | `app/[locale]/(account)/@modal/(.)account/plans/upgrade/page.tsx` |
 | 30 | `components/shared/filters/sections/filter-availability-section.tsx` | `components/shared/filters/filter-hub.tsx` |
 | 28 | `components/ui/toggle.tsx` | `components/ui/toggle-group.tsx` |
+| 24 | `components/layout/header/desktop/minimal-header.tsx` | `components/layout/header/desktop/index.ts` |
+| 24 | `components/layout/header/mobile/minimal-header.tsx` | `components/layout/header/mobile/index.ts` |
 
 ### 2) App-Only Components Under Global `components/`
 
@@ -91,26 +91,16 @@ Generated: 2026-02-09T11:45:38.421Z
 | 12 | 750 | `components/layout/sidebar/sidebar.tsx` |
 | 2 | 192 | `components/ui/command.tsx` |
 | 19 | 185 | `components/ui/select.tsx` |
-| 5 | 165 | `components/shared/empty-state-cta.tsx` |
 | 1 | 140 | `components/ui/pagination.tsx` |
-| 19 | 126 | `components/shared/navigation/app-breadcrumb.tsx` |
-| 13 | 121 | `components/shared/error-boundary-ui.tsx` |
+| 1 | 112 | `components/ui/breadcrumb.tsx` |
 | 14 | 97 | `components/ui/table.tsx` |
-| 55 | 74 | `components/shared/page-shell.tsx` |
-| 4 | 70 | `components/shared/auth/auth-gate-card.tsx` |
 | 10 | 69 | `components/ui/accordion.tsx` |
 | 2 | 67 | `components/ui/alert.tsx` |
-| 2 | 66 | `components/shared/orders/order-status-badge.tsx` |
 | 11 | 59 | `components/ui/scroll-area.tsx` |
-| 1 | 57 | `components/shared/locale-switcher.tsx` |
-| 2 | 49 | `components/shared/page-container.tsx` |
 | 4 | 47 | `components/auth/auth-card.tsx` |
-| 1 | 38 | `components/shared/modal.tsx` |
 | 7 | 37 | `components/ui/progress.tsx` |
-| 1 | 22 | `components/shared/spinner.tsx` |
 | 16 | 20 | `components/ui/textarea.tsx` |
 | 4 | 15 | `components/mobile/category-nav/index.ts` |
-| 1 | 12 | `components/providers/theme-provider.tsx` |
 | 4 | 10 | `components/grid/index.ts` |
 | 1 | 7 | `components/layout/header/mobile/index.ts` |
 | 1 | 6 | `components/mobile/drawers/index.ts` |
@@ -121,7 +111,7 @@ Generated: 2026-02-09T11:45:38.421Z
 
 | Path | Type | Status | Inbound Refs | Importers (sample) | Notes |
 | --- | --- | --- | ---: | --- | --- |
-| `components` | dir | used | - | - | 148 used / 0 unused files |
+| `components` | dir | used | - | - | 136 used / 0 unused files |
 | `components/auth` | dir | used | - | - | 4 used / 0 unused files |
 | `components/auth/auth-card.tsx` | file | used | 4 | `app/[locale]/(auth)/_components/forgot-password-form.tsx, app/[locale]/(auth)/_components/login-form.tsx, app/[locale]/(auth)/_components/sign-up-form.tsx` | loc=47 |
 | `components/auth/login-form-body.tsx` | file | used | 2 | `app/[locale]/(auth)/_components/login-form.tsx, components/mobile/drawers/auth-drawer.tsx` | loc=257 |
@@ -174,7 +164,7 @@ Generated: 2026-02-09T11:45:38.421Z
 | `components/mobile/drawers/index.ts` | file | used | 1 | `app/[locale]/_components/global-drawers.tsx` | loc=6 |
 | `components/mobile/drawers/messages-drawer.tsx` | file | used | 1 | `components/mobile/drawers/index.ts` | loc=239 |
 | `components/mobile/drawers/product-quick-view-drawer.tsx` | file | used | 1 | `components/mobile/drawers/index.ts` | loc=150 |
-| `components/providers` | dir | used | - | - | 12 used / 0 unused files |
+| `components/providers` | dir | used | - | - | 11 used / 0 unused files |
 | `components/providers/_lib` | dir | used | - | - | 1 used / 0 unused files |
 | `components/providers/_lib/analytics-drawer.ts` | file | used | 1 | `components/providers/drawer-context.tsx` | loc=142 |
 | `components/providers/auth-state-manager.tsx` | file | used | 11 | `app/[locale]/_components/app-header.tsx, app/[locale]/_components/guest-sell-cta.tsx, app/[locale]/_components/mobile-tab-bar.tsx` | loc=197 |
@@ -187,19 +177,14 @@ Generated: 2026-02-09T11:45:38.421Z
 | `components/providers/messages/use-messages-actions.ts` | file | used | 1 | `components/providers/message-context.tsx` | loc=214 |
 | `components/providers/messages/use-messages-realtime.ts` | file | used | 1 | `components/providers/message-context.tsx` | loc=198 |
 | `components/providers/messages/use-messages-state.ts` | file | used | 3 | `components/providers/message-context.tsx, components/providers/messages/use-messages-actions.ts, components/providers/messages/use-messages-realtime.ts` | loc=292 |
-| `components/providers/theme-provider.tsx` | file | used | 1 | `app/[locale]/locale-providers.tsx` | loc=12 |
 | `components/providers/wishlist-context.tsx` | file | used | 11 | `app/[locale]/_providers/commerce-providers.tsx, app/[locale]/(main)/wishlist/_components/wishlist-page-client.tsx, app/[locale]/[username]/[productSlug]/_components/desktop/desktop-buy-box.tsx` | loc=338 |
-| `components/shared` | dir | used | - | - | 61 used / 0 unused files |
-| `components/shared/auth` | dir | used | - | - | 1 used / 0 unused files |
-| `components/shared/auth/auth-gate-card.tsx` | file | used | 4 | `app/[locale]/(chat)/chat/[conversationId]/page.tsx, app/[locale]/(chat)/chat/page.tsx, app/[locale]/(main)/(support)/customer-service/_components/support-chat-widget.tsx` | loc=70 |
+| `components/shared` | dir | used | - | - | 50 used / 0 unused files |
 | `components/shared/category` | dir | used | - | - | 3 used / 0 unused files |
 | `components/shared/category/category-circle-visual.tsx` | file | used | 4 | `app/[locale]/(main)/_components/category/subcategory-circles.tsx, app/[locale]/(main)/_components/category/subcategory-tabs.tsx, app/[locale]/(main)/categories/page.tsx` | loc=114 |
 | `components/shared/category/category-circle.tsx` | file | used | 1 | `components/layout/header/mobile/contextual-header.tsx` | loc=206 |
 | `components/shared/category/category-icons.tsx` | file | used | 6 | `__tests__/category-tone.test.ts, app/[locale]/(main)/_components/desktop/category-sidebar.tsx, app/[locale]/(main)/_components/mobile/home-sticky-category-pills.tsx` | loc=424 |
 | `components/shared/count-badge.tsx` | file | used | 7 | `app/[locale]/_components/mobile-tab-bar.tsx, components/dropdowns/account-dropdown.tsx, components/dropdowns/messages-dropdown.tsx` | loc=31 |
 | `components/shared/dropdown-product-item.tsx` | file | used | 1 | `components/dropdowns/wishlist-dropdown.tsx` | loc=75 |
-| `components/shared/empty-state-cta.tsx` | file | used | 5 | `app/[locale]/(main)/_components/desktop-home.tsx, app/[locale]/(main)/categories/[slug]/_components/mobile/product-feed.tsx, app/[locale]/(main)/categories/[slug]/page.tsx` | loc=165 |
-| `components/shared/error-boundary-ui.tsx` | file | used | 13 | `app/[locale]/(account)/account/error.tsx, app/[locale]/(checkout)/checkout/error.tsx, app/[locale]/(main)/cart/error.tsx` | loc=121 |
 | `components/shared/field.tsx` | file | used | 20 | `app/[locale]/_components/search/mobile-search-overlay.tsx, app/[locale]/(account)/account/profile/profile-content.tsx, app/[locale]/(auth)/_components/forgot-password-form.tsx` | loc=149 |
 | `components/shared/filters` | dir | used | - | - | 14 used / 0 unused files |
 | `components/shared/filters/config` | dir | used | - | - | 1 used / 0 unused files |
@@ -220,15 +205,6 @@ Generated: 2026-02-09T11:45:38.421Z
 | `components/shared/filters/sort-modal.tsx` | file | used | 1 | `components/mobile/category-nav/filter-sort-bar.tsx` | loc=132 |
 | `components/shared/filters/state` | dir | used | - | - | 1 used / 0 unused files |
 | `components/shared/filters/state/use-pending-filters.ts` | file | used | 1 | `components/shared/filters/filter-hub.tsx` | loc=146 |
-| `components/shared/locale-switcher.tsx` | file | used | 1 | `app/[locale]/(admin)/_components/dashboard-header.tsx` | loc=57 |
-| `components/shared/modal.tsx` | file | used | 1 | `app/[locale]/(account)/@modal/(.)account/plans/upgrade/page.tsx` | loc=38 |
-| `components/shared/navigation` | dir | used | - | - | 1 used / 0 unused files |
-| `components/shared/navigation/app-breadcrumb.tsx` | file | used | 19 | `app/[locale]/(account)/account/sales/page.tsx, app/[locale]/(account)/account/selling/edit/edit-product-client.tsx, app/[locale]/(main)/(legal)/_components/legal-page-layout.tsx` | loc=126 |
-| `components/shared/orders` | dir | used | - | - | 2 used / 0 unused files |
-| `components/shared/orders/order-status-badge.tsx` | file | used | 2 | `app/[locale]/(account)/account/orders/_components/account-orders-grid.tsx, app/[locale]/(sell)/sell/orders/client.tsx` | loc=66 |
-| `components/shared/orders/order-status-config.ts` | file | used | 2 | `app/[locale]/(sell)/sell/orders/_components/order-status-actions.tsx, components/shared/orders/order-status-badge.tsx` | loc=73 |
-| `components/shared/page-container.tsx` | file | used | 2 | `app/[locale]/(sell)/_components/layouts/desktop-layout.tsx, app/[locale]/(sell)/_components/ui/progress-header.tsx` | loc=49 |
-| `components/shared/page-shell.tsx` | file | used | 55 | `app/[locale]/_components/storefront-shell.tsx, app/[locale]/(account)/account/sales/page.tsx, app/[locale]/(auth)/layout.tsx` | loc=74 |
 | `components/shared/product` | dir | used | - | - | 19 used / 0 unused files |
 | `components/shared/product/_lib` | dir | used | - | - | 2 used / 0 unused files |
 | `components/shared/product/_lib/condition-badges.ts` | file | used | 5 | `app/[locale]/[username]/[productSlug]/_components/mobile/mobile-gallery.tsx, app/[locale]/[username]/[productSlug]/_components/pdp/product-header.tsx, app/[locale]/[username]/[productSlug]/_components/product-page-layout.tsx` | loc=35 |
@@ -265,7 +241,6 @@ Generated: 2026-02-09T11:45:38.421Z
 | `components/shared/search/ai/search-ai-chat.tsx` | file | used | 2 | `app/[locale]/_components/search/mobile-search-overlay.tsx, components/layout/header/desktop/desktop-search.tsx` | loc=318 |
 | `components/shared/search/overlay` | dir | used | - | - | 1 used / 0 unused files |
 | `components/shared/search/overlay/search-context.ts` | file | used | 2 | `app/[locale]/_components/search/mobile-search-overlay.tsx, components/layout/header/mobile/contextual-header.tsx` | loc=32 |
-| `components/shared/spinner.tsx` | file | used | 1 | `app/[locale]/(main)/(support)/customer-service/_components/support-chat-widget.tsx` | loc=22 |
 | `components/shared/user-avatar.tsx` | file | used | 20 | `app/[locale]/_components/nav/nav-user.tsx, app/[locale]/(account)/account/_components/account-sidebar.tsx, app/[locale]/(account)/account/following/following-content.tsx` | loc=99 |
 | `components/shared/wishlist` | dir | used | - | - | 2 used / 0 unused files |
 | `components/shared/wishlist/mobile-wishlist-button.tsx` | file | used | 2 | `components/layout/header/mobile/contextual-header.tsx, components/layout/header/mobile/homepage-header.tsx` | loc=55 |
@@ -277,9 +252,9 @@ Generated: 2026-02-09T11:45:38.421Z
 | `components/ui/aspect-ratio.tsx` | file | used | 3 | `components/grid/product-grid.tsx, components/shared/product/card/image.tsx, components/shared/product/quick-view/quick-view-image-gallery.tsx` | loc=12 |
 | `components/ui/avatar.tsx` | file | used | 8 | `app/[locale]/(admin)/_components/admin-recent-activity.tsx, app/[locale]/(admin)/admin/users/page.tsx, app/[locale]/(business)/_components/business-activity-feed.tsx` | loc=54 |
 | `components/ui/badge.tsx` | file | used | 78 | `app/[locale]/_components/seller/boost-dialog.tsx, app/[locale]/(account)/account/_components/account-addresses-grid.tsx, app/[locale]/(account)/account/_components/account-addresses-stats.tsx` | loc=111 |
-| `components/ui/breadcrumb.tsx` | file | used | 1 | `components/shared/navigation/app-breadcrumb.tsx` | loc=112 |
-| `components/ui/button.tsx` | file | used | 155 | `app/[locale]/_components/cookie-consent.tsx, app/[locale]/_components/geo-welcome-modal.tsx, app/[locale]/_components/guest-sell-cta.tsx` | loc=82 |
-| `components/ui/card.tsx` | file | used | 108 | `app/[locale]/_components/charts/chart-area-interactive.tsx, app/[locale]/_components/guest-sell-cta.tsx, app/[locale]/(account)/account/_components/account-addresses-grid.tsx` | loc=91 |
+| `components/ui/breadcrumb.tsx` | file | used | 1 | `app/[locale]/_components/navigation/app-breadcrumb.tsx` | loc=112 |
+| `components/ui/button.tsx` | file | used | 155 | `app/[locale]/_components/auth/auth-gate-card.tsx, app/[locale]/_components/cookie-consent.tsx, app/[locale]/_components/empty-state-cta.tsx` | loc=82 |
+| `components/ui/card.tsx` | file | used | 108 | `app/[locale]/_components/auth/auth-gate-card.tsx, app/[locale]/_components/charts/chart-area-interactive.tsx, app/[locale]/_components/guest-sell-cta.tsx` | loc=91 |
 | `components/ui/checkbox.tsx` | file | used | 11 | `app/[locale]/(account)/account/orders/[id]/_components/order-detail-content.tsx, app/[locale]/(business)/_components/orders-table.tsx, app/[locale]/(business)/_components/products-table.tsx` | loc=38 |
 | `components/ui/command.tsx` | file | used | 2 | `app/[locale]/(business)/_components/business-command-palette.tsx, app/[locale]/(sell)/_components/ui/brand-combobox.tsx` | loc=192 |
 | `components/ui/dialog.tsx` | file | used | 23 | `app/[locale]/_components/drawers/product-quick-view-dialog.tsx, app/[locale]/_components/orders/star-rating-dialog.tsx, app/[locale]/_components/seller/boost-dialog.tsx` | loc=212 |

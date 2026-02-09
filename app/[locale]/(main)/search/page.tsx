@@ -8,10 +8,10 @@ import { DesktopFilters } from "./_components/desktop-filters"
 import { FilterChips } from "../_components/filters/filter-chips"
 import { SortSelect } from "../_components/search-controls/sort-select"
 import { SearchPagination } from "../_components/search-controls/search-pagination"
-import { EmptyStateCTA } from "@/components/shared/empty-state-cta"
+import { EmptyStateCTA } from "../../_components/empty-state-cta"
 import { DesktopShell } from "../_components/layout/desktop-shell.server"
 import { ProductGrid, type ProductGridProduct } from "@/components/grid"
-import { PageShell } from "@/components/shared/page-shell"
+import { PageShell } from "../../_components/page-shell"
 import { Suspense } from "react"
 import { setRequestLocale, getTranslations } from "next-intl/server"
 import { cookies } from "next/headers"
@@ -478,3 +478,4 @@ export default async function SearchPage({
     </>
   )
 }
+

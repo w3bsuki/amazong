@@ -18,7 +18,7 @@ import {
   Users,
 } from "@phosphor-icons/react"
 
-import { AppBreadcrumb } from "@/components/shared/navigation/app-breadcrumb"
+import { AppBreadcrumb } from "../../../_components/navigation/app-breadcrumb"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
@@ -27,7 +27,7 @@ import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 import { UserAvatar } from "@/components/shared/user-avatar"
-import { PageShell } from "@/components/shared/page-shell"
+import { PageShell } from "../../../_components/page-shell"
 
 interface Member {
   id: string
@@ -321,3 +321,4 @@ export default function MembersPageClient({
     </PageShell>
   )
 }
+

@@ -11,7 +11,7 @@ import {
 } from "@phosphor-icons/react/dist/ssr"
 import { Link } from "@/i18n/routing"
 import { getTranslations, setRequestLocale } from "next-intl/server"
-import { AppBreadcrumb } from "@/components/shared/navigation/app-breadcrumb"
+import { AppBreadcrumb } from "../../../_components/navigation/app-breadcrumb"
 import type { Metadata } from 'next'
 import { validateLocale } from "@/i18n/routing"
 import {
@@ -20,7 +20,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion"
-import { PageShell } from "@/components/shared/page-shell"
+import { PageShell } from "../../../_components/page-shell"
 
 // Generate static params for all locales
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
@@ -282,4 +282,5 @@ export default async function FAQPage({ params }: { params: Promise<{ locale: st
     </PageShell>
   )
 }
+
 

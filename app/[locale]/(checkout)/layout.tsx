@@ -2,7 +2,7 @@ import { CheckoutHeader } from "./_components/checkout-header"
 import { CheckoutFooter } from "./_components/checkout-footer"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import { routing } from "@/i18n/routing"
-import { PageShell } from "@/components/shared/page-shell"
+import { PageShell } from "../_components/page-shell"
 import { CommerceProviders } from "../_providers/commerce-providers"
 import type { Metadata } from "next"
 
@@ -60,3 +60,4 @@ export default async function CheckoutLayout({
     </CommerceProviders>
   )
 }
+

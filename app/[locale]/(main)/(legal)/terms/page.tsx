@@ -1,5 +1,5 @@
 import { getTranslations, setRequestLocale } from "next-intl/server"
-import { breadcrumbPresets } from "@/components/shared/navigation/app-breadcrumb"
+import { breadcrumbPresets } from "../../../_components/navigation/app-breadcrumb"
 import { 
   FileText, ShoppingBag, CreditCard, Truck, Scales,
   Warning, Users, Prohibit, ArrowCounterClockwise, Shield, 
@@ -104,4 +104,5 @@ export default async function TermsPage({ params }: { params: Promise<{ locale: 
     />
   )
 }
+
 

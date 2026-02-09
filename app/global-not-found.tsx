@@ -9,7 +9,7 @@
  */
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import { routing } from "@/i18n/routing"
-import { PageShell } from "@/components/shared/page-shell"
+import { PageShell } from "./[locale]/_components/page-shell"
 
 export default async function GlobalNotFound() {
   const locale = routing.defaultLocale
@@ -61,3 +61,4 @@ export default async function GlobalNotFound() {
     </html>
   )
 }
+

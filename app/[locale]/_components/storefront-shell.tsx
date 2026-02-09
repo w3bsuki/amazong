@@ -9,7 +9,7 @@ import { HeaderProvider } from "@/components/providers/header-context"
 import { GeoWelcomeModal } from "./geo-welcome-modal"
 import { GuestSellCta } from "./guest-sell-cta"
 import { SkipLinks } from "./skip-links"
-import { PageShell } from "@/components/shared/page-shell"
+import { PageShell } from "./page-shell"
 import { CategoryDrawerProvider } from "@/components/mobile/category-nav"
 import { CategoryBrowseDrawer } from "./category-browse-drawer"
 import type { CategoryTreeNode } from "@/lib/category-tree"
@@ -47,3 +47,4 @@ export function StorefrontShell({
     </CategoryDrawerProvider>
   )
 }
+

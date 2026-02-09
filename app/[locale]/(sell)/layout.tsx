@@ -2,7 +2,7 @@ import { setRequestLocale } from 'next-intl/server'
 import Script from 'next/script'
 import { routing } from '@/i18n/routing'
 import { PerformanceMeasureGuard } from './PerformanceMeasureGuard'
-import { PageShell } from "@/components/shared/page-shell"
+import { PageShell } from "../_components/page-shell"
 
 // Generate static params for all supported locales
 export function generateStaticParams() {
@@ -64,3 +64,4 @@ export default async function SellLayout({
     </>
   )
 }
+

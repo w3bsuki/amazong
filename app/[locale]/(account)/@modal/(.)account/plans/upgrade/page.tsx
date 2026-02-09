@@ -1,4 +1,4 @@
-import { Modal } from "@/components/shared/modal"
+import { Modal } from "../../../_components/modal"
 import { createClient } from "@/lib/supabase/server"
 import { redirect } from "@/i18n/routing"
 import { getLocale, getTranslations } from "next-intl/server"

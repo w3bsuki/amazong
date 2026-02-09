@@ -1,6 +1,6 @@
 'use client'
 
-import { ErrorBoundaryUI } from '@/components/shared/error-boundary-ui'
+import { ErrorBoundaryUI } from '../../_components/error-boundary-ui'
 import { useTranslations } from 'next-intl'
 
 export default function DealsError({
@@ -25,3 +25,4 @@ export default function DealsError({
     />
   )
 }
+

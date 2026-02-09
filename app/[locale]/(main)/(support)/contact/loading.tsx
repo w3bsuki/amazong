@@ -1,6 +1,6 @@
 import { Skeleton } from "@/components/ui/skeleton"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
-import { PageShell } from "@/components/shared/page-shell"
+import { PageShell } from "../../../_components/page-shell"
 
 export default function ContactLoading() {
   return (
@@ -108,3 +108,4 @@ export default function ContactLoading() {
     </PageShell>
   )
 }
+

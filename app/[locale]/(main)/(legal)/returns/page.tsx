@@ -1,5 +1,5 @@
 import { getTranslations, setRequestLocale } from "next-intl/server"
-import { AppBreadcrumb, breadcrumbPresets } from "@/components/shared/navigation/app-breadcrumb"
+import { AppBreadcrumb, breadcrumbPresets } from "../../../_components/navigation/app-breadcrumb"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { 
@@ -16,7 +16,7 @@ import {
 import { Link } from "@/i18n/routing"
 import type { Metadata } from 'next'
 import { validateLocale } from "@/i18n/routing"
-import { PageShell } from "@/components/shared/page-shell"
+import { PageShell } from "../../../_components/page-shell"
 
 // Generate static params for all locales - required for Next.js 16 Cache Components
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
@@ -310,4 +310,5 @@ export default async function ReturnsPage({ params }: { params: Promise<{ locale
     </PageShell>
   )
 }
+
 

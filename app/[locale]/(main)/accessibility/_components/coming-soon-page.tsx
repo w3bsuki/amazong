@@ -10,7 +10,7 @@ import {
 } from "@phosphor-icons/react"
 import { useState, useTransition } from "react"
 import type { ReactNode } from "react"
-import { PageShell } from "@/components/shared/page-shell"
+import { PageShell } from "../../../_components/page-shell"
 
 interface ComingSoonPageProps {
   /** The icon to display (Phosphor icon component) */
@@ -160,3 +160,4 @@ export function ComingSoonPage({
     </PageShell>
   )
 }
+

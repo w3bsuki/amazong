@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils"
-import { ORDER_STATUS_CONFIG } from "@/components/shared/orders/order-status-config"
+import { ORDER_STATUS_CONFIG } from "./order-status-config"
 import type { OrderItemStatus } from "@/lib/order-status"
 import { useTranslations } from "next-intl"
 
@@ -63,3 +63,4 @@ function OrderStatusDot({ status }: { status: OrderItemStatus }) {
     </span>
   )
 }
+

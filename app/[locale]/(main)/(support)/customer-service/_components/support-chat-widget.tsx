@@ -14,10 +14,10 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet"
 import { ChatCircleDots, PaperPlaneTilt, X, Headphones } from "@phosphor-icons/react"
-import { Spinner } from "@/components/shared/spinner"
+import { Spinner } from "./spinner"
 import { useTranslations } from "next-intl"
 import { cn } from "@/lib/utils"
-import { AuthGateCard } from "@/components/shared/auth/auth-gate-card"
+import { AuthGateCard } from "../../../../_components/auth/auth-gate-card"
 
 // Support chat configuration
 const SUPPORT_SUBJECT = "SUPPORT_CHAT"

@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react'
 import { getMessages } from 'next-intl/server'
 
-import { ThemeProvider } from '@/components/providers/theme-provider'
+import { ThemeProvider } from './_providers/theme-provider'
 import { IntlClientProvider } from './_providers/intl-client-provider'
 
 export default async function LocaleProviders({

@@ -4,7 +4,7 @@ import { createClient } from "@/lib/supabase/server"
 import { MessagesPageClient } from "../_components/messages-page-client"
 import { blockUser } from "@/app/actions/blocked-users"
 import { reportConversation } from "../_actions/report-conversation"
-import { AuthGateCard } from "@/components/shared/auth/auth-gate-card"
+import { AuthGateCard } from "../../_components/auth/auth-gate-card"
 
 export async function generateMetadata({
   params

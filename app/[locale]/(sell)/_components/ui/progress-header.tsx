@@ -3,7 +3,7 @@
 import { Spinner, CloudCheck, FloppyDisk, CaretLeft, House } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { PageContainer } from "@/components/shared/page-container";
+import { PageContainer } from "../layout/page-container";
 import { cn } from "@/lib/utils";
 import { Link } from "@/i18n/routing";
 import { useTranslations } from "next-intl";

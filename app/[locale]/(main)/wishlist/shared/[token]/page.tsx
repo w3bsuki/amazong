@@ -8,7 +8,7 @@ import { Gift, ShoppingCart } from "@phosphor-icons/react/dist/ssr"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import type { Database } from "@/lib/supabase/database.types"
 import { AddAllToCartButton } from "./add-all-to-cart"
-import { PageShell } from "@/components/shared/page-shell"
+import { PageShell } from "../../../../_components/page-shell"
 
 type SharedWishlistItem = Database["public"]["Functions"]["get_shared_wishlist"]["Returns"][number]
 
@@ -132,3 +132,4 @@ export default async function SharedWishlistPage({ params }: SharedWishlistPageP
     </PageShell>
   )
 }
+

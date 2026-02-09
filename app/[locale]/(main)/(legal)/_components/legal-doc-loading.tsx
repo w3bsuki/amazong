@@ -1,4 +1,4 @@
-import { PageShell } from "@/components/shared/page-shell"
+import { PageShell } from "../../../_components/page-shell"
 import { Skeleton } from "@/components/ui/skeleton"
 
 type LegalDocLoadingProps = {
@@ -60,3 +60,4 @@ export function LegalDocLoading({
     </PageShell>
   )
 }
+

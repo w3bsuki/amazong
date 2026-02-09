@@ -21,7 +21,7 @@ import { useState, useCallback, useMemo, useRef, useEffect } from "react"
 
 import { useTranslations } from "next-intl"
 import { Button } from "@/components/ui/button"
-import { EmptyStateCTA } from "@/components/shared/empty-state-cta"
+import { EmptyStateCTA } from "../../_components/empty-state-cta"
 import { useCategoryCounts } from "@/hooks/use-category-counts"
 import { useCategoryAttributes } from "@/hooks/use-category-attributes"
 import { useViewMode } from "@/hooks/use-view-mode"

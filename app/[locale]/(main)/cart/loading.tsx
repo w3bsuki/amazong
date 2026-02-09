@@ -1,5 +1,5 @@
 import { Skeleton } from "@/components/ui/skeleton"
-import { PageShell } from "@/components/shared/page-shell"
+import { PageShell } from "../../_components/page-shell"
 
 export default function CartLoading() {
   return (
@@ -94,3 +94,4 @@ export default function CartLoading() {
     </PageShell>
   )
 }
+
