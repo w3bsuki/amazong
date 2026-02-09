@@ -7,9 +7,9 @@ import type { CategoryAttribute } from "@/lib/data/categories";
 import { useRouter } from "@/i18n/routing";
 import { useHeader } from "@/components/providers/header-context";
 import { useInstantCategoryBrowse } from "@/hooks/use-instant-category-browse";
-import { ProductFeed } from "@/components/shared/product/product-feed";
+import { ProductFeed } from "./product-feed";
 import { PageShell } from "@/components/shared/page-shell";
-import { MobileFilterControls } from "@/components/mobile/filters/mobile-filter-controls";
+import { MobileFilterControls } from "../../../../_components/filters/mobile-filter-controls";
 
 type Category = CategoryTreeNode;
 

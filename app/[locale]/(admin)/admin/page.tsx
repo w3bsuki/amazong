@@ -1,4 +1,4 @@
-import { ChartAreaInteractive } from "@/components/shared/charts/chart-area-interactive"
+import { ChartAreaInteractive } from "../../_components/charts/chart-area-interactive"
 import { AdminStatsCards } from "../_components/admin-stats-cards"
 import { AdminRecentActivity } from "../_components/admin-recent-activity"
 import { getAdminStats } from "@/lib/auth/admin"

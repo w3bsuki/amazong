@@ -20,7 +20,7 @@ import {
   Pause,
   Play,
 } from "@phosphor-icons/react"
-import { BoostDialog } from "@/components/shared/seller/boost-dialog"
+import { BoostDialog } from "../../../_components/seller/boost-dialog"
 import { toast } from "sonner"
 import { useTranslations } from "next-intl"
 import {

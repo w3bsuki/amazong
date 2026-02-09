@@ -7,7 +7,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server"
 import { AppBreadcrumb, breadcrumbPresets } from "@/components/shared/navigation/app-breadcrumb"
 import type { Metadata } from 'next'
 import { validateLocale } from "@/i18n/routing"
-import { CustomerServiceChat } from "@/components/support/customer-service-chat"
+import { CustomerServiceChat } from "./_components/customer-service-chat"
 import { PageShell } from "@/components/shared/page-shell"
 
 // Generate static params for all locales - required for Next.js 16 Cache Components

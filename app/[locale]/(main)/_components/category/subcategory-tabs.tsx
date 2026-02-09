@@ -1,6 +1,6 @@
 "use client"
 
-import { SubcategoryCircles } from "@/components/category/subcategory-circles"
+import { SubcategoryCircles } from "./subcategory-circles"
 import { useLocale, useTranslations } from "next-intl"
 import { useSearchParams } from "next/navigation"
 

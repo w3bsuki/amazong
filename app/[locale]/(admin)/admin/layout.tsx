@@ -1,5 +1,5 @@
 import { AdminSidebar } from "../_components/admin-sidebar"
-import { DashboardHeader } from "@/components/layout/header/dashboard-header"
+import { DashboardHeader } from "../_components/dashboard-header"
 import { requireAdmin } from "@/lib/auth/admin"
 import {
   SidebarInset,

@@ -1,11 +1,11 @@
 import { createStaticClient } from "@/lib/supabase/server"
 import { SearchFilters } from "./_components/filters/search-filters"
-import { SubcategoryTabs } from "@/components/category/subcategory-tabs"
+import { SubcategoryTabs } from "../_components/category/subcategory-tabs"
 import { SearchHeader } from "./_components/search-header"
 import { searchProducts } from "./_lib/search-products"
 import type { Category, Product } from "./_lib/types"
 import { DesktopFilters } from "./_components/desktop-filters"
-import { FilterChips } from "@/components/shared/filters/filter-chips"
+import { FilterChips } from "../_components/filters/filter-chips"
 import { SortSelect } from "../_components/search-controls/sort-select"
 import { SearchPagination } from "../_components/search-controls/search-pagination"
 import { EmptyStateCTA } from "@/components/shared/empty-state-cta"
@@ -21,7 +21,7 @@ import { ITEMS_PER_PAGE } from "../_lib/pagination"
 import { getCategoryContext } from "@/lib/data/categories"
 import type { CategoryAttribute } from "@/lib/data/categories"
 import { normalizeAttributeKey } from "@/lib/attributes/normalize-attribute-key"
-import { MobileFilterControls } from "@/components/mobile/filters/mobile-filter-controls"
+import { MobileFilterControls } from "../_components/filters/mobile-filter-controls"
 
 export async function generateMetadata({ params, searchParams }: {
   params: Promise<{ locale: string }>

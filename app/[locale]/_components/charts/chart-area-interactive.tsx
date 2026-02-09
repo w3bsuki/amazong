@@ -18,7 +18,7 @@ import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
-} from "@/components/shared/charts/chart"
+} from "./chart"
 import {
   Select,
   SelectContent,

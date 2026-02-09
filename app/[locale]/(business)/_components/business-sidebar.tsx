@@ -18,7 +18,7 @@ import {
   IconSpeakerphone,
 } from "@tabler/icons-react"
 
-import { NavUser } from "@/components/layout/nav-user"
+import { NavUser } from "../../_components/nav/nav-user"
 import {
   Sidebar,
   SidebarContent,

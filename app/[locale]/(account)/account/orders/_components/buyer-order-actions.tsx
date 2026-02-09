@@ -23,7 +23,7 @@ import { Loader2, Package, CheckCircle, MessageSquare, XCircle, AlertTriangle, S
 import { type OrderItemStatus } from "@/lib/order-status"
 import { toast } from "sonner"
 import { Link, useRouter } from "@/i18n/routing"
-import { StarRatingDialog } from "@/components/shared/star-rating-dialog"       
+import { StarRatingDialog } from "../../../../_components/orders/star-rating-dialog"
 
 export type IssueType =
   | 'not_received'

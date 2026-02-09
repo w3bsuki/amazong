@@ -36,4 +36,3 @@ describe("CategoryBadge", () => {
     expect(queryByText("📱")).toBeTruthy()
   })
 })
-

@@ -6,7 +6,7 @@ import { CheckCircle, UserCheck } from "lucide-react"
 import { type OrderItemStatus } from "@/lib/order-status"
 import { useRouter } from "@/i18n/routing"
 import { toast } from "sonner"
-import { StarRatingDialog } from "@/components/shared/star-rating-dialog"
+import { StarRatingDialog } from "../../../../_components/orders/star-rating-dialog"
 
 type SubmitBuyerFeedbackInput = {
   buyer_id: string

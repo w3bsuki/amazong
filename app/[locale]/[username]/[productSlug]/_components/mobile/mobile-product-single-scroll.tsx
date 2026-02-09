@@ -17,25 +17,25 @@ import { MobileGallery } from "./mobile-gallery";
 import { MobileBottomBar } from "./mobile-bottom-bar";
 import { MobileSellerPreviewCard } from "./mobile-seller-preview-card";
 import { MobileSafetyTips, MobileReportButton } from "./mobile-trust-sections";
-import { SellerProfileDrawer } from "@/components/mobile/drawers/seller-profile-drawer";
+import { SellerProfileDrawer } from "./seller-profile-drawer";
 
 // Shared product components
-import { MetaRow, type CategorySummary } from "@/components/shared/product/pdp/meta-row";
-import { ProductHeader } from "@/components/shared/product/pdp/product-header";
-import { SpecificationsList } from "@/components/shared/product/pdp/specifications-list";
-import { ProductDescription } from "@/components/shared/product/pdp/product-description";
-import { DeliveryOptions } from "@/components/shared/product/pdp/delivery-options";
-import { ShippingReturnsInfo } from "@/components/shared/product/pdp/shipping-returns-info";
-import { SimilarItemsGrid } from "@/components/shared/product/pdp/similar-items-grid";
-import { RecentlyViewedTracker } from "@/components/shared/product/pdp/recently-viewed-tracker";
+import { MetaRow, type CategorySummary } from "../pdp/meta-row";
+import { ProductHeader } from "../pdp/product-header";
+import { SpecificationsList } from "../pdp/specifications-list";
+import { ProductDescription } from "../pdp/product-description";
+import { DeliveryOptions } from "../pdp/delivery-options";
+import { ShippingReturnsInfo } from "../pdp/shipping-returns-info";
+import { SimilarItemsGrid } from "../pdp/similar-items-grid";
+import { RecentlyViewedTracker } from "../pdp/recently-viewed-tracker";
 import { PageShell } from "@/components/shared/page-shell";
-import { HeroSpecs } from "@/components/shared/product/pdp/hero-specs";
-import { CustomerReviewsHybrid } from "@/components/shared/product/pdp/customer-reviews-hybrid";
+import { HeroSpecs } from "../pdp/hero-specs";
+import { CustomerReviewsHybrid } from "../pdp/customer-reviews-hybrid";
 
 import type { ProductPageViewModel, ResolvedHeroSpec } from "@/lib/view-models/product-page";
 import type { Database } from "@/lib/supabase/database.types";
-import type { CustomerReview } from "@/components/shared/product/pdp/customer-reviews-hybrid";
-import type { SubmitReviewFn } from "@/components/shared/product/pdp/write-review-dialog";
+import type { CustomerReview } from "../pdp/customer-reviews-hybrid";
+import type { SubmitReviewFn } from "../pdp/write-review-dialog";
 
 type ProductRow = Database["public"]["Tables"]["products"]["Row"];
 type SellerStatsRow = Database["public"]["Tables"]["seller_stats"]["Row"];

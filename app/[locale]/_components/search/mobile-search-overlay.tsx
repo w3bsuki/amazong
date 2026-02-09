@@ -11,7 +11,7 @@ import {
   ArrowRight,
   Robot,
 } from "@phosphor-icons/react"
-import { SearchAiChat } from "../ai/search-ai-chat"
+import { SearchAiChat } from "@/components/shared/search/ai/search-ai-chat"
 import { FieldLabel } from "@/components/shared/field"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -21,7 +21,7 @@ import { useTranslations } from "next-intl"
 import Image from "next/image"
 import { cn } from "@/lib/utils"
 import { useProductSearch } from "@/hooks/use-product-search"
-import { buildSearchHref, type SearchLaunchContext } from "./search-context"
+import { buildSearchHref, type SearchLaunchContext } from "@/components/shared/search/overlay/search-context"
 
 interface MobileSearchOverlayProps {
   className?: string

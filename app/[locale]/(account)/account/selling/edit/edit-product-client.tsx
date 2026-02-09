@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/select"
 import { BULGARIAN_CITIES } from "@/lib/bulgarian-cities"
 import { useToast } from "@/hooks/use-toast"
-import { BoostDialog } from "@/components/shared/seller/boost-dialog"
+import { BoostDialog } from "../../../../_components/seller/boost-dialog"
 import {
   ArrowLeft,
   Package,

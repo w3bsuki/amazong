@@ -6,7 +6,7 @@ import {
   WishlistDropdown,
 } from "@/components/dropdowns"
 import { CartDropdown } from "@/components/layout/header/cart/cart-dropdown"
-import { DesktopSearch } from "@/components/desktop/desktop-search"
+import { DesktopSearch } from "./desktop-search"
 import { Button } from "@/components/ui/button"
 import { Camera } from "@phosphor-icons/react"
 import { Link } from "@/i18n/routing"

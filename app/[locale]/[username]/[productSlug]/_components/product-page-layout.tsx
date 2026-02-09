@@ -1,30 +1,30 @@
 import { Suspense } from "react";
 import { useTranslations } from "next-intl";
-import { RecentlyViewedTracker } from "@/components/shared/product/pdp/recently-viewed-tracker";
-import { SellerProductsGrid } from "@/components/shared/product/pdp/seller-products-grid";
-import { CustomerReviewsHybrid } from "@/components/shared/product/pdp/customer-reviews-hybrid";
+import { RecentlyViewedTracker } from "./pdp/recently-viewed-tracker";
+import { SellerProductsGrid } from "./pdp/seller-products-grid";
+import { CustomerReviewsHybrid } from "./pdp/customer-reviews-hybrid";
 
 import { CategoryBadge } from "@/components/shared/product/pdp/category-badge";
-import { TrustBadges } from "@/components/shared/product/pdp/trust-badges";
-import { ProductSocialProof } from "@/components/shared/product/pdp/product-social-proof";
+import { TrustBadges } from "./pdp/trust-badges";
+import { ProductSocialProof } from "./pdp/product-social-proof";
 import { FreshnessIndicator } from "@/components/shared/product/freshness-indicator";
-import { ViewTracker } from "@/components/shared/product/pdp/view-tracker";
+import { ViewTracker } from "./pdp/view-tracker";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ProductHeaderSync } from "@/components/shared/product/pdp/product-header-sync";
+import { ProductHeaderSync } from "./pdp/product-header-sync";
 import { Star } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { getConditionBadgeVariant } from "@/components/shared/product/_lib/condition-badges";
 import { getConditionKey } from "@/components/shared/product/_lib/condition";
 
-import { DesktopGallery } from "@/components/desktop/product/desktop-gallery";
-import { DesktopBuyBox } from "@/components/desktop/product/desktop-buy-box";
-import { DesktopSpecsAccordion } from "@/components/desktop/product/desktop-specs-accordion";
-import { HeroSpecs } from "@/components/shared/product/pdp/hero-specs";
+import { DesktopGallery } from "./desktop/desktop-gallery";
+import { DesktopBuyBox } from "./desktop/desktop-buy-box";
+import { DesktopSpecsAccordion } from "./desktop/desktop-specs-accordion";
+import { HeroSpecs } from "./pdp/hero-specs";
 
 import type { ProductPageViewModel } from "@/lib/view-models/product-page";
 import type { Database } from "@/lib/supabase/database.types";
-import type { CustomerReview } from "@/components/shared/product/pdp/customer-reviews-hybrid";
-import type { SubmitReviewFn } from "@/components/shared/product/pdp/write-review-dialog";
+import type { CustomerReview } from "./pdp/customer-reviews-hybrid";
+import type { SubmitReviewFn } from "./pdp/write-review-dialog";
 import { PageShell } from "@/components/shared/page-shell";
 
 type ProductRow = Database["public"]["Tables"]["products"]["Row"];
@@ -53,7 +53,7 @@ type CategorySummary = {
 };
 
 // Mobile-specific imports
-import { MobileProductSingleScroll } from "@/components/mobile/product/mobile-product-single-scroll";
+import { MobileProductSingleScroll } from "./mobile/mobile-product-single-scroll";
 
 // Loading skeletons for Suspense boundaries
 function RelatedProductsSkeleton() {

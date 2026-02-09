@@ -3,7 +3,7 @@
 import { useLocale, useTranslations } from "next-intl"
 import { ChevronRight } from "lucide-react"
 import { Link } from "@/i18n/routing"
-import { ProductMiniCard } from "../card/mini"
+import { ProductMiniCard } from "@/components/shared/product/card/mini"
 import type { CategorySummary } from "./meta-row"
 
 interface SimilarProduct {

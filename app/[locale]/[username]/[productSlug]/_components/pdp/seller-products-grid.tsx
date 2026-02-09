@@ -2,7 +2,7 @@
 
 import { useLocale, useTranslations } from "next-intl"
 import { Link } from "@/i18n/routing"
-import { ProductMiniCard } from "../card/mini"
+import { ProductMiniCard } from "@/components/shared/product/card/mini"
 
 interface SellerProductItem {
   id: string

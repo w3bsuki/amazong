@@ -15,7 +15,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/client";
 import { Link } from "@/i18n/routing";
-import { BoostDialog } from "@/components/shared/seller/boost-dialog";
+import { BoostDialog } from "../../_components/seller/boost-dialog";
 import { useTranslations } from "next-intl";
 
 import { SellFormProvider, useSellForm, useSellFormContext, defaultSellFormValuesV4 } from "./sell-form-provider";

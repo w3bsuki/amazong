@@ -8,7 +8,7 @@ import {
   AccountDrawer,
   AuthDrawer,
 } from "@/components/mobile/drawers"
-import { ProductQuickViewDialog } from "@/components/desktop/product/product-quick-view-dialog"
+import { ProductQuickViewDialog } from "./drawers/product-quick-view-dialog"
 
 /**
  * Global drawer container - renders all drawer instances.

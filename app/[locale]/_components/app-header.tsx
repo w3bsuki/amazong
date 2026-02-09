@@ -27,7 +27,7 @@ import {
   DesktopStandardHeader,
   DesktopMinimalHeader,
 } from "@/components/layout/header/desktop"
-import { MobileSearchOverlay } from "@/components/shared/search/overlay/mobile-search-overlay"
+import { MobileSearchOverlay } from "./search/mobile-search-overlay"
 import { useHeaderOptional } from "@/components/providers/header-context"
 import { useAuthOptional } from "@/components/providers/auth-state-manager"
 import { cn } from "@/lib/utils"

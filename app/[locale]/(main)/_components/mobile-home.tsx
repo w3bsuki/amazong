@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { PageShell } from "@/components/shared/page-shell"
-import { MobileSearchOverlay } from "@/components/shared/search/overlay/mobile-search-overlay"
+import { MobileSearchOverlay } from "../../_components/search/mobile-search-overlay"
 import { MobileProductCard } from "@/components/shared/product/card/mobile"
 import { useHeader } from "@/components/providers/header-context"
 import type { UIProduct } from "@/lib/types/products"

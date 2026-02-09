@@ -6,7 +6,7 @@ import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
-} from "@/components/shared/charts/chart"
+} from "../../../../_components/charts/chart"
 
 interface SalesChartProps {
   data: { date: string; revenue: number; orders: number }[]
