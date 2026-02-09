@@ -620,8 +620,8 @@ select:-webkit-autofill {
   --spacing-home-section-gap: 1rem; /* 16px - landing section rhythm */
   --spacing-home-card-gap: 0.625rem; /* 10px - tighter, denser landing rhythm */
   --spacing-home-card-column-w: calc((100vw - (var(--spacing-home-inset) * 2) - var(--spacing-home-card-gap)) / 2);
-  --spacing-home-promo-card-w: calc(var(--spacing-home-card-column-w) + 1rem); /* wider promoted rail cards */
-  --spacing-home-promo-rail-card-w: calc(var(--spacing-home-card-column-w) + 1.25rem); /* promoted rail emphasis */
+  --spacing-home-promo-card-w: var(--spacing-home-card-column-w); /* keep promoted width aligned to feed grid */
+  --spacing-home-promo-rail-card-w: var(--spacing-home-card-column-w); /* legacy alias; emphasis now comes from taller media ratio */
   --spacing-home-curated-card-w: calc(var(--spacing-home-card-column-w) + 0.5rem); /* curated discovery rail cards */
   --spacing-home-strip-card-w: var(--spacing-home-card-column-w); /* legacy alias */
 

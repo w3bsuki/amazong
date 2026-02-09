@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { PageShell } from "@/components/shared/page-shell"
 import { MobileSearchOverlay } from "@/components/shared/search/mobile-search-overlay"
-import { ProductCard } from "@/components/shared/product/product-card"
+import { MobileProductCard } from "@/components/shared/product/product-card-mobile"
 import { useHeader } from "@/components/providers/header-context"
 import type { UIProduct } from "@/lib/types/products"
 import type { CategoryTreeNode } from "@/lib/category-tree"
@@ -38,15 +38,6 @@ interface MobileHomeProps {
 }
 
 type CuratedRailKey = keyof CuratedSections
-
-interface HomeCardConfig {
-  appearance: "card" | "tile"
-  media: "square" | "portrait" | "landscape"
-  titleLines: 1 | 2
-  showCategoryBadge: boolean
-  radius: "xl" | "2xl"
-  maxOverlayBadges: number
-}
 
 interface HomeBannerConfig {
   testId: string
@@ -116,8 +107,8 @@ export function MobileHome({
   }, [curatedSections])
 
   const renderHomeCard = useCallback(
-    (product: UIProduct, index: number, config: HomeCardConfig) => (
-      <ProductCard
+    (product: UIProduct, index: number) => (
+      <MobileProductCard
         key={product.id}
         id={product.id}
         title={product.title}
@@ -140,27 +131,11 @@ export function MobileHome({
         sellerAvatarUrl={product.sellerAvatarUrl || null}
         sellerTier={product.sellerTier ?? "basic"}
         sellerVerified={Boolean(product.sellerVerified)}
-        sellerEmailVerified={Boolean(product.sellerEmailVerified)}
-        sellerPhoneVerified={Boolean(product.sellerPhoneVerified)}
-        sellerIdVerified={Boolean(product.sellerIdVerified)}
         {...(product.condition ? { condition: product.condition } : {})}
-        {...(product.brand ? { brand: product.brand } : {})}
-        {...(product.categorySlug ? { categorySlug: product.categorySlug } : {})}
-        {...(product.categoryRootSlug ? { categoryRootSlug: product.categoryRootSlug } : {})}
         {...(product.categoryPath ? { categoryPath: product.categoryPath } : {})}
-        {...(product.make ? { make: product.make } : {})}
-        {...(product.model ? { model: product.model } : {})}
-        {...(product.year ? { year: product.year } : {})}
         {...(product.location ? { location: product.location } : {})}
-        {...(product.attributes ? { attributes: product.attributes } : {})}
-        appearance={config.appearance}
-        media={config.media}
-        density="compact"
-        titleLines={config.titleLines}
-        uiVariant="mobile-clean"
-        showCategoryBadge={config.showCategoryBadge}
-        radius={config.radius}
-        maxOverlayBadges={config.maxOverlayBadges}
+        titleLines={1}
+        layout="feed"
       />
     ),
     []
@@ -331,14 +306,7 @@ export function MobileHome({
 
             <div className="mt-2 grid grid-cols-2 gap-(--spacing-home-card-gap) px-(--spacing-home-inset) pb-1">
               {initialProducts.map((product, index) =>
-                renderHomeCard(product, index, {
-                  appearance: "card",
-                  media: "landscape",
-                  titleLines: 1,
-                  showCategoryBadge: true,
-                  radius: "2xl",
-                  maxOverlayBadges: 2,
-                })
+                renderHomeCard(product, index)
               )}
             </div>
           </section>
@@ -359,14 +327,7 @@ export function MobileHome({
                     key={product.id}
                     className="w-(--spacing-home-card-column-w) shrink-0 snap-start"
                   >
-                    {renderHomeCard(product, index, {
-                      appearance: "card",
-                      media: "landscape",
-                      titleLines: 1,
-                      showCategoryBadge: true,
-                      radius: "2xl",
-                      maxOverlayBadges: 2,
-                    })}
+                    {renderHomeCard(product, index)}
                   </div>
                 ))}
               </div>

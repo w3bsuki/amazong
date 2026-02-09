@@ -14,7 +14,7 @@ describe("ProductCardPrice presentation", () => {
       />
     )
 
-    const strip = container.querySelector("div.bg-background.border-border-subtle")
+    const strip = container.querySelector("div.rounded-lg.bg-muted")
     expect(strip).toBeTruthy()
   })
 
@@ -27,7 +27,22 @@ describe("ProductCardPrice presentation", () => {
       />
     )
 
-    const strip = container.querySelector("div.bg-background.border-border-subtle")
+    const strip = container.querySelector("div.rounded-lg.bg-muted")
     expect(strip).toBeNull()
+  })
+
+  test("renders semantic price badge when presentation is price-badge", () => {
+    const { container } = render(
+      <ProductCardPrice
+        price={199.99}
+        locale="en"
+        presentation="price-badge"
+        compact
+      />
+    )
+
+    const badge = container.querySelector('[data-slot="badge"]')
+    expect(badge).toBeTruthy()
+    expect(badge?.textContent).toContain("199")
   })
 })

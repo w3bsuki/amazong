@@ -31,7 +31,7 @@ interface ProductCardPriceProps {
   /** Render trailing label as discount badge */
   discountAsBadge?: boolean
   /** Visual presentation style for the price row */
-  presentation?: "default" | "soft-strip"
+  presentation?: "default" | "soft-strip" | "price-badge"
 }
 
 // =============================================================================
@@ -140,6 +140,42 @@ function ProductCardPrice({
     </div>
   )
 
+  const badgePriceRow = (
+    <div className={cn("flex items-center gap-1", homeEmphasis ? "flex-nowrap" : "flex-wrap")}>
+      <Badge
+        variant="price"
+        size={compact ? "default" : "prominent"}
+        className={compact ? "min-h-5 px-2 text-sm leading-none" : undefined}
+      >
+        {formattedPrice}
+      </Badge>
+      {hasDiscount && formattedOriginalPrice && (
+        <span className={cn(
+          "line-through tabular-nums text-muted-foreground",
+          compact && !homeEmphasis ? "text-2xs" : "text-compact"
+        )}>
+          {formattedOriginalPrice}
+        </span>
+      )}
+      {showDualCurrency && formattedSecondaryPrice && (
+        <span className="text-2xs text-muted-foreground tabular-nums">
+          ({formattedSecondaryPrice})
+        </span>
+      )}
+      {trailingLabel && (
+        discountAsBadge ? (
+          <Badge variant="discount" size="compact" className="shrink-0">
+            {trailingLabel}
+          </Badge>
+        ) : (
+          <span className="shrink-0 whitespace-nowrap text-compact font-semibold text-destructive">
+            {trailingLabel}
+          </span>
+        )
+      )}
+    </div>
+  )
+
   return (
     <div className={cn("flex flex-col", presentation === "soft-strip" && "gap-0.5")}>
       {/* Price row - clean compact style */}
@@ -147,6 +183,8 @@ function ProductCardPrice({
         <div className="flex w-full max-w-full items-baseline rounded-lg bg-muted px-2 py-1">
           {priceRow}
         </div>
+      ) : presentation === "price-badge" ? (
+        badgePriceRow
       ) : (
         priceRow
       )}

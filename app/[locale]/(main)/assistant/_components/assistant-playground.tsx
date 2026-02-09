@@ -3,7 +3,6 @@
 import { useMemo, useState, useRef, useEffect } from "react"
 import { DefaultChatTransport } from "ai"
 import { useChat } from "@ai-sdk/react"
-import Image from "next/image"
 import {
   CircleNotch,
   Robot,
@@ -24,7 +23,7 @@ import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
 import { Link } from "@/i18n/routing"
-import { formatPrice } from "@/lib/format-price"
+import { ProductMiniCard } from "@/components/shared/product/product-card-mini"
 
 type ListingCard = {
   id: string
@@ -109,62 +108,6 @@ function UserChatAvatar({ size = "md" }: { size?: "sm" | "md" | "lg" }) {
         You
       </AvatarFallback>
     </Avatar>
-  )
-}
-
-/** Modern Product Card for AI Results */
-function ProductCard({
-  item,
-  locale,
-  index,
-}: {
-  item: ListingCard
-  locale: string
-  index: number
-}) {
-  const href = getListingHref(locale, item)
-  const image = item.images?.[0] || "/placeholder.jpg"
-
-  const content = (
-    <Card className="group relative w-32 shrink-0 overflow-hidden border-border p-0 transition-all duration-200 hover:border-hover-border hover:shadow-md sm:w-36">
-      {/* Product Image */}
-      <div className="relative aspect-square overflow-hidden bg-muted">
-        <Image
-          src={image}
-          alt={item.title}
-          fill
-          className="object-cover transition-transform group-hover:scale-105"
-          sizes="(max-width: 640px) 128px, 144px"
-        />
-        {/* Top Badge */}
-        {index < 3 && (
-          <Badge 
-            variant="default" 
-            className="absolute left-1.5 top-1.5 gap-0.5 px-1.5 py-0.5 text-2xs"
-          >
-            <Sparkle size={8} weight="fill" />
-            Top
-          </Badge>
-        )}
-      </div>
-      {/* Product Info */}
-      <div className="p-2">
-        <p className="line-clamp-2 text-xs font-medium leading-tight text-foreground group-hover:text-primary">
-          {item.title}
-        </p>
-        <p className="mt-1 text-sm font-bold text-price-sale">
-          {formatPrice(item.price, { locale })}
-        </p>
-      </div>
-    </Card>
-  )
-
-  if (!href) return <div key={item.id}>{content}</div>
-
-  return (
-    <Link key={item.id} href={href} className="block">
-      {content}
-    </Link>
   )
 }
 
@@ -437,11 +380,28 @@ export function AssistantPlayground({
                       </div>
                       <div className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 scrollbar-none">
                         {listings.slice(0, 8).map((item, idx) => (
-                          <ProductCard
+                          <ProductMiniCard
                             key={item.id}
-                            item={item}
+                            id={item.id}
+                            title={item.title}
+                            price={item.price}
+                            image={item.images?.[0] ?? null}
+                            href={getListingHref(locale, item)}
                             locale={locale}
-                            index={idx}
+                            className="w-32 shrink-0 sm:w-36"
+                            {...(idx < 3
+                              ? {
+                                  badge: (
+                                    <Badge
+                                      variant="default"
+                                      className="gap-0.5 px-1.5 py-0.5 text-2xs"
+                                    >
+                                      <Sparkle size={8} weight="fill" />
+                                      Top
+                                    </Badge>
+                                  ),
+                                }
+                              : {})}
                           />
                         ))}
                       </div>

@@ -4,7 +4,7 @@ import * as React from "react"
 import { Link } from "@/i18n/routing"
 import { useLocale, useTranslations } from "next-intl"
 import { cn } from "@/lib/utils"
-import { Surface } from "@/components/ui/surface"
+import { Card } from "@/components/ui/card"
 import { getConditionBadgeVariant } from "@/components/shared/product/_lib/condition-badges"
 import { getConditionKey } from "@/components/shared/product/_lib/condition"
 import { computeBadgeSpecsClient, shouldShowConditionBadge } from "@/lib/badges/category-badge-specs"
@@ -164,11 +164,10 @@ export function ProductCardList({
   })
 
   return (
-    <Surface
-      variant="card"
-      interactive
+    <Card
+      data-slot="surface"
       className={cn(
-        "group relative flex gap-3 p-2.5",
+        "group relative flex gap-3 border-border-subtle p-2.5 shadow-none transition-colors hover:border-border hover:bg-hover active:bg-active",
         className
       )}
     >
@@ -278,6 +277,7 @@ export function ProductCardList({
             price={price}
             originalPrice={originalPrice}
             locale={locale}
+            presentation="price-badge"
           />
         </div>
 
@@ -310,6 +310,6 @@ export function ProductCardList({
           </div>
         )}
       </div>
-    </Surface>
+    </Card>
   )
 }

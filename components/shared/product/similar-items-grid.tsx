@@ -1,12 +1,9 @@
 "use client"
 
 import { useLocale, useTranslations } from "next-intl"
-import { ChevronRight, Heart, Package } from "lucide-react"
+import { ChevronRight } from "lucide-react"
 import { Link } from "@/i18n/routing"
-import { formatPrice } from "@/lib/format-price"
-import { IconButton } from "@/components/ui/icon-button"
-import { Surface } from "@/components/ui/surface"
-import { cn } from "@/lib/utils"
+import { ProductMiniCard } from "./product-card-mini"
 import type { CategorySummary } from "./meta-row"
 
 interface SimilarProduct {
@@ -39,13 +36,13 @@ export function SimilarItemsGrid({
   if (!products || products.length === 0) return null
 
   return (
-    <section className="px-4 py-4 bg-background border-t border-border">
-      <div className="flex items-center justify-between mb-3">
+    <section className="border-t border-border bg-background px-4 py-4">
+      <div className="mb-3 flex items-center justify-between">
         <h2 className="font-semibold text-foreground">{t("similarItems")}</h2>
         {rootCategory?.slug && (
           <Link
             href={`/categories/${rootCategory.slug}`}
-            className="text-sm text-primary font-medium flex items-center gap-0.5"
+            className="flex items-center gap-0.5 text-sm font-medium text-primary"
           >
             {t("viewAll")}
             <ChevronRight className="size-4" />
@@ -54,61 +51,17 @@ export function SimilarItemsGrid({
       </div>
       <div className="grid grid-cols-2 gap-3">
         {products.slice(0, maxItems).map((item) => {
-          const productHref = item.storeSlug
-            ? `/${item.storeSlug}/${item.slug || item.id}`
-            : "#"
+          const productHref = item.storeSlug ? `/${item.storeSlug}/${item.slug || item.id}` : null
           return (
-            <Surface
+            <ProductMiniCard
               key={item.id}
-              asChild
-              variant="card"
-              interactive
-              className="group block overflow-hidden outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
-            >
-              <Link href={productHref}>
-              {/* Image */}
-              <div className="aspect-square relative bg-muted">
-                {item.image ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={item.image}
-                    alt={item.title}
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center">
-                    <Package className="size-8 text-muted-foreground" />
-                  </div>
-                )}
-                {/* Wishlist button */}
-                <IconButton
-                  type="button"
-                  variant="ghost"
-                  aria-label={t("addToWatchlist")}
-                  className={cn(
-                    "absolute top-2 right-2",
-                    "bg-background border border-border-subtle",
-                    "hover:bg-hover active:bg-active",
-                    "text-muted-foreground hover:text-foreground"
-                  )}
-                  onClick={(e) => {
-                    e.preventDefault()
-                  }}
-                >
-                  <Heart className="size-4" />
-                </IconButton>
-              </div>
-              {/* Info */}
-              <div className="p-3">
-                <p className="text-sm font-bold text-foreground">
-                  {formatPrice(item.price, { locale })}
-                </p>
-                <p className="text-xs text-muted-foreground line-clamp-2 mt-1 leading-snug">
-                  {item.title}
-                </p>
-              </div>
-              </Link>
-            </Surface>
+              id={item.id}
+              title={item.title}
+              price={item.price}
+              image={item.image}
+              href={productHref}
+              locale={locale}
+            />
           )
         })}
       </div>

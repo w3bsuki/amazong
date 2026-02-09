@@ -1,9 +1,9 @@
 # PAYMENTS.md — Stripe Payments & Connect
 
-> **Purpose:** Complete reference for all payment flows, Stripe integration, fee calculations, and payout handling in the Treido marketplace.
+> **Purpose:** Complete reference for all payment flows, Stripe integration, fee calculations, escrow lifecycle, refunds/disputes, and payout handling in the Treido marketplace.
 
-| Scope | Payments, subscriptions, Connect payouts |
-|-------|------------------------------------------|
+| Scope | Payments, subscriptions, Connect payouts, escrow, refunds |
+|-------|-----------------------------------------------------------|
 | Audience | AI agents, developers |
 | Type | How-To + Reference |
 
@@ -17,6 +17,7 @@
 | **Account Type** | Platform with Connect (Express accounts) |
 | **Fee Model** | Vinted-style hybrid (buyer protection + optional seller fees) |
 | **Currencies** | EUR (primary), BGN (display only) |
+| **Money Movement** | Separate Charges and Transfers (escrow-style control) |
 
 ### Environment Variables
 
@@ -39,10 +40,6 @@ NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY  # Client-side (pk_*)
 | `app/[locale]/(checkout)/_actions/checkout.ts` | Checkout session creation |
 | `app/actions/subscriptions.ts` | Subscription management |
 | `app/actions/payments.ts` | Saved payment methods |
-
-### Deep Dives (SSOT)
-
-- `docs/payments/index.mdx` — detailed payments docs (Connect, escrow flow, webhooks, ops)
 
 ---
 
@@ -68,6 +65,9 @@ NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY  # Client-side (pk_*)
 ├─────────────────────────────────────────────────────────────────────┤
 │  STRIPE CONNECT                                                     │
 │  └─ Express Accounts → Seller payout destination                    │
+├─────────────────────────────────────────────────────────────────────┤
+│  ESCROW LIFECYCLE                                                   │
+│  └─ Pay → Ship → Deliver → Confirm → Transfer to seller            │
 └─────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -119,6 +119,14 @@ export function calculateTransactionFees(itemPriceEur: number, fees: FeeStructur
 - **Buyer pays:** €52.50
 - **Seller receives:** €50
 - **Platform revenue:** €2.50
+
+### Why Buyer Protection Exists
+
+The buyer protection fee funds:
+- Payment processing costs
+- Escrow-style release (hold until delivery confirmed)
+- Support and dispute handling
+- Fraud loss buffer and operational tooling
 
 ---
 
@@ -210,6 +218,8 @@ if (seller.stripeAccountId && seller.chargesEnabled) {
   }
 }
 ```
+
+> **⚠️ Architectural Note:** The current implementation uses **destination charges** (auto-transfer on payment). The recommended pattern for escrow-style control is **Separate Charges and Transfers**, which allows holding funds until delivery confirmation. See [§ 11. Escrow & Order Lifecycle](#11-escrow--order-lifecycle) and [§ 13. Gaps & Future Work](#13-gaps--future-work) for details on this transition.
 
 ---
 
@@ -408,6 +418,20 @@ export async function createOnboardingLink(accountId: string, locale: string) {
 }
 ```
 
+### Money Movement Pattern
+
+**Recommended:** Separate Charges and Transfers
+
+- Buyer is charged on the **platform** account
+- Funds are **transferred** to the connected account only after delivery confirmation or dispute resolution
+- Avoids destination charges that auto-transfer immediately (reduces escrow control)
+
+### Operational Checklist
+
+- Onboarding completion gate before allowing "Buy Now" for seller's products
+- Payout scheduling by seller trust tier (new sellers held longer)
+- Webhook-driven state (don't trust client callbacks)
+
 ### Connect Webhook Events
 
 | Event | Action |
@@ -415,18 +439,41 @@ export async function createOnboardingLink(accountId: string, locale: string) {
 | `account.updated` | Sync `details_submitted`, `charges_enabled`, `payouts_enabled` |
 | `account.application.deauthorized` | Mark account disconnected |
 
+### Open Questions
+
+- Do we require phone verification before Stripe onboarding?
+- Do we allow business KYB without a subscription plan, or require Business Free plan first?
+
 ---
 
 ## 6. Webhook Handlers
+
+### Non-Negotiables
+
+- Treat Stripe webhooks as the **source of truth**
+- Make every webhook handler **idempotent**
+- Never log secrets (Stripe signatures, request bodies with PII)
+- Persist each event ID and short-circuit duplicates
 
 ### Webhook Endpoints Overview
 
 | Endpoint | Secret Env Var | Events |
 |----------|----------------|--------|
-| `/api/checkout/webhook` | `STRIPE_WEBHOOK_SECRET` | `checkout.session.completed`, `payment_intent.*` |
+| `/api/checkout/webhook` | `STRIPE_WEBHOOK_SECRET` | `checkout.session.completed`, `payment_intent.succeeded`, `payment_intent.payment_failed` |
 | `/api/payments/webhook` | `STRIPE_WEBHOOK_SECRET` | `checkout.session.completed` (boosts), `payment_method.detached` |
 | `/api/subscriptions/webhook` | `STRIPE_SUBSCRIPTION_WEBHOOK_SECRET` | `checkout.session.completed`, `customer.subscription.*`, `invoice.*` |
 | `/api/connect/webhook` | `STRIPE_CONNECT_WEBHOOK_SECRET` | `account.updated`, `account.application.deauthorized` |
+
+### Minimum Events to Handle
+
+| Event | Purpose |
+|-------|---------|
+| `payment_intent.succeeded` | Confirm payment success |
+| `payment_intent.payment_failed` | Handle payment failures |
+| `charge.refunded` | Process refunds |
+| `charge.dispute.created` | Handle new disputes |
+| `charge.dispute.closed` | Resolve disputes |
+| `account.updated` | Connect onboarding / payouts enabled |
 
 ### Signature Validation (Supports Key Rotation)
 
@@ -459,6 +506,28 @@ export async function POST(request: Request) {
   
   // Process event...
 }
+```
+
+### Event Deduplication
+
+Persist each Stripe event ID and short-circuit on duplicates to ensure idempotency:
+
+```typescript
+// Check if event already processed
+const { data: existing } = await supabase
+  .from('processed_webhook_events')
+  .select('id')
+  .eq('stripe_event_id', event.id)
+  .single()
+
+if (existing) return new Response('Already processed', { status: 200 })
+
+// Process event, then record it
+await supabase.from('processed_webhook_events').insert({
+  stripe_event_id: event.id,
+  event_type: event.type,
+  processed_at: new Date().toISOString(),
+})
 ```
 
 ### Order Creation (Idempotent)
@@ -681,14 +750,95 @@ stripe trigger customer.subscription.created
 
 ---
 
-## 10. Gaps & Future Work
+## 10. Escrow & Order Lifecycle
+
+### High-Level Flow
+
+1. Buyer pays via Stripe (platform account)
+2. Order is created in DB (status `paid`)
+3. Seller ships (tracking captured)
+4. Delivery is confirmed (carrier or buyer confirmation)
+5. Platform transfers funds to seller (minus any business seller fee)
+
+### Order Status State Machine
+
+```
+pending_payment → paid → shipped → delivered → completed
+                   │                    │
+                   ├──→ cancelled       ├──→ disputed → refunded
+                   └──→ refunded       └──→ completed
+```
+
+| Status | Description |
+|--------|-------------|
+| `pending_payment` | Checkout initiated, awaiting payment confirmation |
+| `paid` | Payment confirmed via webhook |
+| `shipped` | Seller marked as shipped, tracking provided |
+| `delivered` | Delivery confirmed by carrier or buyer |
+| `completed` | Funds released to seller, order finalized |
+| `disputed` | Buyer opened a dispute |
+| `cancelled` | Order cancelled before shipping |
+| `refunded` | Full or partial refund issued |
+
+### Escrow Release Rules
+
+Funds are **not transferred** to the seller until:
+- Buyer confirms receipt, **or**
+- Auto-confirm window passes (configurable), **and**
+- No open dispute exists
+
+This requires the **Separate Charges and Transfers** pattern (see § 5) rather than destination charges.
+
+---
+
+## 11. Refunds & Disputes
+
+### Refunds (Platform-Initiated)
+
+| Type | Condition |
+|------|-----------|
+| **Full refund** | Item not shipped / order cancelled |
+| **Partial refund** | Approved by support (e.g., item damaged but usable) |
+
+### Disputes (User-Initiated)
+
+| Reason Code | Description |
+|-------------|-------------|
+| `not_received` | Buyer claims item never arrived |
+| `not_as_described` | Item differs from listing |
+| `counterfeit` | Item suspected to be fake |
+| `damaged` | Item arrived damaged |
+
+### Evidence Requirements
+
+When responding to disputes, collect:
+- **Photos** — condition of item received vs. listing photos
+- **Chat excerpts** — buyer-seller conversation history
+- **Tracking info** — shipping carrier tracking and delivery confirmation
+- **Order timeline** — timestamps of payment, shipping, delivery
+
+### Chargebacks (Issuer-Initiated)
+
+- Assume some chargebacks will happen even with good UX
+- Maintain an operational playbook: evidence, response templates, and escalation
+- Respond before deadline; keep an internal log of outcomes
+- If patterns repeat: adjust policies and risk controls (limits, verification, UX)
+
+### Policy Alignment
+
+See `/policies/returns` for the customer-facing returns & refunds policy.
+
+---
+
+## 12. Gaps & Future Work
 
 | Gap | Description | Priority |
 |-----|-------------|----------|
-| **Dispute handling** | `charge.dispute.created` webhook not implemented | High |
+| **Destination → Separate Charges** | Migrate from destination charges to Separate Charges and Transfers for proper escrow control | High |
+| **Dispute handling** | `charge.dispute.created` webhook not fully implemented | High |
 | **Refund flow** | No automated refunds, manual via Stripe Dashboard | High |
 | **Multi-seller checkout** | Cart with multiple sellers blocked (returns error) | Medium |
-| **Payout scheduling** | No escrow/hold period, funds transfer immediately | Medium |
+| **Payout scheduling** | No escrow/hold period, funds transfer immediately (see § 10) | Medium |
 | **Invoice generation** | Relies on Stripe invoices, no custom PDF | Low |
 | **Seller without Connect** | Checkout works but funds go to platform (logged warning) | Low |
 
@@ -714,5 +864,72 @@ Future implementation:
 
 ---
 
-*Last updated: 2026-02-01*
+## Appendix: Ops Runbook
 
+> Day-to-day and incident playbook for keeping Treido payments reliable.
+
+### Principles (Non-Negotiable)
+
+- Stripe webhooks are the **source of truth**
+- Webhook handlers must be **idempotent**
+- Never log secrets (signatures, full request bodies, PII)
+
+### Daily Checks (Launch Period)
+
+| Area | What to Check |
+|------|---------------|
+| **Webhook health** | No backlog / no signature failures |
+| **Payment failures** | Spikes by payment method / issuer |
+| **Refund queue** | Pending refunds and reasons |
+| **Chargebacks** | New disputes and response deadlines |
+| **Connect** | Onboarding completion rate, payout failures |
+
+### Incident Playbooks
+
+#### 1. Webhook Lag / Downtime
+
+**Symptoms:** Orders stuck in old state (paid but not updated), refunds initiated in Stripe but not reflected in app.
+
+**Actions:**
+1. Confirm Stripe is sending events (Stripe dashboard)
+2. Check if signature verification is failing (key mismatch, env issues)
+3. Pause risky automation (payout releases) until state is consistent
+4. Replay safely: use stored event IDs to avoid duplicates
+5. After recovery: backfill missing state transitions
+
+#### 2. Payment Succeeded but Order Not Updated
+
+**Actions:**
+- Verify webhook event received and processed
+- If missing: reconcile by querying Stripe for the PaymentIntent and updating order state server-side
+- If duplicate/out-of-order: ensure idempotency keys are enforced
+
+#### 3. Transfer / Payout Failures
+
+**Actions:**
+- Confirm seller Connect status (charges/payouts enabled)
+- Confirm transfer destination is correct
+- If failure: keep order in "payout pending", notify support, and retry once fixed
+
+#### 4. Refund Mismatch
+
+**Actions:**
+- Treat Stripe as canonical; update DB state to match Stripe
+- Verify inventory/restock effects (if applicable) are correct
+- Communicate outcome to buyer and seller
+
+#### 5. Chargeback Received
+
+**Actions:**
+1. Capture evidence bundle (order timeline, tracking, chat excerpt, photos)
+2. Respond before deadline; keep an internal log of outcome
+3. If patterns repeat: adjust policies and risk controls (limits, verification, UX)
+
+### Post-Incident
+
+- Write a short postmortem (what happened, impact, fixes, prevention)
+- Add follow-up tasks in `/admin/tasks`
+
+---
+
+*Last updated: 2026-02-08*

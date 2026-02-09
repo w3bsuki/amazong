@@ -1,7 +1,7 @@
 "use client"
 
 import { useTranslations } from "next-intl"
-import { ProductCard } from "@/components/shared/product/product-card"
+import { MobileProductCard } from "@/components/shared/product/product-card-mobile"
 import type { UIProduct } from "@/lib/types/products"
 import { HomeSectionHeader } from "@/components/mobile/home-section-header"
 import { cn } from "@/lib/utils"
@@ -97,7 +97,7 @@ export function PromotedListingsStrip({
                   cardWidthClass
                 )}
               >
-                <ProductCard
+                <MobileProductCard
                   id={product.id}
                   title={product.title}
                   price={product.price}
@@ -119,27 +119,11 @@ export function PromotedListingsStrip({
                   sellerAvatarUrl={product.sellerAvatarUrl || null}
                   sellerTier={product.sellerTier ?? "basic"}
                   sellerVerified={Boolean(product.sellerVerified)}
-                  sellerEmailVerified={Boolean(product.sellerEmailVerified)}
-                  sellerPhoneVerified={Boolean(product.sellerPhoneVerified)}
-                  sellerIdVerified={Boolean(product.sellerIdVerified)}
                   {...(product.condition ? { condition: product.condition } : {})}
-                  {...(product.brand ? { brand: product.brand } : {})}
-                  {...(product.categorySlug ? { categorySlug: product.categorySlug } : {})}
-                  {...(product.categoryRootSlug ? { categoryRootSlug: product.categoryRootSlug } : {})}
                   {...(product.categoryPath ? { categoryPath: product.categoryPath } : {})}
-                  {...(product.make ? { make: product.make } : {})}
-                  {...(product.model ? { model: product.model } : {})}
-                  {...(product.year ? { year: product.year } : {})}
                   {...(product.location ? { location: product.location } : {})}
-                  {...(product.attributes ? { attributes: product.attributes } : {})}
-                  appearance="card"
-                  media="portrait"
-                  density="compact"
                   titleLines={1}
-                  uiVariant="mobile-clean"
-                  showCategoryBadge={true}
-                  radius="2xl"
-                  maxOverlayBadges={2}
+                  layout="rail"
                 />
               </div>
             ))}
@@ -148,7 +132,7 @@ export function PromotedListingsStrip({
       ) : (
         <div className="grid grid-cols-2 gap-(--spacing-home-card-gap) px-(--spacing-home-inset) pb-0.5">
           {visibleProducts.map((product, index) => (
-            <ProductCard
+            <MobileProductCard
               key={product.id}
               id={product.id}
               title={product.title}
@@ -171,27 +155,11 @@ export function PromotedListingsStrip({
               sellerAvatarUrl={product.sellerAvatarUrl || null}
               sellerTier={product.sellerTier ?? "basic"}
               sellerVerified={Boolean(product.sellerVerified)}
-              sellerEmailVerified={Boolean(product.sellerEmailVerified)}
-              sellerPhoneVerified={Boolean(product.sellerPhoneVerified)}
-              sellerIdVerified={Boolean(product.sellerIdVerified)}
               {...(product.condition ? { condition: product.condition } : {})}
-              {...(product.brand ? { brand: product.brand } : {})}
-              {...(product.categorySlug ? { categorySlug: product.categorySlug } : {})}
-              {...(product.categoryRootSlug ? { categoryRootSlug: product.categoryRootSlug } : {})}
               {...(product.categoryPath ? { categoryPath: product.categoryPath } : {})}
-              {...(product.make ? { make: product.make } : {})}
-              {...(product.model ? { model: product.model } : {})}
-              {...(product.year ? { year: product.year } : {})}
               {...(product.location ? { location: product.location } : {})}
-              {...(product.attributes ? { attributes: product.attributes } : {})}
-              appearance="card"
-              media="portrait"
-              density="compact"
               titleLines={1}
-              uiVariant="mobile-clean"
-              showCategoryBadge={true}
-              radius="2xl"
-              maxOverlayBadges={2}
+              layout="feed"
             />
           ))}
         </div>

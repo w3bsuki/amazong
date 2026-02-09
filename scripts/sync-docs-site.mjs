@@ -7,47 +7,49 @@ const docsSiteContentRoot = path.join(repoRoot, "docs-site", "content");
 const docsSitePublicRoot = path.join(repoRoot, "docs-site", "public");
 
 const canonicalRouteMap = new Map([
-  ["./INDEX.md", "/"],
   ["./PRD.md", "/platform"],
-  ["./FEATURES.md", "/features"],
   ["./ARCHITECTURE.md", "/engineering"],
-  ["./DESIGN.md", "/design"],
-  ["./ROUTES.md", "/routes"],
   ["./DATABASE.md", "/database"],
   ["./API.md", "/api"],
-  ["./PAYMENTS.md", "/payments-overview"],
   ["./AUTH.md", "/auth"],
+  ["./PAYMENTS.md", "/payments"],
   ["./I18N.md", "/i18n"],
-  ["./LAUNCH.md", "/launch"],
-  ["./PRODUCTION-PUSH.md", "/production"],
-  ["./DEV-DEPARTMENT.md", "/dev-department"],
-  ["./AGENTS.md", "/agents"],
+  ["./ROUTES.md", "/routes"],
+  ["./PRODUCTION.md", "/production"],
+  ["./TESTING.md", "/testing"],
   ["./WORKFLOW.md", "/workflow"],
-  ["./PROMPT-GUIDE.md", "/prompt-guide"],
-  ["./DOCS-PLAN.md", "/docs-plan"],
-  ["./APP-FEEL-GUIDE.md", "/app-feel-guide"],
-  ["./APP-FEEL-COMPONENTS.md", "/app-feel-components"],
-  ["./APP-FEEL-CHECKLIST.md", "/app-feel-checklist"],
-  ["./14-UI-UX-PLAN.md", "/ui-ux-plan"],
-  ["./refactor.md", "/refactor"],
-  ["./business/00-INDEX.md", "/business/00-INDEX"],
+  ["./PROMPTS.md", "/prompts"],
   ["./public/00-INDEX.md", "/public-docs"],
-  ["./admin/00-INDEX.md", "/admin-docs-governance"],
-  ["./status/LAUNCH-READINESS.yaml", "/launch-status"],
-  ["./00-INDEX.md", "/"],
-  ["./01-PRD.md", "/platform"],
-  ["./02-FEATURES.md", "/features"],
-  ["./03-ARCHITECTURE.md", "/engineering"],
-  ["./04-DESIGN.md", "/design"],
-  ["./05-ROUTES.md", "/routes"],
-  ["./06-DATABASE.md", "/database"],
-  ["./07-API.md", "/api"],
-  ["./08-PAYMENTS.md", "/payments-overview"],
-  ["./09-AUTH.md", "/auth"],
-  ["./10-I18N.md", "/i18n"],
-  ["./12-LAUNCH.md", "/launch"],
-  ["./13-PRODUCTION-PUSH.md", "/production"],
-  ["./15-DEV-DEPARTMENT.md", "/dev-department"],
+  ["./features/selling.md", "/features/selling"],
+  ["./features/buying.md", "/features/buying"],
+  ["./features/chat.md", "/features/chat"],
+  ["./features/monetization.md", "/features/monetization"],
+  ["./features/plans.md", "/features/plans"],
+  ["./features/trust-safety.md", "/features/trust-safety"],
+  ["./features/search-discovery.md", "/features/search-discovery"],
+  ["./features/app-feel.md", "/features/app-feel"],
+  ["./features/onboarding.md", "/features/onboarding"],
+  // Deleted files — redirect to closest equivalent
+  ["./FEATURES.md", "/platform"],
+  ["./INDEX.md", "/"],
+  ["./DESIGN.md", "/"],
+  ["./AGENTS.md", "/workflow"],
+  // Parent-relative links used in features/ and core doc cross-references
+  ["../PRD.md", "/platform"],
+  ["../ARCHITECTURE.md", "/engineering"],
+  ["../DATABASE.md", "/database"],
+  ["../API.md", "/api"],
+  ["../AUTH.md", "/auth"],
+  ["../PAYMENTS.md", "/payments"],
+  ["../I18N.md", "/i18n"],
+  ["../ROUTES.md", "/routes"],
+  ["../PRODUCTION.md", "/production"],
+  ["../TESTING.md", "/testing"],
+  ["../WORKFLOW.md", "/workflow"],
+  ["../AGENTS.md", "/workflow"],
+  // Root file cross-references (from docs/ to root)
+  ["../DESIGN.md", "/"],
+  ["../REQUIREMENTS.md", "/platform"],
 ]);
 
 function normalizePath(p) {
@@ -139,30 +141,18 @@ async function mirrorMarkdownTree(srcDirAbs, destDirAbs, options = {}) {
 
 async function writeCorePages() {
   const corePages = [
-    { source: "INDEX.md", target: "docs-index.mdx", title: "Docs Index" },
     { source: "PRD.md", target: "platform.mdx", title: "Platform Overview" },
-    { source: "FEATURES.md", target: "features.mdx", title: "Feature Status" },
     { source: "ARCHITECTURE.md", target: "engineering.mdx", title: "Engineering" },
-    { source: "DESIGN.md", target: "design.mdx", title: "Design System" },
-    { source: "ROUTES.md", target: "routes.mdx", title: "Routes" },
     { source: "DATABASE.md", target: "database.mdx", title: "Database" },
     { source: "API.md", target: "api.mdx", title: "API" },
-    { source: "PAYMENTS.md", target: "payments-overview.mdx", title: "Payments Overview" },
     { source: "AUTH.md", target: "auth.mdx", title: "Auth" },
+    { source: "PAYMENTS.md", target: "payments.mdx", title: "Payments" },
     { source: "I18N.md", target: "i18n.mdx", title: "i18n" },
-    { source: "LAUNCH.md", target: "launch.mdx", title: "Launch" },
-    { source: "PRODUCTION-PUSH.md", target: "production.mdx", title: "Production Push" },
-    { source: "DEV-DEPARTMENT.md", target: "dev-department.mdx", title: "Dev Department" },
-    { source: "AGENTS.md", target: "agents.mdx", title: "Agent Entry" },
+    { source: "ROUTES.md", target: "routes.mdx", title: "Routes" },
+    { source: "PRODUCTION.md", target: "production.mdx", title: "Production Readiness" },
+    { source: "TESTING.md", target: "testing.mdx", title: "Testing" },
     { source: "WORKFLOW.md", target: "workflow.mdx", title: "Workflow" },
-    { source: "PROMPT-GUIDE.md", target: "prompt-guide.mdx", title: "Prompt Guide" },
-    { source: "DOCS-PLAN.md", target: "docs-plan.mdx", title: "Docs Plan" },
-    { source: "APP-FEEL-GUIDE.md", target: "app-feel-guide.mdx", title: "App Feel Guide" },
-    { source: "APP-FEEL-COMPONENTS.md", target: "app-feel-components.mdx", title: "App Feel Components" },
-    { source: "APP-FEEL-CHECKLIST.md", target: "app-feel-checklist.mdx", title: "App Feel Checklist" },
-    { source: "14-UI-UX-PLAN.md", target: "ui-ux-plan.mdx", title: "UI UX Plan" },
-    { source: "refactor.md", target: "refactor.mdx", title: "Refactor Program" },
-    { source: "admin/00-INDEX.md", target: "admin-docs-governance.mdx", title: "Admin Docs Governance" },
+    { source: "PROMPTS.md", target: "prompts.mdx", title: "Phase Prompts" },
     { source: "public/00-INDEX.md", target: "public-docs.mdx", title: "Public Docs Index" },
   ];
 
@@ -172,19 +162,6 @@ async function writeCorePages() {
     const content = await readText(sourceAbs);
     await writeText(targetAbs, transformMarkdown(content));
   }
-
-  const launchStatusRaw = await readText(path.join(docsRoot, "status", "LAUNCH-READINESS.yaml"));
-  const launchStatusPage = [
-    "# Launch Status (Machine Ledger)",
-    "",
-    "Canonical machine-readable launch status sourced from `docs/status/LAUNCH-READINESS.yaml`.",
-    "",
-    "```json",
-    launchStatusRaw.trim(),
-    "```",
-    "",
-  ].join("\n");
-  await writeText(path.join(docsSiteContentRoot, "launch-status.mdx"), launchStatusPage);
 }
 
 async function writePublicMirrors() {
@@ -235,23 +212,38 @@ async function writeHomePage() {
 
 > **INTERNAL ONLY.** This portal mirrors canonical documentation in \`/docs/**\`.
 
-## Canonical Sources
-
-- \`docs/INDEX.md\`
-- \`docs/public/00-INDEX.md\`
-- \`docs/business/00-INDEX.md\`
-
 ## Primary Sections
 
 - [Platform](/platform)
-- [Features](/features)
 - [Engineering](/engineering)
-- [Design](/design)
-- [Business](/business)
+- [Database](/database)
+- [API](/api)
+- [Auth](/auth)
 - [Payments](/payments)
+- [i18n](/i18n)
+- [Routes](/routes)
+- [Production Readiness](/production)
+- [Testing](/testing)
+- [Workflow](/workflow)
+
+## Feature Specs
+
+- [Selling](/features/selling)
+- [Buying](/features/buying)
+- [Chat](/features/chat)
+- [Monetization](/features/monetization)
+- [Plans](/features/plans)
+- [Trust & Safety](/features/trust-safety)
+- [Search & Discovery](/features/search-discovery)
+- [App Feel](/features/app-feel)
+- [Onboarding](/features/onboarding)
+
+## Other
+
+- [Business](/business)
 - [Policies](/policies)
 - [Help](/help)
-- [Launch](/launch)
+- [Guides](/guides)
 `,
   );
 }
@@ -358,6 +350,9 @@ async function checkBrokenLinksInDocsSite() {
       const candidates = [abs];
       if (!ext) {
         candidates.push(`${abs}.mdx`, `${abs}.md`, path.join(abs, "index.mdx"), path.join(abs, "index.md"));
+      } else if (ext === ".md") {
+        // Mirror process renames .md → .mdx
+        candidates.push(abs.replace(/\.md$/i, ".mdx"));
       }
 
       const exists = (await Promise.all(candidates.map(async (candidate) => {
@@ -385,9 +380,10 @@ async function main() {
 
   await writeHomePage();
   await writeCorePages();
+  await mirrorMarkdownTree(path.join(docsRoot, "features"), path.join(docsSiteContentRoot, "features"));
   await mirrorMarkdownTree(path.join(docsRoot, "business"), path.join(docsSiteContentRoot, "business"));
-  await mirrorMarkdownTree(path.join(docsRoot, "payments"), path.join(docsSiteContentRoot, "payments"));
   await mirrorMarkdownTree(path.join(docsRoot, "guides"), path.join(docsSiteContentRoot, "guides"));
+  await mirrorMarkdownTree(path.join(docsRoot, "runbooks"), path.join(docsSiteContentRoot, "runbooks"));
   await writePublicMirrors();
   await buildMetaForDirectory(docsSiteContentRoot);
 

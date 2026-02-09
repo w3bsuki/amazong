@@ -15,7 +15,7 @@ import * as React from "react"
 import { useTranslations } from "next-intl"
 import { Megaphone, ArrowRight } from "@phosphor-icons/react"
 import { cn } from "@/lib/utils"
-import { ProductCard } from "@/components/shared/product/product-card"
+import { DesktopProductCard } from "@/components/shared/product/product-card-desktop"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 
@@ -111,7 +111,7 @@ export function PromotedSection({
       <div className="p-4 bg-card">
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
           {displayProducts.map((product, index) => (
-            <ProductCard
+            <DesktopProductCard
               key={product.id}
               id={product.id}
               title={product.title}
@@ -119,7 +119,6 @@ export function PromotedSection({
               originalPrice={product.listPrice ?? null}
               isOnSale={Boolean(product.isOnSale)}
               salePercent={product.salePercent ?? 0}
-              saleEndDate={product.saleEndDate ?? null}
               createdAt={product.createdAt ?? null}
               image={product.image}
               rating={product.rating ?? 0}
@@ -132,12 +131,10 @@ export function PromotedSection({
               sellerVerified={Boolean(product.sellerVerified)}
               {...(product.location ? { location: product.location } : {})}
               {...(product.condition ? { condition: product.condition } : {})}
-              tags={product.tags ?? []}
               isBoosted
               index={index}
               {...(product.categoryRootSlug ? { categoryRootSlug: product.categoryRootSlug } : {})}
               {...(product.categoryPath ? { categoryPath: product.categoryPath } : {})}
-              {...(product.attributes ? { attributes: product.attributes } : {})}
             />
           ))}
         </div>

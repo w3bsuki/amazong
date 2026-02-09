@@ -838,8 +838,7 @@ User Report → Auto-triage → Support L1 → Support L2 → Legal/Escalation
 
 ## See Also
 
-- [INDEX.md](./INDEX.md) — Documentation hub
-- [FEATURES.md](./FEATURES.md) — Implementation status
+- [REQUIREMENTS.md](../REQUIREMENTS.md) — Feature requirements & status
 - [ARCHITECTURE.md](./ARCHITECTURE.md) — System design
 - [PAYMENTS.md](./PAYMENTS.md) — Stripe integration details
 

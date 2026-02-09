@@ -4,7 +4,7 @@ import type { Metadata } from 'next'
 import { validateLocale } from "@/i18n/routing"
 import { AppBreadcrumb, breadcrumbPresets } from "@/components/shared/navigation/app-breadcrumb"
 import { getProducts, toUI } from "@/lib/data/products"
-import { ProductCard } from "@/components/shared/product/product-card"
+import { MobileProductCard } from "@/components/shared/product/product-card-mobile"
 import { PageShell } from "@/components/shared/page-shell"
 import { cookies } from "next/headers"
 import { parseShippingRegion } from "@/lib/shipping"
@@ -76,14 +76,13 @@ export default async function TodaysDealsPage({
         ) : (
           <div className="grid grid-cols-2 gap-2 sm:gap-3 md:grid-cols-3 md:gap-4 lg:grid-cols-4">
             {dealItems.map((product, index) => (
-              <ProductCard
+              <MobileProductCard
                 key={product.id}
                 id={product.id}
                 title={product.title}
                 price={product.price}
                 originalPrice={product.listPrice ?? null}
                 isOnSale={Boolean(product.isOnSale)}
-                saleEndDate={product.saleEndDate ?? null}
                 createdAt={product.createdAt ?? null}
                 image={product.image}
                 rating={product.rating}
@@ -96,13 +95,9 @@ export default async function TodaysDealsPage({
                 sellerVerified={Boolean(product.sellerVerified)}
                 freeShipping={Boolean(product.freeShipping)}
                 {...(typeof product.salePercent === "number" ? { salePercent: product.salePercent } : {})}
-                {...(product.categoryRootSlug ? { categoryRootSlug: product.categoryRootSlug } : {})}
                 {...(product.categoryPath ? { categoryPath: product.categoryPath } : {})}
-                {...(product.attributes ? { attributes: product.attributes } : {})}
                 index={index}
-                appearance="tile"
-                media="landscape"
-                density="compact"
+                layout="feed"
               />
             ))}
           </div>

@@ -13,20 +13,12 @@ Prove the model can fund:
 
 ## Fee model (plan-driven)
 
-Buyer fee:
+See [Monetization Model](/business/monetization) for the full fee formula, plan tables, and acceptance criteria.
 
-```
-buyer_fee = min(
-  item_price * buyer_protection_percent + buyer_protection_fixed,
-  buyer_protection_cap
-)
-```
-
-Business seller fee:
-
-```
-seller_fee = item_price * seller_fee_percent
-```
+In summary:
+- Buyer pays a Buyer Protection fee: `min(item_price × percent + fixed, cap)`
+- Business sellers pay a small seller fee: `item_price × seller_fee_percent`
+- Rates are plan-driven, stored in `subscription_plans`
 
 ## Example (Personal Free, €50 item)
 
@@ -56,6 +48,5 @@ contribution = buyer_fee + seller_fee - stripe_cost - refunds_loss - support_all
 
 ## Implementation requirements
 
-- Store fee components per order at purchase time (no retroactive changes).
-- Keep plan config in DB (`subscription_plans`) and cache per seller when needed.
+See [Monetization — Acceptance Criteria](/business/monetization#acceptance-criteria) for the full checklist.
 

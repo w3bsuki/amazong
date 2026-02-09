@@ -1,0 +1,935 @@
+# PAYMENTS.md — Stripe Payments & Connect
+
+> **Purpose:** Complete reference for all payment flows, Stripe integration, fee calculations, escrow lifecycle, refunds/disputes, and payout handling in the Treido marketplace.
+
+| Scope | Payments, subscriptions, Connect payouts, escrow, refunds |
+|-------|-----------------------------------------------------------|
+| Audience | AI agents, developers |
+| Type | How-To + Reference |
+
+---
+
+## Quick Reference
+
+| Item | Value |
+|------|-------|
+| **Stripe API Version** | `2025-12-15.clover` |
+| **Account Type** | Platform with Connect (Express accounts) |
+| **Fee Model** | Vinted-style hybrid (buyer protection + optional seller fees) |
+| **Currencies** | EUR (primary), BGN (display only) |
+| **Money Movement** | Separate Charges and Transfers (escrow-style control) |
+
+### Environment Variables
+
+```bash
+# Required for payments
+STRIPE_SECRET_KEY                    # Main API key (sk_live_* or sk_test_*)
+STRIPE_WEBHOOK_SECRET               # Checkout/order webhook
+STRIPE_SUBSCRIPTION_WEBHOOK_SECRET  # Subscription lifecycle
+STRIPE_CONNECT_WEBHOOK_SECRET       # Connect account events
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY  # Client-side (pk_*)
+```
+
+### Key Files
+
+| File | Purpose |
+|------|---------|
+| `lib/stripe.ts` | Stripe SDK initialization (server-only) |
+| `lib/stripe-connect.ts` | Connect utilities + fee calculations |
+| `lib/stripe-locale.ts` | Locale-safe URL builders |
+| `app/[locale]/(checkout)/_actions/checkout.ts` | Checkout session creation |
+| `app/actions/subscriptions.ts` | Subscription management |
+| `app/actions/payments.ts` | Saved payment methods |
+
+---
+
+## Architecture Overview
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│                      TREIDO PAYMENT ARCHITECTURE                    │
+├─────────────────────────────────────────────────────────────────────┤
+│  CLIENT                                                             │
+│  └─ Cart → Checkout Button → Stripe Hosted Checkout                 │
+├─────────────────────────────────────────────────────────────────────┤
+│  SERVER ACTIONS                                                     │
+│  ├─ createCheckoutSession()     → Product purchases                 │
+│  ├─ createSubscriptionCheckoutSession() → Plan upgrades             │
+│  └─ createSetupSession()        → Save payment methods              │
+├─────────────────────────────────────────────────────────────────────┤
+│  WEBHOOKS (4 endpoints)                                             │
+│  ├─ /api/checkout/webhook       → Order creation                    │
+│  ├─ /api/payments/webhook       → Boosts + saved cards              │
+│  ├─ /api/subscriptions/webhook  → Subscription lifecycle            │
+│  └─ /api/connect/webhook        → Seller account status             │
+├─────────────────────────────────────────────────────────────────────┤
+│  STRIPE CONNECT                                                     │
+│  └─ Express Accounts → Seller payout destination                    │
+├─────────────────────────────────────────────────────────────────────┤
+│  ESCROW LIFECYCLE                                                   │
+│  └─ Pay → Ship → Deliver → Confirm → Transfer to seller            │
+└─────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 1. Fee Structure
+
+Treido uses a **Vinted-style hybrid model**: buyers pay a protection fee, sellers keep 100% on free tier (personal accounts) or pay small commissions on business tiers.
+
+### Personal Account Tiers
+
+| Tier | Monthly | Seller Fee | Buyer Protection | Fixed | Cap |
+|------|---------|------------|------------------|-------|-----|
+| **Free** | €0 | 0% | 4% | +€0.50 | €15 |
+| **Plus** | €4.99 | 0% | 3.5% | +€0.40 | €14 |
+| **Pro** | €9.99 | 0% | 3% | +€0.30 | €12 |
+
+### Business Account Tiers
+
+| Tier | Monthly | Seller Fee | Buyer Protection | Fixed | Cap |
+|------|---------|------------|------------------|-------|-----|
+| **Free** | €0 | 1.5% | 3% | +€0.35 | €12 |
+| **Pro** | €49.99 | 1% | 2.5% | +€0.25 | €10 |
+| **Enterprise** | €99.99 | 0.5% | 2% | +€0.20 | €8 |
+
+### Fee Calculation
+
+```typescript
+// lib/stripe-connect.ts
+export function calculateTransactionFees(itemPriceEur: number, fees: FeeStructure) {
+  const sellerFee = itemPriceEur * (fees.sellerFeePercent / 100)
+  const buyerProtectionRaw = (itemPriceEur * (fees.buyerProtectionPercent / 100)) 
+                           + fees.buyerProtectionFixed
+  const buyerProtectionFee = Math.min(buyerProtectionRaw, fees.buyerProtectionCap)
+  
+  return {
+    sellerFee,           // Deducted from seller payout
+    buyerProtectionFee,  // Added to buyer total
+    platformRevenue: sellerFee + buyerProtectionFee,
+    sellerPayout: itemPriceEur - sellerFee,
+    buyerTotal: itemPriceEur + buyerProtectionFee,
+  }
+}
+```
+
+**Example:** €50 item, Free Personal tier
+- Seller fee: €0 (0%)
+- Buyer protection: min(€50 × 4% + €0.50, €15) = €2.50
+- **Buyer pays:** €52.50
+- **Seller receives:** €50
+- **Platform revenue:** €2.50
+
+### Why Buyer Protection Exists
+
+The buyer protection fee funds:
+- Payment processing costs
+- Escrow-style release (hold until delivery confirmed)
+- Support and dispute handling
+- Fraud loss buffer and operational tooling
+
+---
+
+## 2. Product Checkout Flow
+
+### Flow Diagram
+
+```
+┌──────────┐     ┌─────────────────┐     ┌────────────────┐
+│   Cart   │────▶│ createCheckout  │────▶│ Stripe Hosted  │
+│   Page   │     │ Session()       │     │ Checkout       │
+└──────────┘     └─────────────────┘     └───────┬────────┘
+                                                 │
+                 ┌─────────────────┐             │ payment
+                 │ /api/checkout/  │◀────────────┘ complete
+                 │ webhook         │
+                 └────────┬────────┘
+                          │
+              ┌───────────▼───────────┐
+              │ Create Order + Items  │
+              │ Start Conversation    │
+              └───────────────────────┘
+```
+
+### Server Action: `createCheckoutSession`
+
+**Location:** `app/[locale]/(checkout)/_actions/checkout.ts`
+
+```typescript
+export async function createCheckoutSession(
+  items: CartItem[],
+  locale: string
+): Promise<{ url: string } | { error: string }>
+```
+
+**Validations:**
+1. User must be authenticated
+2. Cannot purchase own products (self-purchase blocked)
+3. All items must be from single seller (multi-seller blocked for v1)
+4. Products must be active with stock
+
+**Checkout Session Configuration:**
+
+```typescript
+const sessionParams: Stripe.Checkout.SessionCreateParams = {
+  mode: 'payment',
+  payment_method_types: ['card'],
+  line_items: [
+    // Product items
+    ...items.map(item => ({
+      price_data: {
+        currency: 'eur',
+        unit_amount: item.priceInCents,
+        product_data: { name: item.title, images: [item.image] },
+      },
+      quantity: item.quantity,
+    })),
+    // Buyer protection fee (single line)
+    {
+      price_data: {
+        currency: 'eur',
+        unit_amount: buyerProtectionCents,
+        product_data: { name: 'Buyer Protection' },
+      },
+      quantity: 1,
+    },
+  ],
+  metadata: {
+    userId: user.id,
+    sellerId: seller.id,
+    itemIds: JSON.stringify(items.map(i => i.id)),
+  },
+  success_url: `${baseUrl}/${locale}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
+  cancel_url: `${baseUrl}/${locale}/cart`,
+}
+```
+
+**Connect Destination Charges:**
+
+If seller has completed Connect onboarding:
+
+```typescript
+if (seller.stripeAccountId && seller.chargesEnabled) {
+  sessionParams.payment_intent_data = {
+    application_fee_amount: platformFeeCents, // Platform keeps this
+    transfer_data: {
+      destination: seller.stripeAccountId,    // Rest goes to seller
+    },
+  }
+}
+```
+
+> **⚠️ Architectural Note:** The current implementation uses **destination charges** (auto-transfer on payment). The recommended pattern for escrow-style control is **Separate Charges and Transfers**, which allows holding funds until delivery confirmation. See [§ 11. Escrow & Order Lifecycle](#11-escrow--order-lifecycle) and [§ 13. Gaps & Future Work](#13-gaps--future-work) for details on this transition.
+
+---
+
+## 3. Subscription Checkout Flow
+
+### Flow Diagram
+
+```
+┌──────────┐     ┌─────────────────────┐     ┌────────────────┐
+│  Plans   │────▶│ createSubscription  │────▶│ Stripe Hosted  │
+│  Page    │     │ CheckoutSession()   │     │ Checkout       │
+└──────────┘     └─────────────────────┘     └───────┬────────┘
+                                                     │
+                 ┌─────────────────────┐             │ subscribe
+                 │ /api/subscriptions/ │◀────────────┘ complete
+                 │ webhook             │
+                 └─────────┬───────────┘
+                           │
+               ┌───────────▼───────────┐
+               │ Create Subscription   │
+               │ Update Profile Tier   │
+               └───────────────────────┘
+```
+
+### Server Action: `createSubscriptionCheckoutSession`
+
+**Location:** `app/actions/subscriptions.ts`
+
+```typescript
+export async function createSubscriptionCheckoutSession(
+  planId: string,
+  billingPeriod: 'monthly' | 'yearly',
+  locale: string
+): Promise<{ url: string } | { error: string }>
+```
+
+**Session Configuration:**
+
+```typescript
+const session = await stripe.checkout.sessions.create({
+  mode: 'subscription',
+  customer: stripeCustomerId, // Create or reuse
+  line_items: [{
+    price: stripePriceId, // From subscription_plans table
+    quantity: 1,
+  }],
+  metadata: {
+    userId: user.id,
+    planId,
+    billingPeriod,
+  },
+  subscription_data: {
+    metadata: { userId: user.id, planId },
+  },
+  success_url: `${baseUrl}/${locale}/plans/success`,
+  cancel_url: `${baseUrl}/${locale}/plans`,
+})
+```
+
+### Subscription Lifecycle Events
+
+| Event | Webhook Action |
+|-------|----------------|
+| `checkout.session.completed` | Create subscription record, update profile tier |
+| `customer.subscription.updated` | Sync status, handle plan changes |
+| `customer.subscription.deleted` | Downgrade to free tier |
+| `invoice.paid` | Extend subscription period |
+| `invoice.payment_failed` | Mark subscription expired |
+
+---
+
+## 4. Boost Checkout Flow
+
+Boosts promote listings in search results for 1/7/30 days.
+
+### Pricing
+
+| Duration | Price | SKU |
+|----------|-------|-----|
+| 1 day | €0.99 | `boost_24h` |
+| 7 days | €4.99 | `boost_7d` |
+| 30 days | €14.99 | `boost_30d` |
+
+### Free Boosts by Tier
+
+| Tier | Free Boosts/Month |
+|------|-------------------|
+| Plus | 2 |
+| Pro | 5 |
+| Business Pro | 20 |
+| Enterprise | 50 |
+
+### API Route: `/api/boost/checkout`
+
+**Location:** `app/api/boost/checkout/route.ts`
+
+```typescript
+// POST /api/boost/checkout
+// Body: { productId, duration: 1 | 7 | 30 }
+
+const session = await stripe.checkout.sessions.create({
+  mode: 'payment',
+  line_items: [{
+    price_data: {
+      currency: 'eur',
+      unit_amount: priceInCents,
+      product_data: { name: `${duration}-Day Boost` },
+    },
+    quantity: 1,
+  }],
+  metadata: {
+    type: 'listing_boost',  // Distinguishes from product orders
+    productId,
+    sellerId: user.id,
+    durationDays: duration,
+  },
+  success_url: `${baseUrl}/${locale}/sell/listings/${productId}?boosted=true`,
+  cancel_url: `${baseUrl}/${locale}/sell/listings/${productId}`,
+})
+```
+
+---
+
+## 5. Stripe Connect (Seller Payouts)
+
+### Account Type: Express
+
+Stripe handles all KYC/KYB verification. Sellers complete onboarding on Stripe's hosted flow.
+
+### Connect Flow
+
+```
+┌────────────┐     ┌──────────────────┐     ┌─────────────────┐
+│  Seller    │────▶│ POST /api/connect│────▶│ Stripe Express  │
+│  Dashboard │     │ /onboarding      │     │ Onboarding      │
+└────────────┘     └──────────────────┘     └────────┬────────┘
+                                                     │
+                   ┌──────────────────┐              │ complete
+                   │ /api/connect/    │◀─────────────┘
+                   │ webhook          │
+                   └────────┬─────────┘
+                            │
+                ┌───────────▼───────────┐
+                │ Update payout status  │
+                │ charges_enabled: true │
+                └───────────────────────┘
+```
+
+### API Endpoints
+
+| Endpoint | Method | Purpose |
+|----------|--------|---------|
+| `/api/connect/onboarding` | POST | Create Express account + return onboarding URL |
+| `/api/connect/dashboard` | GET | Return Express Dashboard login link |
+| `/api/connect/webhook` | POST | Handle account.updated events |
+
+### Creating Express Account
+
+```typescript
+// lib/stripe-connect.ts
+export async function createConnectAccount(userId: string, email: string) {
+  const account = await stripe.accounts.create({
+    type: 'express',
+    email,
+    capabilities: {
+      card_payments: { requested: true },
+      transfers: { requested: true },
+    },
+    metadata: { userId },
+  })
+  
+  // Save to database
+  await supabase.from('seller_payout_status').insert({
+    seller_id: userId,
+    stripe_connect_account_id: account.id,
+    details_submitted: false,
+    charges_enabled: false,
+    payouts_enabled: false,
+  })
+  
+  return account
+}
+```
+
+### Generating Onboarding Link
+
+```typescript
+export async function createOnboardingLink(accountId: string, locale: string) {
+  const link = await stripe.accountLinks.create({
+    account: accountId,
+    type: 'account_onboarding',
+    refresh_url: `${baseUrl}/${locale}/sell/payouts?refresh=true`,
+    return_url: `${baseUrl}/${locale}/sell/payouts?success=true`,
+  })
+  return link.url
+}
+```
+
+### Money Movement Pattern
+
+**Recommended:** Separate Charges and Transfers
+
+- Buyer is charged on the **platform** account
+- Funds are **transferred** to the connected account only after delivery confirmation or dispute resolution
+- Avoids destination charges that auto-transfer immediately (reduces escrow control)
+
+### Operational Checklist
+
+- Onboarding completion gate before allowing "Buy Now" for seller's products
+- Payout scheduling by seller trust tier (new sellers held longer)
+- Webhook-driven state (don't trust client callbacks)
+
+### Connect Webhook Events
+
+| Event | Action |
+|-------|--------|
+| `account.updated` | Sync `details_submitted`, `charges_enabled`, `payouts_enabled` |
+| `account.application.deauthorized` | Mark account disconnected |
+
+### Open Questions
+
+- Do we require phone verification before Stripe onboarding?
+- Do we allow business KYB without a subscription plan, or require Business Free plan first?
+
+---
+
+## 6. Webhook Handlers
+
+### Non-Negotiables
+
+- Treat Stripe webhooks as the **source of truth**
+- Make every webhook handler **idempotent**
+- Never log secrets (Stripe signatures, request bodies with PII)
+- Persist each event ID and short-circuit duplicates
+
+### Webhook Endpoints Overview
+
+| Endpoint | Secret Env Var | Events |
+|----------|----------------|--------|
+| `/api/checkout/webhook` | `STRIPE_WEBHOOK_SECRET` | `checkout.session.completed`, `payment_intent.succeeded`, `payment_intent.payment_failed` |
+| `/api/payments/webhook` | `STRIPE_WEBHOOK_SECRET` | `checkout.session.completed` (boosts), `payment_method.detached` |
+| `/api/subscriptions/webhook` | `STRIPE_SUBSCRIPTION_WEBHOOK_SECRET` | `checkout.session.completed`, `customer.subscription.*`, `invoice.*` |
+| `/api/connect/webhook` | `STRIPE_CONNECT_WEBHOOK_SECRET` | `account.updated`, `account.application.deauthorized` |
+
+### Minimum Events to Handle
+
+| Event | Purpose |
+|-------|---------|
+| `payment_intent.succeeded` | Confirm payment success |
+| `payment_intent.payment_failed` | Handle payment failures |
+| `charge.refunded` | Process refunds |
+| `charge.dispute.created` | Handle new disputes |
+| `charge.dispute.closed` | Resolve disputes |
+| `account.updated` | Connect onboarding / payouts enabled |
+
+### Signature Validation (Supports Key Rotation)
+
+```typescript
+// Supports multiple secrets (comma or newline separated)
+function getStripeWebhookSecrets(): string[] {
+  const raw = process.env.STRIPE_WEBHOOK_SECRET || ''
+  return raw.split(/[,\n]/).map(s => s.trim()).filter(Boolean)
+}
+
+export async function POST(request: Request) {
+  const body = await request.text()
+  const sig = request.headers.get('stripe-signature')!
+  
+  let event: Stripe.Event | null = null
+  const secrets = getStripeWebhookSecrets()
+  
+  for (const secret of secrets) {
+    try {
+      event = stripe.webhooks.constructEvent(body, sig, secret)
+      break
+    } catch {
+      continue // Try next secret
+    }
+  }
+  
+  if (!event) {
+    return new Response('Invalid signature', { status: 400 })
+  }
+  
+  // Process event...
+}
+```
+
+### Event Deduplication
+
+Persist each Stripe event ID and short-circuit on duplicates to ensure idempotency:
+
+```typescript
+// Check if event already processed
+const { data: existing } = await supabase
+  .from('processed_webhook_events')
+  .select('id')
+  .eq('stripe_event_id', event.id)
+  .single()
+
+if (existing) return new Response('Already processed', { status: 200 })
+
+// Process event, then record it
+await supabase.from('processed_webhook_events').insert({
+  stripe_event_id: event.id,
+  event_type: event.type,
+  processed_at: new Date().toISOString(),
+})
+```
+
+### Order Creation (Idempotent)
+
+```typescript
+// /api/checkout/webhook - checkout.session.completed handler
+
+const session = event.data.object as Stripe.Checkout.Session
+
+// Skip non-order sessions
+if (session.metadata?.type === 'listing_boost') return
+if (session.mode !== 'payment') return
+
+const orderPayload = {
+  user_id: session.metadata!.userId,
+  total_amount: session.amount_total! / 100,
+  status: 'pending',
+  fulfillment_status: 'unfulfilled',
+  stripe_payment_intent_id: session.payment_intent as string,
+  shipping_address: session.shipping_details,
+}
+
+// Upsert for idempotency (unique index on stripe_payment_intent_id)
+const { data: order } = await supabase
+  .from('orders')
+  .upsert(orderPayload, { onConflict: 'stripe_payment_intent_id' })
+  .select()
+  .single()
+
+// Create order items...
+// Create buyer-seller conversation...
+```
+
+---
+
+## 7. Saved Payment Methods
+
+### Flow
+
+```
+┌────────────┐     ┌─────────────────┐     ┌────────────────┐
+│  Settings  │────▶│ createSetup     │────▶│ Stripe Setup   │
+│  Page      │     │ Session()       │     │ Mode Checkout  │
+└────────────┘     └─────────────────┘     └───────┬────────┘
+                                                   │
+                   ┌─────────────────┐             │ card saved
+                   │ /api/payments/  │◀────────────┘
+                   │ webhook         │
+                   └────────┬────────┘
+                            │
+                ┌───────────▼───────────┐
+                │ Save to              │
+                │ user_payment_methods  │
+                └───────────────────────┘
+```
+
+### Server Actions
+
+| Action | Purpose |
+|--------|---------|
+| `createSetupSession()` | Create Checkout Session in setup mode |
+| `getPaymentMethods()` | List user's saved cards |
+| `deletePaymentMethod(id)` | Remove saved card |
+| `setDefaultPaymentMethod(id)` | Set as default |
+
+---
+
+## 8. Database Schema
+
+### orders
+
+```sql
+CREATE TABLE orders (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID REFERENCES auth.users NOT NULL,
+  total_amount DECIMAL(10,2) NOT NULL,
+  status TEXT DEFAULT 'pending',
+  fulfillment_status TEXT DEFAULT 'unfulfilled',
+  shipping_address JSONB,
+  stripe_payment_intent_id TEXT UNIQUE,
+  created_at TIMESTAMPTZ DEFAULT now()
+);
+```
+
+### order_items
+
+```sql
+CREATE TABLE order_items (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  order_id UUID REFERENCES orders NOT NULL,
+  product_id UUID REFERENCES products NOT NULL,
+  seller_id UUID REFERENCES auth.users NOT NULL,
+  variant_id UUID,
+  quantity INTEGER DEFAULT 1,
+  price_at_purchase DECIMAL(10,2) NOT NULL,
+  status TEXT DEFAULT 'pending',
+  tracking_number TEXT,
+  shipping_carrier TEXT
+);
+```
+
+### subscriptions
+
+```sql
+CREATE TABLE subscriptions (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  seller_id UUID REFERENCES auth.users NOT NULL,
+  plan_type TEXT NOT NULL,
+  status TEXT DEFAULT 'active',
+  billing_period TEXT, -- 'monthly' | 'yearly'
+  price_paid DECIMAL(10,2),
+  currency TEXT DEFAULT 'EUR',
+  starts_at TIMESTAMPTZ DEFAULT now(),
+  expires_at TIMESTAMPTZ,
+  auto_renew BOOLEAN DEFAULT true,
+  stripe_subscription_id TEXT UNIQUE,
+  stripe_customer_id TEXT,
+  stripe_price_id TEXT
+);
+```
+
+### listing_boosts
+
+```sql
+CREATE TABLE listing_boosts (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  product_id UUID REFERENCES products NOT NULL,
+  seller_id UUID REFERENCES auth.users NOT NULL,
+  price_paid DECIMAL(10,2),
+  currency TEXT DEFAULT 'EUR',
+  duration_days INTEGER NOT NULL,
+  starts_at TIMESTAMPTZ DEFAULT now(),
+  expires_at TIMESTAMPTZ,
+  is_active BOOLEAN DEFAULT true,
+  stripe_checkout_session_id TEXT UNIQUE
+);
+```
+
+### user_payment_methods
+
+```sql
+CREATE TABLE user_payment_methods (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID REFERENCES auth.users NOT NULL,
+  stripe_payment_method_id TEXT NOT NULL,
+  stripe_customer_id TEXT NOT NULL,
+  card_brand TEXT,
+  card_last4 TEXT,
+  card_exp_month INTEGER,
+  card_exp_year INTEGER,
+  is_default BOOLEAN DEFAULT false
+);
+```
+
+### seller_payout_status
+
+```sql
+CREATE TABLE seller_payout_status (
+  seller_id UUID PRIMARY KEY REFERENCES auth.users,
+  stripe_connect_account_id TEXT UNIQUE,
+  details_submitted BOOLEAN DEFAULT false,
+  charges_enabled BOOLEAN DEFAULT false,
+  payouts_enabled BOOLEAN DEFAULT false,
+  updated_at TIMESTAMPTZ DEFAULT now()
+);
+```
+
+### subscription_plans
+
+```sql
+CREATE TABLE subscription_plans (
+  tier TEXT NOT NULL,
+  account_type TEXT NOT NULL, -- 'personal' | 'business'
+  price_monthly DECIMAL(10,2),
+  price_yearly DECIMAL(10,2),
+  currency TEXT DEFAULT 'EUR',
+  seller_fee_percent DECIMAL(5,2),
+  buyer_protection_percent DECIMAL(5,2),
+  buyer_protection_fixed DECIMAL(10,2),
+  buyer_protection_cap DECIMAL(10,2),
+  stripe_price_monthly_id TEXT,
+  stripe_price_yearly_id TEXT,
+  PRIMARY KEY (tier, account_type)
+);
+```
+
+---
+
+## 9. Testing Payments
+
+### Test Cards
+
+| Scenario | Card Number |
+|----------|-------------|
+| Success | `4242 4242 4242 4242` |
+| Decline | `4000 0000 0000 0002` |
+| 3D Secure | `4000 0025 0000 3155` |
+| Insufficient funds | `4000 0000 0000 9995` |
+
+### Webhook Testing
+
+```bash
+# Install Stripe CLI
+stripe login
+
+# Forward webhooks to local
+stripe listen --forward-to localhost:3000/api/checkout/webhook
+
+# Trigger test events
+stripe trigger checkout.session.completed
+stripe trigger customer.subscription.created
+```
+
+### E2E Tests
+
+| Test File | Coverage |
+|-----------|----------|
+| `e2e/boost-checkout.spec.ts` | Boost purchase flow |
+| `e2e/orders.spec.ts` | Order creation + management |
+
+---
+
+## 10. Escrow & Order Lifecycle
+
+### High-Level Flow
+
+1. Buyer pays via Stripe (platform account)
+2. Order is created in DB (status `paid`)
+3. Seller ships (tracking captured)
+4. Delivery is confirmed (carrier or buyer confirmation)
+5. Platform transfers funds to seller (minus any business seller fee)
+
+### Order Status State Machine
+
+```
+pending_payment → paid → shipped → delivered → completed
+                   │                    │
+                   ├──→ cancelled       ├──→ disputed → refunded
+                   └──→ refunded       └──→ completed
+```
+
+| Status | Description |
+|--------|-------------|
+| `pending_payment` | Checkout initiated, awaiting payment confirmation |
+| `paid` | Payment confirmed via webhook |
+| `shipped` | Seller marked as shipped, tracking provided |
+| `delivered` | Delivery confirmed by carrier or buyer |
+| `completed` | Funds released to seller, order finalized |
+| `disputed` | Buyer opened a dispute |
+| `cancelled` | Order cancelled before shipping |
+| `refunded` | Full or partial refund issued |
+
+### Escrow Release Rules
+
+Funds are **not transferred** to the seller until:
+- Buyer confirms receipt, **or**
+- Auto-confirm window passes (configurable), **and**
+- No open dispute exists
+
+This requires the **Separate Charges and Transfers** pattern (see § 5) rather than destination charges.
+
+---
+
+## 11. Refunds & Disputes
+
+### Refunds (Platform-Initiated)
+
+| Type | Condition |
+|------|-----------|
+| **Full refund** | Item not shipped / order cancelled |
+| **Partial refund** | Approved by support (e.g., item damaged but usable) |
+
+### Disputes (User-Initiated)
+
+| Reason Code | Description |
+|-------------|-------------|
+| `not_received` | Buyer claims item never arrived |
+| `not_as_described` | Item differs from listing |
+| `counterfeit` | Item suspected to be fake |
+| `damaged` | Item arrived damaged |
+
+### Evidence Requirements
+
+When responding to disputes, collect:
+- **Photos** — condition of item received vs. listing photos
+- **Chat excerpts** — buyer-seller conversation history
+- **Tracking info** — shipping carrier tracking and delivery confirmation
+- **Order timeline** — timestamps of payment, shipping, delivery
+
+### Chargebacks (Issuer-Initiated)
+
+- Assume some chargebacks will happen even with good UX
+- Maintain an operational playbook: evidence, response templates, and escalation
+- Respond before deadline; keep an internal log of outcomes
+- If patterns repeat: adjust policies and risk controls (limits, verification, UX)
+
+### Policy Alignment
+
+See `/policies/returns` for the customer-facing returns & refunds policy.
+
+---
+
+## 12. Gaps & Future Work
+
+| Gap | Description | Priority |
+|-----|-------------|----------|
+| **Destination → Separate Charges** | Migrate from destination charges to Separate Charges and Transfers for proper escrow control | High |
+| **Dispute handling** | `charge.dispute.created` webhook not fully implemented | High |
+| **Refund flow** | No automated refunds, manual via Stripe Dashboard | High |
+| **Multi-seller checkout** | Cart with multiple sellers blocked (returns error) | Medium |
+| **Payout scheduling** | No escrow/hold period, funds transfer immediately (see § 10) | Medium |
+| **Invoice generation** | Relies on Stripe invoices, no custom PDF | Low |
+| **Seller without Connect** | Checkout works but funds go to platform (logged warning) | Low |
+
+### Multi-Seller Checkout (Planned)
+
+Current behavior: Returns error `"Multi-seller checkout not supported yet"`
+
+Future implementation:
+1. Split cart by seller
+2. Create separate PaymentIntents per seller
+3. Use `transfer_group` to link related payments
+4. Handle partial failures gracefully
+
+---
+
+## Related Docs
+
+| Doc | Relevance |
+|-----|-----------|
+| [DATABASE.md](/database) | Full schema + RLS policies |
+| [API.md](/api) | Server actions reference |
+| [ARCHITECTURE.md](/engineering) | System overview |
+
+---
+
+## Appendix: Ops Runbook
+
+> Day-to-day and incident playbook for keeping Treido payments reliable.
+
+### Principles (Non-Negotiable)
+
+- Stripe webhooks are the **source of truth**
+- Webhook handlers must be **idempotent**
+- Never log secrets (signatures, full request bodies, PII)
+
+### Daily Checks (Launch Period)
+
+| Area | What to Check |
+|------|---------------|
+| **Webhook health** | No backlog / no signature failures |
+| **Payment failures** | Spikes by payment method / issuer |
+| **Refund queue** | Pending refunds and reasons |
+| **Chargebacks** | New disputes and response deadlines |
+| **Connect** | Onboarding completion rate, payout failures |
+
+### Incident Playbooks
+
+#### 1. Webhook Lag / Downtime
+
+**Symptoms:** Orders stuck in old state (paid but not updated), refunds initiated in Stripe but not reflected in app.
+
+**Actions:**
+1. Confirm Stripe is sending events (Stripe dashboard)
+2. Check if signature verification is failing (key mismatch, env issues)
+3. Pause risky automation (payout releases) until state is consistent
+4. Replay safely: use stored event IDs to avoid duplicates
+5. After recovery: backfill missing state transitions
+
+#### 2. Payment Succeeded but Order Not Updated
+
+**Actions:**
+- Verify webhook event received and processed
+- If missing: reconcile by querying Stripe for the PaymentIntent and updating order state server-side
+- If duplicate/out-of-order: ensure idempotency keys are enforced
+
+#### 3. Transfer / Payout Failures
+
+**Actions:**
+- Confirm seller Connect status (charges/payouts enabled)
+- Confirm transfer destination is correct
+- If failure: keep order in "payout pending", notify support, and retry once fixed
+
+#### 4. Refund Mismatch
+
+**Actions:**
+- Treat Stripe as canonical; update DB state to match Stripe
+- Verify inventory/restock effects (if applicable) are correct
+- Communicate outcome to buyer and seller
+
+#### 5. Chargeback Received
+
+**Actions:**
+1. Capture evidence bundle (order timeline, tracking, chat excerpt, photos)
+2. Respond before deadline; keep an internal log of outcome
+3. If patterns repeat: adjust policies and risk controls (limits, verification, UX)
+
+### Post-Incident
+
+- Write a short postmortem (what happened, impact, fixes, prevention)
+- Add follow-up tasks in `/admin/tasks`
+
+---
+
+*Last updated: 2026-02-08*

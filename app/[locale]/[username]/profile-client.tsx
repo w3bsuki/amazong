@@ -37,9 +37,8 @@ import {
   Gear,
   ChatCircle,
   Users,
-  CheckCircle as Verified,
 } from "@phosphor-icons/react"
-import { ProductCard } from "@/components/shared/product/product-card"
+import { MobileProductCard } from "@/components/shared/product/product-card-mobile"
 import { FollowSellerButton, type FollowSellerActions } from "@/components/shared/seller/follow-seller-button"
 import { SellerVerificationBadge } from "@/components/shared/product/seller-verification-badge"
 import { UserAvatar } from "@/components/shared/user-avatar"
@@ -254,7 +253,7 @@ export function PublicProfileClient({
             <>
               <div className="grid grid-cols-2 gap-3">
                 {products.map((product) => (
-                  <ProductCard
+                  <MobileProductCard
                     key={product.id}
                     id={product.id}
                     title={product.title}
@@ -269,6 +268,7 @@ export function PublicProfileClient({
                     sellerAvatarUrl={profile.avatar_url}
                     sellerVerified={Boolean(profile.is_verified_business)}
                     sellerTier={profile.account_type === 'business' ? 'business' : (profile.tier === 'premium' ? 'premium' : 'basic')}
+                    layout="feed"
                   />
                 ))}
               </div>

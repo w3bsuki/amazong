@@ -59,6 +59,7 @@ const badgeVariants = cva(
         deal: "border-transparent bg-destructive text-destructive-foreground font-semibold",
         sale: "border-transparent bg-destructive text-destructive-foreground font-semibold",
         "limited-time": "border-transparent bg-destructive text-destructive-foreground font-semibold",
+        price: "border-transparent bg-foreground text-background font-semibold tabular-nums",
         promoted: "border-transparent bg-promoted text-promoted-foreground font-semibold",
         sponsored: "border-transparent bg-promoted text-promoted-foreground font-semibold",
 

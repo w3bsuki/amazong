@@ -311,14 +311,37 @@ Use `requireAuth()` from `lib/auth/require-auth.ts` in server actions.
 
 ---
 
-## See Also
+## 12. Ownership Domains
 
-- [PRD.md](./PRD.md) — Product vision & scope
-- [FEATURES.md](./FEATURES.md) — Feature checklist
-- [DESIGN.md](./DESIGN.md) — UI/UX rules
-- [ROUTES.md](./ROUTES.md) — Route map
+> "Departments" are responsibility zones, not separate executors. Treido ships through a single implementation workflow.
+
+| Domain | Ownership | Owns |
+|--------|-----------|------|
+| Styling | Current implementer | Tailwind v4 semantic token rails + shadcn-safe patterns |
+| UI/UX design | Current implementer | Hierarchy, spacing, states, polish |
+| Next.js App Router | Current implementer | Route/layout boundaries, Server vs Client, cache-safe request patterns |
+| Data + auth | Current implementer | Supabase client selection, query shape, auth/session boundaries |
+| Payments | Current implementer | Checkout/webhooks/idempotency safety |
+| Testing | Current implementer | Playwright + Next.js reliability and CI stability |
+| Accessibility | Current implementer | WCAG 2.2 AA semantics, keyboard/focus, screen-reader support |
+
+### Optional Runtime State
+
+- `.codex/TASKS.md` — active task queue (only if you want a backlog)
+- `.codex/DECISIONS.md` — decision log (only if you need traceability)
+- `.codex/SHIPPED.md` — shipped log
 
 ---
 
-*Last updated: 2026-02-01*
+## See Also
+
+- [PRD.md](./PRD.md) — Product vision & scope
+- [DESIGN.md](../DESIGN.md) — UI/UX rules
+- [ROUTES.md](./ROUTES.md) — Route map
+- [AGENTS.md](../AGENTS.md) — Entry point + non-negotiables
+- [WORKFLOW.md](./WORKFLOW.md) — Default shipping loop
+
+---
+
+*Last updated: 2026-02-08*
 

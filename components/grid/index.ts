@@ -6,4 +6,4 @@
  */
 
 export { ProductGrid, ProductGridSkeleton } from "./product-grid";
-export type { ProductGridProps, ProductGridProduct, ViewMode } from "./product-grid";
+export type { ProductGridProps, ProductGridProduct, ProductGridPreset, ViewMode } from "./product-grid";

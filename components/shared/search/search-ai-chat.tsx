@@ -3,15 +3,14 @@
 import * as React from "react"
 import { useChat } from "@ai-sdk/react"
 import { DefaultChatTransport } from "ai"
-import { PaperPlaneRight, Robot, CircleNotch, Package, ArrowRight } from "@phosphor-icons/react"
+import { PaperPlaneRight, Robot, CircleNotch, ArrowRight } from "@phosphor-icons/react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { useTranslations, useLocale } from "next-intl"
 import { cn } from "@/lib/utils"
-import { Link, useRouter } from "@/i18n/routing"
-import Image from "next/image"
-import { formatPrice } from "@/lib/format-price"
+import { Link } from "@/i18n/routing"
+import { ProductMiniCard } from "@/components/shared/product/product-card-mini"
 
 interface SearchAiChatProps {
   className?: string
@@ -72,7 +71,6 @@ function UserChatAvatar({
  */
 export function SearchAiChat({ className, onClose, compact = false }: SearchAiChatProps) {
   const locale = useLocale()
-  const router = useRouter()
   const t = useTranslations("SearchOverlay")
   const inputRef = React.useRef<HTMLInputElement>(null)
   const messagesEndRef = React.useRef<HTMLDivElement>(null)
@@ -105,12 +103,6 @@ export function SearchAiChat({ className, onClose, compact = false }: SearchAiCh
     clearError?.()
     sendMessage({ text: trimmed })
     setInput("")
-  }
-
-  const handleProductClick = (product: ListingCard) => {
-    if (!product.storeSlug) return
-    onClose?.()
-    router.push(`/${product.storeSlug}/${product.slug || product.id}`)
   }
 
   // Extract tool results (listing cards) from messages
@@ -207,36 +199,25 @@ export function SearchAiChat({ className, onClose, compact = false }: SearchAiCh
                     {/* Product listings */}
                     {listings.length > 0 && (
                       <div className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1">
-                        {listings.slice(0, 4).map((listing) => (
-                          <button
-                            key={listing.id}
-                            type="button"
-                            onClick={() => handleProductClick(listing)}
-                            className="shrink-0 w-28 text-left group"
-                          >
-                            <div className="w-28 h-28 bg-muted rounded-lg overflow-hidden ring-1 ring-border">
-                              {listing.image ? (
-                                <Image
-                                  src={listing.image}
-                                  alt={listing.title}
-                                  width={112}
-                                  height={112}
-                                  className="w-full h-full object-cover"
-                                />
-                              ) : (
-                                <div className="w-full h-full flex items-center justify-center">
-                                  <Package size={24} className="text-muted-foreground" />
-                                </div>
-                              )}
+                        {listings.slice(0, 4).map((listing) => {
+                          const href = listing.storeSlug
+                            ? `/${listing.storeSlug}/${listing.slug || listing.id}`
+                            : null
+
+                          return (
+                            <div key={listing.id} className="w-28 shrink-0">
+                              <ProductMiniCard
+                                id={listing.id}
+                                title={listing.title}
+                                price={listing.price}
+                                image={listing.image ?? null}
+                                href={href}
+                                locale={locale}
+                                onClick={() => onClose?.()}
+                              />
                             </div>
-                            <p className="mt-1 text-xs text-foreground line-clamp-2 group-hover:text-primary">
-                              {listing.title}
-                            </p>
-                            <p className="text-xs font-semibold text-price-sale">
-                              {formatPrice(listing.price, { locale })}
-                            </p>
-                          </button>
-                        ))}
+                          )
+                        })}
                         {listings.length > 4 && (
                           <Link
                             href={`/search?q=${encodeURIComponent(input)}`}

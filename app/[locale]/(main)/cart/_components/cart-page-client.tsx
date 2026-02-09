@@ -25,7 +25,7 @@ import {
 import { AppBreadcrumb, breadcrumbPresets } from "@/components/shared/navigation/app-breadcrumb"
 import { useTranslations, useLocale } from "next-intl"
 import { useRecentlyViewed } from "@/hooks/use-recently-viewed"
-import { ProductCard } from "@/components/shared/product/product-card"
+import { ProductMiniCard } from "@/components/shared/product/product-card-mini"
 import { PageShell } from "@/components/shared/page-shell"
 import { useHeaderOptional } from "@/components/providers/header-context"
 
@@ -135,17 +135,18 @@ export default function CartPageClient() {
               </h2>
               <div className="grid grid-cols-2 gap-2 md:grid-cols-4">
                 {recentItems.map((product) => (
-                  <ProductCard
+                  <ProductMiniCard
                     key={`recent-${product.id}`}
                     id={product.id}
                     title={product.title}
                     price={product.price}
                     image={product.image || "/placeholder.svg"}
-                    slug={product.slug}
-                    username={product.username ?? product.storeSlug ?? null}
-                    showQuickAdd={false}
-                    showSeller={false}
-                    showWishlist={false}
+                    href={
+                      (product.username ?? product.storeSlug)
+                        ? `/${product.username ?? product.storeSlug}/${product.slug ?? product.id}`
+                        : null
+                    }
+                    locale={locale}
                   />
                 ))}
               </div>

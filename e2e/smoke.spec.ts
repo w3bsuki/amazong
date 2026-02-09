@@ -131,7 +131,13 @@ test.describe('Smoke Tests - Critical Path', () => {
     expect(newestCardBox).toBeTruthy()
     const promotedCardWidth = promotedCardBox?.width ?? 0
     const newestCardWidth = newestCardBox?.width ?? 0
-    expect(promotedCardWidth).toBeGreaterThan(newestCardWidth * 1.08)
+    const promotedCardHeight = promotedCardBox?.height ?? 0
+    const newestCardHeight = newestCardBox?.height ?? 0
+
+    // Promoted cards should stay aligned to the same width grid rhythm.
+    expect(promotedCardWidth).toBeLessThan(newestCardWidth * 1.06)
+    // Emphasis is vertical (taller media), not horizontal stretching.
+    expect(promotedCardHeight).toBeGreaterThan(newestCardHeight * 1.08)
 
     const newestImage = newestCard.locator('[data-slot="aspect-ratio"]').first()
     await assertVisible(newestImage)

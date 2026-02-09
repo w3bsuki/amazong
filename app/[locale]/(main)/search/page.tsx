@@ -367,10 +367,8 @@ export default async function SearchPage({
           <ProductGrid
             products={gridProducts}
             viewMode="grid"
-            cardAppearance="tile"
-            cardMedia="landscape"
-            cardDensity="compact"
-            cardUiVariant="mobile-clean"
+            preset="mobile-feed"
+            density="compact"
           />
 
           {products.length === 0 && (

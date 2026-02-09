@@ -39,3 +39,22 @@ Ship a safe MVP to production, validate product-market fit, then iterate fast.
 - Add missing features discovered in real usage
 - Start growth loops (referrals, SEO, partnerships)
 - Start reputation iteration (better seller signals, badges milestones)
+
+## Production Readiness Checklist
+
+### Security
+- Admin routes require admin role (no leaks)
+- RLS policies audited for sensitive tables
+- Rate limiting for auth, listings, and chat
+- No secrets/PII in logs
+
+### Payments
+- Webhook idempotency verified in staging
+- Refunds tested end-to-end
+- Payout release logic tested for edge cases
+- Dispute playbook exists (support + engineering)
+
+### Ops
+- Moderation queue exists (reports, blocked users, escalations)
+- Incident response checklist (downtime, webhook failure, fraud spike)
+- Monitoring dashboards and alerting configured

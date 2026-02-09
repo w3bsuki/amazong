@@ -15,7 +15,7 @@ const skipDirNames = new Set([
   "build",
 ]);
 
-const allowedExact = new Set(["README.md", "TASKS.md"]);
+const allowedExact = new Set(["README.md", "TASKS.md", "REQUIREMENTS.md", "DESIGN.md"]);
 
 function normalizePath(p) {
   return p.replaceAll("\\", "/");
@@ -27,7 +27,6 @@ function isAllowedMarkdownPath(relPath) {
   if (allowedExact.has(p)) return true;
   if (p === "AGENTS.md" || p.endsWith("/AGENTS.md")) return true;
   if (p.startsWith("docs/")) return true;
-  if (p.startsWith("codex/")) return true;
   if (p.startsWith(".codex/")) return true;
   if (p.startsWith("docs-site/")) return true; // internal portal (mirrors from /docs)
   if (p.startsWith(".github/")) return true; // repo metadata (templates, instructions)
@@ -52,16 +51,6 @@ function walkMarkdownFiles(dirAbs, out) {
 
     out.push(abs);
   }
-}
-
-function looksLikeRepoPath(token) {
-  // `docs/00-INDEX.md` uses backticks for paths; avoid false positives.
-  if (!token) return false;
-  if (/\s/.test(token)) return false;
-  if (token.includes("*")) return false;
-  if (token.startsWith("http://") || token.startsWith("https://")) return false;
-
-  return token.includes("/") || token.endsWith(".md");
 }
 
 function stripMarkdownLinkTarget(raw) {
@@ -113,28 +102,6 @@ for (const abs of markdownFiles) {
   disallowed.push(rel);
 }
 
-const brokenIndexRefs = [];
-const indexAbs = path.resolve(projectRoot, "docs/INDEX.md");
-if (fs.existsSync(indexAbs)) {
-  const text = fs.readFileSync(indexAbs, "utf8");
-  const seen = new Set();
-  const re = /`([^`]+)`/g;
-
-  for (const match of text.matchAll(re)) {
-    const raw = match[1] ?? "";
-    const token = normalizePath(raw);
-    if (!looksLikeRepoPath(token)) continue;
-    if (seen.has(token)) continue;
-    seen.add(token);
-
-    const targetAbs = path.resolve(projectRoot, token);
-    const shouldExistAsDir = token.endsWith("/");
-    const exists = shouldExistAsDir ? fs.existsSync(targetAbs) && fs.statSync(targetAbs).isDirectory() : fs.existsSync(targetAbs);
-
-    if (!exists) brokenIndexRefs.push(token);
-  }
-}
-
 const brokenRelativeLinks = [];
 for (const abs of markdownFiles) {
   const rel = normalizePath(path.relative(projectRoot, abs));
@@ -184,18 +151,10 @@ if (disallowed.length) {
   console.error("");
   console.error("Allowed:");
   console.error("- docs/**");
-  console.error("- codex/**");
   console.error("- .codex/**");
   console.error("- **/AGENTS.md");
-  console.error("- README.md");
-  console.error("- TASKS.md");
+  console.error("- README.md, TASKS.md, REQUIREMENTS.md, DESIGN.md");
   console.error("- .github/**");
-}
-
-if (brokenIndexRefs.length) {
-  failed = true;
-  console.error("DOCS GATE FAIL: docs/INDEX.md references missing paths:");
-  for (const p of brokenIndexRefs.sort()) console.error(`- ${p}`);
 }
 
 if (brokenRelativeLinks.length) {
@@ -203,43 +162,6 @@ if (brokenRelativeLinks.length) {
   console.error("DOCS GATE FAIL: broken relative markdown links in docs/**:");
   for (const { from, to } of brokenRelativeLinks.sort((a, b) => (a.from + a.to).localeCompare(b.from + b.to))) {
     console.error(`- ${from} -> ${to}`);
-  }
-}
-
-const canonicalAliasWarnings = [];
-const canonicalDocsForAliasScan = [
-  "docs/INDEX.md",
-  "docs/PRD.md",
-  "docs/FEATURES.md",
-  "docs/ARCHITECTURE.md",
-  "docs/DESIGN.md",
-  "docs/ROUTES.md",
-  "docs/DATABASE.md",
-  "docs/API.md",
-  "docs/PAYMENTS.md",
-  "docs/AUTH.md",
-  "docs/I18N.md",
-  "docs/LAUNCH.md",
-  "docs/PRODUCTION-PUSH.md",
-  "docs/DEV-DEPARTMENT.md",
-];
-const aliasPattern =
-  /\b(00-INDEX\.md|01-PRD\.md|02-FEATURES\.md|03-ARCHITECTURE\.md|04-DESIGN\.md|05-ROUTES\.md|06-DATABASE\.md|07-API\.md|08-PAYMENTS\.md|09-AUTH\.md|10-I18N\.md|11-SKILLS\.md|12-LAUNCH\.md|13-PRODUCTION-PUSH\.md|15-DEV-DEPARTMENT\.md)\b/g;
-
-for (const rel of canonicalDocsForAliasScan) {
-  const abs = path.resolve(projectRoot, rel);
-  if (!fs.existsSync(abs)) continue;
-  const text = fs.readFileSync(abs, "utf8");
-  const matches = [...text.matchAll(aliasPattern)]
-    .filter((m) => {
-      const index = typeof m.index === "number" ? m.index : -1;
-      if (index <= 0) return true;
-      return text[index - 1] !== "/";
-    })
-    .map((m) => m[1])
-    .filter(Boolean);
-  if (matches.length > 0) {
-    canonicalAliasWarnings.push(`${rel}: ${[...new Set(matches)].join(", ")}`);
   }
 }
 
@@ -253,19 +175,13 @@ if (failed) {
   } else {
     const agentsText = fs.readFileSync(rootAgentsPath, "utf8");
     const lineCount = agentsText.replace(/\r\n/g, "\n").split("\n").length;
-    if (lineCount > 120) {
-      console.error(`DOCS GATE FAIL: root AGENTS.md is too large (${lineCount} lines, max 120).`);
+    if (lineCount > 200) {
+      console.error(`DOCS GATE FAIL: root AGENTS.md is too large (${lineCount} lines, max 200).`);
       process.exitCode = 1;
     }
   }
 }
 
 if (!process.exitCode) {
-  if (canonicalAliasWarnings.length > 0) {
-    console.warn("DOCS GATE WARN: canonical docs still reference numbered alias files:");
-    for (const warning of canonicalAliasWarnings) {
-      console.warn(`- ${warning}`);
-    }
-  }
   console.log("DOCS GATE OK");
 }

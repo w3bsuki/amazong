@@ -1,131 +1,80 @@
 /**
  * ProductGrid — Responsive product grid
- *
- * A responsive product grid that adapts column count via standard breakpoints.
- *
- * Breakpoints:
- * - Default: 2 columns
- * - sm: 3 columns
- * - md: 4 columns
- * - lg: 5 columns
- * - xl: 6 columns (compact density)
- *
- * Usage:
- * ```tsx
- * <ProductGrid products={products} viewMode="grid" />
- * <ProductGrid products={products} viewMode="list" />
- * ```
  */
 
-"use client";
+"use client"
 
-import * as React from "react";
-import { cn } from "@/lib/utils";
-import { ProductCard } from "@/components/shared/product/product-card";
-import { ProductCardList } from "@/components/shared/product/product-card-list";
-import { AspectRatio } from "@/components/ui/aspect-ratio";
+import * as React from "react"
+import { cn } from "@/lib/utils"
+import { DesktopProductCard } from "@/components/shared/product/product-card-desktop"
+import { MobileProductCard } from "@/components/shared/product/product-card-mobile"
+import { ProductCardList } from "@/components/shared/product/product-card-list"
+import { AspectRatio } from "@/components/ui/aspect-ratio"
 
-export type ViewMode = "grid" | "list";
+export type ViewMode = "grid" | "list"
+export type ProductGridPreset = "desktop" | "mobile-feed" | "mobile-rail"
 
 export interface ProductGridProduct {
-  id: string;
-  title: string;
-  price: number;
-  image: string;
-  // Optional fields - use `| undefined` for exactOptionalPropertyTypes compatibility
-  listPrice?: number | undefined;
-  originalPrice?: number | null | undefined;
-  isOnSale?: boolean | undefined;
-  salePercent?: number | undefined;
-  saleEndDate?: string | null | undefined;
-  createdAt?: string | null | undefined;
-  slug?: string | null | undefined;
-  storeSlug?: string | null | undefined;
-  username?: string | null | undefined;
-  sellerId?: string | null | undefined;
-  sellerName?: string | null | undefined;
-  sellerAvatarUrl?: string | null | undefined;
-  sellerTier?: "basic" | "premium" | "business" | undefined;
-  sellerVerified?: boolean | undefined;
-  location?: string | undefined;
-  condition?: string | undefined;
-  isBoosted?: boolean | undefined;
-  boostExpiresAt?: string | null | undefined;
-  rating?: number | undefined;
-  reviews?: number | undefined;
-  tags?: string[] | undefined;
-  categoryRootSlug?: string | undefined;
-  categoryPath?: Array<{ slug: string; name: string; nameBg?: string | null; icon?: string | null }> | undefined;
-  attributes?: Record<string, unknown> | undefined;
-  freeShipping?: boolean | undefined;
+  id: string
+  title: string
+  price: number
+  image: string
+  listPrice?: number | undefined
+  originalPrice?: number | null | undefined
+  isOnSale?: boolean | undefined
+  salePercent?: number | undefined
+  saleEndDate?: string | null | undefined
+  createdAt?: string | null | undefined
+  slug?: string | null | undefined
+  storeSlug?: string | null | undefined
+  username?: string | null | undefined
+  sellerId?: string | null | undefined
+  sellerName?: string | null | undefined
+  sellerAvatarUrl?: string | null | undefined
+  sellerTier?: "basic" | "premium" | "business" | undefined
+  sellerVerified?: boolean | undefined
+  location?: string | undefined
+  condition?: string | undefined
+  isBoosted?: boolean | undefined
+  boostExpiresAt?: string | null | undefined
+  rating?: number | undefined
+  reviews?: number | undefined
+  soldCount?: number | undefined
+  tags?: string[] | undefined
+  categoryRootSlug?: string | undefined
+  categoryPath?: Array<{ slug: string; name: string; nameBg?: string | null; icon?: string | null }> | undefined
+  attributes?: Record<string, unknown> | undefined
+  freeShipping?: boolean | undefined
 }
 
 export interface ProductGridProps {
-  /** Products to display */
-  products: ProductGridProduct[];
-  /** Display mode - grid or list */
-  viewMode?: ViewMode;
-  /** Density - normal or compact for more columns */
-  density?: "normal" | "compact";
-  /** ProductCard appearance (default: card). Useful for mobile browse tiles. */
-  cardAppearance?: "card" | "tile";
-  /** ProductCard media aspect ratio (default: square). */
-  cardMedia?: "square" | "landscape";
-  /** ProductCard density tuning (default: default). */
-  cardDensity?: "default" | "compact";
-  /** ProductCard title line clamp (default: 1). */
-  cardTitleLines?: 1 | 2;
-  /** ProductCard UI variant (default/home/mobile-clean). */
-  cardUiVariant?: "default" | "home" | "mobile-clean";
-  /** Additional className */
-  className?: string;
-  /** Loading state */
-  isLoading?: boolean;
+  products: ProductGridProduct[]
+  viewMode?: ViewMode
+  density?: "normal" | "compact"
+  preset?: ProductGridPreset
+  className?: string
+  isLoading?: boolean
 }
 
-/**
- * Grid column classes based on container width
- */
 const gridColumnClasses = {
-  normal: [
-    "grid-cols-2",
-    "sm:grid-cols-3",
-    "md:grid-cols-4",
-    "lg:grid-cols-5",
-  ],
-  compact: [
-    "grid-cols-2",
-    "sm:grid-cols-3",
-    "md:grid-cols-4",
-    "lg:grid-cols-5",
-    "xl:grid-cols-6",
-  ],
-} as const;
+  normal: ["grid-cols-2", "sm:grid-cols-3", "md:grid-cols-4", "lg:grid-cols-5"],
+  compact: ["grid-cols-2", "sm:grid-cols-3", "md:grid-cols-4", "lg:grid-cols-5", "xl:grid-cols-6"],
+} as const
 
 export function ProductGrid({
   products,
   viewMode = "grid",
   density = "normal",
-  cardAppearance,
-  cardMedia,
-  cardDensity,
-  cardTitleLines,
-  cardUiVariant,
+  preset = "desktop",
   className,
   isLoading = false,
 }: ProductGridProps) {
   if (isLoading) {
-    return (
-      <ProductGridSkeleton
-        viewMode={viewMode}
-        density={density}
-        {...(cardMedia ? { cardMedia } : {})}
-      />
-    );
+    return <ProductGridSkeleton viewMode={viewMode} density={density} preset={preset} />
   }
 
   if (products.length === 0) {
-    return null;
+    return null
   }
 
   return (
@@ -145,83 +94,106 @@ export function ProductGrid({
           className
         )}
       >
-        {products.map((product, index) => (
-          <div key={product.id} role="listitem">
-            {viewMode === "list" ? (
-              <ProductCardList
-                id={product.id}
-                title={product.title}
-                price={product.price}
-                originalPrice={product.listPrice ?? product.originalPrice ?? null}
-                image={product.image}
-                createdAt={product.createdAt ?? null}
-                slug={product.slug ?? null}
-                username={product.storeSlug ?? product.username ?? null}
-                sellerId={product.sellerId ?? null}
-                sellerName={product.sellerName || product.storeSlug || undefined}
-                sellerVerified={Boolean(product.sellerVerified)}
-                location={product.location}
-                condition={product.condition}
-                freeShipping={product.freeShipping ?? false}
-              />
-            ) : (
-              <ProductCard
-                id={product.id}
-                title={product.title}
-                price={product.price}
-                originalPrice={product.listPrice ?? product.originalPrice ?? null}
-                isOnSale={Boolean(product.isOnSale)}
-                salePercent={product.salePercent ?? 0}
-                saleEndDate={product.saleEndDate ?? null}
-                createdAt={product.createdAt ?? null}
-                image={product.image}
-                rating={product.rating ?? 0}
-                reviews={product.reviews ?? 0}
-                slug={product.slug ?? null}
-                username={product.storeSlug ?? product.username ?? null}
-                sellerId={product.sellerId ?? null}
-                sellerName={product.sellerName || product.storeSlug || undefined}
-                sellerAvatarUrl={product.sellerAvatarUrl ?? null}
-                sellerVerified={Boolean(product.sellerVerified)}
-                {...(product.sellerTier ? { sellerTier: product.sellerTier } : {})}
-                {...(product.location ? { location: product.location } : {})}
-                {...(product.condition ? { condition: product.condition } : {})}
-                tags={product.tags ?? []}
-                isBoosted={Boolean(product.isBoosted)}
-                boostExpiresAt={product.boostExpiresAt ?? null}
-                index={index}
-                {...(product.categoryRootSlug ? { categoryRootSlug: product.categoryRootSlug } : {})}
-                {...(product.categoryPath ? { categoryPath: product.categoryPath } : {})}
-                {...(product.attributes ? { attributes: product.attributes } : {})}
-                {...(cardAppearance ? { appearance: cardAppearance } : {})}
-                {...(cardMedia ? { media: cardMedia } : {})}
-                {...(cardDensity ? { density: cardDensity } : {})}
-                {...(cardTitleLines ? { titleLines: cardTitleLines } : {})}
-                {...(cardUiVariant ? { uiVariant: cardUiVariant } : {})}
-              />
-            )}
-          </div>
-        ))}
+        {products.map((product, index) => {
+          const username = product.storeSlug ?? product.username ?? null
+
+          return (
+            <div key={product.id} role="listitem">
+              {viewMode === "list" ? (
+                <ProductCardList
+                  id={product.id}
+                  title={product.title}
+                  price={product.price}
+                  originalPrice={product.listPrice ?? product.originalPrice ?? null}
+                  image={product.image}
+                  createdAt={product.createdAt ?? null}
+                  slug={product.slug ?? null}
+                  username={username}
+                  sellerId={product.sellerId ?? null}
+                  sellerName={product.sellerName ?? undefined}
+                  sellerAvatarUrl={product.sellerAvatarUrl ?? null}
+                  sellerVerified={Boolean(product.sellerVerified)}
+                  location={product.location}
+                  condition={product.condition}
+                  freeShipping={product.freeShipping ?? false}
+                  isBoosted={Boolean(product.isBoosted)}
+                />
+              ) : preset === "desktop" ? (
+                <DesktopProductCard
+                  id={product.id}
+                  title={product.title}
+                  price={product.price}
+                  originalPrice={product.listPrice ?? product.originalPrice ?? null}
+                  isOnSale={Boolean(product.isOnSale)}
+                  salePercent={product.salePercent ?? 0}
+                  createdAt={product.createdAt ?? null}
+                  image={product.image}
+                  rating={product.rating ?? 0}
+                  reviews={product.reviews ?? 0}
+                  soldCount={product.soldCount ?? 0}
+                  slug={product.slug ?? null}
+                  username={username}
+                  sellerId={product.sellerId ?? null}
+                  sellerName={product.sellerName ?? undefined}
+                  sellerAvatarUrl={product.sellerAvatarUrl ?? null}
+                  sellerVerified={Boolean(product.sellerVerified)}
+                  freeShipping={product.freeShipping ?? false}
+                  location={product.location}
+                  condition={product.condition}
+                  isBoosted={Boolean(product.isBoosted)}
+                  boostExpiresAt={product.boostExpiresAt ?? null}
+                  index={index}
+                  {...(product.sellerTier ? { sellerTier: product.sellerTier } : {})}
+                  {...(product.categoryRootSlug ? { categoryRootSlug: product.categoryRootSlug } : {})}
+                  {...(product.categoryPath ? { categoryPath: product.categoryPath } : {})}
+                />
+              ) : (
+                <MobileProductCard
+                  id={product.id}
+                  title={product.title}
+                  price={product.price}
+                  originalPrice={product.listPrice ?? product.originalPrice ?? null}
+                  salePercent={product.salePercent ?? 0}
+                  createdAt={product.createdAt ?? null}
+                  image={product.image}
+                  rating={product.rating ?? 0}
+                  reviews={product.reviews ?? 0}
+                  slug={product.slug ?? null}
+                  username={username}
+                  sellerId={product.sellerId ?? null}
+                  sellerName={product.sellerName ?? undefined}
+                  sellerAvatarUrl={product.sellerAvatarUrl ?? null}
+                  sellerVerified={Boolean(product.sellerVerified)}
+                  condition={product.condition}
+                  location={product.location}
+                  isBoosted={Boolean(product.isBoosted)}
+                  boostExpiresAt={product.boostExpiresAt ?? null}
+                  index={index}
+                  layout={preset === "mobile-rail" ? "rail" : "feed"}
+                  {...(product.sellerTier ? { sellerTier: product.sellerTier } : {})}
+                  {...(product.categoryPath ? { categoryPath: product.categoryPath } : {})}
+                />
+              )}
+            </div>
+          )
+        })}
       </div>
     </div>
-  );
+  )
 }
 
-/**
- * ProductGridSkeleton — Loading placeholder for ProductGrid
- */
 export function ProductGridSkeleton({
   viewMode = "grid",
   density = "normal",
   count = 12,
-  cardMedia = "square",
+  preset = "desktop",
 }: {
-  viewMode?: ViewMode;
-  density?: "normal" | "compact";
-  count?: number;
-  cardMedia?: "square" | "landscape";
+  viewMode?: ViewMode
+  density?: "normal" | "compact"
+  count?: number
+  preset?: ProductGridPreset
 }) {
-  const ratio = cardMedia === "landscape" ? 4 / 3 : 1;
+  const ratio = preset === "desktop" ? 1 : 4 / 3
 
   return (
     <div data-slot="product-grid-skeleton" className="@container">
@@ -234,29 +206,25 @@ export function ProductGridSkeleton({
       >
         {Array.from({ length: count }).map((_, i) =>
           viewMode === "list" ? (
-            <div
-              key={i}
-              className="flex gap-2.5 p-2 rounded-xl border border-border bg-card"
-            >
-              <div className="aspect-square w-24 rounded-xl bg-muted animate-pulse shrink-0" />
+            <div key={i} className="flex gap-2.5 rounded-xl border border-border bg-card p-2">
+              <div className="aspect-square w-24 shrink-0 animate-pulse rounded-xl bg-muted" />
               <div className="flex-1 space-y-2">
-                <div className="h-4 w-3/4 bg-muted rounded-full animate-pulse" />
-                <div className="h-4 w-1/2 bg-muted rounded-full animate-pulse" />
-                <div className="h-5 w-1/4 bg-muted rounded-full animate-pulse" />
+                <div className="h-4 w-3/4 animate-pulse rounded-full bg-muted" />
+                <div className="h-4 w-1/2 animate-pulse rounded-full bg-muted" />
+                <div className="h-5 w-1/4 animate-pulse rounded-full bg-muted" />
               </div>
             </div>
           ) : (
             <div key={i} className="space-y-2">
-              <div className="relative overflow-hidden rounded-xl bg-muted animate-pulse">
+              <div className="relative overflow-hidden rounded-xl bg-muted">
                 <AspectRatio ratio={ratio} />
               </div>
-              <div className="h-4 w-full bg-muted rounded-full animate-pulse" />
-              <div className="h-4 w-2/3 bg-muted rounded-full animate-pulse" />
+              <div className="h-4 w-full animate-pulse rounded-full bg-muted" />
+              <div className="h-4 w-2/3 animate-pulse rounded-full bg-muted" />
             </div>
           )
         )}
       </div>
     </div>
-  );
+  )
 }
-

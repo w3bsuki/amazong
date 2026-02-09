@@ -9,9 +9,8 @@ export interface ProductCardData {
   isOnSale?: boolean
   salePercent?: number
 
-  categoryRootSlug?: string
-  categoryPath?: Array<{ slug: string; name: string; nameBg?: string | null; icon?: string | null }>
-  attributes?: Record<string, unknown>
+  categoryRootSlug?: string | undefined
+  categoryPath?: Array<{ slug: string; name: string; nameBg?: string | null; icon?: string | null }> | undefined
 
   images?: string[]
   description?: string | null
@@ -19,11 +18,8 @@ export interface ProductCardData {
   sellerId?: string | null
   sellerName?: string | undefined
   sellerAvatarUrl?: string | null
-  sellerTier?: "basic" | "premium" | "business"
+  sellerTier?: "basic" | "premium" | "business" | undefined
   sellerVerified?: boolean
-  sellerEmailVerified?: boolean
-  sellerPhoneVerified?: boolean
-  sellerIdVerified?: boolean
 
   freeShipping?: boolean
 
@@ -34,25 +30,20 @@ export interface ProductCardData {
   rating?: number
   reviews?: number
   soldCount?: number
-  favoritesCount?: number
-  condition?: "new" | "like_new" | "used" | "refurbished" | string
-  location?: string
+  condition?: "new" | "like_new" | "used" | "refurbished" | string | undefined
+  location?: string | undefined
 
   isBoosted?: boolean
   boostExpiresAt?: string | null
 }
 
-export interface ProductCardViewConfig {
-  showQuickAdd?: boolean
-  showWishlist?: boolean
-  showSeller?: boolean
-  showCategoryBadge?: boolean
-  disableQuickView?: boolean
-  appearance?: "card" | "tile"
-  media?: "portrait" | "square" | "landscape"
-  density?: "default" | "compact"
+export interface ProductCardBaseProps extends ProductCardData {
+  className?: string
+  currentUserId?: string | null
+  index?: number
   titleLines?: 1 | 2
-  uiVariant?: "default" | "home" | "mobile-clean"
-  radius?: "xl" | "2xl"
-  maxOverlayBadges?: number
+  showWishlist?: boolean
+  disableQuickView?: boolean
 }
+
+export type MobileProductCardLayout = "feed" | "rail"

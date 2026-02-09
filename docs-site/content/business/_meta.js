@@ -1,6 +1,5 @@
 export default {
   "index": "Overview",
-  "00-INDEX": "00 INDEX",
   "boosts": "Boosts",
   "competitors": "Competitors",
   "decisions": "Decisions",
@@ -8,7 +7,6 @@ export default {
   "investors": "Investors",
   "monetization": "Monetization",
   "ops": "Ops",
-  "pricing": "Pricing",
   "product": "Product",
   "roadmap": "Roadmap",
   "specs": "Specs",
