@@ -30,17 +30,17 @@ import {
   shouldForceMultiSelectCategoryAttribute,
 } from "@/lib/filters/category-attribute"
 import { BULGARIAN_CITIES } from "@/lib/bulgarian-cities"
-import { usePendingFilters } from "./use-pending-filters"
-import { FilterAttributeSectionContent } from "./filter-attribute-section-content"
-import { PriceSlider } from "./price-slider"
-import { FilterRatingSection } from "./filter-rating-section"
-import { FilterAvailabilitySection } from "./filter-availability-section"
-import { FilterCategorySection } from "./filter-category-section"
-import { FilterCheckboxItem } from "./filter-checkbox-item"
-import { FilterRadioGroup, FilterRadioItem } from "./filter-radio-group"
+import { usePendingFilters } from "./state/use-pending-filters"
+import { FilterAttributeSectionContent } from "./sections/filter-attribute-section-content"
+import { PriceSlider } from "./controls/price-slider"
+import { FilterRatingSection } from "./sections/filter-rating-section"
+import { FilterAvailabilitySection } from "./sections/filter-availability-section"
+import { FilterCategorySection } from "./sections/filter-category-section"
+import { FilterCheckboxItem } from "./controls/filter-checkbox-item"
+import { FilterRadioGroup, FilterRadioItem } from "./controls/filter-radio-group"
 import {
   isHiddenFilterAttribute,
-} from "./filter-attribute-config"
+} from "./config/filter-attribute-config"
 
 // =============================================================================
 // FILTER HUB — Main filtering modal with pending/applied state

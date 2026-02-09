@@ -1,7 +1,7 @@
 import { Suspense } from "react"
 import type { Metadata } from "next"
 import { getTranslations, setRequestLocale } from "next-intl/server"
-import { MobileHome } from "@/components/mobile/mobile-home"
+import { MobileHome } from "./_components/mobile-home"
 import { 
   getNewestProducts, 
   getBoostedProducts, 
@@ -13,7 +13,7 @@ import { getCategoryHierarchy } from "@/lib/data/categories"
 import { 
   DesktopHome, 
   DesktopHomeSkeleton 
-} from "@/components/desktop/desktop-home"
+} from "./_components/desktop-home"
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;

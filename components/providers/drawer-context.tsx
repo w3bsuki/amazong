@@ -4,7 +4,7 @@ import * as React from "react"
 import { createContext, useContext, useCallback, useState, useMemo, useEffect } from "react"
 import { trackDrawerOpen, trackDrawerClose } from "@/components/providers/_lib/analytics-drawer"
 import { isDrawerSystemEnabled, getEnabledDrawers } from "@/lib/feature-flags"
-import type { ProductCardData } from "@/components/shared/product/product-card.types"
+import type { ProductCardData } from "@/components/shared/product/card/types"
 
 // =============================================================================
 // TYPES

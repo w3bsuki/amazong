@@ -6,9 +6,9 @@
 
 import * as React from "react"
 import { cn } from "@/lib/utils"
-import { DesktopProductCard } from "@/components/shared/product/product-card-desktop"
-import { MobileProductCard } from "@/components/shared/product/product-card-mobile"
-import { ProductCardList } from "@/components/shared/product/product-card-list"
+import { DesktopProductCard } from "@/components/shared/product/card/desktop"
+import { MobileProductCard } from "@/components/shared/product/card/mobile"
+import { ProductCardList } from "@/components/shared/product/card/list"
 import { AspectRatio } from "@/components/ui/aspect-ratio"
 
 export type ViewMode = "grid" | "list"

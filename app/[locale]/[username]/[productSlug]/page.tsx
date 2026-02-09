@@ -7,7 +7,7 @@ import { fetchProductByUsernameAndSlug, fetchSellerProducts, fetchProductFavorit
 import { fetchProductReviews, type ProductReview } from "@/lib/data/product-reviews"
 import { submitReview } from "@/app/actions/reviews"
 
-import { ProductPageLayout } from "@/components/shared/product/product-page-layout"
+import { ProductPageLayout } from "./_components/product-page-layout"
 import {
   buildProductPageViewModel,
   isUuid,

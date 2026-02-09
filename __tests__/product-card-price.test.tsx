@@ -1,7 +1,7 @@
 import { render } from "@testing-library/react"
 import { describe, expect, test } from "vitest"
 
-import { ProductCardPrice } from "@/components/shared/product/product-card-price"
+import { ProductCardPrice } from "@/components/shared/product/card/price"
 
 describe("ProductCardPrice presentation", () => {
   test("renders soft strip container when presentation is soft-strip", () => {

@@ -20,22 +20,22 @@ import { MobileSafetyTips, MobileReportButton } from "./mobile-trust-sections";
 import { SellerProfileDrawer } from "@/components/mobile/drawers/seller-profile-drawer";
 
 // Shared product components
-import { MetaRow, type CategorySummary } from "@/components/shared/product/meta-row";
-import { ProductHeader } from "@/components/shared/product/product-header";
-import { SpecificationsList } from "@/components/shared/product/specifications-list";
-import { ProductDescription } from "@/components/shared/product/product-description";
-import { DeliveryOptions } from "@/components/shared/product/delivery-options";
-import { ShippingReturnsInfo } from "@/components/shared/product/shipping-returns-info";
-import { SimilarItemsGrid } from "@/components/shared/product/similar-items-grid";
-import { RecentlyViewedTracker } from "@/components/shared/product/recently-viewed-tracker";
+import { MetaRow, type CategorySummary } from "@/components/shared/product/pdp/meta-row";
+import { ProductHeader } from "@/components/shared/product/pdp/product-header";
+import { SpecificationsList } from "@/components/shared/product/pdp/specifications-list";
+import { ProductDescription } from "@/components/shared/product/pdp/product-description";
+import { DeliveryOptions } from "@/components/shared/product/pdp/delivery-options";
+import { ShippingReturnsInfo } from "@/components/shared/product/pdp/shipping-returns-info";
+import { SimilarItemsGrid } from "@/components/shared/product/pdp/similar-items-grid";
+import { RecentlyViewedTracker } from "@/components/shared/product/pdp/recently-viewed-tracker";
 import { PageShell } from "@/components/shared/page-shell";
-import { HeroSpecs } from "@/components/shared/product/hero-specs";
-import { CustomerReviewsHybrid } from "@/components/shared/product/customer-reviews-hybrid";
+import { HeroSpecs } from "@/components/shared/product/pdp/hero-specs";
+import { CustomerReviewsHybrid } from "@/components/shared/product/pdp/customer-reviews-hybrid";
 
 import type { ProductPageViewModel, ResolvedHeroSpec } from "@/lib/view-models/product-page";
 import type { Database } from "@/lib/supabase/database.types";
-import type { CustomerReview } from "@/components/shared/product/customer-reviews-hybrid";
-import type { SubmitReviewFn } from "@/components/shared/product/write-review-dialog";
+import type { CustomerReview } from "@/components/shared/product/pdp/customer-reviews-hybrid";
+import type { SubmitReviewFn } from "@/components/shared/product/pdp/write-review-dialog";
 
 type ProductRow = Database["public"]["Tables"]["products"]["Row"];
 type SellerStatsRow = Database["public"]["Tables"]["seller_stats"]["Row"];

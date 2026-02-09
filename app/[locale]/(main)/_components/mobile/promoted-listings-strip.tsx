@@ -1,0 +1,171 @@
+"use client"
+
+import { useTranslations } from "next-intl"
+import { MobileProductCard } from "@/components/shared/product/card/mobile"
+import type { UIProduct } from "@/lib/types/products"
+import { HomeSectionHeader } from "./home-section-header"
+import { cn } from "@/lib/utils"
+import { Link } from "@/i18n/routing"
+
+interface PromotedListingsStripProps {
+  products: UIProduct[]
+  layout?: "grid" | "strip"
+  maxItems?: number
+  styleDensity?: "default" | "featured"
+  showHeader?: boolean
+  showQuickScopes?: boolean
+  className?: string
+}
+
+export function PromotedListingsStrip({
+  products,
+  layout = "strip",
+  maxItems = 10,
+  showHeader = true,
+  showQuickScopes = true,
+  className,
+}: PromotedListingsStripProps) {
+  const t = useTranslations("Home")
+  const tMobile = useTranslations("Home.mobile")
+  const tProduct = useTranslations("Product")
+
+  if (!products || products.length === 0) return null
+
+  const visibleProducts = products.slice(0, maxItems)
+  const cardWidthClass = "w-(--spacing-home-card-column-w)"
+
+  return (
+    <section
+      data-testid="home-section-promoted"
+      className={cn(
+        showHeader ? "pt-(--spacing-home-section-gap)" : "pt-0.5",
+        className
+      )}
+    >
+      {showHeader && (
+        <HomeSectionHeader
+          title={t("mobile.promotedListings")}
+          href="/search?promoted=true&sort=newest"
+          actionLabel={t("mobile.seeAll")}
+          variant="promoted"
+          badgeLabel={tProduct("adBadge")}
+        />
+      )}
+
+      {showQuickScopes && (
+        <div className="mb-1.5 px-(--spacing-home-inset)">
+          <div className="flex items-center gap-2 overflow-x-auto no-scrollbar">
+            <Link
+              href="/search?promoted=true&sort=newest"
+              className="inline-flex min-h-(--spacing-touch-sm) shrink-0 items-center rounded-full border border-foreground bg-foreground px-3 text-sm font-semibold text-background transition-colors hover:bg-foreground active:bg-foreground"
+            >
+              {tMobile("sort.newest")}
+            </Link>
+            <Link
+              href="/search?promoted=true&sort=price-asc"
+              className="inline-flex min-h-(--spacing-touch-sm) shrink-0 items-center rounded-full border border-border-subtle bg-surface-subtle px-3 text-sm font-medium text-foreground transition-colors hover:bg-hover active:bg-active"
+            >
+              {tMobile("sort.priceLow")}
+            </Link>
+            <Link
+              href="/search?promoted=true&sort=price-desc"
+              className="inline-flex min-h-(--spacing-touch-sm) shrink-0 items-center rounded-full border border-border-subtle bg-surface-subtle px-3 text-sm font-medium text-foreground transition-colors hover:bg-hover active:bg-active"
+            >
+              {tMobile("sort.priceHigh")}
+            </Link>
+            <Link
+              href="/search?promoted=true&nearby=true"
+              className="inline-flex min-h-(--spacing-touch-sm) shrink-0 items-center rounded-full border border-border-subtle bg-surface-subtle px-3 text-sm font-medium text-foreground transition-colors hover:bg-hover active:bg-active"
+            >
+              {tMobile("sort.nearby")}
+            </Link>
+          </div>
+        </div>
+      )}
+
+      {layout === "strip" ? (
+        <div
+          data-testid="home-section-promoted-strip"
+          className="overflow-x-auto scroll-smooth no-scrollbar"
+        >
+          <div className="flex snap-x snap-mandatory gap-(--spacing-home-card-gap) px-(--spacing-home-inset) pb-0.5">
+            {visibleProducts.map((product, index) => (
+              <div
+                key={product.id}
+                className={cn(
+                  "shrink-0 snap-start",
+                  cardWidthClass
+                )}
+              >
+                <MobileProductCard
+                  id={product.id}
+                  title={product.title}
+                  price={product.price}
+                  createdAt={product.createdAt ?? null}
+                  originalPrice={product.listPrice ?? null}
+                  image={product.image}
+                  rating={product.rating}
+                  reviews={product.reviews}
+                  {...(product.freeShipping === true ? { freeShipping: true } : {})}
+                  {...(product.isBoosted ? { isBoosted: true } : {})}
+                  {...(product.boostExpiresAt ? { boostExpiresAt: product.boostExpiresAt } : {})}
+                  index={index}
+                  slug={product.slug ?? null}
+                  username={product.storeSlug ?? null}
+                  sellerId={product.sellerId ?? null}
+                  {...((product.sellerName || product.storeSlug)
+                    ? { sellerName: product.sellerName || product.storeSlug || "" }
+                    : {})}
+                  sellerAvatarUrl={product.sellerAvatarUrl || null}
+                  sellerTier={product.sellerTier ?? "basic"}
+                  sellerVerified={Boolean(product.sellerVerified)}
+                  {...(product.condition ? { condition: product.condition } : {})}
+                  {...(product.categoryPath ? { categoryPath: product.categoryPath } : {})}
+                  {...(product.location ? { location: product.location } : {})}
+                  titleLines={1}
+                  layout="rail"
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+      ) : (
+        <div className="grid grid-cols-2 gap-(--spacing-home-card-gap) px-(--spacing-home-inset) pb-0.5">
+          {visibleProducts.map((product, index) => (
+            <MobileProductCard
+              key={product.id}
+              id={product.id}
+              title={product.title}
+              price={product.price}
+              createdAt={product.createdAt ?? null}
+              originalPrice={product.listPrice ?? null}
+              image={product.image}
+              rating={product.rating}
+              reviews={product.reviews}
+              {...(product.freeShipping === true ? { freeShipping: true } : {})}
+              {...(product.isBoosted ? { isBoosted: true } : {})}
+              {...(product.boostExpiresAt ? { boostExpiresAt: product.boostExpiresAt } : {})}
+              index={index}
+              slug={product.slug ?? null}
+              username={product.storeSlug ?? null}
+              sellerId={product.sellerId ?? null}
+              {...((product.sellerName || product.storeSlug)
+                ? { sellerName: product.sellerName || product.storeSlug || "" }
+                : {})}
+              sellerAvatarUrl={product.sellerAvatarUrl || null}
+              sellerTier={product.sellerTier ?? "basic"}
+              sellerVerified={Boolean(product.sellerVerified)}
+              {...(product.condition ? { condition: product.condition } : {})}
+              {...(product.categoryPath ? { categoryPath: product.categoryPath } : {})}
+              {...(product.location ? { location: product.location } : {})}
+              titleLines={1}
+              layout="feed"
+            />
+          ))}
+        </div>
+      )}
+    </section>
+  )
+}
+
+export type { PromotedListingsStripProps }

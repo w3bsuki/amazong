@@ -38,9 +38,9 @@ import {
   ChatCircle,
   Users,
 } from "@phosphor-icons/react"
-import { MobileProductCard } from "@/components/shared/product/product-card-mobile"
-import { FollowSellerButton, type FollowSellerActions } from "@/components/shared/seller/follow-seller-button"
-import { SellerVerificationBadge } from "@/components/shared/product/seller-verification-badge"
+import { MobileProductCard } from "@/components/shared/product/card/mobile"
+import { FollowSellerButton, type FollowSellerActions } from "./_components/follow-seller-button"
+import { SellerVerificationBadge } from "./_components/seller-verification-badge"
 import { UserAvatar } from "@/components/shared/user-avatar"
 import { useAuth } from "@/components/providers/auth-state-manager"
 import { EmptyStateCTA } from "@/components/shared/empty-state-cta"

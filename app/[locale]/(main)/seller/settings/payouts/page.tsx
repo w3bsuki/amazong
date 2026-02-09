@@ -1,7 +1,7 @@
 import { getTranslations } from "next-intl/server"
 import { redirect } from "@/i18n/routing"
 import { createClient } from "@/lib/supabase/server"
-import { SellerPayoutSetup } from "@/components/shared/seller/seller-payout-setup"
+import { SellerPayoutSetup } from "./_components/seller-payout-setup"
 
 export async function generateMetadata() {
   const t = await getTranslations("seller.payouts")

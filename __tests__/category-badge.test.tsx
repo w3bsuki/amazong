@@ -1,7 +1,7 @@
 import { render } from "@testing-library/react"
 import { describe, expect, test } from "vitest"
 
-import { CategoryBadge } from "@/components/shared/product/category-badge"
+import { CategoryBadge } from "@/components/shared/product/pdp/category-badge"
 
 describe("CategoryBadge", () => {
   test("hides icon content when showIcon is false", () => {

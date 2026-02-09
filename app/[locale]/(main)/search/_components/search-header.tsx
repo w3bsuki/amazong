@@ -3,7 +3,7 @@
 import { Link } from "@/i18n/routing"
 import { useTranslations } from "next-intl"
 import { CaretRight, MagnifyingGlass } from "@phosphor-icons/react"
-import { SaveSearchButton } from "@/components/shared/search/save-search-button"
+import { SaveSearchButton } from "../../_components/search-controls/save-search-button"
 
 interface SearchHeaderProps {
   query?: string

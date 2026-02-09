@@ -2,7 +2,7 @@ import React from "react"
 import { render, screen } from "@testing-library/react"
 import { describe, expect, test, vi } from "vitest"
 
-import { DesktopProductCard } from "@/components/shared/product/product-card-desktop"
+import { DesktopProductCard } from "@/components/shared/product/card/desktop"
 
 vi.mock("next/image", () => ({
   default: ({ alt, src, ...props }: { alt: string; src: string }) => <img alt={alt} src={src} {...props} />,
@@ -37,7 +37,7 @@ vi.mock("@/components/providers/drawer-context", () => ({
   }),
 }))
 
-vi.mock("@/components/shared/product/product-card-actions", () => ({
+vi.mock("@/components/shared/product/card/actions", () => ({
   ProductCardActions: () => <div data-testid="product-card-actions" />,
 }))
 

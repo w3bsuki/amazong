@@ -2,7 +2,7 @@ import React from "react"
 import { cleanup, render, screen } from "@testing-library/react"
 import { afterEach, describe, expect, test, vi } from "vitest"
 
-vi.mock("@/components/shared/product/product-card-desktop", () => ({
+vi.mock("@/components/shared/product/card/desktop", () => ({
   DesktopProductCard: ({ id }: { id: string }) => (
     <a data-testid={`desktop-${id}`} data-slot="product-card-link" href={`/${id}`}>
       desktop-{id}
@@ -10,7 +10,7 @@ vi.mock("@/components/shared/product/product-card-desktop", () => ({
   ),
 }))
 
-vi.mock("@/components/shared/product/product-card-mobile", () => ({
+vi.mock("@/components/shared/product/card/mobile", () => ({
   MobileProductCard: ({ id, layout }: { id: string; layout?: "feed" | "rail" }) => (
     <a
       data-testid={`mobile-${id}`}
@@ -23,7 +23,7 @@ vi.mock("@/components/shared/product/product-card-mobile", () => ({
   ),
 }))
 
-vi.mock("@/components/shared/product/product-card-list", () => ({
+vi.mock("@/components/shared/product/card/list", () => ({
   ProductCardList: ({ id }: { id: string }) => <div data-testid={`list-${id}`}>list-{id}</div>,
 }))
 

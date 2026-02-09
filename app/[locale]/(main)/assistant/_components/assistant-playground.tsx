@@ -23,7 +23,7 @@ import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
 import { Link } from "@/i18n/routing"
-import { ProductMiniCard } from "@/components/shared/product/product-card-mini"
+import { ProductMiniCard } from "@/components/shared/product/card/mini"
 
 type ListingCard = {
   id: string

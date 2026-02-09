@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Switch } from "@/components/ui/switch"
 import { Input } from "@/components/ui/input"
 import { FieldLabel } from "@/components/shared/field"
-import { SearchAiChat } from "@/components/shared/search/search-ai-chat"
+import { SearchAiChat } from "@/components/shared/search/ai/search-ai-chat"
 import { cn } from "@/lib/utils"
 import {
   Popover,

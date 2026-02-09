@@ -8,7 +8,7 @@ import { MagnifyingGlass, ArrowLeft } from "@phosphor-icons/react"
 import { Link, usePathname } from "@/i18n/routing"
 import { useTranslations } from "next-intl"
 import { cn } from "@/lib/utils"
-import { buildSearchHref } from "@/components/shared/search/search-context"
+import { buildSearchHref } from "@/components/shared/search/overlay/search-context"
 import type { ContextualHeaderProps } from "../types"
 
 /**

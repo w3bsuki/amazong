@@ -1,5 +1,5 @@
 import { setRequestLocale, getTranslations } from "next-intl/server"
-import { ComingSoonPage } from "@/components/shared/coming-soon-page"
+import { ComingSoonPage } from "./_components/coming-soon-page"
 import { Wheelchair } from "@phosphor-icons/react/dist/ssr"
 import type { Metadata } from 'next'
 import { validateLocale } from "@/i18n/routing"

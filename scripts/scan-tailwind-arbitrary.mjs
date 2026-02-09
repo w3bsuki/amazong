@@ -11,7 +11,7 @@ const includeExt = new Set([".ts", ".tsx", ".js", ".jsx", ".css", ".mjs"]);
 // Also allow hex colors in the dedicated product swatches file (see .codex/project/DESIGN.md).
 const excludeFiles = new Set([
   "app/globals.css",
-  "components/shared/filters/color-swatches.tsx",
+  "components/shared/filters/controls/color-swatches.tsx",
 ]);
 
 // Focus on the most common styling-debt forms:

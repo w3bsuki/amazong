@@ -2,7 +2,7 @@ import React from "react"
 import { cleanup, render, screen } from "@testing-library/react"
 import { afterEach, describe, expect, test, vi } from "vitest"
 
-import { ProductMiniCard } from "@/components/shared/product/product-card-mini"
+import { ProductMiniCard } from "@/components/shared/product/card/mini"
 
 vi.mock("next/image", () => ({
   default: ({ alt, src, ...props }: { alt: string; src: string }) => <img alt={alt} src={src} {...props} />,

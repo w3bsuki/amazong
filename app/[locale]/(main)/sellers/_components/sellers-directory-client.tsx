@@ -14,7 +14,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 
-import SellersGrid from "@/components/shared/seller/sellers-grid"
+import SellersGrid from "./sellers-grid"
 
 type SortKey = "newest" | "rating" | "products"
 

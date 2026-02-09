@@ -25,7 +25,7 @@ import {
 import { AppBreadcrumb, breadcrumbPresets } from "@/components/shared/navigation/app-breadcrumb"
 import { useTranslations, useLocale } from "next-intl"
 import { useRecentlyViewed } from "@/hooks/use-recently-viewed"
-import { ProductMiniCard } from "@/components/shared/product/product-card-mini"
+import { ProductMiniCard } from "@/components/shared/product/card/mini"
 import { PageShell } from "@/components/shared/page-shell"
 import { useHeaderOptional } from "@/components/providers/header-context"
 

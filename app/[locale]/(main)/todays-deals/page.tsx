@@ -4,7 +4,7 @@ import type { Metadata } from 'next'
 import { validateLocale } from "@/i18n/routing"
 import { AppBreadcrumb, breadcrumbPresets } from "@/components/shared/navigation/app-breadcrumb"
 import { getProducts, toUI } from "@/lib/data/products"
-import { MobileProductCard } from "@/components/shared/product/product-card-mobile"
+import { MobileProductCard } from "@/components/shared/product/card/mobile"
 import { PageShell } from "@/components/shared/page-shell"
 import { cookies } from "next/headers"
 import { parseShippingRegion } from "@/lib/shipping"
