@@ -40,7 +40,7 @@ vi.mock("@/components/shared/product/card/actions", () => ({
 }))
 
 describe("MobileProductCard", () => {
-  test("renders ad badge, seller row, freshness, and wishlist overlay", () => {
+  test("renders seller-only row and dedicated price meta row with freshness + price badge", () => {
     render(
       <MobileProductCard
         id="p-2"
@@ -60,9 +60,20 @@ describe("MobileProductCard", () => {
     )
 
     expect(screen.getByTestId("product-card-ad-badge")).toBeInTheDocument()
-    expect(screen.getByTestId("product-card-seller-row")).toBeInTheDocument()
+    const sellerRow = screen.getByTestId("product-card-seller-row")
+    expect(sellerRow).toBeInTheDocument()
+    expect(sellerRow).toHaveTextContent("Treido")
+    expect(sellerRow).not.toHaveTextContent("justNow")
+
+    const priceRow = screen.getByTestId("product-card-price-row")
+    expect(priceRow).toBeInTheDocument()
+    expect(priceRow).toHaveTextContent("justNow")
+    const rowChildren = priceRow.querySelectorAll(":scope > *")
+    expect(rowChildren.item(0)?.querySelector('[data-slot="badge"]')).not.toBeNull()
+    expect(rowChildren.item(0)).toHaveTextContent("€67")
+    expect(rowChildren.item(rowChildren.length - 1)).toHaveTextContent("justNow")
+
     expect(screen.getByTestId("product-card-actions")).toBeInTheDocument()
-    expect(screen.getByText("justNow")).toBeInTheDocument()
 
     const link = screen.getByRole("link", { name: /open-aifon 17/i })
     expect(link).toHaveAttribute("data-slot", "product-card-link")

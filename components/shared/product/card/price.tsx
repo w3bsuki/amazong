@@ -32,6 +32,8 @@ interface ProductCardPriceProps {
   discountAsBadge?: boolean
   /** Visual presentation style for the price row */
   presentation?: "default" | "soft-strip" | "price-badge"
+  /** Force EUR symbol prefix for compact card readability (e.g., €67) */
+  forceSymbolPrefix?: boolean
 }
 
 // =============================================================================
@@ -53,6 +55,7 @@ function ProductCardPrice({
   trailingLabel,
   discountAsBadge = false,
   presentation = "default",
+  forceSymbolPrefix = false,
 }: ProductCardPriceProps) {
   const currencyCtx = useCurrencyOptional()
   const selectedCurrency = currencyCtx?.currency ?? "EUR"
@@ -66,38 +69,45 @@ function ProductCardPrice({
     ? originalPrice * EUR_TO_BGN_RATE 
     : originalPrice
 
-  // Price formatting (memoized for performance)
-  const formattedPrice = React.useMemo(() => {
-    return new Intl.NumberFormat(locale === "bg" ? "bg-BG" : "en-IE", {
+  const formatCurrencyValue = React.useCallback((value: number, currency: "EUR" | "BGN") => {
+    const formatter = new Intl.NumberFormat(locale === "bg" ? "bg-BG" : "en-IE", {
       style: "currency",
-      currency: selectedCurrency,
+      currency,
       minimumFractionDigits: 0,
       maximumFractionDigits: 2,
-    }).format(displayPrice)
-  }, [displayPrice, locale, selectedCurrency])
+    })
+
+    if (!forceSymbolPrefix || currency !== "EUR") {
+      return formatter.format(value)
+    }
+
+    const parts = formatter.formatToParts(value)
+    const currencySymbol = parts.find((part) => part.type === "currency")?.value ?? "€"
+    const numericPart = parts
+      .filter((part) => part.type !== "currency" && part.type !== "literal")
+      .map((part) => part.value)
+      .join("")
+
+    return `${currencySymbol}${numericPart}`
+  }, [forceSymbolPrefix, locale])
+
+  // Price formatting (memoized for performance)
+  const formattedPrice = React.useMemo(() => {
+    return formatCurrencyValue(displayPrice, selectedCurrency)
+  }, [displayPrice, formatCurrencyValue, selectedCurrency])
 
   const formattedOriginalPrice = React.useMemo(() => {
     if (!displayOriginalPrice) return null
-    return new Intl.NumberFormat(locale === "bg" ? "bg-BG" : "en-IE", {
-      style: "currency",
-      currency: selectedCurrency,
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 2,
-    }).format(displayOriginalPrice)
-  }, [displayOriginalPrice, locale, selectedCurrency])
+    return formatCurrencyValue(displayOriginalPrice, selectedCurrency)
+  }, [displayOriginalPrice, formatCurrencyValue, selectedCurrency])
 
   // Secondary currency (opposite of selected)
   const secondaryCurrency = selectedCurrency === "EUR" ? "BGN" : "EUR"
   const secondaryPrice = selectedCurrency === "EUR" ? price * EUR_TO_BGN_RATE : price
   const formattedSecondaryPrice = React.useMemo(() => {
     if (!showDualCurrency) return null
-    return new Intl.NumberFormat(locale === "bg" ? "bg-BG" : "en-IE", {
-      style: "currency",
-      currency: secondaryCurrency,
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 2,
-    }).format(secondaryPrice)
-  }, [showDualCurrency, secondaryPrice, locale, secondaryCurrency])
+    return formatCurrencyValue(secondaryPrice, secondaryCurrency)
+  }, [formatCurrencyValue, secondaryCurrency, secondaryPrice, showDualCurrency])
 
   const priceRow = (
     <div className={cn("flex items-baseline gap-1", homeEmphasis ? "flex-nowrap" : "flex-wrap")}>

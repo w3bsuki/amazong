@@ -210,38 +210,29 @@ export function MobileProductCard({
       </div>
 
       <CardContent className="flex flex-col gap-1 p-2 pt-2">
-        {(sellerNameLabel || createdAt) && (
-          <div className="flex min-w-0 items-center gap-1.5 text-2xs text-muted-foreground" data-testid="product-card-seller-row">
-            {sellerNameLabel && (
-              <>
-                <span className="relative shrink-0">
-                  <UserAvatar
-                    name={sellerNameLabel}
-                    avatarUrl={sellerAvatarUrl ?? null}
-                    size="sm"
-                    className="size-5 border border-border-subtle"
-                    fallbackClassName="text-2xs font-semibold"
-                  />
-                  {isVerifiedBusinessSeller && (
-                    <span
-                      className="absolute -bottom-0.5 -right-0.5 inline-flex size-3 items-center justify-center rounded-full border border-background bg-verified-business text-verified-business-foreground"
-                      aria-label={t("b2b.verifiedShort")}
-                    >
-                      <Check className="size-2" aria-hidden="true" />
-                    </span>
-                  )}
-                </span>
-                <span className="truncate text-xs font-medium text-foreground">{sellerNameLabel}</span>
-              </>
-            )}
-            {createdAt && (
-              <FreshnessIndicator
-                createdAt={createdAt}
-                variant="text"
-                showIcon={false}
-                className="ml-auto shrink-0 text-2xs text-muted-foreground"
+        {sellerNameLabel && (
+          <div
+            className="flex min-w-0 items-center gap-1.5 text-2xs text-muted-foreground"
+            data-testid="product-card-seller-row"
+          >
+            <span className="relative shrink-0">
+              <UserAvatar
+                name={sellerNameLabel}
+                avatarUrl={sellerAvatarUrl ?? null}
+                size="sm"
+                className="size-5 border border-border-subtle"
+                fallbackClassName="text-2xs font-semibold"
               />
-            )}
+              {isVerifiedBusinessSeller && (
+                <span
+                  className="absolute -bottom-0.5 -right-0.5 inline-flex size-3 items-center justify-center rounded-full border border-background bg-verified-business text-verified-business-foreground"
+                  aria-label={t("b2b.verifiedShort")}
+                >
+                  <Check className="size-2" aria-hidden="true" />
+                </span>
+              )}
+            </span>
+            <span className="min-w-0 flex-1 truncate text-xs font-medium text-foreground">{sellerNameLabel}</span>
           </div>
         )}
 
@@ -254,17 +245,28 @@ export function MobileProductCard({
           {title}
         </h3>
 
-        <div className="min-w-0">
-          <ProductCardPrice
-            price={price}
-            originalPrice={originalPrice}
-            locale={locale}
-            compact
-            homeEmphasis
-            priceEmphasis="strong"
-            presentation={pricePresentation}
-            showOriginalPrice={false}
-          />
+        <div className="flex min-w-0 items-center gap-1.5" data-testid="product-card-price-row">
+          <div className="min-w-0 shrink-0">
+            <ProductCardPrice
+              price={price}
+              originalPrice={originalPrice}
+              locale={locale}
+              compact
+              homeEmphasis
+              priceEmphasis="strong"
+              presentation={pricePresentation}
+              showOriginalPrice={false}
+              forceSymbolPrefix
+            />
+          </div>
+          {createdAt && (
+            <FreshnessIndicator
+              createdAt={createdAt}
+              variant="text"
+              showIcon={false}
+              className="ml-auto min-w-0 shrink-0 text-2xs text-muted-foreground"
+            />
+          )}
         </div>
       </CardContent>
     </Card>

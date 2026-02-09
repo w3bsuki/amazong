@@ -61,14 +61,18 @@ Order + links:
 
 - Use `ProductCard` with:
   - `uiVariant="home"`, `radius="2xl"`, `media="landscape"`
+- Meta hierarchy:
+  - Seller row is seller identity only (avatar + verified + seller name) so long names stay visible.
+  - Price row beneath title uses compact split layout: price on the left, upload date on the right.
 - Overlays max 2:
   - Top-left: **single** badge (discount OR promo).
   - Top-right: wishlist button (consistent container).
 
 ## E) Bottom nav (existing)
 
-- Source: `components/mobile/mobile-tab-bar.tsx`
+- Source: `app/[locale]/_components/mobile-tab-bar.tsx`
 - Safe-area handled by `pb-tabbar-safe` on `<main>` in `app/[locale]/_components/storefront-shell.tsx`.
+- Navigation shell uses a full-width solid surface with top border for consistent drawer/sheet cohesion.
 
 ---
 

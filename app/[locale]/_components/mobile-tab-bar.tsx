@@ -5,6 +5,7 @@ import { House, SquaresFour, ChatCircle, UserCircle, Plus } from "@phosphor-icon
 import { Link, usePathname, useRouter } from "@/i18n/routing"
 import { cn } from "@/lib/utils"
 import { CountBadge } from "@/components/shared/count-badge"
+import { Card, CardContent } from "@/components/ui/card"
 import { useTranslations } from "next-intl"
 import { useMessages } from "@/components/providers/message-context"
 import { useDrawer } from "@/components/providers/drawer-context"
@@ -107,11 +108,11 @@ export function MobileTabBar(_: MobileTabBarProps) {
         aria-label={t("mobileNavigation")}
         data-testid="mobile-tab-bar"
       >
-        <div className="mx-auto max-w-screen-sm px-2">
-          <div
-            data-testid="mobile-tab-bar-dock"
-            className="pointer-events-auto rounded-xl border border-border-subtle bg-surface-elevated px-1 py-0.5 pb-safe shadow-sm"
-          >
+        <Card
+          data-testid="mobile-tab-bar-dock"
+          className="pointer-events-auto w-full rounded-none border-x-0 border-b-0 border-t border-border bg-surface-elevated shadow-none"
+        >
+          <CardContent className="px-1 py-0.5 pb-safe">
             <div className="grid grid-cols-5 items-end gap-0.5">
           {/* Home */}
           <Link
@@ -243,8 +244,8 @@ export function MobileTabBar(_: MobileTabBarProps) {
             </span>
           </button>
             </div>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
       </nav>
     </>
   )

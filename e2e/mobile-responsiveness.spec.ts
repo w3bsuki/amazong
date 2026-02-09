@@ -89,6 +89,8 @@ test.describe("Mobile Responsiveness - Phase 11", () => {
       expect(viewport).toBeTruthy()
       const dockBottom = (dockBox?.y ?? 0) + (dockBox?.height ?? 0)
       expect(Math.abs(dockBottom - (viewport?.height ?? 0))).toBeLessThanOrEqual(2)
+      expect(Math.abs(dockBox?.x ?? 0)).toBeLessThanOrEqual(2)
+      expect(Math.abs((dockBox?.width ?? 0) - (viewport?.width ?? 0))).toBeLessThanOrEqual(2)
     })
 
     test("categories tab opens global category drawer", async ({ page }) => {
