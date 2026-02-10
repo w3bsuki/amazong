@@ -1,436 +1,324 @@
 # DESIGN.md — Treido Design System
 
-> **SSOT for UI/UX + Tailwind v4 + shadcn/ui.** Premium = restraint.
+> SSOT for UI/UX styling rules in Treido.
+> This document is implementation-aligned and mobile-first.
 
-| Scope | Visual design, tokens, components |
-|-------|-----------------------------------|
-| Audience | AI agents, developers |
-| Type | Concept |
-| Stack | Tailwind v4 + shadcn/ui + Radix |
-| Theme | Twitter Blue (oklch) |
-
----
-
-## Quick Answers
-
-| Question | Answer |
-|----------|--------|
-| What color is primary? | Brand blue via `--primary` (`oklch(0.62 0.20 255)` in `app/globals.css`) |
-| What's the default radius? | Base token `--radius: 0.5rem` (8px). Standard components use `rounded-xl` (~12px). |
-| Can I use `bg-primary/10`? | **No.** Use `bg-hover` or `bg-selected` |
-| Can I use `bg-gray-100`? | **No.** Use `bg-muted` |
-| Where are tokens defined? | `app/globals.css` `:root` and `.dark` |
-| Where are primitives? | `components/ui/*` |
-| Gate command? | `pnpm -s styles:gate` |
+| Scope | Visual language, tokens, component behavior, interaction quality bar |
+|---|---|
+| Audience | Engineers, designers, AI agents |
+| Stack | Next.js App Router + Tailwind CSS v4 + shadcn/ui (open code) + Radix |
+| Primary Token Source | `app/globals.css` |
+| Last Updated | 2026-02-10 |
 
 ---
 
-## 2026 Clean Marketplace Rails (Follow These)
+## 1) Source Of Truth And Precedence
 
-- **One accent only**: use `primary` for CTAs, links, active states, focus rings.
-- **Destructive red only**: discounts and error states (no orange/brown "deal" styling).
-- **Minimal elevation**: cards/list rows are border-only; shadows are for overlays only (`shadow-modal`, `shadow-dropdown`).
-- **Dense but tappable**: listing grids use `gap-(--product-grid-gap)` (SSOT: `app/globals.css`), cards use `p-2.5`, buttons/inputs are `h-11`+.
-- **No hover-only UX**: core actions must be reachable without hover.
+1. Runtime code and tokens are truth:
+`app/globals.css`, `app/utilities.css`, `components/ui/*`, route components.
+2. This file is the design SSOT for implementation decisions.
+3. If docs conflict with runtime, follow runtime and update docs in the same batch.
+4. Ignore legacy numbered docs when they conflict with this file or `docs/*.md`.
 
----
+Normative language in this document:
 
-## Part 1: Design Philosophy
-
-### Premium = Restraint
-
-**Premium feels calm. Cheap feels busy.**
-
-- Every element must earn its place
-- Spacing is a design tool, not an afterthought
-- Alignment creates invisible structure users feel, not see
-- Consistency builds trust. Surprise breaks it.
-
-**Premium tells:**
-- Generous whitespace
-- Predictable patterns (no cognitive load)
-- Quiet confidence (no shouting)
-- Polished details (every pixel matters)
-
-**Cheap tells:**
-- Cramped layouts
-- Inconsistent spacing
-- Visual noise competing for attention
-- Missing states (hover, loading, empty)
+- MUST: required for merge
+- SHOULD: strong default; deviations need explicit rationale
+- MAY: optional, context-dependent
 
 ---
 
-## Part 2: Visual Hierarchy
+## 2) 2026 Product Design Direction
 
-### The 5 Levers
+Treido should feel like a modern marketplace app, not a template.
 
-| Lever | Effect | Example |
-|-------|--------|---------|
-| **Size** | Larger = more important | Page title > section title |
-| **Weight** | Bolder = emphasis | Price > description |
-| **Color** | Contrast = attention | Primary CTA > secondary |
-| **Position** | Top/left = first | Key info above fold |
-| **Spacing** | Isolation = importance | CTA with breathing room |
+- Calm base: neutral surfaces and clear spacing.
+- Strong actions: primary blue for revenue-driving CTAs and key intent.
+- Fast scanning: compact but readable hierarchy for feed browsing.
+- Touch confidence: controls are easy to hit with one hand.
+- Minimal decoration: shadows only for overlays, not everyday cards.
 
-**Rule:** Pick 1-2 levers per element. Never all 5.
+Color usage ratio target:
 
-**Squint Test:** Blur vision. Can you identify the focal point? If not, hierarchy is broken.
-
----
-
-## Part 3: Tailwind v4 Token System
-
-### Token Architecture
-
-```
-CSS Variables (:root/.dark) → @theme inline → Tailwind Classes
-     --primary              → --color-primary → bg-primary
-```
-
-| Tier | Purpose | Use |
-|------|---------|-----|
-| Primitive | Raw oklch values | Never directly |
-| Semantic | CSS vars (`--primary`) | Via Tailwind classes |
-| Component | `bg-card`, `text-muted-foreground` | Always |
-
-### Forbidden Patterns ❌
-
-| Pattern | Example | Fix |
-|---------|---------|-----|
-| Palette colors | `bg-gray-100`, `text-blue-500` | `bg-muted`, `text-primary` |
-| Gradients | `bg-gradient-to-r` | Solid `bg-muted` |
-| Arbitrary values | `w-[560px]`, `text-[13px]` | `w-full`, `text-sm` |
-| Opacity tints (brand) | `bg-primary/10` | `bg-hover`, `bg-selected`, or `bg-primary-subtle` |
-| Hardcoded colors | `#ff0000`, `oklch()` in TSX | Semantic token |
-| White/black | `bg-white`, `text-black` | `bg-background`, `text-foreground` |
-
-**Exception:** Product color swatches in `components/shared/filters/color-swatches.tsx` may use hex.
-
-**Allowed (rare):** Token-based alpha only for non-interactive decorative overlays (e.g. `bg-background/90`).
-Do not use alpha on `border-border`; use `border-border-subtle` instead.
-
-### Surface Tokens
-
-| Token | Class | Usage |
-|-------|-------|-------|
-| Page base | `bg-background` | Root body |
-| Subtle tint | `bg-surface-subtle` | Section bands |
-| Cards | `bg-card` | Content containers |
-| Elevated | `bg-surface-elevated` | Sticky elements |
-| Popover | `bg-popover` | Dropdowns, sheets |
-| Gallery | `bg-surface-gallery` | Dark image backgrounds |
-
-**Page canvas (use `PageShell`)**
-- Default pages: `bg-background`
-- Grid/feed pages: `PageShell variant="muted"` → `bg-surface-subtle` (cards pop; premium depth)
-
-### Text Tokens
-
-| Token | Class | Usage |
-|-------|-------|-------|
-| Primary | `text-foreground` | Main text |
-| Secondary | `text-muted-foreground` | Supporting text |
-| On cards | `text-card-foreground` | Card content |
-| Brand accent | `text-primary` | Links, highlights |
-
-### Interactive State Tokens
-
-| State | Background | Border |
-|-------|------------|--------|
-| Default | `bg-background` | `border-border` |
-| Hover | `bg-hover` | `border-hover-border` |
-| Active | `bg-active` | — |
-| Selected | `bg-selected` | `border-selected-border` |
-| Focus | — | `ring-2 ring-ring` |
-
-### Status Tokens
-
-| Status | Background | Text |
-|--------|------------|------|
-| Success | `bg-success` | `text-success-foreground` |
-| Warning | `bg-warning` | `text-warning-foreground` |
-| Error | `bg-error` | `text-error-foreground` |
-| Info | `bg-info` | `text-info-foreground` |
+- 70% neutral surfaces (`background`, `surface-subtle`, `card`)
+- 20% neutral contrast (`foreground`, `muted-foreground`, borders)
+- 10% accent/status (`primary`, `destructive`, badges)
 
 ---
 
-## Part 4: Spacing System
+## 3) Mobile UX Quality Bar (2026)
 
-### Base Unit: 4px
+Treido must meet these defaults:
 
-| Class | Value | Usage |
-|-------|-------|-------|
-| `gap-1` | 4px | Icon-text gaps |
-| `gap-2` | 8px | Related items |
-| `gap-3` | 12px | Form fields |
-| `gap-4` | 16px | Card padding |
-| `gap-6` | 24px | Section padding |
-| `gap-8` | 32px | Major sections |
+- Default touch target: 44px (`--control-default`)
+- Primary target/sticky bars: 48px (`--control-primary`)
+- Dense secondary only: 36px (`--control-compact`)
+- No horizontal page overflow (`documentElement.scrollWidth` must equal viewport width)
+- Respect safe areas (`pt-safe`, `pb-safe`, `pt-app-header`, `pb-tabbar-safe`)
+- Reduced motion support (`prefers-reduced-motion`)
+- Focus visible on all interactive controls
+- Core interactions should feel instant on mobile; optimize for low interaction latency
+- Core mobile interaction targets SHOULD stay under 200ms INP in production telemetry
 
-### Layout Tokens
+External baselines:
 
-| Token / Class | Value | Usage |
-|--------------|-------|-------|
-| `h-11` / `h-(--spacing-touch)` | 44px | Standard interactive controls (mobile-first default) |
-| `h-(--spacing-touch-sm)` / `h-(--control-compact)` | 36px | Dense secondary chips only (never primary nav/actions) |
-| `h-12` / `h-(--control-primary)` | 48px | Primary CTAs and sticky bars |
-| `--spacing-header` | 48px | Header height |
-| `--spacing-bottom-nav` | 48px | Bottom nav |
-
-### Gap vs Padding vs Margin
-
-- **gap**: Space flex/grid children (preferred)
-- **padding**: Container internal space
-- **margin**: Spacing between unrelated blocks (rare)
+- Apple touch guidance: minimum tappable area ~44pt
+- Web.dev touch guidance: at least ~48px with spacing
+- WCAG 2.2 SC 2.5.8: minimum target size 24px in constrained cases
+- No horizontal scrolling for primary page content in mobile layouts
 
 ---
 
-## Part 5: Typography
+## 4) Tailwind v4 + shadcn/ui Rules
 
-### Type Scale
+### 4.1 Token Architecture
 
-| Token | Size | Usage |
-|-------|------|-------|
-| `text-2xs` | 10px | Badges, timestamps |
-| `text-xs` | 12px | Captions, meta |
-| `text-sm` | 14px | Body text |
-| `text-base` | 16px | Prominent body |
-| `text-lg` | 18px | Section titles |
-| `text-xl` | 20px | Page titles |
-| `text-price` | 16px | Prices |
+Use this chain:
 
-### Font Weights
+`CSS vars (:root/.dark) -> @theme inline mapping -> semantic utility classes`
 
-| Weight | Usage |
-|--------|-------|
-| `font-normal` (400) | Body text |
-| `font-medium` (500) | Labels, emphasis |
-| `font-semibold` (600) | Headings, prices |
+Never bypass semantic tokens for normal UI surfaces.
 
----
+### 4.2 Allowed Patterns
 
-## Part 6: Border Radius
+- Semantic classes: `bg-background`, `text-foreground`, `border-border`
+- Token-variable utilities: `w-(--token)`, `h-(--token)`, `gap-(--token)`
+- Component variants through shadcn/CVA (`Button`, `Badge`, `Card`, etc.)
 
-| Token | Value (light mode) | Usage |
-|-------|--------------------|-------|
-| `rounded-sm` | ~6px | Small internal surfaces |
-| `rounded-md` | ~8px | Legacy/default |
-| `rounded-lg` | ~10px | Secondary containers |
-| `rounded-xl` | ~12px | **Cards / list rows / buttons / inputs** |
-| `rounded-2xl` | ~14px | **Sheets / dialogs / popovers** |
-| `rounded-full` | 9999px | Chips / badges / pills |
+### 4.3 Forbidden Patterns
 
----
+- Palette utilities: `text-blue-500`, `bg-gray-100`, `border-zinc-300`
+- Hardcoded color literals in TSX/CSS-in-JS for app UI (`#...`, raw `oklch(...)`)
+- Brand alpha shortcuts for interactive states (`bg-primary/10`)
+- Unbounded one-off arbitrary sizes (`w-[347px]`) when token equivalents exist
+- Card/list shadows as a default styling crutch
 
-## Part 7: shadcn/ui Components
+Exception:
 
-### Component Boundaries
+- Product swatches may use raw color values in dedicated swatch components.
 
-| Layer | Location | Purpose |
-|-------|----------|---------|
-| **Primitives** | `components/ui/*` | Base Radix wrappers |
-| **Composites** | `components/shared/*` | Domain components |
-| **Route-private** | `app/[locale]/(group)/**/_components/*` | Scoped UI |
+Note:
 
-**Forbidden in Primitives:**
-- No domain logic (products, users, orders)
-- No API calls
-- No imports from `app/**` or `components/shared/*`
+- Rails can use `overflow-x-auto` intentionally, but this MUST NOT create page-level overflow.
 
-### Button System
+### 4.4 shadcn/ui Usage Contract
 
-| Variant | Usage |
-|---------|-------|
-| `default` | Primary CTA (Twitter blue) |
-| `secondary` | Dark button |
-| `outline` | Secondary action |
-| `ghost` | Icon buttons, minimal |
-| `destructive` | Delete, cancel |
-| `deal` | Urgency CTAs (sales) |
-| `link` | Inline text links |
-
-| Size | Height | Usage |
-|------|--------|-------|
-| `sm` | 36px | Compact |
-| `default` | 44px | Standard |
-| `lg` | 48px | Touch-safe |
-| `icon` | 44px | Square icon |
-
-### Form Pattern
-
-```tsx
-<Field>
-  <FieldLabel>Email</FieldLabel>
-  <FieldContent>
-    <Input />
-    <FieldDescription>Optional help</FieldDescription>
-    <FieldError>{error}</FieldError>
-  </FieldContent>
-</Field>
-```
-
-### Card Pattern
-
-```tsx
-<Card>
-  <CardHeader>
-    <CardTitle>Title</CardTitle>
-    <CardDescription>Subtitle</CardDescription>
-  </CardHeader>
-  <CardContent>{/* Content */}</CardContent>
-  <CardFooter>{/* Actions */}</CardFooter>
-</Card>
-```
-
-### Badge System
-
-| Variant | Usage |
-|---------|-------|
-| `success` | Completed, verified |
-| `warning` | Pending, low stock |
-| `critical` | Error, urgent |
-| `condition-new` | Product condition |
-| `deal` | Sale percentage |
-| `shipping` | Free shipping |
+- `components/ui/*` are primitives only (no domain logic, no API calls).
+- Treat shadcn as open code you own; keep variants lean and token-based.
+- Reusable business composites belong in `components/shared/*`.
+- Route-private UI belongs in `app/**/_components/*`.
 
 ---
 
-## Part 8: Interactive States
+## 5) Core Tokens (Current Runtime Contract)
 
-### Required States
+Primary source: `app/globals.css`.
 
-| State | Treatment |
-|-------|-----------|
-| Default | Base styling |
-| Hover | `bg-hover` or subtle shift |
-| Active | `bg-active`, slight press |
-| Focus | `ring-2 ring-ring` offset |
-| Disabled | 50% opacity |
-| Loading | Spinner, maintain width |
-| Selected | `bg-selected`, clear distinction |
+### 5.1 Controls
 
----
+| Token | Value | Usage |
+|---|---:|---|
+| `--control-compact` | 36px | Dense chips/icon actions only |
+| `--control-default` | 44px | Default interactive controls |
+| `--control-primary` | 48px | Primary CTA and key bars |
 
-## Part 8.5: App-feel (iOS-inspired) patterns
+### 5.2 Home Spacing
 
-Treido keeps its **Twitter Blue** theme and calm, premium styling. "iOS feel" is about **interaction + layout**, not copying iOS visuals.
+| Token | Value | Usage |
+|---|---:|---|
+| `--spacing-home-inset` | 12px | Mobile page side inset |
+| `--spacing-home-card-gap` | 10px | Grid/rail card gap |
+| `--spacing-home-section-gap` | 16px | Vertical section rhythm |
+| `--spacing-home-card-column-w` | calc token | 2-column feed width |
 
-### Principles
+### 5.3 Surfaces
 
-- Preserve browsing context: deep views open "on top" (not full navigation loss).
-- One clear primary action per screen.
-- Touch-first sizing: primary targets feel easy to hit.
-- Calm surfaces: use spacing + hierarchy, not decoration.
+- `bg-background`: page base
+- `bg-surface-subtle`: low-emphasis containers
+- `bg-card`: card body
+- `bg-surface-elevated`: fixed bars/docks
+- `bg-popover`: sheet/dialog/popover
 
-### Default Patterns
+### 5.4 Radius
 
-| Interaction | Mobile | Desktop |
-|-------------|--------|---------|
-| PDP / quick view | `Sheet` (bottom) | `Dialog` (modal) |
-| Filters | `Sheet` | `Dialog` or right panel |
-| Seller preview | `Sheet` | `Dialog` |
-| Multi-step flows (sell, upgrade, edit) | `Sheet` wizard | `Dialog` wizard |
+- Base token: `--radius: 0.5rem` (8px)
+- Standard controls/cards: `rounded-xl` (~12px with token scale)
+- Sheets/dialogs: `rounded-2xl`
+- Chips/pills: `rounded-full`
 
-### Rules
+### 5.5 Typography
 
-- Prefer **URL-as-state** overlays (Next.js intercepting routes) so deep links + back button work.
-- Sticky headers / bottom CTA bars should use **semantic surfaces** (`bg-surface-elevated`, `border-border`) and safe-area padding utilities from `app/utilities.css` (`pt-safe*`, `pb-safe*`).
-- Press feedback is subtle: `active:bg-active` / `active:opacity-90` + `tap-highlight-transparent` (no new animations).
-- Avoid "glass" via opacity modifiers (`bg-*/90`, `bg-*/10`). If a glass surface is truly needed, add a semantic token in `app/globals.css` and use it normally.
+Primary type tokens in runtime include:
 
-### References
-
-- Roadmap: `docs/14-UI-UX-PLAN.md`
-- Existing modal route pattern: `app/[locale]/(main)/search/@modal/(..)[username]/[productSlug]/page.tsx`
+- `text-2xs`, `text-xs`, `text-compact`, `text-body`, `text-reading`, `text-price`
+- Keep product title compact and scannable; keep price visually dominant
+- Use `text-2xs` sparingly for dense metadata only; primary readable UI copy SHOULD be `text-xs` or larger
 
 ---
 
-## Part 9: Accessibility
+## 6) Mobile Home Contract (`/` on mobile)
 
-**Non-negotiable:**
+Primary implementation:
 
-| Requirement | Implementation |
-|-------------|----------------|
-| Focus visible | `focus-visible:ring-2` |
-| Contrast | 4.5:1 text, 3:1 UI |
-| Touch targets | 44px default for core actions (`--control-default`); 36px allowed only for dense secondary chips |
-| Labels | All inputs labeled |
-| Keyboard | All actions reachable |
-| Reduced motion | Respect `prefers-reduced-motion` |
+- `app/[locale]/(main)/_components/mobile-home.tsx`
+- `components/layout/header/mobile/homepage-header.tsx`
+- `components/mobile/category-nav/category-circles-simple.tsx`
+- `app/[locale]/(main)/_components/mobile/home-feed-controls.tsx`
+- `app/[locale]/(main)/_components/mobile/home-sticky-category-pills.tsx`
+- `components/shared/product/card/mobile.tsx`
+- `app/[locale]/_components/mobile-tab-bar.tsx`
 
----
+### 6.1 Structure Order (Current)
 
-## Part 10: Anti-Patterns
+1. Fixed homepage header (hamburger, logo, inline search, wishlist/cart)
+2. Category circle rail (horizontal)
+3. Sticky category pills (appear after scroll past circles)
+4. Sell CTA banner (primary blue)
+5. Feed controls rail (promoted/all + sort chips + nearby)
+6. Discovery product grid (2 columns)
+7. Optional curated horizontal rail
+8. Bottom tab bar dock
 
-| Don't | Do Instead |
-|-------|------------|
-| Gradients | Solid semantic tokens |
-| `bg-primary/10` | `bg-hover` or `bg-selected` |
-| `bg-gray-100` | `bg-muted` |
-| `w-[560px]` | Scale value or `max-w-*` |
-| Border AND shadow | Choose one |
-| Too many surfaces | Use spacing to group |
-| Inconsistent spacing | 4px base rhythm |
+### 6.2 Home-Specific Behavior Rules
 
----
+- Keep only one high-emphasis blue block above the fold (sell CTA).
+- Feed controls must be compact chips, not full-width segmented tabs.
+- Active chips use strong contrast (foreground inversion) for rapid state recognition.
+- Nearby location is a lightweight toggle with optional city configuration.
+- Category pills and feed chips must remain horizontally scrollable without page overflow.
 
-## Quick Reference Cards
+### 6.3 Product Card Rules (Home Feed)
 
-### Colors
-```
-BACKGROUND:  bg-background, bg-card, bg-muted, bg-surface-subtle
-FOREGROUND:  text-foreground, text-muted-foreground, text-primary
-STATES:      bg-hover, bg-active, bg-selected
-STATUS:      bg-success, bg-warning, bg-error, bg-info
-```
-
-### Spacing
-```
-TIGHT:   gap-1 (4px) - icon + text
-NORMAL:  gap-2 (8px) - list items
-FORM:    gap-3 (12px) - form fields
-CARD:    p-4 (16px) - card padding
-SECTION: gap-6 (24px) - sections
-PAGE:    gap-8 (32px) - major blocks
-```
-
-### Typography
-```
-CAPTION:  text-xs text-muted-foreground
-BODY:     text-sm
-LABEL:    text-sm font-medium
-PRICE:    text-price font-semibold
-TITLE:    text-lg font-semibold
-```
-
-### Components
-```
-BUTTON:   <Button variant="..." size="...">
-CARD:     <Card><CardHeader/><CardContent/><CardFooter/></Card>
-FORM:     <Field><FieldLabel/><FieldContent><Input/></FieldContent></Field>
-BADGE:    <Badge variant="success|warning|critical|deal">
-```
+- Max two image overlays:
+1. One promo badge (when applicable)
+2. Wishlist action
+- Title: one line by default in feed
+- Price row: left price, right freshness timestamp
+- Seller row stays compact and identity-focused
 
 ---
 
-## Verification
+## 7) Component Rules
+
+### 7.1 Buttons
+
+Current runtime variants are defined in `components/ui/button.tsx`.
+
+- `default`: primary CTA
+- `secondary`: low-emphasis neutral surface (not dark-only)
+- `outline`: bordered secondary
+- `ghost`: minimal actions/icons
+- `destructive`: destructive flows
+- `deal`: urgency/promotional action
+
+### 7.2 Chips And Pills
+
+- Base shape: `rounded-full`
+- Dense height allowed (36px) for secondary chip rails
+- Must always include visible selected state (`aria-pressed` + visual inversion)
+- Touch rings are required (`focus-visible:ring-2`)
+- Dense 36px controls MUST NOT be used for primary navigation or destructive confirmation actions
+
+### 7.3 Bottom Navigation
+
+- Exactly five primary items on mobile tab bar
+- Dock uses elevated surface + top border
+- Content area must reserve space with `pb-tabbar-safe`
+
+---
+
+## 8) Motion And Feedback
+
+- Use subtle transitions only (`duration-fast` or `duration-normal`)
+- Avoid decorative motion for static surfaces
+- Press feedback via `active:bg-active` and/or slight opacity change
+- Honor reduced motion globally
+- Avoid introducing bespoke easing/animation tokens when existing `--ease-*` and `--duration-*` tokens suffice
+
+---
+
+## 9) Accessibility Contract
+
+Non-negotiable:
+
+- Text contrast: WCAG AA minimum (4.5:1 body text, 3:1 large text/UI components)
+- Keyboard/focus support for all interactive elements
+- Explicit labels/aria labels for icon-only controls
+- No hover-only critical actions
+- Focus ring visible against both light and dark backgrounds
+- Tap targets below 44px are allowed only in constrained secondary contexts and must still satisfy WCAG 2.5.8 spacing/equivalent exceptions
+
+---
+
+## 10) Drift Guard (Keep SSOT Honest)
+
+When changing these files, update this doc in the same PR:
+
+- `app/globals.css` (tokens, typography, spacing, radii, colors)
+- `components/ui/button.tsx` (button variants/sizes)
+- `app/[locale]/(main)/_components/mobile-home.tsx` (home layout contract)
+- `components/shared/product/card/mobile.tsx` (home card behavior)
+- `app/[locale]/_components/mobile-tab-bar.tsx` (mobile nav behavior)
+
+PR review checklist:
+
+1. Tokens only (no palette leak)
+2. No horizontal overflow on 390px and 393px widths
+3. Touch targets honor 36/44/48 contract by intent
+4. Home structure still matches Section 6 order
+5. States present: default, active, focus, disabled/loading where relevant
+6. Accessibility checks completed (contrast, keyboard/focus, icon-label coverage)
+7. If interaction density changes, verify `HomeFeedControls` and `MobileTabBar` target sizing rules
+
+---
+
+## 11) Verification
+
+Run after any design-related change:
 
 ```bash
-pnpm -s styles:gate    # Check forbidden patterns
-pnpm -s typecheck      # Type safety
-pnpm -s lint           # ESLint
+pnpm -s typecheck
+pnpm -s lint
+pnpm -s styles:gate
+```
+
+Risk-based when behavior changes:
+
+```bash
+pnpm -s test:unit
+REUSE_EXISTING_SERVER=true pnpm -s test:e2e:smoke
+```
+
+Recommended targeted visual/UX checks for Home:
+
+```bash
+pnpm -s test:e2e --grep "Mobile Home Feed Controls"
 ```
 
 ---
 
-## See Also
+## 12) References
 
-- [Tokens SSOT](app/globals.css)
-- [Button Component](components/ui/button.tsx)
-- [PageShell](components/shared/page-shell.tsx)
-- [PRD.md](docs/PRD.md) — Product context
-- [ARCHITECTURE.md](docs/ARCHITECTURE.md) — Module boundaries
+Internal:
 
----
+- `app/globals.css`
+- `app/utilities.css`
+- `components/ui/button.tsx`
+- `app/[locale]/(main)/_components/mobile-home.tsx`
+- `components/layout/header/mobile/homepage-header.tsx`
+- `components/shared/product/card/mobile.tsx`
+- `app/[locale]/_components/mobile-tab-bar.tsx`
 
-*Last updated: 2026-02-08*
+External:
+
+- Tailwind CSS v4 release notes: https://tailwindcss.com/blog/tailwindcss-v4
+- Tailwind CSS v4 theme variables: https://tailwindcss.com/docs/theme
+- shadcn/ui intro (open code): https://ui.shadcn.com/docs
+- shadcn/ui `components.json`: https://ui.shadcn.com/docs/components-json
+- Apple UI design tips (44pt hit target): https://developer.apple.com/design/tips/
+- Apple accessibility HIG: https://developer.apple.com/design/human-interface-guidelines/accessibility
+- web.dev accessible tap targets: https://web.dev/articles/accessible-tap-targets
+- WCAG 2.2 updates: https://www.w3.org/WAI/standards-guidelines/wcag/new-in-22/
+- WCAG 2.2 SC 2.5.8 Target Size: https://www.w3.org/TR/WCAG22/#target-size-minimum
+
+Reference set last verified: 2026-02-10
