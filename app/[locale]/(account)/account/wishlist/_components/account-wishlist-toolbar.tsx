@@ -151,7 +151,7 @@ export function AccountWishlistToolbar({
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder={labels.searchPlaceholder}
-            className="pl-9 pr-9 h-10 rounded-full bg-surface-subtle border-border/40"
+            className="pl-9 pr-9 h-10 rounded-full bg-surface-subtle border-border-subtle"
             aria-label={labels.search}
           />
           {query && (
@@ -182,7 +182,7 @@ export function AccountWishlistToolbar({
                 "flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-all shrink-0",
                 !categoryFilter
                   ? "bg-foreground text-background shadow-sm"
-                  : "bg-background border border-border/60 text-foreground hover:bg-hover"
+                  : "bg-background border border-border-subtle text-foreground hover:bg-hover"
               )}
             >
               {labels.all}
@@ -207,7 +207,7 @@ export function AccountWishlistToolbar({
                 "flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-all shrink-0",
                 categoryFilter === cat.slug
                   ? "bg-foreground text-background shadow-sm"
-                  : "bg-background border border-border/60 text-foreground hover:bg-hover"
+                  : "bg-background border border-border-subtle text-foreground hover:bg-hover"
               )}
             >
               {cat.name}
@@ -230,7 +230,7 @@ export function AccountWishlistToolbar({
                     ? stockFilter === "in-stock"
                       ? "bg-success text-primary-foreground shadow-sm"
                       : "bg-warning text-foreground shadow-sm"
-                    : "bg-background border border-border/60 text-foreground hover:bg-hover"
+                    : "bg-background border border-border-subtle text-foreground hover:bg-hover"
                 )}
               >
                 {stockFilter === "in-stock" ? (

@@ -103,7 +103,7 @@ export function AccountStatsCards({ totals, locale }: AccountStatsProps) {
           <Link
             key={action.href}
             href={action.href}
-            className="group flex items-center gap-2 px-4 py-2 rounded-full bg-background border border-border/60 hover:bg-hover active:bg-active transition-colors shrink-0"
+            className="group flex items-center gap-2 px-4 py-2 rounded-full bg-background border border-border-subtle hover:bg-hover active:bg-active transition-colors shrink-0"
           >
             <div className="flex size-7 items-center justify-center rounded-full bg-muted">
               <action.icon className="size-3.5 text-muted-foreground" strokeWidth={2} />

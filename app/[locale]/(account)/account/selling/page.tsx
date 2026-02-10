@@ -148,7 +148,7 @@ export default async function SellingPage({ params }: SellingPageProps) {
               </div>
             </div>
           </div>
-          <Button asChild size="sm" className="h-9 gap-1.5 rounded-full px-4">
+          <Button asChild size="sm" className="gap-1.5 rounded-full px-4">
             <Link href="/sell">
               <Plus weight="bold" className="size-4" />
               {locale === 'bg' ? 'Добави' : 'Add'}
@@ -158,7 +158,7 @@ export default async function SellingPage({ params }: SellingPageProps) {
 
         {/* Revolut-style stats pills */}
         <div className="flex items-center gap-3 text-sm">
-          <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-background border border-border/60">
+          <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-background border border-border-subtle">
             <Package weight="duotone" className="size-4 text-primary" />
             <span className="font-semibold">{totalProducts}</span>
             <span className="text-muted-foreground">{t.products}</span>
@@ -222,7 +222,7 @@ export default async function SellingPage({ params }: SellingPageProps) {
               {totalProducts.toLocaleString()}
             </CardTitle>
             <div className="pt-1">
-              <Badge variant="outline" className="text-info border-border/60 bg-info/10">
+              <Badge variant="outline" className="text-info border-border-subtle bg-info/10">
                 {locale === 'bg' ? 'Активни' : 'Active'}
               </Badge>
             </div>

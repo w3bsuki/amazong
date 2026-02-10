@@ -263,7 +263,7 @@ export function PhotosField({
         {!compact ? (
           <div className="rounded-md border border-form-section-border bg-form-section-bg overflow-hidden shadow-xs">
             {/* Header */}
-            <div className="p-4 pb-3 border-b border-border/50 bg-surface-subtle">
+            <div className="p-4 pb-3 border-b border-border-subtle bg-surface-subtle">
               <div className="flex items-start justify-between gap-4">
                 <div className="flex items-center gap-3.5">
                   <div className="flex size-10 items-center justify-center rounded-md bg-form-section-bg border border-form-section-border shadow-xs">

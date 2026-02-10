@@ -168,7 +168,7 @@ export function SiteFooter() {
             <div className="lg:hidden px-4 py-6">
                 <Accordion type="single" collapsible defaultValue="help" className="w-full">
                     {footerSections.map((section) => (
-                        <AccordionItem key={section.id} value={section.id} className="border-border/20">
+                        <AccordionItem key={section.id} value={section.id} className="border-border-subtle">
                             <AccordionTrigger className="text-sm font-medium text-background hover:no-underline py-4 hover:text-background">
                                 {section.title}
                             </AccordionTrigger>
@@ -194,12 +194,12 @@ export function SiteFooter() {
             </div>
 
             {/* Desktop Footer Links - 4-Column Grid */}
-            <div className="hidden lg:block border-b border-border/20">
+            <div className="hidden lg:block border-b border-border-subtle">
                 <div className="container py-12">
                     <div className="grid grid-cols-2 lg:grid-cols-4 gap-10">
                         {footerSections.map((section) => (
                             <div key={section.id}>
-                                <h4 className="font-medium text-background text-sm mb-4 pb-2 border-b border-border/10">
+                                <h4 className="font-medium text-background text-sm mb-4 pb-2 border-b border-border-subtle">
                                     {section.title}
                                 </h4>
                                 <nav aria-label={section.title}>
@@ -242,7 +242,7 @@ export function SiteFooter() {
                                 href={social.href}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="size-11 rounded-full bg-background/10 hover:bg-background/20 flex items-center justify-center text-background/70 hover:text-background tap-transparent focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                                className="size-11 rounded-full bg-overlay-light hover:bg-overlay-dark flex items-center justify-center text-overlay-text-muted hover:text-overlay-text tap-transparent focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                                 aria-label={social.name}
                             >
                                 <social.icon />

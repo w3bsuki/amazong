@@ -166,7 +166,7 @@ function QuantityStepper({
         type="button"
         onClick={() => onChange(Math.max(min, value - 1))}
         disabled={value <= min}
-        className="h-full px-4 flex items-center justify-center hover:bg-muted disabled:opacity-40 disabled:cursor-not-allowed transition-colors touch-manipulation border-r border-border/50"
+        className="h-full px-4 flex items-center justify-center hover:bg-muted disabled:opacity-40 disabled:cursor-not-allowed transition-colors touch-manipulation border-r border-border-subtle"
         aria-label="Decrease quantity"
       >
         <Minus className="size-4" weight="bold" />
@@ -188,7 +188,7 @@ function QuantityStepper({
         type="button"
         onClick={() => onChange(Math.min(max, value + 1))}
         disabled={value >= max}
-        className="h-full px-4 flex items-center justify-center hover:bg-muted disabled:opacity-40 disabled:cursor-not-allowed transition-colors touch-manipulation border-l border-border/50"
+        className="h-full px-4 flex items-center justify-center hover:bg-muted disabled:opacity-40 disabled:cursor-not-allowed transition-colors touch-manipulation border-l border-border-subtle"
         aria-label="Increase quantity"
       >
         <Plus className="size-4" weight="bold" />
@@ -329,7 +329,10 @@ export function PricingField({ className, categoryId, idPrefix = "sell-form", co
                     value={currency}
                     onValueChange={(val) => setValue("currency", val as "EUR")}
                   >
-                    <SelectTrigger className="w-auto min-w-24 border-none bg-surface-subtle h-10 rounded-xl font-bold focus:ring-0 focus:ring-offset-0 shadow-none px-3 text-sm">
+                    <SelectTrigger
+                      size="sm"
+                      className="w-auto min-w-24 border-none bg-surface-subtle rounded-xl font-bold focus:ring-0 focus:ring-offset-0 shadow-none px-3 text-sm"
+                    >
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -447,7 +450,7 @@ export function PricingField({ className, categoryId, idPrefix = "sell-form", co
       {!compact ? (
         <div className="rounded-md border border-form-section-border bg-form-section-bg overflow-hidden shadow-xs">
           {/* Header */}
-          <div className="p-section pb-form border-b border-border/50 bg-surface-subtle">
+          <div className="p-section pb-form border-b border-border-subtle bg-surface-subtle">
             <div className="flex items-center gap-form-sm">
               <div className="flex size-10 items-center justify-center rounded-md bg-form-section-bg border border-form-section-border shadow-xs">
                 <CurrencyDollar className="size-5 text-muted-foreground" weight="bold" />

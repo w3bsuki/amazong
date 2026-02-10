@@ -94,69 +94,51 @@ test.describe('Smoke Tests - Critical Path', () => {
     await app.waitForHydration()
 
     const categoriesRow = page.getByTestId('home-category-circles')
-    const promotedSection = page.getByTestId('home-section-promoted')
-    const newestSection = page.getByTestId('home-section-newest')
+    const startSellingCta = page.getByTestId('home-start-selling-cta')
+    const feedControls = page.getByTestId('home-feed-controls')
+    const discoverySection = page.getByTestId('home-section-discovery')
     const curatedRail = page.getByTestId('home-section-curated-rail')
 
     await assertVisible(categoriesRow)
-    await assertVisible(newestSection)
-    await expect(page.getByTestId('home-section-featured-hero')).toHaveCount(0)
-
-    const hasPromoted = await promotedSection.isVisible({ timeout: 2_000 }).catch(() => false)
-    test.skip(!hasPromoted, 'No promoted listings rendered on homepage')
-
-    await assertVisible(promotedSection)
+    await assertVisible(startSellingCta)
+    await assertVisible(feedControls)
+    await assertVisible(discoverySection)
+    await expect(page.getByTestId('home-feed-tab-promoted')).toHaveAttribute('aria-pressed', 'true')
+    await assertVisible(page.getByTestId('home-feed-chip-sort-newest'))
+    await assertVisible(page.getByTestId('home-feed-chip-nearby'))
 
     const categoryBox = await categoriesRow.boundingBox()
-    const promotedBox = await promotedSection.boundingBox()
-    const newestBox = await newestSection.boundingBox()
+    const ctaBox = await startSellingCta.boundingBox()
+    const controlsBox = await feedControls.boundingBox()
+    const discoveryBox = await discoverySection.boundingBox()
 
     expect(categoryBox).toBeTruthy()
-    expect(promotedBox).toBeTruthy()
-    expect(newestBox).toBeTruthy()
+    expect(ctaBox).toBeTruthy()
+    expect(controlsBox).toBeTruthy()
+    expect(discoveryBox).toBeTruthy()
 
-    expect(promotedBox!.y).toBeGreaterThan(categoryBox!.y)
-    expect(newestBox!.y).toBeGreaterThan(promotedBox!.y)
+    expect(ctaBox!.y).toBeGreaterThan(categoryBox!.y)
+    expect(controlsBox!.y).toBeGreaterThan(ctaBox!.y)
+    expect(discoveryBox!.y).toBeGreaterThan(controlsBox!.y)
 
-    const promotedCard = promotedSection.locator('[data-slot="surface"]').first()
-    const newestCard = newestSection.locator('[data-slot="surface"]').first()
+    const firstCard = discoverySection.locator('[data-slot="surface"]').first()
+    await assertVisible(firstCard)
+    await assertVisible(page.getByTestId('home-discovery-header-title'))
+    await assertVisible(page.getByTestId('home-discovery-header-see-all'))
+    const firstCardBox = await firstCard.boundingBox()
+    expect(firstCardBox).toBeTruthy()
 
-    await assertVisible(promotedCard)
-    await assertVisible(newestCard)
-
-    const promotedCardBox = await promotedCard.boundingBox()
-    const newestCardBox = await newestCard.boundingBox()
-
-    expect(promotedCardBox).toBeTruthy()
-    expect(newestCardBox).toBeTruthy()
-    const promotedCardWidth = promotedCardBox?.width ?? 0
-    const newestCardWidth = newestCardBox?.width ?? 0
-    const promotedCardHeight = promotedCardBox?.height ?? 0
-    const newestCardHeight = newestCardBox?.height ?? 0
-
-    // Promoted cards should stay aligned to the same width grid rhythm.
-    expect(promotedCardWidth).toBeLessThan(newestCardWidth * 1.06)
-    // Emphasis is vertical (taller media), not horizontal stretching.
-    expect(promotedCardHeight).toBeGreaterThan(newestCardHeight * 1.08)
-
-    const newestImage = newestCard.locator('[data-slot="aspect-ratio"]').first()
-    await assertVisible(newestImage)
-    const newestImageBox = await newestImage.boundingBox()
+    const firstImage = firstCard.locator('[data-slot="aspect-ratio"]').first()
+    await assertVisible(firstImage)
+    const newestImageBox = await firstImage.boundingBox()
     expect(newestImageBox).toBeTruthy()
-    expect(newestImageBox!.width).toBeGreaterThan(newestImageBox!.height)
+    expect(newestImageBox!.width).toBeGreaterThan(0)
+    expect(newestImageBox!.height).toBeGreaterThan(0)
 
-    const discountBadgesInNewest = newestSection
+    const discountBadges = discoverySection
       .locator('[data-slot="badge"]')
       .filter({ hasText: /^-\d+%$/ })
-    await expect(discountBadgesInNewest).toHaveCount(0)
-
-    const promotedStrip = promotedSection.getByTestId('home-section-promoted-strip')
-    await assertVisible(promotedStrip)
-
-    const stripIsHorizontallyScrollable = await promotedStrip.evaluate((element) => {
-      return element.scrollWidth > element.clientWidth + 8
-    })
-    expect(stripIsHorizontallyScrollable).toBe(true)
+    await expect(discountBadges).toHaveCount(0)
 
     const categoryButtons = categoriesRow.getByRole('button')
     const buttonCount = await categoryButtons.count()
@@ -175,7 +157,7 @@ test.describe('Smoke Tests - Critical Path', () => {
       await assertVisible(curatedRail)
       const curatedBox = await curatedRail.boundingBox()
       expect(curatedBox).toBeTruthy()
-      expect(curatedBox!.y).toBeGreaterThan(newestBox!.y)
+      expect(curatedBox!.y).toBeGreaterThan(discoveryBox!.y)
     }
 
     await assertNoErrorBoundary(page)

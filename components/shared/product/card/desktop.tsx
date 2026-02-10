@@ -175,7 +175,7 @@ export function DesktopProductCard({
     <Card
       data-slot="surface"
       className={cn(
-        "tap-highlight tap-transparent group relative flex h-full min-w-0 cursor-pointer flex-col overflow-hidden rounded-xl border-border/40 shadow-none",
+        "tap-highlight tap-transparent group relative flex h-full min-w-0 cursor-pointer flex-col overflow-hidden rounded-xl border-border-subtle shadow-none",
         className
       )}
     >

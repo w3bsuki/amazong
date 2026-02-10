@@ -628,7 +628,7 @@ export function ChatInterface({
                 // Generic system message (status updates, etc.)
                 return (
                   <div key={message.id} className="flex justify-center my-3">
-                    <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-surface-subtle border border-border/50">
+                    <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-surface-subtle border border-border-subtle">
                       <span className="text-xs text-muted-foreground">
                         {message.content.replaceAll('**', "").replaceAll('_', "").split("\n")[0]}
                       </span>

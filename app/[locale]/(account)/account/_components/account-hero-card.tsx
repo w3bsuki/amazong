@@ -54,8 +54,8 @@ export function AccountHeroCard({ totals, locale, userName }: AccountHeroCardPro
   return (
     <div className="relative overflow-hidden rounded-md bg-foreground p-4 sm:p-4 text-background">
       {/* Background decoration */}
-      <div className="absolute top-0 right-0 w-32 h-32 sm:w-48 sm:h-48 bg-background/5 rounded-full -translate-y-1/2 translate-x-1/2" />
-      <div className="absolute bottom-0 left-0 w-24 h-24 sm:w-32 sm:h-32 bg-background/5 rounded-full translate-y-1/2 -translate-x-1/2" />
+      <div className="absolute top-0 right-0 w-32 h-32 sm:w-48 sm:h-48 bg-overlay-light rounded-full -translate-y-1/2 translate-x-1/2" />
+      <div className="absolute bottom-0 left-0 w-24 h-24 sm:w-32 sm:h-32 bg-overlay-light rounded-full translate-y-1/2 -translate-x-1/2" />
       
       {/* Content */}
       <div className="relative z-10">
@@ -75,7 +75,7 @@ export function AccountHeroCard({ totals, locale, userName }: AccountHeroCardPro
               {formatCurrency(totals.revenue)}
             </span>
             {totals.revenue > 0 && (
-              <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-background/15 text-xs font-medium">
+              <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-overlay-light text-xs font-medium">
                 {trend === 'up' && <IconTrendingUp className="size-3" />}
                 {trend === 'down' && <IconTrendingDown className="size-3" />}
                 {trend === 'neutral' && <IconMinus className="size-3" />}

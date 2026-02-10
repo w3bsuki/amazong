@@ -180,7 +180,7 @@ function CategorySelector({
 
       <div className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-4 gap-2">
         <Select value={l0} onValueChange={handleL0Change}>
-          <SelectTrigger className="h-9">
+          <SelectTrigger size="sm">
             <SelectValue placeholder="Category" />
           </SelectTrigger>
           <SelectContent>
@@ -191,7 +191,7 @@ function CategorySelector({
         </Select>
 
         <Select value={l1} onValueChange={handleL1Change} disabled={!l0 || l1Categories.length === 0}>
-          <SelectTrigger className="h-9">
+          <SelectTrigger size="sm">
             <SelectValue placeholder="Subcategory" />
           </SelectTrigger>
           <SelectContent>
@@ -202,7 +202,7 @@ function CategorySelector({
         </Select>
 
         <Select value={l2} onValueChange={handleL2Change} disabled={!l1 || l2Categories.length === 0}>
-          <SelectTrigger className="h-9">
+          <SelectTrigger size="sm">
             <SelectValue placeholder="Type" />
           </SelectTrigger>
           <SelectContent>
@@ -213,7 +213,7 @@ function CategorySelector({
         </Select>
 
         <Select value={l3} onValueChange={handleL3Change} disabled={!l2 || l3Categories.length === 0}>
-          <SelectTrigger className="h-9">
+          <SelectTrigger size="sm">
             <SelectValue placeholder="Subtype" />
           </SelectTrigger>
           <SelectContent>
@@ -538,14 +538,14 @@ export function ProductFormModal({
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="size-7 bg-background/90 hover:bg-background text-foreground"
+                            className="size-7 bg-background hover:bg-hover text-foreground"
                           >
                             <IconGripVertical className="size-3.5" />
                           </Button>
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="size-7 bg-background/90 hover:bg-background text-destructive"
+                            className="size-7 bg-background hover:bg-hover text-destructive"
                             onClick={() => removeImage(index)}
                           >
                             <IconTrash className="size-3.5" />
@@ -715,7 +715,7 @@ export function ProductFormModal({
                         value={watch("weightUnit")}
                         onValueChange={(v) => setValue("weightUnit", v as "kg" | "g" | "lb" | "oz")}
                       >
-                        <SelectTrigger className="h-9">
+                        <SelectTrigger size="sm">
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>

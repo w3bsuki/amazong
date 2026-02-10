@@ -37,17 +37,22 @@ export function MobileHomepageHeader({
           type="button"
           onClick={onSearchOpen}
           className={cn(
-            "ml-2 flex h-9 min-w-0 flex-1 items-center gap-1.5 rounded-full px-3",
-            "bg-surface-subtle",
-            "text-left text-muted-foreground",
-            "transition-colors hover:bg-hover active:bg-active",
-            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
+            "group ml-2 flex min-h-(--control-default) min-w-0 flex-1 items-center",
+            "tap-transparent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
           )}
           aria-label={searchPlaceholder}
           aria-haspopup="dialog"
         >
-          <MagnifyingGlass size={16} weight="regular" className="shrink-0 text-muted-foreground" />
-          <span className="flex-1 truncate text-xs font-medium text-muted-foreground">{searchPlaceholder}</span>
+          <span
+            className={cn(
+              "flex h-(--control-compact) w-full items-center gap-1.5 rounded-full px-3",
+              "bg-surface-subtle text-left text-muted-foreground transition-colors",
+              "group-hover:bg-hover group-active:bg-active"
+            )}
+          >
+            <MagnifyingGlass size={16} weight="regular" className="shrink-0 text-muted-foreground" />
+            <span className="flex-1 truncate text-xs font-medium text-muted-foreground">{searchPlaceholder}</span>
+          </span>
         </button>
         <div className="flex shrink-0 items-center -space-x-1">
           <MobileWishlistButton />

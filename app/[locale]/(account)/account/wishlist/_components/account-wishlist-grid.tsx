@@ -501,7 +501,7 @@ export function AccountWishlistGrid({ items, locale, onRemove }: WishlistGridPro
             </div>
 
             {/* Wishlist heart indicator */}
-            <div className="absolute top-3 left-3 flex size-8 items-center justify-center rounded-full bg-background/90">
+            <div className="absolute top-3 left-3 flex size-8 items-center justify-center rounded-full bg-background">
               <IconHeart className="size-4 text-destructive fill-destructive" />
             </div>
           </div>
@@ -514,7 +514,7 @@ export function AccountWishlistGrid({ items, locale, onRemove }: WishlistGridPro
           <Button
             variant="outline"
             onClick={handleAddAllToCart}
-            className="border-border/60 hover:bg-hover active:bg-active"
+            className="border-border-subtle hover:bg-hover active:bg-active"
           >
             <ShoppingCart className="size-4 mr-2" />
             {labels.addAllToCart} ({items.filter(i => i.stock > 0).length})

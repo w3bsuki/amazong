@@ -489,8 +489,7 @@ export function SellingProductsList({ products, locale, actions }: SellingProduc
                   <div className="flex flex-col gap-1.5 shrink-0">
                     <Button
                       variant="ghost"
-                      size="icon"
-                      className="size-8"
+                      size="icon-sm"
                       onClick={() => openDiscountDialog(product)}
                       title={t('discountTooltip')}
                     >
@@ -504,8 +503,8 @@ export function SellingProductsList({ products, locale, actions }: SellingProduc
                         trigger={
                           <Button
                             variant="ghost"
-                            size="icon"
-                            className={`size-8 ${boostExpired ? 'text-muted-foreground hover:text-primary' : 'text-primary'} hover:bg-hover`}
+                            size="icon-sm"
+                            className={`${boostExpired ? 'text-muted-foreground hover:text-primary' : 'text-primary'} hover:bg-hover`}
                             title={boostExpired ? tBoost('reboost') : tBoost('trigger')}
                           >
                             <Lightning className="size-4" weight="bold" />
@@ -516,8 +515,7 @@ export function SellingProductsList({ products, locale, actions }: SellingProduc
                     {/* Pause/Unpause button */}
                     <Button
                       variant="ghost"
-                      size="icon"
-                      className="size-8"
+                      size="icon-sm"
                       onClick={() => handleToggleStatus(product.id, product.status)}
                       disabled={togglingId === product.id}
                     >
@@ -527,7 +525,7 @@ export function SellingProductsList({ products, locale, actions }: SellingProduc
                         <Pause className="size-4 text-warning" weight="fill" />
                       )}
                     </Button>
-                    <Button asChild variant="ghost" size="icon" className="size-8">
+                    <Button asChild variant="ghost" size="icon-sm">
                       <Link href={`/account/selling/${product.id}/edit`}>
                         <Pencil className="size-4" />
                       </Link>
@@ -537,8 +535,8 @@ export function SellingProductsList({ products, locale, actions }: SellingProduc
                       <AlertDialogTrigger asChild>
                         <Button
                           variant="ghost"
-                          size="icon"
-                          className="size-8 text-destructive hover:bg-destructive-subtle"
+                          size="icon-sm"
+                          className="text-destructive hover:bg-destructive-subtle"
                           disabled={deletingId === product.id}
                         >
                           <Trash className="size-4" />
@@ -690,7 +688,7 @@ export function SellingProductsList({ products, locale, actions }: SellingProduc
                       <Button
                         variant="outline"
                         size="sm"
-                        className={`gap-1.5 ${boostExpired ? 'text-muted-foreground border-border hover:text-primary hover:border-selected-border' : 'text-primary border-selected-border'} hover:bg-hover h-9 px-3 rounded-full`}
+                        className={`gap-1.5 ${boostExpired ? 'text-muted-foreground border-border hover:text-primary hover:border-selected-border' : 'text-primary border-selected-border'} hover:bg-hover px-3 rounded-full`}
                       >
                         <Lightning className="size-4" weight="bold" />
                         {boostExpired ? tBoost('reboost') : tBoost('trigger')}
@@ -701,8 +699,7 @@ export function SellingProductsList({ products, locale, actions }: SellingProduc
                 {/* Discount Button */}
                 <Button
                   variant="ghost"
-                  size="icon"
-                  className="size-9"
+                  size="icon-sm"
                   onClick={() => openDiscountDialog(product)}
                   title={t('discountTooltip')}
                 >
@@ -711,8 +708,7 @@ export function SellingProductsList({ products, locale, actions }: SellingProduc
                 {/* Pause/Unpause Button */}
                 <Button
                   variant="ghost"
-                  size="icon"
-                  className="size-9"
+                  size="icon-sm"
                   onClick={() => handleToggleStatus(product.id, product.status)}
                   disabled={togglingId === product.id}
                   title={product.status === 'draft'
@@ -726,13 +722,13 @@ export function SellingProductsList({ products, locale, actions }: SellingProduc
                     <Pause className="size-4 text-warning" weight="fill" />
                   )}
                 </Button>
-                <Button asChild variant="ghost" size="icon" className="size-9">
+                <Button asChild variant="ghost" size="icon-sm">
                   <Link href={`/product/${product.id}`}>
                     <Eye className="size-4" />
                     <span className="sr-only">{t('viewSrOnly')}</span>
                   </Link>
                 </Button>
-                <Button asChild variant="ghost" size="icon" className="size-9">
+                <Button asChild variant="ghost" size="icon-sm">
                   <Link href={`/account/selling/${product.id}/edit`}>
                     <Pencil className="size-4" />
                     <span className="sr-only">{t('editSrOnly')}</span>
@@ -743,8 +739,8 @@ export function SellingProductsList({ products, locale, actions }: SellingProduc
                   <AlertDialogTrigger asChild>
                     <Button
                       variant="ghost"
-                      size="icon"
-                      className="size-9 text-destructive hover:bg-destructive-subtle"
+                      size="icon-sm"
+                      className="text-destructive hover:bg-destructive-subtle"
                       disabled={deletingId === product.id}
                     >
                       <Trash className="size-4" />

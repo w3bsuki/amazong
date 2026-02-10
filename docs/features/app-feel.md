@@ -18,7 +18,7 @@ Transform Treido from "website" to "web app" feel through consistent mobile-firs
 |--------|-------------|--------|
 | R17.1 | Keyboard navigation | ✅ |
 | R17.2 | Focus management | ✅ |
-| R17.3 | Touch targets ≥ 32px | ✅ |
+| R17.3 | Touch targets follow 36/44/48 tiers (44px default) | ✅ |
 | R17.4 | Screen reader labels | 🟡 In progress (partial) |
 | R17.5 | WCAG 2.1 AA compliance | 🟡 In progress |
 
@@ -52,7 +52,7 @@ Transform Treido from "website" to "web app" feel through consistent mobile-firs
 ## Mobile-First Production Contract
 
 1. **Visual system**: neutral surfaces + blue accent + destructive red only. No gradients, decorative animation, or palette classes.
-2. **Interaction ergonomics**: all frequent touch controls ≥ 44px. Product quick-view is default tap behavior. Filter/search/category flows preserve browsing context.
+2. **Interaction ergonomics**: 44px is the default touch target for core actions (nav, search, category, filters, CTA). Product quick-view is default tap behavior. Filter/search/category flows preserve browsing context.
 3. **Layout density**: one primary filter row per screen. Tighter whitespace. Product cards use lower corner radii for larger media area.
 4. **Delivery order**: mobile lock first → desktop parity → repo-wide style sweep.
 
@@ -105,7 +105,7 @@ Transform Treido from "website" to "web app" feel through consistent mobile-firs
 | Border | `border border-input` | `border-0` |
 | Background | `bg-background` | `bg-muted` |
 | Radius | `rounded-md` | `rounded-xl` |
-| Height | `h-10` | `py-3` (~48px) |
+| Height | `h-(--control-default)` (44px) | `h-(--control-primary)` (48px) |
 | Focus | `ring-ring` | `ring-primary` |
 
 ### SelectionCards
@@ -156,6 +156,14 @@ Transform Treido from "website" to "web app" feel through consistent mobile-firs
 
 **Rule:** No glass/blur tokens needed. Use solid `bg-background` everywhere.
 
+## Touch Target Policy (2026-02)
+
+| Tier | Size | Where |
+|------|------|-------|
+| Migration floor | 32px | Legacy-only; new UI should not introduce this size (`R17.3`) |
+| Product default | 44px | Core interactions: header/search/actions, sticky pills, category/scope/filter controls, primary taps |
+| Compact exception | 36px | Dense secondary controls only; never primary navigation/actions |
+
 ## ResponsiveOverlay
 
 Planned shared component: `components/shared/responsive-overlay.tsx`
@@ -183,7 +191,7 @@ Planned shared component: `components/shared/responsive-overlay.tsx`
 |--------|--------|
 | Modal open → paint | < 100ms |
 | Lighthouse accessibility | ≥ 95 |
-| Touch target compliance | 100% (all interactive elements ≥ 44px) |
+| Touch target compliance | 100% (core interactive controls ≥ 44px) |
 | Back-button reliability | 100% (URL-driven, E2E verified) |
 | Design rail violations | 0 (`pnpm -s styles:gate`) |
 
@@ -205,6 +213,7 @@ Planned shared component: `components/shared/responsive-overlay.tsx`
 | Pattern | Why |
 |---------|-----|
 | `bg-primary/10` | Use semantic token instead |
+| `border-border/60` | Use `border-border-subtle` token instead |
 | `rounded-3xl` | Use `rounded-lg` or `rounded-xl` max |
 | `bg-gradient-to-r` | No gradients (design rail) |
 | `text-[13px]` | Use `text-sm` or `text-xs` |

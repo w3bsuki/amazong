@@ -51,7 +51,7 @@ export function AccountTabBar() {
 
   return (
     <nav 
-      className="fixed bottom-0 left-0 right-0 z-50 bg-card/95 backdrop-blur-sm border-t border-border lg:hidden pb-safe"
+      className="fixed bottom-0 left-0 right-0 z-50 bg-card border-t border-border-subtle lg:hidden pb-safe"
       role="navigation"
       aria-label="Account navigation"
     >

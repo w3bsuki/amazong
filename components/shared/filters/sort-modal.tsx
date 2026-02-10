@@ -102,7 +102,7 @@ export function SortModal({
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
       <DrawerContent className="max-h-dialog-sm rounded-t-2xl lg:hidden">
-        <DrawerHeader className="px-inset pt-4 pb-3 border-b border-border/50">
+        <DrawerHeader className="px-inset pt-4 pb-3 border-b border-border-subtle">
           <DrawerTitle className="text-base font-semibold text-center">
             {t("sortBy")}
           </DrawerTitle>

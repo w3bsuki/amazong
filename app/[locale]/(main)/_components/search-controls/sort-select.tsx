@@ -54,7 +54,7 @@ export function SortSelect() {
         size="default"
         className={cn(
           "px-3 w-full rounded-lg gap-2",
-          "bg-surface-subtle hover:bg-hover hover:text-foreground border border-border/40",
+          "bg-surface-subtle hover:bg-hover hover:text-foreground border border-border-subtle",
           "active:bg-active",
           isSorted && "bg-selected text-primary border-selected-border",
           "text-xs font-medium text-foreground",

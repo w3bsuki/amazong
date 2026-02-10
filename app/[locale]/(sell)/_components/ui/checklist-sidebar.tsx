@@ -32,7 +32,7 @@ export function ChecklistSidebar({
         <h4 className="text-sm font-semibold text-foreground">
           {t("checklistSidebar.title")}
         </h4>
-        <span className="text-xs font-medium text-muted-foreground tabular-nums bg-surface-subtle px-2 py-0.5 rounded border border-border/50">
+        <span className="text-xs font-medium text-muted-foreground tabular-nums bg-surface-subtle px-2 py-0.5 rounded border border-border-subtle">
           {completedCount}/{items.length}
         </span>
       </div>

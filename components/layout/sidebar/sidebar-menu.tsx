@@ -92,7 +92,7 @@ function NavLink({
         <Link
             href={href}
             onClick={onClick}
-            className="flex items-center gap-4 px-4 h-12 rounded-lg hover:bg-hover active:bg-active transition-colors"
+            className="flex min-h-(--control-primary) items-center gap-4 px-4 rounded-lg transition-colors hover:bg-hover active:bg-active"
         >
             <Icon size={22} weight="regular" className="text-muted-foreground shrink-0" />
             <span className="text-sm font-medium text-foreground flex-1">{label}</span>
@@ -147,7 +147,7 @@ export function SidebarMenu({ user, triggerClassName, userStats }: SidebarMenuPr
             <span
                 role="button"
                 className={cn(
-                    "inline-flex items-center justify-center size-10 rounded-lg text-foreground hover:bg-hover active:bg-active transition-colors touch-manipulation tap-transparent cursor-pointer [&_svg]:size-6",
+                    "inline-flex size-(--control-default) items-center justify-center rounded-lg text-foreground transition-colors touch-manipulation tap-transparent cursor-pointer hover:bg-hover active:bg-active [&_svg]:size-6",
                     triggerClassName
                 )}
                 aria-label={t("title")}
@@ -171,7 +171,7 @@ export function SidebarMenu({ user, triggerClassName, userStats }: SidebarMenuPr
                     variant="ghost"
                     size="icon"
                     className={cn(
-                        "size-10 rounded-lg text-foreground hover:bg-hover active:bg-active transition-colors touch-manipulation tap-transparent focus-visible:ring-0 focus-visible:ring-offset-0 [&_svg]:size-6",
+                        "size-(--control-default) rounded-lg text-foreground transition-colors touch-manipulation tap-transparent hover:bg-hover active:bg-active focus-visible:ring-0 focus-visible:ring-offset-0 [&_svg]:size-6",
                         triggerClassName
                     )}
                     aria-label={t("title")}
@@ -194,7 +194,7 @@ export function SidebarMenu({ user, triggerClassName, userStats }: SidebarMenuPr
                 {/* ================================================================
                     HEADER - Clean app-style header
                 ================================================================ */}
-                <header className="bg-background border-b border-border/50 shrink-0">
+                <header className="shrink-0 border-b border-border-subtle bg-background">
                     {/* Top row: Account left, utility icons right */}
                     <div className="h-14 px-3 flex items-center">
                         {/* LEFT: Account or Sign In */}
@@ -299,7 +299,7 @@ export function SidebarMenu({ user, triggerClassName, userStats }: SidebarMenuPr
                     {isLoggedIn ? (
                         <>
                             {/* My Listings Section - OLX style */}
-                            <section className="px-4 py-4 border-b border-border/50">
+                            <section className="border-b border-border-subtle px-4 py-4">
                                 <div className="flex items-center justify-between mb-3">
                                     <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
                                         {tAccountDrawer("myListings")}
@@ -377,7 +377,7 @@ export function SidebarMenu({ user, triggerClassName, userStats }: SidebarMenuPr
                             </section>
 
                             {/* Account Section */}
-                            <section className="px-4 py-3 border-t border-border/50">
+                            <section className="border-t border-border-subtle px-4 py-3">
                                 <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-1">
                                     {tAccountDrawer("title")}
                                 </h3>
@@ -416,7 +416,7 @@ export function SidebarMenu({ user, triggerClassName, userStats }: SidebarMenuPr
                             </section>
 
                             {/* Browse & Help Section */}
-                            <section className="px-4 py-3 border-t border-border/50">
+                            <section className="border-t border-border-subtle px-4 py-3">
                                 <nav className="-mx-4">
                                     <NavLink
                                         href="/categories"
@@ -448,7 +448,7 @@ export function SidebarMenu({ user, triggerClassName, userStats }: SidebarMenuPr
                                     <Link
                                         href="/auth/login"
                                         onClick={() => setOpen(false)}
-                                        className="flex items-center justify-center gap-2 h-10 px-6 rounded-full bg-primary text-primary-foreground text-sm font-semibold hover:bg-interactive-hover transition-colors"
+                                        className="flex min-h-(--control-default) items-center justify-center gap-2 rounded-full bg-primary px-6 text-sm font-semibold text-primary-foreground transition-colors hover:bg-interactive-hover"
                                     >
                                         <SignInIcon size={18} weight="bold" />
                                         <span>{t("signIn")}</span>
@@ -456,7 +456,7 @@ export function SidebarMenu({ user, triggerClassName, userStats }: SidebarMenuPr
                                     <Link
                                         href="/auth/sign-up"
                                         onClick={() => setOpen(false)}
-                                        className="flex items-center justify-center h-10 px-6 rounded-full border border-selected-border text-primary text-sm font-medium hover:bg-hover hover:border-hover-border transition-colors"
+                                        className="flex min-h-(--control-default) items-center justify-center rounded-full border border-selected-border px-6 text-sm font-medium text-primary transition-colors hover:border-hover-border hover:bg-hover"
                                     >
                                         {tNav("register")}
                                     </Link>
@@ -464,7 +464,7 @@ export function SidebarMenu({ user, triggerClassName, userStats }: SidebarMenuPr
                             </div>
 
                             {/* Browse Categories - always visible */}
-                            <div className="border-t border-border/50 pt-3 mt-3">
+                            <div className="mt-3 border-t border-border-subtle pt-3">
                                 <NavLink
                                     href="/categories"
                                     icon={SquaresFour}
@@ -479,7 +479,7 @@ export function SidebarMenu({ user, triggerClassName, userStats }: SidebarMenuPr
                 {/* ================================================================
                     FOOTER - Sign Out only (Help moved to Account section)
                 ================================================================ */}
-                <footer className="shrink-0 border-t border-border/50 pb-safe">
+                <footer className="shrink-0 border-t border-border-subtle pb-safe">
                     {isLoggedIn ? (
                         <div className="flex items-center justify-center">
                             <AlertDialog>
@@ -487,7 +487,7 @@ export function SidebarMenu({ user, triggerClassName, userStats }: SidebarMenuPr
                                     <button
                                         type="button"
                                         disabled={isSigningOut}
-                                        className="flex-1 flex items-center justify-center gap-2 h-12 text-sm text-muted-foreground hover:text-destructive hover:bg-hover active:bg-active transition-colors"
+                                        className="flex flex-1 min-h-(--control-primary) items-center justify-center gap-2 text-sm text-muted-foreground transition-colors hover:bg-hover hover:text-destructive active:bg-active"
                                     >
                                         {isSigningOut ? (
                                             <SpinnerGap size={18} className="animate-spin" />
@@ -508,11 +508,11 @@ export function SidebarMenu({ user, triggerClassName, userStats }: SidebarMenuPr
                                         </AlertDialogDescription>
                                     </AlertDialogHeader>
                                     <AlertDialogFooter className="flex-row gap-2 sm:flex-row">
-                                        <AlertDialogCancel className="flex-1 h-10 text-sm font-medium">
+                                        <AlertDialogCancel className="h-(--control-default) flex-1 text-sm font-medium">
                                             {tCommon("cancel")}
                                         </AlertDialogCancel>
                                         <AlertDialogAction
-                                            className="flex-1 h-10 text-sm font-medium"
+                                            className="h-(--control-default) flex-1 text-sm font-medium"
                                             onClick={() => {
                                                 setIsSigningOut(true)
                                                 const form = document.createElement('form')

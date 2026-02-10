@@ -538,7 +538,7 @@ function CategoryModalContent({
     return (
       <div className="flex flex-col min-h-0 flex-1 bg-background">
         {/* Header: Search + Step/Breadcrumb combined */}
-        <div className="flex flex-col border-b border-border/50 bg-background shrink-0">
+        <div className="flex flex-col border-b border-border-subtle bg-background shrink-0">
           {/* Search Row */}
           <div className="px-4 py-3">
             <CategorySearchInput value={searchQuery} onChange={setSearchQuery} locale={locale} />
@@ -546,7 +546,7 @@ function CategoryModalContent({
 
           {/* Step & Breadcrumb Row */}
           {!searchQuery.trim() && (
-            <div className="px-4 py-2.5 bg-surface-subtle flex items-center justify-between gap-4 border-t border-border/50">
+            <div className="px-4 py-2.5 bg-surface-subtle flex items-center justify-between gap-4 border-t border-border-subtle">
               <div className="flex items-center gap-3 min-w-0">
                 {navigationPath.length > 0 ? (
                   <button
@@ -738,7 +738,7 @@ function CategoryCard({
               <Check className="size-2.5 text-primary-foreground" weight="bold" />
             </div>
           ) : (
-            <div className="size-5 rounded-full border border-border/50" />
+            <div className="size-5 rounded-full border border-border-subtle" />
           )}
         </div>
     </button>

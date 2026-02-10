@@ -346,7 +346,7 @@ export function SellerProfileDrawer({
       <DrawerContent
         aria-label={seller.name}
         showHandle
-        overlayBlur="sm"
+        overlayBlur="none"
       >
         {/* Header with close button */}
         <div className="flex items-center justify-between px-4 pb-2 border-b border-border-subtle">

@@ -96,6 +96,9 @@ L0: Electronics, Fashion, Home & Garden, Sports, ...
 - **Intercepting route**: `app/[locale]/(main)/search/@modal/(..)[username]/[productSlug]/page.tsx`
 - **Infinite scroll / pagination**: feed and search results use cursor-based pagination
 - **URL-as-state**: search filters, sort, and page are encoded in URL query params for shareability and back-button support
+- **Unified Home feed controls (mobile)**: home uses a compact discovery deck (`Промотирани/Всички`) with a horizontal quick-chip rail (`sort` + `nearby`) and an inline discovery `see all` action; location/category deep filtering stays on Search/Categories
+  - Source: `app/[locale]/(main)/_components/mobile-home.tsx`
+  - Data source: `/api/products/newest` (`type`, `sort`, optional `nearby/city`)
 
 ## Known Gaps & V1.1+ Items
 

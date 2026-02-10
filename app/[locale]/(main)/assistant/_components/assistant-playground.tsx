@@ -243,7 +243,7 @@ function TypingIndicator({ text }: { text: string }) {
   return (
     <div className="flex items-start gap-3">
       <AssistantAvatar size="md" />
-      <div className="rounded-2xl rounded-bl-md border border-border/40 bg-surface-subtle px-4 py-3">
+      <div className="rounded-2xl rounded-bl-md border border-border-subtle bg-surface-subtle px-4 py-3">
         <span className="flex items-center gap-2 text-sm text-muted-foreground">
           <span className="flex gap-1">
             <span className="size-2 animate-bounce rounded-full bg-primary opacity-60 [animation-delay:-0.3s]" />

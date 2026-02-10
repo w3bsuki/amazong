@@ -43,7 +43,7 @@ export function UploadZone({
         "hover:bg-hover active:bg-active",
         isDragActive
           ? "border-selected-border bg-selected"
-          : "border-border/60 bg-surface-subtle",
+          : "border-border-subtle bg-surface-subtle",
         isUploading && "pointer-events-none opacity-70"
       )}
     >

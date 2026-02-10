@@ -71,7 +71,7 @@ export function FilterList({
             placeholder={searchPlaceholder || tHub("searchPlaceholder", { filterName: "" })}
             className={cn(
               "w-full h-10 pl-9 pr-3 rounded-lg",
-              "bg-surface-subtle border border-border/50",
+              "bg-surface-subtle border border-border-subtle",
               "text-sm placeholder:text-muted-foreground",
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1"
             )}

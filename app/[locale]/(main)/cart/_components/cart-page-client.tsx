@@ -182,13 +182,13 @@ export default function CartPageClient() {
             {items.map((item, index) => (
               <div 
                 key={`${item.id}:${item.variantId ?? ""}`} 
-                className="bg-card rounded-lg border border-border/50 p-2.5"
+                className="bg-card rounded-lg border border-border-subtle p-2.5"
               >
                 <div className="flex gap-3">
                   {/* Image */}
                   <Link
                     href={getProductUrl(item)}
-                    className="relative shrink-0 size-20 bg-background rounded-md overflow-hidden border border-border/50"
+                    className="relative shrink-0 size-20 bg-background rounded-md overflow-hidden border border-border-subtle"
                   >
                     {item.image ? (
                       <Image

@@ -10,16 +10,16 @@ const targetFiles = [
   "components/layout/header/mobile/profile-header.tsx",
   "components/layout/header/mobile/minimal-header.tsx",
   "components/layout/header/cart/mobile-cart-dropdown.tsx",
-  "components/mobile/home-sticky-category-pills.tsx",
-  "components/mobile/mobile-tab-bar.tsx",
-  "components/mobile/product/mobile-bottom-bar.tsx",
-  "components/mobile/drawers/category-browse-drawer.tsx",
-  "components/mobile/drawers/product-quick-view-drawer.tsx",
-  "components/shared/product/product-card.tsx",
-  "components/shared/product/product-card-actions.tsx",
-  "components/shared/product/quick-view/quick-view-image-gallery.tsx",
-  "components/shared/product/quick-view/product-quick-view-content.tsx",
   "components/shared/wishlist/mobile-wishlist-button.tsx",
+  "components/layout/sidebar/sidebar-menu.tsx",
+  "components/mobile/category-nav/category-circles-simple.tsx",
+  "app/[locale]/_components/mobile-tab-bar.tsx",
+  "app/[locale]/_components/search/mobile-search-overlay.tsx",
+  "app/[locale]/(main)/_components/mobile/home-sticky-category-pills.tsx",
+  "app/[locale]/(main)/_components/mobile/home-scope-bar.tsx",
+  "app/[locale]/(main)/_components/mobile/home-city-drawer.tsx",
+  "app/[locale]/(main)/_components/mobile/home-category-drawer.tsx",
+  "app/[locale]/(main)/_components/mobile/promoted-listings-strip.tsx",
 ];
 
 const checks = [
@@ -45,7 +45,7 @@ const checks = [
   },
   {
     id: "ad-hoc-size",
-    regex: /\b(?:h-11|h-12|size-9|size-10|size-11|size-12)\b/g,
+    regex: /\b(?:h-9|h-10|h-11|h-12|size-9|size-10|size-11)\b/g,
     message: "Use control tokens/variants instead of ad-hoc h-/size- classes.",
   },
 ];

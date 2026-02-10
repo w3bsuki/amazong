@@ -260,10 +260,10 @@ export default async function BusinessDiscountsPage() {
                   </TableCell>
                   <TableCell className="text-right">
                     <div className="flex items-center justify-end gap-1">
-                      <Button variant="ghost" size="icon" className="size-8">
+                      <Button variant="ghost" size="icon-sm">
                         <IconPencil className="size-4" />
                       </Button>
-                      <Button variant="ghost" size="icon" className="size-8 text-destructive">
+                      <Button variant="ghost" size="icon-sm" className="text-destructive">
                         <IconTrash className="size-4" />
                       </Button>
                     </div>

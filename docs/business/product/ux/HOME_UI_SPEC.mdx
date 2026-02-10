@@ -42,7 +42,27 @@ This spec defines the **mobile Home/Landing** layout and UI rules for Treido.
   - `bg-muted text-foreground font-medium`
   - no thick borders (`border-2` forbidden)
 
-## C) Sections (curated only; no infinite feed on Home)
+## C) Scope controls (lightweight, mobile-only)
+
+Home supports a **hybrid scoped browse** model:
+
+- Keep Home curated and fast.
+- Allow lightweight **city + L0 category scope** directly on Home.
+- Keep full filtering/sorting in Search.
+
+Rules:
+
+1) Scope controls appear as two compact triggers:
+   - City
+   - Category
+2) Both controls open **bottom drawers** (no dropdown menus).
+3) Scope updates Home sections instantly and updates section copy.
+4) Clear scope resets to default curated Home.
+5) No full filter hub, no sort drawer, no segmented sort controls on Home.
+
+---
+
+## D) Sections (curated-only surface with scoped data)
 
 Home is **curated-only** and links out to Search for “see all”.
 
@@ -50,14 +70,21 @@ Order + links:
 
 1) **На фокус** (promoted/boosted) carousel  
    - “See all” → `/search?promoted=true&sort=newest`
+   - If scope active, append `city` / `category` query params.
 2) **Най-нови** carousel  
    - “See all” → `/search?sort=newest`
+   - If scope active, append `city` / `category` query params.
 3) **Оферти днес** carousel  
    - “See all” → `/search?deals=true&sort=newest`
 4) Final CTA row  
    - “All listings” → `/search?sort=newest`
 
-## D) Product card (Home rules)
+Scoped empty behavior:
+
+- If promoted for scope is empty: show compact inline empty state + “Clear scope”.
+- If newest for scope is empty: show compact inline empty state.
+
+## E) Product card (Home rules)
 
 - Use `ProductCard` with:
   - `uiVariant="home"`, `radius="2xl"`, `media="landscape"`
@@ -68,7 +95,7 @@ Order + links:
   - Top-left: **single** badge (discount OR promo).
   - Top-right: wishlist button (consistent container).
 
-## E) Bottom nav (existing)
+## F) Bottom nav (existing)
 
 - Source: `app/[locale]/_components/mobile-tab-bar.tsx`
 - Safe-area handled by `pb-tabbar-safe` on `<main>` in `app/[locale]/_components/storefront-shell.tsx`.

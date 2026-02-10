@@ -1,21 +1,23 @@
 "use client"
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
-import { PageShell } from "../../_components/page-shell"
-import { MobileSearchOverlay } from "../../_components/search/mobile-search-overlay"
-import { MobileProductCard } from "@/components/shared/product/card/mobile"
-import { useHeader } from "@/components/providers/header-context"
-import type { UIProduct } from "@/lib/types/products"
-import type { CategoryTreeNode } from "@/lib/category-tree"
+import { CaretRight } from "@phosphor-icons/react"
 import { useTranslations } from "next-intl"
 import { Link } from "@/i18n/routing"
-import { CaretRight } from "@phosphor-icons/react"
-import { HomeSectionHeader } from "./mobile/home-section-header"
-import { cn } from "@/lib/utils"
-
+import type { UIProduct } from "@/lib/types/products"
+import type { CategoryTreeNode } from "@/lib/category-tree"
+import { BULGARIAN_CITIES } from "@/lib/bulgarian-cities"
+import { useHeader } from "@/components/providers/header-context"
+import { useHomeFeedTabs } from "@/hooks/use-home-feed-tabs"
+import { useCategoryCounts } from "@/hooks/use-category-counts"
+import { MobileProductCard } from "@/components/shared/product/card/mobile"
 import { CategoryCirclesSimple } from "@/components/mobile/category-nav"
-import { PromotedListingsStrip } from "./mobile/promoted-listings-strip"
+import { PageShell } from "../../_components/page-shell"
+import { MobileSearchOverlay } from "../../_components/search/mobile-search-overlay"
+import { HomeSectionHeader } from "./mobile/home-section-header"
 import { HomeStickyCategoryPills } from "./mobile/home-sticky-category-pills"
+import { HomeFeedControls } from "./mobile/home-feed-controls"
+import { HomeCityPickerSheet } from "./mobile/home-city-picker-sheet"
 
 // =============================================================================
 // Types
@@ -39,14 +41,6 @@ interface MobileHomeProps {
 
 type CuratedRailKey = keyof CuratedSections
 
-interface HomeBannerConfig {
-  testId: string
-  href: string
-  title: string
-  cta: string
-  variant: "promoted" | "forYou"
-}
-
 const CURATED_RAIL_PRIORITY: CuratedRailKey[] = ["fashion", "electronics", "automotive", "deals"]
 
 const CURATED_RAIL_HREF: Record<CuratedRailKey, string> = {
@@ -55,6 +49,8 @@ const CURATED_RAIL_HREF: Record<CuratedRailKey, string> = {
   automotive: "/categories/automotive",
   deals: "/todays-deals",
 }
+
+const HOME_CITY_STORAGE_KEY = "treido_user_city"
 
 // =============================================================================
 // Main Component
@@ -70,23 +66,66 @@ export function MobileHome({
   const t = useTranslations("Home")
   const tMobile = useTranslations("Home.mobile")
   const [searchOpen, setSearchOpen] = useState(false)
+  const [cityPickerOpen, setCityPickerOpen] = useState(false)
+  const [cityHydrated, setCityHydrated] = useState(false)
   const [showStickyCategoryPills, setShowStickyCategoryPills] = useState(false)
   const categoryCirclesRef = useRef<HTMLDivElement | null>(null)
+  const { counts: categoryCounts } = useCategoryCounts()
 
-  // Homepage category navigation is drawer-based; avoid legacy `?tab=` URL state.
-  const handleHeaderCategorySelect = useCallback((_slug: string) => {}, [])
-
-  const activePromotedProducts = useMemo(() => {
+  const initialActivePromotedProducts = useMemo(() => {
+    const source = promotedProducts ?? []
     const now = Date.now()
-    return (promotedProducts ?? []).filter((p) => {
-      if (!p.isBoosted) return false
-      if (!p.boostExpiresAt) return false
-      const expiresAt = Date.parse(p.boostExpiresAt)
+    return source.filter((product) => {
+      if (!product.isBoosted) return false
+      if (!product.boostExpiresAt) return false
+      const expiresAt = Date.parse(product.boostExpiresAt)
       return Number.isFinite(expiresAt) && expiresAt > now
     })
   }, [promotedProducts])
 
-  const promotedRail = useMemo(() => activePromotedProducts.slice(0, 10), [activePromotedProducts])
+  const {
+    activeTab,
+    sort,
+    nearby,
+    city,
+    products,
+    isLoading,
+    error,
+    setActiveTab,
+    setSort,
+    setNearby,
+    setCity,
+    retry,
+    buildSearchHref,
+  } = useHomeFeedTabs({
+    initialNewestProducts: initialProducts,
+    initialPromotedProducts: initialActivePromotedProducts,
+  })
+
+  const visibleProducts = useMemo(() => {
+    if (activeTab !== "promoted") return products.slice(0, 12)
+    const now = Date.now()
+    const activePromoted = products.filter((product) => {
+      if (!product.isBoosted) return false
+      if (!product.boostExpiresAt) return false
+      const expiresAt = Date.parse(product.boostExpiresAt)
+      return Number.isFinite(expiresAt) && expiresAt > now
+    })
+    return activePromoted.slice(0, 12)
+  }, [activeTab, products])
+  const cityLabel = useMemo(() => {
+    if (!city) return null
+    const option = BULGARIAN_CITIES.find((entry) => entry.value === city)
+    if (!option) return city
+    return locale === "bg" ? option.labelBg : option.label
+  }, [city, locale])
+  const discoveryTitle = activeTab === "promoted"
+    ? tMobile("feed.discoveryHeader.promoted")
+    : tMobile("feed.discoveryHeader.all")
+  const discoveryHref = useMemo(
+    () => buildSearchHref({ tab: activeTab, sort, nearby, city }),
+    [activeTab, buildSearchHref, city, nearby, sort]
+  )
 
   const curatedRail = useMemo(() => {
     const sections = curatedSections ?? {
@@ -105,6 +144,9 @@ export function MobileHome({
 
     return null
   }, [curatedSections])
+
+  // Homepage category navigation is drawer-based; avoid legacy `?tab=` URL state.
+  const handleHeaderCategorySelect = useCallback((_slug: string) => {}, [])
 
   const renderHomeCard = useCallback(
     (product: UIProduct, index: number) => (
@@ -141,63 +183,32 @@ export function MobileHome({
     []
   )
 
-  const renderHomeBanner = useCallback(
-    ({ testId, href, title, cta, variant }: HomeBannerConfig) => (
-      <div
-        data-testid={testId}
-        className={cn(
-          "w-full border-y",
-          variant === "promoted"
-            ? "border-foreground bg-foreground"
-            : "border-border-subtle bg-surface-subtle"
-        )}
-      >
-        <Link
-          href={href}
-          className={cn(
-            "group block tap-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring",
-            variant === "promoted"
-              ? "hover:bg-foreground active:opacity-95"
-              : "hover:bg-hover active:bg-active"
-          )}
-        >
-          <div className="flex min-h-(--control-primary) items-center gap-3 px-(--spacing-home-inset)">
-            <span
-              aria-hidden="true"
-              className={cn(
-                "h-5 w-0.5 shrink-0 rounded-full",
-                variant === "promoted" ? "bg-background/75" : "bg-foreground/35"
-              )}
-            />
-            <p
-              className={cn(
-                "min-w-0 flex-1 truncate text-base font-semibold leading-tight tracking-tight",
-                variant === "promoted" ? "text-background" : "text-foreground"
-              )}
-            >
-              {title}
-            </p>
-            <span
-              className={cn(
-                "inline-flex shrink-0 items-center text-sm font-semibold transition-colors",
-                variant === "promoted"
-                  ? "text-background/90 group-hover:text-background"
-                  : "text-muted-foreground group-hover:text-foreground"
-              )}
-            >
-              <span>{cta}</span>
-            </span>
-          </div>
-        </Link>
-      </div>
-    ),
-    []
+  const handleNearbyToggle = useCallback(() => {
+    if (nearby) {
+      setNearby(false)
+      return
+    }
+    if (city) {
+      setNearby(true)
+      return
+    }
+    setCityPickerOpen(true)
+  }, [city, nearby, setNearby])
+
+  const handleNearbyConfigure = useCallback(() => {
+    setCityPickerOpen(true)
+  }, [])
+
+  const handleCitySelect = useCallback(
+    (nextCity: string) => {
+      setCity(nextCity)
+      setNearby(true)
+    },
+    [setCity, setNearby]
   )
 
-  // Get header context to provide dynamic state to layout's header
   const { setHomepageHeader } = useHeader()
 
-  // Provide homepage header state to layout via context
   useEffect(() => {
     setHomepageHeader({
       activeCategory: "all",
@@ -217,7 +228,6 @@ export function MobileHome({
     const updateStickyVisibility = () => {
       rafId = 0
       const rect = target.getBoundingClientRect()
-      // Show only after circles are fully out of viewport.
       const shouldShow = rect.bottom <= 0
       setShowStickyCategoryPills((prev) => (prev === shouldShow ? prev : shouldShow))
     }
@@ -240,21 +250,42 @@ export function MobileHome({
     }
   }, [])
 
+  useEffect(() => {
+    if (typeof window === "undefined") return
+    try {
+      const savedCity = localStorage.getItem(HOME_CITY_STORAGE_KEY)
+      if (savedCity && savedCity.length > 0) {
+        setCity(savedCity)
+      }
+    } catch {
+      // Ignore storage access failures.
+    } finally {
+      setCityHydrated(true)
+    }
+  }, [setCity])
+
+  useEffect(() => {
+    if (!cityHydrated || typeof window === "undefined") return
+    try {
+      if (city) {
+        localStorage.setItem(HOME_CITY_STORAGE_KEY, city)
+      } else {
+        localStorage.removeItem(HOME_CITY_STORAGE_KEY)
+      }
+    } catch {
+      // Ignore storage access failures.
+    }
+  }, [city, cityHydrated])
+
   return (
     <PageShell variant="default" className="pb-4">
-      {/* Search Overlay */}
       <MobileSearchOverlay
         hideDefaultTrigger
         externalOpen={searchOpen}
         onOpenChange={setSearchOpen}
       />
 
-      {/* Header is rendered by layout - passes variant="homepage" with category pills */}
-      <div
-        ref={categoryCirclesRef}
-        data-testid="home-category-circles"
-        className="bg-background"
-      >
+      <div ref={categoryCirclesRef} data-testid="home-category-circles" className="bg-background">
         <CategoryCirclesSimple
           categories={initialCategories}
           locale={locale}
@@ -266,50 +297,135 @@ export function MobileHome({
         visible={showStickyCategoryPills}
         categories={initialCategories}
         locale={locale}
+        categoryCounts={categoryCounts}
       />
 
-      {/* Main Content */}
-      <div className="pt-0 pb-4 space-y-2">
-        <section
-          data-testid="home-section-promoted-banner"
-          className="pt-1.5"
-        >
-          {renderHomeBanner({
-            testId: "home-section-promoted-banner-link",
-            href: "/search?promoted=true&sort=newest",
-            title: tMobile("promoBannerTitle"),
-            cta: tMobile("promoBannerCta"),
-            variant: "promoted",
-          })}
+      <div className="space-y-2 pt-0 pb-4">
+        <section className="border-y border-border-subtle bg-surface-subtle px-(--spacing-home-inset) py-2">
+          <Link
+            href="/sell"
+            data-testid="home-start-selling-cta"
+            className="group block rounded-xl border border-primary bg-primary px-4 py-3 tap-transparent transition-colors hover:bg-interactive-hover active:bg-interactive-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+          >
+            <div className="flex items-center gap-3">
+              <div className="min-w-0 flex-1">
+                <p className="text-sm font-semibold tracking-tight text-primary-foreground">
+                  {tMobile("sellBannerTitle")}
+                </p>
+                <p className="mt-0.5 text-xs font-medium text-primary-foreground">
+                  {tMobile("sellBannerSubtitle")}
+                </p>
+              </div>
+
+              <CaretRight
+                size={18}
+                weight="bold"
+                aria-hidden="true"
+                className="shrink-0 text-primary-foreground transition-transform group-hover:translate-x-0.5"
+              />
+              <span className="sr-only">{tMobile("sellBannerAction")}</span>
+            </div>
+          </Link>
         </section>
 
-        {promotedRail.length > 0 && (
-          <PromotedListingsStrip
-            products={promotedRail}
-            layout="strip"
-            maxItems={10}
-            showHeader={false}
-            showQuickScopes={false}
-            className="pt-1.5"
+        <section className="pt-0.5">
+          <HomeFeedControls
+            tab={activeTab}
+            sort={sort}
+            nearby={nearby}
+            cityLabel={cityLabel}
+            onTabChange={setActiveTab}
+            onSortChange={setSort}
+            onNearbyToggle={handleNearbyToggle}
+            onNearbyConfigure={handleNearbyConfigure}
           />
+        </section>
+
+        <section data-testid="home-section-discovery" className="pt-0.5">
+          {visibleProducts.length > 0 ? (
+            <>
+              <div className="px-(--spacing-home-inset) pb-1">
+                <div className="flex items-center justify-between gap-2">
+                  <h2
+                    data-testid="home-discovery-header-title"
+                    className="min-w-0 truncate text-xl font-semibold tracking-tight text-home-section-title"
+                  >
+                    {discoveryTitle}
+                  </h2>
+                  <Link
+                    href={discoveryHref}
+                    data-testid="home-discovery-header-see-all"
+                    aria-label={tMobile("feed.seeAllAria")}
+                    className="inline-flex min-h-(--spacing-touch-md) shrink-0 items-center rounded-md px-1 -mr-1 text-home-section-action transition-colors hover:text-home-section-title active:bg-active active:text-home-section-title"
+                  >
+                    <span className="sr-only">{tMobile("seeAll")}</span>
+                    <CaretRight size={16} weight="bold" aria-hidden="true" />
+                  </Link>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-(--spacing-home-card-gap) px-(--spacing-home-inset) pb-1">
+                {visibleProducts.map((product, index) => renderHomeCard(product, index))}
+              </div>
+            </>
+          ) : activeTab === "promoted" ? (
+            <div className="px-(--spacing-home-inset)">
+              <div
+                data-testid="home-discovery-empty-promoted"
+                className="rounded-xl border border-border-subtle bg-surface-subtle px-3 py-2"
+              >
+                <div className="flex items-center justify-between gap-2">
+                  <p className="text-xs text-muted-foreground">{tMobile("feed.empty.promoted")}</p>
+                  <button
+                    type="button"
+                    data-testid="home-promoted-empty-switch-all"
+                    onClick={() => {
+                      setActiveTab("all")
+                      setSort("newest")
+                    }}
+                    className="inline-flex min-h-(--spacing-touch-md) items-center rounded-full border border-border-subtle bg-background px-2.5 text-xs font-semibold text-foreground transition-colors hover:bg-hover active:bg-active"
+                  >
+                    {tMobile("feed.empty.switchToAll")}
+                  </button>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="px-(--spacing-home-inset)">
+              <div className="rounded-xl border border-border-subtle bg-surface-subtle px-3 py-2">
+                <p
+                  data-testid="home-discovery-empty-all"
+                  className="text-xs text-muted-foreground"
+                >
+                  {tMobile("feed.empty.all")}
+                </p>
+              </div>
+            </div>
+          )}
+        </section>
+
+        {isLoading && (
+          <div className="px-(--spacing-home-inset)">
+            <div className="rounded-xl border border-border-subtle bg-surface-subtle px-3 py-2">
+              <p className="text-xs text-muted-foreground">{tMobile("feed.loading")}</p>
+            </div>
+          </div>
         )}
 
-        {initialProducts.length > 0 && (
-          <section data-testid="home-section-newest" className="pt-1">
-            {renderHomeBanner({
-              testId: "home-section-for-you-banner",
-              href: "/search?sort=newest",
-              title: tMobile("forYouBannerTitle"),
-              cta: tMobile("forYouBannerCta"),
-              variant: "forYou",
-            })}
-
-            <div className="mt-2 grid grid-cols-2 gap-(--spacing-home-card-gap) px-(--spacing-home-inset) pb-1">
-              {initialProducts.map((product, index) =>
-                renderHomeCard(product, index)
-              )}
+        {error && (
+          <div className="px-(--spacing-home-inset)">
+            <div className="flex items-center justify-between gap-2 rounded-xl border border-border-subtle bg-surface-subtle px-3 py-2">
+              <p className="text-xs text-muted-foreground">{tMobile("feed.error")}</p>
+              <button
+                type="button"
+                data-testid="home-feed-retry"
+                onClick={retry}
+                className="inline-flex min-h-(--spacing-touch-md) items-center rounded-full border border-border-subtle bg-background px-2.5 text-xs font-semibold text-foreground transition-colors hover:bg-hover active:bg-active"
+              >
+                {tMobile("feed.retry")}
+              </button>
             </div>
-          </section>
+          </div>
         )}
 
         {curatedRail && (
@@ -334,19 +450,15 @@ export function MobileHome({
             </div>
           </section>
         )}
-
-        {/* Final CTA: Browse all listings */}
-        <section className="px-(--spacing-home-inset) pt-1">
-          <Link
-            href="/search?sort=newest"
-            className="inline-flex min-h-(--spacing-touch-md) w-full items-center justify-between gap-3 rounded-xl border border-border-subtle bg-background px-4 py-3 text-sm font-semibold text-foreground transition-colors hover:bg-hover active:bg-active"
-          >
-            <span className="min-w-0 truncate">{tMobile("allListings")}</span>
-            <CaretRight size={18} weight="bold" className="text-muted-foreground shrink-0" aria-hidden="true" />
-          </Link>
-        </section>
       </div>
+
+      <HomeCityPickerSheet
+        open={cityPickerOpen}
+        locale={locale}
+        selectedCity={city}
+        onOpenChange={setCityPickerOpen}
+        onSelectCity={handleCitySelect}
+      />
     </PageShell>
   )
 }
-

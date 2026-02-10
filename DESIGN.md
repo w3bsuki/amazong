@@ -106,7 +106,8 @@ CSS Variables (:root/.dark) → @theme inline → Tailwind Classes
 
 **Exception:** Product color swatches in `components/shared/filters/color-swatches.tsx` may use hex.
 
-**Allowed (rare):** Token-based alpha for *glass* / *hairline* (e.g. `bg-background/95`, `border-border/30`).
+**Allowed (rare):** Token-based alpha only for non-interactive decorative overlays (e.g. `bg-background/90`).
+Do not use alpha on `border-border`; use `border-border-subtle` instead.
 
 ### Surface Tokens
 
@@ -170,8 +171,9 @@ CSS Variables (:root/.dark) → @theme inline → Tailwind Classes
 
 | Token / Class | Value | Usage |
 |--------------|-------|-------|
-| `h-11` / `h-(--spacing-touch)` | 44px | Standard buttons + inputs |
-| `h-12` / `h-(--spacing-touch-md)` | 48px | Primary CTAs |
+| `h-11` / `h-(--spacing-touch)` | 44px | Standard interactive controls (mobile-first default) |
+| `h-(--spacing-touch-sm)` / `h-(--control-compact)` | 36px | Dense secondary chips only (never primary nav/actions) |
+| `h-12` / `h-(--control-primary)` | 48px | Primary CTAs and sticky bars |
 | `--spacing-header` | 48px | Header height |
 | `--spacing-bottom-nav` | 48px | Bottom nav |
 
@@ -351,7 +353,7 @@ Treido keeps its **Twitter Blue** theme and calm, premium styling. "iOS feel" is
 |-------------|----------------|
 | Focus visible | `focus-visible:ring-2` |
 | Contrast | 4.5:1 text, 3:1 UI |
-| Touch targets | 44px minimum |
+| Touch targets | 44px default for core actions (`--control-default`); 36px allowed only for dense secondary chips |
 | Labels | All inputs labeled |
 | Keyboard | All actions reachable |
 | Reduced motion | Respect `prefers-reduced-motion` |

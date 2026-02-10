@@ -9,7 +9,7 @@ export default function CategorySlugLoading() {
         {/* Contextual Header skeleton (48px) - matches ContextualCategoryHeader */}
         <div className="sticky top-0 z-50 bg-background">
           <div className="pt-safe-top">
-            <div className="flex items-center justify-between px-3 h-12 border-b border-border/50">
+            <div className="flex items-center justify-between px-3 h-12 border-b border-border-subtle">
               <div className="flex items-center">
                 <Skeleton className="size-9 rounded-full" /> {/* Back button */}
                 <Skeleton className="h-5 w-32 ml-1" /> {/* Title */}
@@ -24,7 +24,7 @@ export default function CategorySlugLoading() {
         </div>
         
         {/* Subcategory circles skeleton - matches CategoryCircles */}
-        <div className="bg-background border-b border-border/50">
+        <div className="bg-background border-b border-border-subtle">
           <div className="px-inset py-3">
             <div className="flex items-start gap-3 overflow-x-auto no-scrollbar">
               {Array.from({ length: 6 }).map((_, i) => (
@@ -38,7 +38,7 @@ export default function CategorySlugLoading() {
         </div>
         
         {/* Filter/Sort bar skeleton - 50/50 split matches FilterSortBar */}
-        <div className="sticky top-12 z-20 bg-background border-b border-border/60">
+        <div className="sticky top-12 z-20 bg-background border-b border-border-subtle">
           <div className="flex items-stretch divide-x divide-border/60 h-10">
             <div className="flex-1 flex items-center justify-center gap-1.5">
               <Skeleton className="size-4" />

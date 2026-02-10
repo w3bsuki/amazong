@@ -22,7 +22,7 @@ export function SellSectionSkeleton({
   className 
 }: SellSectionSkeletonProps) {
   return (
-    <Card className={cn("rounded-md border-border/60", className)}>
+    <Card className={cn("rounded-md border-border-subtle", className)}>
       {/* Header skeleton */}
       <CardHeader className="pb-3 pt-4 px-4">
         <div className="flex items-center gap-2.5">
@@ -170,7 +170,7 @@ export function SellFormSkeleton() {
   return (
     <div className="flex flex-1 flex-col">
       {/* Header skeleton */}
-      <div className="sticky top-0 z-50 h-14 border-b border-border bg-background/95 backdrop-blur-xl">
+      <div className="sticky top-0 z-50 h-14 border-b border-border bg-background">
         <div className="container-content h-full flex items-center justify-between">
           <Skeleton className="h-5 w-24" />
           <div className="flex items-center gap-3">
@@ -256,7 +256,7 @@ export function SellFormSkeleton() {
       </main>
 
       {/* Mobile footer skeleton */}
-      <div className="fixed bottom-0 left-0 right-0 border-t border-border bg-background/95 p-4 pb-safe lg:hidden">
+      <div className="fixed bottom-0 left-0 right-0 border-t border-border bg-background p-4 pb-safe lg:hidden">
         <div className="flex items-center gap-3 max-w-lg mx-auto">
           <Skeleton className="size-touch rounded-lg shrink-0" />
           <Skeleton className="flex-1 h-touch rounded-lg" />

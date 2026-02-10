@@ -251,7 +251,7 @@ export function DesktopFilterModal({
             {/* Row 1: Price & Rating - 2 columns 50/50 */}
             <div className="grid grid-cols-2 gap-4">
               {/* Price Card - Compact */}
-              <div className="p-4 rounded-md border border-border/50 bg-secondary/20">
+              <div className="p-4 rounded-md border border-border-subtle bg-secondary/20">
                 <h4 className="text-sm font-semibold flex items-center gap-2 mb-3">
                   <Tag size={15} className="text-primary" weight="duotone" />
                   {t('price')}
@@ -284,7 +284,7 @@ export function DesktopFilterModal({
                       placeholder={t('min')}
                       value={pendingPrice.min}
                       onChange={(e) => setPendingPrice(p => ({ ...p, min: e.target.value }))}
-                      className="pl-6 h-8 text-sm bg-background border-border/50"
+                      className="pl-6 h-8 text-sm bg-background border-border-subtle"
                     />
                   </div>
                   <span className="text-muted-foreground text-sm">–</span>
@@ -295,14 +295,14 @@ export function DesktopFilterModal({
                       placeholder={t('max')}
                       value={pendingPrice.max}
                       onChange={(e) => setPendingPrice(p => ({ ...p, max: e.target.value }))}
-                      className="pl-6 h-8 text-sm bg-background border-border/50"
+                      className="pl-6 h-8 text-sm bg-background border-border-subtle"
                     />
                   </div>
                 </div>
               </div>
 
               {/* Rating Card - Compact */}
-              <div className="p-4 rounded-md border border-border/50 bg-secondary/20">
+              <div className="p-4 rounded-md border border-border-subtle bg-secondary/20">
                 <h4 className="text-sm font-semibold flex items-center gap-2 mb-3">
                   <Star size={15} className="text-rating" weight="fill" />
                   {t('customerReviews')}
@@ -353,7 +353,7 @@ export function DesktopFilterModal({
                 if (attr.attribute_type === 'boolean') {
                   const isChecked = currentValues.includes('true')
                   return (
-                    <div key={attr.id} className="p-4 rounded-md border border-border/50 bg-secondary/20">
+                    <div key={attr.id} className="p-4 rounded-md border border-border-subtle bg-secondary/20">
                       <div className="flex items-center justify-between">
                         <h5 className="text-sm font-semibold">{attrName}</h5>
                         <Switch
@@ -371,7 +371,7 @@ export function DesktopFilterModal({
                   const max = attr.max_value ?? 100
                   const value = currentValues[0] ? Number.parseInt(currentValues[0]) : min
                   return (
-                    <div key={attr.id} className="p-4 rounded-md border border-border/50 bg-secondary/20 space-y-3">
+                    <div key={attr.id} className="p-4 rounded-md border border-border-subtle bg-secondary/20 space-y-3">
                       <div className="flex items-center justify-between">
                         <h5 className="text-sm font-semibold">{attrName}</h5>
                         <span className="text-sm font-bold text-primary">{value}</span>
@@ -399,7 +399,7 @@ export function DesktopFilterModal({
                   const isSingleSelect = attr.attribute_type === 'select'
 
                   return (
-                    <div key={attr.id} className="p-4 rounded-md border border-border/50 bg-secondary/20 space-y-3">
+                    <div key={attr.id} className="p-4 rounded-md border border-border-subtle bg-secondary/20 space-y-3">
                       <div className="flex items-center justify-between">
                         <h5 className="text-sm font-semibold">{attrName}</h5>
                         {selectedCount > 0 && (

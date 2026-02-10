@@ -1,0 +1,121 @@
+"use client"
+
+import { useEffect, useMemo, useState } from "react"
+import { MapPin } from "@phosphor-icons/react"
+import { useTranslations } from "next-intl"
+import { BULGARIAN_CITIES } from "@/lib/bulgarian-cities"
+import { cn } from "@/lib/utils"
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "@/components/ui/drawer"
+import { Input } from "@/components/ui/input"
+
+interface HomeCityPickerSheetProps {
+  open: boolean
+  locale: string
+  selectedCity: string | null
+  onOpenChange: (open: boolean) => void
+  onSelectCity: (city: string) => void
+}
+
+export function HomeCityPickerSheet({
+  open,
+  locale,
+  selectedCity,
+  onOpenChange,
+  onSelectCity,
+}: HomeCityPickerSheetProps) {
+  const tMobile = useTranslations("Home.mobile")
+  const [query, setQuery] = useState("")
+  const [pendingCity, setPendingCity] = useState<string | null>(selectedCity)
+
+  useEffect(() => {
+    if (!open) return
+    setPendingCity(selectedCity)
+    setQuery("")
+  }, [open, selectedCity])
+
+  const cityOptions = useMemo(
+    () =>
+      BULGARIAN_CITIES
+        .filter((city) => city.value !== "other")
+        .filter((city) => {
+          const normalized = query.trim().toLowerCase()
+          if (!normalized) return true
+          return (
+            city.value.includes(normalized) ||
+            city.label.toLowerCase().includes(normalized) ||
+            city.labelBg.toLowerCase().includes(normalized)
+          )
+        }),
+    [query]
+  )
+
+  const handleApply = () => {
+    if (!pendingCity) return
+    onSelectCity(pendingCity)
+    onOpenChange(false)
+  }
+
+  return (
+    <Drawer open={open} onOpenChange={onOpenChange}>
+      <DrawerContent className="max-h-dialog-md rounded-t-2xl lg:hidden">
+        <DrawerHeader className="border-b border-border-subtle px-inset pt-4 pb-3">
+          <DrawerTitle className="text-center text-base font-semibold">
+            {tMobile("feed.chooseCityTitle")}
+          </DrawerTitle>
+        </DrawerHeader>
+
+        <div className="flex min-h-0 flex-1 flex-col px-inset py-3 pb-safe-max">
+          <Input
+            type="search"
+            value={query}
+            onChange={(event) => setQuery(event.currentTarget.value)}
+            placeholder={tMobile("feed.chooseCitySearchPlaceholder")}
+            className="h-11"
+          />
+
+          <div className="mt-3 min-h-0 flex-1 overflow-y-auto">
+            <div className="space-y-1">
+              {cityOptions.length === 0 && (
+                <p className="px-2 py-3 text-sm text-muted-foreground">
+                  {tMobile("feed.chooseCityNoResults")}
+                </p>
+              )}
+
+              {cityOptions.map((city) => {
+                const label = locale === "bg" ? city.labelBg : city.label
+                const isSelected = pendingCity === city.value
+                return (
+                  <button
+                    key={city.value}
+                    type="button"
+                    data-testid={`home-city-option-${city.value}`}
+                    onClick={() => setPendingCity(city.value)}
+                    className={cn(
+                      "flex min-h-(--spacing-touch-md) w-full items-center justify-between gap-2 rounded-xl border px-3 text-left text-sm font-medium transition-colors",
+                      isSelected
+                        ? "border-selected-border bg-selected text-selected-foreground"
+                        : "border-border-subtle bg-background text-foreground hover:bg-hover active:bg-active"
+                    )}
+                  >
+                    <span className="min-w-0 truncate">{label}</span>
+                    {isSelected && <MapPin size={14} weight="fill" aria-hidden="true" />}
+                  </button>
+                )
+              })}
+            </div>
+          </div>
+
+          <button
+            type="button"
+            data-testid="home-city-apply"
+            disabled={!pendingCity}
+            onClick={handleApply}
+            className="mt-3 inline-flex min-h-(--spacing-touch-md) items-center justify-center rounded-full border border-selected-border bg-selected px-4 text-sm font-semibold text-selected-foreground transition-colors hover:brightness-95 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            {tMobile("feed.chooseCityApply")}
+          </button>
+        </div>
+      </DrawerContent>
+    </Drawer>
+  )
+}

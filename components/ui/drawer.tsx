@@ -112,7 +112,7 @@ const blurClasses: Record<DrawerOverlayBlur, string> = {
  */
 function DrawerOverlay({
   className,
-  blur = "md",
+  blur = "none",
   ...props
 }: DrawerOverlayProps) {
   return (
@@ -190,7 +190,7 @@ function DrawerContent({
   className,
   children,
   showHandle,
-  overlayBlur = "sm",
+  overlayBlur = "none",
   onCloseAutoFocus,
   ...props
 }: DrawerContentProps) {

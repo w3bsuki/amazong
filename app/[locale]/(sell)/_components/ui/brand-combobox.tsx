@@ -322,7 +322,7 @@ export function BrandCombobox({
         {trigger}
         <Drawer open={open} onOpenChange={setOpen}>
           <DrawerContent>
-            <DrawerHeader className="text-left border-b border-border/50 pb-4">
+            <DrawerHeader className="text-left border-b border-border-subtle pb-4">
               <DrawerTitle className="text-base font-bold">
                 {t("brandCombobox.mobileTitle")}
               </DrawerTitle>

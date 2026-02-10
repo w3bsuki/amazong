@@ -125,7 +125,7 @@ function AttributeSelect({
 
   return (
     <Select value={value || undefined} onValueChange={onChange}>
-      <SelectTrigger className="w-full h-12 rounded-md border-border font-medium">
+      <SelectTrigger className="w-full h-(--control-primary) rounded-md border-border font-medium">
         <SelectValue placeholder={placeholder || (isBg ? "Избери..." : "Select...")} />
       </SelectTrigger>
       <SelectContent>
@@ -548,7 +548,7 @@ export function AttributesField({ className, compact = false }: AttributesFieldP
 
       {/* Custom attributes */}
       {!isLoading && (
-        <div className="space-y-4 pt-4 border-t border-border/50">
+        <div className="space-y-4 pt-4 border-t border-border-subtle">
           <Label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
             {isBg ? "Допълнителни характеристики" : "Custom Attributes"}
           </Label>
@@ -615,7 +615,7 @@ export function AttributesField({ className, compact = false }: AttributesFieldP
     <Field className={className}>
       {!compact ? (
         <div className="rounded-md border border-border bg-background overflow-hidden shadow-xs">
-          <div className="p-4 pb-3 border-b border-border/50 bg-surface-subtle">
+          <div className="p-4 pb-3 border-b border-border-subtle bg-surface-subtle">
             <div className="flex items-center gap-3.5">
               <div className="flex size-10 items-center justify-center rounded-md bg-background border border-border shadow-xs">
                 <Sliders className="size-5 text-muted-foreground" weight="bold" />

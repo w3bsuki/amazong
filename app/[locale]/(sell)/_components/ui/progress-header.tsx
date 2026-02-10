@@ -44,7 +44,7 @@ export function ProgressHeader({
   const tCommon = useTranslations("Common")
 
   return (
-    <header className="sticky top-0 z-40 bg-background border-b border-border/60">
+    <header className="sticky top-0 z-40 bg-background border-b border-border-subtle">
       <PageContainer size="wide">
         {/* Top bar with logo and actions */}
         <div className="flex items-center justify-between h-14 gap-4">

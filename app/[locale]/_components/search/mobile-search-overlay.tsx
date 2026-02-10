@@ -212,7 +212,7 @@ export function MobileSearchOverlay({
           onClick={handleOpen}
           className={cn(
             "flex items-center justify-center",
-            "size-11 p-0",
+            "size-(--control-default) p-0",
             "rounded-lg text-header-text",
             "hover:bg-header-hover active:bg-header-active",
             "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
@@ -271,7 +271,7 @@ export function MobileSearchOverlay({
                 type="button"
                 variant="ghost"
                 onClick={handleClose}
-                className="h-11 px-3 text-link font-medium hover:bg-transparent hover:text-link-hover"
+                className="h-(--control-default) px-3 text-link font-medium hover:bg-transparent hover:text-link-hover"
               >
                 {tSearch("close")}
               </Button>
@@ -303,7 +303,7 @@ export function MobileSearchOverlay({
                   placeholder={tNav("searchPlaceholder")}
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
-                  className="h-11 w-full pl-9 pr-10 text-base bg-background rounded-full border border-border focus-visible:ring-0"
+                  className="h-(--control-default) w-full rounded-full border border-border bg-background pl-9 pr-10 text-base focus-visible:ring-0"
                   autoComplete="off"
                   autoCapitalize="off"
                   autoCorrect="off"

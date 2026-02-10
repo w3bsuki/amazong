@@ -40,6 +40,7 @@ export function ProductQuickViewDrawer({
   isLoading = false,
 }: ProductQuickViewDrawerProps) {
   const t = useTranslations("Drawers")
+  const tProduct = useTranslations("Product")
   const router = useRouter()
   const { addToCart } = useCart()
   const isMobile = useIsMobile()
@@ -73,7 +74,7 @@ export function ProductQuickViewDrawer({
     return cleanup
   }, [open, product?.sourceScrollY])
 
-  const handleAddToCart = React.useCallback(() => {
+  const addResolvedProductToCart = React.useCallback(() => {
     if (!resolvedProduct) return
     const imgs = resolvedProduct.images?.length
       ? resolvedProduct.images
@@ -89,13 +90,21 @@ export function ProductQuickViewDrawer({
       ...(resolvedProduct.slug ? { slug: resolvedProduct.slug } : {}),
       ...(resolvedProduct.username ? { username: resolvedProduct.username } : {}),
     })
-    onOpenChange(false)
+  }, [addToCart, resolvedProduct])
+
+  const handleAddToCart = React.useCallback(() => {
+    if (!resolvedProduct) return
+    addResolvedProductToCart()
     toast.success(t("addedToCart"))
-  }, [addToCart, resolvedProduct, onOpenChange, t])
+  }, [addResolvedProductToCart, resolvedProduct, t])
 
   const handleBuyNow = React.useCallback(() => {
-    handleAddToCart()
-  }, [handleAddToCart])
+    if (!resolvedProduct) return
+    addResolvedProductToCart()
+    toast.success(tProduct("addedToCart"))
+    onOpenChange(false)
+    router.push("/checkout")
+  }, [addResolvedProductToCart, onOpenChange, resolvedProduct, router, tProduct])
 
   const productPath = React.useMemo(() => {
     if (!resolvedProduct) return "#"
@@ -125,7 +134,7 @@ export function ProductQuickViewDrawer({
         aria-label={t("quickView")}
         showHandle
         className="touch-pan-y max-h-dialog rounded-t-2xl"
-        overlayBlur="sm"
+        overlayBlur="none"
       >
         <DrawerDescription className="sr-only">{description}</DrawerDescription>
         <DrawerBody className="px-0 py-0">
@@ -140,6 +149,7 @@ export function ProductQuickViewDrawer({
               onBuyNow={handleBuyNow}
               onNavigateToProduct={handleNavigateToProduct}
               detailsLoading={detailsLoading}
+              layout="mobile"
             />
           ) : null}
         </DrawerBody>

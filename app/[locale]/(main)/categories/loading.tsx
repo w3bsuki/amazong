@@ -13,7 +13,7 @@ export default function CategoriesLoading() {
   return (
     <PageShell>
       {/* Header - matches page.tsx */}
-      <div className="border-b border-border/30 bg-background">
+      <div className="border-b border-border-subtle bg-background">
         <div className="px-inset py-1.5">
           <div className="flex items-baseline justify-between gap-2">
             <Skeleton className="h-4 w-24" />
@@ -45,7 +45,7 @@ export default function CategoriesLoading() {
       </div>
 
       {/* Quick Actions - matches page.tsx */}
-      <div className="px-inset py-3 bg-surface-subtle border-t border-border/30">
+      <div className="px-inset py-3 bg-surface-subtle border-t border-border-subtle">
         <div className="grid grid-cols-2 gap-2">
           <Skeleton className="h-14 w-full rounded-md" />
           <Skeleton className="h-14 w-full rounded-md" />

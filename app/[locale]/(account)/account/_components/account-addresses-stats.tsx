@@ -127,7 +127,7 @@ export function AccountAddressesStats({ stats, locale }: AddressesStatsProps) {
               {stats.workCount.toLocaleString()}
             </CardTitle>
             <CardAction>
-              <Badge variant="outline" className="text-info border-border/60 bg-info/10">
+              <Badge variant="outline" className="text-info border-border-subtle bg-info/10">
                 {t.business}
               </Badge>
             </CardAction>

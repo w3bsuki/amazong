@@ -67,7 +67,7 @@ interface DialogOverlayProps extends React.ComponentProps<typeof DialogPrimitive
 
 function DialogOverlay({
   className,
-  blur = "sm",
+  blur = "none",
   ...props
 }: DialogOverlayProps) {
   return (
@@ -104,7 +104,7 @@ function DialogContent({
   showCloseButton = true,
   closeLabel,
   variant = 'default',
-  overlayBlur = 'sm',
+  overlayBlur = 'none',
   onCloseAutoFocus,
   ...props
 }: DialogContentProps) {
@@ -135,7 +135,7 @@ function DialogContent({
               aria-label={closeLabel ?? 'Close'}
               className={cn(
                 'absolute top-4 right-4 z-10 transition-all duration-150',
-                'bg-surface-subtle backdrop-blur-sm',
+                'bg-surface-subtle',
                 'text-foreground hover:bg-hover active:bg-active',
               )}
             >

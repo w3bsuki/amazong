@@ -16,9 +16,10 @@ interface QuickViewImageGalleryProps {
   title: string
   discountPercent?: number | undefined
   onNavigateToProduct: () => void
-  onRequestClose?: () => void
   /** Use compact layout with a square hero + thumbnail strip (better for mobile drawers) */
   compact?: boolean
+  /** Mobile compact hero ratio (smaller than square keeps key details above the fold) */
+  compactRatio?: number
 }
 
 export function QuickViewImageGallery({
@@ -26,8 +27,8 @@ export function QuickViewImageGallery({
   title,
   discountPercent,
   onNavigateToProduct,
-  onRequestClose,
   compact = false,
+  compactRatio = 4 / 3,
 }: QuickViewImageGalleryProps) {
   const tDrawers = useTranslations("Drawers")
   const tProduct = useTranslations("Product")
@@ -152,7 +153,7 @@ export function QuickViewImageGallery({
   return (
     <div className="touch-pan-y">
       <div className="relative overflow-hidden rounded-2xl border border-border-subtle bg-surface-subtle">
-        <AspectRatio ratio={1} className="relative">
+        <AspectRatio ratio={compactRatio} className="relative">
         <button
           type="button"
           onClick={onNavigateToProduct}
@@ -193,22 +194,6 @@ export function QuickViewImageGallery({
               <CaretRight size={16} weight="bold" />
             </Button>
           </>
-        )}
-
-        {onRequestClose && (
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon-compact"
-            onClick={(e) => { e.stopPropagation(); onRequestClose() }}
-            className="absolute right-2 top-2 rounded-full border border-border-subtle bg-background text-foreground touch-manipulation hover:bg-hover active:bg-active"
-            aria-label={tProduct("close")}
-          >
-            <span className="sr-only">{tProduct("close")}</span>
-            <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M18 6L6 18M6 6l12 12" />
-            </svg>
-          </Button>
         )}
 
         {discountPercent && discountPercent > 0 && (

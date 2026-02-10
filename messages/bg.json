@@ -231,8 +231,10 @@
             "trustProtected": "Защитени",
             "trustFastShip": "Бърза доставка",
             "trustBestPrices": "Топ цени",
-            "sellBannerTitle": "Имаш нещо за продан?",
-            "sellBannerSubtitle": "Безплатно публикуване • Достигни хиляди",
+            "sellBannerEyebrow": "Продавай в Treido",
+            "sellBannerTitle": "Продай в Treido",
+            "sellBannerSubtitle": "Пусни обява за минута.",
+            "sellBannerAction": "Започни",
             "browseCategorySubtitle": "Разгледай всички продукти в тази категория",
             "forYouTitle": "За теб",
             "exploreTabs": {
@@ -266,13 +268,109 @@
             "promoBannerTitle": "Промотирани обяви",
             "promoBannerSubtitle": "Подбрани оферти от продавачи с доверие",
             "promoBannerCta": "Виж всички",
-            "forYouBannerEyebrow": "За теб",
-            "forYouBannerTitle": "Най-нови за теб",
-            "forYouBannerSubtitle": "Използвай бързите филтри за по-бърз избор",
+            "forYouBannerEyebrow": "Всички обяви",
+            "forYouBannerTitle": "Пълен поток",
+            "forYouBannerSubtitle": "Разгледай целия поток и сортирай по предпочитание",
             "forYouBannerCta": "Виж всички",
             "featuredTitle": "На фокус",
             "featuredSubtitle": "Промотиран продавач с високо доверие от купувачите",
-            "featuredAction": "Виж промотираните"
+            "featuredAction": "Виж промотираните",
+            "feed": {
+                "controlsAria": "Контроли за началния поток",
+                "tabsAria": "Табове за началния поток",
+                "quickSortLabel": "Сортиране",
+                "nearby": "Наблизо",
+                "nearbyWithCity": "Наблизо: {city}",
+                "chooseCityTitle": "Избери град",
+                "chooseCitySearchPlaceholder": "Търси град...",
+                "chooseCityApply": "Приложи",
+                "chooseCityNoResults": "Няма намерени градове.",
+                "tabs": {
+                    "promoted": "Промотирани",
+                    "all": "Всички"
+                },
+                "sortTrigger": "Сортиране",
+                "sort": {
+                    "newest": "Най-нови",
+                    "priceLow": "Цена: Ниска",
+                    "priceHigh": "Цена: Висока",
+                    "topRated": "Топ оценени"
+                },
+                "section": {
+                    "promotedTitle": "Промотирани обяви",
+                    "allTitle": "Всички обяви"
+                },
+                "discoveryHeader": {
+                    "promoted": "Промотирани обяви",
+                    "all": "Всички обяви"
+                },
+                "seeAllAria": "Виж всички обяви",
+                "loading": "Обновяване на обявите...",
+                "error": "Не успяхме да обновим обявите. Опитай отново.",
+                "retry": "Опитай пак",
+                "empty": {
+                    "promoted": "Няма активни промотирани обяви в момента.",
+                    "all": "Няма обяви в момента.",
+                    "switchToAll": "Към всички"
+                }
+            },
+            "scope": {
+                "applyOnHome": "Обхват за началната страница",
+                "openCategoryBrowseHint": "За пълен преглед: „Обяви“ долу",
+                "cityAll": "Навсякъде",
+                "categoryAll": "Всички категории",
+                "clear": "Изчисти",
+                "loading": "Обновяване на секциите...",
+                "error": "Не успяхме да обновим обявите. Опитай отново.",
+                "promotedEmpty": "Няма активни промотирани обяви за този обхват.",
+                "newestEmpty": "Няма нови обяви за този обхват.",
+                "cityDrawerTitle": "Избери град",
+                "cityDrawerSearchPlaceholder": "Търси град...",
+                "cityDrawerNoResults": "Няма намерени градове.",
+                "categoryDrawerTitle": "Избери категория",
+                "categoryDrawerSearchPlaceholder": "Търси категория...",
+                "categoryDrawerNoResults": "Няма намерени категории.",
+                "hero": {
+                    "promoted": {
+                        "eyebrow": "Промотирано",
+                        "default": {
+                            "title": "Промотирани обяви",
+                            "subtitle": "Активни буустове от проверени продавачи"
+                        },
+                        "city": {
+                            "title": "Промотирани в {city}",
+                            "subtitle": "Локални буустове, релевантни за твоя град"
+                        },
+                        "category": {
+                            "title": "Промотирани в {category}",
+                            "subtitle": "Платени позиции в избраната категория"
+                        },
+                        "cityCategory": {
+                            "title": "Промотирани в {city} • {category}",
+                            "subtitle": "Локални буустове в избраната категория"
+                        }
+                    },
+                    "newest": {
+                        "eyebrow": "Най-нови",
+                        "default": {
+                            "title": "Най-нови за теб",
+                            "subtitle": "Последно публикувани обяви в платформата"
+                        },
+                        "city": {
+                            "title": "Най-нови в {city}",
+                            "subtitle": "Прясно публикувани обяви близо до теб"
+                        },
+                        "category": {
+                            "title": "Най-нови в {category}",
+                            "subtitle": "Последни обяви в избраната категория"
+                        },
+                        "cityCategory": {
+                            "title": "Най-нови в {city} • {category}",
+                            "subtitle": "Последни обяви в избран град и категория"
+                        }
+                    }
+                }
+            }
         }
     },
     "Product": {
@@ -1484,7 +1582,7 @@
         "usa": "САЩ",
         "worldwide": "По света",
         "clearShipping": "Изчисти филтър за доставка",
-        "anyLocation": "Всякъде",
+        "anyLocation": "Навсякъде",
         "noProductsFound": "Няма намерени продукти",
         "noResultsForQuery": "Не намерихме резултати за \"{query}\". Опитайте да проверите правописа или използвайте по-общи термини.",
         "noResultsForFilters": "Не намерихме продукти, отговарящи на вашите филтри. Опитайте да коригирате критериите за търсене.",

@@ -8,12 +8,101 @@ import { useTranslations } from "next-intl"
 import { cn } from "@/lib/utils"
 import { getCategoryIcon } from "@/components/shared/category/category-icons"
 import { useCategoryDrawerOptional } from "@/components/mobile/category-nav"
+import { getHomeChipClass, getHomeChipCountClass, getHomeChipIconClass } from "./home-chip-styles"
 
 interface HomeStickyCategoryPillsProps {
   visible: boolean
   categories: CategoryTreeNode[]
   locale: string
+  categoryCounts?: Record<string, number>
   className?: string
+}
+
+interface StickyPillProps {
+  label: string
+  countLabel: string | undefined
+  active: boolean
+  tabIndex: number
+  ariaLabel?: string
+  icon?: React.ReactNode
+  dataTestId?: string
+  onClick?: () => void
+  href?: string
+}
+
+function formatCompactCount(value: number, locale: string): string {
+  const normalized = Math.max(0, Math.trunc(value))
+  if (normalized < 1000) return normalized.toLocaleString(locale)
+  return new Intl.NumberFormat(locale, {
+    notation: "compact",
+    maximumFractionDigits: 1,
+  }).format(normalized)
+}
+
+function StickyPill({
+  label,
+  countLabel,
+  active,
+  tabIndex,
+  ariaLabel,
+  icon,
+  dataTestId,
+  onClick,
+  href,
+}: StickyPillProps) {
+  const baseClass = getHomeChipClass({
+    active,
+    size: "default",
+    className: "gap-1.5",
+  })
+
+  const content = (
+    <>
+      {icon ? (
+        <span className={cn("shrink-0", getHomeChipIconClass(active))}>
+          {icon}
+        </span>
+      ) : null}
+      <span>{label}</span>
+      {countLabel ? (
+        <span
+          className={getHomeChipCountClass({ active })}
+          aria-hidden="true"
+        >
+          {countLabel}
+        </span>
+      ) : null}
+    </>
+  )
+
+  if (href) {
+    return (
+      <Link
+        href={href}
+        prefetch={true}
+        tabIndex={tabIndex}
+        className={baseClass}
+        aria-label={ariaLabel}
+        {...(dataTestId ? { "data-testid": dataTestId } : {})}
+      >
+        {content}
+      </Link>
+    )
+  }
+
+  return (
+    <button
+      type="button"
+      tabIndex={tabIndex}
+      onClick={onClick}
+      aria-pressed={active}
+      aria-label={ariaLabel}
+      className={baseClass}
+      {...(dataTestId ? { "data-testid": dataTestId } : {})}
+    >
+      {content}
+    </button>
+  )
 }
 
 /**
@@ -24,10 +113,12 @@ export function HomeStickyCategoryPills({
   visible,
   categories,
   locale,
+  categoryCounts = {},
   className,
 }: HomeStickyCategoryPillsProps) {
   const tCategories = useTranslations("Categories")
   const tDrawer = useTranslations("CategoryDrawer")
+  const tMobile = useTranslations("Home.mobile")
   const pathname = usePathname()
   const drawer = useCategoryDrawerOptional()
 
@@ -41,19 +132,21 @@ export function HomeStickyCategoryPills({
   const activeCategorySlug = pathWithoutLocale.startsWith(`${categoriesPathPrefix}/`)
     ? pathWithoutLocale.replace(`${categoriesPathPrefix}/`, "").split("/")[0] ?? null
     : null
-  const pillBase =
-    "inline-flex min-h-(--spacing-touch-md) shrink-0 items-center gap-1.5 rounded-full border px-3.5 whitespace-nowrap"
-  const pillText = "text-xs font-medium leading-none"
-  const pillActive = "border-foreground bg-foreground text-background"
-  const pillIdle = "border-border-subtle bg-surface-subtle text-foreground hover:border-hover-border hover:bg-hover"
-  const pillInteractive =
-    "tap-transparent transition-colors active:bg-active focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
+
+  const hasCounts = Object.keys(categoryCounts).length > 0
+  const totalListingsCount = categories.reduce((sum, category) => {
+    return sum + Math.max(0, categoryCounts[category.slug] ?? 0)
+  }, 0)
+
+  const rootAriaLabel = hasCounts
+    ? `${tDrawer("title")} · ${tCategories("categoryCount", { count: categories.length })} · ${tMobile("listingsCount", { count: totalListingsCount })}`
+    : `${tDrawer("title")} · ${tCategories("categoryCount", { count: categories.length })}`
 
   return (
     <div
       data-testid="home-sticky-category-pills"
       className={cn(
-        "fixed inset-x-0 z-30 border-b border-border-subtle bg-background transition-all duration-200 md:hidden",
+        "fixed inset-x-0 z-30 border-b border-border-subtle bg-surface-elevated transition-all duration-200 md:hidden",
         visible ? "pointer-events-auto translate-y-0 opacity-100" : "pointer-events-none -translate-y-1 opacity-0",
         className
       )}
@@ -61,40 +154,29 @@ export function HomeStickyCategoryPills({
       aria-hidden={!visible}
     >
       <div className="overflow-x-auto no-scrollbar px-(--spacing-home-inset) py-1.5">
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-1.5 pr-1">
           {drawer ? (
-            <button
-              type="button"
+            <StickyPill
+              label={tDrawer("title")}
+              countLabel={categories.length.toLocaleString(locale)}
+              active={isCategoriesIndexActive}
               tabIndex={interactiveTabIndex}
               onClick={drawer.openRoot}
-              aria-pressed={isCategoriesIndexActive}
-              className={cn(
-                pillBase,
-                pillText,
-                isCategoriesIndexActive ? pillActive : pillIdle,
-                pillInteractive
-              )}
-              {...(!isCategoriesIndexActive ? { "data-testid": "home-sticky-pill-inactive" } : {})}
-            >
-              {getCategoryIcon("categories", { size: 14, weight: "regular" })}
-              <span>{tDrawer("title")}</span>
-            </button>
+              ariaLabel={rootAriaLabel}
+              icon={getCategoryIcon("categories", { size: 14, weight: "regular" })}
+              {...(!isCategoriesIndexActive ? { dataTestId: "home-sticky-pill-inactive" } : {})}
+            />
           ) : (
-            <Link
-              href="/categories"
-              prefetch={true}
+            <StickyPill
+              label={tDrawer("title")}
+              countLabel={categories.length.toLocaleString(locale)}
+              active={isCategoriesIndexActive}
               tabIndex={interactiveTabIndex}
-              className={cn(
-                pillBase,
-                pillText,
-                isCategoriesIndexActive ? pillActive : pillIdle,
-                pillInteractive
-              )}
-              {...(!isCategoriesIndexActive ? { "data-testid": "home-sticky-pill-inactive" } : {})}
-            >
-              {getCategoryIcon("categories", { size: 14, weight: "regular" })}
-              <span>{tDrawer("title")}</span>
-            </Link>
+              href="/categories"
+              ariaLabel={rootAriaLabel}
+              icon={getCategoryIcon("categories", { size: 14, weight: "regular" })}
+              {...(!isCategoriesIndexActive ? { dataTestId: "home-sticky-pill-inactive" } : {})}
+            />
           )}
 
           {categories.map((category) => {
@@ -106,43 +188,36 @@ export function HomeStickyCategoryPills({
               activeCategorySlug === category.slug ||
               Boolean(drawer?.path[0]?.slug === category.slug)
 
+            const categoryCount = categoryCounts[category.slug] ?? 0
+            const countLabel = hasCounts ? formatCompactCount(categoryCount, locale) : undefined
+            const categoryAriaLabel = hasCounts
+              ? `${label} · ${tMobile("listingsCount", { count: categoryCount })}`
+              : label
+
             if (drawer) {
               return (
-                <button
+                <StickyPill
                   key={category.id}
-                  type="button"
+                  label={label}
+                  countLabel={countLabel}
+                  active={isCategoryActive}
                   tabIndex={interactiveTabIndex}
                   onClick={() => drawer.openCategory(category)}
-                  aria-pressed={isCategoryActive}
-                  className={cn(
-                    pillBase,
-                    pillText,
-                    isCategoryActive ? pillActive : pillIdle,
-                    pillInteractive
-                  )}
-                >
-                  {getCategoryIcon(category.slug, { size: 14, weight: "regular" })}
-                  <span>{label}</span>
-                </button>
+                  ariaLabel={categoryAriaLabel}
+                />
               )
             }
 
             return (
-              <Link
+              <StickyPill
                 key={category.id}
-                href={`/categories/${category.slug}`}
-                prefetch={true}
+                label={label}
+                countLabel={countLabel}
+                active={isCategoryActive}
                 tabIndex={interactiveTabIndex}
-                className={cn(
-                  pillBase,
-                  pillText,
-                  isCategoryActive ? pillActive : pillIdle,
-                  pillInteractive
-                )}
-              >
-                {getCategoryIcon(category.slug, { size: 14, weight: "regular" })}
-                <span>{label}</span>
-              </Link>
+                href={`/categories/${category.slug}`}
+                ariaLabel={categoryAriaLabel}
+              />
             )
           })}
         </div>

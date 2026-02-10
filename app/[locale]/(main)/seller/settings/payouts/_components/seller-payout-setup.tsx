@@ -359,7 +359,7 @@ export function SellerPayoutSetup({ payoutStatus, variant = "full" }: Props) {
       <div className="h-22" aria-hidden="true" />
 
       {/* Fixed bottom CTA (always visible, no scroll required) */}
-      <div className="fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-background px-4 pt-3 pb-safe backdrop-blur">
+      <div className="fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-background px-4 pt-3 pb-safe">
         <div className="mx-auto w-full max-w-md pb-4">
         {error && (
           <div className="w-full p-3 mb-3 bg-destructive-subtle text-destructive rounded-lg text-sm">

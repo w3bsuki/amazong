@@ -57,25 +57,25 @@ export function PromotedListingsStrip({
           <div className="flex items-center gap-2 overflow-x-auto no-scrollbar">
             <Link
               href="/search?promoted=true&sort=newest"
-              className="inline-flex min-h-(--spacing-touch-sm) shrink-0 items-center rounded-full border border-foreground bg-foreground px-3 text-sm font-semibold text-background transition-colors hover:bg-foreground active:bg-foreground"
+              className="inline-flex min-h-(--spacing-touch-md) shrink-0 items-center rounded-full border border-foreground bg-foreground px-3 text-sm font-semibold text-background transition-colors hover:bg-foreground active:bg-foreground"
             >
               {tMobile("sort.newest")}
             </Link>
             <Link
               href="/search?promoted=true&sort=price-asc"
-              className="inline-flex min-h-(--spacing-touch-sm) shrink-0 items-center rounded-full border border-border-subtle bg-surface-subtle px-3 text-sm font-medium text-foreground transition-colors hover:bg-hover active:bg-active"
+              className="inline-flex min-h-(--spacing-touch-md) shrink-0 items-center rounded-full border border-border-subtle bg-surface-subtle px-3 text-sm font-medium text-foreground transition-colors hover:bg-hover active:bg-active"
             >
               {tMobile("sort.priceLow")}
             </Link>
             <Link
               href="/search?promoted=true&sort=price-desc"
-              className="inline-flex min-h-(--spacing-touch-sm) shrink-0 items-center rounded-full border border-border-subtle bg-surface-subtle px-3 text-sm font-medium text-foreground transition-colors hover:bg-hover active:bg-active"
+              className="inline-flex min-h-(--spacing-touch-md) shrink-0 items-center rounded-full border border-border-subtle bg-surface-subtle px-3 text-sm font-medium text-foreground transition-colors hover:bg-hover active:bg-active"
             >
               {tMobile("sort.priceHigh")}
             </Link>
             <Link
               href="/search?promoted=true&nearby=true"
-              className="inline-flex min-h-(--spacing-touch-sm) shrink-0 items-center rounded-full border border-border-subtle bg-surface-subtle px-3 text-sm font-medium text-foreground transition-colors hover:bg-hover active:bg-active"
+              className="inline-flex min-h-(--spacing-touch-md) shrink-0 items-center rounded-full border border-border-subtle bg-surface-subtle px-3 text-sm font-medium text-foreground transition-colors hover:bg-hover active:bg-active"
             >
               {tMobile("sort.nearby")}
             </Link>

@@ -48,7 +48,7 @@ export function DescriptionField({
         <Field data-invalid={fieldState.invalid} className={className}>
           {/* Section Header (non-compact mode) */}
           {!compact && (
-            <div className="p-4 pb-3 border-b border-border/50 bg-surface-subtle">
+            <div className="p-4 pb-3 border-b border-border-subtle bg-surface-subtle">
               <div className="flex items-center gap-3.5">
                 <div className="flex size-10 items-center justify-center rounded-md bg-background border border-border shadow-xs">
                   <TextAlignLeft className="size-5 text-muted-foreground" weight="bold" />
@@ -108,7 +108,7 @@ export function DescriptionField({
               />
 
               {/* Toolbar */}
-              <div className="flex items-center justify-between border-t border-border/50 bg-surface-subtle px-4 py-2">
+              <div className="flex items-center justify-between border-t border-border-subtle bg-surface-subtle px-4 py-2">
                 <div className="flex gap-1">
                   <button
                     type="button"

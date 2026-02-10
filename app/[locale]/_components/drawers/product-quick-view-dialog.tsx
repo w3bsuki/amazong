@@ -33,12 +33,13 @@ export function ProductQuickViewDialog({
   isLoading = false,
 }: ProductQuickViewDialogProps) {
   const tDrawers = useTranslations("Drawers")
+  const tProduct = useTranslations("Product")
   const router = useRouter()
   const { addToCart } = useCart()
   const isMobile = useIsMobile()
   const { product: resolvedProduct, isLoading: detailsLoading } = useProductQuickViewDetails(open, product)
 
-  const handleAddToCart = React.useCallback(() => {
+  const addResolvedProductToCart = React.useCallback(() => {
     if (!resolvedProduct) return
     const imgs = resolvedProduct.images?.length
       ? resolvedProduct.images
@@ -54,13 +55,21 @@ export function ProductQuickViewDialog({
       ...(resolvedProduct.slug ? { slug: resolvedProduct.slug } : {}),
       ...(resolvedProduct.username ? { username: resolvedProduct.username } : {}),
     })
-    onOpenChange(false)
+  }, [addToCart, resolvedProduct])
+
+  const handleAddToCart = React.useCallback(() => {
+    if (!resolvedProduct) return
+    addResolvedProductToCart()
     toast.success(tDrawers("addedToCart"))
-  }, [addToCart, resolvedProduct, onOpenChange, tDrawers])
+  }, [addResolvedProductToCart, resolvedProduct, tDrawers])
 
   const handleBuyNow = React.useCallback(() => {
-    handleAddToCart()
-  }, [handleAddToCart])
+    if (!resolvedProduct) return
+    addResolvedProductToCart()
+    toast.success(tProduct("addedToCart"))
+    onOpenChange(false)
+    router.push("/checkout")
+  }, [addResolvedProductToCart, onOpenChange, resolvedProduct, router, tProduct])
 
   const productPath = React.useMemo(() => {
     if (!resolvedProduct) return "#"
@@ -103,6 +112,7 @@ export function ProductQuickViewDialog({
               onBuyNow={handleBuyNow}
               onNavigateToProduct={handleNavigateToProduct}
               detailsLoading={detailsLoading}
+              layout="desktop"
             />
           ) : null}
         </div>

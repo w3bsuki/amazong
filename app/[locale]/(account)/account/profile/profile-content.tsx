@@ -386,7 +386,7 @@ export function ProfileContent({
                   fallbackClassName="bg-muted text-muted-foreground text-2xl font-bold"
                 />
                 {isUploadingAvatar && (
-                  <div className="absolute inset-0 bg-background/80 flex items-center justify-center rounded-full">
+                  <div className="absolute inset-0 bg-overlay-light flex items-center justify-center rounded-full">
                     <SpinnerGap className="size-6 animate-spin" />
                   </div>
                 )}

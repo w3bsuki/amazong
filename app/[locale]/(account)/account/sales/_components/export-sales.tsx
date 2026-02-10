@@ -81,7 +81,6 @@ export function ExportSales({ locale, defaultFrom, defaultTo }: ExportSalesProps
             type="date"
             value={from}
             onChange={(e) => setFrom(e.target.value)}
-            className="h-9"
           />
         </div>
         <div className="space-y-1">
@@ -90,11 +89,10 @@ export function ExportSales({ locale, defaultFrom, defaultTo }: ExportSalesProps
             type="date"
             value={to}
             onChange={(e) => setTo(e.target.value)}
-            className="h-9"
           />
         </div>
       </div>
-      <Button onClick={download} disabled={isDownloading} variant="outline" className="h-9">
+      <Button onClick={download} disabled={isDownloading} variant="outline" size="sm">
         <DownloadSimple className="size-4 mr-2" />
         {t.export}
       </Button>

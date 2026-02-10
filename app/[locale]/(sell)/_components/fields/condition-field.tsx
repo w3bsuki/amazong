@@ -117,7 +117,7 @@ export function ConditionField({ className, compact = false }: ConditionFieldPro
                     </button>
                   </DrawerTrigger>
                   <DrawerContent className="max-h-dialog">
-                    <DrawerHeader className="border-b border-border/50 pb-4">
+                    <DrawerHeader className="border-b border-border-subtle pb-4">
                       <DrawerTitle className="text-xl font-bold">{isBg ? "Състояние" : "Item condition"}</DrawerTitle>
                       <DrawerDescription className="text-sm">
                         {isBg ? "Бъдете точни — това изгражда доверие" : "Be accurate — it builds trust with buyers"}

@@ -231,7 +231,7 @@ Legend: `[x]` Done | `[ ]` In progress or not started (annotated)
 
 - [x] R17.1: Keyboard navigation
 - [x] R17.2: Focus management
-- [x] R17.3: Touch targets ≥ 32px
+- [x] R17.3: Touch targets ≥ 32px (minimum contract; product UI defaults to 44px for primary actions)
 - [ ] R17.4: Screen reader labels — in progress (partial)
 - [ ] R17.5: WCAG 2.1 AA compliance — in progress
 

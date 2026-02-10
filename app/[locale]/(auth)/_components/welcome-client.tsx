@@ -308,7 +308,7 @@ export function WelcomeClient({ locale }: { locale: string }) {
                           "p-2 rounded-xl border-2 transition-colors",
                           !useCustomAvatar && selectedVariant === variant
                             ? "border-primary bg-muted"
-                            : "border-border hover:border-border/80"
+                            : "border-border hover:border-border-subtle"
                         )}
                       >
                         <Avatar
@@ -332,7 +332,7 @@ export function WelcomeClient({ locale }: { locale: string }) {
                           onClick={() => setSelectedPalette(idx)}
                           className={cn(
                             "p-1.5 rounded-lg border-2 transition-all",
-                            selectedPalette === idx ? "border-primary" : "border-border hover:border-border/80"
+                            selectedPalette === idx ? "border-primary" : "border-border hover:border-border-subtle"
                           )}
                         >
                           <div className="flex gap-0.5">

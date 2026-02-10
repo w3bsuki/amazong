@@ -432,7 +432,7 @@ export function EditProductClient({ productId, locale }: EditProductClientProps)
                     {locale === 'bg' ? 'Град (за Наблизо)' : 'City (for Near Me)'}
                   </Label>
                   <Select value={sellerCity} onValueChange={setSellerCity}>
-                    <SelectTrigger className="h-11 rounded-lg">
+                    <SelectTrigger className="rounded-lg">
                       <SelectValue placeholder={locale === 'bg' ? 'Изберете град...' : 'Select city...'} />
                     </SelectTrigger>
                     <SelectContent>

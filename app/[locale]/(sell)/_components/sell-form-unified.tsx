@@ -290,7 +290,7 @@ function SellFormContent({
 
             {/* Product preview card - cleaner */}
             {firstImageUrl && (
-              <div className="bg-surface-subtle rounded-md p-4 border border-border/50">
+              <div className="bg-surface-subtle rounded-md p-4 border border-border-subtle">
                 <div className="flex items-center gap-4">
                   <img 
                     src={firstImageUrl} 

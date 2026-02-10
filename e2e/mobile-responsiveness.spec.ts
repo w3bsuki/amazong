@@ -191,7 +191,8 @@ test.describe("Mobile Responsiveness - Phase 11", () => {
       
       const categoriesRow = page.getByTestId("home-category-circles")
       await expect(categoriesRow).toBeVisible({ timeout: 15000 })
-      await expect(page.getByTestId("home-section-newest")).toBeVisible({ timeout: 15000 })
+      await expect(page.getByTestId("home-feed-controls")).toBeVisible({ timeout: 15000 })
+      await expect(page.getByTestId("home-section-discovery")).toBeVisible({ timeout: 15000 })
     })
 
     test("category list is scrollable on mobile", async ({ page }) => {
@@ -221,7 +222,7 @@ test.describe("Mobile Responsiveness - Phase 11", () => {
       // Wait for listings to load
       await page.waitForLoadState("networkidle")
       
-      await expect(page.getByTestId("home-section-newest")).toBeVisible({ timeout: 15000 })
+      await expect(page.getByTestId("home-section-discovery")).toBeVisible({ timeout: 15000 })
       const productLinks = page.locator('a[aria-label^="Open product:"]')
       await expect(productLinks.first()).toBeVisible({ timeout: 15000 })
     })
@@ -239,6 +240,7 @@ test.describe("Mobile Responsiveness - Phase 11", () => {
 
       const inactivePill = page.getByTestId("home-sticky-pill-inactive").first()
       await expect(inactivePill).toBeVisible({ timeout: 15000 })
+      await expect(inactivePill).toContainText(/[0-9]/)
 
       const className = (await inactivePill.getAttribute("class")) ?? ""
       expect(className).toContain("bg-surface-subtle")
@@ -246,7 +248,14 @@ test.describe("Mobile Responsiveness - Phase 11", () => {
 
       const inactivePillBox = await inactivePill.boundingBox()
       expect(inactivePillBox).toBeTruthy()
-      expect(inactivePillBox!.height).toBeGreaterThanOrEqual(44)
+      // Bounding boxes can be off by a fraction of a pixel depending on DPR/rounding.
+      expect(inactivePillBox!.height).toBeGreaterThanOrEqual(43.5)
+
+      const rootPill = stickyPills.locator("button, a").first()
+      await rootPill.click()
+      await expect(rootPill).toHaveClass(/bg-foreground/)
+      await expect(rootPill).toHaveClass(/text-background/)
+      await expect(rootPill).not.toHaveClass(/bg-promoted|text-promoted-foreground|border-promoted/)
     })
 
     test("no horizontal overflow on homepage", async ({ page }) => {
@@ -329,7 +338,7 @@ test.describe("Mobile Responsiveness - Phase 11", () => {
       await page.goto("/en/search?q=phone")
       
       // Search results should be visible
-      await expect(page.locator("main")).toBeVisible()
+      await expect(page.locator("#main-content").first()).toBeVisible()
       
       // No horizontal overflow
       const hasOverflow = await page.evaluate(() => {

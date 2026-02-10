@@ -60,6 +60,7 @@ function walkFiles(dirAbs, out) {
 
 const bannedPatterns = [
   // Token alpha hacks we explicitly ban (design rails).
+  /^border-border\/\d{1,3}$/i,
   /^(?:bg|text|ring)-primary\/\d{1,3}$/i,
   /^(?:bg|text|ring)-destructive\/\d{1,3}$/i,
   /^ring-ring\/\d{1,3}$/i,

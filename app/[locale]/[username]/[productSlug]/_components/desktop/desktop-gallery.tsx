@@ -102,7 +102,7 @@ export function DesktopGallery({
             type="button"
             variant="secondary"
             size="icon"
-            className="size-9 rounded-full bg-surface-glass backdrop-blur-md border border-border hover:bg-background"
+            className="size-9 rounded-full bg-background border border-border-subtle hover:bg-hover"
             aria-label={t("share")}
           >
             <Share2 className="size-4 text-foreground" />
@@ -115,7 +115,7 @@ export function DesktopGallery({
             type="button"
             variant="secondary"
             size="icon"
-            className="size-10 rounded-full bg-surface-glass backdrop-blur-md border border-border hover:bg-background"
+            className="size-10 rounded-full bg-background border border-border-subtle hover:bg-hover"
             aria-label={t("clickToEnlarge")}
             onClick={() => lightboxRef.current?.loadAndOpen(activeIndex)}
           >
@@ -125,7 +125,7 @@ export function DesktopGallery({
 
         {/* Image Counter */}
         {images.length > 1 && (
-          <div className="absolute bottom-3 left-3 bg-overlay-dark backdrop-blur-sm text-overlay-text text-xs font-medium px-2.5 py-1 rounded-full">
+          <div className="absolute bottom-3 left-3 bg-overlay-dark text-overlay-text text-xs font-medium px-2.5 py-1 rounded-full">
             {activeIndex + 1}/{images.length}
           </div>
         )}

@@ -82,7 +82,7 @@ function SheetContent({
             aria-label={resolvedCloseLabel}
             className={cn(
               "absolute top-4 right-4 z-10",
-              "bg-surface-glass backdrop-blur-md border border-border shadow-sm",
+              "bg-background border border-border-subtle shadow-sm",
               "text-foreground hover:bg-hover active:bg-active"
             )}
           >

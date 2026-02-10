@@ -231,8 +231,10 @@
             "trustProtected": "Protected",
             "trustFastShip": "Fast Ship",
             "trustBestPrices": "Best Prices",
-            "sellBannerTitle": "Have something to sell?",
-            "sellBannerSubtitle": "Free to list • Reach thousands",
+            "sellBannerEyebrow": "Sell on Treido",
+            "sellBannerTitle": "Sell on Treido",
+            "sellBannerSubtitle": "List in a minute.",
+            "sellBannerAction": "Start",
             "browseCategorySubtitle": "Browse all products in this category",
             "forYouTitle": "For you",
             "exploreTabs": {
@@ -266,13 +268,109 @@
             "promoBannerTitle": "Promoted listings",
             "promoBannerSubtitle": "Curated boosted offers from trusted sellers",
             "promoBannerCta": "View",
-            "forYouBannerEyebrow": "For you",
-            "forYouBannerTitle": "Newest picks for you",
-            "forYouBannerSubtitle": "Use quick filters to explore faster",
+            "forYouBannerEyebrow": "All listings",
+            "forYouBannerTitle": "Full feed",
+            "forYouBannerSubtitle": "Browse everything and sort by what matters to you",
             "forYouBannerCta": "View all",
             "featuredTitle": "Featured listing",
             "featuredSubtitle": "Promoted seller with high buyer trust signals",
-            "featuredAction": "Browse promoted"
+            "featuredAction": "Browse promoted",
+            "feed": {
+                "controlsAria": "Home feed controls",
+                "tabsAria": "Home feed tabs",
+                "quickSortLabel": "Sort",
+                "nearby": "Nearby",
+                "nearbyWithCity": "Nearby: {city}",
+                "chooseCityTitle": "Choose city",
+                "chooseCitySearchPlaceholder": "Search city...",
+                "chooseCityApply": "Apply",
+                "chooseCityNoResults": "No matching cities.",
+                "tabs": {
+                    "promoted": "Promoted",
+                    "all": "All"
+                },
+                "sortTrigger": "Sort",
+                "sort": {
+                    "newest": "Newest",
+                    "priceLow": "Price: Low",
+                    "priceHigh": "Price: High",
+                    "topRated": "Top rated"
+                },
+                "section": {
+                    "promotedTitle": "Promoted listings",
+                    "allTitle": "All listings"
+                },
+                "discoveryHeader": {
+                    "promoted": "Promoted listings",
+                    "all": "All listings"
+                },
+                "seeAllAria": "See all listings",
+                "loading": "Refreshing listings...",
+                "error": "We couldn't refresh listings. Try again.",
+                "retry": "Retry",
+                "empty": {
+                    "promoted": "No active promoted listings right now.",
+                    "all": "No listings available right now.",
+                    "switchToAll": "Switch to all"
+                }
+            },
+            "scope": {
+                "applyOnHome": "Apply scope on Home",
+                "openCategoryBrowseHint": "For full browse: use “Listings” below",
+                "cityAll": "Any location",
+                "categoryAll": "All categories",
+                "clear": "Clear",
+                "loading": "Refreshing sections...",
+                "error": "We couldn't refresh listings. Try again.",
+                "promotedEmpty": "No active promoted listings for this scope.",
+                "newestEmpty": "No newest listings for this scope.",
+                "cityDrawerTitle": "Choose city",
+                "cityDrawerSearchPlaceholder": "Search city...",
+                "cityDrawerNoResults": "No matching cities.",
+                "categoryDrawerTitle": "Choose category",
+                "categoryDrawerSearchPlaceholder": "Search category...",
+                "categoryDrawerNoResults": "No matching categories.",
+                "hero": {
+                    "promoted": {
+                        "eyebrow": "Promoted",
+                        "default": {
+                            "title": "Promoted listings",
+                            "subtitle": "Active boosts from trusted sellers"
+                        },
+                        "city": {
+                            "title": "Promoted in {city}",
+                            "subtitle": "Local boosted picks relevant to your city"
+                        },
+                        "category": {
+                            "title": "Promoted in {category}",
+                            "subtitle": "Paid placements in your selected category"
+                        },
+                        "cityCategory": {
+                            "title": "Promoted in {city} • {category}",
+                            "subtitle": "Local boosted picks in your selected category"
+                        }
+                    },
+                    "newest": {
+                        "eyebrow": "Newest",
+                        "default": {
+                            "title": "Newest picks for you",
+                            "subtitle": "Latest listings published across the marketplace"
+                        },
+                        "city": {
+                            "title": "Newest in {city}",
+                            "subtitle": "Freshly listed items near your location"
+                        },
+                        "category": {
+                            "title": "Newest in {category}",
+                            "subtitle": "Latest listings in your selected category"
+                        },
+                        "cityCategory": {
+                            "title": "Newest in {city} • {category}",
+                            "subtitle": "Latest listings in your selected city and category"
+                        }
+                    }
+                }
+            }
         }
     },
     "Product": {

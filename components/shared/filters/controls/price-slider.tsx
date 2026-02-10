@@ -118,7 +118,7 @@ export function PriceSlider({
             placeholder="0"
             className={cn(
               "w-full h-10 px-3 rounded-md",
-              "bg-surface-subtle border border-border/50",
+              "bg-surface-subtle border border-border-subtle",
               "text-sm placeholder:text-muted-foreground",
               "focus:outline-none focus:ring-2 focus:ring-focus-ring focus:border-primary"
             )}
@@ -135,7 +135,7 @@ export function PriceSlider({
             placeholder={String(computedMaxLimit)}
             className={cn(
               "w-full h-10 px-3 rounded-md",
-              "bg-surface-subtle border border-border/50",
+              "bg-surface-subtle border border-border-subtle",
               "text-sm placeholder:text-muted-foreground",
               "focus:outline-none focus:ring-2 focus:ring-focus-ring focus:border-primary"
             )}

@@ -324,7 +324,7 @@ export function OrderDetailContent({ locale, order, existingSellerFeedbackSeller
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-3">
           <Link href="/account/orders">
-            <Button variant="ghost" size="icon" className="size-8" aria-label={tCommon("back")}>
+            <Button variant="ghost" size="icon-sm" aria-label={tCommon("back")}>
               <ArrowLeft className="size-4" />
             </Button>
           </Link>

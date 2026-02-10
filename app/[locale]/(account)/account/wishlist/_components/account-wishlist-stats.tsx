@@ -50,7 +50,7 @@ export function AccountWishlistStats({ stats, locale }: WishlistStatsProps) {
     <>
       {/* Mobile: Revolut-style stats pills */}
       <div className="flex items-center gap-3 text-sm sm:hidden">
-        <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-background border border-border/60">
+        <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-background border border-border-subtle">
           <IconHeart className="size-4 text-destructive" />
           <span className="font-semibold text-foreground">{stats.total}</span>
           <span className="text-muted-foreground">{t.items}</span>
@@ -76,7 +76,7 @@ export function AccountWishlistStats({ stats, locale }: WishlistStatsProps) {
               {stats.total.toLocaleString()}
             </CardTitle>
             <CardAction>
-              <Badge variant="outline" className="text-info border-border/60 bg-info/10">
+              <Badge variant="outline" className="text-info border-border-subtle bg-info/10">
                 {t.saved}
               </Badge>
             </CardAction>
@@ -139,7 +139,7 @@ export function AccountWishlistStats({ stats, locale }: WishlistStatsProps) {
               {formatCurrency(stats.totalValue)}
             </CardTitle>
             <CardAction>
-              <Badge variant="outline" className="text-info border-border/60 bg-info/10">
+              <Badge variant="outline" className="text-info border-border-subtle bg-info/10">
                 {t.wishlistValue}
               </Badge>
             </CardAction>

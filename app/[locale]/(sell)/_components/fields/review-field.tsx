@@ -47,7 +47,7 @@ function ReviewSection({
 }) {
   return (
     <div className="rounded-2xl border border-border bg-card overflow-hidden">
-      <div className="flex items-center justify-between px-4 py-3 bg-surface-subtle border-b border-border/50">
+      <div className="flex items-center justify-between px-4 py-3 bg-surface-subtle border-b border-border-subtle">
         <div className="flex items-center gap-3">
           <div className={cn(
             "size-9 rounded-xl flex items-center justify-center",

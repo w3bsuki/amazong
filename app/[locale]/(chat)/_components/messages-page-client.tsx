@@ -25,7 +25,7 @@ function ChatInterfaceSkeleton() {
   return (
     <div className="flex h-full min-h-0 flex-col">
       {/* Header skeleton */}
-      <div className="shrink-0 border-b border-border/50 px-4 py-3">
+      <div className="shrink-0 border-b border-border-subtle px-4 py-3">
         <div className="flex items-center gap-3">
           <Skeleton className="size-10 rounded-full" />
           <div className="flex-1">
@@ -52,7 +52,7 @@ function ChatInterfaceSkeleton() {
         </div>
       </div>
       {/* Input skeleton */}
-      <div className="shrink-0 border-t border-border/50 p-3">
+      <div className="shrink-0 border-t border-border-subtle p-3">
         <Skeleton className="h-11 w-full rounded-full" />
       </div>
     </div>
@@ -77,7 +77,7 @@ function ChatBottomTabs({
   ]
 
   return (
-    <div className="shrink-0 border-t border-border/50 bg-background/95 backdrop-blur-sm pb-safe lg:hidden">
+    <div className="shrink-0 border-t border-border-subtle bg-background pb-safe lg:hidden">
       <div className="flex items-center justify-around h-14">
         {tabs.map((tab) => {
           const Icon = tab.icon
@@ -145,12 +145,12 @@ function MessagesContent({ actions }: { actions: ChatInterfaceServerActions }) {
       {/* Conversation list - full width on mobile, sidebar on desktop */}
       <div
         className={cn(
-          "w-full flex flex-col overflow-hidden lg:w-80 xl:w-96 lg:border-r border-border/40",
+          "w-full flex flex-col overflow-hidden lg:w-80 xl:w-96 lg:border-r border-border-subtle",
           showChat ? "hidden lg:flex" : "flex"
         )}
       >
         {/* Header with back button, title and search */}
-        <div className="shrink-0 p-3 lg:p-4 border-b border-border/50 pt-safe-max-sm">
+        <div className="shrink-0 p-3 lg:p-4 border-b border-border-subtle pt-safe-max-sm">
           {/* Title row with back button */}
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">

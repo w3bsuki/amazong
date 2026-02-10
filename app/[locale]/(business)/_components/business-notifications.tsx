@@ -128,7 +128,7 @@ export function BusinessNotifications({
   return (
     <Popover open={isOpen} onOpenChange={setIsOpen}>
       <PopoverTrigger asChild>
-        <Button variant="ghost" size="icon" className="size-8 relative">
+        <Button variant="ghost" size="icon-sm" className="relative">
           <IconBell className="size-4" />
           {unreadCount > 0 && (
             <Badge

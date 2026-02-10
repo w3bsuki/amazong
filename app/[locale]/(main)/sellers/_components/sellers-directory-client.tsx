@@ -60,7 +60,7 @@ export default function SellersDirectoryClient({ sellers }: { sellers: Seller[] 
         </div>
         <div className="w-full sm:w-52">
           <Select value={sortKey} onValueChange={(v) => setSortKey(v as SortKey)}>
-            <SelectTrigger className="h-10">
+            <SelectTrigger size="sm">
               <SelectValue placeholder={t("sortLabel")} />
             </SelectTrigger>
             <SelectContent>

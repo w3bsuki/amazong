@@ -162,7 +162,7 @@ export function GeoWelcomeModal({ locale }: GeoWelcomeModalProps) {
             <label className="text-sm font-medium text-foreground">{t('selectRegion')}</label>
 
             <Select value={selectedRegion} onValueChange={(value) => setSelectedRegion(value as ShippingRegion)}>
-              <SelectTrigger className="h-10 w-full rounded-lg" aria-label={t('selectRegion')}>
+              <SelectTrigger className="w-full rounded-lg" aria-label={t('selectRegion')}>
                 <SelectValue>
                   <span className="flex items-center gap-2">
                     <span className="text-base">{REGION_FLAGS[selectedRegion]}</span>

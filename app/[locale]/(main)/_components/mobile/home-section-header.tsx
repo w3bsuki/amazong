@@ -1,7 +1,7 @@
 "use client"
 
 import type * as React from "react"
-import { CaretRight, Lightning } from "@phosphor-icons/react"
+import { CaretRight } from "@phosphor-icons/react"
 import { Link } from "@/i18n/routing"
 import { cn } from "@/lib/utils"
 
@@ -20,6 +20,7 @@ export function HomeSectionHeader({
   href,
   actionLabel,
   variant = "default",
+  badgeLabel,
   leading,
   className,
 }: HomeSectionHeaderProps) {
@@ -28,23 +29,18 @@ export function HomeSectionHeader({
   return (
     <div className={cn("mb-2 flex items-center justify-between gap-2 px-inset-md", className)}>
       <div className="min-w-0 flex items-center gap-2">
-        {isPromoted ? (
-          <>
-            <span className="inline-flex size-6 shrink-0 items-center justify-center rounded-full bg-foreground text-background">
-              <Lightning size={12} weight="fill" className="shrink-0" />
+        {!isPromoted && leading ? <div className="shrink-0">{leading}</div> : null}
+
+        <div className="min-w-0">
+          {isPromoted && badgeLabel ? (
+            <span className="mb-1 inline-flex h-5 max-w-full items-center rounded-full border border-foreground bg-foreground px-1.5 text-2xs font-semibold uppercase leading-none tracking-wide text-background">
+              {badgeLabel}
             </span>
-            <h2 className="min-w-0 truncate text-lg font-semibold tracking-tight text-home-section-title">
-              {title}
-            </h2>
-          </>
-        ) : (
-          <>
-            {leading && <div className="shrink-0">{leading}</div>}
-            <h2 className="min-w-0 truncate text-lg font-semibold tracking-tight text-home-section-title">
-              {title}
-            </h2>
-          </>
-        )}
+          ) : null}
+          <h2 className="min-w-0 truncate text-lg font-semibold tracking-tight text-home-section-title">
+            {title}
+          </h2>
+        </div>
       </div>
       <Link
         href={href}

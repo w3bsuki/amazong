@@ -172,7 +172,7 @@ export function AccountRecentActivity({ orders, products, sales, locale }: Accou
                               sizes="144px"
                             />
                             {itemCount > 1 && (
-                              <div className="absolute top-2 right-2 flex size-6 items-center justify-center rounded-full bg-surface-overlay backdrop-blur-sm text-2xs font-bold text-overlay-text">
+                              <div className="absolute top-2 right-2 flex size-6 items-center justify-center rounded-full bg-surface-overlay text-2xs font-bold text-overlay-text">
                                 +{itemCount - 1}
                               </div>
                             )}
@@ -294,7 +294,7 @@ export function AccountRecentActivity({ orders, products, sales, locale }: Accou
                       </div>
                     )}
                     {/* Stock badge */}
-                    <div className="absolute top-2 right-2 flex items-center justify-center px-1.5 py-0.5 rounded-full bg-surface-overlay backdrop-blur-sm text-2xs font-medium text-overlay-text">
+                    <div className="absolute top-2 right-2 flex items-center justify-center px-1.5 py-0.5 rounded-full bg-surface-overlay text-2xs font-medium text-overlay-text">
                       {product.stock} {t.inStock}
                     </div>
                   </div>

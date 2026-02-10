@@ -66,7 +66,7 @@ export default async function CategoriesPage({
       <CategoriesHeaderSync title={headerTitle} />
 
       {/* Header */}
-      <div className="border-b border-border/30 bg-background">
+      <div className="border-b border-border-subtle bg-background">
         <div className="px-inset py-1.5">
           <div className="flex items-baseline justify-between gap-2">
             <h1 className="hidden lg:block text-sm font-bold text-foreground">{t("title")}</h1>
@@ -119,7 +119,7 @@ export default async function CategoriesPage({
       </div>
 
       {/* Quick Actions */}
-      <div className="px-inset py-3 bg-surface-subtle border-t border-border/30">
+      <div className="px-inset py-3 bg-surface-subtle border-t border-border-subtle">
         <div className="grid grid-cols-2 gap-2">
           <Link
             href="/sell"

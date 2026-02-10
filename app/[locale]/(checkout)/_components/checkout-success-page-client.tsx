@@ -89,10 +89,10 @@ export default function CheckoutSuccessPageClient({
           <p className="text-sm font-semibold mb-1">{t("paymentFailed")}</p>
           <p className="text-xs text-muted-foreground mb-4">{state.message}</p>
           <div className="flex gap-2">
-            <Button asChild variant="outline" size="sm" className="flex-1 h-9">
+            <Button asChild variant="outline" size="sm" className="flex-1">
               <Link href="/cart">{t("backToCart")}</Link>
             </Button>
-            <Button asChild size="sm" className="flex-1 h-9">
+            <Button asChild size="sm" className="flex-1">
               <Link href="/">{t("continueShopping")}</Link>
             </Button>
           </div>
@@ -135,10 +135,10 @@ export default function CheckoutSuccessPageClient({
 
         {/* Actions */}
         <div className="flex gap-2">
-          <Button asChild variant="outline" size="sm" className="flex-1 h-9">
+          <Button asChild variant="outline" size="sm" className="flex-1">
             <Link href="/orders">{t("viewOrders")}</Link>
           </Button>
-          <Button asChild size="sm" className="flex-1 h-9">
+          <Button asChild size="sm" className="flex-1">
             <Link href="/">
               {t("continueShopping")}
               <ArrowRight className="size-3.5 ml-1" />

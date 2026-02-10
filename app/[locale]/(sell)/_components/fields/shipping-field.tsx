@@ -85,7 +85,7 @@ function ShippingRegionCard({
       {/* Icon */}
       <div className={cn(
         "size-9 rounded-full flex items-center justify-center shrink-0 border",
-        isSelected ? "bg-selected border-selected-border" : "bg-surface-subtle border-border/50"
+        isSelected ? "bg-selected border-selected-border" : "bg-surface-subtle border-border-subtle"
       )}>
         <Icon className={cn(
           "size-4.5",
@@ -369,7 +369,7 @@ export function ShippingField({ className, compact = false }: ShippingFieldProps
                 value={sellerCity || ""}
                 onValueChange={(val) => setValue("sellerCity", val)}
               >
-                <SelectTrigger className="h-12 rounded-md border-border font-medium">
+                <SelectTrigger className="h-(--control-primary) rounded-md border-border font-medium">
                   <SelectValue placeholder={isBg ? "Изберете град..." : "Select city..."} />
                 </SelectTrigger>
                 <SelectContent>
@@ -536,7 +536,7 @@ export function ShippingField({ className, compact = false }: ShippingFieldProps
               value={String(processingDays)}
               onValueChange={(val) => setValue("processingDays", Number(val))}
             >
-              <SelectTrigger className="h-12 w-44 rounded-md border-border font-medium">
+              <SelectTrigger className="h-(--control-primary) w-44 rounded-md border-border font-medium">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -563,7 +563,7 @@ export function ShippingField({ className, compact = false }: ShippingFieldProps
       {!compact ? (
         <div className="rounded-md border border-form-section-border bg-form-section-bg overflow-hidden shadow-xs">
           {/* Header */}
-          <div className="p-4 pb-3 border-b border-border/50 bg-surface-subtle">
+          <div className="p-4 pb-3 border-b border-border-subtle bg-surface-subtle">
             <div className="flex items-center gap-3.5">
               <div className="flex size-10 items-center justify-center rounded-md bg-form-section-bg border border-form-section-border shadow-xs">
                 <Truck className="size-5 text-muted-foreground" weight="bold" />

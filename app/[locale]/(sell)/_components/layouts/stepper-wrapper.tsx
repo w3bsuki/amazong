@@ -110,7 +110,7 @@ export function StepperWrapper({
   return (
     <div className="flex flex-1 flex-col">
       {/* Header - Premium minimal with dot progress */}
-      <header className="sticky top-0 z-40 bg-background/95 backdrop-blur-md border-b border-border/40 pt-safe">
+      <header className="sticky top-0 z-40 bg-background border-b border-border-subtle pt-safe">
         <div className="flex items-center h-14 px-4">
           {/* Back button or spacer */}
           <div className="w-12">
@@ -191,7 +191,7 @@ export function StepperWrapper({
       </main>
 
       {/* Footer CTA - Bold h-12 buttons */}
-      <footer className="sticky bottom-0 bg-background/95 backdrop-blur-md border-t border-border/40 px-4 pt-4 pb-safe">
+      <footer className="sticky bottom-0 bg-background border-t border-border-subtle px-4 pt-4 pb-safe">
         <div className="mx-auto max-w-lg pb-4">
           {isLastStep ? (
             <Button

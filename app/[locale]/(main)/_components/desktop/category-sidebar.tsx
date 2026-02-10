@@ -211,7 +211,7 @@ export function CompactCategorySidebar({
                     onCategorySelect([], null)
                   }
                 }}
-                className="size-6 flex items-center justify-center rounded bg-background/20 hover:bg-background/30 transition-colors shrink-0 ml-1"
+                className="size-6 flex items-center justify-center rounded bg-surface-subtle hover:bg-hover transition-colors shrink-0 ml-1"
                 aria-label={tCategories("backToAllCategories")}
                 title={tCategories("backToAllCategories")}
               >
