@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react"
 import { CheckCircle, X } from "@phosphor-icons/react"
+import { useRouter } from "next/navigation"
 import { useLocale, useTranslations } from "next-intl"
 
 import {
@@ -36,6 +37,7 @@ interface AuthDrawerProps {
 
 export function AuthDrawer({ open, mode, onOpenChange, onModeChange }: AuthDrawerProps) {
   const locale = useLocale()
+  const router = useRouter()
   const tAuth = useTranslations("Auth")
   const tDrawer = useTranslations("AuthDrawer")
   const tDrawers = useTranslations("Drawers")
@@ -68,12 +70,13 @@ export function AuthDrawer({ open, mode, onOpenChange, onModeChange }: AuthDrawe
   )
 
   const handleLoginSuccess = useCallback(async () => {
-    await refreshSession()
+    await refreshSession({ forceRetry: true })
+    router.refresh()
     onOpenChange(false)
     window.setTimeout(() => {
       openAccount()
     }, 80)
-  }, [onOpenChange, openAccount, refreshSession])
+  }, [onOpenChange, openAccount, refreshSession, router])
 
   const handleSignUpSuccess = useCallback(() => {
     setDidSignUpSucceed(true)

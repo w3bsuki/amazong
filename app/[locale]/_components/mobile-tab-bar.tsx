@@ -40,7 +40,7 @@ export function MobileTabBar(_: MobileTabBarProps) {
   // (with or without locale in usePathname(), depending on next-intl config)
   // Also hide on cart page - it has its own sticky checkout footer
   // Also hide on assistant page - it has its own chat input
-  const rawSegments = pathname.split('/').filter(Boolean)
+  const rawSegments = pathname.split("/").filter(Boolean)
   const pathSegments = (() => {
     const segments = [...rawSegments]
     const maybeLocale = segments[0]
@@ -49,47 +49,51 @@ export function MobileTabBar(_: MobileTabBarProps) {
     }
     return segments
   })()
-  const knownRoutes = ['categories', 'cart', 'checkout', 'account', 'chat', 'sell', 'help', 'auth', 'search', 'admin', 'dashboard', 'plans', 'wishlist', 'orders', 'settings', 'notifications', 'assistant']
+  const knownRoutes = ["categories", "cart", "checkout", "account", "chat", "sell", "help", "auth", "search", "admin", "dashboard", "plans", "wishlist", "orders", "settings", "notifications", "assistant"]
   // /{username}/{slug-or-id} pattern: exactly 2 segments AND first segment is not a known route
   const firstSegment = pathSegments.at(0)
   const isProductPage = (pathSegments.length === 2 && !!firstSegment && !knownRoutes.includes(firstSegment))
   // Cart page has its own sticky footer
-  const isCartPage = firstSegment === 'cart'
+  const isCartPage = firstSegment === "cart"
   // Assistant page has its own chat input
-  const isAssistantPage = firstSegment === 'assistant'
+  const isAssistantPage = firstSegment === "assistant"
 
   const isActive = (path: string) => {
     if (path === "/") return pathname === "/"
     return pathname.startsWith(path)
   }
-  const activeTextClass = "text-foreground"
-  const inactiveTextClass = "text-muted-foreground"
+
   const iconClass = (active: boolean) =>
-    cn("transition-colors", active ? activeTextClass : inactiveTextClass)
+    cn("transition-colors", active ? "text-nav-active" : "text-nav-inactive")
+
   const isHomeActive = pathname === "/"
   const isCategoriesActive = isActive("/categories") || Boolean(categoryDrawer?.isOpen)
   const isSellActive = isActive("/sell")
-  const isChatActive = isActive("/chat")
+  const isChatActive = isActive("/chat") || drawerState.messages.open
   const chatAriaLabel = unreadCount > 0 ? `${t("chat")} (${unreadCount})` : t("chat")
+  const isCategoryDrawerEnabled = Boolean(categoryDrawer)
+  const categoryTriggerA11yProps = isCategoryDrawerEnabled
+    ? { "aria-haspopup": "dialog" as const, "aria-expanded": categoryDrawer?.isOpen }
+    : {}
 
-  const tabItemBase = cn(
-    "flex min-h-(--control-default) w-full flex-col items-center justify-center gap-0 rounded-xl border border-transparent px-1.5 py-0.5",
+  const tabItemOuterBase = cn(
+    "flex h-full min-h-(--control-default) w-full items-center justify-center rounded-lg px-1",
     "tap-transparent transition-colors",
-    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
+    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 focus-visible:ring-offset-surface-elevated"
   )
 
-  const tabItemClass = (active: boolean) =>
+  const tabItemOuterClass = (active: boolean) =>
     cn(
-      tabItemBase,
-      active
-        ? "bg-surface-subtle text-foreground"
-        : "text-muted-foreground hover:bg-hover active:bg-active"
+      tabItemOuterBase,
+      active ? "text-nav-active" : "text-nav-inactive hover:bg-hover active:bg-active"
     )
+
+  const tabItemInnerBase = "flex w-full flex-col items-center justify-center gap-0.5"
 
   const tabLabelClass = (active: boolean) =>
     cn(
-      "text-2xs font-medium leading-none tracking-tight",
-      active ? activeTextClass : inactiveTextClass
+      "text-xs leading-tight tracking-normal",
+      active ? "font-semibold text-nav-active" : "font-medium text-nav-inactive"
     )
 
   const isAuthenticated = Boolean(auth?.user)
@@ -110,139 +114,140 @@ export function MobileTabBar(_: MobileTabBarProps) {
       >
         <Card
           data-testid="mobile-tab-bar-dock"
-          className="pointer-events-auto w-full rounded-none border-x-0 border-b-0 border-t border-border bg-surface-elevated shadow-none"
+          className="pointer-events-auto w-full rounded-none border-x-0 border-b-0 border-t border-border-subtle bg-surface-elevated shadow-none"
         >
-          <CardContent className="px-1 py-0.5 pb-safe">
-            <div className="grid grid-cols-5 items-end gap-0.5">
-          {/* Home */}
-          <Link
-            href="/"
-            prefetch={true}
-            className={tabItemClass(isHomeActive)}
-            aria-label={t("home")}
-            aria-current={isHomeActive ? "page" : undefined}
-          >
-            <House 
-              size={20}
-              weight={isHomeActive ? "fill" : "regular"}
-              className={iconClass(isHomeActive)} 
-            />
-            <span className={cn(
-              tabLabelClass(isHomeActive)
-            )}>{t("home")}</span>
-          </Link>
+          <CardContent className="px-1 pt-0 pb-safe">
+            <div className="grid h-(--spacing-bottom-nav) grid-cols-5 items-stretch gap-0.5">
+              {/* Home */}
+              <Link
+                href="/"
+                prefetch={true}
+                className={tabItemOuterClass(isHomeActive)}
+                aria-label={t("home")}
+                aria-current={isHomeActive ? "page" : undefined}
+              >
+                <span className={tabItemInnerBase}>
+                  <House
+                    size={21}
+                    weight={isHomeActive ? "fill" : "regular"}
+                    className={iconClass(isHomeActive)}
+                  />
+                  <span className={tabLabelClass(isHomeActive)}>{t("home")}</span>
+                </span>
+              </Link>
 
-          {/* Categories - Opens drawer sheet */}
-          <button
-            type="button"
-            onClick={() => {
-              if (categoryDrawer) {
-                categoryDrawer.openRoot()
-                return
-              }
-              router.push("/categories")
-            }}
-            className={tabItemClass(isCategoriesActive)}
-            aria-label={t("categories")}
-            aria-haspopup="dialog"
-            aria-expanded={categoryDrawer?.isOpen}
-          >
-            <SquaresFour 
-              size={20}
-              weight={isCategoriesActive ? "fill" : "regular"}
-              className={iconClass(isCategoriesActive)} 
-            />
-            <span className={cn(
-              tabLabelClass(isCategoriesActive)
-            )}>{t("categories")}</span>
-          </button>
+              {/* Categories - Opens drawer sheet */}
+              <button
+                type="button"
+                onClick={() => {
+                  if (categoryDrawer) {
+                    categoryDrawer.openRoot()
+                    return
+                  }
+                  router.push("/categories")
+                }}
+                className={tabItemOuterClass(isCategoriesActive)}
+                aria-label={t("categories")}
+                {...categoryTriggerA11yProps}
+              >
+                <span className={tabItemInnerBase}>
+                  <SquaresFour
+                    size={21}
+                    weight={isCategoriesActive ? "fill" : "regular"}
+                    className={iconClass(isCategoriesActive)}
+                  />
+                  <span className={tabLabelClass(isCategoriesActive)}>{t("categories")}</span>
+                </span>
+              </button>
 
-          {/* Sell */}
-          <Link
-            href="/sell"
-            prefetch={true}
-            className={cn(
-              tabItemBase,
-              isSellActive
-                ? "bg-surface-subtle text-foreground"
-                : "text-muted-foreground hover:bg-hover active:bg-active"
-            )}
-            aria-label={t("sell")}
-            aria-current={isSellActive ? "page" : undefined}
-            data-testid="mobile-tab-sell"
-          >
-            <span
-              className={cn(
-                "inline-flex size-(--control-default) items-center justify-center rounded-full border transition-colors",
-                isActive("/sell")
-                  ? "border-foreground bg-foreground text-background"
-                  : "border-border-subtle bg-background text-foreground hover:bg-hover active:bg-active"
-              )}
-            >
-              <Plus
-                size={17}
-                weight="bold"
-                className={cn("transition-colors", isSellActive ? "text-background" : activeTextClass)}
-              />
-            </span>
-          </Link>
+              {/* Sell */}
+              <Link
+                href="/sell"
+                prefetch={true}
+                className={tabItemOuterClass(isSellActive)}
+                aria-label={t("sell")}
+                aria-current={isSellActive ? "page" : undefined}
+                data-testid="mobile-tab-sell"
+              >
+                <span className={tabItemInnerBase}>
+                  <span
+                    className={cn(
+                      "inline-flex size-8 items-center justify-center rounded-full border transition-colors",
+                      isSellActive
+                        ? "border-nav-active bg-nav-active text-background"
+                        : "border-border-subtle bg-background text-nav-inactive"
+                    )}
+                  >
+                    <Plus
+                      size={18}
+                      weight="bold"
+                      className={cn(
+                        "transition-colors",
+                        isSellActive ? "text-background" : "text-nav-inactive"
+                      )}
+                    />
+                  </span>
+                  <span
+                    aria-hidden="true"
+                    className="pointer-events-none block h-4 select-none"
+                  />
+                </span>
+              </Link>
 
-          {/* Chat - Opens messages drawer */}
-          <button
-            type="button"
-            onClick={openMessages}
-            className={tabItemClass(isChatActive)}
-            aria-label={chatAriaLabel}
-            aria-haspopup="dialog"
-          >
-            <span className="relative">
-              <ChatCircle 
-                size={20}
-                weight={isChatActive ? "fill" : "regular"}
-                className={iconClass(isChatActive)} 
-              />
-              {unreadCount > 0 && (
-                <CountBadge
-                  count={unreadCount}
-                  className="absolute -top-1 -right-1.5 h-3.5 min-w-3.5 bg-notification px-0.5 text-2xs text-primary-foreground"
-                  aria-hidden="true"
-                />
-              )}
-            </span>
-            <span className={cn(
-              tabLabelClass(isChatActive)
-            )}>{t("chat")}</span>
-          </button>
+              {/* Chat - Opens messages drawer */}
+              <button
+                type="button"
+                onClick={openMessages}
+                className={tabItemOuterClass(isChatActive)}
+                aria-label={chatAriaLabel}
+                aria-haspopup="dialog"
+                aria-expanded={drawerState.messages.open}
+                data-testid="mobile-tab-chat"
+              >
+                <span className={tabItemInnerBase}>
+                  <span className="relative">
+                    <ChatCircle
+                      size={21}
+                      weight={isChatActive ? "fill" : "regular"}
+                      className={iconClass(isChatActive)}
+                    />
+                    {unreadCount > 0 && (
+                      <CountBadge
+                        count={unreadCount}
+                        className="absolute -top-1 -right-1.5 h-3.5 min-w-3.5 bg-notification px-0.5 text-2xs text-primary-foreground"
+                        aria-hidden="true"
+                      />
+                    )}
+                  </span>
+                  <span className={tabLabelClass(isChatActive)}>{t("chat")}</span>
+                </span>
+              </button>
 
-          {/* Profile - Authenticated opens account drawer; guest opens auth drawer */}
-          <button
-            type="button"
-            onClick={() => {
-              if (isAuthenticated) {
-                openAccount()
-                return
-              }
-              openAuth({ mode: "login", entrypoint: "profile_tab" })
-            }}
-            className={tabItemClass(isProfileActive)}
-            aria-label={t("profile")}
-            aria-haspopup="dialog"
-            aria-expanded={drawerState.account.open || drawerState.auth.open}
-            data-testid="mobile-tab-profile"
-          >
-            <UserCircle
-              size={20}
-              weight={isProfileActive ? "fill" : "regular"}
-              className={iconClass(isProfileActive)}
-            />
-            <span
-              className={cn(
-                tabLabelClass(isProfileActive)
-              )}
-            >
-              {t("profile")}
-            </span>
-          </button>
+              {/* Profile - Authenticated opens account drawer; guest opens auth drawer */}
+              <button
+                type="button"
+                onClick={() => {
+                  if (isAuthenticated) {
+                    openAccount()
+                    return
+                  }
+                  openAuth({ mode: "login", entrypoint: "profile_tab" })
+                }}
+                className={tabItemOuterClass(isProfileActive)}
+                aria-label={t("profile")}
+                aria-haspopup="dialog"
+                aria-expanded={drawerState.account.open || drawerState.auth.open}
+                data-testid="mobile-tab-profile"
+              >
+                <span className={tabItemInnerBase}>
+                  <UserCircle
+                    size={21}
+                    weight={isProfileActive ? "fill" : "regular"}
+                    className={iconClass(isProfileActive)}
+                  />
+                  <span className={tabLabelClass(isProfileActive)}>{t("profile")}</span>
+                </span>
+              </button>
             </div>
           </CardContent>
         </Card>

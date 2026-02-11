@@ -4,6 +4,7 @@ import path from "node:path";
 const ROOT = process.cwd();
 const COMPONENTS_DIR = path.join(ROOT, "components");
 const OUTPUT_FILE = path.join(ROOT, "COMPONENTS_AUDIT.md");
+const MOVE_CANDIDATES_FILE = path.join(ROOT, "cleanup", "components-move-candidates.json");
 
 const CODE_EXTENSIONS = new Set([".ts", ".tsx", ".js", ".jsx", ".mjs", ".cjs"]);
 const RESOLVE_EXTENSIONS = [".ts", ".tsx", ".js", ".jsx", ".mjs", ".cjs", ".json"];
@@ -161,6 +162,22 @@ function markdownEscape(value) {
   return value.replace(/\|/g, "\\|");
 }
 
+function getRouteGroup(importerPath) {
+  const match = importerPath.match(/^app\/\[locale\]\/\(([^)]+)\)\//);
+  return match ? match[1] : null;
+}
+
+function getRoutePrivateRoot(importerPath) {
+  const markers = ["/_components/", "/_actions/", "/_lib/", "/_providers/"];
+  for (const marker of markers) {
+    const markerIndex = importerPath.indexOf(marker);
+    if (markerIndex >= 0) {
+      return importerPath.slice(0, markerIndex + marker.length - 1);
+    }
+  }
+  return null;
+}
+
 const componentTree = walkTree(COMPONENTS_DIR);
 const componentDirectories = componentTree.directories
   .map(toRelative)
@@ -255,6 +272,67 @@ const appOnlyGlobalComponents = codeFiles
   .sort((a, b) => b.loc - a.loc)
   .slice(0, 30);
 
+const moveCandidates = codeFiles
+  .filter((file) => file.inboundCount > 0)
+  .filter((file) => !file.path.startsWith("components/ui/"))
+  .filter((file) => file.inboundImporters.every((importer) => importer.startsWith("app/")))
+  .map((file) => {
+    const routeGroups = new Set(
+      file.inboundImporters
+        .map((importer) => getRouteGroup(importer))
+        .filter(Boolean),
+    );
+    if (routeGroups.size !== 1) return null;
+
+    const privateRoots = file.inboundImporters
+      .map((importer) => getRoutePrivateRoot(importer))
+      .filter(Boolean);
+    const uniquePrivateRoots = new Set(privateRoots);
+    const singleRouteGroup = [...routeGroups][0];
+    const routeGroupScope = `app/[locale]/(${singleRouteGroup})`;
+
+    const isRoutePrivateTreeCandidate =
+      privateRoots.length === file.inboundImporters.length && uniquePrivateRoots.size === 1;
+
+    const mode = isRoutePrivateTreeCandidate ? "route-private-tree" : "route-group";
+    const routeScope = isRoutePrivateTreeCandidate
+      ? [...uniquePrivateRoots][0]
+      : routeGroupScope;
+    const suggestedTarget = isRoutePrivateTreeCandidate
+      ? `${routeScope}/${path.basename(file.path)}`
+      : `${routeScope}/_components/${path.basename(file.path)}`;
+
+    const priority = isRoutePrivateTreeCandidate ? 1 : file.inboundCount === 1 ? 2 : 3;
+    const reason = isRoutePrivateTreeCandidate
+      ? "All importers are in one route-private tree"
+      : "All importers are confined to one route group";
+
+    return {
+      priority,
+      mode,
+      reason,
+      routeScope,
+      suggestedTarget,
+      path: file.path,
+      loc: file.loc,
+      inboundCount: file.inboundCount,
+      inboundImporters: file.inboundImporters,
+    };
+  })
+  .filter(Boolean)
+  .sort((a, b) => {
+    if (a.priority !== b.priority) return a.priority - b.priority;
+    if (a.inboundCount !== b.inboundCount) return a.inboundCount - b.inboundCount;
+    if (a.loc !== b.loc) return b.loc - a.loc;
+    return a.path.localeCompare(b.path);
+  });
+
+const batchARoutePrivate = moveCandidates.filter((candidate) => candidate.mode === "route-private-tree");
+const batchBRouteGroup = moveCandidates.filter((candidate) => candidate.mode === "route-group");
+const batchCBarrelCleanup = moveCandidates.filter((candidate) =>
+  /^index\.[mc]?[jt]sx?$/.test(path.basename(candidate.path)),
+);
+
 function getDirectoryRollup(dirPath) {
   const prefix = `${dirPath}/`;
   const descendants = componentFiles.filter((filePath) => filePath.startsWith(prefix));
@@ -325,6 +403,23 @@ for (const item of appOnlyGlobalComponents) {
   markdown.push(`| ${item.inboundCount} | ${item.loc} | \`${markdownEscape(item.path)}\` |`);
 }
 
+markdown.push("", "### 3) Deterministic Move Candidates", "");
+markdown.push(
+  "Rule set: importer scope must be one route group or one route-private tree; `components/ui/*` is excluded.",
+);
+markdown.push(`Machine-readable output: \`${toRelative(MOVE_CANDIDATES_FILE)}\``);
+markdown.push("");
+markdown.push("| Priority | File | Reason | Scope | Refs | Suggested target |");
+markdown.push("| ---: | --- | --- | --- | ---: | --- |");
+for (const candidate of moveCandidates.slice(0, 80)) {
+  markdown.push(
+    `| ${candidate.priority} | \`${markdownEscape(candidate.path)}\` | ${candidate.reason} | \`${markdownEscape(candidate.routeScope)}\` | ${candidate.inboundCount} | \`${markdownEscape(candidate.suggestedTarget)}\` |`,
+  );
+}
+if (moveCandidates.length === 0) {
+  markdown.push("| - | - | No deterministic candidates found | - | - | - |");
+}
+
 markdown.push("", "## Full Component Map", "");
 markdown.push("| Path | Type | Status | Inbound Refs | Importers (sample) | Notes |");
 markdown.push("| --- | --- | --- | ---: | --- | --- |");
@@ -358,12 +453,43 @@ if (unusedFiles.length > 0) {
 }
 
 markdown.push("", "### Structural Follow-Ups", "");
-markdown.push("- [ ] Continue converting flat feature folders into submodules (next highest-impact candidates: `components/shared/search`, `components/layout/header`).");
-markdown.push("- [ ] Move app-only components from global `components/` into route-local `app/**/_components` when cross-route reuse is not required.");
+markdown.push(
+  `- [ ] Batch A (route-private tree moves): ${batchARoutePrivate.length} candidates from deterministic rules.`,
+);
+markdown.push(
+  `- [ ] Batch B (route-group confined moves): ${batchBRouteGroup.length} candidates from deterministic rules.`,
+);
+markdown.push(
+  `- [ ] Batch C (barrel/index cleanup after moves): ${batchCBarrelCleanup.length} candidate index files.`,
+);
 markdown.push("- [ ] Keep shadcn primitives in `components/ui/*` only; keep feature composition in `components/shared/*`, `components/mobile/*`, `components/desktop/*`.");
 markdown.push("", "## Method and Limits", "");
 markdown.push("- Static import graph only; dynamic runtime resolution is not counted.");
 markdown.push("- Import samples list up to 3 callers per file for readability.");
+markdown.push("- Deterministic move candidates are suggestions; resolve naming collisions before applying.");
 
+fs.mkdirSync(path.dirname(MOVE_CANDIDATES_FILE), { recursive: true });
+fs.writeFileSync(
+  MOVE_CANDIDATES_FILE,
+  `${JSON.stringify(
+    {
+      generatedAt: new Date().toISOString(),
+      rules: {
+        excludes: ["components/ui/*"],
+        allowModes: ["route-private-tree", "route-group"],
+      },
+      counts: {
+        total: moveCandidates.length,
+        batchA: batchARoutePrivate.length,
+        batchB: batchBRouteGroup.length,
+        batchC: batchCBarrelCleanup.length,
+      },
+      candidates: moveCandidates,
+    },
+    null,
+    2,
+  )}\n`,
+  "utf8",
+);
 fs.writeFileSync(OUTPUT_FILE, `${markdown.join("\n")}\n`, "utf8");
 console.log(`Wrote ${toRelative(OUTPUT_FILE)} with ${componentFiles.length} files.`);

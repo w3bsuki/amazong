@@ -73,11 +73,12 @@ Transform Treido from "website" to "web app" feel through consistent mobile-firs
 
 | Element | Pattern | Notes |
 |---------|---------|-------|
-| Container | `fixed bottom-0 bg-background border-t safe-bottom` | Solid white, z-40 |
-| Height | `h-16` (64px) | Comfortable touch |
-| Labels | `text-2xs` (10px) | Compact |
-| Active state | `text-primary` | Color only, no background |
-| Sell FAB | `w-12 h-12 -mt-4 shadow-lg rounded-full bg-primary` | Elevated center button |
+| Container | `fixed bottom-0 bg-surface-elevated border-t border-border-subtle pb-safe` | Flat dock, z-40 |
+| Height | `h-(--spacing-bottom-nav)` (tokenized) | Aligned with 44/48 ergonomics contract |
+| Items | `grid-cols-5` | Exactly five primary mobile destinations |
+| Labels | `text-xs` + `leading-tight` + `tracking-normal` | Legible in EN/BG; compact but readable |
+| Active state | `text-nav-active` + font weight shift | Color + type hierarchy only, no filled selection block |
+| Sell action | Icon-only center tab with explicit `aria-label` | No floating FAB; keep consistent dock rhythm |
 
 ### StickyHeader
 
@@ -181,7 +182,7 @@ Planned shared component: `components/shared/responsive-overlay.tsx`
 |-------|-------|--------|--------|
 | 1: Foundation | `tap-highlight`, `safe-top`/`safe-bottom`, `scrollbar-hide`, shadow tokens | ⬜ Not started | 1–2 days |
 | 2: Core Components | Button tap-highlight, ProductCard patterns, Badge `text-2xs`, Avatar sizes | ⬜ Not started | 3–5 days |
-| 3: Navigation | BottomNav solid bg + FAB, StickyHeader + safe areas, back button patterns | ⬜ Not started | 2–3 days |
+| 3: Navigation | BottomNav tokenized dock + 5-item contract, StickyHeader + safe areas, back button patterns | ⬜ Not started | 2–3 days |
 | 4: Forms & Sell UX | App-style input variant, selection components, SellDrawer wizard | ⬜ Not started | 3–5 days |
 | 5: Polish | Skeleton loading, empty states, error states, minimal animations | ⬜ Not started | Ongoing |
 

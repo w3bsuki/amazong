@@ -7,12 +7,12 @@ import { useMemo, useState, useTransition, useEffect } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
-import { AuthCard } from "@/components/auth/auth-card"
 import { Field, FieldContent, FieldError, FieldLabel } from "@/components/shared/field"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { SpinnerGap, Check, Lock, ArrowLeft, Eye, EyeSlash } from "@phosphor-icons/react"
 import { useRouter } from "@/i18n/routing"
+import { AuthCard } from "../../_components/auth-card"
 
 type ResetPasswordFormData = {
   password: string
@@ -131,50 +131,51 @@ export default function ResetPasswordPage() {
   // Invalid session - link expired or not valid
   if (!isValidSession) {
     return (
-      <div className="min-h-dvh flex items-center justify-center p-4">
-        <div className="w-full max-w-sm text-center">
-          <div className="flex flex-col items-center gap-4 mb-6">
-            <div className="size-16 bg-destructive-subtle rounded-full flex items-center justify-center">
-              <Lock className="size-8 text-destructive" weight="bold" />
-            </div>
-            <h1 className="text-2xl font-bold text-foreground">{t("linkExpired")}</h1>
-            <p className="text-sm text-muted-foreground">
-              {t("linkExpiredDescription")}
-            </p>
+      <AuthCard
+        title={t("linkExpired")}
+        description={t("linkExpiredDescription")}
+        showLogo={true}
+      >
+        <div className="flex flex-col items-center gap-4 py-2">
+          <div className="inline-flex size-16 items-center justify-center rounded-full bg-destructive-subtle text-destructive">
+            <Lock className="size-8" weight="bold" />
           </div>
-          <Link href="/auth/forgot-password" className="inline-flex items-center gap-2 text-sm text-primary hover:underline">
-            {t("requestNewLink")}
-          </Link>
+          <Button asChild variant="outline" size="default" className="w-full">
+            <Link href="/auth/forgot-password">{t("requestNewLink")}</Link>
+          </Button>
         </div>
-      </div>
+      </AuthCard>
     )
   }
 
   // Success state
   if (isSuccess) {
     return (
-      <div className="min-h-dvh flex items-center justify-center p-4">
-        <div className="w-full max-w-sm text-center">
-          <div className="flex flex-col items-center gap-4 mb-6">
-            <div className="size-16 bg-success/15 rounded-full flex items-center justify-center">
-              <Check className="size-8 text-success" weight="bold" />
-            </div>
-            <h1 className="text-2xl font-bold text-foreground">{t("passwordUpdated")}</h1>
-            <p className="text-sm text-muted-foreground">
-              {t("passwordUpdatedDescription")}
-            </p>
+      <AuthCard
+        title={t("passwordUpdated")}
+        description={t("passwordUpdatedDescription")}
+        showLogo={true}
+      >
+        <div className="flex flex-col items-center gap-4 py-2">
+          <div className="inline-flex size-16 items-center justify-center rounded-full bg-success-subtle text-success">
+            <Check className="size-8" weight="bold" />
           </div>
-          <Link href="/auth/login" className="inline-flex items-center gap-2 text-sm text-primary hover:underline">
-            <ArrowLeft className="size-4" />
-            {t("goToLogin")}
-          </Link>
+          <Button asChild variant="outline" size="default" className="w-full">
+            <Link href="/auth/login" className="inline-flex items-center justify-center gap-2">
+              <ArrowLeft className="size-4" />
+              {t("goToLogin")}
+            </Link>
+          </Button>
         </div>
-      </div>
+      </AuthCard>
     )
   }
 
   const footer = (
-    <Link href="/auth/login" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
+    <Link
+      href="/auth/login"
+      className="inline-flex min-h-11 items-center gap-2 text-sm text-primary hover:underline"
+    >
       <ArrowLeft className="size-4" />
       {t("backToLogin")}
     </Link>
@@ -190,7 +191,7 @@ export default function ResetPasswordPage() {
     >
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
         {serverError && (
-          <div className="p-3 text-sm text-destructive bg-destructive-subtle border border-destructive/20 rounded-md">
+          <div className="p-3 text-sm text-destructive bg-destructive-subtle border border-destructive rounded-xl">
             {serverError}
           </div>
         )}
@@ -214,7 +215,7 @@ export default function ResetPasswordPage() {
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                className="absolute right-0 top-1/2 -translate-y-1/2 inline-flex size-11 items-center justify-center rounded-xl text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
                 aria-label={showPassword ? t("hidePassword") : t("showPassword")}
               >
                 {showPassword ? (
@@ -253,7 +254,7 @@ export default function ResetPasswordPage() {
               <button
                 type="button"
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                className="absolute right-0 top-1/2 -translate-y-1/2 inline-flex size-11 items-center justify-center rounded-xl text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
                 aria-label={showConfirmPassword ? t("hidePassword") : t("showPassword")}
               >
                 {showConfirmPassword ? (
@@ -285,7 +286,7 @@ export default function ResetPasswordPage() {
           <Button
             type="submit"
             size="lg"
-            className="w-full h-10"
+            className="w-full"
             disabled={isPending || !isValid}
           >
             {isPending ? (

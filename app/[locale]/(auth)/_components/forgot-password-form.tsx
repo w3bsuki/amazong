@@ -1,16 +1,15 @@
 "use client"
 
 import { useActionState } from "react"
-import { ArrowLeft, Check, Envelope } from "@phosphor-icons/react"
+import { ArrowLeft, Check } from "@phosphor-icons/react"
 import { useTranslations } from "next-intl"
 
-import { AuthCard } from "@/components/auth/auth-card"
 import { SubmitButton } from "@/components/auth/submit-button"
 import { Field, FieldContent, FieldError, FieldLabel } from "@/components/shared/field"
 import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
 import { Link } from "@/i18n/routing"
 import { cn } from "@/lib/utils"
+import { AuthCard } from "./auth-card"
 
 type AuthActionState = {
   error?: string
@@ -32,29 +31,30 @@ export function ForgotPasswordForm({
   const [state, formAction] = useActionState(requestPasswordResetAction.bind(null, locale), initialState)
 
   if (state?.success) {
+    const successFooter = (
+      <Link href="/auth/login" className="inline-flex min-h-11 items-center gap-2 text-sm text-primary hover:underline">
+        <ArrowLeft className="size-4" />
+        {t("backToLogin")}
+      </Link>
+    )
+
     return (
-      <div className="min-h-dvh flex items-center justify-center p-4">
-        <div className="w-full max-w-sm text-center">
-          <div className="flex flex-col items-center gap-4 mb-6">
-            <div className="size-16 bg-primary-subtle rounded-full flex items-center justify-center">
-              <Check className="size-8 text-primary" weight="bold" />
-            </div>
-            <h1 className="text-2xl font-bold text-foreground">{t("checkYourEmailTitle")}</h1>
-            <p className="text-sm text-muted-foreground">
-              {t("resetLinkSent")}
-            </p>
+      <AuthCard
+        title={t("checkYourEmailTitle")}
+        description={t("resetLinkSent")}
+        footer={successFooter}
+      >
+        <div className="flex items-center justify-center py-1">
+          <div className="inline-flex size-16 items-center justify-center rounded-full bg-primary-subtle text-primary">
+            <Check className="size-8" weight="bold" />
           </div>
-          <Link href="/auth/login" className="inline-flex items-center gap-2 text-sm text-primary hover:underline">
-            <ArrowLeft className="size-4" />
-            {t("backToLogin")}
-          </Link>
         </div>
-      </div>
+      </AuthCard>
     )
   }
 
   const footer = (
-    <Link href="/auth/login" className="inline-flex items-center gap-2 text-sm text-primary hover:underline">
+    <Link href="/auth/login" className="inline-flex min-h-11 items-center gap-2 text-sm text-primary hover:underline">
       <ArrowLeft className="size-4" />
       {t("backToLogin")}
     </Link>

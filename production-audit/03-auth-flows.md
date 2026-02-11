@@ -558,6 +558,18 @@
 |---|----------|-----------|-------------|------------|-------------|
 | | | | | | |
 
+### Post-implementation update (2026-02-10)
+
+- AUTH-001: Implemented fresh browser Supabase client creation for session refresh paths, singleton-session synchronization, force-retry refresh after auth-route exits, and explicit `router.refresh()` after in-drawer login success.
+- AUTH-002: Refactored auth success/error pages and auth card branding to shared shadcn primitives (`AuthCard`, `Button`, `Input`, `Field`) with token-safe classes.
+- AUTH-003: Removed duplicated auth footer link blocks that caused mobile overflow; standardized auth links/toggles/CTAs to touch-safe sizing.
+
+Re-verification required:
+
+1. Run S3.6 to confirm no hard refresh is required after login.
+2. Run S3.14 to confirm all critical interactive targets remain ≥44px.
+3. Run S3.1/S3.5/S3.11/S3.12/S3.18 visual regression checks.
+
 ---
 
 ## Summary

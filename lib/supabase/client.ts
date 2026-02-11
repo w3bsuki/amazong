@@ -9,12 +9,11 @@ let supabaseInstance: ReturnType<typeof createBrowserClient<Database>> | null = 
 
 /**
  * Creates a typed browser-side Supabase client.
- * 
+ *
  * @throws {Error} When required environment variables are missing
  * @returns Singleton Supabase client instance
  */
 export function createClient() {
-  // Return cached instance if available
   if (supabaseInstance) {
     return supabaseInstance
   }
@@ -37,4 +36,30 @@ export function createClient() {
 
   supabaseInstance = createBrowserClient<Database>(env.url, env.anonKey)
   return supabaseInstance
+}
+
+/**
+ * Creates a non-singleton browser-side Supabase client.
+ *
+ * Use this when auth cookies may have changed server-side (e.g. server actions)
+ * and you need to force a fresh cookie read for session synchronization.
+ */
+export function createFreshClient() {
+  const env = getPublicSupabaseEnvOptional()
+  if (!env) {
+    logger.error(
+      "[Supabase] Missing required NEXT_PUBLIC_SUPABASE_URL / NEXT_PUBLIC_SUPABASE_ANON_KEY",
+      undefined,
+      {
+        NODE_ENV: process.env.NODE_ENV ?? "unknown",
+      },
+    )
+
+    throw new Error(
+      "Missing required Supabase environment variables: NEXT_PUBLIC_SUPABASE_URL and/or NEXT_PUBLIC_SUPABASE_ANON_KEY. " +
+        "Set them in your environment (and ensure they are exposed via NEXT_PUBLIC_*) before using the browser client."
+    )
+  }
+
+  return createBrowserClient<Database>(env.url, env.anonKey, { isSingleton: false })
 }

@@ -88,6 +88,29 @@ async function setupLoginHydration(page: Page) {
   })
 }
 
+async function assertLoginSectionPlacement(page: Page) {
+  const submitSection = page.getByTestId("login-submit-section")
+  const createAccountSection = page.getByTestId("login-create-account-section")
+  const legalSection = page.getByTestId("login-legal-section")
+
+  await expect(submitSection).toBeVisible()
+  await expect(createAccountSection).toBeVisible()
+  await expect(legalSection).toBeVisible()
+
+  const [submitBox, createAccountBox, legalBox] = await Promise.all([
+    submitSection.boundingBox(),
+    createAccountSection.boundingBox(),
+    legalSection.boundingBox(),
+  ])
+
+  expect(submitBox).toBeTruthy()
+  expect(createAccountBox).toBeTruthy()
+  expect(legalBox).toBeTruthy()
+
+  expect((createAccountBox?.y ?? 0)).toBeGreaterThan((submitBox?.y ?? 0))
+  expect((legalBox?.y ?? 0)).toBeGreaterThan((createAccountBox?.y ?? 0))
+}
+
 // ============================================================================
 // Sign Up Tests
 // ============================================================================
@@ -353,6 +376,7 @@ test.describe('Login Flow', () => {
     
     // Verify forgot password link
     await expect(page.getByRole('link', { name: /forgot|reset/i })).toBeVisible()
+    await assertLoginSectionPlacement(page)
   })
 
   test('should validate email format @auth @validation', async ({ page }) => {

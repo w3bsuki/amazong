@@ -35,6 +35,7 @@ function SheetOverlay({
         "data-[state=open]:animate-in data-[state=closed]:animate-out",
         "data-[state=open]:fade-in data-[state=closed]:fade-out",
         "duration-200 ease-out",
+        "will-change-auto",
         className
       )}
       {...props}
@@ -62,8 +63,8 @@ function SheetContent({
         className={cn(
           "bg-background fixed z-50 flex flex-col gap-4 border border-border shadow-modal outline-none",
           "data-[state=open]:animate-in data-[state=closed]:animate-out",
-          "data-[state=open]:fade-in data-[state=closed]:fade-out",
           "duration-200 ease-out",
+          "motion-reduce:transition-none will-change-transform",
           side === "right" &&
             "inset-y-0 right-0 h-full w-3/4 rounded-l-2xl border-l sm:max-w-sm data-[state=open]:slide-in-from-right data-[state=closed]:slide-out-to-right",
           side === "left" &&

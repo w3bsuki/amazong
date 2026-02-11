@@ -5,6 +5,8 @@ import { CheckCircle, EnvelopeSimple } from "@phosphor-icons/react"
 import { useTranslations } from "next-intl"
 import { useCallback, useState } from "react"
 import { createClient } from "@/lib/supabase/client"
+import { Button } from "@/components/ui/button"
+import { AuthCard } from "../../_components/auth-card"
 
 export default function SignUpSuccessClient() {
   const t = useTranslations("Auth")
@@ -50,82 +52,47 @@ export default function SignUpSuccessClient() {
   }, [isResending])
 
   return (
-    <div className="min-h-dvh flex items-center justify-center p-4">
-      <div className="w-full max-w-sm bg-card rounded-md border border-border relative">
-        <div className="p-6">
-          <div className="flex flex-col items-center mb-6">
-            <div className="size-14 bg-success/15 rounded-full flex items-center justify-center mb-3">
-              <CheckCircle className="size-8 text-success" weight="fill" />
-            </div>
-
-            <h1 className="text-xl font-semibold text-foreground">
-              {t("signUpSuccessTitle")}
-            </h1>
-            <p className="text-sm text-muted-foreground mt-1 text-center">
-              {t("signUpSuccessDescription")}
-            </p>
+    <AuthCard
+      title={t("signUpSuccessTitle")}
+      description={t("signUpSuccessDescription")}
+      showLogo={false}
+    >
+      <div className="space-y-5">
+        <div className="flex items-center justify-center">
+          <div className="inline-flex size-14 items-center justify-center rounded-full bg-success-subtle text-success">
+            <CheckCircle className="size-8" weight="fill" />
           </div>
-
-          <div className="flex items-start gap-3 p-4 bg-selected border border-selected-border rounded-md text-left mb-6">
-            <EnvelopeSimple
-              className="size-5 text-primary shrink-0 mt-0.5"
-              weight="duotone"
-            />
-            <div>
-              <p className="text-sm font-medium text-foreground mb-0.5">
-                {t("checkYourEmail")}
-              </p>
-              <p className="text-xs text-muted-foreground">
-                {t("confirmEmailInstructions")}
-              </p>
-            </div>
-          </div>
-
-          <div className="space-y-3">
-            <Link
-              href="/auth/login"
-              className="w-full h-10 bg-primary hover:bg-interactive-hover text-primary-foreground text-sm font-medium rounded-md transition-colors flex items-center justify-center"
-            >
-              {t("goToSignIn")}
-            </Link>
-            <Link
-              href="/"
-              className="w-full h-10 bg-background border border-border text-foreground text-sm font-medium rounded-md hover:bg-muted transition-colors flex items-center justify-center"
-            >
-              {t("backToHome")}
-            </Link>
-          </div>
-
-          <p className="text-xs text-center text-muted-foreground mt-4">
-            {t("didNotReceiveEmail")} {" "}
-            <button
-              type="button"
-              className="text-primary hover:underline disabled:opacity-60"
-              onClick={handleResend}
-              disabled={isResending}
-            >
-              {t("resendEmail")}
-            </button>
-          </p>
         </div>
 
-        <div className="px-6 py-4 bg-muted border-t border-border rounded-b-md">
-          <div className="flex justify-center gap-4 text-xs text-muted-foreground">
-            <Link href="/terms" className="hover:text-primary transition-colors">
-              {t("conditionsOfUse")}
-            </Link>
-            <Link href="/privacy" className="hover:text-primary transition-colors">
-              {t("privacyNotice")}
-            </Link>
-            <Link href="/help" className="hover:text-primary transition-colors">
-              {t("help")}
-            </Link>
+        <div className="flex items-start gap-3 rounded-xl border border-selected-border bg-selected p-4 text-left">
+          <EnvelopeSimple className="mt-0.5 size-5 shrink-0 text-primary" weight="duotone" />
+          <div>
+            <p className="text-sm font-medium text-foreground">{t("checkYourEmail")}</p>
+            <p className="text-xs text-muted-foreground">{t("confirmEmailInstructions")}</p>
           </div>
-          <p className="text-xs text-center text-muted-foreground mt-2">
-            {t("copyright", { year: new Date().getFullYear() })}
-          </p>
         </div>
+
+        <div className="space-y-2">
+          <Button asChild size="default" className="w-full">
+            <Link href="/auth/login">{t("goToSignIn")}</Link>
+          </Button>
+          <Button asChild variant="outline" size="default" className="w-full">
+            <Link href="/">{t("backToHome")}</Link>
+          </Button>
+        </div>
+
+        <p className="text-xs text-center text-muted-foreground">
+          {t("didNotReceiveEmail")}{" "}
+          <button
+            type="button"
+            className="inline-flex min-h-11 items-center text-primary hover:underline disabled:opacity-60"
+            onClick={handleResend}
+            disabled={isResending}
+          >
+            {t("resendEmail")}
+          </button>
+        </p>
       </div>
-    </div>
+    </AuthCard>
   )
 }

@@ -38,11 +38,11 @@ function Drawer({
   const isIOS = isIOSDevice()
   const resolvedNoBodyStyles = noBodyStyles ?? isIOS
 
-  // Vaul's prop name is misleading: `disablePreventScroll` actually ENABLES the
-  // scroll lock when true. On iOS Safari that strategy offsets <body> by scrollY,
-  // which breaks `position: sticky` headers (header "disappears" after scrolling).
-  // Default to disabling that strategy on iOS and rely on overlay/overscroll instead.
-  const resolvedDisablePreventScroll = disablePreventScroll ?? !isIOS
+  // Vaul's prop name is misleading: `disablePreventScroll=true` ENABLES
+  // touch-scroll prevention for background content while the drawer is open.
+  // Keep this enabled by default across platforms to avoid background scroll
+  // drift and sticky UI jumps while dragging/closing.
+  const resolvedDisablePreventScroll = disablePreventScroll ?? true
 
   return (
     <DrawerPrimitive.Root
@@ -209,6 +209,7 @@ function DrawerContent({
         aria-describedby={hasDescription ? ariaDescribedBy : undefined}
         className={cn(
           "group/drawer-content fixed z-60 flex h-auto min-h-0 flex-col overflow-hidden bg-surface-elevated shadow-modal outline-none",
+          "motion-reduce:transition-none will-change-transform",
           // Bottom drawer - standard mobile drawer (most common)
           "data-[vaul-drawer-direction=bottom]:inset-x-0 data-[vaul-drawer-direction=bottom]:bottom-0",
           "data-[vaul-drawer-direction=bottom]:mt-24 data-[vaul-drawer-direction=bottom]:max-h-dialog",

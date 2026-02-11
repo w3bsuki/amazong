@@ -3,18 +3,18 @@ import { cn } from "@/lib/utils"
 export type HomeChipSize = "compact" | "default"
 
 const HOME_CHIP_BASE =
-  "inline-flex shrink-0 items-center rounded-full border whitespace-nowrap tap-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+  "inline-flex shrink-0 items-center rounded-full border whitespace-nowrap tap-transparent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
 
 const HOME_CHIP_SIZE: Record<HomeChipSize, string> = {
-  compact: "min-h-(--spacing-touch-sm) px-2.5 text-2xs font-semibold leading-none",
+  compact: "min-h-(--spacing-touch-sm) px-2.5 text-xs font-medium leading-none",
   default: "min-h-(--spacing-touch-md) px-3 text-xs font-medium leading-none",
 }
 
 const HOME_CHIP_INACTIVE =
-  "border-border-subtle bg-surface-subtle text-muted-foreground hover:border-hover-border hover:bg-hover hover:text-foreground active:bg-active"
+  "border-border-subtle bg-surface-subtle text-muted-foreground"
 
 const HOME_CHIP_ACTIVE =
-  "border-foreground bg-foreground text-background font-semibold hover:bg-foreground active:opacity-90"
+  "border-foreground bg-foreground text-background font-semibold"
 
 const HOME_CHIP_COUNT_BASE =
   "inline-flex min-w-5 shrink-0 items-center justify-center rounded-full border px-1.5 py-0.5 text-2xs font-semibold tabular-nums"

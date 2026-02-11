@@ -96,6 +96,8 @@ select:-webkit-autofill {
   --selected-foreground: 0.18 0.02 255;
   --selected-border: 0.62 0.20 255;
   --hover-border: 0.92 0.01 255;
+  --nav-active: var(--foreground);
+  --nav-inactive: 0.38 0.02 255;
 
   /* Brand/CTA accents (raw components; mapped to `--color-*` tokens in @theme) */
   --cta-primary-hover: 0.55 0.19 243;
@@ -275,6 +277,8 @@ select:-webkit-autofill {
   --selected-foreground: 0.98 0 0;
   --selected-border: 0.72 0.18 255;
   --hover-border: 0.26 0.02 255;
+  --nav-active: var(--foreground);
+  --nav-inactive: 0.82 0.01 255;
 
   /* Brand/CTA accents */
   --cta-primary-hover: 0.66 0.18 255;
@@ -438,6 +442,8 @@ select:-webkit-autofill {
   --color-hover: oklch(var(--hover));
   --color-hover-border: oklch(var(--hover-border));
   --color-active: oklch(var(--active));
+  --color-nav-active: oklch(var(--nav-active));
+  --color-nav-inactive: oklch(var(--nav-inactive));
   --color-focus-ring: oklch(var(--focus-ring));
   --color-checked: oklch(var(--checked));
   --color-checked-foreground: oklch(var(--checked-foreground));
@@ -542,7 +548,7 @@ select:-webkit-autofill {
 
   /* === LAYOUT HEIGHTS === */
   --spacing-header: 3rem;
-  --spacing-bottom-nav: 3.5rem;
+  --spacing-bottom-nav: 3rem;
   --spacing-button: 2.75rem;
   --spacing-button-sm: 2.25rem;
   --spacing-button-lg: 3rem;

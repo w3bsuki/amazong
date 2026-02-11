@@ -11,7 +11,7 @@ import {
   type Context,
 } from "react"
 import { usePathname } from "next/navigation"
-import { createClient } from "@/lib/supabase/client"
+import { createClient, createFreshClient } from "@/lib/supabase/client"
 import type { User, Session, AuthChangeEvent } from "@supabase/supabase-js"
 
 interface AuthState {
@@ -23,10 +23,16 @@ interface AuthState {
 
 interface AuthContextType extends AuthState {
   signOut: () => Promise<void>
-  refreshSession: () => Promise<void>
+  refreshSession: (options?: { forceRetry?: boolean }) => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextType | null>(null)
+const EMPTY_AUTH_STATE: AuthState = {
+  user: null,
+  session: null,
+  isLoading: false,
+  isAuthenticated: false,
+}
 
 export function AuthStateManager({ children }: { children: ReactNode }) {
   const [state, setState] = useState<AuthState>({
@@ -42,7 +48,35 @@ export function AuthStateManager({ children }: { children: ReactNode }) {
   const lastPathnameRef = useRef<string | null>(null)
   const lastRefreshRef = useRef<number>(0)
 
-  const refreshSession = useCallback(async () => {
+  const syncSingletonSession = useCallback(async (session: Session | null) => {
+    const singletonClient = createClient()
+
+    if (!session?.access_token || !session.refresh_token) {
+      await singletonClient.auth.signOut({ scope: "local" })
+      return
+    }
+
+    const {
+      data: { session: singletonSession },
+    } = await singletonClient.auth.getSession()
+
+    if (singletonSession?.access_token === session.access_token) return
+
+    await singletonClient.auth.setSession({
+      access_token: session.access_token,
+      refresh_token: session.refresh_token,
+    })
+  }, [])
+  const setStateFromSession = useCallback((session: Session | null) => {
+    setState({
+      user: session?.user ?? null,
+      session,
+      isLoading: false,
+      isAuthenticated: Boolean(session?.user),
+    })
+  }, [])
+
+  const refreshSession = useCallback(async (options?: { forceRetry?: boolean }) => {
     // Prevent concurrent refreshes
     if (pendingRefreshRef.current) {
       return pendingRefreshRef.current
@@ -50,44 +84,56 @@ export function AuthStateManager({ children }: { children: ReactNode }) {
 
     pendingRefreshRef.current = (async () => {
       try {
-        const supabase = createClient()
-        const {
+        const readFreshSession = async () => {
+          // Fresh client ensures we re-read auth cookies written by server actions.
+          const supabase = createFreshClient()
+          return supabase.auth.getSession()
+        }
+
+        let {
           data: { session },
           error,
-        } = await supabase.auth.getSession()
+        } = await readFreshSession()
 
         if (error) throw error
+        if (!session && options?.forceRetry) {
+          await new Promise((resolve) => setTimeout(resolve, 180))
+          const retry = await readFreshSession()
+          session = retry.data.session
+          error = retry.error
+          if (error) throw error
+        }
 
-        setState({
-          user: session?.user ?? null,
-          session: session,
-          isLoading: false,
-          isAuthenticated: !!session?.user,
-        })
-      } catch (error) {
+        setStateFromSession(session)
+        await syncSingletonSession(session)
+      } catch {
         // Avoid logging raw error objects in client (can contain request details).
         console.error("Failed to refresh session")
-        setState((prev) => ({ ...prev, isLoading: false }))
+        setState((prev) => ({ ...prev, isLoading: false, isAuthenticated: Boolean(prev.user) }))
       } finally {
         pendingRefreshRef.current = null
       }
     })()
 
     return pendingRefreshRef.current
-  }, [])
+  }, [setStateFromSession, syncSingletonSession])
 
-  const refreshWithThrottle = useCallback(async () => {
+  const refreshWithThrottle = useCallback(async (forceRetry = false) => {
     const now = Date.now()
     if (now - lastRefreshRef.current < 30_000) return
     lastRefreshRef.current = now
-    await refreshSession()
+    await refreshSession({ forceRetry })
   }, [refreshSession])
 
   const signOut = useCallback(async () => {
-    const supabase = createClient()
-    await supabase.auth.signOut()
-    // State will be updated by onAuthStateChange
-  }, [])
+    try {
+      const supabase = createFreshClient()
+      await supabase.auth.signOut()
+      await syncSingletonSession(null)
+    } finally {
+      setState(EMPTY_AUTH_STATE)
+    }
+  }, [syncSingletonSession])
 
   useEffect(() => {
     if (isInitializedRef.current) return
@@ -100,12 +146,7 @@ export function AuthStateManager({ children }: { children: ReactNode }) {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(
       async (_event: AuthChangeEvent, session: Session | null) => {
-        setState({
-          user: session?.user ?? null,
-          session: session,
-          isLoading: false,
-          isAuthenticated: !!session?.user,
-        })
+        setStateFromSession(session)
 
       }
     )
@@ -113,7 +154,7 @@ export function AuthStateManager({ children }: { children: ReactNode }) {
     return () => {
       subscription.unsubscribe()
     }
-  }, [refreshSession])
+  }, [setStateFromSession])
 
   // Sync session on navigation when leaving auth routes. This fixes cases where auth is
   // performed on the server (server actions setting cookies), which won't trigger the
@@ -135,9 +176,9 @@ export function AuthStateManager({ children }: { children: ReactNode }) {
     const isAuthRoute = pathname.includes("/auth")
 
     if (wasAuthRoute && !isAuthRoute) {
-      void refreshWithThrottle()
+      void refreshWithThrottle(true)
     }
-  }, [pathname, refreshWithThrottle])
+  }, [pathname, refreshSession, refreshWithThrottle])
 
   useEffect(() => {
     if (!state.isAuthenticated) return

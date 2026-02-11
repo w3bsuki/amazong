@@ -32,11 +32,30 @@ export function ProductQuickViewDialog({
   product,
   isLoading = false,
 }: ProductQuickViewDialogProps) {
+  const isMobile = useIsMobile()
+
+  if (isMobile) return null
+
+  return (
+    <ProductQuickViewDialogDesktop
+      open={open}
+      onOpenChange={onOpenChange}
+      product={product}
+      isLoading={isLoading}
+    />
+  )
+}
+
+function ProductQuickViewDialogDesktop({
+  open,
+  onOpenChange,
+  product,
+  isLoading = false,
+}: ProductQuickViewDialogProps) {
   const tDrawers = useTranslations("Drawers")
   const tProduct = useTranslations("Product")
   const router = useRouter()
   const { addToCart } = useCart()
-  const isMobile = useIsMobile()
   const { product: resolvedProduct, isLoading: detailsLoading } = useProductQuickViewDetails(open, product)
 
   const addResolvedProductToCart = React.useCallback(() => {
@@ -85,8 +104,6 @@ export function ProductQuickViewDialog({
 
   const title = resolvedProduct?.title ?? ""
   const description = resolvedProduct?.description ?? title
-
-  if (isMobile) return null
 
   const showSkeleton = isLoading || (open && !resolvedProduct && !product)
 

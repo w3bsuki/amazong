@@ -26,6 +26,15 @@ pnpm -s knip
 pnpm -s dupes
 ```
 
+## 🚀 Production Finalization Queue (2026-02-10)
+
+- [x] TASK-1 AUTH: Sign in + sign up logic, UI/UX, styling, mobile polish
+  - Priority: Critical
+  - Owner: treido-impl-frontend
+  - Scope: `/(auth)` routes + auth drawer + auth state sync (`AUTH-001`, `AUTH-002`, `AUTH-003`)
+  - Verify: `pnpm -s typecheck` · `pnpm -s lint` · `pnpm -s styles:gate` · `pnpm -s test:unit` · `REUSE_EXISTING_SERVER=true pnpm -s test:e2e:smoke`
+  - Files: `components/auth/*` · `app/[locale]/(auth)/**/*` · `components/providers/auth-state-manager.tsx` · `lib/supabase/client.ts` · `components/mobile/drawers/auth-drawer.tsx`
+
 ## 🔥 In Progress
 
 | Task | Issue | Owner | Notes |

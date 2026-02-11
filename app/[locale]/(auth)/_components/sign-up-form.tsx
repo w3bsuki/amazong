@@ -3,9 +3,8 @@
 import { useMemo } from "react"
 import { useTranslations } from "next-intl"
 
-import { AuthCard } from "@/components/auth/auth-card"
 import { SignUpFormBody } from "@/components/auth/sign-up-form-body"
-import { Link } from "@/i18n/routing"
+import { AuthCard } from "./auth-card"
 
 type AuthActionState = {
   error?: string
@@ -28,29 +27,8 @@ export function SignUpForm({
   const t = useTranslations("Auth")
   const action = useMemo(() => signUpAction.bind(null, locale), [locale, signUpAction])
 
-  const footer = (
-    <>
-      <div className="flex justify-center gap-4 text-xs text-muted-foreground">
-        <Link href="/terms" className="hover:text-primary transition-colors">
-          {t("conditionsOfUse")}
-        </Link>
-        <Link href="/privacy" className="hover:text-primary transition-colors">
-          {t("privacyNotice")}
-        </Link>
-        <Link href="/help" className="hover:text-primary transition-colors">
-          {t("help")}
-        </Link>
-      </div>
-      <p className="text-xs text-center text-muted-foreground">{t("copyright", { year: new Date().getFullYear() })}</p>
-    </>
-  )
-
   return (
-    <AuthCard
-      title={t("createAccountTitle")}
-      description={t("signUpDescription")}
-      footer={footer}
-    >
+    <AuthCard title={t("createAccountTitle")} description={t("signUpDescription")}>
       <SignUpFormBody
         action={action}
         checkUsernameAvailabilityAction={checkUsernameAvailabilityAction}

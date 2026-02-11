@@ -301,13 +301,13 @@ export function MobileHome({
       />
 
       <div className="space-y-2 pt-0 pb-4">
-        <section className="border-y border-border-subtle bg-surface-subtle px-(--spacing-home-inset) py-2">
+        <section className="px-(--spacing-home-inset)">
           <Link
             href="/sell"
             data-testid="home-start-selling-cta"
-            className="group block rounded-xl border border-primary bg-primary px-4 py-3 tap-transparent transition-colors hover:bg-interactive-hover active:bg-interactive-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+            className="block w-full rounded-xl border border-primary bg-primary px-4 py-3 tap-transparent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
           >
-            <div className="flex items-center gap-3">
+            <div className="flex min-h-(--control-primary) items-center gap-3">
               <div className="min-w-0 flex-1">
                 <p className="text-sm font-semibold tracking-tight text-primary-foreground">
                   {tMobile("sellBannerTitle")}
@@ -321,7 +321,7 @@ export function MobileHome({
                 size={18}
                 weight="bold"
                 aria-hidden="true"
-                className="shrink-0 text-primary-foreground transition-transform group-hover:translate-x-0.5"
+                className="shrink-0 text-primary-foreground"
               />
               <span className="sr-only">{tMobile("sellBannerAction")}</span>
             </div>

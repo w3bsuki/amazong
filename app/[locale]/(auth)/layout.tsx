@@ -21,7 +21,7 @@ export default async function AuthLayout({
   setRequestLocale(locale);
 
   return (
-    <PageShell variant="muted">
+    <PageShell variant="default">
       <main id="main-content" role="main">
         {children}
       </main>

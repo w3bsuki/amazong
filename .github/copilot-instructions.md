@@ -10,6 +10,14 @@
 - Implement directly for normal tasks (UI, styling, components, refactoring, tests, docs).
 - The current implementer owns planning, decisions, and code edits.
 
+## UI & Design work
+
+- Read `DESIGN.md` for token contracts, forbidden patterns, and layout rules.
+- Read `docs/guides/FRONTEND-DESIGN.md` for design quality bar, anti-slop rules, typography guidance, and motion patterns.
+- Apply §2.1 Design Thinking checklist before building any new UI surface.
+- Apply §2.2 Anti-Slop Rules during implementation.
+- Typography, color, and motion must use semantic tokens — never bypass.
+
 ## Verification
 
 ```bash

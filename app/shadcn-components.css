@@ -5,28 +5,9 @@
    ============================================================ */
 
 /* ===== DRAWER (Vaul) ===== */
-/* Smooth spring animation for drawer open/close */
+/* Use Vaul's native animation + scroll-lock internals; avoid extra overrides. */
 [data-vaul-drawer] {
   touch-action: none;
-}
-
-[data-vaul-drawer][data-vaul-drawer-direction="bottom"] {
-  /* iOS-style spring animation */
-  transition: transform 0.42s cubic-bezier(0.32, 0.72, 0, 1);
-}
-
-[data-vaul-drawer][data-vaul-drawer-direction="top"] {
-  transition: transform 0.42s cubic-bezier(0.32, 0.72, 0, 1);
-}
-
-[data-vaul-drawer][data-vaul-drawer-direction="left"],
-[data-vaul-drawer][data-vaul-drawer-direction="right"] {
-  transition: transform 0.32s cubic-bezier(0.32, 0.72, 0, 1);
-}
-
-/* Prevent scrolling underneath drawer when open */
-[data-vaul-drawer-wrapper][data-vaul-drawer-open="true"] {
-  overflow: hidden;
 }
 
 /* Handle drag affordance styling */
@@ -36,7 +17,7 @@
 
 [data-slot="drawer-content"] {
   overscroll-behavior: contain;
-  contain: layout style paint;
+  contain: paint;
 }
 
 /* Drawer body scroll containment - prevents scroll leaking to parent */

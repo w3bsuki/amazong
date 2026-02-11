@@ -39,97 +39,132 @@ export function ProductQuickViewDrawer({
   product,
   isLoading = false,
 }: ProductQuickViewDrawerProps) {
+  const isMobile = useIsMobile()
+
+  if (!isMobile) {
+    return null
+  }
+
+  return (
+    <ProductQuickViewDrawerMobile
+      open={open}
+      onOpenChange={onOpenChange}
+      product={product}
+      isLoading={isLoading}
+    />
+  )
+}
+
+function ProductQuickViewDrawerMobile({
+  open,
+  onOpenChange,
+  product,
+  isLoading = false,
+}: ProductQuickViewDrawerProps) {
   const t = useTranslations("Drawers")
   const tProduct = useTranslations("Product")
   const router = useRouter()
   const { addToCart } = useCart()
-  const isMobile = useIsMobile()
   const scrollBeforeOpenRef = React.useRef<number | null>(null)
-  const wasOpenRef = React.useRef(false)
+  const pendingRestoreScrollRef = React.useRef<number | null>(null)
+  const openRef = React.useRef(open)
+  const [displayProduct, setDisplayProduct] = React.useState<QuickViewProduct | null>(product)
   const { product: resolvedProduct, isLoading: detailsLoading } = useProductQuickViewDetails(open, product)
 
   React.useEffect(() => {
-    if (typeof window === "undefined") return
-    let cleanup: (() => void) | undefined
+    openRef.current = open
+  }, [open])
 
-    if (open && !wasOpenRef.current) {
-      scrollBeforeOpenRef.current = product?.sourceScrollY ?? window.scrollY
-      wasOpenRef.current = true
-    } else if (!open && wasOpenRef.current) {
-      const restoreY = scrollBeforeOpenRef.current
-      wasOpenRef.current = false
-      if (restoreY != null) {
-        const restoreScroll = () => {
-          window.scrollTo({ top: restoreY, behavior: "auto" })
-        }
-        const rafId = requestAnimationFrame(restoreScroll)
-        const timeoutId = window.setTimeout(restoreScroll, 260)
-        cleanup = () => {
-          cancelAnimationFrame(rafId)
-          clearTimeout(timeoutId)
-        }
+  React.useEffect(() => {
+    if (resolvedProduct) {
+      setDisplayProduct(resolvedProduct)
+    }
+  }, [resolvedProduct])
+
+  React.useEffect(() => {
+    if (typeof window === "undefined") return
+
+    if (open) {
+      if (scrollBeforeOpenRef.current == null) {
+        scrollBeforeOpenRef.current = product?.sourceScrollY ?? window.scrollY
       }
+      if (product) {
+        setDisplayProduct(product)
+      }
+      pendingRestoreScrollRef.current = null
+      return
     }
 
-    return cleanup
-  }, [open, product?.sourceScrollY])
+    pendingRestoreScrollRef.current = scrollBeforeOpenRef.current
+  }, [open, product])
+
+  const handleDrawerAnimationEnd = React.useCallback((isDrawerOpen: boolean) => {
+    // Ignore stale "close finished" callbacks if the drawer was reopened quickly.
+    if (isDrawerOpen || typeof window === "undefined" || openRef.current) return
+
+    const restoreY = pendingRestoreScrollRef.current
+    if (restoreY != null) {
+      window.scrollTo({ top: restoreY, behavior: "auto" })
+    }
+
+    pendingRestoreScrollRef.current = null
+    scrollBeforeOpenRef.current = null
+    setDisplayProduct(null)
+  }, [])
+
+  const activeProduct = resolvedProduct ?? displayProduct
 
   const addResolvedProductToCart = React.useCallback(() => {
-    if (!resolvedProduct) return
-    const imgs = resolvedProduct.images?.length
-      ? resolvedProduct.images
-      : resolvedProduct.image
-        ? [resolvedProduct.image]
+    if (!activeProduct) return
+    const imgs = activeProduct.images?.length
+      ? activeProduct.images
+      : activeProduct.image
+        ? [activeProduct.image]
         : []
     addToCart({
-      id: resolvedProduct.id,
-      title: resolvedProduct.title,
-      price: resolvedProduct.price,
+      id: activeProduct.id,
+      title: activeProduct.title,
+      price: activeProduct.price,
       image: imgs[0] ?? PLACEHOLDER_IMAGE_PATH,
       quantity: 1,
-      ...(resolvedProduct.slug ? { slug: resolvedProduct.slug } : {}),
-      ...(resolvedProduct.username ? { username: resolvedProduct.username } : {}),
+      ...(activeProduct.slug ? { slug: activeProduct.slug } : {}),
+      ...(activeProduct.username ? { username: activeProduct.username } : {}),
     })
-  }, [addToCart, resolvedProduct])
+  }, [activeProduct, addToCart])
 
   const handleAddToCart = React.useCallback(() => {
-    if (!resolvedProduct) return
+    if (!activeProduct) return
     addResolvedProductToCart()
     toast.success(t("addedToCart"))
-  }, [addResolvedProductToCart, resolvedProduct, t])
+  }, [activeProduct, addResolvedProductToCart, t])
 
   const handleBuyNow = React.useCallback(() => {
-    if (!resolvedProduct) return
+    if (!activeProduct) return
     addResolvedProductToCart()
     toast.success(tProduct("addedToCart"))
     onOpenChange(false)
     router.push("/checkout")
-  }, [addResolvedProductToCart, onOpenChange, resolvedProduct, router, tProduct])
+  }, [activeProduct, addResolvedProductToCart, onOpenChange, router, tProduct])
 
   const productPath = React.useMemo(() => {
-    if (!resolvedProduct) return "#"
-    const { id, slug, username } = resolvedProduct
+    if (!activeProduct) return "#"
+    const { id, slug, username } = activeProduct
     const productSlug = slug ?? id
     return username ? `/${username}/${productSlug}` : "#"
-  }, [resolvedProduct])
+  }, [activeProduct])
 
   const handleNavigateToProduct = React.useCallback(() => {
     onOpenChange(false)
     router.push(productPath)
   }, [onOpenChange, router, productPath])
 
-  const title = resolvedProduct?.title ?? ""
-  const description = resolvedProduct?.description ?? title
+  const title = activeProduct?.title ?? ""
+  const description = activeProduct?.description ?? title
 
-  // This drawer is MOBILE ONLY (desktop uses Dialog)
-  if (!isMobile) {
-    return null
-  }
-
-  const showOnlyBlockingSkeleton = isLoading || (open && !resolvedProduct && !product)
+  const showOnlyBlockingSkeleton = isLoading || (open && !activeProduct && !product)
 
   return (
-    <Drawer open={open} onOpenChange={onOpenChange}>
+    <Drawer open={open} onOpenChange={onOpenChange} onAnimationEnd={handleDrawerAnimationEnd}>
       <DrawerContent
         aria-label={t("quickView")}
         showHandle
@@ -140,9 +175,9 @@ export function ProductQuickViewDrawer({
         <DrawerBody className="px-0 py-0">
           {showOnlyBlockingSkeleton ? (
             <QuickViewSkeleton />
-          ) : resolvedProduct ? (
+          ) : activeProduct ? (
             <ProductQuickViewContent
-              product={resolvedProduct}
+              product={activeProduct}
               productPath={productPath}
               onRequestClose={() => onOpenChange(false)}
               onAddToCart={handleAddToCart}

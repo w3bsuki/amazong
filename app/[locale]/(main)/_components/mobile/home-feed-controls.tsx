@@ -54,7 +54,11 @@ export function HomeFeedControls({
       className={cn("px-(--spacing-home-inset)", className)}
       aria-label={tMobile("feed.controlsAria")}
     >
-      <div className="-mx-0.5 overflow-x-auto no-scrollbar" data-testid="home-feed-tabs" aria-label={tMobile("feed.tabsAria")}>
+      <div
+        className="-mx-0.5 overflow-x-auto no-scrollbar touch-pan-x"
+        data-testid="home-feed-tabs"
+        aria-label={tMobile("feed.tabsAria")}
+      >
         <div className="flex w-max items-center gap-1.5 px-0.5">
           <button
             type="button"
@@ -138,7 +142,7 @@ export function HomeFeedControls({
               data-testid="home-feed-city-configure"
               aria-label={tMobile("feed.chooseCityTitle")}
               onClick={onNearbyConfigure}
-              className="inline-flex size-(--spacing-touch-md) shrink-0 items-center justify-center rounded-full border border-border-subtle bg-background text-muted-foreground transition-colors hover:bg-hover hover:text-foreground active:bg-active tap-transparent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+              className="inline-flex size-(--spacing-touch-md) shrink-0 items-center justify-center rounded-full border border-border-subtle bg-background text-muted-foreground tap-transparent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
             >
               <GearSix size={14} weight="bold" aria-hidden="true" />
             </button>

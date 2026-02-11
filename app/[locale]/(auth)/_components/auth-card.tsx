@@ -1,5 +1,4 @@
 import { Link } from "@/i18n/routing"
-import Image from "next/image"
 
 import { Card, CardHeader, CardContent, CardFooter } from "@/components/ui/card"
 
@@ -19,12 +18,16 @@ export function AuthCard({
   showLogo = true,
 }: AuthCardProps) {
   return (
-    <div className="min-h-dvh flex items-center justify-center p-4">
+    <div className="min-h-dvh flex items-start sm:items-center justify-center px-3 py-4 pt-safe-max-sm pb-safe-max sm:px-4">
       <Card className="w-full max-w-sm py-0 gap-0 overflow-hidden">
-        <CardHeader className="text-center pt-6 pb-4 px-6 gap-3">
+        <CardHeader className="text-center pt-6 pb-4 px-5 gap-3">
           {showLogo && (
-            <Link href="/" className="mx-auto hover:opacity-80 transition-opacity">
-              <Image src="/icon.svg" width={40} height={40} alt="Treido" priority />
+            <Link
+              href="/"
+              className="mx-auto inline-flex min-h-11 items-center text-lg font-extrabold tracking-tight text-foreground hover:text-primary transition-colors"
+              aria-label="Treido home"
+            >
+              treido.
             </Link>
           )}
           <div className="space-y-1.5">
@@ -34,9 +37,9 @@ export function AuthCard({
             )}
           </div>
         </CardHeader>
-        <CardContent className="px-6 pb-4">{children}</CardContent>
+        <CardContent className="px-5 pb-5">{children}</CardContent>
         {footer && (
-          <CardFooter className="flex-col gap-4 bg-surface-subtle border-t py-4 px-6">
+          <CardFooter className="flex-col gap-3 bg-surface-subtle border-t py-3 px-5">
             {footer}
           </CardFooter>
         )}

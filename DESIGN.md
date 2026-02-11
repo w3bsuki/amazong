@@ -8,7 +8,8 @@
 | Audience | Engineers, designers, AI agents |
 | Stack | Next.js App Router + Tailwind CSS v4 + shadcn/ui (open code) + Radix |
 | Primary Token Source | `app/globals.css` |
-| Last Updated | 2026-02-10 |
+| Design Quality Guide | `docs/guides/FRONTEND-DESIGN.md` |
+| Last Updated | 2026-02-11 |
 
 ---
 
@@ -43,6 +44,60 @@ Color usage ratio target:
 - 70% neutral surfaces (`background`, `surface-subtle`, `card`)
 - 20% neutral contrast (`foreground`, `muted-foreground`, borders)
 - 10% accent/status (`primary`, `destructive`, badges)
+
+### 2.1) Design Thinking (Before Coding)
+
+Before building or modifying any UI surface, answer these four questions:
+
+1. **Purpose**: What user goal does this surface serve? Who sees it, and what's their state of mind? (Browsing buyer? Anxious seller? Returning customer?) Does every visible element earn its place?
+2. **Tone**: What's the emotional register for this surface?
+   - Treido baseline: calm confidence with sharp moments of delight.
+   - Surface-specific: editorial (product detail), transactional urgency (checkout), celebratory (order confirmed), professional trust (seller dashboard).
+3. **Memorable detail**: What's the one thing that makes this feel *designed*? A typographic moment, a micro-interaction, an unexpected layout choice? If you can't name it, the surface is generic.
+4. **Brand check**: Does this feel like *Treido* — calm, scannable, touch-confident — or like a shadcn starter template?
+
+### 2.2) Anti-Slop Rules (Banned Patterns)
+
+These patterns signal low-effort AI-generated UI and MUST be avoided:
+
+**Typography slop:**
+- All-same-weight text walls (everything `font-normal`, no hierarchy)
+- Missing letter-spacing on headings (`--letter-spacing-tight` exists — use it)
+- Headings that look the same as body text
+- No weight contrast between labels and values
+
+**Layout slop:**
+- Every section is a centered card on white background
+- Symmetrical grids with identical spacing everywhere (vary density: feed is tight, detail pages breathe)
+- No visual rhythm — equal gaps between unrelated sections
+- Ignoring the difference between scannable density and reading comfort
+
+**Color slop:**
+- Purple gradients on white (the universal AI cliché)
+- Every surface using `bg-card` identically without surface hierarchy
+- Missing state differentiation (hover/active/selected all look the same)
+- Not using the category tone system for browsing cues (`--category-*-bg/fg/ring` exist — use them)
+- Evenly-distributed weak palettes — trust the 70/20/10 ratio
+
+**Motion slop:**
+- Every element has the same fade-in
+- Decorative animation on static content
+- Missing press feedback on touch targets
+- Ignoring `prefers-reduced-motion`
+
+**Component slop:**
+- Gratuitous card shadows (Treido is border-based; shadows for overlays only per §5.3)
+- Filler microcopy ("Lorem ipsum", "Welcome to our platform", "John Doe")
+- Icon-only buttons without aria-labels
+- Buttons that all look the same regardless of hierarchy
+- Skeleton-loader-everywhere without real loading states
+
+### 2.3) Quality Compounds
+
+- **Micro-polish**: Border-radius consistency, spacing rhythm alignment to tokens, transition timing matching `--ease-*` / `--duration-*`. Small details distinguish polished products from templates.
+- **Restraint is design**: In Treido's calm aesthetic, what you *leave out* matters as much as what you add. Fewer competing elements with precise spacing reads as more intentional than a busy surface.
+- **Context-specific character**: The same component in different contexts (home feed vs. seller dashboard vs. checkout) SHOULD feel cohesive but tuned to its context.
+- **Intentionality over intensity**: A single well-placed typographic detail beats scattered decorative noise.
 
 ---
 
@@ -148,11 +203,37 @@ Primary source: `app/globals.css`.
 
 ### 5.5 Typography
 
-Primary type tokens in runtime include:
+#### Font Stack (Tiered)
 
-- `text-2xs`, `text-xs`, `text-compact`, `text-body`, `text-reading`, `text-price`
-- Keep product title compact and scannable; keep price visually dominant
-- Use `text-2xs` sparingly for dense metadata only; primary readable UI copy SHOULD be `text-xs` or larger
+| Tier | Token | Current Value | Role |
+|------|-------|--------------|------|
+| **Display** | `--font-display` | *(planned — see upgrade note)* | Hero headings, marketing, landing pages |
+| **UI / Body** | `--font-sans` | Inter (via `next/font/google`) | Body text, labels, form fields, descriptions |
+| **Serif accent** | `--font-serif` | Source Serif 4 | Editorial moments, trust indicators |
+| **Mono** | `--font-mono` | JetBrains Mono | Tracking IDs, code, technical values |
+
+**Display font upgrade note**: Inter is serviceable for body text but generic at display sizes. A distinctive display font SHOULD be added for hero headings and marketing surfaces. Requirements:
+- Cyrillic support (Bulgarian locale is mandatory)
+- Variable weight axis for nuanced hierarchy
+- Geometric-modern but distinct from Inter
+- Candidates: **Onest**, **Manrope**, **Commissioner**, **Golos Text**, **Wix Madefor Display**
+- Load via `next/font/google` with `display: "swap"`, `subsets: ["latin", "cyrillic"]`
+- Register as `--font-display` in `globals.css` `@theme` block
+
+#### Type Scale Tokens
+
+- `text-2xs`, `text-tiny`, `text-xs`, `text-compact`, `text-body`, `text-reading`, `text-price`
+- `text-heading-1`, `text-heading-2`, `text-heading-3` (CMS/rich text)
+
+#### Typographic Rules
+
+- **Headings**: MUST use `font-semibold` or `font-bold` with `--letter-spacing-tight`. Never leave headings at default weight/spacing.
+- **Prices**: `text-price` + `font-semibold` minimum. Price is the most important number on product surfaces.
+- **Labels/metadata**: `text-compact` or `text-xs` with `text-muted-foreground`. Quiet but readable.
+- **Body text**: `text-body` with token line-height. Don't compress line-height on readable content.
+- **Weight contrast**: Create hierarchy through weight, not just size. A `text-body font-semibold` label above `text-body font-normal` value is clearer than making the label bigger.
+- **Letter spacing**: Use `--letter-spacing-tight` on large text (headings, prices), `--letter-spacing-wide` on small uppercase labels.
+- Use `text-2xs` sparingly for dense metadata only; primary readable UI SHOULD be `text-xs` or larger.
 
 ---
 
@@ -229,11 +310,37 @@ Current runtime variants are defined in `components/ui/button.tsx`.
 
 ## 8) Motion And Feedback
 
-- Use subtle transitions only (`duration-fast` or `duration-normal`)
-- Avoid decorative motion for static surfaces
-- Press feedback via `active:bg-active` and/or slight opacity change
-- Honor reduced motion globally
-- Avoid introducing bespoke easing/animation tokens when existing `--ease-*` and `--duration-*` tokens suffice
+### 8.1 Tokens
+
+| Token | Value | Usage |
+|-------|-------|-------|
+| `--ease-snappy` | `cubic-bezier(0.2, 0, 0, 1)` | Sheets, drawers, spring-like interactions |
+| `--ease-smooth` | `cubic-bezier(0.4, 0, 0.2, 1)` | Standard UI transitions |
+| `--duration-instant` | 50ms | Immediate state changes |
+| `--duration-fast` | 100ms | Press feedback, micro-interactions |
+| `--duration-normal` | 200ms | Standard transitions (hover, expand) |
+| `--duration-slow` | 300ms | Maximum for UI transitions — longer feels sluggish on mobile |
+
+### 8.2 Principles
+
+- **One hero moment per page load**: A well-orchestrated entrance (staggered reveals with `animation-delay`, 20-40ms per item, cap at ~10 items) creates more delight than everything fading in at once.
+- **Interaction feedback > decoration**: Press states, hover transitions, and loading skeletons matter more than ambient animation.
+- **Use existing tokens**: Do not invent bespoke easing/duration values when `--ease-*` / `--duration-*` tokens exist.
+
+### 8.3 Required Patterns
+
+- Press feedback on all touch targets: `active:bg-active` and/or `active:scale-[0.98]` with `--duration-fast`
+- Transition on hover states: `transition-colors duration-fast` minimum
+- Sheet/drawer spring: use `--ease-snappy` for native-feeling open/close
+- Skeleton → content: loading states use subtle pulse, then cross-fade
+- Honor `prefers-reduced-motion` globally (use `motion-safe:` prefix or `@media` query)
+
+### 8.4 Don'ts
+
+- Never animate layout-triggering properties (`width`, `height`, `top`, `left`) — use `transform` and `opacity`
+- Never exceed `--duration-slow` (300ms) for UI transitions
+- Avoid decorative motion on static surfaces
+- Don't add ambient animation that doesn't serve a functional purpose
 
 ---
 
@@ -308,6 +415,7 @@ Internal:
 - `components/layout/header/mobile/homepage-header.tsx`
 - `components/shared/product/card/mobile.tsx`
 - `app/[locale]/_components/mobile-tab-bar.tsx`
+- `docs/guides/FRONTEND-DESIGN.md` (extended design quality skill)
 
 External:
 
@@ -321,4 +429,4 @@ External:
 - WCAG 2.2 updates: https://www.w3.org/WAI/standards-guidelines/wcag/new-in-22/
 - WCAG 2.2 SC 2.5.8 Target Size: https://www.w3.org/TR/WCAG22/#target-size-minimum
 
-Reference set last verified: 2026-02-10
+Reference set last verified: 2026-02-11

@@ -126,7 +126,12 @@ export function SignUpFormBody({
     if (!username || username.trim().length < 3) return null
     if (isCheckingUsername) {
       return (
-        <span data-testid="username-availability" role="status" aria-live="polite">
+        <span
+          data-testid="username-availability"
+          role="status"
+          aria-live="polite"
+          aria-label={t("usernameAvailabilityChecking")}
+        >
           <span className="sr-only">{t("usernameAvailabilityChecking")}</span>
           <SpinnerGap className="size-4 animate-spin text-muted-foreground" weight="bold" />
         </span>
@@ -134,7 +139,12 @@ export function SignUpFormBody({
     }
     if (usernameAvailable === true) {
       return (
-        <span data-testid="username-availability" role="status" aria-live="polite">
+        <span
+          data-testid="username-availability"
+          role="status"
+          aria-live="polite"
+          aria-label={t("usernameAvailabilityAvailable")}
+        >
           <span className="sr-only">{t("usernameAvailabilityAvailable")}</span>
           <CheckCircle className="size-4 text-success" weight="fill" />
         </span>
@@ -142,7 +152,12 @@ export function SignUpFormBody({
     }
     if (usernameAvailable === false) {
       return (
-        <span data-testid="username-availability" role="status" aria-live="polite">
+        <span
+          data-testid="username-availability"
+          role="status"
+          aria-live="polite"
+          aria-label={t("usernameAvailabilityUnavailable")}
+        >
           <span className="sr-only">{t("usernameAvailabilityUnavailable")}</span>
           <X className="size-4 text-destructive" />
         </span>
@@ -352,17 +367,26 @@ export function SignUpFormBody({
       </form>
 
       {showLegalText && (
-        <p className="text-xs text-muted-foreground mt-4 leading-relaxed">
-          {t("byCreatingAccount")}{" "}
-          <Link href="/terms" className="text-primary hover:underline" onClick={onNavigateAway}>
-            {t("conditionsOfUse")}
-          </Link>{" "}
-          {t("and")}{" "}
-          <Link href="/privacy" className="text-primary hover:underline" onClick={onNavigateAway}>
-            {t("privacyNotice")}
-          </Link>
-          .
-        </p>
+        <div className="mt-4 space-y-1.5 text-xs">
+          <p className="text-muted-foreground leading-relaxed">{t("byCreatingAccount")}</p>
+          <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
+            <Link
+              href="/terms"
+              className="inline-flex min-h-11 items-center text-primary hover:underline"
+              onClick={onNavigateAway}
+            >
+              {t("conditionsOfUse")}
+            </Link>
+            <span className="text-muted-foreground">{t("and")}</span>
+            <Link
+              href="/privacy"
+              className="inline-flex min-h-11 items-center text-primary hover:underline"
+              onClick={onNavigateAway}
+            >
+              {t("privacyNotice")}
+            </Link>
+          </div>
+        </div>
       )}
 
       {showSignInCta && (
@@ -372,7 +396,7 @@ export function SignUpFormBody({
             <Button
               type="button"
               variant="link"
-              className="h-auto p-0 font-medium text-primary hover:underline"
+              className="min-h-11 p-0 font-medium text-primary hover:underline"
               onClick={onSwitchToSignIn}
             >
               {t("signInArrow")}
@@ -380,7 +404,7 @@ export function SignUpFormBody({
           ) : (
             <Link
               href="/auth/login"
-              className="text-primary hover:underline font-medium"
+              className="inline-flex min-h-11 items-center text-primary hover:underline font-medium"
               onClick={onNavigateAway}
             >
               {t("signInArrow")}

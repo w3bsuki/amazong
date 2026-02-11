@@ -102,19 +102,26 @@ export function LoginFormBody({
   return (
     <div className={cn("flex flex-col gap-4", className)}>
       {state?.error && (
-        <div className="rounded-xl border border-destructive bg-destructive-subtle p-3 text-sm text-destructive">
+        <div
+          className="rounded-xl border border-destructive bg-destructive-subtle p-3 text-sm text-destructive"
+          data-testid="login-error-section"
+        >
           {t(state.error as never)}
         </div>
       )}
 
-      <form action={formAction} onSubmit={onSubmit} className="contents">
-        {/* Email Field */}
+      <form
+        action={formAction}
+        onSubmit={onSubmit}
+        className="space-y-4"
+        data-testid="login-form"
+      >
         <Field
-          className="order-1"
+          data-testid="login-email-section"
           data-invalid={showClientEmailError || !!state?.fieldErrors?.email}
         >
           <FieldContent>
-            <FieldLabel htmlFor="email">{t("emailOrPhone")}</FieldLabel>
+            <FieldLabel htmlFor="email">{t("email")}</FieldLabel>
             <Input
               id="email"
               name="email"
@@ -142,8 +149,7 @@ export function LoginFormBody({
           </FieldContent>
         </Field>
 
-        {/* Password Field */}
-        <Field className="order-2" data-invalid={!!state?.fieldErrors?.password}>
+        <Field data-testid="login-password-section" data-invalid={!!state?.fieldErrors?.password}>
           <FieldContent>
             <div className="flex items-center justify-between gap-2">
               <FieldLabel htmlFor="password">{t("password")}</FieldLabel>
@@ -184,7 +190,26 @@ export function LoginFormBody({
           </FieldContent>
         </Field>
 
-        <div className="pt-1 order-4">
+        <div
+          className="flex items-center justify-between"
+          data-testid="login-remember-section"
+        >
+          <div className="flex items-center gap-2 min-h-11">
+            <Checkbox
+              id="remember-me"
+              checked={rememberMe}
+              onCheckedChange={(checked) => setRememberMe(checked === true)}
+            />
+            <FieldLabel
+              htmlFor="remember-me"
+              className="text-sm text-muted-foreground cursor-pointer font-normal"
+            >
+              {t("rememberMe")}
+            </FieldLabel>
+          </div>
+        </div>
+
+        <div className="pt-1" data-testid="login-submit-section">
           <SubmitButton
             label={t("signIn")}
             pendingLabel={t("signingIn")}
@@ -193,42 +218,11 @@ export function LoginFormBody({
         </div>
       </form>
 
-      {/* Remember Me */}
-      <div className="flex items-center justify-between order-3">
-        <div className="flex items-center gap-2 min-h-11">
-          <Checkbox
-            id="remember-me"
-            checked={rememberMe}
-            onCheckedChange={(checked) => setRememberMe(checked === true)}
-          />
-          <FieldLabel
-            htmlFor="remember-me"
-            className="text-sm text-muted-foreground cursor-pointer font-normal"
-          >
-            {t("rememberMe")}
-          </FieldLabel>
-        </div>
-      </div>
-
-      {showLegalText && (
-        <p className="text-xs text-muted-foreground leading-relaxed">
-          {t("byContinuing")}{" "}
-          <Link href="/terms" className="text-primary hover:underline" onClick={onNavigateAway}>
-            {t("conditionsOfUse")}
-          </Link>{" "}
-          {t("and")}{" "}
-          <Link href="/privacy" className="text-primary hover:underline" onClick={onNavigateAway}>
-            {t("privacyNotice")}
-          </Link>
-          .
-        </p>
-      )}
-
       {showCreateAccountCta && (
-        <div>
+        <div data-testid="login-create-account-section">
           <div className="flex items-center gap-3">
             <div className="h-px flex-1 bg-border" />
-            <p className="text-xs text-muted-foreground">{t("newToAmazon")}</p>
+            <p className="text-xs text-muted-foreground">{t("newToTreido")}</p>
             <div className="h-px flex-1 bg-border" />
           </div>
 
@@ -249,6 +243,29 @@ export function LoginFormBody({
               </Button>
             </Link>
           )}
+        </div>
+      )}
+
+      {showLegalText && (
+        <div className="space-y-1.5 text-xs" data-testid="login-legal-section">
+          <p className="text-muted-foreground leading-relaxed">{t("byContinuing")}</p>
+          <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
+            <Link
+              href="/terms"
+              className="inline-flex min-h-11 items-center text-primary hover:underline"
+              onClick={onNavigateAway}
+            >
+              {t("conditionsOfUse")}
+            </Link>
+            <span className="text-muted-foreground">{t("and")}</span>
+            <Link
+              href="/privacy"
+              className="inline-flex min-h-11 items-center text-primary hover:underline"
+              onClick={onNavigateAway}
+            >
+              {t("privacyNotice")}
+            </Link>
+          </div>
         </div>
       )}
     </div>

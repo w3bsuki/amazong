@@ -12,7 +12,8 @@ Read these files for full project understanding:
 |-------|------|------------------|
 | What to build | `REQUIREMENTS.md` (root) | 119 features with R{n}.{m} IDs, status, deep-dive pointers |
 | What's active now | `TASKS.md` (root) | Current sprint / work queue |
-| Design system | `DESIGN.md` (root) | Tokens, spacing, typography, components, app-feel §8.5 |
+| Design system | `DESIGN.md` (root) | Tokens, spacing, typography, components, app-feel |
+| Frontend design quality | `docs/guides/FRONTEND-DESIGN.md` | Anti-slop rules, typography tiers, motion patterns, design thinking |
 | Production status | `docs/PRODUCTION.md` | What's shipped, what's blocked, launch checklist |
 | Feature deep-dives | `docs/features/{area}.md` | Per-feature specs (selling, buying, chat, etc.) |
 | Architecture | `docs/ARCHITECTURE.md` | Directory structure, code patterns, module boundaries |
@@ -155,4 +156,4 @@ See `docs/WORKFLOW.md` for the full workflow reference and prompt formatting gui
 
 ---
 
-*Last updated: 2026-02-08*
+*Last updated: 2026-02-11*

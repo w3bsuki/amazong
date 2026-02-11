@@ -54,6 +54,48 @@ async function setupPage(page: Page) {
   })
 }
 
+async function assertFormFirstLoginHierarchy(page: Page) {
+  const emailSection = page.getByTestId("login-email-section")
+  const passwordSection = page.getByTestId("login-password-section")
+  const rememberSection = page.getByTestId("login-remember-section")
+  const submitSection = page.getByTestId("login-submit-section")
+  const createAccountSection = page.getByTestId("login-create-account-section")
+  const legalSection = page.getByTestId("login-legal-section")
+
+  await expect(emailSection).toBeVisible()
+  await expect(passwordSection).toBeVisible()
+  await expect(rememberSection).toBeVisible()
+  await expect(submitSection).toBeVisible()
+  await expect(createAccountSection).toBeVisible()
+  await expect(legalSection).toBeVisible()
+
+  const sections = [
+    emailSection,
+    passwordSection,
+    rememberSection,
+    submitSection,
+    createAccountSection,
+    legalSection,
+  ]
+
+  const boxes = await Promise.all(sections.map((section) => section.boundingBox()))
+  expect(boxes.every(Boolean)).toBe(true)
+
+  for (let index = 1; index < boxes.length; index += 1) {
+    const previousY = boxes[index - 1]?.y ?? 0
+    const currentY = boxes[index]?.y ?? 0
+    expect(currentY).toBeGreaterThan(previousY)
+  }
+
+  const viewport = page.viewportSize()
+  expect(viewport).toBeTruthy()
+  const criticalSectionIndexes = [0, 1, 3] // email, password, submit
+  for (const sectionIndex of criticalSectionIndexes) {
+    const bottom = (boxes[sectionIndex]?.y ?? 0) + (boxes[sectionIndex]?.height ?? 0)
+    expect(bottom).toBeLessThanOrEqual((viewport?.height ?? 0) + 2)
+  }
+}
+
 const MOBILE_PRODUCT_PATH = "/en/treido/2022-bmw-330i-xdrive-sedan"
 
 test.describe("Mobile Responsiveness - Phase 11", () => {
@@ -76,12 +118,45 @@ test.describe("Mobile Responsiveness - Phase 11", () => {
       await expect(dock).toBeVisible()
       
       // Verify all tab bar items are present (use tabBar as parent to avoid ambiguity)
-      await expect(tabBar.getByRole("link", { name: "Home" })).toBeVisible()
-      await expect(tabBar.getByRole("button", { name: /categories/i })).toBeVisible()
-      await expect(tabBar.getByRole("link", { name: "Sell" })).toBeVisible()
+      const homeTab = tabBar.getByRole("link", { name: "Home" })
+      const categoriesTab = tabBar.getByRole("button", { name: /categories/i })
+      const sellTab = tabBar.getByRole("link", { name: "Sell" })
+      const chatTabByRole = tabBar.getByRole("button", { name: /chat/i })
+      const chatTab = tabBar.getByTestId("mobile-tab-chat")
+      const profileTab = tabBar.getByTestId("mobile-tab-profile")
+
+      await expect(homeTab).toBeVisible()
+      await expect(categoriesTab).toBeVisible()
+      await expect(sellTab).toBeVisible()
       await expect(tabBar.getByTestId("mobile-tab-sell")).toBeVisible()
-      await expect(tabBar.getByRole("button", { name: /chat/i })).toBeVisible()
-      await expect(tabBar.getByTestId("mobile-tab-profile")).toBeVisible()
+      await expect(chatTabByRole).toBeVisible()
+      await expect(profileTab).toBeVisible()
+
+      // Sell tab remains icon-only, but still discoverable by accessible name.
+      await expect(tabBar.getByTestId("mobile-tab-sell")).toHaveText("")
+
+      // Active state should be color/weight-driven (no persistent selected background fill).
+      const homeClassName = (await homeTab.getAttribute("class")) ?? ""
+      expect(homeClassName).toContain("text-nav-active")
+      expect(homeClassName).not.toContain("bg-surface-subtle")
+
+      const categoriesClassName = (await categoriesTab.getAttribute("class")) ?? ""
+      expect(categoriesClassName).toContain("text-nav-inactive")
+      expect(categoriesClassName).not.toContain("bg-surface-subtle")
+
+      // Vertical rhythm: all top-level tab targets should align on the same row.
+      const tabBoxes = await Promise.all([
+        homeTab.boundingBox(),
+        categoriesTab.boundingBox(),
+        sellTab.boundingBox(),
+        chatTab.boundingBox(),
+        profileTab.boundingBox(),
+      ])
+      expect(tabBoxes.every(Boolean)).toBe(true)
+      const tabCenters = tabBoxes.map((box) => (box?.y ?? 0) + ((box?.height ?? 0) / 2))
+      const minCenter = Math.min(...tabCenters)
+      const maxCenter = Math.max(...tabCenters)
+      expect(maxCenter - minCenter).toBeLessThanOrEqual(2)
 
       const dockBox = await dock.boundingBox()
       const viewport = page.viewportSize()
@@ -91,6 +166,24 @@ test.describe("Mobile Responsiveness - Phase 11", () => {
       expect(Math.abs(dockBottom - (viewport?.height ?? 0))).toBeLessThanOrEqual(2)
       expect(Math.abs(dockBox?.x ?? 0)).toBeLessThanOrEqual(2)
       expect(Math.abs((dockBox?.width ?? 0) - (viewport?.width ?? 0))).toBeLessThanOrEqual(2)
+
+      // Chat tab should reflect drawer-open state as active.
+      await expect(chatTab).toHaveAttribute("aria-expanded", "false")
+      await chatTab.click()
+
+      const messagesDrawer = page
+        .locator('[data-slot="drawer-content"]')
+        .filter({ has: page.getByRole("button", { name: /view all messages/i }) })
+        .first()
+      await expect(messagesDrawer).toBeVisible()
+      await expect(chatTab).toHaveAttribute("aria-expanded", "true")
+
+      const chatClassName = (await chatTab.getAttribute("class")) ?? ""
+      expect(chatClassName).toContain("text-nav-active")
+
+      await messagesDrawer.getByRole("button", { name: /close/i }).first().click()
+      await expect(messagesDrawer).toBeHidden()
+      await expect(chatTab).toHaveAttribute("aria-expanded", "false")
     })
 
     test("categories tab opens global category drawer", async ({ page }) => {
@@ -380,12 +473,18 @@ test.describe("Mobile Responsiveness - Phase 11", () => {
       // Password input - use specific selector to avoid matching "Show password" button
       await expect(page.getByRole("textbox", { name: /password/i })).toBeVisible()
       await expect(page.getByRole("button", { name: /sign in|вход/i })).toBeVisible()
+      await assertFormFirstLoginHierarchy(page)
       
       // No horizontal overflow
       const hasOverflow = await page.evaluate(() => {
         return document.body.scrollWidth > window.innerWidth
       })
       expect(hasOverflow).toBe(false)
+    })
+
+    test("login hierarchy remains form-first in Bulgarian locale", async ({ page }) => {
+      await page.goto("/bg/auth/login")
+      await assertFormFirstLoginHierarchy(page)
     })
 
     test("sign up form is usable on mobile", async ({ page }) => {

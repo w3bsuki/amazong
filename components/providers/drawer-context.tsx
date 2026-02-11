@@ -153,20 +153,12 @@ export function DrawerProvider({ children }: { children: React.ReactNode }) {
   }, [featureFlags.enabledDrawers.productQuickView])
 
   const closeProductQuickView = useCallback(() => {
-    const restoreY = state.productQuickView.product?.sourceScrollY
-    if (typeof window !== "undefined" && restoreY != null) {
-      ;[0, 120, 280, 520].forEach((delay) => {
-        window.setTimeout(() => {
-          window.scrollTo({ top: restoreY, behavior: "auto" })
-        }, delay)
-      })
-    }
     trackDrawerClose({ type: "product_quick_view", method: "button" })
     setState((prev) => ({
       ...prev,
       productQuickView: { open: false, product: null },
     }))
-  }, [state.productQuickView.product?.sourceScrollY])
+  }, [])
 
   // Cart actions
   const openCart = useCallback(() => {

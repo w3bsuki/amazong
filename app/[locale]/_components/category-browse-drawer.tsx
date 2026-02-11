@@ -177,8 +177,6 @@ export function CategoryBrowseDrawer({
       open={isOpen}
       onOpenChange={handleOpenChange}
       modal={true}
-      noBodyStyles={true}
-      disablePreventScroll={false}
     >
       <DrawerContent
         className={cn("max-h-dialog rounded-t-2xl", className)}

@@ -52,8 +52,8 @@ function StickyPill({
 }: StickyPillProps) {
   const baseClass = getHomeChipClass({
     active,
-    size: "default",
-    className: "gap-1.5",
+    size: "compact",
+    className: "gap-1",
   })
 
   const content = (
@@ -146,15 +146,15 @@ export function HomeStickyCategoryPills({
     <div
       data-testid="home-sticky-category-pills"
       className={cn(
-        "fixed inset-x-0 z-30 border-b border-border-subtle bg-surface-elevated transition-all duration-200 md:hidden",
-        visible ? "pointer-events-auto translate-y-0 opacity-100" : "pointer-events-none -translate-y-1 opacity-0",
+        "fixed inset-x-0 z-30 border-b border-border-subtle bg-surface-elevated md:hidden",
+        visible ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0",
         className
       )}
       style={{ top: "var(--app-header-offset)" }}
       aria-hidden={!visible}
     >
-      <div className="overflow-x-auto no-scrollbar px-(--spacing-home-inset) py-1.5">
-        <div className="flex items-center gap-1.5 pr-1">
+      <div className="overflow-x-auto no-scrollbar px-(--spacing-home-inset) py-1">
+        <div className="flex items-center gap-1 pr-1">
           {drawer ? (
             <StickyPill
               label={tDrawer("title")}
