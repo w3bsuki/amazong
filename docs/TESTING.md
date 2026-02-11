@@ -247,6 +247,7 @@ pnpm -s typecheck && pnpm -s lint && pnpm -s styles:gate
 ```
 
 → Full test plan with per-phase checklists: `docs/PRODUCTION-TEST-PLAN.md`
+→ Route-by-route execution tracker: `production-audit/master.md`
 
 ---
 
@@ -300,6 +301,7 @@ pnpm -s typecheck && pnpm -s lint && pnpm -s styles:gate
 ## See Also
 
 - `docs/PRODUCTION-TEST-PLAN.md` — Full 13-phase QA checklist with per-test-case tracking
+- `production-audit/master.md` — Execution board for 18 phase audit files
 - `docs/guides/testing.mdx` — Testing how-to guide with code examples
 - `docs/PRODUCTION.md` — Production readiness tracker
 - `vitest.config.ts` — Unit test configuration
@@ -307,4 +309,4 @@ pnpm -s typecheck && pnpm -s lint && pnpm -s styles:gate
 
 ---
 
-*Last updated: 2026-02-08*
+*Last updated: 2026-02-11*

@@ -4,6 +4,7 @@ import type React from "react"
 import { createContext, useCallback, useContext, useEffect, useState, useRef } from "react"
 import { createClient } from "@/lib/supabase/client"
 import { safeJsonParse } from "@/lib/safe-json"
+import { normalizeImageUrl } from "@/lib/normalize-image-url"
 import { useAuth } from "./auth-state-manager"
 
 export interface CartItem {
@@ -103,6 +104,7 @@ function sanitizeCartItems(rawItems: CartItem[]): CartItem[] {
     sanitized.push({
       ...item,
       ...sellerSlugs,
+      image: normalizeImageUrl(item.image),
       price,
       quantity,
     })
@@ -160,7 +162,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       const price = normalizePrice(products?.price)
 
       const images = asStringArray(products?.images)
-      const image = images?.[0] ?? "/placeholder.svg"
+      const image = normalizeImageUrl(images?.[0] ?? null)
 
       const slug = asString(products?.slug)
       const seller = toRecord(products?.seller)
@@ -190,7 +192,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     setItems(nextItems)
   }, [])
 
-  const syncLocalCartToServer = useCallback(async (activeUserId: string) => {
+  const syncLocalCartToServer = useCallback(async () => {
     const savedCart = localStorage.getItem("cart")
     const localItems = safeJsonParse<CartItem[]>(savedCart) || []
     const sanitizedItems = sanitizeCartItems(localItems)
@@ -306,7 +308,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
       try {
         // Sync local → server
-        await syncLocalCartToServer(activeUserId)
+        await syncLocalCartToServer()
         // Load server → state
         await loadServerCart(activeUserId)
       } finally {
@@ -341,6 +343,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     const itemWithValidPrice = {
       ...newItem,
       ...normalizeSellerSlugs({ username: newItem.username, storeSlug: newItem.storeSlug ?? null }),
+      image: normalizeImageUrl(newItem.image),
       price: normalizedPrice,
       quantity: normalizedQuantity,
     }
@@ -352,7 +355,11 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       if (existingItem) {
         return prevItems.map((item) =>
           item.id === itemWithValidPrice.id && (item.variantId ?? null) === (itemWithValidPrice.variantId ?? null)
-            ? { ...item, quantity: item.quantity + itemWithValidPrice.quantity }
+            ? {
+                ...item,
+                quantity:
+                  normalizeQuantity(item.quantity + itemWithValidPrice.quantity) ?? MAX_CART_QUANTITY,
+              }
             : item,
         )
       }
@@ -360,18 +367,24 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     })
 
     // Server-side cart (best-effort)
-    if (user?.id) {
+    const activeUserId = user?.id
+    if (activeUserId) {
       const qty = itemWithValidPrice.quantity
       void (async () => {
         const supabase = createClient()
-        const { error } = await supabase.rpc("cart_add_item", {
-          p_product_id: itemWithValidPrice.id,
-          p_quantity: qty,
-          ...(itemWithValidPrice.variantId ? { p_variant_id: itemWithValidPrice.variantId } : {}),
-        })
+        try {
+          const { error } = await supabase.rpc("cart_add_item", {
+            p_product_id: itemWithValidPrice.id,
+            p_quantity: qty,
+            ...(itemWithValidPrice.variantId ? { p_variant_id: itemWithValidPrice.variantId } : {}),
+          })
 
-        if (error) {
-          console.error("Error adding to server cart:", error)
+          if (error) {
+            console.error("Error adding to server cart:", error)
+          }
+        } finally {
+          // Server remains the source of truth for authenticated carts.
+          await loadServerCart(activeUserId)
         }
       })()
     }
@@ -380,44 +393,55 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const removeFromCart = (id: string, variantId?: string) => {
     setItems((prevItems) => prevItems.filter((item) => !(item.id === id && (item.variantId ?? null) === (variantId ?? null))))
 
-    if (user?.id) {
+    const activeUserId = user?.id
+    if (activeUserId) {
       void (async () => {
         const supabase = createClient()
-        const { error } = await supabase.rpc("cart_set_quantity", {
-          p_product_id: id,
-          p_quantity: 0,
-          ...(variantId ? { p_variant_id: variantId } : {}),
-        })
+        try {
+          const { error } = await supabase.rpc("cart_set_quantity", {
+            p_product_id: id,
+            p_quantity: 0,
+            ...(variantId ? { p_variant_id: variantId } : {}),
+          })
 
-        if (error) {
-          console.error("Error removing from server cart:", error)
+          if (error) {
+            console.error("Error removing from server cart:", error)
+          }
+        } finally {
+          await loadServerCart(activeUserId)
         }
       })()
     }
   }
 
   const updateQuantity = (id: string, quantity: number, variantId?: string) => {
-    if (quantity <= 0) {
+    const normalizedQuantity = normalizeQuantity(quantity)
+    if (normalizedQuantity === null) {
       removeFromCart(id, variantId)
       return
     }
     setItems((prevItems) => prevItems.map((item) =>
       item.id === id && (item.variantId ?? null) === (variantId ?? null)
-        ? { ...item, quantity }
+        ? { ...item, quantity: normalizedQuantity }
         : item
     ))
 
-    if (user?.id) {
+    const activeUserId = user?.id
+    if (activeUserId) {
       void (async () => {
         const supabase = createClient()
-        const { error } = await supabase.rpc("cart_set_quantity", {
-          p_product_id: id,
-          p_quantity: quantity,
-          ...(variantId ? { p_variant_id: variantId } : {}),
-        })
+        try {
+          const { error } = await supabase.rpc("cart_set_quantity", {
+            p_product_id: id,
+            p_quantity: normalizedQuantity,
+            ...(variantId ? { p_variant_id: variantId } : {}),
+          })
 
-        if (error) {
-          console.error("Error updating server cart quantity:", error)
+          if (error) {
+            console.error("Error updating server cart quantity:", error)
+          }
+        } finally {
+          await loadServerCart(activeUserId)
         }
       })()
     }
@@ -426,12 +450,17 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const clearCart = () => {
     setItems([])
 
-    if (user?.id) {
+    const activeUserId = user?.id
+    if (activeUserId) {
       void (async () => {
         const supabase = createClient()
-        const { error } = await supabase.rpc("cart_clear")
-        if (error) {
-          console.error("Error clearing server cart:", error)
+        try {
+          const { error } = await supabase.rpc("cart_clear")
+          if (error) {
+            console.error("Error clearing server cart:", error)
+          }
+        } finally {
+          await loadServerCart(activeUserId)
         }
       })()
     }

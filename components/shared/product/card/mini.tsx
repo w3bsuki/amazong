@@ -9,7 +9,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
 import { formatPrice } from "@/lib/format-price"
-import { normalizeImageUrl } from "@/lib/normalize-image-url"
+import { normalizeImageUrl, PLACEHOLDER_IMAGE_PATH } from "@/lib/normalize-image-url"
 
 export interface ProductMiniCardProps {
   id: string
@@ -42,6 +42,11 @@ function MiniCardBody({
     if (!image) return null
     return normalizeImageUrl(image)
   }, [image])
+  const [resolvedImageSrc, setResolvedImageSrc] = React.useState<string | null>(imageSrc)
+
+  React.useEffect(() => {
+    setResolvedImageSrc(imageSrc)
+  }, [imageSrc])
 
   return (
     <Card
@@ -51,13 +56,18 @@ function MiniCardBody({
       )}
     >
       <div className="relative aspect-square bg-surface-subtle">
-        {imageSrc ? (
+        {resolvedImageSrc ? (
           <Image
-            src={imageSrc}
+            src={resolvedImageSrc}
             alt={title}
             fill
             sizes="(max-width: 640px) 128px, 160px"
             className="object-cover"
+            onError={() => {
+              if (resolvedImageSrc !== PLACEHOLDER_IMAGE_PATH) {
+                setResolvedImageSrc(PLACEHOLDER_IMAGE_PATH)
+              }
+            }}
           />
         ) : (
           <div className="flex h-full w-full items-center justify-center text-muted-foreground">
@@ -78,7 +88,6 @@ function MiniCardBody({
 }
 
 export function ProductMiniCard({
-  id: _id,
   title,
   price,
   image,

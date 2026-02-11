@@ -10,7 +10,6 @@ import {
   DrawerHeader,
   DrawerTitle,
   DrawerClose,
-  DrawerFooter,
   DrawerBody,
 } from "@/components/ui/drawer"
 import { Button } from "@/components/ui/button"
@@ -106,8 +105,16 @@ export function WishlistDrawer({ className, children }: WishlistDrawerProps) {
             </Button>
           </div>
         ) : (
-          <>
-            <DrawerBody className={cn("px-inset", contentMaxHeight)}>
+          <DrawerBody className={cn("px-inset", contentMaxHeight)}>
+            <div className="pb-2">
+              <Button asChild variant="outline" size="sm" className="w-full" onClick={() => setOpen(false)}>
+                <Link href="/account/wishlist" className="gap-1">
+                  {t("viewAll")}
+                  <ArrowRight size={14} />
+                </Link>
+              </Button>
+            </div>
+            <div className="space-y-0.5">
               {items.map((item, index) => (
                 <div
                   key={item.id}
@@ -170,17 +177,8 @@ export function WishlistDrawer({ className, children }: WishlistDrawerProps) {
                   </div>
                 </div>
               ))}
-            </DrawerBody>
-
-            <DrawerFooter className="border-t border-border gap-1">
-              <Button asChild variant="cta" size="default" className="w-full" onClick={() => setOpen(false)}>
-                <Link href="/account/wishlist" className="gap-1">
-                  {t("viewAll")}
-                  <ArrowRight size={14} />
-                </Link>
-              </Button>
-            </DrawerFooter>
-          </>
+            </div>
+          </DrawerBody>
         )}
       </DrawerContent>
     </Drawer>

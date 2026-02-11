@@ -305,6 +305,9 @@ Current runtime variants are defined in `components/ui/button.tsx`.
 - Exactly five primary items on mobile tab bar
 - Dock uses elevated surface + top border
 - Content area must reserve space with `pb-tabbar-safe`
+- Tabs stay icon-only in the visible UI; provide accessible names via `aria-label`
+- Sell action remains filled primary (`bg-primary text-primary-foreground`) with ring treatment, without drop shadow
+- Profile tab uses avatar treatment: guest fallback avatar + authenticated user avatar, with active/inactive ring states
 
 ---
 

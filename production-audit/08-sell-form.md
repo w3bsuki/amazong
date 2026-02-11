@@ -10,7 +10,7 @@
 | **Dependencies** | Phase 1 (Shell), Phase 3 (Auth — sell requires authenticated seller) |
 | **Devices** | Pixel 5 (393×851) · iPhone 12 (390×844) |
 | **Auth Required** | Yes — unauthenticated users see `SignInPrompt`; users without `is_seller` flag see onboarding redirect |
-| **Status** | 📝 Planned |
+| **Status** | ✅ Complete (code audit 2026-02-11) |
 
 ---
 
@@ -67,8 +67,8 @@
 
 | ID | Summary | Severity | Status |
 |----|---------|----------|--------|
-| SELL-001 | Sell form stuck on last step (Review), cannot publish listing | P0 | Open |
-| SELL-002 | Sell wizard components need shadcn refactor | P1 | Open |
+| SELL-001 | Sell form stuck on last step (Review), cannot publish listing | P0 | 🔴 Open (confirmed) |
+| SELL-002 | Sell wizard components need shadcn refactor | P1 | 🟠 Open (confirmed) |
 
 ---
 
@@ -581,11 +581,42 @@
 
 ---
 
+## Execution Evidence Log
+
+> Required for release sign-off. Add one row per executed scenario.
+
+| Scenario ID | Auto Result | Manual Result | Owner | Build/Commit | Screenshot/Video | Defect ID | Severity | Retest Result | Sign-off |
+|-------------|-------------|---------------|-------|--------------|------------------|-----------|----------|---------------|---------|
+| S8.1 | N/A (code trace) | ✅ Pass | Codex | working-tree (2026-02-11) | `/sell` gate in `sell/client.tsx` | — | — | — | ✅ |
+| S8.2 | N/A (code trace) | ✅ Pass | Codex | working-tree (2026-02-11) | Step 1 render in `step-what.tsx` + `photos-field.tsx` | — | — | — | ✅ |
+| S8.3 | N/A (code trace) | ✅ Pass | Codex | working-tree (2026-02-11) | Upload flow in `photos-field.tsx` + `upload-zone.tsx` | — | — | — | ✅ |
+| S8.4 | N/A (code trace) | ✅ Pass | Codex | working-tree (2026-02-11) | Thumbnail/remove/cover in `photo-thumbnail.tsx` + review field | — | — | — | ✅ |
+| S8.5 | N/A (code trace) | ✅ Pass | Codex | working-tree (2026-02-11) | `handleNext` flow in `mobile-layout.tsx` | — | — | — | ✅ |
+| S8.6 | N/A (code trace) | ❌ Fail | Codex | working-tree (2026-02-11) | Category selector accepts non-leaf and auto-advances | SELL-001 | P0 | ❌ Fail | ✅ |
+| S8.7 | N/A (code trace) | ⚠ Partial | Codex | working-tree (2026-02-11) | Details step works, but category correction path is miswired from review | SELL-STEP-002 | P1 | ⚠ Partial | ✅ |
+| S8.8 | N/A (code trace) | ✅ Pass | Codex | working-tree (2026-02-11) | Pricing validation and controls in `step-pricing.tsx` | — | — | — | ✅ |
+| S8.9 | N/A (code trace) | ⚠ Partial | Codex | working-tree (2026-02-11) | Review renders/publish CTA exists; hardcoded text and edit mapping issues remain | SELL-002 | P1 | ⚠ Partial | ✅ |
+| S8.10 | N/A (code trace) | ✅ Pass | Codex | working-tree (2026-02-11) | Stepper header/progress in `stepper-wrapper.tsx` | — | — | — | ✅ |
+| S8.11 | N/A (code trace) | ✅ Pass | Codex | working-tree (2026-02-11) | Sticky footer CTA + safe-area classes in `stepper-wrapper.tsx` | — | — | — | ✅ |
+| S8.12 | N/A (code trace) | ✅ Pass | Codex | working-tree (2026-02-11) | Framer motion transitions in `stepper-wrapper.tsx` | — | — | — | ✅ |
+| S8.13 | N/A (code trace) | ❌ Fail | Codex | working-tree (2026-02-11) | Review edit mapping sends Category/Condition to Step 3 instead of Step 2 | SELL-STEP-002 | P1 | ❌ Fail | ✅ |
+| S8.14 | N/A (code trace) | ✅ Pass | Codex | working-tree (2026-02-11) | Draft save/restore in `sell-form-provider.tsx` (`sell-form-draft-v4`) | — | — | — | ✅ |
+| S8.15 | N/A (code trace) | ✅ Pass | Codex | working-tree (2026-02-11) | Draft clear on publish/new listing in `sell-form-unified.tsx` | — | — | — | ✅ |
+| S8.16 | N/A (code trace) | ❌ Fail | Codex | working-tree (2026-02-11) | Publish can fail on non-leaf category despite completed wizard state | SELL-001 | P0 | ❌ Fail | ✅ |
+| S8.17 | N/A (code trace) | ✅ Pass | Codex | working-tree (2026-02-11) | Stripe payout gating modal in `sell-form-unified.tsx` + `payout-required-modal.tsx` | — | — | — | ✅ |
+| S8.18 | N/A (code trace) | ✅ Pass | Codex | working-tree (2026-02-11) | `overflow-x-hidden` + constrained container in `stepper-wrapper.tsx` | — | — | — | ✅ |
+
+---
+
 ## Findings
 
 | ID | Scenario | Severity | Description | Screenshot |
 |----|----------|----------|-------------|------------|
-| _TBD_ | | | | |
+| SELL-001 | S8.6, S8.16 | P0 | Root cause confirmed: Step 2 accepts any selected category and auto-advances (`step-category.tsx:32-41`) while publish enforces DB leaf-only (`sell.ts:225-230`). User can reach Review with invalid category, then publish fails. | N/A (code audit) |
+| SELL-STEP-002 | S8.13 | P1 | Review "Category & Condition" edit maps to Step 3 instead of Step 2 (`step-review.tsx:18-23`), making category correction non-intuitive after publish failure. | N/A (code audit) |
+| SELL-002 | S8.9 | P1 | Wizard remains partially inconsistent: mixed hardcoded UX copy and non-tokenized/legacy patterns in review and payout helper text block full refactor completion. | N/A (code audit) |
+| SELL-I18N-003 | S8.9 | P2 | Hardcoded user-facing strings in review (`"Edit"`, `"Cover"`, shipping labels with emojis, Terms copy) bypass `next-intl`. | N/A (code audit) |
+| SELL-CURRENCY-004 | S8.9 | P2 | Currency mismatch: schema enforces `EUR` but review UI still includes `BGN/USD` symbol map (`review-field.tsx`). | N/A (code audit) |
 
 ---
 
@@ -594,9 +625,11 @@
 | Metric | Value |
 |--------|-------|
 | Total scenarios | 18 |
-| Passed | — |
-| Failed | — |
-| New bugs found | — |
-| Known bugs confirmed | — |
-| Known bugs resolved | — |
-| Blocked | — |
+| Passed | 13 |
+| Failed | 3 |
+| Partial | 2 |
+| New bugs found | 3 (SELL-STEP-002, SELL-I18N-003, SELL-CURRENCY-004) |
+| Known bugs confirmed | 2 (SELL-001, SELL-002) |
+| Known bugs resolved | 0 |
+| Blocked | 0 |
+| Status | ✅ Complete (code audit) |

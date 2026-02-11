@@ -1,132 +1,126 @@
 # Deployment Guide
 
-Deploying Treido to production.
+Production deployment and release operations for Treido.
+
+| Scope | Deploy, rollback, launch checks |
+|-------|----------------------------------|
+| Audience | AI agents, developers, ops |
+| Last updated | 2026-02-11 |
+
+---
 
 ## Environments
 
-| Environment | URL | Branch |
-|-------------|-----|--------|
-| Development | localhost:3000 | - |
-| Preview | *.vercel.app | PR branches |
-| Production | treido.eu | main |
+| Environment | URL | Stripe Mode | Supabase | Branch |
+|-------------|-----|-------------|----------|--------|
+| Development | `http://localhost:3000` | Test (`sk_test_*`) | Local or staging | local |
+| Preview | `*.vercel.app` | Test | Staging | PR / release branch |
+| Production | `https://treido.eu` | Live (`sk_live_*`) | Production | `main` |
 
-## Vercel Deployment
+**Critical:** never use live Stripe keys in local development.
 
-### Initial Setup
+---
 
-1. Connect GitHub repo to Vercel
-2. Configure environment variables
-3. Set Node.js version to 20.x
-4. Enable automatic deployments
+## Node + Package Manager
 
-### Environment Variables
+| Context | Version |
+|---------|---------|
+| Local dev/install baseline | Node 20.x + `pnpm@9.x` |
+| Vercel runtime | Node 22.x |
 
-Required in Vercel dashboard:
+---
 
-```
+## Required Environment Variables
+
+Set these in Vercel for Preview and Production:
+
+```bash
 NEXT_PUBLIC_SUPABASE_URL=
 NEXT_PUBLIC_SUPABASE_ANON_KEY=
 SUPABASE_SERVICE_ROLE_KEY=
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=
 STRIPE_SECRET_KEY=
 STRIPE_WEBHOOK_SECRET=
-NEXT_PUBLIC_SITE_URL=
+STRIPE_SUBSCRIPTION_WEBHOOK_SECRET=
+STRIPE_CONNECT_WEBHOOK_SECRET=
+NEXT_PUBLIC_APP_URL=
 ```
 
-### Manual Deploy
+Optional feature flags / integrations:
 
 ```bash
-# Install Vercel CLI
-npm i -g vercel
+AI_ASSISTANT_ENABLED=false
+AI_GATEWAY_API_KEY=
+AI_CHAT_MODEL=openai/gpt-4o-mini
+AI_VISION_MODEL=google/gemini-2.0-flash
+SUPABASE_ACCESS_TOKEN=
+```
 
-# Deploy preview
+---
+
+## Deploy Commands
+
+```bash
+# Preview deploy
 vercel
 
-# Deploy production
+# Production deploy
 vercel --prod
 ```
 
-## Build Process
+---
+
+## Pre-Deploy Validation
+
+Run before promoting to production:
 
 ```bash
-# Local build test
+pnpm -s typecheck
+pnpm -s lint
+pnpm -s styles:gate
+pnpm -s test:unit
+REUSE_EXISTING_SERVER=true pnpm -s test:e2e:smoke
 pnpm build
-
-# Check bundle size
-pnpm analyze  # if configured
 ```
 
-### Build Checks
+Launch-go criteria are tracked in:
+- `docs/PRODUCTION.md`
+- `production-audit/master.md`
+- `TASKS.md` (`LAUNCH-001..007`)
 
-The build will fail if:
+---
 
-- TypeScript errors exist
-- ESLint errors exist
-- Tests fail (if configured in CI)
+## Soft Launch Protocol (2026-02-12)
 
-## CI/CD Pipeline
+1. Validate full checklist on preview first.
+2. Deploy production.
+3. Run 30-60 minute production smoke:
+   - signup/login/session reflect
+   - browse/search/PDP
+   - cart/checkout real transaction
+   - sell publish flow
+   - chat send/receive
+4. Monitor Sentry + Stripe + webhook health and rollback immediately on P0.
 
-### GitHub Actions
-
-```yaml
-# .github/workflows/ci.yml
-name: CI
-
-on: [push, pull_request]
-
-jobs:
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v2
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: 'pnpm'
-      
-      - run: pnpm install
-      - run: pnpm typecheck
-      - run: pnpm test:unit
-      - run: pnpm build
-```
-
-## Database Migrations
-
-### Supabase Migrations
-
-```bash
-# Create migration
-supabase migration new add_column
-
-# Apply locally
-supabase db reset
-
-# Push to production
-supabase db push
-```
+---
 
 ## Rollback
 
-### Vercel Rollback
-
-1. Go to Vercel dashboard
-2. Deployments tab
-3. Find previous successful deployment
-4. Click "..." → "Promote to Production"
-
-### Database Rollback
-
 ```bash
-# List migrations
-supabase migration list
+# list deployments
+vercel ls
 
-# Rollback last migration
-supabase migration repair --status reverted <version>
+# rollback
+vercel rollback <deployment-url>
 ```
 
-## Monitoring
+For database rollback, identify the specific migration and use a tested reverse migration plan first.
 
-- **Vercel Analytics** — Core Web Vitals
-- **Vercel Logs** — Function logs
-- **Supabase Dashboard** — Database metrics
-- **Stripe Dashboard** — Payment metrics
+---
+
+## See Also
+
+- `docs/PRODUCTION.md`
+- `docs/TESTING.md`
+- `docs/PAYMENTS.md`
+- `docs/DATABASE.md`

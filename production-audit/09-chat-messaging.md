@@ -15,7 +15,7 @@
 | **Dependencies** | Phase 1 (Shell), Phase 3 (Auth — chat requires authentication) |
 | **Devices** | Pixel 5 (393×851) · iPhone 12 (390×844) |
 | **Auth Required** | Yes — both routes auth-gated |
-| **Status** | 📝 Planned |
+| **Status** | ✅ Complete (code audit 2026-02-11) |
 
 ---
 
@@ -489,11 +489,36 @@ _None identified at time of writing._
 
 ---
 
+## Execution Evidence Log
+
+> Required for release sign-off. Add one row per executed scenario.
+
+| Scenario ID | Auto Result | Manual Result | Owner | Build/Commit | Screenshot/Video | Defect ID | Severity | Retest Result | Sign-off |
+|-------------|-------------|---------------|-------|--------------|------------------|-----------|----------|---------------|---------|
+| S9.1 | N/A (code trace) | ✅ Pass | Codex | working-tree (2026-02-11) | Full-height shell in `chat/layout.tsx` and chat clients | — | — | — | ✅ |
+| S9.2 | N/A (code trace) | ✅ Pass | Codex | working-tree (2026-02-11) | Conversation list rendering logic in `conversation-list.tsx` | — | — | — | ✅ |
+| S9.3 | N/A (code trace) | ✅ Pass | Codex | working-tree (2026-02-11) | Unread indicators in list/drawer | — | — | — | ✅ |
+| S9.4 | N/A (code trace) | ✅ Pass | Codex | working-tree (2026-02-11) | Bottom tabs/filter control in `messages-page-client.tsx` | — | — | — | ✅ |
+| S9.5 | N/A (code trace) | ⚠ Partial | Codex | working-tree (2026-02-11) | Thread navigation works, but in-thread seller/product links use non-canonical routes | CHAT-001 | P1 | ⚠ Partial | ✅ |
+| S9.6 | N/A (code trace) | ✅ Pass | Codex | working-tree (2026-02-11) | Message bubble styling and thread segmentation in `chat-interface.tsx` | — | — | — | ✅ |
+| S9.7 | N/A (code trace) | ⚠ Partial | Codex | working-tree (2026-02-11) | Image upload endpoint is wired, but send path calls `sendMessage(\"\", data.url)` while send hook requires non-empty content | CHAT-003 | P1 | ⚠ Partial | ✅ |
+| S9.8 | N/A (code trace) | ✅ Pass | Codex | working-tree (2026-02-11) | Send-message path and optimistic thread update wiring | — | — | — | ✅ |
+| S9.9 | N/A (code trace) | ✅ Pass | Codex | working-tree (2026-02-11) | Back navigation logic in `messages-page-client.tsx` | — | — | — | ✅ |
+| S9.10 | N/A (code trace) | ✅ Pass | Codex | working-tree (2026-02-11) | Header messages drawer integration and conversation links | — | — | — | ✅ |
+| S9.11 | N/A (code trace) | ❌ Fail | Codex | working-tree (2026-02-11) | Report flow inserts notification for reporter (`user_id=userData.user.id`) instead of admin recipient | CHAT-002 | P1 | ❌ Fail | ✅ |
+| S9.12 | N/A (code trace) | ✅ Pass | Codex | working-tree (2026-02-11) | Empty-state flows in drawer and messages list | — | — | — | ✅ |
+| S9.13 | N/A (code trace) | ✅ Pass | Codex | working-tree (2026-02-11) | Safe-area classes and mobile container behavior | — | — | — | ✅ |
+
+---
+
 ## Findings
 
 | ID | Scenario | Severity | Description | Evidence |
 |----|----------|----------|-------------|----------|
-| — | — | — | — | — |
+| CHAT-001 | S9.5 | P1 | In-thread links point to non-canonical paths (`/seller/:id`, `/product/:id`) that diverge from route conventions and can break deep-link expectations. | `app/[locale]/(chat)/_components/chat-interface.tsx:356`, `app/[locale]/(chat)/_components/chat-interface.tsx:372`, `app/[locale]/(chat)/_components/chat-interface.tsx:566` |
+| CHAT-002 | S9.11 | P1 | Report conversation action is marked as admin report but currently stores notification for reporter account (`user_id: userData.user.id`) with placeholder comment. | `app/[locale]/(chat)/_actions/report-conversation.ts:59-64` |
+| CHAT-003 | S9.7 | P1 | Image-send flow is internally inconsistent: upload handler calls `sendMessage(\"\", imageUrl)` while send action returns early when `content.trim()` is empty, causing silent image-send failure. | `app/[locale]/(chat)/_components/chat-interface.tsx:183`, `components/providers/messages/use-messages-actions.ts:79` |
+| CHAT-I18N-003 | Cross-cutting | P2 | Extensive `locale === "bg" ? ... : ...` inline strings in `chat-interface.tsx` bypass `next-intl` keys and increase localization drift risk. | `app/[locale]/(chat)/_components/chat-interface.tsx` (multiple blocks, e.g. 210-260, 319-320, 588-610, 761) |
 
 ---
 
@@ -502,10 +527,13 @@ _None identified at time of writing._
 | Metric | Value |
 |--------|-------|
 | Scenarios | 13 |
-| Pass | — |
-| Fail | — |
-| Blocked | — |
-| Not Run | 13 |
+| Pass | 10 |
+| Fail | 1 |
+| Partial | 2 |
+| Blocked | 0 |
+| Not Run | 0 |
+| Findings | 4 (P1:3, P2:1) |
+| Status | ✅ Complete (code audit) |
 
 ---
 

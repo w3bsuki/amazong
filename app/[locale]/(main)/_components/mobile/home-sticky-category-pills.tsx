@@ -121,6 +121,11 @@ export function HomeStickyCategoryPills({
   const tMobile = useTranslations("Home.mobile")
   const pathname = usePathname()
   const drawer = useCategoryDrawerOptional()
+  const [mounted, setMounted] = React.useState(false)
+
+  React.useEffect(() => {
+    setMounted(true)
+  }, [])
 
   if (categories.length === 0) return null
 
@@ -133,7 +138,7 @@ export function HomeStickyCategoryPills({
     ? pathWithoutLocale.replace(`${categoriesPathPrefix}/`, "").split("/")[0] ?? null
     : null
 
-  const hasCounts = Object.keys(categoryCounts).length > 0
+  const hasCounts = mounted && Object.keys(categoryCounts).length > 0
   const totalListingsCount = categories.reduce((sum, category) => {
     return sum + Math.max(0, categoryCounts[category.slug] ?? 0)
   }, 0)

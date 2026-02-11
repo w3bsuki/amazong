@@ -8,7 +8,6 @@ import { Button } from "@/components/ui/button"
 import { IconButton } from "@/components/ui/icon-button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
-import { Badge } from "@/components/ui/badge"
 import {
   CheckCircle,
   ShoppingCart,
@@ -28,9 +27,42 @@ import { useRecentlyViewed } from "@/hooks/use-recently-viewed"
 import { ProductMiniCard } from "@/components/shared/product/card/mini"
 import { PageShell } from "../../../_components/page-shell"
 import { useHeaderOptional } from "@/components/providers/header-context"
+import { normalizeImageUrl, PLACEHOLDER_IMAGE_PATH } from "@/lib/normalize-image-url"
 
 /** Timeout to show cart content even if auth hasn't finished (ms) */
 const CART_READY_TIMEOUT = 3000
+
+function CartPageItemImage({
+  src,
+  alt,
+  priority,
+}: {
+  src?: string | null
+  alt: string
+  priority: boolean
+}) {
+  const [resolvedSrc, setResolvedSrc] = useState(() => normalizeImageUrl(src))
+
+  useEffect(() => {
+    setResolvedSrc(normalizeImageUrl(src))
+  }, [src])
+
+  return (
+    <Image
+      src={resolvedSrc}
+      alt={alt}
+      fill
+      className="object-contain p-1.5"
+      sizes="80px"
+      priority={priority}
+      onError={() => {
+        if (resolvedSrc !== PLACEHOLDER_IMAGE_PATH) {
+          setResolvedSrc(PLACEHOLDER_IMAGE_PATH)
+        }
+      }}
+    />
+  )
+}
 
 export default function CartPageClient() {
   const { items, isReady, removeFromCart, updateQuantity, subtotal, totalItems } = useCart()
@@ -191,14 +223,7 @@ export default function CartPageClient() {
                     className="relative shrink-0 size-20 bg-background rounded-md overflow-hidden border border-border-subtle"
                   >
                     {item.image ? (
-                      <Image
-                        src={item.image}
-                        alt={item.title}
-                        fill
-                        className="object-contain p-1.5"
-                        sizes="80px"
-                        priority={index === 0}
-                      />
+                      <CartPageItemImage src={item.image} alt={item.title} priority={index === 0} />
                     ) : (
                       <div className="size-full flex items-center justify-center text-muted-foreground">
                         <Package size={28} weight="duotone" />

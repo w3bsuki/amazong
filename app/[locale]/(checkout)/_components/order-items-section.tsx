@@ -1,12 +1,45 @@
 "use client";
 
 import Image from "next/image";
+import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import type { CartItem } from "@/components/providers/cart-context";
+import { normalizeImageUrl, PLACEHOLDER_IMAGE_PATH } from "@/lib/normalize-image-url";
 
 interface OrderItemsSectionProps {
   items: CartItem[];
   formatPrice: (price: number) => string;
+}
+
+function OrderItemThumb({
+  src,
+  alt,
+  size,
+}: {
+  src?: string | null;
+  alt: string;
+  size: number;
+}) {
+  const [resolvedSrc, setResolvedSrc] = useState(() => normalizeImageUrl(src));
+
+  useEffect(() => {
+    setResolvedSrc(normalizeImageUrl(src));
+  }, [src]);
+
+  return (
+    <Image
+      src={resolvedSrc}
+      alt={alt}
+      width={size}
+      height={size}
+      className="size-full object-contain"
+      onError={() => {
+        if (resolvedSrc !== PLACEHOLDER_IMAGE_PATH) {
+          setResolvedSrc(PLACEHOLDER_IMAGE_PATH);
+        }
+      }}
+    />
+  );
 }
 
 export function OrderItemsSection({ items, formatPrice }: OrderItemsSectionProps) {
@@ -21,13 +54,7 @@ export function OrderItemsSection({ items, formatPrice }: OrderItemsSectionProps
             className="size-9 rounded border-2 border-card bg-muted overflow-hidden shrink-0"
             style={{ zIndex: 4 - i }}
           >
-            <Image
-              src={item.image || "/placeholder.svg"}
-              alt={item.title}
-              width={36}
-              height={36}
-              className="size-full object-contain"
-            />
+            <OrderItemThumb src={item.image} alt={item.title} size={36} />
           </div>
         ))}
         {items.length > 4 && (
@@ -60,7 +87,7 @@ export function OrderItemsSectionDesktop({ items, formatPrice }: OrderItemsSecti
       {items.map((item) => (
         <div key={item.id} className="flex gap-3">
           <div className="size-14 rounded border border-border bg-muted overflow-hidden shrink-0">
-            <Image src={item.image || "/placeholder.svg"} alt={item.title} width={56} height={56} className="size-full object-contain" />
+            <OrderItemThumb src={item.image} alt={item.title} size={56} />
           </div>
           <div className="flex-1 min-w-0">
             <p className="text-sm line-clamp-1 font-medium">{item.title}</p>

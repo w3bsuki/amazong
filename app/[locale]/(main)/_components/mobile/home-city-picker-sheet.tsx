@@ -5,7 +5,15 @@ import { MapPin } from "@phosphor-icons/react"
 import { useTranslations } from "next-intl"
 import { BULGARIAN_CITIES } from "@/lib/bulgarian-cities"
 import { cn } from "@/lib/utils"
-import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "@/components/ui/drawer"
+import {
+  Drawer,
+  DrawerBody,
+  DrawerContent,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+} from "@/components/ui/drawer"
+import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 
 interface HomeCityPickerSheetProps {
@@ -64,7 +72,7 @@ export function HomeCityPickerSheet({
           </DrawerTitle>
         </DrawerHeader>
 
-        <div className="flex min-h-0 flex-1 flex-col px-inset py-3 pb-safe-max">
+        <DrawerBody className="px-inset py-3 pb-2">
           <Input
             type="search"
             value={query}
@@ -73,7 +81,7 @@ export function HomeCityPickerSheet({
             className="h-11"
           />
 
-          <div className="mt-3 min-h-0 flex-1 overflow-y-auto">
+          <div className="mt-3 min-h-0 flex-1 overflow-y-auto overscroll-contain">
             <div className="space-y-1">
               {cityOptions.length === 0 && (
                 <p className="px-2 py-3 text-sm text-muted-foreground">
@@ -104,17 +112,19 @@ export function HomeCityPickerSheet({
               })}
             </div>
           </div>
+        </DrawerBody>
 
-          <button
+        <DrawerFooter className="border-t border-border-subtle px-inset py-2.5">
+          <Button
             type="button"
             data-testid="home-city-apply"
             disabled={!pendingCity}
             onClick={handleApply}
-            className="mt-3 inline-flex min-h-(--spacing-touch-md) items-center justify-center rounded-full border border-selected-border bg-selected px-4 text-sm font-semibold text-selected-foreground transition-colors hover:brightness-95 disabled:cursor-not-allowed disabled:opacity-50"
+            className="w-full"
           >
             {tMobile("feed.chooseCityApply")}
-          </button>
-        </div>
+          </Button>
+        </DrawerFooter>
       </DrawerContent>
     </Drawer>
   )

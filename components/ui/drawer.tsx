@@ -283,8 +283,8 @@ function DrawerFooter({ className, ...props }: React.ComponentProps<"div">) {
     <div
       data-slot="drawer-footer"
       className={cn(
-        "mt-auto shrink-0 border-t border-border bg-surface-elevated px-4 py-3",
-        "flex flex-col gap-2",
+        "mt-auto shrink-0 border-t border-border bg-surface-elevated px-4 py-2.5",
+        "flex flex-col gap-1.5",
         // Safe area padding for bottom drawers on iOS
         "group-data-[vaul-drawer-direction=bottom]/drawer-content:pb-safe-max",
         className

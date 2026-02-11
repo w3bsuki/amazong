@@ -19,7 +19,6 @@ import {
   DrawerHeader,
   DrawerTitle,
   DrawerClose,
-  DrawerFooter,
   DrawerBody,
 } from "@/components/ui/drawer"
 import { Button } from "@/components/ui/button"
@@ -398,16 +397,16 @@ export function AccountDrawer({ open, onOpenChange }: AccountDrawerProps) {
                 </div>
               </div>
             )}
+
+            <div className="mt-3">
+              <Button variant="outline" size="default" className="w-full" asChild>
+                <Link href="/account" onClick={handleClose}>
+                  {t("viewFullProfile")}
+                </Link>
+              </Button>
+            </div>
           </DrawerBody>
         )}
-
-        <DrawerFooter className="border-t border-border-subtle px-inset py-3 pb-safe-max">
-          <Link href="/account" onClick={handleClose} className="w-full">
-            <Button variant="outline" size="default" className="w-full">
-              {t("viewFullProfile")}
-            </Button>
-          </Link>
-        </DrawerFooter>
       </DrawerContent>
     </Drawer>
   )

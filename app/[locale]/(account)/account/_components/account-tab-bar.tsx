@@ -1,95 +1,223 @@
 "use client"
 
+import { useState, type ComponentType } from "react"
 import { 
   IconUser, 
   IconPackage, 
   IconBuildingStore, 
   IconCrown, 
-  IconHome,
+  IconDots,
+  IconLock,
+  IconMapPin,
+  IconCreditCard,
+  IconReceipt,
+  IconBell,
+  IconHeart,
+  IconChartLine,
+  IconMessage,
 } from "@tabler/icons-react"
 import { Link, usePathname } from "@/i18n/routing"
 import { cn } from "@/lib/utils"
 import { useLocale } from "next-intl"
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet"
+
+type AccountNavItem = {
+  label: string
+  href: string
+  icon: ComponentType<{ className?: string; stroke?: string | number }>
+  exact?: boolean
+}
 
 export function AccountTabBar() {
+  const [moreOpen, setMoreOpen] = useState(false)
   const pathname = usePathname()
   const locale = useLocale()
+  const isBg = locale === "bg"
 
   const isActive = (path: string, exact?: boolean) => {
     if (exact) return pathname === path
     return pathname === path || pathname.startsWith(path + '/')
   }
 
-  const tabs = [
+  const tabs: AccountNavItem[] = [
     {
-      label: locale === 'bg' ? 'Акаунт' : 'Account',
-      href: "/account" as const,
+      label: isBg ? 'Акаунт' : 'Account',
+      href: "/account",
       icon: IconUser,
       exact: true,
     },
     {
-      label: locale === 'bg' ? 'Поръчки' : 'Orders',
-      href: "/account/orders" as const,
+      label: isBg ? 'Поръчки' : 'Orders',
+      href: "/account/orders",
       icon: IconPackage,
     },
     {
-      label: locale === 'bg' ? 'Продавам' : 'Selling',
-      href: "/account/selling" as const,
+      label: isBg ? 'Продавам' : 'Selling',
+      href: "/account/selling",
       icon: IconBuildingStore,
     },
     {
-      label: locale === 'bg' ? 'Планове' : 'Plans',
-      href: "/account/plans" as const,
+      label: isBg ? 'Планове' : 'Plans',
+      href: "/account/plans",
       icon: IconCrown,
-    },
-    {
-      label: locale === 'bg' ? 'Магазин' : 'Store',
-      href: "/" as const,
-      icon: IconHome,
     },
   ]
 
+  const moreLinks: AccountNavItem[] = [
+    {
+      label: isBg ? 'Профил' : 'Profile',
+      href: "/account/profile",
+      icon: IconUser,
+    },
+    {
+      label: isBg ? 'Сигурност' : 'Security',
+      href: "/account/security",
+      icon: IconLock,
+    },
+    {
+      label: isBg ? 'Адреси' : 'Addresses',
+      href: "/account/addresses",
+      icon: IconMapPin,
+    },
+    {
+      label: isBg ? 'Плащания' : 'Payments',
+      href: "/account/payments",
+      icon: IconCreditCard,
+    },
+    {
+      label: isBg ? 'Фактуриране' : 'Billing',
+      href: "/account/billing",
+      icon: IconReceipt,
+    },
+    {
+      label: isBg ? 'Известия' : 'Notifications',
+      href: "/account/notifications",
+      icon: IconBell,
+    },
+    {
+      label: isBg ? 'Любими' : 'Wishlist',
+      href: "/account/wishlist",
+      icon: IconHeart,
+    },
+    {
+      label: isBg ? 'Следвани' : 'Following',
+      href: "/account/following",
+      icon: IconBuildingStore,
+    },
+    {
+      label: isBg ? 'Продажби' : 'Sales',
+      href: "/account/sales",
+      icon: IconChartLine,
+    },
+    {
+      label: isBg ? 'Съобщения' : 'Messages',
+      href: "/chat",
+      icon: IconMessage,
+    },
+    {
+      label: isBg ? 'Към магазина' : 'Back to Store',
+      href: "/",
+      icon: IconBuildingStore,
+      exact: true,
+    },
+  ]
+
+  const isMoreActive = moreLinks.some((item) => isActive(item.href, item.exact))
+
   return (
-    <nav 
-      className="fixed bottom-0 left-0 right-0 z-50 bg-card border-t border-border-subtle lg:hidden pb-safe"
-      role="navigation"
-      aria-label="Account navigation"
-    >
-      <div className="flex items-center justify-around h-14 px-1">
-        {tabs.map((tab) => {
-          const active = isActive(tab.href, tab.exact)
-          const isStore = tab.href === "/"
-          
-          return (
-            <Link
-              key={tab.href}
-              href={tab.href}
-              prefetch={true}
-              className={cn(
-                "flex flex-col items-center justify-center flex-1 h-full min-w-11 min-h-11 gap-0.5 transition-colors",
-                "touch-manipulation tap-transparent",
-                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-md",
-                active && !isStore 
-                  ? "text-primary" 
-                  : "text-muted-foreground",
-              )}
-              aria-label={tab.label}
-              aria-current={active ? "page" : undefined}
-            >
-              <tab.icon 
-                className="size-5"
-                stroke={active && !isStore ? 2 : 1.5}
-              />
-              <span className={cn(
-                "text-2xs leading-tight",
-                active && !isStore ? "font-semibold" : "font-medium"
-              )}>
-                {tab.label}
-              </span>
-            </Link>
-          )
-        })}
-      </div>
-    </nav>
+    <>
+      <nav 
+        className="fixed bottom-0 left-0 right-0 z-50 bg-card border-t border-border-subtle lg:hidden pb-safe"
+        role="navigation"
+        aria-label={isBg ? "Навигация в акаунта" : "Account navigation"}
+      >
+        <div className="flex items-center justify-around h-14 px-1">
+          {tabs.map((tab) => {
+            const active = isActive(tab.href, tab.exact)
+
+            return (
+              <Link
+                key={tab.href}
+                href={tab.href}
+                prefetch={true}
+                className={cn(
+                  "flex flex-col items-center justify-center flex-1 h-full min-w-11 min-h-11 gap-0.5 transition-colors",
+                  "touch-manipulation tap-transparent",
+                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-md",
+                  active ? "text-primary" : "text-muted-foreground",
+                )}
+                aria-label={tab.label}
+                aria-current={active ? "page" : undefined}
+              >
+                <tab.icon 
+                  className="size-5"
+                  stroke={active ? 2 : 1.5}
+                />
+                <span className={cn(
+                  "text-2xs leading-tight",
+                  active ? "font-semibold" : "font-medium"
+                )}>
+                  {tab.label}
+                </span>
+              </Link>
+            )
+          })}
+
+          <button
+            type="button"
+            onClick={() => setMoreOpen(true)}
+            className={cn(
+              "flex flex-col items-center justify-center flex-1 h-full min-w-11 min-h-11 gap-0.5 transition-colors",
+              "touch-manipulation tap-transparent",
+              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-md",
+              isMoreActive ? "text-primary" : "text-muted-foreground",
+            )}
+            aria-label={isBg ? "Още опции" : "More options"}
+            aria-haspopup="dialog"
+            aria-expanded={moreOpen}
+          >
+            <IconDots className="size-5" stroke={isMoreActive ? 2 : 1.5} />
+            <span className={cn("text-2xs leading-tight", isMoreActive ? "font-semibold" : "font-medium")}>
+              {isBg ? "Още" : "More"}
+            </span>
+          </button>
+        </div>
+      </nav>
+
+      <Sheet open={moreOpen} onOpenChange={setMoreOpen}>
+        <SheetContent side="bottom" className="max-h-dialog overflow-hidden p-0">
+          <SheetHeader className="border-b border-border-subtle">
+            <SheetTitle>{isBg ? "Още в акаунта" : "More in Account"}</SheetTitle>
+            <SheetDescription>
+              {isBg ? "Бързи преки пътища до всички секции." : "Quick shortcuts to all account sections."}
+            </SheetDescription>
+          </SheetHeader>
+          <div className="grid grid-cols-2 gap-2 p-4 pb-safe overflow-y-auto">
+            {moreLinks.map((item) => {
+              const active = isActive(item.href, item.exact)
+
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  prefetch={true}
+                  onClick={() => setMoreOpen(false)}
+                  className={cn(
+                    "flex items-center gap-2 rounded-lg border px-3 py-2 min-h-11 text-sm font-medium transition-colors",
+                    active
+                      ? "border-selected-border bg-selected text-primary"
+                      : "border-border-subtle bg-background text-foreground hover:bg-hover active:bg-active"
+                  )}
+                  aria-current={active ? "page" : undefined}
+                >
+                  <item.icon className="size-4 shrink-0" stroke={active ? 2 : 1.75} />
+                  <span className="truncate">{item.label}</span>
+                </Link>
+              )
+            })}
+          </div>
+        </SheetContent>
+      </Sheet>
+    </>
   )
 }

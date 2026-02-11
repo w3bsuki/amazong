@@ -1,5 +1,5 @@
 import React from "react"
-import { cleanup, render, screen } from "@testing-library/react"
+import { cleanup, fireEvent, render, screen } from "@testing-library/react"
 import { afterEach, describe, expect, test, vi } from "vitest"
 
 import { ProductMiniCard } from "@/components/shared/product/card/mini"
@@ -52,5 +52,22 @@ describe("ProductMiniCard", () => {
 
     expect(container.querySelector("a")).toBeNull()
     expect(screen.getByText("No Link")).toBeInTheDocument()
+  })
+
+  test("falls back to placeholder image after load error", () => {
+    render(
+      <ProductMiniCard
+        id="mini-3"
+        title="Broken Image"
+        price={100}
+        image="https://example.com/broken-image.jpg"
+        locale="en"
+      />
+    )
+
+    const image = screen.getByAltText("Broken Image")
+    fireEvent.error(image)
+
+    expect(image).toHaveAttribute("src", expect.stringContaining("/placeholder.jpg"))
   })
 })

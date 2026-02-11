@@ -11,7 +11,7 @@
 
 ## Quick Reference
 
-- **Total Pages:** 77 routes across 10 route groups
+- **Total Pages:** 85 routes across 10 route groups
 - **API Routes:** 40 endpoints
 - **Server Actions:** 13 action files
 - **Pattern:** Next.js 16 App Router with `[locale]` prefix
@@ -431,5 +431,5 @@ Located in `app/actions/`:
 
 ---
 
-*Last updated: 2026-02-01*
+*Last updated: 2026-02-11*
 

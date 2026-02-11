@@ -1,4 +1,4 @@
-# Tasks — Structure & Rails Hardening (2026-01-30)
+# Tasks — Structure & Rails Hardening (2026-02-11)
 
 > **Active work only.** Max **20 total** tasks listed below, keep **≤15 “Ready”** at any time.
 
@@ -28,6 +28,12 @@ pnpm -s dupes
 
 ## 🚀 Production Finalization Queue (2026-02-10)
 
+- [x] TASK-0 LAUNCH COMMAND CENTER: Normalize production docs + audit evidence contract
+  - Priority: Critical
+  - Owner: treido-orchestrator
+  - Scope: Align launch SSOT and remove production-doc contradictions before phase execution
+  - Verify: `pnpm -s typecheck` · `pnpm -s lint` · `pnpm -s styles:gate` · `pnpm -s docs:check`
+  - Files: `docs/PRODUCTION.md` · `docs/TESTING.md` · `docs/PRODUCTION-TEST-PLAN.md` · `docs/ROUTES.md` · `docs/guides/deployment.md` · `production-audit/master.md` · `production-audit/01..18`
 - [x] TASK-1 AUTH: Sign in + sign up logic, UI/UX, styling, mobile polish
   - Priority: Critical
   - Owner: treido-impl-frontend
@@ -315,4 +321,4 @@ Notes (2026-01-30):
    - Phase 2 planning: designated single writer consolidates into `TASKS.md`.
 9. Full refactor mode: follow DEC-2026-01-29-05 (parallel Phase 1 audits → single-writer planning → round-based execute with gates).
 
-*Last updated: 2026-01-30*
+*Last updated: 2026-02-11*

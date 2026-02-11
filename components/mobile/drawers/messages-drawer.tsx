@@ -225,7 +225,7 @@ export function MessagesDrawer({ open, onOpenChange }: MessagesDrawerProps) {
           </DrawerBody>
         )}
 
-        <DrawerFooter className="border-t border-border">
+        <DrawerFooter className="border-t border-border-subtle py-2.5">
           <Link href="/chat" onClick={handleClose} className="w-full">
             <Button variant="outline" size="default" className="w-full">
               {t("viewAllMessages")}

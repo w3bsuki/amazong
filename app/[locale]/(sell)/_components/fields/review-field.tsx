@@ -115,9 +115,10 @@ export function ReviewField({ onEditStep }: ReviewFieldProps) {
   const hasTitle = Boolean(title && title.length >= 5);
   const hasCategory = Boolean(categoryId);
   const hasCondition = Boolean(condition);
+  const hasDescription = Boolean(description && description.trim().length >= 50);
   const hasPrice = Boolean(price && Number.parseFloat(price) > 0);
 
-  const isValid = hasPhotos && hasTitle && hasCategory && hasCondition && hasPrice;
+  const isValid = hasPhotos && hasTitle && hasCategory && hasCondition && hasDescription && hasPrice;
 
   // Handle edit navigation - use provided callback or context
   const handleEdit = (step: number) => {
@@ -161,6 +162,7 @@ export function ReviewField({ onEditStep }: ReviewFieldProps) {
                 {!hasTitle && <li>• {isBg ? "Добавете заглавие" : "Add a title"}</li>}
                 {!hasCategory && <li>• {isBg ? "Изберете категория" : "Select a category"}</li>}
                 {!hasCondition && <li>• {isBg ? "Изберете състояние" : "Select condition"}</li>}
+                {!hasDescription && <li>• {isBg ? "Добавете описание (мин. 50 символа)" : "Add a description (min 50 characters)"}</li>}
                 {!hasPrice && <li>• {isBg ? "Въведете цена" : "Enter a price"}</li>}
               </ul>
             </div>

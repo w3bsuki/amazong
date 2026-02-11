@@ -11,8 +11,10 @@ import Image from "next/image"
 import { useState, useEffect, useCallback } from "react"
 import { CountBadge } from "@/components/shared/count-badge"
 
+const CART_BADGE_MAX = Number.MAX_SAFE_INTEGER
+
 export function CartDropdown() {
-  const { items, totalItems, isReady, subtotal, removeFromCart, updateQuantity } = useCart()
+  const { items, totalItems, subtotal, removeFromCart, updateQuantity } = useCart()
   const t = useTranslations("CartDropdown")
   const tNav = useTranslations("Navigation")
   const locale = useLocale()
@@ -21,7 +23,7 @@ export function CartDropdown() {
     setMounted(true)
   }, [])
 
-  const displayItems = mounted && isReady ? totalItems : 0
+  const displayItems = mounted ? totalItems : 0
 
   const buildProductUrl = useCallback((item: CartItem) => {
     const sellerSlug = item.username ?? item.storeSlug
@@ -50,6 +52,7 @@ export function CartDropdown() {
               {mounted && displayItems > 0 && (
                 <CountBadge
                   count={displayItems}
+                  max={CART_BADGE_MAX}
                   className="absolute -top-1 -right-1.5 bg-cart-badge text-primary-foreground ring-2 ring-header-bg h-4 min-w-4 px-1 text-2xs"
                   aria-hidden="true"
                 />

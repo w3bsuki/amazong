@@ -18,20 +18,31 @@ export function FilterRatingSection({ minRating, onChange }: FilterRatingSection
       {[4, 3, 2, 1].map((stars) => {
         const value = stars.toString();
         const isActive = minRating === value;
+        const handleToggle = () => onChange(isActive ? null : value);
+
+        const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+          if (event.key === " " || event.key === "Enter") {
+            event.preventDefault();
+            handleToggle();
+          }
+        };
+
         return (
-          <button
+          <div
             key={stars}
-            type="button"
-            onClick={() => onChange(isActive ? null : value)}
+            role="checkbox"
+            aria-checked={isActive}
+            tabIndex={0}
+            onClick={handleToggle}
+            onKeyDown={handleKeyDown}
             className={cn(
-              "w-full flex items-center gap-3 px-inset h-11 transition-colors text-left",
+              "w-full flex items-center gap-3 px-inset h-11 cursor-pointer transition-colors text-left outline-none focus-visible:ring-2 focus-visible:ring-focus-ring",
               isActive ? "bg-selected text-foreground font-medium" : "text-foreground active:bg-active"
             )}
-            aria-pressed={isActive}
           >
             <Checkbox
               checked={isActive}
-              onCheckedChange={() => onChange(isActive ? null : value)}
+              onCheckedChange={handleToggle}
               className="pointer-events-none shrink-0"
               aria-hidden="true"
               tabIndex={-1}
@@ -42,7 +53,7 @@ export function FilterRatingSection({ minRating, onChange }: FilterRatingSection
               ))}
             </div>
             <span className="text-sm">{t("andUp")}</span>
-          </button>
+          </div>
         );
       })}
     </div>
@@ -50,4 +61,3 @@ export function FilterRatingSection({ minRating, onChange }: FilterRatingSection
 }
 
 export type { FilterRatingSectionProps };
-

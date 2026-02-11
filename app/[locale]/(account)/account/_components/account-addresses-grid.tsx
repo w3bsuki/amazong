@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { MapPin, House, Briefcase, Star, Plus, Pencil, Trash, Phone } from "@phosphor-icons/react"
+import { MapPin, House, Briefcase, Star, Plus, Pencil, Trash, Phone, X } from "@phosphor-icons/react"
 
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -12,14 +12,16 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet"
-import { ScrollArea } from "@/components/ui/scroll-area"
+  Drawer,
+  DrawerBody,
+  DrawerClose,
+  DrawerContent,
+  DrawerDescription,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from "@/components/ui/drawer"
+import { IconButton } from "@/components/ui/icon-button"
 import { Separator } from "@/components/ui/separator"
 
 type UserAddress = {
@@ -56,7 +58,7 @@ export function AccountAddressesGrid({
   onSetDefault,
   isLoading 
 }: AccountAddressesGridProps) {
-  const [openSheetId, setOpenSheetId] = useState<string | null>(null)
+  const [openDrawerId, setOpenDrawerId] = useState<string | null>(null)
 
   const t = {
     noAddresses: locale === 'bg' ? 'Нямате запазени адреси' : 'No saved addresses',
@@ -128,14 +130,14 @@ export function AccountAddressesGrid({
     )
   }
 
-  // Mobile card with Sheet
+  // Mobile card with Drawer
   const MobileAddressCard = ({ address }: { address: UserAddress }) => {
     const LabelIcon = getLabelIcon(address.label)
-    const isOpen = openSheetId === address.id
+    const isOpen = openDrawerId === address.id
 
     return (
-      <Sheet open={isOpen} onOpenChange={(open) => setOpenSheetId(open ? address.id : null)}>
-        <SheetTrigger asChild>
+      <Drawer open={isOpen} onOpenChange={(open) => setOpenDrawerId(open ? address.id : null)}>
+        <DrawerTrigger asChild>
           <Card className={`cursor-pointer transition-colors hover:bg-hover ${address.is_default ? 'border-selected-border ring-1 ring-border-subtle' : ''}`}>
             <CardHeader className="pb-2">
               <div className="flex items-start justify-between gap-2">
@@ -156,22 +158,29 @@ export function AccountAddressesGrid({
               <p className="text-sm text-muted-foreground line-clamp-2">{address.address_line1}, {address.city}</p>
             </CardContent>
           </Card>
-        </SheetTrigger>
-        <SheetContent side="bottom" className="h-auto max-h-(--dialog-h-85vh)">
-          <SheetHeader className="text-left">
-            <SheetTitle className="flex items-center gap-2">
-              <LabelIcon className={`size-5 ${getLabelColor(address.label)}`} weight="duotone" />
-              {address.label}
-              {address.is_default && (
-                <Badge variant="secondary" className="ml-2 text-xs bg-selected text-primary border-0">
-                  <Star className="size-3 mr-1" weight="fill" />
-                  {t.default}
-                </Badge>
-              )}
-            </SheetTitle>
-            <SheetDescription>{t.addressDetails}</SheetDescription>
-          </SheetHeader>
-          <ScrollArea className="mt-4 max-h-(--dialog-h-50vh)">
+        </DrawerTrigger>
+        <DrawerContent className="max-h-(--dialog-h-85vh)">
+          <DrawerHeader className="border-b border-border-subtle text-left">
+            <div className="flex items-start justify-between gap-3">
+              <DrawerTitle className="flex items-center gap-2">
+                <LabelIcon className={`size-5 ${getLabelColor(address.label)}`} weight="duotone" />
+                {address.label}
+                {address.is_default && (
+                  <Badge variant="secondary" className="ml-2 text-xs bg-selected text-primary border-0">
+                    <Star className="size-3 mr-1" weight="fill" />
+                    {t.default}
+                  </Badge>
+                )}
+              </DrawerTitle>
+              <DrawerClose asChild>
+                <IconButton aria-label={locale === "bg" ? "Затвори" : "Close"} variant="ghost" size="icon-compact">
+                  <X className="size-4" />
+                </IconButton>
+              </DrawerClose>
+            </div>
+            <DrawerDescription>{t.addressDetails}</DrawerDescription>
+          </DrawerHeader>
+          <DrawerBody className="px-4 py-4">
             <div className="space-y-4">
               <div>
                 <p className="text-sm font-medium text-muted-foreground mb-1">{t.deliveryAddress}</p>
@@ -196,12 +205,12 @@ export function AccountAddressesGrid({
                 <p className="text-sm font-medium text-muted-foreground">{t.actions}</p>
                 <div className="flex flex-col gap-2">
                   {!address.is_default && (
-                    <Button 
-                      variant="outline" 
+                    <Button
+                      variant="outline"
                       className="justify-start gap-2"
                       onClick={() => {
                         onSetDefault(address.id)
-                        setOpenSheetId(null)
+                        setOpenDrawerId(null)
                       }}
                       disabled={isLoading}
                     >
@@ -209,23 +218,23 @@ export function AccountAddressesGrid({
                       {t.setDefault}
                     </Button>
                   )}
-                  <Button 
-                    variant="outline" 
+                  <Button
+                    variant="outline"
                     className="justify-start gap-2"
                     onClick={() => {
                       onEdit(address)
-                      setOpenSheetId(null)
+                      setOpenDrawerId(null)
                     }}
                   >
                     <Pencil className="size-4" />
                     {t.edit}
                   </Button>
-                  <Button 
-                    variant="outline" 
+                  <Button
+                    variant="outline"
                     className="justify-start gap-2 text-destructive hover:text-destructive"
                     onClick={() => {
                       onDelete(address.id)
-                      setOpenSheetId(null)
+                      setOpenDrawerId(null)
                     }}
                   >
                     <Trash className="size-4" />
@@ -234,9 +243,9 @@ export function AccountAddressesGrid({
                 </div>
               </div>
             </div>
-          </ScrollArea>
-        </SheetContent>
-      </Sheet>
+          </DrawerBody>
+        </DrawerContent>
+      </Drawer>
     )
   }
 

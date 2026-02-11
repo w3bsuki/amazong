@@ -132,8 +132,9 @@ test.describe("Mobile Responsiveness - Phase 11", () => {
       await expect(chatTabByRole).toBeVisible()
       await expect(profileTab).toBeVisible()
 
-      // Sell tab remains icon-only, but still discoverable by accessible name.
+      // Icon-only tabs remain discoverable by accessible names.
       await expect(tabBar.getByTestId("mobile-tab-sell")).toHaveText("")
+      await expect(tabBar).not.toContainText(/Home|Categories|Sell|Chat|Profile/i)
 
       // Active state should be color/weight-driven (no persistent selected background fill).
       const homeClassName = (await homeTab.getAttribute("class")) ?? ""
@@ -166,6 +167,25 @@ test.describe("Mobile Responsiveness - Phase 11", () => {
       expect(Math.abs(dockBottom - (viewport?.height ?? 0))).toBeLessThanOrEqual(2)
       expect(Math.abs(dockBox?.x ?? 0)).toBeLessThanOrEqual(2)
       expect(Math.abs((dockBox?.width ?? 0) - (viewport?.width ?? 0))).toBeLessThanOrEqual(2)
+
+      // Sell CTA geometry: ensure the icon-only CTA sits fully inside the dock
+      // with minimum vertical breathing room.
+      const sellCtaBox = await tabBar.getByTestId("mobile-tab-sell-core").boundingBox()
+      expect(sellCtaBox).toBeTruthy()
+      const dockTop = dockBox?.y ?? 0
+      const dockBottomEdge = (dockBox?.y ?? 0) + (dockBox?.height ?? 0)
+      const sellTop = sellCtaBox?.y ?? 0
+      const sellBottom = (sellCtaBox?.y ?? 0) + (sellCtaBox?.height ?? 0)
+      const sellTopClearance = sellTop - dockTop
+      const sellBottomClearance = dockBottomEdge - sellBottom
+      expect(sellTopClearance).toBeGreaterThanOrEqual(2)
+      expect(sellBottomClearance).toBeGreaterThanOrEqual(2)
+
+      // Sell CTA should use a filled primary core treatment.
+      const sellCoreClassName =
+        (await tabBar.getByTestId("mobile-tab-sell-core").getAttribute("class")) ?? ""
+      expect(sellCoreClassName).toContain("bg-primary")
+      expect(sellCoreClassName).toContain("text-primary-foreground")
 
       // Chat tab should reflect drawer-open state as active.
       await expect(chatTab).toHaveAttribute("aria-expanded", "false")
@@ -740,10 +760,11 @@ test.describe("Mobile Responsiveness - Phase 11", () => {
       // Main content should be visible - use #main-content to avoid multiple main elements
       await expect(page.locator("#main-content")).toBeVisible({ timeout: 15000 })
       
-      // Mobile tab bar should render with Bulgarian labels.
+      // Mobile tab bar should render icon-only tabs with Bulgarian accessible names.
       const mobileTabBar = page.getByTestId("mobile-tab-bar")
       await expect(mobileTabBar).toBeVisible()
-      await expect(mobileTabBar.getByText(/начало/i)).toBeVisible()
+      await expect(mobileTabBar.getByRole("link", { name: /начало/i })).toBeVisible()
+      await expect(mobileTabBar).not.toContainText(/начало|обяви|чат|профил/i)
       
       // No horizontal overflow
       const hasOverflow = await page.evaluate(() => {

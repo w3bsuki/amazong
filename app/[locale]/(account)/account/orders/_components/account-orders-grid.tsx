@@ -5,7 +5,7 @@ import Image from "next/image"
 import { Link } from "@/i18n/routing"
 import { formatDistanceToNow } from "date-fns"
 import { bg, enUS } from "date-fns/locale"
-import { IconChevronRight, IconPackage, IconShoppingBag, IconMessageCircle } from "@tabler/icons-react"
+import { IconChevronRight, IconPackage, IconShoppingBag, IconMessageCircle, IconX } from "@tabler/icons-react"
 
 import { Badge } from "@/components/ui/badge"
 import { BuyerOrderActions, type BuyerOrderActionsServerActions } from "./buyer-order-actions"
@@ -20,6 +20,16 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
+import {
+  Drawer,
+  DrawerBody,
+  DrawerClose,
+  DrawerContent,
+  DrawerDescription,
+  DrawerHeader,
+  DrawerTitle,
+} from "@/components/ui/drawer"
+import { IconButton } from "@/components/ui/icon-button"
 import {
   Sheet,
   SheetContent,
@@ -86,6 +96,7 @@ interface AccountOrdersGridProps {
 export function AccountOrdersGrid({ orders, locale, actions }: AccountOrdersGridProps) {
   const dateLocale = locale === "bg" ? bg : enUS
   const [conversationMap, setConversationMap] = useState<Map<string, string>>(new Map())
+  const [openMobileOrderId, setOpenMobileOrderId] = useState<string | null>(null)
   const isOrderStatusKey = (value: unknown): value is OrderStatusKey =>
     typeof value === "string" &&
     ["pending", "paid", "processing", "shipped", "delivered", "cancelled"].includes(value)
@@ -225,9 +236,15 @@ export function AccountOrdersGrid({ orders, locale, actions }: AccountOrdersGrid
           const remainingCount = order.order_items.length - 3
 
           return (
-            <Sheet key={order.id}>
-              <SheetTrigger asChild>
-                <button className="active-scale-99 w-full text-left rounded-md bg-card border border-border p-4 transition-colors">
+            <Drawer
+              key={order.id}
+              open={openMobileOrderId === order.id}
+              onOpenChange={(nextOpen) => setOpenMobileOrderId(nextOpen ? order.id : null)}
+            >
+              <button
+                className="active-scale-99 w-full text-left rounded-md bg-card border border-border p-4 transition-colors"
+                onClick={() => setOpenMobileOrderId(order.id)}
+              >
                   {/* Header: Price + Date */}
                   <div className="flex items-center justify-between mb-3">
                     <p className="text-lg font-bold text-foreground tabular-nums">
@@ -293,25 +310,31 @@ export function AccountOrdersGrid({ orders, locale, actions }: AccountOrdersGrid
                       <IconChevronRight className="size-3.5" />
                     </div>
                   </div>
-                </button>
-              </SheetTrigger>
-              <SheetContent side="bottom" className="h-(--dialog-h-85vh) rounded-t-2xl">
-                <SheetHeader className="pb-4 border-b">
-                  <SheetTitle className="flex items-center gap-2">
-                    <IconPackage className="size-5" />
-                    {t.order} #{order.id.slice(0, 8)}
-                  </SheetTitle>
-                  <SheetDescription>
+              </button>
+              <DrawerContent className="max-h-(--dialog-h-85vh) rounded-t-2xl">
+                <DrawerHeader className="border-b border-border-subtle pb-4 text-left">
+                  <div className="flex items-center justify-between gap-3">
+                    <DrawerTitle className="flex items-center gap-2">
+                      <IconPackage className="size-5" />
+                      {t.order} #{order.id.slice(0, 8)}
+                    </DrawerTitle>
+                    <DrawerClose asChild>
+                      <IconButton aria-label={locale === "bg" ? "Затвори" : "Close"} variant="ghost" size="icon-compact">
+                        <IconX className="size-4" />
+                      </IconButton>
+                    </DrawerClose>
+                  </div>
+                  <DrawerDescription>
                     <Badge
                       variant="outline"
-                      className={getStatusColor(status)}
+                      className={getStatusColor(displayStatus)}
                     >
-                      {getStatusText(status)}
+                      {getStatusText(displayStatus)}
                     </Badge>
-                  </SheetDescription>
-                </SheetHeader>
-                <ScrollArea className="flex-1 -mx-6 px-6">
-                  <div className="py-4 space-y-4">
+                  </DrawerDescription>
+                </DrawerHeader>
+                <DrawerBody className="px-4 py-4">
+                  <div className="space-y-4">
                     {/* Order info */}
                     <div className="grid grid-cols-2 gap-4 text-sm">
                       <div>
@@ -416,9 +439,9 @@ export function AccountOrdersGrid({ orders, locale, actions }: AccountOrdersGrid
                       })}
                     </div>
                   </div>
-                </ScrollArea>
-              </SheetContent>
-            </Sheet>
+                </DrawerBody>
+              </DrawerContent>
+            </Drawer>
           )
         })}
       </div>

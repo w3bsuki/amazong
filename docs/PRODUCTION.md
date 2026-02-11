@@ -6,7 +6,7 @@
 |-------|------------------------------------------|
 | Audience | AI agents, developers, ops |
 | Type | Reference + Checklist |
-| Last verified | 2026-02-08 |
+| Last verified | 2026-02-11 |
 
 ---
 
@@ -17,7 +17,7 @@ Progress: **103/119 features (~87%)** across 18 categories.
 | # | Area | Status | Done | Total | Blockers / Notes |
 |---|------|--------|------|-------|------------------|
 | 1 | Auth & Accounts | ✅ Ready | 8 | 8 | All complete |
-| 2 | Cart & Checkout | ✅ Ready | 8 | 8 | Webhooks idempotent |
+| 2 | Cart & Checkout | ✅ Ready | 8 | 8 | Launch replay verification pending (`LAUNCH-001`) |
 | 3 | Orders (Buyer) | 🟡 Partial | 5 | 6 | Cancel pre-shipment in progress |
 | 4 | Orders (Seller) | 🟡 Partial | 5 | 6 | Refund processing admin-assisted |
 | 5 | Selling / Listings | 🟡 Partial | 7 | 8 | Listing analytics missing (business tier) |
@@ -36,6 +36,18 @@ Progress: **103/119 features (~87%)** across 18 categories.
 | 18 | Infrastructure | ✅ Ready | 6 | 6 | Vercel, Supabase, Stripe, health, revalidation |
 
 → Full feature breakdown: `REQUIREMENTS.md` (root)
+
+---
+
+## Launch Policy (Soft Launch — 2026-02-12)
+
+| Policy | Value |
+|--------|-------|
+| Launch mode | Controlled soft launch |
+| Hard blockers | All 🔴 P0 issues + `LAUNCH-001..007` in `TASKS.md` |
+| Test ownership | Hybrid (AI automation + human manual verification) |
+| Tracking SSOT | `production-audit/` (`master.md` + phase files) |
+| Test environments | Full validation on preview URL, production smoke only post-deploy |
 
 ---
 
@@ -155,7 +167,7 @@ Webhook secrets support rotation (comma-separated): both old and new secrets val
 | Build Command | `pnpm build` |
 | Output Directory | `.next` |
 | Install Command | `pnpm install` |
-| Node Version | 22.x |
+| Node Version | 22.x (Vercel runtime), 20.x (local dev/install baseline) |
 | Analytics | Enabled |
 | Speed Insights | Enabled |
 
@@ -314,4 +326,4 @@ User Report → Support L1 → Support L2 → Engineering → On-call
 
 ---
 
-*Last updated: 2026-02-08*
+*Last updated: 2026-02-11*

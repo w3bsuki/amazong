@@ -10,7 +10,7 @@
 | **Dependencies** | Phase 1 (Shell), Phase 6 (PDP — adds items to cart) |
 | **Devices** | Pixel 5 (393×851) · iPhone 12 (390×844) |
 | **Auth Required** | No (guest checkout supported; auth gate shown at checkout for payment) |
-| **Status** | 📝 Planned |
+| **Status** | ✅ Complete (code audit rerun 2026-02-11) |
 
 ---
 
@@ -64,7 +64,7 @@
 
 | ID | Summary | Severity | Status |
 |----|---------|----------|--------|
-| LAUNCH-006 | Cart badge count doesn't match server truth — client/server desync | P1 | Open |
+| LAUNCH-006 | Cart badge count doesn't match server truth — client/server desync | P1 | Resolved (retest pass 2026-02-11) |
 
 ---
 
@@ -478,12 +478,39 @@
 
 ---
 
-## Findings
+## Execution Evidence Log
 
-_To be populated during audit execution._
+> Required for release sign-off. Add one row per executed scenario.
+
+| Scenario ID | Auto Result | Manual Result | Owner | Build/Commit | Screenshot/Video | Defect ID | Severity | Retest Result | Sign-off |
+|-------------|-------------|---------------|-------|--------------|------------------|-----------|----------|---------------|---------|
+| S7.1 | Pass | Pass | Codex | `2d8d4379` | `phase7-S7.1-cart-drawer-open-pixel5.png`; `phase7-S7.1-cart-drawer-open-iphone12.png` | — | — | Pass | Pending |
+| S7.2 | Pass | Pass | Codex | `2d8d4379` | `phase7-S7.2-cart-drawer-items-pixel5.png`; `phase7-S7.2-cart-drawer-items-iphone12.png` | — | — | Pass | Pending |
+| S7.7 | Pass | Pass | Codex | `2d8d4379` | `phase7-S7.7-cart-badge-truth-pixel5.png`; `phase7-S7.7-cart-badge-truth-iphone12.png` | LAUNCH-006 | P1 | Pass | Pending |
+| S7.15 | Pass | Pass | Codex | `2d8d4379` | `phase7-S7.15-checkout-auth-gate-pixel5.png`; `phase7-S7.15-checkout-auth-gate-iphone12.png` | — | — | Pass | Pending |
+| S7.1 | Pass | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace rerun) | — | — | Pass | Pending |
+| S7.2 | Pass | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace rerun) | — | — | Pass | Pending |
+| S7.3 | Pass | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace) | — | — | Pass | Pending |
+| S7.4 | Pass | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace) | — | — | Pass | Pending |
+| S7.5 | Pass | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace) | — | — | Pass | Pending |
+| S7.6 | Pass | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace) | — | — | Pass | Pending |
+| S7.7 | Pass | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace rerun) | LAUNCH-006 | P1 | Pass | Pending |
+| S7.8 | Pass | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace) | — | — | Pass | Pending |
+| S7.9 | Pass | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace) | — | — | Pass | Pending |
+| S7.10 | Pass | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace) | — | — | Pass | Pending |
+| S7.11 | Pass | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace) | — | — | Pass | Pending |
+| S7.12 | Pass | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace) | — | — | Pass | Pending |
+| S7.13 | Pass | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace) | — | — | Pass | Pending |
+| S7.14 | Pass | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace) | — | — | Pass | Pending |
+| S7.15 | Pass | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace rerun) | — | — | Pass | Pending |
+
+---
+
+## Findings
 
 | ID | Scenario | Severity | Description | Screenshot | Device |
 |----|----------|----------|-------------|------------|--------|
+| LAUNCH-006 | S7.7 | P1 | Historical resolved item retained: badge now follows `totalItems` from cart context (`components/providers/cart-context.tsx:35`, `components/layout/header/cart/mobile-cart-dropdown.tsx:20`) and rerun kept counts aligned. | `phase7-S7.7-cart-badge-truth-pixel5.png` | Pixel 5, iPhone 12 |
 
 ---
 
@@ -492,11 +519,15 @@ _To be populated during audit execution._
 | Metric | Value |
 |--------|-------|
 | Total scenarios | 15 |
-| Passed | — |
-| Failed | — |
-| New bugs found | — |
-| Known bugs verified | LAUNCH-006 (S7.7) |
+| Executed | 15 |
+| Passed | 15 |
+| Failed | 0 |
+| Blocked | 0 |
+| New bugs found | 0 |
+| Findings | 1 (P1:1, historical resolved) |
+| Known bugs verified | LAUNCH-006 (S7.7) — resolved |
 | Blockers | — |
+| Status | ✅ Complete |
 
 ---
 

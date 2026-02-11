@@ -10,7 +10,7 @@
 | **Dependencies** | Phase 1 (Shell & Navigation) |
 | **Devices** | Pixel 5 (393×851) · iPhone 12 (390×844) |
 | **Auth Required** | No |
-| **Status** | 📝 Planned |
+| **Status** | ✅ Complete (code audit 2026-02-11) |
 
 ---
 
@@ -377,12 +377,38 @@
 
 ---
 
-## Findings
+## Execution Evidence Log
 
-> Filled during audit execution.
+> Required for release sign-off. Add one row per executed scenario.
+
+| Scenario ID | Auto Result | Manual Result | Owner | Build/Commit | Screenshot/Video | Defect ID | Severity | Retest Result | Sign-off |
+|-------------|-------------|---------------|-------|--------------|------------------|-----------|----------|---------------|---------|
+| S2.1 | Fail | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace) | F2-001 | P1 | Fail | Pending |
+| S2.2 | Pass | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace) | — | — | Pass | Pending |
+| S2.3 | Fail | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace) | F2-002 | P3 | Fail | Pending |
+| S2.4 | Fail | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace) | F2-001 | P1 | Fail | Pending |
+| S2.5 | Fail | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace) | F2-001 | P1 | Fail | Pending |
+| S2.6 | Fail | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace) | F2-001 | P1 | Fail | Pending |
+| S2.7 | Pass | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace) | — | — | Pass | Pending |
+| S2.8 | Pass | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace) | — | — | Pass | Pending |
+| S2.9 | Pass | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace) | — | — | Pass | Pending |
+| S2.10 | Fail | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace) | CAT-001 | P1 | Fail | Pending |
+| S2.11 | Pass | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace) | — | — | Pass | Pending |
+| S2.12 | Pass | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace) | — | — | Pass | Pending |
+| S2.13 | Pass | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace) | — | — | Pass | Pending |
+| S2.14 | Pass | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace) | — | — | Pass | Pending |
+| S2.15 | Fail | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace) | F2-003 | P2 | Fail | Pending |
+
+---
+
+## Findings
 
 | # | Severity | Component | Description | Screenshot | Repro Steps |
 |---|----------|-----------|-------------|------------|-------------|
+| F2-001 | P1 | Homepage promoted merchandising stack | `PromotedListingsStrip` exists (`app/[locale]/(main)/_components/mobile/promoted-listings-strip.tsx:20`) but is not rendered by `MobileHome`, so promoted hero/strip/empty-state scenarios fail (`app/[locale]/(main)/_components/mobile-home.tsx:344`, `app/[locale]/(main)/_components/mobile-home.tsx:431`). | N/A (code trace) | Audit `MobileHome` render tree for `/en`; promoted section is absent. |
+| CAT-001 | P1 | Product card category badge | Product cards accept `categoryPath` (`app/[locale]/(main)/_components/mobile-home.tsx:177`) but never render category text in the card body (`components/shared/product/card/mobile.tsx:212`), so L0-vs-L4 label behavior is still broken. | N/A (code trace) | Trace `MobileHome` -> `MobileProductCard` and inspect rendered card fields. |
+| F2-003 | P2 | Homepage terminal CTA | No bottom “All Listings” CTA is rendered after curated rail; component ends at city picker (`app/[locale]/(main)/_components/mobile-home.tsx:431`, `app/[locale]/(main)/_components/mobile-home.tsx:455`). | N/A (code trace) | Inspect the final JSX branches in `MobileHome`. |
+| F2-002 | P3 | Phase doc vs implementation drift | Scenario wording references legacy `HomeScopeBar`; current architecture uses `HomeFeedControls` + `HomeCityPickerSheet` (`app/[locale]/(main)/_components/mobile-home.tsx:331`, `app/[locale]/(main)/_components/mobile-home.tsx:455`). | N/A (code trace) | Compare Phase 2 scenario text against current homepage component tree. |
 
 ---
 
@@ -390,8 +416,11 @@
 
 | Metric | Value |
 |--------|-------|
-| Routes tested | — |
-| Scenarios executed | — |
-| Findings | — |
-| Known bugs verified | — |
-| Status | 📝 Planned |
+| Routes tested | `/en` (homepage) with linked drawer/header dependencies |
+| Scenarios executed | 15 / 15 |
+| Passed | 8 |
+| Failed | 7 |
+| Blocked | 0 |
+| Findings | 4 (P1:2, P2:1, P3:1) |
+| Known bugs verified | 1 / 1 — CAT-001 open |
+| Status | ✅ Complete |

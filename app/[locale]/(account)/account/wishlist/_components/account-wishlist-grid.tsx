@@ -13,7 +13,8 @@ import {
   ArrowRight,
   Package,
   XCircle,
-  Eye
+  Eye,
+  X,
 } from "@phosphor-icons/react"
 import { IconHeart, IconTag } from "@tabler/icons-react"
 
@@ -21,13 +22,16 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetDescription,
-  SheetFooter,
-} from "@/components/ui/sheet"
+  Drawer,
+  DrawerBody,
+  DrawerClose,
+  DrawerContent,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+} from "@/components/ui/drawer"
+import { IconButton } from "@/components/ui/icon-button"
 import { Separator } from "@/components/ui/separator"
 import { useCart } from "@/components/providers/cart-context"
 import { createClient } from "@/lib/supabase/client"
@@ -193,7 +197,7 @@ export function AccountWishlistGrid({ items, locale, onRemove }: WishlistGridPro
       {/* pb-20 adds padding for the floating "Add All" button */}
       <div className="grid grid-cols-2 gap-3 pb-20 md:hidden md:pb-0">
         {items.map((item) => (
-          <Sheet key={item.id} open={selectedItem?.id === item.id} onOpenChange={(open) => !open && setSelectedItem(null)}>
+          <Drawer key={item.id} open={selectedItem?.id === item.id} onOpenChange={(open) => !open && setSelectedItem(null)}>
             <div
               onClick={() => setSelectedItem(item)}
               onKeyDown={(e) => {
@@ -279,14 +283,18 @@ export function AccountWishlistGrid({ items, locale, onRemove }: WishlistGridPro
               </div>
             </div>
 
-            {/* Detail Sheet */}
-            <SheetContent
-              side="bottom"
-              className="h-auto max-h-(--dialog-h-85vh) rounded-t-2xl gap-0 overflow-hidden"
-            >
-              <SheetHeader className="text-left border-b border-border bg-background">
-                <SheetTitle className="line-clamp-2 text-lg">{item.title}</SheetTitle>
-                <SheetDescription className="flex items-center gap-2 flex-wrap">
+            {/* Detail Drawer */}
+            <DrawerContent className="max-h-(--dialog-h-85vh) rounded-t-2xl gap-0 overflow-hidden">
+              <DrawerHeader className="border-b border-border bg-background text-left">
+                <div className="flex items-start justify-between gap-3">
+                  <DrawerTitle className="line-clamp-2 text-lg">{item.title}</DrawerTitle>
+                  <DrawerClose asChild>
+                    <IconButton aria-label={locale === "bg" ? "Затвори" : "Close"} variant="ghost" size="icon-compact">
+                      <X className="size-4" />
+                    </IconButton>
+                  </DrawerClose>
+                </div>
+                <DrawerDescription className="flex items-center gap-2 flex-wrap">
                   {labels.addedOn} {formatDate(item.created_at)}
                   {item.category_name && (
                     <>
@@ -297,10 +305,10 @@ export function AccountWishlistGrid({ items, locale, onRemove }: WishlistGridPro
                       </Badge>
                     </>
                   )}
-                </SheetDescription>
-              </SheetHeader>
+                </DrawerDescription>
+              </DrawerHeader>
 
-              <div className="flex-1 overflow-y-auto px-4 py-4">
+              <DrawerBody className="px-4 py-4">
                 <div className="relative mx-auto aspect-square w-full max-w-60 overflow-hidden rounded-xl bg-muted">
                   <Image
                     src={item.image}
@@ -331,9 +339,9 @@ export function AccountWishlistGrid({ items, locale, onRemove }: WishlistGridPro
                     )}
                   </div>
                 </div>
-              </div>
+              </DrawerBody>
 
-              <SheetFooter className="flex-col gap-2 sm:flex-col border-t border-border bg-background pb-safe-max">
+              <DrawerFooter className="flex-col gap-2 sm:flex-col border-t border-border bg-background pb-safe-max">
                 <Button
                   onClick={() => handleMoveToCart(item)}
                   disabled={item.stock <= 0}
@@ -371,9 +379,9 @@ export function AccountWishlistGrid({ items, locale, onRemove }: WishlistGridPro
                     <Trash className="size-4" />
                   </Button>
                 </div>
-              </SheetFooter>
-            </SheetContent>
-          </Sheet>
+              </DrawerFooter>
+            </DrawerContent>
+          </Drawer>
         ))}
       </div>
 

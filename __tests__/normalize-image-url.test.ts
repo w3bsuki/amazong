@@ -37,7 +37,9 @@ describe('lib/normalize-image-url', () => {
 
     it('returns placeholder for known bad Unsplash images', () => {
       const badUrl = 'https://images.unsplash.com/photo-1558584673-90d3e2c6f626?auto=format'
+      const newlyBrokenUrl = 'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=800&q=80'
       expect(normalizeImageUrl(badUrl)).toBe(PLACEHOLDER_IMAGE_PATH)
+      expect(normalizeImageUrl(newlyBrokenUrl)).toBe(PLACEHOLDER_IMAGE_PATH)
     })
 
     it('returns valid URLs unchanged', () => {
@@ -84,7 +86,9 @@ describe('lib/normalize-image-url', () => {
 
     it('returns null for known bad Unsplash images', () => {
       const badUrl = 'https://images.unsplash.com/photo-1558584673-90d3e2c6f626?auto=format'
+      const newlyBrokenUrl = 'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=800&q=80'
       expect(normalizeOptionalImageUrl(badUrl)).toBeNull()
+      expect(normalizeOptionalImageUrl(newlyBrokenUrl)).toBeNull()
     })
 
     it('returns valid URLs unchanged', () => {

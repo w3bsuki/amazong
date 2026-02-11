@@ -1,8 +1,7 @@
 "use client";
 
-import { useState } from "react";
 import { useLocale } from "next-intl";
-import { Wallet, ShieldCheck, Zap, ArrowRight, Loader2 } from "lucide-react";
+import { Wallet, ShieldCheck, Zap, ArrowRight } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -11,6 +10,7 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { useRouter } from "@/i18n/routing";
 
 interface PayoutRequiredModalProps {
   open: boolean;
@@ -24,42 +24,11 @@ interface PayoutRequiredModalProps {
 export function PayoutRequiredModal({ open, onOpenChange }: PayoutRequiredModalProps) {
   const locale = useLocale();
   const isBg = locale === "bg";
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
 
-  const handleSetupPayments = async () => {
-    setLoading(true);
-    setError(null);
-
-    try {
-      const response = await fetch("/api/connect/onboarding", {
-        method: "POST",
-        headers: {
-          "x-next-intl-locale": locale,
-          "x-return-to-sell": "true", // Custom header to indicate return to /sell
-        },
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.error || "Failed to start setup");
-      }
-
-      const data = await response.json();
-      if (!data?.url) {
-        throw new Error("No redirect URL received");
-      }
-
-      // Redirect to Stripe - they'll return to /sell?payout=complete
-      window.location.href = data.url;
-    } catch (err) {
-      setError(
-        isBg
-          ? "Грешка при стартиране на настройката. Опитайте отново."
-          : "Error starting setup. Please try again."
-      );
-      setLoading(false);
-    }
+  const handleSetupPayouts = () => {
+    onOpenChange(false);
+    router.push("/seller/settings/payouts");
   };
 
   return (
@@ -72,12 +41,12 @@ export function PayoutRequiredModal({ open, onOpenChange }: PayoutRequiredModalP
           </div>
 
           <DialogTitle className="text-xl font-bold">
-            {isBg ? "Настройте плащанията" : "Set Up Payments"}
+            {isBg ? "Първо настройте изплащанията" : "Set Up Payouts First"}
           </DialogTitle>
           <DialogDescription className="text-muted-foreground">
             {isBg
-              ? "Свържете банковата си сметка, за да получавате плащания от купувачите."
-              : "Connect your bank account to receive payments from buyers."}
+              ? "За да публикувате обяви, завършете Stripe Connect в настройките на продавача."
+              : "To publish listings, complete Stripe Connect from Seller payout settings."}
           </DialogDescription>
         </DialogHeader>
 
@@ -115,33 +84,20 @@ export function PayoutRequiredModal({ open, onOpenChange }: PayoutRequiredModalP
           </div>
         </div>
 
-        {/* Error */}
-        {error && (
-          <div className="p-3 rounded-lg bg-destructive-subtle text-destructive text-sm">
-            {error}
-          </div>
-        )}
-
         {/* CTA */}
         <div className="flex flex-col gap-2 pt-2">
           <Button
-            onClick={handleSetupPayments}
-            disabled={loading}
+            onClick={handleSetupPayouts}
             size="lg"
             className="w-full"
           >
-            {loading ? (
-              <Loader2 className="size-5 mr-2 animate-spin" />
-            ) : (
-              <Wallet className="size-5 mr-2" />
-            )}
-            {isBg ? "Настройване на плащания" : "Set Up Payments"}
+            <Wallet className="size-5 mr-2" />
+            {isBg ? "Към настройките за изплащане" : "Go to payout settings"}
             <ArrowRight className="size-5 ml-2" />
           </Button>
           <Button
             variant="ghost"
             onClick={() => onOpenChange(false)}
-            disabled={loading}
             className="w-full"
           >
             {isBg ? "По-късно" : "Later"}
@@ -151,8 +107,8 @@ export function PayoutRequiredModal({ open, onOpenChange }: PayoutRequiredModalP
         {/* Note */}
         <p className="text-xs text-center text-muted-foreground">
           {isBg
-            ? "Вашата обява е запазена като чернова. Можете да я публикувате след настройката."
-            : "Your listing is saved as a draft. You can publish it after setup."}
+            ? "След като активирате изплащанията, върнете се в /sell и публикувайте."
+            : "After payouts are enabled, return to /sell and publish."}
         </p>
       </DialogContent>
     </Dialog>

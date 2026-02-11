@@ -27,7 +27,7 @@ import type { SellFormDataV4 } from "@/lib/sell/schema-v4";
 const MOBILE_STEPS = [
   { id: 1, title: { en: "What", bg: "Какво" }, fields: ["title", "images"] },
   { id: 2, title: { en: "Category", bg: "Категория" }, fields: ["categoryId"] },
-  { id: 3, title: { en: "Details", bg: "Детайли" }, fields: ["condition"] },
+  { id: 3, title: { en: "Details", bg: "Детайли" }, fields: ["condition", "description"] },
   { id: 4, title: { en: "Price", bg: "Цена" }, fields: ["price", "shippingPrice", "sellerCity"] },
   { id: 5, title: { en: "Review", bg: "Преглед" }, fields: [] },
 ];
@@ -45,6 +45,7 @@ export function MobileLayout({ onSubmit, isSubmitting = false }: MobileLayoutPro
   const title = form.watch("title");
   const categoryId = form.watch("categoryId");
   const condition = form.watch("condition");
+  const description = form.watch("description");
   const price = form.watch("price");
 
   const canContinue = useMemo(() => {
@@ -59,7 +60,9 @@ export function MobileLayout({ onSubmit, isSubmitting = false }: MobileLayoutPro
     }
 
     if (currentStep === 3) {
-      return Boolean(condition);
+      const hasCondition = Boolean(condition);
+      const hasDescription = Boolean(description && description.trim().length >= 50);
+      return hasCondition && hasDescription;
     }
 
     if (currentStep === 4) {
@@ -68,22 +71,50 @@ export function MobileLayout({ onSubmit, isSubmitting = false }: MobileLayoutPro
     }
 
     return true;
-  }, [categoryId, condition, currentStep, images, price, title]);
+  }, [categoryId, condition, currentStep, description, images, price, title]);
 
   const isPublishDisabled = useMemo(() => {
     const hasPhotos = Boolean(images && images.length > 0);
     const hasTitle = Boolean(title && title.trim().length >= 5);
     const hasCategory = Boolean(categoryId);
     const hasCondition = Boolean(condition);
+    const hasDescription = Boolean(description && description.trim().length >= 50);
     const hasPrice = Boolean(price && Number.parseFloat(price) > 0);
-    return !(hasPhotos && hasTitle && hasCategory && hasCondition && hasPrice);
-  }, [categoryId, condition, images, price, title]);
+    return !(hasPhotos && hasTitle && hasCategory && hasCondition && hasDescription && hasPrice);
+  }, [categoryId, condition, description, images, price, title]);
 
   // Handle submission
   const handleSubmit = () => {
     form.handleSubmit(
       (data) => onSubmit(data),
-      () => { /* Validation errors handled by fields */ }
+      (errors) => {
+        const errorKeys = Object.keys(errors);
+        const firstError = errorKeys[0];
+        if (!firstError) return;
+
+        if (firstError === "images" || firstError === "title") {
+          setCurrentStep(1);
+          return;
+        }
+
+        if (firstError === "categoryId" || firstError === "categoryPath") {
+          setCurrentStep(2);
+          return;
+        }
+
+        if (
+          firstError === "condition" ||
+          firstError === "description" ||
+          firstError === "attributes" ||
+          firstError === "brandId" ||
+          firstError === "brandName"
+        ) {
+          setCurrentStep(3);
+          return;
+        }
+
+        setCurrentStep(4);
+      }
     )();
   };
 

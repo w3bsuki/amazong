@@ -116,7 +116,7 @@ export function ProductQuickViewMobileContent({
         </div>
       </div>
 
-      <div className="flex-1">
+      <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
         <div className="space-y-3 px-4 py-3">
           <QuickViewImageGallery
             images={allImages}
@@ -127,7 +127,7 @@ export function ProductQuickViewMobileContent({
             compactRatio={4 / 3}
           />
 
-          <div className="space-y-3 rounded-xl border border-border-subtle bg-card p-3.5">
+          <div className="space-y-2.5 rounded-xl border border-border-subtle bg-card p-3">
             <div className="space-y-1.5">
               <h2 className="line-clamp-2 text-base leading-tight font-semibold text-foreground">
                 {titleText}
@@ -237,7 +237,7 @@ export function ProductQuickViewMobileContent({
         </div>
       </div>
 
-      <div className="sticky bottom-0 z-20 shrink-0 border-t border-border bg-surface-elevated px-4 py-3 pb-safe-max">
+      <div className="sticky bottom-0 z-20 shrink-0 border-t border-border bg-surface-elevated px-4 py-2.5 pb-safe-max">
         <div className="grid grid-cols-2 gap-2">
           <Button
             type="button"

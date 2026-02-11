@@ -76,9 +76,10 @@ Transform Treido from "website" to "web app" feel through consistent mobile-firs
 | Container | `fixed bottom-0 bg-surface-elevated border-t border-border-subtle pb-safe` | Flat dock, z-40 |
 | Height | `h-(--spacing-bottom-nav)` (tokenized) | Aligned with 44/48 ergonomics contract |
 | Items | `grid-cols-5` | Exactly five primary mobile destinations |
-| Labels | `text-xs` + `leading-tight` + `tracking-normal` | Legible in EN/BG; compact but readable |
-| Active state | `text-nav-active` + font weight shift | Color + type hierarchy only, no filled selection block |
-| Sell action | Icon-only center tab with explicit `aria-label` | No floating FAB; keep consistent dock rhythm |
+| Labels | Icon-only UI + explicit `aria-label` on each tab | Keep visible chrome clean; preserve EN/BG accessibility names |
+| Active state | `text-nav-active` / `text-nav-inactive` on tab targets | Color hierarchy only, no persistent filled selected block |
+| Sell action | Filled primary center action + ring offset (`ring-offset-surface-elevated`) | No floating FAB or shadowed bubble treatment |
+| Profile action | Avatar slot (guest fallback, authenticated user avatar) + subtle ring states | `ring-1 ring-border-subtle` inactive, `ring-1 ring-primary` active |
 
 ### StickyHeader
 

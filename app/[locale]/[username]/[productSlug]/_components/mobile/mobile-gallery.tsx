@@ -13,7 +13,7 @@
 // - Fullscreen image viewer on tap
 // =============================================================================
 
-import { useState, useEffect, useRef, useCallback, type ReactNode } from "react"
+import { useState, useEffect, useRef, useCallback, useMemo, type ReactNode } from "react"
 import Image from "next/image"
 import { useTranslations } from "next-intl"
 import { Heart, ChevronLeft, MoreHorizontal, X } from "lucide-react"
@@ -22,6 +22,7 @@ import { getConditionBadgeVariant } from "@/components/shared/product/_lib/condi
 import { Badge } from "@/components/ui/badge"
 import { useWishlist } from "@/components/providers/wishlist-context"
 import type { GalleryImage } from "@/lib/view-models/product-page"
+import { normalizeImageUrl, PLACEHOLDER_IMAGE_PATH } from "@/lib/normalize-image-url"
 
 export interface MobileGalleryProps {
   images: GalleryImage[]
@@ -63,11 +64,36 @@ export function MobileGallery({
   
   const { isInWishlist, toggleWishlist } = useWishlist()
   const isWishlisted = product ? isInWishlist(product.id) : false
+  const normalizedImageSources = useMemo(
+    () => images.map((img) => normalizeImageUrl(img.src)),
+    [images],
+  )
+  const [failedImageIndexes, setFailedImageIndexes] = useState<Record<number, true>>({})
+  const imageResetKey = useMemo(() => normalizedImageSources.join("|"), [normalizedImageSources])
 
   const getAlt = useCallback(
     (img: GalleryImage) => t(img.altKey as never, img.altParams as never),
     [t],
   )
+
+  useEffect(() => {
+    setFailedImageIndexes({})
+  }, [imageResetKey])
+
+  const getImageSrc = useCallback(
+    (index: number) => {
+      if (failedImageIndexes[index]) return PLACEHOLDER_IMAGE_PATH
+      return normalizedImageSources[index] ?? PLACEHOLDER_IMAGE_PATH
+    },
+    [failedImageIndexes, normalizedImageSources],
+  )
+
+  const handleImageError = useCallback((index: number) => {
+    setFailedImageIndexes((previous) => {
+      if (previous[index]) return previous
+      return { ...previous, [index]: true }
+    })
+  }, [])
 
   // Sync scroll position with active index
   useEffect(() => {
@@ -99,7 +125,7 @@ export function MobileGallery({
       id: product.id,
       title: product.title,
       price: product.price,
-      image: images[0]?.src ?? "",
+      image: getImageSrc(0),
     })
   }
 
@@ -201,11 +227,12 @@ export function MobileGallery({
                   aria-label={t("viewImageNumber", { number: i + 1 })}
                 >
                   <Image
-                    src={img.src}
+                    src={getImageSrc(i)}
                     alt={getAlt(img)}
                     width={44}
                     height={44}
                     className="object-cover size-full"
+                    onError={() => handleImageError(i)}
                   />
                 </button>
               ))}
@@ -222,12 +249,13 @@ export function MobileGallery({
               <div key={i} className="flex-none w-full snap-center">
                 <div className="relative aspect-square">
                   <Image
-                    src={img.src}
+                    src={getImageSrc(i)}
                     alt={getAlt(img)}
                     fill
                     className="object-cover"
                     priority={i === 0}
                     sizes="100vw"
+                    onError={() => handleImageError(i)}
                   />
                 </div>
               </div>
@@ -265,12 +293,13 @@ export function MobileGallery({
           <div className="flex-1 flex items-center justify-center relative">
             {images[activeIndex] && (
               <Image
-                src={images[activeIndex].src}
+                src={getImageSrc(activeIndex)}
                 alt={getAlt(images[activeIndex])}
                 fill
                 className="object-contain"
                 sizes="100vw"
                 priority
+                onError={() => handleImageError(activeIndex)}
               />
             )}
           </div>
@@ -291,11 +320,12 @@ export function MobileGallery({
                 aria-label={t("viewImageNumber", { number: i + 1 })}
               >
                 <Image
-                  src={img.src}
+                  src={getImageSrc(i)}
                   alt={getAlt(img)}
                   width={56}
                   height={56}
                   className="object-cover size-full"
+                  onError={() => handleImageError(i)}
                 />
               </button>
             ))}

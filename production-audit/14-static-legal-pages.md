@@ -10,7 +10,7 @@
 | **Dependencies** | Phase 1 (Shell) |
 | **Devices** | Pixel 5 (393×851) · iPhone 12 (390×844) |
 | **Auth Required** | No |
-| **Status** | 📝 Planned |
+| **Status** | ✅ Complete (code audit 2026-02-11) |
 
 ---
 
@@ -289,11 +289,26 @@ None identified for static or legal pages.
 
 ---
 
+## Execution Evidence Log
+
+> Required for release sign-off. Add one row per executed scenario.
+
+| Scenario ID | Auto Result | Manual Result | Owner | Build/Commit | Screenshot/Video | Defect ID | Severity | Retest Result | Sign-off |
+|-------------|-------------|---------------|-------|--------------|------------------|-----------|----------|---------------|---------|
+| S14.1 | Pass | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace) | — | — | Pass | Pending |
+| S14.2 | Pass | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace) | — | — | Pass | Pending |
+| S14.3 | Pass | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace) | — | — | Pass | Pending |
+| S14.4 | Fail | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace) | F14-001 | P2 | Fail | Pending |
+| S14.5 | Pass | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace) | — | — | Pass | Pending |
+| S14.6 | Pass | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace) | — | — | Pass | Pending |
+
+---
+
 ## Findings
 
 | ID | Scenario | Severity | Description | Screenshot | Device |
 |----|----------|----------|-------------|------------|--------|
-| — | — | — | — | — | — |
+| F14-001 | S14.4 | P2 | Legal contact CTA uses compact sizing (`app/[locale]/(main)/(legal)/_components/legal-page-layout.tsx:203`) and maps to `h-(--control-compact)` in the button variant (`components/ui/button.tsx:37`, `app/globals.css:568`), which is 36px and below the 44px touch-target contract. | N/A (code trace) | N/A (code audit) |
 
 ---
 
@@ -302,10 +317,12 @@ None identified for static or legal pages.
 | Metric | Value |
 |--------|-------|
 | Scenarios | 6 |
-| Executed | 0 |
-| Passed | 0 |
-| Issues found | 0 |
+| Executed | 6 |
+| Passed | 5 |
+| Failed | 1 |
+| Blocked | 0 |
+| Issues found | 1 (P2:1) |
 | Blockers | 0 |
-| Status | 📝 Planned |
+| Status | ✅ Complete |
 
 Phase 14 covers 18 routes across 3 layout sub-groups: `(legal)` (4 pages sharing `LegalPageLayout`), `(support)` (6 pages), and direct `(main)` children (8 pages including about and placeholders). The `LegalPageLayout` template is the primary component under test — it composes hero sections, `AppBreadcrumb`, `Accordion` (shadcn/Radix), `ReactMarkdown` + `remarkGfm` rendering, contact CTAs, and related links into a consistent legal document experience. The about page uses a distinct custom layout via `AboutPageContent`. Placeholder pages (gift-cards, members, registry, todays-deals, assistant) are verified for error-free rendering only. No `data-testid` attributes exist in any of these pages — all selectors must rely on structural queries, ARIA roles, `data-state` attributes (accordion), or text content. Key risk areas are accordion interactivity on touch devices, markdown rendering overflow on narrow viewports, and touch target compliance for inline links within legal content.

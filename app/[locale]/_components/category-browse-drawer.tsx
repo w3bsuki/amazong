@@ -9,9 +9,11 @@ import {
   DrawerClose,
   DrawerContent,
   DrawerDescription,
+  DrawerFooter,
   DrawerHeader,
   DrawerTitle,
 } from "@/components/ui/drawer"
+import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
 import { IconButton } from "@/components/ui/icon-button"
 import { Input } from "@/components/ui/input"
@@ -303,22 +305,16 @@ export function CategoryBrowseDrawer({
         </DrawerBody>
 
         {rootCategory && (
-          <div className="shrink-0 border-t border-border bg-surface-elevated px-inset py-3 pb-safe-max">
-            <button
+          <DrawerFooter className="border-t border-border-subtle py-2.5">
+            <Button
               type="button"
+              size="default"
+              className="w-full"
               onClick={() => handleNavigateToCategory(rootCategory.slug)}
-              className={cn(
-                "flex w-full min-h-(--spacing-touch-md) items-center justify-center rounded-xl border border-foreground bg-foreground px-4 text-center",
-                "tap-transparent transition-colors",
-                "hover:bg-foreground active:opacity-90",
-                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
-              )}
             >
-              <span className="min-w-0 truncate text-sm font-semibold text-background">
-                {t("seeAllIn", { category: seeAllCategoryLabel })}
-              </span>
-            </button>
-          </div>
+              {t("seeAllIn", { category: seeAllCategoryLabel })}
+            </Button>
+          </DrawerFooter>
         )}
       </DrawerContent>
     </Drawer>

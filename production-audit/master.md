@@ -1,21 +1,24 @@
 # Production Audit — Master Plan
 
-> **Mobile-only Playwright audit of the entire Treido marketplace.**
+> **Mobile-first Playwright audit with desktop core-flow coverage.**
 > Single orchestration document linking all phase plans, tracking status, and defining execution order.
 
-| Scope | Full mobile UI/UX audit — every route, feature, and interaction |
+| Scope | Full mobile UI/UX audit + desktop core-flow pass on release-critical routes |
 |-------|----------------------------------------------------------------|
 | Devices | Pixel 5 (393×851) · iPhone 12 (390×844) |
 | Playwright projects | `mobile-chrome` · `mobile-safari` |
 | Locale | Primary: `en` · Cross-check: `bg` (Phase 18) |
+| Release target | 2026-02-12 soft launch |
+| Hard blockers | All P0 + `LAUNCH-001..007` in `TASKS.md` |
 | Created | 2026-02-09 |
-| Status | **Planning** |
+| Status | **Execution Ready** |
 
 ---
 
 ## Table of Contents
 
 1. [Objective](#1-objective)
+1.1 [Launch Policy & Readiness Gate](#11-launch-policy--readiness-gate)
 2. [Device Matrix & Viewport Config](#2-device-matrix--viewport-config)
 3. [Test Infrastructure](#3-test-infrastructure)
 4. [Known Bugs Registry](#4-known-bugs-registry)
@@ -32,7 +35,7 @@
 
 ## 1. Objective
 
-Perform a comprehensive mobile-only audit of every user-facing route, interaction, and feature in the Treido marketplace. The audit will:
+Perform a comprehensive mobile-first audit of every user-facing route, interaction, and feature in the Treido marketplace, with desktop validation for core release routes. The audit will:
 
 - **Verify** that every route renders correctly on mobile viewports without visual breakage
 - **Validate** all interactive flows (auth, selling, buying, checkout, chat, account management)
@@ -41,6 +44,16 @@ Perform a comprehensive mobile-only audit of every user-facing route, interactio
 - **Produce** a prioritized fix list for the development team
 
 This is an **audit-only** effort — no code changes. The output is a set of detailed findings documents per phase.
+
+---
+
+## 1.1 Launch Policy & Readiness Gate
+
+- Launch strategy: controlled soft launch on **2026-02-12**.
+- Tracking source of truth: this file + `production-audit/01..18`.
+- Test ownership: hybrid (automation + manual verification).
+- Environment policy: full validation on preview, production smoke post-deploy only.
+- Launch rule: **no-go** if any P0 remains open or any `LAUNCH-001..007` task is unresolved.
 
 ---
 
@@ -154,7 +167,7 @@ const creds = getTestUserCredentials();
 | **ONB-001** | Onboarding | Onboarding wizard uses hardcoded styles instead of design tokens | Phase 3 | 🟠 Open |
 | **ONB-002** | Onboarding | Onboarding routes accessible without auth (public route gating) | Phase 3 | 🟠 Open |
 | **SELL-002** | Selling | Sell wizard components need shadcn refactor | Phase 8 | 🟠 Open |
-| **LAUNCH-006** | Cart | Cart badge count doesn't match server truth — client/server desync | Phase 7 | 🟠 Open |
+| **LAUNCH-006** | Cart | Cart badge count doesn't match server truth — client/server desync | Phase 7 | 🟢 Resolved (retest pass 2026-02-11) |
 
 ### High — Infrastructure / Styling
 
@@ -175,31 +188,31 @@ const creds = getTestUserCredentials();
 
 | # | Phase File | Scope | Routes | Priority | Status |
 |---|------------|-------|--------|----------|--------|
-| 1 | `01-shell-navigation.md` | App shell, headers, tab bar, drawers, safe areas, overlays | Global chrome | **P0** | 📝 Planned |
-| 2 | `02-landing-homepage.md` | Homepage sections, scroll, sticky pills, feed content | `/` | **P0** | 📝 Planned |
-| 3 | `03-auth-flows.md` | Sign up, login, password reset, auth drawer, session, onboarding | 7 auth routes + drawer | **P0** | 📝 Planned |
-| 4 | `04-categories-discovery.md` | Category browsing L0→L3, drawer, subcategories, filter/sort | `/categories`, `/categories/:slug`, `/categories/:slug/:sub` | **P0** | 📝 Planned |
-| 5 | `05-search-quickview.md` | Search input, results, filters, sorting, quick-view drawer | `/search` + `@modal` | **P0** | 📝 Planned |
-| 6 | `06-product-detail.md` | PDP mobile layout, gallery, price, seller card, attributes, reviews | `/:username/:productSlug` | **P0** | 📝 Planned |
-| 7 | `07-cart-checkout.md` | Cart drawer, cart page, checkout flow, Stripe, success | `/cart`, `/checkout`, `/checkout/success` | **P0** | 📝 Planned |
-| 8 | `08-sell-form.md` | Multi-step wizard, stepper, photo upload, draft, publish | `/sell` | **P0** | 📝 Planned |
-| 9 | `09-chat-messaging.md` | Chat inbox, conversation thread, real-time, images, report/block | `/chat`, `/chat/:id` | **P1** | 📝 Planned |
-| 10 | `10-account-pages.md` | All 18 account routes, mobile nav gap, profile, orders, settings | `/account/*` | **P1** | 📝 Planned |
-| 11 | `11-wishlist.md` | Wishlist page, drawer, add/remove, shared wishlist | `/wishlist`, `/wishlist/:token` | **P1** | 📝 Planned |
-| 12 | `12-seller-management.md` | Seller dashboard, payouts, listing edit, sales, orders | `/seller/*`, `/account/selling/*`, `/sell/orders` | **P1** | 📝 Planned |
-| 13 | `13-user-profiles.md` | Public user/seller profiles, product listings by user | `/:username` | **P2** | 📝 Planned |
-| 14 | `14-static-legal-pages.md` | About, cookies, privacy, returns, terms, contact, FAQ, help, etc. | 16 static routes | **P2** | 📝 Planned |
-| 15 | `15-plans-pricing.md` | Plans page, upgrade modal, plan comparison, CTAs | `/plans`, account upgrade | **P2** | 📝 Planned |
-| 16 | `16-business-dashboard.md` | All 13 business dashboard routes — mobile responsive audit | `/dashboard/*` | **P2** | 📝 Planned |
-| 17 | `17-admin-panel.md` | All 8 admin routes — mobile responsive audit | `/admin/*` | **P3** | 📝 Planned |
-| 18 | `18-cross-cutting.md` | i18n (BG locale), a11y (axe-core, touch targets), perf (LCP, CLS), hydration, error pages | All routes in `bg` | **P1** | 📝 Planned |
+| 1 | `01-shell-navigation.md` | App shell, headers, tab bar, drawers, safe areas, overlays | Global chrome | **P0** | 🧪 Ready |
+| 2 | `02-landing-homepage.md` | Homepage sections, scroll, sticky pills, feed content | `/` | **P0** | 🧪 Ready |
+| 3 | `03-auth-flows.md` | Sign up, login, password reset, auth drawer, session, onboarding | 7 auth routes + drawer | **P0** | 🧪 Ready |
+| 4 | `04-categories-discovery.md` | Category browsing L0→L3, drawer, subcategories, filter/sort | `/categories`, `/categories/:slug`, `/categories/:slug/:sub` | **P0** | 🧪 Ready |
+| 5 | `05-search-quickview.md` | Search input, results, filters, sorting, quick-view drawer | `/search` + `@modal` | **P0** | 🧪 Ready |
+| 6 | `06-product-detail.md` | PDP mobile layout, gallery, price, seller card, attributes, reviews | `/:username/:productSlug` | **P0** | 🧪 Ready |
+| 7 | `07-cart-checkout.md` | Cart drawer, cart page, checkout flow, Stripe, success | `/cart`, `/checkout`, `/checkout/success` | **P0** | 🧪 Ready |
+| 8 | `08-sell-form.md` | Multi-step wizard, stepper, photo upload, draft, publish | `/sell` | **P0** | 🧪 Ready |
+| 9 | `09-chat-messaging.md` | Chat inbox, conversation thread, real-time, images, report/block | `/chat`, `/chat/:id` | **P1** | 🧪 Ready |
+| 10 | `10-account-pages.md` | All 18 account routes, mobile nav gap, profile, orders, settings | `/account/*` | **P1** | 🧪 Ready |
+| 11 | `11-wishlist.md` | Wishlist page, drawer, add/remove, shared wishlist | `/wishlist`, `/wishlist/:token` | **P1** | 🧪 Ready |
+| 12 | `12-seller-management.md` | Seller dashboard, payouts, listing edit, sales, orders | `/seller/*`, `/account/selling/*`, `/sell/orders` | **P1** | 🧪 Ready |
+| 13 | `13-user-profiles.md` | Public user/seller profiles, product listings by user | `/:username` | **P2** | 🧪 Ready |
+| 14 | `14-static-legal-pages.md` | About, cookies, privacy, returns, terms, contact, FAQ, help, etc. | 16 static routes | **P2** | 🧪 Ready |
+| 15 | `15-plans-pricing.md` | Plans page, upgrade modal, plan comparison, CTAs | `/plans`, account upgrade | **P2** | 🧪 Ready |
+| 16 | `16-business-dashboard.md` | All 13 business dashboard routes — mobile responsive audit | `/dashboard/*` | **P2** | 🧪 Ready |
+| 17 | `17-admin-panel.md` | All 8 admin routes — mobile responsive audit | `/admin/*` | **P3** | 🧪 Ready |
+| 18 | `18-cross-cutting.md` | i18n (BG locale), a11y (axe-core, touch targets), perf (LCP, CLS), hydration, error pages | All routes in `bg` | **P1** | 🧪 Ready |
 
 ### Status Legend
 
 | Symbol | Meaning |
 |--------|---------|
 | ⬜ Plan | Phase document not yet created |
-| 📝 Planned | Phase document written with test scenarios |
+| 🧪 Ready | Phase document written with test scenarios |
 | 🔄 In Progress | Audit execution underway |
 | ✅ Complete | Audit finished, findings documented |
 | 🔴 Blocked | Cannot proceed (dependency or environment issue) |
@@ -284,7 +297,7 @@ Lower priority, execute as time allows.
 
 ## 8. Route Coverage Matrix
 
-Every route from `docs/ROUTES.md` (77 routes) mapped to an audit phase.
+Every route from `docs/ROUTES.md` (85 routes) mapped to an audit phase.
 
 ### (main) — Public Buyer Routes (30 routes)
 
@@ -514,7 +527,7 @@ Each phase `.md` file follows this structure:
 | Dependencies | List of prerequisite phases |
 | Devices | Pixel 5 (393×851) · iPhone 12 (390×844) |
 | Auth Required | Yes/No — roles needed |
-| Status | ⬜ Plan / 📝 Planned / 🔄 In Progress / ✅ Complete |
+| Status | ⬜ Plan / 🧪 Ready / 🔄 In Progress / ✅ Complete |
 
 ---
 
@@ -559,6 +572,16 @@ Each phase `.md` file follows this structure:
 
 ---
 
+## Execution Evidence Log
+
+> Required: one row per scenario execution. This table is the release sign-off contract.
+
+| Scenario ID | Auto Result | Manual Result | Owner | Build/Commit | Screenshot/Video | Defect ID | Severity | Retest Result | Sign-off |
+|-------------|-------------|---------------|-------|--------------|------------------|-----------|----------|---------------|---------|
+| S{N}.{M} | Pass/Fail/Blocked/N/A | Pass/Fail/Blocked/N/A | ... | ... | ... | ... | P0/P1/P2/P3 | Pass/Fail/Blocked/N/A | ... |
+
+---
+
 ## Findings
 
 > Filled during audit execution.
@@ -589,24 +612,24 @@ Files to be created in `/production-audit/`:
 | File | Content | Status |
 |------|---------|--------|
 | `master.md` | This document — orchestration + tracking | ✅ Created |
-| `01-shell-navigation.md` | App shell, headers, tab bar, drawers, safe areas | 📝 Planned |
-| `02-landing-homepage.md` | Homepage sections, scroll, sticky pills, feed | 📝 Planned |
-| `03-auth-flows.md` | Sign up, login, password reset, auth drawer, onboarding | 📝 Planned |
-| `04-categories-discovery.md` | Category browsing, drawer, subcategories, filter/sort | 📝 Planned |
-| `05-search-quickview.md` | Search, results, filters, sorting, quick-view drawer | 📝 Planned |
-| `06-product-detail.md` | PDP layout, gallery, price, seller card, reviews | 📝 Planned |
-| `07-cart-checkout.md` | Cart drawer/page, checkout flow, Stripe, success | 📝 Planned |
-| `08-sell-form.md` | Multi-step wizard, stepper, photos, draft, publish | 📝 Planned |
-| `09-chat-messaging.md` | Chat inbox, conversation, real-time, images | 📝 Planned |
-| `10-account-pages.md` | All 18 account routes, mobile nav, profile, settings | 📝 Planned |
-| `11-wishlist.md` | Wishlist page, drawer, add/remove, shared | 📝 Planned |
-| `12-seller-management.md` | Seller dashboard, payouts, listings, sales, orders | 📝 Planned |
-| `13-user-profiles.md` | Public user/seller profiles | 📝 Planned |
-| `14-static-legal-pages.md` | 16 static/legal/info pages | 📝 Planned |
-| `15-plans-pricing.md` | Plans page, upgrade modal, comparison | 📝 Planned |
-| `16-business-dashboard.md` | 13 business dashboard routes | 📝 Planned |
-| `17-admin-panel.md` | 8 admin routes | 📝 Planned |
-| `18-cross-cutting.md` | i18n, a11y, performance, hydration, error pages | 📝 Planned |
+| `01-shell-navigation.md` | App shell, headers, tab bar, drawers, safe areas | 🧪 Ready |
+| `02-landing-homepage.md` | Homepage sections, scroll, sticky pills, feed | 🧪 Ready |
+| `03-auth-flows.md` | Sign up, login, password reset, auth drawer, onboarding | 🧪 Ready |
+| `04-categories-discovery.md` | Category browsing, drawer, subcategories, filter/sort | 🧪 Ready |
+| `05-search-quickview.md` | Search, results, filters, sorting, quick-view drawer | 🧪 Ready |
+| `06-product-detail.md` | PDP layout, gallery, price, seller card, reviews | 🧪 Ready |
+| `07-cart-checkout.md` | Cart drawer/page, checkout flow, Stripe, success | 🧪 Ready |
+| `08-sell-form.md` | Multi-step wizard, stepper, photos, draft, publish | 🧪 Ready |
+| `09-chat-messaging.md` | Chat inbox, conversation, real-time, images | 🧪 Ready |
+| `10-account-pages.md` | All 18 account routes, mobile nav, profile, settings | 🧪 Ready |
+| `11-wishlist.md` | Wishlist page, drawer, add/remove, shared | 🧪 Ready |
+| `12-seller-management.md` | Seller dashboard, payouts, listings, sales, orders | 🧪 Ready |
+| `13-user-profiles.md` | Public user/seller profiles | 🧪 Ready |
+| `14-static-legal-pages.md` | 16 static/legal/info pages | 🧪 Ready |
+| `15-plans-pricing.md` | Plans page, upgrade modal, comparison | 🧪 Ready |
+| `16-business-dashboard.md` | 13 business dashboard routes | 🧪 Ready |
+| `17-admin-panel.md` | 8 admin routes | 🧪 Ready |
+| `18-cross-cutting.md` | i18n, a11y, performance, hydration, error pages | 🧪 Ready |
 
 **Total: 19 files** (1 master + 18 phase documents)
 
@@ -1014,25 +1037,28 @@ Files to be created in `/production-audit/`:
 
 | Phase | Plan Status | Execution Status | Findings Count | Last Updated |
 |-------|-------------|------------------|----------------|-------------|
-| 1 | 📝 | — | — | 2026-02-09 |
-| 2 | 📝 | — | — | 2026-02-09 |
-| 3 | 📝 | — | — | 2026-02-09 |
-| 4 | 📝 | — | — | 2026-02-09 |
-| 5 | 📝 | — | — | 2026-02-09 |
-| 6 | 📝 | — | — | 2026-02-09 |
-| 7 | 📝 | — | — | 2026-02-09 |
-| 8 | 📝 | — | — | 2026-02-09 |
-| 9 | 📝 | — | — | 2026-02-09 |
-| 10 | 📝 | — | — | 2026-02-09 |
-| 11 | 📝 | — | — | 2026-02-09 |
-| 12 | 📝 | — | — | 2026-02-09 |
-| 13 | 📝 | — | — | 2026-02-09 |
-| 14 | 📝 | — | — | 2026-02-09 |
-| 15 | 📝 | — | — | 2026-02-09 |
-| 16 | 📝 | — | — | 2026-02-09 |
-| 17 | 📝 | — | — | 2026-02-09 |
-| 18 | 📝 | — | — | 2026-02-09 |
+| 0 (Command Center) | ✅ | ✅ Documentation baseline normalized | 0 | 2026-02-11 |
+| 1 | 🧪 | ✅ Complete: 16/16 shell scenarios executed (SAFE-001 resolved, HYDRA-002 open) | 1 (P1:1) | 2026-02-11 |
+| 2 | 🧪 | ✅ Complete: 15/15 homepage scenarios executed; promoted-stack gaps + CAT-001 still open | 4 (P1:2, P2:1, P3:1) | 2026-02-11 |
+| 3 | 🧪 | ✅ Complete: auth/onboarding code audit rerun; AUTH-001/002 resolved, AUTH-003 partially open | 3 (P1:1, P2:1, P3:1) | 2026-02-11 |
+| 4 | 🧪 | ✅ Complete: 15/15 category scenarios executed; CAT-001 remains open | 2 (P1:2, includes 1 resolved historical) | 2026-02-11 |
+| 5 | 🧪 | ✅ Complete: 15/15 search/quick-view scenarios passed; FE-UX-006 resolved | 0 | 2026-02-11 |
+| 6 | 🧪 | ✅ Complete: 18/18 PDP scenarios passed; FE-UX-006 resolved | 1 (P1:1, historical resolved) | 2026-02-11 |
+| 7 | 🧪 | ✅ Complete: 15/15 cart/checkout scenarios passed; LAUNCH-006 resolved | 1 (P1:1, historical resolved) | 2026-02-11 |
+| 8 | 🧪 | ✅ Complete: SELL-001 confirmed open (leaf-category + review edit mapping defects) | 5 (P0:1, P1:2, P2:2) | 2026-02-11 |
+| 9 | 🧪 | ✅ Complete: chat/report flow audited; image-send, admin-report recipient, and route consistency issues found | 4 (P1:3, P2:1) | 2026-02-11 |
+| 10 | 🧪 | ✅ Complete: account route/nav audit; ACCT-001 resolved, i18n debt remains | 1 (P2:1) | 2026-02-11 |
+| 11 | 🧪 | ✅ Complete: wishlist/public-share audit; auth gate + shared-link issues found | 5 (P1:3, P2:2) | 2026-02-11 |
+| 12 | 🧪 | ✅ Complete: seller management audit; role guard inconsistency, route issues, and action-surface risks found | 5 (P1:3, P2:2) | 2026-02-11 |
+| 13 | 🧪 | ✅ Complete: profile/directory audit; message CTA query mismatch found | 2 (P2:1, P3:1) | 2026-02-11 |
+| 14 | 🧪 | ✅ Complete: 6/6 static/legal scenarios executed; legal CTA touch target under spec | 1 (P2:1) | 2026-02-11 |
+| 15 | 🧪 | ✅ Complete: plans/upgrade modal audit; tier-state + currency/i18n issues found | 3 (P1:1, P2:2) | 2026-02-11 |
+| 16 | 🧪 | ✅ Complete: DASH-001 split verdict (sidebar mobile infra present, content responsiveness still open) | 9 (P1:4, P2:5) | 2026-02-11 |
+| 17 | 🧪 | ✅ Complete: ADMIN-001 partial (sidebar fixed, table/readability + UX gaps remain) | 5 (P1:1, P2:4) | 2026-02-11 |
+| 18 | 🧪 | ✅ Complete: 16/16 cross-cutting scenarios executed (7 pass, 4 fail, 5 blocked); HYDRA-002 open, a11y suite failing | 6 (P1:2, P2:4) | 2026-02-11 |
 
 ---
 
-*Last updated: 2026-02-09*
+*Last updated: 2026-02-11*
+
+

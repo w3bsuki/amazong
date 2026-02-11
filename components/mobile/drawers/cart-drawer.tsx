@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo, useCallback } from "react"
+import { useMemo, useCallback, useEffect, useState } from "react"
 import { ShoppingCart, Package, Minus, Plus, Trash, X } from "@phosphor-icons/react"
 import {
   Drawer,
@@ -19,10 +19,44 @@ import { useTranslations, useLocale } from "next-intl"
 import { useCart, type CartItem } from "@/components/providers/cart-context"
 import Image from "next/image"
 import { cn } from "@/lib/utils"
+import { normalizeImageUrl, PLACEHOLDER_IMAGE_PATH } from "@/lib/normalize-image-url"
 
 interface CartDrawerProps {
   open: boolean
   onOpenChange: (open: boolean) => void
+}
+
+function CartDrawerItemImage({
+  src,
+  alt,
+  priority,
+}: {
+  src?: string | null
+  alt: string
+  priority: boolean
+}) {
+  const [resolvedSrc, setResolvedSrc] = useState(() => normalizeImageUrl(src))
+
+  useEffect(() => {
+    setResolvedSrc(normalizeImageUrl(src))
+  }, [src])
+
+  return (
+    <Image
+      src={resolvedSrc}
+      alt={alt}
+      width={56}
+      height={56}
+      className="size-full object-cover"
+      priority={priority}
+      loading={priority ? "eager" : "lazy"}
+      onError={() => {
+        if (resolvedSrc !== PLACEHOLDER_IMAGE_PATH) {
+          setResolvedSrc(PLACEHOLDER_IMAGE_PATH)
+        }
+      }}
+    />
+  )
 }
 
 /**
@@ -103,15 +137,7 @@ export function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
                 <Link href={buildProductUrl(item)} onClick={handleClose} className="shrink-0">
                   <div className="size-14 bg-muted rounded-xl overflow-hidden border border-border">
                     {item.image ? (
-                      <Image
-                        src={item.image}
-                        alt={item.title}
-                        width={56}
-                        height={56}
-                        className="size-full object-cover"
-                        priority={index === 0}
-                        loading={index === 0 ? "eager" : "lazy"}
-                      />
+                      <CartDrawerItemImage src={item.image} alt={item.title} priority={index === 0} />
                     ) : (
                       <div className="size-full flex items-center justify-center text-muted-foreground">
                         <Package size={20} weight="regular" />

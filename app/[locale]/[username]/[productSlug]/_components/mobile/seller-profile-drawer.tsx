@@ -20,10 +20,8 @@ import {
   Package,
   Users,
   MessageCircle,
-  ChevronRight,
   Sparkles,
   X,
-  ExternalLink,
 } from "lucide-react"
 import { Link, useRouter } from "@/i18n/routing"
 import {
@@ -385,15 +383,26 @@ export function SellerProfileDrawer({
             sellerUsername={seller.username}
             onClose={handleClose}
           />
+
+          {seller.username && (
+            <Button
+              variant="ghost"
+              size="sm"
+              className="w-full justify-center text-sm text-primary"
+              onClick={handleViewFullProfile}
+            >
+              {t("viewFullProfile")}
+            </Button>
+          )}
         </DrawerBody>
 
         {/* Footer with actions */}
-        <DrawerFooter className="border-t border-border-subtle">
+        <DrawerFooter className="border-t border-border-subtle py-2.5">
           {/* Action buttons */}
           <div className="flex gap-2">
             <Button
               variant={isFollowing ? "secondary" : "outline"}
-              size="default"
+              size="sm"
               className="flex-1 gap-1.5"
               onClick={handleFollow}
             >
@@ -402,7 +411,7 @@ export function SellerProfileDrawer({
             </Button>
             <Button
               variant="default"
-              size="default"
+              size="sm"
               className="flex-1 gap-1.5"
               onClick={handleChat}
             >
@@ -410,19 +419,6 @@ export function SellerProfileDrawer({
               {t("chat")}
             </Button>
           </div>
-
-          {/* View full profile link */}
-          {seller.username && (
-            <Button
-              variant="ghost"
-              size="compact"
-              className="w-full text-sm text-primary"
-              onClick={handleViewFullProfile}
-            >
-              {t("viewFullProfile")}
-              <ExternalLink className="size-3.5 ml-1" />
-            </Button>
-          )}
         </DrawerFooter>
       </DrawerContent>
     </Drawer>

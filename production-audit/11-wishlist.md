@@ -10,7 +10,7 @@
 | **Dependencies** | Phase 1 (Shell), Phase 3 (Auth), Phase 6 (PDP — add to wishlist) |
 | **Devices** | Pixel 5 (393×851) · iPhone 12 (390×844) |
 | **Auth Required** | Yes for `/wishlist` and `/account/wishlist`; No for `/wishlist/shared/:token` |
-| **Status** | 📝 Planned |
+| **Status** | ✅ Complete (code audit 2026-02-11) |
 
 ---
 
@@ -374,11 +374,34 @@
 
 ---
 
+## Execution Evidence Log
+
+> Required for release sign-off. Add one row per executed scenario.
+
+| Scenario ID | Auto Result | Manual Result | Owner | Build/Commit | Screenshot/Video | Defect ID | Severity | Retest Result | Sign-off |
+|-------------|-------------|---------------|-------|--------------|------------------|-----------|----------|---------------|---------|
+| S11.1 | N/A (code trace) | ❌ Fail | Codex | working-tree (2026-02-11) | `/wishlist` page has no server auth redirect; route renders directly | WISH-AUTH-001 | P1 | ❌ Fail | ✅ |
+| S11.2 | N/A (code trace) | ✅ Pass | Codex | working-tree (2026-02-11) | Grid rendering in `wishlist-page-client.tsx` | — | — | — | ✅ |
+| S11.3 | N/A (code trace) | ✅ Pass | Codex | working-tree (2026-02-11) | Remove path in page client + context | — | — | — | ✅ |
+| S11.4 | N/A (code trace) | ✅ Pass | Codex | working-tree (2026-02-11) | Drawer trigger/components wiring | — | — | — | ✅ |
+| S11.5 | N/A (code trace) | ✅ Pass | Codex | working-tree (2026-02-11) | Drawer item actions (`add`, `remove`) in `wishlist-drawer.tsx` | — | — | — | ✅ |
+| S11.6 | N/A (code trace) | ✅ Pass | Codex | working-tree (2026-02-11) | Drawer max-height classes and responsive container | — | — | — | ✅ |
+| S11.7 | N/A (code trace) | ✅ Pass | Codex | working-tree (2026-02-11) | Empty-state handling in page/drawer | — | — | — | ✅ |
+| S11.8 | N/A (code trace) | ⚠ Partial | Codex | working-tree (2026-02-11) | Public shared page exists, but links/prices are non-canonical/hardcoded | WISH-002, WISH-003 | P1/P2 | ⚠ Partial | ✅ |
+| S11.9 | N/A (code trace) | ⚠ Partial | Codex | working-tree (2026-02-11) | Account wishlist works; share-link generator targets wrong path format | WISH-001 | P1 | ⚠ Partial | ✅ |
+| S11.10 | N/A (code trace) | ✅ Pass | Codex | working-tree (2026-02-11) | Provider `toggleWishlist` and optimistic updates are present | — | — | — | ✅ |
+
+---
+
 ## Findings
 
 | ID | Scenario | Severity | Description | Screenshot | Device |
 |----|----------|----------|-------------|------------|--------|
-| — | — | — | — | — | — |
+| WISH-AUTH-001 | S11.1 | P1 | Route protection mismatch: `/wishlist` is documented/auth-mapped as auth-only but currently renders without server auth redirect (`app/[locale]/(main)/wishlist/page.tsx`). | N/A (code audit) | N/A |
+| WISH-001 | S11.9 | P1 | Share button builds `/{locale}/wishlist/{token}` instead of `/{locale}/wishlist/shared/{token}`, producing broken shared links. | N/A (code audit) | N/A |
+| WISH-002 | S11.8 | P1 | Shared wishlist page links product cards to `/product/{id}` instead of canonical `/{username}/{slug}` URLs. | N/A (code audit) | N/A |
+| WISH-003 | S11.8 | P2 | Shared page hardcodes dollar formatting via `${price.toFixed(2)}`; bypasses locale/currency formatting strategy. | N/A (code audit) | N/A |
+| WISH-I18N-004 | Cross-cutting | P2 | Share dialog and related account wishlist UI still contain many inline `locale === "bg"` string branches instead of `next-intl` keys. | N/A (code audit) | N/A |
 
 ---
 
@@ -387,8 +410,10 @@
 | Metric | Value |
 |--------|-------|
 | Scenarios | 10 |
-| Executed | 0 |
-| Passed | 0 |
-| Issues found | 0 |
+| Executed | 10 |
+| Passed | 7 |
+| Failed | 1 |
+| Partial | 2 |
+| Issues found | 5 (P1:3, P2:2) |
 | Blockers | 0 |
-| Status | 📝 Planned |
+| Status | ✅ Complete (code audit) |

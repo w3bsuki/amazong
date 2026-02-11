@@ -1,6 +1,6 @@
-import type { Metadata } from "next";
 import { getCategoryType, type CategoryType } from "@/lib/utils/category-type";
 import type { HeroSpec } from "@/lib/data/product-page";
+import { normalizeImageUrl, normalizeImageUrls, PLACEHOLDER_IMAGE_PATH } from "@/lib/normalize-image-url";
 export type { HeroSpec };
 
 /**
@@ -154,12 +154,16 @@ function getProductImages(product: ProductPageProductLike): string[] {
       // Then sort by display_order
       return (a.display_order ?? 0) - (b.display_order ?? 0);
     });
-    return sorted.map(img => img.image_url);
+    return sorted.map((img) => normalizeImageUrl(img.image_url));
   }
   
   // Fallback to legacy images JSON array
   const raw = product.images;
-  return Array.isArray(raw) && raw.length > 0 ? (raw as string[]) : ["/placeholder.svg"];
+  if (Array.isArray(raw) && raw.length > 0) {
+    const normalized = normalizeImageUrls(raw as Array<string | null | undefined>);
+    return normalized.length > 0 ? normalized : [PLACEHOLDER_IMAGE_PATH];
+  }
+  return [PLACEHOLDER_IMAGE_PATH];
 }
 
 export function buildProductPageViewModel(args: {
@@ -197,7 +201,9 @@ export function buildProductPageViewModel(args: {
       title: String(row.title ?? ""),
       price: Number(row.price ?? 0),
       originalPrice: row.list_price != null ? Number(row.list_price) : null,
-      image: (Array.isArray(rowImages) ? (rowImages[0] as string | undefined) : undefined) || "/placeholder.svg",
+      image: normalizeImageUrl(
+        (Array.isArray(rowImages) ? (rowImages[0] as string | undefined) : undefined) ?? null,
+      ),
       rating: Number(row.rating ?? 0),
       reviews: Number(row.review_count ?? 0),
       sellerName,

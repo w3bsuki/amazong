@@ -10,7 +10,7 @@
 | **Dependencies** | Phase 1 (Shell) |
 | **Devices** | Pixel 5 (393×851) · iPhone 12 (390×844) |
 | **Auth Required** | No (public pages; follow/message require auth) |
-| **Status** | 📝 Planned |
+| **Status** | ✅ Complete (code audit 2026-02-11) |
 
 ---
 
@@ -302,11 +302,29 @@ None identified for profile or seller directory routes.
 
 ---
 
+## Execution Evidence Log
+
+> Required for release sign-off. Add one row per executed scenario.
+
+| Scenario ID | Auto Result | Manual Result | Owner | Build/Commit | Screenshot/Video | Defect ID | Severity | Retest Result | Sign-off |
+|-------------|-------------|---------------|-------|--------------|------------------|-----------|----------|---------------|---------|
+| S13.1 | N/A (code trace) | ✅ Pass | Codex | working-tree (2026-02-11) | Public profile composition in `app/[locale]/[username]/page.tsx` + `profile-client.tsx` | — | — | — | ✅ |
+| S13.2 | N/A (code trace) | ✅ Pass | Codex | working-tree (2026-02-11) | Product tab/grid rendering path in profile client | — | — | — | ✅ |
+| S13.3 | N/A (code trace) | ✅ Pass | Codex | working-tree (2026-02-11) | Follow/unfollow flow through `app/actions/seller-follows.ts` and follow button | — | — | — | ✅ |
+| S13.4 | N/A (code trace) | ⚠ Partial | Codex | working-tree (2026-02-11) | Message CTA uses unsupported `?to=` query shape for chat entry | PROFILE-001 | P2 | ⚠ Partial | ✅ |
+| S13.5 | N/A (code trace) | ✅ Pass | Codex | working-tree (2026-02-11) | Proper `notFound()` handling for invalid usernames | — | — | — | ✅ |
+| S13.6 | N/A (code trace) | ✅ Pass | Codex | working-tree (2026-02-11) | Sellers directory server/client rendering path verified | — | — | — | ✅ |
+| S13.7 | N/A (code trace) | ✅ Pass | Codex | working-tree (2026-02-11) | Mobile profile header sync integration present | — | — | — | ✅ |
+| S13.8 | N/A (code trace) | ✅ Pass | Codex | working-tree (2026-02-11) | Own-profile conditional settings panel rendering present | — | — | — | ✅ |
+
+---
+
 ## Findings
 
 | ID | Scenario | Severity | Description | Screenshot | Device |
 |----|----------|----------|-------------|------------|--------|
-| — | — | — | — | — | — |
+| PROFILE-001 | S13.4 | P2 | Message Seller CTA links to `/chat?to={sellerId}` while chat entry expects `seller`/`product` params; `to` is not consumed in route handler. | N/A (code audit) | N/A |
+| PROFILE-I18N-002 | Cross-cutting | P3 | `sellers-empty-state.tsx` still uses direct `locale === "bg"` branches instead of translation keys. | N/A (code audit) | N/A |
 
 ---
 
@@ -315,10 +333,12 @@ None identified for profile or seller directory routes.
 | Metric | Value |
 |--------|-------|
 | Scenarios | 8 |
-| Executed | 0 |
-| Passed | 0 |
-| Issues found | 0 |
+| Executed | 8 |
+| Passed | 7 |
+| Failed | 0 |
+| Partial | 1 |
+| Issues found | 2 (P2:1, P3:1) |
 | Blockers | 0 |
-| Status | 📝 Planned |
+| Status | ✅ Complete (code audit) |
 
 Phase 13 covers 2 public routes (`/:username` and `/sellers`) spanning the profile and seller directory surface. The profile page (`PublicProfileClient`) is a rich client component with tabs (products, reviews), stats, social links, and conditional actions (follow/message for visitors, edit/share for own profile). Profile data is hybrid-cached — public data via `'use cache'` in `getPublicProfileData` with ISR pre-rendering top 25 active sellers, while user-specific data (`isOwnProfile`, `isFollowing`) remains dynamic. No `data-testid` attributes exist in profile components — all selectors must rely on structural queries, ARIA roles, or text content. The seller directory uses `PageShell variant="muted"` with a hero banner and `SellersDirectoryClient` grid. Key risk areas include follow button auth gating, profile 404 rendering via `notFound()`, and mobile header synchronization via `ProfileHeaderSync`.

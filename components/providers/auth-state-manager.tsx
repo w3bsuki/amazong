@@ -120,7 +120,11 @@ export function AuthStateManager({ children }: { children: ReactNode }) {
 
   const refreshWithThrottle = useCallback(async (forceRetry = false) => {
     const now = Date.now()
-    if (now - lastRefreshRef.current < 30_000) return
+
+    // Route-exit refresh after auth success is latency-sensitive and should
+    // never be skipped by the periodic refresh throttle.
+    if (!forceRetry && now - lastRefreshRef.current < 30_000) return
+
     lastRefreshRef.current = now
     await refreshSession({ forceRetry })
   }, [refreshSession])

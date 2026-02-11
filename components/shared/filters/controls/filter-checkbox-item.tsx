@@ -48,14 +48,32 @@ export function FilterCheckboxItem({
   disabled = false,
 }: FilterCheckboxItemProps) {
   const id = React.useId()
+  const handleToggle = React.useCallback(() => {
+    if (disabled) return
+    onCheckedChange(!checked)
+  }, [checked, disabled, onCheckedChange])
+
+  const handleKeyDown = React.useCallback(
+    (event: React.KeyboardEvent<HTMLDivElement>) => {
+      if (disabled) return
+      if (event.key === " " || event.key === "Enter") {
+        event.preventDefault()
+        onCheckedChange(!checked)
+      }
+    },
+    [checked, disabled, onCheckedChange]
+  )
 
   return (
-    <button
-      type="button"
-      onClick={() => !disabled && onCheckedChange(!checked)}
-      disabled={disabled}
+    <div
+      role="checkbox"
+      aria-checked={checked}
+      aria-disabled={disabled || undefined}
+      tabIndex={disabled ? -1 : 0}
+      onClick={handleToggle}
+      onKeyDown={handleKeyDown}
       className={cn(
-        "w-full flex items-center gap-3 h-11 transition-colors text-left",
+        "w-full flex items-center gap-3 h-11 cursor-pointer transition-colors text-left outline-none focus-visible:ring-2 focus-visible:ring-focus-ring",
         fullBleed ? "px-inset -mx-inset" : "px-3",
         checked
           ? "bg-selected text-foreground font-medium"
@@ -63,7 +81,6 @@ export function FilterCheckboxItem({
         disabled && "opacity-50 cursor-not-allowed",
         className
       )}
-      aria-pressed={checked}
     >
       <Checkbox
         id={id}
@@ -82,7 +99,7 @@ export function FilterCheckboxItem({
           </span>
         )}
       </div>
-    </button>
+    </div>
   )
 }
 

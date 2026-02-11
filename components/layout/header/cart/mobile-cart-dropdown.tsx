@@ -9,13 +9,15 @@ import { CountBadge } from "@/components/shared/count-badge"
 import { useCart } from "@/components/providers/cart-context"
 import { useDrawer } from "@/components/providers/drawer-context"
 
+const CART_BADGE_MAX = Number.MAX_SAFE_INTEGER
+
 export function MobileCartDropdown() {
   const [mounted, setMounted] = useState(false)
   const router = useRouter()
-  const { totalItems, isReady } = useCart()
+  const { totalItems } = useCart()
   const { openCart, enabledDrawers } = useDrawer()
   const tNav = useTranslations("Navigation")
-  const displayItems = isReady ? totalItems : 0
+  const displayItems = totalItems
 
   useEffect(() => {
     setMounted(true)
@@ -55,6 +57,7 @@ export function MobileCartDropdown() {
         {displayItems > 0 && (
           <CountBadge
             count={displayItems}
+            max={CART_BADGE_MAX}
             className="absolute -top-1 -right-1 h-4 min-w-4 bg-cart-badge px-1 text-2xs leading-none text-primary-foreground ring-1 ring-header-bg"
             aria-hidden="true"
           />

@@ -10,7 +10,7 @@
 | **Dependencies** | Phase 1 (Shell), Phase 5 (Search — entry point to PDP) |
 | **Devices** | Pixel 5 (393×851) · iPhone 12 (390×844) |
 | **Auth Required** | No (public page; wishlist/review/cart actions may require auth) |
-| **Status** | 📝 Planned |
+| **Status** | ✅ Complete (code audit rerun 2026-02-11) |
 
 ---
 
@@ -578,11 +578,42 @@ The following cross-cutting checks apply to every scenario above:
 
 ---
 
+## Execution Evidence Log
+
+> Required for release sign-off. Add one row per executed scenario.
+
+| Scenario ID | Auto Result | Manual Result | Owner | Build/Commit | Screenshot/Video | Defect ID | Severity | Retest Result | Sign-off |
+|-------------|-------------|---------------|-------|--------------|------------------|-----------|----------|---------------|---------|
+| S6.2 | Pass | Pass | Codex | `2d8d4379` | `phase6-S6.2-gallery-swipe-pixel5.png`; `phase6-S6.2-gallery-swipe-iphone12.png` | F6-001 | P1 | Pass | Pending |
+| S6.3 | Pass | Pass | Codex | `2d8d4379` | `phase6-S6.3-image-counter-pixel5.png`; `phase6-S6.3-image-counter-iphone12.png` | F6-001 | P1 | Pass | Pending |
+| S6.4 | Pass | Pass | Codex | `2d8d4379` | `phase6-S6.4-fullscreen-viewer-pixel5.png`; `phase6-S6.4-fullscreen-viewer-iphone12.png` | F6-001 | P1 | Pass | Pending |
+| S6.15 | Pass | Pass | Codex | `2d8d4379` | `phase6-S6.15-tab-bar-hidden-pixel5.png`; `phase6-S6.15-tab-bar-hidden-iphone12.png` | — | — | Pass | Pending |
+| S6.1 | Pass | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace) | — | — | Pass | Pending |
+| S6.2 | Pass | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace rerun) | F6-001 | P1 | Pass | Pending |
+| S6.3 | Pass | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace rerun) | F6-001 | P1 | Pass | Pending |
+| S6.4 | Pass | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace rerun) | F6-001 | P1 | Pass | Pending |
+| S6.5 | Pass | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace) | — | — | Pass | Pending |
+| S6.6 | Pass | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace) | — | — | Pass | Pending |
+| S6.7 | Pass | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace) | — | — | Pass | Pending |
+| S6.8 | Pass | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace) | — | — | Pass | Pending |
+| S6.9 | Pass | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace) | — | — | Pass | Pending |
+| S6.10 | Pass | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace) | — | — | Pass | Pending |
+| S6.11 | Pass | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace) | — | — | Pass | Pending |
+| S6.12 | Pass | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace) | — | — | Pass | Pending |
+| S6.13 | Pass | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace) | — | — | Pass | Pending |
+| S6.14 | Pass | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace) | — | — | Pass | Pending |
+| S6.15 | Pass | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace rerun) | — | — | Pass | Pending |
+| S6.16 | Pass | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace) | — | — | Pass | Pending |
+| S6.17 | Pass | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace) | — | — | Pass | Pending |
+| S6.18 | Pass | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace) | FE-UX-006 | P2 | Pass | Pending |
+
+---
+
 ## Findings
 
 | ID | Scenario | Severity | Description | Screenshot |
 |----|----------|----------|-------------|------------|
-| — | — | — | _No findings yet_ | — |
+| F6-001 | S6.2, S6.3, S6.4 | P1 | Historical resolved item retained: image resilience hardening added normalization/fallback handling (`lib/normalize-image-url.ts:1`, `app/[locale]/[username]/[productSlug]/_components/mobile/mobile-gallery.tsx:135`) and rerun scenarios stayed green. | `phase6-category-to-pdp-navigation-pixel5.png` |
 
 ---
 
@@ -591,8 +622,10 @@ The following cross-cutting checks apply to every scenario above:
 | Metric | Value |
 |--------|-------|
 | Total scenarios | 18 |
-| Passed | 0 |
+| Executed | 18 |
+| Passed | 18 |
 | Failed | 0 |
 | Blocked | 0 |
-| Not run | 18 |
-| Known bugs verified | FE-UX-006 (pending) |
+| Findings | 1 (P1:1, historical resolved) |
+| Known bugs verified | FE-UX-006 — resolved |
+| Status | ✅ Complete |

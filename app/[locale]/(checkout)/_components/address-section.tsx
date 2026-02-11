@@ -2,11 +2,19 @@
 
 import type { ChangeEvent } from "react";
 import { useTranslations } from "next-intl";
-import { ArrowLeft, Check, MapPin, SpinnerGap } from "@phosphor-icons/react";
+import { ArrowLeft, Check, MapPin, SpinnerGap, X } from "@phosphor-icons/react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import {
+  Drawer,
+  DrawerBody,
+  DrawerClose,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+} from "@/components/ui/drawer";
+import { IconButton } from "@/components/ui/icon-button";
 import { cn } from "@/lib/utils";
 import { AddressFormFields } from "../../_components/address-form";
 import type { NewAddressForm, SavedAddress } from "./checkout-types";
@@ -95,19 +103,26 @@ export function AddressSection({
           </div>
         )}
 
-        <Sheet open={showAddressSelector} onOpenChange={setShowAddressSelector}>
-          <SheetContent side="bottom" className="h-5/6">
-            <SheetHeader>
-              <SheetTitle>{t("selectShippingAddress")}</SheetTitle>
-            </SheetHeader>
-            <div className="mt-6 flex h-full flex-col gap-3 overflow-hidden pb-4">
+        <Drawer open={showAddressSelector} onOpenChange={setShowAddressSelector}>
+          <DrawerContent className="max-h-dialog rounded-t-2xl">
+            <DrawerHeader className="border-b border-border-subtle">
+              <div className="flex items-center justify-between gap-3">
+                <DrawerTitle>{t("selectShippingAddress")}</DrawerTitle>
+                <DrawerClose asChild>
+                  <IconButton aria-label="Close" variant="ghost" size="icon-compact">
+                    <X className="size-4" />
+                  </IconButton>
+                </DrawerClose>
+              </div>
+            </DrawerHeader>
+            <DrawerBody className="px-4 py-4">
               <RadioGroup
                 value={selectedAddressId || ""}
                 onValueChange={(v) => {
                   setSelectedAddressId(v);
                   setShowAddressSelector(false);
                 }}
-                className="flex-1 space-y-3 overflow-auto"
+                className="space-y-3"
               >
                 {savedAddresses.map((addr) => {
                   const isSelected = addr.id === selectedAddressId;
@@ -155,9 +170,9 @@ export function AddressSection({
                 <MapPin className="size-4 mr-2" weight="regular" />
                 {t("addNewAddress")}
               </Button>
-            </div>
-          </SheetContent>
-        </Sheet>
+            </DrawerBody>
+          </DrawerContent>
+        </Drawer>
 
         <button type="button" onClick={() => setUseNewAddress(true)} className="text-xs text-primary mt-3 block font-medium">
           {t("useNewAddress")}

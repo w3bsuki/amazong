@@ -11,7 +11,6 @@ import {
   DrawerClose,
   DrawerContent,
   DrawerDescription,
-  DrawerFooter,
   DrawerHeader,
   DrawerTitle,
 } from "@/components/ui/drawer"
@@ -173,6 +172,25 @@ export function AuthDrawer({ open, mode, onOpenChange, onModeChange }: AuthDrawe
                 <p className="text-base font-semibold text-foreground">{tAuth("checkYourEmail")}</p>
                 <p className="text-sm text-muted-foreground">{tAuth("signUpSuccessDescription")}</p>
               </div>
+              <div className="mt-2 flex w-full max-w-xs flex-col gap-2">
+                <Button
+                  type="button"
+                  size="default"
+                  className="w-full"
+                  onClick={() => handleSwitchMode("login")}
+                >
+                  {tAuth("goToSignIn")}
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="default"
+                  className="w-full"
+                  onClick={handleClose}
+                >
+                  {tDrawer("continueBrowsing")}
+                </Button>
+              </div>
             </div>
           ) : (
             <div id="auth-drawer-panel-signup" role="tabpanel" aria-labelledby="auth-drawer-tab-signup">
@@ -188,44 +206,6 @@ export function AuthDrawer({ open, mode, onOpenChange, onModeChange }: AuthDrawe
             </div>
           )}
         </DrawerBody>
-
-        <DrawerFooter className="border-t border-border-subtle px-inset py-3 pb-safe-max gap-2">
-          {isLoginMode ? (
-            <Button
-              type="button"
-              variant="outline"
-              size="default"
-              className="w-full"
-              onClick={() => handleSwitchMode("signup")}
-            >
-              {tAuth("createAccount")}
-            </Button>
-          ) : didSignUpSucceed ? (
-            <>
-              <Button
-                type="button"
-                size="default"
-                className="w-full"
-                onClick={() => handleSwitchMode("login")}
-              >
-                {tAuth("goToSignIn")}
-              </Button>
-              <Button type="button" variant="outline" size="default" className="w-full" onClick={handleClose}>
-                {tDrawer("continueBrowsing")}
-              </Button>
-            </>
-          ) : (
-            <Button
-              type="button"
-              variant="outline"
-              size="default"
-              className="w-full"
-              onClick={() => handleSwitchMode("login")}
-            >
-              {tAuth("signIn")}
-            </Button>
-          )}
-        </DrawerFooter>
       </DrawerContent>
     </Drawer>
   )
