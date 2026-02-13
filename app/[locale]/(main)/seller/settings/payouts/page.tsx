@@ -46,7 +46,7 @@ export default async function PayoutsPage({
 
   return (
       <div className="container max-w-2xl py-8">
-      <h1 className="text-2xl font-bold mb-6">{t("title")}</h1>
+      <h1 className="text-2xl font-bold tracking-tight mb-6">{t("title")}</h1>
       <SellerPayoutSetup
         payoutStatus={payoutStatus}
       />

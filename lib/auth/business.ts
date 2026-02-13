@@ -526,6 +526,7 @@ export async function getBusinessProducts(
     .select(`
       id,
       title,
+      slug,
       price,
       list_price,
       stock,

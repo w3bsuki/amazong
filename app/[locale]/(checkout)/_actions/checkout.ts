@@ -255,7 +255,7 @@ export async function createCheckoutSession(
       }
     } else {
       // Seller hasn't set up payouts - funds go to platform
-      // TODO: Consider blocking checkout or warning buyer
+      // NOTE (BACKLOG-005): Consider blocking checkout or warning buyer.
       console.warn(`Seller ${sellerId} has not completed payout setup. Funds will go to platform.`)
     }
 

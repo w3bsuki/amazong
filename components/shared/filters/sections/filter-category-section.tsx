@@ -46,7 +46,7 @@ export function FilterCategorySection({
           <Link
             href="/categories"
             onClick={onCloseHub}
-            className="size-8 flex items-center justify-center rounded-full bg-muted hover:bg-destructive-subtle hover:text-destructive transition-colors shrink-0 ml-2"
+            className="ml-2 size-8 shrink-0 rounded-full bg-muted flex items-center justify-center transition-colors hover:bg-destructive-subtle hover:text-destructive focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
             aria-label={t("browseAllCategories")}
             title={t("browseAllCategories")}
           >

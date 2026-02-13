@@ -86,8 +86,9 @@ export function PriceFilterSection({
               return (
                 <button
                   key={label}
+                  type="button"
                   className={cn(
-                    "px-2.5 py-1 rounded-md text-xs font-medium transition-colors",
+                    "px-2.5 py-1 rounded-md text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
                     isActive
                       ? "bg-primary text-primary-foreground"
                       : "bg-sidebar-accent text-sidebar-accent-foreground hover:bg-sidebar-muted",

@@ -1,7 +1,7 @@
 export default function GiftCardsFeaturedDesigns({ t }: { t: (key: string) => string }) {
   return (
     <>
-      <h2 className="text-2xl font-bold mb-6">{t("popularGiftCards")}</h2>
+      <h2 className="text-2xl font-bold tracking-tight mb-6">{t("popularGiftCards")}</h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
           <div key={i} className="group cursor-pointer">

@@ -1,0 +1,99 @@
+# PAYMENTS.md — Payments Domain Contract
+
+> Stripe + Stripe Connect implementation notes: webhook ownership, idempotency patterns, and payout gating.
+
+| Field | Value |
+|-------|-------|
+| Owner | treido-orchestrator |
+| Last verified | 2026-02-13 |
+| Refresh cadence | Weekly + whenever Stripe behavior changes |
+
+## Scope
+
+Checkout (orders), listing boosts, saved card setup, subscriptions, Stripe Connect onboarding, payout eligibility, and webhook safety.
+
+## Runtime Truth Paths
+
+- `lib/env.ts` (validated Stripe env vars; webhook secret parsing/rotation)
+- `lib/stripe.ts` (server Stripe instance; API version pin)
+- `lib/stripe-connect.ts` (Connect helpers + fee calculation helpers)
+- `app/actions/payments.ts` (saved cards: setup session, detach, default method)
+- `app/api/checkout/webhook/route.ts` (orders: checkout session completion)
+- `app/api/payments/webhook/route.ts` (listing boosts + card setup webhooks)
+- `app/api/subscriptions/webhook/route.ts` (subscriptions + invoices; separate secret)
+- `app/api/connect/webhook/route.ts` (Connect account updates; separate secret)
+- `app/api/connect/onboarding/route.ts` (Connect onboarding start)
+- `app/[locale]/(checkout)/**` (checkout UI)
+
+## Canonical Ownership (Do Not Duplicate)
+
+Each webhook route owns specific concerns to avoid double-processing:
+
+- Orders (one-time product checkout): `app/api/checkout/webhook/route.ts`
+- Listing boosts + saved cards (setup mode): `app/api/payments/webhook/route.ts`
+- Subscriptions + invoices: `app/api/subscriptions/webhook/route.ts`
+- Connect account status events: `app/api/connect/webhook/route.ts`
+
+If a Checkout session is `mode=subscription` or `mode=setup`, order webhook returns early by design.
+
+## Stripe Environment Variables (Validated)
+
+Do not read `process.env.*` directly; use `lib/env.ts`.
+
+- `STRIPE_SECRET_KEY` (server)
+- `STRIPE_WEBHOOK_SECRET` (orders + payments webhooks; supports comma/newline separated rotation)
+- `STRIPE_SUBSCRIPTION_WEBHOOK_SECRET` (subscriptions webhooks; separate webhook)
+- `STRIPE_CONNECT_WEBHOOK_SECRET` (connect webhooks; separate webhook)
+
+## Webhook Safety Rules
+
+- Verify signature with `stripe.webhooks.constructEvent(...)` before any DB writes.
+- Use `createAdminClient()` in webhook handlers (service role) only after signature verification.
+- Make handlers idempotent:
+  - Orders: `orders.stripe_payment_intent_id` is used for upsert conflict handling.
+  - Listing boosts: unique `listing_boosts.stripe_checkout_session_id` prevents double inserts; retries must not extend duration.
+  - Saved cards: check existing `user_payment_methods` by `stripe_payment_method_id` before inserting.
+- Logging must be sanitized (avoid logging request bodies, secrets, or full error objects).
+
+## Fee Model (Where It Lives)
+
+- Fees are runtime-configured in DB (`subscription_plans`) and loaded by `getFeesForSeller()` in `lib/stripe-connect.ts`.
+- `calculateTransactionFees()` returns a full breakdown (seller fee, buyer protection, platform revenue).
+- Treat the DB as the pricing contract; do not hardcode fee numbers in UI.
+
+## Connect Onboarding + Payout Status
+
+- Connected accounts are Stripe **Express** (`lib/stripe-connect.ts`).
+- Account status updates flow through `POST /api/connect/webhook` which updates `seller_payout_status` fields:
+  - `details_submitted`, `charges_enabled`, `payouts_enabled`
+- UI surfaces should treat these flags as the gating contract for “payout ready”.
+
+## Saved Payment Methods (Buyer)
+
+`app/actions/payments.ts` creates `mode=setup` Checkout sessions and persists:
+
+- `private_profiles.stripe_customer_id` (created on demand)
+- `user_payment_methods` rows from webhook events
+
+## High-Risk Notes
+
+Payments and auth changes are high-risk. Follow `docs/RISK.md` stop-and-ask policy before finalizing changes to webhook semantics, fee calculation, payout release behavior, refunds/disputes, or billing.
+
+## Verification
+
+- Baseline: `pnpm -s typecheck && pnpm -s lint && pnpm -s styles:gate`
+- Unit: `pnpm -s test:unit` (when changing fee logic, webhook handlers, or server actions)
+- E2E: `REUSE_EXISTING_SERVER=true pnpm -s test:e2e:smoke` (when changing checkout/subscription flows)
+
+## Deep Dive
+
+- Pre-cutover full reference: [`docs/archive/2026-02-doc-reset/pre-cutover-docs/PAYMENTS.md`](../archive/2026-02-doc-reset/pre-cutover-docs/PAYMENTS.md)
+
+## See Also
+
+- [`ARCHITECTURE.md`](../../ARCHITECTURE.md)
+- [`docs/RISK.md`](../RISK.md)
+- [`REQUIREMENTS.md`](../../REQUIREMENTS.md)
+
+*Last updated: 2026-02-13*
+

@@ -145,7 +145,7 @@ export function CompactCategorySidebar({
   }
 
   // Item height from CSS var for consistency with layout tokens
-  const itemBase = "w-full flex items-center gap-2.5 px-3 py-2 rounded-md text-sm transition-colors text-left min-h-(--sidebar-item-h)"
+  const itemBase = "w-full flex items-center gap-2.5 px-3 py-2 rounded-md text-sm transition-colors text-left min-h-(--sidebar-item-h) focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
   const itemActive = cn(itemBase, "bg-foreground text-background font-medium")
   const itemInactive = cn(itemBase, "text-muted-foreground hover:bg-muted hover:text-foreground")
 
@@ -182,7 +182,7 @@ export function CompactCategorySidebar({
         {/* Header category when drilled */}
         {viewLevel > 0 && headerCategory && (
           <div className="flex items-center gap-1">
-            <button type="button" onClick={() => {}} className={cn(itemActive, "flex-1 pr-1.5")}>
+            <div className={cn(itemActive, "flex-1 pr-1.5")} role="presentation">
               <SquaresFour size={18} weight="fill" className="shrink-0" />
               <span className="flex-1 truncate">
                 {tCategories("allIn", { category: getCategoryName(headerCategory, locale) })}
@@ -191,9 +191,8 @@ export function CompactCategorySidebar({
                 <span className="text-xs tabular-nums opacity-70">{categoryCounts[headerCategory.slug]}</span>
               )}
               {/* Reset to All Categories button - inside the black button */}
-              <span
-                role="button"
-                tabIndex={0}
+              <button
+                type="button"
                 onClick={(e) => {
                   e.stopPropagation()
                   setViewLevel(0)
@@ -201,23 +200,13 @@ export function CompactCategorySidebar({
                   setCurrentL1(null)
                   onCategorySelect([], null)
                 }}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" || e.key === " ") {
-                    e.preventDefault()
-                    e.stopPropagation()
-                    setViewLevel(0)
-                    setCurrentL0(null)
-                    setCurrentL1(null)
-                    onCategorySelect([], null)
-                  }
-                }}
-                className="size-6 flex items-center justify-center rounded bg-surface-subtle hover:bg-hover transition-colors shrink-0 ml-1"
+                className="size-6 flex items-center justify-center rounded bg-surface-subtle hover:bg-hover transition-colors shrink-0 ml-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
                 aria-label={tCategories("backToAllCategories")}
                 title={tCategories("backToAllCategories")}
               >
                 <X size={12} weight="bold" />
-              </span>
-            </button>
+              </button>
+            </div>
           </div>
         )}
 
@@ -256,7 +245,7 @@ export function CompactCategorySidebar({
           <button
             type="button"
             onClick={() => setIsExpanded(!isExpanded)}
-            className="w-full flex items-center justify-center gap-1.5 py-2 mt-1 text-xs font-medium rounded-md bg-foreground text-background hover:bg-foreground/90"
+            className="w-full flex items-center justify-center gap-1.5 py-2 mt-1 text-xs font-medium rounded-md bg-foreground text-background hover:bg-foreground/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
           >
             {isExpanded ? (
               <>
@@ -293,7 +282,7 @@ export function CompactCategorySidebar({
                 )
               }
             }}
-            className="w-full flex items-center justify-center gap-2 py-2.5 mt-2 text-sm font-medium rounded-md bg-foreground text-background hover:bg-foreground/90 transition-colors"
+            className="w-full flex items-center justify-center gap-2 py-2.5 mt-2 text-sm font-medium rounded-md bg-foreground text-background hover:bg-foreground/90 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
           >
             {tCommon("viewAll")}
             {isMounted && headerCategory && categoryCounts[headerCategory.slug] !== undefined && (

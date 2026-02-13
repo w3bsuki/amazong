@@ -1,0 +1,52 @@
+# Unit Economics (Per Order)
+
+## Goal
+
+Prove the model can fund:
+
+- Stripe processing costs
+- support + dispute handling
+- fraud loss buffer
+- product development and growth
+
+…while keeping fees low enough to avoid off-platform leakage.
+
+## Fee model (plan-driven)
+
+See [Monetization Model](/business/monetization) for the full fee formula, plan tables, and acceptance criteria.
+
+In summary:
+- Buyer pays a Buyer Protection fee: `min(item_price × percent + fixed, cap)`
+- Business sellers pay a small seller fee: `item_price × seller_fee_percent`
+- Rates are plan-driven, stored in `subscription_plans`
+
+## Example (Personal Free, €50 item)
+
+- Buyer fee: `min(€50×4% + €0.50, €15) = €2.50`
+- Buyer total: `€52.50`
+- Seller receives: `€50.00`
+- Platform gross revenue (before Stripe/support): `€2.50`
+
+## Cost buckets to track
+
+- Stripe processing (variable + fixed)
+- refunds/chargebacks (loss rate)
+- support cost per dispute (time + tooling)
+- fraud prevention costs (verification, monitoring)
+
+## Contribution margin (simple model)
+
+```
+contribution = buyer_fee + seller_fee - stripe_cost - refunds_loss - support_allocation
+```
+
+## Sensitivities to monitor
+
+- low-price orders are dominated by fixed Stripe fees → cap/fixed fee matters
+- fraud spikes can wipe margin → early risk controls are critical
+- support load scales with disputes, not GMV → keep dispute rate low
+
+## Implementation requirements
+
+See [Monetization — Acceptance Criteria](/business/monetization#acceptance-criteria) for the full checklist.
+

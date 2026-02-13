@@ -106,14 +106,14 @@ const PUBLIC_ENV_OVERRIDES: Record<string, string | undefined> = {
  */
 function getStableUserId(): string {
   if (typeof window === "undefined") {
-    return Math.random().toString(36).substring(2)
+    return Math.random().toString(36).slice(2)
   }
   
   const storageKey = "treido_feature_user_id"
   let userId = localStorage.getItem(storageKey)
   
   if (!userId) {
-    userId = `${Date.now()}-${Math.random().toString(36).substring(2, 15)}`
+    userId = `${Date.now()}-${Math.random().toString(36).slice(2, 15)}`
     localStorage.setItem(storageKey, userId)
   }
   

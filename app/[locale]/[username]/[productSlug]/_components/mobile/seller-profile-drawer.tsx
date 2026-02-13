@@ -23,7 +23,7 @@ import {
   Sparkles,
   X,
 } from "lucide-react"
-import { Link, useRouter } from "@/i18n/routing"
+import { useRouter } from "@/i18n/routing"
 import {
   Drawer,
   DrawerBody,
@@ -37,7 +37,6 @@ import { Button } from "@/components/ui/button"
 import { IconButton } from "@/components/ui/icon-button"
 import { Badge } from "@/components/ui/badge"
 import { UserAvatar } from "@/components/shared/user-avatar"
-import { cn } from "@/lib/utils"
 
 // -----------------------------------------------------------------------------
 // Types

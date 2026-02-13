@@ -1,6 +1,6 @@
 "use client";
 
-import { useLocale } from "next-intl";
+import { useTranslations } from "next-intl";
 import { Wallet, ShieldCheck, Zap, ArrowRight } from "lucide-react";
 import {
   Dialog,
@@ -22,8 +22,7 @@ interface PayoutRequiredModalProps {
  * Links to /api/connect/onboarding which redirects to Stripe, then back to /sell
  */
 export function PayoutRequiredModal({ open, onOpenChange }: PayoutRequiredModalProps) {
-  const locale = useLocale();
-  const isBg = locale === "bg";
+  const tSell = useTranslations("Sell");
   const router = useRouter();
 
   const handleSetupPayouts = () => {
@@ -41,12 +40,10 @@ export function PayoutRequiredModal({ open, onOpenChange }: PayoutRequiredModalP
           </div>
 
           <DialogTitle className="text-xl font-bold">
-            {isBg ? "Първо настройте изплащанията" : "Set Up Payouts First"}
+            {tSell("payoutSetupRequired")}
           </DialogTitle>
           <DialogDescription className="text-muted-foreground">
-            {isBg
-              ? "За да публикувате обяви, завършете Stripe Connect в настройките на продавача."
-              : "To publish listings, complete Stripe Connect from Seller payout settings."}
+            {tSell("payoutSetupDescription")}
           </DialogDescription>
         </DialogHeader>
 
@@ -58,12 +55,10 @@ export function PayoutRequiredModal({ open, onOpenChange }: PayoutRequiredModalP
             </div>
             <div>
               <p className="text-sm font-medium text-foreground">
-                {isBg ? "Сигурни плащания" : "Secure payments"}
+                {tSell("payoutSetupModal.benefits.securePayments.title")}
               </p>
               <p className="text-xs text-muted-foreground">
-                {isBg
-                  ? "Обработени от Stripe, световен лидер"
-                  : "Processed by Stripe, a global leader"}
+                {tSell("payoutSetupModal.benefits.securePayments.description")}
               </p>
             </div>
           </div>
@@ -73,12 +68,10 @@ export function PayoutRequiredModal({ open, onOpenChange }: PayoutRequiredModalP
             </div>
             <div>
               <p className="text-sm font-medium text-foreground">
-                {isBg ? "Бързи преводи" : "Fast transfers"}
+                {tSell("payoutSetupModal.benefits.fastTransfers.title")}
               </p>
               <p className="text-xs text-muted-foreground">
-                {isBg
-                  ? "Получавайте парите си за дни, не седмици"
-                  : "Get your money in days, not weeks"}
+                {tSell("payoutSetupModal.benefits.fastTransfers.description")}
               </p>
             </div>
           </div>
@@ -92,7 +85,7 @@ export function PayoutRequiredModal({ open, onOpenChange }: PayoutRequiredModalP
             className="w-full"
           >
             <Wallet className="size-5 mr-2" />
-            {isBg ? "Към настройките за изплащане" : "Go to payout settings"}
+            {tSell("setupPayouts")}
             <ArrowRight className="size-5 ml-2" />
           </Button>
           <Button
@@ -100,15 +93,13 @@ export function PayoutRequiredModal({ open, onOpenChange }: PayoutRequiredModalP
             onClick={() => onOpenChange(false)}
             className="w-full"
           >
-            {isBg ? "По-късно" : "Later"}
+            {tSell("payoutSetupModal.later")}
           </Button>
         </div>
 
         {/* Note */}
         <p className="text-xs text-center text-muted-foreground">
-          {isBg
-            ? "След като активирате изплащанията, върнете се в /sell и публикувайте."
-            : "After payouts are enabled, return to /sell and publish."}
+          {tSell("payoutSetupModal.note")}
         </p>
       </DialogContent>
     </Dialog>

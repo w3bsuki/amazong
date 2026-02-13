@@ -127,8 +127,9 @@ export function QuickViewImageGallery({
                 key={`thumb-${i}`}
                 type="button"
                 onClick={() => setCurrentIndex(i)}
+                aria-label={`${title} ${i + 1}/${images.length}`}
                 className={cn(
-                  "relative size-20 shrink-0 rounded-xl overflow-hidden border border-border transition-colors",
+                  "relative size-20 shrink-0 overflow-hidden rounded-xl border border-border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring",
                   i === currentIndex
                     ? "ring-2 ring-ring"
                     : "hover:border-hover-border"
@@ -154,22 +155,22 @@ export function QuickViewImageGallery({
     <div className="touch-pan-y">
       <div className="relative overflow-hidden rounded-2xl border border-border-subtle bg-surface-subtle">
         <AspectRatio ratio={compactRatio} className="relative">
-        <button
-          type="button"
-          onClick={onNavigateToProduct}
-          className="absolute inset-0 size-full cursor-pointer focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset touch-manipulation"
-          aria-label={tDrawers("viewFullListing")}
-        >
-          <Image
-            src={normalizeImageUrl(currentImage) ?? PLACEHOLDER_IMAGE_PATH}
-            alt={title}
-            fill
-            className="pointer-events-none object-cover"
-            sizes="(max-width: 768px) 100vw, 400px"
-            priority
-            draggable={false}
-          />
-        </button>
+          <button
+            type="button"
+            onClick={onNavigateToProduct}
+            className="absolute inset-0 size-full cursor-pointer touch-manipulation focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
+            aria-label={tDrawers("viewFullListing")}
+          >
+            <Image
+              src={normalizeImageUrl(currentImage) ?? PLACEHOLDER_IMAGE_PATH}
+              alt={title}
+              fill
+              className="pointer-events-none object-cover"
+              sizes="(max-width: 768px) 100vw, 400px"
+              priority
+              draggable={false}
+            />
+          </button>
 
         {hasMultiple && (
           <>
@@ -219,8 +220,9 @@ export function QuickViewImageGallery({
               key={`thumb-${i}`}
               type="button"
               onClick={() => setCurrentIndex(i)}
-                className={cn(
-                "relative size-(--control-default) shrink-0 overflow-hidden rounded-lg border border-border-subtle bg-surface-subtle transition-all touch-manipulation",
+              aria-label={`${title} ${i + 1}/${images.length}`}
+              className={cn(
+                "relative size-(--control-default) shrink-0 overflow-hidden rounded-lg border border-border-subtle bg-surface-subtle transition-all touch-manipulation focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring",
                 i === currentIndex
                   ? "ring-2 ring-ring"
                   : "hover:border-hover-border"

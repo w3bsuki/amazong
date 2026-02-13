@@ -7,6 +7,7 @@ import { Link } from "@/i18n/routing";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useSellFormContext } from "../sell-form-provider";
+import { useTranslations } from "next-intl";
 
 // ============================================================================
 // FRAMER MOTION VARIANTS - Direction-aware page transitions
@@ -41,7 +42,6 @@ const pageTransition = {
 
 interface StepConfig {
   id: number;
-  title: { en: string; bg: string };
   fields: string[];
 }
 
@@ -64,7 +64,9 @@ export function StepperWrapper({
   isNextDisabled = false,
   isSubmitDisabled = false,
 }: StepperWrapperProps) {
-  const { currentStep, setCurrentStep, isBg } = useSellFormContext();
+  const { currentStep, setCurrentStep } = useSellFormContext();
+  const tCommon = useTranslations("Common");
+  const tSell = useTranslations("Sell");
   const contentRef = useRef<HTMLDivElement>(null);
   
   // Track direction for animations (1 = forward, -1 = backward)
@@ -119,7 +121,7 @@ export function StepperWrapper({
                 type="button"
                 onClick={handleBack}
                 className="size-10 -ml-2 flex items-center justify-center rounded-md hover:bg-muted transition-colors"
-                aria-label={isBg ? "Назад" : "Back"}
+                aria-label={tCommon("back")}
               >
                 <CaretLeft className="size-5" weight="bold" />
               </button>
@@ -204,12 +206,12 @@ export function StepperWrapper({
               {isSubmitting ? (
                 <>
                   <SpinnerGap className="size-5 animate-spin" />
-                  {isBg ? "Публикуване..." : "Publishing..."}
+                  {tSell("actions.publishing")}
                 </>
               ) : (
                 <>
                   <Rocket className="size-5" weight="fill" />
-                  {isBg ? "Публикувай" : "Publish Listing"}
+                  {tSell("actions.publishListing")}
                 </>
               )}
             </Button>
@@ -221,7 +223,7 @@ export function StepperWrapper({
               className="w-full h-12 rounded-md text-base font-bold gap-2.5"
               disabled={isNextDisabled}
             >
-              {isBg ? "Продължи" : "Continue"}
+              {tCommon("continue")}
               <ArrowRight className="size-5" weight="bold" />
             </Button>
           )}

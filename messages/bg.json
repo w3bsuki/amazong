@@ -1045,9 +1045,11 @@
         "cancel": "Отказ",
         "close": "Затвори",
         "edit": "Редактирай",
+        "share": "Сподели",
         "delete": "Изтрий",
         "confirm": "Потвърди",
         "submit": "Изпрати",
+        "continue": "Продължи",
         "next": "Напред",
         "previous": "Назад",
         "back": "Назад",
@@ -1375,6 +1377,13 @@
     "Account": {
         "title": "Твоят акаунт",
         "tabBarAriaLabel": "Навигация в акаунта",
+        "tabBar": {
+            "account": "Акаунт",
+            "more": "Още",
+            "moreTitle": "Още",
+            "moreDescription": "Още секции и бързи връзки в акаунта.",
+            "moreOptionsAriaLabel": "Още опции"
+        },
         "header": {
             "overview": "Преглед на акаунта",
             "orders": "Поръчки",
@@ -1384,16 +1393,23 @@
             "addresses": "Адреси",
             "notifications": "Известия",
             "payments": "Плащания",
+            "billing": "Фактуриране",
             "selling": "Продавам",
             "sales": "Продажби",
             "plans": "Планове",
             "myAccount": "Моят акаунт",
             "backToStore": "Към магазина",
+            "messages": "Съобщения",
             "profile": "Профил"
         },
         "orders": {
             "title": "Твоите поръчки",
             "desc": "Проследи, върни или купи отново"
+        },
+        "settings": {
+            "title": "Настройки",
+            "emailChangedTitle": "Имейлът е обновен",
+            "emailChangedDescription": "Имейл адресът на акаунта ви беше променен успешно."
         },
         "security": {
             "title": "Вход и сигурност",
@@ -1414,6 +1430,246 @@
         "messages": {
             "title": "Твоите съобщения",
             "desc": "Виж съобщения от Treido и продавачи"
+        },
+        "subscriptionBenefitsCard": {
+            "tierName": "{tier, select, free {Безплатен} starter {Начален} pro {Про} business {Бизнес} other {{tier}}}",
+            "analyticsAccessLabel": "{access, select, basic {Основен} advanced {Разширен} other {{access}}}",
+            "badgeLabel": "{badge, select, verified {Проверен} premium {Премиум} other {{badge}}}",
+            "currentPlanLabel": "Текущ план",
+            "cancellingBadge": "Прекратява се",
+            "listingsLabel": "Обяви",
+            "boostsLabel": "Промоции",
+            "boostsResetLabel": "Нулиране",
+            "boostsRemainingSuffix": "оставащи",
+            "prioritySupportLabel": "Приоритетна поддръжка",
+            "analyticsLabel": "Анализи",
+            "sellerBadgeLabel": "Значка на продавача",
+            "managePlanCta": "Управлявай план",
+            "upgradePlanCta": "Надгради план",
+            "expiresOnLabel": "Изтича на"
+        },
+        "addressesPage": {
+            "labels": {
+                "home": "Дом",
+                "work": "Работа",
+                "other": "Друго"
+            },
+            "actions": {
+                "addAddress": "Добави",
+                "cancel": "Отказ",
+                "save": "Запази",
+                "add": "Добави",
+                "delete": "Изтрий"
+            },
+            "dialog": {
+                "editTitle": "Редактирай адрес",
+                "addTitle": "Добави нов адрес",
+                "description": "Въведете детайлите на адреса за доставка"
+            },
+            "fields": {
+                "label": "Етикет",
+                "country": "Държава",
+                "phone": "Телефон",
+                "fullName": "Пълно име",
+                "addressLine1": "Адрес",
+                "addressLine2": "Адрес 2",
+                "city": "Град",
+                "state": "Област",
+                "postalCode": "Пощ. код",
+                "setDefault": "Направи адрес по подразбиране"
+            },
+            "placeholders": {
+                "fullName": "Иван Иванов",
+                "addressLine1": "ул. Витоша 1",
+                "addressLine2": "Апартамент, етаж и др.",
+                "city": "София",
+                "state": "София-град"
+            },
+            "countries": {
+                "bulgaria": "България",
+                "romania": "Румъния",
+                "greece": "Гърция",
+                "serbia": "Сърбия",
+                "northMacedonia": "Северна Македония"
+            },
+            "deleteDialog": {
+                "title": "Изтриване на адрес",
+                "description": "Сигурни ли сте, че искате да изтриете този адрес? Това действие не може да бъде отменено."
+            },
+            "toasts": {
+                "requiredFields": "Моля, попълнете всички задължителни полета",
+                "updated": "Адресът е обновен",
+                "added": "Адресът е добавен",
+                "saveError": "Грешка при запазване",
+                "deleted": "Адресът е изтрит",
+                "deleteError": "Грешка при изтриване",
+                "defaultUpdated": "Адресът по подразбиране е променен",
+                "updateError": "Грешка при промяна"
+            },
+            "grid": {
+                "noAddresses": "Нямате запазени адреси",
+                "noAddressesDescription": "Добавете адрес за по-бързо плащане при следващата поръчка",
+                "addFirst": "Добави първия адрес",
+                "addNew": "Добави нов адрес",
+                "default": "По подразбиране",
+                "setDefault": "Направи по подразбиране",
+                "edit": "Редактирай",
+                "delete": "Изтрий",
+                "addressDetails": "Детайли на адреса",
+                "deliveryAddress": "Адрес за доставка",
+                "phone": "Телефон",
+                "actions": "Действия",
+                "close": "Затвори"
+            },
+            "stats": {
+                "totalAddresses": "Общо адреси",
+                "addressSingular": "адрес",
+                "addressPlural": "адреса",
+                "defaultShort": "по подразбиране",
+                "defaultAddress": "По подразбиране",
+                "active": "Активен",
+                "home": "Дом",
+                "personal": "Лични",
+                "work": "Работа",
+                "business": "Бизнес",
+                "all": "Всички"
+            }
+        },
+        "followingPage": {
+            "title": "Следвани",
+            "count": "{count, plural, one {# магазин} other {# магазина}}",
+            "viewStore": "Виж магазина",
+            "empty": {
+                "title": "Не следвате никой магазин",
+                "description": "Когато последвате магазин, ще виждате техните нови продукти и оферти тук.",
+                "cta": "Разгледай магазини"
+            },
+            "toasts": {
+                "unfollowed": "Спряхте да следвате магазина",
+                "error": "Грешка"
+            }
+        },
+        "notificationsPage": {
+            "title": "Известия",
+            "markAll": "Отбележи всички",
+            "loading": "Зареждане...",
+            "empty": "Няма известия",
+            "goToSales": "Към продажбите",
+            "preferences": {
+                "title": "Предпочитания",
+                "description": "Изберете кои известия да виждате в приложението и по имейл.",
+                "inApp": "В приложението",
+                "email": "Имейл",
+                "push": "Push"
+            },
+            "rows": {
+                "newSales": {
+                    "title": "Нови продажби",
+                    "description": "Когато някой купи ваш продукт"
+                },
+                "orderStatus": {
+                    "title": "Статус на поръчка",
+                    "description": "Промени по поръчките"
+                },
+                "messages": {
+                    "title": "Съобщения",
+                    "description": "Нови съобщения и разговори"
+                },
+                "reviews": {
+                    "title": "Отзиви",
+                    "description": "Нови отзиви за продукти и продавачи"
+                },
+                "system": {
+                    "title": "Системни",
+                    "description": "Важни системни известия"
+                },
+                "promotions": {
+                    "title": "Промоции",
+                    "description": "Промо кампании и оферти"
+                },
+                "newSalesEmail": "Нови продажби (имейл)",
+                "orderStatusEmail": "Статус на поръчка (имейл)",
+                "messagesEmail": "Съобщения (имейл)",
+                "reviewsEmail": "Отзиви (имейл)",
+                "systemEmail": "Системни (имейл)",
+                "promotionsEmail": "Промоции (имейл)",
+                "push": {
+                    "title": "Push известия",
+                    "description": "Скоро"
+                }
+            },
+            "toasts": {
+                "loadError": "Грешка при зареждане на известия",
+                "markReadError": "Грешка при отбелязване като прочетено",
+                "markAllReadError": "Грешка при отбелязване",
+                "saveError": "Грешка при запазване"
+            }
+        },
+        "billingPage": {
+            "title": "Фактуриране",
+            "subtitle": "Управлявайте абонамента си и преглеждайте историята на плащанията",
+            "currentPlan": "Текущ план",
+            "freePlan": "Безплатен план",
+            "basicPlan": "Основен",
+            "premiumPlan": "Премиум",
+            "businessPlan": "Бизнес",
+            "active": "Активен",
+            "cancelled": "Отказан",
+            "expired": "Изтекъл",
+            "pending": "В изчакване",
+            "nextBilling": "Следващо плащане",
+            "billingPeriod": "Период",
+            "monthly": "Месечно",
+            "yearly": "Годишно",
+            "commission": "Комисионна",
+            "managePlan": "Управление на плана",
+            "upgradePlan": "Надгради плана",
+            "viewPlans": "Виж плановете",
+            "paymentHistory": "История на плащанията",
+            "invoices": "Фактури",
+            "subscriptions": "Абонаменти",
+            "boostPurchases": "Промотирания",
+            "date": "Дата",
+            "description": "Описание",
+            "amount": "Сума",
+            "status": "Статус",
+            "actions": "Действия",
+            "download": "Изтегли",
+            "view": "Преглед",
+            "paid": "Платено",
+            "open": "Отворено",
+            "void": "Анулирано",
+            "draft": "Чернова",
+            "noInvoices": "Няма фактури",
+            "noBoosts": "Няма промотирания",
+            "boostProduct": "Промотирай продукт",
+            "loadingError": "Грешка при зареждане",
+            "product": "Продукт",
+            "duration": "Продължителност",
+            "days": "дни",
+            "expiresIn": "Изтича след",
+            "expired2": "Изтекъл",
+            "sellerSubscription": "Абонамент за продавач",
+            "listingBoost": "Промотиране на обява",
+            "noBillingYet": "Все още нямате плащания. Когато направите покупка или абонамент, ще ги видите тук.",
+            "startSelling": "Започнете да продавате",
+            "becomeSeller": "Станете продавач, за да получите достъп до планове и промотиране",
+            "paymentMethods": "Плащания",
+            "portalOpenError": "Грешка при отваряне на портала",
+            "paymentFallback": "Плащане",
+            "boostHint": "Промотирайте продуктите си за повече видимост",
+            "paidPlanDescription": "Всички плащания за абонаменти и услуги",
+            "freePlanDescription": "Надградете за по-ниски такси и повече функции",
+            "noInvoicesDescription": "Плащанията се обработват сигурно чрез Stripe. Фактурите се генерират автоматично след всяко плащане.",
+            "noBoostsDescription": "История на промотираните продукти",
+            "activeBadge": "Активен",
+            "expiredBadge": "Изтекъл",
+            "billingEmail": "Имейл за фактури: {email}"
+        },
+        "billingError": {
+            "title": "Нещо се обърка",
+            "description": "Не успяхме да заредим информацията за фактуриране. Моля, опитайте отново.",
+            "retry": "Опитай отново"
         }
     },
     "ProductForm": {
@@ -2213,7 +2469,12 @@
         "sortLabel": "Сортиране",
         "sortNewest": "Най-нови",
         "sortRating": "Рейтинг",
-        "sortProducts": "Най-много продукти"
+        "sortProducts": "Най-много продукти",
+        "empty": {
+            "title": "Все още няма продавачи",
+            "description": "Бъдете първият продавач в нашата платформа",
+            "cta": "Започни да продаваш"
+        }
     },
     "Messages": {
         "pageTitle": "Съобщения",
@@ -2261,7 +2522,32 @@
         "tabBuying": "Покупки",
         "tabSelling": "Продажби",
         "unread": "Непрочетено",
-        "read": "Прочетено"
+        "read": "Прочетено",
+        "active": "Активен",
+        "reportConversation": "Докладвай разговор",
+        "reporting": "Изпращане...",
+        "blockUser": "Блокирай потребителя",
+        "blocking": "Блокиране...",
+        "startConversationDisclaimer": "Започнете разговора. Съобщенията изчезват след като поръчката бъде доставена.",
+        "orderLabel": "Поръчка",
+        "orderStatusPending": "Изчаква",
+        "typingIndicator": "{name} пише...",
+        "toasts": {
+            "userBlocked": {
+                "title": "Потребителят е блокиран",
+                "description": "Този потребител вече не може да ви изпраща съобщения"
+            },
+            "blockUserFailed": {
+                "description": "Неуспешно блокиране на потребителя"
+            },
+            "reportSubmitted": {
+                "title": "Докладът е изпратен",
+                "description": "Благодарим ви за сигнала. Ще го прегледаме."
+            },
+            "reportConversationFailed": {
+                "description": "Неуспешно изпращане на доклада"
+            }
+        }
     },
     "ProductFeed": {
         "categoryAnnouncement": "Показване на {categoryName}",
@@ -2628,6 +2914,230 @@
         "removeDiscountButton": "Премахни отстъпка",
         "saveButton": "Запази"
     },
+    "SellerManagement": {
+        "selling": {
+            "pageTitle": "Моят магазин",
+            "actions": {
+                "add": "Добави",
+                "newListing": "Нова обява",
+                "sales": "Продажби"
+            },
+            "stats": {
+                "products": {
+                    "title": "Продукти"
+                },
+                "productsLabel": "{count, plural, one {продукт} other {продукта}}",
+                "value": {
+                    "title": "Стойност на наличностите"
+                },
+                "orders": {
+                    "title": "Поръчки"
+                },
+                "lowStock": {
+                    "title": "Ниска наличност"
+                },
+                "lowStockLabel": "Ниска наличност"
+            },
+            "badges": {
+                "active": "Активни",
+                "inventory": "Наличност",
+                "thisMonth": "Този месец",
+                "attention": "Внимание",
+                "allGood": "Всичко е наред",
+                "verified": "Проверен"
+            },
+            "labels": {
+                "memberSince": "Член от"
+            },
+            "sections": {
+                "yourProducts": "Вашите продукти",
+                "manageListings": "Управлявайте и редактирайте обявите си"
+            },
+            "edit": {
+                "toast": {
+                    "errorTitle": "Грешка",
+                    "productNotFound": "Обявата не е намерена.",
+                    "failedToSave": "Неуспешно запазване на промените. Опитайте отново.",
+                    "successTitle": "Запазено",
+                    "changesSaved": "Промените са запазени."
+                },
+                "breadcrumb": {
+                    "account": "Акаунт",
+                    "myStore": "Моят магазин",
+                    "edit": "Редакция"
+                },
+                "header": {
+                    "title": "Редакция на обява",
+                    "description": "Променете детайли, цена, доставка и промоция."
+                },
+                "sections": {
+                    "basicInformation": "Основна информация",
+                    "pricingDiscount": "Цена и отстъпка",
+                    "pricingDiscountDescription": "Задайте цена и при нужда добавете отстъпка.",
+                    "shipping": {
+                        "title": "Доставка",
+                        "description": "Изберете къде доставяте и задайте град за България."
+                    }
+                },
+                "fields": {
+                    "title": {
+                        "label": "Заглавие",
+                        "placeholder": "напр. iPhone 13 Pro Max"
+                    },
+                    "description": {
+                        "label": "Описание",
+                        "placeholder": "Състояние, включени аксесоари и забележки..."
+                    },
+                    "stock": {
+                        "label": "Наличност"
+                    },
+                    "price": {
+                        "label": "Цена",
+                        "saleLabel": "Цена с отстъпка"
+                    },
+                    "originalPrice": {
+                        "label": "Стара цена",
+                        "placeholder": "напр. 99.99"
+                    },
+                    "saleEndDate": {
+                        "label": "Край на отстъпката (по избор)"
+                    },
+                    "city": {
+                        "label": "Вашият град",
+                        "placeholder": "Изберете град",
+                        "help": "Показва се за доставки в България."
+                    }
+                },
+                "sale": {
+                    "toggleLabel": "Отстъпка",
+                    "toggleDescription": "Показва етикет с отстъпка и стара цена.",
+                    "discountPreview": "Отстъпка: {percent}%"
+                },
+                "shippingDestinations": {
+                    "bulgaria": "България",
+                    "europe": "Европа",
+                    "usa": "САЩ",
+                    "worldwide": "Цял свят"
+                },
+                "sidebar": {
+                    "previewTitle": "Преглед",
+                    "boostTitle": "Промотирай",
+                    "boostDescription": "Показва се на началната страница"
+                },
+                "actions": {
+                    "save": "Запази промените",
+                    "saving": "Запазване...",
+                    "viewProduct": "Виж продукта"
+                }
+            }
+        },
+        "sales": {
+            "breadcrumb": {
+                "account": "Акаунт",
+                "sales": "Продажби"
+            },
+            "header": {
+                "title": "Продажби",
+                "description": "Приходи и поръчки за вашия магазин."
+            },
+            "actions": {
+                "myStore": "Моят магазин",
+                "newListing": "Нова обява"
+            },
+            "pendingActions": {
+                "title": "За внимание",
+                "description": "Бързи действия за неща, които изискват внимание.",
+                "allClear": "Всичко е наред",
+                "items": {
+                    "ordersToShip": "Поръчки за изпращане",
+                    "unreadMessages": "Непрочетени съобщения",
+                    "lowStock": "Ниска наличност"
+                },
+                "actions": {
+                    "view": "Виж",
+                    "open": "Отвори",
+                    "manage": "Управлявай"
+                }
+            },
+            "export": {
+                "from": "От",
+                "to": "До",
+                "cta": "Експортирай",
+                "errors": {
+                    "invalidRange": "Изберете валиден период.",
+                    "failed": "Неуспешен експорт. Опитайте отново."
+                }
+            },
+            "chart": {
+                "empty": "Няма данни за този период.",
+                "metrics": {
+                    "revenue": "Приход",
+                    "orders": "Поръчки"
+                }
+            },
+            "stats": {
+                "totalRevenue": {
+                    "title": "Общ приход",
+                    "vsPrevious": "спрямо предходния период"
+                },
+                "netRevenue": {
+                    "title": "Нетен приход",
+                    "afterCommission": "След {rate}% комисиона",
+                    "commissionLabel": "Комисиона"
+                },
+                "totalOrders": {
+                    "title": "Поръчки",
+                    "unitsSold": "{count, plural, one {# продаден брой} other {# продадени броя}}"
+                },
+                "avgOrderValue": {
+                    "title": "Средна стойност",
+                    "perOrder": "На поръчка",
+                    "itemsPerOrder": "{value} артикула на поръчка"
+                }
+            },
+            "sections": {
+                "revenueOverTime": {
+                    "title": "Приходи във времето",
+                    "description": "Приходи и поръчки за избрания период."
+                },
+                "recentSales": {
+                    "title": "Последни продажби",
+                    "description": "{count, plural, one {# продажба} other {# продажби}} · {period, select, 7d {последните 7 дни} 30d {последните 30 дни} 90d {последните 90 дни} 1y {последната година} other {избрания период}}"
+                }
+            },
+            "empty": {
+                "title": "Все още нямате продажби",
+                "description": "Когато направите продажба, тя ще се появи тук.",
+                "cta": "Създай обява"
+            },
+            "status": {
+                "pending": "В изчакване",
+                "paid": "Платено",
+                "processing": "Обработва се",
+                "shipped": "Изпратено",
+                "delivered": "Доставено",
+                "cancelled": "Отказано"
+            },
+            "table": {
+                "headers": {
+                    "product": "Продукт",
+                    "buyer": "Купувач",
+                    "quantity": "Брой",
+                    "revenue": "Приход",
+                    "status": "Статус",
+                    "date": "Дата",
+                    "actions": "Действия"
+                },
+                "actions": {
+                    "view": "Виж"
+                },
+                "fallbackBuyerName": "Неизвестен купувач",
+                "fallbackProductTitle": "Без заглавие",
+                "productFallbackAlt": "Снимка на продукта",
+                "unitPriceSuffix": "за брой"
+            }
+        }
+    },
     "seller": {
         "payouts": {
             "title": "Настройки за плащания",
@@ -2665,6 +3175,301 @@
         "payoutSetupRequired": "Настройте плащанията първо",
         "payoutSetupDescription": "Преди да можете да публикувате обяви за продажба, трябва да свържете банковата си сметка за получаване на плащания.",
         "setupPayouts": "Настройка на плащанията",
+        "common": {
+            "optionalParenthetical": "(по избор)",
+            "storeFallback": "Магазин"
+        },
+        "gates": {
+            "completeAccountSetup": {
+                "title": "Завършете настройката на акаунта",
+                "description": "Моля, завършете настройката на вашия профил, преди да започнете да продавате.",
+                "cta": "Завършете настройката"
+            },
+            "setUpUsername": {
+                "title": "Настройте потребителско име",
+                "description": "Нужно ви е потребителско име, преди да започнете да продавате. Отидете в настройките на акаунта, за да го зададете.",
+                "cta": "Към настройките"
+            }
+        },
+        "aiAssistant": {
+            "label": "AI предложения",
+            "addPhotoFirst": "първо добави снимка",
+            "generate": "Генерирай",
+            "generating": "Генериране...",
+            "applyAll": "Приложи всички",
+            "toasts": {
+                "applied": "Приложени AI предложения",
+                "nothingToApply": "Няма какво да се приложи",
+                "ready": "AI предложения готови",
+                "titleApplied": "Заглавието е приложено",
+                "categoryApplied": "Категорията е приложена",
+                "conditionApplied": "Състоянието е приложено",
+                "priceApplied": "Цената е приложена"
+            },
+            "errors": {
+                "generateFailed": "Грешка при генериране на предложения"
+            }
+        },
+        "categoryModal": {
+            "searchPlaceholder": "Търси категория...",
+            "searchPlaceholderCompact": "Търси...",
+            "noResultsCompact": "Няма резултати",
+            "noResults": "Няма намерени резултати",
+            "selectPlaceholder": "Избери...",
+            "categoryLabel": "Категория:",
+            "title": "Избери категория",
+            "description": "Изберете категория за вашия продукт",
+            "levelLabel": "Ниво {level}",
+            "stepProgress": "Стъпка {current}/{total}"
+        },
+        "steps": {
+            "what": {
+                "title": "Какво продавате?",
+                "description": "Дайте име на артикула и добавете снимка"
+            },
+            "category": {
+                "title": "Изберете категория",
+                "description": "Категорията определя какви детайли ще попълните",
+                "selectedLabel": "Избрана категория"
+            },
+            "details": {
+                "title": "Детайли за продукта",
+                "description": "Добавете информация, която помага на купувачите",
+                "conditionLabel": "Състояние",
+                "conditionPlaceholder": "Изберете състояние",
+                "mainSpecificsLabel": "Основни характеристики",
+                "enterPlaceholder": "Въведи...",
+                "descriptionLabel": "Описание",
+                "descriptionPlaceholder": "Опишете продукта: марка, размер, защо продавате...",
+                "conditionDrawerTitle": "Състояние на продукта"
+            },
+            "pricing": {
+                "title": "Цена и доставка",
+                "description": "Задайте цена и изберете опции за доставка",
+                "yourPriceLabel": "Вашата цена",
+                "compareAtLabel": "Стара цена",
+                "originalPricePlaceholder": "Оригинална цена",
+                "quantityLabel": "Количество",
+                "quantityDecreaseAriaLabel": "Намали количеството",
+                "quantityIncreaseAriaLabel": "Увеличи количеството",
+                "acceptOffersTitle": "Приемане на оферти",
+                "acceptOffersDescription": "Позволете на купувачите да предлагат цена",
+                "selectCurrencyTitle": "Изберете валута"
+            },
+            "review": {
+                "title": "Преглед и публикуване",
+                "description": "Прегледайте обявата преди публикуване"
+            }
+        },
+        "actions": {
+            "publishListing": "Публикувай обявата",
+            "publishing": "Публикуване..."
+        },
+        "errors": {
+            "signInRequired": "Моля, влезте в профила си",
+            "createFailed": "Неуспешно създаване на обява",
+            "publishFailed": "Грешка при публикуване"
+        },
+        "toasts": {
+            "published": {
+                "title": "Обявата е публикувана!",
+                "description": "Вашият продукт е на живо"
+            }
+        },
+        "publish": {
+            "processingDescription": "Подготвяме вашата обява за купувачите.",
+            "pleaseWait": "Моля, изчакайте"
+        },
+        "success": {
+            "productTitleFallback": "Вашият продукт",
+            "headerStatus": "Обявата е публикувана",
+            "title": "Публикувано!",
+            "description": "Вашата обява е на живо и готова за купувачи.",
+            "listingActive": "Обявата е активна",
+            "viewListing": "Виж обявата",
+            "linkCopied": "Линкът е копиран",
+            "newListing": "Нова"
+        },
+        "desktop": {
+            "sections": {
+                "details": "Детайли",
+                "pricingAndShipping": "Цена и доставка"
+            },
+            "reviewProgress": "Преглед ({percent}%)",
+            "completeRequiredFieldsToPublish": "Попълнете всички задължителни полета, за да публикувате обявата",
+            "sellingTips": {
+                "title": "Съвети за продажби",
+                "items": {
+                    "photos": "Качествени снимки увеличават продажбите",
+                    "description": "Подробно описание изгражда доверие",
+                    "pricing": "Конкурентна цена привлича купувачи"
+                }
+            }
+        },
+        "fields": {
+            "title": {
+                "label": "Заглавие",
+                "description": "{min}-{max} символа. Бъдете конкретни.",
+                "placeholder": "Напр. iPhone 15 Pro Max 256GB",
+                "remaining": "Добавете още {count} символа"
+            },
+            "description": {
+                "label": "Описание",
+                "helpText": "Опишете детайлите — размер, цвят, дефекти",
+                "placeholder": "Добавете описание на вашия продукт...",
+                "toolbar": {
+                    "boldTitle": "Удебелен",
+                    "boldAriaLabel": "Удебелен текст",
+                    "italicTitle": "Курсив",
+                    "italicAriaLabel": "Курсив текст",
+                    "listTitle": "Списък",
+                    "listAriaLabel": "Добави списък"
+                }
+            },
+            "brand": {
+                "label": "Марка",
+                "helpText": "Изберете марката на вашия продукт"
+            },
+            "condition": {
+                "helpText": "Изберете състоянието на вашия продукт",
+                "drawerDescription": "Бъдете точни — това изгражда доверие"
+            },
+            "category": {
+                "label": "Категория",
+                "helpText": "Изберете най-подходящата категория за вашия продукт"
+            },
+            "pricing": {
+                "sectionTitle": "Цена и количество",
+                "sectionDescription": "Задайте цена и налично количество",
+                "compactLabel": "Цена",
+                "priceGuide": "Ценови ориентир ({count} подобни обяви)",
+                "suggestions": {
+                    "low": "Ниска",
+                    "recommended": "Препоръчана",
+                    "high": "Висока"
+                },
+                "positionHint": "{position, select, below {Цената ви е под пазарната — продава се по-бързо!} above {Цената ви е над типичния диапазон} low {Конкурентна цена} median {Средна пазарна цена} high {Премиум ценообразуване} other {}}"
+            },
+            "attributes": {
+                "sectionTitle": "Характеристики",
+                "sectionDescription": "Добавете детайли, за да помогнете на купувачите да намерят продукта",
+                "noCategorySelected": "Изберете категория, за да видите спецификациите",
+                "helpBuyersHint": "Спецификациите помагат на купувачите",
+                "moreDetailsOptional": "Още детайли (по желание)",
+                "toggle": {
+                    "showAll": "Покажи всички",
+                    "hide": "Скрий"
+                },
+                "placeholders": {
+                    "selectEllipsis": "Избери...",
+                    "selectWithLabel": "Избери {label}",
+                    "enterWithLabel": "Въведи {label}"
+                },
+                "custom": {
+                    "title": "Допълнителни характеристики",
+                    "removeAriaLabel": "Премахни",
+                    "nameLabel": "Име",
+                    "namePlaceholder": "напр. Материал",
+                    "valueLabel": "Стойност",
+                    "valuePlaceholder": "напр. Памук",
+                    "addButton": "Добави характеристика"
+                }
+            }
+        },
+        "photos": {
+            "label": "Снимки",
+            "helpText": "Добавете до {max} снимки. Първата е корица.",
+            "add": "Добави",
+            "cover": "Корица",
+            "uploaded": "Качено",
+            "errors": {
+                "uploadFailed": "Грешка при качване"
+            },
+            "photoAlt": "Снимка {index}"
+        },
+        "review": {
+            "completeRequiredFieldsTitle": "Попълнете задължителните полета",
+            "sections": {
+                "photosAndDetails": "Снимки и описание",
+                "categoryAndCondition": "Категория и състояние",
+                "itemSpecifics": "Детайли",
+                "priceAndShipping": "Цена и доставка"
+            },
+            "labels": {
+                "category": "Категория",
+                "condition": "Състояние",
+                "brand": "Марка",
+                "attributes": "Характеристики",
+                "price": "Цена",
+                "quantity": "Количество",
+                "acceptsOffers": "Приема оферти",
+                "shipping": "Доставка",
+                "pickupOnly": "Само лично предаване",
+                "shippingPrice": "Цена:",
+                "free": "Безплатна"
+            },
+            "shippingDestinations": {
+                "bulgaria": "България",
+                "europe": "Европа"
+            },
+            "termsAgreement": "При публикуване на обявата, Вие се съгласявате с Условията за продажба и потвърждавате, че информацията е вярна."
+        },
+        "payoutSetupModal": {
+            "benefits": {
+                "securePayments": {
+                    "title": "Сигурни плащания",
+                    "description": "Обработени от Stripe, световен лидер"
+                },
+                "fastTransfers": {
+                    "title": "Бързи преводи",
+                    "description": "Получавайте парите си за дни, не седмици"
+                }
+            },
+            "later": "По-късно",
+            "note": "След като активирате изплащанията, върнете се в /sell и публикувайте."
+        },
+        "shipping": {
+            "section": {
+                "title": "Доставка",
+                "description": "Изберете регионите, до които доставяте"
+            },
+            "regionsTitle": "Региони за доставка",
+            "regions": {
+                "bulgaria": {
+                    "label": "България",
+                    "description": "Наложен платеж с куриер",
+                    "deliveryTime": "1-3 дни"
+                },
+                "pickup": {
+                    "label": "Лично вземане",
+                    "description": "Купувачът взема лично",
+                    "deliveryTime": "По договаряне"
+                }
+            },
+            "shipsFromLabel": "Локация",
+            "shipsFromHint": "Градът, от който ще изпращате",
+            "selectCityTitle": "Изберете град",
+            "selectCityPlaceholder": "Изберете град...",
+            "cityLabel": "Вашият град",
+            "freeShipping": {
+                "title": "Безплатна доставка",
+                "description": "Привлечете повече купувачи"
+            },
+            "shippingPriceLabel": "Цена за доставка",
+            "dimensions": {
+                "title": "Размери на пратката",
+                "lengthLabel": "Дължина",
+                "widthLabel": "Ширина",
+                "heightLabel": "Височина",
+                "weightLabel": "Тегло"
+            },
+            "processing": {
+                "inlineLabel": "Обработка:",
+                "title": "Време за обработка",
+                "hint": "Време за подготовка на поръчката преди изпращане",
+                "days": "{count, plural, one {# ден} other {# дни}}"
+            }
+        },
         "sellerOnboardingWizard": {
             "step2Title": "Персонализирайте профила си",
             "step2Subtitle": "Помогнете на купувачите да ви опознаят",
@@ -2853,6 +3658,10 @@
             "created": "Задачата е създадена",
             "deleteFailed": "Неуспешно изтриване на задача",
             "deleted": "Задачата е изтрита"
+        },
+        "aria": {
+            "edit": "Редактирай задача",
+            "delete": "Изтрий задача"
         }
     },
     "AdminNotes": {
@@ -2892,6 +3701,12 @@
             "created": "Бележката е създадена",
             "deleteFailed": "Неуспешно изтриване на бележка",
             "deleted": "Бележката е изтрита"
+        },
+        "aria": {
+            "pin": "Закачи бележка",
+            "unpin": "Откачи бележка",
+            "edit": "Редактирай бележка",
+            "delete": "Изтрий бележка"
         }
     },
     "AdminUsers": {
@@ -3784,6 +4599,99 @@
         "errors": {
             "failedToUpdateStatus": "Неуспешно обновяване на статуса",
             "unexpectedError": "Възникна грешка"
+        }
+    },
+    "BusinessEmptyState": {
+        "tipsLabel": "Съвети за старт",
+        "products": {
+            "title": "Добави първия си продукт",
+            "description": "Започни да продаваш, като създадеш първата си продуктова обява. Добави детайли, снимки и цена.",
+            "primaryAction": {
+                "label": "Добави продукт"
+            },
+            "secondaryAction": {
+                "label": "Импортирай продукти"
+            },
+            "tips": [
+                "Използвай качествени снимки, за да покажеш продуктите",
+                "Пиши подробни описания с подходящи ключови думи",
+                "Задай конкурентни цени спрямо пазара"
+            ]
+        },
+        "orders": {
+            "title": "Все още няма поръчки",
+            "description": "Когато клиентите направят покупка, тук ще виждаш поръчките им. Сподели продуктите си, за да започнеш продажби!",
+            "primaryAction": {
+                "label": "Виж продуктите"
+            },
+            "secondaryAction": {
+                "label": "Създай чернова на поръчка"
+            },
+            "tips": [
+                "Увери се, че продуктите ти са видими и добре описани",
+                "Сподели линка към магазина в социалните мрежи",
+                "Пусни промоции, за да привлечеш първи клиенти"
+            ]
+        },
+        "inventory": {
+            "title": "Няма наличности за проследяване",
+            "description": "Добави продукти с включено проследяване на наличностите, за да ги управляваш тук.",
+            "primaryAction": {
+                "label": "Добави продукт"
+            },
+            "secondaryAction": {
+                "label": "Импортирай наличности"
+            },
+            "tips": [
+                "Включвай проследяване на наличност при създаване на продукт",
+                "Задай известия за ниска наличност",
+                "Поддържай буферна наличност за популярни продукти"
+            ]
+        },
+        "analytics": {
+            "title": "Все още няма данни",
+            "description": "Анализите ще се появят тук, след като започнеш да получаваш посещения и продажби.",
+            "primaryAction": {
+                "label": "Към таблото"
+            },
+            "secondaryAction": {
+                "label": ""
+            },
+            "tips": [
+                "Споделяй линка към магазина, за да увеличиш трафика",
+                "Проверявай редовно за нови прозрения",
+                "Аналитиката се обновява в реално време"
+            ]
+        },
+        "customers": {
+            "title": "Все още няма клиенти",
+            "description": "Клиентите, които купят от магазина ти, ще се покажат тук. Започни продажби, за да изградиш клиентска база!",
+            "primaryAction": {
+                "label": "Виж продуктите"
+            },
+            "secondaryAction": {
+                "label": ""
+            },
+            "tips": [
+                "Предлагай добри продукти на конкурентни цени",
+                "Осигури отлично обслужване на клиентите",
+                "Изграждай отношения чрез съобщения"
+            ]
+        },
+        "discounts": {
+            "title": "Няма създадени отстъпки",
+            "description": "Създай кодове за отстъпка, за да привлечеш клиенти и да увеличиш продажбите.",
+            "primaryAction": {
+                "label": "Създай отстъпка"
+            },
+            "secondaryAction": {
+                "label": ""
+            },
+            "tips": [
+                "Използвай отстъпки за специални кампании",
+                "Добави крайна дата, за да създадеш усещане за спешност",
+                "Следи представянето на отстъпките в аналитиката"
+            ]
         }
     }
 }

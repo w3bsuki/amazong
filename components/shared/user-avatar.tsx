@@ -86,6 +86,7 @@ export function UserAvatar({
             variant={boringAvatar.variant}
             colors={boringAvatar.colors}
             className="size-full"
+            aria-label={label}
           />
         </AvatarFallback>
       ) : (

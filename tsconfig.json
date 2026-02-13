@@ -45,6 +45,8 @@
     ".next",
     "scripts",
     "vitest.config.ts",
+    "vitest.hooks.config.ts",
+    "vitest.node.config.ts",
     "__tests__",
     "e2e",
     "test",

@@ -1,6 +1,7 @@
 "use client"
 
 import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts"
+import { useTranslations } from "next-intl"
 import {
   ChartConfig,
   ChartContainer,
@@ -13,22 +14,23 @@ interface SalesChartProps {
   locale: string
 }
 
-const chartConfig = {
-  revenue: {
-    label: "Revenue",
-    color: "var(--color-chart-1)",
-  },
-  orders: {
-    label: "Orders",
-    color: "var(--color-chart-2)",
-  },
-} satisfies ChartConfig
-
 export function SalesChart({ data, locale }: SalesChartProps) {
+  const t = useTranslations("SellerManagement")
+  const chartConfig = {
+    revenue: {
+      label: t("sales.chart.metrics.revenue"),
+      color: "var(--color-chart-1)",
+    },
+    orders: {
+      label: t("sales.chart.metrics.orders"),
+      color: "var(--color-chart-2)",
+    },
+  } satisfies ChartConfig
+
   if (data.length === 0) {
     return (
       <div className="flex items-center justify-center h-(--spacing-scroll-md) text-muted-foreground">
-        {locale === "bg" ? "Няма данни за показване" : "No data to display"}
+        {t("sales.chart.empty")}
       </div>
     )
   }
@@ -95,9 +97,9 @@ export function SalesChart({ data, locale }: SalesChartProps) {
               }}
               formatter={(value, name) => {
                 if (name === "revenue") {
-                  return [formatCurrency(Number(value)), locale === "bg" ? "Приходи" : "Revenue"]
+                  return [formatCurrency(Number(value)), t("sales.chart.metrics.revenue")]
                 }
-                return [value, locale === "bg" ? "Поръчки" : "Orders"]
+                return [value, t("sales.chart.metrics.orders")]
               }}
             />
           }

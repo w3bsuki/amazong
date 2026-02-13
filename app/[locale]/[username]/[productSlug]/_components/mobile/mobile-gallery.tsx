@@ -13,7 +13,15 @@
 // - Fullscreen image viewer on tap
 // =============================================================================
 
-import { useState, useEffect, useRef, useCallback, useMemo, type ReactNode } from "react"
+import {
+  useState,
+  useEffect,
+  useRef,
+  useCallback,
+  useMemo,
+  type KeyboardEvent as ReactKeyboardEvent,
+  type ReactNode,
+} from "react"
 import Image from "next/image"
 import { useTranslations } from "next-intl"
 import { Heart, ChevronLeft, MoreHorizontal, X } from "lucide-react"
@@ -95,6 +103,10 @@ export function MobileGallery({
     })
   }, [])
 
+  const openViewer = useCallback(() => {
+    setViewerOpen(true)
+  }, [])
+
   // Sync scroll position with active index
   useEffect(() => {
     const el = galleryRef.current
@@ -115,8 +127,25 @@ export function MobileGallery({
   const scrollToImage = useCallback((index: number) => {
     const el = galleryRef.current
     if (!el) return
-    el.scrollTo({ left: index * el.offsetWidth, behavior: "smooth" })
+    const prefersReducedMotion =
+      typeof window !== "undefined" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches
+
+    el.scrollTo({
+      left: index * el.offsetWidth,
+      behavior: prefersReducedMotion ? "auto" : "smooth",
+    })
   }, [])
+
+  const handleGalleryKeyDown = useCallback(
+    (event: ReactKeyboardEvent<HTMLDivElement>) => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault()
+        openViewer()
+      }
+    },
+    [openViewer],
+  )
 
   // Handle wishlist toggle
   const handleWishlistToggle = () => {
@@ -243,7 +272,11 @@ export function MobileGallery({
           <div
             ref={galleryRef}
             className="flex overflow-x-auto snap-x snap-mandatory scrollbar-hide"
-            onClick={() => setViewerOpen(true)}
+            onClick={openViewer}
+            onKeyDown={handleGalleryKeyDown}
+            role="button"
+            tabIndex={0}
+            aria-label={t("viewImageNumber", { number: activeIndex + 1 })}
           >
             {images.map((img, i) => (
               <div key={i} className="flex-none w-full snap-center">

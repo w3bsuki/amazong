@@ -18,6 +18,7 @@ import { HomeSectionHeader } from "./mobile/home-section-header"
 import { HomeStickyCategoryPills } from "./mobile/home-sticky-category-pills"
 import { HomeFeedControls } from "./mobile/home-feed-controls"
 import { HomeCityPickerSheet } from "./mobile/home-city-picker-sheet"
+import { PromotedListingsStrip } from "./mobile/promoted-listings-strip"
 
 // =============================================================================
 // Types
@@ -146,7 +147,7 @@ export function MobileHome({
   }, [curatedSections])
 
   // Homepage category navigation is drawer-based; avoid legacy `?tab=` URL state.
-  const handleHeaderCategorySelect = useCallback((_slug: string) => {}, [])
+  const handleHeaderCategorySelect = useCallback(() => {}, [])
 
   const renderHomeCard = useCallback(
     (product: UIProduct, index: number) => (
@@ -328,6 +329,14 @@ export function MobileHome({
           </Link>
         </section>
 
+        {initialActivePromotedProducts.length > 0 && (
+          <PromotedListingsStrip
+            products={initialActivePromotedProducts}
+            showQuickScopes={false}
+            className="pt-0.5"
+          />
+        )}
+
         <section className="pt-0.5">
           <HomeFeedControls
             tab={activeTab}
@@ -383,7 +392,7 @@ export function MobileHome({
                       setActiveTab("all")
                       setSort("newest")
                     }}
-                    className="inline-flex min-h-(--spacing-touch-md) items-center rounded-full border border-border-subtle bg-background px-2.5 text-xs font-semibold text-foreground transition-colors hover:bg-hover active:bg-active"
+                    className="inline-flex min-h-(--spacing-touch-md) items-center rounded-full border border-border-subtle bg-background px-2.5 text-xs font-semibold text-foreground transition-colors hover:bg-hover active:bg-active focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
                   >
                     {tMobile("feed.empty.switchToAll")}
                   </button>
@@ -420,7 +429,7 @@ export function MobileHome({
                 type="button"
                 data-testid="home-feed-retry"
                 onClick={retry}
-                className="inline-flex min-h-(--spacing-touch-md) items-center rounded-full border border-border-subtle bg-background px-2.5 text-xs font-semibold text-foreground transition-colors hover:bg-hover active:bg-active"
+                className="inline-flex min-h-(--spacing-touch-md) items-center rounded-full border border-border-subtle bg-background px-2.5 text-xs font-semibold text-foreground transition-colors hover:bg-hover active:bg-active focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
               >
                 {tMobile("feed.retry")}
               </button>

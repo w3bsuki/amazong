@@ -27,7 +27,6 @@ import type { BaseHeaderProps } from "../types"
  */
 export function DesktopStandardHeader({
   user,
-  locale,
 }: BaseHeaderProps) {
   const t = useTranslations("Navigation")
   const notificationCount = useNotificationCount(user)
@@ -37,7 +36,7 @@ export function DesktopStandardHeader({
       <div className="container h-16 flex items-center justify-between gap-6">
         {/* Left: Logo + Account (with notification badge) */}
         <div className="flex items-center gap-3">
-          <Link href="/" className="flex items-center shrink-0">
+          <Link href="/" className="flex shrink-0 items-center rounded-sm tap-transparent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring">
             <span className="text-xl font-bold tracking-tight text-header-text">treido.</span>
           </Link>
           <div className="hidden lg:block">

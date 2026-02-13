@@ -425,30 +425,33 @@
 
 ---
 
-## Execution Evidence Log
+## Evidence Log (v2)
 
-> Required for release sign-off. Add one row per executed scenario.
+Fixed columns. Add one row per scenario run (or per sub-scenario if needed).
 
-| Scenario ID | Auto Result | Manual Result | Owner | Build/Commit | Screenshot/Video | Defect ID | Severity | Retest Result | Sign-off |
-|-------------|-------------|---------------|-------|--------------|------------------|-----------|----------|---------------|---------|
-| S4.7 | Pass | Pass | Codex | `2d8d4379` | `phase4-S4.7-filter-sort-bar-pixel5.png`; `phase4-S4.7-filter-sort-bar-iphone12.png` | — | — | Pass | Pending |
-| S4.8 | Pass | Pass | Codex | `2d8d4379` | `phase4-S4.8-filter-panel-open-pixel5.png`; `phase4-S4.8-filter-panel-open-iphone12.png` | F4-001 | P1 | Pass | Pending |
-| S4.10 | Pass | Pass | Codex | `2d8d4379` | `phase4-S4.10-location-chip-pixel5.png`; `phase4-S4.10-location-chip-iphone12.png` | — | — | Pass | Pending |
-| S4.1 | Pass | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace) | — | — | Pass | Pending |
-| S4.2 | Pass | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace) | — | — | Pass | Pending |
-| S4.3 | Pass | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace) | — | — | Pass | Pending |
-| S4.4 | Pass | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace) | — | — | Pass | Pending |
-| S4.5 | Pass | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace) | — | — | Pass | Pending |
-| S4.6 | Pass | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace) | — | — | Pass | Pending |
-| S4.7 | Pass | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace rerun) | — | — | Pass | Pending |
-| S4.8 | Pass | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace rerun) | F4-001 | P1 | Pass | Pending |
-| S4.9 | Pass | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace) | — | — | Pass | Pending |
-| S4.10 | Pass | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace rerun) | — | — | Pass | Pending |
-| S4.11 | Pass | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace) | — | — | Pass | Pending |
-| S4.12 | Fail | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace) | CAT-001 | P1 | Fail | Pending |
-| S4.13 | Pass | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace) | — | — | Pass | Pending |
-| S4.14 | Pass | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace) | — | — | Pass | Pending |
-| S4.15 | Pass | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace) | — | — | Pass | Pending |
+| Scenario | Method | Artifact | Result | Issue ID | Severity | Owner | Date |
+|----------|--------|----------|--------|----------|----------|-------|------|
+| S4.7 | manual | `phase4-S4.7-filter-sort-bar-pixel5.png`; `phase4-S4.7-filter-sort-bar-iphone12.png` | Pass | — | — | Codex | 2026-02-11 |
+| S4.8 | manual | `phase4-S4.8-filter-panel-open-pixel5.png`; `phase4-S4.8-filter-panel-open-iphone12.png` | Pass | F4-001 | P1 | Codex | 2026-02-11 |
+| S4.10 | manual | `phase4-S4.10-location-chip-pixel5.png`; `phase4-S4.10-location-chip-iphone12.png` | Pass | — | — | Codex | 2026-02-11 |
+| S4.1 | code trace | N/A (code trace) | Pass | — | — | Codex | 2026-02-11 |
+| S4.2 | code trace | N/A (code trace) | Pass | — | — | Codex | 2026-02-11 |
+| S4.3 | code trace | N/A (code trace) | Pass | — | — | Codex | 2026-02-11 |
+| S4.4 | code trace | N/A (code trace) | Pass | — | — | Codex | 2026-02-11 |
+| S4.5 | code trace | N/A (code trace) | Pass | — | — | Codex | 2026-02-11 |
+| S4.6 | code trace | N/A (code trace) | Pass | — | — | Codex | 2026-02-11 |
+| S4.7 | code trace | N/A (code trace) | Pass | — | — | Codex | 2026-02-11 |
+| S4.8 | code trace | N/A (code trace) | Pass | F4-001 | P1 | Codex | 2026-02-11 |
+| S4.9 | code trace | N/A (code trace) | Pass | — | — | Codex | 2026-02-11 |
+| S4.10 | code trace | N/A (code trace) | Pass | — | — | Codex | 2026-02-11 |
+| S4.11 | code trace | N/A (code trace) | Pass | — | — | Codex | 2026-02-11 |
+| S4.12 | code trace | N/A (code trace) | Fail | CAT-001 | P1 | Codex | 2026-02-11 |
+| S4.13 | code trace | N/A (code trace) | Pass | — | — | Codex | 2026-02-11 |
+| S4.14 | code trace | N/A (code trace) | Pass | — | — | Codex | 2026-02-11 |
+| S4.15 | code trace | N/A (code trace) | Pass | — | — | Codex | 2026-02-11 |
+
+Method suggestions: `runtime` | `code trace` | `manual` (keep it consistent within a phase).
+
 
 ---
 

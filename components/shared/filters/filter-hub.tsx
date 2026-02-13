@@ -7,13 +7,11 @@ import {
   CaretLeft,
   CaretRight,
   X,
-  SquaresFour,
 } from "@phosphor-icons/react"
 import { cn } from "@/lib/utils"
 import { useTranslations } from "next-intl"
 import { useFilterCount } from "@/hooks/use-filter-count"
 import { Button } from "@/components/ui/button"
-import { Checkbox } from "@/components/ui/checkbox"
 import {
   Drawer,
   DrawerBody,
@@ -139,7 +137,6 @@ export function FilterHub({
   onOpenChange,
   locale,
   resultsCount = 0,
-  categorySlug,
   categoryId,
   searchQuery,
   attributes = [],
@@ -295,10 +292,12 @@ export function FilterHub({
     params.delete("page")
 
     // Remove all attr_* params
-    for (const key of Array.from(params.keys())) {
-      if (key.startsWith("attr_")) {
-        params.delete(key)
-      }
+    const attrKeysToDelete: string[] = []
+    for (const key of params.keys()) {
+      if (key.startsWith("attr_")) attrKeysToDelete.push(key)
+    }
+    for (const key of attrKeysToDelete) {
+      params.delete(key)
     }
 
     // Apply pending base filters
@@ -413,7 +412,7 @@ export function FilterHub({
             {/* Single mode: show title + close button */}
             {isSingleMode ? (
               <>
-                <DrawerTitle className="text-base font-semibold">
+                <DrawerTitle className="text-base font-semibold tracking-tight">
                   {currentSectionLabel}
                 </DrawerTitle>
                 <div className="flex items-center gap-2">
@@ -421,7 +420,7 @@ export function FilterHub({
                     <button
                       type="button"
                       onClick={clearAllPending}
-                      className="text-sm font-medium text-primary active:opacity-70 transition-opacity"
+                      className="text-sm font-medium text-primary transition-opacity active:opacity-70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
                     >
                       {tHub("clearAll")}
                     </button>
@@ -429,7 +428,7 @@ export function FilterHub({
                   <button
                     type="button"
                     onClick={() => onOpenChange(false)}
-                    className="size-11 flex items-center justify-center rounded-full hover:bg-hover active:bg-active transition-colors"
+                    className="size-11 flex items-center justify-center rounded-full transition-colors hover:bg-hover active:bg-active focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
                     aria-label={tHub("close")}
                   >
                     <X size={18} weight="bold" />
@@ -441,7 +440,7 @@ export function FilterHub({
               <button
                 type="button"
                 onClick={() => setActiveSection(null)}
-                className="flex items-center gap-2 text-foreground font-semibold active:opacity-70 transition-opacity"
+                className="flex items-center gap-2 font-semibold text-foreground transition-opacity active:opacity-70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
               >
                 <CaretLeft size={20} weight="bold" />
                 <span className="text-base">
@@ -450,7 +449,7 @@ export function FilterHub({
               </button>
             ) : (
               /* Full mode: main list view */
-              <DrawerTitle className="text-base font-semibold">
+              <DrawerTitle className="text-base font-semibold tracking-tight">
                 {tHub("refineSearch")}
               </DrawerTitle>
             )}
@@ -460,7 +459,7 @@ export function FilterHub({
               <button
                 type="button"
                 onClick={clearAllPending}
-                className="text-sm font-medium text-primary active:opacity-70 transition-opacity"
+                className="text-sm font-medium text-primary transition-opacity active:opacity-70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
               >
                 {tHub("clearAll")}
               </button>
@@ -482,7 +481,7 @@ export function FilterHub({
                     key={section.id}
                     type="button"
                     onClick={() => setActiveSection(section.id)}
-                    className="w-full flex items-center justify-between px-inset h-11 active:bg-active transition-colors text-left"
+                    className="w-full h-11 px-inset flex items-center justify-between text-left transition-colors active:bg-active focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
                   >
                     <div className="flex flex-col">
                       <span className="text-sm text-foreground">

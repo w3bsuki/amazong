@@ -9,6 +9,17 @@ import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 
+function getRoleBadge(role: string | null) {
+  switch (role) {
+    case "admin":
+      return "border-foreground/20 bg-foreground/10 text-foreground"
+    case "seller":
+      return "border-selected-border bg-selected text-primary"
+    default:
+      return "border-border bg-muted text-muted-foreground"
+  }
+}
+
 async function getUsers() {
   const adminClient = createAdminClient()
 
@@ -54,17 +65,6 @@ async function AdminUsersContent() {
   const locale = await getLocale()
   const dateLocale = locale === "bg" ? bg : enUS
 
-  const getRoleBadge = (role: string | null) => {
-    switch (role) {
-      case "admin":
-        return "border-foreground/20 bg-foreground/10 text-foreground"
-      case "seller":
-        return "border-selected-border bg-selected text-primary"
-      default:
-        return "border-border bg-muted text-muted-foreground"
-    }
-  }
-
   return (
     <div className="flex flex-col gap-4 py-4 md:gap-4 md:py-6 px-4 lg:px-6">
       <div className="flex items-center justify-between">
@@ -83,44 +83,46 @@ async function AdminUsersContent() {
           <CardDescription>{t("table.description")}</CardDescription>
         </CardHeader>
         <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>{t("table.headers.user")}</TableHead>
-                <TableHead>{t("table.headers.role")}</TableHead>
-                <TableHead>{t("table.headers.phone")}</TableHead>
-                <TableHead>{t("table.headers.joined")}</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {users.map((user) => (
-                <TableRow key={user.id}>
-                  <TableCell>
-                    <div className="flex items-center gap-3">
-                      <Avatar className="size-8">
-                        <AvatarFallback className="text-xs">
-                          {(user.email || t("fallbacks.unknown")).slice(0, 2).toUpperCase()}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div>
-                        <p className="font-medium">{user.full_name || t("fallbacks.noName")}</p>
-                        <p className="text-sm text-muted-foreground">{user.email}</p>
-                      </div>
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <Badge variant="outline" className={getRoleBadge(user.role)}>
-                      {t(`roles.${user.role || "buyer"}`)}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="text-muted-foreground">{user.phone || t("fallbacks.noPhone")}</TableCell>
-                  <TableCell className="text-muted-foreground">
-                    {formatDistanceToNow(new Date(user.created_at), { addSuffix: true, locale: dateLocale })}
-                  </TableCell>
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>{t("table.headers.user")}</TableHead>
+                  <TableHead>{t("table.headers.role")}</TableHead>
+                  <TableHead className="hidden md:table-cell">{t("table.headers.phone")}</TableHead>
+                  <TableHead className="hidden md:table-cell">{t("table.headers.joined")}</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              </TableHeader>
+              <TableBody>
+                {users.map((user) => (
+                  <TableRow key={user.id}>
+                    <TableCell>
+                      <div className="flex items-center gap-3">
+                        <Avatar className="size-8">
+                          <AvatarFallback className="text-xs">
+                            {(user.email || t("fallbacks.unknown")).slice(0, 2).toUpperCase()}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div>
+                          <p className="font-medium">{user.full_name || t("fallbacks.noName")}</p>
+                          <p className="text-sm text-muted-foreground">{user.email}</p>
+                        </div>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant="outline" className={getRoleBadge(user.role)}>
+                        {t(`roles.${user.role || "buyer"}`)}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="hidden md:table-cell text-muted-foreground">{user.phone || t("fallbacks.noPhone")}</TableCell>
+                    <TableCell className="hidden md:table-cell text-muted-foreground">
+                      {formatDistanceToNow(new Date(user.created_at), { addSuffix: true, locale: dateLocale })}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
         </CardContent>
       </Card>
     </div>

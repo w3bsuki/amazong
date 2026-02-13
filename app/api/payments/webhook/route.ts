@@ -14,9 +14,6 @@ import type Stripe from "stripe"
  * Subscriptions are handled by `app/api/subscriptions/webhook/route.ts`.
  */
 export async function POST(request: Request) {
-    // Create admin client inside handler (avoid module-level client in serverless)
-    const supabase = createAdminClient()
-
     const body = await request.text()
     const signature = request.headers.get("stripe-signature")
 
@@ -51,6 +48,9 @@ export async function POST(request: Request) {
         })
         return NextResponse.json({ error: message }, { status: 400 })
     }
+
+    // Only create the service-role client after the request is verified.
+    const supabase = createAdminClient()
 
     try {
         switch (event.type) {

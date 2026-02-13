@@ -1,6 +1,5 @@
 "use client";
 
-import { memo } from "react";
 import { Controller } from "react-hook-form";
 import { FolderSimple } from "@phosphor-icons/react";
 import { Field, FieldLabel, FieldDescription, FieldError, FieldContent } from "@/components/shared/field";
@@ -23,9 +22,23 @@ interface CategoryFieldProps {
   compact?: boolean;
 }
 
+async function prefetchCategoryAttributes(categoryId: string) {
+  if (!categoryId) return;
+  try {
+    // Warm the cache for the attributes field.
+    // This endpoint accepts UUID or slug; categoryId is UUID here.
+    await fetch(`/api/categories/${encodeURIComponent(categoryId)}/attributes`, {
+      method: "GET",
+      credentials: "same-origin",
+    });
+  } catch {
+    // Non-blocking: it's only a prefetch.
+  }
+}
+
 export function CategoryField({ onCategoryChange, className, compact = false }: CategoryFieldProps) {
   const { control, setValue, watch } = useSellForm();
-  const { categories, isBg } = useSellFormContext();
+  const { categories, locale } = useSellFormContext();
   const tSell = useTranslations("Sell")
 
   const categoryPathRaw = watch("categoryPath");
@@ -35,20 +48,6 @@ export function CategoryField({ onCategoryChange, className, compact = false }: 
     slug: item.slug,
     name_bg: item.name_bg ?? null,
   }));
-
-  const prefetchCategoryAttributes = async (categoryId: string) => {
-    if (!categoryId) return;
-    try {
-      // Warm the cache for the attributes field.
-      // This endpoint accepts UUID or slug; categoryId is UUID here.
-      await fetch(`/api/categories/${encodeURIComponent(categoryId)}/attributes`, {
-        method: "GET",
-        credentials: "same-origin",
-      });
-    } catch {
-      // Non-blocking: it's only a prefetch.
-    }
-  };
 
   return (
     <Controller
@@ -66,12 +65,10 @@ export function CategoryField({ onCategoryChange, className, compact = false }: 
                   </div>
                   <div>
                     <FieldLabel className="text-sm font-bold tracking-tight text-foreground">
-                      {isBg ? "Категория" : "Category"}
+                      {tSell("fields.category.label")}
                     </FieldLabel>
                     <FieldDescription className="text-xs font-medium text-muted-foreground mt-0.5">
-                      {isBg
-                        ? "Изберете най-подходящата категория за вашия продукт"
-                        : "Choose the most appropriate category for your product"}
+                      {tSell("fields.category.helpText")}
                     </FieldDescription>
                   </div>
                 </div>
@@ -98,7 +95,7 @@ export function CategoryField({ onCategoryChange, className, compact = false }: 
                     onCategoryChange?.(categoryId, normalizedPath);
                     void prefetchCategoryAttributes(categoryId);
                   }}
-                  locale={isBg ? "bg" : "en"}
+                  locale={locale}
                 />
 
                 {/* Error Message */}
@@ -114,7 +111,7 @@ export function CategoryField({ onCategoryChange, className, compact = false }: 
               {/* Compact Label - hidden if we use label inside */}
               <div className="hidden">
                 <FieldLabel className="text-sm font-semibold mb-form-sm">
-                  {isBg ? "Категория" : "Category"}
+                  {tSell("fields.category.label")}
                 </FieldLabel>
               </div>
 
@@ -138,7 +135,7 @@ export function CategoryField({ onCategoryChange, className, compact = false }: 
                     onCategoryChange?.(categoryId, normalizedPath);
                     void prefetchCategoryAttributes(categoryId);
                   }}
-                  locale={isBg ? "bg" : "en"}
+                  locale={locale}
                 />
 
                 {fieldState.invalid && (
@@ -154,11 +151,3 @@ export function CategoryField({ onCategoryChange, className, compact = false }: 
     />
   );
 }
-
-/**
- * Memoized CategoryField - Category picker using context pattern.
- * Optimized to prevent unnecessary re-renders when unrelated form state changes.
- * @see useSellForm - Hook for form state access
- * @see useSellFormContext - Hook for context access
- */
-const MemoizedCategoryField = memo(CategoryField);

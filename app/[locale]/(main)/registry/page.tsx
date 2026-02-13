@@ -45,7 +45,7 @@ export default async function RegistryPage({
             <div className="relative bg-header-bg text-header-text py-16 px-4">
                 <div className="container flex flex-col md:flex-row items-center justify-between">
                     <div className="space-y-6 max-w-xl">
-                        <h1 className="text-4xl md:text-5xl font-bold">
+                        <h1 className="text-4xl md:text-5xl font-bold tracking-tight">
                             {t("heroTitle")}
                         </h1>
                         <p className="text-lg text-header-text/80">
@@ -68,7 +68,7 @@ export default async function RegistryPage({
 
             {/* Registry Types */}
             <div className="container py-12">
-                <h2 className="text-3xl font-bold text-center mb-12">{t("typesTitle")}</h2>
+                <h2 className="text-3xl font-bold tracking-tight text-center mb-12">{t("typesTitle")}</h2>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <Card className="hover:border-hover-border transition-colors cursor-pointer border border-border">
                         <CardHeader className="text-center">
@@ -111,22 +111,22 @@ export default async function RegistryPage({
             {/* Benefits Section */}
             <div className="bg-muted py-16 px-4">
                 <div className="container">
-                    <h2 className="text-3xl font-bold text-center mb-12">{t("benefitsTitle")}</h2>
+                    <h2 className="text-3xl font-bold tracking-tight text-center mb-12">{t("benefitsTitle")}</h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                         <div className="text-center space-y-2">
-                            <h3 className="font-bold text-lg">{t("benefit1Title")}</h3>
+                            <h3 className="font-bold tracking-tight text-lg">{t("benefit1Title")}</h3>
                             <p className="text-sm text-muted-foreground">{t("benefit1Desc")}</p>
                         </div>
                         <div className="text-center space-y-2">
-                            <h3 className="font-bold text-lg">{t("benefit2Title")}</h3>
+                            <h3 className="font-bold tracking-tight text-lg">{t("benefit2Title")}</h3>
                             <p className="text-sm text-muted-foreground">{t("benefit2Desc")}</p>
                         </div>
                         <div className="text-center space-y-2">
-                            <h3 className="font-bold text-lg">{t("benefit3Title")}</h3>
+                            <h3 className="font-bold tracking-tight text-lg">{t("benefit3Title")}</h3>
                             <p className="text-sm text-muted-foreground">{t("benefit3Desc")}</p>
                         </div>
                         <div className="text-center space-y-2">
-                            <h3 className="font-bold text-lg">{t("benefit4Title")}</h3>
+                            <h3 className="font-bold tracking-tight text-lg">{t("benefit4Title")}</h3>
                             <p className="text-sm text-muted-foreground">{t("benefit4Desc")}</p>
                         </div>
                     </div>

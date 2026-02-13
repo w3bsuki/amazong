@@ -129,7 +129,7 @@ export function ProductQuickViewMobileContent({
 
           <div className="space-y-2.5 rounded-xl border border-border-subtle bg-card p-3">
             <div className="space-y-1.5">
-              <h2 className="line-clamp-2 text-base leading-tight font-semibold text-foreground">
+              <h2 className="line-clamp-2 text-base font-semibold tracking-tight leading-tight text-foreground">
                 {titleText}
               </h2>
               {descriptionPreview ? (
@@ -140,7 +140,7 @@ export function ProductQuickViewMobileContent({
             </div>
 
             <div className="flex flex-wrap items-baseline gap-2">
-              <span className="text-2xl font-bold tabular-nums tracking-tight text-foreground">
+              <span className="text-2xl font-bold tabular-nums tracking-tight text-price">
                 {formattedPrice}
               </span>
               {formattedOriginalPrice && (
@@ -214,7 +214,7 @@ export function ProductQuickViewMobileContent({
             <div className="flex items-start gap-2">
               <ShieldCheck size={17} weight="fill" className="mt-0.5 shrink-0" />
               <div className="min-w-0 flex-1">
-                <p className="font-medium text-foreground">{tProduct("buyerProtection")}</p>
+                <p className="font-semibold tracking-tight text-foreground">{tProduct("buyerProtection")}</p>
                 <p className="text-xs text-muted-foreground">{tProduct("buyerProtectionBadgeSubtitle")}</p>
               </div>
             </div>

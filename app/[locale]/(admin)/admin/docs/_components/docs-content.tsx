@@ -103,13 +103,13 @@ const CYRILLIC_TO_LATIN: Record<string, string> = {
 
 function slugifyTitle(title: string) {
   const lowered = title.trim().toLowerCase()
-  const transliterated = lowered.replace(/[\u0400-\u04FF]/g, (char) => CYRILLIC_TO_LATIN[char] ?? char)
-  const withoutDiacritics = transliterated.normalize("NFKD").replace(/[\u0300-\u036f]/g, "")
+  const transliterated = lowered.replaceAll(/[\u0400-\u04FF]/g, (char) => CYRILLIC_TO_LATIN[char] ?? char)
+  const withoutDiacritics = transliterated.normalize("NFKD").replaceAll(/[\u0300-\u036f]/g, "")
 
   return withoutDiacritics
-    .replace(/[^a-z0-9\s-]/g, " ")
-    .replace(/[\s_-]+/g, "-")
-    .replace(/^-+|-+$/g, "")
+    .replaceAll(/[^a-z0-9\s-]/g, " ")
+    .replaceAll(/[\s_-]+/g, "-")
+    .replaceAll(/^-+|-+$/g, "")
 }
 
 function makeUniqueSlug(baseSlug: string, existingSlugs: Set<string>) {
@@ -339,7 +339,17 @@ export function AdminDocsContent({ initialDocs }: { initialDocs: AdminDoc[] }) {
                 <TableRow 
                   key={doc.id} 
                   className="cursor-pointer hover:bg-hover"
+                  role="button"
+                  tabIndex={0}
+                  aria-label={doc.title}
                   onClick={() => { setSelectedDoc(doc); setIsEditing(false) }}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter" || event.key === " ") {
+                      event.preventDefault()
+                      setSelectedDoc(doc)
+                      setIsEditing(false)
+                    }
+                  }}
                 >
                   <TableCell className="font-medium">
                     <div className="flex items-center gap-2">
@@ -367,6 +377,7 @@ export function AdminDocsContent({ initialDocs }: { initialDocs: AdminDoc[] }) {
                       <Button
                         variant="ghost"
                         size="icon"
+                        className="min-h-11 min-w-11"
                         aria-label={t("aria.edit")}
                         title={t("aria.edit")}
                         onClick={(e) => {
@@ -380,6 +391,7 @@ export function AdminDocsContent({ initialDocs }: { initialDocs: AdminDoc[] }) {
                       <Button
                         variant="ghost"
                         size="icon"
+                        className="min-h-11 min-w-11"
                         aria-label={t("aria.delete")}
                         title={t("aria.delete")}
                         onClick={(e) => {
@@ -506,7 +518,7 @@ function DocEditor({
               onClick={onClose}
               aria-label={t("aria.close")}
               title={t("aria.close")}
-              className="shrink-0 size-8"
+              className="shrink-0 size-8 min-h-11 min-w-11"
             >
               <IconX className="size-5" />
             </Button>
@@ -634,7 +646,7 @@ function DocEditor({
             onClick={onCancel}
             aria-label={t("aria.close")}
             title={t("aria.close")}
-            className="shrink-0 size-8"
+            className="shrink-0 size-8 min-h-11 min-w-11"
           >
             <IconX className="size-5" />
           </Button>

@@ -1,5 +1,6 @@
 "use client"
 
+import { useTranslations } from "next-intl"
 import { MapPin, House, Briefcase, Star } from "@phosphor-icons/react"
 
 import { Badge } from "@/components/ui/badge"
@@ -18,27 +19,10 @@ interface AddressesStatsProps {
     homeCount: number
     workCount: number
   }
-  locale: string
 }
 
-export function AccountAddressesStats({ stats, locale }: AddressesStatsProps) {
-  const t = {
-    totalAddresses: locale === 'bg' ? 'Общо адреси' : 'Total Addresses',
-    savedLocations: locale === 'bg' ? 'Запазени места' : 'Saved locations',
-    defaultAddress: locale === 'bg' ? 'По подразбиране' : 'Default',
-    forDelivery: locale === 'bg' ? 'За доставка' : 'For delivery',
-    active: locale === 'bg' ? 'Активен' : 'Active',
-    home: locale === 'bg' ? 'Дом' : 'Home',
-    homeAddresses: locale === 'bg' ? 'Домашни адреси' : 'Home addresses',
-    personal: locale === 'bg' ? 'Лични' : 'Personal',
-    work: locale === 'bg' ? 'Работа' : 'Work',
-    workAddresses: locale === 'bg' ? 'Работни адреси' : 'Work addresses',
-    business: locale === 'bg' ? 'Бизнес' : 'Business',
-    all: locale === 'bg' ? 'Всички' : 'All',
-    addresses: locale === 'bg' ? 'адреса' : 'addresses',
-    address: locale === 'bg' ? 'адрес' : 'address',
-    default: locale === 'bg' ? 'по подразбиране' : 'default',
-  }
+export function AccountAddressesStats({ stats }: AddressesStatsProps) {
+  const t = useTranslations("Account.addressesPage.stats")
 
   return (
     <>
@@ -47,13 +31,15 @@ export function AccountAddressesStats({ stats, locale }: AddressesStatsProps) {
         <div className="flex items-center gap-1.5">
           <MapPin className="size-4 text-muted-foreground" weight="duotone" />
           <span className="font-medium">{stats.total}</span>
-          <span className="text-muted-foreground">{stats.total === 1 ? t.address : t.addresses}</span>
+          <span className="text-muted-foreground">
+            {stats.total === 1 ? t("addressSingular") : t("addressPlural")}
+          </span>
         </div>
         {stats.defaultCount > 0 && (
           <div className="flex items-center gap-1.5">
             <span className="size-2 rounded-full bg-primary" />
             <span className="font-medium text-primary">{stats.defaultCount}</span>
-            <span className="text-muted-foreground">{t.default}</span>
+            <span className="text-muted-foreground">{t("defaultShort")}</span>
           </div>
         )}
       </div>
@@ -64,14 +50,14 @@ export function AccountAddressesStats({ stats, locale }: AddressesStatsProps) {
           <CardHeader>
             <CardDescription className="flex items-center gap-1.5">
               <MapPin className="size-4 shrink-0" weight="duotone" />
-              <span className="truncate">{t.totalAddresses}</span>
+              <span className="truncate">{t("totalAddresses")}</span>
             </CardDescription>
             <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
               {stats.total.toLocaleString()}
             </CardTitle>
             <CardAction>
               <Badge variant="outline" className="text-muted-foreground border-border">
-                {t.all}
+                {t("all")}
               </Badge>
             </CardAction>
           </CardHeader>
@@ -81,7 +67,7 @@ export function AccountAddressesStats({ stats, locale }: AddressesStatsProps) {
           <CardHeader>
             <CardDescription className="flex items-center gap-1.5">
               <Star className="size-4 shrink-0" weight="duotone" />
-              <span className="truncate">{t.defaultAddress}</span>
+              <span className="truncate">{t("defaultAddress")}</span>
             </CardDescription>
             <CardTitle className={`text-2xl font-semibold tabular-nums @[250px]/card:text-3xl ${stats.defaultCount > 0 ? 'text-primary' : ''}`}>
               {stats.defaultCount.toLocaleString()}
@@ -89,11 +75,11 @@ export function AccountAddressesStats({ stats, locale }: AddressesStatsProps) {
             <CardAction>
               {stats.defaultCount > 0 ? (
                 <Badge variant="outline" className="text-primary border-selected-border bg-selected">
-                  {t.active}
+                  {t("active")}
                 </Badge>
               ) : (
                 <Badge variant="outline" className="text-muted-foreground border-border">
-                  {t.active}
+                  {t("active")}
                 </Badge>
               )}
             </CardAction>
@@ -104,14 +90,14 @@ export function AccountAddressesStats({ stats, locale }: AddressesStatsProps) {
           <CardHeader>
             <CardDescription className="flex items-center gap-1.5">
               <House className="size-4 shrink-0" weight="duotone" />
-              <span className="truncate">{t.home}</span>
+              <span className="truncate">{t("home")}</span>
             </CardDescription>
             <CardTitle className="text-2xl font-semibold tabular-nums text-success @[250px]/card:text-3xl">
               {stats.homeCount.toLocaleString()}
             </CardTitle>
             <CardAction>
               <Badge variant="outline" className="text-success border-success/20 bg-success/10">
-                {t.personal}
+                {t("personal")}
               </Badge>
             </CardAction>
           </CardHeader>
@@ -121,14 +107,14 @@ export function AccountAddressesStats({ stats, locale }: AddressesStatsProps) {
           <CardHeader>
             <CardDescription className="flex items-center gap-1.5">
               <Briefcase className="size-4 shrink-0" weight="duotone" />
-              <span className="truncate">{t.work}</span>
+              <span className="truncate">{t("work")}</span>
             </CardDescription>
             <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
               {stats.workCount.toLocaleString()}
             </CardTitle>
             <CardAction>
               <Badge variant="outline" className="text-info border-border-subtle bg-info/10">
-                {t.business}
+                {t("business")}
               </Badge>
             </CardAction>
           </CardHeader>

@@ -329,22 +329,25 @@ None identified for seller management routes.
 
 ---
 
-## Execution Evidence Log
+## Evidence Log (v2)
 
-> Required for release sign-off. Add one row per executed scenario.
+Fixed columns. Add one row per scenario run (or per sub-scenario if needed).
 
-| Scenario ID | Auto Result | Manual Result | Owner | Build/Commit | Screenshot/Video | Defect ID | Severity | Retest Result | Sign-off |
-|-------------|-------------|---------------|-------|--------------|------------------|-----------|----------|---------------|---------|
-| S12.1 | N/A (code trace) | ✅ Pass | Codex | working-tree (2026-02-11) | Selling dashboard mobile/header structure in `account/selling/page.tsx` | — | — | — | ✅ |
-| S12.2 | N/A (code trace) | ✅ Pass | Codex | working-tree (2026-02-11) | Stats pill/card sections in selling dashboard | — | — | — | ✅ |
-| S12.3 | N/A (code trace) | ✅ Pass | Codex | working-tree (2026-02-11) | Seller product list rendering in `selling-products-list.tsx` | — | — | — | ✅ |
-| S12.4 | N/A (code trace) | ✅ Pass | Codex | working-tree (2026-02-11) | Create listing entrypoints route to `/sell` | — | — | — | ✅ |
-| S12.5 | N/A (code trace) | ✅ Pass | Codex | working-tree (2026-02-11) | Edit listing routes and client form wiring present | — | — | — | ✅ |
-| S12.6 | N/A (code trace) | ✅ Pass | Codex | working-tree (2026-02-11) | Sales overview queries and rendering in `account/sales/page.tsx` | — | — | — | ✅ |
-| S12.7 | N/A (code trace) | ⚠ Partial | Codex | working-tree (2026-02-11) | Seller orders flow exists; route/link consistency has gaps | SELLMGMT-002 | P1 | ⚠ Partial | ✅ |
-| S12.8 | N/A (code trace) | ✅ Pass | Codex | working-tree (2026-02-11) | Legacy `/seller/dashboard` redirect to `/dashboard` | — | — | — | ✅ |
-| S12.9 | N/A (code trace) | ✅ Pass | Codex | working-tree (2026-02-11) | Stripe Connect payout setup and role gate in payouts page | — | — | — | ✅ |
-| S12.10 | N/A (code trace) | ❌ Fail | Codex | working-tree (2026-02-11) | Non-seller guard is inconsistent across seller surfaces | SELLMGMT-001 | P1 | ❌ Fail | ✅ |
+| Scenario | Method | Artifact | Result | Issue ID | Severity | Owner | Date |
+|----------|--------|----------|--------|----------|----------|-------|------|
+| S12.1 | code trace | Selling dashboard mobile/header structure in `account/selling/page.tsx` | Pass | — | — | Codex | 2026-02-11 |
+| S12.2 | code trace | Stats pill/card sections in selling dashboard | Pass | — | — | Codex | 2026-02-11 |
+| S12.3 | code trace | Seller product list rendering in `selling-products-list.tsx` | Pass | — | — | Codex | 2026-02-11 |
+| S12.4 | code trace | Create listing entrypoints route to `/sell` | Pass | — | — | Codex | 2026-02-11 |
+| S12.5 | code trace | Edit listing routes and client form wiring present | Pass | — | — | Codex | 2026-02-11 |
+| S12.6 | code trace | Sales overview queries and rendering in `account/sales/page.tsx` | Pass | — | — | Codex | 2026-02-11 |
+| S12.7 | code trace | Seller orders flow exists; route/link consistency has gaps | Partial | SELLMGMT-002 | P1 | Codex | 2026-02-11 |
+| S12.8 | code trace | Legacy `/seller/dashboard` redirect to `/dashboard` | Pass | — | — | Codex | 2026-02-11 |
+| S12.9 | code trace | Stripe Connect payout setup and role gate in payouts page | Pass | — | — | Codex | 2026-02-11 |
+| S12.10 | code trace | Non-seller guard is inconsistent across seller surfaces | Fail | SELLMGMT-001 | P1 | Codex | 2026-02-11 |
+
+Method suggestions: `runtime` | `code trace` | `manual` (keep it consistent within a phase).
+
 
 ---
 

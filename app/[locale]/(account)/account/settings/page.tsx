@@ -2,6 +2,7 @@ import { Link } from "@/i18n/routing"
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { getTranslations, setRequestLocale } from "next-intl/server"
 
 export default async function AccountSettingsPage({
   params,
@@ -11,46 +12,34 @@ export default async function AccountSettingsPage({
   searchParams: Promise<{ email_changed?: string }>
 }) {
   const { locale } = await params
+  setRequestLocale(locale)
   const sp = await searchParams
 
-  const t = {
-    title: locale === "bg" ? "Настройки" : "Settings",
-    emailChangedTitle: locale === "bg" ? "Имейлът е обновен" : "Email updated",
-    emailChangedDesc:
-      locale === "bg"
-        ? "Имейл адресът на акаунта ви беше променен успешно."
-        : "Your account email address was updated successfully.",
-    profile: locale === "bg" ? "Профил" : "Profile",
-    security: locale === "bg" ? "Сигурност" : "Security",
-    addresses: locale === "bg" ? "Адреси" : "Addresses",
-    payments: locale === "bg" ? "Плащания" : "Payments",
-    notifications: locale === "bg" ? "Известия" : "Notifications",
-    billing: locale === "bg" ? "Фактуриране" : "Billing",
-  }
+  const t = await getTranslations("Account")
 
   const links = [
-    { label: t.profile, href: "/account/profile" },
-    { label: t.security, href: "/account/security" },
-    { label: t.addresses, href: "/account/addresses" },
-    { label: t.payments, href: "/account/payments" },
-    { label: t.notifications, href: "/account/notifications" },
-    { label: t.billing, href: "/account/billing" },
+    { label: t("header.profile"), href: "/account/profile" },
+    { label: t("header.security"), href: "/account/security" },
+    { label: t("header.addresses"), href: "/account/addresses" },
+    { label: t("header.payments"), href: "/account/payments" },
+    { label: t("header.notifications"), href: "/account/notifications" },
+    { label: t("header.billing"), href: "/account/billing" },
   ]
 
   return (
     <div className="grid gap-4">
-      <h1 className="text-2xl font-semibold tracking-tight">{t.title}</h1>
+      <h1 className="text-2xl font-semibold tracking-tight">{t("settings.title")}</h1>
 
       {sp.email_changed === "true" && (
         <Alert>
-          <AlertTitle>{t.emailChangedTitle}</AlertTitle>
-          <AlertDescription>{t.emailChangedDesc}</AlertDescription>
+          <AlertTitle>{t("settings.emailChangedTitle")}</AlertTitle>
+          <AlertDescription>{t("settings.emailChangedDescription")}</AlertDescription>
         </Alert>
       )}
 
       <Card>
         <CardHeader className="pb-3">
-          <CardTitle className="text-base">{t.title}</CardTitle>
+          <CardTitle className="text-base">{t("settings.title")}</CardTitle>
         </CardHeader>
         <CardContent className="grid gap-2">
           {links.map((item) => (

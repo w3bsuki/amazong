@@ -99,37 +99,44 @@ export function MobileSearchOverlay({
     minSearchLength,
   } = useProductSearch(8)
 
+  const handleOpen = useCallback(() => {
+    setIsOpen(true)
+  }, [setIsOpen])
+
+  const handleClose = useCallback(() => {
+    setIsOpen(false)
+    clearQuery()
+    triggerRef.current?.focus()
+  }, [clearQuery, setIsOpen])
+
   // Focus input when opened
   useEffect(() => {
-    if (isOpen) {
-      const timer = setTimeout(() => {
-        inputRef.current?.focus()
-      }, FOCUS_DELAY_MS)
-      return () => clearTimeout(timer)
-    }
+    if (!isOpen) return undefined
 
-    return
+    const timer = setTimeout(() => {
+      inputRef.current?.focus()
+    }, FOCUS_DELAY_MS)
+
+    return () => clearTimeout(timer)
   }, [isOpen])
 
   // Lock body scroll when open
   useEffect(() => {
-    if (isOpen) {
-      const scrollY = window.scrollY
-      document.body.style.position = "fixed"
-      document.body.style.top = `-${scrollY}px`
-      document.body.style.width = "100%"
-      document.body.style.overflow = "hidden"
+    if (!isOpen) return undefined
 
-      return () => {
-        document.body.style.position = ""
-        document.body.style.top = ""
-        document.body.style.width = ""
-        document.body.style.overflow = ""
-        window.scrollTo(0, scrollY)
-      }
+    const scrollY = window.scrollY
+    document.body.style.position = "fixed"
+    document.body.style.top = `-${scrollY}px`
+    document.body.style.width = "100%"
+    document.body.style.overflow = "hidden"
+
+    return () => {
+      document.body.style.position = ""
+      document.body.style.top = ""
+      document.body.style.width = ""
+      document.body.style.overflow = ""
+      window.scrollTo(0, scrollY)
     }
-
-    return
   }, [isOpen])
 
   // Handle Escape key to close overlay
@@ -145,17 +152,7 @@ export function MobileSearchOverlay({
 
     document.addEventListener("keydown", handleKeyDown)
     return () => document.removeEventListener("keydown", handleKeyDown)
-  }, [isOpen])
-
-  const handleOpen = useCallback(() => {
-    setIsOpen(true)
-  }, [])
-
-  const handleClose = useCallback(() => {
-    setIsOpen(false)
-    clearQuery()
-    triggerRef.current?.focus()
-  }, [clearQuery])
+  }, [handleClose, isOpen])
 
   const handleSearch = useCallback(
     (value: string) => {

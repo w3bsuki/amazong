@@ -112,11 +112,11 @@ Auth callbacks: `/auth/callback` (OAuth), `/auth/confirm` (email verification)
 
 ## Cross-References
 
-- [AUTH.md](../AUTH.md) — Auth flows, session management, role system, security
-- [DATABASE.md](../DATABASE.md) — profiles, private_profiles, user_addresses, notifications tables
-- [ROUTES.md](../ROUTES.md) — (auth) and (account) route groups
+- [AUTH.md](../domain/AUTH.md) — Auth flows, session management, role system, security
+- [DATABASE.md](../domain/DATABASE.md) — profiles, private_profiles, user_addresses, notifications tables
+- [ROUTES.md](../domain/ROUTES.md) — (auth) and (account) route groups
 - [selling.md](./selling.md) — Seller onboarding → Stripe Connect → first listing
-- [PAYMENTS.md](../PAYMENTS.md) — Stripe Connect onboarding for sellers
+- [PAYMENTS.md](../domain/PAYMENTS.md) — Stripe Connect onboarding for sellers
 
 ---
 

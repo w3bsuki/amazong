@@ -12,8 +12,8 @@
 
 ## UI & Design work
 
-- Read `DESIGN.md` for token contracts, forbidden patterns, and layout rules.
-- Read `docs/guides/FRONTEND-DESIGN.md` for design quality bar, anti-slop rules, typography guidance, and motion patterns.
+- Read `docs/ui/DESIGN.md` for token contracts, forbidden patterns, and layout rules.
+- Read `docs/ui/FRONTEND.md` for frontend implementation defaults and design quality bar.
 - Apply §2.1 Design Thinking checklist before building any new UI surface.
 - Apply §2.2 Anti-Slop Rules during implementation.
 - Typography, color, and motion must use semantic tokens — never bypass.
@@ -36,3 +36,6 @@ REUSE_EXISTING_SERVER=true pnpm -s test:e2e:smoke
 
 - Boundaries/pause rules: `AGENTS.md`
 - Workflow/gates: `docs/WORKFLOW.md`
+- Golden principles: `docs/PRINCIPLES.md`
+- Domain quality grades: `docs/QUALITY.md`
+- Decision log: `docs/DECISIONS.md`

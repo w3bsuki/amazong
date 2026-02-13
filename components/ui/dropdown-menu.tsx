@@ -12,11 +12,16 @@ function DropdownMenu({
 }
 
 function DropdownMenuTrigger({
+  className,
   ...props
 }: React.ComponentProps<typeof DropdownMenuPrimitive.Trigger>) {
   return (
     <DropdownMenuPrimitive.Trigger
       data-slot="dropdown-menu-trigger"
+      className={cn(
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring",
+        className
+      )}
       {...props}
     />
   )
@@ -63,7 +68,7 @@ function DropdownMenuItem({
     <DropdownMenuPrimitive.Item
       data-slot="dropdown-menu-item"
       className={cn(
-        "ui-dropdown-item focus:bg-accent focus:text-accent-foreground relative flex cursor-default items-center gap-2 rounded-xl px-2 py-1.5 text-sm outline-hidden select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+        "ui-dropdown-item focus:bg-accent focus:text-accent-foreground relative flex cursor-default items-center gap-2 rounded-xl px-2 py-1.5 text-sm outline-hidden select-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:outline-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
         inset && "pl-8",
         variant === "destructive" && "ui-dropdown-item--destructive focus:bg-destructive-subtle",
         className
@@ -124,7 +129,7 @@ function DropdownMenuSubTrigger({
     <DropdownMenuPrimitive.SubTrigger
       data-slot="dropdown-menu-sub-trigger"
       className={cn(
-        "ui-dropdown-item focus:bg-accent data-[state=open]:bg-accent flex cursor-default items-center rounded-xl px-2 py-1.5 text-sm outline-hidden select-none",
+        "ui-dropdown-item focus:bg-accent data-[state=open]:bg-accent flex cursor-default items-center rounded-xl px-2 py-1.5 text-sm outline-hidden select-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:outline-none",
         inset && "pl-8",
         className
       )}

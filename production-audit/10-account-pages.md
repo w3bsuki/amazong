@@ -662,32 +662,35 @@
 
 ---
 
-## Execution Evidence Log
+## Evidence Log (v2)
 
-> Required for release sign-off. Add one row per executed scenario.
+Fixed columns. Add one row per scenario run (or per sub-scenario if needed).
 
-| Scenario ID | Auto Result | Manual Result | Owner | Build/Commit | Screenshot/Video | Defect ID | Severity | Retest Result | Sign-off |
-|-------------|-------------|---------------|-------|--------------|------------------|-----------|----------|---------------|---------|
-| S10.1 | N/A (code trace) | ✅ Pass | Codex | working-tree (2026-02-11) | Auth gate in `app/[locale]/(account)/layout.tsx` | — | — | — | ✅ |
-| S10.2 | N/A (code trace) | ✅ Pass | Codex | working-tree (2026-02-11) | Dashboard composition in `app/[locale]/(account)/account/page.tsx` | — | — | — | ✅ |
-| S10.3 | N/A (code trace) | ✅ Pass | Codex | working-tree (2026-02-11) | Mobile tab bar fixed nav in `account-tab-bar.tsx` | — | — | — | ✅ |
-| S10.4 | N/A (code trace) | ✅ Pass | Codex | working-tree (2026-02-11) | Route active matching logic `isActive()` in tab bar | — | — | — | ✅ |
-| S10.5 | N/A (code trace) | ✅ Pass | Codex | working-tree (2026-02-11) | Tab links + More sheet navigation map | — | — | — | ✅ |
-| S10.6 | N/A (code trace) | ✅ Pass | Codex | working-tree (2026-02-11) | `SidebarTrigger` + mobile sheet implementation in shared sidebar | ACCT-001 | P1 | ✅ Pass | ✅ |
-| S10.7 | N/A (code trace) | ✅ Pass | Codex | working-tree (2026-02-11) | Sidebar sections/items in `account-sidebar.tsx` | — | — | — | ✅ |
-| S10.8 | N/A (code trace) | ✅ Pass | Codex | working-tree (2026-02-11) | Route accessibility coverage via tab bar + More + sidebar trigger | ACCT-001 | P1 | ✅ Pass | ✅ |
-| S10.9 | N/A (code trace) | ✅ Pass | Codex | working-tree (2026-02-11) | Profile route page + content container | — | — | — | ✅ |
-| S10.10 | N/A (code trace) | ✅ Pass | Codex | working-tree (2026-02-11) | Orders route grid/toolbar wiring | — | — | — | ✅ |
-| S10.11 | N/A (code trace) | ✅ Pass | Codex | working-tree (2026-02-11) | Order detail route loading and auth checks | — | — | — | ✅ |
-| S10.12 | N/A (code trace) | ✅ Pass | Codex | working-tree (2026-02-11) | Addresses route and content module | — | — | — | ✅ |
-| S10.13 | N/A (code trace) | ✅ Pass | Codex | working-tree (2026-02-11) | Payments route auth and render path | — | — | — | ✅ |
-| S10.14 | N/A (code trace) | ✅ Pass | Codex | working-tree (2026-02-11) | Security route auth and content rendering | — | — | — | ✅ |
-| S10.15 | N/A (code trace) | ✅ Pass | Codex | working-tree (2026-02-11) | Settings route render and nav links | — | — | — | ✅ |
-| S10.16 | N/A (code trace) | ✅ Pass | Codex | working-tree (2026-02-11) | Notifications route auth and content | — | — | — | ✅ |
-| S10.17 | N/A (code trace) | ✅ Pass | Codex | working-tree (2026-02-11) | Billing route loading/error/page surfaces | — | — | — | ✅ |
-| S10.18 | N/A (code trace) | ✅ Pass | Codex | working-tree (2026-02-11) | Following route auth + list render entrypoint | — | — | — | ✅ |
-| S10.19 | N/A (code trace) | ✅ Pass | Codex | working-tree (2026-02-11) | Route-level loading/error components present across account surface | — | — | — | ✅ |
-| S10.20 | N/A (code trace) | ✅ Pass | Codex | working-tree (2026-02-11) | `pb-20 lg:pb-6` in account layout content | — | — | — | ✅ |
+| Scenario | Method | Artifact | Result | Issue ID | Severity | Owner | Date |
+|----------|--------|----------|--------|----------|----------|-------|------|
+| S10.1 | code trace | Auth gate in `app/[locale]/(account)/layout.tsx` | Pass | — | — | Codex | 2026-02-11 |
+| S10.2 | code trace | Dashboard composition in `app/[locale]/(account)/account/page.tsx` | Pass | — | — | Codex | 2026-02-11 |
+| S10.3 | code trace | Mobile tab bar fixed nav in `account-tab-bar.tsx` | Pass | — | — | Codex | 2026-02-11 |
+| S10.4 | code trace | Route active matching logic `isActive()` in tab bar | Pass | — | — | Codex | 2026-02-11 |
+| S10.5 | code trace | Tab links + More sheet navigation map | Pass | — | — | Codex | 2026-02-11 |
+| S10.6 | code trace | `SidebarTrigger` + mobile sheet implementation in shared sidebar | Pass | ACCT-001 | P1 | Codex | 2026-02-11 |
+| S10.7 | code trace | Sidebar sections/items in `account-sidebar.tsx` | Pass | — | — | Codex | 2026-02-11 |
+| S10.8 | code trace | Route accessibility coverage via tab bar + More + sidebar trigger | Pass | ACCT-001 | P1 | Codex | 2026-02-11 |
+| S10.9 | code trace | Profile route page + content container | Pass | — | — | Codex | 2026-02-11 |
+| S10.10 | code trace | Orders route grid/toolbar wiring | Pass | — | — | Codex | 2026-02-11 |
+| S10.11 | code trace | Order detail route loading and auth checks | Pass | — | — | Codex | 2026-02-11 |
+| S10.12 | code trace | Addresses route and content module | Pass | — | — | Codex | 2026-02-11 |
+| S10.13 | code trace | Payments route auth and render path | Pass | — | — | Codex | 2026-02-11 |
+| S10.14 | code trace | Security route auth and content rendering | Pass | — | — | Codex | 2026-02-11 |
+| S10.15 | code trace | Settings route render and nav links | Pass | — | — | Codex | 2026-02-11 |
+| S10.16 | code trace | Notifications route auth and content | Pass | — | — | Codex | 2026-02-11 |
+| S10.17 | code trace | Billing route loading/error/page surfaces | Pass | — | — | Codex | 2026-02-11 |
+| S10.18 | code trace | Following route auth + list render entrypoint | Pass | — | — | Codex | 2026-02-11 |
+| S10.19 | code trace | Route-level loading/error components present across account surface | Pass | — | — | Codex | 2026-02-11 |
+| S10.20 | code trace | `pb-20 lg:pb-6` in account layout content | Pass | — | — | Codex | 2026-02-11 |
+
+Method suggestions: `runtime` | `code trace` | `manual` (keep it consistent within a phase).
+
 
 ---
 

@@ -3,7 +3,6 @@
 import Image from "next/image";
 import {
   Trash,
-  DotsSixVertical,
   Star,
   MagnifyingGlassPlus,
 } from "@phosphor-icons/react";

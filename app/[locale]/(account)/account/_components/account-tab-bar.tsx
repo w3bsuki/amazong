@@ -18,7 +18,7 @@ import {
 } from "@tabler/icons-react"
 import { Link, usePathname } from "@/i18n/routing"
 import { cn } from "@/lib/utils"
-import { useLocale } from "next-intl"
+import { useTranslations } from "next-intl"
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet"
 
 type AccountNavItem = {
@@ -31,8 +31,7 @@ type AccountNavItem = {
 export function AccountTabBar() {
   const [moreOpen, setMoreOpen] = useState(false)
   const pathname = usePathname()
-  const locale = useLocale()
-  const isBg = locale === "bg"
+  const t = useTranslations("Account")
 
   const isActive = (path: string, exact?: boolean) => {
     if (exact) return pathname === path
@@ -41,23 +40,23 @@ export function AccountTabBar() {
 
   const tabs: AccountNavItem[] = [
     {
-      label: isBg ? 'Акаунт' : 'Account',
+      label: t("tabBar.account"),
       href: "/account",
       icon: IconUser,
       exact: true,
     },
     {
-      label: isBg ? 'Поръчки' : 'Orders',
+      label: t("header.orders"),
       href: "/account/orders",
       icon: IconPackage,
     },
     {
-      label: isBg ? 'Продавам' : 'Selling',
+      label: t("header.selling"),
       href: "/account/selling",
       icon: IconBuildingStore,
     },
     {
-      label: isBg ? 'Планове' : 'Plans',
+      label: t("header.plans"),
       href: "/account/plans",
       icon: IconCrown,
     },
@@ -65,57 +64,57 @@ export function AccountTabBar() {
 
   const moreLinks: AccountNavItem[] = [
     {
-      label: isBg ? 'Профил' : 'Profile',
+      label: t("header.profile"),
       href: "/account/profile",
       icon: IconUser,
     },
     {
-      label: isBg ? 'Сигурност' : 'Security',
+      label: t("header.security"),
       href: "/account/security",
       icon: IconLock,
     },
     {
-      label: isBg ? 'Адреси' : 'Addresses',
+      label: t("header.addresses"),
       href: "/account/addresses",
       icon: IconMapPin,
     },
     {
-      label: isBg ? 'Плащания' : 'Payments',
+      label: t("header.payments"),
       href: "/account/payments",
       icon: IconCreditCard,
     },
     {
-      label: isBg ? 'Фактуриране' : 'Billing',
+      label: t("header.billing"),
       href: "/account/billing",
       icon: IconReceipt,
     },
     {
-      label: isBg ? 'Известия' : 'Notifications',
+      label: t("header.notifications"),
       href: "/account/notifications",
       icon: IconBell,
     },
     {
-      label: isBg ? 'Любими' : 'Wishlist',
+      label: t("header.wishlist"),
       href: "/account/wishlist",
       icon: IconHeart,
     },
     {
-      label: isBg ? 'Следвани' : 'Following',
+      label: t("header.following"),
       href: "/account/following",
       icon: IconBuildingStore,
     },
     {
-      label: isBg ? 'Продажби' : 'Sales',
+      label: t("header.sales"),
       href: "/account/sales",
       icon: IconChartLine,
     },
     {
-      label: isBg ? 'Съобщения' : 'Messages',
+      label: t("header.messages"),
       href: "/chat",
       icon: IconMessage,
     },
     {
-      label: isBg ? 'Към магазина' : 'Back to Store',
+      label: t("header.backToStore"),
       href: "/",
       icon: IconBuildingStore,
       exact: true,
@@ -129,7 +128,7 @@ export function AccountTabBar() {
       <nav 
         className="fixed bottom-0 left-0 right-0 z-50 bg-card border-t border-border-subtle lg:hidden pb-safe"
         role="navigation"
-        aria-label={isBg ? "Навигация в акаунта" : "Account navigation"}
+        aria-label={t("tabBarAriaLabel")}
       >
         <div className="flex items-center justify-around h-14 px-1">
           {tabs.map((tab) => {
@@ -172,13 +171,13 @@ export function AccountTabBar() {
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-md",
               isMoreActive ? "text-primary" : "text-muted-foreground",
             )}
-            aria-label={isBg ? "Още опции" : "More options"}
+            aria-label={t("tabBar.moreOptionsAriaLabel")}
             aria-haspopup="dialog"
             aria-expanded={moreOpen}
           >
             <IconDots className="size-5" stroke={isMoreActive ? 2 : 1.5} />
             <span className={cn("text-2xs leading-tight", isMoreActive ? "font-semibold" : "font-medium")}>
-              {isBg ? "Още" : "More"}
+              {t("tabBar.more")}
             </span>
           </button>
         </div>
@@ -187,9 +186,9 @@ export function AccountTabBar() {
       <Sheet open={moreOpen} onOpenChange={setMoreOpen}>
         <SheetContent side="bottom" className="max-h-dialog overflow-hidden p-0">
           <SheetHeader className="border-b border-border-subtle">
-            <SheetTitle>{isBg ? "Още в акаунта" : "More in Account"}</SheetTitle>
+            <SheetTitle>{t("tabBar.moreTitle")}</SheetTitle>
             <SheetDescription>
-              {isBg ? "Бързи преки пътища до всички секции." : "Quick shortcuts to all account sections."}
+              {t("tabBar.moreDescription")}
             </SheetDescription>
           </SheetHeader>
           <div className="grid grid-cols-2 gap-2 p-4 pb-safe overflow-y-auto">

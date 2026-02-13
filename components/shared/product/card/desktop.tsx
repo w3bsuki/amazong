@@ -246,7 +246,7 @@ export function DesktopProductCard({
       <CardContent className="space-y-1.5 p-2.5 pt-2.5">
         <h3
           className={cn(
-            "min-w-0 text-sm font-medium leading-tight tracking-tight text-foreground",
+            "min-w-0 text-sm font-semibold leading-tight tracking-tight text-foreground",
             titleLines === 1 ? "truncate" : "line-clamp-2 break-words"
           )}
         >

@@ -37,7 +37,6 @@ interface AdminNote {
 }
 
 export function AdminNotesContent({ initialNotes }: { initialNotes: AdminNote[] }) {
-  const locale = useLocale()
   const t = useTranslations("AdminNotes")
   const [notes, setNotes] = useState(initialNotes)
   const [editingNote, setEditingNote] = useState<AdminNote | null>(null)
@@ -198,7 +197,9 @@ function NoteCard({
           <Button
             variant="ghost"
             size="icon"
-            className="size-7 shrink-0"
+            className="size-7 min-h-11 min-w-11 shrink-0"
+            aria-label={note.is_pinned ? t("aria.unpin") : t("aria.pin")}
+            title={note.is_pinned ? t("aria.unpin") : t("aria.pin")}
             onClick={onTogglePin}
           >
             {note.is_pinned ? (
@@ -219,11 +220,25 @@ function NoteCard({
           <span className="text-xs text-muted-foreground">
             {note.updated_at ? new Date(note.updated_at).toLocaleDateString(locale) : t("dateEmpty")}
           </span>
-          <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-            <Button variant="ghost" size="icon" className="size-7" onClick={onEdit}>
+          <div className="flex gap-1 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="size-7 min-h-11 min-w-11"
+              onClick={onEdit}
+              aria-label={t("aria.edit")}
+              title={t("aria.edit")}
+            >
               <IconEdit className="size-3.5" />
             </Button>
-            <Button variant="ghost" size="icon" className="size-7" onClick={onDelete}>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="size-7 min-h-11 min-w-11"
+              onClick={onDelete}
+              aria-label={t("aria.delete")}
+              title={t("aria.delete")}
+            >
               <IconTrash className="size-3.5" />
             </Button>
           </div>

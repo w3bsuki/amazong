@@ -77,7 +77,7 @@ export default async function SecurityPage({
               <ShieldCheck className="size-7 text-primary-foreground" weight="fill" />
             </div>
             <div>
-              <h1 className="text-2xl md:text-4xl font-bold">{t('heroTitle')}</h1>
+              <h1 className="text-2xl md:text-4xl font-bold tracking-tight">{t('heroTitle')}</h1>
               <p className="text-foreground text-lg mt-1">{t('heroSubtitle')}</p>
             </div>
           </div>
@@ -96,7 +96,7 @@ export default async function SecurityPage({
                   </svg>
                 </div>
                 <div>
-                  <h2 className="text-xl font-bold">{t('stripePartner')}</h2>
+                  <h2 className="text-xl font-bold tracking-tight">{t('stripePartner')}</h2>
                   <p className="text-muted-foreground">{t('stripePartnerDesc')}</p>
                 </div>
               </div>
@@ -117,7 +117,7 @@ export default async function SecurityPage({
 
         {/* Payment Security */}
         <section className="mb-12">
-          <h2 className="text-2xl font-bold mb-2">{t('paymentSecurity')}</h2>
+          <h2 className="text-2xl font-bold tracking-tight mb-2">{t('paymentSecurity')}</h2>
           <p className="text-muted-foreground mb-6">{t('paymentSecurityDesc')}</p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {paymentFeatures.map((feature, index) => (
@@ -128,7 +128,7 @@ export default async function SecurityPage({
                       <feature.icon className="size-6 text-primary" weight="duotone" />
                     </div>
                     <div>
-                      <h3 className="font-semibold mb-1">{feature.title}</h3>
+                      <h3 className="font-semibold tracking-tight mb-1">{feature.title}</h3>
                       <p className="text-sm text-muted-foreground">{feature.desc}</p>
                     </div>
                   </div>
@@ -140,7 +140,7 @@ export default async function SecurityPage({
 
         {/* Account Security */}
         <section className="mb-12">
-          <h2 className="text-2xl font-bold mb-2">{t('accountSecurity')}</h2>
+          <h2 className="text-2xl font-bold tracking-tight mb-2">{t('accountSecurity')}</h2>
           <p className="text-muted-foreground mb-6">{t('accountSecurityDesc')}</p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {accountFeatures.map((feature, index) => (
@@ -151,7 +151,7 @@ export default async function SecurityPage({
                       <feature.icon className="size-6 text-success" weight="duotone" />
                     </div>
                     <div>
-                      <h3 className="font-semibold mb-1">{feature.title}</h3>
+                      <h3 className="font-semibold tracking-tight mb-1">{feature.title}</h3>
                       <p className="text-sm text-muted-foreground">{feature.desc}</p>
                     </div>
                   </div>
@@ -163,7 +163,7 @@ export default async function SecurityPage({
 
         {/* Fraud Prevention */}
         <section className="mb-12">
-          <h2 className="text-2xl font-bold mb-2">{t('fraudPrevention')}</h2>
+          <h2 className="text-2xl font-bold tracking-tight mb-2">{t('fraudPrevention')}</h2>
           <p className="text-muted-foreground mb-6">{t('fraudPreventionDesc')}</p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {fraudProtection.map((feature, index) => (
@@ -174,7 +174,7 @@ export default async function SecurityPage({
                       <feature.icon className="size-6 text-warning" weight="duotone" />
                     </div>
                     <div>
-                      <h3 className="font-semibold mb-1">{feature.title}</h3>
+                      <h3 className="font-semibold tracking-tight mb-1">{feature.title}</h3>
                       <p className="text-sm text-muted-foreground">{feature.desc}</p>
                     </div>
                   </div>
@@ -224,7 +224,7 @@ export default async function SecurityPage({
                   <ShieldCheck className="size-7 text-primary" weight="fill" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold">{t('reportIssue')}</h3>
+                  <h3 className="text-xl font-bold tracking-tight">{t('reportIssue')}</h3>
                   <p className="text-muted-foreground">{t('reportIssueDesc')}</p>
                 </div>
               </div>

@@ -12,9 +12,19 @@ function Popover({
 }
 
 function PopoverTrigger({
+  className,
   ...props
 }: React.ComponentProps<typeof PopoverPrimitive.Trigger>) {
-  return <PopoverPrimitive.Trigger data-slot="popover-trigger" {...props} />
+  return (
+    <PopoverPrimitive.Trigger
+      data-slot="popover-trigger"
+      className={cn(
+        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring',
+        className,
+      )}
+      {...props}
+    />
+  )
 }
 
 function PopoverContent({

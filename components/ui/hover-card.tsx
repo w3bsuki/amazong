@@ -12,10 +12,18 @@ function HoverCard({
 }
 
 function HoverCardTrigger({
+  className,
   ...props
 }: React.ComponentProps<typeof HoverCardPrimitive.Trigger>) {
   return (
-    <HoverCardPrimitive.Trigger data-slot="hover-card-trigger" {...props} />
+    <HoverCardPrimitive.Trigger
+      data-slot="hover-card-trigger"
+      className={cn(
+        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring',
+        className,
+      )}
+      {...props}
+    />
   )
 }
 

@@ -147,7 +147,7 @@ function SuggestionChip({
     <button
       type="button"
       onClick={onClick}
-      className="group flex w-full items-center gap-2.5 rounded-lg border border-border bg-card px-3.5 py-3 text-left text-sm text-foreground transition-colors hover:border-hover-border hover:bg-hover active:bg-active"
+      className="group flex w-full items-center gap-2.5 rounded-lg border border-border bg-card px-3.5 py-3 text-left text-sm text-foreground transition-colors hover:border-hover-border hover:bg-hover active:bg-active focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
     >
       <Icon
         size={16}
@@ -187,7 +187,7 @@ function WelcomeScreen({
       </div>
 
       {/* Welcome Text */}
-      <h2 className="mb-2 text-xl font-bold text-foreground md:text-2xl">
+      <h2 className="mb-2 text-xl font-bold tracking-tight text-foreground md:text-2xl">
         {copy.title}
       </h2>
       <p className="mb-6 max-w-xs text-sm text-muted-foreground md:max-w-sm md:text-base">
@@ -306,13 +306,14 @@ export function AssistantPlayground({
       <header className="shrink-0 flex items-center gap-2 px-3 h-14 border-b border-border bg-background pt-safe">
         <Link
           href="/"
-          className="size-10 flex items-center justify-center rounded-full -ml-1 tap-transparent active:bg-muted transition-colors"
+          aria-label={locale === "bg" ? "Назад" : "Back"}
+          className="size-10 flex items-center justify-center rounded-full -ml-1 tap-transparent active:bg-muted transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
         >
           <ArrowLeft className="size-5" weight="bold" />
         </Link>
         <AssistantAvatar size="md" />
         <div className="flex-1 min-w-0">
-          <h1 className="text-sm font-semibold text-foreground truncate">
+          <h1 className="text-sm font-semibold tracking-tight text-foreground truncate">
             {copy.title}
           </h1>
           <p className="text-2xs text-muted-foreground">
@@ -456,6 +457,7 @@ export function AssistantPlayground({
             disabled={!input.trim() || isLoading}
             size="icon"
             className="size-11 shrink-0 rounded-full"
+            aria-label={copy.send}
           >
             {isLoading ? (
               <CircleNotch size={18} className="animate-spin" />

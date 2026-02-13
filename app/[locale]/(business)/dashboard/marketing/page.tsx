@@ -66,7 +66,7 @@ const quickCampaigns = [
 
 export default async function BusinessMarketingPage() {
   // Requires paid business subscription
-  const _businessSeller = await requireDashboardAccess()
+  await requireDashboardAccess()
 
   return (
     <div className="flex flex-col gap-4 py-4 md:gap-4 md:py-6 px-4 lg:px-6">

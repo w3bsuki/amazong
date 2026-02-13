@@ -32,6 +32,8 @@ import {
 
 interface CommandPaletteProps {
   storeName?: string
+  compact?: boolean
+  enableKeyboardShortcut?: boolean
 }
 
 interface CommandOption {
@@ -45,7 +47,11 @@ interface CommandOption {
   group: string
 }
 
-export function BusinessCommandPalette({ storeName }: CommandPaletteProps) {
+export function BusinessCommandPalette({
+  storeName,
+  compact = false,
+  enableKeyboardShortcut = true,
+}: CommandPaletteProps) {
   const router = useRouter()
   const [open, setOpen] = React.useState(false)
   const t = useTranslations("BusinessCommandPalette")
@@ -53,6 +59,10 @@ export function BusinessCommandPalette({ storeName }: CommandPaletteProps) {
 
   // Listen for keyboard shortcut
   React.useEffect(() => {
+    if (!enableKeyboardShortcut) {
+      return
+    }
+
     const down = (e: KeyboardEvent) => {
       if (e.key === "k" && (e.metaKey || e.ctrlKey)) {
         e.preventDefault()
@@ -61,7 +71,7 @@ export function BusinessCommandPalette({ storeName }: CommandPaletteProps) {
     }
     document.addEventListener("keydown", down)
     return () => document.removeEventListener("keydown", down)
-  }, [])
+  }, [enableKeyboardShortcut])
 
   const runCommand = React.useCallback((command: () => void) => {
     setOpen(false)
@@ -182,13 +192,22 @@ export function BusinessCommandPalette({ storeName }: CommandPaletteProps) {
       {/* Trigger Button in Header */}
       <button
         onClick={() => setOpen(true)}
-        className="flex items-center gap-2 px-3 h-8 text-sm text-muted-foreground rounded-md border bg-surface-subtle hover:bg-hover transition-colors"
+        className={`flex items-center rounded-md border bg-surface-subtle text-muted-foreground hover:bg-hover transition-colors ${
+          compact ? "size-9 justify-center" : "h-8 gap-2 px-3 text-sm"
+        }`}
+        aria-label={t("trigger")}
       >
         <IconSearch className="size-4" />
-        <span className="hidden sm:inline">{t("trigger")}</span>
-        <kbd className="hidden sm:inline-flex pointer-events-none h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-2xs font-medium text-muted-foreground">
-          <span className="text-xs">⌘</span>K
-        </kbd>
+        {compact ? (
+          <span className="sr-only">{t("trigger")}</span>
+        ) : (
+          <>
+            <span>{t("trigger")}</span>
+            <kbd className="hidden sm:inline-flex pointer-events-none h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-2xs font-medium text-muted-foreground">
+              <span className="text-xs">⌘</span>K
+            </kbd>
+          </>
+        )}
       </button>
 
       <CommandDialog

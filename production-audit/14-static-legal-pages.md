@@ -289,18 +289,21 @@ None identified for static or legal pages.
 
 ---
 
-## Execution Evidence Log
+## Evidence Log (v2)
 
-> Required for release sign-off. Add one row per executed scenario.
+Fixed columns. Add one row per scenario run (or per sub-scenario if needed).
 
-| Scenario ID | Auto Result | Manual Result | Owner | Build/Commit | Screenshot/Video | Defect ID | Severity | Retest Result | Sign-off |
-|-------------|-------------|---------------|-------|--------------|------------------|-----------|----------|---------------|---------|
-| S14.1 | Pass | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace) | — | — | Pass | Pending |
-| S14.2 | Pass | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace) | — | — | Pass | Pending |
-| S14.3 | Pass | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace) | — | — | Pass | Pending |
-| S14.4 | Fail | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace) | F14-001 | P2 | Fail | Pending |
-| S14.5 | Pass | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace) | — | — | Pass | Pending |
-| S14.6 | Pass | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace) | — | — | Pass | Pending |
+| Scenario | Method | Artifact | Result | Issue ID | Severity | Owner | Date |
+|----------|--------|----------|--------|----------|----------|-------|------|
+| S14.1 | code trace | N/A (code trace) | Pass | — | — | Codex | 2026-02-11 |
+| S14.2 | code trace | N/A (code trace) | Pass | — | — | Codex | 2026-02-11 |
+| S14.3 | code trace | N/A (code trace) | Pass | — | — | Codex | 2026-02-11 |
+| S14.4 | code trace | N/A (code trace) | Fail | F14-001 | P2 | Codex | 2026-02-11 |
+| S14.5 | code trace | N/A (code trace) | Pass | — | — | Codex | 2026-02-11 |
+| S14.6 | code trace | N/A (code trace) | Pass | — | — | Codex | 2026-02-11 |
+
+Method suggestions: `runtime` | `code trace` | `manual` (keep it consistent within a phase).
+
 
 ---
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState, useRef, memo } from "react";
+import { useCallback, useState, useRef } from "react";
 import { useDropzone } from "react-dropzone";
 import { Camera, SpinnerGap, WarningCircle } from "@phosphor-icons/react";
 import { Badge } from "@/components/ui/badge";
@@ -10,9 +10,11 @@ import { useTranslations } from "next-intl";
 
 import type { ProductImage } from "@/lib/sell/schema-v4";
 import { compressImage } from "@/lib/image-compression";
-import { useSellForm, useSellFormContext } from "../sell-form-provider";
+import { useSellForm } from "../sell-form-provider";
 import { PhotoThumbnail, UploadZone, ImagePreviewModal } from "../ui";
 // Note: AiListingAssistant will be updated in Phase 3 to use context pattern
+
+const EMPTY_IMAGES: ProductImage[] = [];
 
 // ============================================================================
 // Upload Progress Types
@@ -28,6 +30,8 @@ interface UploadProgress {
 // Upload Progress Item Component
 // ============================================================================
 function UploadProgressItem({ upload }: { upload: UploadProgress }) {
+  const tSell = useTranslations("Sell")
+
   return (
     <div className="flex items-center gap-3 p-2 rounded-lg bg-surface-subtle">
       <div className="h-10 w-10 rounded bg-muted flex items-center justify-center shrink-0">
@@ -45,7 +49,7 @@ function UploadProgressItem({ upload }: { upload: UploadProgress }) {
           {upload.status === "error" ? (
             <span className="text-xs text-destructive">{upload.error}</span>
           ) : upload.status === "done" ? (
-            <span className="text-xs text-primary">Uploaded</span>
+            <span className="text-xs text-primary">{tSell("photos.uploaded")}</span>
           ) : (
             <Progress value={upload.progress} className="h-1" />
           )}
@@ -75,11 +79,11 @@ export function PhotosField({
 }: PhotosFieldProps) {
   // Use context instead of prop drilling
   const { watch, setValue, formState: { errors } } = useSellForm();
-  const { isBg } = useSellFormContext();
   const tSell = useTranslations("Sell")
 
   // Local state
-  const images = watch("images") || [];
+  const watchedImages = watch("images");
+  const images = watchedImages ?? EMPTY_IMAGES;
   const [uploads, setUploads] = useState<UploadProgress[]>([]);
   const [draggingIndex, setDraggingIndex] = useState<number | null>(null);
   const [previewImage, setPreviewImage] = useState<ProductImage | null>(null);
@@ -112,8 +116,15 @@ export function PhotosField({
     });
 
     if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.error || "Upload failed");
+      const errorPayload: unknown = await response.json();
+      const errorMessage =
+        typeof errorPayload === "object" &&
+        errorPayload !== null &&
+        "error" in errorPayload &&
+        typeof (errorPayload as { error?: unknown }).error === "string"
+          ? (errorPayload as { error: string }).error
+          : tSell("photos.errors.uploadFailed");
+      throw new Error(errorMessage);
     }
 
     const data = await response.json();
@@ -122,7 +133,7 @@ export function PhotosField({
       thumbnailUrl: data.thumbnailUrl || data.url,
       isPrimary: false,
     };
-  }, []);
+  }, [tSell]);
 
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
     const remainingSlots = maxPhotos - images.length;
@@ -164,7 +175,7 @@ export function PhotosField({
           i === idx ? {
             ...u,
             status: "error" as const,
-            error: error instanceof Error ? error.message : "Upload failed"
+            error: error instanceof Error ? error.message : tSell("photos.errors.uploadFailed")
           } : u
         ));
         return null;
@@ -184,7 +195,7 @@ export function PhotosField({
     // Clear upload progress after delay
     setTimeout(() => setUploads([]), 1500);
     onUploadEnd?.();
-  }, [images, maxPhotos, setValue, uploadFile, onUploadStart, onUploadEnd]);
+  }, [images, maxPhotos, setValue, uploadFile, onUploadStart, onUploadEnd, tSell]);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
@@ -271,12 +282,10 @@ export function PhotosField({
                   </div>
                   <div>
                     <FieldLabel className="text-sm font-bold tracking-tight text-foreground">
-                      {isBg ? "Снимки" : "Photos"}
+                      {tSell("photos.label")}
                     </FieldLabel>
                     <FieldDescription className="text-xs font-medium text-muted-foreground mt-0.5">
-                      {isBg
-                        ? `Добавете до ${maxPhotos} снимки. Първата е корица.`
-                        : `Add up to ${maxPhotos} photos. First image is the cover.`}
+                      {tSell("photos.helpText", { max: maxPhotos })}
                     </FieldDescription>
                   </div>
                 </div>
@@ -321,7 +330,6 @@ export function PhotosField({
                   getInputProps={getInputProps}
                   currentCount={images.length}
                   maxCount={maxPhotos}
-                  locale={isBg ? "bg" : "en"}
                 />
               )}
 
@@ -347,9 +355,7 @@ export function PhotosField({
             <div className="flex items-start justify-between gap-4 mb-3">
               <div className="space-y-0.5">
                 <p className="text-sm text-muted-foreground">
-                  {isBg
-                    ? `Добавете до ${maxPhotos} снимки. Първата е корица.`
-                    : `Add up to ${maxPhotos} photos. First image is the cover.`}
+                  {tSell("photos.helpText", { max: maxPhotos })}
                 </p>
               </div>
               <Badge
@@ -390,7 +396,6 @@ export function PhotosField({
                 getInputProps={getInputProps}
                 currentCount={images.length}
                 maxCount={maxPhotos}
-                locale={isBg ? "bg" : "en"}
               />
             )}
 
@@ -424,10 +429,3 @@ export function PhotosField({
   );
 }
 
-/**
- * Memoized PhotosField - Photo upload with drag/drop, compression, and preview.
- * Optimized to prevent unnecessary re-renders when unrelated form state changes.
- * @see useSellForm - Hook for form state access
- * @see useSellFormContext - Hook for context access
- */
-const MemoizedPhotosField = memo(PhotosField);

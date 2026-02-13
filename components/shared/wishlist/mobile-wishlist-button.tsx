@@ -22,7 +22,7 @@ export function MobileWishlistButton() {
     return (
       <span
         role="button"
-        className="relative flex size-touch-md cursor-pointer items-center justify-center rounded-md p-0 tap-transparent transition-colors hover:bg-header-hover active:bg-header-active touch-manipulation"
+        className="relative flex size-touch-md cursor-pointer items-center justify-center rounded-md p-0 tap-transparent transition-colors hover:bg-header-hover active:bg-header-active touch-manipulation focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
         aria-label={tNav("wishlist")}
       >
         <span className="relative" aria-hidden="true">
@@ -35,7 +35,7 @@ export function MobileWishlistButton() {
   return (
     <WishlistDrawer>
       <button
-        className="relative flex size-touch-md appearance-none items-center justify-center rounded-md border-0 bg-transparent p-0 tap-transparent transition-colors hover:bg-header-hover active:bg-header-active touch-manipulation"
+        className="relative flex size-touch-md appearance-none items-center justify-center rounded-md border-0 bg-transparent p-0 tap-transparent transition-colors hover:bg-header-hover active:bg-header-active touch-manipulation focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
         aria-label={tNav("wishlist")}
       >
         <span className="relative" aria-hidden="true">

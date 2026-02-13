@@ -19,10 +19,13 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 
-function stripLocalePrefix(pathname: string): string {
+function stripLocalePrefix(pathname: string, locale?: string): string {
   const segments = pathname.split("/").filter(Boolean)
+  const normalizedLocale = locale?.trim().toLowerCase()
+  const firstSegment = segments[0]?.toLowerCase()
+  const shouldStripExplicitLocale = Boolean(normalizedLocale) && normalizedLocale === firstSegment
   const maybeLocale = segments[0]
-  if (maybeLocale && /^[a-z]{2}(-[A-Z]{2})?$/i.test(maybeLocale)) {
+  if (shouldStripExplicitLocale || (maybeLocale && /^[a-z]{2}(-[A-Z]{2})?$/i.test(maybeLocale))) {
     segments.shift()
   }
   const normalized = `/${segments.join("/")}`
@@ -94,7 +97,7 @@ export function WriteReviewDialog({
         onReviewSubmitted?.();
       } else {
         if (result.error?.includes("logged in")) {
-          const next = stripLocalePrefix(pathname)
+          const next = stripLocalePrefix(pathname, locale)
           toast.error(tReviews("signInRequired"), {
             action: {
               label: tAuth("signIn"),

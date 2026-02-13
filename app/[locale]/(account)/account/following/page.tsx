@@ -92,7 +92,6 @@ export default async function FollowingPage({ params }: FollowingPageProps) {
         {t("header.following")}
       </h1>
       <FollowingContent
-        locale={locale}
         sellers={transformedSellers}
         total={count || 0}
         actions={{ unfollowSeller }}

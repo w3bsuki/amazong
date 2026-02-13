@@ -3,53 +3,43 @@ import path from "node:path";
 
 const repoRoot = path.resolve(process.cwd());
 const docsRoot = path.join(repoRoot, "docs");
+const contextRoot = path.join(repoRoot, "context");
 const docsSiteContentRoot = path.join(repoRoot, "docs-site", "content");
 const docsSitePublicRoot = path.join(repoRoot, "docs-site", "public");
 
 const canonicalRouteMap = new Map([
-  ["./PRD.md", "/platform"],
-  ["./ARCHITECTURE.md", "/engineering"],
-  ["./DATABASE.md", "/database"],
-  ["./API.md", "/api"],
-  ["./AUTH.md", "/auth"],
-  ["./PAYMENTS.md", "/payments"],
-  ["./I18N.md", "/i18n"],
-  ["./ROUTES.md", "/routes"],
-  ["./PRODUCTION.md", "/production"],
-  ["./TESTING.md", "/testing"],
-  ["./WORKFLOW.md", "/workflow"],
-  ["./PROMPTS.md", "/prompts"],
-  ["./public/00-INDEX.md", "/public-docs"],
-  ["./features/selling.md", "/features/selling"],
-  ["./features/buying.md", "/features/buying"],
-  ["./features/chat.md", "/features/chat"],
-  ["./features/monetization.md", "/features/monetization"],
-  ["./features/plans.md", "/features/plans"],
-  ["./features/trust-safety.md", "/features/trust-safety"],
-  ["./features/search-discovery.md", "/features/search-discovery"],
-  ["./features/app-feel.md", "/features/app-feel"],
-  ["./features/onboarding.md", "/features/onboarding"],
-  // Deleted files — redirect to closest equivalent
-  ["./FEATURES.md", "/platform"],
   ["./INDEX.md", "/"],
-  ["./DESIGN.md", "/"],
-  ["./AGENTS.md", "/workflow"],
-  // Parent-relative links used in features/ and core doc cross-references
-  ["../PRD.md", "/platform"],
+  ["./PROJECT.md", "/project"],
+  ["./WORKFLOW.md", "/workflow"],
+  ["./QA.md", "/qa"],
+  ["./RISK.md", "/risk"],
+  ["./REFERENCE.md", "/reference"],
+  ["./domain/AUTH.md", "/auth"],
+  ["./domain/PAYMENTS.md", "/payments"],
+  ["./domain/DATABASE.md", "/database"],
+  ["./domain/API.md", "/api"],
+  ["./domain/ROUTES.md", "/routes"],
+  ["./domain/I18N.md", "/i18n"],
+  ["./ui/DESIGN.md", "/design"],
+  ["./ui/FRONTEND.md", "/frontend"],
+  ["./public/00-INDEX.md", "/public-docs"],
+  ["./PRD.md", "/project"],
   ["../ARCHITECTURE.md", "/engineering"],
-  ["../DATABASE.md", "/database"],
-  ["../API.md", "/api"],
-  ["../AUTH.md", "/auth"],
-  ["../PAYMENTS.md", "/payments"],
-  ["../I18N.md", "/i18n"],
-  ["../ROUTES.md", "/routes"],
-  ["../PRODUCTION.md", "/production"],
-  ["../TESTING.md", "/testing"],
-  ["../WORKFLOW.md", "/workflow"],
   ["../AGENTS.md", "/workflow"],
-  // Root file cross-references (from docs/ to root)
-  ["../DESIGN.md", "/"],
-  ["../REQUIREMENTS.md", "/platform"],
+  ["../WORKFLOW.md", "/workflow"],
+  ["../QA.md", "/qa"],
+  ["../RISK.md", "/risk"],
+  ["../REFERENCE.md", "/reference"],
+  ["../REQUIREMENTS.md", "/project"],
+  // Root docs links (when syncing root markdown like ARCHITECTURE.md into docs-site).
+  ["./AGENTS.md", "/workflow"],
+  ["./REQUIREMENTS.md", "/project"],
+  ["./docs/WORKFLOW.md", "/workflow"],
+  ["./docs/domain/ROUTES.md", "/routes"],
+  ["./docs/DESIGN.md", "/design"],
+  ["./docs/FRONTEND.md", "/frontend"],
+  ["./docs/ui/DESIGN.md", "/design"],
+  ["./docs/ui/FRONTEND.md", "/frontend"],
 ]);
 
 function normalizePath(p) {
@@ -76,9 +66,43 @@ function rewriteMarkdownLinks(markdown) {
       return full;
     }
 
+    // Archive docs are not mirrored into docs-site; keep them visible but not as broken links.
+    if (
+      target.startsWith("../archive/")
+      || target.startsWith("./archive/")
+      || target.startsWith("archive/")
+      || target.startsWith("../docs/archive/")
+      || target.startsWith("./docs/archive/")
+      || target.startsWith("docs/archive/")
+    ) {
+      const clean = target.replace(/^(\.\.\/)+/, "docs/").replace(/^\.\//, "docs/");
+      return `${label} (\`${clean}\`)`;
+    }
+
+    // Generated docs are repo artifacts and not mirrored into docs-site content.
+    if (
+      target.startsWith("../generated/")
+      || target.startsWith("./generated/")
+      || target.startsWith("generated/")
+      || target.startsWith("../docs/generated/")
+      || target.startsWith("./docs/generated/")
+      || target.startsWith("docs/generated/")
+    ) {
+      const clean = target.replace(/^(\.\.\/)+/, "docs/").replace(/^\.\//, "docs/");
+      return `${label} (\`${clean}\`)`;
+    }
+
     const mapped = canonicalRouteMap.get(target);
     if (mapped) {
       return `[${label}](${mapped})`;
+    }
+
+    const businessPrefixVariants = ["../../context/business/", "../context/business/", "./context/business/"];
+    for (const prefix of businessPrefixVariants) {
+      if (target.startsWith(prefix)) {
+        const rest = target.slice(prefix.length).replace(/\.(md|mdx)$/i, "");
+        return `[${label}](/business/${rest})`;
+      }
     }
 
     if (/^\.\.\/(app|components|lib|scripts)\//.test(target)) {
@@ -92,6 +116,15 @@ function rewriteMarkdownLinks(markdown) {
 
 function transformMarkdown(markdown) {
   return rewriteMarkdownLinks(stripStableSectionIds(markdown)).replace(/\r\n/g, "\n");
+}
+
+async function pathExists(absPath) {
+  try {
+    await fs.access(absPath);
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 async function ensureDir(absPath) {
@@ -115,7 +148,9 @@ async function listDir(absPath) {
   return await fs.readdir(absPath, { withFileTypes: true });
 }
 
-async function mirrorMarkdownTree(srcDirAbs, destDirAbs, options = {}) {
+async function mirrorMarkdownTree(srcDirAbs, destDirAbs) {
+  if (!(await pathExists(srcDirAbs))) return;
+
   const entries = await listDir(srcDirAbs);
   await ensureDir(destDirAbs);
 
@@ -124,10 +159,11 @@ async function mirrorMarkdownTree(srcDirAbs, destDirAbs, options = {}) {
     const destAbs = path.join(destDirAbs, entry.name);
 
     if (entry.isDirectory()) {
-      await mirrorMarkdownTree(srcAbs, destAbs, options);
+      await mirrorMarkdownTree(srcAbs, destAbs);
       continue;
     }
     if (!entry.isFile()) continue;
+    if (/^AGENTS\.mdx?$/i.test(entry.name)) continue;
 
     const ext = path.extname(entry.name).toLowerCase();
     if (ext !== ".md" && ext !== ".mdx") continue;
@@ -141,25 +177,27 @@ async function mirrorMarkdownTree(srcDirAbs, destDirAbs, options = {}) {
 
 async function writeCorePages() {
   const corePages = [
-    { source: "PRD.md", target: "platform.mdx", title: "Platform Overview" },
-    { source: "ARCHITECTURE.md", target: "engineering.mdx", title: "Engineering" },
-    { source: "DATABASE.md", target: "database.mdx", title: "Database" },
-    { source: "API.md", target: "api.mdx", title: "API" },
-    { source: "AUTH.md", target: "auth.mdx", title: "Auth" },
-    { source: "PAYMENTS.md", target: "payments.mdx", title: "Payments" },
-    { source: "I18N.md", target: "i18n.mdx", title: "i18n" },
-    { source: "ROUTES.md", target: "routes.mdx", title: "Routes" },
-    { source: "PRODUCTION.md", target: "production.mdx", title: "Production Readiness" },
-    { source: "TESTING.md", target: "testing.mdx", title: "Testing" },
-    { source: "WORKFLOW.md", target: "workflow.mdx", title: "Workflow" },
-    { source: "PROMPTS.md", target: "prompts.mdx", title: "Phase Prompts" },
-    { source: "public/00-INDEX.md", target: "public-docs.mdx", title: "Public Docs Index" },
+    { sourceAbs: path.join(docsRoot, "PROJECT.md"), target: "project.mdx" },
+    { sourceAbs: path.join(repoRoot, "ARCHITECTURE.md"), target: "engineering.mdx" },
+    { sourceAbs: path.join(docsRoot, "WORKFLOW.md"), target: "workflow.mdx" },
+    { sourceAbs: path.join(docsRoot, "QA.md"), target: "qa.mdx" },
+    { sourceAbs: path.join(docsRoot, "RISK.md"), target: "risk.mdx" },
+    { sourceAbs: path.join(docsRoot, "REFERENCE.md"), target: "reference.mdx" },
+    { sourceAbs: path.join(docsRoot, "domain", "AUTH.md"), target: "auth.mdx" },
+    { sourceAbs: path.join(docsRoot, "domain", "PAYMENTS.md"), target: "payments.mdx" },
+    { sourceAbs: path.join(docsRoot, "domain", "DATABASE.md"), target: "database.mdx" },
+    { sourceAbs: path.join(docsRoot, "domain", "API.md"), target: "api.mdx" },
+    { sourceAbs: path.join(docsRoot, "domain", "ROUTES.md"), target: "routes.mdx" },
+    { sourceAbs: path.join(docsRoot, "domain", "I18N.md"), target: "i18n.mdx" },
+    { sourceAbs: path.join(docsRoot, "ui", "DESIGN.md"), target: "design.mdx" },
+    { sourceAbs: path.join(docsRoot, "ui", "FRONTEND.md"), target: "frontend.mdx" },
+    { sourceAbs: path.join(docsRoot, "public", "00-INDEX.md"), target: "public-docs.mdx" },
   ];
 
   for (const page of corePages) {
-    const sourceAbs = path.join(docsRoot, page.source);
+    if (!(await pathExists(page.sourceAbs))) continue;
     const targetAbs = path.join(docsSiteContentRoot, page.target);
-    const content = await readText(sourceAbs);
+    const content = await readText(page.sourceAbs);
     await writeText(targetAbs, transformMarkdown(content));
   }
 }
@@ -184,6 +222,7 @@ async function writePublicMirrors() {
 
   for (const [sourceRel, targetRel] of [...policiesMap, ...helpMap]) {
     const sourceAbs = path.join(docsRoot, "public", sourceRel);
+    if (!(await pathExists(sourceAbs))) continue;
     const targetAbs = path.join(docsSiteContentRoot, targetRel);
     await writeText(targetAbs, transformMarkdown(await readText(sourceAbs)));
   }
@@ -214,36 +253,28 @@ async function writeHomePage() {
 
 ## Primary Sections
 
-- [Platform](/platform)
+- [Docs Index](/)
+- [Project](/project)
 - [Engineering](/engineering)
-- [Database](/database)
-- [API](/api)
+- [Workflow](/workflow)
+- [QA](/qa)
+- [Risk](/risk)
+- [Reference](/reference)
 - [Auth](/auth)
 - [Payments](/payments)
-- [i18n](/i18n)
+- [Database](/database)
+- [API](/api)
 - [Routes](/routes)
-- [Production Readiness](/production)
-- [Testing](/testing)
-- [Workflow](/workflow)
-
-## Feature Specs
-
-- [Selling](/features/selling)
-- [Buying](/features/buying)
-- [Chat](/features/chat)
-- [Monetization](/features/monetization)
-- [Plans](/features/plans)
-- [Trust & Safety](/features/trust-safety)
-- [Search & Discovery](/features/search-discovery)
-- [App Feel](/features/app-feel)
-- [Onboarding](/features/onboarding)
+- [i18n](/i18n)
+- [Design](/design)
+- [Frontend](/frontend)
+- [Public Docs](/public-docs)
 
 ## Other
 
-- [Business](/business)
+- [Business (Archive)](/business)
 - [Policies](/policies)
 - [Help](/help)
-- [Guides](/guides)
 `,
   );
 }
@@ -334,12 +365,12 @@ async function checkBrokenLinksInDocsSite() {
 
     for (const link of links) {
       if (
-        link.startsWith("http://") ||
-        link.startsWith("https://") ||
-        link.startsWith("mailto:") ||
-        link.startsWith("tel:") ||
-        link.startsWith("#") ||
-        link.startsWith("/")
+        link.startsWith("http://")
+        || link.startsWith("https://")
+        || link.startsWith("mailto:")
+        || link.startsWith("tel:")
+        || link.startsWith("#")
+        || link.startsWith("/")
       ) {
         continue;
       }
@@ -351,18 +382,21 @@ async function checkBrokenLinksInDocsSite() {
       if (!ext) {
         candidates.push(`${abs}.mdx`, `${abs}.md`, path.join(abs, "index.mdx"), path.join(abs, "index.md"));
       } else if (ext === ".md") {
-        // Mirror process renames .md → .mdx
         candidates.push(abs.replace(/\.md$/i, ".mdx"));
       }
 
-      const exists = (await Promise.all(candidates.map(async (candidate) => {
-        try {
-          await fs.access(candidate);
-          return true;
-        } catch {
-          return false;
-        }
-      }))).some(Boolean);
+      const exists = (
+        await Promise.all(
+          candidates.map(async (candidate) => {
+            try {
+              await fs.access(candidate);
+              return true;
+            } catch {
+              return false;
+            }
+          }),
+        )
+      ).some(Boolean);
 
       if (!exists) {
         errors.push(`${fileRel} -> ${link}`);
@@ -380,10 +414,7 @@ async function main() {
 
   await writeHomePage();
   await writeCorePages();
-  await mirrorMarkdownTree(path.join(docsRoot, "features"), path.join(docsSiteContentRoot, "features"));
-  await mirrorMarkdownTree(path.join(docsRoot, "business"), path.join(docsSiteContentRoot, "business"));
-  await mirrorMarkdownTree(path.join(docsRoot, "guides"), path.join(docsSiteContentRoot, "guides"));
-  await mirrorMarkdownTree(path.join(docsRoot, "runbooks"), path.join(docsSiteContentRoot, "runbooks"));
+  await mirrorMarkdownTree(path.join(contextRoot, "business"), path.join(docsSiteContentRoot, "business"));
   await writePublicMirrors();
   await buildMetaForDirectory(docsSiteContentRoot);
 

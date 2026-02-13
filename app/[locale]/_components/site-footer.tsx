@@ -47,6 +47,17 @@ const PinterestIcon = () => (
     </svg>
 )
 
+function scrollToTop() {
+    const prefersReducedMotion =
+        typeof window !== "undefined" &&
+        window.matchMedia("(prefers-reduced-motion: reduce)").matches
+
+    window.scrollTo({
+        top: 0,
+        behavior: prefersReducedMotion ? "auto" : "smooth",
+    })
+}
+
 export function SiteFooter() {
     const t = useTranslations('Footer')
     const pathname = usePathname()
@@ -81,10 +92,6 @@ export function SiteFooter() {
         if (route === "/") return pathWithoutLocale === "/"
         return pathWithoutLocale.startsWith(route)
     })
-
-    const scrollToTop = () => {
-        window.scrollTo({ top: 0, behavior: "smooth" })
-    }
 
     const footerSections = [
         {

@@ -1,0 +1,61 @@
+# PRD: Trust & Safety (V1)
+
+## Objective
+
+Ship the minimum trust & safety layer required for a real-money marketplace launch.
+
+## Why this matters
+
+- Trust failures directly create chargebacks, disputes, refunds, and brand damage.
+- Payment providers punish marketplaces with high dispute/chargeback rates.
+
+## In scope (V1)
+
+### 1) Reports & blocks
+
+- buyers can report sellers/listings
+- users can block other users
+- moderation queue for admins (triage → action)
+
+### 2) Disputes and evidence
+
+- standard dispute reasons (INR, damaged, not as described, counterfeit, harassment)
+- evidence uploads (photos, tracking references)
+- strict state machine: disputed blocks payout release
+
+### 3) Verification and limits
+
+- phone verification (anti-spam)
+- seller limits for new sellers (listing caps, price caps)
+- escalation path to stronger verification (Stripe Connect onboarding + platform checks)
+
+### 4) Admin tooling (minimum viable)
+
+- admin docs, tasks, notes for operational playbooks
+- ability to document decisions and policies internally
+- audit-friendly history (who did what, when)
+
+## Out of scope (explicit)
+
+- automated ML fraud scoring (later)
+- complex arbitration process (keep V1 predictable)
+
+## Requirements
+
+- Dispute types and default outcomes documented: see [Dispute Resolution Matrix](/business/ops/dispute-resolution-matrix)
+- Refund/chargeback playbook documented: see [Payments Ops Runbook](/payments/ops-runbook)
+- “Stop-the-line” rules: payout release bugs are SEV-0 incidents
+
+## Acceptance criteria
+
+- Dispute can be opened with a reason + evidence.
+- When a dispute exists, payout release is blocked.
+- Admins can resolve a dispute with a documented outcome.
+- Reports can be triaged and result in enforceable actions.
+
+## Related docs
+
+- `docs/payments/escrow-order-lifecycle.mdx` (payments + escrow plan)
+- `docs/PAYMENTS.md`
+- [Support Playbook](/business/ops/support-playbook)
+- [Moderation Playbook](/business/ops/moderation-playbook)

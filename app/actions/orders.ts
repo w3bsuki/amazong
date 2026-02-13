@@ -1,6 +1,6 @@
 "use server"
 
-import { createClient } from "@/lib/supabase/server"
+import { createAdminClient, createClient } from "@/lib/supabase/server"
 import { revalidateTag } from "next/cache"
 import type { OrderItemStatus, ShippingCarrier } from "@/lib/order-status"
 
@@ -805,25 +805,28 @@ export async function requestOrderCancellation(
       return { success: false, error: "Failed to cancel order" }
     }
 
-    // Create a notification for the seller
-    const { error: notifyError } = await supabase
-      .from('notifications')
-      .insert({
+    // Create a notification for the seller (service role insert; users must not be able to write notifications directly).
+    try {
+      const admin = createAdminClient()
+      const { error: notifyError } = await admin.from("notifications").insert({
         user_id: orderItem.seller_id,
-        type: 'order_status',
-        title: 'Order Cancellation Request',
-        body: `A buyer has cancelled their order${reason ? `: ${reason}` : ''}`,
-        data: { 
-          order_item_id: orderItemId, 
+        type: "order_status",
+        title: "Order Cancellation Request",
+        body: `A buyer has cancelled their order${reason ? `: ${reason}` : ""}`,
+        data: {
+          order_item_id: orderItemId,
           order_id: orderItem.order.id,
-          reason 
+          reason,
         },
         order_id: orderItem.order.id,
       })
 
-    if (notifyError) {
-      console.error('Error creating cancellation notification:', notifyError)
-      // Don't fail the cancellation if notification fails
+      if (notifyError) {
+        console.error("Error creating cancellation notification:", notifyError)
+        // Don't fail the cancellation if notification fails
+      }
+    } catch (err) {
+      console.error("Error creating cancellation notification:", err)
     }
 
     revalidateTag('orders', "max")
@@ -969,23 +972,30 @@ export async function reportOrderIssue(
       })
       .eq('id', conversationId)
 
-    // Create notification for seller
-    await supabase
-      .from('notifications')
-      .insert({
+    // Create notification for seller (service role insert; users must not be able to write notifications directly).
+    try {
+      const admin = createAdminClient()
+      const { error: notifyError } = await admin.from("notifications").insert({
         user_id: orderItem.seller_id,
-        type: 'message',
+        type: "message",
         title: `Issue Report: ${issueSubjects[issueType]}`,
-        body: `A buyer has reported an issue with their order`,
-        data: { 
-          order_item_id: orderItemId, 
+        body: "A buyer has reported an issue with their order",
+        data: {
+          order_item_id: orderItemId,
           order_id: orderItem.order.id,
           issue_type: issueType,
-          conversation_id: conversationId
+          conversation_id: conversationId,
         },
         order_id: orderItem.order.id,
         conversation_id: conversationId,
       })
+
+      if (notifyError) {
+        console.error("Error creating issue report notification:", notifyError)
+      }
+    } catch (err) {
+      console.error("Error creating issue report notification:", err)
+    }
 
     revalidateTag('orders', "max")
     revalidateTag('messages', "max")

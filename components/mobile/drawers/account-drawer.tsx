@@ -233,8 +233,8 @@ export function AccountDrawer({ open, onOpenChange }: AccountDrawerProps) {
               <IconButton
                 aria-label={tAccount("close")}
                 variant="ghost"
-                size="icon-compact"
-                className="text-muted-foreground hover:bg-hover hover:text-foreground active:bg-active focus-visible:ring-2 focus-visible:ring-focus-ring"
+                size="icon-default"
+                className="text-muted-foreground hover:bg-hover hover:text-foreground active:bg-active focus-visible:ring-2 focus-visible:ring-focus-ring motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth)"
               >
                 <X size={16} weight="bold" />
               </IconButton>
@@ -255,7 +255,7 @@ export function AccountDrawer({ open, onOpenChange }: AccountDrawerProps) {
               </div>
               <div className="mt-4 flex w-full flex-col gap-2">
                 <Button
-                  size="default"
+                  size="primary"
                   className="w-full"
                   onClick={() => {
                     handleClose()
@@ -326,7 +326,7 @@ export function AccountDrawer({ open, onOpenChange }: AccountDrawerProps) {
                   data-testid="account-drawer-quick-link"
                   className={cn(
                     "flex min-h-(--spacing-touch-md) w-full items-center justify-between gap-3 rounded-xl border border-border-subtle bg-background px-3.5 text-left",
-                    "tap-transparent transition-colors",
+                    "tap-transparent motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth)",
                     "hover:border-border hover:bg-hover active:bg-active",
                     "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
                   )}
@@ -377,14 +377,14 @@ export function AccountDrawer({ open, onOpenChange }: AccountDrawerProps) {
                         key={listing.id}
                         href={href}
                         onClick={handleClose}
-                        className="group rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
+                        className="group rounded-xl tap-transparent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
                       >
                         <div className="relative aspect-square overflow-hidden rounded-xl border border-border-subtle bg-surface-subtle">
                           <Image
                             src={imageUrl ?? PLACEHOLDER_IMAGE_PATH}
                             alt={listing.title}
                             fill
-                            className="object-cover group-hover:scale-105 transition-transform duration-200"
+                            className="object-cover group-hover:scale-105 motion-safe:transition-transform motion-safe:duration-normal motion-safe:ease-(--ease-smooth)"
                             sizes="(max-width: 640px) 33vw, 100px"
                           />
                         </div>

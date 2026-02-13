@@ -283,20 +283,23 @@ None identified for plans and pricing routes.
 
 ---
 
-## Execution Evidence Log
+## Evidence Log (v2)
 
-> Required for release sign-off. Add one row per executed scenario.
+Fixed columns. Add one row per scenario run (or per sub-scenario if needed).
 
-| Scenario ID | Auto Result | Manual Result | Owner | Build/Commit | Screenshot/Video | Defect ID | Severity | Retest Result | Sign-off |
-|-------------|-------------|---------------|-------|--------------|------------------|-----------|----------|---------------|---------|
-| S15.1 | N/A (code trace) | ✅ Pass | Codex | working-tree (2026-02-11) | Plans page section composition in `plans-page-client.tsx` | — | — | — | ✅ |
-| S15.2 | N/A (code trace) | ✅ Pass | Codex | working-tree (2026-02-11) | Responsive grid behavior for pricing cards | — | — | — | ✅ |
-| S15.3 | N/A (code trace) | ⚠ Partial | Codex | working-tree (2026-02-11) | Toggles functionally present; current-tier mapping has edge-case mislabeling (`free` treated as `basic`) | PLANS-001 | P1 | ⚠ Partial | ✅ |
-| S15.4 | N/A (code trace) | ✅ Pass | Codex | working-tree (2026-02-11) | Comparison table/overflow classes present | — | — | — | ✅ |
-| S15.5 | N/A (code trace) | ✅ Pass | Codex | working-tree (2026-02-11) | FAQ accordion render and interaction wiring | — | — | — | ✅ |
-| S15.6 | N/A (code trace) | ⚠ Partial | Codex | working-tree (2026-02-11) | Account plans route auth gate works; localized pricing consistency issues remain | PLANS-002 | P2 | ⚠ Partial | ✅ |
-| S15.7 | N/A (code trace) | ✅ Pass | Codex | working-tree (2026-02-11) | Intercepting upgrade modal route auth/data flow verified | — | — | — | ✅ |
-| S15.8 | N/A (code trace) | ✅ Pass | Codex | working-tree (2026-02-11) | Loading skeleton horizontal scroll implementation present | — | — | — | ✅ |
+| Scenario | Method | Artifact | Result | Issue ID | Severity | Owner | Date |
+|----------|--------|----------|--------|----------|----------|-------|------|
+| S15.1 | code trace | Plans page section composition in `plans-page-client.tsx` | Pass | — | — | Codex | 2026-02-11 |
+| S15.2 | code trace | Responsive grid behavior for pricing cards | Pass | — | — | Codex | 2026-02-11 |
+| S15.3 | code trace | Toggles functionally present; current-tier mapping has edge-case mislabeling (`free` treated as `basic`) | Partial | PLANS-001 | P1 | Codex | 2026-02-11 |
+| S15.4 | code trace | Comparison table/overflow classes present | Pass | — | — | Codex | 2026-02-11 |
+| S15.5 | code trace | FAQ accordion render and interaction wiring | Pass | — | — | Codex | 2026-02-11 |
+| S15.6 | code trace | Account plans route auth gate works; localized pricing consistency issues remain | Partial | PLANS-002 | P2 | Codex | 2026-02-11 |
+| S15.7 | code trace | Intercepting upgrade modal route auth/data flow verified | Pass | — | — | Codex | 2026-02-11 |
+| S15.8 | code trace | Loading skeleton horizontal scroll implementation present | Pass | — | — | Codex | 2026-02-11 |
+
+Method suggestions: `runtime` | `code trace` | `manual` (keep it consistent within a phase).
+
 
 ---
 

@@ -54,15 +54,14 @@ const activityColors: Record<ActivityType, string> = {
   milestone: "bg-selected text-primary",
 }
 
-export function BusinessActivityFeed({ activities, className }: BusinessActivityFeedProps) {
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'BGN',
-      maximumFractionDigits: 2,
-    }).format(value)
-  }
+const formatCurrencyBGN = (value: number) =>
+  new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "BGN",
+    maximumFractionDigits: 2,
+  }).format(value)
 
+export function BusinessActivityFeed({ activities, className }: BusinessActivityFeedProps) {
   if (activities.length === 0) {
     return (
       <Card className={className}>
@@ -132,7 +131,7 @@ export function BusinessActivityFeed({ activities, className }: BusinessActivity
                       </div>
                       {activity.meta?.amount && (
                         <span className="text-sm font-semibold tabular-nums text-success shrink-0">
-                          +{formatCurrency(activity.meta.amount)}
+                          +{formatCurrencyBGN(activity.meta.amount)}
                         </span>
                       )}
                     </div>
@@ -185,65 +184,4 @@ export function BusinessActivityFeed({ activities, className }: BusinessActivity
       </CardContent>
     </Card>
   )
-}
-
-// Helper function to transform orders/products into activity items
-function transformToActivityItems(
-  orders: Array<{
-    id: string
-    created_at: string
-    quantity: number
-    price_at_time: number
-    product?: { title: string; images?: string[] | null } | { title: string; images?: string[] | null }[] | null
-  }>,
-  products: Array<{
-    id: string
-    title: string
-    created_at: string
-    images?: string[] | null
-    status?: string | null
-  }>
-): ActivityItem[] {
-  const activities: ActivityItem[] = []
-
-  // Transform orders
-  for (const order of orders) {
-    const product = Array.isArray(order.product) ? order.product[0] : order.product
-    activities.push({
-      id: `order-${order.id}`,
-      type: "order",
-      title: "New order received",
-      description: product?.title || "Order item",
-      timestamp: order.created_at,
-      href: `/dashboard/orders/${order.id}`,
-      meta: {
-        amount: Number(order.price_at_time) * order.quantity,
-        status: "Unfulfilled",
-        ...(product?.images?.[0] ? { image: product.images[0] } : {}),
-      },
-    })
-  }
-
-  // Transform products
-  for (const product of products) {
-    activities.push({
-      id: `product-${product.id}`,
-      type: "product",
-      title: "Product listed",
-      description: product.title,
-      timestamp: product.created_at,
-      href: `/dashboard/products/${product.id}`,
-      meta: {
-        status: product.status || "Active",
-        ...(product.images?.[0] ? { image: product.images[0] } : {}),
-      },
-    })
-  }
-
-  // Sort by timestamp (newest first)
-  activities.sort((a, b) =>
-    new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
-  )
-
-  return activities.slice(0, 10)
 }

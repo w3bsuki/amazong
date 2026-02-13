@@ -3,9 +3,9 @@ import type { Metadata } from "next"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 
 import { createStaticClient } from "@/lib/supabase/server"
-import { fetchProductByUsernameAndSlug, fetchSellerProducts, fetchProductFavoritesCount, fetchProductHeroSpecs, type ProductPageProduct, type HeroSpec } from "@/lib/data/product-page"
+import { fetchProductByUsernameAndSlug, fetchSellerProducts, fetchProductFavoritesCount, fetchProductHeroSpecs, type ProductPageProduct } from "@/lib/data/product-page"
 import { fetchProductReviews, type ProductReview } from "@/lib/data/product-reviews"
-import { submitReview } from "@/app/actions/reviews"
+import { submitReview } from "../../../actions/reviews"
 
 import { ProductPageLayout } from "./_components/product-page-layout"
 import {

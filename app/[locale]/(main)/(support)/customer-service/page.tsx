@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
-import { Package, ArrowsClockwise, CreditCard, User, Shield, Question, MagnifyingGlass as Search } from "@phosphor-icons/react/dist/ssr"
+import { Package, CreditCard, User, Shield, Question, MagnifyingGlass as Search } from "@phosphor-icons/react/dist/ssr"
 import { Link } from "@/i18n/routing"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import { AppBreadcrumb, breadcrumbPresets } from "../../../_components/navigation/app-breadcrumb"
@@ -51,10 +51,10 @@ export default async function CustomerServicePage({ params }: { params: Promise<
                     homeLabel={tBreadcrumbs("homeLabel")}
                 />
                 
-                <h1 className="text-3xl font-bold mb-8">{t('title')}</h1>
+                <h1 className="text-3xl font-bold tracking-tight mb-8">{t('title')}</h1>
 
                 <div className="mb-12">
-                    <h2 className="text-xl font-bold mb-4">{t('helpTitle')}</h2>
+                    <h2 className="text-xl font-bold tracking-tight mb-4">{t('helpTitle')}</h2>
                     <div className="grid grid-cols-1 xs:grid-cols-2 gap-2 sm:gap-4 md:grid-cols-3">
                         {helpTopics.map((topic, i) => (
                             <Card key={i} className="hover:bg-muted cursor-pointer transition-colors overflow-hidden">
@@ -70,7 +70,7 @@ export default async function CustomerServicePage({ params }: { params: Promise<
                 </div>
 
                 <div className="mb-12">
-                    <h2 className="text-xl font-bold mb-4">{t('searchTitle')}</h2>
+                    <h2 className="text-xl font-bold tracking-tight mb-4">{t('searchTitle')}</h2>
                     <div className="relative max-w-2xl">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
                         <Input
@@ -82,7 +82,7 @@ export default async function CustomerServicePage({ params }: { params: Promise<
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div className="col-span-2">
-                        <h2 className="text-xl font-bold mb-4">{t('allHelpTopics')}</h2>
+                        <h2 className="text-xl font-bold tracking-tight mb-4">{t('allHelpTopics')}</h2>
                         <div className="space-y-4">
                             <details className="group border border-border rounded-lg">
                                 <summary className="flex justify-between items-center font-medium cursor-pointer list-none p-4 bg-muted group-open:bg-background">
@@ -116,7 +116,7 @@ export default async function CustomerServicePage({ params }: { params: Promise<
 
                     <div>
                         <div className="bg-muted p-4 rounded-lg border border-border">
-                            <h3 className="font-bold text-lg mb-4">{t('contactUs')}</h3>
+                            <h3 className="font-bold tracking-tight text-lg mb-4">{t('contactUs')}</h3>
                             <p className="text-sm text-muted-foreground mb-4">
                                 {t('needMoreHelp')}
                             </p>

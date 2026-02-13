@@ -90,7 +90,7 @@ Enable buyers to browse products, add items to a server-backed cart, complete ch
 
 ### Special Patterns
 
-- **Product quick-view modal**: implemented via parallel route `@modal` in search — `Dialog` on desktop, `Sheet` on mobile
+- **Product quick-view overlay**: implemented via the global Drawer system (Dialog on desktop, Drawer on mobile) with data fetched from `GET /api/products/quick-view`
 - **Guest checkout**: supported (no auth required for `/checkout`)
 - **Idempotent webhooks**: Stripe webhook deduplication prevents double order creation
 
@@ -105,13 +105,13 @@ Enable buyers to browse products, add items to a server-backed cart, complete ch
 
 ## Cross-References
 
-- [PAYMENTS.md](../PAYMENTS.md) — Stripe payment intents, Buyer Protection fee formula, webhook processing
-- [DATABASE.md](../DATABASE.md) — Orders schema, cart_items, wishlists
-- [ROUTES.md](../ROUTES.md) — (main), (checkout), (account), [username] route groups
-- [API.md](../API.md) — Checkout and payment endpoints
+- [PAYMENTS.md](../domain/PAYMENTS.md) — Stripe payment intents, Buyer Protection fee formula, webhook processing
+- [DATABASE.md](../domain/DATABASE.md) — Orders schema, cart_items, wishlists
+- [ROUTES.md](../domain/ROUTES.md) — (main), (checkout), (account), [username] route groups
+- [API.md](../domain/API.md) — Checkout and payment endpoints
 - [monetization.md](./monetization.md) — Buyer Protection fee tiers by plan
 - [trust-safety.md](./trust-safety.md) — Dispute flow, buyer protection claims
 
 ---
 
-*Last updated: 2026-02-08*
+*Last updated: 2026-02-13*

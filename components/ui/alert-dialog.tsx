@@ -39,7 +39,7 @@ function AlertDialogOverlay({
         'fixed inset-0 z-50 bg-overlay-dark',
         'data-[state=open]:animate-in data-[state=closed]:animate-out',
         'data-[state=open]:fade-in data-[state=closed]:fade-out',
-        'duration-200 ease-out',
+        'motion-safe:duration-normal motion-safe:ease-(--ease-smooth)',
         className,
       )}
       {...props}
@@ -61,7 +61,7 @@ function AlertDialogContent({
           'data-[state=open]:animate-in data-[state=closed]:animate-out',
           'data-[state=open]:fade-in data-[state=closed]:fade-out',
           'data-[state=open]:zoom-in data-[state=closed]:zoom-out',
-          'duration-200 ease-out',
+          'motion-safe:duration-normal motion-safe:ease-(--ease-smooth)',
           className,
         )}
         {...props}
@@ -106,7 +106,7 @@ function AlertDialogTitle({
   return (
     <AlertDialogPrimitive.Title
       data-slot="alert-dialog-title"
-      className={cn('text-lg font-semibold', className)}
+      className={cn('text-lg font-semibold tracking-tight', className)}
       {...props}
     />
   )

@@ -117,10 +117,12 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([])
   const hasSyncedRef = useRef<string | null>(null)
   const lastUserIdRef = useRef<string | null>(null)
+  const serverLoadSeqRef = useRef(0)
   const [storageLoaded, setStorageLoaded] = useState(false)
   const [serverSyncDone, setServerSyncDone] = useState(false)
 
   const loadServerCart = useCallback(async (activeUserId: string) => {
+    const requestSeq = ++serverLoadSeqRef.current
     const supabase = createClient()
 
     // Note: cart_items is introduced via migration; keep runtime-safe casts.
@@ -188,6 +190,9 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       }
     })
     .filter((item): item is CartItem => Boolean(item))
+
+    if (requestSeq !== serverLoadSeqRef.current) return
+    if (lastUserIdRef.current !== activeUserId) return
 
     setItems(nextItems)
   }, [])
@@ -272,6 +277,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         if (previousUserId) {
           // Signed out: clear local + in-memory cart to avoid cross-account drift.
           hasSyncedRef.current = null
+          serverLoadSeqRef.current += 1
           setItems([])
           try {
             localStorage.removeItem("cart")
@@ -288,6 +294,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       if (previousUserId && previousUserId !== activeUserId) {
         // Switching accounts: reset sync state and local cache.
         hasSyncedRef.current = null
+        serverLoadSeqRef.current += 1
         setItems([])
         try {
           localStorage.removeItem("cart")

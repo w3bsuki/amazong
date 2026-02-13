@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, memo } from "react";
+import { useCallback } from "react";
 import { Controller } from "react-hook-form";
 import { Tag } from "lucide-react";
 import { Field, FieldLabel, FieldDescription, FieldError, FieldContent } from "@/components/shared/field";
@@ -29,7 +29,7 @@ export function BrandField({
   allowCustom = true
 }: BrandFieldProps) {
   const { control, setValue, watch } = useSellForm();
-  const { brands, isBg, locale } = useSellFormContext();
+  const { brands, locale } = useSellFormContext();
   const tSell = useTranslations("Sell")
 
   const brandId = watch("brandId");
@@ -48,7 +48,7 @@ export function BrandField({
     <Controller
       name="brandId"
       control={control}
-      render={({ field: _field, fieldState }) => (
+      render={({ fieldState }) => (
         <Field data-invalid={fieldState.invalid} className={className}>
           {/* Section Header (non-compact mode) */}
           {!compact && (
@@ -59,12 +59,10 @@ export function BrandField({
                 </div>
                 <div>
                   <FieldLabel className="text-sm font-bold tracking-tight text-foreground">
-                    {isBg ? "Марка" : "Brand"}
+                    {tSell("fields.brand.label")}
                   </FieldLabel>
                   <FieldDescription className="text-xs font-medium text-muted-foreground mt-0.5">
-                    {isBg
-                      ? "Изберете марката на вашия продукт"
-                      : "Select your product's brand"}
+                    {tSell("fields.brand.helpText")}
                   </FieldDescription>
                 </div>
               </div>
@@ -72,13 +70,13 @@ export function BrandField({
           )}
 
           {/* Compact Label - hidden if we use label inside */}
-          {compact && (
-            <div className="hidden">
-              <FieldLabel className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2 block">
-                {isBg ? "Марка" : "Brand"}
-              </FieldLabel>
-            </div>
-          )}
+            {compact && (
+              <div className="hidden">
+                <FieldLabel className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2 block">
+                  {tSell("fields.brand.label")}
+                </FieldLabel>
+              </div>
+            )}
 
           {/* Brand Combobox - Using extracted shadcn-compliant component */}
           <FieldContent className={cn(!compact && "p-5")}>
@@ -103,11 +101,3 @@ export function BrandField({
     />
   );
 }
-
-/**
- * Memoized BrandField - Brand selector using shadcn Combobox pattern.
- * Optimized to prevent unnecessary re-renders when unrelated form state changes.
- * @see useSellForm - Hook for form state access
- * @see useSellFormContext - Hook for context access
- */
-const MemoizedBrandField = memo(BrandField);

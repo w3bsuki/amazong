@@ -65,7 +65,7 @@ export function ProductQuickViewDesktopContent({
     <div className="flex min-h-full flex-col bg-surface-elevated">
       <div className="sticky top-0 z-20 border-b border-border bg-surface-elevated px-4 py-3 lg:px-6">
         <div className="flex items-center gap-2">
-          <h2 className="min-w-0 flex-1 truncate text-base font-semibold text-foreground">
+          <h2 className="min-w-0 flex-1 truncate text-base font-semibold tracking-tight text-foreground">
             {titleText}
           </h2>
           <IconButton
@@ -124,7 +124,7 @@ export function ProductQuickViewDesktopContent({
 
             <div className="space-y-3 rounded-2xl border border-border-subtle bg-card p-4">
               <div className="flex flex-wrap items-baseline gap-2">
-                <span className="text-2xl font-bold tabular-nums tracking-tight text-foreground">
+                <span className="text-2xl font-bold tabular-nums tracking-tight text-price">
                   {formattedPrice}
                 </span>
                 {formattedOriginalPrice && (
@@ -202,7 +202,7 @@ export function ProductQuickViewDesktopContent({
               <div className="flex items-start gap-2">
                 <ShieldCheck size={17} weight="fill" className="mt-0.5 shrink-0" />
                 <div className="min-w-0 flex-1">
-                  <p className="font-medium text-foreground">{tProduct("buyerProtection")}</p>
+                  <p className="font-semibold tracking-tight text-foreground">{tProduct("buyerProtection")}</p>
                   <p className="text-xs text-muted-foreground">{tProduct("buyerProtectionBadgeSubtitle")}</p>
                 </div>
               </div>

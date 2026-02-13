@@ -578,34 +578,37 @@ The following cross-cutting checks apply to every scenario above:
 
 ---
 
-## Execution Evidence Log
+## Evidence Log (v2)
 
-> Required for release sign-off. Add one row per executed scenario.
+Fixed columns. Add one row per scenario run (or per sub-scenario if needed).
 
-| Scenario ID | Auto Result | Manual Result | Owner | Build/Commit | Screenshot/Video | Defect ID | Severity | Retest Result | Sign-off |
-|-------------|-------------|---------------|-------|--------------|------------------|-----------|----------|---------------|---------|
-| S6.2 | Pass | Pass | Codex | `2d8d4379` | `phase6-S6.2-gallery-swipe-pixel5.png`; `phase6-S6.2-gallery-swipe-iphone12.png` | F6-001 | P1 | Pass | Pending |
-| S6.3 | Pass | Pass | Codex | `2d8d4379` | `phase6-S6.3-image-counter-pixel5.png`; `phase6-S6.3-image-counter-iphone12.png` | F6-001 | P1 | Pass | Pending |
-| S6.4 | Pass | Pass | Codex | `2d8d4379` | `phase6-S6.4-fullscreen-viewer-pixel5.png`; `phase6-S6.4-fullscreen-viewer-iphone12.png` | F6-001 | P1 | Pass | Pending |
-| S6.15 | Pass | Pass | Codex | `2d8d4379` | `phase6-S6.15-tab-bar-hidden-pixel5.png`; `phase6-S6.15-tab-bar-hidden-iphone12.png` | — | — | Pass | Pending |
-| S6.1 | Pass | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace) | — | — | Pass | Pending |
-| S6.2 | Pass | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace rerun) | F6-001 | P1 | Pass | Pending |
-| S6.3 | Pass | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace rerun) | F6-001 | P1 | Pass | Pending |
-| S6.4 | Pass | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace rerun) | F6-001 | P1 | Pass | Pending |
-| S6.5 | Pass | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace) | — | — | Pass | Pending |
-| S6.6 | Pass | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace) | — | — | Pass | Pending |
-| S6.7 | Pass | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace) | — | — | Pass | Pending |
-| S6.8 | Pass | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace) | — | — | Pass | Pending |
-| S6.9 | Pass | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace) | — | — | Pass | Pending |
-| S6.10 | Pass | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace) | — | — | Pass | Pending |
-| S6.11 | Pass | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace) | — | — | Pass | Pending |
-| S6.12 | Pass | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace) | — | — | Pass | Pending |
-| S6.13 | Pass | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace) | — | — | Pass | Pending |
-| S6.14 | Pass | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace) | — | — | Pass | Pending |
-| S6.15 | Pass | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace rerun) | — | — | Pass | Pending |
-| S6.16 | Pass | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace) | — | — | Pass | Pending |
-| S6.17 | Pass | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace) | — | — | Pass | Pending |
-| S6.18 | Pass | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace) | FE-UX-006 | P2 | Pass | Pending |
+| Scenario | Method | Artifact | Result | Issue ID | Severity | Owner | Date |
+|----------|--------|----------|--------|----------|----------|-------|------|
+| S6.2 | manual | `phase6-S6.2-gallery-swipe-pixel5.png`; `phase6-S6.2-gallery-swipe-iphone12.png` | Pass | F6-001 | P1 | Codex | 2026-02-11 |
+| S6.3 | manual | `phase6-S6.3-image-counter-pixel5.png`; `phase6-S6.3-image-counter-iphone12.png` | Pass | F6-001 | P1 | Codex | 2026-02-11 |
+| S6.4 | manual | `phase6-S6.4-fullscreen-viewer-pixel5.png`; `phase6-S6.4-fullscreen-viewer-iphone12.png` | Pass | F6-001 | P1 | Codex | 2026-02-11 |
+| S6.15 | manual | `phase6-S6.15-tab-bar-hidden-pixel5.png`; `phase6-S6.15-tab-bar-hidden-iphone12.png` | Pass | — | — | Codex | 2026-02-11 |
+| S6.1 | code trace | N/A (code trace) | Pass | — | — | Codex | 2026-02-11 |
+| S6.2 | code trace | N/A (code trace) | Pass | F6-001 | P1 | Codex | 2026-02-11 |
+| S6.3 | code trace | N/A (code trace) | Pass | F6-001 | P1 | Codex | 2026-02-11 |
+| S6.4 | code trace | N/A (code trace) | Pass | F6-001 | P1 | Codex | 2026-02-11 |
+| S6.5 | code trace | N/A (code trace) | Pass | — | — | Codex | 2026-02-11 |
+| S6.6 | code trace | N/A (code trace) | Pass | — | — | Codex | 2026-02-11 |
+| S6.7 | code trace | N/A (code trace) | Pass | — | — | Codex | 2026-02-11 |
+| S6.8 | code trace | N/A (code trace) | Pass | — | — | Codex | 2026-02-11 |
+| S6.9 | code trace | N/A (code trace) | Pass | — | — | Codex | 2026-02-11 |
+| S6.10 | code trace | N/A (code trace) | Pass | — | — | Codex | 2026-02-11 |
+| S6.11 | code trace | N/A (code trace) | Pass | — | — | Codex | 2026-02-11 |
+| S6.12 | code trace | N/A (code trace) | Pass | — | — | Codex | 2026-02-11 |
+| S6.13 | code trace | N/A (code trace) | Pass | — | — | Codex | 2026-02-11 |
+| S6.14 | code trace | N/A (code trace) | Pass | — | — | Codex | 2026-02-11 |
+| S6.15 | code trace | N/A (code trace) | Pass | — | — | Codex | 2026-02-11 |
+| S6.16 | code trace | N/A (code trace) | Pass | — | — | Codex | 2026-02-11 |
+| S6.17 | code trace | N/A (code trace) | Pass | — | — | Codex | 2026-02-11 |
+| S6.18 | code trace | N/A (code trace) | Pass | FE-UX-006 | P2 | Codex | 2026-02-11 |
+
+Method suggestions: `runtime` | `code trace` | `manual` (keep it consistent within a phase).
+
 
 ---
 

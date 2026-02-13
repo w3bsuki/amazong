@@ -18,11 +18,11 @@ import { createClient } from "@/lib/supabase/client"
 function slugify(text: string): string {
   return text
     .toLowerCase()
-    .replace(/[^a-z0-9\s_-]/g, "")
-    .replace(/\s+/g, "_")
-    .replace(/-+/g, "_")
-    .replace(/_+/g, "_")
-    .replace(/^_|_$/g, "")
+    .replaceAll(/[^a-z0-9\s_-]/g, "")
+    .replaceAll(/\s+/g, "_")
+    .replaceAll(/-+/g, "_")
+    .replaceAll(/_+/g, "_")
+    .replaceAll(/^_|_$/g, "")
     .slice(0, 30)
 }
 
@@ -94,7 +94,7 @@ export default function BusinessProfilePage() {
 
   const handleUsernameChange = (value: string) => {
     setUsernameManuallyEdited(true)
-    setUsername(value.toLowerCase().replace(/[^a-z0-9_]/g, ""))
+    setUsername(value.toLowerCase().replaceAll(/[^a-z0-9_]/g, ""))
   }
 
   const handleContinue = () => {
@@ -138,7 +138,7 @@ export default function BusinessProfilePage() {
     if (isCheckingUsername) {
       return (
         <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
-          <SpinnerGap className="size-4 animate-spin" />
+          <SpinnerGap className="size-4 animate-spin motion-reduce:animate-none" />
           {t("businessProfile.checking")}
         </span>
       )
@@ -177,7 +177,7 @@ export default function BusinessProfilePage() {
         <Button onClick={handleContinue} disabled={!canContinue || isPending} size="lg" className="w-full">
           {isPending ? (
             <>
-              <SpinnerGap className="size-5 animate-spin" />
+              <SpinnerGap className="size-5 animate-spin motion-reduce:animate-none" />
               {t("common.processing")}
             </>
           ) : (
@@ -213,7 +213,10 @@ export default function BusinessProfilePage() {
                   />
                 )}
               </div>
-              <label className="absolute -bottom-1 -right-1 size-7 bg-primary text-primary-foreground rounded-full flex items-center justify-center cursor-pointer hover:bg-interactive-hover transition-colors shadow-sm">
+              <label
+                className="absolute -bottom-1 -right-1 size-7 bg-primary text-primary-foreground rounded-full flex items-center justify-center cursor-pointer hover:bg-interactive-hover transition-colors shadow-sm"
+                aria-label={t("businessProfile.logoLabel")}
+              >
                 <Camera className="size-3.5" weight="bold" />
                 <input type="file" accept="image/*" className="hidden" onChange={handleLogoChange} />
               </label>

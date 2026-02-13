@@ -42,6 +42,37 @@ export default async function SharedWishlistPage({ params }: SharedWishlistPageP
   const wishlistDescription = wishlistItems[0]?.wishlist_description
   const ownerName = wishlistItems[0]?.owner_name || t('anonymousUser')
 
+  const productIds = (wishlistItems as SharedWishlistItem[]).map((i) => i.product_id)
+  const { data: productsForLinks } = await supabase
+    .from("products")
+    .select("id, slug, seller:profiles!products_seller_id_fkey(username)")
+    .in("id", productIds)
+
+  type ProductWithSeller = {
+    id: string
+    slug: string | null
+    seller: { username: string | null } | null
+  }
+
+  const canonicalById = new Map(
+    (productsForLinks || []).map((p) => {
+      const product = p as ProductWithSeller
+      return [
+        product.id,
+        {
+          username: product.seller?.username ?? null,
+          slug: product.slug ?? null,
+        },
+      ]
+    })
+  )
+
+  const getProductHref = (productId: string) => {
+    const info = canonicalById.get(productId)
+    if (!info?.username) return "#"
+    return `/${info.username}/${info.slug || productId}`
+  }
+
   return (
     <PageShell variant="muted">
       <div className="container py-8">
@@ -49,7 +80,7 @@ export default async function SharedWishlistPage({ params }: SharedWishlistPageP
         <div className="mb-8 text-center">
           <div className="flex items-center justify-center gap-2 mb-4">
             <Gift className="h-8 w-8 text-deal" />
-            <h1 className="text-3xl font-bold text-foreground">{wishlistName}</h1>
+            <h1 className="text-3xl font-bold tracking-tight text-foreground">{wishlistName}</h1>
           </div>
           <p className="text-muted-foreground">
             {t('createdBy', { name: ownerName })}
@@ -82,7 +113,7 @@ export default async function SharedWishlistPage({ params }: SharedWishlistPageP
               key={item.product_id}
               className="overflow-hidden transition-colors hover:bg-hover active:bg-active hover:border-hover-border"
             >
-              <Link href={`/product/${item.product_id}`}>
+              <Link href={getProductHref(item.product_id)}>
                 <div className="relative aspect-square bg-muted">
                   <Image
                     src={item.product_image || "/placeholder.svg"}
@@ -94,7 +125,7 @@ export default async function SharedWishlistPage({ params }: SharedWishlistPageP
               </Link>
               <CardContent className="p-3">
                 <Link 
-                  href={`/product/${item.product_id}`}
+                  href={getProductHref(item.product_id)}
                   className="text-sm font-medium text-foreground hover:text-primary line-clamp-2 min-h-10"
                 >
                   {item.product_title}
@@ -110,7 +141,7 @@ export default async function SharedWishlistPage({ params }: SharedWishlistPageP
                   className="w-full mt-3"
                   asChild
                 >
-                  <Link href={`/product/${item.product_id}`}>
+                  <Link href={getProductHref(item.product_id)}>
                     <ShoppingCart className="h-4 w-4 mr-2" />
                     {t('viewProduct')}
                   </Link>
@@ -122,7 +153,7 @@ export default async function SharedWishlistPage({ params }: SharedWishlistPageP
 
         {/* CTA Section */}
         <div className="mt-12 text-center p-4 bg-surface-subtle rounded-xl border border-border-subtle">
-          <h2 className="text-xl font-semibold mb-2">{t('createYourOwn')}</h2>
+          <h2 className="text-xl font-semibold tracking-tight mb-2">{t('createYourOwn')}</h2>
           <p className="text-muted-foreground mb-4">{t('signUpToCreate')}</p>
           <Button asChild variant="cta" className="font-medium">
             <Link href="/auth/sign-up">{t('signUpFree')}</Link>

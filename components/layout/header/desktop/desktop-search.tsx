@@ -9,7 +9,6 @@ import { Switch } from "@/components/ui/switch"
 import { Input } from "@/components/ui/input"
 import { FieldLabel } from "@/components/shared/field"
 import { SearchAiChat } from "@/components/shared/search/ai/search-ai-chat"
-import { cn } from "@/lib/utils"
 import {
   Popover,
   PopoverContent,
@@ -130,7 +129,7 @@ export function DesktopSearch() {
             onSubmit={handleSearch}
             action={`/${locale}/search`}
             method="get"
-            className="relative flex h-11 w-full items-center rounded-full bg-search-bg border border-search-border transition-colors focus-within:border-search-focus-border focus-within:ring-search-focus-ring/30 focus-within:ring-2 focus-within:bg-background"
+            className="relative flex h-11 w-full items-center rounded-full border border-search-border bg-search-bg motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth) motion-reduce:transition-none focus-within:border-search-focus-border focus-within:bg-background focus-within:ring-2 focus-within:ring-search-focus-ring/30"
           >
             <MagnifyingGlass
               size={18}
@@ -164,7 +163,7 @@ export function DesktopSearch() {
                 type="button"
                 onClick={handleClearInput}
                   aria-label={tNav("clearSearch")}
-                className="absolute right-24 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                className="absolute top-1/2 right-24 -translate-y-1/2 rounded-sm text-muted-foreground tap-transparent motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth) motion-reduce:transition-none hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
               >
                 <X size={16} weight="regular" />
               </button>
@@ -216,7 +215,7 @@ export function DesktopSearch() {
                   </span>
                   <Link 
                     href={buildSearchHref(query)}
-                    className="text-xs text-primary flex items-center gap-1"
+                    className="flex items-center gap-1 rounded-sm text-xs text-primary tap-transparent motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth) motion-reduce:transition-none hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
                     onClick={() => setIsOpen(false)}
                   >
                     {tSearch("viewAll")}
@@ -227,8 +226,9 @@ export function DesktopSearch() {
                   {products.map((product) => (
                     <button
                       key={product.id}
+                      type="button"
                       onClick={() => handleSelectProduct(product)}
-                      className="w-full flex items-center gap-3 p-2.5 hover:bg-muted rounded-lg text-left group"
+                      className="group flex w-full items-center gap-3 rounded-lg p-2.5 text-left tap-transparent motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth) motion-reduce:transition-none hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
                     >
                       <div className="w-12 h-12 bg-muted rounded-lg overflow-hidden shrink-0 ring-1 ring-border">
                         {product.images?.[0] ? (
@@ -253,7 +253,7 @@ export function DesktopSearch() {
                           {formatPrice(product.price)}
                         </p>
                       </div>
-                      <ArrowRight size={16} weight="regular" className="text-muted-foreground opacity-0 group-hover:opacity-100" />
+                      <ArrowRight size={16} weight="regular" className="text-muted-foreground opacity-0 motion-safe:transition-opacity motion-safe:duration-fast motion-safe:ease-(--ease-smooth) motion-reduce:transition-none group-hover:opacity-100" />
                     </button>
                   ))}
                 </div>
@@ -269,8 +269,9 @@ export function DesktopSearch() {
                     {tSearch("recentlyViewed")}
                   </span>
                   <button
+                    type="button"
                     onClick={clearRecentlyViewed}
-                    className="text-xs text-muted-foreground hover:text-foreground"
+                    className="rounded-sm text-xs text-muted-foreground tap-transparent motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth) motion-reduce:transition-none hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
                   >
                     {tSearch("clear")}
                   </button>
@@ -282,7 +283,7 @@ export function DesktopSearch() {
                         key={product.id}
                         href={buildProductUrl(product)}
                         onClick={() => setIsOpen(false)}
-                        className="shrink-0 w-24 group"
+                        className="group w-24 shrink-0 rounded-md tap-transparent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
                       >
                         <div className="w-24 h-24 bg-muted rounded-lg overflow-hidden ring-1 ring-border">
                           {product.image ? (
@@ -321,8 +322,9 @@ export function DesktopSearch() {
                     {tSearch("recentSearches")}
                   </span>
                   <button
+                    type="button"
                     onClick={clearRecentProducts}
-                    className="text-xs text-muted-foreground hover:text-foreground"
+                    className="rounded-sm text-xs text-muted-foreground tap-transparent motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth) motion-reduce:transition-none hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
                   >
                     {tSearch("clear")}
                   </button>
@@ -334,7 +336,7 @@ export function DesktopSearch() {
                         key={product.id}
                         href={buildProductUrl(product)}
                         onClick={() => setIsOpen(false)}
-                        className="shrink-0 w-24 group"
+                        className="group w-24 shrink-0 rounded-md tap-transparent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
                       >
                         <div className="w-24 h-24 bg-muted rounded-lg overflow-hidden ring-1 ring-border">
                           {product.image ? (
@@ -377,8 +379,9 @@ export function DesktopSearch() {
                   {trendingSearches.map((search, i) => (
                     <button
                       key={`trending-${i}`}
+                      type="button"
                       onClick={() => handleSelectSearch(search)}
-                      className="w-full flex items-center gap-3 px-3 py-2 hover:bg-muted rounded-md text-left group"
+                      className="group flex w-full items-center gap-3 rounded-md px-3 py-2 text-left tap-transparent motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth) motion-reduce:transition-none hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
                     >
                       <div className="w-5 h-5 rounded-full bg-primary flex items-center justify-center text-xs font-bold text-primary-foreground">
                         {i + 1}
@@ -386,7 +389,7 @@ export function DesktopSearch() {
                       <span className="text-sm text-foreground group-hover:text-primary flex-1">
                         {search}
                       </span>
-                      <ArrowRight size={14} weight="regular" className="text-muted-foreground opacity-0 group-hover:opacity-100" />
+                      <ArrowRight size={14} weight="regular" className="text-muted-foreground opacity-0 motion-safe:transition-opacity motion-safe:duration-fast motion-safe:ease-(--ease-smooth) motion-reduce:transition-none group-hover:opacity-100" />
                     </button>
                   ))}
                 </div>
@@ -397,7 +400,7 @@ export function DesktopSearch() {
             {isSearching && query && (
               <div className="px-4 py-8 text-center">
                 <div className="inline-flex items-center gap-2 text-sm text-muted-foreground">
-                  <div className="size-4 border-2 border-border border-t-primary rounded-full" />
+                  <div className="size-4 rounded-full border-2 border-border border-t-primary motion-safe:animate-spin motion-reduce:animate-none" />
                   {tSearch("searching")}
                 </div>
               </div>

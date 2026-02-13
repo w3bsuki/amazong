@@ -489,25 +489,28 @@ _None identified at time of writing._
 
 ---
 
-## Execution Evidence Log
+## Evidence Log (v2)
 
-> Required for release sign-off. Add one row per executed scenario.
+Fixed columns. Add one row per scenario run (or per sub-scenario if needed).
 
-| Scenario ID | Auto Result | Manual Result | Owner | Build/Commit | Screenshot/Video | Defect ID | Severity | Retest Result | Sign-off |
-|-------------|-------------|---------------|-------|--------------|------------------|-----------|----------|---------------|---------|
-| S9.1 | N/A (code trace) | ✅ Pass | Codex | working-tree (2026-02-11) | Full-height shell in `chat/layout.tsx` and chat clients | — | — | — | ✅ |
-| S9.2 | N/A (code trace) | ✅ Pass | Codex | working-tree (2026-02-11) | Conversation list rendering logic in `conversation-list.tsx` | — | — | — | ✅ |
-| S9.3 | N/A (code trace) | ✅ Pass | Codex | working-tree (2026-02-11) | Unread indicators in list/drawer | — | — | — | ✅ |
-| S9.4 | N/A (code trace) | ✅ Pass | Codex | working-tree (2026-02-11) | Bottom tabs/filter control in `messages-page-client.tsx` | — | — | — | ✅ |
-| S9.5 | N/A (code trace) | ⚠ Partial | Codex | working-tree (2026-02-11) | Thread navigation works, but in-thread seller/product links use non-canonical routes | CHAT-001 | P1 | ⚠ Partial | ✅ |
-| S9.6 | N/A (code trace) | ✅ Pass | Codex | working-tree (2026-02-11) | Message bubble styling and thread segmentation in `chat-interface.tsx` | — | — | — | ✅ |
-| S9.7 | N/A (code trace) | ⚠ Partial | Codex | working-tree (2026-02-11) | Image upload endpoint is wired, but send path calls `sendMessage(\"\", data.url)` while send hook requires non-empty content | CHAT-003 | P1 | ⚠ Partial | ✅ |
-| S9.8 | N/A (code trace) | ✅ Pass | Codex | working-tree (2026-02-11) | Send-message path and optimistic thread update wiring | — | — | — | ✅ |
-| S9.9 | N/A (code trace) | ✅ Pass | Codex | working-tree (2026-02-11) | Back navigation logic in `messages-page-client.tsx` | — | — | — | ✅ |
-| S9.10 | N/A (code trace) | ✅ Pass | Codex | working-tree (2026-02-11) | Header messages drawer integration and conversation links | — | — | — | ✅ |
-| S9.11 | N/A (code trace) | ❌ Fail | Codex | working-tree (2026-02-11) | Report flow inserts notification for reporter (`user_id=userData.user.id`) instead of admin recipient | CHAT-002 | P1 | ❌ Fail | ✅ |
-| S9.12 | N/A (code trace) | ✅ Pass | Codex | working-tree (2026-02-11) | Empty-state flows in drawer and messages list | — | — | — | ✅ |
-| S9.13 | N/A (code trace) | ✅ Pass | Codex | working-tree (2026-02-11) | Safe-area classes and mobile container behavior | — | — | — | ✅ |
+| Scenario | Method | Artifact | Result | Issue ID | Severity | Owner | Date |
+|----------|--------|----------|--------|----------|----------|-------|------|
+| S9.1 | code trace | Full-height shell in `chat/layout.tsx` and chat clients | Pass | — | — | Codex | 2026-02-11 |
+| S9.2 | code trace | Conversation list rendering logic in `conversation-list.tsx` | Pass | — | — | Codex | 2026-02-11 |
+| S9.3 | code trace | Unread indicators in list/drawer | Pass | — | — | Codex | 2026-02-11 |
+| S9.4 | code trace | Bottom tabs/filter control in `messages-page-client.tsx` | Pass | — | — | Codex | 2026-02-11 |
+| S9.5 | code trace | Thread navigation works, but in-thread seller/product links use non-canonical routes | Partial | CHAT-001 | P1 | Codex | 2026-02-11 |
+| S9.6 | code trace | Message bubble styling and thread segmentation in `chat-interface.tsx` | Pass | — | — | Codex | 2026-02-11 |
+| S9.7 | code trace | Image upload endpoint is wired, but send path calls `sendMessage(\"\", data.url)` while send hook requires non-empty content | Partial | CHAT-003 | P1 | Codex | 2026-02-11 |
+| S9.8 | code trace | Send-message path and optimistic thread update wiring | Pass | — | — | Codex | 2026-02-11 |
+| S9.9 | code trace | Back navigation logic in `messages-page-client.tsx` | Pass | — | — | Codex | 2026-02-11 |
+| S9.10 | code trace | Header messages drawer integration and conversation links | Pass | — | — | Codex | 2026-02-11 |
+| S9.11 | code trace | Report flow inserts notification for reporter (`user_id=userData.user.id`) instead of admin recipient | Fail | CHAT-002 | P1 | Codex | 2026-02-11 |
+| S9.12 | code trace | Empty-state flows in drawer and messages list | Pass | — | — | Codex | 2026-02-11 |
+| S9.13 | code trace | Safe-area classes and mobile container behavior | Pass | — | — | Codex | 2026-02-11 |
+
+Method suggestions: `runtime` | `code trace` | `manual` (keep it consistent within a phase).
+
 
 ---
 

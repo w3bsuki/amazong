@@ -36,11 +36,11 @@ export default async function AccountPage({ params }: AccountPageProps) {
   const [ordersResult, wishlistResult, productsResult, , salesResult, profileResult, subscriptionResult] = await Promise.all([
     supabase.from('orders').select('id, total_amount, status, created_at', { count: 'exact' }).eq('user_id', user.id).order('created_at', { ascending: false }).limit(5),
     supabase.from('wishlists').select('id', { count: 'exact' }).eq('user_id', user.id),
-    supabase.from('products').select('id, title, price, stock, images, created_at', { count: 'exact' }).eq('seller_id', user.id).order('created_at', { ascending: false }).limit(5),
+    supabase.from('products').select('id, title, price, stock, images, slug, created_at', { count: 'exact' }).eq('seller_id', user.id).order('created_at', { ascending: false }).limit(5),
     supabase.from('messages').select('id, is_read', { count: 'exact' }).eq('sender_id', user.id).neq('sender_id', user.id),
     supabase.from('order_items').select('id, order_id, price_at_purchase, quantity, product_id', { count: 'exact' }).eq('seller_id', user.id).limit(5),
     // Profile with subscription benefits
-    supabase.from('profiles').select('account_type, tier, boosts_allocated, boosts_remaining, boosts_reset_at').eq('id', user.id).single(),
+    supabase.from('profiles').select('username, account_type, tier, boosts_allocated, boosts_remaining, boosts_reset_at').eq('id', user.id).single(),
     // Active subscription
     supabase.from('subscriptions').select('status, expires_at, auto_renew, plan_type').eq('seller_id', user.id).eq('status', 'active').order('created_at', { ascending: false }).limit(1).maybeSingle(),
   ])
@@ -105,6 +105,8 @@ export default async function AccountPage({ params }: AccountPageProps) {
     price: p.price,
     stock: p.stock,
     ...(p.images ? { images: p.images } : {}),
+    slug: p.slug ?? null,
+    username: profile?.username ?? null,
     created_at: p.created_at
   }))
   const recentSales = salesData.map((sale: SaleItem) => {

@@ -1,7 +1,7 @@
 "use client"
 
 import { useMemo, useCallback, useEffect, useState } from "react"
-import { ShoppingCart, Package, Minus, Plus, Trash, X } from "@phosphor-icons/react"
+import { ShoppingCart, Package, Minus, Plus, SpinnerGap, Trash, X } from "@phosphor-icons/react"
 import {
   Drawer,
   DrawerContent,
@@ -69,7 +69,7 @@ function CartDrawerItemImage({
  * For self-contained trigger usage, see MobileCartDropdown instead.
  */
 export function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
-  const { items, totalItems, subtotal, removeFromCart, updateQuantity } = useCart()
+  const { items, totalItems, subtotal, removeFromCart, updateQuantity, isReady } = useCart()
   const t = useTranslations("CartDropdown")
   const locale = useLocale()
 
@@ -102,13 +102,14 @@ export function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
             <div className="flex items-center gap-1.5">
               <ShoppingCart size={16} weight="regular" className="text-muted-foreground" />
               <DrawerTitle className="text-sm font-semibold">{t("title")}</DrawerTitle>
-              <span className="text-xs text-muted-foreground">({totalItems})</span>
+              <span className="text-xs text-muted-foreground">({isReady ? totalItems : "..."})</span>
             </div>
             <DrawerClose asChild>
               <IconButton
                 aria-label={t("close")}
                 variant="ghost"
-                className="text-muted-foreground hover:text-foreground hover:bg-muted active:bg-muted"
+                size="icon-default"
+                className="text-muted-foreground hover:text-foreground hover:bg-muted active:bg-muted motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth)"
               >
                 <X size={20} weight="light" />
               </IconButton>
@@ -117,7 +118,11 @@ export function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
           <DrawerDescription className="sr-only">{t("description")}</DrawerDescription>
         </DrawerHeader>
 
-        {items.length === 0 ? (
+        {!isReady ? (
+          <div className="flex flex-col items-center justify-center px-inset py-5" aria-live="polite">
+            <SpinnerGap size={20} weight="bold" className="animate-spin text-muted-foreground" />
+          </div>
+        ) : items.length === 0 ? (
           <div className="flex flex-col items-center justify-center px-inset py-5">
             <div className="size-11 bg-muted rounded-xl flex items-center justify-center mb-2">
               <ShoppingCart size={22} weight="regular" className="text-muted-foreground" />
@@ -134,7 +139,11 @@ export function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
                 key={`${item.id}:${item.variantId ?? ""}`}
                 className={cn("flex gap-2 py-2", index !== items.length - 1 && "border-b border-border")}
               >
-                <Link href={buildProductUrl(item)} onClick={handleClose} className="shrink-0">
+                <Link
+                  href={buildProductUrl(item)}
+                  onClick={handleClose}
+                  className="shrink-0 rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
+                >
                   <div className="size-14 bg-muted rounded-xl overflow-hidden border border-border">
                     {item.image ? (
                       <CartDrawerItemImage src={item.image} alt={item.title} priority={index === 0} />
@@ -149,7 +158,7 @@ export function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
                   <Link
                     href={buildProductUrl(item)}
                     onClick={handleClose}
-                    className="text-sm text-foreground hover:text-primary line-clamp-2 leading-snug"
+                    className="inline-flex min-h-(--control-default) items-center rounded-lg py-1 text-sm text-foreground hover:text-primary line-clamp-2 leading-snug tap-transparent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth)"
                   >
                     {item.title}
                   </Link>
@@ -163,7 +172,7 @@ export function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
                         data-vaul-no-drag
                         aria-label={t("removeItem")}
                         variant="ghost"
-                        className="hover:bg-destructive-subtle text-muted-foreground hover:text-destructive"
+                        className="text-muted-foreground hover:bg-destructive-subtle hover:text-destructive motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth)"
                         onClick={() => removeFromCart(item.id, item.variantId)}
                       >
                         <Trash weight="regular" />
@@ -174,7 +183,7 @@ export function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
                         data-vaul-no-drag
                         aria-label={t("decreaseQuantity")}
                         variant="ghost"
-                        className="hover:bg-muted text-muted-foreground hover:text-foreground"
+                        className="text-muted-foreground hover:bg-muted hover:text-foreground motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth)"
                         onClick={() =>
                           item.quantity > 1
                             ? updateQuantity(item.id, item.quantity - 1, item.variantId)
@@ -188,7 +197,7 @@ export function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
                         data-vaul-no-drag
                         aria-label={t("increaseQuantity")}
                         variant="ghost"
-                        className="hover:bg-muted text-muted-foreground hover:text-foreground"
+                        className="text-muted-foreground hover:bg-muted hover:text-foreground motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth)"
                         onClick={() => updateQuantity(item.id, item.quantity + 1, item.variantId)}
                       >
                         <Plus weight="bold" />
@@ -202,8 +211,12 @@ export function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
         )}
 
         <DrawerFooter className="border-t border-border gap-1.5">
-          {items.length === 0 ? (
-            <Button variant="cta" size="default" className="w-full" asChild>
+          {!isReady ? (
+            <div className="flex items-center justify-center py-2">
+              <SpinnerGap size={16} weight="bold" className="animate-spin text-muted-foreground" />
+            </div>
+          ) : items.length === 0 ? (
+            <Button variant="cta" size="primary" className="w-full" asChild>
               <Link href="/search" onClick={handleClose}>
                 {t("startShopping")}
               </Link>
@@ -214,7 +227,7 @@ export function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
                 <span className="text-xs text-muted-foreground">{t("subtotal")}</span>
                 <span className="text-base font-bold text-foreground">{formatPrice(subtotal)}</span>
               </div>
-              <Button variant="cta" size="default" className="w-full" asChild>
+              <Button variant="cta" size="primary" className="w-full" asChild>
                 <Link href="/checkout" onClick={handleClose}>
                   {t("checkout")}
                 </Link>

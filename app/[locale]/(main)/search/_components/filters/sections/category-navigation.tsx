@@ -61,8 +61,9 @@ export function CategoryNavigation({
             </Link>
           ) : (
             <button
+              type="button"
               onClick={onToggleShowAllCategories}
-              className="text-sm text-muted-foreground hover:text-primary min-h-11 flex items-center gap-1 w-full mb-2"
+              className="text-sm text-muted-foreground hover:text-primary min-h-11 flex items-center gap-1 w-full mb-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
             >
               <CaretRight size={14} weight="bold" className={showAllCategories ? "rotate-90" : "rotate-180"} />
               <span className="hover:underline">{tCommon("allCategories")}</span>
@@ -89,7 +90,7 @@ export function CategoryNavigation({
 
           {validSubcategories.length > 0 && (
             <>
-              <h3 className="text-xs font-semibold text-sidebar-muted-foreground uppercase tracking-wide mb-2 mt-4">
+              <h3 className="text-xs font-semibold tracking-tight text-sidebar-muted-foreground uppercase mb-2 mt-4">
                 {t("subcategories")}
               </h3>
               <nav className="space-y-0.5">
@@ -108,7 +109,7 @@ export function CategoryNavigation({
         </>
       ) : (
         <>
-          <h3 className="font-semibold text-base mb-3 text-sidebar-foreground">{t("department")}</h3>
+          <h3 className="font-semibold tracking-tight text-base mb-3 text-sidebar-foreground">{t("department")}</h3>
           <nav className="space-y-0.5">
             {validCategories.map((category) => {
               const isExpanded = expandedCategories.includes(category.slug)
@@ -126,11 +127,12 @@ export function CategoryNavigation({
                     </Link>
                     {hasSubcategories && (
                       <button
+                        type="button"
                         onClick={(event) => {
                           event.preventDefault()
                           onToggleCategory(category.slug)
                         }}
-                        className="size-11 flex items-center justify-center hover:bg-sidebar-accent rounded-md transition-colors"
+                        className="size-11 flex items-center justify-center hover:bg-sidebar-accent rounded-md transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
                         aria-label={
                           isExpanded
                             ? t("collapseSubcategories", { category: getCategoryName(category, locale) })

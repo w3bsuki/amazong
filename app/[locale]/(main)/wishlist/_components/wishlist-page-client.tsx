@@ -137,7 +137,7 @@ export default function WishlistPageClient() {
             <span className="text-foreground">{t("title")}</span>
           </nav>
 
-          <h1 className="text-xl md:text-2xl font-bold text-foreground mb-6 flex items-center gap-2">
+          <h1 className="text-xl md:text-2xl font-bold tracking-tight text-foreground mb-6 flex items-center gap-2">
             <Heart className="h-5 w-5 md:h-6 md:w-6" weight="fill" />
             {t("title")}
           </h1>
@@ -146,7 +146,7 @@ export default function WishlistPageClient() {
             <div className="size-20 md:size-24 bg-muted rounded-full flex items-center justify-center mx-auto mb-6">
               <Heart className="size-10 md:size-12 text-muted-foreground" weight="duotone" />
             </div>
-            <h2 className="text-lg md:text-xl font-semibold text-foreground mb-2">{t("empty")}</h2>
+            <h2 className="text-lg md:text-xl font-semibold tracking-tight text-foreground mb-2">{t("empty")}</h2>
             <p className="text-muted-foreground mb-6 max-w-md mx-auto">{t("emptyDescription")}</p>
             <Button asChild variant="cta" className="gap-2">
               <Link href="/search">
@@ -174,7 +174,7 @@ export default function WishlistPageClient() {
 
         {/* Header with title and actions */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
-          <h1 className="text-xl md:text-2xl font-bold text-foreground flex items-center gap-2">
+          <h1 className="text-xl md:text-2xl font-bold tracking-tight text-foreground flex items-center gap-2">
             <Heart className="h-5 w-5 md:h-6 md:w-6 text-wishlist" weight="fill" />
             {t("title")} <span className="text-muted-foreground font-normal">({items.length})</span>
           </h1>
@@ -224,13 +224,14 @@ export default function WishlistPageClient() {
                   />
                   {/* Remove button - Top right */}
                   <button
+                    type="button"
                     onClick={(e) => {
                       e.preventDefault()
                       e.stopPropagation()
                       removeFromWishlist(item.product_id)
                       toast.success(t("removedFromWishlist"))
                     }}
-                    className="absolute top-2 right-2 p-2 rounded-full bg-background hover:bg-hover border border-border text-muted-foreground hover:text-destructive transition-colors"
+                    className="absolute top-2 right-2 p-2 rounded-full bg-background hover:bg-hover border border-border text-muted-foreground hover:text-destructive transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
                     aria-label={t("remove")}
                   >
                     <Trash size={16} weight="regular" />
@@ -242,7 +243,7 @@ export default function WishlistPageClient() {
               <div className="p-2 sm:p-3">
                 {/* Title */}
                 <Link href={getProductUrl(item)}>
-                  <h3 className="text-sm font-medium text-foreground line-clamp-2 mb-1 group-hover:text-primary transition-colors min-h-10">
+                  <h3 className="text-sm font-semibold tracking-tight text-foreground line-clamp-2 mb-1 group-hover:text-primary transition-colors min-h-10">
                     {item.title}
                   </h3>
                 </Link>

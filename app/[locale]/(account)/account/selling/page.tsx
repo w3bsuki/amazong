@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server"
 import { Link, redirect } from "@/i18n/routing"
+import { getTranslations } from "next-intl/server"
 import {
   bulkUpdateProductStatus,
   clearProductDiscount,
@@ -29,6 +30,7 @@ interface SellingPageProps {
 
 interface Product {
   id: string
+  slug: string
   title: string
   description: string | null
   price: number
@@ -52,6 +54,7 @@ interface Product {
 
 export default async function SellingPage({ params }: SellingPageProps) {
   const { locale } = await params
+  const t = await getTranslations({ locale, namespace: "SellerManagement" })
   const supabase = await createClient()
 
   if (!supabase) {
@@ -87,6 +90,7 @@ export default async function SellingPage({ params }: SellingPageProps) {
     .from("products")
     .select(`
       id,
+      slug,
       title,
       description,
       price,
@@ -121,15 +125,9 @@ export default async function SellingPage({ params }: SellingPageProps) {
     }).format(value)
   }
 
-  const t = {
-    products: locale === 'bg' ? 'продукта' : 'products',
-    value: locale === 'bg' ? 'стойност' : 'value',
-    lowStock: locale === 'bg' ? 'нисък склад' : 'low stock',
-  }
-
   return (
     <div className="flex flex-col gap-4 md:gap-4">
-      <h1 className="sr-only">{locale === 'bg' ? 'Моят магазин' : 'My Store'}</h1>
+      <h1 className="sr-only">{t("selling.pageTitle")}</h1>
 
       {/* Mobile: Revolut-style header with stats pills */}
       <div className="sm:hidden">
@@ -151,7 +149,7 @@ export default async function SellingPage({ params }: SellingPageProps) {
           <Button asChild size="sm" className="gap-1.5 rounded-full px-4">
             <Link href="/sell">
               <Plus weight="bold" className="size-4" />
-              {locale === 'bg' ? 'Добави' : 'Add'}
+              {t("selling.actions.add")}
             </Link>
           </Button>
         </div>
@@ -161,13 +159,15 @@ export default async function SellingPage({ params }: SellingPageProps) {
           <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-background border border-border-subtle">
             <Package weight="duotone" className="size-4 text-primary" />
             <span className="font-semibold">{totalProducts}</span>
-            <span className="text-muted-foreground">{t.products}</span>
+            <span className="text-muted-foreground">
+              {t("selling.stats.productsLabel", { count: totalProducts })}
+            </span>
           </div>
           {lowStockProducts > 0 && (
             <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-warning/10 border border-warning/20">
               <span className="size-2 rounded-full bg-warning animate-pulse" />
               <span className="font-semibold text-warning">{lowStockProducts}</span>
-              <span className="text-warning/70">{t.lowStock}</span>
+              <span className="text-warning/70">{t("selling.stats.lowStockLabel")}</span>
             </div>
           )}
         </div>
@@ -185,12 +185,12 @@ export default async function SellingPage({ params }: SellingPageProps) {
               {seller.verified && (
                 <Badge variant="secondary" className="bg-success/10 text-success border-0">
                   <Star weight="fill" className="size-3 mr-1" />
-                  {locale === 'bg' ? 'Потвърден' : 'Verified'}
+                  {t("selling.badges.verified")}
                 </Badge>
               )}
             </div>
             <p className="text-sm text-muted-foreground mt-0.5">
-              {locale === 'bg' ? 'Член от' : 'Member since'} {new Date(seller.created_at).toLocaleDateString(locale)}
+              {t("selling.labels.memberSince")} {new Date(seller.created_at).toLocaleDateString(locale)}
             </p>
           </div>
         </div>
@@ -198,13 +198,13 @@ export default async function SellingPage({ params }: SellingPageProps) {
           <Button asChild variant="outline" className="gap-2 rounded-full">
             <Link href="/account/sales">
               <ChartLineUp weight="bold" className="size-4" />
-              {locale === 'bg' ? 'Продажби' : 'Sales'}
+              {t("selling.actions.sales")}
             </Link>
           </Button>
           <Button asChild className="gap-2 rounded-full">
             <Link href="/sell">
               <Plus weight="bold" className="size-4" />
-              {locale === 'bg' ? 'Нова обява' : 'New Listing'}
+              {t("selling.actions.newListing")}
             </Link>
           </Button>
         </div>
@@ -216,14 +216,14 @@ export default async function SellingPage({ params }: SellingPageProps) {
           <CardHeader className="p-4">
             <CardDescription className="flex items-center gap-1.5">
               <Package weight="duotone" className="size-4 shrink-0 text-muted-foreground" />
-              <span className="truncate">{locale === 'bg' ? 'Продукти' : 'Products'}</span>
+              <span className="truncate">{t("selling.stats.products.title")}</span>
             </CardDescription>
             <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
               {totalProducts.toLocaleString()}
             </CardTitle>
             <div className="pt-1">
               <Badge variant="outline" className="text-info border-border-subtle bg-info/10">
-                {locale === 'bg' ? 'Активни' : 'Active'}
+                {t("selling.badges.active")}
               </Badge>
             </div>
           </CardHeader>
@@ -233,14 +233,14 @@ export default async function SellingPage({ params }: SellingPageProps) {
           <CardHeader className="p-4">
             <CardDescription className="flex items-center gap-1.5">
               <CurrencyCircleDollar weight="duotone" className="size-4 shrink-0 text-success" />
-              <span className="truncate">{locale === 'bg' ? 'Стойност' : 'Value'}</span>
+              <span className="truncate">{t("selling.stats.value.title")}</span>
             </CardDescription>
             <CardTitle className="text-2xl font-semibold tabular-nums text-success @[250px]/card:text-3xl">
               {formatCurrency(totalValue)}
             </CardTitle>
             <div className="pt-1">
               <Badge variant="outline" className="text-success border-success/20 bg-success/10">
-                {locale === 'bg' ? 'Инвентар' : 'Inventory'}
+                {t("selling.badges.inventory")}
               </Badge>
             </div>
           </CardHeader>
@@ -250,14 +250,14 @@ export default async function SellingPage({ params }: SellingPageProps) {
           <CardHeader className="p-4">
             <CardDescription className="flex items-center gap-1.5">
               <ShoppingCart weight="duotone" className="size-4 shrink-0" />
-              <span className="truncate">{locale === 'bg' ? 'Поръчки' : 'Orders'}</span>
+              <span className="truncate">{t("selling.stats.orders.title")}</span>
             </CardDescription>
             <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
               0
             </CardTitle>
             <div className="pt-1">
               <Badge variant="outline" className="text-muted-foreground border-border">
-                {locale === 'bg' ? 'Този месец' : 'This month'}
+                {t("selling.badges.thisMonth")}
               </Badge>
             </div>
           </CardHeader>
@@ -267,7 +267,7 @@ export default async function SellingPage({ params }: SellingPageProps) {
           <CardHeader className="p-4">
             <CardDescription className="flex items-center gap-1.5">
               <Warning weight="duotone" className="size-4 shrink-0" />
-              <span className="truncate">{locale === 'bg' ? 'Нисък склад' : 'Low Stock'}</span>
+              <span className="truncate">{t("selling.stats.lowStock.title")}</span>
             </CardDescription>
             <CardTitle className={`text-2xl font-semibold tabular-nums @[250px]/card:text-3xl ${lowStockProducts > 0 ? 'text-warning' : ''}`}>
               {lowStockProducts.toLocaleString()}
@@ -275,11 +275,11 @@ export default async function SellingPage({ params }: SellingPageProps) {
             <div className="pt-1">
               {lowStockProducts > 0 ? (
                 <Badge variant="outline" className="text-warning border-warning/20 bg-warning/10">
-                  {locale === 'bg' ? 'Внимание' : 'Attention'}
+                  {t("selling.badges.attention")}
                 </Badge>
               ) : (
                 <Badge variant="outline" className="text-muted-foreground border-border">
-                  {locale === 'bg' ? 'Всичко е ОК' : 'All good'}
+                  {t("selling.badges.allGood")}
                 </Badge>
               )}
             </div>
@@ -291,11 +291,12 @@ export default async function SellingPage({ params }: SellingPageProps) {
       <div className="sm:hidden mt-4">
         <div className="flex items-center justify-between px-1 mb-3">
           <span className="font-semibold text-base text-foreground">
-            {locale === 'bg' ? 'Вашите продукти' : 'Your Products'}
+            {t("selling.sections.yourProducts")}
           </span>
         </div>
         <SellingProductsList
           products={sellerProducts}
+          sellerUsername={profile.username}
           locale={locale}
           actions={{
             deleteProduct,
@@ -312,16 +313,16 @@ export default async function SellingPage({ params }: SellingPageProps) {
           <div className="flex items-center justify-between">
             <div>
               <CardTitle className="text-base">
-                {locale === 'bg' ? 'Вашите продукти' : 'Your Products'}
+                {t("selling.sections.yourProducts")}
               </CardTitle>
               <CardDescription>
-                {locale === 'bg' ? 'Управлявайте вашите обяви' : 'Manage your product listings'}
+                {t("selling.sections.manageListings")}
               </CardDescription>
             </div>
             <Button asChild variant="outline" size="sm" className="rounded-full">
               <Link href="/sell">
                 <Plus weight="bold" className="size-4 mr-2" />
-                {locale === 'bg' ? 'Добави' : 'Add'}
+                {t("selling.actions.add")}
               </Link>
             </Button>
           </div>
@@ -329,6 +330,7 @@ export default async function SellingPage({ params }: SellingPageProps) {
         <CardContent className="p-0">
           <SellingProductsList
             products={sellerProducts}
+            sellerUsername={profile.username}
             locale={locale}
             actions={{
               deleteProduct,

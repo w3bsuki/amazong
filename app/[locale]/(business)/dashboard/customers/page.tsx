@@ -206,7 +206,7 @@ export default async function BusinessCustomersPage() {
                   <TableCell className="text-right">
                     <div className="flex items-center justify-end gap-1">
                       <Button variant="ghost" size="icon-sm" asChild>
-                        <Link href={`/messages?user=${customer.id}`}>
+                        <Link href={`/chat?seller=${customer.id}`}>
                           <IconMessage className="size-4" />
                         </Link>
                       </Button>

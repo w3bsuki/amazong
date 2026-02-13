@@ -121,7 +121,7 @@ export default function ResetPasswordPage() {
     return (
       <div className="min-h-dvh flex items-center justify-center p-4">
         <div className="w-full max-w-sm text-center">
-          <SpinnerGap className="size-8 animate-spin mx-auto text-primary" />
+          <SpinnerGap className="size-8 animate-spin motion-reduce:animate-none mx-auto text-primary" />
           <p className="text-sm text-muted-foreground mt-4">{t("loading")}</p>
         </div>
       </div>
@@ -291,7 +291,7 @@ export default function ResetPasswordPage() {
           >
             {isPending ? (
               <>
-                <SpinnerGap className="size-5 animate-spin" weight="bold" />
+                <SpinnerGap className="size-5 animate-spin motion-reduce:animate-none" weight="bold" />
                 {t("updating")}
               </>
             ) : (

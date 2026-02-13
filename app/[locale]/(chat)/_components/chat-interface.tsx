@@ -64,6 +64,8 @@ export function ChatInterface({
   actions,
 }: ChatInterfaceProps) {
   const t = useTranslations("Messages")
+  const tCommon = useTranslations("Common")
+  const tFreshness = useTranslations("Freshness")
   const locale = useLocale()
   const dateLocale = locale === "bg" ? bg : enUS
   const supabase = createClient()
@@ -173,14 +175,25 @@ export function ChatInterface({
       })
 
       if (!response.ok) {
-        const error = await response.json()
-        throw new Error(error.error || "Upload failed")
+        const payload: unknown = await response.json()
+        const uploadError =
+          typeof payload === "object" && payload && "error" in payload
+            ? String((payload as { error?: unknown }).error ?? "Upload failed")
+            : "Upload failed"
+        throw new Error(uploadError)
       }
 
-      const data = await response.json()
+      const payload: unknown = await response.json()
+      const imageUrl =
+        typeof payload === "object" && payload && "url" in payload
+          ? (payload as { url?: unknown }).url
+          : undefined
+      if (typeof imageUrl !== "string" || imageUrl.length === 0) {
+        throw new Error("Upload response missing URL")
+      }
 
       // Send message with image attachment
-      await sendMessage("", data.url)
+      await sendMessage("", imageUrl)
     } catch (err) {
       console.error("Error uploading image:", err)
     } finally {
@@ -207,11 +220,8 @@ export function ChatInterface({
       const result = await actions.blockUser(userToBlock)
       if (result.success) {
         toast({
-          title: locale === "bg" ? "Потребителят е блокиран" : "User blocked",
-          description:
-            locale === "bg"
-              ? "Този потребител вече не може да ви изпраща съобщения"
-              : "This user can no longer message you",
+          title: t("toasts.userBlocked.title"),
+          description: t("toasts.userBlocked.description"),
         })
         // Close the conversation
         await closeConversation(currentConversation.id)
@@ -221,9 +231,8 @@ export function ChatInterface({
     } catch (err) {
       console.error("Error blocking user:", err)
       toast({
-        title: locale === "bg" ? "Грешка" : "Error",
-        description:
-          locale === "bg" ? "Неуспешно блокиране на потребителя" : "Failed to block user",
+        title: tCommon("error"),
+        description: t("toasts.blockUserFailed.description"),
         variant: "destructive",
       })
     } finally {
@@ -243,11 +252,8 @@ export function ChatInterface({
       )
       if (result.success) {
         toast({
-          title: locale === "bg" ? "Докладът е изпратен" : "Report submitted",
-          description:
-            locale === "bg"
-              ? "Благодарим ви за сигнала. Ще го прегледаме."
-              : "Thank you for your report. We will review it.",
+          title: t("toasts.reportSubmitted.title"),
+          description: t("toasts.reportSubmitted.description"),
         })
       } else {
         throw new Error(result.error || "Failed to report")
@@ -255,9 +261,8 @@ export function ChatInterface({
     } catch (err) {
       console.error("Error reporting conversation:", err)
       toast({
-        title: locale === "bg" ? "Грешка" : "Error",
-        description:
-          locale === "bg" ? "Неуспешно изпращане на доклада" : "Failed to submit report",
+        title: tCommon("error"),
+        description: t("toasts.reportConversationFailed.description"),
         variant: "destructive",
       })
     } finally {
@@ -287,7 +292,7 @@ export function ChatInterface({
               {t("selectConversation")}
             </h3>
             <p className="text-sm text-muted-foreground">
-              {locale === "bg" ? "Изберете чат, за да започнете" : "Choose a chat to get started"}
+              {t("selectConversationDescription")}
             </p>
           </div>
         </div>
@@ -313,11 +318,15 @@ export function ChatInterface({
 
   // Check if conversation is closed
   const isClosed = currentConversation.status !== "open"
+  const productHref =
+    currentConversation.seller_profile?.username && currentConversation.product
+      ? `/${currentConversation.seller_profile.username}/${currentConversation.product.id}`
+      : "#"
 
   // Format date separator
   const formatDateSeparator = (date: Date) => {
-    if (isToday(date)) return locale === "bg" ? "Днес" : "Today"
-    if (isYesterday(date)) return locale === "bg" ? "Вчера" : "Yesterday"
+    if (isToday(date)) return tFreshness("today")
+    if (isYesterday(date)) return tFreshness("yesterday")
     return format(date, "d MMM yyyy", { locale: dateLocale })
   }
 
@@ -345,7 +354,9 @@ export function ChatInterface({
             {/* Back button (mobile) */}
             {onBack && (
               <button
+                type="button"
                 onClick={onBack}
+                aria-label={t("back")}
                 className="flex items-center justify-center size-9 rounded-full hover:bg-hover active:bg-active transition-colors lg:hidden"
               >
                 <ArrowLeft size={22} weight="regular" className="text-foreground" />
@@ -369,35 +380,41 @@ export function ChatInterface({
               </h2>
               {currentConversation.product ? (
                 <Link
-                  href={`/product/${currentConversation.product.id}`}
+                  href={productHref}
                   className="text-xs text-muted-foreground hover:text-foreground transition-colors truncate block leading-tight"
                 >
                   {currentConversation.product.title}
                 </Link>
               ) : (
                 <p className="text-xs text-muted-foreground leading-tight">
-                  {isClosed
-                    ? locale === "bg"
-                      ? "Затворен чат"
-                      : "Chat closed"
-                    : locale === "bg"
-                      ? "Активен"
-                      : "Active"}
+                  {isClosed ? t("closed") : t("active")}
                 </p>
               )}
             </div>
 
             {/* Action buttons - compact */}
             <div className="flex items-center">
-              <button className="flex items-center justify-center size-9 rounded-full hover:bg-muted transition-colors">
+              <button
+                type="button"
+                aria-label="Voice call"
+                className="flex items-center justify-center size-9 rounded-full hover:bg-muted transition-colors"
+              >
                 <Phone size={20} weight="regular" className="text-foreground" />
               </button>
-              <button className="flex items-center justify-center size-9 rounded-full hover:bg-muted transition-colors">
+              <button
+                type="button"
+                aria-label="Video call"
+                className="flex items-center justify-center size-9 rounded-full hover:bg-muted transition-colors"
+              >
                 <VideoCamera size={20} weight="regular" className="text-foreground" />
               </button>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <button className="flex items-center justify-center size-9 rounded-full hover:bg-muted transition-colors">
+                  <button
+                    type="button"
+                    aria-label="More actions"
+                    className="flex items-center justify-center size-9 rounded-full hover:bg-muted transition-colors"
+                  >
                     <Info size={22} weight="regular" className="text-foreground" />
                   </button>
                 </DropdownMenuTrigger>
@@ -415,13 +432,7 @@ export function ChatInterface({
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={handleReportConversation} disabled={isReporting}>
                     <Flag size={16} weight="regular" className="mr-2" />
-                    {isReporting
-                      ? locale === "bg"
-                        ? "Изпращане..."
-                        : "Reporting..."
-                      : locale === "bg"
-                        ? "Докладвай разговор"
-                        : "Report conversation"}
+                    {isReporting ? t("reporting") : t("reportConversation")}
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     onClick={handleBlockUser}
@@ -429,13 +440,7 @@ export function ChatInterface({
                     className="text-destructive focus:text-destructive focus:bg-destructive-subtle"
                   >
                     <ProhibitInset size={16} weight="regular" className="mr-2" />
-                    {isBlocking
-                      ? locale === "bg"
-                        ? "Блокиране..."
-                        : "Blocking..."
-                      : locale === "bg"
-                        ? "Блокирай потребителя"
-                        : "Block user"}
+                    {isBlocking ? t("blocking") : t("blockUser")}
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -486,9 +491,7 @@ export function ChatInterface({
               </div>
             </div>
             <p className="text-sm text-muted-foreground max-w-xs">
-              {locale === "bg"
-                ? "Започнете разговора. Съобщенията изчезват след като поръчката бъде доставена."
-                : "Start the conversation. Messages disappear after the order is delivered."}
+              {t("startConversationDisclaimer")}
             </p>
           </div>
         ) : (
@@ -529,10 +532,6 @@ export function ChatInterface({
 
               // Check previous item for avatar display
               const prevItem = messagesWithSeparators[index - 1]
-              const _isFirstInGroup =
-                !prevItem ||
-                prevItem.type === "separator" ||
-                prevItem.message.sender_id !== message.sender_id
 
               // System messages render as notification banners
               if (isSystemMessage) {
@@ -563,7 +562,7 @@ export function ChatInterface({
                       <div className="flex items-stretch gap-0 rounded-lg border border-border bg-card overflow-hidden">
                         {/* Product image - clickable */}
                         {productImage ? (
-                          <Link href={`/product/${currentConversation.product.id}`} className="shrink-0">
+                          <Link href={productHref} className="shrink-0">
                             <div className="relative w-16 h-full min-h-16 bg-muted">
                               <Image
                                 src={productImage}
@@ -585,7 +584,7 @@ export function ChatInterface({
                           <div className="flex items-center gap-1.5">
                             <Package size={12} weight="fill" className="text-primary shrink-0" />
                             <span className="text-xs font-medium text-primary">
-                              {locale === "bg" ? "Поръчка" : "Order"}
+                              {t("orderLabel")}
                             </span>
                             <span className="text-2xs text-muted-foreground ml-auto">
                               {format(new Date(message.created_at), "MMM d, HH:mm", { locale: dateLocale })}
@@ -606,8 +605,8 @@ export function ChatInterface({
                               <span className="text-xs text-muted-foreground">× {quantity}</span>
                             )}
                             <span className="inline-flex items-center gap-1 text-2xs text-warning ml-auto">
-                              <span className="size-1.5 rounded-full bg-warning animate-pulse" />
-                              {locale === "bg" ? "Изчаква" : "Pending"}
+                              <span className="size-1.5 rounded-full bg-warning animate-pulse motion-reduce:animate-none" />
+                              {t("orderStatusPending")}
                             </span>
                           </div>
                         </div>
@@ -722,7 +721,8 @@ export function ChatInterface({
                     )}
 
                     {/* Like reaction button - appears on hover */}
-                    <button
+                    <span
+                      aria-hidden="true"
                       className={cn(
                         "absolute top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity",
                         "flex items-center justify-center size-7 rounded-full bg-background border border-border shadow-sm hover:bg-accent",
@@ -730,7 +730,7 @@ export function ChatInterface({
                       )}
                     >
                       <Heart size={14} weight="regular" className="text-muted-foreground" />
-                    </button>
+                    </span>
                   </div>
                 </div>
               )
@@ -745,20 +745,20 @@ export function ChatInterface({
           <div className="flex items-center gap-2 text-xs text-muted-foreground">
             <div className="flex gap-1">
               <span
-                className="size-1.5 rounded-full bg-muted animate-bounce"
+                className="size-1.5 rounded-full bg-muted animate-bounce motion-reduce:animate-none"
                 style={{ animationDelay: "0ms" }}
               />
               <span
-                className="size-1.5 rounded-full bg-muted animate-bounce"
+                className="size-1.5 rounded-full bg-muted animate-bounce motion-reduce:animate-none"
                 style={{ animationDelay: "150ms" }}
               />
               <span
-                className="size-1.5 rounded-full bg-muted animate-bounce"
+                className="size-1.5 rounded-full bg-muted animate-bounce motion-reduce:animate-none"
                 style={{ animationDelay: "300ms" }}
               />
             </div>
             <span>
-              {displayName} {locale === "bg" ? "пише..." : "is typing..."}
+              {t("typingIndicator", { name: displayName })}
             </span>
           </div>
         )}
@@ -783,12 +783,14 @@ export function ChatInterface({
 
             {/* Image upload button */}
             <button
+              type="button"
               onClick={() => fileInputRef.current?.click()}
               disabled={isUploadingImage || isSending}
+              aria-label={t("attachImage")}
               className="flex items-center justify-center size-10 rounded-full hover:bg-hover active:bg-active transition-colors shrink-0 disabled:opacity-50"
             >
               {isUploadingImage ? (
-                <CircleNotch size={22} weight="regular" className="text-primary animate-spin" />
+                <CircleNotch size={22} weight="regular" className="text-primary animate-spin motion-reduce:animate-none" />
               ) : (
                 <ImageIcon size={22} weight="regular" className="text-primary" />
               )}
@@ -810,8 +812,10 @@ export function ChatInterface({
 
             {/* Send button */}
             <button
+              type="button"
               onClick={handleSend}
               disabled={isSending || isUploadingImage || !inputValue.trim()}
+              aria-label={t("send")}
               className={cn(
                 "flex items-center justify-center size-10 rounded-full transition-colors shrink-0 disabled:opacity-50",
                 inputValue.trim()
@@ -820,7 +824,7 @@ export function ChatInterface({
               )}
             >
               {isSending ? (
-                <CircleNotch size={18} weight="regular" className="animate-spin" />
+                <CircleNotch size={18} weight="regular" className="animate-spin motion-reduce:animate-none" />
               ) : (
                 <PaperPlaneTilt size={18} weight="fill" />
               )}

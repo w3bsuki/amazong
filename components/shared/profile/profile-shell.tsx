@@ -87,7 +87,7 @@ export function ProfileShell({
           </div>
 
           <div className="min-w-0 flex-1 pt-0.5">
-            <h1 className="text-xl font-semibold leading-tight truncate">{displayName}</h1>
+            <h1 className="truncate text-xl font-semibold tracking-tight leading-tight">{displayName}</h1>
             {username ? <p className="text-sm text-muted-foreground truncate">@{username}</p> : null}
           </div>
         </div>

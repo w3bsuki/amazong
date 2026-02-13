@@ -1,13 +1,12 @@
 import { notFound } from "next/navigation"
 import type { Metadata } from "next"
 import { getTranslations, setRequestLocale } from "next-intl/server"
-import { Suspense } from "react"
 import { createClient, createStaticClient } from "@/lib/supabase/server"
 import { getPublicProfileData, getProfileMetadata } from "@/lib/data/profile-page"
 import { safeAvatarSrc } from "@/lib/utils"
 import { PublicProfileClient } from "./profile-client"
 import { routing } from "@/i18n/routing"
-import { followSeller, unfollowSeller } from "@/app/actions/seller-follows"
+import { followSeller, unfollowSeller } from "../../actions/seller-follows"
 
 // =============================================================================
 // SEO-OPTIMIZED PROFILE PAGE - HYBRID CACHING
@@ -60,49 +59,6 @@ export async function generateStaticParams() {
   return routing.locales.flatMap((locale) =>
     activeSellers.map((s) => ({ locale, username: s.username }))
   )
-}
-
-// Proper types for products and reviews - must match profile-client.tsx
-interface ProfileProduct {
-  id: string
-  title: string
-  slug: string | null
-  price: number
-  list_price: number | null
-  images: string[] | null
-  rating: number | null
-  review_count: number | null
-  created_at: string
-  is_boosted: boolean | null
-  seller_id: string | null
-  condition: string | null
-}
-
-interface ReviewPerson {
-  username: string | null
-  display_name: string | null
-  avatar_url: string | null
-}
-
-interface SellerReview {
-  id: string
-  rating: number
-  comment: string | null
-  item_as_described: boolean | null
-  shipping_speed: boolean | null
-  communication: boolean | null
-  created_at: string
-  buyer: ReviewPerson | null
-}
-
-interface BuyerReview {
-  id: string
-  rating: number
-  comment: string | null
-  payment_promptness: boolean | null
-  communication: boolean | null
-  created_at: string
-  seller: ReviewPerson | null
 }
 
 interface ProfilePageProps {
@@ -176,34 +132,6 @@ export async function generateMetadata({ params }: ProfilePageProps): Promise<Me
       follow: true,
     },
   }
-}
-
-// Dynamic user-specific data component (wrapped in Suspense)
-async function UserSpecificData({ 
-  profileId, 
-  isSeller 
-}: { 
-  profileId: string
-  isSeller: boolean 
-}) {
-  const supabase = await createClient()
-  const { data: { user: currentUser } } = await supabase.auth.getUser()
-  
-  const isOwnProfile = currentUser?.id === profileId
-  
-  // Check if current user is following this seller
-  let isFollowing = false
-  if (currentUser && isSeller && !isOwnProfile) {
-    const { data: followData } = await supabase
-      .from("store_followers")
-      .select("id")
-      .eq("follower_id", currentUser.id)
-      .eq("seller_id", profileId)
-      .maybeSingle()
-    isFollowing = !!followData
-  }
-  
-  return { isOwnProfile, isFollowing }
 }
 
 export default async function PublicProfilePage({ params }: ProfilePageProps) {

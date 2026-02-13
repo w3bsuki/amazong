@@ -8,7 +8,7 @@ const dirs = targetDirs.length ? targetDirs : ["app", "components"]; // workspac
 const includeExt = new Set([".ts", ".tsx", ".js", ".jsx", ".css", ".mjs"]);
 
 // Token source-of-truth. Intentionally contains many oklch() declarations.
-// Also allow hex colors in the dedicated product swatches file (see .codex/project/DESIGN.md).
+// Also allow hex colors in the dedicated product swatches file (see docs/ui/DESIGN.md).
 const excludeFiles = new Set([
   "app/globals.css",
   "components/shared/filters/controls/color-swatches.tsx",

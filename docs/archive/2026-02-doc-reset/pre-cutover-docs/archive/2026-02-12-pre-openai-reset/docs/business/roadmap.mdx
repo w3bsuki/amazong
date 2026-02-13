@@ -1,0 +1,54 @@
+# Roadmap
+
+This roadmap is scoped for a **full marketplace launch** (Vinted-style), not classifieds.
+
+## V1 (Launch): full marketplace with Buyer Protection
+
+Must-have (ship to production):
+
+- Listings: create/edit, photos, categories, search/browse
+- Chat: buyer ↔ seller (pre-sale) + order messaging (post-sale)
+- Checkout: Stripe payments on-platform + Buyer Protection fee
+- Orders: lifecycle, status tracking, receipts
+- Payouts: Stripe Connect onboarding + delayed release after delivery confirmation
+- Ratings/reviews: seller + product (minimum viable)
+- Trust & safety: reports, blocks, moderation tooling
+- Basic returns/refunds + dispute intake
+- Notifications: order updates + important account events
+
+Hard gates (no launch without these):
+
+- Webhook correctness + idempotency (payment succeeded/failed/refund/chargeback)
+- Refund policy + support playbooks written and tested
+- Fraud prevention basics (rate limits, seller limits, monitoring)
+- KYC/KYB path defined (Stripe Connect + platform-side checks)
+
+## V1.1–V1.3 (post-launch)
+
+- Shipping carrier integrations (tracking + delivery confirmation automation)
+- Better dispute resolution tooling + evidence uploads
+- Seller onboarding improvements and education
+- Performance + SEO polishing
+- Reputation iteration (badges/levels, stronger seller stats)
+
+## V2: AI & growth
+
+- AI Listing Assistant (title/description/category suggestions)
+- AI Search/Shopping Assistant (paid add-on or plan perk)
+- More advanced analytics for businesses
+- Internationalization expansion (markets + languages)
+- Early B2B features (directory, verified-only introductions)
+
+### Future: AI Assistants
+
+AI assistants (listing + search) are planned for V2. Key risks to address:
+- Cost control (usage caps, rate limits)
+- Safety (policy compliance, prohibited items)
+- Quality (hallucinations → require user confirmation)
+
+## V3: platform scale
+
+- Mobile apps (Capacitor or native)
+- Internal ops automation (fraud scoring, moderation queues)
+- Partnerships and logistics options
+- Optional B2B networking chat (if moderation capacity is strong)

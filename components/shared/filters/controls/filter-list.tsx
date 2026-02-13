@@ -95,7 +95,7 @@ export function FilterList({
                 type="button"
                 onClick={() => handleSelect(option)}
                 className={cn(
-                  "w-full flex items-center gap-3 px-4 h-10 transition-colors text-left",
+                  "w-full flex items-center gap-3 px-4 h-10 transition-colors text-left outline-none focus-visible:ring-2 focus-visible:ring-focus-ring",
                   isActive
                     ? "bg-selected text-foreground font-medium"
                     : "text-foreground active:bg-active"

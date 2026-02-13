@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useEffect, memo } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { Controller } from "react-hook-form";
 import {
   Tag,
@@ -59,13 +59,13 @@ function PriceSuggestionCard({
   suggestion,
   currentPrice,
   onApply,
-  isBg,
 }: {
   suggestion: PriceSuggestion | null;
   currentPrice: string;
   onApply: (price: number) => void;
-  isBg: boolean;
 }) {
+  const tSell = useTranslations("Sell")
+
   if (!suggestion || suggestion.count < 3) return null;
 
   const priceNum = Number.parseFloat(currentPrice) || 0;
@@ -87,7 +87,7 @@ function PriceSuggestionCard({
       <div className="flex items-center gap-2 mb-2">
         <TrendUp className="h-4 w-4 text-primary" />
         <span className="text-xs font-semibold text-foreground">
-          {isBg ? `Ценови ориентир (${suggestion.count} подобни обяви)` : `Price Guide (${suggestion.count} similar listings)`}
+          {tSell("fields.pricing.priceGuide", { count: suggestion.count })}
         </span>
       </div>
 
@@ -97,7 +97,7 @@ function PriceSuggestionCard({
           onClick={() => onApply(suggestion.low)}
           className="flex-1 p-2 rounded-lg bg-background hover:bg-accent transition-colors text-center"
         >
-          <div className="text-xs text-muted-foreground mb-0.5">{isBg ? "Ниска" : "Low"}</div>
+          <div className="text-xs text-muted-foreground mb-0.5">{tSell("fields.pricing.suggestions.low")}</div>
           <div className="text-sm font-semibold text-foreground">
             {symbol}{suggestion.low.toFixed(2)}
           </div>
@@ -108,7 +108,7 @@ function PriceSuggestionCard({
           onClick={() => onApply(suggestion.median)}
           className="flex-1 p-2 rounded-lg bg-selected hover:bg-hover active:bg-active transition-colors text-center ring-2 ring-ring"
         >
-          <div className="text-xs text-primary mb-0.5">{isBg ? "Препоръчана" : "Recommended"}</div>
+          <div className="text-xs text-primary mb-0.5">{tSell("fields.pricing.suggestions.recommended")}</div>
           <div className="text-sm font-bold text-primary">
             {symbol}{suggestion.median.toFixed(2)}
           </div>
@@ -119,7 +119,7 @@ function PriceSuggestionCard({
           onClick={() => onApply(suggestion.high)}
           className="flex-1 p-2 rounded-lg bg-background hover:bg-accent transition-colors text-center"
         >
-          <div className="text-xs text-muted-foreground mb-0.5">{isBg ? "Висока" : "High"}</div>
+          <div className="text-xs text-muted-foreground mb-0.5">{tSell("fields.pricing.suggestions.high")}</div>
           <div className="text-sm font-semibold text-foreground">
             {symbol}{suggestion.high.toFixed(2)}
           </div>
@@ -135,11 +135,7 @@ function PriceSuggestionCard({
         )}>
           {position === "below" && <TrendDown className="h-3.5 w-3.5" />}
           {position === "above" && <TrendUp className="h-3.5 w-3.5" />}
-          {position === "below" && (isBg ? "Цената ви е под пазарната - продава се по-бързо!" : "Your price is below market - items sell faster!")}
-          {position === "above" && (isBg ? "Цената ви е над типичния диапазон" : "Your price is above typical range")}
-          {position === "low" && (isBg ? "Конкурентна цена" : "Competitively priced")}
-          {position === "median" && (isBg ? "Средна пазарна цена" : "Priced at market average")}
-          {position === "high" && (isBg ? "Премиум ценообразуване" : "Premium pricing")}
+          {tSell("fields.pricing.positionHint", { position })}
         </div>
       )}
     </div>
@@ -160,6 +156,8 @@ function QuantityStepper({
   min?: number;
   max?: number;
 }) {
+  const tSell = useTranslations("Sell")
+
   return (
     <div className="flex items-center h-12 w-fit rounded-md border border-border bg-background shadow-xs overflow-hidden">
       <button
@@ -167,7 +165,7 @@ function QuantityStepper({
         onClick={() => onChange(Math.max(min, value - 1))}
         disabled={value <= min}
         className="h-full px-4 flex items-center justify-center hover:bg-muted disabled:opacity-40 disabled:cursor-not-allowed transition-colors touch-manipulation border-r border-border-subtle"
-        aria-label="Decrease quantity"
+        aria-label={tSell("steps.pricing.quantityDecreaseAriaLabel")}
       >
         <Minus className="size-4" weight="bold" />
       </button>
@@ -176,7 +174,7 @@ function QuantityStepper({
         value={value}
         onChange={(e) => {
           const num = Number.parseInt(e.target.value, 10);
-          if (!isNaN(num)) {
+          if (!Number.isNaN(num)) {
             onChange(Math.max(min, Math.min(max, num)));
           }
         }}
@@ -189,7 +187,7 @@ function QuantityStepper({
         onClick={() => onChange(Math.min(max, value + 1))}
         disabled={value >= max}
         className="h-full px-4 flex items-center justify-center hover:bg-muted disabled:opacity-40 disabled:cursor-not-allowed transition-colors touch-manipulation border-l border-border-subtle"
-        aria-label="Increase quantity"
+        aria-label={tSell("steps.pricing.quantityIncreaseAriaLabel")}
       >
         <Plus className="size-4" weight="bold" />
       </button>
@@ -214,7 +212,7 @@ interface PricingFieldProps {
 
 export function PricingField({ className, categoryId, idPrefix = "sell-form", compact = false }: PricingFieldProps) {
   const { control, setValue, watch, formState: { errors } } = useSellForm();
-  const { isBg } = useSellFormContext();
+  const { locale } = useSellFormContext();
   const tSell = useTranslations("Sell")
 
   const [isCurrencyDrawerOpen, setIsCurrencyDrawerOpen] = useState(false);
@@ -227,7 +225,7 @@ export function PricingField({ className, categoryId, idPrefix = "sell-form", co
   const acceptOffers = watch("acceptOffers");
   const compareAtPrice = watch("compareAtPrice");
 
-  const [priceSuggestion, _setPriceSuggestion] = useState<PriceSuggestion | null>(null);
+  const [priceSuggestion] = useState<PriceSuggestion | null>(null);
   const priceInputId = `${idPrefix}-price`;
   const comparePriceInputId = `${idPrefix}-compare-price`;
 
@@ -282,12 +280,12 @@ export function PricingField({ className, categoryId, idPrefix = "sell-form", co
           <div className="space-y-3">
             <div className="flex items-center justify-between px-1">
               <label htmlFor={priceInputId} className="text-sm font-bold text-foreground">
-                {isBg ? "Вашата цена" : "Your price"} <span className="text-destructive">*</span>
+                {tSell("steps.pricing.yourPriceLabel")} <span className="text-destructive">*</span>
               </label>
             </div>
             
             <div className={cn(
-              "rounded-xl border bg-card overflow-hidden transition-all",
+              "rounded-xl border bg-card overflow-hidden transition-colors",
               "focus-within:ring-2 focus-within:ring-ring focus-within:border-ring",
               fieldState.invalid ? "border-destructive/50 bg-destructive-subtle" : "border-border"
             )}>
@@ -316,12 +314,12 @@ export function PricingField({ className, categoryId, idPrefix = "sell-form", co
                     <SelectDrawer
                       isOpen={isCurrencyDrawerOpen}
                       onClose={() => setIsCurrencyDrawerOpen(false)}
-                      title={isBg ? "Изберете валута" : "Select Currency"}
+                      title={tSell("steps.pricing.selectCurrencyTitle")}
                       options={CURRENCIES.map(c => c.value)}
                       optionsBg={CURRENCIES.map(c => c.label)}
                       value={currency}
                       onChange={(val) => setValue("currency", val as "EUR")}
-                      locale={isBg ? "bg" : "en"}
+                      locale={locale}
                     />
                   </>
                 ) : (
@@ -360,15 +358,14 @@ export function PricingField({ className, categoryId, idPrefix = "sell-form", co
         suggestion={priceSuggestion}
         currentPrice={price}
         onApply={handleApplyPrice}
-        isBg={isBg}
       />
 
       {/* Compare at Price (Optional) */}
       <div className="space-y-2">
         <div className="flex items-center justify-between px-1">
           <label htmlFor={comparePriceInputId} className="text-sm font-bold text-foreground flex items-center gap-2">
-            {isBg ? "Стара цена" : "Compare at price"}
-            <span className="text-xs font-medium text-muted-foreground">{isBg ? "(по избор)" : "(optional)"}</span>
+            {tSell("steps.pricing.compareAtLabel")}
+            <span className="text-xs font-medium text-muted-foreground">{tSell("common.optionalParenthetical")}</span>
           </label>
         </div>
         <div className={cn(
@@ -382,7 +379,7 @@ export function PricingField({ className, categoryId, idPrefix = "sell-form", co
             id={comparePriceInputId}
             type="text"
             inputMode="decimal"
-            placeholder={isBg ? "Оригинална цена" : "Original price"}
+            placeholder={tSell("steps.pricing.originalPricePlaceholder")}
             value={compareAtPrice || ""}
             onChange={(e) => setValue("compareAtPrice", e.target.value)}
             className="border-none bg-transparent h-full text-lg font-semibold p-0 focus-visible:ring-0 flex-1"
@@ -393,7 +390,7 @@ export function PricingField({ className, categoryId, idPrefix = "sell-form", co
       {/* Quantity */}
       <div className="space-y-2">
         <Label className="text-sm font-bold px-1">
-          {isBg ? "Количество" : "Quantity"}
+          {tSell("steps.pricing.quantityLabel")}
         </Label>
         <QuantityStepper
           value={quantity}
@@ -416,7 +413,7 @@ export function PricingField({ className, categoryId, idPrefix = "sell-form", co
         )}
       >
         <div className={cn(
-          "size-11 rounded-xl flex items-center justify-center shrink-0 transition-all",
+          "size-11 rounded-xl flex items-center justify-center shrink-0 transition-colors",
           acceptOffers 
             ? "bg-selected text-primary" 
             : "bg-muted text-muted-foreground"
@@ -428,12 +425,10 @@ export function PricingField({ className, categoryId, idPrefix = "sell-form", co
             "text-base font-semibold block",
             acceptOffers ? "text-foreground" : "text-foreground"
           )}>
-            {isBg ? "Приемане на оферти" : "Accept offers"}
+            {tSell("steps.pricing.acceptOffersTitle")}
           </span>
           <span className="text-sm text-muted-foreground line-clamp-1">
-            {isBg
-              ? "Позволете на купувачите да предлагат цена"
-              : "Let buyers negotiate the price"}
+            {tSell("steps.pricing.acceptOffersDescription")}
           </span>
         </div>
         <Switch 
@@ -457,12 +452,10 @@ export function PricingField({ className, categoryId, idPrefix = "sell-form", co
               </div>
               <div>
                 <FieldLabel className="text-sm font-bold tracking-tight text-foreground">
-                  {isBg ? "Цена и количество" : "Price & Quantity"}
+                  {tSell("fields.pricing.sectionTitle")}
                 </FieldLabel>
                 <FieldDescription className="text-sm text-muted-foreground mt-0.5">
-                  {isBg
-                    ? "Задайте цена и налично количество"
-                    : "Set your price and available quantity"}
+                  {tSell("fields.pricing.sectionDescription")}
                 </FieldDescription>
               </div>
             </div>
@@ -472,23 +465,16 @@ export function PricingField({ className, categoryId, idPrefix = "sell-form", co
         </div>
       ) : (
         <>
-          {/* Compact Label - hidden if we use label inside */}
-          <div className="hidden">
-            <FieldLabel className="text-sm font-semibold mb-form-sm">
-              {isBg ? "Цена и количество" : "Pricing"}
-            </FieldLabel>
-          </div>
-          {content}
-        </>
+            {/* Compact Label - hidden if we use label inside */}
+            <div className="hidden">
+              <FieldLabel className="text-sm font-semibold mb-form-sm">
+                {tSell("fields.pricing.compactLabel")}
+              </FieldLabel>
+            </div>
+            {content}
+          </>
       )}
     </Field>
   );
 }
 
-/**
- * Memoized PricingField - Price, quantity, currency, and offer settings.
- * Optimized to prevent unnecessary re-renders when unrelated form state changes.
- * @see useSellForm - Hook for form state access
- * @see useSellFormContext - Hook for context access
- */
-const MemoizedPricingField = memo(PricingField);

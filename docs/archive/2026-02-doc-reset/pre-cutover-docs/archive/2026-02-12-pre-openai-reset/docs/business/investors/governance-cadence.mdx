@@ -1,0 +1,32 @@
+# Governance & Cadence
+
+## Roles (baseline)
+
+- Product: roadmap, UX, growth loops
+- Engineering: reliability, payments, performance, security
+- Ops/Trust: support, disputes, moderation, fraud prevention
+
+## Weekly cadence
+
+- Metrics review (NSM + trust metrics)
+- Support/dispute review (top issues, root causes)
+- Shipping plan (what is releasing this week)
+
+## Decision process
+
+- Write decisions as docs (DEC format) before big scope/fee changes.
+- Prefer small reversible experiments.
+- Keep “launch gates” explicit for payments and trust features.
+
+## Security posture
+
+- admin-only access enforced (server-side)
+- no secrets in logs
+- audit payments-related changes carefully
+
+## Incident response (minimum)
+
+- define severity levels
+- rollback plan for payment regressions
+- communication templates (internal + user-facing later)
+

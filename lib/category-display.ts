@@ -13,5 +13,5 @@ export function getCategoryName(category: CategoryDisplay, locale: string): stri
 }
 
 export function getCategorySlugKey(slug: string): string {
-  return slug.replace(/-/g, "_")
+  return slug.replaceAll("-", "_")
 }

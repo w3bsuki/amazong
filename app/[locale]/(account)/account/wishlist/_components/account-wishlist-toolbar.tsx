@@ -156,11 +156,13 @@ export function AccountWishlistToolbar({
           />
           {query && (
             <button
+              type="button"
               onClick={() => {
                 setQuery("")
                 applyUrl({ q: null, category: categoryFilter, stock: stockFilter })
               }}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
+              aria-label={locale === "bg" ? "Изчисти търсенето" : "Clear search"}
             >
               <IconX className="size-4" />
             </button>
@@ -174,6 +176,7 @@ export function AccountWishlistToolbar({
         <div className="flex items-center gap-2 overflow-x-auto no-scrollbar -mx-4 px-4">
           {/* All button */}
           <button
+            type="button"
             onClick={() => {
               setCategoryFilter(null)
               applyUrl({ q: query, category: null, stock: stockFilter })
@@ -184,6 +187,7 @@ export function AccountWishlistToolbar({
                   ? "bg-foreground text-background shadow-sm"
                   : "bg-background border border-border-subtle text-foreground hover:bg-hover"
               )}
+              aria-pressed={!categoryFilter}
             >
               {labels.all}
               <span className={cn(
@@ -198,6 +202,7 @@ export function AccountWishlistToolbar({
           {categories.map((cat) => (
             <button
               key={cat.slug}
+              type="button"
               onClick={() => {
                 const newCat = categoryFilter === cat.slug ? null : cat.slug
                 setCategoryFilter(newCat)
@@ -209,6 +214,7 @@ export function AccountWishlistToolbar({
                   ? "bg-foreground text-background shadow-sm"
                   : "bg-background border border-border-subtle text-foreground hover:bg-hover"
               )}
+              aria-pressed={categoryFilter === cat.slug}
             >
               {cat.name}
               <span className={cn(
@@ -224,6 +230,7 @@ export function AccountWishlistToolbar({
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <button
+                type="button"
                 className={cn(
                   "flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-all shrink-0",
                   stockFilter !== "all"
@@ -232,6 +239,8 @@ export function AccountWishlistToolbar({
                       : "bg-warning text-foreground shadow-sm"
                     : "bg-background border border-border-subtle text-foreground hover:bg-hover"
                 )}
+                aria-label={labels.stock}
+                aria-pressed={stockFilter !== "all"}
               >
                 {stockFilter === "in-stock" ? (
                   <IconPackage className="size-3.5" />
@@ -294,11 +303,13 @@ export function AccountWishlistToolbar({
           />
           {query && (
             <button
+              type="button"
               onClick={() => {
                 setQuery("")
                 applyUrl({ q: null, category: categoryFilter, stock: stockFilter })
               }}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
+              aria-label={locale === "bg" ? "Изчисти търсенето" : "Clear search"}
             >
               <IconX className="size-4" />
             </button>
@@ -434,11 +445,13 @@ export function AccountWishlistToolbar({
               >
                 {selectedCategory.name}
                 <button
+                  type="button"
                   onClick={() => {
                     setCategoryFilter(null)
                   applyUrl({ q: query, category: null, stock: stockFilter })
                 }}
-                className="hover:text-foreground"
+                className="hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
+                aria-label={locale === "bg" ? "Премахни филтъра за категория" : "Remove category filter"}
               >
                 <IconX className="size-3" />
               </button>
@@ -456,10 +469,13 @@ export function AccountWishlistToolbar({
             >
               {stockFilter === "in-stock" ? labels.inStock : labels.outOfStock}
               <button
+                type="button"
                 onClick={() => {
                   setStockFilter("all")
                   applyUrl({ q: query, category: categoryFilter, stock: "all" })
                 }}
+                className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
+                aria-label={locale === "bg" ? "Премахни филтъра за наличност" : "Remove stock filter"}
               >
                 <IconX className="size-3" />
               </button>
@@ -472,8 +488,9 @@ export function AccountWishlistToolbar({
             </span>
           )}
           <button
+            type="button"
             onClick={clearAllFilters}
-            className="text-xs text-muted-foreground hover:text-foreground ml-auto"
+            className="text-xs text-muted-foreground hover:text-foreground ml-auto focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
           >
             {labels.clearFilters}
           </button>

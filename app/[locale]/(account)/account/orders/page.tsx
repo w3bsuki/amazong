@@ -63,12 +63,15 @@ type OrderProduct = {
   id: string
   title: string | null
   images: string[] | null
+  slug?: string | null
   price?: number | null
 }
 
 type OrderItemRow = {
   id: string
   product_id: string
+  seller_id?: string
+  seller_username?: string | null
   quantity: number
   price_at_purchase?: number
   product?: OrderProduct | null
@@ -131,6 +134,7 @@ export default async function OrdersPage({ params, searchParams }: OrdersPagePro
             id,
             title,
             images,
+            slug,
             price
           )
         )
@@ -138,9 +142,34 @@ export default async function OrdersPage({ params, searchParams }: OrdersPagePro
     .eq("user_id", user.id)
     .order("created_at", { ascending: false })
 
+  const sellerIds = Array.from(
+    new Set(
+      ((ordersRaw || []) as unknown as OrderRow[])
+        .flatMap((order) => (Array.isArray(order.order_items) ? order.order_items : []))
+        .map((item) => item.seller_id)
+        .filter((id): id is string => typeof id === "string" && id.length > 0)
+    )
+  )
+
+  const { data: sellerProfiles } = sellerIds.length
+    ? await supabase
+      .from("profiles")
+      .select("id,username")
+      .in("id", sellerIds)
+    : { data: [] as Array<{ id: string; username: string | null }> }
+
+  const sellerUsernameById = new Map(
+    (sellerProfiles || []).map((profile) => [profile.id, profile.username ?? null])
+  )
+
   const allOrders = ((ordersRaw || []) as unknown as OrderRow[]).map((order) => ({
     ...order,
-    order_items: Array.isArray(order.order_items) ? order.order_items : [],
+    order_items: Array.isArray(order.order_items)
+      ? order.order_items.map((item) => ({
+        ...item,
+        seller_username: item.seller_id ? sellerUsernameById.get(item.seller_id) ?? null : null,
+      }))
+      : [],
   }))
 
   const normalize = (value: string) => value.toLowerCase()

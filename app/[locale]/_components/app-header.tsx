@@ -33,7 +33,7 @@ import { useAuthOptional } from "@/components/providers/auth-state-manager"
 import { cn } from "@/lib/utils"
 import { useEffect, useRef, useState } from "react"
 import { useRouter, usePathname } from "@/i18n/routing"
-import { useLocale, useTranslations } from "next-intl"
+import { useLocale } from "next-intl"
 import type { User } from "@supabase/supabase-js"
 import type { CategoryTreeNode } from "@/lib/category-tree"
 import type { UserListingStats } from "@/components/layout/sidebar/sidebar-menu"
@@ -195,7 +195,6 @@ export function AppHeader({
   const [isHydrated, setIsHydrated] = useState(false)
   const headerRef = useRef<HTMLElement>(null)
   const locale = useLocale()
-  const tNav = useTranslations("Navigation")
   const router = useRouter()
   const pathname = usePathname()
   
@@ -244,8 +243,6 @@ export function AppHeader({
   const effectiveProfileIsFollowing = hydratedProfileHeader?.isFollowing ?? false
   const effectiveProfileSellerId = hydratedProfileHeader?.sellerId ?? null
 
-  const searchPlaceholder = tNav("searchPlaceholderShort")
-
   // Mark header as hydrated for E2E tests
   useEffect(() => {
     headerRef.current?.setAttribute("data-hydrated", "true")
@@ -291,20 +288,22 @@ export function AppHeader({
   // MOBILE HEADER VARIANTS
   // ==========================================================================
 
+  const homepageMobileHeader = (
+    <MobileHomepageHeader
+      user={effectiveUser}
+      categories={effectiveHomepageCategories}
+      userStats={userStats}
+      activeCategory={effectiveHomepageCategory}
+      onCategorySelect={effectiveHomepageCategorySelect}
+      onSearchOpen={handleSearchOpen}
+      locale={locale}
+    />
+  )
+
   const renderMobileHeader = () => {
     switch (variant) {
       case "homepage":
-        return (
-          <MobileHomepageHeader
-            user={effectiveUser}
-            categories={effectiveHomepageCategories}
-            userStats={userStats}
-            activeCategory={effectiveHomepageCategory}
-            onCategorySelect={effectiveHomepageCategorySelect}
-            onSearchOpen={handleSearchOpen}
-            locale={locale}
-          />
-        )
+        return homepageMobileHeader
       case "product":
         return (
           <MobileProductHeader
@@ -358,17 +357,7 @@ export function AppHeader({
         return <MobileMinimalHeader locale={locale} />
       default:
         // Fallback to homepage header (inline search + pills)
-        return (
-          <MobileHomepageHeader
-            user={effectiveUser}
-            categories={effectiveHomepageCategories}
-            userStats={userStats}
-            activeCategory={effectiveHomepageCategory}
-            onCategorySelect={effectiveHomepageCategorySelect}
-            onSearchOpen={handleSearchOpen}
-            locale={locale}
-          />
-        )
+        return homepageMobileHeader
     }
   }
 
@@ -397,6 +386,7 @@ export function AppHeader({
       <header
         ref={headerRef}
         data-slot="app-header"
+        data-hide-subheader={hideSubheader ? "true" : undefined}
         className={cn(
           "fixed inset-x-0 top-0 z-40 w-full flex flex-col md:sticky",
           variant !== "homepage" && variant !== "contextual" && "bg-header-bg",

@@ -42,7 +42,8 @@ export function AccountLayoutContent({
         const user = result && "data" in result ? result.data.user : null
         if (user?.email) {
           setEmail(user.email)
-          setFullName(user.user_metadata?.full_name || "")
+          const fullNameFromMetadata = user.user_metadata?.full_name
+          setFullName(typeof fullNameFromMetadata === "string" ? fullNameFromMetadata : "")
         }
       } catch {
         // Best-effort only; server layout already validated auth.

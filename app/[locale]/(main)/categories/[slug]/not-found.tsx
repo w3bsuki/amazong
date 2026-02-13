@@ -9,7 +9,7 @@ export default async function NotFound() {
     <div className="min-h-(--dialog-h-50vh) flex items-center justify-center px-4">
       <div className="text-center max-w-md">
         <div className="text-7xl font-bold text-text-subtle mb-4">404</div>
-        <h1 className="text-2xl font-bold text-foreground mb-2">{t("title")}</h1>
+        <h1 className="text-2xl font-bold tracking-tight text-foreground mb-2">{t("title")}</h1>
         <p className="text-muted-foreground mb-6">
           {t("description")}
         </p>

@@ -1,6 +1,7 @@
 "use client"
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
+import { useTranslations } from "next-intl"
 import { Button } from "@/components/ui/button"
 import { Switch } from "@/components/ui/switch"
 import { createClient } from "@/lib/supabase/client"
@@ -139,12 +140,11 @@ const NotificationToggleRow = ({
 }
 
 export function NotificationsContent({
-  locale,
   initialNotifications,
 }: {
-  locale: string
   initialNotifications?: NotificationRow[]
 }) {
+  const t = useTranslations("Account.notificationsPage")
   const router = useRouter()
   const supabase = useMemo(() => createClient(), [])
 
@@ -218,13 +218,13 @@ export function NotificationsContent({
       setNotifications((data ?? []) as NotificationRow[])
     } catch (error) {
       console.error("Error loading notifications:", error)
-      toast.error(locale === "bg" ? "Грешка при зареждане на известия" : "Failed to load notifications")
+      toast.error(t("toasts.loadError"))
     } finally {
       setIsLoading(false)
       initializedRef.current = true
     }
     },
-    [locale, supabase]
+    [supabase, t]
   )
 
   useEffect(() => {
@@ -242,7 +242,7 @@ export function NotificationsContent({
       await supabase.rpc("mark_notification_read", { p_notification_id: notificationId })
       setNotifications((prev) => prev.map((n) => (n.id === notificationId ? { ...n, is_read: true } : n)))
     } catch {
-      toast.error(locale === "bg" ? "Грешка при отбелязване като прочетено" : "Failed to mark as read")
+      toast.error(t("toasts.markReadError"))
     }
   }
 
@@ -251,7 +251,7 @@ export function NotificationsContent({
       await supabase.rpc("mark_all_notifications_read")
       setNotifications((prev) => prev.map((n) => ({ ...n, is_read: true })))
     } catch {
-      toast.error(locale === "bg" ? "Грешка при отбелязване" : "Failed to mark all as read")
+      toast.error(t("toasts.markAllReadError"))
     }
   }
 
@@ -272,7 +272,7 @@ export function NotificationsContent({
         )
     } catch (error) {
       console.error("Error saving notification prefs:", error)
-      toast.error(locale === "bg" ? "Грешка при запазване" : "Failed to save preferences")
+      toast.error(t("toasts.saveError"))
     }
   }
 
@@ -293,7 +293,7 @@ export function NotificationsContent({
           <div className="flex items-center gap-2">
             <Bell size={20} weight="regular" className="text-muted-foreground" />
             <div className="font-semibold text-base text-foreground">
-              {locale === "bg" ? "Известия" : "Notifications"}
+              {t("title")}
             </div>
             {unreadCount > 0 && (
               <span className="text-xs bg-destructive text-destructive-foreground px-2 py-0.5 rounded-full">
@@ -309,20 +309,20 @@ export function NotificationsContent({
               onClick={() => void markAllAsRead()}
             >
               <CheckCircle size={14} className="mr-1" />
-              {locale === "bg" ? "Отбележи всички" : "Mark all"}
+              {t("markAll")}
             </Button>
           )}
         </div>
 
         {isLoading ? (
           <div className="p-4 text-center text-muted-foreground">
-            {locale === "bg" ? "Зареждане..." : "Loading..."}
+            {t("loading")}
           </div>
         ) : visibleNotifications.length === 0 ? (
           <div className="p-4 text-center">
             <Bell size={40} weight="thin" className="mx-auto mb-2 text-muted-foreground" />
             <p className="text-sm text-muted-foreground">
-              {locale === "bg" ? "Няма известия" : "No notifications"}
+              {t("empty")}
             </p>
           </div>
         ) : (
@@ -369,104 +369,102 @@ export function NotificationsContent({
       <div className="rounded-lg border bg-card overflow-hidden">
         <div className="p-4 bg-muted border-b border-border">
           <div className="text-sm font-semibold text-foreground">
-            {locale === "bg" ? "Предпочитания" : "Preferences"}
+            {t("preferences.title")}
           </div>
           <div className="text-xs text-muted-foreground mt-1">
-            {locale === "bg"
-              ? "Изберете кои известия да виждате в приложението и по имейл."
-              : "Choose which notifications you want in-app and via email."}
+            {t("preferences.description")}
           </div>
         </div>
 
         <div className="divide-y divide-border">
           <div className="p-3">
             <div className="text-xs font-medium text-muted-foreground">
-              {locale === "bg" ? "В приложението" : "In-app"}
+              {t("preferences.inApp")}
             </div>
           </div>
 
           <NotificationToggleRow
-            title={locale === "bg" ? "Нови продажби" : "New sales"}
-            description={locale === "bg" ? "Когато някой купи ваш продукт" : "When someone buys your product"}
+            title={t("rows.newSales.title")}
+            description={t("rows.newSales.description")}
             checked={prefs.in_app_purchase}
             onCheckedChange={(v) => updatePref("in_app_purchase", v)}
           />
           <NotificationToggleRow
-            title={locale === "bg" ? "Статус на поръчка" : "Order status"}
-            description={locale === "bg" ? "Промени по поръчките" : "Updates about your orders"}
+            title={t("rows.orderStatus.title")}
+            description={t("rows.orderStatus.description")}
             checked={prefs.in_app_order_status}
             onCheckedChange={(v) => updatePref("in_app_order_status", v)}
           />
           <NotificationToggleRow
-            title={locale === "bg" ? "Съобщения" : "Messages"}
-            description={locale === "bg" ? "Нови съобщения и разговори" : "New messages and conversations"}
+            title={t("rows.messages.title")}
+            description={t("rows.messages.description")}
             checked={prefs.in_app_message}
             onCheckedChange={(v) => updatePref("in_app_message", v)}
           />
           <NotificationToggleRow
-            title={locale === "bg" ? "Отзиви" : "Reviews"}
-            description={locale === "bg" ? "Нови отзиви за продукти/продавач" : "New reviews"}
+            title={t("rows.reviews.title")}
+            description={t("rows.reviews.description")}
             checked={prefs.in_app_review}
             onCheckedChange={(v) => updatePref("in_app_review", v)}
           />
           <NotificationToggleRow
-            title={locale === "bg" ? "Системни" : "System"}
-            description={locale === "bg" ? "Важни системни известия" : "Important system alerts"}
+            title={t("rows.system.title")}
+            description={t("rows.system.description")}
             checked={prefs.in_app_system}
             onCheckedChange={(v) => updatePref("in_app_system", v)}
           />
           <NotificationToggleRow
-            title={locale === "bg" ? "Промоции" : "Promotions"}
-            description={locale === "bg" ? "Промо кампании и оферти" : "Promotions and offers"}
+            title={t("rows.promotions.title")}
+            description={t("rows.promotions.description")}
             checked={prefs.in_app_promotion}
             onCheckedChange={(v) => updatePref("in_app_promotion", v)}
           />
 
           <div className="p-3">
             <div className="text-xs font-medium text-muted-foreground">
-              {locale === "bg" ? "Имейл" : "Email"}
+              {t("preferences.email")}
             </div>
           </div>
 
           <NotificationToggleRow
-            title={locale === "bg" ? "Нови продажби (имейл)" : "New sales (email)"}
+            title={t("rows.newSalesEmail")}
             checked={prefs.email_purchase}
             onCheckedChange={(v) => updatePref("email_purchase", v)}
           />
           <NotificationToggleRow
-            title={locale === "bg" ? "Статус на поръчка (имейл)" : "Order status (email)"}
+            title={t("rows.orderStatusEmail")}
             checked={prefs.email_order_status}
             onCheckedChange={(v) => updatePref("email_order_status", v)}
           />
           <NotificationToggleRow
-            title={locale === "bg" ? "Съобщения (имейл)" : "Messages (email)"}
+            title={t("rows.messagesEmail")}
             checked={prefs.email_message}
             onCheckedChange={(v) => updatePref("email_message", v)}
           />
           <NotificationToggleRow
-            title={locale === "bg" ? "Отзиви (имейл)" : "Reviews (email)"}
+            title={t("rows.reviewsEmail")}
             checked={prefs.email_review}
             onCheckedChange={(v) => updatePref("email_review", v)}
           />
           <NotificationToggleRow
-            title={locale === "bg" ? "Системни (имейл)" : "System (email)"}
+            title={t("rows.systemEmail")}
             checked={prefs.email_system}
             onCheckedChange={(v) => updatePref("email_system", v)}
           />
           <NotificationToggleRow
-            title={locale === "bg" ? "Промоции (имейл)" : "Promotions (email)"}
+            title={t("rows.promotionsEmail")}
             checked={prefs.email_promotion}
             onCheckedChange={(v) => updatePref("email_promotion", v)}
           />
 
           <div className="p-3">
             <div className="text-xs font-medium text-muted-foreground">
-              {locale === "bg" ? "Push" : "Push"}
+              {t("preferences.push")}
             </div>
           </div>
           <NotificationToggleRow
-            title={locale === "bg" ? "Push известия" : "Push notifications"}
-            description={locale === "bg" ? "Скоро" : "Coming soon"}
+            title={t("rows.push.title")}
+            description={t("rows.push.description")}
             checked={prefs.push_enabled}
             onCheckedChange={() => {}}
             disabled
@@ -481,7 +479,7 @@ export function NotificationsContent({
               router.push("/account/sales")
             }}
           >
-            {locale === "bg" ? "Към продажбите" : "Go to Sales"}
+            {t("goToSales")}
             <CaretRight size={14} className="ml-1" />
           </Button>
         </div>

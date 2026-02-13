@@ -1,14 +1,12 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import Image from "next/image"
 import { Link } from "@/i18n/routing"
 import { useLocale, useTranslations } from "next-intl"
 import { Button } from "@/components/ui/button"
 import { IconButton } from "@/components/ui/icon-button"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
-import { Separator } from "@/components/ui/separator"
 import {
   ProfileShell,
   ProfileStats,
@@ -21,8 +19,6 @@ import {
   MapPin,
   Calendar,
   Package,
-  ShoppingBag,
-  CheckCircle,
   Storefront,
   Globe,
   FacebookLogo,
@@ -32,7 +28,6 @@ import {
   YoutubeLogo,
   PencilSimple,
   ShareNetwork,
-  Heart,
   ArrowRight,
   Gear,
   ChatCircle,

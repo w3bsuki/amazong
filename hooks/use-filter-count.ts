@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useRef, useCallback } from "react"
+import { useState, useEffect, useRef, useCallback, useMemo } from "react"
 
 /**
  * useFilterCount — Client hook for live product count with debounce.
@@ -39,11 +39,26 @@ export function useFilterCount(params: FilterCountParams): UseFilterCountResult 
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
+  const categoryId = params.categoryId
+  const query = params.query
+  const minPrice = params.filters?.minPrice
+  const maxPrice = params.filters?.maxPrice
+  const minRating = params.filters?.minRating
+  const availability = params.filters?.availability
+  const deals = params.filters?.deals
+  const verified = params.filters?.verified
+  const attributes = params.filters?.attributes
+  const hasFilters = params.filters !== undefined
+
   const abortControllerRef = useRef<AbortController | null>(null)
   const timeoutIdRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const lastCountRef = useRef<number>(0)
+  const attributesKey = useMemo(
+    () => JSON.stringify(attributes ?? {}),
+    [attributes],
+  )
 
-  const fetchCount = useCallback(async (signal: AbortSignal) => {
+  const fetchCount = useCallback(async (signal: AbortSignal, requestParams: FilterCountParams) => {
     setIsLoading(true)
     setError(null)
 
@@ -63,7 +78,7 @@ export function useFilterCount(params: FilterCountParams): UseFilterCountResult 
       const response = await fetch("/api/products/count", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(params),
+        body: JSON.stringify(requestParams),
         signal,
       })
 
@@ -75,8 +90,8 @@ export function useFilterCount(params: FilterCountParams): UseFilterCountResult 
         throw new Error("Failed to fetch count")
       }
 
-      const data = await response.json()
-      const newCount = data.count ?? 0
+      const data = (await response.json()) as { count?: number }
+      const newCount = typeof data.count === "number" ? data.count : 0
 
       lastCountRef.current = newCount
       setCount(newCount)
@@ -91,7 +106,7 @@ export function useFilterCount(params: FilterCountParams): UseFilterCountResult 
       setError(err instanceof Error ? err.message : "Unknown error")
       setIsLoading(false)
     }
-  }, [params])
+  }, [])
 
   useEffect(() => {
     // Cancel previous request
@@ -105,9 +120,46 @@ export function useFilterCount(params: FilterCountParams): UseFilterCountResult 
     // Debounce the fetch
     const controller = new AbortController()
     abortControllerRef.current = controller
+    const requestParams: FilterCountParams = {}
+
+    if (categoryId !== undefined) {
+      requestParams.categoryId = categoryId
+    }
+
+    if (query !== undefined) {
+      requestParams.query = query
+    }
+
+    if (hasFilters) {
+      const filterParams: NonNullable<FilterCountParams["filters"]> = {}
+
+      if (minPrice !== undefined) {
+        filterParams.minPrice = minPrice
+      }
+      if (maxPrice !== undefined) {
+        filterParams.maxPrice = maxPrice
+      }
+      if (minRating !== undefined) {
+        filterParams.minRating = minRating
+      }
+      if (availability !== undefined) {
+        filterParams.availability = availability
+      }
+      if (deals !== undefined) {
+        filterParams.deals = deals
+      }
+      if (verified !== undefined) {
+        filterParams.verified = verified
+      }
+      if (attributes !== undefined) {
+        filterParams.attributes = attributes
+      }
+
+      requestParams.filters = filterParams
+    }
 
     timeoutIdRef.current = setTimeout(() => {
-      fetchCount(controller.signal)
+      fetchCount(controller.signal, requestParams)
     }, DEBOUNCE_MS)
 
     return () => {
@@ -117,16 +169,18 @@ export function useFilterCount(params: FilterCountParams): UseFilterCountResult 
       }
     }
   }, [
-    params.categoryId,
-    params.query,
-    params.filters?.minPrice,
-    params.filters?.maxPrice,
-    params.filters?.minRating,
-    params.filters?.availability,
-    params.filters?.deals,
-    params.filters?.verified,
-    // Stringify attributes for stable dependency
-    JSON.stringify(params.filters?.attributes),
+    fetchCount,
+    categoryId,
+    query,
+    minPrice,
+    maxPrice,
+    minRating,
+    availability,
+    deals,
+    verified,
+    attributes,
+    hasFilters,
+    attributesKey,
   ])
 
   return { count, isLoading, error }

@@ -131,7 +131,7 @@ export function AddressSection({
                       key={addr.id}
                       htmlFor={`addr-${addr.id}`}
                       className={cn(
-                        "flex items-start gap-3 p-4 rounded-md border-2 cursor-pointer transition-all",
+                        "flex items-start gap-3 p-4 rounded-md border-2 cursor-pointer transition-colors focus-within:outline-none focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-1 focus-within:ring-offset-background",
                         isSelected ? "border-selected-border bg-selected shadow-sm" : "border-border hover:border-hover-border"
                       )}
                     >
@@ -174,7 +174,11 @@ export function AddressSection({
           </DrawerContent>
         </Drawer>
 
-        <button type="button" onClick={() => setUseNewAddress(true)} className="text-xs text-primary mt-3 block font-medium">
+        <button
+          type="button"
+          onClick={() => setUseNewAddress(true)}
+          className="text-xs text-primary mt-3 block font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background rounded-sm"
+        >
           {t("useNewAddress")}
         </button>
       </>
@@ -187,7 +191,7 @@ export function AddressSection({
         <button
           type="button"
           onClick={() => setUseNewAddress(false)}
-          className="text-sm text-muted-foreground hover:text-foreground flex items-center gap-1.5"
+          className="text-sm text-muted-foreground hover:text-foreground flex items-center gap-1.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background rounded-sm"
         >
           <ArrowLeft className="size-4" />
           {t("backToSaved")}

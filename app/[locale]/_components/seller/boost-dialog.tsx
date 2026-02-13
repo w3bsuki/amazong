@@ -51,7 +51,7 @@ interface BoostDialogProps {
   onBoostSuccess?: () => void
 }
 
-export function BoostDialog({ product, locale, trigger, onBoostSuccess: _onBoostSuccess }: BoostDialogProps) {
+export function BoostDialog({ product, locale, trigger, onBoostSuccess }: BoostDialogProps) {
   const [selectedDays, setSelectedDays] = useState<number>(7)
   const [isLoading, setIsLoading] = useState(false)
   const [isOpen, setIsOpen] = useState(false)
@@ -144,6 +144,7 @@ export function BoostDialog({ product, locale, trigger, onBoostSuccess: _onBoost
       }
 
       const url = data.url
+      onBoostSuccess?.()
 
       // Redirect to Stripe checkout
       if (url) {

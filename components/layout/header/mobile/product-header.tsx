@@ -29,7 +29,6 @@ export function MobileProductHeader({
   sellerName,
   sellerUsername,
   sellerAvatarUrl,
-  locale,
   onBack,
   productId,
   productPrice,
@@ -84,7 +83,7 @@ export function MobileProductHeader({
           type="button"
           variant="ghost"
           className={cn(
-            "shrink-0 border border-transparent text-foreground hover:bg-hover active:bg-active"
+            "shrink-0 border border-transparent text-foreground motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth) motion-reduce:transition-none hover:bg-hover active:bg-active"
           )}
           aria-label={tProduct("back")}
           onClick={onBack}
@@ -99,7 +98,7 @@ export function MobileProductHeader({
             <Link 
               href={profileHref} 
               className={cn(
-                "shrink-0 rounded-full",
+                "shrink-0 rounded-full tap-transparent motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth) motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring",
                 "ring-1 ring-border-subtle"
               )}
             >
@@ -135,7 +134,7 @@ export function MobileProductHeader({
               type="button"
               variant="ghost"
               className={cn(
-                "border border-transparent hover:bg-hover active:bg-active"
+                "border border-transparent motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth) motion-reduce:transition-none hover:bg-hover active:bg-active"
               )}
               aria-label={isWishlisted ? tProduct("removeFromWishlist") : tProduct("addToWishlist")}
               aria-pressed={isWishlisted}
@@ -143,7 +142,7 @@ export function MobileProductHeader({
             >
               <Heart 
               className={cn(
-                  "size-icon-sm transition-colors",
+                  "size-icon-sm motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth) motion-reduce:transition-none",
                   isWishlisted 
                     ? "fill-wishlist-active text-wishlist-active" 
                     : "text-foreground"
@@ -158,7 +157,7 @@ export function MobileProductHeader({
               type="button"
               variant="ghost"
               className={cn(
-              "border border-transparent text-foreground hover:bg-hover active:bg-active"
+              "border border-transparent text-foreground motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth) motion-reduce:transition-none hover:bg-hover active:bg-active"
             )}
             aria-label={tProduct("share")}
             onClick={handleShare}

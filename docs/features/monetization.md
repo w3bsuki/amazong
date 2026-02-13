@@ -130,11 +130,11 @@ seller_fee = item_price × seller_fee_percent
 
 ## Cross-References
 
-- [PAYMENTS.md](../PAYMENTS.md) — Stripe Connect, escrow lifecycle, webhook processing, payout release rules
+- [PAYMENTS.md](../domain/PAYMENTS.md) — Stripe Connect, escrow lifecycle, webhook processing, payout release rules
 - [plans.md](./plans.md) — Subscription tier details, pricing, listing limits
-- [DATABASE.md](../DATABASE.md) — subscription_plans, subscriptions, listing_boosts tables
-- [PRD.md](../PRD.md) §5.1–5.6 — Business model, fee formulas, unit economics
-- `docs/business/monetization.mdx` — Detailed monetization model rationale (includes plan pricing)
+- [DATABASE.md](../domain/DATABASE.md) — subscription_plans, subscriptions, listing_boosts tables
+- [PRD.md](../archive/2026-02-doc-reset/pre-cutover-docs/PRD.md) §5.1–5.6 — Business model, fee formulas, unit economics
+- `../../context/business/monetization.mdx` — Detailed monetization model rationale (includes plan pricing)
 
 ---
 

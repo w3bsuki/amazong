@@ -42,25 +42,3 @@ export function OrderStatusBadge({
   )
 }
 
-// Compact version for tables
-function OrderStatusDot({ status }: { status: OrderItemStatus }) {
-  const t = useTranslations("Orders")
-  const config = ORDER_STATUS_CONFIG[status] || ORDER_STATUS_CONFIG.pending
-  
-  const dotColors: Record<OrderItemStatus, string> = {
-    pending: 'bg-order-pending',
-    received: 'bg-order-received',
-    processing: 'bg-order-processing',
-    shipped: 'bg-order-shipped',
-    delivered: 'bg-order-delivered',
-    cancelled: 'bg-order-cancelled',
-  }
-
-  return (
-    <span className="inline-flex items-center gap-2">
-      <span className={cn("w-2 h-2 rounded-full", dotColors[status])} />
-      <span className="text-sm text-muted-foreground">{t(config.labelKey)}</span>
-    </span>
-  )
-}
-

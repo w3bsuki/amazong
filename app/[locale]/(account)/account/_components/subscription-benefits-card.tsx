@@ -13,6 +13,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
+import { useTranslations } from "next-intl"
 
 interface SubscriptionBenefitsCardProps {
   locale: string
@@ -50,23 +51,7 @@ export function SubscriptionBenefitsCard({
   isActive,
   isCancelled,
 }: SubscriptionBenefitsCardProps) {
-  const t = {
-    planBenefits: locale === "bg" ? "Ползи от плана" : "Plan Benefits",
-    currentPlan: locale === "bg" ? "Текущ план" : "Current plan",
-    freePlan: locale === "bg" ? "Безплатен" : "Free",
-    listings: locale === "bg" ? "Обяви" : "Listings",
-    boosts: locale === "bg" ? "Промоции" : "Boosts",
-    boostsRemaining: locale === "bg" ? "оставащи" : "remaining",
-    boostsReset: locale === "bg" ? "Нулират се на" : "Resets on",
-    unlimited: locale === "bg" ? "Неограничен" : "Unlimited",
-    prioritySupport: locale === "bg" ? "Приоритетна поддръжка" : "Priority support",
-    analytics: locale === "bg" ? "Анализи" : "Analytics",
-    sellerBadge: locale === "bg" ? "Бадж на продавач" : "Seller badge",
-    upgradePlan: locale === "bg" ? "Надградете плана" : "Upgrade Plan",
-    managePlan: locale === "bg" ? "Управление на плана" : "Manage Plan",
-    expiresOn: locale === "bg" ? "Изтича на" : "Expires on",
-    cancelling: locale === "bg" ? "Ще бъде прекратен" : "Cancelling",
-  }
+  const t = useTranslations("Account")
 
   const isPaidPlan = tier !== "free"
   const listingsUsed = maxListings ? Math.min(activeListings, maxListings) : activeListings
@@ -81,37 +66,16 @@ export function SubscriptionBenefitsCard({
   }
 
   const getTierDisplayName = (tier: string) => {
-    const names: Record<string, { en: string; bg: string }> = {
-      free: { en: "Free", bg: "Безплатен" },
-      plus: { en: "Plus", bg: "Плюс" },
-      pro: { en: "Pro", bg: "Про" },
-      professional: { en: "Business Pro", bg: "Бизнес Про" },
-      enterprise: { en: "Enterprise", bg: "Ентърпрайз" },
-      business: { en: "Business", bg: "Бизнес" },
-    }
-    return names[tier]?.[locale === "bg" ? "bg" : "en"] || tier
+    return t("subscriptionBenefitsCard.tierName", { tier })
   }
 
   const getAnalyticsLabel = (access: string) => {
-    const labels: Record<string, { en: string; bg: string }> = {
-      none: { en: "Not included", bg: "Не е включен" },
-      basic: { en: "Basic", bg: "Основен" },
-      full: { en: "Full", bg: "Пълен" },
-      export: { en: "Full + Export", bg: "Пълен + Експорт" },
-    }
-    return labels[access]?.[locale === "bg" ? "bg" : "en"] || access
+    return t("subscriptionBenefitsCard.analyticsAccessLabel", { access })
   }
 
   const getBadgeLabel = (badge: string | null) => {
     if (!badge) return null
-    const labels: Record<string, { en: string; bg: string }> = {
-      plus: { en: "Plus Seller", bg: "Плюс Продавач" },
-      pro: { en: "Pro Seller", bg: "Про Продавач" },
-      business: { en: "Business", bg: "Бизнес" },
-      business_pro: { en: "Business Pro", bg: "Бизнес Про" },
-      enterprise: { en: "Enterprise", bg: "Ентърпрайз" },
-    }
-    return labels[badge]?.[locale === "bg" ? "bg" : "en"] || badge
+    return t("subscriptionBenefitsCard.badgeLabel", { badge })
   }
 
   return (
@@ -128,7 +92,7 @@ export function SubscriptionBenefitsCard({
               className={cn("size-5", isPaidPlan ? "text-primary" : "text-muted-foreground")} 
             />
             <div>
-              <span className="text-sm text-muted-foreground">{t.currentPlan}</span>
+              <span className="text-sm text-muted-foreground">{t("subscriptionBenefitsCard.currentPlanLabel")}</span>
               <h3 className="font-semibold leading-tight">
                 {getTierDisplayName(tier)}
               </h3>
@@ -136,7 +100,7 @@ export function SubscriptionBenefitsCard({
           </div>
           {isCancelled && expiresAt && (
             <Badge variant="outline" className="text-warning border-warning/50">
-              {t.cancelling}
+              {t("subscriptionBenefitsCard.cancellingBadge")}
             </Badge>
           )}
         </div>
@@ -147,12 +111,12 @@ export function SubscriptionBenefitsCard({
           <div className="space-y-2">
             <div className="flex items-center justify-between text-sm">
               <div className="flex items-center gap-2">
-                <Package className="size-4 text-muted-foreground" />
-                <span>{t.listings}</span>
-              </div>
-              <span className="font-medium">
-                {activeListings} / {maxListings ?? "∞"}
-              </span>
+                  <Package className="size-4 text-muted-foreground" />
+                  <span>{t("subscriptionBenefitsCard.listingsLabel")}</span>
+                </div>
+                <span className="font-medium">
+                  {activeListings} / {maxListings ?? "∞"}
+                </span>
             </div>
             {maxListings && (
               <Progress 
@@ -168,7 +132,7 @@ export function SubscriptionBenefitsCard({
               <div className="flex items-center justify-between text-sm">
                 <div className="flex items-center gap-2">
                   <Lightning weight="fill" className="size-4 text-primary" />
-                  <span>{t.boosts}</span>
+                  <span>{t("subscriptionBenefitsCard.boostsLabel")}</span>
                   {boostsResetAt && (
                     <TooltipProvider delayDuration={200}>
                       <Tooltip>
@@ -176,14 +140,14 @@ export function SubscriptionBenefitsCard({
                           <Info className="size-3.5 text-muted-foreground cursor-help" />
                         </TooltipTrigger>
                         <TooltipContent>
-                          <p>{t.boostsReset}: {formatDate(boostsResetAt)}</p>
+                          <p>{t("subscriptionBenefitsCard.boostsResetLabel")}: {formatDate(boostsResetAt)}</p>
                         </TooltipContent>
                       </Tooltip>
                     </TooltipProvider>
                   )}
                 </div>
                 <span className="font-medium">
-                  {boostsRemaining} {t.boostsRemaining}
+                  {boostsRemaining} {t("subscriptionBenefitsCard.boostsRemainingSuffix")}
                 </span>
               </div>
               <Progress 
@@ -199,7 +163,7 @@ export function SubscriptionBenefitsCard({
             {prioritySupport && (
               <div className="flex items-center gap-2 text-sm">
                 <Headset weight="duotone" className="size-4 text-success" />
-                <span>{t.prioritySupport}</span>
+                <span>{t("subscriptionBenefitsCard.prioritySupportLabel")}</span>
                 <Badge variant="secondary" className="ml-auto text-2xs">✓</Badge>
               </div>
             )}
@@ -208,7 +172,7 @@ export function SubscriptionBenefitsCard({
             {analyticsAccess && analyticsAccess !== "none" && (
               <div className="flex items-center gap-2 text-sm">
                 <ChartLine weight="duotone" className="size-4 text-info" />
-                <span>{t.analytics}</span>
+                <span>{t("subscriptionBenefitsCard.analyticsLabel")}</span>
                 <Badge variant="secondary" className="ml-auto text-2xs">
                   {getAnalyticsLabel(analyticsAccess)}
                 </Badge>
@@ -219,7 +183,7 @@ export function SubscriptionBenefitsCard({
             {badgeType && (
               <div className="flex items-center gap-2 text-sm">
                 <Medal weight="duotone" className="size-4 text-verified" />
-                <span>{t.sellerBadge}</span>
+                <span>{t("subscriptionBenefitsCard.sellerBadgeLabel")}</span>
                 <Badge variant="secondary" className="ml-auto text-2xs">
                   {getBadgeLabel(badgeType)}
                 </Badge>
@@ -231,7 +195,7 @@ export function SubscriptionBenefitsCard({
           <div className="pt-2">
             <Button asChild variant={isPaidPlan ? "outline" : "default"} className="w-full" size="sm">
               <Link href="/account/plans">
-                {isPaidPlan ? t.managePlan : t.upgradePlan}
+                {isPaidPlan ? t("subscriptionBenefitsCard.managePlanCta") : t("subscriptionBenefitsCard.upgradePlanCta")}
               </Link>
             </Button>
           </div>
@@ -239,7 +203,7 @@ export function SubscriptionBenefitsCard({
           {/* Expiry notice */}
           {expiresAt && isCancelled && (
             <p className="text-xs text-muted-foreground text-center">
-              {t.expiresOn}: {formatDate(expiresAt)}
+              {t("subscriptionBenefitsCard.expiresOnLabel")}: {formatDate(expiresAt)}
             </p>
           )}
         </div>

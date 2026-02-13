@@ -47,7 +47,6 @@ export function SecurityContent({ locale, userEmail }: SecurityContentProps) {
     
     const [emailData, setEmailData] = useState({
         newEmail: "",
-        password: ""
     })
 
     const supabase = createClient()
@@ -107,34 +106,10 @@ export function SecurityContent({ locale, userEmail }: SecurityContentProps) {
                     : 'A confirmation email has been sent to your new address'
             )
             setIsChangeEmailOpen(false)
-            setEmailData({ newEmail: "", password: "" })
+            setEmailData({ newEmail: "" })
         } catch (error) {
             console.error('Error changing email:', error)
             const message = error instanceof Error ? error.message : (locale === 'bg' ? 'Грешка при промяна на имейла' : 'Error changing email')
-            toast.error(message)
-        } finally {
-            setIsLoading(false)
-        }
-    }
-
-    // Reset password via email - can be exposed in UI later
-    const _handleResetPassword = async () => {
-        setIsLoading(true)
-        try {
-            const { error } = await supabase.auth.resetPasswordForEmail(userEmail, {
-                redirectTo: `${window.location.origin}/auth/reset-password`
-            })
-
-            if (error) throw error
-
-            toast.success(
-                locale === 'bg' 
-                    ? 'Изпратен е имейл с инструкции за нулиране на паролата' 
-                    : 'Password reset email sent'
-            )
-        } catch (error) {
-            console.error('Error sending reset email:', error)
-            const message = error instanceof Error ? error.message : (locale === 'bg' ? 'Грешка при изпращане на имейл' : 'Error sending email')
             toast.error(message)
         } finally {
             setIsLoading(false)
@@ -179,8 +154,9 @@ export function SecurityContent({ locale, userEmail }: SecurityContentProps) {
             <div className="rounded-lg border bg-card divide-y">
                 {/* Email Row */}
                 <button
+                    type="button"
                     onClick={() => setIsChangeEmailOpen(true)}
-                    className="w-full flex items-center gap-3 p-3 text-left active:bg-active transition-colors"
+                    className="w-full rounded-lg flex items-center gap-3 p-3 text-left active:bg-active transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                 >
                     <div className="flex size-10 items-center justify-center rounded-full bg-muted">
                         <Envelope className="size-5 text-muted-foreground" />
@@ -196,17 +172,10 @@ export function SecurityContent({ locale, userEmail }: SecurityContentProps) {
                 </button>
 
                 {/* Password Row */}
-                <div
+                <button
+                    type="button"
                     onClick={() => setIsChangePasswordOpen(true)}
-                    onKeyDown={(e) => {
-                        if (e.key === "Enter" || e.key === " ") {
-                            e.preventDefault()
-                            setIsChangePasswordOpen(true)
-                        }
-                    }}
-                    role="button"
-                    tabIndex={0}
-                    className="w-full flex items-center gap-3 p-3 text-left active:bg-active transition-colors"
+                    className="w-full rounded-lg flex items-center gap-3 p-3 text-left active:bg-active transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                 >
                     <div className="flex size-10 items-center justify-center rounded-full bg-muted">
                         <Key className="size-5 text-muted-foreground" />
@@ -215,18 +184,10 @@ export function SecurityContent({ locale, userEmail }: SecurityContentProps) {
                         <p className="text-sm font-medium">{locale === 'bg' ? 'Парола' : 'Password'}</p>
                         <p className="text-xs text-muted-foreground">••••••••</p>
                     </div>
-                    <Button 
-                        variant="ghost" 
-                        size="sm" 
-                        className="h-7 text-xs"
-                        onClick={(e) => {
-                            e.stopPropagation()
-                            setIsChangePasswordOpen(true)
-                        }}
-                    >
+                    <span className="text-xs text-muted-foreground">
                         {locale === 'bg' ? 'Промени' : 'Change'}
-                    </Button>
-                </div>
+                    </span>
+                </button>
 
                 {/* 2FA Row */}
                 <div className="flex items-center gap-3 p-3">
@@ -283,9 +244,10 @@ export function SecurityContent({ locale, userEmail }: SecurityContentProps) {
 
                     <div className="space-y-4 py-4">
                         <div className="space-y-2">
-                            <Label>{locale === 'bg' ? 'Нова парола' : 'New Password'}</Label>
+                            <Label htmlFor="security-new-password">{locale === 'bg' ? 'Нова парола' : 'New Password'}</Label>
                             <div className="relative">
                                 <Input 
+                                    id="security-new-password"
                                     type={showNewPassword ? "text" : "password"}
                                     value={passwordData.newPassword}
                                     onChange={(e) => setPasswordData(prev => ({ ...prev, newPassword: e.target.value }))}
@@ -297,6 +259,9 @@ export function SecurityContent({ locale, userEmail }: SecurityContentProps) {
                                     size="icon"
                                     className="absolute right-0 top-0 h-full px-3"
                                     onClick={() => setShowNewPassword(!showNewPassword)}
+                                    aria-label={showNewPassword
+                                        ? (locale === "bg" ? "Скрий паролата" : "Hide password")
+                                        : (locale === "bg" ? "Покажи паролата" : "Show password")}
                                 >
                                     {showNewPassword ? <EyeSlash className="size-4" /> : <Eye className="size-4" />}
                                 </Button>
@@ -321,8 +286,9 @@ export function SecurityContent({ locale, userEmail }: SecurityContentProps) {
                         </div>
 
                         <div className="space-y-2">
-                            <Label>{locale === 'bg' ? 'Потвърди паролата' : 'Confirm Password'}</Label>
+                            <Label htmlFor="security-confirm-password">{locale === 'bg' ? 'Потвърди паролата' : 'Confirm Password'}</Label>
                             <Input 
+                                id="security-confirm-password"
                                 type="password"
                                 value={passwordData.confirmPassword}
                                 onChange={(e) => setPasswordData(prev => ({ ...prev, confirmPassword: e.target.value }))}
@@ -367,13 +333,14 @@ export function SecurityContent({ locale, userEmail }: SecurityContentProps) {
 
                     <div className="space-y-4 py-4">
                         <div className="space-y-2">
-                            <Label>{locale === 'bg' ? 'Текущ имейл' : 'Current Email'}</Label>
-                            <Input value={userEmail} disabled />
+                            <Label htmlFor="security-current-email">{locale === 'bg' ? 'Текущ имейл' : 'Current Email'}</Label>
+                            <Input id="security-current-email" value={userEmail} disabled />
                         </div>
 
                         <div className="space-y-2">
-                            <Label>{locale === 'bg' ? 'Нов имейл' : 'New Email'}</Label>
+                            <Label htmlFor="security-new-email">{locale === 'bg' ? 'Нов имейл' : 'New Email'}</Label>
                             <Input 
+                                id="security-new-email"
                                 type="email"
                                 value={emailData.newEmail}
                                 onChange={(e) => setEmailData(prev => ({ ...prev, newEmail: e.target.value }))}

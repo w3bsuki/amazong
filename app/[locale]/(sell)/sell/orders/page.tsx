@@ -34,9 +34,16 @@ export default async function SellerOrdersPage({
     return redirect({ href: "/auth/login", locale })
   }
 
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("username")
+    .eq("id", user.id)
+    .maybeSingle()
+
   return (
     <SellerOrdersClient
       locale={locale}
+      sellerUsername={profile?.username ?? null}
       actions={{
         getSellerOrders,
         getSellerOrderStats,

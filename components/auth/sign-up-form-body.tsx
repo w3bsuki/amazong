@@ -48,6 +48,7 @@ export function SignUpFormBody({
 }: SignUpFormBodyProps) {
   const t = useTranslations("Auth")
   const handledSuccess = useRef(false)
+  const invalidInputClass = "border-destructive"
 
   const [name, setName] = useState("")
   const [email, setEmail] = useState("")
@@ -133,7 +134,11 @@ export function SignUpFormBody({
           aria-label={t("usernameAvailabilityChecking")}
         >
           <span className="sr-only">{t("usernameAvailabilityChecking")}</span>
-          <SpinnerGap className="size-4 animate-spin text-muted-foreground" weight="bold" />
+          <SpinnerGap
+            className="size-4 animate-spin motion-reduce:animate-none text-muted-foreground"
+            weight="bold"
+            aria-hidden="true"
+          />
         </span>
       )
     }
@@ -146,7 +151,7 @@ export function SignUpFormBody({
           aria-label={t("usernameAvailabilityAvailable")}
         >
           <span className="sr-only">{t("usernameAvailabilityAvailable")}</span>
-          <CheckCircle className="size-4 text-success" weight="fill" />
+          <CheckCircle className="size-4 text-success" weight="fill" aria-hidden="true" />
         </span>
       )
     }
@@ -159,7 +164,7 @@ export function SignUpFormBody({
           aria-label={t("usernameAvailabilityUnavailable")}
         >
           <span className="sr-only">{t("usernameAvailabilityUnavailable")}</span>
-          <X className="size-4 text-destructive" />
+          <X className="size-4 text-destructive" aria-hidden="true" />
         </span>
       )
     }
@@ -188,7 +193,11 @@ export function SignUpFormBody({
         }}
       >
         {state?.error && (
-          <div className="rounded-xl border border-destructive bg-destructive-subtle p-3 text-sm text-destructive">
+          <div
+            className="rounded-xl border border-destructive bg-destructive-subtle p-3 text-sm text-destructive"
+            role="alert"
+            aria-live="assertive"
+          >
             {t(state.error as never)}
           </div>
         )}
@@ -207,7 +216,7 @@ export function SignUpFormBody({
               onChange={(e) => setName(e.target.value)}
               aria-invalid={!!state?.fieldErrors?.name}
               aria-describedby={state?.fieldErrors?.name ? "name-error" : undefined}
-              className={cn(state?.fieldErrors?.name && "border-destructive")}
+              className={cn(state?.fieldErrors?.name && invalidInputClass)}
             />
             <FieldError id="name-error">
               {state?.fieldErrors?.name ? t(state.fieldErrors.name as never) : null}
@@ -226,14 +235,14 @@ export function SignUpFormBody({
                 type="text"
                 value={username}
                 onChange={(e) =>
-                  setUsername(e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, ""))
+                  setUsername(e.target.value.toLowerCase().replaceAll(/[^a-z0-9_]/g, ""))
                 }
                 autoComplete="username"
                 required
                 placeholder={t("usernamePlaceholder")}
                 aria-invalid={!!state?.fieldErrors?.username}
                 aria-describedby={state?.fieldErrors?.username ? "username-error" : undefined}
-                className={cn("pr-10", state?.fieldErrors?.username && "border-destructive")}
+                className={cn("pr-10", state?.fieldErrors?.username && invalidInputClass)}
               />
               <div className="absolute right-3 top-1/2 -translate-y-1/2">{usernameIndicator}</div>
             </div>
@@ -257,7 +266,7 @@ export function SignUpFormBody({
               onChange={(e) => setEmail(e.target.value)}
               aria-invalid={!!state?.fieldErrors?.email}
               aria-describedby={state?.fieldErrors?.email ? "email-error" : undefined}
-              className={cn(state?.fieldErrors?.email && "border-destructive")}
+              className={cn(state?.fieldErrors?.email && invalidInputClass)}
             />
             <FieldError id="email-error">
               {state?.fieldErrors?.email ? t(state.fieldErrors.email as never) : null}
@@ -281,22 +290,28 @@ export function SignUpFormBody({
                 onChange={(e) => setPassword(e.target.value)}
                 aria-invalid={!!state?.fieldErrors?.password}
                 aria-describedby={state?.fieldErrors?.password ? "password-error" : undefined}
-                className={cn("pr-12", state?.fieldErrors?.password && "border-destructive")}
+                className={cn("pr-12", state?.fieldErrors?.password && invalidInputClass)}
               />
               <button
                 type="button"
                 onClick={() => setShowPassword((v) => !v)}
-                className="absolute right-0 top-1/2 -translate-y-1/2 size-11 inline-flex items-center justify-center text-muted-foreground hover:text-foreground rounded-xl transition-colors focus-visible:ring-2 focus-visible:ring-focus-ring"
+                className="absolute right-0 top-1/2 -translate-y-1/2 size-11 inline-flex items-center justify-center text-muted-foreground hover:text-foreground rounded-xl transition-colors motion-reduce:transition-none focus-visible:ring-2 focus-visible:ring-focus-ring"
                 aria-label={showPassword ? t("hidePassword") : t("showPassword")}
+                aria-controls="password"
+                aria-pressed={showPassword}
               >
-                {showPassword ? <EyeSlash className="size-5" /> : <Eye className="size-5" />}
+                {showPassword ? (
+                  <EyeSlash className="size-5" aria-hidden="true" />
+                ) : (
+                  <Eye className="size-5" aria-hidden="true" />
+                )}
               </button>
             </div>
             {password && (
               <div className="mt-1.5 space-y-1">
                 <div className="h-1 w-full bg-muted rounded-full overflow-hidden">
                   <div
-                    className={`h-full transition-all duration-300 rounded-full ${strengthUi.color} ${strengthUi.width}`}
+                    className={`h-full transition-all duration-300 motion-reduce:transition-none rounded-full ${strengthUi.color} ${strengthUi.width}`}
                   />
                 </div>
                 <p className="text-xs text-muted-foreground">
@@ -306,12 +321,16 @@ export function SignUpFormBody({
             )}
             {password && (
               <div className="mt-2 grid grid-cols-2 gap-x-2 gap-y-1">
-                {requirements.map((req, i) => (
+                {requirements.map((req) => (
                   <div
-                    key={i}
+                    key={req.label}
                     className={`flex items-center gap-1.5 text-xs transition-colors ${req.met ? "text-foreground" : "text-muted-foreground"}`}
                   >
-                    {req.met ? <Check className="size-3" weight="bold" /> : <X className="size-3" />}
+                    {req.met ? (
+                      <Check className="size-3" weight="bold" aria-hidden="true" />
+                    ) : (
+                      <X className="size-3" aria-hidden="true" />
+                    )}
                     <span>{req.label}</span>
                   </div>
                 ))}
@@ -340,15 +359,21 @@ export function SignUpFormBody({
                 aria-describedby={
                   state?.fieldErrors?.confirmPassword ? "confirmPassword-error" : undefined
                 }
-                className={cn("pr-12", state?.fieldErrors?.confirmPassword && "border-destructive")}
+                className={cn("pr-12", state?.fieldErrors?.confirmPassword && invalidInputClass)}
               />
               <button
                 type="button"
                 onClick={() => setShowConfirmPassword((v) => !v)}
-                className="absolute right-0 top-1/2 -translate-y-1/2 size-11 inline-flex items-center justify-center text-muted-foreground hover:text-foreground rounded-xl transition-colors focus-visible:ring-2 focus-visible:ring-focus-ring"
+                className="absolute right-0 top-1/2 -translate-y-1/2 size-11 inline-flex items-center justify-center text-muted-foreground hover:text-foreground rounded-xl transition-colors motion-reduce:transition-none focus-visible:ring-2 focus-visible:ring-focus-ring"
                 aria-label={showConfirmPassword ? t("hidePassword") : t("showPassword")}
+                aria-controls="confirmPassword"
+                aria-pressed={showConfirmPassword}
               >
-                {showConfirmPassword ? <EyeSlash className="size-5" /> : <Eye className="size-5" />}
+                {showConfirmPassword ? (
+                  <EyeSlash className="size-5" aria-hidden="true" />
+                ) : (
+                  <Eye className="size-5" aria-hidden="true" />
+                )}
               </button>
             </div>
             <FieldError id="confirmPassword-error">

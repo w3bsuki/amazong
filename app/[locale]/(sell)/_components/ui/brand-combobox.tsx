@@ -4,7 +4,6 @@ import * as React from "react";
 import { CheckIcon, ShieldCheck, Plus, X } from "lucide-react";
 import { CaretRight } from "@phosphor-icons/react";
 import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
 import {
   Command,
   CommandEmpty,
@@ -72,10 +71,10 @@ export function BrandCombobox({
   allowCustom = true,
   disabled = false,
   className,
-  locale: _locale = "en",
 }: BrandComboboxProps) {
   const [open, setOpen] = React.useState(false);
   const [searchQuery, setSearchQuery] = React.useState("");
+  const listboxId = React.useId();
   const isMobile = useIsMobile();
   
   const t = useTranslations("Sell")
@@ -164,7 +163,10 @@ export function BrandCombobox({
         onValueChange={setSearchQuery}
         className="h-12 border-none focus:ring-0"
       />
-      <CommandList className={cn("overflow-y-auto", isMobile ? "max-h-(--dialog-h-50vh)" : "max-h-(--spacing-scroll-md)")}>
+      <CommandList
+        id={listboxId}
+        className={cn("overflow-y-auto", isMobile ? "max-h-(--dialog-h-50vh)" : "max-h-(--spacing-scroll-md)")}
+      >
         <CommandEmpty>
           {showCustomOption ? (
             <button
@@ -255,10 +257,12 @@ export function BrandCombobox({
       type="button"
       role="combobox"
       aria-expanded={open}
+      aria-controls={listboxId}
+      aria-haspopup="listbox"
       onClick={isMobile ? () => setOpen(true) : undefined}
       disabled={disabled}
       className={cn(
-        "relative w-full flex flex-col justify-center h-14 px-4 rounded-md border transition-all text-left",
+        "relative w-full flex flex-col justify-center h-14 px-4 rounded-md border text-left",
         "bg-background border border-border shadow-xs",
         "hover:border-hover-border focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background",
         "transition-colors",
@@ -300,16 +304,17 @@ export function BrandCombobox({
       <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-1.5 shrink-0">
         {/* Clear button */}
         {(selectedBrand || customValue) && (
-          <span
-            role="button"
-            tabIndex={0}
-            onClick={handleClear}
-            onKeyDown={(e) => e.key === "Enter" && handleClear(e as unknown as React.MouseEvent)}
-            className="size-6 flex items-center justify-center rounded-lg hover:bg-muted transition-colors"
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              handleClear(e);
+            }}
+            className="size-6 flex items-center justify-center rounded-lg hover:bg-muted transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background"
             aria-label={t("brandCombobox.clear")}
           >
             <X className="size-3.5 text-muted-foreground" />
-          </span>
+          </button>
         )}
         <CaretRight className="size-4 text-muted-foreground" weight="bold" />
       </div>

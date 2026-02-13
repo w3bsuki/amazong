@@ -11,7 +11,6 @@ interface UploadZoneProps {
   getInputProps: () => Record<string, unknown>;
   currentCount: number;
   maxCount: number;
-  locale?: "en" | "bg";
 }
 
 /**
@@ -29,7 +28,6 @@ export function UploadZone({
   getInputProps,
   currentCount,
   maxCount,
-  locale: _locale = "en",
 }: UploadZoneProps) {
   const remaining = maxCount - currentCount;
   const t = useTranslations("Sell")

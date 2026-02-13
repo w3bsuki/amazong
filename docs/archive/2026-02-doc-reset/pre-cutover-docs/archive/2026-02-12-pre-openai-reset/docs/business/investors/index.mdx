@@ -1,0 +1,34 @@
+# Investor Pack (Internal)
+
+This section is the **management and investor-ready** documentation set for Treido Marketplace.
+
+It is written to be:
+
+- **specific** (clear assumptions and decisions)
+- **operational** (what we do day-to-day)
+- **auditable** (metrics and risks are explicit)
+
+## What’s inside
+
+- [One-Pager](/business/investors/one-pager) — narrative summary (problem → solution → model)
+- [KPIs & Metrics](/business/investors/kpis-metrics) — what we measure and why
+- [Unit Economics](/business/investors/unit-economics) — per-order margin model (fee-driven)
+- [Go-to-Market](/business/investors/go-to-market) — launch strategy and growth loops
+- [Risk Register](/business/investors/risk-register) — risks, owners, mitigations
+- [Fundraising Plan](/business/investors/fundraising-plan) — milestones and use of funds
+- [Governance & Cadence](/business/investors/governance-cadence) — how we run the company
+
+## Current operating assumptions (can be revised)
+
+- Launch is **full marketplace** (Vinted-style), not classifieds.
+- **No cash on delivery (COD)**.
+- Payments: **Stripe** + **Stripe Connect (Express)**.
+- Monetization: **Buyer Protection** (buyer-paid) + **small business seller fee** (plan-driven).
+
+## Open decisions (track and close)
+
+- Auto-confirm after delivery: **48h vs 72h** (fraud vs UX tradeoff)
+- Return shipping label policy: buyer-paid vs seller-paid vs platform-paid
+- KYC/phone verification sequence: platform phone OTP before Connect onboarding vs after
+
+> For operational planning, we mirror the key docs into `/admin/docs` (seed templates + edits).

@@ -491,7 +491,7 @@ export default function CheckoutPageClient({
 
       {/* Mobile sticky footer - hide when scrolled to bottom */}
       <div className={cn(
-        "lg:hidden fixed inset-x-0 bottom-0 z-40 bg-background border-t border-border transition-transform duration-300",
+        "lg:hidden fixed inset-x-0 bottom-0 z-40 bg-background border-t border-border motion-safe:transition-transform motion-safe:duration-300 motion-reduce:transition-none",
         isAtBottom ? "translate-y-full" : "translate-y-0"
       )}>
         <div className="px-4 py-3 pb-safe">

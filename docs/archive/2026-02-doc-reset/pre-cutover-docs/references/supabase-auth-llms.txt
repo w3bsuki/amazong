@@ -1,0 +1,53 @@
+# Supabase Auth Reference (for @supabase/ssr)
+# Version: @supabase/ssr 0.6.x, Supabase Auth v2
+# Last fetched: 2026-02-12
+
+## Server-Side Client Creation
+
+```typescript
+import { createServerClient } from '@supabase/ssr'
+import { cookies } from 'next/headers'
+
+export async function createClient() {
+  const cookieStore = await cookies()
+  return createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll() { return cookieStore.getAll() },
+        setAll(cookiesToSet) {
+          cookiesToSet.forEach(({ name, value, options }) =>
+            cookieStore.set(name, value, options))
+        },
+      },
+    }
+  )
+}
+```
+
+## Middleware Session Refresh
+
+```typescript
+import { createServerClient } from '@supabase/ssr'
+import { NextResponse } from 'next/server'
+
+// Must call supabase.auth.getUser() in middleware to refresh session
+// getSession() alone does NOT refresh — it only reads from cookies
+```
+
+## Key Auth Methods
+
+- `supabase.auth.signUp({ email, password })` — create account
+- `supabase.auth.signInWithPassword({ email, password })` — email login
+- `supabase.auth.signInWithOAuth({ provider })` — OAuth flow
+- `supabase.auth.signOut()` — sign out
+- `supabase.auth.getUser()` — get authenticated user (verifies JWT)
+- `supabase.auth.getSession()` — get session from cookies (no verification)
+- `supabase.auth.exchangeCodeForSession(code)` — PKCE callback
+
+## RLS Pattern
+
+Row Level Security policies reference `auth.uid()` which returns the JWT's `sub` claim.
+Always use `getUser()` in server actions for security — `getSession()` is for
+middleware performance only.

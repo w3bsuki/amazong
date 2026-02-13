@@ -1,7 +1,7 @@
 "use server"
 
 import { revalidateTag } from "next/cache"
-import { createClient } from "@/lib/supabase/server"
+import { createAdminClient, createClient } from "@/lib/supabase/server"
 
 export type ReportReason = 
   | "spam"
@@ -55,25 +55,30 @@ export async function reportConversation(
     const reportedUserId = conversation.buyer_id === userId 
       ? conversation.seller_id 
       : conversation.buyer_id
+    const reportBody = description ? `Reason: ${reason} - ${description}` : `Reason: ${reason}`
 
-    // Create admin notification for review
-    const { error: notifError } = await supabase
-      .from("notifications")
-      .insert({
+    // Create admin notification for review (service role insert; users must not be able to write notifications directly).
+    let notifError: unknown = null
+    try {
+      const admin = createAdminClient()
+      ;({ error: notifError } = await admin.from("notifications").insert({
         user_id: userData.user.id, // Placeholder - in production, this would go to admin users
         type: "system",
         title: "Conversation Reported",
-        body: `Reason: ${reason}${description ? ` - ${description}` : ""}`,
+        body: reportBody,
         data: {
           type: "conversation_report",
           conversation_id: conversationId,
           reporter_id: userId,
           reported_user_id: reportedUserId,
           reason,
-          description: description || null
+          description: description || null,
         },
-        conversation_id: conversationId
-      })
+        conversation_id: conversationId,
+      }))
+    } catch (err) {
+      notifError = err
+    }
 
     if (notifError) {
       console.error("Error creating report notification:", notifError)

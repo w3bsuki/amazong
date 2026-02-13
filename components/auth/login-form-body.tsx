@@ -105,6 +105,8 @@ export function LoginFormBody({
         <div
           className="rounded-xl border border-destructive bg-destructive-subtle p-3 text-sm text-destructive"
           data-testid="login-error-section"
+          role="alert"
+          aria-live="assertive"
         >
           {t(state.error as never)}
         </div>
@@ -178,10 +180,16 @@ export function LoginFormBody({
               <button
                 type="button"
                 onClick={() => setShowPassword((v) => !v)}
-                className="absolute right-0 top-1/2 -translate-y-1/2 size-11 inline-flex items-center justify-center text-muted-foreground hover:text-foreground rounded-xl transition-colors focus-visible:ring-2 focus-visible:ring-focus-ring"
+                className="absolute right-0 top-1/2 -translate-y-1/2 size-11 inline-flex items-center justify-center text-muted-foreground hover:text-foreground rounded-xl transition-colors motion-reduce:transition-none focus-visible:ring-2 focus-visible:ring-focus-ring"
                 aria-label={showPassword ? t("hidePassword") : t("showPassword")}
+                aria-controls="password"
+                aria-pressed={showPassword}
               >
-                {showPassword ? <EyeSlash className="size-4" /> : <Eye className="size-4" />}
+                {showPassword ? (
+                  <EyeSlash className="size-4" aria-hidden="true" />
+                ) : (
+                  <Eye className="size-4" aria-hidden="true" />
+                )}
               </button>
             </div>
             <FieldError id="password-error">
@@ -237,11 +245,11 @@ export function LoginFormBody({
               {t("createAccount")}
             </Button>
           ) : (
-            <Link href="/auth/sign-up" className="block mt-3" onClick={onNavigateAway}>
-              <Button type="button" variant="outline" size="lg" className="w-full">
+            <Button asChild variant="outline" size="lg" className="w-full mt-3">
+              <Link href="/auth/sign-up" onClick={onNavigateAway}>
                 {t("createAccount")}
-              </Button>
-            </Link>
+              </Link>
+            </Button>
           )}
         </div>
       )}

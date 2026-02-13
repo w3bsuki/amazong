@@ -1,4 +1,4 @@
-import { dirname } from 'node:path'
+import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { defineConfig } from 'vitest/config'
 
@@ -7,26 +7,30 @@ export default defineConfig(async () => {
 
   // Vitest may load config in a CJS context, and these plugins are ESM-only.
   // Dynamic import works in both environments.
-  const [{ default: react }, { default: tsconfigPaths }] = await Promise.all([
-    import('@vitejs/plugin-react'),
-    import('vite-tsconfig-paths'),
-  ])
+  const [{ default: tsconfigPaths }] = await Promise.all([import('vite-tsconfig-paths')])
 
   return {
-    plugins: [tsconfigPaths(), react()],
+    // Keep test transforms lean: Vite's esbuild handles TSX/JSX. React Fast Refresh
+    // and Babel transforms are unnecessary for unit tests and can be memory heavy.
+    plugins: [tsconfigPaths()],
+    esbuild: {
+      jsx: 'automatic',
+    },
     resolve: {
       alias: {
         '@': projectRoot,
+        'server-only': join(projectRoot, 'test', 'shims', 'server-only.ts'),
+        'client-only': join(projectRoot, 'test', 'shims', 'client-only.ts'),
       },
     },
     test: {
       environment: 'jsdom',
       setupFiles: ['./test/setup.ts'],
       include: [
-        '__tests__/**/*.{test,spec}.{ts,tsx}',
-        'lib/**/*.{test,spec}.{ts,tsx}',
-        'hooks/**/*.{test,spec}.{ts,tsx}',
-        'components/**/*.{test,spec}.{ts,tsx}',
+        '__tests__/**/*.{test,spec}.tsx',
+        'lib/**/*.{test,spec}.tsx',
+        'hooks/**/*.{test,spec}.tsx',
+        'components/**/*.{test,spec}.tsx',
       ],
       exclude: ['e2e/**', 'node_modules/**', '.next/**'],
       clearMocks: true,

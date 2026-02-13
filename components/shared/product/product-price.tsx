@@ -41,48 +41,52 @@ export function ProductPrice({
   showAccessibleLabel = true,
   showVat = true
 }: ProductPriceProps) {
-  const hasDiscount = originalPrice && originalPrice > price
+  const hasDiscount = typeof originalPrice === "number" && originalPrice > price
   const priceParts = formatPriceParts(price, locale)
   const classes = sizeClasses[size]
   
   // Accessible label for screen readers
   const accessiblePrice = formatPrice(price, locale)
   const accessibleOriginal = originalPrice ? formatPrice(originalPrice, locale) : null
+  const discountLabel = hasDiscount && accessibleOriginal ? `, was ${accessibleOriginal}` : ""
+  const accessibleLabel = showAccessibleLabel
+    ? `Price: ${accessiblePrice}${discountLabel}`
+    : undefined
   
   const vatLabel = locale === 'bg' ? 'с ДДС' : 'incl. VAT'
   
   return (
     <div 
       className={cn("flex items-baseline gap-2", className)}
-      aria-label={showAccessibleLabel ? `Price: ${accessiblePrice}${hasDiscount ? `, was ${accessibleOriginal}` : ''}` : undefined}
+      aria-label={accessibleLabel}
     >
       <span className={cn(
-        "flex items-baseline gap-0.5 tabular-nums",
+        "flex items-baseline gap-0.5 tabular-nums font-semibold",
         hasDiscount ? "text-price-sale" : "text-price-regular"
       )}>
         {priceParts.symbolPosition === 'before' && (
           <span 
-            className={cn(classes.symbol, "align-top font-medium relative top-1")}
+            className={cn(classes.symbol, "align-top font-semibold relative top-1")}
             aria-hidden="true"
           >
             {priceParts.symbol}
           </span>
         )}
         <span 
-          className={cn(classes.whole, "font-medium")}
+          className={cn(classes.whole, "font-semibold")}
           aria-hidden="true"
         >
           {priceParts.wholePart}
         </span>
         <span 
-          className={cn(classes.decimal, "align-top font-medium relative top-1")}
+          className={cn(classes.decimal, "align-top font-semibold relative top-1")}
           aria-hidden="true"
         >
           {locale === 'bg' ? ',' : '.'}{priceParts.decimalPart}
         </span>
         {priceParts.symbolPosition === 'after' && (
           <span 
-            className={cn(classes.symbol, "align-top font-medium relative top-1 ml-1")}
+            className={cn(classes.symbol, "align-top font-semibold relative top-1 ml-1")}
             aria-hidden="true"
           >
             {priceParts.symbol}
@@ -104,22 +108,5 @@ export function ProductPrice({
         </span>
       )}
     </div>
-  )
-}
-
-// Simple inline price for Buy Box etc
-function InlinePrice({
-  price,
-  locale,
-  className
-}: {
-  price: number
-  locale: string
-  className?: string
-}) {
-  return (
-    <span className={cn("text-price-regular font-medium tabular-nums", className)}>
-      {formatPrice(price, locale)}
-    </span>
   )
 }

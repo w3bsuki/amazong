@@ -14,12 +14,13 @@ import { IconExternalLink } from "@tabler/icons-react"
 interface AdminProduct {
   id: string
   title: string
+  slug: string | null
   price: number
   stock: number
   is_boosted: boolean | null
   created_at: string
   seller_id: string
-  profiles: { business_name: string | null; display_name: string | null } | null
+  profiles: { business_name: string | null; display_name: string | null; username: string | null } | null
 }
 
 async function getProducts(): Promise<AdminProduct[]> {
@@ -30,6 +31,7 @@ async function getProducts(): Promise<AdminProduct[]> {
     .select(`
       id,
       title,
+      slug,
       price,
       stock,
       is_boosted,
@@ -37,7 +39,8 @@ async function getProducts(): Promise<AdminProduct[]> {
       seller_id,
       profiles!products_seller_id_fkey (
         business_name,
-        display_name
+        display_name,
+        username
       )
     `)
     .order("created_at", { ascending: false })
@@ -87,56 +90,66 @@ async function AdminProductsContent() {
           <CardDescription>{t("table.description")}</CardDescription>
         </CardHeader>
         <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>{t("table.headers.product")}</TableHead>
-                <TableHead>{t("table.headers.seller")}</TableHead>
-                <TableHead>{t("table.headers.price")}</TableHead>
-                <TableHead>{t("table.headers.stock")}</TableHead>
-                <TableHead>{t("table.headers.status")}</TableHead>
-                <TableHead>{t("table.headers.listed")}</TableHead>
-                <TableHead className="w-12"></TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {products.map((product) => (
-                <TableRow key={product.id}>
-                  <TableCell>
-                    <p className="font-medium truncate max-w-52">{product.title}</p>
-                  </TableCell>
-                  <TableCell className="text-muted-foreground">
-                    {product.profiles?.business_name || product.profiles?.display_name || t("fallbacks.unknownSeller")}
-                  </TableCell>
-                  <TableCell className="font-medium tabular-nums">{formatCurrency(product.price)}</TableCell>
-                  <TableCell>
-                    <Badge variant={product.stock > 0 ? "stock-available" : "stock-out"}>
-                      {product.stock > 0
-                        ? t("badges.inStock", { count: product.stock })
-                        : t("badges.outOfStock")}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    {product.is_boosted && (
-                      <Badge variant="outline" className="border-warning/20 bg-warning/10 text-warning">
-                        {t("badges.boosted")}
-                      </Badge>
-                    )}
-                  </TableCell>
-                  <TableCell className="text-muted-foreground">
-                    {formatDistanceToNow(new Date(product.created_at), { addSuffix: true, locale: dateLocale })}
-                  </TableCell>
-                  <TableCell>
-                    <Button variant="ghost" size="icon" asChild>
-                      <Link href={`/product/${product.id}`} target="_blank">
-                        <IconExternalLink className="size-4" />
-                      </Link>
-                    </Button>
-                  </TableCell>
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>{t("table.headers.product")}</TableHead>
+                  <TableHead className="hidden md:table-cell">{t("table.headers.seller")}</TableHead>
+                  <TableHead>{t("table.headers.price")}</TableHead>
+                  <TableHead>{t("table.headers.stock")}</TableHead>
+                  <TableHead>{t("table.headers.status")}</TableHead>
+                  <TableHead className="hidden md:table-cell">{t("table.headers.listed")}</TableHead>
+                  <TableHead className="w-12"></TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              </TableHeader>
+              <TableBody>
+                {products.map((product) => (
+                  <TableRow key={product.id}>
+                    <TableCell>
+                      <p className="font-medium truncate max-w-52">{product.title}</p>
+                    </TableCell>
+                    <TableCell className="hidden md:table-cell text-muted-foreground">
+                      {product.profiles?.business_name || product.profiles?.display_name || t("fallbacks.unknownSeller")}
+                    </TableCell>
+                    <TableCell className="font-medium tabular-nums">{formatCurrency(product.price)}</TableCell>
+                    <TableCell>
+                      <Badge variant={product.stock > 0 ? "stock-available" : "stock-out"}>
+                        {product.stock > 0
+                          ? t("badges.inStock", { count: product.stock })
+                          : t("badges.outOfStock")}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      {product.is_boosted && (
+                        <Badge variant="outline" className="border-warning/20 bg-warning/10 text-warning">
+                          {t("badges.boosted")}
+                        </Badge>
+                      )}
+                    </TableCell>
+                    <TableCell className="hidden md:table-cell text-muted-foreground">
+                      {formatDistanceToNow(new Date(product.created_at), { addSuffix: true, locale: dateLocale })}
+                    </TableCell>
+                    <TableCell>
+                      <Button variant="ghost" size="icon" asChild>
+                        <Link
+                          href={
+                            product.profiles?.username
+                              ? `/${product.profiles.username}/${product.slug || product.id}`
+                              : "#"
+                          }
+                          target="_blank"
+                          aria-label={t("table.headers.product")}
+                        >
+                          <IconExternalLink className="size-4" />
+                        </Link>
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
         </CardContent>
       </Card>
     </div>

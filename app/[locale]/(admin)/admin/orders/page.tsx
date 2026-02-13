@@ -31,6 +31,25 @@ interface AdminOrder {
   profiles: { email: string | null; full_name: string | null } | null
 }
 
+function getStatusColor(status: string | null) {
+  switch (status) {
+    case "paid":
+      return "bg-muted text-success border-success"
+    case "pending":
+      return "bg-muted text-order-pending border-order-pending"
+    case "processing":
+      return "bg-muted text-order-processing border-order-processing"
+    case "shipped":
+      return "bg-muted text-order-shipped border-order-shipped"
+    case "delivered":
+      return "bg-muted text-order-delivered border-order-delivered"
+    case "cancelled":
+      return "bg-muted text-order-cancelled border-order-cancelled"
+    default:
+      return "bg-muted text-muted-foreground border-border"
+  }
+}
+
 async function getOrders(): Promise<AdminOrder[]> {
   const adminClient = createAdminClient()
   
@@ -54,7 +73,7 @@ async function getOrders(): Promise<AdminOrder[]> {
     return []
   }
 
-  const userIds = Array.from(new Set((orders || []).map((o) => o.user_id).filter(Boolean)))
+  const userIds = [...new Set((orders || []).map((o) => o.user_id).filter(Boolean))]
 
   const { data: privateProfiles } = userIds.length
     ? await adminClient
@@ -93,25 +112,6 @@ export default async function AdminOrdersPage() {
       currency: 'BGN',
       maximumFractionDigits: 2,
     }).format(value)
-  }
-
-  const getStatusColor = (status: string | null) => {
-    switch (status) {
-      case 'paid':
-        return 'bg-muted text-success border-success'
-      case 'pending':
-        return 'bg-muted text-order-pending border-order-pending'
-      case 'processing':
-        return 'bg-muted text-order-processing border-order-processing'
-      case 'shipped':
-        return 'bg-muted text-order-shipped border-order-shipped'
-      case 'delivered':
-        return 'bg-muted text-order-delivered border-order-delivered'
-      case 'cancelled':
-        return 'bg-muted text-order-cancelled border-order-cancelled'
-      default:
-        return 'bg-muted text-muted-foreground border-border'
-    }
   }
 
   const getStatusLabel = (status: string | null) => {
@@ -163,47 +163,49 @@ export default async function AdminOrdersPage() {
           <CardDescription>{t('table.description')}</CardDescription>
         </CardHeader>
         <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>{t('table.headers.orderId')}</TableHead>
-                <TableHead>{t('table.headers.customer')}</TableHead>
-                <TableHead>{t('table.headers.amount')}</TableHead>
-                <TableHead>{t('table.headers.status')}</TableHead>
-                <TableHead>{t('table.headers.date')}</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {orders.map((order) => (
-                <TableRow key={order.id}>
-                  <TableCell className="font-mono text-sm">
-                    #{order.id.slice(0, 8)}
-                  </TableCell>
-                  <TableCell>
-                    <div>
-                      <p className="font-medium">
-                        {order.profiles?.full_name || t('fallbacks.noName')}
-                      </p>
-                      <p className="text-sm text-muted-foreground">
-                        {order.profiles?.email}
-                      </p>
-                    </div>
-                  </TableCell>
-                  <TableCell className="font-medium tabular-nums">
-                    {formatCurrency(order.total_amount)}
-                  </TableCell>
-                  <TableCell>
-                    <Badge variant="outline" className={getStatusColor(order.status)}>
-                      {getStatusLabel(order.status)}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="text-muted-foreground">
-                    {formatDistanceToNow(new Date(order.created_at), { addSuffix: true, locale: dateLocale })}
-                  </TableCell>
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>{t('table.headers.orderId')}</TableHead>
+                  <TableHead>{t('table.headers.customer')}</TableHead>
+                  <TableHead>{t('table.headers.amount')}</TableHead>
+                  <TableHead>{t('table.headers.status')}</TableHead>
+                  <TableHead className="hidden md:table-cell">{t('table.headers.date')}</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              </TableHeader>
+              <TableBody>
+                {orders.map((order) => (
+                  <TableRow key={order.id}>
+                    <TableCell className="font-mono text-sm">
+                      #{order.id.slice(0, 8)}
+                    </TableCell>
+                    <TableCell>
+                      <div>
+                        <p className="font-medium">
+                          {order.profiles?.full_name || t('fallbacks.noName')}
+                        </p>
+                        <p className="text-sm text-muted-foreground">
+                          {order.profiles?.email}
+                        </p>
+                      </div>
+                    </TableCell>
+                    <TableCell className="font-medium tabular-nums">
+                      {formatCurrency(order.total_amount)}
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant="outline" className={getStatusColor(order.status)}>
+                        {getStatusLabel(order.status)}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="hidden md:table-cell text-muted-foreground">
+                      {formatDistanceToNow(new Date(order.created_at), { addSuffix: true, locale: dateLocale })}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
         </CardContent>
       </Card>
     </div>

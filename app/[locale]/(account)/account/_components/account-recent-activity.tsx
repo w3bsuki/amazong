@@ -41,6 +41,8 @@ interface RecentProduct {
   price: number
   stock: number
   images?: string[]
+  slug?: string | null
+  username?: string | null
   created_at: string
 }
 
@@ -125,6 +127,11 @@ export function AccountRecentActivity({ orders, products, sales, locale }: Accou
     inStock: locale === 'bg' ? 'бр.' : 'in stock',
     viewAll: locale === 'bg' ? 'Виж всички' : 'See all',
     activity: locale === 'bg' ? 'Активност' : 'Activity',
+  }
+
+  const getProductHref = (product: RecentProduct) => {
+    if (!product.username) return "#"
+    return `/${product.username}/${product.slug || product.id}`
   }
 
   return (
@@ -275,7 +282,7 @@ export function AccountRecentActivity({ orders, products, sales, locale }: Accou
               {products.slice(0, 5).map((product) => (
                 <Link
                   key={product.id}
-                  href={`/product/${product.id}`}
+                  href={getProductHref(product)}
                   className="flex flex-col w-36 rounded-md bg-card border border-border p-3 transition-colors"
                 >
                   {/* Product Image */}
@@ -316,7 +323,7 @@ export function AccountRecentActivity({ orders, products, sales, locale }: Accou
               {products.slice(0, 3).map((product) => (
                 <Link
                   key={product.id}
-                  href={`/product/${product.id}`}
+                  href={getProductHref(product)}
                   className="flex items-center gap-3 p-4 hover:bg-hover active:bg-active transition-colors"
                 >
                   <div className="relative size-11 rounded-md overflow-hidden bg-card border border-border shrink-0">

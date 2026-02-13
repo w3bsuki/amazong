@@ -1,7 +1,7 @@
 "use server"
 
 import { revalidateTag } from "next/cache"
-import { createClient } from "@/lib/supabase/server"
+import { createAdminClient, createClient } from "@/lib/supabase/server"
 import { z } from "zod"
 
 // Types
@@ -177,16 +177,25 @@ export async function submitSellerFeedback(
     // Update seller stats (trigger should handle this, but we can also do it here)
     await updateSellerStatsFromFeedback(supabase, data.sellerId)
 
-    // Create notification for seller
-    await supabase.from("notifications").insert({
-      user_id: data.sellerId,
-      type: "review",
-      title: `New ${data.rating}-star feedback`,
-      body: data.comment 
-        ? `A buyer left ${data.rating}-star feedback: "${data.comment.slice(0, 100)}${data.comment.length > 100 ? '...' : ''}"`
-        : `A buyer left ${data.rating}-star feedback`,
-      data: { rating: data.rating, feedback_id: feedback.id },
-    })
+    // Create notification for seller (service role insert; users must not be able to write notifications directly).
+    try {
+      const admin = createAdminClient()
+      const { error: notifError } = await admin.from("notifications").insert({
+        user_id: data.sellerId,
+        type: "review",
+        title: `New ${data.rating}-star feedback`,
+        body: data.comment
+          ? `A buyer left ${data.rating}-star feedback: "${data.comment.slice(0, 100)}${data.comment.length > 100 ? "..." : ""}"`
+          : `A buyer left ${data.rating}-star feedback`,
+        data: { rating: data.rating, feedback_id: feedback.id },
+      })
+
+      if (notifError) {
+        console.error("Error creating seller feedback notification:", notifError)
+      }
+    } catch (err) {
+      console.error("Error creating seller feedback notification:", err)
+    }
 
     revalidateTag(`seller-${data.sellerId}`, "max")
 
@@ -671,14 +680,23 @@ async function respondToFeedback(
       return { success: false, error: "Failed to submit response" }
     }
 
-    // Notify the buyer
-    await supabase.from("notifications").insert({
-      user_id: feedback.buyer_id,
-      type: "review",
-      title: "Seller responded to your feedback",
-      body: "The seller has responded to your feedback",
-      data: { feedback_id: feedbackId },
-    })
+    // Notify the buyer (service role insert; users must not be able to write notifications directly).
+    try {
+      const admin = createAdminClient()
+      const { error: notifError } = await admin.from("notifications").insert({
+        user_id: feedback.buyer_id,
+        type: "review",
+        title: "Seller responded to your feedback",
+        body: "The seller has responded to your feedback",
+        data: { feedback_id: feedbackId },
+      })
+
+      if (notifError) {
+        console.error("Error creating seller feedback response notification:", notifError)
+      }
+    } catch (err) {
+      console.error("Error creating seller feedback response notification:", err)
+    }
 
     return { success: true }
   } catch (error) {

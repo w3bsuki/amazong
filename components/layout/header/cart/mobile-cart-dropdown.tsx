@@ -1,9 +1,8 @@
 "use client"
 
-import { useEffect, useState } from "react"
 import { ShoppingCart } from "@phosphor-icons/react"
 
-import { Link, useRouter } from "@/i18n/routing"
+import { useRouter } from "@/i18n/routing"
 import { useTranslations } from "next-intl"
 import { CountBadge } from "@/components/shared/count-badge"
 import { useCart } from "@/components/providers/cart-context"
@@ -12,37 +11,18 @@ import { useDrawer } from "@/components/providers/drawer-context"
 const CART_BADGE_MAX = Number.MAX_SAFE_INTEGER
 
 export function MobileCartDropdown() {
-  const [mounted, setMounted] = useState(false)
   const router = useRouter()
-  const { totalItems } = useCart()
+  const { totalItems, isReady } = useCart()
   const { openCart, enabledDrawers } = useDrawer()
   const tNav = useTranslations("Navigation")
-  const displayItems = totalItems
-
-  useEffect(() => {
-    setMounted(true)
-  }, [])
-
-  // Avoid hydration mismatches by rendering a static fallback until client mount.
-  if (!mounted) {
-    return (
-      <Link
-        href="/cart"
-        className="relative flex size-touch-md items-center justify-center rounded-md tap-transparent hover:bg-header-hover active:bg-header-active touch-manipulation"
-        aria-label={tNav("cart")}
-      >
-        <span className="relative" aria-hidden="true">
-          <ShoppingCart className="size-icon-header text-header-text" weight="regular" />
-        </span>
-      </Link>
-    )
-  }
+  const displayItems = isReady ? totalItems : 0
+  const cartAriaLabel = displayItems > 0 ? `${tNav("cart")} (${displayItems})` : tNav("cart")
 
   return (
     <button
       type="button"
-      className="relative flex size-touch-md appearance-none items-center justify-center rounded-md border-0 bg-transparent tap-transparent hover:bg-header-hover active:bg-header-active touch-manipulation"
-      aria-label={tNav("cart")}
+      className="relative flex size-touch-md appearance-none items-center justify-center rounded-md border-0 bg-transparent touch-manipulation tap-transparent motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth) motion-reduce:transition-none hover:bg-header-hover active:bg-header-active focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
+      aria-label={cartAriaLabel}
       aria-haspopup={enabledDrawers.cart ? "dialog" : undefined}
       onClick={() => {
         if (enabledDrawers.cart) {

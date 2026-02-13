@@ -90,10 +90,10 @@ Plans are closely related to monetization (fee reduction per tier) — see [mone
 ## Cross-References
 
 - [monetization.md](./monetization.md) — Full fee model, revenue streams, worked examples
-- [PAYMENTS.md](../PAYMENTS.md) — Stripe subscription integration, billing portal
-- [DATABASE.md](../DATABASE.md) — subscription_plans, subscriptions tables
-- [ROUTES.md](../ROUTES.md) — (plans) and (account) route groups
-- `docs/business/monetization.mdx` — Detailed plan pricing and limits
+- [PAYMENTS.md](../domain/PAYMENTS.md) — Stripe subscription integration, billing portal
+- [DATABASE.md](../domain/DATABASE.md) — subscription_plans, subscriptions tables
+- [ROUTES.md](../domain/ROUTES.md) — (plans) and (account) route groups
+- `../../context/business/monetization.mdx` — Detailed plan pricing and limits
 
 ---
 

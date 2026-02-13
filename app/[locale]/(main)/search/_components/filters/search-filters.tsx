@@ -247,8 +247,9 @@ export function SearchFilters({
       {hasActiveFilters && (
         <div className="pt-4 mt-2">
           <button
+            type="button"
             onClick={clearAllFilters}
-            className="w-full min-h-11 text-sm text-center text-sidebar-primary hover:underline font-medium"
+            className="w-full min-h-11 text-sm text-center text-sidebar-primary hover:underline font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
           >
             {t("clearAllFilters")}
           </button>

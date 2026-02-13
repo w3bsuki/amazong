@@ -34,7 +34,7 @@ function toDisplayName(locale: string, cat: { name: string; name_bg: string | nu
 
 function withoutAttrParams(params: URLSearchParams): URLSearchParams {
   const next = new URLSearchParams(params.toString())
-  for (const key of Array.from(next.keys())) {
+  for (const key of next.keys()) {
     if (key.startsWith("attr_")) next.delete(key)
   }
   return next
@@ -134,7 +134,8 @@ export function useInstantCategoryBrowse(options: {
    */
   const syncUrl = useCallback((slug: string, params: URLSearchParams, createHistoryEntry: boolean = false) => {
     const qs = params.toString()
-    const nextPath = `/${locale}/categories/${encodeURIComponent(slug)}${qs ? `?${qs}` : ""}`
+    const qsSuffix = qs ? `?${qs}` : ""
+    const nextPath = `/${locale}/categories/${encodeURIComponent(slug)}${qsSuffix}`
     updateUrl(nextPath, createHistoryEntry)
   }, [locale])
 
@@ -243,7 +244,6 @@ export function useInstantCategoryBrowse(options: {
     if (!enabled) return
     if (parent?.slug) {
       await setCategorySlug(parent.slug, { clearAttrFilters: true })
-      return
     }
   }, [enabled, parent?.slug, setCategorySlug])
 

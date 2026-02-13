@@ -75,7 +75,7 @@ export default function CompletePage() {
   if (isSaving) {
     return (
       <div className="flex flex-col items-center justify-center min-h-dvh space-y-4">
-        <SpinnerGap className="size-10 animate-spin text-primary" weight="bold" />
+        <SpinnerGap className="size-10 animate-spin motion-reduce:animate-none text-primary" weight="bold" />
         <p className="text-muted-foreground">{t("complete.saving")}</p>
       </div>
     )

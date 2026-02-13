@@ -457,7 +457,7 @@ export function DesktopHome({
         <div className="rounded-xl bg-card border border-border p-4 mb-4">
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
-              <h2 className="text-lg font-semibold text-foreground leading-tight">
+              <h2 className="text-lg font-semibold tracking-tight text-foreground leading-tight">
                 {getCategoryName(activeCategoryNode, locale)}
               </h2>
               <p className="text-sm text-muted-foreground">

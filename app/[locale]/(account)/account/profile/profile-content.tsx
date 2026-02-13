@@ -395,7 +395,8 @@ export function ProfileContent({
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
                 disabled={isUploadingAvatar}
-                className="absolute -bottom-1 -right-1 size-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center shadow-md hover:bg-interactive-hover transition-colors"
+                className="absolute -bottom-1 -right-1 size-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center shadow-md hover:bg-interactive-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                aria-label={locale === "bg" ? "Качи нова профилна снимка" : "Upload new profile picture"}
               >
                 <Camera className="size-4" weight="fill" />
               </button>
@@ -439,7 +440,7 @@ export function ProfileContent({
                   type="button"
                   onClick={() => handleChoosePresetAvatar(url)}
                   disabled={isUploadingAvatar}
-                  className="size-10 rounded-full overflow-hidden border bg-muted hover:bg-hover active:bg-active transition-colors disabled:opacity-50"
+                  className="size-10 rounded-full overflow-hidden border bg-muted hover:bg-hover active:bg-active transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50"
                   aria-label={locale === "bg" ? "Избери този аватар" : "Choose this avatar"}
                 >
                   {/* Render UserAvatar for boring-avatar presets, fallback to AvatarImg for legacy URLs */}
@@ -594,8 +595,9 @@ export function ProfileContent({
         <CardContent className="space-y-4">
           {/* Email Row */}
           <button
+            type="button"
             onClick={() => setIsChangeEmailOpen(true)}
-            className="w-full flex items-center gap-3 p-3 rounded-lg border bg-card hover:bg-hover active:bg-active text-left transition-colors"
+            className="w-full flex items-center gap-3 p-3 rounded-lg border bg-card hover:bg-hover active:bg-active text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
           >
             <div className="flex size-10 items-center justify-center rounded-full bg-muted">
               <Envelope className="size-5 text-muted-foreground" />
@@ -612,8 +614,9 @@ export function ProfileContent({
 
           {/* Password Row */}
           <button
+            type="button"
             onClick={() => setIsChangePasswordOpen(true)}
-            className="w-full flex items-center gap-3 p-3 rounded-lg border bg-card hover:bg-hover active:bg-active text-left transition-colors"
+            className="w-full flex items-center gap-3 p-3 rounded-lg border bg-card hover:bg-hover active:bg-active text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
           >
             <div className="flex size-10 items-center justify-center rounded-full bg-muted">
               <Key className="size-5 text-muted-foreground" />
@@ -724,7 +727,10 @@ export function ProfileContent({
                   <button
                     type="button"
                     onClick={() => setShowNewPassword(!showNewPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
+                    aria-label={showNewPassword
+                      ? (locale === "bg" ? "Скрий паролата" : "Hide password")
+                      : (locale === "bg" ? "Покажи паролата" : "Show password")}
                   >
                     {showNewPassword ? (
                       <EyeSlash className="size-4" />

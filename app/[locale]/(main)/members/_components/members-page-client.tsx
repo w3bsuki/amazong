@@ -80,7 +80,7 @@ function MemberCard({ member, locale }: { member: Member; locale: string }) {
 
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-1.5">
-                <h3 className="font-semibold truncate group-hover:text-primary transition-colors">{displayName}</h3>
+                <h3 className="font-semibold tracking-tight truncate group-hover:text-primary transition-colors">{displayName}</h3>
               </div>
               <p className="text-xs text-muted-foreground">@{member.username}</p>
 
@@ -181,7 +181,7 @@ export default function MembersPageClient({
               <Users className="size-6 sm:size-7 text-primary-foreground" weight="fill" />
             </div>
             <div>
-              <h1 className="text-2xl sm:text-4xl font-bold">{locale === "bg" ? "Общност" : "Community"}</h1>
+              <h1 className="text-2xl sm:text-4xl font-bold tracking-tight">{locale === "bg" ? "Общност" : "Community"}</h1>
               <p className="text-foreground text-sm sm:text-base mt-1">
                 {locale === "bg" ? "Открий продавачи и купувачи" : "Discover sellers and buyers"}
               </p>

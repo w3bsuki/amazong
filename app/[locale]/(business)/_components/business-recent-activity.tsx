@@ -9,7 +9,6 @@ import {
 import { Badge } from "@/components/ui/badge"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import Image from "next/image"
-import { formatCurrency } from "@/app/[locale]/_lib/format-currency"
 
 interface RecentProduct {
   id: string
@@ -41,20 +40,27 @@ interface BusinessRecentActivityProps {
   orders: RecentOrder[]
 }
 
-export function BusinessRecentActivity({ products, orders }: BusinessRecentActivityProps) {
-  const getStatusColor = (status: string | null) => {
-    switch (status) {
-      case 'active':
-        return 'bg-success/10 text-success border-success/20'
-      case 'draft':
-        return 'bg-muted text-foreground border-border'
-      case 'sold':
-        return 'bg-info/10 text-info border-info/20'
-      default:
-        return 'bg-muted text-foreground border-border'
-    }
+const getStatusColor = (status: string | null) => {
+  switch (status) {
+    case "active":
+      return "bg-success/10 text-success border-success/20"
+    case "draft":
+      return "bg-muted text-foreground border-border"
+    case "sold":
+      return "bg-info/10 text-info border-info/20"
+    default:
+      return "bg-muted text-foreground border-border"
   }
+}
 
+const formatCurrencyBGN = (value: number) =>
+  new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "BGN",
+    maximumFractionDigits: 2,
+  }).format(value)
+
+export function BusinessRecentActivity({ products, orders }: BusinessRecentActivityProps) {
   return (
     <div className="grid gap-4 px-4 lg:px-6 md:grid-cols-2">
       {/* Recent Products */}
@@ -95,7 +101,7 @@ export function BusinessRecentActivity({ products, orders }: BusinessRecentActiv
                     </div>
                     <div className="flex flex-col items-end gap-1">
                       <span className="text-sm font-medium text-success">
-                        {formatCurrency(product.price, { locale: "en-US", maximumFractionDigits: 2 })}
+                        {formatCurrencyBGN(product.price)}
                       </span>
                       <Badge variant="outline" className={`text-xs ${getStatusColor(product.status)}`}>
                         {product.status || 'active'}
@@ -149,7 +155,7 @@ export function BusinessRecentActivity({ products, orders }: BusinessRecentActiv
                         </p>
                       </div>
                       <div className="text-sm font-medium tabular-nums">
-                        {formatCurrency(order.price_at_purchase * order.quantity, { locale: "en-US", maximumFractionDigits: 2 })}
+                        {formatCurrencyBGN(order.price_at_purchase * order.quantity)}
                       </div>
                     </div>
                   )

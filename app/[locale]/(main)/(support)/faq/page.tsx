@@ -4,10 +4,7 @@ import {
   CreditCard, 
   ArrowsClockwise, 
   User, 
-  Shield, 
-  Truck, 
-  Question,
-  CaretDown
+  Shield
 } from "@phosphor-icons/react/dist/ssr"
 import { Link } from "@/i18n/routing"
 import { getTranslations, setRequestLocale } from "next-intl/server"
@@ -218,7 +215,7 @@ export default async function FAQPage({ params }: { params: Promise<{ locale: st
         
         {/* Header */}
         <div className="text-center mb-10">
-          <h1 className="text-3xl font-bold mb-3">{t.title}</h1>
+          <h1 className="text-3xl font-bold tracking-tight mb-3">{t.title}</h1>
           <p className="text-muted-foreground max-w-2xl mx-auto">{t.subtitle}</p>
         </div>
 

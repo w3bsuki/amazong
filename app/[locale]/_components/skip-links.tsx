@@ -1,5 +1,3 @@
-import { Link } from "@/i18n/routing";
-
 /**
  * SkipLinks — Accessibility navigation for keyboard users
  *

@@ -9,11 +9,16 @@ import {
 } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { IconChartBar, IconTrendingUp, IconCurrencyDollar, IconEye, IconShoppingCart } from "@tabler/icons-react"
+import { BusinessEmptyState } from "../../_components/business-empty-state"
 
 export default async function BusinessAnalyticsPage() {
   // Requires paid business subscription
   const businessSeller = await requireDashboardAccess()
   const stats = await getBusinessDashboardStats(businessSeller.id)
+
+  if (stats.totals.orders === 0 && stats.totals.views === 0 && stats.totals.revenue === 0) {
+    return <BusinessEmptyState type="analytics" />
+  }
   
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('en-US', {

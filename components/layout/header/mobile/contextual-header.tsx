@@ -50,7 +50,7 @@ export function MobileContextualHeader({
             <button
               type="button"
               onClick={onBack}
-              className="size-(--control-default) -ml-1 flex items-center justify-center rounded-full tap-transparent transition-colors active:bg-active"
+              className="flex size-(--control-default) -ml-1 items-center justify-center rounded-full tap-transparent motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth) motion-reduce:transition-none active:bg-active focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
               aria-label={tCommon("back")}
             >
               <ArrowLeft className="size-6" weight="bold" />
@@ -58,7 +58,7 @@ export function MobileContextualHeader({
           ) : (
             <Link
               href={backHref}
-              className="size-(--control-default) -ml-1 flex items-center justify-center rounded-full tap-transparent transition-colors active:bg-active"
+              className="flex size-(--control-default) -ml-1 items-center justify-center rounded-full tap-transparent motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth) motion-reduce:transition-none active:bg-active focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
               aria-label={tCommon("back")}
             >
               <ArrowLeft className="size-6" weight="bold" />
@@ -72,7 +72,7 @@ export function MobileContextualHeader({
           <div className="flex items-center gap-1">
             <Link
               href={searchHref}
-              className="size-(--control-default) flex items-center justify-center rounded-full tap-transparent transition-colors active:bg-active"
+              className="flex size-(--control-default) items-center justify-center rounded-full tap-transparent motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth) motion-reduce:transition-none active:bg-active focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
               aria-label={tCommon("search")}
             >
               <MagnifyingGlass className="size-6" weight="regular" />

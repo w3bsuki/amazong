@@ -30,6 +30,7 @@ import {
   SidebarGroup,
   SidebarGroupLabel,
   SidebarGroupContent,
+  useSidebar,
 } from "@/components/layout/sidebar/sidebar"
 import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
@@ -132,13 +133,19 @@ export function BusinessSidebar({
   storeName,
   pendingOrdersCount = 0,
   subscriptionTier = 'free',
-  subscriptionName: _subscriptionName = 'Business Free',
   hasDashboardAccess = false,
   ...props
 }: BusinessSidebarProps) {
   const pathname = usePathname()
+  const { isMobile, setOpenMobile } = useSidebar()
 
   const normalizedPath = pathname || "/dashboard"
+
+  React.useEffect(() => {
+    if (isMobile) {
+      setOpenMobile(false)
+    }
+  }, [isMobile, normalizedPath, setOpenMobile])
 
   const isActive = (url: string) => {
     if (url === '/dashboard') {

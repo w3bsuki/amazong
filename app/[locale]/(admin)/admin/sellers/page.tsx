@@ -40,6 +40,17 @@ interface Seller {
   }
 }
 
+function getTierBadge(tier: string | null) {
+  switch (tier) {
+    case "business":
+      return "border-selected-border bg-selected text-primary"
+    case "premium":
+      return "border-warning/20 bg-warning/10 text-warning"
+    default:
+      return "border-border bg-muted text-muted-foreground"
+  }
+}
+
 async function getSellers(): Promise<Seller[]> {
   const adminClient = createAdminClient()
   
@@ -62,10 +73,7 @@ async function getSellers(): Promise<Seller[]> {
     .order('created_at', { ascending: false })
   
   if (error) {
-    const message =
-      typeof error === 'object' && error && 'message' in error
-        ? String((error as { message?: unknown }).message)
-        : ''
+    const message = error.message
 
     if (!message.includes('During prerendering, fetch() rejects when the prerender is complete')) {
       console.error('Failed to fetch sellers:', error)
@@ -110,17 +118,6 @@ async function AdminSellersContent() {
   const locale = await getLocale()
   const dateLocale = locale === "bg" ? bg : enUS
   
-  const getTierBadge = (tier: string | null) => {
-    switch (tier) {
-      case 'business':
-        return 'border-selected-border bg-selected text-primary'
-      case 'premium':
-        return 'border-warning/20 bg-warning/10 text-warning'
-      default:
-        return 'border-border bg-muted text-muted-foreground'
-    }
-  }
-
   const getTierLabel = (tier: string | null) => {
     switch (tier) {
       case 'business':
@@ -154,74 +151,76 @@ async function AdminSellersContent() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>{t('table.headers.store')}</TableHead>
-                <TableHead>{t('table.headers.owner')}</TableHead>
-                <TableHead>{t('table.headers.tier')}</TableHead>
-                <TableHead>{t('table.headers.verified')}</TableHead>
-                <TableHead>{t('table.headers.commission')}</TableHead>
-                <TableHead>{t('table.headers.country')}</TableHead>
-                <TableHead>{t('table.headers.joined')}</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {sellers.map((seller) => (
-                <TableRow key={seller.id}>
-                  <TableCell>
-                    <div>
-                      <p className="font-medium">{seller.store_name || t("fallbacks.unknownStore")}</p>
-                      {seller.business_name && (
-                        <p className="text-sm text-muted-foreground">
-                          {seller.business_name}
-                        </p>
-                      )}
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <div>
-                      <p className="font-medium">
-                        {seller.profiles.full_name || t('fallbacks.noName')}
-                      </p>
-                      <p className="text-sm text-muted-foreground">
-                        {seller.profiles.email}
-                      </p>
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <Badge variant="outline" className={getTierBadge(seller.tier)}>
-                      {getTierLabel(seller.tier)}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex gap-2">
-                      {seller.verified ? (
-                        <Badge variant="outline" className="border-success/20 bg-success/10 text-success">
-                          <IconCheck className="size-3 mr-1" />
-                          {t('badges.verified')}
-                        </Badge>
-                      ) : (
-                        <Badge variant="outline" className="border-border bg-muted text-muted-foreground">
-                          <IconX className="size-3 mr-1" />
-                          {t('badges.notVerified')}
-                        </Badge>
-                      )}
-                    </div>
-                  </TableCell>
-                  <TableCell className="tabular-nums">
-                    {seller.commission_rate}%
-                  </TableCell>
-                  <TableCell className="text-muted-foreground">
-                    {seller.country_code || t('fallbacks.country')}
-                  </TableCell>
-                  <TableCell className="text-muted-foreground">
-                    {formatDistanceToNow(new Date(seller.created_at), { addSuffix: true, locale: dateLocale })}
-                  </TableCell>
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>{t('table.headers.store')}</TableHead>
+                  <TableHead>{t('table.headers.owner')}</TableHead>
+                  <TableHead>{t('table.headers.tier')}</TableHead>
+                  <TableHead>{t('table.headers.verified')}</TableHead>
+                  <TableHead className="hidden md:table-cell">{t('table.headers.commission')}</TableHead>
+                  <TableHead className="hidden md:table-cell">{t('table.headers.country')}</TableHead>
+                  <TableHead className="hidden md:table-cell">{t('table.headers.joined')}</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              </TableHeader>
+              <TableBody>
+                {sellers.map((seller) => (
+                  <TableRow key={seller.id}>
+                    <TableCell>
+                      <div>
+                        <p className="font-medium">{seller.store_name || t("fallbacks.unknownStore")}</p>
+                        {seller.business_name && (
+                          <p className="text-sm text-muted-foreground">
+                            {seller.business_name}
+                          </p>
+                        )}
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <div>
+                        <p className="font-medium">
+                          {seller.profiles.full_name || t('fallbacks.noName')}
+                        </p>
+                        <p className="text-sm text-muted-foreground">
+                          {seller.profiles.email}
+                        </p>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant="outline" className={getTierBadge(seller.tier)}>
+                        {getTierLabel(seller.tier)}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex gap-2">
+                        {seller.verified ? (
+                          <Badge variant="outline" className="border-success/20 bg-success/10 text-success">
+                            <IconCheck className="size-3 mr-1" />
+                            {t('badges.verified')}
+                          </Badge>
+                        ) : (
+                          <Badge variant="outline" className="border-border bg-muted text-muted-foreground">
+                            <IconX className="size-3 mr-1" />
+                            {t('badges.notVerified')}
+                          </Badge>
+                        )}
+                      </div>
+                    </TableCell>
+                    <TableCell className="hidden md:table-cell tabular-nums">
+                      {seller.commission_rate}%
+                    </TableCell>
+                    <TableCell className="hidden md:table-cell text-muted-foreground">
+                      {seller.country_code || t('fallbacks.country')}
+                    </TableCell>
+                    <TableCell className="hidden md:table-cell text-muted-foreground">
+                      {formatDistanceToNow(new Date(seller.created_at), { addSuffix: true, locale: dateLocale })}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
         </CardContent>
       </Card>
     </div>

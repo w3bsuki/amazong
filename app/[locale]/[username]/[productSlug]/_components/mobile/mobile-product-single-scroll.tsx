@@ -32,7 +32,7 @@ import { PageShell } from "../../../../_components/page-shell";
 import { HeroSpecs } from "../pdp/hero-specs";
 import { CustomerReviewsHybrid } from "../pdp/customer-reviews-hybrid";
 
-import type { ProductPageViewModel, ResolvedHeroSpec } from "@/lib/view-models/product-page";
+import type { ProductPageViewModel } from "@/lib/view-models/product-page";
 import type { Database } from "@/lib/supabase/database.types";
 import type { CustomerReview } from "../pdp/customer-reviews-hybrid";
 import type { SubmitReviewFn } from "../pdp/write-review-dialog";
@@ -166,7 +166,7 @@ export function MobileProductSingleScroll(props: MobileProductSingleScrollProps)
         : null,
     joinedAt: seller?.created_at ?? null,
     joinedYear: seller?.created_at ? new Date(seller.created_at).getFullYear().toString() : null,
-    bio: null as string | null, // TODO: Add seller bio when available
+    bio: null as string | null, // NOTE (BACKLOG-007): Add seller bio when available.
   };
 
   // Convert relatedProducts to drawer-compatible format
@@ -182,7 +182,7 @@ export function MobileProductSingleScroll(props: MobileProductSingleScrollProps)
 
   // Handle report (placeholder)
   const handleReport = () => {
-    // TODO: Implement report modal/flow
+    // NOTE (BACKLOG-008): Implement report modal/flow.
     console.log("Report listing:", product.id);
   };
 

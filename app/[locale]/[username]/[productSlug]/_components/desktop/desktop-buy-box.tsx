@@ -15,7 +15,6 @@
 import { useState } from "react"
 import { useTranslations } from "next-intl"
 import { useLocale } from "next-intl"
-import Image from "next/image"
 import { Link } from "@/i18n/routing"
 import {
   Heart,
@@ -143,13 +142,8 @@ export function DesktopBuyBox({
 
   // Handle buy now
   const handleBuyNow = () => {
-    if (isOutOfStock) return
-    addToCart({ ...cartProduct, quantity })
-    // Navigate to checkout would happen here
-    toast({
-      title: t("addedToCart"),
-      description: `${quantity}x ${title}`,
-    })
+    handleAddToCart()
+    // Navigate to checkout would happen here.
   }
 
   // Category-adaptive CTA labels

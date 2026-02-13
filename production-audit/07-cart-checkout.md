@@ -478,31 +478,34 @@
 
 ---
 
-## Execution Evidence Log
+## Evidence Log (v2)
 
-> Required for release sign-off. Add one row per executed scenario.
+Fixed columns. Add one row per scenario run (or per sub-scenario if needed).
 
-| Scenario ID | Auto Result | Manual Result | Owner | Build/Commit | Screenshot/Video | Defect ID | Severity | Retest Result | Sign-off |
-|-------------|-------------|---------------|-------|--------------|------------------|-----------|----------|---------------|---------|
-| S7.1 | Pass | Pass | Codex | `2d8d4379` | `phase7-S7.1-cart-drawer-open-pixel5.png`; `phase7-S7.1-cart-drawer-open-iphone12.png` | — | — | Pass | Pending |
-| S7.2 | Pass | Pass | Codex | `2d8d4379` | `phase7-S7.2-cart-drawer-items-pixel5.png`; `phase7-S7.2-cart-drawer-items-iphone12.png` | — | — | Pass | Pending |
-| S7.7 | Pass | Pass | Codex | `2d8d4379` | `phase7-S7.7-cart-badge-truth-pixel5.png`; `phase7-S7.7-cart-badge-truth-iphone12.png` | LAUNCH-006 | P1 | Pass | Pending |
-| S7.15 | Pass | Pass | Codex | `2d8d4379` | `phase7-S7.15-checkout-auth-gate-pixel5.png`; `phase7-S7.15-checkout-auth-gate-iphone12.png` | — | — | Pass | Pending |
-| S7.1 | Pass | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace rerun) | — | — | Pass | Pending |
-| S7.2 | Pass | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace rerun) | — | — | Pass | Pending |
-| S7.3 | Pass | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace) | — | — | Pass | Pending |
-| S7.4 | Pass | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace) | — | — | Pass | Pending |
-| S7.5 | Pass | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace) | — | — | Pass | Pending |
-| S7.6 | Pass | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace) | — | — | Pass | Pending |
-| S7.7 | Pass | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace rerun) | LAUNCH-006 | P1 | Pass | Pending |
-| S7.8 | Pass | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace) | — | — | Pass | Pending |
-| S7.9 | Pass | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace) | — | — | Pass | Pending |
-| S7.10 | Pass | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace) | — | — | Pass | Pending |
-| S7.11 | Pass | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace) | — | — | Pass | Pending |
-| S7.12 | Pass | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace) | — | — | Pass | Pending |
-| S7.13 | Pass | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace) | — | — | Pass | Pending |
-| S7.14 | Pass | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace) | — | — | Pass | Pending |
-| S7.15 | Pass | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace rerun) | — | — | Pass | Pending |
+| Scenario | Method | Artifact | Result | Issue ID | Severity | Owner | Date |
+|----------|--------|----------|--------|----------|----------|-------|------|
+| S7.1 | manual | `phase7-S7.1-cart-drawer-open-pixel5.png`; `phase7-S7.1-cart-drawer-open-iphone12.png` | Pass | — | — | Codex | 2026-02-11 |
+| S7.2 | manual | `phase7-S7.2-cart-drawer-items-pixel5.png`; `phase7-S7.2-cart-drawer-items-iphone12.png` | Pass | — | — | Codex | 2026-02-11 |
+| S7.7 | manual | `phase7-S7.7-cart-badge-truth-pixel5.png`; `phase7-S7.7-cart-badge-truth-iphone12.png` | Pass | LAUNCH-006 | P1 | Codex | 2026-02-11 |
+| S7.15 | manual | `phase7-S7.15-checkout-auth-gate-pixel5.png`; `phase7-S7.15-checkout-auth-gate-iphone12.png` | Pass | — | — | Codex | 2026-02-11 |
+| S7.1 | code trace | N/A (code trace) | Pass | — | — | Codex | 2026-02-11 |
+| S7.2 | code trace | N/A (code trace) | Pass | — | — | Codex | 2026-02-11 |
+| S7.3 | code trace | N/A (code trace) | Pass | — | — | Codex | 2026-02-11 |
+| S7.4 | code trace | N/A (code trace) | Pass | — | — | Codex | 2026-02-11 |
+| S7.5 | code trace | N/A (code trace) | Pass | — | — | Codex | 2026-02-11 |
+| S7.6 | code trace | N/A (code trace) | Pass | — | — | Codex | 2026-02-11 |
+| S7.7 | code trace | N/A (code trace) | Pass | LAUNCH-006 | P1 | Codex | 2026-02-11 |
+| S7.8 | code trace | N/A (code trace) | Pass | — | — | Codex | 2026-02-11 |
+| S7.9 | code trace | N/A (code trace) | Pass | — | — | Codex | 2026-02-11 |
+| S7.10 | code trace | N/A (code trace) | Pass | — | — | Codex | 2026-02-11 |
+| S7.11 | code trace | N/A (code trace) | Pass | — | — | Codex | 2026-02-11 |
+| S7.12 | code trace | N/A (code trace) | Pass | — | — | Codex | 2026-02-11 |
+| S7.13 | code trace | N/A (code trace) | Pass | — | — | Codex | 2026-02-11 |
+| S7.14 | code trace | N/A (code trace) | Pass | — | — | Codex | 2026-02-11 |
+| S7.15 | code trace | N/A (code trace) | Pass | — | — | Codex | 2026-02-11 |
+
+Method suggestions: `runtime` | `code trace` | `manual` (keep it consistent within a phase).
+
 
 ---
 

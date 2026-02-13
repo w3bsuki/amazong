@@ -1,7 +1,8 @@
-"use client";
+"use client"
 
-import { useSellFormContext } from "../sell-form-provider";
-import { TitleField, PhotosField } from "../fields";
+import { useTranslations } from "next-intl"
+import { PhotosField, TitleField } from "../fields"
+import { StepLayout } from "./step-layout"
 
 // ============================================================================
 // STEP 1: WHAT - Title + 1 Primary Photo
@@ -10,26 +11,16 @@ import { TitleField, PhotosField } from "../fields";
 // ============================================================================
 
 export function StepWhat() {
-  const { isBg } = useSellFormContext();
+  const tSell = useTranslations("Sell")
 
   return (
-    <div className="space-y-6">
-      {/* Section header */}
-      <div className="space-y-1">
-        <h2 className="text-2xl font-bold tracking-tight text-foreground">
-          {isBg ? "Какво продавате?" : "What are you selling?"}
-        </h2>
-        <p className="text-sm text-muted-foreground">
-          {isBg 
-            ? "Дайте име на артикула и добавете снимка" 
-            : "Give your item a name and add a photo"}
-        </p>
-      </div>
-      
-      <div className="space-y-5">
-        <TitleField compact />
-        <PhotosField maxPhotos={8} compact />
-      </div>
-    </div>
-  );
+    <StepLayout
+      title={tSell("steps.what.title")}
+      description={tSell("steps.what.description")}
+      contentClassName="space-y-5"
+    >
+      <TitleField compact />
+      <PhotosField compact maxPhotos={8} />
+    </StepLayout>
+  )
 }

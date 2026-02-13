@@ -79,6 +79,7 @@ export type ProductsTableServerActions = {
 interface Product {
   id: string
   title: string
+  slug?: string | null
   price: number
   list_price: number | null
   cost_price?: number | null
@@ -114,6 +115,7 @@ interface ProductsTableProps {
   categories: Category[]
   total: number
   sellerId: string
+  sellerUsername: string | null
   actions: ProductsTableServerActions
 }
 
@@ -125,7 +127,7 @@ export function ProductsTable({
   initialProducts,
   categories,
   total,
-  sellerId: _sellerId,
+  sellerUsername,
   actions,
 }: ProductsTableProps) {
   const router = useRouter()
@@ -282,6 +284,7 @@ export function ProductsTable({
           const newProduct: Product = {
             id: result.data.id,
             title: data.title,
+            slug: null,
             price: data.price,
             list_price: data.compareAtPrice || null,
             cost_price: data.costPrice || null,
@@ -572,7 +575,11 @@ export function ProductsTable({
               )}
             </div>
           ) : (
-            <Table>
+            <div
+              className="overflow-x-auto"
+              style={{ "--business-table-min-w": "68rem" } as React.CSSProperties}
+            >
+              <Table className="min-w-(--business-table-min-w)">
               <TableHeader>
                 <TableRow className="hover:bg-transparent bg-surface-subtle">
                   <TableHead className="w-10 pl-4">
@@ -581,19 +588,19 @@ export function ProductsTable({
                   <TableHead className="min-w-(--container-3xs)">
                     <SortHeader field="title">Product</SortHeader>
                   </TableHead>
-                  <TableHead className="w-24">
+                  <TableHead className="hidden md:table-cell w-24">
                     <SortHeader field="sku">SKU</SortHeader>
                   </TableHead>
                   <TableHead className="w-24">
                     <SortHeader field="status">Status</SortHeader>
                   </TableHead>
-                  <TableHead className="w-28">
+                  <TableHead className="hidden md:table-cell w-28">
                     <SortHeader field="stock">Inventory</SortHeader>
                   </TableHead>
                   <TableHead className="w-24">
                     <SortHeader field="price">Price</SortHeader>
                   </TableHead>
-                  <TableHead className="w-24">Rating</TableHead>
+                  <TableHead className="hidden md:table-cell w-24">Rating</TableHead>
                   <TableHead className="w-10 pr-4"></TableHead>
                 </TableRow>
               </TableHeader>
@@ -641,7 +648,7 @@ export function ProductsTable({
                         </div>
                       </div>
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="hidden md:table-cell">
                       <span className="text-xs text-muted-foreground font-mono">
                         {product.variant_count ? "—" : (product.sku || "—")}
                       </span>
@@ -659,7 +666,7 @@ export function ProductsTable({
                           product.status ? product.status.charAt(0).toUpperCase() + product.status.slice(1) : "Draft"}
                       </span>
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="hidden md:table-cell">
                       <span className={cn(
                         "text-sm tabular-nums",
                         product.stock === 0 && "text-destructive font-medium",
@@ -678,7 +685,7 @@ export function ProductsTable({
                         )}
                       </div>
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="hidden md:table-cell">
                       <div className="text-sm text-muted-foreground">
                         {product.rating ? (
                           <span>⭐ {product.rating.toFixed(1)} ({product.review_count || 0})</span>
@@ -704,7 +711,10 @@ export function ProductsTable({
                             Edit
                           </DropdownMenuItem>
                           <DropdownMenuItem asChild>
-                            <Link href={`/product/${product.id}`} target="_blank">
+                            <Link
+                              href={sellerUsername ? `/${sellerUsername}/${product.slug || product.id}` : "#"}
+                              target="_blank"
+                            >
                               <IconExternalLink className="size-4 mr-2" />
                               View
                             </Link>
@@ -728,7 +738,8 @@ export function ProductsTable({
                   </TableRow>
                 ))}
               </TableBody>
-            </Table>
+              </Table>
+            </div>
           )}
         </div>
 

@@ -71,10 +71,6 @@ export function MobileBottomBar({
       maximumFractionDigits: currency === "BGN" ? 0 : 2,
     }).format(p)
 
-  const discount = product.originalPrice
-    ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
-    : 0
-
   // Navigate to chat
   const handleChat = () => {
     if (!seller?.id) return

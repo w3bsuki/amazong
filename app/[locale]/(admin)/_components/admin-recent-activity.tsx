@@ -44,6 +44,36 @@ interface AdminRecentActivityProps {
   orders: RecentOrder[]
 }
 
+function getStatusColor(status: string | null) {
+  switch (status) {
+    case "paid":
+      return "bg-success/10 text-success border-success/20"
+    case "pending":
+      return "bg-warning/10 text-warning border-warning/20"
+    case "processing":
+      return "bg-order-processing/10 text-order-processing border-order-processing/20"
+    case "shipped":
+      return "bg-order-shipped/10 text-order-shipped border-order-shipped/20"
+    case "delivered":
+      return "bg-success/10 text-success border-success/20"
+    case "cancelled":
+      return "bg-destructive-subtle text-destructive border-destructive/20"
+    default:
+      return "bg-muted text-muted-foreground border-border"
+  }
+}
+
+function getRoleBadge(role: string | null) {
+  switch (role) {
+    case "admin":
+      return "bg-destructive-subtle text-destructive border-destructive/20"
+    case "seller":
+      return "bg-selected text-primary border-selected-border"
+    default:
+      return "bg-muted text-muted-foreground border-border"
+  }
+}
+
 export function AdminRecentActivity({ users, products, orders }: AdminRecentActivityProps) {
   const t = useTranslations("AdminDashboard")
   const locale = useLocale()
@@ -55,25 +85,6 @@ export function AdminRecentActivity({ users, products, orders }: AdminRecentActi
       currency: "BGN",
       maximumFractionDigits: 2,
     }).format(value)
-  }
-
-  const getStatusColor = (status: string | null) => {
-    switch (status) {
-      case "paid":
-        return "bg-success/10 text-success border-success/20"
-      case "pending":
-        return "bg-warning/10 text-warning border-warning/20"
-      case "processing":
-        return "bg-order-processing/10 text-order-processing border-order-processing/20"
-      case "shipped":
-        return "bg-order-shipped/10 text-order-shipped border-order-shipped/20"
-      case "delivered":
-        return "bg-success/10 text-success border-success/20"
-      case "cancelled":
-        return "bg-destructive-subtle text-destructive border-destructive/20"
-      default:
-        return "bg-muted text-muted-foreground border-border"
-    }
   }
 
   const getStatusLabel = (status: string | null) => {
@@ -92,17 +103,6 @@ export function AdminRecentActivity({ users, products, orders }: AdminRecentActi
         return t("status.cancelled")
       default:
         return t("status.unknown")
-    }
-  }
-
-  const getRoleBadge = (role: string | null) => {
-    switch (role) {
-      case "admin":
-        return "bg-destructive-subtle text-destructive border-destructive/20"
-      case "seller":
-        return "bg-selected text-primary border-selected-border"
-      default:
-        return "bg-muted text-muted-foreground border-border"
     }
   }
 

@@ -39,11 +39,6 @@ function formatDate(value: string) {
   return d.toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" });
 }
 
-function initials(name: string) {
-  const parts = name.trim().split(/\s+/).slice(0, 2);
-  return parts.map((p) => p.slice(0, 1).toUpperCase()).join("");
-}
-
 export function CustomerReviewsHybrid({ 
   rating, 
   reviewCount, 

@@ -302,20 +302,23 @@ None identified for profile or seller directory routes.
 
 ---
 
-## Execution Evidence Log
+## Evidence Log (v2)
 
-> Required for release sign-off. Add one row per executed scenario.
+Fixed columns. Add one row per scenario run (or per sub-scenario if needed).
 
-| Scenario ID | Auto Result | Manual Result | Owner | Build/Commit | Screenshot/Video | Defect ID | Severity | Retest Result | Sign-off |
-|-------------|-------------|---------------|-------|--------------|------------------|-----------|----------|---------------|---------|
-| S13.1 | N/A (code trace) | ✅ Pass | Codex | working-tree (2026-02-11) | Public profile composition in `app/[locale]/[username]/page.tsx` + `profile-client.tsx` | — | — | — | ✅ |
-| S13.2 | N/A (code trace) | ✅ Pass | Codex | working-tree (2026-02-11) | Product tab/grid rendering path in profile client | — | — | — | ✅ |
-| S13.3 | N/A (code trace) | ✅ Pass | Codex | working-tree (2026-02-11) | Follow/unfollow flow through `app/actions/seller-follows.ts` and follow button | — | — | — | ✅ |
-| S13.4 | N/A (code trace) | ⚠ Partial | Codex | working-tree (2026-02-11) | Message CTA uses unsupported `?to=` query shape for chat entry | PROFILE-001 | P2 | ⚠ Partial | ✅ |
-| S13.5 | N/A (code trace) | ✅ Pass | Codex | working-tree (2026-02-11) | Proper `notFound()` handling for invalid usernames | — | — | — | ✅ |
-| S13.6 | N/A (code trace) | ✅ Pass | Codex | working-tree (2026-02-11) | Sellers directory server/client rendering path verified | — | — | — | ✅ |
-| S13.7 | N/A (code trace) | ✅ Pass | Codex | working-tree (2026-02-11) | Mobile profile header sync integration present | — | — | — | ✅ |
-| S13.8 | N/A (code trace) | ✅ Pass | Codex | working-tree (2026-02-11) | Own-profile conditional settings panel rendering present | — | — | — | ✅ |
+| Scenario | Method | Artifact | Result | Issue ID | Severity | Owner | Date |
+|----------|--------|----------|--------|----------|----------|-------|------|
+| S13.1 | code trace | Public profile composition in `app/[locale]/[username]/page.tsx` + `profile-client.tsx` | Pass | — | — | Codex | 2026-02-11 |
+| S13.2 | code trace | Product tab/grid rendering path in profile client | Pass | — | — | Codex | 2026-02-11 |
+| S13.3 | code trace | Follow/unfollow flow through `app/actions/seller-follows.ts` and follow button | Pass | — | — | Codex | 2026-02-11 |
+| S13.4 | code trace | Message CTA uses unsupported `?to=` query shape for chat entry | Partial | PROFILE-001 | P2 | Codex | 2026-02-11 |
+| S13.5 | code trace | Proper `notFound()` handling for invalid usernames | Pass | — | — | Codex | 2026-02-11 |
+| S13.6 | code trace | Sellers directory server/client rendering path verified | Pass | — | — | Codex | 2026-02-11 |
+| S13.7 | code trace | Mobile profile header sync integration present | Pass | — | — | Codex | 2026-02-11 |
+| S13.8 | code trace | Own-profile conditional settings panel rendering present | Pass | — | — | Codex | 2026-02-11 |
+
+Method suggestions: `runtime` | `code trace` | `manual` (keep it consistent within a phase).
+
 
 ---
 

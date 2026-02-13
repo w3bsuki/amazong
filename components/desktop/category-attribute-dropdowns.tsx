@@ -35,7 +35,6 @@ interface CategoryAttributeDropdownsProps {
 }
 
 export function CategoryAttributeDropdowns({
-  locale,
   filters,
   onFiltersChange,
   inlineFilters,
@@ -62,7 +61,7 @@ export function CategoryAttributeDropdowns({
               <DropdownMenuTrigger asChild>
                 <button type="button" className={cn(pillBase, hasValue ? pillActive : pillInactive)}>
                   <span className="max-w-28 truncate">{displayLabel}</span>
-                  <CaretDown className="size-4 opacity-60 shrink-0" />
+                  <CaretDown className="size-4 opacity-60 shrink-0" aria-hidden="true" />
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="start" className="min-w-40 max-h-72 overflow-y-auto">
@@ -71,7 +70,7 @@ export function CategoryAttributeDropdowns({
                   return (
                     <DropdownMenuItem
                       key={opt.value}
-                      onClick={() => {
+                      onSelect={() => {
                         const newAttributes = { ...filters.attributes };
                         if (isSelected) {
                           delete newAttributes[filter.id];
@@ -91,7 +90,7 @@ export function CategoryAttributeDropdowns({
                   <>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem
-                      onClick={() => {
+                      onSelect={() => {
                         const newAttributes = { ...filters.attributes };
                         delete newAttributes[filter.id];
                         onFiltersChange({ ...filters, attributes: newAttributes });
@@ -112,7 +111,7 @@ export function CategoryAttributeDropdowns({
             <DropdownMenuTrigger asChild>
               <button type="button" className={cn(pillBase, overflowSelectedCount > 0 ? pillActive : pillInactive)}>
                 <span>{t("tabs.moreFilters", { count: overflowFilters.length })}</span>
-                <CaretDown className="size-3 opacity-50 shrink-0" />
+                <CaretDown className="size-3 opacity-50 shrink-0" aria-hidden="true" />
               </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start" className="min-w-44">
@@ -137,7 +136,7 @@ export function CategoryAttributeDropdowns({
                           return (
                             <DropdownMenuItem
                               key={opt.value}
-                              onClick={() => {
+                              onSelect={() => {
                                 const newAttributes = { ...filters.attributes };
                                 if (isSelected) {
                                   delete newAttributes[filter.id];
@@ -157,7 +156,7 @@ export function CategoryAttributeDropdowns({
                           <>
                             <DropdownMenuSeparator />
                             <DropdownMenuItem
-                              onClick={() => {
+                              onSelect={() => {
                                 const newAttributes = { ...filters.attributes };
                                 delete newAttributes[filter.id];
                                 onFiltersChange({ ...filters, attributes: newAttributes });
@@ -182,4 +181,3 @@ export function CategoryAttributeDropdowns({
 }
 
 export type { CategoryAttributeDropdownsProps };
-

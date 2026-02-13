@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { useTranslations } from "next-intl"
 import { MapPin, House, Briefcase, Star, Plus, Pencil, Trash, Phone, X } from "@phosphor-icons/react"
 
 import { Badge } from "@/components/ui/badge"
@@ -41,7 +42,6 @@ type UserAddress = {
 
 interface AccountAddressesGridProps {
   addresses: UserAddress[]
-  locale: string
   onEdit: (address: UserAddress) => void
   onDelete: (addressId: string) => void
   onAdd: () => void
@@ -51,7 +51,6 @@ interface AccountAddressesGridProps {
 
 export function AccountAddressesGrid({ 
   addresses, 
-  locale, 
   onEdit, 
   onDelete, 
   onAdd,
@@ -59,21 +58,7 @@ export function AccountAddressesGrid({
   isLoading 
 }: AccountAddressesGridProps) {
   const [openDrawerId, setOpenDrawerId] = useState<string | null>(null)
-
-  const t = {
-    noAddresses: locale === 'bg' ? 'Нямате запазени адреси' : 'No saved addresses',
-    noAddressesDesc: locale === 'bg' ? 'Добавете адрес за по-бързо плащане при следващата поръчка' : 'Add an address for faster checkout on your next order',
-    addFirst: locale === 'bg' ? 'Добави първия адрес' : 'Add your first address',
-    addNew: locale === 'bg' ? 'Добави нов адрес' : 'Add new address',
-    default: locale === 'bg' ? 'По подразбиране' : 'Default',
-    setDefault: locale === 'bg' ? 'Направи по подразбиране' : 'Set as default',
-    edit: locale === 'bg' ? 'Редактирай' : 'Edit',
-    delete: locale === 'bg' ? 'Изтрий' : 'Delete',
-    addressDetails: locale === 'bg' ? 'Детайли на адреса' : 'Address Details',
-    deliveryAddress: locale === 'bg' ? 'Адрес за доставка' : 'Delivery address',
-    phone: locale === 'bg' ? 'Телефон' : 'Phone',
-    actions: locale === 'bg' ? 'Действия' : 'Actions',
-  }
+  const t = useTranslations("Account.addressesPage.grid")
 
   const getLabelIcon = (label: string) => {
     switch (label.toLowerCase()) {
@@ -117,13 +102,13 @@ export function AccountAddressesGrid({
           <div className="flex size-16 items-center justify-center rounded-full bg-muted mb-4">
             <MapPin className="size-8 text-muted-foreground" weight="duotone" />
           </div>
-          <h3 className="font-semibold text-lg">{t.noAddresses}</h3>
+          <h3 className="font-semibold text-lg">{t("noAddresses")}</h3>
           <p className="text-muted-foreground text-sm mt-1 max-w-sm">
-            {t.noAddressesDesc}
+            {t("noAddressesDescription")}
           </p>
           <Button onClick={onAdd} className="mt-6 gap-2">
             <Plus className="size-4" weight="bold" />
-            {t.addFirst}
+            {t("addFirst")}
           </Button>
         </CardContent>
       </Card>
@@ -138,26 +123,32 @@ export function AccountAddressesGrid({
     return (
       <Drawer open={isOpen} onOpenChange={(open) => setOpenDrawerId(open ? address.id : null)}>
         <DrawerTrigger asChild>
-          <Card className={`cursor-pointer transition-colors hover:bg-hover ${address.is_default ? 'border-selected-border ring-1 ring-border-subtle' : ''}`}>
-            <CardHeader className="pb-2">
-              <div className="flex items-start justify-between gap-2">
-                <div className="flex items-center gap-2 min-w-0">
-                  <LabelIcon className={`size-5 shrink-0 ${getLabelColor(address.label)}`} weight="duotone" />
-                  <CardTitle className="text-base truncate">{address.label}</CardTitle>
+          <button
+            type="button"
+            className="w-full rounded-md text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+            aria-label={t("addressDetails")}
+          >
+            <Card className={`cursor-pointer transition-colors hover:bg-hover ${address.is_default ? 'border-selected-border ring-1 ring-border-subtle' : ''}`}>
+              <CardHeader className="pb-2">
+                <div className="flex items-start justify-between gap-2">
+                  <div className="flex items-center gap-2 min-w-0">
+                    <LabelIcon className={`size-5 shrink-0 ${getLabelColor(address.label)}`} weight="duotone" />
+                    <CardTitle className="text-base truncate">{address.label}</CardTitle>
+                  </div>
+                  {address.is_default && (
+                    <Badge variant="secondary" className="shrink-0 text-xs bg-selected text-primary border-0">
+                      <Star className="size-3 mr-1" weight="fill" />
+                      {t("default")}
+                    </Badge>
+                  )}
                 </div>
-                {address.is_default && (
-                  <Badge variant="secondary" className="shrink-0 text-xs bg-selected text-primary border-0">
-                    <Star className="size-3 mr-1" weight="fill" />
-                    {t.default}
-                  </Badge>
-                )}
-              </div>
-            </CardHeader>
-            <CardContent className="pt-0">
-              <p className="font-medium text-sm">{address.full_name}</p>
-              <p className="text-sm text-muted-foreground line-clamp-2">{address.address_line1}, {address.city}</p>
-            </CardContent>
-          </Card>
+              </CardHeader>
+              <CardContent className="pt-0">
+                <p className="font-medium text-sm">{address.full_name}</p>
+                <p className="text-sm text-muted-foreground line-clamp-2">{address.address_line1}, {address.city}</p>
+              </CardContent>
+            </Card>
+          </button>
         </DrawerTrigger>
         <DrawerContent className="max-h-(--dialog-h-85vh)">
           <DrawerHeader className="border-b border-border-subtle text-left">
@@ -168,22 +159,22 @@ export function AccountAddressesGrid({
                 {address.is_default && (
                   <Badge variant="secondary" className="ml-2 text-xs bg-selected text-primary border-0">
                     <Star className="size-3 mr-1" weight="fill" />
-                    {t.default}
+                    {t("default")}
                   </Badge>
                 )}
               </DrawerTitle>
               <DrawerClose asChild>
-                <IconButton aria-label={locale === "bg" ? "Затвори" : "Close"} variant="ghost" size="icon-compact">
+                <IconButton aria-label={t("close")} variant="ghost" size="icon-compact">
                   <X className="size-4" />
                 </IconButton>
               </DrawerClose>
             </div>
-            <DrawerDescription>{t.addressDetails}</DrawerDescription>
+            <DrawerDescription>{t("addressDetails")}</DrawerDescription>
           </DrawerHeader>
           <DrawerBody className="px-4 py-4">
             <div className="space-y-4">
               <div>
-                <p className="text-sm font-medium text-muted-foreground mb-1">{t.deliveryAddress}</p>
+                <p className="text-sm font-medium text-muted-foreground mb-1">{t("deliveryAddress")}</p>
                 <div className="space-y-1">
                   <p className="font-medium">{address.full_name}</p>
                   {formatAddress(address).map((line, i) => (
@@ -193,7 +184,7 @@ export function AccountAddressesGrid({
               </div>
               {address.phone && (
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground mb-1">{t.phone}</p>
+                  <p className="text-sm font-medium text-muted-foreground mb-1">{t("phone")}</p>
                   <p className="flex items-center gap-2">
                     <Phone className="size-4 text-muted-foreground" />
                     {address.phone}
@@ -202,7 +193,7 @@ export function AccountAddressesGrid({
               )}
               <Separator />
               <div className="space-y-2">
-                <p className="text-sm font-medium text-muted-foreground">{t.actions}</p>
+                <p className="text-sm font-medium text-muted-foreground">{t("actions")}</p>
                 <div className="flex flex-col gap-2">
                   {!address.is_default && (
                     <Button
@@ -215,7 +206,7 @@ export function AccountAddressesGrid({
                       disabled={isLoading}
                     >
                       <Star className="size-4" />
-                      {t.setDefault}
+                      {t("setDefault")}
                     </Button>
                   )}
                   <Button
@@ -227,7 +218,7 @@ export function AccountAddressesGrid({
                     }}
                   >
                     <Pencil className="size-4" />
-                    {t.edit}
+                    {t("edit")}
                   </Button>
                   <Button
                     variant="outline"
@@ -238,7 +229,7 @@ export function AccountAddressesGrid({
                     }}
                   >
                     <Trash className="size-4" />
-                    {t.delete}
+                    {t("delete")}
                   </Button>
                 </div>
               </div>
@@ -263,7 +254,7 @@ export function AccountAddressesGrid({
               {address.is_default && (
                 <Badge variant="secondary" className="text-xs bg-selected text-primary border-0">
                   <Star className="size-3 mr-1" weight="fill" />
-                  {t.default}
+                  {t("default")}
                 </Badge>
               )}
             </div>
@@ -271,7 +262,8 @@ export function AccountAddressesGrid({
               <Button 
                 variant="ghost" 
                 size="icon" 
-                className="size-8"
+                className="size-10"
+                aria-label={t("edit")}
                 onClick={() => onEdit(address)}
               >
                 <Pencil className="size-4" />
@@ -279,7 +271,8 @@ export function AccountAddressesGrid({
               <Button 
                 variant="ghost" 
                 size="icon" 
-                className="size-8 text-destructive hover:text-destructive"
+                className="size-10 text-destructive hover:text-destructive"
+                aria-label={t("delete")}
                 onClick={() => onDelete(address.id)}
               >
                 <Trash className="size-4" />
@@ -307,7 +300,7 @@ export function AccountAddressesGrid({
               onClick={() => onSetDefault(address.id)}
               disabled={isLoading}
             >
-              {t.setDefault}
+              {t("setDefault")}
             </Button>
           )}
         </CardContent>
@@ -317,17 +310,21 @@ export function AccountAddressesGrid({
 
   // Inline add new card JSX
   const addNewCardJSX = (
-    <Card 
-      className="border-dashed cursor-pointer hover:border-hover-border hover:bg-hover transition-colors"
-      onClick={onAdd}
-    >
-      <CardContent className="flex flex-col items-center justify-center h-full min-h-44 py-8">
-        <div className="size-12 rounded-full bg-muted flex items-center justify-center mb-3">
-          <Plus className="size-6 text-muted-foreground" />
-        </div>
-        <p className="text-muted-foreground font-medium text-sm">
-          {t.addNew}
-        </p>
+    <Card className="border-dashed hover:border-hover-border transition-colors">
+      <CardContent className="p-0">
+        <button
+          type="button"
+          onClick={onAdd}
+          className="flex h-full min-h-44 w-full flex-col items-center justify-center rounded-md py-8 transition-colors hover:bg-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+          aria-label={t("addNew")}
+        >
+          <div className="mb-3 flex size-12 items-center justify-center rounded-full bg-muted">
+            <Plus className="size-6 text-muted-foreground" />
+          </div>
+          <p className="text-sm font-medium text-muted-foreground">
+            {t("addNew")}
+          </p>
+        </button>
       </CardContent>
     </Card>
   )

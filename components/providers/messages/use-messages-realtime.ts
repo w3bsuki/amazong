@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useRef, useCallback } from "react"
+import { useEffect, useRef, useCallback, type Dispatch, type SetStateAction } from "react"
 import type { RealtimeChannel } from "@supabase/supabase-js"
 import { createClient } from "@/lib/supabase/client"
 import type { Conversation, Message, MessageType } from "@/lib/types/messages"
@@ -22,9 +22,9 @@ interface UseMessagesRealtimeParams {
   conversations: Conversation[]
   currentConversationId: string | null
   // State updaters
-  setMessages: React.Dispatch<React.SetStateAction<Message[]>>
-  setConversations: React.Dispatch<React.SetStateAction<Conversation[]>>
-  setTotalUnreadCount: React.Dispatch<React.SetStateAction<number>>
+  setMessages: Dispatch<SetStateAction<Message[]>>
+  setConversations: Dispatch<SetStateAction<Conversation[]>>
+  setTotalUnreadCount: Dispatch<SetStateAction<number>>
   // Callbacks
   loadConversations: () => Promise<void>
   markAsRead: (conversationId: string) => Promise<void>
@@ -174,7 +174,6 @@ export function useMessagesRealtime({
  */
 export function useTypingIndicator() {
   const lastTypingSentRef = useRef<number>(0)
-  const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
   const sendTypingIndicator = useCallback(() => {
     // Throttle typing events
@@ -182,15 +181,6 @@ export function useTypingIndicator() {
     if (now - lastTypingSentRef.current < 2000) return
     lastTypingSentRef.current = now
     // Typing indicator via broadcast could be added here if needed
-  }, [])
-
-  // Cleanup typing timeout on unmount
-  useEffect(() => {
-    return () => {
-      if (typingTimeoutRef.current) {
-        clearTimeout(typingTimeoutRef.current)
-      }
-    }
   }, [])
 
   return { sendTypingIndicator }

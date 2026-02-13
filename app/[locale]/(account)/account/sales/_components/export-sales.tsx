@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { toast } from "sonner"
 import { DownloadSimple } from "@phosphor-icons/react"
+import { useTranslations } from "next-intl"
 
 function toYmd(date: Date) {
   const yyyy = date.getFullYear()
@@ -20,27 +21,19 @@ function parseFilename(contentDisposition: string | null): string | null {
 }
 
 interface ExportSalesProps {
-  locale: string
   defaultFrom?: string
   defaultTo?: string
 }
 
-export function ExportSales({ locale, defaultFrom, defaultTo }: ExportSalesProps) {
+export function ExportSales({ defaultFrom, defaultTo }: ExportSalesProps) {
+  const t = useTranslations("SellerManagement")
   const [from, setFrom] = React.useState(defaultFrom || toYmd(new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)))
   const [to, setTo] = React.useState(defaultTo || toYmd(new Date()))
   const [isDownloading, setIsDownloading] = React.useState(false)
 
-  const t = {
-    export: locale === "bg" ? "Експорт CSV" : "Export CSV",
-    from: locale === "bg" ? "От" : "From",
-    to: locale === "bg" ? "До" : "To",
-    invalidRange: locale === "bg" ? "Невалиден период" : "Invalid date range",
-    failed: locale === "bg" ? "Неуспешен експорт" : "Export failed",
-  }
-
   const download = async () => {
     if (!from || !to || from > to) {
-      toast.error(t.invalidRange)
+      toast.error(t("sales.export.errors.invalidRange"))
       return
     }
 
@@ -66,7 +59,7 @@ export function ExportSales({ locale, defaultFrom, defaultTo }: ExportSalesProps
       URL.revokeObjectURL(href)
     } catch (err) {
       console.error(err)
-      toast.error(t.failed)
+      toast.error(t("sales.export.errors.failed"))
     } finally {
       setIsDownloading(false)
     }
@@ -76,7 +69,7 @@ export function ExportSales({ locale, defaultFrom, defaultTo }: ExportSalesProps
     <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-end">
       <div className="flex items-center gap-2">
         <div className="space-y-1">
-          <div className="text-xs text-muted-foreground">{t.from}</div>
+          <div className="text-xs text-muted-foreground">{t("sales.export.from")}</div>
           <Input
             type="date"
             value={from}
@@ -84,7 +77,7 @@ export function ExportSales({ locale, defaultFrom, defaultTo }: ExportSalesProps
           />
         </div>
         <div className="space-y-1">
-          <div className="text-xs text-muted-foreground">{t.to}</div>
+          <div className="text-xs text-muted-foreground">{t("sales.export.to")}</div>
           <Input
             type="date"
             value={to}
@@ -94,7 +87,7 @@ export function ExportSales({ locale, defaultFrom, defaultTo }: ExportSalesProps
       </div>
       <Button onClick={download} disabled={isDownloading} variant="outline" size="sm">
         <DownloadSimple className="size-4 mr-2" />
-        {t.export}
+        {t("sales.export.cta")}
       </Button>
     </div>
   )

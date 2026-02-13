@@ -42,7 +42,7 @@ async function getOrderDetails(orderId: string, sellerId: string) {
     return null
   }
 
-  const productIds = Array.from(new Set(orderItems.map((i) => i.product?.id).filter(Boolean)))
+  const productIds = [...new Set(orderItems.map((i) => i.product?.id).filter(Boolean))]
   const { data: privateRows } = productIds.length
     ? await supabase
         .from('product_private')

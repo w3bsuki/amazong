@@ -18,7 +18,11 @@ interface SelectDrawerProps {
   isOpen: boolean;
   onClose: () => void;
   title: string;
+  /** Stored values */
   options: string[];
+  /** Display labels (same length as `options`) */
+  displayOptions?: string[];
+  /** Legacy bilingual display labels for bg locale */
   optionsBg?: string[];
   value: string;
   onChange: (value: string) => void;
@@ -36,13 +40,14 @@ export function SelectDrawer({
   onClose,
   title,
   options,
+  displayOptions,
   optionsBg,
   value,
   onChange,
   locale = "en",
 }: SelectDrawerProps) {
   const isBg = locale === "bg";
-  const displayOptions = isBg && optionsBg ? optionsBg : options;
+  const displayedOptions = displayOptions ?? (isBg && optionsBg ? optionsBg : options);
   const t = useTranslations("Sell")
 
   const [query, setQuery] = useState("");
@@ -53,10 +58,10 @@ export function SelectDrawer({
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
-    const indexed = displayOptions.map((opt, idx) => ({ opt, idx }));
+    const indexed = displayedOptions.map((opt, idx) => ({ opt, idx }));
     if (!q) return indexed;
     return indexed.filter(({ opt }) => opt.toLowerCase().includes(q));
-  }, [displayOptions, query]);
+  }, [displayedOptions, query]);
 
   const customValue = query.trim();
   const canUseCustomValue = useMemo(() => {

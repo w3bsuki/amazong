@@ -43,8 +43,8 @@ export function useBadges(): UseBadgesResult {
         return
       }
       
-      const data = await response.json()
-      setBadges(data.badges || [])
+      const data = (await response.json()) as { badges?: BadgeWithMeta[] }
+      setBadges(Array.isArray(data.badges) ? data.badges : [])
     } catch (err) {
       setError("Failed to load badges")
       console.error("Error fetching badges:", err)
@@ -64,20 +64,21 @@ export function useBadges(): UseBadgesResult {
       })
       
       if (!response.ok) {
-        const data = await response.json()
-        throw new Error(data.error || "Failed to update badge")
+        const data = (await response.json()) as { error?: string }
+        throw new Error(typeof data.error === "string" ? data.error : "Failed to update badge")
       }
       
-      const data = await response.json()
+      const data = (await response.json()) as { is_featured?: boolean }
+      const isFeatured = Boolean(data.is_featured)
       
       // Update local state
       setBadges(prev => prev.map(badge => 
         badge.id === badgeId 
-          ? { ...badge, is_featured: data.is_featured }
+          ? { ...badge, is_featured: isFeatured }
           : badge
       ))
       
-      return data.is_featured
+      return isFeatured
     } catch (err) {
       console.error("Error toggling badge feature:", err)
       throw err
@@ -96,14 +97,16 @@ export function useBadges(): UseBadgesResult {
         throw new Error("Failed to evaluate badges")
       }
       
-      const data = await response.json()
+      const data = (await response.json()) as { total_awarded?: number; awarded?: string[] }
       
       // Refetch badges if new ones were awarded
-      if (data.total_awarded > 0) {
+      if ((data.total_awarded ?? 0) > 0) {
         await fetchBadges()
       }
       
-      return data.awarded || []
+      return Array.isArray(data.awarded)
+        ? data.awarded.filter((badgeId): badgeId is string => typeof badgeId === "string")
+        : []
     } catch (err) {
       console.error("Error evaluating badges:", err)
       return []
@@ -118,58 +121,4 @@ export function useBadges(): UseBadgesResult {
     toggleFeatured,
     evaluateBadges,
   }
-}
-
-/**
- * Hook to fetch another user's public badges
- */
-function usePublicBadges(userId: string | null) {
-  const [badges, setBadges] = useState<BadgeWithMeta[]>([])
-  const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-
-  useEffect(() => {
-    if (!userId) {
-      setBadges([])
-      return
-    }
-    
-    let cancelled = false
-    
-    async function fetchBadges() {
-      setIsLoading(true)
-      setError(null)
-      
-      try {
-        const response = await fetch(`/api/badges/${userId}`)
-        
-        if (!response.ok) {
-          throw new Error("Failed to load badges")
-        }
-        
-        const data = await response.json()
-        
-        if (!cancelled) {
-          setBadges(data.badges || [])
-        }
-      } catch (err) {
-        if (!cancelled) {
-          setError("Failed to load badges")
-          console.error("Error fetching public badges:", err)
-        }
-      } finally {
-        if (!cancelled) {
-          setIsLoading(false)
-        }
-      }
-    }
-    
-    fetchBadges()
-    
-    return () => {
-      cancelled = true
-    }
-  }, [userId])
-
-  return { badges, isLoading, error }
 }

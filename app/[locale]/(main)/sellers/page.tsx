@@ -62,7 +62,7 @@ export default async function SellersPage({
 
         {/* Empty state */}
         {sellersWithStats.length === 0 && (
-          <SellersEmptyState locale={locale} />
+          <SellersEmptyState />
         )}
       </div>
     </PageShell>

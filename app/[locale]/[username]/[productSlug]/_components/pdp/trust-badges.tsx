@@ -6,9 +6,10 @@ import { Card, CardContent } from "@/components/ui/card"
 export function TrustBadges(props: { verifiedSeller?: boolean }) {
   const { verifiedSeller } = props
   const t = useTranslations("Product")
+  const sellerIsVerified = Boolean(verifiedSeller)
 
   return (
-    <Card className="border border-border-subtle">
+    <Card className="border border-border-subtle" data-verified-seller={sellerIsVerified ? "true" : "false"}>
       <CardContent className="p-3">
         <div className="grid grid-cols-1 gap-3">
           <div className="flex items-start gap-3">

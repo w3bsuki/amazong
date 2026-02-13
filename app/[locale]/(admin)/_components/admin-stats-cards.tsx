@@ -4,7 +4,6 @@ import { IconTrendingUp, IconUsers, IconBox, IconShoppingCart, IconCurrencyDolla
 import { useLocale, useTranslations } from "next-intl"
 
 import { Badge } from "@/components/ui/badge"
-import { formatCurrency } from "@/app/[locale]/_lib/format-currency"
 import {
   Card,
   CardAction,
@@ -22,6 +21,14 @@ interface AdminStatsProps {
     sellers: number
     revenue: number
   }
+}
+
+function formatAdminCurrency(value: number, locale: string) {
+  return new Intl.NumberFormat(locale, {
+    style: "currency",
+    currency: "BGN",
+    maximumFractionDigits: 0,
+  }).format(value)
 }
 
 export function AdminStatsCards({ totals }: AdminStatsProps) {
@@ -119,7 +126,7 @@ export function AdminStatsCards({ totals }: AdminStatsProps) {
             {t("stats.revenue.label")}
           </CardDescription>
           <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-            {formatCurrency(totals.revenue, { locale, maximumFractionDigits: 0 })}
+            {formatAdminCurrency(totals.revenue, locale)}
           </CardTitle>
           <CardAction>
             <Badge variant="outline" className="border-success bg-muted text-success">

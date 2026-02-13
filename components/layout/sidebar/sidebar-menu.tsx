@@ -92,7 +92,7 @@ function NavLink({
         <Link
             href={href}
             onClick={onClick}
-            className="flex min-h-(--control-primary) items-center gap-4 px-4 rounded-lg transition-colors hover:bg-hover active:bg-active"
+            className="flex min-h-(--control-primary) items-center gap-4 rounded-lg px-4 tap-transparent motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth) motion-reduce:transition-none hover:bg-hover active:bg-active focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
         >
             <Icon size={22} weight="regular" className="text-muted-foreground shrink-0" />
             <span className="text-sm font-medium text-foreground flex-1">{label}</span>
@@ -145,12 +145,11 @@ export function SidebarMenu({ user, triggerClassName, userStats }: SidebarMenuPr
     if (!mounted) {
         return (
             <span
-                role="button"
                 className={cn(
-                    "inline-flex size-(--control-default) items-center justify-center rounded-lg text-foreground transition-colors touch-manipulation tap-transparent cursor-pointer hover:bg-hover active:bg-active [&_svg]:size-6",
+                    "inline-flex size-(--control-default) items-center justify-center rounded-lg text-foreground touch-manipulation tap-transparent motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth) motion-reduce:transition-none cursor-pointer hover:bg-hover active:bg-active [&_svg]:size-6",
                     triggerClassName
                 )}
-                aria-label={t("title")}
+                aria-hidden="true"
                 data-testid="mobile-menu-trigger"
             >
                 <List weight="bold" />
@@ -171,7 +170,7 @@ export function SidebarMenu({ user, triggerClassName, userStats }: SidebarMenuPr
                     variant="ghost"
                     size="icon"
                     className={cn(
-                        "size-(--control-default) rounded-lg text-foreground transition-colors touch-manipulation tap-transparent hover:bg-hover active:bg-active focus-visible:ring-0 focus-visible:ring-offset-0 [&_svg]:size-6",
+                        "size-(--control-default) rounded-lg text-foreground touch-manipulation tap-transparent motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth) motion-reduce:transition-none hover:bg-hover active:bg-active focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring [&_svg]:size-6",
                         triggerClassName
                     )}
                     aria-label={t("title")}
@@ -202,7 +201,7 @@ export function SidebarMenu({ user, triggerClassName, userStats }: SidebarMenuPr
                             <Link
                                 href="/account"
                                 onClick={() => setOpen(false)}
-                                className="flex items-center gap-2.5 min-w-0 hover:opacity-90 transition-opacity"
+                                className="flex min-w-0 items-center gap-2.5 rounded-lg tap-transparent motion-safe:transition-opacity motion-safe:duration-fast motion-safe:ease-(--ease-smooth) motion-reduce:transition-none hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
                             >
                                 <div className="size-touch shrink-0 rounded-full bg-selected flex items-center justify-center">
                                     <UserCircle size={26} weight="fill" className="text-primary" />
@@ -236,7 +235,7 @@ export function SidebarMenu({ user, triggerClassName, userStats }: SidebarMenuPr
                                 <Link
                                     href="/account/settings"
                                     onClick={() => setOpen(false)}
-                                    className="size-touch rounded-full flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                                    className="flex size-touch items-center justify-center rounded-full text-muted-foreground tap-transparent motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth) motion-reduce:transition-none hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
                                     aria-label={tAccountDrawer("settings")}
                                 >
                                     <Gear size={22} weight="regular" />
@@ -248,7 +247,7 @@ export function SidebarMenu({ user, triggerClassName, userStats }: SidebarMenuPr
                                 <DropdownMenuTrigger asChild>
                                     <button
                                         type="button"
-                                        className="size-touch rounded-full flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-hover transition-colors"
+                                        className="flex size-touch items-center justify-center rounded-full text-muted-foreground tap-transparent motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth) motion-reduce:transition-none hover:bg-hover hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
                                         aria-label={tLocaleSwitcher('label')}
                                     >
                                         <Image
@@ -301,15 +300,15 @@ export function SidebarMenu({ user, triggerClassName, userStats }: SidebarMenuPr
                             {/* My Listings Section - OLX style */}
                             <section className="border-b border-border-subtle px-4 py-4">
                                 <div className="flex items-center justify-between mb-3">
-                                    <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+                                    <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
                                         {tAccountDrawer("myListings")}
-                                    </span>
+                                    </h3>
                                 </div>
                                 {/* New Listing CTA - full width */}
                                 <Link
                                     href="/sell"
                                     onClick={() => setOpen(false)}
-                                    className="flex items-center justify-center gap-1.5 w-full h-touch rounded-lg bg-primary text-primary-foreground font-semibold hover:bg-interactive-hover transition-colors mb-2"
+                                    className="mb-2 flex h-touch w-full items-center justify-center gap-1.5 rounded-lg bg-primary font-semibold text-primary-foreground tap-transparent motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth) motion-reduce:transition-none hover:bg-interactive-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
                                 >
                                     <Plus size={18} weight="bold" />
                                     <span className="text-sm">{tMenu("newListing")}</span>
@@ -319,7 +318,7 @@ export function SidebarMenu({ user, triggerClassName, userStats }: SidebarMenuPr
                                     <Link
                                         href="/account/selling"
                                         onClick={() => setOpen(false)}
-                                        className="flex items-center justify-center gap-1.5 h-touch rounded-lg bg-surface-subtle border border-border hover:bg-hover hover:border-hover-border transition-colors"
+                                        className="flex h-touch items-center justify-center gap-1.5 rounded-lg border border-border bg-surface-subtle tap-transparent motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth) motion-reduce:transition-none hover:border-hover-border hover:bg-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
                                     >
                                         <Package size={18} weight="duotone" className="text-primary" />
                                         <span className="text-sm font-semibold tabular-nums">{userStats?.activeListings ?? 0}</span>
@@ -328,7 +327,7 @@ export function SidebarMenu({ user, triggerClassName, userStats }: SidebarMenuPr
                                     <Link
                                         href="/account/selling"
                                         onClick={() => setOpen(false)}
-                                        className="flex items-center justify-center gap-1.5 h-touch rounded-lg bg-surface-subtle border border-border hover:bg-hover hover:border-hover-border transition-colors"
+                                        className="flex h-touch items-center justify-center gap-1.5 rounded-lg border border-border bg-surface-subtle tap-transparent motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth) motion-reduce:transition-none hover:border-hover-border hover:bg-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
                                     >
                                         <RocketLaunch size={18} weight="duotone" className="text-primary" />
                                         <span className="text-sm font-semibold tabular-nums">{userStats?.boostedListings ?? 0}</span>
@@ -448,7 +447,7 @@ export function SidebarMenu({ user, triggerClassName, userStats }: SidebarMenuPr
                                     <Link
                                         href="/auth/login"
                                         onClick={() => setOpen(false)}
-                                        className="flex min-h-(--control-default) items-center justify-center gap-2 rounded-full bg-primary px-6 text-sm font-semibold text-primary-foreground transition-colors hover:bg-interactive-hover"
+                                        className="flex min-h-(--control-default) items-center justify-center gap-2 rounded-full bg-primary px-6 text-sm font-semibold text-primary-foreground tap-transparent motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth) motion-reduce:transition-none hover:bg-interactive-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
                                     >
                                         <SignInIcon size={18} weight="bold" />
                                         <span>{t("signIn")}</span>
@@ -456,7 +455,7 @@ export function SidebarMenu({ user, triggerClassName, userStats }: SidebarMenuPr
                                     <Link
                                         href="/auth/sign-up"
                                         onClick={() => setOpen(false)}
-                                        className="flex min-h-(--control-default) items-center justify-center rounded-full border border-selected-border px-6 text-sm font-medium text-primary transition-colors hover:border-hover-border hover:bg-hover"
+                                        className="flex min-h-(--control-default) items-center justify-center rounded-full border border-selected-border px-6 text-sm font-medium text-primary tap-transparent motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth) motion-reduce:transition-none hover:border-hover-border hover:bg-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
                                     >
                                         {tNav("register")}
                                     </Link>
@@ -487,7 +486,7 @@ export function SidebarMenu({ user, triggerClassName, userStats }: SidebarMenuPr
                                     <button
                                         type="button"
                                         disabled={isSigningOut}
-                                        className="flex flex-1 min-h-(--control-primary) items-center justify-center gap-2 text-sm text-muted-foreground transition-colors hover:bg-hover hover:text-destructive active:bg-active"
+                                        className="flex min-h-(--control-primary) flex-1 items-center justify-center gap-2 text-sm text-muted-foreground tap-transparent motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth) motion-reduce:transition-none hover:bg-hover hover:text-destructive active:bg-active focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
                                     >
                                         {isSigningOut ? (
                                             <SpinnerGap size={18} className="animate-spin" />

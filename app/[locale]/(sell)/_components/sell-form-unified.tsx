@@ -14,7 +14,7 @@ import {
 } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/client";
-import { Link } from "@/i18n/routing";
+import { Link, validateLocale } from "@/i18n/routing";
 import { BoostDialog } from "../../_components/seller/boost-dialog";
 import { useTranslations } from "next-intl";
 
@@ -23,6 +23,7 @@ import { DesktopLayout, MobileLayout } from "./layouts";
 import { PayoutRequiredModal } from "./ui/payout-required-modal";
 import type { Category } from "../_lib/types";
 import type { SellFormDataV4 } from "@/lib/sell/schema-v4";
+import type { Locale } from "@/i18n/routing";
 
 type SellerPayoutStatus = {
   stripe_connect_account_id: string | null;
@@ -63,7 +64,7 @@ type CreateListingAction = (args: { sellerId: string; data: unknown }) => Promis
 // ============================================================================
 
 interface UnifiedSellFormProps {
-  locale?: string;
+  locale?: Locale;
   existingProduct?: SellFormDataV4 & { id: string };
   sellerId: string;
   categories?: Category[];
@@ -88,9 +89,11 @@ export function UnifiedSellForm({
   createListingAction,
   payoutStatus,
 }: UnifiedSellFormProps) {
+  const safeLocale = validateLocale(locale);
+
   return (
     <SellFormProvider
-      locale={locale}
+      locale={safeLocale}
       categories={categories}
       sellerId={sellerId}
       {...(existingProduct ? { existingProduct } : {})}
@@ -118,8 +121,9 @@ function SellFormContent({
   payoutStatus: SellerPayoutStatus | undefined;
 }) {
   const form = useSellForm();
-  const { isBg, clearDraft, setCurrentStep, locale } = useSellFormContext();
+  const { clearDraft, setCurrentStep, locale } = useSellFormContext();
   const tSell = useTranslations("Sell");
+  const tCommon = useTranslations("Common");
   const tBoost = useTranslations("Boost");
   
   const [isPending, startTransition] = useTransition();
@@ -128,7 +132,6 @@ function SellFormContent({
   const [createdProductId, setCreatedProductId] = useState<string | null>(null);
   const [createdProductHref, setCreatedProductHref] = useState<string | null>(null);
   const [showPayoutModal, setShowPayoutModal] = useState(false);
-  const [pendingSubmitData, setPendingSubmitData] = useState<SellFormDataV4 | null>(null);
 
   // Handle form submission - check payout status first
   const handleSubmit = useCallback(async (data: SellFormDataV4) => {
@@ -136,7 +139,6 @@ function SellFormContent({
     
     // Gate at publish: check payout status before submitting
     if (!isPayoutReady(payoutStatus)) {
-      setPendingSubmitData(data);
       setShowPayoutModal(true);
       return;
     }
@@ -147,7 +149,7 @@ function SellFormContent({
         const { data: { user } } = await supabase.auth.getUser();
         
         if (!user) {
-          setSubmitError(isBg ? "Моля, влезте в профила си" : "Please sign in to continue");
+          setSubmitError(tSell("errors.signInRequired"));
           return;
         }
 
@@ -168,7 +170,7 @@ function SellFormContent({
             .join(", ")
             .trim()
 
-          const baseError = result.message || result.error || "Failed to create listing";
+          const baseError = result.message || result.error || tSell("errors.createFailed");
           throw new Error(baseError + (issueMessages ? ` (${issueMessages})` : ""));
         }
 
@@ -176,8 +178,8 @@ function SellFormContent({
         clearDraft();
 
         toast.success(
-          isBg ? "Обявата е публикувана!" : "Listing published!",
-          { description: isBg ? "Вашият продукт е на живо" : "Your product is now live" }
+          tSell("toasts.published.title"),
+          { description: tSell("toasts.published.description") }
         );
 
         const productId = result.product.id;
@@ -191,14 +193,14 @@ function SellFormContent({
           window.scrollTo({ top: 0, behavior: "instant" });
       } catch (error) {
         console.error("Submit error:", error);
-        const errorMessage = error instanceof Error 
-          ? error.message 
-          : isBg ? "Грешка при публикуване" : "Error publishing listing";
+       const errorMessage = error instanceof Error 
+         ? error.message 
+          : tSell("errors.publishFailed");
         setSubmitError(errorMessage);
         toast.error(errorMessage);
       }
     });
-  }, [isBg, sellerId, clearDraft, payoutStatus, createListingAction]);
+  }, [sellerId, clearDraft, payoutStatus, createListingAction, tSell]);
 
   // Handle reset for new listing
   const handleNewListing = useCallback(() => {
@@ -232,18 +234,16 @@ function SellFormContent({
 
           <div className="space-y-3">
             <h2 className="text-2xl font-bold tracking-tight text-foreground">
-              {isBg ? "Публикуване..." : "Publishing..."}
+              {tSell("actions.publishing")}
             </h2>
             <p className="text-muted-foreground font-medium">
-              {isBg 
-                ? "Подготвяме вашата обява за купувачите."
-                : "Preparing your listing for buyers."}
+              {tSell("publish.processingDescription")}
             </p>
           </div>
 
           <div className="flex items-center justify-center gap-2 text-xs font-bold text-primary uppercase tracking-widest">
             <SpinnerGap className="size-4 animate-spin" weight="bold" />
-            <span>{isBg ? "Моля, изчакайте" : "Please wait"}</span>
+            <span>{tSell("publish.pleaseWait")}</span>
           </div>
         </div>
       </div>
@@ -252,7 +252,7 @@ function SellFormContent({
 
   // Success screen
   if (showSuccess) {
-    const productTitle = form.getValues().title || (isBg ? "Вашият продукт" : "Your product");
+    const productTitle = form.getValues().title || tSell("success.productTitleFallback");
     const firstImageObj = form.getValues().images?.[0];
     const firstImageUrl = typeof firstImageObj === "string" ? firstImageObj : firstImageObj?.url;
     const productId = createdProductId;
@@ -263,7 +263,7 @@ function SellFormContent({
         <header className="sticky top-0 z-40 bg-background border-b border-border">
           <div className="flex items-center justify-center h-14">
             <span className="text-sm font-medium text-muted-foreground">
-              {isBg ? "Обявата е публикувана" : "Listing Published"}
+              {tSell("success.headerStatus")}
             </span>
           </div>
         </header>
@@ -279,12 +279,10 @@ function SellFormContent({
             {/* Success message */}
             <div className="space-y-3">
               <h1 className="text-3xl font-bold tracking-tight text-foreground">
-                {isBg ? "Публикувано!" : "Published!"}
+                {tSell("success.title")}
               </h1>
               <p className="text-lg text-muted-foreground leading-relaxed">
-                {isBg 
-                  ? "Вашата обява е на живо и готова за купувачи."
-                  : "Your listing is live and ready for buyers."}
+                {tSell("success.description")}
               </p>
             </div>
 
@@ -300,7 +298,7 @@ function SellFormContent({
                   <div className="flex-1 text-left min-w-0">
                     <p className="font-bold text-base truncate">{productTitle}</p>
                     <p className="text-sm text-muted-foreground">
-                      {isBg ? "Обявата е активна" : "Listing is active"}
+                      {tSell("success.listingActive")}
                     </p>
                   </div>
                 </div>
@@ -312,7 +310,7 @@ function SellFormContent({
               <Button asChild className="w-full h-12 gap-2 bg-primary hover:bg-interactive-hover text-base font-semibold rounded-md">
                 <Link href={createdProductHref || "/"}>
                   <Eye className="size-5" />
-                  {isBg ? "Виж обявата" : "View Listing"}
+                  {tSell("success.viewListing")}
                 </Link>
               </Button>
 
@@ -338,7 +336,7 @@ function SellFormContent({
                   variant="outline"
                   className="h-12 gap-2 rounded-md font-medium"
                   onClick={() => {
-                    const shareLocale = isBg ? "bg" : "en";
+                    const shareLocale = locale === "bg" ? "bg" : "en";
                     if (navigator.share) {
                       navigator.share({
                         title: productTitle,
@@ -352,12 +350,12 @@ function SellFormContent({
                           ? `${window.location.origin}/${shareLocale}${createdProductHref}`
                           : `${window.location.origin}/${shareLocale}/sell`
                       );
-                      toast.success(isBg ? "Линкът е копиран" : "Link copied");
+                      toast.success(tSell("success.linkCopied"));
                     }
                   }}
                 >
                   <Share className="size-5" />
-                  {isBg ? "Сподели" : "Share"}
+                  {tCommon("share")}
                 </Button>
 
                 <Button
@@ -366,7 +364,7 @@ function SellFormContent({
                   onClick={handleNewListing}
                 >
                   <Plus className="size-5" />
-                  {isBg ? "Нова" : "New"}
+                  {tSell("success.newListing")}
                 </Button>
               </div>
 
@@ -377,7 +375,7 @@ function SellFormContent({
               >
                 <Link href="/">
                   <House className="size-5" />
-                  {isBg ? "Към началото" : "Go Home"}
+                  {tCommon("goToHomepage")}
                 </Link>
               </Button>
             </div>

@@ -42,7 +42,6 @@ export default async function AddressesPage({
         <div className="flex flex-col gap-4 md:gap-4">
             <h1 className="sr-only">{t("addresses")}</h1>
             <AddressesContent 
-                locale={locale}
                 initialAddresses={addresses}
             />
         </div>

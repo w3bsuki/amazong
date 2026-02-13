@@ -1,12 +1,11 @@
 "use client";
 
-import { memo } from "react";
 import { Controller } from "react-hook-form";
 import { TextAa } from "@phosphor-icons/react";
 import { Input } from "@/components/ui/input";
 import { Field, FieldLabel, FieldDescription, FieldError, FieldContent } from "@/components/shared/field";
 import { cn } from "@/lib/utils";
-import { useSellForm, useSellFormContext } from "../sell-form-provider";
+import { useSellForm } from "../sell-form-provider";
 import { useTranslations } from "next-intl";
 
 // ============================================================================
@@ -35,7 +34,6 @@ export function TitleField({
   compact = false
 }: TitleFieldProps) {
   const { control, watch } = useSellForm();
-  const { isBg } = useSellFormContext();
   const tSell = useTranslations("Sell")
 
   const currentValue = watch("title") || "";
@@ -57,12 +55,10 @@ export function TitleField({
                 </div>
                 <div>
                   <FieldLabel className="text-sm font-bold tracking-tight text-foreground">
-                    {isBg ? "Заглавие" : "Title"}
+                    {tSell("fields.title.label")}
                   </FieldLabel>
                   <FieldDescription className="text-xs font-medium text-muted-foreground mt-0.5">
-                    {isBg
-                      ? `${minLength}-${maxLength} символа. Бъдете конкретни.`
-                      : `${minLength}-${maxLength} characters. Be specific.`}
+                    {tSell("fields.title.description", { min: minLength, max: maxLength })}
                   </FieldDescription>
                 </div>
               </div>
@@ -73,7 +69,7 @@ export function TitleField({
           {compact && (
             <div className="hidden">
               <FieldLabel className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2 block">
-                {isBg ? "Заглавие" : "Title"}
+                {tSell("fields.title.label")}
               </FieldLabel>
             </div>
           )}
@@ -84,7 +80,7 @@ export function TitleField({
               {compact && (
                 <div className="flex items-center justify-between px-1">
                   <label htmlFor={inputId} className="text-sm font-bold text-foreground">
-                    {isBg ? "Заглавие" : "Title"} <span className="text-destructive">*</span>
+                    {tSell("fields.title.label")} <span className="text-destructive">*</span>
                   </label>
                   <span className={cn(
                     "text-xs font-bold tabular-nums",
@@ -95,7 +91,7 @@ export function TitleField({
                 </div>
               )}
               <div className={cn(
-                "relative rounded-xl border bg-card overflow-hidden transition-all",
+                "relative rounded-xl border bg-card overflow-hidden transition-colors",
                 "focus-within:ring-2 focus-within:ring-ring focus-within:border-ring",
                 fieldState.invalid ? "border-destructive/50 bg-destructive-subtle" : "border-border"
               )}>
@@ -103,9 +99,7 @@ export function TitleField({
                   {...field}
                   id={inputId}
                   aria-invalid={fieldState.invalid}
-                  placeholder={isBg
-                    ? "Напр. iPhone 15 Pro Max 256GB"
-                    : "e.g., iPhone 15 Pro Max 256GB"}
+                  placeholder={tSell("fields.title.placeholder")}
                   maxLength={maxLength}
                   className="border-none bg-transparent h-14 px-4 text-base font-medium placeholder:text-muted-foreground focus-visible:ring-0"
                 />
@@ -115,9 +109,7 @@ export function TitleField({
             {/* Helper text - shows progress toward minimum */}
             {charCount > 0 && charCount < minLength && (
               <p className="mt-2 text-sm font-medium text-primary flex items-center gap-1.5 px-1">
-                {isBg
-                  ? `Добавете още ${minLength - charCount} символа`
-                  : `Add ${minLength - charCount} more characters`}
+                {tSell("fields.title.remaining", { count: minLength - charCount })}
               </p>
             )}
 
@@ -133,11 +125,3 @@ export function TitleField({
     />
   );
 }
-
-/**
- * Memoized TitleField - Product title input with character count.
- * Optimized to prevent unnecessary re-renders when unrelated form state changes.
- * @see useSellForm - Hook for form state access
- * @see useSellFormContext - Hook for context access
- */
-const MemoizedTitleField = memo(TitleField);

@@ -36,7 +36,7 @@ export async function AboutPageContent() {
             />
           </div>
           <div className="max-w-3xl">
-            <h1 className="text-3xl md:text-5xl font-bold mb-4">
+            <h1 className="text-3xl md:text-5xl font-bold tracking-tight mb-4">
               {t("heroTitle")}
             </h1>
             <p className="text-lg md:text-xl text-foreground leading-relaxed">
@@ -55,7 +55,7 @@ export async function AboutPageContent() {
                 <Target className="size-4" />
                 {t("ourMission")}
               </div>
-              <h2 className="text-2xl md:text-3xl font-bold mb-4">{t("missionTitle")}</h2>
+              <h2 className="text-2xl md:text-3xl font-bold tracking-tight mb-4">{t("missionTitle")}</h2>
               <p className="text-muted-foreground text-lg leading-relaxed mb-6">{t("missionDesc")}</p>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="flex items-start gap-3">
@@ -108,7 +108,7 @@ export async function AboutPageContent() {
         {/* Values Section */}
         <section className="py-12 md:py-16 border-t border-border">
           <div className="text-center mb-12">
-            <h2 className="text-2xl md:text-3xl font-bold mb-3">{t("ourValues")}</h2>
+            <h2 className="text-2xl md:text-3xl font-bold tracking-tight mb-3">{t("ourValues")}</h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">{t("valuesSubtitle")}</p>
           </div>
 
@@ -118,7 +118,7 @@ export async function AboutPageContent() {
                 <div className="size-12 bg-surface-subtle flex items-center justify-center mb-4 group-hover:bg-hover transition-colors">
                   <Heart className="size-6 text-primary" />
                 </div>
-                <h3 className="font-bold text-lg mb-2">{t("valueCustomerFirst")}</h3>
+                <h3 className="font-bold tracking-tight text-lg mb-2">{t("valueCustomerFirst")}</h3>
                 <p className="text-muted-foreground text-sm">{t("valueCustomerFirstDesc")}</p>
               </CardContent>
             </Card>
@@ -128,7 +128,7 @@ export async function AboutPageContent() {
                 <div className="size-12 bg-surface-subtle flex items-center justify-center mb-4 group-hover:bg-hover transition-colors">
                   <Shield className="size-6 text-primary" />
                 </div>
-                <h3 className="font-bold text-lg mb-2">{t("valueTrust")}</h3>
+                <h3 className="font-bold tracking-tight text-lg mb-2">{t("valueTrust")}</h3>
                 <p className="text-muted-foreground text-sm">{t("valueTrustDesc")}</p>
               </CardContent>
             </Card>
@@ -138,7 +138,7 @@ export async function AboutPageContent() {
                 <div className="size-12 bg-surface-subtle flex items-center justify-center mb-4 group-hover:bg-hover transition-colors">
                   <Lightning className="size-6 text-primary" />
                 </div>
-                <h3 className="font-bold text-lg mb-2">{t("valueInnovation")}</h3>
+                <h3 className="font-bold tracking-tight text-lg mb-2">{t("valueInnovation")}</h3>
                 <p className="text-muted-foreground text-sm">{t("valueInnovationDesc")}</p>
               </CardContent>
             </Card>
@@ -148,7 +148,7 @@ export async function AboutPageContent() {
                 <div className="size-12 bg-surface-subtle flex items-center justify-center mb-4 group-hover:bg-hover transition-colors">
                   <Leaf className="size-6 text-primary" />
                 </div>
-                <h3 className="font-bold text-lg mb-2">{t("valueSustainability")}</h3>
+                <h3 className="font-bold tracking-tight text-lg mb-2">{t("valueSustainability")}</h3>
                 <p className="text-muted-foreground text-sm">{t("valueSustainabilityDesc")}</p>
               </CardContent>
             </Card>
@@ -158,7 +158,7 @@ export async function AboutPageContent() {
         {/* What We Offer Section */}
         <section className="py-12 md:py-16 border-t border-border">
           <div className="text-center mb-12">
-            <h2 className="text-2xl md:text-3xl font-bold mb-3">{t("whatWeOffer")}</h2>
+            <h2 className="text-2xl md:text-3xl font-bold tracking-tight mb-3">{t("whatWeOffer")}</h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">{t("whatWeOfferSubtitle")}</p>
           </div>
 
@@ -167,7 +167,7 @@ export async function AboutPageContent() {
               <div className="size-16 bg-success/10 text-success flex items-center justify-center mx-auto mb-4">
                 <Truck className="size-8" />
               </div>
-              <h3 className="font-bold text-lg mb-2">{t("offerFastDelivery")}</h3>
+              <h3 className="font-bold tracking-tight text-lg mb-2">{t("offerFastDelivery")}</h3>
               <p className="text-muted-foreground text-sm">{t("offerFastDeliveryDesc")}</p>
             </div>
 
@@ -175,7 +175,7 @@ export async function AboutPageContent() {
               <div className="size-16 bg-selected text-primary flex items-center justify-center mx-auto mb-4">
                 <Trophy className="size-8" />
               </div>
-              <h3 className="font-bold text-lg mb-2">{t("offerQuality")}</h3>
+              <h3 className="font-bold tracking-tight text-lg mb-2">{t("offerQuality")}</h3>
               <p className="text-muted-foreground text-sm">{t("offerQualityDesc")}</p>
             </div>
 
@@ -183,7 +183,7 @@ export async function AboutPageContent() {
               <div className="size-16 bg-deal-light text-deal flex items-center justify-center mx-auto mb-4">
                 <Headphones className="size-8" />
               </div>
-              <h3 className="font-bold text-lg mb-2">{t("offerSupport")}</h3>
+              <h3 className="font-bold tracking-tight text-lg mb-2">{t("offerSupport")}</h3>
               <p className="text-muted-foreground text-sm">{t("offerSupportDesc")}</p>
             </div>
           </div>
@@ -192,7 +192,7 @@ export async function AboutPageContent() {
         {/* Our Promises Section */}
         <section className="py-12 md:py-16 border-t border-border">
           <div className="bg-muted p-4 md:p-4">
-            <h3 className="text-xl font-bold text-center mb-8">{t("ourPromises")}</h3>
+            <h3 className="text-xl font-bold tracking-tight text-center mb-8">{t("ourPromises")}</h3>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
               <div>
                 <div className="size-12 bg-selected rounded-full flex items-center justify-center mx-auto mb-3">
@@ -232,7 +232,7 @@ export async function AboutPageContent() {
         {/* CTA Section */}
         <section className="py-12 md:py-16 border-t border-border">
           <div className="text-center max-w-2xl mx-auto">
-            <h2 className="text-2xl md:text-3xl font-bold mb-4">{t("ctaTitle")}</h2>
+            <h2 className="text-2xl md:text-3xl font-bold tracking-tight mb-4">{t("ctaTitle")}</h2>
             <p className="text-muted-foreground mb-8">{t("ctaSubtitle")}</p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link

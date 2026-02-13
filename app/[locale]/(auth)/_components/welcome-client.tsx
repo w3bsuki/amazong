@@ -155,7 +155,7 @@ export function WelcomeClient({ locale }: { locale: string }) {
   if (isLoading) {
     return (
       <div className="min-h-dvh flex items-center justify-center">
-        <SpinnerGap className="size-8 text-primary animate-spin" weight="bold" />
+        <SpinnerGap className="size-8 text-primary animate-spin motion-reduce:animate-none" weight="bold" />
       </div>
     )
   }
@@ -237,6 +237,7 @@ export function WelcomeClient({ locale }: { locale: string }) {
                     Get Started
                   </Button>
                   <button
+                    type="button"
                     onClick={handleSkip}
                     disabled={isPending}
                     className="w-full text-sm text-muted-foreground hover:text-foreground py-2"
@@ -258,6 +259,7 @@ export function WelcomeClient({ locale }: { locale: string }) {
             >
               <div className="p-4 border-b border-border">
                 <button
+                  type="button"
                   onClick={() => setStep(1)}
                   className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground mb-4"
                 >
@@ -287,7 +289,10 @@ export function WelcomeClient({ locale }: { locale: string }) {
                         colors={COLOR_PALETTES[selectedPalette] ?? COLOR_PALETTES[0] ?? []}
                       />
                     )}
-                    <label className="absolute bottom-0 right-0 size-8 bg-primary text-primary-foreground hover:bg-interactive-hover rounded-full flex items-center justify-center cursor-pointer shadow-sm transition-colors">
+                    <label
+                      className="absolute bottom-0 right-0 size-8 bg-primary text-primary-foreground hover:bg-interactive-hover rounded-full flex items-center justify-center cursor-pointer shadow-sm transition-colors"
+                      aria-label="Upload avatar image"
+                    >
                       <Camera className="size-4 text-primary-foreground" weight="bold" />
                       <input type="file" accept="image/*" className="hidden" onChange={handleFileChange} />
                     </label>
@@ -300,6 +305,7 @@ export function WelcomeClient({ locale }: { locale: string }) {
                     {AVATAR_VARIANTS.map((variant) => (
                       <button
                         key={variant}
+                        type="button"
                         onClick={() => {
                           setSelectedVariant(variant)
                           setUseCustomAvatar(false)
@@ -329,6 +335,7 @@ export function WelcomeClient({ locale }: { locale: string }) {
                       {COLOR_PALETTES.map((palette, idx) => (
                         <button
                           key={idx}
+                          type="button"
                           onClick={() => setSelectedPalette(idx)}
                           className={cn(
                             "p-1.5 rounded-lg border-2 transition-all",
@@ -366,7 +373,7 @@ export function WelcomeClient({ locale }: { locale: string }) {
                     className="flex-1 bg-primary text-primary-foreground hover:bg-interactive-hover"
                   >
                     {isPending ? (
-                      <SpinnerGap className="size-4 animate-spin" />
+                      <SpinnerGap className="size-4 animate-spin motion-reduce:animate-none" />
                     ) : (
                       <>
                         Continue <ArrowRight className="size-4 ml-2" />
@@ -388,6 +395,7 @@ export function WelcomeClient({ locale }: { locale: string }) {
             >
               <div className="p-4 border-b border-border">
                 <button
+                  type="button"
                   onClick={() => setStep(2)}
                   className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground mb-4"
                 >
@@ -447,7 +455,7 @@ export function WelcomeClient({ locale }: { locale: string }) {
                     className="flex-1 bg-primary text-primary-foreground hover:bg-interactive-hover"
                   >
                     {isPending ? (
-                      <SpinnerGap className="size-4 animate-spin" />
+                      <SpinnerGap className="size-4 animate-spin motion-reduce:animate-none" />
                     ) : (
                       <>
                         Save & Continue <ArrowRight className="size-4 ml-2" />

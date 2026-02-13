@@ -37,7 +37,7 @@ export function QuickFilterPills({
 }: QuickFilterPillsProps) {
   const t = useTranslations("TabbedProductFeed");
 
-  const showCitySelector = activeQuickFilters.includes("nearby");
+  const showCitySelector = activeQuickFilters.includes("nearby") && Boolean(onCityChange);
 
   return (
     <div className="flex items-center gap-2 overflow-x-auto no-scrollbar ml-auto">
@@ -69,7 +69,7 @@ export function QuickFilterPills({
                     userCity
                   : t("cityPlaceholder")}
               </span>
-              <CaretDown className="size-4 opacity-60 shrink-0" />
+              <CaretDown className="size-4 opacity-60 shrink-0" aria-hidden="true" />
             </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="start" className="min-w-44 max-h-72 overflow-y-auto">
@@ -78,7 +78,7 @@ export function QuickFilterPills({
               return (
                 <DropdownMenuItem
                   key={city.value}
-                  onClick={() => onCityChange?.(city.value)}
+                  onSelect={() => onCityChange?.(city.value)}
                   className={cn(isSelected && "bg-accent")}
                 >
                   <span className="flex-1">{locale === "bg" ? city.labelBg : city.label}</span>

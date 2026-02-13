@@ -67,7 +67,7 @@ export function HomeCityPickerSheet({
     <Drawer open={open} onOpenChange={onOpenChange}>
       <DrawerContent className="max-h-dialog-md rounded-t-2xl lg:hidden">
         <DrawerHeader className="border-b border-border-subtle px-inset pt-4 pb-3">
-          <DrawerTitle className="text-center text-base font-semibold">
+          <DrawerTitle className="text-center text-base font-semibold tracking-tight">
             {tMobile("feed.chooseCityTitle")}
           </DrawerTitle>
         </DrawerHeader>
@@ -99,7 +99,7 @@ export function HomeCityPickerSheet({
                     data-testid={`home-city-option-${city.value}`}
                     onClick={() => setPendingCity(city.value)}
                     className={cn(
-                      "flex min-h-(--spacing-touch-md) w-full items-center justify-between gap-2 rounded-xl border px-3 text-left text-sm font-medium transition-colors",
+                      "flex min-h-(--spacing-touch-md) w-full items-center justify-between gap-2 rounded-xl border px-3 text-left text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
                       isSelected
                         ? "border-selected-border bg-selected text-selected-foreground"
                         : "border-border-subtle bg-background text-foreground hover:bg-hover active:bg-active"

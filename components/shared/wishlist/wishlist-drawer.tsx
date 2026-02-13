@@ -27,6 +27,13 @@ interface WishlistDrawerProps {
   children: React.ReactNode
 }
 
+function formatPrice(price: number): string {
+  return new Intl.NumberFormat("en-IE", {
+    style: "currency",
+    currency: "EUR",
+  }).format(price)
+}
+
 export function WishlistDrawer({ className, children }: WishlistDrawerProps) {
   const [open, setOpen] = useState(false)
   const [mounted, setMounted] = useState(false)
@@ -37,13 +44,6 @@ export function WishlistDrawer({ className, children }: WishlistDrawerProps) {
   useEffect(() => {
     setMounted(true)
   }, [])
-
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat("en-IE", {
-      style: "currency",
-      currency: "EUR",
-    }).format(price)
-  }
 
   const handleMoveToCart = (item: (typeof items)[0]) => {
     addToCart({
@@ -67,7 +67,7 @@ export function WishlistDrawer({ className, children }: WishlistDrawerProps) {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-1">
               <Heart size={16} weight="fill" className="text-wishlist" />
-              <DrawerTitle className="text-sm font-semibold">{t("title")}</DrawerTitle>
+              <DrawerTitle className="text-sm font-semibold tracking-tight">{t("title")}</DrawerTitle>
               <span className="text-xs text-muted-foreground" suppressHydrationWarning>
                 ({mounted ? totalItems : 0})
               </span>
@@ -147,7 +147,7 @@ export function WishlistDrawer({ className, children }: WishlistDrawerProps) {
                     >
                       {item.title}
                     </Link>
-                    <p className="text-sm font-semibold tabular-nums text-foreground mt-auto pt-1">{formatPrice(item.price)}</p>
+                    <p className="mt-auto pt-1 text-sm font-semibold tabular-nums text-price">{formatPrice(item.price)}</p>
                   </div>
 
                   <div className="flex flex-col items-end justify-between">

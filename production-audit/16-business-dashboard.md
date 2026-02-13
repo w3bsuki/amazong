@@ -387,22 +387,25 @@
 
 ---
 
-## Execution Evidence Log
+## Evidence Log (v2)
 
-> Required for release sign-off. Add one row per executed scenario.
+Fixed columns. Add one row per scenario run (or per sub-scenario if needed).
 
-| Scenario ID | Auto Result | Manual Result | Owner | Build/Commit | Screenshot/Video | Defect ID | Severity | Retest Result | Sign-off |
-|-------------|-------------|---------------|-------|--------------|------------------|-----------|----------|---------------|---------|
-| S16.1 | N/A (code trace) | ✅ Pass | Codex | working-tree (2026-02-11) | Mobile sidebar sheet path via shared `SidebarProvider` | DASH-001 | P2 | ✅ Pass (sidebar only) | ✅ |
-| S16.2 | N/A (code trace) | ❌ Fail | Codex | working-tree (2026-02-11) | Sidebar Sheet opens on mobile, but route navigation does not explicitly close `openMobile` state after link transitions | DASH-NAV-006 | P2 | ❌ Fail | ✅ |
-| S16.3 | N/A (code trace) | ⚠ Partial | Codex | working-tree (2026-02-11) | Overview structure present, but significant hardcoded English text remains | DASH-I18N-004 | P2 | ⚠ Partial | ✅ |
-| S16.4 | N/A (code trace) | ❌ Fail | Codex | working-tree (2026-02-11) | Orders table uses hardcoded BGN and wrong message route (`/messages?user=`) | DASH-ROUTE-002, DASH-CURRENCY-003 | P1 | ❌ Fail | ✅ |
-| S16.5 | N/A (code trace) | ❌ Fail | Codex | working-tree (2026-02-11) | Products table/modal use hardcoded BGN text and non-canonical product link patterns | DASH-CURRENCY-003, DASH-PRODUCT-005 | P1 | ❌ Fail | ✅ |
-| S16.6 | N/A (code trace) | ⚠ Partial | Codex | working-tree (2026-02-11) | Analytics/content components render, but localization consistency remains unresolved | DASH-I18N-004 | P2 | ⚠ Partial | ✅ |
-| S16.7 | N/A (code trace) | ⚠ Partial | Codex | working-tree (2026-02-11) | Empty-state component exists, but dashboard overview does not consistently surface it as the primary fallback | DASH-EMPTY-008 | P2 | ⚠ Partial | ✅ |
-| S16.8 | N/A (code trace) | ⚠ Partial | Codex | working-tree (2026-02-11) | Command palette exists but trigger is desktop-only (`md:flex`) and not directly reachable on mobile | DASH-CMD-010 | P2 | ⚠ Partial | ✅ |
-| S16.9 | N/A (code trace) | ✅ Pass | Codex | working-tree (2026-02-11) | Notifications component and header integration present | — | — | — | ✅ |
-| S16.10 | N/A (code trace) | ❌ Fail | Codex | working-tree (2026-02-11) | DASH-001 sweep: sidebar responsive infra is correct; multiple content surfaces remain mobile-weak and non-i18n compliant | DASH-001 | P1 | ❌ Fail | ✅ |
+| Scenario | Method | Artifact | Result | Issue ID | Severity | Owner | Date |
+|----------|--------|----------|--------|----------|----------|-------|------|
+| S16.1 | code trace | Mobile sidebar sheet path via shared `SidebarProvider` | Pass | DASH-001 | P2 | Codex | 2026-02-11 |
+| S16.2 | code trace | Sidebar Sheet opens on mobile, but route navigation does not explicitly close `openMobile` state after link transitions | Fail | DASH-NAV-006 | P2 | Codex | 2026-02-11 |
+| S16.3 | code trace | Overview structure present, but significant hardcoded English text remains | Partial | DASH-I18N-004 | P2 | Codex | 2026-02-11 |
+| S16.4 | code trace | Orders table uses hardcoded BGN and wrong message route (`/messages?user=`) | Fail | DASH-ROUTE-002, DASH-CURRENCY-003 | P1 | Codex | 2026-02-11 |
+| S16.5 | code trace | Products table/modal use hardcoded BGN text and non-canonical product link patterns | Fail | DASH-CURRENCY-003, DASH-PRODUCT-005 | P1 | Codex | 2026-02-11 |
+| S16.6 | code trace | Analytics/content components render, but localization consistency remains unresolved | Partial | DASH-I18N-004 | P2 | Codex | 2026-02-11 |
+| S16.7 | code trace | Empty-state component exists, but dashboard overview does not consistently surface it as the primary fallback | Partial | DASH-EMPTY-008 | P2 | Codex | 2026-02-11 |
+| S16.8 | code trace | Command palette exists but trigger is desktop-only (`md:flex`) and not directly reachable on mobile | Partial | DASH-CMD-010 | P2 | Codex | 2026-02-11 |
+| S16.9 | code trace | Notifications component and header integration present | Pass | — | — | Codex | 2026-02-11 |
+| S16.10 | code trace | DASH-001 sweep: sidebar responsive infra is correct; multiple content surfaces remain mobile-weak and non-i18n compliant | Fail | DASH-001 | P1 | Codex | 2026-02-11 |
+
+Method suggestions: `runtime` | `code trace` | `manual` (keep it consistent within a phase).
+
 
 ---
 

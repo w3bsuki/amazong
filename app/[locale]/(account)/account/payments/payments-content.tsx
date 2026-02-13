@@ -288,7 +288,8 @@ export function PaymentsContent({
                                         <Button 
                                             variant="ghost" 
                                             size="icon"
-                                            className="text-destructive hover:text-destructive"
+                                            className="h-11 w-11 text-destructive hover:text-destructive"
+                                            aria-label={locale === "bg" ? "Премахни карта" : "Remove card"}
                                             onClick={() => {
                                                 setDeletingMethodId(method.id)
                                                 setIsDeleteDialogOpen(true)
@@ -303,17 +304,21 @@ export function PaymentsContent({
                     })}
 
                     {/* Add New Card Button */}
-                    <Card 
-                        className="border-dashed cursor-pointer hover:border-hover-border transition-colors"
-                        onClick={handleAddCard}
-                    >
-                        <CardContent className="flex items-center justify-center py-6">
-                            <div className="flex items-center gap-2 text-muted-foreground">
-                                <Plus className="size-5" />
-                                <span className="font-medium">
-                                    {locale === 'bg' ? 'Добави нова карта' : 'Add new card'}
-                                </span>
-                            </div>
+                    <Card className="border-dashed hover:border-hover-border transition-colors">
+                        <CardContent className="p-0">
+                            <button
+                                type="button"
+                                onClick={handleAddCard}
+                                disabled={isAddingCard}
+                                className="w-full rounded-md px-4 py-6 text-muted-foreground transition-colors hover:bg-hover hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
+                            >
+                                <div className="flex items-center justify-center gap-2 font-medium">
+                                    <Plus className="size-5" />
+                                    <span>
+                                        {locale === "bg" ? "Добави нова карта" : "Add new card"}
+                                    </span>
+                                </div>
+                            </button>
                         </CardContent>
                     </Card>
                 </div>

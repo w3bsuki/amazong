@@ -57,7 +57,7 @@ export default async function TodaysDealsPage({
             <Zap className="size-6 sm:size-7" weight="duotone" />
           </div>
           <div className="min-w-0">
-            <h1 className="text-2xl sm:text-3xl font-bold text-foreground">{t("title")}</h1>
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">{t("title")}</h1>
             <p className="text-muted-foreground mt-1">{t("heroSubtitle")}</p>
           </div>
         </div>

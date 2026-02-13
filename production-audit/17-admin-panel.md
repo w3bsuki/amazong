@@ -218,20 +218,23 @@ SidebarProvider with `collapsible="offcanvas"` renders the sidebar as a Sheet ov
 
 ---
 
-## Execution Evidence Log
+## Evidence Log (v2)
 
-> Required for release sign-off. Add one row per executed scenario.
+Fixed columns. Add one row per scenario run (or per sub-scenario if needed).
 
-| Scenario ID | Auto Result | Manual Result | Owner | Build/Commit | Screenshot/Video | Defect ID | Severity | Retest Result | Sign-off |
-|-------------|-------------|---------------|-------|--------------|------------------|-----------|----------|---------------|---------|
-| S17.1 | N/A (code trace) | ✅ Pass | Codex | working-tree (2026-02-11) | `requireAdmin("/")` in admin layout | — | — | — | ✅ |
-| S17.2 | N/A (code trace) | ✅ Pass | Codex | working-tree (2026-02-11) | Admin sidebar uses `collapsible=\"offcanvas\"` + shared mobile sheet | ADMIN-001 | P2 | ✅ Pass (sidebar) | ✅ |
-| S17.3 | N/A (code trace) | ✅ Pass | Codex | working-tree (2026-02-11) | Header includes `SidebarTrigger` and locale switcher | — | — | — | ✅ |
-| S17.4 | N/A (code trace) | ✅ Pass | Codex | working-tree (2026-02-11) | Dashboard overview cards/activity components present | — | — | — | ✅ |
-| S17.5 | N/A (code trace) | ⚠ Partial | Codex | working-tree (2026-02-11) | Tables are wrapped with horizontal scroll, but `whitespace-nowrap` on headers/cells limits mobile readability | ADMIN-001 | P2 | ⚠ Partial | ✅ |
-| S17.6 | N/A (code trace) | ✅ Pass | Codex | working-tree (2026-02-11) | Tasks route present and reachable via admin nav | — | — | — | ✅ |
-| S17.7 | N/A (code trace) | ✅ Pass | Codex | working-tree (2026-02-11) | Docs/notes routes present and reachable via admin nav | — | — | — | ✅ |
-| S17.8 | N/A (code trace) | ⚠ Partial | Codex | working-tree (2026-02-11) | ADMIN-001 sweep: mobile sidebar support exists; table UX remains scroll-heavy and dense on small screens | ADMIN-001 | P2 | ⚠ Partial | ✅ |
+| Scenario | Method | Artifact | Result | Issue ID | Severity | Owner | Date |
+|----------|--------|----------|--------|----------|----------|-------|------|
+| S17.1 | code trace | `requireAdmin("/")` in admin layout | Pass | — | — | Codex | 2026-02-11 |
+| S17.2 | code trace | Admin sidebar uses `collapsible=\"offcanvas\"` + shared mobile sheet | Pass | ADMIN-001 | P2 | Codex | 2026-02-11 |
+| S17.3 | code trace | Header includes `SidebarTrigger` and locale switcher | Pass | — | — | Codex | 2026-02-11 |
+| S17.4 | code trace | Dashboard overview cards/activity components present | Pass | — | — | Codex | 2026-02-11 |
+| S17.5 | code trace | Tables are wrapped with horizontal scroll, but `whitespace-nowrap` on headers/cells limits mobile readability | Partial | ADMIN-001 | P2 | Codex | 2026-02-11 |
+| S17.6 | code trace | Tasks route present and reachable via admin nav | Pass | — | — | Codex | 2026-02-11 |
+| S17.7 | code trace | Docs/notes routes present and reachable via admin nav | Pass | — | — | Codex | 2026-02-11 |
+| S17.8 | code trace | ADMIN-001 sweep: mobile sidebar support exists; table UX remains scroll-heavy and dense on small screens | Partial | ADMIN-001 | P2 | Codex | 2026-02-11 |
+
+Method suggestions: `runtime` | `code trace` | `manual` (keep it consistent within a phase).
+
 
 ---
 

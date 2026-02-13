@@ -59,6 +59,7 @@ export type SellingProductsListServerActions = {
 
 interface Product {
   id: string
+  slug: string
   title: string
   description: string | null
   price: number
@@ -82,11 +83,12 @@ interface Product {
 
 interface SellingProductsListProps {
   products: Product[]
+  sellerUsername: string
   locale: string
   actions: SellingProductsListServerActions
 }
 
-export function SellingProductsList({ products, locale, actions }: SellingProductsListProps) {
+export function SellingProductsList({ products, sellerUsername, locale, actions }: SellingProductsListProps) {
   const searchParams = useSearchParams()
   const router = useRouter()
   const tBoost = useTranslations("Boost")
@@ -432,7 +434,7 @@ export function SellingProductsList({ products, locale, actions }: SellingProduc
                 <div className="flex items-start justify-between gap-2">
                   <div className="min-w-0 flex-1">
                     <Link
-                      href={`/product/${product.id}`}
+                      href={`/${sellerUsername}/${product.slug || product.id}`}
                       className="font-medium text-foreground hover:text-primary line-clamp-1 text-sm"
                     >
                       {product.title}
@@ -615,7 +617,7 @@ export function SellingProductsList({ products, locale, actions }: SellingProduc
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 flex-wrap">
                   <Link
-                    href={`/product/${product.id}`}
+                    href={`/${sellerUsername}/${product.slug || product.id}`}
                     className="font-medium text-foreground hover:text-primary line-clamp-1"
                   >
                     {product.title}
@@ -723,7 +725,7 @@ export function SellingProductsList({ products, locale, actions }: SellingProduc
                   )}
                 </Button>
                 <Button asChild variant="ghost" size="icon-sm">
-                  <Link href={`/product/${product.id}`}>
+                  <Link href={`/${sellerUsername}/${product.slug || product.id}`}>
                     <Eye className="size-4" />
                     <span className="sr-only">{t('viewSrOnly')}</span>
                   </Link>

@@ -67,17 +67,17 @@ Layout: Full-height, split-view (list + thread on desktop; stack on mobile).
 
 | Item | Status | Notes |
 |------|--------|-------|
-| B2B networking chat | ⬜ Deferred | Separate module for verified business accounts — private, rate-limited 1:1 messaging. Explicitly deferred until after V1 stability and trust systems are proven. See `docs/business/specs/prd-b2b-networking-chat.mdx` |
+| B2B networking chat | ⬜ Deferred | Separate module for verified business accounts — private, rate-limited 1:1 messaging. Explicitly deferred until after V1 stability and trust systems are proven. See `../../context/business/specs/prd-b2b-networking-chat.mdx` |
 | Read receipts | ⬜ Deferred | `read_at` column exists but UI indicator not implemented |
 | Typing indicators | ⬜ Deferred | Not in V1 scope |
 | Message search | ⬜ Deferred | No full-text search on messages |
 
 ## Cross-References
 
-- [DATABASE.md](../DATABASE.md) — Conversations and messages tables
-- [ROUTES.md](../ROUTES.md) — (chat) route group
+- [DATABASE.md](../domain/DATABASE.md) — Conversations and messages tables
+- [ROUTES.md](../domain/ROUTES.md) — (chat) route group
 - [trust-safety.md](./trust-safety.md) — Reporting and blocking flows
-- [AUTH.md](../AUTH.md) — Auth-gated chat access
+- [AUTH.md](../domain/AUTH.md) — Auth-gated chat access
 
 ---
 

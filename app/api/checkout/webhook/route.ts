@@ -144,7 +144,6 @@ async function ensureOrderItems(
 }
 
 export async function POST(req: Request) {
-  const supabase = createAdminClient()
   const body = await req.text();
   const sig = req.headers.get('stripe-signature');
 
@@ -185,6 +184,9 @@ export async function POST(req: Request) {
       { status: 400 }
     );
   }
+
+  // Only create the service-role client after the request is verified.
+  const supabase = createAdminClient()
 
   // Handle the checkout.session.completed event
   if (event.type === 'checkout.session.completed') {
@@ -276,7 +278,7 @@ export async function POST(req: Request) {
         }
       }
 
-      // TODO: Send buyer confirmation email when email service is set up
+      // NOTE (BACKLOG-006): Send buyer confirmation email when email service is set up.
       // await sendOrderConfirmationEmail(session.customer_details?.email, order);
 
     } catch (error) {

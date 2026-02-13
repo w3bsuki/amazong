@@ -72,6 +72,7 @@ interface OrderItem {
   seller: {
     id: string
     store_name: string
+    username?: string | null
     profile?: {
       full_name: string | null
       avatar_url: string | null
@@ -543,7 +544,11 @@ export function OrderDetailContent({ locale, order, existingSellerFeedbackSeller
                             </DialogContent>
                           </Dialog>
                           <Link
-                            href={`/product/${item.product?.slug || item.product_id}`}
+                            href={
+                              item.seller?.username
+                                ? `/${item.seller.username}/${item.product?.slug || item.product_id}`
+                                : "#"
+                            }
                             className="font-medium hover:underline line-clamp-2"
                           >
                             {item.product?.title || "Unknown Product"}

@@ -58,10 +58,10 @@ function SelectTrigger({
       data-slot="select-trigger"
       data-size={size}
       className={cn(
-        "ui-select-trigger border-input flex w-fit items-center justify-between gap-2 rounded-xl border bg-transparent px-3 text-sm whitespace-nowrap shadow-none outline-none transition-colors",
+        "ui-select-trigger border-input flex w-fit items-center justify-between gap-2 rounded-xl border bg-transparent px-3 text-sm whitespace-nowrap shadow-none outline-none",
         "h-(--control-default) data-[size=sm]:h-(--control-compact)",
-        "focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:outline-none focus-visible:border-ring",
-        "aria-invalid:border-destructive aria-invalid:ring-2 aria-invalid:ring-destructive-subtle",
+        "focus-visible:border-ring",
+        "aria-invalid:border-destructive",
         "disabled:cursor-not-allowed disabled:pointer-events-none disabled:bg-muted disabled:text-muted-foreground",
         className
       )}

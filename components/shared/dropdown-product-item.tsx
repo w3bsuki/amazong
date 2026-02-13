@@ -55,16 +55,17 @@ export function DropdownProductItem({
           {item.title}
         </Link>
         <div className="flex items-center gap-1.5 mt-0.5">
-          <span className="text-sm font-semibold text-foreground">{formatPrice(item.price)}</span>
+          <span className="text-sm font-semibold text-price">{formatPrice(item.price)}</span>
         </div>
         {children}
       </div>
       <button
+        type="button"
         onClick={(e) => {
           e.preventDefault()
           onRemove()
         }}
-        className="size-6 flex items-center justify-center rounded-md hover:bg-destructive-subtle text-muted-foreground hover:text-destructive self-start"
+        className="size-6 self-start flex items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-destructive-subtle hover:text-destructive focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
         aria-label={removeLabel}
       >
         <Trash size={14} weight="regular" />

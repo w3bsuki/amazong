@@ -65,9 +65,6 @@ async function getFreeTierFeesForProfile(
 }
 
 export async function POST(req: Request) {
-  // Create admin client inside handler (not at module level)
-  const supabase = createAdminClient()
-
   let body: string
   try {
     body = await req.text()
@@ -105,6 +102,9 @@ export async function POST(req: Request) {
     logWebhookError('signature', err)
     return NextResponse.json({ error: 'Invalid signature' }, { status: 400 })
   }
+
+  // Only create the service-role client after the request is verified.
+  const supabase = createAdminClient()
 
   // Process events - always return 200 { received: true } after signature verification
   // to prevent Stripe retries from causing load spikes

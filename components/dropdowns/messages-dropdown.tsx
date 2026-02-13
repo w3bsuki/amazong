@@ -5,7 +5,7 @@ import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/h
 import { Button } from "@/components/ui/button"
 import { Link } from "@/i18n/routing"
 import { useTranslations } from "next-intl"
-import { User } from "@supabase/supabase-js"
+import type { User } from "@supabase/supabase-js"
 import { ChatCircle, CaretRight } from "@phosphor-icons/react"
 import { createClient } from "@/lib/supabase/client"
 import { CountBadge } from "@/components/shared/count-badge"
@@ -18,6 +18,7 @@ export function MessagesDropdown({ user }: MessagesDropdownProps) {
   const t = useTranslations("MessagesDropdown")
   const [unreadCount, setUnreadCount] = useState(0)
   const [isOpen, setIsOpen] = useState(false)
+  const unreadSuffix = unreadCount > 0 ? ` (${unreadCount})` : ""
 
   const fetchUnreadCount = useCallback(async () => {
     if (!user) return
@@ -97,9 +98,9 @@ export function MessagesDropdown({ user }: MessagesDropdownProps) {
           href="/chat"
           data-testid="messages-dropdown"
           className="block rounded-md outline-none focus-visible:outline-2 focus-visible:outline-ring"
-          aria-label={`${t("title")}${unreadCount > 0 ? ` (${unreadCount})` : ""}`}
+          aria-label={`${t("title")}${unreadSuffix}`}
         >
-          <div className="inline-flex items-center justify-center border border-transparent hover:border-header-text/20 rounded-md text-header-text hover:text-header-text hover:bg-header-hover relative size-11 [&_svg]:size-6 cursor-pointer">
+          <div className="inline-flex items-center justify-center border border-transparent hover:border-header-text/20 rounded-md text-header-text hover:text-header-text hover:bg-header-hover active:bg-header-active relative size-11 [&_svg]:size-6 cursor-pointer tap-transparent motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth) motion-reduce:transition-none">
           <span className="relative" aria-hidden="true">
             <ChatCircle weight="regular" />
             {unreadCount > 0 && (
@@ -124,7 +125,7 @@ export function MessagesDropdown({ user }: MessagesDropdownProps) {
           <ChatCircle size={20} weight="regular" className="text-muted-foreground" />
           <h3 className="font-semibold text-base text-foreground">{t("title")}</h3>
           {unreadCount > 0 && (
-            <span className="text-xs bg-notification text-primary-foreground px-2 py-0.5 rounded-full">
+            <span className="text-xs bg-notification text-primary-foreground px-2 py-0.5 rounded-full" aria-hidden="true">
               {unreadCount}
             </span>
           )}
@@ -141,12 +142,12 @@ export function MessagesDropdown({ user }: MessagesDropdownProps) {
 
         {/* Footer */}
         <div className="p-3 bg-muted border-t border-border">
-          <Link href="/chat" onClick={() => setIsOpen(false)}>
-            <Button variant="cta" className="w-full h-9 text-sm">
+          <Button asChild variant="cta" className="w-full h-9 text-sm">
+            <Link href="/chat" onClick={() => setIsOpen(false)}>
               {t("openInbox")}
               <CaretRight size={14} className="ml-1" />
-            </Button>
-          </Link>
+            </Link>
+          </Button>
         </div>
       </HoverCardContent>
     </HoverCard>

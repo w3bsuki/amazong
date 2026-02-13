@@ -1045,9 +1045,11 @@
         "cancel": "Cancel",
         "close": "Close",
         "edit": "Edit",
+        "share": "Share",
         "delete": "Delete",
         "confirm": "Confirm",
         "submit": "Submit",
+        "continue": "Continue",
         "next": "Next",
         "previous": "Previous",
         "back": "Back",
@@ -1375,6 +1377,13 @@
     "Account": {
         "title": "Your Account",
         "tabBarAriaLabel": "Account navigation",
+        "tabBar": {
+            "account": "Account",
+            "more": "More",
+            "moreTitle": "More",
+            "moreDescription": "More account sections and quick links.",
+            "moreOptionsAriaLabel": "More options"
+        },
         "header": {
             "overview": "Account Overview",
             "orders": "Orders",
@@ -1384,16 +1393,23 @@
             "addresses": "Addresses",
             "notifications": "Notifications",
             "payments": "Payments",
+            "billing": "Billing",
             "selling": "Selling",
             "sales": "Sales",
             "plans": "Plans",
             "myAccount": "My Account",
             "backToStore": "Back to Store",
+            "messages": "Messages",
             "profile": "Profile"
         },
         "orders": {
             "title": "Your Orders",
             "desc": "Track, return, or buy things again"
+        },
+        "settings": {
+            "title": "Settings",
+            "emailChangedTitle": "Email updated",
+            "emailChangedDescription": "Your account email address was updated successfully."
         },
         "security": {
             "title": "Login & security",
@@ -1414,6 +1430,246 @@
         "messages": {
             "title": "Your Messages",
             "desc": "View messages from Treido and sellers"
+        },
+        "subscriptionBenefitsCard": {
+            "tierName": "{tier, select, free {Free} starter {Starter} pro {Pro} business {Business} other {{tier}}}",
+            "analyticsAccessLabel": "{access, select, basic {Basic} advanced {Advanced} other {{access}}}",
+            "badgeLabel": "{badge, select, verified {Verified} premium {Premium} other {{badge}}}",
+            "currentPlanLabel": "Current plan",
+            "cancellingBadge": "Cancelling",
+            "listingsLabel": "Listings",
+            "boostsLabel": "Promotions",
+            "boostsResetLabel": "Resets",
+            "boostsRemainingSuffix": "remaining",
+            "prioritySupportLabel": "Priority support",
+            "analyticsLabel": "Analytics",
+            "sellerBadgeLabel": "Seller badge",
+            "managePlanCta": "Manage plan",
+            "upgradePlanCta": "Upgrade plan",
+            "expiresOnLabel": "Expires on"
+        },
+        "addressesPage": {
+            "labels": {
+                "home": "Home",
+                "work": "Work",
+                "other": "Other"
+            },
+            "actions": {
+                "addAddress": "Add",
+                "cancel": "Cancel",
+                "save": "Save",
+                "add": "Add",
+                "delete": "Delete"
+            },
+            "dialog": {
+                "editTitle": "Edit Address",
+                "addTitle": "Add New Address",
+                "description": "Enter the details for your delivery address"
+            },
+            "fields": {
+                "label": "Label",
+                "country": "Country",
+                "phone": "Phone",
+                "fullName": "Full Name",
+                "addressLine1": "Address Line 1",
+                "addressLine2": "Address Line 2",
+                "city": "City",
+                "state": "State",
+                "postalCode": "Postal Code",
+                "setDefault": "Set as default address"
+            },
+            "placeholders": {
+                "fullName": "John Doe",
+                "addressLine1": "Street address",
+                "addressLine2": "Apartment, floor, etc.",
+                "city": "City",
+                "state": "State"
+            },
+            "countries": {
+                "bulgaria": "Bulgaria",
+                "romania": "Romania",
+                "greece": "Greece",
+                "serbia": "Serbia",
+                "northMacedonia": "North Macedonia"
+            },
+            "deleteDialog": {
+                "title": "Delete Address",
+                "description": "Are you sure you want to delete this address? This action cannot be undone."
+            },
+            "toasts": {
+                "requiredFields": "Please fill in all required fields",
+                "updated": "Address updated",
+                "added": "Address added",
+                "saveError": "Error saving address",
+                "deleted": "Address deleted",
+                "deleteError": "Error deleting address",
+                "defaultUpdated": "Default address updated",
+                "updateError": "Error updating"
+            },
+            "grid": {
+                "noAddresses": "No saved addresses",
+                "noAddressesDescription": "Add an address for faster checkout on your next order",
+                "addFirst": "Add your first address",
+                "addNew": "Add new address",
+                "default": "Default",
+                "setDefault": "Set as default",
+                "edit": "Edit",
+                "delete": "Delete",
+                "addressDetails": "Address details",
+                "deliveryAddress": "Delivery address",
+                "phone": "Phone",
+                "actions": "Actions",
+                "close": "Close"
+            },
+            "stats": {
+                "totalAddresses": "Total addresses",
+                "addressSingular": "address",
+                "addressPlural": "addresses",
+                "defaultShort": "default",
+                "defaultAddress": "Default",
+                "active": "Active",
+                "home": "Home",
+                "personal": "Personal",
+                "work": "Work",
+                "business": "Business",
+                "all": "All"
+            }
+        },
+        "followingPage": {
+            "title": "Following",
+            "count": "{count, plural, one {# store} other {# stores}}",
+            "viewStore": "View Store",
+            "empty": {
+                "title": "You're not following any stores",
+                "description": "When you follow a store, you'll see their new products and offers here.",
+                "cta": "Browse stores"
+            },
+            "toasts": {
+                "unfollowed": "Unfollowed store",
+                "error": "Error"
+            }
+        },
+        "notificationsPage": {
+            "title": "Notifications",
+            "markAll": "Mark all",
+            "loading": "Loading...",
+            "empty": "No notifications",
+            "goToSales": "Go to Sales",
+            "preferences": {
+                "title": "Preferences",
+                "description": "Choose which notifications you want in-app and via email.",
+                "inApp": "In-app",
+                "email": "Email",
+                "push": "Push"
+            },
+            "rows": {
+                "newSales": {
+                    "title": "New sales",
+                    "description": "When someone buys your product"
+                },
+                "orderStatus": {
+                    "title": "Order status",
+                    "description": "Updates about your orders"
+                },
+                "messages": {
+                    "title": "Messages",
+                    "description": "New messages and conversations"
+                },
+                "reviews": {
+                    "title": "Reviews",
+                    "description": "New product and seller reviews"
+                },
+                "system": {
+                    "title": "System",
+                    "description": "Important system alerts"
+                },
+                "promotions": {
+                    "title": "Promotions",
+                    "description": "Promotion campaigns and offers"
+                },
+                "newSalesEmail": "New sales (email)",
+                "orderStatusEmail": "Order status (email)",
+                "messagesEmail": "Messages (email)",
+                "reviewsEmail": "Reviews (email)",
+                "systemEmail": "System (email)",
+                "promotionsEmail": "Promotions (email)",
+                "push": {
+                    "title": "Push notifications",
+                    "description": "Coming soon"
+                }
+            },
+            "toasts": {
+                "loadError": "Failed to load notifications",
+                "markReadError": "Failed to mark as read",
+                "markAllReadError": "Failed to mark all as read",
+                "saveError": "Failed to save preferences"
+            }
+        },
+        "billingPage": {
+            "title": "Billing",
+            "subtitle": "Manage your subscription and view payment history",
+            "currentPlan": "Current plan",
+            "freePlan": "Free plan",
+            "basicPlan": "Basic",
+            "premiumPlan": "Premium",
+            "businessPlan": "Business",
+            "active": "Active",
+            "cancelled": "Cancelled",
+            "expired": "Expired",
+            "pending": "Pending",
+            "nextBilling": "Next billing",
+            "billingPeriod": "Period",
+            "monthly": "Monthly",
+            "yearly": "Yearly",
+            "commission": "Commission",
+            "managePlan": "Manage plan",
+            "upgradePlan": "Upgrade plan",
+            "viewPlans": "View plans",
+            "paymentHistory": "Payment history",
+            "invoices": "Invoices",
+            "subscriptions": "Subscriptions",
+            "boostPurchases": "Boost purchases",
+            "date": "Date",
+            "description": "Description",
+            "amount": "Amount",
+            "status": "Status",
+            "actions": "Actions",
+            "download": "Download",
+            "view": "View",
+            "paid": "Paid",
+            "open": "Open",
+            "void": "Void",
+            "draft": "Draft",
+            "noInvoices": "No invoices yet",
+            "noBoosts": "No boosts yet",
+            "boostProduct": "Boost a product",
+            "loadingError": "Error loading data",
+            "product": "Product",
+            "duration": "Duration",
+            "days": "days",
+            "expiresIn": "Expires in",
+            "expired2": "Expired",
+            "sellerSubscription": "Seller subscription",
+            "listingBoost": "Listing boost",
+            "noBillingYet": "No billing history yet. When you make a purchase or subscription, it will appear here.",
+            "startSelling": "Start selling",
+            "becomeSeller": "Become a seller to access plans and boosts",
+            "paymentMethods": "Payment methods",
+            "portalOpenError": "Error opening portal",
+            "paymentFallback": "Payment",
+            "boostHint": "Boost your products for more visibility",
+            "paidPlanDescription": "All payments for subscriptions and services",
+            "freePlanDescription": "Upgrade for lower fees and more features",
+            "noInvoicesDescription": "Payments are processed securely through Stripe. Invoices are automatically generated after each payment.",
+            "noBoostsDescription": "Boosted products history",
+            "activeBadge": "Active",
+            "expiredBadge": "Expired",
+            "billingEmail": "Billing email: {email}"
+        },
+        "billingError": {
+            "title": "Something went wrong",
+            "description": "We couldn't load your billing information. Please try again.",
+            "retry": "Try again"
         }
     },
     "ProductForm": {
@@ -2213,7 +2469,12 @@
         "sortLabel": "Sort",
         "sortNewest": "Newest",
         "sortRating": "Rating",
-        "sortProducts": "Most products"
+        "sortProducts": "Most products",
+        "empty": {
+            "title": "No sellers yet",
+            "description": "Be the first seller on our platform",
+            "cta": "Start selling"
+        }
     },
     "Messages": {
         "pageTitle": "Messages",
@@ -2261,7 +2522,32 @@
         "tabBuying": "Buying",
         "tabSelling": "Selling",
         "unread": "Unread",
-        "read": "Read"
+        "read": "Read",
+        "active": "Active",
+        "reportConversation": "Report conversation",
+        "reporting": "Reporting...",
+        "blockUser": "Block user",
+        "blocking": "Blocking...",
+        "startConversationDisclaimer": "Start the conversation. Messages disappear after the order is delivered.",
+        "orderLabel": "Order",
+        "orderStatusPending": "Pending",
+        "typingIndicator": "{name} is typing...",
+        "toasts": {
+            "userBlocked": {
+                "title": "User blocked",
+                "description": "This user can no longer message you"
+            },
+            "blockUserFailed": {
+                "description": "Failed to block user"
+            },
+            "reportSubmitted": {
+                "title": "Report submitted",
+                "description": "Thank you for your report. We will review it."
+            },
+            "reportConversationFailed": {
+                "description": "Failed to submit report"
+            }
+        }
     },
     "ProductFeed": {
         "categoryAnnouncement": "Now showing {categoryName}",
@@ -2628,6 +2914,230 @@
         "removeDiscountButton": "Remove discount",
         "saveButton": "Save"
     },
+    "SellerManagement": {
+        "selling": {
+            "pageTitle": "My store",
+            "actions": {
+                "add": "Add",
+                "newListing": "New listing",
+                "sales": "Sales"
+            },
+            "stats": {
+                "products": {
+                    "title": "Products"
+                },
+                "productsLabel": "{count, plural, one {product} other {products}}",
+                "value": {
+                    "title": "Inventory value"
+                },
+                "orders": {
+                    "title": "Orders"
+                },
+                "lowStock": {
+                    "title": "Low stock"
+                },
+                "lowStockLabel": "Low stock"
+            },
+            "badges": {
+                "active": "Active",
+                "inventory": "Inventory",
+                "thisMonth": "This month",
+                "attention": "Attention",
+                "allGood": "All good",
+                "verified": "Verified"
+            },
+            "labels": {
+                "memberSince": "Member since"
+            },
+            "sections": {
+                "yourProducts": "Your products",
+                "manageListings": "Manage and update your listings"
+            },
+            "edit": {
+                "toast": {
+                    "errorTitle": "Error",
+                    "productNotFound": "Listing not found.",
+                    "failedToSave": "Failed to save changes. Please try again.",
+                    "successTitle": "Saved",
+                    "changesSaved": "Changes saved successfully."
+                },
+                "breadcrumb": {
+                    "account": "Account",
+                    "myStore": "My store",
+                    "edit": "Edit"
+                },
+                "header": {
+                    "title": "Edit listing",
+                    "description": "Update details, pricing, shipping, and boost settings."
+                },
+                "sections": {
+                    "basicInformation": "Basic information",
+                    "pricingDiscount": "Pricing & discount",
+                    "pricingDiscountDescription": "Set your price and optionally add a discount.",
+                    "shipping": {
+                        "title": "Shipping",
+                        "description": "Choose destinations and set your city for Bulgaria shipments."
+                    }
+                },
+                "fields": {
+                    "title": {
+                        "label": "Title",
+                        "placeholder": "e.g. iPhone 13 Pro Max"
+                    },
+                    "description": {
+                        "label": "Description",
+                        "placeholder": "Condition, included accessories, and any flaws..."
+                    },
+                    "stock": {
+                        "label": "Stock"
+                    },
+                    "price": {
+                        "label": "Price",
+                        "saleLabel": "Sale price"
+                    },
+                    "originalPrice": {
+                        "label": "Original price",
+                        "placeholder": "e.g. 99.99"
+                    },
+                    "saleEndDate": {
+                        "label": "Sale ends (optional)"
+                    },
+                    "city": {
+                        "label": "Your city",
+                        "placeholder": "Select a city",
+                        "help": "Shown on your listing for delivery within Bulgaria."
+                    }
+                },
+                "sale": {
+                    "toggleLabel": "On sale",
+                    "toggleDescription": "Show a discount badge and the original price.",
+                    "discountPreview": "Discount: {percent}%"
+                },
+                "shippingDestinations": {
+                    "bulgaria": "Bulgaria",
+                    "europe": "Europe",
+                    "usa": "USA",
+                    "worldwide": "Worldwide"
+                },
+                "sidebar": {
+                    "previewTitle": "Preview",
+                    "boostTitle": "Boost",
+                    "boostDescription": "Featured on homepage"
+                },
+                "actions": {
+                    "save": "Save Changes",
+                    "saving": "Saving...",
+                    "viewProduct": "View Product"
+                }
+            }
+        },
+        "sales": {
+            "breadcrumb": {
+                "account": "Account",
+                "sales": "Sales"
+            },
+            "header": {
+                "title": "Sales",
+                "description": "Revenue and order trends for your store."
+            },
+            "actions": {
+                "myStore": "My store",
+                "newListing": "New listing"
+            },
+            "pendingActions": {
+                "title": "Pending actions",
+                "description": "Things that may need your attention right now.",
+                "allClear": "All clear",
+                "items": {
+                    "ordersToShip": "Orders to ship",
+                    "unreadMessages": "Unread messages",
+                    "lowStock": "Low stock"
+                },
+                "actions": {
+                    "view": "View",
+                    "open": "Open",
+                    "manage": "Manage"
+                }
+            },
+            "export": {
+                "from": "From",
+                "to": "To",
+                "cta": "Export",
+                "errors": {
+                    "invalidRange": "Select a valid date range.",
+                    "failed": "Export failed. Please try again."
+                }
+            },
+            "chart": {
+                "empty": "No data for this period.",
+                "metrics": {
+                    "revenue": "Revenue",
+                    "orders": "Orders"
+                }
+            },
+            "stats": {
+                "totalRevenue": {
+                    "title": "Total revenue",
+                    "vsPrevious": "vs previous period"
+                },
+                "netRevenue": {
+                    "title": "Net revenue",
+                    "afterCommission": "After {rate}% commission",
+                    "commissionLabel": "Commission"
+                },
+                "totalOrders": {
+                    "title": "Orders",
+                    "unitsSold": "{count, plural, one {# unit sold} other {# units sold}}"
+                },
+                "avgOrderValue": {
+                    "title": "Avg order value",
+                    "perOrder": "Per order",
+                    "itemsPerOrder": "{value} items per order"
+                }
+            },
+            "sections": {
+                "revenueOverTime": {
+                    "title": "Revenue over time",
+                    "description": "Revenue and orders for the selected period."
+                },
+                "recentSales": {
+                    "title": "Recent sales",
+                    "description": "{count, plural, one {# sale} other {# sales}} · {period, select, 7d {last 7 days} 30d {last 30 days} 90d {last 90 days} 1y {last year} other {selected period}}"
+                }
+            },
+            "empty": {
+                "title": "No sales yet",
+                "description": "When you make a sale, it will show up here.",
+                "cta": "Create a listing"
+            },
+            "status": {
+                "pending": "Pending",
+                "paid": "Paid",
+                "processing": "Processing",
+                "shipped": "Shipped",
+                "delivered": "Delivered",
+                "cancelled": "Cancelled"
+            },
+            "table": {
+                "headers": {
+                    "product": "Product",
+                    "buyer": "Buyer",
+                    "quantity": "Qty",
+                    "revenue": "Revenue",
+                    "status": "Status",
+                    "date": "Date",
+                    "actions": "Actions"
+                },
+                "actions": {
+                    "view": "View"
+                },
+                "fallbackBuyerName": "Unknown buyer",
+                "fallbackProductTitle": "Untitled product",
+                "productFallbackAlt": "Product image",
+                "unitPriceSuffix": "each"
+            }
+        }
+    },
     "seller": {
         "payouts": {
             "title": "Payout Settings",
@@ -2665,6 +3175,301 @@
         "payoutSetupRequired": "Set up payouts first",
         "payoutSetupDescription": "Before you can list items for sale, you need to connect your bank account to receive payments.",
         "setupPayouts": "Set up payouts",
+        "common": {
+            "optionalParenthetical": "(optional)",
+            "storeFallback": "Store"
+        },
+        "gates": {
+            "completeAccountSetup": {
+                "title": "Complete your account setup",
+                "description": "Please complete your profile setup before you can start selling.",
+                "cta": "Complete setup"
+            },
+            "setUpUsername": {
+                "title": "Set up your username",
+                "description": "You need a username before you can start selling. Visit your account settings to set one up.",
+                "cta": "Go to settings"
+            }
+        },
+        "aiAssistant": {
+            "label": "AI suggestions",
+            "addPhotoFirst": "add photo first",
+            "generate": "Generate",
+            "generating": "Generating...",
+            "applyAll": "Apply all",
+            "toasts": {
+                "applied": "Applied AI suggestions",
+                "nothingToApply": "Nothing to apply",
+                "ready": "AI suggestions ready",
+                "titleApplied": "Title applied",
+                "categoryApplied": "Category applied",
+                "conditionApplied": "Condition applied",
+                "priceApplied": "Price applied"
+            },
+            "errors": {
+                "generateFailed": "Failed to generate suggestions"
+            }
+        },
+        "categoryModal": {
+            "searchPlaceholder": "Search category...",
+            "searchPlaceholderCompact": "Search...",
+            "noResultsCompact": "No results",
+            "noResults": "No results found",
+            "selectPlaceholder": "Select...",
+            "categoryLabel": "Category:",
+            "title": "Select category",
+            "description": "Choose a category for your product",
+            "levelLabel": "Level {level}",
+            "stepProgress": "Step {current}/{total}"
+        },
+        "steps": {
+            "what": {
+                "title": "What are you selling?",
+                "description": "Give your item a name and add a photo"
+            },
+            "category": {
+                "title": "Choose a category",
+                "description": "The category determines what details you'll fill in",
+                "selectedLabel": "Selected category"
+            },
+            "details": {
+                "title": "Product details",
+                "description": "Add information that helps buyers find your item",
+                "conditionLabel": "Condition",
+                "conditionPlaceholder": "Select condition",
+                "mainSpecificsLabel": "Main specifics",
+                "enterPlaceholder": "Enter...",
+                "descriptionLabel": "Description",
+                "descriptionPlaceholder": "Describe your item: brand, size, why you're selling...",
+                "conditionDrawerTitle": "Item condition"
+            },
+            "pricing": {
+                "title": "Price & shipping",
+                "description": "Set your price and choose shipping options",
+                "yourPriceLabel": "Your price",
+                "compareAtLabel": "Compare at price",
+                "originalPricePlaceholder": "Original price",
+                "quantityLabel": "Quantity",
+                "quantityDecreaseAriaLabel": "Decrease quantity",
+                "quantityIncreaseAriaLabel": "Increase quantity",
+                "acceptOffersTitle": "Accept offers",
+                "acceptOffersDescription": "Let buyers negotiate the price",
+                "selectCurrencyTitle": "Select currency"
+            },
+            "review": {
+                "title": "Review & publish",
+                "description": "Review your listing before publishing"
+            }
+        },
+        "actions": {
+            "publishListing": "Publish listing",
+            "publishing": "Publishing..."
+        },
+        "errors": {
+            "signInRequired": "Please sign in to continue",
+            "createFailed": "Failed to create listing",
+            "publishFailed": "Error publishing listing"
+        },
+        "toasts": {
+            "published": {
+                "title": "Listing published!",
+                "description": "Your product is now live"
+            }
+        },
+        "publish": {
+            "processingDescription": "Preparing your listing for buyers.",
+            "pleaseWait": "Please wait"
+        },
+        "success": {
+            "productTitleFallback": "Your product",
+            "headerStatus": "Listing published",
+            "title": "Published!",
+            "description": "Your listing is live and ready for buyers.",
+            "listingActive": "Listing is active",
+            "viewListing": "View listing",
+            "linkCopied": "Link copied",
+            "newListing": "New"
+        },
+        "desktop": {
+            "sections": {
+                "details": "Details",
+                "pricingAndShipping": "Pricing & Shipping"
+            },
+            "reviewProgress": "Review ({percent}%)",
+            "completeRequiredFieldsToPublish": "Complete all required fields to publish your listing",
+            "sellingTips": {
+                "title": "Selling Tips",
+                "items": {
+                    "photos": "Quality photos increase sales",
+                    "description": "Detailed descriptions build trust",
+                    "pricing": "Competitive pricing attracts buyers"
+                }
+            }
+        },
+        "fields": {
+            "title": {
+                "label": "Title",
+                "description": "{min}-{max} characters. Be specific.",
+                "placeholder": "e.g., iPhone 15 Pro Max 256GB",
+                "remaining": "Add {count} more characters"
+            },
+            "description": {
+                "label": "Description",
+                "helpText": "Describe the details — size, color, flaws",
+                "placeholder": "Add a description of your product...",
+                "toolbar": {
+                    "boldTitle": "Bold",
+                    "boldAriaLabel": "Bold text",
+                    "italicTitle": "Italic",
+                    "italicAriaLabel": "Italic text",
+                    "listTitle": "List",
+                    "listAriaLabel": "Add list"
+                }
+            },
+            "brand": {
+                "label": "Brand",
+                "helpText": "Select your product's brand"
+            },
+            "condition": {
+                "helpText": "Select the condition of your item",
+                "drawerDescription": "Be accurate — it builds trust with buyers"
+            },
+            "category": {
+                "label": "Category",
+                "helpText": "Choose the most appropriate category for your product"
+            },
+            "pricing": {
+                "sectionTitle": "Price & quantity",
+                "sectionDescription": "Set your price and available quantity",
+                "compactLabel": "Pricing",
+                "priceGuide": "Price Guide ({count} similar listings)",
+                "suggestions": {
+                    "low": "Low",
+                    "recommended": "Recommended",
+                    "high": "High"
+                },
+                "positionHint": "{position, select, below {Your price is below market — items sell faster!} above {Your price is above typical range} low {Competitively priced} median {Priced at market average} high {Premium pricing} other {}}"
+            },
+            "attributes": {
+                "sectionTitle": "Item specifics",
+                "sectionDescription": "Add details to help buyers find your product",
+                "noCategorySelected": "Select a category to see item specifics",
+                "helpBuyersHint": "Item specifics help buyers",
+                "moreDetailsOptional": "More details (optional)",
+                "toggle": {
+                    "showAll": "Show all",
+                    "hide": "Hide"
+                },
+                "placeholders": {
+                    "selectEllipsis": "Select...",
+                    "selectWithLabel": "Select {label}",
+                    "enterWithLabel": "Enter {label}"
+                },
+                "custom": {
+                    "title": "Custom attributes",
+                    "removeAriaLabel": "Remove",
+                    "nameLabel": "Name",
+                    "namePlaceholder": "e.g., Material",
+                    "valueLabel": "Value",
+                    "valuePlaceholder": "e.g., Cotton",
+                    "addButton": "Add attribute"
+                }
+            }
+        },
+        "photos": {
+            "label": "Photos",
+            "helpText": "Add up to {max} photos. First image is the cover.",
+            "add": "Add",
+            "cover": "Cover",
+            "uploaded": "Uploaded",
+            "errors": {
+                "uploadFailed": "Upload failed"
+            },
+            "photoAlt": "Photo {index}"
+        },
+        "review": {
+            "completeRequiredFieldsTitle": "Complete required fields",
+            "sections": {
+                "photosAndDetails": "Photos & Details",
+                "categoryAndCondition": "Category & Condition",
+                "itemSpecifics": "Item Specifics",
+                "priceAndShipping": "Price & Shipping"
+            },
+            "labels": {
+                "category": "Category",
+                "condition": "Condition",
+                "brand": "Brand",
+                "attributes": "Attributes",
+                "price": "Price",
+                "quantity": "Quantity",
+                "acceptsOffers": "Accepts offers",
+                "shipping": "Shipping",
+                "pickupOnly": "Pickup only",
+                "shippingPrice": "Price:",
+                "free": "Free"
+            },
+            "shippingDestinations": {
+                "bulgaria": "Bulgaria",
+                "europe": "Europe"
+            },
+            "termsAgreement": "By publishing this listing, you agree to the Terms of Sale and confirm that all information is accurate."
+        },
+        "payoutSetupModal": {
+            "benefits": {
+                "securePayments": {
+                    "title": "Secure payments",
+                    "description": "Processed by Stripe, a global leader"
+                },
+                "fastTransfers": {
+                    "title": "Fast transfers",
+                    "description": "Get your money in days, not weeks"
+                }
+            },
+            "later": "Later",
+            "note": "After payouts are enabled, return to /sell and publish."
+        },
+        "shipping": {
+            "section": {
+                "title": "Shipping",
+                "description": "Select regions you can ship to"
+            },
+            "regionsTitle": "Shipping Regions",
+            "regions": {
+                "bulgaria": {
+                    "label": "Bulgaria",
+                    "description": "Cash on delivery via courier",
+                    "deliveryTime": "1-3 days"
+                },
+                "pickup": {
+                    "label": "Local Pickup",
+                    "description": "Buyer picks up in person",
+                    "deliveryTime": "Arranged"
+                }
+            },
+            "shipsFromLabel": "Ships from",
+            "shipsFromHint": "The city you'll ship from",
+            "selectCityTitle": "Select City",
+            "selectCityPlaceholder": "Select your city...",
+            "cityLabel": "Your City",
+            "freeShipping": {
+                "title": "Free shipping",
+                "description": "Attract more buyers with free delivery"
+            },
+            "shippingPriceLabel": "Shipping price",
+            "dimensions": {
+                "title": "Package dimensions",
+                "lengthLabel": "Length",
+                "widthLabel": "Width",
+                "heightLabel": "Height",
+                "weightLabel": "Weight"
+            },
+            "processing": {
+                "inlineLabel": "Processing:",
+                "title": "Processing Time",
+                "hint": "Time to prepare the order before shipping",
+                "days": "{count, plural, one {# day} other {# days}}"
+            }
+        },
         "sellerOnboardingWizard": {
             "step2Title": "Customize Your Profile",
             "step2Subtitle": "Help buyers get to know you",
@@ -2853,6 +3658,10 @@
             "created": "Task created",
             "deleteFailed": "Failed to delete task",
             "deleted": "Task deleted"
+        },
+        "aria": {
+            "edit": "Edit task",
+            "delete": "Delete task"
         }
     },
     "AdminNotes": {
@@ -2892,6 +3701,12 @@
             "created": "Note created",
             "deleteFailed": "Failed to delete note",
             "deleted": "Note deleted"
+        },
+        "aria": {
+            "pin": "Pin note",
+            "unpin": "Unpin note",
+            "edit": "Edit note",
+            "delete": "Delete note"
         }
     },
     "AdminUsers": {
@@ -3784,6 +4599,99 @@
         "errors": {
             "failedToUpdateStatus": "Failed to update status",
             "unexpectedError": "An error occurred"
+        }
+    },
+    "BusinessEmptyState": {
+        "tipsLabel": "Tips to get started",
+        "products": {
+            "title": "Add your first product",
+            "description": "Start selling by creating your first product listing. Add details, images, and pricing to get started.",
+            "primaryAction": {
+                "label": "Add product"
+            },
+            "secondaryAction": {
+                "label": "Import products"
+            },
+            "tips": [
+                "Use high-quality images to showcase your products",
+                "Write detailed descriptions with relevant keywords",
+                "Set competitive prices based on market research"
+            ]
+        },
+        "orders": {
+            "title": "No orders yet",
+            "description": "When customers make purchases, you'll see their orders here. Share your products to start getting sales!",
+            "primaryAction": {
+                "label": "View products"
+            },
+            "secondaryAction": {
+                "label": "Create draft order"
+            },
+            "tips": [
+                "Make sure your products are visible and well-described",
+                "Share your store link on social media",
+                "Consider running promotions to attract first customers"
+            ]
+        },
+        "inventory": {
+            "title": "No inventory to track",
+            "description": "Add products with inventory tracking enabled to manage your stock levels here.",
+            "primaryAction": {
+                "label": "Add product"
+            },
+            "secondaryAction": {
+                "label": "Import inventory"
+            },
+            "tips": [
+                "Enable inventory tracking when creating products",
+                "Set low stock alerts to avoid running out",
+                "Keep safety stock for popular items"
+            ]
+        },
+        "analytics": {
+            "title": "No data yet",
+            "description": "Analytics will appear here once you start getting traffic and sales. Check back soon!",
+            "primaryAction": {
+                "label": "View dashboard"
+            },
+            "secondaryAction": {
+                "label": ""
+            },
+            "tips": [
+                "Share your store link to drive traffic",
+                "Check back regularly for insights",
+                "Analytics update in real-time"
+            ]
+        },
+        "customers": {
+            "title": "No customers yet",
+            "description": "Customers who purchase from your store will appear here. Start selling to build your customer base!",
+            "primaryAction": {
+                "label": "View products"
+            },
+            "secondaryAction": {
+                "label": ""
+            },
+            "tips": [
+                "Offer great products at competitive prices",
+                "Provide excellent customer service",
+                "Build relationships through messages"
+            ]
+        },
+        "discounts": {
+            "title": "No discounts created",
+            "description": "Create discount codes to attract customers and boost sales. You can set percentage or fixed amount discounts.",
+            "primaryAction": {
+                "label": "Create discount"
+            },
+            "secondaryAction": {
+                "label": ""
+            },
+            "tips": [
+                "Use discounts for special promotions",
+                "Set expiration dates to create urgency",
+                "Track discount performance in analytics"
+            ]
         }
     }
 }

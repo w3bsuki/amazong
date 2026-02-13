@@ -30,14 +30,8 @@ jobs:
       - name: Lint
         run: pnpm -s lint
 
-      - name: Docs gate
-        run: pnpm -s docs:gate
-
-      - name: Docs site check
-        run: pnpm -s docs:site:check
-
-      - name: Launch readiness check
-        run: pnpm -s docs:status:check
+      - name: Docs check
+        run: pnpm -s docs:check
 
       - name: TS safety gate
         run: pnpm -s ts:gate

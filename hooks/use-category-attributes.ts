@@ -50,10 +50,11 @@ export function useCategoryAttributes(
         throw new Error(`Failed to fetch: ${res.status}`)
       }
 
-      const data = await res.json()
+      const data = (await res.json()) as { attributes?: CategoryAttribute[] }
+      const attributesFromApi = Array.isArray(data.attributes) ? data.attributes : []
       
       // Filter to only filterable select/multiselect attrs with options
-      const filterable = (data.attributes || []).filter(
+      const filterable = attributesFromApi.filter(
         (attr: CategoryAttribute) =>
           attr.is_filterable &&
           (attr.attribute_type === "select" || attr.attribute_type === "multiselect") &&

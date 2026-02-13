@@ -209,7 +209,9 @@ export function AccountWishlistGrid({ items, locale, onRemove }: WishlistGridPro
               role="button"
               tabIndex={0}
               aria-label={locale === "bg" ? `Отвори ${item.title}` : `Open ${item.title}`}
-              className="flex flex-col rounded-md bg-card border border-border overflow-hidden transition-colors active:bg-active text-left"
+              aria-haspopup="dialog"
+              aria-expanded={selectedItem?.id === item.id}
+              className="flex flex-col rounded-md bg-card border border-border overflow-hidden transition-colors active:bg-active text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
             >
               {/* Product Image */}
               <div className="relative aspect-square w-full overflow-hidden bg-card">
@@ -243,11 +245,13 @@ export function AccountWishlistGrid({ items, locale, onRemove }: WishlistGridPro
                 {/* Quick add to cart button overlay */}
                 {item.stock > 0 && (
                   <button
+                    type="button"
                     onClick={(e) => {
                       e.stopPropagation()
                       handleMoveToCart(item)
                     }}
-                    className="absolute bottom-2 right-2 flex size-8 items-center justify-center rounded-full bg-foreground"
+                    aria-label={locale === "bg" ? `Добави ${item.title} в количката` : `Add ${item.title} to cart`}
+                    className="absolute bottom-2 right-2 flex size-11 items-center justify-center rounded-full bg-foreground"
                   >
                     <ShoppingCart weight="fill" className="size-4 text-overlay-text" />
                   </button>
@@ -270,12 +274,14 @@ export function AccountWishlistGrid({ items, locale, onRemove }: WishlistGridPro
                   </p>
                   {/* Remove button */}
                   <button
+                    type="button"
                     onClick={(e) => {
                       e.stopPropagation()
                       handleRemove(item.product_id)
                     }}
                     disabled={removingId === item.product_id}
-                    className="flex size-7 items-center justify-center rounded-full text-muted-foreground hover:text-destructive hover:bg-destructive-subtle transition-colors"
+                    aria-label={locale === "bg" ? `Премахни ${item.title}` : `Remove ${item.title}`}
+                    className="flex size-11 items-center justify-center rounded-full text-muted-foreground hover:text-destructive hover:bg-destructive-subtle transition-colors"
                   >
                     <Trash className="size-4" />
                   </button>
@@ -375,6 +381,7 @@ export function AccountWishlistGrid({ items, locale, onRemove }: WishlistGridPro
                     }}
                     disabled={removingId === item.product_id}
                     className="text-destructive hover:text-destructive h-11 px-4"
+                    aria-label={locale === "bg" ? `Премахни ${item.title}` : `Remove ${item.title}`}
                   >
                     <Trash className="size-4" />
                   </Button>
@@ -412,7 +419,7 @@ export function AccountWishlistGrid({ items, locale, onRemove }: WishlistGridPro
                   username: item.username ?? null,
                 })}
                 className="absolute inset-0 z-10"
-                aria-label={item.title}
+                aria-label={locale === "bg" ? `Виж ${item.title}` : `View ${item.title}`}
               />
 
               {/* Stock indicator */}
@@ -501,6 +508,7 @@ export function AccountWishlistGrid({ items, locale, onRemove }: WishlistGridPro
                     onClick={() => handleRemove(item.product_id)}
                     disabled={removingId === item.product_id}
                     className="text-destructive hover:text-destructive hover:bg-destructive-subtle"
+                    aria-label={locale === "bg" ? `Премахни ${item.title}` : `Remove ${item.title}`}
                   >
                     <Trash className="size-4" />
                   </Button>

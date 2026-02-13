@@ -550,31 +550,34 @@
 
 ---
 
-## Execution Evidence Log
+## Evidence Log (v2)
 
-> Required for release sign-off. Add one row per executed scenario.
+Fixed columns. Add one row per scenario run (or per sub-scenario if needed).
 
-| Scenario ID | Auto Result | Manual Result | Owner | Build/Commit | Screenshot/Video | Defect ID | Severity | Retest Result | Sign-off |
-|-------------|-------------|---------------|-------|--------------|------------------|-----------|----------|---------------|---------|
-| S3.1 | N/A (code trace) | ✅ Pass | Codex | working-tree (2026-02-11) | `app/[locale]/(auth)/auth/sign-up/page.tsx`, `components/auth/sign-up-form-body.tsx` | — | — | — | ✅ |
-| S3.2 | N/A (code trace) | ✅ Pass | Codex | working-tree (2026-02-11) | `components/auth/sign-up-form-body.tsx` validation + field errors | — | — | — | ✅ |
-| S3.3 | N/A (code trace) | ✅ Pass | Codex | working-tree (2026-02-11) | `data-testid="username-availability"` state handling in sign-up form body | — | — | — | ✅ |
-| S3.4 | N/A (code trace) | ✅ Pass | Codex | working-tree (2026-02-11) | Password strength requirements rendered in sign-up form body | — | — | — | ✅ |
-| S3.5 | N/A (code trace) | ✅ Pass | Codex | working-tree (2026-02-11) | `app/[locale]/(auth)/_components/login-form.tsx`, `components/auth/login-form-body.tsx` | — | — | — | ✅ |
-| S3.6 | N/A (code trace) | ✅ Pass | Codex | working-tree (2026-02-11) | Auth refresh flow in `components/providers/auth-state-manager.tsx` + drawer submit in `components/mobile/drawers/auth-drawer.tsx` | AUTH-001 | P0 | ✅ Pass | ✅ |
-| S3.7 | N/A (code trace) | ✅ Pass | Codex | working-tree (2026-02-11) | Auth drawer open state and tabbed content wiring | — | — | — | ✅ |
-| S3.8 | N/A (code trace) | ✅ Pass | Codex | working-tree (2026-02-11) | Drawer tab switching logic in `components/mobile/drawers/auth-drawer.tsx` | — | — | — | ✅ |
-| S3.9 | N/A (code trace) | ✅ Pass | Codex | working-tree (2026-02-11) | Drawer login submit calls `onLoginSuccess` refresh path | AUTH-001 | P0 | ✅ Pass | ✅ |
-| S3.10 | N/A (code trace) | ✅ Pass | Codex | working-tree (2026-02-11) | Drawer safe-area classes and container structure | — | — | — | ✅ |
-| S3.11 | N/A (code trace) | ✅ Pass | Codex | working-tree (2026-02-11) | `app/[locale]/(auth)/_components/forgot-password-form.tsx` submit/success states | — | — | — | ✅ |
-| S3.12 | N/A (code trace) | ✅ Pass | Codex | working-tree (2026-02-11) | `app/[locale]/(auth)/auth/reset-password/reset-password-client.tsx` session+reset flow | — | — | — | ✅ |
-| S3.13 | N/A (code trace) | ✅ Pass | Codex | working-tree (2026-02-11) | Sign-up success screen + resend flow in `sign-up-success-client.tsx` | — | — | — | ✅ |
-| S3.14 | N/A (code trace) | ⚠ Partial | Codex | working-tree (2026-02-11) | Most controls are touch-safe, but drawer close button uses `icon-compact` (36px) | AUTH-003 | P1 | ⚠ Partial | ✅ |
-| S3.15 | N/A (code trace) | ✅ Pass | Codex | working-tree (2026-02-11) | Onboarding auth gate in `app/[locale]/(onboarding)/layout.tsx` | ONB-002 | P1 | ✅ Pass | ✅ |
-| S3.16 | N/A (code trace) | ✅ Pass | Codex | working-tree (2026-02-11) | Onboarding shell/cards flow components audited | ONB-001 | P1 | ✅ Pass | ✅ |
-| S3.17 | N/A (code trace) | ⚠ Partial | Codex | working-tree (2026-02-11) | Auth layout uses `PageShell variant=\"default\"`; route auto-detection keeps `/auth/*` in default header path | AUTH-UX-004 | P2 | ⚠ Partial | ✅ |
-| S3.18 | N/A (code trace) | ✅ Pass | Codex | working-tree (2026-02-11) | Auth error page render + navigation actions | AUTH-002 | P1 | ✅ Pass | ✅ |
-| S3.19 | N/A (code trace) | ✅ Pass | Codex | working-tree (2026-02-11) | Welcome wizard logic in `app/[locale]/(auth)/_components/welcome-client.tsx` | — | — | — | ✅ |
+| Scenario | Method | Artifact | Result | Issue ID | Severity | Owner | Date |
+|----------|--------|----------|--------|----------|----------|-------|------|
+| S3.1 | code trace | `app/[locale]/(auth)/auth/sign-up/page.tsx`, `components/auth/sign-up-form-body.tsx` | Pass | — | — | Codex | 2026-02-11 |
+| S3.2 | code trace | `components/auth/sign-up-form-body.tsx` validation + field errors | Pass | — | — | Codex | 2026-02-11 |
+| S3.3 | code trace | `data-testid="username-availability"` state handling in sign-up form body | Pass | — | — | Codex | 2026-02-11 |
+| S3.4 | code trace | Password strength requirements rendered in sign-up form body | Pass | — | — | Codex | 2026-02-11 |
+| S3.5 | code trace | `app/[locale]/(auth)/_components/login-form.tsx`, `components/auth/login-form-body.tsx` | Pass | — | — | Codex | 2026-02-11 |
+| S3.6 | code trace | Auth refresh flow in `components/providers/auth-state-manager.tsx` + drawer submit in `components/mobile/drawers/auth-drawer.tsx` | Pass | AUTH-001 | P0 | Codex | 2026-02-11 |
+| S3.7 | code trace | Auth drawer open state and tabbed content wiring | Pass | — | — | Codex | 2026-02-11 |
+| S3.8 | code trace | Drawer tab switching logic in `components/mobile/drawers/auth-drawer.tsx` | Pass | — | — | Codex | 2026-02-11 |
+| S3.9 | code trace | Drawer login submit calls `onLoginSuccess` refresh path | Pass | AUTH-001 | P0 | Codex | 2026-02-11 |
+| S3.10 | code trace | Drawer safe-area classes and container structure | Pass | — | — | Codex | 2026-02-11 |
+| S3.11 | code trace | `app/[locale]/(auth)/_components/forgot-password-form.tsx` submit/success states | Pass | — | — | Codex | 2026-02-11 |
+| S3.12 | code trace | `app/[locale]/(auth)/auth/reset-password/reset-password-client.tsx` session+reset flow | Pass | — | — | Codex | 2026-02-11 |
+| S3.13 | code trace | Sign-up success screen + resend flow in `sign-up-success-client.tsx` | Pass | — | — | Codex | 2026-02-11 |
+| S3.14 | code trace | Most controls are touch-safe, but drawer close button uses `icon-compact` (36px) | Partial | AUTH-003 | P1 | Codex | 2026-02-11 |
+| S3.15 | code trace | Onboarding auth gate in `app/[locale]/(onboarding)/layout.tsx` | Pass | ONB-002 | P1 | Codex | 2026-02-11 |
+| S3.16 | code trace | Onboarding shell/cards flow components audited | Pass | ONB-001 | P1 | Codex | 2026-02-11 |
+| S3.17 | code trace | Auth layout uses `PageShell variant=\"default\"`; route auto-detection keeps `/auth/*` in default header path | Partial | AUTH-UX-004 | P2 | Codex | 2026-02-11 |
+| S3.18 | code trace | Auth error page render + navigation actions | Pass | AUTH-002 | P1 | Codex | 2026-02-11 |
+| S3.19 | code trace | Welcome wizard logic in `app/[locale]/(auth)/_components/welcome-client.tsx` | Pass | — | — | Codex | 2026-02-11 |
+
+Method suggestions: `runtime` | `code trace` | `manual` (keep it consistent within a phase).
+
 
 ---
 

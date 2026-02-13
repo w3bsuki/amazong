@@ -30,7 +30,7 @@ type GetPublicDocArgs = {
 const PUBLIC_DOCS_ROOT = path.join(process.cwd(), "docs", "public")
 
 function normalizeMarkdown(markdown: string) {
-  return markdown.replace(/^\uFEFF/, "").replace(/\r\n/g, "\n")
+  return markdown.replace(/^\uFEFF/, "").replaceAll("\r\n", "\n")
 }
 
 function stripLastUpdatedFooter(markdown: string) {
@@ -47,7 +47,7 @@ function stripLastUpdatedFooter(markdown: string) {
 }
 
 function normalizeDocKey(docKey: string): string {
-  const normalized = docKey.trim().replaceAll("\\", "/").replace(/^\/+|\/+$/g, "")
+  const normalized = docKey.trim().replaceAll("\\", "/").replaceAll(/^\/+|\/+$/g, "")
   if (!normalized) throw new Error("Public doc key is required")
   if (normalized.includes("..")) throw new Error(`Invalid public doc key: '${docKey}'`)
 
@@ -143,7 +143,7 @@ export function parsePublicDocIntro(markdown: string): { notice: string; markdow
   }
 
   return {
-    notice: noticeLines.join(" ").replace(/\s+/g, " ").trim(),
+    notice: noticeLines.join(" ").replaceAll(/\s+/g, " ").trim(),
     markdown: bodyLines.join("\n").trim(),
   }
 }

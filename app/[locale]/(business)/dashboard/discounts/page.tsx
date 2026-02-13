@@ -31,7 +31,7 @@ import {
 } from "@tabler/icons-react"
 
 // Placeholder function - would need actual discounts table
-async function getBusinessDiscounts(_sellerId: string) {
+async function getBusinessDiscounts() {
   // This is a placeholder - you'd need to create a discounts table
   // For now, return empty to demonstrate the UI
   return {
@@ -53,8 +53,8 @@ async function getBusinessDiscounts(_sellerId: string) {
 
 export default async function BusinessDiscountsPage() {
   // Requires paid business subscription
-  const businessSeller = await requireDashboardAccess()
-  const { discounts, total } = await getBusinessDiscounts(businessSeller.id)
+  await requireDashboardAccess()
+  const { discounts, total } = await getBusinessDiscounts()
 
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('en-US', {

@@ -62,7 +62,7 @@ export function SellerRateBuyerActions({
       }
     }
     checkRatingStatus()
-  }, [isDelivered, orderItemId])
+  }, [actions, isDelivered, orderItemId])
 
   async function handleSubmitRating(rating: number, comment: string) {
     if (!buyerId || !orderId) {

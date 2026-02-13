@@ -24,7 +24,7 @@ pnpm -s test:e2e:smoke
 - Project contract: `AGENTS.md`
 - Docs hub (SSOT): `docs/INDEX.md`
 - Workflow + gates: `docs/WORKFLOW.md`
-- Launch/env notes: `docs/LAUNCH.md`
+- Verification matrix: `docs/QA.md`
 
 ## Storybook
 

@@ -109,7 +109,7 @@ export function LegalPageLayout({
               <HeroIcon className="size-7 text-primary-foreground" />
             </div>
             <div>
-              <h1 className="text-2xl md:text-4xl font-bold mb-2">{title}</h1>
+              <h1 className="text-2xl md:text-4xl font-bold tracking-tight mb-2">{title}</h1>
               <p className="text-foreground">{lastUpdated}</p>
             </div>
           </div>
@@ -122,7 +122,7 @@ export function LegalPageLayout({
           <aside className="lg:col-span-1">
             <Card className="sticky top-4">
               <CardContent className="p-4">
-                <h3 className="font-bold mb-4 text-sm uppercase tracking-wide text-muted-foreground">
+                <h3 className="font-bold tracking-tight mb-4 text-sm uppercase text-muted-foreground">
                   {tocLabel}
                 </h3>
                 <nav className="space-y-1">
@@ -130,7 +130,7 @@ export function LegalPageLayout({
                     <a
                       key={section.id}
                       href={`#${section.id}`}
-                      className="flex items-center gap-2 px-3 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                      className="flex min-h-11 items-center gap-2 px-3 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
                     >
                       <section.icon className="size-4" />
                       <span className="truncate">{section.title}</span>
@@ -197,15 +197,15 @@ export function LegalPageLayout({
                     <Envelope className="size-6 text-primary" />
                   </div>
                   <div>
-                    <h3 className="font-bold text-lg mb-2">{questionsTitle}</h3>
+                    <h3 className="font-bold tracking-tight text-lg mb-2">{questionsTitle}</h3>
                     <p className="text-muted-foreground mb-4">{questionsDesc}</p>
                     <div className="flex flex-wrap gap-3">
-                      <Button asChild variant="cta" size="sm" className="px-4">
+                      <Button asChild variant="cta" className="px-4">
                         <Link href="/contact">{contactButtonText}</Link>
                       </Button>
                       <a 
                         href={`mailto:${contactEmail}`}
-                        className="inline-flex items-center justify-center px-4 py-2 border border-border text-sm font-medium hover:bg-background transition-colors"
+                        className="inline-flex min-h-11 items-center justify-center px-4 py-2 border border-border text-sm font-medium hover:bg-background transition-colors"
                       >
                         {contactEmail}
                       </a>

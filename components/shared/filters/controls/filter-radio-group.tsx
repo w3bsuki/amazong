@@ -76,7 +76,7 @@ export function FilterRadioItem({
     <label
       htmlFor={id}
       className={cn(
-        "w-full flex items-center gap-3 h-11 transition-colors text-left cursor-pointer",
+        "w-full flex items-center gap-3 h-11 cursor-pointer text-left transition-colors focus-within:ring-2 focus-within:ring-focus-ring",
         fullBleed ? "px-inset" : "px-3",
         // Selection styling via data attribute from RadioGroup
         "has-[[data-state=checked]]:bg-selected has-[[data-state=checked]]:font-medium",

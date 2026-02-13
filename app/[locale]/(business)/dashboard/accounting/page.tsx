@@ -1,4 +1,4 @@
-import { requireDashboardAccess, getBusinessDashboardStats } from "@/lib/auth/business"
+import { requireDashboardAccess } from "@/lib/auth/business"
 import { createClient } from "@/lib/supabase/server"
 import {
   Card,
@@ -73,8 +73,6 @@ export default async function BusinessAccountingPage() {
   // Requires paid business subscription
   const businessSeller = await requireDashboardAccess()
   const accountingData = await getAccountingData(businessSeller.id)
-  // Note: Stats are available if needed for additional visualizations
-  const _stats = await getBusinessDashboardStats(businessSeller.id)
   
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('en-US', {

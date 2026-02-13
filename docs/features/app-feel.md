@@ -1,11 +1,11 @@
 # App Feel & UX
 
-> **Consolidates:** APP-FEEL-GUIDE.md, APP-FEEL-COMPONENTS.md, APP-FEEL-CHECKLIST.md, 14-UI-UX-PLAN.md, and DESIGN.md §8.5.
-> DESIGN.md remains the token/pattern authority. This file adds the implementation plan, component specs, and UX strategy.
+> **Consolidates:** APP-FEEL-GUIDE.md, APP-FEEL-COMPONENTS.md, APP-FEEL-CHECKLIST.md, 14-UI-UX-PLAN.md, and `docs/ui/DESIGN.md` §8.5.
+> `docs/ui/DESIGN.md` remains the token/pattern authority. This file adds the implementation plan, component specs, and UX strategy.
 
 ## Goal
 
-Transform Treido from "website" to "web app" feel through consistent mobile-first interaction patterns: bottom navigation, sell drawer wizard, sticky headers, tap states on all interactive elements, 44px touch targets, card hierarchy with light shadows, and progressive disclosure via sheets/modals. Deliver a fast, calm, premium marketplace UX without visual noise.
+Transform Treido from "website" to "web app" feel through consistent mobile-first interaction patterns: bottom navigation, sell drawer wizard, sticky headers, tap states on all interactive elements, 44px touch targets, card hierarchy via borders + surface hierarchy (not default card shadows), and progressive disclosure via sheets/modals. Deliver a fast, calm, premium marketplace UX without visual noise.
 
 ## Current Status
 
@@ -38,7 +38,8 @@ Transform Treido from "website" to "web app" feel through consistent mobile-firs
 - Progressive disclosure: show more without losing context
 - Back button always works (state is in the URL)
 - Deep links work (share a product, it opens correctly)
-- Prefer **intercepting routes** for overlays — bookmarkable, navigation-consistent
+- Prefer URL-driven overlays when deep-linking/back-button semantics matter (account modals, tab state, filters).
+- For product quick-view, Treido currently prefers **no route change** overlays (E2E verified) for speed and scroll preservation.
 
 ### Default Interaction Patterns
 
@@ -62,7 +63,7 @@ Transform Treido from "website" to "web app" feel through consistent mobile-firs
 
 | Element | Pattern | Notes |
 |---------|---------|-------|
-| Container | `rounded-xl shadow-card tap-highlight` | Light shadow, no border |
+| Container | `rounded-xl border border-border-subtle bg-card tap-highlight` | Border-based (no default card shadows) |
 | Image | `aspect-square object-cover lazy` | Consistent ratios |
 | Save button | Floating `bg-card shadow-sm` | Solid, top-right |
 | Badge | `absolute top-2 left-2 text-2xs` | Promoted / condition |
@@ -94,7 +95,7 @@ Transform Treido from "website" to "web app" feel through consistent mobile-firs
 
 | Element | Pattern | Notes |
 |---------|---------|-------|
-| Container | `h-[95vh] rounded-t-3xl` bottom Sheet | Near full-height |
+| Container | `h-[95vh] rounded-t-2xl` bottom Sheet | Near full-height |
 | Header | 3-column: back/close, centered title + step count, spacer | Consistent layout |
 | Progress bar | `h-1 bg-muted` with `bg-primary` fill | Thin, animated |
 | Content | `flex-1 overflow-y-auto` | Independent scroll |
@@ -151,12 +152,9 @@ Transform Treido from "website" to "web app" feel through consistent mobile-firs
 
 ### Token Additions (globals.css)
 
-```css
---shadow-card: 0 1px 3px rgba(0, 0, 0, 0.08);
---shadow-elevated: 0 4px 12px rgba(0, 0, 0, 0.1);
-```
+None required for app-feel.
 
-**Rule:** No glass/blur tokens needed. Use solid `bg-background` everywhere.
+**Rule:** No glass/blur surfaces for core app chrome. Use solid `bg-background` everywhere. (`docs/ui/DESIGN.md` is authoritative.)
 
 ## Touch Target Policy (2026-02)
 
@@ -175,13 +173,13 @@ Planned shared component: `components/shared/responsive-overlay.tsx`
 - Unified props: `open`, `onOpenChange`, `title`, `children`
 - URL sync via `useRouter`
 
-**Status:** ⬜ Not built. Product quick-view already uses this pattern (Dialog + Sheet) but not generalized.
+**Status:** ⬜ Not built. Product quick-view already uses this pattern (Dialog + Drawer) but not generalized.
 
 ## Implementation Phases
 
 | Phase | Focus | Status | Effort |
 |-------|-------|--------|--------|
-| 1: Foundation | `tap-highlight`, `safe-top`/`safe-bottom`, `scrollbar-hide`, shadow tokens | ⬜ Not started | 1–2 days |
+| 1: Foundation | `tap-highlight`, `safe-top`/`safe-bottom`, `scrollbar-hide` | ⬜ Not started | 1–2 days |
 | 2: Core Components | Button tap-highlight, ProductCard patterns, Badge `text-2xs`, Avatar sizes | ⬜ Not started | 3–5 days |
 | 3: Navigation | BottomNav tokenized dock + 5-item contract, StickyHeader + safe areas, back button patterns | ⬜ Not started | 2–3 days |
 | 4: Forms & Sell UX | App-style input variant, selection components, SellDrawer wizard | ⬜ Not started | 3–5 days |
@@ -201,14 +199,14 @@ Planned shared component: `components/shared/responsive-overlay.tsx`
 
 | Component | Status |
 |-----------|--------|
-| Search `@modal` slot | ✅ Done |
-| Category `@modal` slot | ❌ Missing |
+| Product quick-view overlay (no route change) | ✅ Done (Dialog desktop + Drawer mobile; `e2e/modal-routing.spec.ts`) |
+| Category quick-view overlay | ✅ Done (shared overlay system) |
+| Account upgrade modal route (`@modal`) | ✅ Done |
 | Seller preview modal | ❌ Missing |
 | Touch target utilities | ✅ Done (`--spacing-touch*` in globals.css) |
-| Product quick-view overlay | ✅ Done (Dialog + Sheet) |
-| ResponsiveOverlay component | ❌ Missing |
-| Glass surface token | ✅ Done (`bg-surface-glass`) |
-| Modal routing E2E test | ❌ Missing |
+| ResponsiveOverlay component | ❌ Missing (not generalized) |
+| Glass surface token | ⚠️ Present in runtime, but forbidden for core app chrome (cleanup candidate) |
+| Modal routing E2E test | ✅ Done (`e2e/modal-routing.spec.ts`) |
 
 ## Anti-Patterns (Do NOT Use)
 
@@ -244,13 +242,13 @@ Planned shared component: `components/shared/responsive-overlay.tsx`
 
 ## Cross-References
 
-- DESIGN.md §8.5 — Token/pattern authority for app-feel principles
-- DESIGN.md §9 — Accessibility tokens and patterns
-- [ROUTES.md](../ROUTES.md) — Modal routing, parallel routes, intercepting routes
+- `docs/ui/DESIGN.md` §8.5 — Token/pattern authority for app-feel principles
+- `docs/ui/DESIGN.md` §9 — Accessibility tokens and patterns
+- [ROUTES.md](../domain/ROUTES.md) — Modal routing, parallel routes, intercepting routes
 - [selling.md](./selling.md) — SellDrawer wizard implementation
 - [search-discovery.md](./search-discovery.md) — Product card, filter UX, modal routing
-- [TESTING.md](../TESTING.md) — E2E test patterns for modal and drawer flows
+- [TESTING.md](../archive/2026-02-doc-reset/pre-cutover-docs/TESTING.md) — E2E test patterns for modal and drawer flows
 
 ---
 
-*Last updated: 2026-02-08*
+*Last updated: 2026-02-13*

@@ -15,6 +15,8 @@ export interface SaleItem {
     title: string
     images: string[]
     price: number
+    slug?: string | null
+    username?: string | null
   } | null
   order: {
     id: string

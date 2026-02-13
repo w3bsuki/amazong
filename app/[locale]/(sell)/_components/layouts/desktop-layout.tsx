@@ -1,6 +1,7 @@
 "use client";
 
-import { useCallback, useState, useTransition } from "react";
+import { useCallback } from "react";
+import { useTranslations } from "next-intl";
 import {
   Rocket,
   Sparkle,
@@ -44,27 +45,22 @@ interface DesktopLayoutProps {
 }
 
 export function DesktopLayout({
-  onSubmit,
   submitError,
   setSubmitError,
   isSubmitting = false,
 }: DesktopLayoutProps) {
   const form = useSellForm();
   const {
-    isBg,
     progress,
     progressItems,
     currentStep,
-    setCurrentStep,
     totalSteps,
     isSaving,
     autoSaved,
     hasUnsavedChanges,
     saveDraft,
-    categories,
   } = useSellFormContext();
-
-  const [showReview, setShowReview] = useState(false);
+  const tSell = useTranslations("Sell");
 
   const formValues = form.watch();
 
@@ -72,7 +68,6 @@ export function DesktopLayout({
   const handleOpenReview = useCallback(async () => {
     setSubmitError(null);
     const ok = await form.trigger();
-    setShowReview(true);
     window.scrollTo({ top: 0, behavior: "instant" });
 
     if (!ok) {
@@ -80,29 +75,10 @@ export function DesktopLayout({
     }
   }, [form, setSubmitError]);
 
-  // Handle form submission
-  const handleSubmit = useCallback(() => {
-    form.handleSubmit(
-      (data) => {
-        onSubmit(data);
-      },
-      () => {
-        // Validation errors handled by react-hook-form
-      }
-    )();
-  }, [onSubmit, form]);
-
   // Manual save
   const handleSaveDraft = useCallback(() => {
     saveDraft();
   }, [saveDraft]);
-
-  // Tips card data
-  const tips = [
-    { en: "Quality photos increase sales", bg: "Качествени снимки увеличават продажбите" },
-    { en: "Detailed descriptions build trust", bg: "Подробно описание изгражда доверие" },
-    { en: "Competitive pricing attracts buyers", bg: "Конкурентна цена привлича купувачи" },
-  ];
 
   return (
     <div className="flex flex-1 flex-col pb-8">
@@ -113,7 +89,6 @@ export function DesktopLayout({
         isSaving={isSaving}
         hasUnsavedChanges={hasUnsavedChanges}
         onSaveDraft={handleSaveDraft}
-        locale={isBg ? "bg" : "en"}
         currentStep={currentStep}
         totalSteps={totalSteps}
       />
@@ -133,7 +108,7 @@ export function DesktopLayout({
               {/* Section 1: Photos & AI */}
               <section className="space-y-6 rounded-md border border-border bg-background p-6">
                 <h2 className="text-base font-semibold text-foreground">
-                  {isBg ? "Снимки" : "Photos"}
+                  {tSell("photos.label")}
                 </h2>
                 <PhotosField maxPhotos={12} compact />
 
@@ -148,7 +123,7 @@ export function DesktopLayout({
               {/* Section 2: Item Details */}
               <section className="space-y-6 rounded-md border border-border bg-background p-6">
                 <h2 className="text-base font-semibold text-foreground">
-                  {isBg ? "Детайли" : "Details"}
+                  {tSell("desktop.sections.details")}
                 </h2>
 
                 <TitleField compact idPrefix="sell-form-desktop" />
@@ -162,7 +137,7 @@ export function DesktopLayout({
               {/* Section 3: Pricing & Shipping */}
               <section className="space-y-6 rounded-md border border-border bg-background p-6">
                 <h2 className="text-base font-semibold text-foreground">
-                  {isBg ? "Цена и доставка" : "Pricing & Shipping"}
+                  {tSell("desktop.sections.pricingAndShipping")}
                 </h2>
 
                 <PricingField compact idPrefix="sell-form-desktop" />
@@ -199,27 +174,25 @@ export function DesktopLayout({
                 {isSubmitting ? (
                   <>
                     <Spinner className="size-5 animate-spin" />
-                    {isBg ? "Публикуване..." : "Publishing..."}
+                    {tSell("actions.publishing")}
                   </>
                 ) : progress === 100 ? (
                   <>
                     <Rocket className="size-5" weight="bold" />
-                    {isBg ? "Преглед и публикуване" : "Review & publish"}
+                    {tSell("steps.review.title")}
                     <ArrowRight className="size-5" weight="bold" />
                   </>
                 ) : (
                   <>
                     <Sparkle className="size-5" weight="bold" />
-                    {isBg ? `Преглед (${progress}%)` : `Review (${progress}%)`}
+                    {tSell("desktop.reviewProgress", { percent: progress })}
                   </>
                 )}
               </Button>
 
               {progress < 100 && (
                 <p className="text-center text-sm text-muted-foreground">
-                  {isBg
-                    ? "Попълнете всички задължителни полета, за да публикувате"
-                    : "Complete all required fields to publish your listing"}
+                  {tSell("desktop.completeRequiredFieldsToPublish")}
                 </p>
               )}
             </form>
@@ -237,17 +210,21 @@ export function DesktopLayout({
                     <Sparkle className="size-4 text-primary" weight="bold" />
                   </div>
                   <h4 className="text-sm font-semibold text-foreground">
-                    {isBg ? "Съвети за продажби" : "Selling Tips"}
+                    {tSell("desktop.sellingTips.title")}
                   </h4>
                 </div>
                 <ul className="space-y-3">
-                  {tips.map((tip, index) => (
+                  {[
+                    tSell("desktop.sellingTips.items.photos"),
+                    tSell("desktop.sellingTips.items.description"),
+                    tSell("desktop.sellingTips.items.pricing"),
+                  ].map((tip, index) => (
                     <li key={index} className="flex items-start gap-3">
                       <div className="size-4 rounded-full bg-selected flex items-center justify-center shrink-0 mt-0.5">
                         <Check className="size-2.5 text-primary" weight="bold" />
                       </div>
                       <span className="text-sm text-muted-foreground leading-relaxed">
-                        {isBg ? tip.bg : tip.en}
+                        {tip}
                       </span>
                     </li>
                   ))}

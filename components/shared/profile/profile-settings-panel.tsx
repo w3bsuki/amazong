@@ -8,7 +8,6 @@ import {
   Shield,
   CreditCard,
   GlobeSimple,
-  Moon,
   Question,
   SignOut,
   CaretRight,
@@ -74,6 +73,7 @@ function SettingsItem({
   const baseClasses = cn(
     "w-full flex items-center gap-3 p-4 bg-card rounded-xl border border-border",
     "tap-transparent active:bg-active transition-colors",
+    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring",
     danger && "text-destructive"
   )
 
@@ -105,7 +105,7 @@ interface ProfileSettingsPanelProps {
  * Card-style items with icons, labels, descriptions, and either
  * chevron (navigation) or switch (toggle) on the right.
  */
-export function ProfileSettingsPanel({ isSeller, onSignOut }: ProfileSettingsPanelProps) {
+export function ProfileSettingsPanel({ onSignOut }: ProfileSettingsPanelProps) {
   const t = useTranslations("ProfileSettings")
 
   return (

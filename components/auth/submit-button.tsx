@@ -25,10 +25,15 @@ export function SubmitButton({
       size="lg"
       className={className ?? "w-full"}
       disabled={pending || disabled}
+      aria-busy={pending}
     >
       {pending ? (
         <span className="inline-flex items-center gap-2">
-          <SpinnerGap className="size-5 animate-spin" weight="bold" />
+          <SpinnerGap
+            aria-hidden="true"
+            className="size-5 animate-spin motion-reduce:animate-none"
+            weight="bold"
+          />
           {pendingLabel}
         </span>
       ) : (

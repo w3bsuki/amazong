@@ -1,4 +1,5 @@
 import { requireDashboardAccess, getBusinessProducts } from "@/lib/auth/business"
+import { createClient } from "@/lib/supabase/server"
 import {
   bulkDeleteProducts,
   bulkUpdateProductStatus,
@@ -15,6 +16,12 @@ export default async function BusinessProductsPage() {
   const businessSeller = await requireDashboardAccess()
   const { products, total } = await getBusinessProducts(businessSeller.id)
   const categories = await getBusinessDashboardCategories()
+  const supabase = await createClient()
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("username")
+    .eq("id", businessSeller.id)
+    .maybeSingle()
   
   return (
     <ProductsTable 
@@ -22,6 +29,7 @@ export default async function BusinessProductsPage() {
       categories={categories}
       total={total}
       sellerId={businessSeller.id}
+      sellerUsername={profile?.username ?? null}
       actions={{
         createProduct,
         updateProduct,

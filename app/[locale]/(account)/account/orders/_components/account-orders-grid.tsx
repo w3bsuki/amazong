@@ -54,6 +54,7 @@ type OrderProduct = {
   id: string
   title: string | null
   images: string[] | null
+  slug?: string | null
   price?: number | null
 }
 
@@ -61,6 +62,7 @@ type OrderItemRow = {
   id: string
   product_id: string
   seller_id?: string
+  seller_username?: string | null
   quantity: number
   price_at_purchase?: number
   product?: OrderProduct | null
@@ -176,6 +178,11 @@ export function AccountOrdersGrid({ orders, locale, actions }: AccountOrdersGrid
     return status ? status.charAt(0).toUpperCase() + status.slice(1) : "Unknown"
   }
 
+  const getProductHref = (item: OrderItemRow) => {
+    if (!item.seller_username) return "#"
+    return `/${item.seller_username}/${item.product?.slug || item.product_id}`
+  }
+
   const t = {
     order: locale === "bg" ? "Поръчка" : "Order",
     items: locale === "bg" ? "артикула" : "items",
@@ -190,7 +197,6 @@ export function AccountOrdersGrid({ orders, locale, actions }: AccountOrdersGrid
     noOrders: locale === "bg" ? "Няма поръчки" : "No orders found",
     noOrdersDesc: locale === "bg" ? "Когато направите поръчка, тя ще се появи тук." : "When you place an order, it will appear here.",
     startShopping: locale === "bg" ? "Към магазина" : "Start shopping",
-    moreItems: locale === "bg" ? "още" : "more",
   }
 
   // Empty state
@@ -242,8 +248,12 @@ export function AccountOrdersGrid({ orders, locale, actions }: AccountOrdersGrid
               onOpenChange={(nextOpen) => setOpenMobileOrderId(nextOpen ? order.id : null)}
             >
               <button
-                className="active-scale-99 w-full text-left rounded-md bg-card border border-border p-4 transition-colors"
+                type="button"
+                className="active-scale-99 w-full text-left rounded-md bg-card border border-border p-4 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                 onClick={() => setOpenMobileOrderId(order.id)}
+                aria-label={locale === "bg" ? `Отвори поръчка ${order.id.slice(0, 8)}` : `Open order ${order.id.slice(0, 8)}`}
+                aria-haspopup="dialog"
+                aria-expanded={openMobileOrderId === order.id}
               >
                   {/* Header: Price + Date */}
                   <div className="flex items-center justify-between mb-3">
@@ -369,7 +379,7 @@ export function AccountOrdersGrid({ orders, locale, actions }: AccountOrdersGrid
                         const title =
                           product?.title ||
                           (locale === "bg" ? "Продукт" : "Product")
-                        const href = `/product/${item.product_id}`
+                        const href = getProductHref(item)
                         const itemStatus = item.status || 'pending'
 
                         return (
@@ -597,7 +607,7 @@ export function AccountOrdersGrid({ orders, locale, actions }: AccountOrdersGrid
                             const title =
                               product?.title ||
                               (locale === "bg" ? "Продукт" : "Product")
-                            const href = `/product/${item.product_id}`
+                            const href = getProductHref(item)
                             const itemStatus = item.status || 'pending'
 
                             return (

@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { Link } from "@/i18n/routing"
 import Image from "next/image"
 import { ArrowLeft, Package, Loader2, RefreshCw, ExternalLink } from "lucide-react"
@@ -30,7 +30,7 @@ type SellerOrderItem = {
     id: string
     title: string
     images: string[]
-    slug: string
+    slug?: string | null
   }
   order?: {
     id: string
@@ -81,12 +81,13 @@ export type SellerOrdersClientServerActions = OrderStatusActionsServerActions &
 
 interface SellerOrdersClientProps {
   locale: string
+  sellerUsername: string | null
   actions: SellerOrdersClientServerActions
 }
 
 type StatusFilter = OrderItemStatus | 'all' | 'active'
 
-export function SellerOrdersClient({ locale, actions }: SellerOrdersClientProps) {
+export function SellerOrdersClient({ locale, sellerUsername, actions }: SellerOrdersClientProps) {
   const tCommon = useTranslations("Common")
   const [orders, setOrders] = useState<SellerOrderItem[]>([])
   const [isLoading, setIsLoading] = useState(true)
@@ -104,7 +105,7 @@ export function SellerOrdersClient({ locale, actions }: SellerOrdersClientProps)
   const [conversationMap, setConversationMap] = useState<Map<string, string>>(new Map())
 
   // Load orders and stats
-  async function loadData() {
+  const loadData = useCallback(async () => {
     try {
       const [ordersResult, statsResult] = await Promise.all([
         actions.getSellerOrders(),
@@ -135,11 +136,11 @@ export function SellerOrdersClient({ locale, actions }: SellerOrdersClientProps)
       setIsLoading(false)
       setIsRefreshing(false)
     }
-  }
+  }, [actions])
 
   useEffect(() => {
     loadData()
-  }, [])
+  }, [loadData])
 
   function handleRefresh() {
     setIsRefreshing(true)
@@ -189,7 +190,7 @@ export function SellerOrdersClient({ locale, actions }: SellerOrdersClientProps)
             <Card
               key={stat.key}
               className={cn(
-                "cursor-pointer transition-all hover:shadow-md",
+                "cursor-pointer transition-shadow hover:shadow-md",
                 activeTab === stat.key && "ring-2 ring-primary"
               )}
               onClick={() => setActiveTab(stat.key)}
@@ -372,9 +373,16 @@ export function SellerOrdersClient({ locale, actions }: SellerOrdersClientProps)
                               }}
                             />
 
-                            {item.product?.slug && (
+                            {item.product && (
                               <Button variant="ghost" size="sm" asChild>
-                                <Link href={`/product/${item.product.slug}`} target="_blank">
+                                <Link
+                                  href={
+                                    sellerUsername
+                                      ? `/${sellerUsername}/${item.product.slug || item.product.id}`
+                                      : "#"
+                                  }
+                                  target="_blank"
+                                >
                                   <ExternalLink className="h-4 w-4" />
                                 </Link>
                               </Button>

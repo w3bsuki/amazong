@@ -337,28 +337,31 @@ error, reset, title, description, ctaIcon, ctaLabel, ctaHref, logPrefix
 
 ---
 
-## Execution Evidence Log
+## Evidence Log (v2)
 
-> Required for release sign-off. Add one row per executed scenario.
+Fixed columns. Add one row per scenario run (or per sub-scenario if needed).
 
-| Scenario ID | Auto Result | Manual Result | Owner | Build/Commit | Screenshot/Video | Defect ID | Severity | Retest Result | Sign-off |
-|-------------|-------------|---------------|-------|--------------|------------------|-----------|----------|---------------|---------|
-| S18.1 | Pass | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace) | — | — | Pass | Pending |
-| S18.2 | Pass | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace) | — | — | Pass | Pending |
-| S18.3 | Pass | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace) | — | — | Pass | Pending |
-| S18.4 | Pass | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace) | — | — | Pass | Pending |
-| S18.5 | Fail | Fail (runtime: `pnpm -s test:a11y`) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace + runtime log) | F18-001 | P1 | Fail | Pending |
-| S18.6 | Fail | Fail (runtime: `pnpm -s test:a11y`) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace + runtime log) | F18-001 | P1 | Fail | Pending |
-| S18.7 | Blocked | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace) | F18-005 | P2 | Pending | Pending |
-| S18.8 | Blocked | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace) | F18-006 | P2 | Pending | Pending |
-| S18.9 | Blocked | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace) | F18-003 | P2 | Pending | Pending |
-| S18.10 | Blocked | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace) | F18-003 | P2 | Pending | Pending |
-| S18.11 | Blocked | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace) | F18-003 | P2 | Pending | Pending |
-| S18.12 | Pass | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace) | — | — | Pass | Pending |
-| S18.13 | Pass | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace) | — | — | Pass | Pending |
-| S18.14 | Pass | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace) | — | — | Pass | Pending |
-| S18.15 | Fail | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace) | HYDRA-002 | P1 | Fail | Pending |
-| S18.16 | Fail | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace) | F18-004 | P2 | Fail | Pending |
+| Scenario | Method | Artifact | Result | Issue ID | Severity | Owner | Date |
+|----------|--------|----------|--------|----------|----------|-------|------|
+| S18.1 | code trace | N/A (code trace) | Pass | — | — | Codex | 2026-02-11 |
+| S18.2 | code trace | N/A (code trace) | Pass | — | — | Codex | 2026-02-11 |
+| S18.3 | code trace | N/A (code trace) | Pass | — | — | Codex | 2026-02-11 |
+| S18.4 | code trace | N/A (code trace) | Pass | — | — | Codex | 2026-02-11 |
+| S18.5 | manual | — | Fail | F18-001 | P1 | Codex | 2026-02-11 |
+| S18.6 | manual | — | Fail | F18-001 | P1 | Codex | 2026-02-11 |
+| S18.7 | code trace | N/A (code trace) | Blocked | F18-005 | P2 | Codex | 2026-02-11 |
+| S18.8 | code trace | N/A (code trace) | Blocked | F18-006 | P2 | Codex | 2026-02-11 |
+| S18.9 | code trace | N/A (code trace) | Blocked | F18-003 | P2 | Codex | 2026-02-11 |
+| S18.10 | code trace | N/A (code trace) | Blocked | F18-003 | P2 | Codex | 2026-02-11 |
+| S18.11 | code trace | N/A (code trace) | Blocked | F18-003 | P2 | Codex | 2026-02-11 |
+| S18.12 | code trace | N/A (code trace) | Pass | — | — | Codex | 2026-02-11 |
+| S18.13 | code trace | N/A (code trace) | Pass | — | — | Codex | 2026-02-11 |
+| S18.14 | code trace | N/A (code trace) | Pass | — | — | Codex | 2026-02-11 |
+| S18.15 | code trace | N/A (code trace) | Fail | HYDRA-002 | P1 | Codex | 2026-02-11 |
+| S18.16 | code trace | N/A (code trace) | Fail | F18-004 | P2 | Codex | 2026-02-11 |
+
+Method suggestions: `runtime` | `code trace` | `manual` (keep it consistent within a phase).
+
 
 ---
 

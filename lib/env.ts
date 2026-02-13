@@ -22,7 +22,7 @@ function getRequiredEnvVar(key: string): string {
   return value
 }
 
-function parseWebhookSecrets(raw: string): string[] {
+export function parseWebhookSecrets(raw: string): string[] {
   return raw
     .split(/[\n,]/g)
     .map((s) => s.trim())

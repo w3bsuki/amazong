@@ -231,7 +231,7 @@ export function ProductCardList({
       {/* Content - Right side */}
       <div className="relative z-1 flex-1 min-w-0 flex flex-col">
         {/* Title */}
-        <h3 className="min-w-0 truncate font-medium text-sm sm:text-base text-foreground mb-1">
+        <h3 className="mb-1 min-w-0 truncate text-sm sm:text-base font-semibold tracking-tight text-foreground">
           {title}
         </h3>
 

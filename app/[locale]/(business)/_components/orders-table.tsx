@@ -134,18 +134,15 @@ function getStatusConfig(status: string): (typeof STATUS_CONFIG)[StatusKey] {
 
 export function OrdersTable({
   initialOrders,
-  total: _total,
-  sellerId: _sellerId,
 }: OrdersTableProps) {
   const router = useRouter()
-  const [orders, _setOrders] = React.useState<OrderItem[]>(initialOrders)
+  const [orders] = React.useState<OrderItem[]>(initialOrders)
   const [selectedIds, setSelectedIds] = React.useState<Set<string>>(new Set())
   const [isAllSelected, setIsAllSelected] = React.useState(false)
   const [searchQuery, setSearchQuery] = React.useState("")
   const [statusFilter, setStatusFilter] = React.useState<OrderStatus>("all")
   const [sortField, setSortField] = React.useState<SortField>("created_at")
   const [sortOrder, setSortOrder] = React.useState<SortOrder>("desc")
-  const [_isLoading, _setIsLoading] = React.useState(false)
 
   // Helper to extract order data from potentially nested structure
   const getOrder = (item: OrderItem): Order | null => {
@@ -275,13 +272,11 @@ export function OrdersTable({
   }
 
   const handleBulkStatusUpdate = async (newStatus: string) => {
-    _setIsLoading(true)
     // Stub: Need bulkUpdateOrderItemsStatus action in app/actions/orders.ts
     // Would iterate selectedIds and call updateOrderItemStatus for each
     toast.success(`${selectedIds.size} order(s) updated to ${newStatus}`)
     setSelectedIds(new Set())
     setIsAllSelected(false)
-    _setIsLoading(false)
     router.refresh()
   }
 
@@ -289,8 +284,7 @@ export function OrdersTable({
     const order = getOrder(item)
     const customer = getCustomer(order)
     if (customer) {
-      // Navigate to chat with customer
-      router.push(`/messages?user=${customer.id}`)
+      router.push(`/chat?seller=${customer.id}`)
     }
   }
 
@@ -417,7 +411,10 @@ export function OrdersTable({
       </div>
 
       {/* Orders Table */}
-      <div className="rounded-lg border bg-card">
+      <div
+        className="rounded-lg border bg-card overflow-x-auto"
+        style={{ "--business-table-min-w": "64rem" } as React.CSSProperties}
+      >
         {filteredOrders.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-16 text-center">
             <IconPackage className="size-12 text-muted-foreground mb-4" />
@@ -429,7 +426,7 @@ export function OrdersTable({
             </p>
           </div>
         ) : (
-          <Table>
+          <Table className="min-w-(--business-table-min-w)">
             <TableHeader>
               <TableRow className="hover:bg-transparent">
                 <TableHead className="w-10">
@@ -441,7 +438,7 @@ export function OrdersTable({
                 </TableHead>
                 <TableHead className="w-24">Order</TableHead>
                 <TableHead
-                  className="cursor-pointer select-none"
+                  className="hidden md:table-cell cursor-pointer select-none"
                   onClick={() => handleSort("created_at")}
                 >
                   <div className="flex items-center gap-1">
@@ -459,7 +456,7 @@ export function OrdersTable({
                   </div>
                 </TableHead>
                 <TableHead>Product</TableHead>
-                <TableHead className="text-center">Qty</TableHead>
+                <TableHead className="hidden md:table-cell text-center">Qty</TableHead>
                 <TableHead
                   className="cursor-pointer select-none text-right"
                   onClick={() => handleSort("total")}
@@ -506,7 +503,7 @@ export function OrdersTable({
                         #{order?.id?.slice(0, 8)}
                       </Link>
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="hidden md:table-cell">
                       <div className="flex flex-col">
                         <span className="text-sm">
                           {order?.created_at ? format(new Date(order.created_at), "MMM d") : "-"}
@@ -556,7 +553,7 @@ export function OrdersTable({
                         </div>
                       </div>
                     </TableCell>
-                    <TableCell className="text-center tabular-nums">
+                    <TableCell className="hidden md:table-cell text-center tabular-nums">
                       {item.quantity}
                     </TableCell>
                     <TableCell className="text-right font-medium tabular-nums">

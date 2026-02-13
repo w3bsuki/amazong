@@ -40,7 +40,7 @@ export function FollowSellerButton({
   sellerId,
   initialIsFollowing,
   actions,
-  locale: _locale = "en",
+  locale = "en",
   showLabel = true,
   onFollowChange,
   variant = "outline",
@@ -86,6 +86,7 @@ export function FollowSellerButton({
       variant={optimisticFollowing ? "secondary" : variant}
       size={size}
       className={className}
+      data-locale={locale}
       onClick={handleClick}
       disabled={isPending}
     >

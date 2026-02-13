@@ -7,16 +7,19 @@ import { cn } from "@/lib/utils"
 
 // Format: { THEME_NAME: CSS_SELECTOR }
 const THEMES = { light: "", dark: ".dark" } as const
+type ThemeName = keyof typeof THEMES
 
-export type ChartConfig = {
-  [k in string]: {
-    label?: React.ReactNode
-    icon?: React.ComponentType
-  } & (
-    | { color?: string; theme?: never }
-    | { color?: never; theme: Record<keyof typeof THEMES, string> }
-  )
+interface ChartSeriesConfigBase {
+  label?: React.ReactNode
+  icon?: React.ComponentType
 }
+
+type ChartSeriesConfig = ChartSeriesConfigBase & {
+  color?: string
+  theme?: Record<ThemeName, string>
+}
+
+export type ChartConfig = Record<string, ChartSeriesConfig>
 
 type ChartContextProps = {
   config: ChartConfig
@@ -81,15 +84,13 @@ const ChartStyle = ({ id, config }: { id: string; config: ChartConfig }) => {
   return (
     <style
       dangerouslySetInnerHTML={{
-        __html: Object.entries(THEMES)
+        __html: (Object.entries(THEMES) as Array<[ThemeName, string]>)
           .map(
             ([theme, prefix]) => `
 ${prefix} [data-chart=${id}] {
 ${colorConfig
   .map(([key, itemConfig]) => {
-    const color =
-      itemConfig.theme?.[theme as keyof typeof itemConfig.theme] ||
-      itemConfig.color
+    const color = itemConfig.theme?.[theme] ?? itemConfig.color
     return color ? `  --color-${key}: ${color};` : null
   })
   .join("\n")}
@@ -218,6 +219,10 @@ function ChartTooltipContent({
           .map((item: TooltipPayloadItem, index: number) => {
             const key = `${nameKey || item.name || item.dataKey || "value"}`
             const itemConfig = getPayloadConfigFromPayload(config, item, key)
+            const IconComponent =
+              itemConfig?.icon as
+                | React.ComponentType<{ className?: string }>
+                | undefined
             const payloadFill =
               typeof item.payload?.fill === "string"
                 ? item.payload.fill
@@ -228,7 +233,7 @@ function ChartTooltipContent({
               <div
                 key={String(item.dataKey)}
                 className={cn(
-                  "[&>svg]:text-muted-foreground flex w-full flex-wrap items-stretch gap-2 [&>svg]:h-2.5 [&>svg]:w-2.5",
+                  "flex w-full flex-wrap items-stretch gap-2",
                   indicator === "dot" && "items-center"
                 )}
               >
@@ -242,8 +247,8 @@ function ChartTooltipContent({
                   ) as React.ReactNode)
                 ) : (
                   <>
-                    {itemConfig?.icon ? (
-                      <itemConfig.icon />
+                    {IconComponent ? (
+                      <IconComponent className="size-2.5 text-muted-foreground" />
                     ) : (
                       !hideIndicator && (
                         <div

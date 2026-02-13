@@ -1,6 +1,6 @@
 "use client";
 
-import { memo, useState } from "react";
+import { useState } from "react";
 import {
   Truck,
   MapPin,
@@ -34,25 +34,13 @@ const SHIPPING_REGIONS = [
   {
     id: "bulgaria",
     field: "shipsToBulgaria" as const,
-    label: "Bulgaria",
-    labelBg: "България",
-    description: "Cash on delivery via courier",
-    descriptionBg: "Наложен платеж с куриер",
     icon: House,
-    deliveryTime: "1-3 days",
-    deliveryTimeBg: "1-3 дни",
     carriers: ["Speedy", "Econt"],
   },
   {
     id: "pickup",
     field: "pickupOnly" as const,
-    label: "Local Pickup",
-    labelBg: "Лично вземане",
-    description: "Buyer picks up in person",
-    descriptionBg: "Купувачът взема лично",
     icon: MapPin,
-    deliveryTime: "Arranged",
-    deliveryTimeBg: "По договаряне",
     carriers: [],
   },
 ] as const;
@@ -62,14 +50,18 @@ const SHIPPING_REGIONS = [
 // ============================================================================
 function ShippingRegionCard({
   region,
+  label,
+  description,
+  deliveryTime,
   isSelected,
   onToggle,
-  isBg,
 }: {
   region: typeof SHIPPING_REGIONS[number];
+  label: string;
+  description: string;
+  deliveryTime: string;
   isSelected: boolean;
   onToggle: () => void;
-  isBg: boolean;
 }) {
   const Icon = region.icon;
 
@@ -100,14 +92,14 @@ function ShippingRegionCard({
             "font-bold text-sm tracking-tight",
             isSelected ? "text-primary" : "text-foreground"
           )}>
-            {isBg ? region.labelBg : region.label}
+            {label}
           </span>
           <span className="text-2xs font-bold text-muted-foreground uppercase tracking-wider">
-            {isBg ? region.deliveryTimeBg : region.deliveryTime}
+            {deliveryTime}
           </span>
         </div>
         <p className="text-xs text-muted-foreground font-medium mt-0.5">
-          {isBg ? region.descriptionBg : region.description}
+          {description}
         </p>
         {region.carriers.length > 0 && isSelected && (
           <div className="flex flex-wrap gap-1 mt-1.5">
@@ -128,7 +120,7 @@ function ShippingRegionCard({
         checked={isSelected}
         onCheckedChange={() => onToggle()}
         className="size-4.5 rounded-md border-border data-[state=checked]:bg-primary data-[state=checked]:border-primary"
-        aria-label={isBg ? region.labelBg : region.label}
+        aria-label={label}
       />
     </label>
   );
@@ -140,16 +132,16 @@ function ShippingRegionCard({
 function DimensionsInput({
   dimensions,
   onChange,
-  isBg,
+  labels,
 }: {
   dimensions: { lengthCm?: number; widthCm?: number; heightCm?: number; weightKg?: number } | undefined;
   onChange: (dims: { lengthCm?: number; widthCm?: number; heightCm?: number; weightKg?: number }) => void;
-  isBg: boolean;
+  labels: { length: string; width: string; height: string; weight: string };
 }) {
   return (
     <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
       <div className="space-y-1.5">
-        <Label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">{isBg ? "Дължина" : "Length"}</Label>
+        <Label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">{labels.length}</Label>
         <div className="relative">
           <Input
             type="number"
@@ -167,7 +159,7 @@ function DimensionsInput({
         </div>
       </div>
       <div className="space-y-1.5">
-        <Label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">{isBg ? "Ширина" : "Width"}</Label>
+        <Label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">{labels.width}</Label>
         <div className="relative">
           <Input
             type="number"
@@ -185,7 +177,7 @@ function DimensionsInput({
         </div>
       </div>
       <div className="space-y-1.5">
-        <Label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">{isBg ? "Височина" : "Height"}</Label>
+        <Label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">{labels.height}</Label>
         <div className="relative">
           <Input
             type="number"
@@ -203,7 +195,7 @@ function DimensionsInput({
         </div>
       </div>
       <div className="space-y-1.5">
-        <Label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">{isBg ? "Тегло" : "Weight"}</Label>
+        <Label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">{labels.weight}</Label>
         <div className="relative">
           <Input
             type="number"
@@ -280,26 +272,44 @@ export function ShippingField({ className, compact = false }: ShippingFieldProps
   const selectedCityLabel = BULGARIAN_CITIES.find(c => c.value === sellerCity)?.[isBg ? "labelBg" : "label"];
 
   const processingOptions = [1, 2, 3, 5, 7, 10, 14].map(d => String(d));
-  const processingOptionsBg = [1, 2, 3, 5, 7, 10, 14].map(d => `${d} ${d === 1 ? "ден" : "дни"}`);
-  const processingOptionsEn = [1, 2, 3, 5, 7, 10, 14].map(d => `${d} ${d === 1 ? "day" : "days"}`);
+  const processingDisplayOptions = processingOptions.map((value) =>
+    tSell("shipping.processing.days", { count: Number(value) })
+  );
 
   const content = (
     <FieldContent className={cn("space-y-6", !compact && "p-6")}>
       {/* Shipping Regions */}
       <div className="space-y-3">
         <Label className="text-sm font-semibold">
-          {isBg ? "Региони за доставка" : "Shipping Regions"}
+          {tSell("shipping.regionsTitle")}
         </Label>
         <div className="grid gap-3 sm:grid-cols-2">
-          {SHIPPING_REGIONS.map((region) => (
-            <ShippingRegionCard
-              key={region.id}
-              region={region}
-              isSelected={regionValues[region.field]}
-              onToggle={() => toggleRegion(region.field)}
-              isBg={isBg}
-            />
-          ))}
+          {SHIPPING_REGIONS.map((region) => {
+            const copy =
+              region.id === "bulgaria"
+                ? {
+                    label: tSell("shipping.regions.bulgaria.label"),
+                    description: tSell("shipping.regions.bulgaria.description"),
+                    deliveryTime: tSell("shipping.regions.bulgaria.deliveryTime"),
+                  }
+                : {
+                    label: tSell("shipping.regions.pickup.label"),
+                    description: tSell("shipping.regions.pickup.description"),
+                    deliveryTime: tSell("shipping.regions.pickup.deliveryTime"),
+                  };
+
+            return (
+              <ShippingRegionCard
+                key={region.id}
+                region={region}
+                label={copy.label}
+                description={copy.description}
+                deliveryTime={copy.deliveryTime}
+                isSelected={regionValues[region.field]}
+                onToggle={() => toggleRegion(region.field)}
+              />
+            );
+          })}
         </div>
         {hasError && (
           <FieldError>
@@ -333,7 +343,7 @@ export function ShippingField({ className, compact = false }: ShippingFieldProps
                   <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-1.5">
                     <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-                      {isBg ? "Локация" : "Ships from"}
+                      {tSell("shipping.shipsFromLabel")}
                     </span>
                     <span className="text-destructive text-xs">*</span>
                   </div>
@@ -341,7 +351,7 @@ export function ShippingField({ className, compact = false }: ShippingFieldProps
                     "text-base font-semibold truncate block mt-0.5",
                     sellerCity ? "text-foreground" : "text-text-subtle"
                   )}>
-                    {selectedCityLabel || (isBg ? "Изберете град..." : "Select your city")}
+                    {selectedCityLabel || tSell("shipping.selectCityPlaceholder")}
                   </span>
                 </div>
                 <CaretRight className={cn(
@@ -352,9 +362,9 @@ export function ShippingField({ className, compact = false }: ShippingFieldProps
               <SelectDrawer
                 isOpen={isCityDrawerOpen}
                 onClose={() => setIsCityDrawerOpen(false)}
-                title={isBg ? "Изберете град" : "Select City"}
+                title={tSell("shipping.selectCityTitle")}
                 options={BULGARIAN_CITIES.map(c => c.value)}
-                optionsBg={isBg ? cityOptionsBg : cityOptions}
+                displayOptions={isBg ? cityOptionsBg : cityOptions}
                 value={sellerCity || ""}
                 onChange={(val) => setValue("sellerCity", val)}
                 locale={isBg ? "bg" : "en"}
@@ -362,15 +372,15 @@ export function ShippingField({ className, compact = false }: ShippingFieldProps
             </>
           ) : (
             <>
-              <Label className="text-sm font-semibold">
-                {isBg ? "Вашият град" : "Your City"} *
-              </Label>
-              <Select
-                value={sellerCity || ""}
-                onValueChange={(val) => setValue("sellerCity", val)}
-              >
-                <SelectTrigger className="h-(--control-primary) rounded-md border-border font-medium">
-                  <SelectValue placeholder={isBg ? "Изберете град..." : "Select city..."} />
+            <Label className="text-sm font-semibold">
+              {tSell("shipping.cityLabel")} *
+            </Label>
+            <Select
+              value={sellerCity || ""}
+              onValueChange={(val) => setValue("sellerCity", val)}
+            >
+              <SelectTrigger className="h-(--control-primary) rounded-md border-border font-medium">
+                  <SelectValue placeholder={tSell("shipping.selectCityPlaceholder")} />
                 </SelectTrigger>
                 <SelectContent>
                   {BULGARIAN_CITIES.map((city) => (
@@ -383,9 +393,7 @@ export function ShippingField({ className, compact = false }: ShippingFieldProps
             </>
           )}
           <p className="text-xs text-muted-foreground font-medium px-1">
-            {isBg
-              ? "Градът, от който ще изпращате"
-              : "The city you'll ship from"}
+            {tSell("shipping.shipsFromHint")}
           </p>
         </div>
       )}
@@ -427,12 +435,10 @@ export function ShippingField({ className, compact = false }: ShippingFieldProps
         </div>
         <div className="flex-1 text-left min-w-0">
           <span className="text-base font-semibold block">
-            {isBg ? "Безплатна доставка" : "Free shipping"}
+            {tSell("shipping.freeShipping.title")}
           </span>
           <span className="text-sm text-muted-foreground line-clamp-1">
-            {isBg
-              ? "Привлечете повече купувачи"
-              : "Attract more buyers with free delivery"}
+            {tSell("shipping.freeShipping.description")}
           </span>
         </div>
         <Switch 
@@ -452,7 +458,7 @@ export function ShippingField({ className, compact = false }: ShippingFieldProps
         <div className="space-y-2">
           <div className="flex items-center justify-between px-1">
             <label className="text-sm font-bold text-foreground">
-              {isBg ? "Цена за доставка" : "Shipping price"}
+              {tSell("shipping.shippingPriceLabel")}
             </label>
           </div>
           <div className={cn(
@@ -477,7 +483,8 @@ export function ShippingField({ className, compact = false }: ShippingFieldProps
         <div className="flex items-center gap-2">
           <Package className="size-4 text-muted-foreground" weight="bold" />
           <Label className="text-sm font-semibold">
-            {isBg ? "Размери на пратката (по избор)" : "Package Dimensions (optional)"}
+            {tSell("shipping.dimensions.title")}{" "}
+            <span className="font-normal opacity-60">{tSell("common.optionalParenthetical")}</span>
           </Label>
         </div>
         <DimensionsInput
@@ -493,7 +500,12 @@ export function ShippingField({ className, compact = false }: ShippingFieldProps
               : undefined;
             setValue("dimensions", next);
           }}
-          isBg={isBg}
+          labels={{
+            length: tSell("shipping.dimensions.lengthLabel"),
+            width: tSell("shipping.dimensions.widthLabel"),
+            height: tSell("shipping.dimensions.heightLabel"),
+            weight: tSell("shipping.dimensions.weightLabel"),
+          }}
         />
       </div>
 
@@ -508,10 +520,10 @@ export function ShippingField({ className, compact = false }: ShippingFieldProps
             >
               <div className="flex items-center gap-2 flex-1 min-w-0">
                 <span className="text-2xs font-bold uppercase tracking-wider text-muted-foreground shrink-0">
-                  {isBg ? "Обработка:" : "Processing:"}
+                  {tSell("shipping.processing.inlineLabel")}
                 </span>
                 <span className="text-sm font-semibold text-foreground truncate">
-                  {processingDays} {isBg ? (processingDays === 1 ? "ден" : "дни") : (processingDays === 1 ? "day" : "days")}
+                  {tSell("shipping.processing.days", { count: processingDays })}
                 </span>
               </div>
               <CaretRight className="size-4 text-text-subtle shrink-0 ml-2" weight="bold" />
@@ -519,9 +531,9 @@ export function ShippingField({ className, compact = false }: ShippingFieldProps
             <SelectDrawer
               isOpen={isProcessingDrawerOpen}
               onClose={() => setIsProcessingDrawerOpen(false)}
-              title={isBg ? "Време за обработка" : "Processing Time"}
+              title={tSell("shipping.processing.title")}
               options={processingOptions}
-              optionsBg={isBg ? processingOptionsBg : processingOptionsEn}
+              displayOptions={processingDisplayOptions}
               value={String(processingDays)}
               onChange={(val) => setValue("processingDays", Number(val))}
               locale={isBg ? "bg" : "en"}
@@ -530,7 +542,7 @@ export function ShippingField({ className, compact = false }: ShippingFieldProps
         ) : (
           <>
             <Label className="text-sm font-semibold">
-              {isBg ? "Време за обработка" : "Processing Time"}
+              {tSell("shipping.processing.title")}
             </Label>
             <Select
               value={String(processingDays)}
@@ -542,7 +554,7 @@ export function ShippingField({ className, compact = false }: ShippingFieldProps
               <SelectContent>
                 {[1, 2, 3, 5, 7, 10, 14].map((days) => (
                   <SelectItem key={days} value={String(days)} className="font-medium">
-                    {days} {isBg ? (days === 1 ? "ден" : "дни") : (days === 1 ? "day" : "days")}
+                    {tSell("shipping.processing.days", { count: days })}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -550,9 +562,7 @@ export function ShippingField({ className, compact = false }: ShippingFieldProps
           </>
         )}
         <p className="text-xs text-muted-foreground font-medium px-1">
-          {isBg
-            ? "Време за подготовка на поръчката преди изпращане"
-            : "Time to prepare the order before shipping"}
+          {tSell("shipping.processing.hint")}
         </p>
       </div>
     </FieldContent>
@@ -570,12 +580,10 @@ export function ShippingField({ className, compact = false }: ShippingFieldProps
               </div>
               <div>
                 <FieldLabel className="text-sm font-bold tracking-tight text-foreground">
-                  {isBg ? "Доставка" : "Shipping"}
+                  {tSell("shipping.section.title")}
                 </FieldLabel>
                 <FieldDescription className="text-xs font-medium text-muted-foreground mt-0.5">
-                  {isBg
-                    ? "Изберете регионите, до които доставяте"
-                    : "Select regions you can ship to"}
+                  {tSell("shipping.section.description")}
                 </FieldDescription>
               </div>
             </div>
@@ -590,7 +598,7 @@ export function ShippingField({ className, compact = false }: ShippingFieldProps
             <div className="flex items-center gap-2 mb-2">
               <Truck className="size-4 text-muted-foreground" weight="bold" />
               <FieldLabel className="text-sm font-medium">
-                {isBg ? "Доставка" : "Shipping"}
+                {tSell("shipping.section.title")}
               </FieldLabel>
             </div>
           </div>
@@ -601,10 +609,3 @@ export function ShippingField({ className, compact = false }: ShippingFieldProps
   );
 }
 
-/**
- * Memoized ShippingField - Shipping regions, city, and dimensions selector.
- * Optimized to prevent unnecessary re-renders when unrelated form state changes.
- * @see useSellForm - Hook for form state access
- * @see useSellFormContext - Hook for context access
- */
-const MemoizedShippingField = memo(ShippingField);

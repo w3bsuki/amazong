@@ -114,8 +114,8 @@ export function MessagesDrawer({ open, onOpenChange }: MessagesDrawerProps) {
               <IconButton
                 aria-label={t("close")}
                 variant="ghost"
-                size="icon-compact"
-                className="text-muted-foreground hover:text-foreground hover:bg-muted active:bg-muted"
+                size="icon-default"
+                className="text-muted-foreground hover:text-foreground hover:bg-muted active:bg-muted motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth)"
               >
                 <X size={20} weight="light" />
               </IconButton>
@@ -164,9 +164,10 @@ export function MessagesDrawer({ open, onOpenChange }: MessagesDrawerProps) {
                   href={`/chat/${conversation.id}`}
                   onClick={handleClose}
                   className={cn(
-                    "flex gap-3 px-inset py-3",
-                    "hover:bg-hover active:bg-active transition-colors",
+                    "flex min-h-(--control-default) items-center gap-3 rounded-xl px-inset py-3",
+                    "hover:bg-hover active:bg-active motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth)",
                     "touch-manipulation tap-transparent",
+                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring",
                     index !== recentConversations.length - 1 && "border-b border-border"
                   )}
                 >
@@ -196,10 +197,13 @@ export function MessagesDrawer({ open, onOpenChange }: MessagesDrawerProps) {
                         <span className="text-xs text-muted-foreground">
                           {formatRelativeTime(conversation.last_message_at)}
                         </span>
+                        <span className="sr-only">
+                          {unread > 0 ? tMessages("unread") : tMessages("read")}
+                        </span>
                         {unread > 0 ? (
-                          <Circle size={8} weight="fill" className="text-destructive" aria-label={tMessages("unread")} />
+                          <Circle size={8} weight="fill" className="text-destructive" aria-hidden="true" />
                         ) : (
-                          <Check size={12} weight="bold" className="text-muted-foreground" aria-label={tMessages("read")} />
+                          <Check size={12} weight="bold" className="text-muted-foreground" aria-hidden="true" />
                         )}
                       </div>
                     </div>

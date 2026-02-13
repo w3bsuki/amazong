@@ -29,6 +29,42 @@ interface ListingCard {
   storeSlug?: string
 }
 
+function isListingCard(value: unknown): value is ListingCard {
+  if (!value || typeof value !== "object") return false
+  const candidate = value as Record<string, unknown>
+  return (
+    typeof candidate.id === "string" &&
+    typeof candidate.title === "string" &&
+    typeof candidate.price === "number" &&
+    Number.isFinite(candidate.price)
+  )
+}
+
+function extractListings(parts: unknown): ListingCard[] {
+  const listings: ListingCard[] = []
+  if (!Array.isArray(parts)) return listings
+
+  for (const rawPart of parts) {
+    if (!rawPart || typeof rawPart !== "object") continue
+    const part = rawPart as { type?: string; output?: unknown; state?: string }
+
+    // AI SDK v6: tool parts are typed as `tool-{toolName}` with state
+    if (
+      part.type === "tool-searchListings" &&
+      part.state === "output-available" &&
+      Array.isArray(part.output)
+    ) {
+      for (const rawListing of part.output) {
+        if (isListingCard(rawListing)) {
+          listings.push(rawListing)
+        }
+      }
+    }
+  }
+
+  return listings
+}
+
 /** Assistant Avatar - consistent across the app */
 function AssistantAvatar({ size = "sm" }: { size?: "sm" | "md" }) {
   const sizeClasses = {
@@ -105,23 +141,6 @@ export function SearchAiChat({ className, onClose, compact = false }: SearchAiCh
     setInput("")
   }
 
-  // Extract tool results (listing cards) from messages
-  const extractListings = (parts: Array<{ type: string; toolName?: string; output?: unknown; state?: string }>): ListingCard[] => {
-    const listings: ListingCard[] = []
-    for (const part of parts) {
-      // AI SDK v6: tool parts are typed as `tool-{toolName}` with state
-      if (
-        part.type === "tool-searchListings" && 
-        part.state === "output-available" &&
-        part.output && 
-        Array.isArray(part.output)
-      ) {
-        listings.push(...(part.output as ListingCard[]))
-      }
-    }
-    return listings
-  }
-
   return (
     <div className={cn("flex flex-col h-full", className)}>
       {/* Chat Messages */}
@@ -139,7 +158,7 @@ export function SearchAiChat({ className, onClose, compact = false }: SearchAiCh
                 <Robot size={24} weight="fill" />
               </AvatarFallback>
             </Avatar>
-            <h3 className="text-base font-semibold text-foreground mb-1">
+            <h3 className="mb-1 text-base font-semibold tracking-tight text-foreground">
               {t("aiWelcome")}
             </h3>
             <p className="text-sm text-muted-foreground max-w-xs">
@@ -155,7 +174,7 @@ export function SearchAiChat({ className, onClose, compact = false }: SearchAiCh
                     setInput(suggestion)
                     inputRef.current?.focus()
                   }}
-                  className="px-3 py-1.5 text-xs bg-surface-subtle hover:bg-hover active:bg-active rounded-full text-muted-foreground hover:text-foreground transition-colors"
+                  className="rounded-full bg-surface-subtle px-3 py-1.5 text-xs text-muted-foreground transition-colors hover:bg-hover hover:text-foreground active:bg-active focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
                 >
                   {suggestion}
                 </button>
@@ -166,7 +185,7 @@ export function SearchAiChat({ className, onClose, compact = false }: SearchAiCh
           <div className="p-4 space-y-4">
             {messages.map((message) => {
               const isUser = message.role === "user"
-              const listings = extractListings(message.parts as Array<{ type: string; toolName?: string; output?: unknown }>)
+              const listings = extractListings(message.parts)
               
               return (
                 <div key={message.id} className={cn("flex gap-3", isUser ? "justify-end" : "justify-start")}>
@@ -222,7 +241,7 @@ export function SearchAiChat({ className, onClose, compact = false }: SearchAiCh
                           <Link
                             href={`/search?q=${encodeURIComponent(input)}`}
                             onClick={() => onClose?.()}
-                            className="shrink-0 w-28 h-28 flex flex-col items-center justify-center bg-surface-subtle rounded-lg text-muted-foreground hover:text-foreground hover:bg-hover active:bg-active"
+                            className="shrink-0 w-28 h-28 rounded-lg bg-surface-subtle flex flex-col items-center justify-center text-muted-foreground transition-colors hover:bg-hover hover:text-foreground active:bg-active focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
                           >
                             <ArrowRight size={20} />
                             <span className="text-xs mt-1">{t("aiMoreResults", { count: listings.length - 4 })}</span>
@@ -306,7 +325,7 @@ export function SearchAiChat({ className, onClose, compact = false }: SearchAiCh
           <button
             type="button"
             onClick={() => stop?.()}
-            className="mt-2 text-xs text-muted-foreground hover:text-foreground w-full text-center"
+            className="mt-2 w-full text-center text-xs text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
           >
             {t("stopGenerating")}
           </button>

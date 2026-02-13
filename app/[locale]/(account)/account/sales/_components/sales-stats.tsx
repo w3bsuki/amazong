@@ -12,6 +12,7 @@ import {
   TrendDown,
   Receipt,
 } from "@phosphor-icons/react/dist/ssr"
+import { getTranslations } from "next-intl/server"
 
 interface SalesStatsProps {
   locale: string
@@ -27,7 +28,7 @@ interface SalesStatsProps {
   formatCurrency: (value: number) => string
 }
 
-export function SalesStats({
+export async function SalesStats({
   locale,
   totalRevenue,
   netRevenue,
@@ -40,13 +41,16 @@ export function SalesStats({
   totalCommission,
   formatCurrency,
 }: SalesStatsProps) {
+  const t = await getTranslations({ locale, namespace: "SellerManagement" })
+  const itemsPerOrder = (totalUnits / Math.max(totalSales, 1)).toFixed(1)
+
   return (
     <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
       {/* Total Revenue */}
       <Card className="@container/card">
         <CardHeader className="pb-2">
           <CardDescription className="text-xs sm:text-sm">
-            {locale === "bg" ? "Общи приходи" : "Total Revenue"}
+            {t("sales.stats.totalRevenue.title")}
           </CardDescription>
           <CardTitle className="text-xl sm:text-2xl font-bold tabular-nums">
             {formatCurrency(totalRevenue)}
@@ -68,7 +72,7 @@ export function SalesStats({
             </Badge>
           </div>
           <p className="text-xs text-muted-foreground mt-2">
-            {locale === "bg" ? "спрямо предишен период" : "vs previous period"}
+            {t("sales.stats.totalRevenue.vsPrevious")}
           </p>
         </CardContent>
       </Card>
@@ -77,7 +81,7 @@ export function SalesStats({
       <Card className="@container/card">
         <CardHeader className="pb-2">
           <CardDescription className="text-xs sm:text-sm">
-            {locale === "bg" ? "Нетни приходи" : "Net Revenue"}
+            {t("sales.stats.netRevenue.title")}
           </CardDescription>
           <CardTitle className="text-xl sm:text-2xl font-bold tabular-nums text-success">
             {formatCurrency(netRevenue)}
@@ -87,11 +91,11 @@ export function SalesStats({
           <div className="flex items-center gap-2 text-xs text-muted-foreground">
             <Receipt className="size-3.5" />
             <span>
-              {locale === "bg" ? "след" : "after"} {commissionRate}% {locale === "bg" ? "комисионна" : "commission"}
+              {t("sales.stats.netRevenue.afterCommission", { rate: commissionRate })}
             </span>
           </div>
           <p className="text-xs text-muted-foreground mt-2">
-            {locale === "bg" ? "Комисионна" : "Commission"}: {formatCurrency(totalCommission)}
+            {t("sales.stats.netRevenue.commissionLabel")}: {formatCurrency(totalCommission)}
           </p>
         </CardContent>
       </Card>
@@ -100,7 +104,7 @@ export function SalesStats({
       <Card className="@container/card">
         <CardHeader className="pb-2">
           <CardDescription className="text-xs sm:text-sm">
-            {locale === "bg" ? "Общо поръчки" : "Total Orders"}
+            {t("sales.stats.totalOrders.title")}
           </CardDescription>
           <CardTitle className="text-xl sm:text-2xl font-bold tabular-nums">{totalSales}</CardTitle>
         </CardHeader>
@@ -120,7 +124,7 @@ export function SalesStats({
             </Badge>
           </div>
           <p className="text-xs text-muted-foreground mt-2">
-            {totalUnits} {locale === "bg" ? "продадени бройки" : "units sold"}
+            {t("sales.stats.totalOrders.unitsSold", { count: totalUnits })}
           </p>
         </CardContent>
       </Card>
@@ -129,7 +133,7 @@ export function SalesStats({
       <Card className="@container/card">
         <CardHeader className="pb-2">
           <CardDescription className="text-xs sm:text-sm">
-            {locale === "bg" ? "Средна поръчка" : "Avg Order Value"}
+            {t("sales.stats.avgOrderValue.title")}
           </CardDescription>
           <CardTitle className="text-xl sm:text-2xl font-bold tabular-nums">
             {formatCurrency(avgOrderValue)}
@@ -138,10 +142,10 @@ export function SalesStats({
         <CardContent className="pt-0">
           <div className="flex items-center gap-2 text-xs text-muted-foreground">
             <ShoppingCart className="size-3.5" />
-            <span>{locale === "bg" ? "на поръчка" : "per order"}</span>
+            <span>{t("sales.stats.avgOrderValue.perOrder")}</span>
           </div>
           <p className="text-xs text-muted-foreground mt-2">
-            {(totalUnits / Math.max(totalSales, 1)).toFixed(1)} {locale === "bg" ? "бройки/поръчка" : "items/order"}
+            {t("sales.stats.avgOrderValue.itemsPerOrder", { value: itemsPerOrder })}
           </p>
         </CardContent>
       </Card>

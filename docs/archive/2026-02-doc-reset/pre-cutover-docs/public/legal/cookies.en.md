@@ -1,0 +1,43 @@
+# Cookie Policy
+
+> Cookies help Treido work securely. This page explains what we use and your choices.
+
+---
+
+Treido uses cookies for security, session management, and core functionality. Where consent is required, we will request it.
+
+## what-are-cookies: What are cookies?
+
+Cookies are small text files stored on your device. They help websites remember information (for example: session state, preferences) and improve security.
+
+## essential-cookies: Essential cookies
+
+These cookies are required for core functionality such as authentication, security, and basic site operations.
+
+## functional-cookies: Functional cookies
+
+These cookies help remember user preferences (for example: locale) and improve user experience.
+
+## analytics-cookies: Analytics cookies
+
+If analytics is enabled, cookies may be used to understand aggregated usage and improve the platform. Where required, we will request consent.
+
+## advertising-cookies: Advertising cookies
+
+Treido does not need advertising cookies to operate core functionality. If this changes, we will update this policy and follow applicable consent requirements.
+
+## manage-cookies: Managing cookies
+
+You can manage cookies through your browser settings. Disabling essential cookies may affect site functionality.
+
+## cookie-duration: Duration
+
+Some cookies last only during a browsing session; others may persist for a defined period.
+
+## your-choices: Your choices
+
+Where required, Treido provides cookie consent options. You may update your preferences at any time.
+
+---
+
+*Last updated: 2026-02-04*

@@ -1,11 +1,10 @@
 "use client";
 
-import { memo } from "react";
 import { Controller } from "react-hook-form";
 import { TextAlignLeft, TextB, TextItalic, List } from "@phosphor-icons/react";
 import { Field, FieldLabel, FieldDescription, FieldError, FieldContent } from "@/components/shared/field";
 import { cn } from "@/lib/utils";
-import { useSellForm, useSellFormContext } from "../sell-form-provider";
+import { useSellForm } from "../sell-form-provider";
 import { useTranslations } from "next-intl";
 
 // ============================================================================
@@ -33,7 +32,6 @@ export function DescriptionField({
   compact = false
 }: DescriptionFieldProps) {
   const { control, watch } = useSellForm();
-  const { isBg } = useSellFormContext();
   const tSell = useTranslations("Sell")
 
   const currentValue = watch("description") || "";
@@ -55,12 +53,10 @@ export function DescriptionField({
                 </div>
                 <div>
                   <FieldLabel className="text-sm font-bold tracking-tight text-foreground">
-                    {isBg ? "Описание" : "Description"}
+                    {tSell("fields.description.label")}
                   </FieldLabel>
                   <FieldDescription className="text-xs font-medium text-muted-foreground mt-0.5">
-                    {isBg
-                      ? "Опишете детайлите - размер, цвят, дефекти"
-                      : "Describe the details - size, color, flaws"}
+                    {tSell("fields.description.helpText")}
                   </FieldDescription>
                 </div>
               </div>
@@ -68,13 +64,13 @@ export function DescriptionField({
           )}
 
           {/* Compact Label */}
-          {compact && (
-            <div className="hidden">
-              <FieldLabel className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2 block">
-                {isBg ? "Описание" : "Description"}
-              </FieldLabel>
-            </div>
-          )}
+            {compact && (
+              <div className="hidden">
+                <FieldLabel className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2 block">
+                  {tSell("fields.description.label")}
+                </FieldLabel>
+              </div>
+            )}
 
           {/* Rich Textarea with label inside */}
           <FieldContent className={cn(!compact && "p-5")}>
@@ -88,19 +84,17 @@ export function DescriptionField({
                   htmlFor={textareaId}
                   className="text-2xs font-bold uppercase tracking-wider text-muted-foreground leading-none"
                 >
-                  {isBg ? "Описание" : "Description"}
+                  {tSell("fields.description.label")}
                 </label>
               </div>
               <textarea
                 {...field}
-                id={textareaId}
-                aria-invalid={fieldState.invalid}
-                placeholder={isBg
-                  ? "Добавете описание на вашия продукт..."
-                  : "Add a description of your product..."}
-                maxLength={maxLength}
-                rows={minRows}
-                className={cn(
+                 id={textareaId}
+                 aria-invalid={fieldState.invalid}
+                 placeholder={tSell("fields.description.placeholder")}
+                 maxLength={maxLength}
+                 rows={minRows}
+                 className={cn(
                   "block w-full resize-none border-0 bg-transparent px-4 py-2 text-sm font-semibold",
                   "placeholder:text-muted-foreground focus:ring-0 focus:outline-none",
                   "min-h-32"
@@ -110,31 +104,31 @@ export function DescriptionField({
               {/* Toolbar */}
               <div className="flex items-center justify-between border-t border-border-subtle bg-surface-subtle px-4 py-2">
                 <div className="flex gap-1">
-                  <button
-                    type="button"
-                    className="size-8 flex items-center justify-center rounded-lg text-muted-foreground hover:bg-background hover:text-primary hover:shadow-sm transition-all"
-                    title={isBg ? "Удебелен" : "Bold"}
-                    aria-label={isBg ? "Удебелен текст" : "Bold text"}
-                  >
-                    <TextB className="size-3.5" weight="bold" />
-                  </button>
-                  <button
-                    type="button"
-                    className="size-8 flex items-center justify-center rounded-lg text-muted-foreground hover:bg-background hover:text-primary hover:shadow-sm transition-all"
-                    title={isBg ? "Курсив" : "Italic"}
-                    aria-label={isBg ? "Курсив текст" : "Italic text"}
-                  >
-                    <TextItalic className="size-3.5" weight="bold" />
-                  </button>
-                  <button
-                    type="button"
-                    className="size-8 flex items-center justify-center rounded-lg text-muted-foreground hover:bg-background hover:text-primary hover:shadow-sm transition-all"
-                    title={isBg ? "Списък" : "List"}
-                    aria-label={isBg ? "Добави списък" : "Add list"}
-                  >
-                    <List className="size-3.5" weight="bold" />
-                  </button>
-                </div>
+                   <button
+                     type="button"
+                     className="size-8 flex items-center justify-center rounded-lg text-muted-foreground hover:bg-background hover:text-primary hover:shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background"
+                     title={tSell("fields.description.toolbar.boldTitle")}
+                     aria-label={tSell("fields.description.toolbar.boldAriaLabel")}
+                   >
+                     <TextB className="size-3.5" weight="bold" />
+                   </button>
+                   <button
+                     type="button"
+                     className="size-8 flex items-center justify-center rounded-lg text-muted-foreground hover:bg-background hover:text-primary hover:shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background"
+                     title={tSell("fields.description.toolbar.italicTitle")}
+                     aria-label={tSell("fields.description.toolbar.italicAriaLabel")}
+                   >
+                     <TextItalic className="size-3.5" weight="bold" />
+                   </button>
+                   <button
+                     type="button"
+                     className="size-8 flex items-center justify-center rounded-lg text-muted-foreground hover:bg-background hover:text-primary hover:shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background"
+                     title={tSell("fields.description.toolbar.listTitle")}
+                     aria-label={tSell("fields.description.toolbar.listAriaLabel")}
+                   >
+                     <List className="size-3.5" weight="bold" />
+                   </button>
+                 </div>
                 <span
                   className={cn(
                     "text-2xs font-bold tabular-nums uppercase tracking-widest",
@@ -161,10 +155,3 @@ export function DescriptionField({
   );
 }
 
-/**
- * Memoized DescriptionField - Rich textarea with formatting toolbar.
- * Optimized to prevent unnecessary re-renders when unrelated form state changes.
- * @see useSellForm - Hook for form state access
- * @see useSellFormContext - Hook for context access
- */
-const MemoizedDescriptionField = memo(DescriptionField);

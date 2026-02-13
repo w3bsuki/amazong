@@ -15,6 +15,7 @@ import {
 import { Field, FieldLabel, FieldDescription, FieldContent } from "@/components/shared/field";
 import { cn } from "@/lib/utils";
 import type { ProductAttribute } from "@/lib/sell/schema-v4";
+import { useTranslations } from "next-intl";
 import { useSellForm, useSellFormContext } from "../sell-form-provider";
 import { SelectDrawer } from "../ui/select-drawer";
 
@@ -34,6 +35,8 @@ interface CategoryAttribute {
   placeholder_bg?: string;
   sort_order: number;
 }
+
+const EXCLUDED_ATTRIBUTE_NAMES = ["condition", "състояние", "състояние на продукта"];
 
 // ============================================================================
 // Helper: Check if attribute value is filled
@@ -63,7 +66,7 @@ function AttributeSelect({
   onChange,
   placeholder,
   compact,
-  isBg,
+  locale,
 }: {
   label: string;
   value: string;
@@ -72,9 +75,11 @@ function AttributeSelect({
   onChange: (val: string) => void;
   placeholder?: string;
   compact: boolean;
-  isBg: boolean;
+  locale: string;
 }) {
   const [isOpen, setIsOpen] = useState(false);
+  const tSell = useTranslations("Sell")
+  const isBg = locale === "bg"
 
   const normalizedOptions = useMemo(() => {
     return options.map((opt, idx) => ({
@@ -104,7 +109,7 @@ function AttributeSelect({
               "text-sm font-semibold truncate",
               displayValue ? "text-foreground" : "text-muted-foreground"
             )}>
-              {displayValue || placeholder || (isBg ? "Изберете..." : "Select...")}
+              {displayValue || placeholder || tSell("fields.attributes.placeholders.selectEllipsis")}
             </span>
           </div>
           <CaretRight className="size-4 text-muted-foreground shrink-0 ml-2" weight="bold" />
@@ -117,7 +122,7 @@ function AttributeSelect({
           {...(optionsBg ? { optionsBg } : {})}
           value={value}
           onChange={onChange}
-          locale={isBg ? "bg" : "en"}
+          locale={locale}
         />
       </>
     );
@@ -126,7 +131,7 @@ function AttributeSelect({
   return (
     <Select value={value || undefined} onValueChange={onChange}>
       <SelectTrigger className="w-full h-(--control-primary) rounded-md border-border font-medium">
-        <SelectValue placeholder={placeholder || (isBg ? "Избери..." : "Select...")} />
+        <SelectValue placeholder={placeholder || tSell("fields.attributes.placeholders.selectEllipsis")} />
       </SelectTrigger>
       <SelectContent>
         {normalizedOptions.map((opt) => (
@@ -141,7 +146,8 @@ function AttributeSelect({
 
 export function AttributesField({ className, compact = false }: AttributesFieldProps) {
   const { setValue, watch } = useSellForm();
-  const { isBg } = useSellFormContext();
+  const { isBg, locale } = useSellFormContext();
+  const tSell = useTranslations("Sell")
 
   const categoryId = watch("categoryId");
   const watchedAttributes = watch("attributes");
@@ -261,14 +267,11 @@ export function AttributesField({ className, compact = false }: AttributesFieldP
 
   const customAttrs = useMemo(() => attributes.filter(a => a.isCustom), [attributes]);
 
-  // Filter out condition attribute (handled by ConditionField)
-  const EXCLUDED_NAMES = ["condition", "състояние", "състояние на продукта"];
-  
   const dbRequiredAttrs = useMemo(
     () => dbAttributes
       .filter(a => a.is_required)
-      .filter(a => !EXCLUDED_NAMES.includes(a.name.toLowerCase()) && 
-                   !(a.name_bg && EXCLUDED_NAMES.includes(a.name_bg.toLowerCase())))
+      .filter(a => !EXCLUDED_ATTRIBUTE_NAMES.includes(a.name.toLowerCase()) && 
+                   !(a.name_bg && EXCLUDED_ATTRIBUTE_NAMES.includes(a.name_bg.toLowerCase())))
       .sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0)),
     [dbAttributes]
   );
@@ -276,8 +279,8 @@ export function AttributesField({ className, compact = false }: AttributesFieldP
   const dbOptionalAttrs = useMemo(
     () => dbAttributes
       .filter(a => !a.is_required)
-      .filter(a => !EXCLUDED_NAMES.includes(a.name.toLowerCase()) && 
-                   !(a.name_bg && EXCLUDED_NAMES.includes(a.name_bg.toLowerCase())))
+      .filter(a => !EXCLUDED_ATTRIBUTE_NAMES.includes(a.name.toLowerCase()) && 
+                   !(a.name_bg && EXCLUDED_ATTRIBUTE_NAMES.includes(a.name_bg.toLowerCase())))
       .sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0)),
     [dbAttributes]
   );
@@ -299,11 +302,11 @@ export function AttributesField({ className, compact = false }: AttributesFieldP
   if (!categoryId) {
     return (
       <div className={cn("rounded-md border border-dashed border-border bg-surface-subtle p-4", className)}>
-        <p className="text-sm text-muted-foreground text-center">
-          {isBg ? "Изберете категория, за да видите спецификациите" : "Select a category to see item specifics"}
-        </p>
-      </div>
-    );
+          <p className="text-sm text-muted-foreground text-center">
+          {tSell("fields.attributes.noCategorySelected")}
+          </p>
+        </div>
+      );
   }
 
   const content = (
@@ -326,7 +329,7 @@ export function AttributesField({ className, compact = false }: AttributesFieldP
                 <WarningCircle className="size-4 text-muted-foreground" weight="fill" />
               )}
               <span className="text-foreground uppercase tracking-wider text-xs">
-                {isBg ? "Основни характеристики" : "Main specifics"}
+                {tSell("steps.details.mainSpecificsLabel")}
               </span>
             </div>
             <span className="text-xs font-bold text-muted-foreground tabular-nums bg-surface-subtle px-2 py-0.5 rounded-full">
@@ -352,9 +355,9 @@ export function AttributesField({ className, compact = false }: AttributesFieldP
                       options={attr.options}
                       {...(attr.options_bg ? { optionsBg: attr.options_bg } : {})}
                       onChange={(value) => handleAttributeChange(attr, value)}
-                      placeholder={`${isBg ? "Избери" : "Select"} ${getName(attr)}`}
+                      placeholder={tSell("fields.attributes.placeholders.selectWithLabel", { label: getName(attr) })}
                       compact={compact}
-                      isBg={isBg}
+                      locale={locale}
                     />
                   ) : (
                     <div className={cn(
@@ -368,7 +371,7 @@ export function AttributesField({ className, compact = false }: AttributesFieldP
                       <Input
                         value={currentValue}
                         onChange={(e) => handleAttributeChange(attr, e.target.value)}
-                        placeholder={getPlaceholder(attr) || `${isBg ? "Въведи" : "Enter"} ${getName(attr)}`}
+                        placeholder={getPlaceholder(attr) || tSell("fields.attributes.placeholders.enterWithLabel", { label: getName(attr) })}
                         type={attr.attribute_type === "number" ? "number" : "text"}
                         className="h-auto p-0 border-none bg-transparent shadow-none focus-visible:ring-0 text-sm font-semibold flex-1 min-w-0"
                       />
@@ -386,7 +389,7 @@ export function AttributesField({ className, compact = false }: AttributesFieldP
         <div className="space-y-3">
           <div className="flex items-center justify-between gap-2">
             <Label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
-              {isBg ? "Още детайли (по желание)" : "More details (optional)"}
+              {tSell("fields.attributes.moreDetailsOptional")}
             </Label>
             <Button
               type="button"
@@ -395,7 +398,7 @@ export function AttributesField({ className, compact = false }: AttributesFieldP
               onClick={() => setShowAllDbAttributes(v => !v)}
               className="h-8 text-xs font-bold text-primary hover:bg-hover active:bg-active"
             >
-              {showAllDbAttributes ? (isBg ? "Скрий" : "Hide") : (isBg ? "Покажи всички" : "Show all")}
+              {showAllDbAttributes ? tSell("fields.attributes.toggle.hide") : tSell("fields.attributes.toggle.showAll")}
             </Button>
           </div>
 
@@ -419,9 +422,9 @@ export function AttributesField({ className, compact = false }: AttributesFieldP
                         options={attr.options}
                         {...(attr.options_bg ? { optionsBg: attr.options_bg } : {})}
                         onChange={(value) => handleAttributeChange(attr, value)}
-                        placeholder={`${isBg ? "Избери" : "Select"} ${getName(attr)}`}
+                        placeholder={tSell("fields.attributes.placeholders.selectWithLabel", { label: getName(attr) })}
                         compact={compact}
-                        isBg={isBg}
+                        locale={locale}
                       />
                     ) : (
                       <div className={cn(
@@ -435,7 +438,7 @@ export function AttributesField({ className, compact = false }: AttributesFieldP
                         <Input
                           value={currentValue}
                           onChange={(e) => handleAttributeChange(attr, e.target.value)}
-                          placeholder={getPlaceholder(attr) || `${isBg ? "Въведи" : "Enter"} ${getName(attr)}`}
+                          placeholder={getPlaceholder(attr) || tSell("fields.attributes.placeholders.enterWithLabel", { label: getName(attr) })}
                           type={attr.attribute_type === "number" ? "number" : "text"}
                           className="h-auto p-0 border-none bg-transparent shadow-none focus-visible:ring-0 text-sm font-semibold flex-1 min-w-0"
                         />
@@ -462,9 +465,9 @@ export function AttributesField({ className, compact = false }: AttributesFieldP
                         options={attr.options}
                         {...(attr.options_bg ? { optionsBg: attr.options_bg } : {})}
                         onChange={(value) => handleAttributeChange(attr, value)}
-                        placeholder={`${isBg ? "Избери" : "Select"} ${getName(attr)}`}
+                        placeholder={tSell("fields.attributes.placeholders.selectWithLabel", { label: getName(attr) })}
                         compact={compact}
-                        isBg={isBg}
+                        locale={locale}
                       />
                     ) : (
                       <div className={cn(
@@ -477,7 +480,7 @@ export function AttributesField({ className, compact = false }: AttributesFieldP
                         <Input
                           value={currentValue}
                           onChange={(e) => handleAttributeChange(attr, e.target.value)}
-                          placeholder={getPlaceholder(attr) || `${isBg ? "Въведи" : "Enter"} ${getName(attr)}`}
+                          placeholder={getPlaceholder(attr) || tSell("fields.attributes.placeholders.enterWithLabel", { label: getName(attr) })}
                           type={attr.attribute_type === "number" ? "number" : "text"}
                           className="h-auto p-0 border-none bg-transparent shadow-none focus-visible:ring-0 text-sm font-semibold flex-1 min-w-0"
                         />
@@ -496,7 +499,7 @@ export function AttributesField({ className, compact = false }: AttributesFieldP
         <div className="space-y-4">
           <div className="flex items-center gap-2 text-xs font-bold text-muted-foreground uppercase tracking-wider">
             <Info className="size-4" weight="bold" />
-            {isBg ? "Спецификациите помагат на купувачите" : "Item specifics help buyers"}
+            {tSell("fields.attributes.helpBuyersHint")}
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -517,9 +520,9 @@ export function AttributesField({ className, compact = false }: AttributesFieldP
                       options={attr.options}
                       {...(attr.options_bg ? { optionsBg: attr.options_bg } : {})}
                       onChange={(value) => handleAttributeChange(attr, value)}
-                      placeholder={getPlaceholder(attr) || `${isBg ? "Избери" : "Select"} ${getName(attr)}`}
+                      placeholder={getPlaceholder(attr) || tSell("fields.attributes.placeholders.selectWithLabel", { label: getName(attr) })}
                       compact={compact}
-                      isBg={isBg}
+                      locale={locale}
                     />
                   ) : (
                     <div className={cn(
@@ -533,7 +536,7 @@ export function AttributesField({ className, compact = false }: AttributesFieldP
                       <Input
                         value={currentValue}
                         onChange={(e) => handleAttributeChange(attr, e.target.value)}
-                        placeholder={getPlaceholder(attr) || `${isBg ? "Въведи" : "Enter"} ${getName(attr)}`}
+                        placeholder={getPlaceholder(attr) || tSell("fields.attributes.placeholders.enterWithLabel", { label: getName(attr) })}
                         type={attr.attribute_type === "number" ? "number" : "text"}
                         className="h-auto p-0 border-none bg-transparent shadow-none focus-visible:ring-0 text-sm font-semibold flex-1 min-w-0"
                       />
@@ -550,7 +553,7 @@ export function AttributesField({ className, compact = false }: AttributesFieldP
       {!isLoading && (
         <div className="space-y-4 pt-4 border-t border-border-subtle">
           <Label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
-            {isBg ? "Допълнителни характеристики" : "Custom Attributes"}
+            {tSell("fields.attributes.custom.title")}
           </Label>
 
           {customAttrs.length > 0 && (
@@ -565,7 +568,7 @@ export function AttributesField({ className, compact = false }: AttributesFieldP
                     type="button"
                     onClick={() => handleRemoveCustom(index)}
                     className="size-8 flex items-center justify-center rounded-lg hover:bg-destructive-subtle text-muted-foreground hover:text-destructive transition-colors"
-                    aria-label={isBg ? "Премахни" : "Remove"}
+                    aria-label={tSell("fields.attributes.custom.removeAriaLabel")}
                   >
                     <X className="size-4" weight="bold" />
                   </button>
@@ -577,20 +580,20 @@ export function AttributesField({ className, compact = false }: AttributesFieldP
           <div className="flex flex-col gap-3 p-4 rounded-md bg-surface-subtle border border-dashed border-border">
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
-                <Label className="text-2xs font-bold text-muted-foreground uppercase tracking-wider">{isBg ? "Име" : "Name"}</Label>
+                <Label className="text-2xs font-bold text-muted-foreground uppercase tracking-wider">{tSell("fields.attributes.custom.nameLabel")}</Label>
                 <Input
                   value={newAttrName}
                   onChange={(e) => setNewAttrName(e.target.value)}
-                  placeholder={isBg ? "напр. Материал" : "e.g., Material"}
+                  placeholder={tSell("fields.attributes.custom.namePlaceholder")}
                   className="h-10 rounded-lg border-border font-medium text-sm"
                 />
               </div>
               <div className="space-y-1.5">
-                <Label className="text-2xs font-bold text-muted-foreground uppercase tracking-wider">{isBg ? "Стойност" : "Value"}</Label>
+                <Label className="text-2xs font-bold text-muted-foreground uppercase tracking-wider">{tSell("fields.attributes.custom.valueLabel")}</Label>
                 <Input
                   value={newAttrValue}
                   onChange={(e) => setNewAttrValue(e.target.value)}
-                  placeholder={isBg ? "напр. Памук" : "e.g., Cotton"}
+                  placeholder={tSell("fields.attributes.custom.valuePlaceholder")}
                   className="h-10 rounded-lg border-border font-medium text-sm"
                 />
               </div>
@@ -603,7 +606,7 @@ export function AttributesField({ className, compact = false }: AttributesFieldP
               className="h-10 rounded-md border-selected-border text-primary font-bold text-xs uppercase tracking-widest hover:bg-hover active:bg-active"
             >
               <Plus className="size-3.5 mr-2" weight="bold" />
-              {isBg ? "Добави характеристика" : "Add attribute"}
+              {tSell("fields.attributes.custom.addButton")}
             </Button>
           </div>
         </div>
@@ -622,12 +625,10 @@ export function AttributesField({ className, compact = false }: AttributesFieldP
               </div>
               <div>
                 <FieldLabel className="text-sm font-bold tracking-tight text-foreground">
-                  {isBg ? "Характеристики" : "Item Specifics"}
+                  {tSell("fields.attributes.sectionTitle")}
                 </FieldLabel>
                 <FieldDescription className="text-xs font-medium text-muted-foreground mt-0.5">
-                  {isBg
-                    ? "Добавете детайли, за да помогнете на купувачите да намерят продукта"
-                    : "Add details to help buyers find your product"}
+                  {tSell("fields.attributes.sectionDescription")}
                 </FieldDescription>
               </div>
             </div>

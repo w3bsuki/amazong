@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo, useCallback } from "react";
-import { CaretRight, Check, X, MagnifyingGlass, CaretLeft, FolderSimple } from "@phosphor-icons/react";
+import { CaretRight, Check, MagnifyingGlass, CaretLeft, FolderSimple } from "@phosphor-icons/react";
 import {
   Dialog,
   DialogContent,
@@ -19,6 +19,7 @@ import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useTranslations } from "next-intl";
 import type { Category, CategoryPathItem } from "../../../_lib/types";
 
 // ============================================================================
@@ -47,14 +48,14 @@ interface FlatCategory extends Category {
 function CategorySearchInput({
   value,
   onChange,
-  locale,
   compact = false,
 }: {
   value: string;
   onChange: (val: string) => void;
-  locale: string;
   compact?: boolean;
 }) {
+  const tSell = useTranslations("Sell")
+
   return (
     <div className="relative">
       <MagnifyingGlass 
@@ -67,7 +68,7 @@ function CategorySearchInput({
       <Input
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        placeholder={locale === "bg" ? (compact ? "Търси..." : "Търси категория...") : (compact ? "Search..." : "Search category...")}
+        placeholder={compact ? tSell("categoryModal.searchPlaceholderCompact") : tSell("categoryModal.searchPlaceholder")}
         className={cn(
           compact 
             ? "pl-9 h-9 text-sm" 
@@ -79,12 +80,14 @@ function CategorySearchInput({
 }
 
 /** Reusable empty state when no search results */
-function CategoryEmptyState({ locale, compact = false }: { locale: string; compact?: boolean }) {
+function CategoryEmptyState({ compact = false }: { compact?: boolean }) {
+  const tSell = useTranslations("Sell")
+
   if (compact) {
     return (
       <div className="py-8 text-center text-muted-foreground">
         <p className="text-sm">
-          {locale === "bg" ? "Няма резултати" : "No results"}
+          {tSell("categoryModal.noResultsCompact")}
         </p>
       </div>
     );
@@ -96,7 +99,7 @@ function CategoryEmptyState({ locale, compact = false }: { locale: string; compa
         <MagnifyingGlass className="size-8 text-muted-foreground" />
       </div>
       <p className="text-sm font-bold text-muted-foreground uppercase tracking-widest">
-        {locale === "bg" ? "Няма намерени резултати" : "No results found"}
+        {tSell("categoryModal.noResults")}
       </p>
     </div>
   );
@@ -192,6 +195,7 @@ export function CategorySelector({
 }: CategoryModalProps) {
   const [isOpen, setIsOpen] = useState(false);
   const isMobile = useIsMobile();
+  const tSell = useTranslations("Sell")
 
   // Flatten categories for search and lookup
   const flatCategories = useMemo(() => {
@@ -245,7 +249,7 @@ export function CategorySelector({
 
   // Smart path display for mobile to save space
   const displayPath = useMemo(() => {
-    if (!selectedCategory) return locale === "bg" ? "Изберете..." : "Select...";
+    if (!selectedCategory) return tSell("categoryModal.selectPlaceholder");
     
     const path = selectedCategory.path;
     if (!path || path.length === 0) return selectedCategory.name;
@@ -257,12 +261,7 @@ export function CategorySelector({
     }
     
     return selectedCategory.fullPath;
-  }, [selectedCategory, locale, isMobile]);
-
-  const handleClear = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    onChange("", []);
-  };
+  }, [selectedCategory, locale, isMobile, tSell]);
 
   const handleSelect = useCallback(
     (cat: FlatCategory) => {
@@ -278,7 +277,7 @@ export function CategorySelector({
       type="button"
       onClick={() => setIsOpen(true)}
       className={cn(
-        "relative w-full flex items-center h-12 px-4 rounded-md border transition-all text-left",
+        "relative w-full flex items-center h-12 px-4 rounded-md border text-left",
         "bg-background border border-border shadow-xs",
         "hover:border-hover-border focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background",
         "transition-colors",
@@ -287,7 +286,7 @@ export function CategorySelector({
     >
       <div className="flex items-center gap-2 flex-1 min-w-0">
         <span className="text-2xs font-bold uppercase tracking-wider text-muted-foreground shrink-0">
-          {locale === "bg" ? "Категория:" : "Category:"}
+          {tSell("categoryModal.categoryLabel")}
         </span>
         <span className={cn(
           "text-sm font-semibold truncate pr-4",
@@ -323,10 +322,10 @@ export function CategorySelector({
           <DrawerContent className="h-full max-h-full rounded-none">
             <DrawerHeader className="sr-only">
               <DrawerTitle>
-                {locale === "bg" ? "Избери категория" : "Select Category"}
+                {tSell("categoryModal.title")}
               </DrawerTitle>
               <DrawerDescription>
-                {locale === "bg" ? "Изберете категория за вашия продукт" : "Choose a category for your product"}
+                {tSell("categoryModal.description")}
               </DrawerDescription>
             </DrawerHeader>
             <CategoryModalContent {...contentProps} isMobile />
@@ -339,16 +338,16 @@ export function CategorySelector({
   return (
     <>
       {TriggerButton}
-      <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogContent className="max-w-2xl max-h-dialog-sm p-0 gap-0 rounded-lg">
-          <DialogHeader className="px-4 py-3 border-b">
-            <DialogTitle className="text-base font-semibold">
-              {locale === "bg" ? "Избери категория" : "Select Category"}
-            </DialogTitle>
-          </DialogHeader>
-          <CategoryModalContent {...contentProps} isMobile={false} />
-        </DialogContent>
-      </Dialog>
+        <Dialog open={isOpen} onOpenChange={setIsOpen}>
+          <DialogContent className="max-w-2xl max-h-dialog-sm p-0 gap-0 rounded-lg">
+            <DialogHeader className="px-4 py-3 border-b">
+              <DialogTitle className="text-base font-semibold">
+                {tSell("categoryModal.title")}
+              </DialogTitle>
+            </DialogHeader>
+            <CategoryModalContent {...contentProps} isMobile={false} />
+          </DialogContent>
+        </Dialog>
     </>
   );
 }
@@ -378,11 +377,13 @@ function CategoryModalContent({
   const [activeL1, setActiveL1] = useState<Category | null>(categories[0] || null);
   const [childrenById, setChildrenById] = useState<Record<string, Category[]>>({});
   const [loadingChildrenById, setLoadingChildrenById] = useState<Record<string, boolean>>({});
+  const tSell = useTranslations("Sell")
 
   const MAX_DEPTH = 4; // L0 -> L1 -> L2 -> L3 -> L4 (supports 647 L4 categories)
-  const stepLabels = locale === "bg"
-    ? ["Ниво 0", "Ниво 1", "Ниво 2", "Ниво 3", "Ниво 4"]
-    : ["Level 0", "Level 1", "Level 2", "Level 3", "Level 4"];
+  const levelLabels = useMemo(
+    () => Array.from({ length: MAX_DEPTH + 1 }, (_, level) => tSell("categoryModal.levelLabel", { level })),
+    [MAX_DEPTH, tSell],
+  )
   const lastNavigationItem = navigationPath.at(-1)
 
   const getName = (cat: Category) =>
@@ -541,7 +542,7 @@ function CategoryModalContent({
         <div className="flex flex-col border-b border-border-subtle bg-background shrink-0">
           {/* Search Row */}
           <div className="px-4 py-3">
-            <CategorySearchInput value={searchQuery} onChange={setSearchQuery} locale={locale} />
+            <CategorySearchInput value={searchQuery} onChange={setSearchQuery} />
           </div>
 
           {/* Step & Breadcrumb Row */}
@@ -564,12 +565,12 @@ function CategoryModalContent({
                 
                 <div className="flex flex-col min-w-0">
                   <span className="text-2xs font-bold text-muted-foreground uppercase tracking-widest leading-none mb-1">
-                    {locale === "bg" ? "Стъпка" : "Step"} {currentStep}/{MAX_DEPTH + 1}
+                    {tSell("categoryModal.stepProgress", { current: currentStep, total: MAX_DEPTH + 1 })}
                   </span>
                   <h3 className="text-xs font-bold text-foreground uppercase tracking-wider truncate">
                     {navigationPath.length > 0 
-                      ? (lastNavigationItem ? getName(lastNavigationItem) : stepLabels[0])
-                      : stepLabels[0]
+                      ? (lastNavigationItem ? getName(lastNavigationItem) : levelLabels[0])
+                      : levelLabels[0]
                     }
                   </h3>
                 </div>
@@ -577,7 +578,7 @@ function CategoryModalContent({
 
               <div className="shrink-0 px-2 py-1 rounded-md bg-background border border-border shadow-xs">
                 <span className="text-2xs font-bold text-primary uppercase tracking-tighter">
-                  {stepLabels[Math.min(currentStep - 1, stepLabels.length - 1)]}
+                  {levelLabels[Math.min(currentStep - 1, levelLabels.length - 1)]}
                 </span>
               </div>
             </div>
@@ -589,7 +590,7 @@ function CategoryModalContent({
           <div className="p-4">
             {searchQuery.trim() ? (
               searchResults.length === 0 ? (
-                <CategoryEmptyState locale={locale} />
+                <CategoryEmptyState />
               ) : (
                 <CategorySearchResults
                   results={searchResults}
@@ -651,7 +652,7 @@ function CategoryModalContent({
       <div className="flex-1 flex flex-col">
         {/* Search */}
         <div className="px-3 py-2 border-b">
-          <CategorySearchInput value={searchQuery} onChange={setSearchQuery} locale={locale} compact />
+          <CategorySearchInput value={searchQuery} onChange={setSearchQuery} compact />
         </div>
 
         {/* Content */}
@@ -659,7 +660,7 @@ function CategoryModalContent({
           <div className="p-3">
             {searchQuery.trim() ? (
               searchResults.length === 0 ? (
-                <CategoryEmptyState locale={locale} compact />
+                <CategoryEmptyState compact />
               ) : (
                 <CategorySearchResults
                   results={searchResults}

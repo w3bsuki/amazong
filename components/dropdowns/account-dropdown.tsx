@@ -4,7 +4,7 @@ import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/h
 import { Button } from "@/components/ui/button"
 import { Link } from "@/i18n/routing"
 import { useTranslations } from "next-intl"
-import { User } from "@supabase/supabase-js"
+import type { User } from "@supabase/supabase-js"
 import { SpinnerGap, UserCircle, Package, Storefront, ChatCircle, Gear, SignOut, CaretRight, CaretDown, Bell } from "@phosphor-icons/react"
 import { useState } from "react"
 import { cn } from "@/lib/utils"
@@ -24,18 +24,25 @@ export function AccountDropdown({ user, variant = "icon", notificationCount = 0,
   const tAccountDrawer = useTranslations("AccountDrawer")
   const tNotifications = useTranslations("NotificationsDropdown")
   const [isSigningOut, setIsSigningOut] = useState(false)
+  const menuLinkClass =
+    "flex items-center gap-2.5 px-3 py-2 text-sm text-foreground hover:bg-accent active:bg-active focus-visible:bg-accent focus-visible:outline-none motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth) motion-reduce:transition-none"
+  const notificationSuffix =
+    notificationCount > 0
+      ? ` (${notificationCount} ${tNotifications("title").toLowerCase()})`
+      : ""
 
   // For non-authenticated users with icon variant, show a simple Sign In link
   if (!user && variant === "icon") {
     return (
-      <Link href="/auth/login">
-        <Button
-          variant="header-ghost"
-          className={cn("h-10 px-3 text-sm font-medium", className)}
-        >
+      <Button
+        asChild
+        variant="header-ghost"
+        className={cn("h-10 px-3 text-sm font-medium", className)}
+      >
+        <Link href="/auth/login">
           {t("signIn")}
-        </Button>
-      </Link>
+        </Link>
+      </Button>
     )
   }
 
@@ -44,7 +51,7 @@ export function AccountDropdown({ user, variant = "icon", notificationCount = 0,
   const triggerContent = variant === "full" ? (
     <div
       className={cn(
-        "h-11 px-3 text-sm font-semibold leading-none rounded-md text-header-text hover:bg-header-hover transition-all flex items-center cursor-pointer gap-1",
+        "h-11 px-3 text-sm font-semibold leading-none rounded-md text-header-text hover:bg-header-hover active:bg-header-active flex items-center cursor-pointer gap-1 tap-transparent motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth) motion-reduce:transition-none",
         className
       )}
     >
@@ -70,11 +77,11 @@ export function AccountDropdown({ user, variant = "icon", notificationCount = 0,
         </div>
       </div>
       {/* Dropdown arrow indicator */}
-      <CaretDown weight="bold" className="size-3 text-header-text-muted ml-0.5" />
+      <CaretDown weight="bold" className="size-3 text-header-text-muted ml-0.5" aria-hidden="true" />
     </div>
   ) : (
     <div
-      className={cn("inline-flex items-center justify-center rounded-md text-header-text hover:bg-header-hover relative size-11 [&_svg]:size-6 cursor-pointer transition-colors", className)}
+      className={cn("inline-flex items-center justify-center rounded-md text-header-text hover:bg-header-hover active:bg-header-active relative size-11 [&_svg]:size-6 cursor-pointer tap-transparent motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth) motion-reduce:transition-none", className)}
     >
       <UserCircle weight="fill" />
       {notificationCount > 0 && (
@@ -94,7 +101,7 @@ export function AccountDropdown({ user, variant = "icon", notificationCount = 0,
         <Link
           href={user ? "/account" : "/auth/login"}
           className="block rounded-md outline-none focus-visible:outline-2 focus-visible:outline-ring"
-          aria-label={`${t("hello")}, ${user?.email?.split("@")[0] || t("signIn")}. ${t("accountAndLists")}${notificationCount > 0 ? ` (${notificationCount} ${tNotifications("title").toLowerCase()})` : ""}`}
+          aria-label={`${t("hello")}, ${user?.email?.split("@")[0] || t("signIn")}. ${t("accountAndLists")}${notificationSuffix}`}
         >
           {triggerContent}
         </Link>
@@ -107,13 +114,13 @@ export function AccountDropdown({ user, variant = "icon", notificationCount = 0,
       >
         {!user ? (
           <div className="p-3">
-            <Link href="/auth/login" className="block">
-              <Button className="w-full bg-primary hover:bg-interactive-hover text-primary-foreground">
+            <Button asChild className="w-full bg-primary hover:bg-interactive-hover text-primary-foreground">
+              <Link href="/auth/login">
                 {t("signIn")}
-              </Button>
-            </Link>
+              </Link>
+            </Button>
             <p className="text-xs text-muted-foreground text-center mt-2">
-              {t("newCustomer")} <Link href="/auth/sign-up" className="text-primary hover:underline">{t("startHere")}</Link>
+              {t("newCustomer")} <Link href="/auth/sign-up" className="text-primary hover:underline focus-visible:outline-none focus-visible:underline">{t("startHere")}</Link>
             </p>
           </div>
         ) : (
@@ -127,32 +134,32 @@ export function AccountDropdown({ user, variant = "icon", notificationCount = 0,
             </div>
 
             {/* Navigation links */}
-            <nav className="py-1">
+            <nav className="py-1" aria-label={t("accountAndLists")}>
               {/* Notifications link with badge */}
-              <Link href="/account/notifications" className="flex items-center justify-between px-3 py-2 text-sm text-foreground hover:bg-accent">
+              <Link href="/account/notifications" className={cn(menuLinkClass, "justify-between")}>
                 <span className="flex items-center gap-2.5">
                   <Bell size={16} weight="regular" className="text-muted-foreground" />
                   {tNotifications("title")}
                 </span>
                 {notificationCount > 0 && (
-                  <span className="text-2xs bg-notification text-primary-foreground px-1.5 py-0.5 rounded-full">
+                  <span className="text-2xs bg-notification text-primary-foreground px-1.5 py-0.5 rounded-full" aria-hidden="true">
                     {notificationCount}
                   </span>
                 )}
               </Link>
-              <Link href="/account/orders" className="flex items-center gap-2.5 px-3 py-2 text-sm text-foreground hover:bg-accent">
+              <Link href="/account/orders" className={menuLinkClass}>
                 <Package size={16} weight="regular" className="text-muted-foreground" />
                 {tAccount("header.orders")}
               </Link>
-              <Link href="/account/sales" className="flex items-center gap-2.5 px-3 py-2 text-sm text-foreground hover:bg-accent">
+              <Link href="/account/sales" className={menuLinkClass}>
                 <Storefront size={16} weight="regular" className="text-muted-foreground" />
                 {tAccount("header.sales")}
               </Link>
-              <Link href="/chat" className="flex items-center gap-2.5 px-3 py-2 text-sm text-foreground hover:bg-accent">
+              <Link href="/chat" className={menuLinkClass}>
                 <ChatCircle size={16} weight="regular" className="text-muted-foreground" />
                 {t("messages")}
               </Link>
-              <Link href="/account/settings" className="flex items-center gap-2.5 px-3 py-2 text-sm text-foreground hover:bg-accent">
+              <Link href="/account/settings" className={menuLinkClass}>
                 <Gear size={16} weight="regular" className="text-muted-foreground" />
                 {tAccountDrawer("settings")}
               </Link>
@@ -160,7 +167,7 @@ export function AccountDropdown({ user, variant = "icon", notificationCount = 0,
 
             {/* Account link */}
             <div className="border-t border-border py-1">
-              <Link href="/account" className="flex items-center justify-between px-3 py-2 text-sm text-foreground hover:bg-accent">
+              <Link href="/account" className={cn(menuLinkClass, "justify-between")}>
                 <span>{tAccount("header.myAccount")}</span>
                 <CaretRight size={14} weight="regular" className="text-muted-foreground" />
               </Link>

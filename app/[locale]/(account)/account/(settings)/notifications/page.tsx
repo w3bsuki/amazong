@@ -64,7 +64,7 @@ export default async function NotificationsPage({
   return (
     <div className="flex flex-col gap-4 md:gap-4">
       <h1 className="sr-only">{t("notifications")}</h1>
-      <NotificationsContent locale={locale} initialNotifications={initialNotifications} />
+      <NotificationsContent initialNotifications={initialNotifications} />
     </div>
   )
 }

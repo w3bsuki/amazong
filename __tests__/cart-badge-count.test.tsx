@@ -63,6 +63,7 @@ describe("cart badge count rendering", () => {
       enabledDrawers: { cart: true },
     })
     mocks.useCart.mockReturnValue({
+      isReady: true,
       items: [],
       totalItems: 120,
       subtotal: 0,
@@ -94,5 +95,23 @@ describe("cart badge count rendering", () => {
     await waitFor(() => {
       expect(container.querySelector('[data-slot=\"count-badge\"]')).toHaveTextContent("120")
     })
+  })
+
+  test("hides badge count until cart readiness is complete", () => {
+    mocks.useCart.mockReturnValue({
+      isReady: false,
+      items: [],
+      totalItems: 120,
+      subtotal: 0,
+      removeFromCart: vi.fn(),
+      updateQuantity: vi.fn(),
+    })
+
+    const mobile = render(<MobileCartDropdown />)
+    expect(mobile.container.querySelector('[data-slot=\"count-badge\"]')).toBeNull()
+    mobile.unmount()
+
+    const desktop = render(<CartDropdown />)
+    expect(desktop.container.querySelector('[data-slot=\"count-badge\"]')).toBeNull()
   })
 })

@@ -90,11 +90,11 @@ Enable users to list items for sale through an auth-gated, multi-step wizard wit
 
 ## Cross-References
 
-- [PAYMENTS.md](../PAYMENTS.md) — Stripe Connect onboarding, payout release, escrow lifecycle
-- [DATABASE.md](../DATABASE.md) — Products schema, category hierarchy, full-text search
-- [ROUTES.md](../ROUTES.md) — (sell) and (account) route groups
-- [API.md](../API.md) — Product and upload endpoints
-- DESIGN.md §8.5 — Sell drawer / wizard UX pattern
+- [PAYMENTS.md](../domain/PAYMENTS.md) — Stripe Connect onboarding, payout release, escrow lifecycle
+- [DATABASE.md](../domain/DATABASE.md) — Products schema, category hierarchy, full-text search
+- [ROUTES.md](../domain/ROUTES.md) — (sell) and (account) route groups
+- [API.md](../domain/API.md) — Product and upload endpoints
+- `docs/ui/DESIGN.md` §8.5 — Sell drawer / wizard UX pattern
 - [app-feel.md](./app-feel.md) — SellDrawer component spec, multi-step wizard pattern
 
 ---

@@ -377,27 +377,30 @@
 
 ---
 
-## Execution Evidence Log
+## Evidence Log (v2)
 
-> Required for release sign-off. Add one row per executed scenario.
+Fixed columns. Add one row per scenario run (or per sub-scenario if needed).
 
-| Scenario ID | Auto Result | Manual Result | Owner | Build/Commit | Screenshot/Video | Defect ID | Severity | Retest Result | Sign-off |
-|-------------|-------------|---------------|-------|--------------|------------------|-----------|----------|---------------|---------|
-| S2.1 | Fail | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace) | F2-001 | P1 | Fail | Pending |
-| S2.2 | Pass | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace) | — | — | Pass | Pending |
-| S2.3 | Fail | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace) | F2-002 | P3 | Fail | Pending |
-| S2.4 | Fail | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace) | F2-001 | P1 | Fail | Pending |
-| S2.5 | Fail | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace) | F2-001 | P1 | Fail | Pending |
-| S2.6 | Fail | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace) | F2-001 | P1 | Fail | Pending |
-| S2.7 | Pass | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace) | — | — | Pass | Pending |
-| S2.8 | Pass | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace) | — | — | Pass | Pending |
-| S2.9 | Pass | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace) | — | — | Pass | Pending |
-| S2.10 | Fail | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace) | CAT-001 | P1 | Fail | Pending |
-| S2.11 | Pass | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace) | — | — | Pass | Pending |
-| S2.12 | Pass | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace) | — | — | Pass | Pending |
-| S2.13 | Pass | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace) | — | — | Pass | Pending |
-| S2.14 | Pass | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace) | — | — | Pass | Pending |
-| S2.15 | Fail | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace) | F2-003 | P2 | Fail | Pending |
+| Scenario | Method | Artifact | Result | Issue ID | Severity | Owner | Date |
+|----------|--------|----------|--------|----------|----------|-------|------|
+| S2.1 | code trace | N/A (code trace) | Fail | F2-001 | P1 | Codex | 2026-02-11 |
+| S2.2 | code trace | N/A (code trace) | Pass | — | — | Codex | 2026-02-11 |
+| S2.3 | code trace | N/A (code trace) | Fail | F2-002 | P3 | Codex | 2026-02-11 |
+| S2.4 | code trace | N/A (code trace) | Fail | F2-001 | P1 | Codex | 2026-02-11 |
+| S2.5 | code trace | N/A (code trace) | Fail | F2-001 | P1 | Codex | 2026-02-11 |
+| S2.6 | code trace | N/A (code trace) | Fail | F2-001 | P1 | Codex | 2026-02-11 |
+| S2.7 | code trace | N/A (code trace) | Pass | — | — | Codex | 2026-02-11 |
+| S2.8 | code trace | N/A (code trace) | Pass | — | — | Codex | 2026-02-11 |
+| S2.9 | code trace | N/A (code trace) | Pass | — | — | Codex | 2026-02-11 |
+| S2.10 | code trace | N/A (code trace) | Fail | CAT-001 | P1 | Codex | 2026-02-11 |
+| S2.11 | code trace | N/A (code trace) | Pass | — | — | Codex | 2026-02-11 |
+| S2.12 | code trace | N/A (code trace) | Pass | — | — | Codex | 2026-02-11 |
+| S2.13 | code trace | N/A (code trace) | Pass | — | — | Codex | 2026-02-11 |
+| S2.14 | code trace | N/A (code trace) | Pass | — | — | Codex | 2026-02-11 |
+| S2.15 | code trace | N/A (code trace) | Fail | F2-003 | P2 | Codex | 2026-02-11 |
+
+Method suggestions: `runtime` | `code trace` | `manual` (keep it consistent within a phase).
+
 
 ---
 

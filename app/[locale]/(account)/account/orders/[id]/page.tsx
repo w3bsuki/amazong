@@ -33,6 +33,7 @@ interface OrderItemProduct {
 interface OrderItemSeller {
   id: string
   store_name: string
+  username?: string | null
   profile?: {
     full_name: string | null
     avatar_url: string | null
@@ -156,7 +157,7 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
   const { data: sellerProfilesRaw } = sellerIds.length > 0
     ? await supabase
         .from("profiles")
-        .select("id, full_name, avatar_url, business_name")
+        .select("id, full_name, avatar_url, business_name, username")
         .in("id", sellerIds)
     : { data: [] }
 
@@ -165,6 +166,7 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
     full_name: string | null
     avatar_url: string | null
     business_name: string | null
+    username: string | null
   }>
 
   // Create lookup maps
@@ -192,6 +194,7 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
       seller: sellerProfile ? {
         id: sellerProfile.id,
         store_name: sellerProfile.business_name || sellerProfile.full_name || "Unknown Seller",
+        username: sellerProfile.username,
         profile: {
           full_name: sellerProfile.full_name,
           avatar_url: sellerProfile.avatar_url,

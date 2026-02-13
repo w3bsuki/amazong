@@ -25,11 +25,11 @@ import type { SellFormDataV4 } from "@/lib/sell/schema-v4";
 // 4) Pricing: price + shipping options
 // 5) Review: final validation + publish
 const MOBILE_STEPS = [
-  { id: 1, title: { en: "What", bg: "Какво" }, fields: ["title", "images"] },
-  { id: 2, title: { en: "Category", bg: "Категория" }, fields: ["categoryId"] },
-  { id: 3, title: { en: "Details", bg: "Детайли" }, fields: ["condition", "description"] },
-  { id: 4, title: { en: "Price", bg: "Цена" }, fields: ["price", "shippingPrice", "sellerCity"] },
-  { id: 5, title: { en: "Review", bg: "Преглед" }, fields: [] },
+  { id: 1, fields: ["title", "images"] },
+  { id: 2, fields: ["categoryId"] },
+  { id: 3, fields: ["condition", "description"] },
+  { id: 4, fields: ["price", "shippingPrice", "sellerCity"] },
+  { id: 5, fields: [] },
 ];
 
 interface MobileLayoutProps {
@@ -66,8 +66,7 @@ export function MobileLayout({ onSubmit, isSubmitting = false }: MobileLayoutPro
     }
 
     if (currentStep === 4) {
-      const hasPrice = Boolean(price && Number.parseFloat(price) > 0);
-      return hasPrice;
+      return Boolean(price && Number.parseFloat(price) > 0);
     }
 
     return true;

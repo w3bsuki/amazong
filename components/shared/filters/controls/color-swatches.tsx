@@ -62,9 +62,9 @@ function getColorHex(colorName: string): string | null {
 }
 
 function isLightColor(hex: string): boolean {
-  const r = parseInt(hex.slice(1, 3), 16)
-  const g = parseInt(hex.slice(3, 5), 16)
-  const b = parseInt(hex.slice(5, 7), 16)
+  const r = Number.parseInt(hex.slice(1, 3), 16)
+  const g = Number.parseInt(hex.slice(3, 5), 16)
+  const b = Number.parseInt(hex.slice(5, 7), 16)
   // Relative luminance formula
   const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255
   return luminance > 0.7
@@ -99,9 +99,9 @@ export function ColorSwatches({
             key={option}
             type="button"
             onClick={() => handleSelect(option)}
-              className={cn(
-                "flex flex-col items-center gap-1.5 p-2 rounded-lg transition-colors",
-                "min-h-touch min-w-touch",
+            className={cn(
+              "flex flex-col items-center gap-1.5 rounded-lg p-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring",
+              "min-h-touch min-w-touch",
               isActive ? "bg-secondary" : "active:bg-active"
             )}
             aria-pressed={isActive}

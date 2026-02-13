@@ -77,7 +77,7 @@ export default async function SharedWishlistTokenPage({ params }: SharedWishlist
         <div className="mb-8 text-center">
           <div className="flex items-center justify-center gap-2 mb-4">
             <Gift className="h-8 w-8 text-deal" />
-            <h1 className="text-3xl font-bold text-foreground">{wishlistName}</h1>
+            <h1 className="text-3xl font-bold tracking-tight text-foreground">{wishlistName}</h1>
           </div>
           <p className="text-muted-foreground">{t("createdBy", { name: ownerName })}</p>
           {wishlistDescription && (
@@ -135,7 +135,7 @@ export default async function SharedWishlistTokenPage({ params }: SharedWishlist
         </div>
 
         <div className="mt-12 text-center p-4 bg-surface-subtle rounded-xl border border-border-subtle">
-          <h2 className="text-xl font-semibold mb-2">{t("createYourOwn")}</h2>
+          <h2 className="text-xl font-semibold tracking-tight mb-2">{t("createYourOwn")}</h2>
           <p className="text-muted-foreground mb-4">{t("signUpToCreate")}</p>
           <Button asChild variant="cta" className="font-medium">
             <Link href="/auth/sign-up">{t("signUpFree")}</Link>

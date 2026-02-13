@@ -43,7 +43,7 @@ const mobileBottomNavItemVariants = cva(
 )
 
 const mobileBottomNavCoreActionVariants = cva(
-  "inline-flex size-(--control-compact) items-center justify-center rounded-full motion-safe:transition-[background-color,transform] motion-safe:duration-fast motion-safe:ease-(--ease-smooth) group-active:scale-[0.97]",
+  "inline-flex size-(--control-compact) items-center justify-center rounded-full motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth)",
   {
     variants: {
       state: {

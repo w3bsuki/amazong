@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect } from "react";
 import Image from "next/image";
 import {
   CheckCircle,
@@ -36,12 +35,14 @@ function ReviewSection({
   title,
   icon: Icon,
   onEdit,
+  editLabel,
   isComplete,
   children,
 }: {
   title: string;
   icon: React.ElementType;
   onEdit?: () => void;
+  editLabel?: string;
   isComplete?: boolean;
   children: React.ReactNode;
 }) {
@@ -69,7 +70,7 @@ function ReviewSection({
             className="h-8 px-3 gap-1.5 text-primary text-sm font-semibold hover:bg-hover active:bg-active"
           >
             <PencilSimple className="size-4" />
-            Edit
+            {editLabel ?? "Edit"}
           </Button>
         )}
       </div>
@@ -88,6 +89,7 @@ export function ReviewField({ onEditStep }: ReviewFieldProps) {
   const { watch } = useSellForm();
   const { isBg, setCurrentStep } = useSellFormContext();
   const tSell = useTranslations("Sell")
+  const tCommon = useTranslations("Common")
   
   const formValues = watch();
   
@@ -141,7 +143,7 @@ export function ReviewField({ onEditStep }: ReviewFieldProps) {
 
   // Get category path display
   const categoryDisplay = categoryPath && categoryPath.length > 0
-    ? categoryPath.map(c => c.name).join(" › ")
+    ? categoryPath.map(c => (isBg && c.name_bg ? c.name_bg : c.name)).join(" › ")
     : "";
 
   return (
@@ -155,15 +157,15 @@ export function ReviewField({ onEditStep }: ReviewFieldProps) {
             </div>
             <div>
               <p className="text-sm font-bold text-foreground">
-                {isBg ? "Попълнете задължителните полета" : "Complete required fields"}
+                {tSell("review.completeRequiredFieldsTitle")}
               </p>
               <ul className="text-sm text-muted-foreground mt-2 space-y-1">
-                {!hasPhotos && <li>• {isBg ? "Добавете поне 1 снимка" : "Add at least 1 photo"}</li>}
-                {!hasTitle && <li>• {isBg ? "Добавете заглавие" : "Add a title"}</li>}
-                {!hasCategory && <li>• {isBg ? "Изберете категория" : "Select a category"}</li>}
-                {!hasCondition && <li>• {isBg ? "Изберете състояние" : "Select condition"}</li>}
-                {!hasDescription && <li>• {isBg ? "Добавете описание (мин. 50 символа)" : "Add a description (min 50 characters)"}</li>}
-                {!hasPrice && <li>• {isBg ? "Въведете цена" : "Enter a price"}</li>}
+                {!hasPhotos && <li>• {tSell("validation.photosRequired")}</li>}
+                {!hasTitle && <li>• {tSell("validation.titleMin")}</li>}
+                {!hasCategory && <li>• {tSell("validation.categoryRequired")}</li>}
+                {!hasCondition && <li>• {tSell("validation.conditionRequired")}</li>}
+                {!hasDescription && <li>• {tSell("validation.descriptionMin")}</li>}
+                {!hasPrice && <li>• {tSell("validation.priceRequired")}</li>}
               </ul>
             </div>
           </div>
@@ -172,10 +174,11 @@ export function ReviewField({ onEditStep }: ReviewFieldProps) {
 
       {/* Photos & Details */}
       <ReviewSection
-        title={isBg ? "Снимки и описание" : "Photos & Details"}
+        title={tSell("review.sections.photosAndDetails")}
         icon={Camera}
         isComplete={hasPhotos && hasTitle}
         onEdit={() => handleEdit(1)}
+        editLabel={tCommon("edit")}
       >
         {/* Photo preview */}
         {hasPhotos && (
@@ -187,14 +190,14 @@ export function ReviewField({ onEditStep }: ReviewFieldProps) {
               >
                 <Image
                   src={img.thumbnailUrl || img.url}
-                  alt={`Photo ${idx + 1}`}
+                  alt={tSell("photos.photoAlt", { index: idx + 1 })}
                   fill
                   className="object-cover"
                   sizes="56px"
                 />
                 {idx === 0 && (
                   <div className="absolute bottom-0 inset-x-0 bg-surface-overlay py-0.5 text-center">
-                    <span className="text-2xs text-overlay-text font-bold uppercase tracking-wider">Cover</span>
+                    <span className="text-2xs text-overlay-text font-bold uppercase tracking-wider">{tSell("photos.cover")}</span>
                   </div>
                 )}
               </div>
@@ -222,17 +225,18 @@ export function ReviewField({ onEditStep }: ReviewFieldProps) {
 
       {/* Category & Condition */}
       <ReviewSection
-        title={isBg ? "Категория и състояние" : "Category & Condition"}
+        title={tSell("review.sections.categoryAndCondition")}
         icon={FolderOpen}
         isComplete={hasCategory && hasCondition}
         onEdit={() => handleEdit(2)}
+        editLabel={tCommon("edit")}
       >
         <div className="space-y-3">
           {/* Category */}
           <div className="flex items-start gap-2">
             <Tag className="size-4 text-muted-foreground mt-0.5" />
             <div>
-              <p className="text-xs text-muted-foreground">{isBg ? "Категория" : "Category"}</p>
+              <p className="text-xs text-muted-foreground">{tSell("review.labels.category")}</p>
               <p className="text-sm font-medium">{categoryDisplay || "-"}</p>
             </div>
           </div>
@@ -241,7 +245,7 @@ export function ReviewField({ onEditStep }: ReviewFieldProps) {
           <div className="flex items-start gap-2">
             <Package className="size-4 text-muted-foreground mt-0.5" />
             <div>
-              <p className="text-xs text-muted-foreground">{isBg ? "Състояние" : "Condition"}</p>
+              <p className="text-xs text-muted-foreground">{tSell("review.labels.condition")}</p>
               <p className="text-sm font-medium">{conditionLabel || "-"}</p>
             </div>
           </div>
@@ -251,10 +255,11 @@ export function ReviewField({ onEditStep }: ReviewFieldProps) {
       {/* Item Specifics (Brand + Attributes) */}
       {(brandName || (attributes && attributes.length > 0)) && (
         <ReviewSection
-          title={isBg ? "Детайли" : "Item Specifics"}
+          title={tSell("review.sections.itemSpecifics")}
           icon={Tag}
           isComplete={true}
           onEdit={() => handleEdit(2)}
+          editLabel={tCommon("edit")}
         >
           <div className="space-y-3">
             {/* Brand */}
@@ -262,7 +267,7 @@ export function ReviewField({ onEditStep }: ReviewFieldProps) {
               <div className="flex items-start gap-2">
                 <Tag className="size-4 text-muted-foreground mt-0.5" />
                 <div>
-                  <p className="text-xs text-muted-foreground">{isBg ? "Марка" : "Brand"}</p>
+                  <p className="text-xs text-muted-foreground">{tSell("review.labels.brand")}</p>
                   <p className="text-sm font-medium">{brandName}</p>
                 </div>
               </div>
@@ -272,7 +277,7 @@ export function ReviewField({ onEditStep }: ReviewFieldProps) {
             {attributes && attributes.length > 0 && (
               <div className={brandName ? "pt-2 border-t border-border" : ""}>
                 <p className="text-xs text-muted-foreground mb-2">
-                  {isBg ? "Характеристики" : "Attributes"}
+                  {tSell("review.labels.attributes")}
                 </p>
                 <div className="flex flex-wrap gap-2">
                   {attributes.map((attr, idx) => (
@@ -292,15 +297,16 @@ export function ReviewField({ onEditStep }: ReviewFieldProps) {
 
       {/* Pricing & Shipping */}
       <ReviewSection
-        title={isBg ? "Цена и доставка" : "Price & Shipping"}
+        title={tSell("review.sections.priceAndShipping")}
         icon={CurrencyDollar}
         isComplete={hasPrice}
         onEdit={() => handleEdit(3)}
+        editLabel={tCommon("edit")}
       >
         <div className="space-y-3">
           {/* Price */}
           <div className="flex items-center justify-between">
-            <span className="text-muted-foreground">{isBg ? "Цена" : "Price"}</span>
+            <span className="text-muted-foreground">{tSell("review.labels.price")}</span>
             <span className="text-xl font-bold">
               {currencySymbol} {Number.parseFloat(price || "0").toFixed(2)}
             </span>
@@ -309,7 +315,7 @@ export function ReviewField({ onEditStep }: ReviewFieldProps) {
           {/* Quantity */}
           {quantity > 1 && (
             <div className="flex items-center justify-between text-sm">
-              <span className="text-muted-foreground">{isBg ? "Количество" : "Quantity"}</span>
+              <span className="text-muted-foreground">{tSell("review.labels.quantity")}</span>
               <span className="font-medium">{quantity}</span>
             </div>
           )}
@@ -318,7 +324,7 @@ export function ReviewField({ onEditStep }: ReviewFieldProps) {
           {acceptOffers && (
             <div className="flex items-center gap-2 text-sm text-success">
               <CheckCircle className="size-4" weight="fill" />
-              {isBg ? "Приема оферти" : "Accepts offers"}
+              {tSell("review.labels.acceptsOffers")}
             </div>
           )}
 
@@ -327,24 +333,24 @@ export function ReviewField({ onEditStep }: ReviewFieldProps) {
             <div className="flex items-center gap-2 mb-2">
               <Truck className="size-4 text-muted-foreground" />
               <span className="text-sm text-muted-foreground">
-                {isBg ? "Доставка" : "Shipping"}
+                {tSell("review.labels.shipping")}
               </span>
             </div>
 
             {pickupOnly ? (
-              <p className="text-sm">{isBg ? "Само лично предаване" : "Pickup only"}</p>
+              <p className="text-sm">{tSell("review.labels.pickupOnly")}</p>
             ) : (
               <div className="space-y-1 text-sm">
                 <p>
-                  <span className="text-muted-foreground">{isBg ? "Цена:" : "Price:"}</span>{" "}
+                  <span className="text-muted-foreground">{tSell("review.labels.shippingPrice")}</span>{" "}
                   {shippingPrice && Number.parseFloat(shippingPrice) > 0
                     ? `${currencySymbol} ${Number.parseFloat(shippingPrice).toFixed(2)}`
-                    : isBg ? "Безплатна" : "Free"}
+                    : tSell("review.labels.free")}
                 </p>
                 <p className="text-muted-foreground">
                   {[
-                    shipsToBulgaria && "🇧🇬 Bulgaria",
-                    shipsToEurope && "🇪🇺 Europe",
+                    shipsToBulgaria && `🇧🇬 ${tSell("review.shippingDestinations.bulgaria")}`,
+                    shipsToEurope && `🇪🇺 ${tSell("review.shippingDestinations.europe")}`,
                   ].filter(Boolean).join(", ") || "-"}
                 </p>
               </div>
@@ -355,9 +361,7 @@ export function ReviewField({ onEditStep }: ReviewFieldProps) {
 
       {/* Terms agreement - Clean design */}
       <p className="text-xs text-muted-foreground text-center px-4 leading-relaxed">
-        {isBg
-          ? "При публикуване на обявата, Вие се съгласявате с Условията за продажба и потвърждавате, че информацията е вярна."
-          : "By publishing this listing, you agree to the Terms of Sale and confirm that all information is accurate."}
+        {tSell("review.termsAgreement")}
       </p>
     </div>
   );

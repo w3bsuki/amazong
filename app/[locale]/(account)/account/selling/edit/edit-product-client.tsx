@@ -24,6 +24,7 @@ import {
 import { BULGARIAN_CITIES } from "@/lib/bulgarian-cities"
 import { useToast } from "@/hooks/use-toast"
 import { BoostDialog } from "../../../../_components/seller/boost-dialog"
+import { useTranslations } from "next-intl"
 import {
   ArrowLeft,
   Package,
@@ -37,6 +38,7 @@ import {
 interface Product {
   id: string
   title: string
+  slug?: string | null
   description: string | null
   price: number
   list_price: number | null
@@ -64,10 +66,12 @@ interface EditProductClientProps {
 export function EditProductClient({ productId, locale }: EditProductClientProps) {
   const router = useRouter()
   const { toast } = useToast()
+  const t = useTranslations("SellerManagement")
 
   const [isLoading, setIsLoading] = useState(true)
   const [isSaving, setIsSaving] = useState(false)
   const [product, setProduct] = useState<Product | null>(null)
+  const [sellerUsername, setSellerUsername] = useState<string | null>(null)
 
   // Form state
   const [title, setTitle] = useState("")
@@ -99,11 +103,18 @@ export function EditProductClient({ productId, locale }: EditProductClientProps)
         return
       }
 
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("username")
+        .eq("id", user.id)
+        .maybeSingle()
+      setSellerUsername(profile?.username ?? null)
+
       // Fetch product
       const { data, error } = await supabase
         .from("products")
         .select(
-          "id,title,description,price,list_price,is_on_sale,sale_percent,sale_end_date,seller_city,stock,images,is_boosted,boost_expires_at,is_featured,ships_to_bulgaria,ships_to_europe,ships_to_usa,ships_to_worldwide"
+          "id,title,slug,description,price,list_price,is_on_sale,sale_percent,sale_end_date,seller_city,stock,images,is_boosted,boost_expires_at,is_featured,ships_to_bulgaria,ships_to_europe,ships_to_usa,ships_to_worldwide"
         )
         .eq("id", productId)
         .eq("seller_id", user.id)
@@ -111,9 +122,9 @@ export function EditProductClient({ productId, locale }: EditProductClientProps)
 
       if (error || !data) {
         toast({
-          title: locale === 'bg' ? 'Грешка' : 'Error',
-          description: locale === 'bg' ? 'Продуктът не е намерен' : 'Product not found',
-          variant: 'destructive'
+          title: t("selling.edit.toast.errorTitle"),
+          description: t("selling.edit.toast.productNotFound"),
+          variant: "destructive",
         })
         router.push("/account/selling")
         return
@@ -214,14 +225,14 @@ export function EditProductClient({ productId, locale }: EditProductClientProps)
 
     if (error) {
       toast({
-        title: locale === 'bg' ? 'Грешка' : 'Error',
-        description: locale === 'bg' ? 'Неуспешно запазване' : 'Failed to save changes',
-        variant: 'destructive'
+        title: t("selling.edit.toast.errorTitle"),
+        description: t("selling.edit.toast.failedToSave"),
+        variant: "destructive",
       })
     } else {
       toast({
-        title: locale === 'bg' ? 'Успех!' : 'Success!',
-        description: locale === 'bg' ? 'Промените са запазени' : 'Changes saved successfully',
+        title: t("selling.edit.toast.successTitle"),
+        description: t("selling.edit.toast.changesSaved"),
       })
       router.push("/account/selling")
     }
@@ -242,9 +253,9 @@ export function EditProductClient({ productId, locale }: EditProductClientProps)
     <div className="py-4 sm:py-6">
       {/* Breadcrumb */}
       <AppBreadcrumb items={[
-        { label: locale === 'bg' ? 'Акаунт' : 'Account', href: '/account' },
-        { label: locale === 'bg' ? 'Моят магазин' : 'My Store', href: '/account/selling' },
-        { label: locale === 'bg' ? 'Редактиране' : 'Edit Product' }
+        { label: t("selling.edit.breadcrumb.account"), href: "/account" },
+        { label: t("selling.edit.breadcrumb.myStore"), href: "/account/selling" },
+        { label: t("selling.edit.breadcrumb.edit") }
       ]} />
 
       {/* Header */}
@@ -256,10 +267,10 @@ export function EditProductClient({ productId, locale }: EditProductClientProps)
         </Button>
         <div>
           <h1 className="text-xl sm:text-2xl font-bold text-foreground">
-            {locale === 'bg' ? 'Редактиране на продукт' : 'Edit Product'}
+            {t("selling.edit.header.title")}
           </h1>
           <p className="text-sm text-muted-foreground mt-0.5">
-            {locale === 'bg' ? 'Променете детайли, цена и настройки' : 'Update details, pricing, and settings'}
+            {t("selling.edit.header.description")}
           </p>
         </div>
       </div>
@@ -272,31 +283,31 @@ export function EditProductClient({ productId, locale }: EditProductClientProps)
             <CardHeader>
               <CardTitle className="text-lg flex items-center gap-2">
                 <Package className="size-5" />
-                {locale === 'bg' ? 'Основна информация' : 'Basic Information'}
+                {t("selling.edit.sections.basicInformation")}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="title">{locale === 'bg' ? 'Заглавие' : 'Title'}</Label>
+                <Label htmlFor="title">{t("selling.edit.fields.title.label")}</Label>
                 <Input
                   id="title"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  placeholder={locale === 'bg' ? 'Име на продукта' : 'Product name'}
+                  placeholder={t("selling.edit.fields.title.placeholder")}
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="description">{locale === 'bg' ? 'Описание' : 'Description'}</Label>
+                <Label htmlFor="description">{t("selling.edit.fields.description.label")}</Label>
                 <Textarea
                   id="description"
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
-                  placeholder={locale === 'bg' ? 'Описание на продукта' : 'Product description'}
+                  placeholder={t("selling.edit.fields.description.placeholder")}
                   rows={4}
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="stock">{locale === 'bg' ? 'Количество в склад' : 'Stock Quantity'}</Label>
+                <Label htmlFor="stock">{t("selling.edit.fields.stock.label")}</Label>
                 <Input
                   id="stock"
                   type="number"
@@ -313,12 +324,10 @@ export function EditProductClient({ productId, locale }: EditProductClientProps)
             <CardHeader>
               <CardTitle className="text-lg flex items-center gap-2">
                 <CurrencyCircleDollar className="size-5" />
-                {locale === 'bg' ? 'Цена и намаление' : 'Pricing & Discount'}
+                {t("selling.edit.sections.pricingDiscount")}
               </CardTitle>
               <CardDescription>
-                {locale === 'bg'
-                  ? 'Задайте редовна цена или активирайте намаление'
-                  : 'Set regular price or enable a sale discount'}
+                {t("selling.edit.sections.pricingDiscountDescription")}
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
@@ -326,9 +335,8 @@ export function EditProductClient({ productId, locale }: EditProductClientProps)
               <div className="space-y-2">
                 <Label htmlFor="price">
                   {isOnSale
-                    ? (locale === 'bg' ? 'Цена с намаление' : 'Sale Price')
-                    : (locale === 'bg' ? 'Цена' : 'Price')
-                  } (лв)
+                    ? t("selling.edit.fields.price.saleLabel")
+                    : t("selling.edit.fields.price.label")} (лв)
                 </Label>
                 <Input
                   id="price"
@@ -351,12 +359,10 @@ export function EditProductClient({ productId, locale }: EditProductClientProps)
                   </div>
                   <div>
                     <Label htmlFor="sale-toggle" className="text-base font-medium cursor-pointer">
-                      {locale === 'bg' ? 'Включи намаление' : 'Enable Sale'}
+                      {t("selling.edit.sale.toggleLabel")}
                     </Label>
                     <p className="text-sm text-muted-foreground">
-                      {locale === 'bg'
-                        ? 'Показва зачеркната оригинална цена'
-                        : 'Shows strikethrough original price'}
+                      {t("selling.edit.sale.toggleDescription")}
                     </p>
                   </div>
                 </div>
@@ -372,7 +378,7 @@ export function EditProductClient({ productId, locale }: EditProductClientProps)
                 <div className="space-y-4 p-4 bg-destructive-subtle border border-destructive rounded-lg">
                   <div className="space-y-2">
                     <Label htmlFor="originalPrice" className="text-deal font-medium">
-                      {locale === 'bg' ? 'Оригинална цена' : 'Original Price'} (лв)
+                      {t("selling.edit.fields.originalPrice.label")} (лв)
                     </Label>
                     <Input
                       id="originalPrice"
@@ -381,7 +387,7 @@ export function EditProductClient({ productId, locale }: EditProductClientProps)
                       step="0.01"
                       value={originalPrice}
                       onChange={(e) => setOriginalPrice(e.target.value)}
-                      placeholder={locale === 'bg' ? 'Цена преди намаление' : 'Price before discount'}
+                      placeholder={t("selling.edit.fields.originalPrice.placeholder")}
                     />
                   </div>
 
@@ -389,17 +395,14 @@ export function EditProductClient({ productId, locale }: EditProductClientProps)
                     <div className="flex items-center gap-2 p-3 bg-destructive-subtle rounded-md">
                       <Tag className="size-4 text-deal" weight="fill" />
                       <span className="text-sm font-medium text-deal">
-                        {locale === 'bg'
-                          ? `Купувачите ще видят ${calculateDiscount()}% намаление`
-                          : `Buyers will see ${calculateDiscount()}% off`
-                        }
+                        {t("selling.edit.sale.discountPreview", { percent: calculateDiscount() })}
                       </span>
                     </div>
                   )}
 
                   <div className="space-y-2">
                     <Label htmlFor="saleEndDate" className="text-deal font-medium">
-                      {locale === 'bg' ? 'Край на офертата (по избор)' : 'Sale end date (optional)'}
+                      {t("selling.edit.fields.saleEndDate.label")}
                     </Label>
                     <Input
                       id="saleEndDate"
@@ -417,23 +420,21 @@ export function EditProductClient({ productId, locale }: EditProductClientProps)
           <Card>
             <CardHeader>
               <CardTitle className="text-lg">
-                {locale === 'bg' ? 'Доставка до' : 'Ships To'}
+                {t("selling.edit.sections.shipping.title")}
               </CardTitle>
               <CardDescription>
-                {locale === 'bg'
-                  ? 'Изберете региони за доставка'
-                  : 'Select shipping destinations'}
+                {t("selling.edit.sections.shipping.description")}
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               {shipsBulgaria && (
                 <div className="space-y-2">
                   <Label className="text-sm font-medium">
-                    {locale === 'bg' ? 'Град (за Наблизо)' : 'City (for Near Me)'}
+                    {t("selling.edit.fields.city.label")}
                   </Label>
                   <Select value={sellerCity} onValueChange={setSellerCity}>
                     <SelectTrigger className="rounded-lg">
-                      <SelectValue placeholder={locale === 'bg' ? 'Изберете град...' : 'Select city...'} />
+                      <SelectValue placeholder={t("selling.edit.fields.city.placeholder")} />
                     </SelectTrigger>
                     <SelectContent>
                       {BULGARIAN_CITIES.map((city) => (
@@ -444,7 +445,7 @@ export function EditProductClient({ productId, locale }: EditProductClientProps)
                     </SelectContent>
                   </Select>
                   <p className="text-xs text-muted-foreground">
-                    {locale === 'bg' ? 'Градът, от който изпращате продукта' : 'The city you ship the item from'}
+                    {t("selling.edit.fields.city.help")}
                   </p>
                 </div>
               )}
@@ -452,28 +453,28 @@ export function EditProductClient({ productId, locale }: EditProductClientProps)
                 <div className="flex items-center justify-between p-3 border rounded-lg">
                   <div className="flex items-center gap-2">
                     <span className="text-lg">🇧🇬</span>
-                    <span className="text-sm font-medium">{locale === 'bg' ? 'България' : 'Bulgaria'}</span>
+                    <span className="text-sm font-medium">{t("selling.edit.shippingDestinations.bulgaria")}</span>
                   </div>
                   <Switch checked={shipsBulgaria} onCheckedChange={setShipsBulgaria} />
                 </div>
                 <div className="flex items-center justify-between p-3 border rounded-lg">
                   <div className="flex items-center gap-2">
                     <span className="text-lg">🇪🇺</span>
-                    <span className="text-sm font-medium">{locale === 'bg' ? 'Европа' : 'Europe'}</span>
+                    <span className="text-sm font-medium">{t("selling.edit.shippingDestinations.europe")}</span>
                   </div>
                   <Switch checked={shipsEurope} onCheckedChange={setShipsEurope} />
                 </div>
                 <div className="flex items-center justify-between p-3 border rounded-lg">
                   <div className="flex items-center gap-2">
                     <span className="text-lg">🇺🇸</span>
-                    <span className="text-sm font-medium">{locale === 'bg' ? 'САЩ' : 'USA'}</span>
+                    <span className="text-sm font-medium">{t("selling.edit.shippingDestinations.usa")}</span>
                   </div>
                   <Switch checked={shipsUSA} onCheckedChange={setShipsUSA} />
                 </div>
                 <div className="flex items-center justify-between p-3 border rounded-lg">
                   <div className="flex items-center gap-2">
                     <span className="text-lg">🌍</span>
-                    <span className="text-sm font-medium">{locale === 'bg' ? 'По целия свят' : 'Worldwide'}</span>
+                    <span className="text-sm font-medium">{t("selling.edit.shippingDestinations.worldwide")}</span>
                   </div>
                   <Switch checked={shipsWorldwide} onCheckedChange={setShipsWorldwide} />
                 </div>
@@ -487,7 +488,7 @@ export function EditProductClient({ productId, locale }: EditProductClientProps)
           {/* Product Preview */}
           <Card>
             <CardHeader>
-              <CardTitle className="text-base">{locale === 'bg' ? 'Преглед' : 'Preview'}</CardTitle>
+              <CardTitle className="text-base">{t("selling.edit.sidebar.previewTitle")}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="relative aspect-square rounded-lg overflow-hidden bg-muted mb-4">
@@ -528,12 +529,10 @@ export function EditProductClient({ productId, locale }: EditProductClientProps)
             <CardHeader>
               <CardTitle className="text-base flex items-center gap-2">
                 <Lightning className="size-5 text-primary" weight="fill" />
-                {locale === 'bg' ? 'Промотирай' : 'Boost Listing'}
+                {t("selling.edit.sidebar.boostTitle")}
               </CardTitle>
               <CardDescription>
-                {locale === 'bg'
-                  ? 'Показва се на начална страница'
-                  : 'Featured on homepage'}
+                {t("selling.edit.sidebar.boostDescription")}
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -559,15 +558,12 @@ export function EditProductClient({ productId, locale }: EditProductClientProps)
             size="lg"
           >
             <FloppyDisk className="size-5" />
-            {isSaving
-              ? (locale === 'bg' ? 'Запазване...' : 'Saving...')
-              : (locale === 'bg' ? 'Запази промените' : 'Save Changes')
-            }
+            {isSaving ? t("selling.edit.actions.saving") : t("selling.edit.actions.save")}
           </Button>
 
           <Button variant="outline" className="w-full" asChild>
-            <Link href={`/product/${productId}`}>
-              {locale === 'bg' ? 'Виж продукта' : 'View Product'}
+            <Link href={sellerUsername ? `/${sellerUsername}/${product?.slug || productId}` : "#"}>
+              {t("selling.edit.actions.viewProduct")}
             </Link>
           </Button>
         </div>

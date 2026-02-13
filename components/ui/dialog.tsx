@@ -77,7 +77,7 @@ function DialogOverlay({
         "fixed inset-0 z-50 bg-overlay-dark",
         "data-[state=open]:animate-in data-[state=closed]:animate-out",
         "data-[state=open]:fade-in data-[state=closed]:fade-out",
-        "duration-200 ease-out",
+        "motion-safe:duration-normal motion-safe:ease-(--ease-smooth)",
         blurClasses[blur],
         className,
       )}
@@ -118,7 +118,7 @@ function DialogContent({
           "data-[state=open]:animate-in data-[state=closed]:animate-out",
           "data-[state=open]:fade-in data-[state=closed]:fade-out",
           "data-[state=open]:zoom-in data-[state=closed]:zoom-out",
-          "duration-200 ease-out",
+          "motion-safe:duration-normal motion-safe:ease-(--ease-smooth)",
           // Size & shape variants
           variant === 'fullWidth'
             ? 'max-h-dialog w-dialog rounded-2xl p-0 md:max-w-6xl lg:max-w-screen-xl'
@@ -134,7 +134,7 @@ function DialogContent({
             <IconButton
               aria-label={closeLabel ?? 'Close'}
               className={cn(
-                'absolute top-4 right-4 z-10 transition-all duration-150',
+                'absolute top-4 right-4 z-10 motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth)',
                 'bg-surface-subtle',
                 'text-foreground hover:bg-hover active:bg-active',
               )}
@@ -178,7 +178,7 @@ function DialogTitle({
   return (
     <DialogPrimitive.Title
       data-slot="dialog-title"
-      className={cn('text-lg leading-none font-medium', className)}
+      className={cn('text-lg leading-none font-semibold tracking-tight', className)}
       {...props}
     />
   )

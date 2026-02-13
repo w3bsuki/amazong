@@ -14,7 +14,6 @@ interface ProgressHeaderProps {
   isSaving: boolean;
   hasUnsavedChanges: boolean;
   onSaveDraft: () => void;
-  locale: string;
   currentStep: number;
   totalSteps: number;
 }
@@ -34,7 +33,6 @@ export function ProgressHeader({
   isSaving,
   hasUnsavedChanges,
   onSaveDraft,
-  locale: _locale,
   currentStep,
   totalSteps,
 }: ProgressHeaderProps) {

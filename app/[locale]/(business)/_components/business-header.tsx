@@ -24,7 +24,6 @@ interface BusinessHeaderProps {
 export function BusinessHeader({
   storeName,
   isVerified,
-  subscriptionTier: _subscriptionTier = 'free',
   hasDashboardAccess = false
 }: BusinessHeaderProps) {
   const pathname = usePathname()
@@ -82,6 +81,10 @@ export function BusinessHeader({
 
         {/* Right Actions */}
         <div className="ml-auto flex items-center gap-1">
+          <div className="md:hidden">
+            <BusinessCommandPalette compact enableKeyboardShortcut={false} {...(storeName ? { storeName } : {})} />
+          </div>
+
           {/* Add Product - Primary Action */}
           <Button
             variant="default"

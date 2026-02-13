@@ -49,6 +49,8 @@ type FlatCategory = {
   path: Array<{ id: string; name: string; slug: string }>;
 };
 
+const EMPTY_IMAGES: Array<{ url: string }> = [];
+
 function flattenCategories(categories: Category[], locale: string): FlatCategory[] {
   const out: FlatCategory[] = [];
 
@@ -100,15 +102,17 @@ function scoreCategoryMatch(target: string, cat: FlatCategory): number {
 export function AiListingAssistant() {
   // Use context instead of prop drilling
   const form = useSellForm();
-  const { categories, locale, isBg } = useSellFormContext();
+  const { categories, locale } = useSellFormContext();
   const tSell = useTranslations("Sell")
+  const tCommon = useTranslations("Common")
   
   const [enabled, setEnabled] = useState(false);
   const [status, setStatus] = useState<"idle" | "loading" | "ready" | "error">("idle");
   const [error, setError] = useState<string | null>(null);
   const [suggestions, setSuggestions] = useState<SuggestionResponse | null>(null);
 
-  const images = form.watch("images") ?? [];
+  const watchedImages = form.watch("images");
+  const images = watchedImages ?? EMPTY_IMAGES;
   const currency = form.watch("currency") ?? "BGN";
 
   const flatCategories = useMemo(() => flattenCategories(categories, locale), [categories, locale]);
@@ -195,12 +199,12 @@ export function AiListingAssistant() {
       }
 
       if (applied > 0) {
-        toast.success(isBg ? "Приложени AI предложения" : "Applied AI suggestions");
+        toast.success(tSell("aiAssistant.toasts.applied"));
       } else {
-        toast.message(isBg ? "Няма какво да се приложи" : "Nothing to apply");
+        toast.message(tSell("aiAssistant.toasts.nothingToApply"));
       }
     },
-    [form, isBg, resolveSuggestedCategory]
+    [form, resolveSuggestedCategory, tSell]
   );
 
   const generate = useCallback(async () => {
@@ -228,24 +232,24 @@ export function AiListingAssistant() {
       });
 
       const data = (await res.json()) as SuggestionResponse | { error?: string };
-      if (!res.ok) {
-        const errorMessage =
-          typeof (data as { error?: unknown }).error === "string"
-            ? (data as { error?: string }).error
-            : undefined;
-        throw new Error(errorMessage || "Failed to generate suggestions");
-      }
+       if (!res.ok) {
+         const errorMessage =
+           typeof (data as { error?: unknown }).error === "string"
+             ? (data as { error?: string }).error
+             : undefined;
+         throw new Error(errorMessage || tSell("aiAssistant.errors.generateFailed"));
+       }
 
-      setSuggestions(data as SuggestionResponse);
-      setStatus("ready");
+       setSuggestions(data as SuggestionResponse);
+       setStatus("ready");
 
-      toast.success(isBg ? "AI предложения готови" : "AI suggestions ready");
-    } catch (e) {
-      const message = e instanceof Error ? e.message : "Failed to generate suggestions";
-      setError(message);
-      setStatus("error");
-    }
-  }, [canGenerate, currency, form, images, isBg, locale]);
+       toast.success(tSell("aiAssistant.toasts.ready"));
+     } catch (e) {
+       const message = e instanceof Error ? e.message : tSell("aiAssistant.errors.generateFailed");
+       setError(message);
+       setStatus("error");
+     }
+   }, [canGenerate, currency, form, images, locale, tSell]);
 
   const showPanel = enabled;
 
@@ -271,39 +275,39 @@ export function AiListingAssistant() {
         }}
         disabled={images.length === 0}
         className="w-full h-11 gap-2 border-dashed border-border"
-      >
-        <Sparkle className="size-4" weight="fill" />
-        <span className="text-sm">
-          {isBg ? "AI предложения" : "AI suggestions"}
-        </span>
-        {images.length === 0 && (
-          <span className="text-xs text-muted-foreground ml-1">
-            ({isBg ? "добави снимка" : "add photo first"})
-          </span>
-        )}
-      </Button>
-    );
+       >
+         <Sparkle className="size-4" weight="fill" />
+         <span className="text-sm">
+           {tSell("aiAssistant.label")}
+         </span>
+         {images.length === 0 && (
+           <span className="text-xs text-muted-foreground ml-1">
+             ({tSell("aiAssistant.addPhotoFirst")})
+           </span>
+         )}
+       </Button>
+     );
   }
 
   // Expanded: show results inline
   return (
     <div className="space-y-3">
       {/* Header with close */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Sparkle className="size-4 text-primary" weight="fill" />
-          <span className="text-sm font-medium">{isBg ? "AI предложения" : "AI suggestions"}</span>
-        </div>
-        <Button
-          type="button"
-          variant="ghost"
-          size="sm"
-          onClick={() => { setEnabled(false); setSuggestions(null); }}
-          className="h-8 px-2 text-muted-foreground"
-        >
-          {isBg ? "Затвори" : "Close"}
-        </Button>
-      </div>
+       <div className="flex items-center justify-between">
+         <div className="flex items-center gap-2">
+           <Sparkle className="size-4 text-primary" weight="fill" />
+           <span className="text-sm font-medium">{tSell("aiAssistant.label")}</span>
+         </div>
+         <Button
+           type="button"
+           variant="ghost"
+           size="sm"
+           onClick={() => { setEnabled(false); setSuggestions(null); }}
+           className="h-8 px-2 text-muted-foreground"
+         >
+           {tCommon("close")}
+         </Button>
+       </div>
 
       {/* Actions */}
       <div className="flex items-center gap-2">
@@ -315,29 +319,27 @@ export function AiListingAssistant() {
           disabled={!canGenerate}
           className="h-9 gap-1.5"
         >
-          {status === "loading" ? (
-            <SpinnerGap className="size-4 animate-spin" />
-          ) : (
-            <Sparkle className="size-4" />
-          )}
-          {status === "loading" 
-            ? (isBg ? "Генериране..." : "Generating...") 
-            : (isBg ? "Генерирай" : "Generate")}
-        </Button>
+           {status === "loading" ? (
+             <SpinnerGap className="size-4 animate-spin" />
+           ) : (
+             <Sparkle className="size-4" />
+           )}
+           {status === "loading" ? tSell("aiAssistant.generating") : tSell("aiAssistant.generate")}
+         </Button>
 
-        {suggestions && (
-          <Button
-            type="button"
-            variant="secondary"
-            size="sm"
-            onClick={() => applyAll(suggestions)}
-            className="h-9 gap-1.5"
-          >
-            <Check className="size-4" />
-            {isBg ? "Приложи всички" : "Apply all"}
-          </Button>
-        )}
-      </div>
+         {suggestions && (
+           <Button
+             type="button"
+             variant="secondary"
+             size="sm"
+             onClick={() => applyAll(suggestions)}
+             className="h-9 gap-1.5"
+           >
+             <Check className="size-4" />
+             {tSell("aiAssistant.applyAll")}
+           </Button>
+         )}
+       </div>
 
       {/* Error */}
       {error && (
@@ -359,71 +361,71 @@ export function AiListingAssistant() {
           <div className="space-y-2">
             {title && (
               <button
-                type="button"
-                onClick={() => {
-                  form.setValue("title", title, { shouldValidate: true, shouldDirty: true });
-                  toast.success(isBg ? "Заглавието е приложено" : "Title applied");
-                }}
-                className="w-full flex items-center justify-between gap-2 px-3 py-2 rounded-lg border border-dashed border-border text-left hover:bg-accent"
-              >
-                <div className="min-w-0">
-                  <div className="text-xs text-muted-foreground">{isBg ? "Заглавие" : "Title"}</div>
-                  <div className="text-sm truncate">{title}</div>
-                </div>
-                <Check className="size-4 text-muted-foreground shrink-0" />
-              </button>
+                 type="button"
+                 onClick={() => {
+                   form.setValue("title", title, { shouldValidate: true, shouldDirty: true });
+                   toast.success(tSell("aiAssistant.toasts.titleApplied"));
+                 }}
+                 className="w-full flex items-center justify-between gap-2 px-3 py-2 rounded-lg border border-dashed border-border text-left hover:bg-accent"
+               >
+                 <div className="min-w-0">
+                   <div className="text-xs text-muted-foreground">{tSell("fields.title.label")}</div>
+                   <div className="text-sm truncate">{title}</div>
+                 </div>
+                 <Check className="size-4 text-muted-foreground shrink-0" />
+               </button>
             )}
 
             {matchedCategory && (
               <button
                 type="button"
-                onClick={() => {
-                  form.setValue("categoryId", matchedCategory.id, { shouldValidate: true, shouldDirty: true });
-                  form.setValue("categoryPath", matchedCategory.path, { shouldDirty: true });
-                  toast.success(isBg ? "Категорията е приложена" : "Category applied");
-                }}
-                className="w-full flex items-center justify-between gap-2 px-3 py-2 rounded-lg border border-dashed border-border text-left hover:bg-accent"
-              >
-                <div className="min-w-0">
-                  <div className="text-xs text-muted-foreground">{isBg ? "Категория" : "Category"}</div>
-                  <div className="text-sm truncate">{matchedCategory.path.map(p => p.name).join(" > ")}</div>
-                </div>
-                <Check className="size-4 text-muted-foreground shrink-0" />
-              </button>
+                 onClick={() => {
+                   form.setValue("categoryId", matchedCategory.id, { shouldValidate: true, shouldDirty: true });
+                   form.setValue("categoryPath", matchedCategory.path, { shouldDirty: true });
+                   toast.success(tSell("aiAssistant.toasts.categoryApplied"));
+                 }}
+                 className="w-full flex items-center justify-between gap-2 px-3 py-2 rounded-lg border border-dashed border-border text-left hover:bg-accent"
+               >
+                 <div className="min-w-0">
+                   <div className="text-xs text-muted-foreground">{tSell("review.labels.category")}</div>
+                   <div className="text-sm truncate">{matchedCategory.path.map(p => p.name).join(" > ")}</div>
+                 </div>
+                 <Check className="size-4 text-muted-foreground shrink-0" />
+               </button>
             )}
 
             {condition && (
               <button
-                type="button"
-                onClick={() => {
-                  form.setValue("condition", condition, { shouldValidate: true, shouldDirty: true });
-                  toast.success(isBg ? "Състоянието е приложено" : "Condition applied");
-                }}
-                className="w-full flex items-center justify-between gap-2 px-3 py-2 rounded-lg border border-dashed border-border text-left hover:bg-accent"
-              >
-                <div className="min-w-0">
-                  <div className="text-xs text-muted-foreground">{isBg ? "Състояние" : "Condition"}</div>
-                  <div className="text-sm">{conditionLabel}</div>
-                </div>
-                <Check className="size-4 text-muted-foreground shrink-0" />
-              </button>
+                 type="button"
+                 onClick={() => {
+                   form.setValue("condition", condition, { shouldValidate: true, shouldDirty: true });
+                   toast.success(tSell("aiAssistant.toasts.conditionApplied"));
+                 }}
+                 className="w-full flex items-center justify-between gap-2 px-3 py-2 rounded-lg border border-dashed border-border text-left hover:bg-accent"
+               >
+                 <div className="min-w-0">
+                   <div className="text-xs text-muted-foreground">{tSell("steps.details.conditionLabel")}</div>
+                   <div className="text-sm">{conditionLabel}</div>
+                 </div>
+                 <Check className="size-4 text-muted-foreground shrink-0" />
+               </button>
             )}
 
             {suggestedPrice !== null && (
               <button
-                type="button"
-                onClick={() => {
-                  form.setValue("price", suggestedPrice.toFixed(2), { shouldValidate: true, shouldDirty: true });
-                  toast.success(isBg ? "Цената е приложена" : "Price applied");
-                }}
-                className="w-full flex items-center justify-between gap-2 px-3 py-2 rounded-lg border border-dashed border-border text-left hover:bg-accent"
-              >
-                <div className="min-w-0">
-                  <div className="text-xs text-muted-foreground">{isBg ? "Цена" : "Price"}</div>
-                  <div className="text-sm">{suggestedPrice.toFixed(2)} {suggestions.price.currency ?? currency}</div>
-                </div>
-                <Check className="size-4 text-muted-foreground shrink-0" />
-              </button>
+                 type="button"
+                 onClick={() => {
+                   form.setValue("price", suggestedPrice.toFixed(2), { shouldValidate: true, shouldDirty: true });
+                   toast.success(tSell("aiAssistant.toasts.priceApplied"));
+                 }}
+                 className="w-full flex items-center justify-between gap-2 px-3 py-2 rounded-lg border border-dashed border-border text-left hover:bg-accent"
+               >
+                 <div className="min-w-0">
+                   <div className="text-xs text-muted-foreground">{tSell("review.labels.price")}</div>
+                   <div className="text-sm">{suggestedPrice.toFixed(2)} {suggestions.price.currency ?? currency}</div>
+                 </div>
+                 <Check className="size-4 text-muted-foreground shrink-0" />
+               </button>
             )}
           </div>
         )

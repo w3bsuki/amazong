@@ -10,6 +10,7 @@ import {
   calculateFormProgress,
   type ProgressItem,
 } from "@/lib/sell/schema-v4";
+import type { Locale } from "@/i18n/routing";
 import type { Category } from "../_lib/types";
 
 // ============================================================================
@@ -26,7 +27,7 @@ interface Brand {
 
 interface SellFormContextValue {
   // Core data
-  locale: string;
+  locale: Locale;
   categories: Category[];
   brands: Brand[];
   sellerId: string;
@@ -88,7 +89,7 @@ export function useSellForm(): UseFormReturn<SellFormDataV4> {
 
 interface SellFormProviderProps {
   children: ReactNode;
-  locale: string;
+  locale: Locale;
   categories: Category[];
   brands?: Brand[];
   sellerId: string;

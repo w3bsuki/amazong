@@ -3,6 +3,7 @@ export default {
   "boosts": "Boosts",
   "competitors": "Competitors",
   "decisions": "Decisions",
+  "DRIVE-HANDOFF": "DRIVE HANDOFF",
   "guardrails": "Guardrails",
   "investors": "Investors",
   "monetization": "Monetization",

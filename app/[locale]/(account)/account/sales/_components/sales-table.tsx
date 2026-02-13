@@ -3,6 +3,7 @@
 import { Link } from "@/i18n/routing"
 import Image from "next/image"
 import { Badge } from "@/components/ui/badge"
+import { useTranslations } from "next-intl"
 import {
   Table,
   TableBody,
@@ -35,16 +36,17 @@ const statusColors: Record<string, string> = {
   cancelled: "bg-destructive-subtle text-destructive",
 }
 
-const statusLabels: Record<string, { en: string; bg: string }> = {
-  pending: { en: "Pending", bg: "Изчакване" },
-  paid: { en: "Paid", bg: "Платено" },
-  processing: { en: "Processing", bg: "В обработка" },
-  shipped: { en: "Shipped", bg: "Изпратено" },
-  delivered: { en: "Delivered", bg: "Доставено" },
-  cancelled: { en: "Cancelled", bg: "Отказано" },
-}
-
 export function SalesTable({ sales, locale }: SalesTableProps) {
+  const t = useTranslations("SellerManagement")
+  const statusLabels: Record<string, string> = {
+    pending: t("sales.status.pending"),
+    paid: t("sales.status.paid"),
+    processing: t("sales.status.processing"),
+    shipped: t("sales.status.shipped"),
+    delivered: t("sales.status.delivered"),
+    cancelled: t("sales.status.cancelled"),
+  }
+
   if (sales.length === 0) {
     return null
   }
@@ -56,18 +58,23 @@ export function SalesTable({ sales, locale }: SalesTableProps) {
     }).format(value)
   }
 
+  const getProductHref = (sale: SaleItem) => {
+    if (!sale.product?.username) return "#"
+    return `/${sale.product.username}/${sale.product.slug || sale.product_id}`
+  }
+
   return (
     <div className="overflow-x-auto -mx-6">
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead className="pl-6">{locale === "bg" ? "Продукт" : "Product"}</TableHead>
-            <TableHead>{locale === "bg" ? "Купувач" : "Buyer"}</TableHead>
-            <TableHead className="text-right">{locale === "bg" ? "Количество" : "Qty"}</TableHead>
-            <TableHead className="text-right">{locale === "bg" ? "Приходи" : "Revenue"}</TableHead>
-            <TableHead>{locale === "bg" ? "Статус" : "Status"}</TableHead>
-            <TableHead>{locale === "bg" ? "Дата" : "Date"}</TableHead>
-            <TableHead className="pr-6 text-right">{locale === "bg" ? "Действия" : "Actions"}</TableHead>
+            <TableHead className="pl-6">{t("sales.table.headers.product")}</TableHead>
+            <TableHead>{t("sales.table.headers.buyer")}</TableHead>
+            <TableHead className="text-right">{t("sales.table.headers.quantity")}</TableHead>
+            <TableHead className="text-right">{t("sales.table.headers.revenue")}</TableHead>
+            <TableHead>{t("sales.table.headers.status")}</TableHead>
+            <TableHead>{t("sales.table.headers.date")}</TableHead>
+            <TableHead className="pr-6 text-right">{t("sales.table.headers.actions")}</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -80,7 +87,7 @@ export function SalesTable({ sales, locale }: SalesTableProps) {
                     {sale.product?.images?.[0] && sale.product.images[0].startsWith("http") ? (
                       <Image
                         src={sale.product.images[0]}
-                        alt={sale.product?.title || "Product"}
+                        alt={sale.product?.title || t("sales.table.productFallbackAlt")}
                         fill
                         className="object-cover"
                         sizes="48px"
@@ -93,13 +100,13 @@ export function SalesTable({ sales, locale }: SalesTableProps) {
                   </div>
                   <div className="min-w-0">
                     <Link
-                      href={`/product/${sale.product_id}`}
+                      href={getProductHref(sale)}
                       className="font-medium text-sm hover:underline line-clamp-1"
                     >
-                      {sale.product?.title || "Unknown Product"}
+                      {sale.product?.title || t("sales.table.fallbackProductTitle")}
                     </Link>
                     <p className="text-xs text-muted-foreground">
-                      {formatCurrency(Number(sale.price_at_purchase))} {locale === "bg" ? "на бройка" : "each"}
+                      {formatCurrency(Number(sale.price_at_purchase))} {t("sales.table.unitPriceSuffix")}
                     </p>
                   </div>
                 </div>
@@ -113,7 +120,9 @@ export function SalesTable({ sales, locale }: SalesTableProps) {
                   </div>
                   <div className="min-w-0">
                     <p className="text-sm font-medium truncate">
-                      {sale.order?.buyer?.full_name || sale.order?.buyer?.email?.split("@")[0] || "Unknown"}
+                      {sale.order?.buyer?.full_name
+                        || sale.order?.buyer?.email?.split("@")[0]
+                        || t("sales.table.fallbackBuyerName")}
                     </p>
                     {sale.order?.shipping_address?.city && (
                       <p className="text-xs text-muted-foreground flex items-center gap-1">
@@ -141,7 +150,7 @@ export function SalesTable({ sales, locale }: SalesTableProps) {
               {/* Status */}
               <TableCell>
                 <Badge variant="secondary" className={`${statusColors[sale.status] || statusColors.pending} border-0`}>
-                  {statusLabels[sale.status]?.[locale === "bg" ? "bg" : "en"] || sale.status}
+                  {statusLabels[sale.status] ?? sale.status}
                 </Badge>
               </TableCell>
 
@@ -163,7 +172,7 @@ export function SalesTable({ sales, locale }: SalesTableProps) {
                 <Button asChild variant="ghost" size="sm">
                   <Link href={`/account/orders/${sale.order_id}`}>
                     <Eye className="size-4 mr-1.5" />
-                    {locale === "bg" ? "Виж" : "View"}
+                    {t("sales.table.actions.view")}
                   </Link>
                 </Button>
               </TableCell>

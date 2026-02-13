@@ -1,0 +1,435 @@
+# ROUTES.md — Route Architecture
+
+> **Complete route map for Treido marketplace.** All routes, auth requirements, and patterns.
+
+| Scope | All app routes |
+|-------|----------------|
+| Audience | AI agents, developers |
+| Type | Reference |
+
+---
+
+## Quick Reference
+
+- **Total Pages:** 85 routes across 10 route groups
+- **API Routes:** 40 endpoints
+- **Server Actions:** 13 action files
+- **Pattern:** Next.js 16 App Router with `[locale]` prefix
+- **Auth:** Supabase session with role-based gating
+
+---
+
+## Route Architecture
+
+```
+app/
+├── [locale]/                    # i18n prefix (bg, en)
+│   ├── (main)/                  # Public buyer routes
+│   ├── (account)/               # Authenticated user routes
+│   ├── (auth)/                  # Auth flows
+│   ├── (checkout)/              # Checkout flow
+│   ├── (sell)/                  # Seller listing creation
+│   ├── (business)/              # Business dashboard
+│   ├── (admin)/                 # Admin panel
+│   ├── (plans)/                 # Pricing page
+│   ├── (chat)/                  # Messaging
+│   └── [username]/              # User/seller profiles
+├── api/                         # API route handlers
+└── auth/                        # Auth callbacks
+```
+
+---
+
+## Route Groups
+
+### (main) — Public Buyer Routes
+
+**Layout:** Full e-commerce (header, footer, mobile tab bar)  
+**Auth:** Public (some features require login)
+
+| Path | Purpose | Auth | Dynamic |
+|------|---------|------|---------|
+| `/` | Homepage | public | ✗ |
+| `/about` | About page | public | ✗ |
+| `/accessibility` | Accessibility statement | public | ✗ |
+| `/assistant` | AI shopping assistant | public | ✗ |
+| `/cart` | Shopping cart | public | ✗ |
+| `/categories` | Category listing | public | ✗ |
+| `/categories/:slug` | Category page | public | ✓ |
+| `/categories/:slug/:sub` | Subcategory page | public | ✓ |
+| `/cookies` | Cookie policy | public | ✗ |
+| `/privacy` | Privacy policy | public | ✗ |
+| `/returns` | Return policy | public | ✗ |
+| `/terms` | Terms of service | public | ✗ |
+| `/contact` | Contact form | public | ✗ |
+| `/customer-service` | Customer service | public | ✗ |
+| `/faq` | FAQ | public | ✗ |
+| `/feedback` | Feedback form | public | ✗ |
+| `/help` | Help center | public | ✗ |
+| `/security` | Security info | public | ✗ |
+| `/gift-cards` | Gift cards | public | ✗ |
+| `/members` | Membership info | public | ✗ |
+| `/messages` | Messages redirect | public | ✗ |
+| `/registry` | Gift registry | public | ✗ |
+| `/search` | Search results | public | ✗ |
+| `/seller/dashboard` | Basic seller dashboard | seller | ✗ |
+| `/seller/settings/payouts` | Seller payout settings | seller | ✗ |
+| `/sellers` | Sellers directory | public | ✗ |
+| `/todays-deals` | Daily deals | public | ✗ |
+| `/wishlist` | User wishlist | auth | ✗ |
+| `/wishlist/:token` | Personal wishlist share | public | ✓ |
+| `/wishlist/shared/:token` | Shared wishlist view | public | ✓ |
+
+### (account) — User Dashboard
+
+**Layout:** Account sidebar + content area  
+**Auth:** Authenticated user required
+
+| Path | Purpose | Auth | Dynamic |
+|------|---------|------|---------|
+| `/account` | Account dashboard | auth | ✗ |
+| `/account/addresses` | Manage addresses | auth | ✗ |
+| `/account/billing` | Billing info | auth | ✗ |
+| `/account/following` | Followed sellers | auth | ✗ |
+| `/account/notifications` | Notification settings | auth | ✗ |
+| `/account/orders` | Order history | auth | ✗ |
+| `/account/orders/:id` | Order details | auth | ✓ |
+| `/account/payments` | Payment methods | auth | ✗ |
+| `/account/plans` | Subscription plans | auth | ✗ |
+| `/account/plans/upgrade` | Upgrade subscription | auth | ✗ |
+| `/account/profile` | Profile settings | auth | ✗ |
+| `/account/sales` | Sales overview | seller | ✗ |
+| `/account/security` | Security settings | auth | ✗ |
+| `/account/selling` | My listings | seller | ✗ |
+| `/account/selling/edit` | Create listing | seller | ✗ |
+| `/account/selling/:id/edit` | Edit listing | seller | ✓ |
+| `/account/settings` | General settings | auth | ✗ |
+| `/account/wishlist` | Account wishlist | auth | ✗ |
+
+### (auth) — Authentication
+
+**Layout:** Clean auth-focused  
+**Auth:** Public (redirects if already logged in)
+
+| Path | Purpose | Auth |
+|------|---------|------|
+| `/auth/login` | Login page | public |
+| `/auth/sign-up` | Registration | public |
+| `/auth/sign-up-success` | Registration success | public |
+| `/auth/forgot-password` | Password reset request | public |
+| `/auth/reset-password` | Set new password | public |
+| `/auth/welcome` | Welcome page | public |
+| `/auth/error` | Auth error page | public |
+
+### (checkout) — Purchase Flow
+
+**Layout:** Minimal distraction-free  
+**Auth:** Public (guest checkout supported)
+
+| Path | Purpose | Auth |
+|------|---------|------|
+| `/checkout` | Checkout page | public |
+| `/checkout/success` | Order confirmation | public |
+
+### (sell) — Seller Listing Creation
+
+**Layout:** Clean standalone  
+**Auth:** Authenticated (seller onboarding)
+
+| Path | Purpose | Auth |
+|------|---------|------|
+| `/sell` | Create listing | auth |
+| `/sell/orders` | Seller orders | seller |
+
+### (business) — Business Dashboard
+
+**Layout:** Full business panel  
+**Auth:** Business seller account
+
+| Path | Purpose | Auth |
+|------|---------|------|
+| `/dashboard` | Dashboard home | business |
+| `/dashboard/accounting` | Accounting/finances | business |
+| `/dashboard/analytics` | Business analytics | business |
+| `/dashboard/customers` | Customer management | business |
+| `/dashboard/discounts` | Discount management | business |
+| `/dashboard/inventory` | Inventory management | business |
+| `/dashboard/marketing` | Marketing tools | business |
+| `/dashboard/orders` | Order management | business |
+| `/dashboard/orders/:orderId` | Order detail | business |
+| `/dashboard/products` | Product management | business |
+| `/dashboard/products/:id/edit` | Edit product | business |
+| `/dashboard/settings` | Business settings | business |
+| `/dashboard/upgrade` | Upgrade business plan | business |
+
+### (admin) — Platform Administration
+
+**Layout:** Admin sidebar  
+**Auth:** Admin role only
+
+| Path | Purpose | Auth |
+|------|---------|------|
+| `/admin` | Admin dashboard | admin |
+| `/admin/docs` | Admin documentation | admin |
+| `/admin/notes` | Admin notes/memos | admin |
+| `/admin/orders` | All orders | admin |
+| `/admin/products` | All products | admin |
+| `/admin/sellers` | Sellers management | admin |
+| `/admin/tasks` | Admin tasks | admin |
+| `/admin/users` | User management | admin |
+
+### (plans) — Pricing
+
+**Layout:** Standalone pricing  
+**Auth:** Public
+
+| Path | Purpose | Auth |
+|------|---------|------|
+| `/plans` | Pricing/plans page | public |
+
+### (chat) — Messaging
+
+**Layout:** Full-screen immersive  
+**Auth:** Authenticated
+
+| Path | Purpose | Auth | Dynamic |
+|------|---------|------|---------|
+| `/chat` | Messages inbox | auth | ✗ |
+| `/chat/:conversationId` | Chat conversation | auth | ✓ |
+
+### [username] — Public Profiles
+
+**Layout:** Main layout  
+**Auth:** Public
+
+| Path | Purpose | Auth | Dynamic |
+|------|---------|------|---------|
+| `/:username` | Seller profile/store | public | ✓ |
+| `/:username/:productSlug` | Product detail page | public | ✓ |
+
+---
+
+## API Routes
+
+### Categories
+
+| Endpoint | Method | Purpose | Auth |
+|----------|--------|---------|------|
+| `/api/categories` | GET | Get all categories | public |
+| `/api/categories/attributes` | GET | Category attributes | public |
+| `/api/categories/counts` | GET | Product counts | public |
+| `/api/categories/products` | GET | Category products | public |
+| `/api/categories/sell-tree` | GET | Category tree for listing | public |
+| `/api/categories/:slug/attributes` | GET | Specific attributes | public |
+| `/api/categories/:slug/children` | GET | Child categories | public |
+| `/api/categories/:slug/context` | GET | Breadcrumbs | public |
+
+### Products
+
+| Endpoint | Method | Purpose | Auth |
+|----------|--------|---------|------|
+| `/api/products/category/:slug` | GET | Products by category | public |
+| `/api/products/count` | GET | Total count | public |
+| `/api/products/feed` | GET | Homepage feed | public |
+| `/api/products/newest` | GET | Newest products | public |
+| `/api/products/quick-view` | GET | Quick view data | public |
+| `/api/products/search` | GET | Product search | public |
+| `/api/products/:id/view` | POST | Track view | public |
+
+### Payments & Checkout
+
+| Endpoint | Method | Purpose | Auth |
+|----------|--------|---------|------|
+| `/api/checkout/webhook` | POST | Stripe checkout webhook | webhook |
+| `/api/payments/delete` | DELETE | Delete payment method | auth |
+| `/api/payments/set-default` | POST | Set default payment | auth |
+| `/api/payments/setup` | POST | Setup payment intent | auth |
+| `/api/payments/webhook` | POST | Payments webhook | webhook |
+| `/api/boost/checkout` | POST | Boost product checkout | seller |
+
+### Stripe Connect
+
+| Endpoint | Method | Purpose | Auth |
+|----------|--------|---------|------|
+| `/api/connect/dashboard` | POST | Connect dashboard link | seller |
+| `/api/connect/onboarding` | POST | Connect onboarding | seller |
+| `/api/connect/webhook` | POST | Connect webhook | webhook |
+
+### Subscriptions
+
+| Endpoint | Method | Purpose | Auth |
+|----------|--------|---------|------|
+| `/api/subscriptions/checkout` | POST | Subscription checkout | auth |
+| `/api/subscriptions/portal` | POST | Billing portal link | auth |
+| `/api/subscriptions/webhook` | POST | Subscriptions webhook | webhook |
+| `/api/plans` | GET | Get subscription plans | public |
+
+### AI Assistant
+
+| Endpoint | Method | Purpose | Auth |
+|----------|--------|---------|------|
+| `/api/assistant/chat` | POST | AI chat assistant | public |
+| `/api/assistant/find-similar` | POST | Find similar products | public |
+| `/api/assistant/sell-autofill` | POST | AI listing autofill | auth |
+
+### Orders & Shipping
+
+| Endpoint | Method | Purpose | Auth |
+|----------|--------|---------|------|
+| `/api/orders/:id/ship` | POST | Mark order shipped | seller |
+| `/api/orders/:id/track` | GET | Order tracking | auth |
+
+### User & Badges
+
+| Endpoint | Method | Purpose | Auth |
+|----------|--------|---------|------|
+| `/api/badges` | GET | Get user badges | auth |
+| `/api/badges/evaluate` | POST | Evaluate eligibility | auth |
+| `/api/badges/feature/:badgeId` | POST | Feature a badge | auth |
+| `/api/badges/:userId` | GET | User's badges | public |
+
+### Admin & Utility
+
+| Endpoint | Method | Purpose | Auth |
+|----------|--------|---------|------|
+| `/api/admin/docs/seed` | POST | Seed documentation | admin |
+| `/api/health/env` | GET | Environment check | public |
+| `/api/revalidate` | POST | Revalidate cache | internal |
+| `/api/seller/limits` | GET | Seller limits | seller |
+| `/api/sales/export` | GET | Export sales data | seller |
+
+### Upload & Media
+
+| Endpoint | Method | Purpose | Auth |
+|----------|--------|---------|------|
+| `/api/upload-image` | POST | Upload product image | auth |
+| `/api/upload-chat-image` | POST | Upload chat image | auth |
+
+### Auth Callbacks
+
+| Endpoint | Method | Purpose |
+|----------|--------|---------|
+| `/auth/callback` | GET | OAuth callback |
+| `/auth/confirm` | GET | Email confirmation |
+
+---
+
+## Auth Levels
+
+| Level | Description | Gating |
+|-------|-------------|--------|
+| `public` | No auth required | None |
+| `auth` | Any authenticated user | Session check |
+| `seller` | User with seller status | `is_seller = true` |
+| `business` | Business seller account | Subscription tier |
+| `admin` | Platform administrator | `role = 'admin'` |
+| `webhook` | Stripe webhook secret | Signature verify |
+| `internal` | Server-to-server | API key |
+
+---
+
+## Special Route Patterns
+
+### Parallel Routes (Modals)
+
+```
+app/[locale]/(main)/search/@modal/(..)[username]/[productSlug]/
+  └─ Product quick view modal from search results
+
+app/[locale]/(account)/@modal/(.)account/plans/upgrade/
+  └─ Upgrade plan modal overlay
+```
+
+### Route Group Layouts
+
+Each route group has its own `layout.tsx`:
+
+| Group | Layout Features |
+|-------|-----------------|
+| `(main)` | Header, footer, mobile tab bar, drawers |
+| `(account)` | Account sidebar, breadcrumbs |
+| `(auth)` | Centered card, minimal nav |
+| `(checkout)` | Progress bar, minimal distraction |
+| `(business)` | Business sidebar, analytics header |
+| `(admin)` | Admin sidebar, quick actions |
+| `(chat)` | Full-height, split view |
+
+### Dynamic Segments
+
+| Pattern | Example | Purpose |
+|---------|---------|---------|
+| `[slug]` | `/categories/electronics` | Category pages |
+| `[id]` | `/account/orders/abc123` | Order details |
+| `[username]` | `/johndoe` | Seller profiles |
+| `[productSlug]` | `/johndoe/vintage-lamp` | Product pages |
+| `[conversationId]` | `/chat/conv-xyz` | Chat threads |
+| `[token]` | `/wishlist/abc` | Shareable wishlists |
+
+---
+
+## Server Actions
+
+Located in `app/actions/`:
+
+| File | Purpose |
+|------|---------|
+| `blocked-users.ts` | User blocking |
+| `boosts.ts` | Product boost |
+| `buyer-feedback.ts` | Buyer feedback |
+| `onboarding.ts` | User onboarding |
+| `orders.ts` | Order management |
+| `payments.ts` | Payment methods |
+| `products.ts` | Product CRUD |
+| `profile.ts` | Profile updates |
+| `reviews.ts` | Product reviews |
+| `seller-feedback.ts` | Seller feedback |
+| `seller-follows.ts` | Seller follows |
+| `subscriptions.ts` | Subscription management |
+| `username.ts` | Username management |
+
+---
+
+## Next.js 16 Patterns Used
+
+### File Conventions
+
+| File | Purpose |
+|------|---------|
+| `page.tsx` | Route UI |
+| `layout.tsx` | Shared UI wrapper |
+| `loading.tsx` | Loading state |
+| `error.tsx` | Error boundary |
+| `not-found.tsx` | 404 page |
+| `default.tsx` | Parallel route fallback |
+| `route.ts` | API handler |
+
+### Route Groups `(folder)`
+
+- Not included in URL path
+- Enable separate layouts per group
+- Organize by feature/concern
+
+### Intercepting Routes `(..)`
+
+- `(.)` — Same level
+- `(..)` — One level up
+- `(...)` — From root app
+
+### Parallel Routes `@slot`
+
+- Multiple pages in same layout
+- Independent loading/error states
+- Used for modals
+
+---
+
+## See Also
+
+- [ARCHITECTURE.md](../ARCHITECTURE.md) — System design
+- [AUTH.md](./AUTH.md) — Auth implementation
+- [API.md](./API.md) — Server actions detail
+
+---
+
+*Last updated: 2026-02-11*
+

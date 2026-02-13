@@ -114,7 +114,7 @@ export default function ProfilePage() {
     if (isCheckingUsername) {
       return (
         <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
-          <SpinnerGap className="size-4 animate-spin" />
+          <SpinnerGap className="size-4 animate-spin motion-reduce:animate-none" />
           {t("profile.checking")}
         </span>
       )
@@ -158,7 +158,7 @@ export default function ProfilePage() {
         >
           {isPending ? (
             <>
-              <SpinnerGap className="size-5 animate-spin" />
+              <SpinnerGap className="size-5 animate-spin motion-reduce:animate-none" />
               {t("common.processing")}
             </>
           ) : (
@@ -196,7 +196,10 @@ export default function ProfilePage() {
                   />
                 )}
               </div>
-              <label className="absolute -bottom-1 -right-1 size-7 bg-primary text-primary-foreground rounded-full flex items-center justify-center cursor-pointer hover:bg-interactive-hover transition-colors shadow-sm">
+              <label
+                className="absolute -bottom-1 -right-1 size-7 bg-primary text-primary-foreground rounded-full flex items-center justify-center cursor-pointer hover:bg-interactive-hover transition-colors shadow-sm"
+                aria-label={t("profile.profileImageLabel")}
+              >
                 <Camera className="size-3.5" weight="bold" />
                 <input type="file" accept="image/*" className="hidden" onChange={handleAvatarChange} />
               </label>
@@ -242,13 +245,13 @@ export default function ProfilePage() {
           </Label>
           <div className="relative mt-2">
             <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">@</span>
-            <Input
-              id="username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, ""))}
-              placeholder={t("profile.usernamePlaceholder")}
-              className="pl-8"
-              maxLength={30}
+              <Input
+                id="username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value.toLowerCase().replaceAll(/[^a-z0-9_]/g, ""))}
+                placeholder={t("profile.usernamePlaceholder")}
+                className="pl-8"
+                maxLength={30}
             />
           </div>
           <div className="flex justify-between items-center gap-3 mt-1.5">

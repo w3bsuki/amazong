@@ -32,7 +32,7 @@ export default function TopSellersHero({
             </svg>
           </div>
           <div>
-            <h1 className="text-2xl sm:text-4xl font-bold">{title}</h1>
+            <h1 className="text-2xl sm:text-4xl font-bold tracking-tight">{title}</h1>
             <p className="text-foreground/80 text-sm sm:text-base mt-1">
               {subtitle}
             </p>

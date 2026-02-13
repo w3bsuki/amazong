@@ -1,11 +1,9 @@
 import { Link } from "@/i18n/routing"
 import {
   IconPlus,
-  IconBox,
   IconShoppingCart,
   IconPackage,
   IconChartBar,
-  IconSettings,
 } from "@tabler/icons-react"
 import { Button } from "@/components/ui/button"
 

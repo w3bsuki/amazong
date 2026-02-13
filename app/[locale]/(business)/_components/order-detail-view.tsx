@@ -127,7 +127,6 @@ export function OrderDetailView({
   order,
   items,
   subtotal,
-  sellerId: _sellerId,
 }: OrderDetailViewProps) {
   const router = useRouter()
   const [isLoading, setIsLoading] = React.useState(false)
@@ -171,7 +170,7 @@ export function OrderDetailView({
 
   const handleContactCustomer = () => {
     if (customer) {
-      router.push(`/messages?user=${customer.id}`)
+      router.push(`/chat?seller=${customer.id}`)
     }
   }
 

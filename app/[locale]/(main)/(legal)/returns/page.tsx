@@ -51,7 +51,7 @@ export default async function ReturnsPage({ params }: { params: Promise<{ locale
           </div>
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div className="max-w-2xl">
-              <h1 className="text-2xl md:text-4xl font-bold mb-3">{t('heroTitle')}</h1>
+              <h1 className="text-2xl md:text-4xl font-bold tracking-tight mb-3">{t('heroTitle')}</h1>
               <p className="text-foreground">{t('heroSubtitle')}</p>
             </div>
             <Button asChild variant="cta" size="lg" className="whitespace-nowrap">
@@ -71,28 +71,28 @@ export default async function ReturnsPage({ params }: { params: Promise<{ locale
             <Card className="border-success/30 bg-success/10">
               <CardContent className="p-4 text-center">
                 <Clock className="size-8 text-success mx-auto mb-3" />
-                <h3 className="font-bold text-2xl text-success">30</h3>
+                <h3 className="font-bold tracking-tight text-2xl text-success">30</h3>
                 <p className="text-sm text-muted-foreground">{t('daysToReturn')}</p>
               </CardContent>
             </Card>
             <Card>
               <CardContent className="p-4 text-center">
                 <Truck className="size-8 text-primary mx-auto mb-3" />
-                <h3 className="font-bold">{t('freeReturns')}</h3>
+                <h3 className="font-bold tracking-tight">{t('freeReturns')}</h3>
                 <p className="text-sm text-muted-foreground">{t('freeReturnsDesc')}</p>
               </CardContent>
             </Card>
             <Card>
               <CardContent className="p-4 text-center">
                 <CreditCard className="size-8 text-primary mx-auto mb-3" />
-                <h3 className="font-bold">{t('fastRefunds')}</h3>
+                <h3 className="font-bold tracking-tight">{t('fastRefunds')}</h3>
                 <p className="text-sm text-muted-foreground">{t('fastRefundsDesc')}</p>
               </CardContent>
             </Card>
             <Card>
               <CardContent className="p-4 text-center">
                 <ShieldCheck className="size-8 text-primary mx-auto mb-3" />
-                <h3 className="font-bold">{t('noHassle')}</h3>
+                <h3 className="font-bold tracking-tight">{t('noHassle')}</h3>
                 <p className="text-sm text-muted-foreground">{t('noHassleDesc')}</p>
               </CardContent>
             </Card>
@@ -101,7 +101,7 @@ export default async function ReturnsPage({ params }: { params: Promise<{ locale
 
         {/* How to Return Section */}
         <section className="mb-12">
-          <h2 className="text-2xl font-bold mb-6">{t('howToReturn')}</h2>
+          <h2 className="text-2xl font-bold tracking-tight mb-6">{t('howToReturn')}</h2>
           <div className="grid grid-cols-2 gap-3 md:gap-4 md:grid-cols-4">
             {/* Step 1 */}
             <Card className="relative">
@@ -110,7 +110,7 @@ export default async function ReturnsPage({ params }: { params: Promise<{ locale
                   1
                 </div>
                 <Package className="size-10 text-primary mb-4 mt-2" />
-                <h3 className="font-bold text-lg mb-2">{t('step1')}</h3>
+                <h3 className="font-bold tracking-tight text-lg mb-2">{t('step1')}</h3>
                 <p className="text-sm text-muted-foreground">{t('step1Desc')}</p>
               </CardContent>
             </Card>
@@ -122,7 +122,7 @@ export default async function ReturnsPage({ params }: { params: Promise<{ locale
                   2
                 </div>
                 <FileText className="size-10 text-primary mb-4 mt-2" />
-                <h3 className="font-bold text-lg mb-2">{t('step2')}</h3>
+                <h3 className="font-bold tracking-tight text-lg mb-2">{t('step2')}</h3>
                 <p className="text-sm text-muted-foreground">{t('step2Desc')}</p>
               </CardContent>
             </Card>
@@ -134,7 +134,7 @@ export default async function ReturnsPage({ params }: { params: Promise<{ locale
                   3
                 </div>
                 <Printer className="size-10 text-primary mb-4 mt-2" />
-                <h3 className="font-bold text-lg mb-2">{t('step3')}</h3>
+                <h3 className="font-bold tracking-tight text-lg mb-2">{t('step3')}</h3>
                 <p className="text-sm text-muted-foreground">{t('step3Desc')}</p>
               </CardContent>
             </Card>
@@ -146,7 +146,7 @@ export default async function ReturnsPage({ params }: { params: Promise<{ locale
                   4
                 </div>
                 <MapPin className="size-10 text-primary mb-4 mt-2" />
-                <h3 className="font-bold text-lg mb-2">{t('step4')}</h3>
+                <h3 className="font-bold tracking-tight text-lg mb-2">{t('step4')}</h3>
                 <p className="text-sm text-muted-foreground">{t('step4Desc')}</p>
               </CardContent>
             </Card>
@@ -164,7 +164,7 @@ export default async function ReturnsPage({ params }: { params: Promise<{ locale
                   <div className="size-10 bg-success/10 flex items-center justify-center">
                     <CheckCircle className="size-5 text-success" />
                   </div>
-                  <h3 className="text-lg font-bold">{t('eligibleItems')}</h3>
+                  <h3 className="text-lg font-bold tracking-tight">{t('eligibleItems')}</h3>
                 </div>
                 <ul className="space-y-3">
                   {t.raw('eligibleItemsList').map((item: string, index: number) => (
@@ -184,7 +184,7 @@ export default async function ReturnsPage({ params }: { params: Promise<{ locale
                   <div className="size-10 bg-deal-light flex items-center justify-center">
                     <Prohibit className="size-5 text-deal" />
                   </div>
-                  <h3 className="text-lg font-bold">{t('nonReturnable')}</h3>
+                  <h3 className="text-lg font-bold tracking-tight">{t('nonReturnable')}</h3>
                 </div>
                 <ul className="space-y-3">
                   {t.raw('nonReturnableList').map((item: string, index: number) => (
@@ -204,7 +204,7 @@ export default async function ReturnsPage({ params }: { params: Promise<{ locale
                   <div className="size-10 bg-selected flex items-center justify-center">
                     <CreditCard className="size-5 text-primary" />
                   </div>
-                  <h3 className="text-lg font-bold">{t('refundInfo')}</h3>
+                  <h3 className="text-lg font-bold tracking-tight">{t('refundInfo')}</h3>
                 </div>
                 <div className="space-y-4 text-sm text-muted-foreground">
                   <p>{t('refundInfoText')}</p>
@@ -229,7 +229,7 @@ export default async function ReturnsPage({ params }: { params: Promise<{ locale
             <Card className="border-selected-border bg-selected">
               <CardContent className="p-4 text-center">
                 <ArrowCounterClockwise className="size-12 text-primary mx-auto mb-4" />
-                <h3 className="font-bold text-lg mb-2">{t('readyToReturn')}</h3>
+                <h3 className="font-bold tracking-tight text-lg mb-2">{t('readyToReturn')}</h3>
                 <p className="text-sm text-muted-foreground mb-4">{t('readyToReturnDesc')}</p>
                 <Link href="/account/orders" className="block">
                   <Button variant="cta" className="w-full">
@@ -283,7 +283,7 @@ export default async function ReturnsPage({ params }: { params: Promise<{ locale
 
         {/* FAQ Section with Accordion */}
         <section>
-          <h2 className="text-2xl font-bold mb-6">{t('faqTitle')}</h2>
+          <h2 className="text-2xl font-bold tracking-tight mb-6">{t('faqTitle')}</h2>
           <Card>
             <CardContent className="p-6">
               <Accordion type="single" collapsible className="w-full">

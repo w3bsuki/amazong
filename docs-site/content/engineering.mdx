@@ -31,7 +31,7 @@
 | `app/[locale]/` | Locale-scoped routes (en/bg) |
 | `app/actions/` | Shared server actions |
 | `app/api/` | Route handlers (webhooks, REST) |
-| `components/ui/` | shadcn primitives only — DO NOT EDIT |
+| `components/ui/` | shadcn primitives only (editable Treido-owned open code; keep app/domain logic out) |
 | `components/shared/` | Shared composites (cards, fields, filters) |
 | `components/layout/` | Header, footer, sidebars, shells |
 | `components/providers/` | Context providers |
@@ -92,7 +92,7 @@ Keep route-specific code private:
 | `lib/types/` | TypeScript types |
 | `lib/upload/` | Image upload utilities |
 | `lib/validation/` | Zod schemas for orders |
-| `lib/validations/` | Auth validations |
+| `lib/validation/` | Zod schemas (auth, orders, password strength) |
 | `lib/view-models/` | View model transformations |
 | `lib/stripe.ts` | Server-side Stripe instance |
 | `lib/stripe-connect.ts` | Stripe Connect utilities |
@@ -213,13 +213,20 @@ export async function getCategories() {
 ### Boundaries
 
 ```
-components/ui/       → shadcn primitives ONLY (no app logic)
+components/ui/       → shadcn primitives only (editable; no app/domain logic)
 components/shared/   → shared composites (use ui + lib)
 components/layout/   → shells (header, nav, footer)
 components/providers/→ thin contexts
 hooks/               → reusable React hooks
 lib/                 → pure utilities (no React, no app imports)
 ```
+
+### `components/ui/*` Ownership
+
+- `components/ui/*` is open code owned by Treido and may be edited.
+- Expected edits include token compliance, accessibility fixes, bug fixes, and variant maintenance.
+- Constraint: keep this layer primitive-only (no domain logic, data fetching, or API calls).
+- Styling and interaction SSOT for this layer: `docs/ui/DESIGN.md` and `docs/ui/FRONTEND.md`.
 
 ### Forbidden Imports
 
@@ -284,7 +291,12 @@ lib/                 → pure utilities (no React, no app imports)
 
 ### Auth Boundaries
 
-Protected by middleware:
+Protected (redirected) by middleware:
+- `/account/*`
+- `/sell/orders/*`
+- `/protected/*`
+
+Session refresh/auth check in middleware runs for:
 - `/account/*`
 - `/sell/*`
 - `/chat/*`
@@ -335,13 +347,13 @@ Use `requireAuth()` from `lib/auth/require-auth.ts` in server actions.
 
 ## See Also
 
-- [PRD.md](/platform) — Product vision & scope
-- [DESIGN.md](/) — UI/UX rules
-- [ROUTES.md](/routes) — Route map
+- [REQUIREMENTS.md](/project) — Feature requirements checklist
+- [docs/ui/DESIGN.md](/design) — UI/UX rules
+- [docs/domain/ROUTES.md](/routes) — Route map
 - [AGENTS.md](/workflow) — Entry point + non-negotiables
-- [WORKFLOW.md](/workflow) — Default shipping loop
+- [docs/WORKFLOW.md](/workflow) — Default shipping loop
 
 ---
 
-*Last updated: 2026-02-08*
+*Last updated: 2026-02-13*
 

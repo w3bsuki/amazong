@@ -137,13 +137,13 @@ Build the minimum trust and safety layer required for a real-money marketplace l
 
 ## Cross-References
 
-- [PAYMENTS.md](../PAYMENTS.md) — Escrow lifecycle, payout blocking during disputes, refund processing
-- [DATABASE.md](../DATABASE.md) — reviews, badge_definitions, user_badges, seller_stats tables
+- [PAYMENTS.md](../domain/PAYMENTS.md) — Escrow lifecycle, payout blocking during disputes, refund processing
+- [DATABASE.md](../domain/DATABASE.md) — reviews, badge_definitions, user_badges, seller_stats tables
 - [chat.md](./chat.md) — Report conversation, block user flows
 - [buying.md](./buying.md) — Buyer protection claims, order disputes
-- [PRD.md](../PRD.md) §6.9 (Reviews), §6.10 (Trust & Safety), §12 (Operations)
-- `docs/business/specs/prd-trust-safety.mdx` — Detailed V1 trust requirements
-- `docs/business/specs/prd-reputation-badges-ratings.mdx` — Badge system design
+- [PRD.md](../archive/2026-02-doc-reset/pre-cutover-docs/PRD.md) §6.9 (Reviews), §6.10 (Trust & Safety), §12 (Operations)
+- `../../context/business/specs/prd-trust-safety.mdx` — Detailed V1 trust requirements
+- `../../context/business/specs/prd-reputation-badges-ratings.mdx` — Badge system design
 
 ---
 

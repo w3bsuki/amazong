@@ -40,16 +40,18 @@ export default async function NotFound({
         </p>
         
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
-          <Link href="/">
-            <span className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-interactive-hover w-full sm:w-auto">
-              {t('goToHomepage')}
-            </span>
+          <Link
+            href="/"
+            className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-interactive-hover w-full sm:w-auto"
+          >
+            {t('goToHomepage')}
           </Link>
           
-          <Link href="/search">
-            <span className="inline-flex items-center justify-center rounded-md border border-border bg-background px-4 py-2 text-sm font-medium text-foreground hover:bg-accent w-full sm:w-auto">
-              {t('searchProducts')}
-            </span>
+          <Link
+            href="/search"
+            className="inline-flex items-center justify-center rounded-md border border-border bg-background px-4 py-2 text-sm font-medium text-foreground hover:bg-accent w-full sm:w-auto"
+          >
+            {t('searchProducts')}
           </Link>
         </div>
         

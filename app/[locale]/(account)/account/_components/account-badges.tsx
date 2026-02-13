@@ -156,10 +156,13 @@ export function AccountBadges({ locale = "en" }: AccountBadgesProps) {
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <button
+                        type="button"
                         onClick={() => handleToggleFeatured(badge.id)}
                         disabled={updating === badge.id}
+                        aria-pressed={badge.is_featured}
+                        aria-label={badge.is_featured ? `${t.unfeature}: ${badge.name}` : `${t.feature}: ${badge.name}`}
                         className={cn(
-                          "relative flex items-center gap-2 rounded-full px-3 py-1.5 text-sm font-medium transition-all",
+                          "relative flex min-h-11 items-center gap-2 rounded-full px-3 py-1.5 text-sm font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
                           badge.color || "bg-primary text-primary-foreground",
                           updating === badge.id && "opacity-50"
                         )}
@@ -203,10 +206,13 @@ export function AccountBadges({ locale = "en" }: AccountBadgesProps) {
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <button
+                        type="button"
                         onClick={() => handleToggleFeatured(badge.id)}
                         disabled={updating === badge.id}
+                        aria-pressed={badge.is_featured}
+                        aria-label={badge.is_featured ? `${t.unfeature}: ${badge.name}` : `${t.feature}: ${badge.name}`}
                         className={cn(
-                          "relative flex items-center justify-center size-10 rounded-full transition-opacity hover:opacity-80",
+                          "relative flex size-11 items-center justify-center rounded-full transition-opacity hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
                           badge.color || "bg-muted",
                           updating === badge.id && "opacity-50",
                           !badge.is_featured && "opacity-70 hover:opacity-100"

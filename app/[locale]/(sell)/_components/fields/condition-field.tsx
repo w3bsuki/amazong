@@ -1,12 +1,12 @@
 "use client";
 
-import { memo, useState } from "react";
+import { useState } from "react";
 import { Controller } from "react-hook-form";
 import { Sparkle, Check, CaretRight } from "@phosphor-icons/react";
 import { Field, FieldLabel, FieldDescription, FieldError, FieldContent } from "@/components/shared/field";
 import { cn } from "@/lib/utils";
 import { conditionOptions } from "@/lib/sell/schema-v4";
-import { useSellForm, useSellFormContext } from "../sell-form-provider";
+import { useSellForm } from "../sell-form-provider";
 import { useTranslations } from "next-intl";
 import {
   Drawer,
@@ -31,7 +31,6 @@ interface ConditionFieldProps {
 
 export function ConditionField({ className, compact = false }: ConditionFieldProps) {
   const { control } = useSellForm();
-  const { isBg } = useSellFormContext();
   const [isOpen, setIsOpen] = useState(false);
   const tSell = useTranslations("Sell")
 
@@ -53,12 +52,10 @@ export function ConditionField({ className, compact = false }: ConditionFieldPro
                 </div>
                 <div>
                   <FieldLabel className="text-sm font-bold tracking-tight text-foreground">
-                    {isBg ? "Състояние" : "Condition"}
+                    {tSell("steps.details.conditionLabel")}
                   </FieldLabel>
                   <FieldDescription className="text-sm text-muted-foreground mt-0.5">
-                    {isBg
-                      ? "Изберете състоянието на вашия продукт"
-                      : "Select the condition of your item"}
+                    {tSell("fields.condition.helpText")}
                   </FieldDescription>
                 </div>
               </div>
@@ -68,7 +65,7 @@ export function ConditionField({ className, compact = false }: ConditionFieldPro
             {compact && (
               <div className="hidden">
                 <FieldLabel className="text-sm font-semibold mb-form-sm">
-                  {isBg ? "Състояние" : "Condition"}
+                  {tSell("steps.details.conditionLabel")}
                 </FieldLabel>
               </div>
             )}
@@ -99,7 +96,7 @@ export function ConditionField({ className, compact = false }: ConditionFieldPro
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-1.5">
                           <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-                            {isBg ? "Състояние" : "Condition"}
+                            {tSell("steps.details.conditionLabel")}
                           </span>
                           <span className="text-destructive text-xs">*</span>
                         </div>
@@ -107,7 +104,7 @@ export function ConditionField({ className, compact = false }: ConditionFieldPro
                           "text-base font-semibold truncate block mt-0.5",
                           selectedLabel ? "text-foreground" : "text-text-subtle"
                         )}>
-                          {selectedLabel || (isBg ? "Изберете..." : "Select condition")}
+                          {selectedLabel || tSell("steps.details.conditionPlaceholder")}
                         </span>
                       </div>
                       <CaretRight className={cn(
@@ -118,9 +115,9 @@ export function ConditionField({ className, compact = false }: ConditionFieldPro
                   </DrawerTrigger>
                   <DrawerContent className="max-h-dialog">
                     <DrawerHeader className="border-b border-border-subtle pb-4">
-                      <DrawerTitle className="text-xl font-bold">{isBg ? "Състояние" : "Item condition"}</DrawerTitle>
+                      <DrawerTitle className="text-xl font-bold">{tSell("steps.details.conditionDrawerTitle")}</DrawerTitle>
                       <DrawerDescription className="text-sm">
-                        {isBg ? "Бъдете точни — това изгражда доверие" : "Be accurate — it builds trust with buyers"}
+                        {tSell("fields.condition.drawerDescription")}
                       </DrawerDescription>
                     </DrawerHeader>
                     <div className="p-4 space-y-3 max-h-dialog-sm overflow-y-auto" data-vaul-no-drag>
@@ -217,10 +214,4 @@ export function ConditionField({ className, compact = false }: ConditionFieldPro
       }}
     />
   );
-}/**
- * Memoized ConditionField - Item condition selector using context pattern.
- * Optimized to prevent unnecessary re-renders when unrelated form state changes.
- * @see useSellForm - Hook for form state access
- * @see useSellFormContext - Hook for context access
- */
-const MemoizedConditionField = memo(ConditionField);
+}

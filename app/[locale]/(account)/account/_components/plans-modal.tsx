@@ -4,7 +4,6 @@ import { useState, useEffect, useCallback, useMemo } from "react"
 import { Link } from "@/i18n/routing"
 import { useRouter } from "@/i18n/routing"
 import { 
-  Crown, 
   Buildings, 
   User, 
   ArrowRight,
@@ -19,7 +18,6 @@ import {
   DialogDescription,
   DialogTrigger,
 } from "@/components/ui/dialog"
-import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
 
@@ -111,7 +109,7 @@ export function PlansModal({
   currentTier,
   title,
   description,
-  source: _source,
+  source,
   actions,
 }: PlansModalProps) {
   const router = useRouter()
@@ -204,7 +202,7 @@ export function PlansModal({
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       {trigger && <DialogTrigger asChild>{trigger}</DialogTrigger>}
       
-      <DialogContent className="max-w-lg sm:max-w-2xl max-h-dialog overflow-visible p-0">
+      <DialogContent className="max-w-lg sm:max-w-2xl max-h-dialog overflow-visible p-0" data-source={source ?? "unknown"}>
         <div className="px-4 pt-4 pb-3 sm:px-6 sm:pt-5">
           <DialogHeader className="text-center sm:text-center space-y-1">
             <div className="flex items-center justify-center">
@@ -226,6 +224,7 @@ export function PlansModal({
             {/* Account Type Toggle */}
             <div className="inline-flex p-0.5 rounded-md bg-surface-subtle border text-xs">
               <button
+                type="button"
                 onClick={() => setAccountType("personal")}
                 className={cn(
                   "flex items-center gap-1 px-2 py-1 rounded font-medium transition-all",
@@ -233,11 +232,13 @@ export function PlansModal({
                     ? "bg-background shadow-sm text-foreground"
                     : "text-muted-foreground hover:text-foreground"
                 )}
+                aria-pressed={accountType === "personal"}
               >
                 <User weight={accountType === "personal" ? "fill" : "regular"} className="size-3" />
                 {t.personal}
               </button>
               <button
+                type="button"
                 onClick={() => setAccountType("business")}
                 className={cn(
                   "flex items-center gap-1 px-2 py-1 rounded font-medium transition-all",
@@ -245,6 +246,7 @@ export function PlansModal({
                     ? "bg-background shadow-sm text-foreground"
                     : "text-muted-foreground hover:text-foreground"
                 )}
+                aria-pressed={accountType === "business"}
               >
                 <Buildings weight={accountType === "business" ? "fill" : "regular"} className="size-3" />
                 {t.business}
@@ -256,6 +258,7 @@ export function PlansModal({
             {/* Billing Toggle */}
             <div className="inline-flex p-0.5 rounded-md bg-surface-subtle border text-xs">
               <button
+                type="button"
                 onClick={() => setBillingPeriod("monthly")}
                 className={cn(
                   "px-2 py-1 rounded font-medium transition-all",
@@ -263,10 +266,12 @@ export function PlansModal({
                     ? "bg-background shadow-sm text-foreground"
                     : "text-muted-foreground hover:text-foreground"
                 )}
+                aria-pressed={billingPeriod === "monthly"}
               >
                 {t.monthly}
               </button>
               <button
+                type="button"
                 onClick={() => setBillingPeriod("yearly")}
                 className={cn(
                   "px-2 py-1 rounded font-medium transition-all flex items-center gap-1",
@@ -274,6 +279,7 @@ export function PlansModal({
                     ? "bg-background shadow-sm text-foreground"
                     : "text-muted-foreground hover:text-foreground"
                 )}
+                aria-pressed={billingPeriod === "yearly"}
               >
                 {t.yearly}
                 <Badge variant="secondary" className="text-2xs bg-success/10 text-success border-success/20 px-1 py-0">
@@ -316,34 +322,3 @@ export function PlansModal({
     </Dialog>
   )
 }
-
-// =============================================================================
-// Convenience Export: Trigger Button
-// =============================================================================
-
-function PlansModalTrigger({
-  children,
-  className,
-  variant = "default",
-  size = "default",
-  ...props
-}: React.ComponentProps<typeof Button> & {
-  children?: React.ReactNode
-}) {
-  const locale = useLocale()
-  const localeKey = locale === "bg" ? "bg" : "en"
-  const t = translations[localeKey]
-
-  return (
-    <Button variant={variant} size={size} className={className} {...props}>
-      {children || (
-        <>
-          <Crown weight="fill" className="size-4 mr-1.5" />
-          {t.upgrade}
-        </>
-      )}
-    </Button>
-  )
-}
-
-

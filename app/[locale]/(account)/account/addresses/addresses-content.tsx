@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useMemo, type ChangeEvent } from "react"
+import { useTranslations } from "next-intl"
 import { useRouter } from "@/i18n/routing"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -85,19 +86,13 @@ const emptyFormData: AddressFormData = {
     is_default: false
 }
 
-const addressLabels = [
-    { value: "Home", icon: House, label: "Home" },
-    { value: "Work", icon: Briefcase, label: "Work" },
-    { value: "Other", icon: Buildings, label: "Other" },
-]
-
 interface AddressesContentProps {
-    locale: string
     initialAddresses: Address[]
 }
 
-export function AddressesContent({ locale, initialAddresses }: AddressesContentProps) {
+export function AddressesContent({ initialAddresses }: AddressesContentProps) {
     const router = useRouter()
+    const t = useTranslations("Account.addressesPage")
     const [addresses, setAddresses] = useState<Address[]>(initialAddresses)
     const [isDialogOpen, setIsDialogOpen] = useState(false)
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
@@ -146,7 +141,7 @@ export function AddressesContent({ locale, initialAddresses }: AddressesContentP
         // Validation
         if (!formData.full_name.trim() || !formData.address_line1.trim() || 
             !formData.city.trim() || !formData.postal_code.trim()) {
-            toast.error(locale === 'bg' ? 'Моля, попълнете всички задължителни полета' : 'Please fill in all required fields')
+            toast.error(t("toasts.requiredFields"))
             return
         }
 
@@ -172,7 +167,7 @@ export function AddressesContent({ locale, initialAddresses }: AddressesContentP
 
                 if (error) throw error
 
-                toast.success(locale === 'bg' ? 'Адресът е обновен' : 'Address updated')
+                toast.success(t("toasts.updated"))
             } else {
                 // Create new
                 const { data: { user } } = await supabase.auth.getUser()
@@ -196,7 +191,7 @@ export function AddressesContent({ locale, initialAddresses }: AddressesContentP
 
                 if (error) throw error
 
-                toast.success(locale === 'bg' ? 'Адресът е добавен' : 'Address added')
+                toast.success(t("toasts.added"))
             }
 
             setIsDialogOpen(false)
@@ -212,7 +207,7 @@ export function AddressesContent({ locale, initialAddresses }: AddressesContentP
             if (data) setAddresses(data)
         } catch (error) {
             console.error('Error saving address:', error)
-            toast.error(locale === 'bg' ? 'Грешка при запазване' : 'Error saving address')
+            toast.error(t("toasts.saveError"))
         } finally {
             setIsLoading(false)
         }
@@ -230,7 +225,7 @@ export function AddressesContent({ locale, initialAddresses }: AddressesContentP
 
             if (error) throw error
 
-            toast.success(locale === 'bg' ? 'Адресът е изтрит' : 'Address deleted')
+            toast.success(t("toasts.deleted"))
             setIsDeleteDialogOpen(false)
             setDeletingAddressId(null)
             router.refresh()
@@ -245,7 +240,7 @@ export function AddressesContent({ locale, initialAddresses }: AddressesContentP
             if (data) setAddresses(data)
         } catch (error) {
             console.error('Error deleting address:', error)
-            toast.error(locale === 'bg' ? 'Грешка при изтриване' : 'Error deleting address')
+            toast.error(t("toasts.deleteError"))
         } finally {
             setIsLoading(false)
         }
@@ -261,7 +256,7 @@ export function AddressesContent({ locale, initialAddresses }: AddressesContentP
 
             if (error) throw error
 
-            toast.success(locale === 'bg' ? 'Адресът по подразбиране е променен' : 'Default address updated')
+            toast.success(t("toasts.defaultUpdated"))
             router.refresh()
             
             // Refetch addresses
@@ -274,7 +269,7 @@ export function AddressesContent({ locale, initialAddresses }: AddressesContentP
             if (data) setAddresses(data)
         } catch (error) {
             console.error('Error setting default:', error)
-            toast.error(locale === 'bg' ? 'Грешка при промяна' : 'Error updating')
+            toast.error(t("toasts.updateError"))
         } finally {
             setIsLoading(false)
         }
@@ -298,30 +293,31 @@ export function AddressesContent({ locale, initialAddresses }: AddressesContentP
         setIsDeleteDialogOpen(true)
     }
 
-    const t = {
-        addAddress: locale === 'bg' ? 'Добави' : 'Add',
-    }
+    const addressLabels = [
+        { value: "Home", icon: House, label: t("labels.home") },
+        { value: "Work", icon: Briefcase, label: t("labels.work") },
+        { value: "Other", icon: Buildings, label: t("labels.other") },
+    ]
 
     return (
         <div className="flex flex-col gap-4">
             {/* Mobile header with add button */}
             <div className="flex items-center justify-between sm:hidden">
-                <AccountAddressesStats stats={stats} locale={locale} />
+                <AccountAddressesStats stats={stats} />
                 <Button onClick={openAddDialog} size="sm" className="h-8 gap-1.5">
                     <Plus className="size-4" weight="bold" />
-                    {t.addAddress}
+                    {t("actions.addAddress")}
                 </Button>
             </div>
 
             {/* Desktop stats */}
             <div className="hidden sm:block">
-                <AccountAddressesStats stats={stats} locale={locale} />
+                <AccountAddressesStats stats={stats} />
             </div>
 
             {/* Grid */}
             <AccountAddressesGrid
                 addresses={addresses.map(addr => ({ ...addr, is_default: addr.is_default ?? false }))}
-                locale={locale}
                 onEdit={handleEdit}
                 onDelete={handleDeleteClick}
                 onAdd={openAddDialog}
@@ -335,20 +331,18 @@ export function AddressesContent({ locale, initialAddresses }: AddressesContentP
                     <DialogHeader>
                         <DialogTitle>
                             {editingAddress 
-                                ? (locale === 'bg' ? 'Редактирай адрес' : 'Edit Address')
-                                : (locale === 'bg' ? 'Добави нов адрес' : 'Add New Address')}
+                                ? t("dialog.editTitle")
+                                : t("dialog.addTitle")}
                         </DialogTitle>
                         <DialogDescription>
-                            {locale === 'bg' 
-                                ? 'Въведете детайлите на адреса за доставка'
-                                : 'Enter the details for your delivery address'}
+                            {t("dialog.description")}
                         </DialogDescription>
                     </DialogHeader>
 
                     <div className="space-y-4 py-4">
                         <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-2">
-                                <Label>{locale === 'bg' ? 'Етикет' : 'Label'}</Label>
+                                <Label>{t("fields.label")}</Label>
                                 <Select 
                                     value={formData.label} 
                                     onValueChange={(v) => handleInputChange('label', v)}
@@ -369,7 +363,7 @@ export function AddressesContent({ locale, initialAddresses }: AddressesContentP
                                 </Select>
                             </div>
                             <div className="space-y-2">
-                                <Label>{locale === 'bg' ? 'Държава' : 'Country'}</Label>
+                                <Label>{t("fields.country")}</Label>
                                 <Select 
                                     value={formData.country} 
                                     onValueChange={(v) => handleInputChange('country', v)}
@@ -378,18 +372,18 @@ export function AddressesContent({ locale, initialAddresses }: AddressesContentP
                                         <SelectValue />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value="Bulgaria">Bulgaria</SelectItem>
-                                        <SelectItem value="Romania">Romania</SelectItem>
-                                        <SelectItem value="Greece">Greece</SelectItem>
-                                        <SelectItem value="Serbia">Serbia</SelectItem>
-                                        <SelectItem value="North Macedonia">North Macedonia</SelectItem>
+                                        <SelectItem value="Bulgaria">{t("countries.bulgaria")}</SelectItem>
+                                        <SelectItem value="Romania">{t("countries.romania")}</SelectItem>
+                                        <SelectItem value="Greece">{t("countries.greece")}</SelectItem>
+                                        <SelectItem value="Serbia">{t("countries.serbia")}</SelectItem>
+                                        <SelectItem value="North Macedonia">{t("countries.northMacedonia")}</SelectItem>
                                     </SelectContent>
                                 </Select>
                             </div>
                         </div>
 
                         <div className="space-y-2">
-                            <Label>{locale === 'bg' ? 'Телефон' : 'Phone'}</Label>
+                            <Label>{t("fields.phone")}</Label>
                             <Input 
                                 value={formData.phone}
                                 onChange={(e) => handleInputChange('phone', e.target.value)}
@@ -403,11 +397,11 @@ export function AddressesContent({ locale, initialAddresses }: AddressesContentP
                                     id: "full_name",
                                     label: (
                                         <>
-                                            {locale === 'bg' ? 'Пълно име' : 'Full Name'}{" "}
+                                            {t("fields.fullName")}{" "}
                                             <span className="text-destructive">*</span>
                                         </>
                                     ),
-                                    placeholder: locale === 'bg' ? 'Иван Иванов' : 'John Doe',
+                                    placeholder: t("placeholders.fullName"),
                                     value: formData.full_name,
                                     onChange: handleTextChange('full_name'),
                                     required: true,
@@ -417,19 +411,19 @@ export function AddressesContent({ locale, initialAddresses }: AddressesContentP
                                 id: "address_line1",
                                 label: (
                                     <>
-                                        {locale === 'bg' ? 'Адрес' : 'Address Line 1'}{" "}
+                                        {t("fields.addressLine1")}{" "}
                                         <span className="text-destructive">*</span>
                                     </>
                                 ),
-                                placeholder: locale === 'bg' ? 'ул. Витоша 1' : 'Street address',
+                                placeholder: t("placeholders.addressLine1"),
                                 value: formData.address_line1,
                                 onChange: handleTextChange('address_line1'),
                                 required: true,
                             }}
                             addressLine2={{
                                 id: "address_line2",
-                                label: locale === 'bg' ? 'Адрес 2' : 'Address Line 2',
-                                placeholder: locale === 'bg' ? 'Апартамент, етаж и др.' : 'Apartment, floor, etc.',
+                                label: t("fields.addressLine2"),
+                                placeholder: t("placeholders.addressLine2"),
                                 value: formData.address_line2,
                                 onChange: handleTextChange('address_line2'),
                             }}
@@ -437,19 +431,19 @@ export function AddressesContent({ locale, initialAddresses }: AddressesContentP
                                 id: "city",
                                 label: (
                                     <>
-                                        {locale === 'bg' ? 'Град' : 'City'}{" "}
+                                        {t("fields.city")}{" "}
                                         <span className="text-destructive">*</span>
                                     </>
                                 ),
-                                placeholder: locale === 'bg' ? 'София' : 'City',
+                                placeholder: t("placeholders.city"),
                                 value: formData.city,
                                 onChange: handleTextChange('city'),
                                 required: true,
                             }}
                             state={{
                                 id: "state",
-                                label: locale === 'bg' ? 'Област' : 'State',
-                                placeholder: locale === 'bg' ? 'София-град' : 'State',
+                                label: t("fields.state"),
+                                placeholder: t("placeholders.state"),
                                 value: formData.state,
                                 onChange: handleTextChange('state'),
                             }}
@@ -457,7 +451,7 @@ export function AddressesContent({ locale, initialAddresses }: AddressesContentP
                                 id: "postal_code",
                                 label: (
                                     <>
-                                        {locale === 'bg' ? 'Пощ. код' : 'Postal Code'}{" "}
+                                        {t("fields.postalCode")}{" "}
                                         <span className="text-destructive">*</span>
                                     </>
                                 ),
@@ -477,20 +471,20 @@ export function AddressesContent({ locale, initialAddresses }: AddressesContentP
                                 className="rounded border-border"
                             />
                             <Label htmlFor="is_default" className="font-normal cursor-pointer">
-                                {locale === 'bg' ? 'Направи адрес по подразбиране' : 'Set as default address'}
+                                {t("fields.setDefault")}
                             </Label>
                         </div>
                     </div>
 
                     <DialogFooter>
                         <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
-                            {locale === 'bg' ? 'Отказ' : 'Cancel'}
+                            {t("actions.cancel")}
                         </Button>
                         <Button onClick={handleSave} disabled={isLoading}>
                             {isLoading && <SpinnerGap className="size-4 mr-2 animate-spin" />}
                             {editingAddress 
-                                ? (locale === 'bg' ? 'Запази' : 'Save')
-                                : (locale === 'bg' ? 'Добави' : 'Add')}
+                                ? t("actions.save")
+                                : t("actions.add")}
                         </Button>
                     </DialogFooter>
                 </DialogContent>
@@ -501,24 +495,22 @@ export function AddressesContent({ locale, initialAddresses }: AddressesContentP
                 <AlertDialogContent>
                     <AlertDialogHeader>
                         <AlertDialogTitle>
-                            {locale === 'bg' ? 'Изтриване на адрес' : 'Delete Address'}
+                            {t("deleteDialog.title")}
                         </AlertDialogTitle>
                         <AlertDialogDescription>
-                            {locale === 'bg' 
-                                ? 'Сигурни ли сте, че искате да изтриете този адрес? Това действие не може да бъде отменено.'
-                                : 'Are you sure you want to delete this address? This action cannot be undone.'}
+                            {t("deleteDialog.description")}
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                         <AlertDialogCancel>
-                            {locale === 'bg' ? 'Отказ' : 'Cancel'}
+                            {t("actions.cancel")}
                         </AlertDialogCancel>
                         <AlertDialogAction 
                             onClick={handleDelete}
                             className="bg-destructive text-destructive-foreground hover:bg-destructive"
                         >
                             {isLoading && <SpinnerGap className="size-4 mr-2 animate-spin" />}
-                            {locale === 'bg' ? 'Изтрий' : 'Delete'}
+                            {t("actions.delete")}
                         </AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>

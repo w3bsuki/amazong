@@ -25,7 +25,6 @@ export function MobileProfileHeader({
   displayName,
   username,
   isOwnProfile,
-  isFollowing,
   sellerId,
   onBack,
 }: ProfileHeaderProps) {
@@ -65,7 +64,7 @@ export function MobileProfileHeader({
             type="button"
             variant="ghost"
             className={cn(
-              "shrink-0 text-foreground hover:bg-hover active:bg-active"
+              "shrink-0 text-foreground motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth) motion-reduce:transition-none hover:bg-hover active:bg-active"
             )}
             aria-label={tNav("back")}
             onClick={onBack}
@@ -86,7 +85,7 @@ export function MobileProfileHeader({
             type="button"
             variant="ghost"
             className={cn(
-              "text-foreground hover:bg-hover active:bg-active"
+              "text-foreground motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth) motion-reduce:transition-none hover:bg-hover active:bg-active"
             )}
             aria-label={tProfile("share")}
             onClick={handleShare}
@@ -94,13 +93,13 @@ export function MobileProfileHeader({
             <Export className="size-icon-sm" weight="bold" />
           </IconButton>
 
-          {/* Context-aware action: Account for own profile, Follow for others */}
+          {/* Context-aware action: Account for own profile, Message for others */}
           {isOwnProfile ? (
             <IconButton
               asChild
               variant="ghost"
               className={cn(
-                "text-foreground hover:bg-hover active:bg-active"
+                "text-foreground motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth) motion-reduce:transition-none hover:bg-hover active:bg-active"
               )}
               aria-label={tProfile("settings")}
             >
@@ -108,25 +107,20 @@ export function MobileProfileHeader({
                   <Gear className="size-icon-sm" weight="bold" />
                 </Link>
             </IconButton>
-          ) : (
-            <>
-              {/* Message Button */}
-              {sellerId && (
-                <IconButton
-                  asChild
-                  variant="ghost"
-                  className={cn(
-                    "text-foreground hover:bg-hover active:bg-active"
-                  )}
-                  aria-label={tProfile("message")}
-                >
-                  <Link href={`/chat?to=${sellerId}`}>
-                    <ChatCircle className="size-icon-sm" weight="bold" />
-                  </Link>
-                </IconButton>
+          ) : sellerId ? (
+            <IconButton
+              asChild
+              variant="ghost"
+              className={cn(
+                "text-foreground motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth) motion-reduce:transition-none hover:bg-hover active:bg-active"
               )}
-            </>
-          )}
+              aria-label={tProfile("message")}
+            >
+              <Link href={`/chat?to=${sellerId}`}>
+                <ChatCircle className="size-icon-sm" weight="bold" />
+              </Link>
+            </IconButton>
+          ) : null}
         </div>
       </div>
     </header>

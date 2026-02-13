@@ -31,6 +31,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 export default async function Home({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params
   setRequestLocale(locale)
+  const t = await getTranslations("Home")
 
   // Fetch categories with children for mobile subcategory circles.
   // L0 + L1 + L2 only (~3,400 categories, ~60KB gzipped).
@@ -68,6 +69,8 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
 
   return (
     <div className="flex flex-col md:pb-0">
+      <h1 className="sr-only">{t("metaTitle")}</h1>
+
       {/* 
         MOBILE LAYOUT (Demo-style unified header):
         - Unified sticky header: Hamburger + Logo + Search + Category Pills

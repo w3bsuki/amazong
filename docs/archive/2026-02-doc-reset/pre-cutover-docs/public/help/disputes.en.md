@@ -1,0 +1,39 @@
+# Disputes (Help)
+
+> How disputes work on Treido.
+
+---
+
+## overview: Overview
+
+If a transaction has an issue, Treido can review a dispute and decide an outcome according to platform policy and payment safety requirements.
+
+## eligibility: Eligibility
+
+Disputes typically require:
+
+- On-platform payment
+- Evidence (photos, tracking, messages, timestamps)
+- Opening the dispute within the required timeframe
+
+## evidence: Evidence you should provide
+
+Depending on the issue, Treido may request:
+
+- Photos of the item and packaging
+- Screenshots or chat logs (preferably within Treido)
+- Tracking information and delivery status
+- Any other documents needed to evaluate the claim
+
+## outcomes: Possible outcomes
+
+Outcomes may include:
+
+- Refund (full or partial, depending on policy)
+- Return workflow (when applicable)
+- No refund (when policy conditions are not met)
+
+---
+
+*Last updated: 2026-02-04*
+

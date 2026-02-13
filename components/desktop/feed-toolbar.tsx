@@ -99,7 +99,6 @@ export function FeedToolbar({
   filters,
   onFiltersChange,
   categoryAttributes,
-  isLoadingAttributes,
 }: FeedToolbarProps) {
   const t = useTranslations("TabbedProductFeed")
   const tViewMode = useTranslations("ViewMode")
@@ -112,10 +111,9 @@ export function FeedToolbar({
     const isGenderedCategory = /^(men|women|kids|boys|girls)-/.test(categorySlug) ||
       categorySlug.includes("-mens") || categorySlug.includes("-womens")
     
-    const filtered = categoryAttributes.filter(attr => {
-      if (attr.name.toLowerCase() === "gender" && isGenderedCategory) return false
-      return true
-    })
+    const filtered = categoryAttributes.filter(
+      (attr) => attr.name.toLowerCase() !== "gender" || !isGenderedCategory
+    )
 
     // Priority order: Condition first, then Size, Color, then by sortOrder
     const priorityMap: Record<string, number> = {
@@ -132,14 +130,14 @@ export function FeedToolbar({
 
     // Return all sorted attributes for inline + overflow handling
     return sorted.map((attr) => ({
-      id: attr.name.toLowerCase().replace(/\s+/g, "_"),
+      id: attr.name.toLowerCase().replaceAll(/\s+/g, "_"),
       label: locale === "bg" && attr.name_bg ? attr.name_bg : attr.name,
       name: attr.name,
       options: (locale === "bg" && attr.options_bg && attr.options_bg.length > 0
         ? attr.options_bg
         : attr.options || []
       ).slice(0, 10).map((opt) => ({
-        value: opt.toLowerCase().replace(/\s+/g, "_"),
+        value: opt.toLowerCase().replaceAll(/\s+/g, "_"),
         label: opt,
       })),
     }))
@@ -171,7 +169,7 @@ export function FeedToolbar({
           <button type="button" className={cn(pillBase, pillInactive)}>
             <ArrowsDownUp size={16} weight="regular" className="shrink-0" />
             <span>{t(currentSortLabel)}</span>
-            <CaretDown className="size-4 opacity-60 shrink-0" />
+            <CaretDown className="size-4 opacity-60 shrink-0" aria-hidden="true" />
           </button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="start" className="min-w-44">
@@ -180,7 +178,7 @@ export function FeedToolbar({
             return (
               <DropdownMenuItem
                 key={opt.id}
-                onClick={() => onTabChange(opt.id)}
+                onSelect={() => onTabChange(opt.id)}
                 className={cn(isSelected && "bg-accent")}
               >
                 <span className="flex-1">{t(opt.labelKey)}</span>
@@ -229,7 +227,7 @@ export function FeedToolbar({
         type="single"
         value={viewMode}
         onValueChange={(value) => value && onViewModeChange(value as "grid" | "list")}
-        className="h-9 bg-surface-subtle p-0.5 rounded-lg shrink-0 border border-border"
+        className="h-(--control-compact) bg-surface-subtle p-0.5 rounded-lg shrink-0 border border-border"
       >
         <ToggleGroupItem
           value="grid"

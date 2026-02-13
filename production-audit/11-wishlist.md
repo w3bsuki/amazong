@@ -374,22 +374,25 @@
 
 ---
 
-## Execution Evidence Log
+## Evidence Log (v2)
 
-> Required for release sign-off. Add one row per executed scenario.
+Fixed columns. Add one row per scenario run (or per sub-scenario if needed).
 
-| Scenario ID | Auto Result | Manual Result | Owner | Build/Commit | Screenshot/Video | Defect ID | Severity | Retest Result | Sign-off |
-|-------------|-------------|---------------|-------|--------------|------------------|-----------|----------|---------------|---------|
-| S11.1 | N/A (code trace) | ❌ Fail | Codex | working-tree (2026-02-11) | `/wishlist` page has no server auth redirect; route renders directly | WISH-AUTH-001 | P1 | ❌ Fail | ✅ |
-| S11.2 | N/A (code trace) | ✅ Pass | Codex | working-tree (2026-02-11) | Grid rendering in `wishlist-page-client.tsx` | — | — | — | ✅ |
-| S11.3 | N/A (code trace) | ✅ Pass | Codex | working-tree (2026-02-11) | Remove path in page client + context | — | — | — | ✅ |
-| S11.4 | N/A (code trace) | ✅ Pass | Codex | working-tree (2026-02-11) | Drawer trigger/components wiring | — | — | — | ✅ |
-| S11.5 | N/A (code trace) | ✅ Pass | Codex | working-tree (2026-02-11) | Drawer item actions (`add`, `remove`) in `wishlist-drawer.tsx` | — | — | — | ✅ |
-| S11.6 | N/A (code trace) | ✅ Pass | Codex | working-tree (2026-02-11) | Drawer max-height classes and responsive container | — | — | — | ✅ |
-| S11.7 | N/A (code trace) | ✅ Pass | Codex | working-tree (2026-02-11) | Empty-state handling in page/drawer | — | — | — | ✅ |
-| S11.8 | N/A (code trace) | ⚠ Partial | Codex | working-tree (2026-02-11) | Public shared page exists, but links/prices are non-canonical/hardcoded | WISH-002, WISH-003 | P1/P2 | ⚠ Partial | ✅ |
-| S11.9 | N/A (code trace) | ⚠ Partial | Codex | working-tree (2026-02-11) | Account wishlist works; share-link generator targets wrong path format | WISH-001 | P1 | ⚠ Partial | ✅ |
-| S11.10 | N/A (code trace) | ✅ Pass | Codex | working-tree (2026-02-11) | Provider `toggleWishlist` and optimistic updates are present | — | — | — | ✅ |
+| Scenario | Method | Artifact | Result | Issue ID | Severity | Owner | Date |
+|----------|--------|----------|--------|----------|----------|-------|------|
+| S11.1 | code trace | `/wishlist` page has no server auth redirect; route renders directly | Fail | WISH-AUTH-001 | P1 | Codex | 2026-02-11 |
+| S11.2 | code trace | Grid rendering in `wishlist-page-client.tsx` | Pass | — | — | Codex | 2026-02-11 |
+| S11.3 | code trace | Remove path in page client + context | Pass | — | — | Codex | 2026-02-11 |
+| S11.4 | code trace | Drawer trigger/components wiring | Pass | — | — | Codex | 2026-02-11 |
+| S11.5 | code trace | Drawer item actions (`add`, `remove`) in `wishlist-drawer.tsx` | Pass | — | — | Codex | 2026-02-11 |
+| S11.6 | code trace | Drawer max-height classes and responsive container | Pass | — | — | Codex | 2026-02-11 |
+| S11.7 | code trace | Empty-state handling in page/drawer | Pass | — | — | Codex | 2026-02-11 |
+| S11.8 | code trace | Public shared page exists, but links/prices are non-canonical/hardcoded | Partial | WISH-002, WISH-003 | P1/P2 | Codex | 2026-02-11 |
+| S11.9 | code trace | Account wishlist works; share-link generator targets wrong path format | Partial | WISH-001 | P1 | Codex | 2026-02-11 |
+| S11.10 | code trace | Provider `toggleWishlist` and optimistic updates are present | Pass | — | — | Codex | 2026-02-11 |
+
+Method suggestions: `runtime` | `code trace` | `manual` (keep it consistent within a phase).
+
 
 ---
 

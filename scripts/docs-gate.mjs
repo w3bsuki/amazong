@@ -2,6 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 
 const projectRoot = process.cwd();
+const activeDocsRoot = detectActiveDocsRoot();
 
 const skipDirNames = new Set([
   ".git",
@@ -15,10 +16,16 @@ const skipDirNames = new Set([
   "build",
 ]);
 
-const allowedExact = new Set(["README.md", "TASKS.md", "REQUIREMENTS.md", "DESIGN.md"]);
+const allowedExact = new Set(["README.md", "TASKS.md", "REQUIREMENTS.md", "ARCHITECTURE.md", "COMPONENTS_AUDIT.md"]);
 
 function normalizePath(p) {
   return p.replaceAll("\\", "/");
+}
+
+function detectActiveDocsRoot() {
+  const docs2Index = path.resolve(projectRoot, "docs2", "INDEX.md");
+  if (fs.existsSync(docs2Index)) return "docs2";
+  return "docs";
 }
 
 function isAllowedMarkdownPath(relPath) {
@@ -27,7 +34,10 @@ function isAllowedMarkdownPath(relPath) {
   if (allowedExact.has(p)) return true;
   if (p === "AGENTS.md" || p.endsWith("/AGENTS.md")) return true;
   if (p.startsWith("docs/")) return true;
+  if (p.startsWith("docs2/")) return true;
+  if (p.startsWith("context/")) return true;
   if (p.startsWith(".codex/")) return true;
+  if (p.startsWith("production-audit/")) return true;
   if (p.startsWith("docs-site/")) return true; // internal portal (mirrors from /docs)
   if (p.startsWith(".github/")) return true; // repo metadata (templates, instructions)
 
@@ -103,9 +113,23 @@ for (const abs of markdownFiles) {
 }
 
 const brokenRelativeLinks = [];
+
+const linkCheckedRootFiles = new Set([
+  "AGENTS.md",
+  "README.md",
+  "ARCHITECTURE.md",
+  "REQUIREMENTS.md",
+  "TASKS.md",
+  ".github/copilot-instructions.md",
+]);
+
 for (const abs of markdownFiles) {
   const rel = normalizePath(path.relative(projectRoot, abs));
-  if (!rel.startsWith("docs/")) continue;
+  const activePrefix = `${activeDocsRoot}/`;
+  const isActiveDocsFile = rel.startsWith(activePrefix) && !rel.startsWith(`${activeDocsRoot}/archive/`);
+  const isRootDocFile = linkCheckedRootFiles.has(rel);
+  if (!isActiveDocsFile && !isRootDocFile) continue;
+
   const text = fs.readFileSync(abs, "utf8");
   const targets = findRelativeLinksInMarkdown(text);
 
@@ -151,15 +175,16 @@ if (disallowed.length) {
   console.error("");
   console.error("Allowed:");
   console.error("- docs/**");
+  console.error("- docs2/** (staging)");
   console.error("- .codex/**");
   console.error("- **/AGENTS.md");
-  console.error("- README.md, TASKS.md, REQUIREMENTS.md, DESIGN.md");
+  console.error("- README.md, TASKS.md, REQUIREMENTS.md, ARCHITECTURE.md");
   console.error("- .github/**");
 }
 
 if (brokenRelativeLinks.length) {
   failed = true;
-  console.error("DOCS GATE FAIL: broken relative markdown links in docs/**:");
+  console.error(`DOCS GATE FAIL: broken relative markdown links in ${activeDocsRoot}/**:`);
   for (const { from, to } of brokenRelativeLinks.sort((a, b) => (a.from + a.to).localeCompare(b.from + b.to))) {
     console.error(`- ${from} -> ${to}`);
   }
@@ -168,6 +193,12 @@ if (brokenRelativeLinks.length) {
 if (failed) {
   process.exitCode = 1;
 } else {
+  const activeDocsIndex = path.resolve(projectRoot, activeDocsRoot, "INDEX.md");
+  if (!fs.existsSync(activeDocsIndex)) {
+    console.error(`DOCS GATE FAIL: missing active docs index: ${activeDocsRoot}/INDEX.md`);
+    process.exitCode = 1;
+  }
+
   const rootAgentsPath = path.resolve(projectRoot, "AGENTS.md");
   if (!fs.existsSync(rootAgentsPath)) {
     console.error("DOCS GATE FAIL: missing root AGENTS.md");

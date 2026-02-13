@@ -24,12 +24,6 @@ export type SellerPayoutStatus = {
 
 type CreateListingAction = Parameters<typeof UnifiedSellForm>[0]["createListingAction"]
 
-function isPayoutReady(payoutStatus: SellerPayoutStatus): boolean {
-  return Boolean(
-    payoutStatus?.details_submitted && payoutStatus?.charges_enabled && payoutStatus?.payouts_enabled
-  );
-}
-
 interface SellPageClientProps {
   initialUser: { id: string; email?: string } | null;
   initialSeller: Seller | null;
@@ -58,7 +52,6 @@ export function SellPageClient({
   const [needsOnboarding, setNeedsOnboarding] = useState(initialNeedsOnboarding);
   const [username, setUsername] = useState<string | null>(initialUsername);
   const [payoutStatus, setPayoutStatus] = useState<SellerPayoutStatus>(initialPayoutStatus ?? null);
-  const isBg = safeLocale === "bg";
 
   // Listen for auth state changes (for client-side navigation)
   useEffect(() => {
@@ -106,7 +99,11 @@ export function SellPageClient({
           } else {
             setSeller({
               id: profileData.id,
-              store_name: profileData.display_name || profileData.business_name || profileData.username || "Store",
+              store_name:
+                profileData.display_name ||
+                profileData.business_name ||
+                profileData.username ||
+                t("common.storeFallback"),
             });
           }
         }
@@ -128,7 +125,7 @@ export function SellPageClient({
       subscription.unsubscribe();
       clearTimeout(timeout);
     };
-  }, [initialUser, seller]);
+  }, [initialUser, seller, t]);
 
   // Loading state while checking auth - but show SignInPrompt immediately for guests
   if (isAuthChecking && initialUser) {
@@ -145,7 +142,6 @@ export function SellPageClient({
           isSaving={false}
           hasUnsavedChanges={false}
           onSaveDraft={() => {}}
-          locale={safeLocale}
           currentStep={1}
           totalSteps={4}
         />
@@ -168,23 +164,20 @@ export function SellPageClient({
           isSaving={false}
           hasUnsavedChanges={false}
           onSaveDraft={() => {}}
-          locale={safeLocale}
           currentStep={1}
           totalSteps={4}
         />
         <div className="flex-1 flex flex-col items-center justify-center overflow-y-auto py-8 px-4 text-center">
           <div className="max-w-md space-y-4">
             <h2 className="text-2xl font-bold text-foreground">
-              {isBg ? "Завършете настройката на акаунта" : "Complete Your Account Setup"}
+              {t("gates.completeAccountSetup.title")}
             </h2>
             <p className="text-muted-foreground">
-              {isBg
-                ? "Моля, завършете настройката на вашия профил, преди да започнете да продавате."
-                : "Please complete your profile setup before you can start selling."}
+              {t("gates.completeAccountSetup.description")}
             </p>
             <Button asChild size="lg" className="w-full">
               <Link href="/?onboarding=true">
-                {isBg ? "Завършете настройката" : "Complete Setup"}
+                {t("gates.completeAccountSetup.cta")}
               </Link>
             </Button>
           </div>
@@ -204,22 +197,19 @@ export function SellPageClient({
           isSaving={false}
           hasUnsavedChanges={false}
           onSaveDraft={() => {}}
-          locale={safeLocale}
           currentStep={1}
           totalSteps={4}
         />
         <div className="flex-1 flex flex-col justify-center overflow-y-auto py-8">
           <div className="container-narrow text-center space-y-4">
             <h2 className="text-2xl font-bold">
-              {isBg ? "Настройте потребителско име" : "Set Up Your Username"}
+              {t("gates.setUpUsername.title")}
             </h2>
             <p className="text-muted-foreground">
-              {isBg
-                ? "Нужно ви е потребителско име, преди да започнете да продавате."
-                : "You need a username before you can start selling. Visit your account settings to set one up."}
+              {t("gates.setUpUsername.description")}
             </p>
             <Button asChild>
-              <Link href="/account/profile">{isBg ? "Настройки" : "Go to Settings"}</Link>
+              <Link href="/account/profile">{t("gates.setUpUsername.cta")}</Link>
             </Button>
           </div>
         </div>

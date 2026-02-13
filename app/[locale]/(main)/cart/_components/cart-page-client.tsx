@@ -141,7 +141,7 @@ export default function CartPageClient() {
             <div className="size-24 bg-surface-subtle rounded-full flex items-center justify-center mx-auto mb-6">
               <ShoppingCart className="size-10 text-muted-foreground" weight="duotone" />
             </div>
-            <h1 className="text-2xl font-semibold mb-2">{t("emptyTitle")}</h1>
+            <h1 className="text-2xl font-semibold tracking-tight mb-2">{t("emptyTitle")}</h1>
             <p className="text-muted-foreground mb-8">{t("emptyDescription")}</p>
             <div className="flex flex-col gap-3">
               <Button
@@ -162,7 +162,7 @@ export default function CartPageClient() {
 
           {recentlyViewedLoaded && recentItems.length > 0 && (
             <section className="mt-10">
-              <h2 className="text-sm font-semibold text-foreground mb-3">
+              <h2 className="text-sm font-semibold tracking-tight text-foreground mb-3">
                 {t("recentlyViewedTitle")}
               </h2>
               <div className="grid grid-cols-2 gap-2 md:grid-cols-4">
@@ -201,7 +201,7 @@ export default function CartPageClient() {
 
         <div className="mt-4 mb-6 flex items-baseline justify-between">
           <div>
-            <h1 className="text-2xl lg:text-3xl font-semibold">{t("title")}</h1>
+            <h1 className="text-2xl lg:text-3xl font-semibold tracking-tight">{t("title")}</h1>
             <p className="text-muted-foreground mt-1 text-sm">
               {totalItems} {tCartDropdown(totalItems === 1 ? "item" : "items")}
             </p>
@@ -313,7 +313,7 @@ export default function CartPageClient() {
             <div className="sticky top-24 space-y-4">
               <Card className="border-border-subtle">
                 <CardContent className="p-5">
-                  <h2 className="font-semibold text-lg mb-4">
+                  <h2 className="font-semibold tracking-tight text-lg mb-4">
                     {t("orderSummaryTitle")}
                   </h2>
 

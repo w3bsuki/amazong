@@ -84,13 +84,13 @@ export function PriceSlider({
   }
 
   const handleMinInput = (raw: string) => {
-    const digitsOnly = raw.replace(/[^0-9]/g, "")
+    const digitsOnly = raw.replaceAll(/[^0-9]/g, "")
     setMinText(digitsOnly)
     commit({ min: parseNonNegativeInt(digitsOnly), max: parsedMax }, "min")
   }
 
   const handleMaxInput = (raw: string) => {
-    const digitsOnly = raw.replace(/[^0-9]/g, "")
+    const digitsOnly = raw.replaceAll(/[^0-9]/g, "")
     setMaxText(digitsOnly)
     commit({ min: parsedMin, max: parseNonNegativeInt(digitsOnly) }, "max")
   }
@@ -120,7 +120,7 @@ export function PriceSlider({
               "w-full h-10 px-3 rounded-md",
               "bg-surface-subtle border border-border-subtle",
               "text-sm placeholder:text-muted-foreground",
-              "focus:outline-none focus:ring-2 focus:ring-focus-ring focus:border-primary"
+              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:border-primary"
             )}
             aria-label={t("min")}
           />
@@ -137,7 +137,7 @@ export function PriceSlider({
               "w-full h-10 px-3 rounded-md",
               "bg-surface-subtle border border-border-subtle",
               "text-sm placeholder:text-muted-foreground",
-              "focus:outline-none focus:ring-2 focus:ring-focus-ring focus:border-primary"
+              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:border-primary"
             )}
             aria-label={t("max")}
           />

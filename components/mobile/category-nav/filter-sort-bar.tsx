@@ -18,7 +18,7 @@ import { getCategoryAttributeKey } from "@/lib/filters/category-attribute"
 // - Right: "Sort" showing current sort → opens sort bottom sheet
 //
 // Design system compliance (.codex/project/DESIGN.md):
-// - h-11 touch targets (44px Treido standard)
+// - Primary 48px controls for main rail actions
 // - Semantic tokens only (text-muted-foreground, bg-muted)
 // - Tailwind v4 best practices
 // - lucide-react icons (repo standard)
@@ -48,9 +48,7 @@ export interface FilterSortBarProps {
   onLocationChipClick?: () => void
 }
 
-/** Sort option keys */
-const SORT_OPTIONS = ["featured", "price-asc", "price-desc", "rating", "newest"] as const
-type SortOption = (typeof SORT_OPTIONS)[number]
+type SortOption = "featured" | "price-asc" | "price-desc" | "rating" | "newest"
 
 export function FilterSortBar({
   locale,
@@ -124,13 +122,14 @@ export function FilterSortBar({
             type="button"
             onClick={onLocationChipClick}
             className={cn(
-              "mb-2 inline-flex min-h-10 max-w-full items-center gap-1.5 rounded-full border px-3 text-sm font-medium",
-              "transition-colors tap-transparent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+              "mb-2 inline-flex min-h-(--control-default) max-w-full items-center gap-1.5 rounded-full border px-3 text-sm font-medium",
+              "tap-transparent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth)",
               locationChipActive
                 ? "border-selected-border bg-selected text-selected-foreground"
                 : "border-border-subtle bg-surface-subtle text-muted-foreground hover:bg-hover hover:text-foreground active:bg-active"
             )}
             aria-haspopup="dialog"
+            aria-pressed={locationChipActive}
             data-testid="mobile-location-chip"
           >
             <MapPin className="size-4 shrink-0" aria-hidden="true" />
@@ -146,11 +145,11 @@ export function FilterSortBar({
             variant="outline"
             onClick={onAllFiltersClick}
             className={cn(
-              "flex-1 h-11 rounded-full px-4 gap-2 font-semibold",
+              "flex-1 h-(--control-primary) rounded-full px-4 gap-2 font-semibold motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth)",
               hasActiveFilters && "bg-selected border-selected-border text-selected-foreground"
             )}
             aria-haspopup="dialog"
-            aria-expanded={false}
+            aria-pressed={hasActiveFilters}
           >
             <SlidersHorizontal className="size-4 shrink-0" aria-hidden="true" />
             <span>{t("filters")}</span>
@@ -167,11 +166,12 @@ export function FilterSortBar({
             variant="outline"
             onClick={openSort}
             className={cn(
-              "flex-1 h-11 rounded-full px-4 gap-2 font-semibold min-w-0",
+              "flex-1 h-(--control-primary) rounded-full px-4 gap-2 font-semibold min-w-0 motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth)",
               isSorted && "bg-selected border-selected-border text-selected-foreground"
             )}
             aria-haspopup="dialog"
             aria-expanded={sortOpen}
+            aria-pressed={isSorted}
             aria-label={`${t("sortBy")}: ${sortLabels[currentSort]}`}
           >
             <ArrowUpDown className="size-4 shrink-0" aria-hidden="true" />

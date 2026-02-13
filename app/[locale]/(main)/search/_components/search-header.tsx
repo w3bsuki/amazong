@@ -40,7 +40,7 @@ export function SearchHeader({ query, category, totalResults }: SearchHeaderProp
       {/* Page Header with Save Search button */}
       <div className="flex items-start justify-between gap-3">
         <div>
-          <h1 className="mb-1.5 text-2xl font-bold text-foreground sm:text-3xl">
+          <h1 className="mb-1.5 text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
             {query ? (
               <>
                 {t('resultsFor')}{" "}

@@ -63,7 +63,7 @@ export default async function FeedbackPage({
           <div className="max-w-2xl">
             <div className="flex items-center gap-3 mb-3">
               <ChatCircleDots className="size-8" weight="duotone" />
-              <h1 className="text-2xl md:text-4xl font-bold">{t('heroTitle')}</h1>
+              <h1 className="text-2xl md:text-4xl font-bold tracking-tight">{t('heroTitle')}</h1>
             </div>
             <p className="text-foreground text-lg">{t('heroSubtitle')}</p>
           </div>
@@ -73,13 +73,13 @@ export default async function FeedbackPage({
       <div className="container py-8">
         {/* Why Your Feedback Matters */}
         <section className="mb-10">
-          <h2 className="text-xl font-bold mb-4">{t('whyMattersTitle')}</h2>
+          <h2 className="text-xl font-bold tracking-tight mb-4">{t('whyMattersTitle')}</h2>
           <p className="text-muted-foreground max-w-2xl">{t('whyMattersDesc')}</p>
         </section>
 
         {/* Feedback Types */}
         <section className="mb-10">
-          <h2 className="text-xl font-bold mb-6">{t('feedbackTypesTitle')}</h2>
+          <h2 className="text-xl font-bold tracking-tight mb-6">{t('feedbackTypesTitle')}</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {feedbackTypes.map((type, index) => (
               <Card key={index} className="text-center">
@@ -87,7 +87,7 @@ export default async function FeedbackPage({
                   <div className="size-12 bg-surface-subtle rounded-full flex items-center justify-center mx-auto mb-3">
                     <type.icon className="size-6 text-primary" weight="duotone" />
                   </div>
-                  <h3 className="font-semibold text-sm mb-1">{type.title}</h3>
+                  <h3 className="font-semibold tracking-tight text-sm mb-1">{type.title}</h3>
                   <p className="text-xs text-muted-foreground">{type.desc}</p>
                 </CardContent>
               </Card>
@@ -104,7 +104,7 @@ export default async function FeedbackPage({
                   <PaperPlaneTilt className="size-5 text-primary" />
                 </div>
                 <div>
-                  <h2 className="font-bold text-lg">{t('formTitle')}</h2>
+                  <h2 className="font-bold tracking-tight text-lg">{t('formTitle')}</h2>
                   <p className="text-sm text-muted-foreground">{t('formSubtitle')}</p>
                 </div>
               </div>

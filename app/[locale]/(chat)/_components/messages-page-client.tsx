@@ -85,7 +85,9 @@ function ChatBottomTabs({
           return (
             <button
               key={tab.id}
+              type="button"
               onClick={() => onFilterChange(tab.id)}
+              aria-pressed={isActive}
               className={cn(
                 "flex flex-col items-center justify-center gap-0.5 flex-1 h-full transition-colors",
                 isActive 
@@ -165,6 +167,7 @@ function MessagesContent({ actions }: { actions: ChatInterfaceServerActions }) {
               <h1 className="text-xl font-bold">{labels.title}</h1>
             </div>
             <button 
+              type="button"
               className="flex items-center justify-center size-9 rounded-full bg-primary text-primary-foreground hover:bg-interactive-hover transition-colors"
               aria-label={labels.newMessage}
             >
@@ -185,6 +188,7 @@ function MessagesContent({ actions }: { actions: ChatInterfaceServerActions }) {
             </div>
             {/* New message button - desktop only (already have it in header on mobile) */}
             <button 
+              type="button"
               className="hidden lg:flex shrink-0 items-center justify-center size-10 rounded-full bg-primary text-primary-foreground hover:bg-interactive-hover transition-colors"
               aria-label={labels.newMessage}
             >

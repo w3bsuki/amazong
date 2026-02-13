@@ -57,7 +57,7 @@ export default async function ContactPage({
             />
           </div>
           <div className="max-w-2xl">
-            <h1 className="text-2xl md:text-4xl font-bold mb-3">{t('heroTitle')}</h1>
+            <h1 className="text-2xl md:text-4xl font-bold tracking-tight mb-3">{t('heroTitle')}</h1>
             <p className="text-foreground text-lg">{t('heroSubtitle')}</p>
           </div>
         </div>
@@ -66,7 +66,7 @@ export default async function ContactPage({
       <div className="container py-8">
         {/* Quick Help Section */}
         <section className="mb-12">
-          <h2 className="text-xl font-bold mb-6">{t('quickHelp')}</h2>
+          <h2 className="text-xl font-bold tracking-tight mb-6">{t('quickHelp')}</h2>
           <div className="grid grid-cols-2 gap-2 sm:gap-4 md:grid-cols-3">
             {quickHelp.map((item, index) => (
               <Link key={index} href={item.href}>
@@ -78,7 +78,7 @@ export default async function ContactPage({
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center justify-between gap-2">
-                          <h3 className="font-semibold">{item.title}</h3>
+                          <h3 className="font-semibold tracking-tight">{item.title}</h3>
                           <CaretRight className="size-4 text-muted-foreground group-hover:text-primary transition-colors" />
                         </div>
                         <p className="text-sm text-muted-foreground mt-1">{item.desc}</p>
@@ -101,7 +101,7 @@ export default async function ContactPage({
                     <PaperPlaneTilt className="size-5 text-primary" />
                   </div>
                   <div>
-                    <h2 className="text-xl font-bold">{t('sendMessage')}</h2>
+                    <h2 className="text-xl font-bold tracking-tight">{t('sendMessage')}</h2>
                     <p className="text-sm text-muted-foreground">{t('sendMessageDesc')}</p>
                   </div>
                 </div>
@@ -203,7 +203,7 @@ export default async function ContactPage({
                     <Headphones className="size-5 text-primary" />
                   </div>
                   <div>
-                    <h3 className="font-bold">{t('customerService')}</h3>
+                    <h3 className="font-bold tracking-tight">{t('customerService')}</h3>
                     <p className="text-sm text-muted-foreground">{t('fastestWay')}</p>
                   </div>
                 </div>
@@ -223,7 +223,7 @@ export default async function ContactPage({
                     <Envelope className="size-6 text-primary" />
                   </div>
                   <div>
-                    <h3 className="font-bold">{t('emailUs')}</h3>
+                    <h3 className="font-bold tracking-tight">{t('emailUs')}</h3>
                     <a href="mailto:help@treido.com" className="text-sm text-primary hover:underline">
                       help@treido.com
                     </a>
@@ -241,7 +241,7 @@ export default async function ContactPage({
                     <Phone className="size-6 text-primary" />
                   </div>
                   <div>
-                    <h3 className="font-bold">{t('callUs')}</h3>
+                    <h3 className="font-bold tracking-tight">{t('callUs')}</h3>
                     <a href="tel:+35921234567" className="text-sm text-primary hover:underline">
                       +359 2 123 4567
                     </a>
@@ -259,7 +259,7 @@ export default async function ContactPage({
                     <MapPin className="size-6 text-primary" />
                   </div>
                   <div>
-                    <h3 className="font-bold">{t('headquarters')}</h3>
+                    <h3 className="font-bold tracking-tight">{t('headquarters')}</h3>
                     <p className="text-sm text-muted-foreground">
                       Treido Ltd.<br />
                       bul. Vitosha 100<br />
@@ -278,7 +278,7 @@ export default async function ContactPage({
                     <Clock className="size-6 text-primary" />
                   </div>
                   <div>
-                    <h3 className="font-bold">{t('hours')}</h3>
+                    <h3 className="font-bold tracking-tight">{t('hours')}</h3>
                     <div className="text-sm text-muted-foreground space-y-1 mt-1">
                       <p>{t('weekdays')}: 09:00 - 21:00</p>
                       <p>{t('saturday')}: 10:00 - 18:00</p>
@@ -301,7 +301,7 @@ export default async function ContactPage({
                     <Question className="size-6 text-primary" />
                   </div>
                   <div>
-                    <h3 className="font-bold text-lg">{t('faqTitle')}</h3>
+                    <h3 className="font-bold tracking-tight text-lg">{t('faqTitle')}</h3>
                     <p className="text-muted-foreground">{t('faqDesc')}</p>
                   </div>
                 </div>

@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useTransition } from "react"
+import { useTranslations } from "next-intl"
 import { Link } from "@/i18n/routing"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
@@ -46,18 +47,17 @@ export type FollowingContentServerActions = {
 }
 
 interface FollowingContentProps {
-  locale: string
   sellers: FollowedSeller[]
   total: number
   actions: FollowingContentServerActions
 }
 
 export function FollowingContent({
-  locale,
   sellers: initialSellers,
   total,
   actions,
 }: FollowingContentProps) {
+  const t = useTranslations("Account.followingPage")
   const [sellers, setSellers] = useState(initialSellers)
   const [isPending, startTransition] = useTransition()
   const [unfollowingId, setUnfollowingId] = useState<string | null>(null)       
@@ -70,9 +70,9 @@ export function FollowingContent({
 
       if (result.success) {
         setSellers(prev => prev.filter(s => s.seller_id !== sellerId))
-        toast.success(locale === "bg" ? "Спряхте да следвате магазина" : "Unfollowed store")
+        toast.success(t("toasts.unfollowed"))
       } else {
-        toast.error(result.error || (locale === "bg" ? "Грешка" : "Error"))
+        toast.error(result.error || t("toasts.error"))
       }
 
       setUnfollowingId(null)
@@ -85,16 +85,14 @@ export function FollowingContent({
         <CardContent className="flex flex-col items-center justify-center py-12">
           <Storefront className="size-16 text-muted-foreground mb-4" />
           <h2 className="text-lg font-semibold mb-2">
-            {locale === "bg" ? "Не следвате никой магазин" : "You're not following any stores"}
+            {t("empty.title")}
           </h2>
           <p className="text-sm text-muted-foreground text-center max-w-md mb-4">
-            {locale === "bg"
-              ? "Когато последвате магазин, ще виждате техните нови продукти и оферти тук"
-              : "When you follow a store, you'll see their new products and offers here"}
+            {t("empty.description")}
           </p>
           <Button asChild>
             <Link href="/">
-              {locale === "bg" ? "Разгледай магазини" : "Browse stores"}
+              {t("empty.cta")}
             </Link>
           </Button>
         </CardContent>
@@ -108,10 +106,10 @@ export function FollowingContent({
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-lg font-semibold">
-            {locale === "bg" ? "Следвани магазини" : "Following"}
+            {t("title")}
           </h2>
           <p className="text-sm text-muted-foreground">
-            {locale === "bg" ? `${total} магазина` : `${total} stores`}
+            {t("count", { count: total })}
           </p>
         </div>
       </div>
@@ -188,7 +186,7 @@ export function FollowingContent({
                   <Button asChild variant="outline" size="sm" className="flex-1">
                     <Link href={`/seller/${seller.store_slug || seller.id}`}>
                       <Storefront className="size-4 mr-1.5" />
-                      {locale === "bg" ? "Виж магазина" : "View Store"}
+                      {t("viewStore")}
                     </Link>
                   </Button>
                   <Button

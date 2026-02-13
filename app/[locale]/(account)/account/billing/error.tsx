@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect } from "react"
+import { useTranslations } from "next-intl"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { WarningCircle, ArrowClockwise } from "@phosphor-icons/react"
@@ -12,6 +13,8 @@ export default function BillingError({
   error: Error & { digest?: string }
   reset: () => void
 }) {
+  const t = useTranslations("Account.billingError")
+
   useEffect(() => {
     console.error('Billing page error:', error)
   }, [error])
@@ -25,14 +28,14 @@ export default function BillingError({
               <WarningCircle className="size-8 text-destructive" weight="duotone" />
             </div>
             <h2 className="text-lg font-semibold mb-2">
-              Something went wrong
+              {t("title")}
             </h2>
             <p className="text-muted-foreground text-sm max-w-md mb-4">
-              We couldn&apos;t load your billing information. Please try again.
+              {t("description")}
             </p>
             <Button onClick={reset} variant="outline" className="gap-1.5">
               <ArrowClockwise className="size-4" />
-              Try again
+              {t("retry")}
             </Button>
           </CardContent>
         </Card>

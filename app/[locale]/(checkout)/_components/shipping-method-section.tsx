@@ -60,7 +60,7 @@ export function ShippingMethodSection({
               key={opt.id}
               htmlFor={`shipping-${opt.id}`}
               className={cn(
-                "flex items-center gap-3 p-3 rounded-lg border-2 cursor-pointer transition-all",
+                "flex items-center gap-3 p-3 rounded-lg border-2 cursor-pointer transition-colors focus-within:outline-none focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-1 focus-within:ring-offset-background",
                 isSelected ? "border-selected-border bg-selected" : "border-border hover:border-hover-border"
               )}
             >

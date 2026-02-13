@@ -52,7 +52,7 @@ export function FiltersSidebar({
   return (
     <div className="rounded-lg border border-border bg-card shadow-sm">
       <div className="px-3 py-2.5 border-b border-border">
-        <h3 className="text-sm font-semibold text-foreground">
+        <h3 className="text-sm font-semibold tracking-tight text-foreground">
           {tFilters("filters")}
         </h3>
       </div>
@@ -93,7 +93,7 @@ export function FiltersSidebar({
                 type="button"
                 onClick={() => onFiltersChange({ ...filters, condition: filters.condition === c.id ? null : c.id })}
                 className={cn(
-                  "px-3 py-1.5 text-xs rounded-full transition-colors min-h-touch-sm",
+                  "px-3 py-1.5 text-xs rounded-full transition-colors min-h-touch-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
                   filters.condition === c.id
                     ? "bg-foreground text-background font-medium"
                     : "bg-muted text-muted-foreground hover:bg-hover hover:text-foreground"

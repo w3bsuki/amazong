@@ -96,13 +96,11 @@ export function DesktopFilterModal({
   // Get current filter values from URL
   const getCurrentAttrValues = (attr: CategoryAttribute): string[] => {
     const attrKey = getCategoryAttributeKey(attr)
-    return Array.from(
-      new Set([
-        ...searchParams.getAll(`attr_${attrKey}`),
-        // Backward-compat: old links used the raw name (e.g. attr_Brand).
-        ...searchParams.getAll(`attr_${attr.name}`),
-      ]),
-    )
+    return [...new Set([
+      ...searchParams.getAll(`attr_${attrKey}`),
+      // Backward-compat: old links used the raw name (e.g. attr_Brand).
+      ...searchParams.getAll(`attr_${attr.name}`),
+    ])]
   }
 
   // Initialize pending state when modal opens
@@ -163,7 +161,8 @@ export function DesktopFilterModal({
     if (pendingRating) params.set('minRating', pendingRating.toString())
     
     const query = params.toString()
-    router.push(`${basePath}${query ? `?${query}` : ''}`)
+    const route = query ? `${basePath}?${query}` : basePath
+    router.push(route)
     setIsOpen(false)
   }
 
@@ -252,7 +251,7 @@ export function DesktopFilterModal({
             <div className="grid grid-cols-2 gap-4">
               {/* Price Card - Compact */}
               <div className="p-4 rounded-md border border-border-subtle bg-secondary/20">
-                <h4 className="text-sm font-semibold flex items-center gap-2 mb-3">
+                <h4 className="text-sm font-semibold tracking-tight flex items-center gap-2 mb-3">
                   <Tag size={15} className="text-primary" weight="duotone" />
                   {t('price')}
                 </h4>
@@ -265,7 +264,7 @@ export function DesktopFilterModal({
                         type="button"
                         onClick={() => setPendingPrice(isActive ? { min: '', max: '' } : { min, max })}
                         className={cn(
-                          "px-2.5 py-1 rounded-full text-xs font-medium transition-all",
+                          "px-2.5 py-1 rounded-full text-xs font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
                           isActive 
                             ? "bg-primary text-primary-foreground" 
                             : "bg-background hover:bg-muted text-muted-foreground"
@@ -303,7 +302,7 @@ export function DesktopFilterModal({
 
               {/* Rating Card - Compact */}
               <div className="p-4 rounded-md border border-border-subtle bg-secondary/20">
-                <h4 className="text-sm font-semibold flex items-center gap-2 mb-3">
+                <h4 className="text-sm font-semibold tracking-tight flex items-center gap-2 mb-3">
                   <Star size={15} className="text-rating" weight="fill" />
                   {t('customerReviews')}
                 </h4>
@@ -316,7 +315,7 @@ export function DesktopFilterModal({
                         type="button"
                         onClick={() => setPendingRating(isActive ? null : stars)}
                         className={cn(
-                          "flex flex-col items-center gap-0.5 py-2 px-1 rounded-lg transition-all",
+                          "flex flex-col items-center gap-0.5 py-2 px-1 rounded-lg transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
                           isActive 
                             ? "bg-accent" 
                             : "bg-background hover:bg-muted text-muted-foreground"
@@ -355,7 +354,7 @@ export function DesktopFilterModal({
                   return (
                     <div key={attr.id} className="p-4 rounded-md border border-border-subtle bg-secondary/20">
                       <div className="flex items-center justify-between">
-                        <h5 className="text-sm font-semibold">{attrName}</h5>
+                        <h5 className="text-sm font-semibold tracking-tight">{attrName}</h5>
                         <Switch
                           checked={isChecked}
                           onCheckedChange={(c) => handleBooleanAttr(attrKey, c)}
@@ -373,7 +372,7 @@ export function DesktopFilterModal({
                   return (
                     <div key={attr.id} className="p-4 rounded-md border border-border-subtle bg-secondary/20 space-y-3">
                       <div className="flex items-center justify-between">
-                        <h5 className="text-sm font-semibold">{attrName}</h5>
+                        <h5 className="text-sm font-semibold tracking-tight">{attrName}</h5>
                         <span className="text-sm font-bold text-primary">{value}</span>
                       </div>
                       <Slider
@@ -401,7 +400,7 @@ export function DesktopFilterModal({
                   return (
                     <div key={attr.id} className="p-4 rounded-md border border-border-subtle bg-secondary/20 space-y-3">
                       <div className="flex items-center justify-between">
-                        <h5 className="text-sm font-semibold">{attrName}</h5>
+                        <h5 className="text-sm font-semibold tracking-tight">{attrName}</h5>
                         {selectedCount > 0 && (
                           <Badge className="h-5 min-w-5 px-1.5 text-xs bg-primary">{selectedCount}</Badge>
                         )}
@@ -432,7 +431,7 @@ export function DesktopFilterModal({
             onClick={clearAll}
             disabled={!hasPendingFilters}
             className={cn(
-              "text-sm font-medium transition-colors px-4 py-2 rounded-lg",
+              "text-sm font-medium transition-colors px-4 py-2 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
               hasPendingFilters 
                 ? "text-destructive hover:bg-destructive-subtle"
                 : "text-muted-foreground cursor-not-allowed opacity-50"
@@ -501,40 +500,57 @@ function FilterSearch({
       <div className="space-y-1 max-h-(--spacing-scroll-sm) overflow-y-auto">
         {visibleOptions.map((option) => {
           const isChecked = selectedValues.includes(option)
+          const optionRowClass = cn(
+            "flex items-center gap-2.5 py-2 px-2.5 rounded-lg cursor-pointer transition-colors",
+            "hover:bg-muted",
+            isChecked && "bg-selected hover:bg-hover"
+          )
+
+          if (isSingleSelect) {
+            return (
+              <button
+                key={option}
+                type="button"
+                onClick={() => onChange(isChecked ? [] : [option])}
+                aria-pressed={isChecked}
+                className={cn(
+                  optionRowClass,
+                  "w-full text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                )}
+              >
+                <span
+                  className={cn(
+                    "size-4 rounded-full border-2 flex items-center justify-center transition-colors",
+                    isChecked ? "border-primary bg-primary" : "border-border"
+                  )}
+                  aria-hidden="true"
+                >
+                  {isChecked && <span className="size-1.5 rounded-full bg-primary-foreground" />}
+                </span>
+                <span className="text-sm flex-1 truncate">{option}</span>
+                {isChecked && <Check size={14} className="text-primary shrink-0" aria-hidden="true" />}
+              </button>
+            )
+          }
+
           return (
             <label
               key={option}
-              className={cn(
-                "flex items-center gap-2.5 py-2 px-2.5 rounded-lg cursor-pointer transition-colors",
-                "hover:bg-muted",
-                isChecked && "bg-selected hover:bg-hover"
-              )}
+              className={optionRowClass}
             >
-              {isSingleSelect ? (
-                <div
-                  onClick={() => onChange(isChecked ? [] : [option])}
-                  className={cn(
-                    "size-4 rounded-full border-2 flex items-center justify-center cursor-pointer transition-colors",
-                    isChecked ? "border-primary bg-primary" : "border-border"
-                  )}
-                >
-                  {isChecked && <div className="size-1.5 rounded-full bg-primary-foreground" />}
-                </div>
-              ) : (
-                <Checkbox
-                  checked={isChecked}
-                  onCheckedChange={(checked) => {
-                    if (checked) {
-                      onChange([...selectedValues, option])
-                    } else {
-                      onChange(selectedValues.filter(v => v !== option))
-                    }
-                  }}
-                  className="size-4"
-                />
-              )}
+              <Checkbox
+                checked={isChecked}
+                onCheckedChange={(checked) => {
+                  if (checked) {
+                    onChange([...selectedValues, option])
+                  } else {
+                    onChange(selectedValues.filter(v => v !== option))
+                  }
+                }}
+                className="size-4"
+              />
               <span className="text-sm flex-1 truncate">{option}</span>
-              {isChecked && <Check size={14} className="text-primary shrink-0" />}
+              {isChecked && <Check size={14} className="text-primary shrink-0" aria-hidden="true" />}
             </label>
           )
         })}
@@ -546,7 +562,7 @@ function FilterSearch({
         <button
           type="button"
           onClick={() => setIsExpanded(!isExpanded)}
-          className="text-sm text-link hover:text-link-hover font-medium w-full text-center py-2 flex items-center justify-center gap-1.5 rounded-lg hover:bg-hover transition-colors"
+          className="text-sm text-link hover:text-link-hover font-medium w-full text-center py-2 flex items-center justify-center gap-1.5 rounded-lg hover:bg-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
         >
           {isExpanded ? t('showLess') : t('showAllCount', { count: filteredOptions.length })}
           <CaretDown size={14} className={cn("transition-transform", isExpanded && "rotate-180")} />

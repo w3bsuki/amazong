@@ -1,0 +1,21 @@
+# DEC-002: Category Navigation
+
+## Context
+
+Category UX determines discoverability and conversion. We need a hierarchy that works on mobile and desktop.
+
+## Decision
+
+- Use a **sell-tree** flow for listing (guided selection).
+- Use a browse tree for discovery with:
+  - top categories → subcategories → filters.
+
+## Consequences
+
+- Requires a stable category taxonomy and display order.
+- Needs good search fallback if users can’t find a category quickly.
+
+## Open questions
+
+- Do we allow multi-category listings (usually no; increases noise)?
+- How do we handle “Other” buckets without turning them into dumps?

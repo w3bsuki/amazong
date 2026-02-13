@@ -1,6 +1,5 @@
 "use client"
 
-import { Check } from "@phosphor-icons/react"
 import { cn } from "@/lib/utils"
 
 // =============================================================================
@@ -48,7 +47,7 @@ export function SizeTiles({
             className={cn(
               "flex items-center justify-center",
               "min-h-touch rounded-md border text-sm font-medium",
-              "transition-colors",
+              "transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring",
               isActive
                 ? "bg-primary text-primary-foreground border-primary"
                 : "bg-background text-foreground border-border active:bg-muted"

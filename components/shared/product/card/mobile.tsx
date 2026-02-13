@@ -226,6 +226,7 @@ export function MobileProductCard({
               {isVerifiedBusinessSeller && (
                 <span
                   className="absolute -bottom-0.5 -right-0.5 inline-flex size-3 items-center justify-center rounded-full border border-background bg-verified-business text-verified-business-foreground"
+                  role="img"
                   aria-label={t("b2b.verifiedShort")}
                 >
                   <Check className="size-2" aria-hidden="true" />
@@ -238,7 +239,7 @@ export function MobileProductCard({
 
         <h3
           className={cn(
-            "min-w-0 text-compact font-medium leading-tight tracking-tight text-foreground",
+            "min-w-0 text-compact font-semibold leading-tight tracking-tight text-foreground",
             titleLines === 1 ? "truncate" : "line-clamp-2 break-words"
           )}
         >

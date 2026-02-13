@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { useTranslations } from "next-intl"
 import { Link } from "@/i18n/routing"
 import Image from "next/image"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
@@ -139,6 +140,7 @@ export function BillingContent({
   userEmail,
   actions,
 }: BillingContentProps) {
+  const tBilling = useTranslations("Account.billingPage")
   const [invoices, setInvoices] = useState<Invoice[]>([])
   const [charges, setCharges] = useState<Charge[]>([])
   const [isLoading, setIsLoading] = useState(true)
@@ -149,60 +151,64 @@ export function BillingContent({
 
   // Translations
   const t = {
-    title: locale === 'bg' ? 'Фактуриране' : 'Billing',
-    subtitle: locale === 'bg'
-      ? 'Управлявайте абонамента си и преглеждайте историята на плащанията'
-      : 'Manage your subscription and view payment history',
-    currentPlan: locale === 'bg' ? 'Текущ план' : 'Current Plan',
-    freePlan: locale === 'bg' ? 'Безплатен план' : 'Free Plan',
-    basicPlan: locale === 'bg' ? 'Основен' : 'Basic',
-    premiumPlan: locale === 'bg' ? 'Премиум' : 'Premium',
-    businessPlan: locale === 'bg' ? 'Бизнес' : 'Business',
-    active: locale === 'bg' ? 'Активен' : 'Active',
-    cancelled: locale === 'bg' ? 'Отказан' : 'Cancelled',
-    expired: locale === 'bg' ? 'Изтекъл' : 'Expired',
-    pending: locale === 'bg' ? 'В изчакване' : 'Pending',
-    nextBilling: locale === 'bg' ? 'Следващо плащане' : 'Next billing',
-    billingPeriod: locale === 'bg' ? 'Период' : 'Period',
-    monthly: locale === 'bg' ? 'Месечно' : 'Monthly',
-    yearly: locale === 'bg' ? 'Годишно' : 'Yearly',
-    commission: locale === 'bg' ? 'Комисионна' : 'Commission',
-    managePlan: locale === 'bg' ? 'Управление на плана' : 'Manage Plan',
-    upgradePlan: locale === 'bg' ? 'Надгради плана' : 'Upgrade Plan',
-    viewPlans: locale === 'bg' ? 'Виж плановете' : 'View Plans',
-    paymentHistory: locale === 'bg' ? 'История на плащанията' : 'Payment History',
-    invoices: locale === 'bg' ? 'Фактури' : 'Invoices',
-    subscriptions: locale === 'bg' ? 'Абонаменти' : 'Subscriptions',
-    boostPurchases: locale === 'bg' ? 'Промотирания' : 'Boost Purchases',
-    date: locale === 'bg' ? 'Дата' : 'Date',
-    description: locale === 'bg' ? 'Описание' : 'Description',
-    amount: locale === 'bg' ? 'Сума' : 'Amount',
-    status: locale === 'bg' ? 'Статус' : 'Status',
-    actions: locale === 'bg' ? 'Действия' : 'Actions',
-    download: locale === 'bg' ? 'Изтегли' : 'Download',
-    view: locale === 'bg' ? 'Преглед' : 'View',
-    paid: locale === 'bg' ? 'Платено' : 'Paid',
-    open: locale === 'bg' ? 'Отворено' : 'Open',
-    void: locale === 'bg' ? 'Анулирано' : 'Void',
-    draft: locale === 'bg' ? 'Чернова' : 'Draft',
-    noInvoices: locale === 'bg' ? 'Няма фактури' : 'No invoices yet',
-    noBoosts: locale === 'bg' ? 'Няма промотирания' : 'No boosts yet',
-    boostProduct: locale === 'bg' ? 'Промотирай продукт' : 'Boost a Product',
-    loadingError: locale === 'bg' ? 'Грешка при зареждане' : 'Error loading data',
-    product: locale === 'bg' ? 'Продукт' : 'Product',
-    duration: locale === 'bg' ? 'Продължителност' : 'Duration',
-    days: locale === 'bg' ? 'дни' : 'days',
-    expiresIn: locale === 'bg' ? 'Изтича след' : 'Expires in',
-    expired2: locale === 'bg' ? 'Изтекъл' : 'Expired',
-    sellerSubscription: locale === 'bg' ? 'Абонамент за продавач' : 'Seller subscription',
-    listingBoost: locale === 'bg' ? 'Промотиране на обява' : 'Listing boost',
-    noBillingYet: locale === 'bg'
-      ? 'Все още нямате плащания. Когато направите покупка или абонамент, ще ги видите тук.'
-      : 'No billing history yet. When you make a purchase or subscription, it will appear here.',
-    startSelling: locale === 'bg' ? 'Започнете да продавате' : 'Start Selling',
-    becomeSeller: locale === 'bg'
-      ? 'Станете продавач, за да получите достъп до планове и промотиране'
-      : 'Become a seller to access plans and boosts',
+    title: tBilling("title"),
+    subtitle: tBilling("subtitle"),
+    currentPlan: tBilling("currentPlan"),
+    freePlan: tBilling("freePlan"),
+    basicPlan: tBilling("basicPlan"),
+    premiumPlan: tBilling("premiumPlan"),
+    businessPlan: tBilling("businessPlan"),
+    active: tBilling("active"),
+    cancelled: tBilling("cancelled"),
+    expired: tBilling("expired"),
+    pending: tBilling("pending"),
+    nextBilling: tBilling("nextBilling"),
+    billingPeriod: tBilling("billingPeriod"),
+    monthly: tBilling("monthly"),
+    yearly: tBilling("yearly"),
+    commission: tBilling("commission"),
+    managePlan: tBilling("managePlan"),
+    upgradePlan: tBilling("upgradePlan"),
+    viewPlans: tBilling("viewPlans"),
+    paymentHistory: tBilling("paymentHistory"),
+    invoices: tBilling("invoices"),
+    subscriptions: tBilling("subscriptions"),
+    boostPurchases: tBilling("boostPurchases"),
+    date: tBilling("date"),
+    description: tBilling("description"),
+    amount: tBilling("amount"),
+    status: tBilling("status"),
+    actions: tBilling("actions"),
+    download: tBilling("download"),
+    view: tBilling("view"),
+    paid: tBilling("paid"),
+    open: tBilling("open"),
+    void: tBilling("void"),
+    draft: tBilling("draft"),
+    noInvoices: tBilling("noInvoices"),
+    noBoosts: tBilling("noBoosts"),
+    boostProduct: tBilling("boostProduct"),
+    loadingError: tBilling("loadingError"),
+    product: tBilling("product"),
+    duration: tBilling("duration"),
+    days: tBilling("days"),
+    expiresIn: tBilling("expiresIn"),
+    expired2: tBilling("expired2"),
+    sellerSubscription: tBilling("sellerSubscription"),
+    listingBoost: tBilling("listingBoost"),
+    noBillingYet: tBilling("noBillingYet"),
+    startSelling: tBilling("startSelling"),
+    becomeSeller: tBilling("becomeSeller"),
+    paymentMethods: tBilling("paymentMethods"),
+    portalOpenError: tBilling("portalOpenError"),
+    paymentFallback: tBilling("paymentFallback"),
+    boostHint: tBilling("boostHint"),
+    paidPlanDescription: tBilling("paidPlanDescription"),
+    freePlanDescription: tBilling("freePlanDescription"),
+    noInvoicesDescription: tBilling("noInvoicesDescription"),
+    noBoostsDescription: tBilling("noBoostsDescription"),
+    activeBadge: tBilling("activeBadge"),
+    expiredBadge: tBilling("expiredBadge"),
   }
 
   // Fetch invoices from API
@@ -311,7 +317,7 @@ export function BillingContent({
       }
     } catch (error) {
       console.error('Portal error:', error)
-      toast.error(locale === 'bg' ? 'Грешка при отваряне на портала' : 'Error opening portal')
+      toast.error(t.portalOpenError)
     } finally {
       setIsPortalLoading(false)
     }
@@ -330,7 +336,7 @@ export function BillingContent({
             <Link href={withLocale("/account/payments")}>
               <Button variant="outline" size="sm" className="gap-1.5">
                 <CreditCard className="size-4" />
-                {locale === 'bg' ? 'Плащания' : 'Payment Methods'}
+                {t.paymentMethods}
               </Button>
             </Link>
             <Link href={withLocale("/account/plans")}>
@@ -441,9 +447,7 @@ export function BillingContent({
                 {/* Free Plan Notice */}
                 {!subscription && seller.tier === 'basic' && (
                   <p className="text-sm text-muted-foreground">
-                    {locale === 'bg'
-                      ? 'Надградете за по-ниски такси и повече функции'
-                      : 'Upgrade for lower fees and more features'}
+                    {t.freePlanDescription}
                   </p>
                 )}
               </div>
@@ -499,9 +503,7 @@ export function BillingContent({
               <CardHeader>
                 <CardTitle className="text-base">{t.paymentHistory}</CardTitle>
                 <CardDescription>
-                  {locale === 'bg'
-                    ? 'Всички плащания за абонаменти и услуги'
-                    : 'All payments for subscriptions and services'}
+                  {t.paidPlanDescription}
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -609,10 +611,10 @@ export function BillingContent({
                               <div className="flex items-center gap-2">
                                 <Lightning className="size-4 text-primary shrink-0" />
                                 <span className="truncate max-w-52">
-                                  {charge.description ||
-                                    charge.metadata?.type === 'listing_boost'
-                                    ? t.listingBoost
-                                    : locale === 'bg' ? 'Плащане' : 'Payment'}
+                                      {charge.description ||
+                                    (charge.metadata?.type === 'listing_boost'
+                                      ? t.listingBoost
+                                      : t.paymentFallback)}
                                 </span>
                               </div>
                             </TableCell>
@@ -656,9 +658,7 @@ export function BillingContent({
                 <div>
                   <CardTitle className="text-base">{t.boostPurchases}</CardTitle>
                   <CardDescription>
-                    {locale === 'bg'
-                      ? 'История на промотираните продукти'
-                      : 'Boosted products history'}
+                    {t.noBoostsDescription}
                   </CardDescription>
                 </div>
                 <Link href={withLocale("/account/selling")}>
@@ -674,9 +674,7 @@ export function BillingContent({
                     <Lightning className="size-12 text-muted-foreground mx-auto mb-3" />
                     <p className="text-muted-foreground">{t.noBoosts}</p>
                     <p className="text-sm text-muted-foreground mt-1">
-                      {locale === 'bg'
-                        ? 'Промотирайте продуктите си за повече видимост'
-                        : 'Boost your products for more visibility'}
+                      {t.boostHint}
                     </p>
                     <Link href={withLocale("/account/selling")} className="mt-4 inline-block">
                       <Button variant="outline" size="sm" className="gap-1.5">
@@ -733,7 +731,7 @@ export function BillingContent({
                                 {boost.is_active && !isExpired ? (
                                   <Badge className="bg-selected text-primary">
                                     <Lightning className="size-3 mr-1" weight="fill" />
-                                    {locale === 'bg' ? 'Активен' : 'Active'}
+                                    {t.activeBadge}
                                   </Badge>
                                 ) : (
                                   <Badge variant="secondary">
@@ -769,14 +767,10 @@ export function BillingContent({
             <Info className="size-5 text-muted-foreground mt-0.5 shrink-0" />
             <div className="text-sm text-muted-foreground grid gap-1">
               <p>
-                {locale === 'bg'
-                  ? 'Плащанията се обработват сигурно чрез Stripe. Фактурите се генерират автоматично след всяко плащане.'
-                  : 'Payments are processed securely through Stripe. Invoices are automatically generated after each payment.'}
+                {t.noInvoicesDescription}
               </p>
               <p>
-                {locale === 'bg'
-                  ? `Имейл за фактури: ${userEmail}`
-                  : `Billing email: ${userEmail}`}
+                {tBilling("billingEmail", { email: userEmail })}
               </p>
             </div>
           </CardContent>

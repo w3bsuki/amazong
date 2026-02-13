@@ -82,7 +82,7 @@ export function ComingSoonPage({
           </div>
 
           {/* Title & Description */}
-          <h1 className="text-3xl md:text-4xl font-bold mb-4">{title}</h1>
+          <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-4">{title}</h1>
           <p className="text-lg text-muted-foreground mb-4">{description}</p>
 
           {/* Timeline badge */}
@@ -142,7 +142,7 @@ export function ComingSoonPage({
           {/* Features list */}
           {features.length > 0 && (
             <div className="text-left">
-              <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-4">
+              <h2 className="text-sm font-semibold tracking-tight text-muted-foreground uppercase mb-4">
                 {labels.whatToExpect}
               </h2>
               <ul className="space-y-3">

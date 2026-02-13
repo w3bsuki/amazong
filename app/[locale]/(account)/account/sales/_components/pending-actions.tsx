@@ -1,22 +1,24 @@
+"use client"
+
 import { Link } from "@/i18n/routing"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { ChatCircle, Package, WarningCircle } from "@phosphor-icons/react/dist/ssr"
+import { ChatCircle, Package, WarningCircle } from "@phosphor-icons/react"
+import { useTranslations } from "next-intl"
 
 interface PendingActionsProps {
-  locale: string
   ordersToShipCount: number
   unreadMessagesCount: number
   lowStockCount: number
 }
 
 export function PendingActions({
-  locale,
   ordersToShipCount,
   unreadMessagesCount,
   lowStockCount,
 }: PendingActionsProps) {
+  const t = useTranslations("SellerManagement")
   const hasAny = ordersToShipCount > 0 || unreadMessagesCount > 0 || lowStockCount > 0
 
   return (
@@ -25,16 +27,14 @@ export function PendingActions({
         <div className="flex items-center justify-between gap-3">
           <div>
             <CardTitle className="text-lg">
-              {locale === "bg" ? "Нуждае се от внимание" : "Needs Attention"}
+              {t("sales.pendingActions.title")}
             </CardTitle>
             <p className="text-sm text-muted-foreground">
-              {locale === "bg"
-                ? "Бързи действия за магазина ви"
-                : "Quick actions for your store"}
+              {t("sales.pendingActions.description")}
             </p>
           </div>
           {!hasAny && (
-            <Badge variant="secondary">{locale === "bg" ? "Всичко е наред" : "All clear"}</Badge>
+            <Badge variant="secondary">{t("sales.pendingActions.allClear")}</Badge>
           )}
         </div>
       </CardHeader>
@@ -43,7 +43,7 @@ export function PendingActions({
           <div className="flex items-center gap-2">
             <Package className="size-4 text-muted-foreground" />
             <span className="text-sm">
-              {locale === "bg" ? "Поръчки за изпращане" : "Orders to ship"}
+              {t("sales.pendingActions.items.ordersToShip")}
             </span>
           </div>
           <div className="flex items-center gap-2">
@@ -52,7 +52,7 @@ export function PendingActions({
             </Badge>
             <Button asChild size="sm" variant="outline" disabled={ordersToShipCount === 0}>
               <Link href="/account/sales">
-                {locale === "bg" ? "Преглед" : "View"}
+                {t("sales.pendingActions.actions.view")}
               </Link>
             </Button>
           </div>
@@ -62,7 +62,7 @@ export function PendingActions({
           <div className="flex items-center gap-2">
             <ChatCircle className="size-4 text-muted-foreground" />
             <span className="text-sm">
-              {locale === "bg" ? "Непрочетени съобщения" : "Unread messages"}
+              {t("sales.pendingActions.items.unreadMessages")}
             </span>
           </div>
           <div className="flex items-center gap-2">
@@ -71,7 +71,7 @@ export function PendingActions({
             </Badge>
             <Button asChild size="sm" variant="outline" disabled={unreadMessagesCount === 0}>
               <Link href="/chat">
-                {locale === "bg" ? "Отвори" : "Open"}
+                {t("sales.pendingActions.actions.open")}
               </Link>
             </Button>
           </div>
@@ -81,7 +81,7 @@ export function PendingActions({
           <div className="flex items-center gap-2">
             <WarningCircle className="size-4 text-muted-foreground" />
             <span className="text-sm">
-              {locale === "bg" ? "Ниска наличност" : "Low stock"}
+              {t("sales.pendingActions.items.lowStock")}
             </span>
           </div>
           <div className="flex items-center gap-2">
@@ -90,7 +90,7 @@ export function PendingActions({
             </Badge>
             <Button asChild size="sm" variant="outline" disabled={lowStockCount === 0}>
               <Link href="/account/selling">
-                {locale === "bg" ? "Управление" : "Manage"}
+                {t("sales.pendingActions.actions.manage")}
               </Link>
             </Button>
           </div>

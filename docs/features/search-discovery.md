@@ -92,13 +92,12 @@ L0: Electronics, Fashion, Home & Garden, Sports, ...
 
 ### Special Patterns
 
-- **Product quick-view modal**: search results use `@modal` parallel route for in-place PDP preview
-- **Intercepting route**: `app/[locale]/(main)/search/@modal/(..)[username]/[productSlug]/page.tsx`
+- **Product quick-view overlay**: implemented via the global Drawer system (Dialog on desktop, Drawer on mobile) with data fetched from `GET /api/products/quick-view` (keeps browsing URL stable while enabling rich preview)
 - **Infinite scroll / pagination**: feed and search results use cursor-based pagination
 - **URL-as-state**: search filters, sort, and page are encoded in URL query params for shareability and back-button support
-- **Unified Home feed controls (mobile)**: home uses a compact discovery deck (`Промотирани/Всички`) with a horizontal quick-chip rail (`sort` + `nearby`) and an inline discovery `see all` action; location/category deep filtering stays on Search/Categories
+- **Unified Home discovery controls (mobile)**: home uses a top category circle rail, an optional promoted listings strip, and a single sticky discovery control bar (sort + nearby/city) that appears once the user reaches the browsing feed; deep filtering stays on Search/Categories
   - Source: `app/[locale]/(main)/_components/mobile-home.tsx`
-  - Data source: `/api/products/newest` (`type`, `sort`, optional `nearby/city`)
+  - Data source: `/api/products/newest` (`type=newest`, `sort`, pagination, optional `nearby/city`)
 
 ## Known Gaps & V1.1+ Items
 
@@ -112,12 +111,12 @@ L0: Electronics, Fashion, Home & Garden, Sports, ...
 
 ## Cross-References
 
-- [DATABASE.md](../DATABASE.md) — Products search_vector, categories hierarchy, category_attributes
-- [ROUTES.md](../ROUTES.md) — (main) route group, search and category routes
-- [API.md](../API.md) — Product search and category endpoints
+- [DATABASE.md](../domain/DATABASE.md) — Products search_vector, categories hierarchy, category_attributes
+- [ROUTES.md](../domain/ROUTES.md) — (main) route group, search and category routes
+- [API.md](../domain/API.md) — Product search and category endpoints
 - [app-feel.md](./app-feel.md) — Product card patterns, filter UX, modal routing
 - [monetization.md](./monetization.md) — Boost visibility in search results
 
 ---
 
-*Last updated: 2026-02-08*
+*Last updated: 2026-02-13*

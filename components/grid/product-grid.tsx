@@ -207,11 +207,11 @@ export function ProductGridSkeleton({
         {Array.from({ length: count }).map((_, i) =>
           viewMode === "list" ? (
             <div key={i} className="flex gap-2.5 rounded-xl border border-border bg-card p-2">
-              <div className="aspect-square w-24 shrink-0 animate-pulse rounded-xl bg-muted" />
+              <div className="aspect-square w-24 shrink-0 animate-pulse motion-reduce:animate-none rounded-xl bg-muted" />
               <div className="flex-1 space-y-2">
-                <div className="h-4 w-3/4 animate-pulse rounded-full bg-muted" />
-                <div className="h-4 w-1/2 animate-pulse rounded-full bg-muted" />
-                <div className="h-5 w-1/4 animate-pulse rounded-full bg-muted" />
+                <div className="h-4 w-3/4 animate-pulse motion-reduce:animate-none rounded-full bg-muted" />
+                <div className="h-4 w-1/2 animate-pulse motion-reduce:animate-none rounded-full bg-muted" />
+                <div className="h-5 w-1/4 animate-pulse motion-reduce:animate-none rounded-full bg-muted" />
               </div>
             </div>
           ) : (
@@ -219,8 +219,8 @@ export function ProductGridSkeleton({
               <div className="relative overflow-hidden rounded-xl bg-muted">
                 <AspectRatio ratio={ratio} />
               </div>
-              <div className="h-4 w-full animate-pulse rounded-full bg-muted" />
-              <div className="h-4 w-2/3 animate-pulse rounded-full bg-muted" />
+              <div className="h-4 w-full animate-pulse motion-reduce:animate-none rounded-full bg-muted" />
+              <div className="h-4 w-2/3 animate-pulse motion-reduce:animate-none rounded-full bg-muted" />
             </div>
           )
         )}

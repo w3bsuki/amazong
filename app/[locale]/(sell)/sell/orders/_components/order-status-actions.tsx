@@ -53,8 +53,6 @@ interface OrderStatusActionsProps {
 export function OrderStatusActions({
   orderItemId,
   currentStatus,
-  orderId: _orderId,
-  sellerId: _sellerId,
   isSeller = true,
   conversationId,
   actions,

@@ -337,7 +337,9 @@ export default function PlansPageClient(props: {
         <div className="mb-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
           <div className="flex items-center gap-3 rounded-full border bg-surface-subtle p-1">
             <button
+              type="button"
               onClick={() => setAccountType("personal")}
+              aria-pressed={accountType === "personal"}
               className={cn(
                 "rounded-full px-4 py-1.5 text-sm font-medium transition-colors",
                 accountType === "personal"
@@ -348,7 +350,9 @@ export default function PlansPageClient(props: {
               {t.personal}
             </button>
             <button
+              type="button"
               onClick={() => setAccountType("business")}
+              aria-pressed={accountType === "business"}
               className={cn(
                 "rounded-full px-4 py-1.5 text-sm font-medium transition-colors",
                 accountType === "business"

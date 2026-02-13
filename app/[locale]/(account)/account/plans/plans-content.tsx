@@ -435,6 +435,7 @@ export function PlansContent({
       <div className="flex items-center justify-center">
         <div className="inline-flex items-center gap-2 bg-muted rounded-lg p-1">
           <button
+            type="button"
             className={cn(
               "px-4 py-2 rounded-md text-sm font-medium transition-colors",
               billingPeriod === "monthly"
@@ -442,10 +443,12 @@ export function PlansContent({
                 : "text-muted-foreground hover:text-foreground"
             )}
             onClick={() => setBillingPeriod("monthly")}
+            aria-pressed={billingPeriod === "monthly"}
           >
             {locale === "bg" ? "Месечно" : "Monthly"}
           </button>
           <button
+            type="button"
             className={cn(
               "px-4 py-2 rounded-md text-sm font-medium transition-colors flex items-center gap-2",
               billingPeriod === "yearly"
@@ -453,6 +456,7 @@ export function PlansContent({
                 : "text-muted-foreground hover:text-foreground"
             )}
             onClick={() => setBillingPeriod("yearly")}
+            aria-pressed={billingPeriod === "yearly"}
           >
             {locale === "bg" ? "Годишно" : "Yearly"}
             <Badge variant="secondary" className="text-xs bg-selected text-primary">

@@ -646,28 +646,31 @@ await page.waitForSelector('[data-testid="mobile-tab-bar"]', { timeout: 10_000 }
 
 ---
 
-## Execution Evidence Log
+## Evidence Log (v2)
 
-> Required for release sign-off. Add one row per executed scenario.
+Fixed columns. Add one row per scenario run (or per sub-scenario if needed).
 
-| Scenario ID | Auto Result | Manual Result | Owner | Build/Commit | Screenshot/Video | Defect ID | Severity | Retest Result | Sign-off |
-|-------------|-------------|---------------|-------|--------------|------------------|-----------|----------|---------------|---------|
-| S1.1 | Pass | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace) | — | — | Pass | Pending |
-| S1.2 | Pass | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace) | — | — | Pass | Pending |
-| S1.3 | Pass | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace) | — | — | Pass | Pending |
-| S1.4 | Pass | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace) | — | — | Pass | Pending |
-| S1.5 | Pass | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace) | — | — | Pass | Pending |
-| S1.6 | Pass | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace) | — | — | Pass | Pending |
-| S1.7 | Pass | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace) | — | — | Pass | Pending |
-| S1.8 | Pass | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace) | — | — | Pass | Pending |
-| S1.9 | Pass | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace) | — | — | Pass | Pending |
-| S1.10 | Pass | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace) | — | — | Pass | Pending |
-| S1.11 | Pass | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace) | — | — | Pass | Pending |
-| S1.12 | Pass | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace) | — | — | Pass | Pending |
-| S1.13 | Pass | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace) | — | — | Pass | Pending |
-| S1.14 | Pass | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace) | — | — | Pass | Pending |
-| S1.15 | Pass | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace) | SAFE-001 | P3 | Pass | Pending |
-| S1.16 | Fail | N/A (code audit) | Codex | `2d8d4379 (dirty worktree)` | N/A (code trace) | HYDRA-002 | P1 | Fail | Pending |
+| Scenario | Method | Artifact | Result | Issue ID | Severity | Owner | Date |
+|----------|--------|----------|--------|----------|----------|-------|------|
+| S1.1 | code trace | N/A (code trace) | Pass | — | — | Codex | 2026-02-11 |
+| S1.2 | code trace | N/A (code trace) | Pass | — | — | Codex | 2026-02-11 |
+| S1.3 | code trace | N/A (code trace) | Pass | — | — | Codex | 2026-02-11 |
+| S1.4 | code trace | N/A (code trace) | Pass | — | — | Codex | 2026-02-11 |
+| S1.5 | code trace | N/A (code trace) | Pass | — | — | Codex | 2026-02-11 |
+| S1.6 | code trace | N/A (code trace) | Pass | — | — | Codex | 2026-02-11 |
+| S1.7 | code trace | N/A (code trace) | Pass | — | — | Codex | 2026-02-11 |
+| S1.8 | code trace | N/A (code trace) | Pass | — | — | Codex | 2026-02-11 |
+| S1.9 | code trace | N/A (code trace) | Pass | — | — | Codex | 2026-02-11 |
+| S1.10 | code trace | N/A (code trace) | Pass | — | — | Codex | 2026-02-11 |
+| S1.11 | code trace | N/A (code trace) | Pass | — | — | Codex | 2026-02-11 |
+| S1.12 | code trace | N/A (code trace) | Pass | — | — | Codex | 2026-02-11 |
+| S1.13 | code trace | N/A (code trace) | Pass | — | — | Codex | 2026-02-11 |
+| S1.14 | code trace | N/A (code trace) | Pass | — | — | Codex | 2026-02-11 |
+| S1.15 | code trace | N/A (code trace) | Pass | SAFE-001 | P3 | Codex | 2026-02-11 |
+| S1.16 | code trace | N/A (code trace) | Fail | HYDRA-002 | P1 | Codex | 2026-02-11 |
+
+Method suggestions: `runtime` | `code trace` | `manual` (keep it consistent within a phase).
+
 
 ---
 

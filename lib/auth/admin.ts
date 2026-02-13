@@ -82,6 +82,24 @@ export async function getAdminStats() {
 
   const adminClient = createAdminClient()
 
+  /**
+   * Deferred DB migration (not applied automatically from app code):
+   *
+   * create or replace function public.admin_paid_revenue_total()
+   * returns table(total_revenue numeric)
+   * language sql
+   * security definer
+   * set search_path = public
+   * as $$
+   *   select coalesce(sum(total_amount), 0)::numeric as total_revenue
+   *   from public.orders
+   *   where status = 'paid';
+   * $$;
+   *
+   * revoke all on function public.admin_paid_revenue_total() from public;
+   * grant execute on function public.admin_paid_revenue_total() to service_role;
+   */
+
   const toRecord = (value: unknown): Record<string, unknown> | null => {
     if (!value || typeof value !== "object") return null
     return value as Record<string, unknown>
@@ -136,17 +154,39 @@ export async function getAdminStats() {
       .order('created_at', { ascending: false })
       .limit(10),
   ])
-  
-  // Calculate revenue via SQL aggregate (avoid scanning all orders client-side)
-  const revenueResult = await adminClient
-    .from("orders")
-    .select("total_amount.sum()")
-    .eq("status", "paid")
-    .maybeSingle()
 
-  const revenueRecord = toRecord(revenueResult.data)
-  const totalRevenue =
-    asNumber(revenueRecord?.total_amount) ?? asNumber(revenueRecord?.sum) ?? 0
+  // Preferred path: RPC/view-backed aggregation (DB-side), with safe fallback.
+  let totalRevenue = 0
+  const revenueRpc = await adminClient
+    .rpc("admin_paid_revenue_total" as never)
+    .maybeSingle()
+  const rpcRecord = toRecord(revenueRpc.data)
+  totalRevenue = asNumber(rpcRecord?.total_revenue) ?? asNumber(rpcRecord?.sum) ?? 0
+
+  if (revenueRpc.error) {
+    const message = revenueRpc.error.message.toLowerCase()
+    const isMissingRpc =
+      revenueRpc.error.code === "42883" ||
+      message.includes("function") && message.includes("does not exist")
+
+    if (isMissingRpc) {
+      logger.warn(
+        "[Admin] Missing admin_paid_revenue_total RPC; falling back to inline aggregate"
+      )
+    } else {
+      logger.error("[Admin] Revenue RPC failed; falling back to inline aggregate", revenueRpc.error)
+    }
+
+    const fallbackRevenue = await adminClient
+      .from("orders")
+      .select("total_amount.sum()")
+      .eq("status", "paid")
+      .maybeSingle()
+
+    const fallbackRecord = toRecord(fallbackRevenue.data)
+    totalRevenue =
+      asNumber(fallbackRecord?.total_amount) ?? asNumber(fallbackRecord?.sum) ?? 0
+  }
 
   const recentUsersBase = recentUsersResult.data || []
   const recentUserIds = recentUsersBase.map((u) => u.id).filter(Boolean)

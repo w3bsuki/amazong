@@ -581,30 +581,33 @@
 
 ---
 
-## Execution Evidence Log
+## Evidence Log (v2)
 
-> Required for release sign-off. Add one row per executed scenario.
+Fixed columns. Add one row per scenario run (or per sub-scenario if needed).
 
-| Scenario ID | Auto Result | Manual Result | Owner | Build/Commit | Screenshot/Video | Defect ID | Severity | Retest Result | Sign-off |
-|-------------|-------------|---------------|-------|--------------|------------------|-----------|----------|---------------|---------|
-| S8.1 | N/A (code trace) | ✅ Pass | Codex | working-tree (2026-02-11) | `/sell` gate in `sell/client.tsx` | — | — | — | ✅ |
-| S8.2 | N/A (code trace) | ✅ Pass | Codex | working-tree (2026-02-11) | Step 1 render in `step-what.tsx` + `photos-field.tsx` | — | — | — | ✅ |
-| S8.3 | N/A (code trace) | ✅ Pass | Codex | working-tree (2026-02-11) | Upload flow in `photos-field.tsx` + `upload-zone.tsx` | — | — | — | ✅ |
-| S8.4 | N/A (code trace) | ✅ Pass | Codex | working-tree (2026-02-11) | Thumbnail/remove/cover in `photo-thumbnail.tsx` + review field | — | — | — | ✅ |
-| S8.5 | N/A (code trace) | ✅ Pass | Codex | working-tree (2026-02-11) | `handleNext` flow in `mobile-layout.tsx` | — | — | — | ✅ |
-| S8.6 | N/A (code trace) | ❌ Fail | Codex | working-tree (2026-02-11) | Category selector accepts non-leaf and auto-advances | SELL-001 | P0 | ❌ Fail | ✅ |
-| S8.7 | N/A (code trace) | ⚠ Partial | Codex | working-tree (2026-02-11) | Details step works, but category correction path is miswired from review | SELL-STEP-002 | P1 | ⚠ Partial | ✅ |
-| S8.8 | N/A (code trace) | ✅ Pass | Codex | working-tree (2026-02-11) | Pricing validation and controls in `step-pricing.tsx` | — | — | — | ✅ |
-| S8.9 | N/A (code trace) | ⚠ Partial | Codex | working-tree (2026-02-11) | Review renders/publish CTA exists; hardcoded text and edit mapping issues remain | SELL-002 | P1 | ⚠ Partial | ✅ |
-| S8.10 | N/A (code trace) | ✅ Pass | Codex | working-tree (2026-02-11) | Stepper header/progress in `stepper-wrapper.tsx` | — | — | — | ✅ |
-| S8.11 | N/A (code trace) | ✅ Pass | Codex | working-tree (2026-02-11) | Sticky footer CTA + safe-area classes in `stepper-wrapper.tsx` | — | — | — | ✅ |
-| S8.12 | N/A (code trace) | ✅ Pass | Codex | working-tree (2026-02-11) | Framer motion transitions in `stepper-wrapper.tsx` | — | — | — | ✅ |
-| S8.13 | N/A (code trace) | ❌ Fail | Codex | working-tree (2026-02-11) | Review edit mapping sends Category/Condition to Step 3 instead of Step 2 | SELL-STEP-002 | P1 | ❌ Fail | ✅ |
-| S8.14 | N/A (code trace) | ✅ Pass | Codex | working-tree (2026-02-11) | Draft save/restore in `sell-form-provider.tsx` (`sell-form-draft-v4`) | — | — | — | ✅ |
-| S8.15 | N/A (code trace) | ✅ Pass | Codex | working-tree (2026-02-11) | Draft clear on publish/new listing in `sell-form-unified.tsx` | — | — | — | ✅ |
-| S8.16 | N/A (code trace) | ❌ Fail | Codex | working-tree (2026-02-11) | Publish can fail on non-leaf category despite completed wizard state | SELL-001 | P0 | ❌ Fail | ✅ |
-| S8.17 | N/A (code trace) | ✅ Pass | Codex | working-tree (2026-02-11) | Stripe payout gating modal in `sell-form-unified.tsx` + `payout-required-modal.tsx` | — | — | — | ✅ |
-| S8.18 | N/A (code trace) | ✅ Pass | Codex | working-tree (2026-02-11) | `overflow-x-hidden` + constrained container in `stepper-wrapper.tsx` | — | — | — | ✅ |
+| Scenario | Method | Artifact | Result | Issue ID | Severity | Owner | Date |
+|----------|--------|----------|--------|----------|----------|-------|------|
+| S8.1 | code trace | `/sell` gate in `sell/client.tsx` | Pass | — | — | Codex | 2026-02-11 |
+| S8.2 | code trace | Step 1 render in `step-what.tsx` + `photos-field.tsx` | Pass | — | — | Codex | 2026-02-11 |
+| S8.3 | code trace | Upload flow in `photos-field.tsx` + `upload-zone.tsx` | Pass | — | — | Codex | 2026-02-11 |
+| S8.4 | code trace | Thumbnail/remove/cover in `photo-thumbnail.tsx` + review field | Pass | — | — | Codex | 2026-02-11 |
+| S8.5 | code trace | `handleNext` flow in `mobile-layout.tsx` | Pass | — | — | Codex | 2026-02-11 |
+| S8.6 | code trace | Category selector accepts non-leaf and auto-advances | Fail | SELL-001 | P0 | Codex | 2026-02-11 |
+| S8.7 | code trace | Details step works, but category correction path is miswired from review | Partial | SELL-STEP-002 | P1 | Codex | 2026-02-11 |
+| S8.8 | code trace | Pricing validation and controls in `step-pricing.tsx` | Pass | — | — | Codex | 2026-02-11 |
+| S8.9 | code trace | Review renders/publish CTA exists; hardcoded text and edit mapping issues remain | Partial | SELL-002 | P1 | Codex | 2026-02-11 |
+| S8.10 | code trace | Stepper header/progress in `stepper-wrapper.tsx` | Pass | — | — | Codex | 2026-02-11 |
+| S8.11 | code trace | Sticky footer CTA + safe-area classes in `stepper-wrapper.tsx` | Pass | — | — | Codex | 2026-02-11 |
+| S8.12 | code trace | Framer motion transitions in `stepper-wrapper.tsx` | Pass | — | — | Codex | 2026-02-11 |
+| S8.13 | code trace | Review edit mapping sends Category/Condition to Step 3 instead of Step 2 | Fail | SELL-STEP-002 | P1 | Codex | 2026-02-11 |
+| S8.14 | code trace | Draft save/restore in `sell-form-provider.tsx` (`sell-form-draft-v4`) | Pass | — | — | Codex | 2026-02-11 |
+| S8.15 | code trace | Draft clear on publish/new listing in `sell-form-unified.tsx` | Pass | — | — | Codex | 2026-02-11 |
+| S8.16 | code trace | Publish can fail on non-leaf category despite completed wizard state | Fail | SELL-001 | P0 | Codex | 2026-02-11 |
+| S8.17 | code trace | Stripe payout gating modal in `sell-form-unified.tsx` + `payout-required-modal.tsx` | Pass | — | — | Codex | 2026-02-11 |
+| S8.18 | code trace | `overflow-x-hidden` + constrained container in `stepper-wrapper.tsx` | Pass | — | — | Codex | 2026-02-11 |
+
+Method suggestions: `runtime` | `code trace` | `manual` (keep it consistent within a phase).
+
 
 ---
 

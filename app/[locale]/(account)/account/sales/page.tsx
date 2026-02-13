@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server"
 import { Link, redirect } from "@/i18n/routing"
+import { getTranslations } from "next-intl/server"
 import { AppBreadcrumb } from "../../../_components/navigation/app-breadcrumb"
 import { PageShell } from "../../../_components/page-shell"
 import { SalesChart } from "./_components/sales-chart"
@@ -32,6 +33,7 @@ interface SalesPageProps {
 export default async function SalesPage({ params, searchParams }: SalesPageProps) {
   const { locale } = await params
   const { period = "30d" } = await searchParams
+  const t = await getTranslations({ locale, namespace: "SellerManagement" })
   const supabase = await createClient()
 
   if (!supabase) {
@@ -149,7 +151,7 @@ export default async function SalesPage({ params, searchParams }: SalesPageProps
   const { data: productsData } = productIds.length > 0
     ? await supabase
       .from("products")
-      .select("id, title, images, price")
+      .select("id, title, images, price, slug")
       .in("id", productIds)
     : { data: [] }
 
@@ -182,6 +184,8 @@ export default async function SalesPage({ params, searchParams }: SalesPageProps
           title: product.title,
           images: product.images || [],
           price: product.price,
+          slug: product.slug ?? null,
+          username: profile.username ?? null,
         } : null,
          order: order ? {
            id: order.id,
@@ -270,8 +274,8 @@ export default async function SalesPage({ params, searchParams }: SalesPageProps
       <div className="container py-4 sm:py-6">
         {/* Breadcrumb */}
         <AppBreadcrumb items={[
-          { label: locale === 'bg' ? 'Акаунт' : 'Account', href: "/account" },
-          { label: locale === 'bg' ? 'Продажби' : 'Sales' }
+          { label: t("sales.breadcrumb.account"), href: "/account" },
+          { label: t("sales.breadcrumb.sales") }
         ]} />
 
         {/* Header */}
@@ -282,10 +286,10 @@ export default async function SalesPage({ params, searchParams }: SalesPageProps
             </div>
             <div>
               <h1 className="text-xl sm:text-2xl font-bold text-foreground">
-                {locale === 'bg' ? 'Продажби' : 'Sales Dashboard'}
+                {t("sales.header.title")}
               </h1>
               <p className="text-sm text-muted-foreground mt-0.5">
-                {locale === 'bg' ? 'Преглед на приходите и продажбите' : 'Track your revenue and orders'}
+                {t("sales.header.description")}
               </p>
             </div>
           </div>
@@ -293,20 +297,19 @@ export default async function SalesPage({ params, searchParams }: SalesPageProps
             <Button asChild variant="outline">
               <Link href="/account/selling">
                 <Storefront className="size-4 mr-2" />
-                {locale === 'bg' ? 'Моят магазин' : 'My Store'}
+                {t("sales.actions.myStore")}
               </Link>
             </Button>
             <Button asChild>
               <Link href="/sell">
                 <Plus weight="bold" className="size-4 mr-2" />
-                {locale === 'bg' ? 'Нова обява' : 'New Listing'}
+                {t("sales.actions.newListing")}
               </Link>
             </Button>
           </div>
         </div>
 
         <PendingActions
-          locale={locale}
           ordersToShipCount={ordersToShipCount ?? 0}
           unreadMessagesCount={unreadMessagesCount ?? 0}
           lowStockCount={lowStockCount ?? 0}
@@ -332,10 +335,10 @@ export default async function SalesPage({ params, searchParams }: SalesPageProps
           <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
               <CardTitle className="text-lg">
-                {locale === 'bg' ? 'Приходи във времето' : 'Revenue Over Time'}
+                {t("sales.sections.revenueOverTime.title")}
               </CardTitle>
               <CardDescription>
-                {locale === 'bg' ? 'Дневни приходи за избрания период' : 'Daily revenue for the selected period'}
+                {t("sales.sections.revenueOverTime.description")}
               </CardDescription>
             </div>
             <div className="flex items-center gap-2">
@@ -384,17 +387,13 @@ export default async function SalesPage({ params, searchParams }: SalesPageProps
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
               <div>
                 <CardTitle className="text-lg">
-                  {locale === 'bg' ? 'Последни продажби' : 'Recent Sales'}
+                  {t("sales.sections.recentSales.title")}
                 </CardTitle>
                 <CardDescription>
-                  {locale === 'bg'
-                    ? `${totalSales} продажби за последните ${period === '7d' ? '7 дни' : period === '30d' ? '30 дни' : period === '90d' ? '90 дни' : 'година'}`
-                    : `${totalSales} sales in the last ${period === '7d' ? '7 days' : period === '30d' ? '30 days' : period === '90d' ? '90 days' : 'year'}`
-                  }
+                  {t("sales.sections.recentSales.description", { count: totalSales, period })}
                 </CardDescription>
               </div>
               <ExportSales
-                locale={locale}
                 defaultFrom={startDate.toISOString().slice(0, 10)}
                 defaultTo={now.toISOString().slice(0, 10)}
               />
@@ -414,17 +413,15 @@ export default async function SalesPage({ params, searchParams }: SalesPageProps
                   <CurrencyCircleDollar weight="duotone" className="size-10 text-muted-foreground" />
                 </div>
                 <h3 className="text-lg font-semibold text-foreground mb-2">
-                  {locale === 'bg' ? 'Нямате продажби все още' : 'No sales yet'}
+                  {t("sales.empty.title")}
                 </h3>
                 <p className="text-muted-foreground mb-6 max-w-sm mx-auto">
-                  {locale === 'bg'
-                    ? 'Когато продадете продукт, вашите продажби ще се показват тук'
-                    : 'When you sell a product, your sales will appear here'}
+                  {t("sales.empty.description")}
                 </p>
                 <Button asChild>
                   <Link href="/sell">
                     <Plus weight="bold" className="size-4 mr-2" />
-                    {locale === 'bg' ? 'Създай обява' : 'Create Listing'}
+                    {t("sales.empty.cta")}
                   </Link>
                 </Button>
               </div>

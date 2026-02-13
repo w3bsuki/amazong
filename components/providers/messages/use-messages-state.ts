@@ -1,13 +1,12 @@
 "use client"
 
-import { useState, useCallback, useEffect } from "react"
+import { useState, useCallback, useEffect, type Dispatch, type SetStateAction } from "react"
 import { createClient } from "@/lib/supabase/client"
 import type { Conversation, Message } from "@/lib/types/messages"
 import {
   fetchConversations,
   fetchConversation,
   fetchMessages,
-  fetchSenderProfile,
   fetchTotalUnreadCount,
 } from "@/lib/supabase/messages"
 
@@ -25,10 +24,10 @@ export interface MessagesState {
 
 export interface MessagesStateActions {
   setCurrentUserId: (id: string | null) => void
-  setConversations: React.Dispatch<React.SetStateAction<Conversation[]>>
-  setCurrentConversation: React.Dispatch<React.SetStateAction<Conversation | null>>
-  setMessages: React.Dispatch<React.SetStateAction<Message[]>>
-  setTotalUnreadCount: React.Dispatch<React.SetStateAction<number>>
+  setConversations: Dispatch<SetStateAction<Conversation[]>>
+  setCurrentConversation: Dispatch<SetStateAction<Conversation | null>>
+  setMessages: Dispatch<SetStateAction<Message[]>>
+  setTotalUnreadCount: Dispatch<SetStateAction<number>>
   setIsLoading: (loading: boolean) => void
   setIsLoadingMessages: (loading: boolean) => void
   setError: (error: string | null) => void

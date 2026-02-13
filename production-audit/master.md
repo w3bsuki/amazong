@@ -513,7 +513,8 @@ Applied during **every phase** for every route tested.
 
 ## 10. Phase Document Template
 
-Each phase `.md` file follows this structure:
+Use `production-audit/TEMPLATE.md` for new phases and refreshes.  
+As of 2026-02-13, phases `01..18` are aligned to the `Evidence Log (v2)` format.
 
 ```markdown
 # Phase N: [Phase Name]
@@ -572,13 +573,13 @@ Each phase `.md` file follows this structure:
 
 ---
 
-## Execution Evidence Log
+## Evidence Log (v2)
 
 > Required: one row per scenario execution. This table is the release sign-off contract.
 
-| Scenario ID | Auto Result | Manual Result | Owner | Build/Commit | Screenshot/Video | Defect ID | Severity | Retest Result | Sign-off |
-|-------------|-------------|---------------|-------|--------------|------------------|-----------|----------|---------------|---------|
-| S{N}.{M} | Pass/Fail/Blocked/N/A | Pass/Fail/Blocked/N/A | ... | ... | ... | ... | P0/P1/P2/P3 | Pass/Fail/Blocked/N/A | ... |
+| Scenario | Method | Artifact | Result | Issue ID | Severity | Owner | Date |
+|----------|--------|----------|--------|----------|----------|-------|------|
+| S{N}.{M} | runtime/code trace/manual | `artifact` | Pass/Fail/Blocked | ISSUE-1234 | P0/P1/P2/P3 | ... | YYYY-MM-DD |
 
 ---
 

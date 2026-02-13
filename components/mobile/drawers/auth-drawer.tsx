@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useEffect, useMemo, useState } from "react"
+import { useCallback, useEffect, useMemo, useRef, useState, type KeyboardEvent } from "react"
 import { CheckCircle, X } from "@phosphor-icons/react"
 import { useRouter } from "next/navigation"
 import { useLocale, useTranslations } from "next-intl"
@@ -44,6 +44,8 @@ export function AuthDrawer({ open, mode, onOpenChange, onModeChange }: AuthDrawe
   const { openAccount } = useDrawer()
 
   const [didSignUpSucceed, setDidSignUpSucceed] = useState(false)
+  const loginTabRef = useRef<HTMLButtonElement | null>(null)
+  const signUpTabRef = useRef<HTMLButtonElement | null>(null)
 
   const boundLoginAction = useMemo(() => loginInPlace.bind(null, locale), [locale])
   const boundSignUpAction = useMemo(() => signUpInPlace.bind(null, locale), [locale])
@@ -82,6 +84,36 @@ export function AuthDrawer({ open, mode, onOpenChange, onModeChange }: AuthDrawe
   }, [])
 
   const isLoginMode = mode === "login"
+  const focusModeTab = useCallback((targetMode: AuthDrawerMode) => {
+    if (targetMode === "signup") {
+      signUpTabRef.current?.focus()
+      return
+    }
+    loginTabRef.current?.focus()
+  }, [])
+
+  const handleTabKeyDown = useCallback(
+    (event: KeyboardEvent<HTMLButtonElement>) => {
+      let nextMode: AuthDrawerMode | null = null
+
+      if (event.key === "ArrowRight") {
+        nextMode = isLoginMode ? "signup" : "login"
+      } else if (event.key === "ArrowLeft") {
+        nextMode = isLoginMode ? "signup" : "login"
+      } else if (event.key === "Home") {
+        nextMode = "login"
+      } else if (event.key === "End") {
+        nextMode = "signup"
+      }
+
+      if (!nextMode) return
+
+      event.preventDefault()
+      handleSwitchMode(nextMode)
+      focusModeTab(nextMode)
+    },
+    [focusModeTab, handleSwitchMode, isLoginMode]
+  )
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
@@ -93,8 +125,8 @@ export function AuthDrawer({ open, mode, onOpenChange, onModeChange }: AuthDrawe
               <IconButton
                 aria-label={tDrawers("close")}
                 variant="ghost"
-                size="icon-compact"
-                className="text-muted-foreground hover:bg-hover hover:text-foreground active:bg-active focus-visible:ring-2 focus-visible:ring-focus-ring"
+                size="icon-default"
+                className="text-muted-foreground hover:bg-hover hover:text-foreground active:bg-active focus-visible:ring-2 focus-visible:ring-focus-ring motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth)"
               >
                 <X size={16} weight="bold" />
               </IconButton>
@@ -109,6 +141,7 @@ export function AuthDrawer({ open, mode, onOpenChange, onModeChange }: AuthDrawe
               aria-label={tDrawer("tabsLabel")}
             >
               <button
+                ref={loginTabRef}
                 id="auth-drawer-tab-login"
                 type="button"
                 role="tab"
@@ -116,17 +149,19 @@ export function AuthDrawer({ open, mode, onOpenChange, onModeChange }: AuthDrawe
                 aria-controls="auth-drawer-panel-login"
                 tabIndex={isLoginMode ? 0 : -1}
                 className={cn(
-                  "min-h-(--spacing-touch-md) rounded-lg px-3 text-sm font-medium transition-colors",
+                  "min-h-(--spacing-touch-md) rounded-lg px-3 text-sm font-medium tap-transparent active:bg-active motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth)",
                   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring",
                   isLoginMode
                     ? "bg-background text-foreground shadow-2xs"
                     : "text-muted-foreground hover:bg-hover hover:text-foreground"
                 )}
+                onKeyDown={handleTabKeyDown}
                 onClick={() => handleSwitchMode("login")}
               >
                 {tAuth("signIn")}
               </button>
               <button
+                ref={signUpTabRef}
                 id="auth-drawer-tab-signup"
                 type="button"
                 role="tab"
@@ -134,12 +169,13 @@ export function AuthDrawer({ open, mode, onOpenChange, onModeChange }: AuthDrawe
                 aria-controls="auth-drawer-panel-signup"
                 tabIndex={!isLoginMode ? 0 : -1}
                 className={cn(
-                  "min-h-(--spacing-touch-md) rounded-lg px-3 text-sm font-medium transition-colors",
+                  "min-h-(--spacing-touch-md) rounded-lg px-3 text-sm font-medium tap-transparent active:bg-active motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth)",
                   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring",
                   !isLoginMode
                     ? "bg-background text-foreground shadow-2xs"
                     : "text-muted-foreground hover:bg-hover hover:text-foreground"
                 )}
+                onKeyDown={handleTabKeyDown}
                 onClick={() => handleSwitchMode("signup")}
               >
                 {tAuth("signUp")}
@@ -175,7 +211,7 @@ export function AuthDrawer({ open, mode, onOpenChange, onModeChange }: AuthDrawe
               <div className="mt-2 flex w-full max-w-xs flex-col gap-2">
                 <Button
                   type="button"
-                  size="default"
+                  size="primary"
                   className="w-full"
                   onClick={() => handleSwitchMode("login")}
                 >

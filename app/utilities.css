@@ -255,6 +255,18 @@
   -webkit-tap-highlight-color: transparent;
 }
 
+@utility touch-pan-x {
+  touch-action: pan-x;
+}
+
+@utility touch-pan-y {
+  touch-action: pan-y;
+}
+
+@utility touch-manipulation {
+  touch-action: manipulation;
+}
+
 @utility control-compact {
   min-height: var(--control-compact);
   min-width: var(--control-compact);

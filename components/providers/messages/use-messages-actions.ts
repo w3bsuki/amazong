@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback } from "react"
+import { useCallback, type Dispatch, type SetStateAction } from "react"
 import { createClient } from "@/lib/supabase/client"
 import type { Conversation, Message } from "@/lib/types/messages"
 import {
@@ -21,9 +21,9 @@ interface UseMessagesActionsParams {
   currentUserId: string | null
   currentConversation: Conversation | null
   // State updaters
-  setMessages: React.Dispatch<React.SetStateAction<Message[]>>
-  setConversations: React.Dispatch<React.SetStateAction<Conversation[]>>
-  setCurrentConversation: React.Dispatch<React.SetStateAction<Conversation | null>>
+  setMessages: Dispatch<SetStateAction<Message[]>>
+  setConversations: Dispatch<SetStateAction<Conversation[]>>
+  setCurrentConversation: Dispatch<SetStateAction<Conversation | null>>
   setError: (error: string | null) => void
   // Callbacks
   refreshUnreadCount: () => Promise<void>
@@ -77,6 +77,7 @@ export function useMessagesActions({
   const sendMessage = useCallback(
     async (content: string, _attachmentUrl?: string) => {
       if (!currentConversation || !currentUserId || !content.trim()) return
+      void _attachmentUrl
 
       try {
         const newMsgRow = await sendMessageToConversation(
