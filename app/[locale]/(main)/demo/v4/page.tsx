@@ -11,8 +11,21 @@ import {
 
 import { DemoV4Home } from "./demo-v4-home"
 
-const CATEGORY_POOL_LIMIT = 24
-const FEATURED_CATEGORY_LIMIT = 8
+const CATEGORY_POOL_LIMIT = 16
+const FEATURED_CATEGORY_LIMIT = 6
+const DEMO_FETCH_TIMEOUT_MS = 4500
+
+async function withDemoTimeout<T>(promise: Promise<T>, fallback: T): Promise<T> {
+  try {
+    const result = await Promise.race([
+      promise,
+      new Promise<T>((resolve) => setTimeout(() => resolve(fallback), DEMO_FETCH_TIMEOUT_MS)),
+    ])
+    return result
+  } catch {
+    return fallback
+  }
+}
 
 /**
  * Demo V4 — Refined mobile homepage IA.
@@ -31,22 +44,21 @@ export default async function DemoV4Page({
   setRequestLocale(locale)
 
   const [categories, newestRows, boostedRows, dealsRows] = await Promise.all([
-    getCategoryHierarchy(null, 2),
-    getNewestProducts(40),
-    getBoostedProducts(28),
-    getDealsProducts(24),
+    withDemoTimeout(getCategoryHierarchy(null, 1), []),
+    withDemoTimeout(getNewestProducts(28), []),
+    withDemoTimeout(getBoostedProducts(20), []),
+    withDemoTimeout(getDealsProducts(CATEGORY_POOL_LIMIT), []),
   ])
 
   const featuredCategories = categories.slice(0, FEATURED_CATEGORY_LIMIT)
 
   const categoryRows = await Promise.all(
     featuredCategories.map(async (category) => {
-      try {
-        const rows = await getCategoryRowProducts(category.slug, CATEGORY_POOL_LIMIT)
-        return { slug: category.slug, rows }
-      } catch {
-        return { slug: category.slug, rows: [] }
-      }
+      const rows = await withDemoTimeout(
+        getCategoryRowProducts(category.slug, CATEGORY_POOL_LIMIT),
+        []
+      )
+      return { slug: category.slug, rows }
     })
   )
 
