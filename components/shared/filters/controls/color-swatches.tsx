@@ -1,6 +1,6 @@
 "use client"
 
-import { Check } from "@phosphor-icons/react"
+import { Check } from "@/lib/icons/phosphor"
 import { cn } from "@/lib/utils"
 
 // =============================================================================

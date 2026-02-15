@@ -1,7 +1,7 @@
 "use client"
 
 import { useTranslations } from "next-intl"
-import { MapPin, House, Briefcase, Star } from "@phosphor-icons/react"
+import { MapPin, House, Briefcase, Star } from "@/lib/icons/phosphor"
 
 import { Badge } from "@/components/ui/badge"
 import {

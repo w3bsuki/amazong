@@ -1,6 +1,6 @@
 "use client"
 
-import { CaretDown, ArrowsDownUp } from "@phosphor-icons/react"
+import { CaretDown, ArrowsDownUp } from "@/lib/icons/phosphor"
 import { useTranslations } from "next-intl"
 import { useSearchParams } from "next/navigation"
 import { usePathname, useRouter } from "@/i18n/routing"

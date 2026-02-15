@@ -3,7 +3,7 @@ import {
   IconAlertTriangle,
   IconStar,
   IconShoppingCart,
-} from "@tabler/icons-react"
+} from "@/lib/icons/tabler"
 import { cn } from "@/lib/utils"
 
 interface TasksCount {

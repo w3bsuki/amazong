@@ -3,7 +3,7 @@
 import { useEffect, useState, useTransition } from "react"
 import { useRouter } from "next/navigation"
 import { useLocale, useTranslations } from "next-intl"
-import { ArrowRight, Camera, SpinnerGap, Check, X, Globe, MapPin } from "@phosphor-icons/react"
+import { ArrowRight, Camera, SpinnerGap, Check, X, Globe, MapPin } from "@/lib/icons/phosphor"
 import Image from "next/image"
 import Avatar from "boring-avatars"
 

@@ -4,7 +4,7 @@ import {
   FileText, ShoppingBag, CreditCard, Truck, Scales,
   Warning, Users, Prohibit, ArrowCounterClockwise, Shield, 
   Gavel, CheckCircle
-} from "@phosphor-icons/react/dist/ssr"
+} from "@/lib/icons/phosphor"
 import type { Metadata } from 'next'
 import { validateLocale } from "@/i18n/routing"
 import { extractLastUpdatedDate, getPublicDoc, parsePublicDocIntro, parsePublicDocSections } from "@/lib/public-docs"

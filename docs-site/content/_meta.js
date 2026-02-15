@@ -2,7 +2,6 @@ export default {
   "index": "Overview",
   "api": "Api",
   "auth": "Auth",
-  "business": "Business",
   "database": "Database",
   "design": "Design",
   "engineering": "Engineering",

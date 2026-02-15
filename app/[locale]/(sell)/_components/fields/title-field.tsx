@@ -1,7 +1,7 @@
 "use client";
 
 import { Controller } from "react-hook-form";
-import { TextAa } from "@phosphor-icons/react";
+import { TextAa } from "@/lib/icons/phosphor";
 import { Input } from "@/components/ui/input";
 import { Field, FieldLabel, FieldDescription, FieldError, FieldContent } from "@/components/shared/field";
 import { cn } from "@/lib/utils";

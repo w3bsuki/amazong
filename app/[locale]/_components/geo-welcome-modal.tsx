@@ -13,7 +13,7 @@ import {
 import { useGeoWelcome } from '@/hooks/use-geo-welcome';
 import { getCountryName } from '@/lib/geolocation';
 import type { ShippingRegion } from '@/lib/shipping';
-import { Globe, X } from '@phosphor-icons/react';
+import { Globe, X } from '@/lib/icons/phosphor';
 
 // Region flag emojis
 const REGION_FLAGS: Record<ShippingRegion, string> = {

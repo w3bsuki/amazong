@@ -11,7 +11,7 @@ import {
   SpinnerGap,
   CloudArrowUp,
   Lightning,
-} from "@phosphor-icons/react";
+} from "@/lib/icons/phosphor";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/client";
 import { Link, validateLocale } from "@/i18n/routing";
@@ -97,7 +97,7 @@ export function UnifiedSellForm({
       categories={categories}
       sellerId={sellerId}
       {...(existingProduct ? { existingProduct } : {})}
-      totalSteps={4}
+      totalSteps={5}
     >
       <SellFormContent 
         sellerId={sellerId} 

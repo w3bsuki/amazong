@@ -7,6 +7,7 @@ import { safeAvatarSrc } from "@/lib/utils"
 import { PublicProfileClient } from "./profile-client"
 import { routing } from "@/i18n/routing"
 import { followSeller, unfollowSeller } from "../../actions/seller-follows"
+import { renderDemoLanding } from "../(main)/demo/page"
 
 // =============================================================================
 // SEO-OPTIMIZED PROFILE PAGE - HYBRID CACHING
@@ -72,6 +73,14 @@ interface ProfilePageProps {
 export async function generateMetadata({ params }: ProfilePageProps): Promise<Metadata> {
   const { username, locale } = await params
   setRequestLocale(locale)
+  const normalizedUsername = username.trim().toLowerCase()
+
+  if (normalizedUsername === "demo") {
+    return {
+      title: "Demo Landing",
+      description: "Treido mobile landing demo page",
+    }
+  }
 
   const data = await getProfileMetadata(username)
 
@@ -138,6 +147,13 @@ export default async function PublicProfilePage({ params }: ProfilePageProps) {
   // NO connection() - uses cached getPublicProfileData function
   const { username, locale } = await params
   setRequestLocale(locale)
+  const normalizedUsername = username.trim().toLowerCase()
+
+  // Hotfix: route resolution can map `/[locale]/demo` into this dynamic profile segment.
+  // Serve the canonical demo landing page instead of falling through to profile not-found.
+  if (normalizedUsername === "demo") {
+    return renderDemoLanding(locale)
+  }
 
   // Handle fallback from generateStaticParams (when Supabase unavailable at build)
   if (username === '__fallback__') {

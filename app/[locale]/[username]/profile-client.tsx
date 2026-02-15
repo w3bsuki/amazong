@@ -32,7 +32,7 @@ import {
   Gear,
   ChatCircle,
   Users,
-} from "@phosphor-icons/react"
+} from "@/lib/icons/phosphor"
 import { MobileProductCard } from "@/components/shared/product/card/mobile"
 import { FollowSellerButton, type FollowSellerActions } from "./_components/follow-seller-button"
 import { SellerVerificationBadge } from "./_components/seller-verification-badge"

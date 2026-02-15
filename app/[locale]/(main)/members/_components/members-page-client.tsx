@@ -16,7 +16,7 @@ import {
   Star,
   Storefront,
   Users,
-} from "@phosphor-icons/react"
+} from "@/lib/icons/phosphor"
 
 import { AppBreadcrumb } from "../../../_components/navigation/app-breadcrumb"
 import { Badge } from "@/components/ui/badge"

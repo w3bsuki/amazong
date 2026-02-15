@@ -37,7 +37,7 @@ import {
   Globe,
   UserCircle,
   GearSix,
-} from "@phosphor-icons/react"
+} from "@/lib/icons/phosphor"
 import { toast } from "sonner"
 import { validatePassword, validateEmail } from "@/lib/validation/auth"
 import { PublicProfileEditor, type PublicProfileEditorServerActions } from "./public-profile-editor"

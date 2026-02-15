@@ -3,7 +3,7 @@
 import { Component, type ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { WarningCircle, ArrowCounterClockwise, FloppyDisk, House } from "@phosphor-icons/react";
+import { WarningCircle, ArrowCounterClockwise, FloppyDisk, House } from "@/lib/icons/phosphor";
 import { Link } from "@/i18n/routing";
 
 interface SellErrorBoundaryProps {

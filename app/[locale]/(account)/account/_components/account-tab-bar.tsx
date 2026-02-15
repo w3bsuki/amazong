@@ -15,7 +15,7 @@ import {
   IconHeart,
   IconChartLine,
   IconMessage,
-} from "@tabler/icons-react"
+} from "@/lib/icons/tabler"
 import { Link, usePathname } from "@/i18n/routing"
 import { cn } from "@/lib/utils"
 import { useTranslations } from "next-intl"

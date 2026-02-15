@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { useTranslations } from "next-intl"
-import { MapPin, House, Briefcase, Star, Plus, Pencil, Trash, Phone, X } from "@phosphor-icons/react"
+import { MapPin, House, Briefcase, Star, Plus, Pencil, Trash, Phone, X } from "@/lib/icons/phosphor"
 
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"

@@ -8,7 +8,7 @@ import {
   User, 
   ArrowRight,
   SealCheck,
-} from "@phosphor-icons/react"
+} from "@/lib/icons/phosphor"
 import { useLocale } from "next-intl"
 import {
   Dialog,

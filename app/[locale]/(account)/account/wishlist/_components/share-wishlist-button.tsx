@@ -15,7 +15,7 @@ import { Label } from "@/components/ui/label"
 import { createClient } from "@/lib/supabase/client"
 import { toast } from "sonner"
 import { useTranslations } from "next-intl"
-import { Copy, Link as LinkIcon, SpinnerGap, XCircle } from "@phosphor-icons/react"
+import { Copy, Link as LinkIcon, SpinnerGap, XCircle } from "@/lib/icons/phosphor"
 
 interface ShareWishlistButtonProps {
   locale: string

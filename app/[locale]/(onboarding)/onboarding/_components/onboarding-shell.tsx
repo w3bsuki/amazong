@@ -1,7 +1,7 @@
 "use client"
 
 import type { ReactNode } from "react"
-import { ArrowLeft } from "@phosphor-icons/react"
+import { ArrowLeft } from "@/lib/icons/phosphor"
 
 import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"

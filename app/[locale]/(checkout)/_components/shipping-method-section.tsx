@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { Airplane, Lightning, Truck } from "@phosphor-icons/react";
+import { Airplane, Lightning, Truck } from "@/lib/icons/phosphor";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { cn } from "@/lib/utils";
 import { SHIPPING_COSTS, type ShippingMethod } from "./checkout-types";

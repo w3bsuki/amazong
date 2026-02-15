@@ -8,15 +8,23 @@ import { Card } from "@/components/ui/card"
 import { getConditionBadgeVariant } from "@/components/shared/product/_lib/condition-badges"
 import { getConditionKey } from "@/components/shared/product/_lib/condition"
 import { computeBadgeSpecsClient, shouldShowConditionBadge } from "@/lib/badges/category-badge-specs"
+import { getCategoryName } from "@/lib/category-display"
 import { ProductCardActions } from "./actions"
 import { ProductCardPrice } from "./price"
 import { FreshnessIndicator } from "../freshness-indicator"
 import { VerifiedSellerBadge } from "../verified-seller-badge"
-import { Truck, MapPin, ShieldCheck } from "@phosphor-icons/react"
+import { Truck, MapPin, ShieldCheck } from "@/lib/icons/phosphor"
 import Image from "next/image"
 import { normalizeImageUrl } from "@/lib/normalize-image-url"
 import { Badge } from "@/components/ui/badge"
 import { getListingOverlayBadgeVariants } from "@/lib/ui/badge-intent"
+
+type CategoryPathItem = {
+  slug: string
+  name: string
+  nameBg?: string | null
+  icon?: string | null
+}
 
 interface ProductCardListProps {
   // Required
@@ -69,6 +77,7 @@ interface ProductCardListProps {
   categorySlug?: string | null
   rootCategorySlug?: string | null
   attributes?: Record<string, unknown>
+  categoryPath?: CategoryPathItem[] | undefined
 }
 
 /**
@@ -100,6 +109,7 @@ export function ProductCardList({
   categorySlug,
   rootCategorySlug,
   attributes = {},
+  categoryPath,
 }: ProductCardListProps) {
   const t = useTranslations("Product")
   const locale = useLocale()
@@ -152,6 +162,26 @@ export function ProductCardList({
     if (key) return t(key)
     return condition.slice(0, 8)
   }, [condition, t, smartBadges, categorySlug, rootCategorySlug])
+
+  const rootCategoryLabel = React.useMemo(() => {
+    const rootCategory = categoryPath?.[0]
+    if (!rootCategory) return null
+
+    const fallbackName = rootCategory.name?.trim()
+    if (!fallbackName) return null
+
+    const localizedName = getCategoryName(
+      {
+        id: rootCategory.slug || fallbackName,
+        slug: rootCategory.slug || fallbackName,
+        name: fallbackName,
+        name_bg: rootCategory.nameBg ?? null,
+      },
+      locale
+    ).trim()
+
+    return localizedName || fallbackName
+  }, [categoryPath, locale])
 
   const hasDiscount = originalPrice && originalPrice > price
   const discountPercent = hasDiscount
@@ -234,6 +264,12 @@ export function ProductCardList({
         <h3 className="mb-1 min-w-0 truncate text-sm sm:text-base font-semibold tracking-tight text-foreground">
           {title}
         </h3>
+
+        {rootCategoryLabel && (
+          <span data-slot="category" className="mb-1 block min-w-0 truncate text-2xs font-medium text-muted-foreground">
+            {rootCategoryLabel}
+          </span>
+        )}
 
         {/* Description (if available) */}
         {description && (

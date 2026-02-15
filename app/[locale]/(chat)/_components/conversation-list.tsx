@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils"
 import { UserAvatar } from "@/components/shared/user-avatar"
 import { useMessages, type Conversation } from "@/components/providers/message-context"
 import { Skeleton } from "@/components/ui/skeleton"
-import { ChatCircle, Check, Checks } from "@phosphor-icons/react"
+import { ChatCircle, Check, Checks } from "@/lib/icons/phosphor"
 import Image from "next/image"
 
 // Filter types matching the chat bottom tabs

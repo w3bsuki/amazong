@@ -4,7 +4,7 @@ import { useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Check, Crown, Buildings, User, SpinnerGap } from "@phosphor-icons/react"
+import { Check, Crown, Buildings, User, SpinnerGap } from "@/lib/icons/phosphor"
 import { cn } from "@/lib/utils"
 import { toast } from "sonner"
 

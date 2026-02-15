@@ -23,7 +23,7 @@ import {
   Clock,
   Crown,
   CaretRight,
-} from "@phosphor-icons/react"
+} from "@/lib/icons/phosphor"
 import { cn } from "@/lib/utils"
 import { toast } from "sonner"
 import { useTranslations } from "next-intl"

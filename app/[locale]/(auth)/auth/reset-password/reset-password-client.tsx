@@ -10,7 +10,7 @@ import { z } from "zod"
 import { Field, FieldContent, FieldError, FieldLabel } from "@/components/shared/field"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { SpinnerGap, Check, Lock, ArrowLeft, Eye, EyeSlash } from "@phosphor-icons/react"
+import { SpinnerGap, Check, Lock, ArrowLeft, Eye, EyeSlash } from "@/lib/icons/phosphor"
 import { useRouter } from "@/i18n/routing"
 import { AuthCard } from "../../_components/auth-card"
 

@@ -4,11 +4,12 @@ import path from "node:path";
 const projectRoot = process.cwd();
 const targetDirs = process.argv.slice(2);
 const dirs = targetDirs.length ? targetDirs : ["app", "components"]; // workspace-relative
+const shouldWriteReport = String(process.env.WRITE_CLEANUP_REPORTS || "") === "1";
 
 const includeExt = new Set([".ts", ".tsx", ".js", ".jsx", ".css", ".mjs"]);
 
 // Token source-of-truth. Intentionally contains many oklch() declarations.
-// Also allow hex colors in the dedicated product swatches file (see docs/ui/DESIGN.md).
+// Also allow hex colors in the dedicated product swatches file (see docs/DESIGN.md).
 const excludeFiles = new Set([
   "app/globals.css",
   "components/shared/filters/controls/color-swatches.tsx",
@@ -110,11 +111,13 @@ reportLines.push(
 );
 
 const reportPath = path.resolve(projectRoot, "cleanup/arbitrary-scan-report.txt");
-try {
-  fs.mkdirSync(path.dirname(reportPath), { recursive: true });
-  fs.writeFileSync(reportPath, reportLines.join("\n"), "utf8");
-} catch {
-  // Best-effort reporting.
+if (shouldWriteReport) {
+  try {
+    fs.mkdirSync(path.dirname(reportPath), { recursive: true });
+    fs.writeFileSync(reportPath, reportLines.join("\n"), "utf8");
+  } catch {
+    // Best-effort reporting.
+  }
 }
 
 console.log("Top offenders (rough match counts)");
@@ -126,7 +129,9 @@ console.log("--------------------------------");
 console.log(
   `Totals: files=${totals.files} arbitrary=${totals.arbitrary} hex=${totals.hex} oklch=${totals.oklch}`
 );
-console.log(`Full report: ${path.relative(projectRoot, reportPath).split(path.sep).join("/")}`);
+if (shouldWriteReport) {
+  console.log(`Full report: ${path.relative(projectRoot, reportPath).split(path.sep).join("/")}`);
+}
 
 if (process.env.FAIL_ON_FINDINGS === "1") {
   if (totals.arbitrary > 0 || totals.hex > 0 || totals.oklch > 0) {

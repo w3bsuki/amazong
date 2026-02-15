@@ -9,7 +9,7 @@ import {
   Envelope, Phone, MapPin, Clock, 
   Headphones, Package, CreditCard, Question,
   CaretRight, PaperPlaneTilt, ShieldCheck
-} from "@phosphor-icons/react/dist/ssr"
+} from "@/lib/icons/phosphor"
 import { PageShell } from "../../../_components/page-shell"
 import { Link } from "@/i18n/routing"
 import type { Metadata } from 'next'

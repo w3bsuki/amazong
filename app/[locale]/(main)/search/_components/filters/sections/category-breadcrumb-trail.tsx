@@ -2,7 +2,7 @@
 
 import { Link } from "@/i18n/routing"
 import { useLocale, useTranslations } from "next-intl"
-import { CaretRight, House } from "@phosphor-icons/react"
+import { CaretRight, House } from "@/lib/icons/phosphor"
 import { cn } from "@/lib/utils"
 
 interface BreadcrumbCategory {

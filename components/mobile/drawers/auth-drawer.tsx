@@ -1,7 +1,7 @@
 "use client"
 
 import { useCallback, useEffect, useMemo, useRef, useState, type KeyboardEvent } from "react"
-import { CheckCircle, X } from "@phosphor-icons/react"
+import { CheckCircle, X } from "@/lib/icons/phosphor"
 import { useRouter } from "next/navigation"
 import { useLocale, useTranslations } from "next-intl"
 

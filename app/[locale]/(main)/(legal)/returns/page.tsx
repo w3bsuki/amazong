@@ -12,7 +12,7 @@ import {
   ArrowCounterClockwise, Package, Clock, CheckCircle, Question,
   Truck, CreditCard, WarningCircle, FileText, 
   CaretRight, Printer, MapPin, ShieldCheck, Prohibit
-} from "@phosphor-icons/react/dist/ssr"
+} from "@/lib/icons/phosphor"
 import { Link } from "@/i18n/routing"
 import type { Metadata } from 'next'
 import { validateLocale } from "@/i18n/routing"

@@ -4,7 +4,7 @@ import { useEffect } from "react"
 import { useTranslations } from "next-intl"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { WarningCircle, ArrowClockwise } from "@phosphor-icons/react"
+import { WarningCircle, ArrowClockwise } from "@/lib/icons/phosphor"
 
 export default function BillingError({
   error,

@@ -2,7 +2,7 @@
 
 import { useEffect } from "react"
 import { Button } from "@/components/ui/button"
-import { ArrowClockwise, WarningCircle } from "@phosphor-icons/react"
+import { ArrowClockwise, WarningCircle } from "@/lib/icons/phosphor"
 import {
   NextIntlClientProvider,
   useTranslations,

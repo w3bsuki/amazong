@@ -13,7 +13,7 @@ import {
   IconX,
   IconSettings,
   IconDots,
-} from "@tabler/icons-react"
+} from "@/lib/icons/tabler"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { ScrollArea } from "@/components/ui/scroll-area"

@@ -1,6 +1,6 @@
 "use client"
 
-import { Check, User, Crown, Buildings, Rocket, SpinnerGap } from "@phosphor-icons/react"
+import { Check, User, Crown, Buildings, Rocket, SpinnerGap } from "@/lib/icons/phosphor"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"

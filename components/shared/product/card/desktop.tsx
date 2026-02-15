@@ -3,7 +3,7 @@
 import * as React from "react"
 import { Link } from "@/i18n/routing"
 import { useLocale, useTranslations } from "next-intl"
-import { Lightning } from "@phosphor-icons/react"
+import { Lightning } from "@/lib/icons/phosphor"
 
 import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
@@ -12,6 +12,7 @@ import { useDrawer, type QuickViewProduct } from "@/components/providers/drawer-
 import { isBoostActiveNow } from "@/lib/boost/boost-status"
 import { shouldShowConditionBadge } from "@/lib/badges/category-badge-specs"
 import { getListingOverlayBadgeVariants } from "@/lib/ui/badge-intent"
+import { getCategoryName } from "@/lib/category-display"
 
 import { ProductCardActions } from "./actions"
 import { ProductCardImage } from "./image"
@@ -91,6 +92,26 @@ export function DesktopProductCard({
     if (key) return t(key)
     return condition
   }, [condition, shouldShowCondition, t])
+
+  const rootCategoryLabel = React.useMemo(() => {
+    const rootCategory = categoryPath?.[0]
+    if (!rootCategory) return null
+
+    const fallbackName = rootCategory.name?.trim()
+    if (!fallbackName) return null
+
+    const localizedName = getCategoryName(
+      {
+        id: rootCategory.slug || fallbackName,
+        slug: rootCategory.slug || fallbackName,
+        name: fallbackName,
+        name_bg: rootCategory.nameBg ?? null,
+      },
+      locale
+    ).trim()
+
+    return localizedName || fallbackName
+  }, [categoryPath, locale])
 
   const locationLabel = React.useMemo(() => location?.trim() || null, [location])
   const hasFreshness = Boolean(createdAt)
@@ -252,6 +273,12 @@ export function DesktopProductCard({
         >
           {title}
         </h3>
+
+        {rootCategoryLabel && (
+          <span data-slot="category" className="block min-w-0 truncate text-2xs font-medium text-muted-foreground">
+            {rootCategoryLabel}
+          </span>
+        )}
 
         <ProductCardPrice
           price={price}

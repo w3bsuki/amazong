@@ -11,7 +11,7 @@ import {
   TrendUp,
   TrendDown,
   Receipt,
-} from "@phosphor-icons/react/dist/ssr"
+} from "@/lib/icons/phosphor"
 import { getTranslations } from "next-intl/server"
 
 interface SalesStatsProps {

@@ -9,7 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
-import { IconExternalLink } from "@tabler/icons-react"
+import { IconExternalLink } from "@/lib/icons/tabler"
 
 interface AdminProduct {
   id: string

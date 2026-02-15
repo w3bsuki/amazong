@@ -13,7 +13,7 @@ import {
   IconFileText,
   IconChecklist,
   IconNote,
-} from "@tabler/icons-react"
+} from "@/lib/icons/tabler"
 
 import { NavMain } from "../../_components/nav/nav-main"
 import { NavSecondary } from "../../_components/nav/nav-secondary"

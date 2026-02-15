@@ -1,6 +1,6 @@
 "use client"
 
-import { ShoppingCart } from "@phosphor-icons/react"
+import { ShoppingCart } from "@/lib/icons/phosphor"
 
 import { useRouter } from "@/i18n/routing"
 import { useTranslations } from "next-intl"

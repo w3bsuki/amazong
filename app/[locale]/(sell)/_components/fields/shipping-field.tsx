@@ -7,7 +7,7 @@ import {
   House,
   Package,
   CaretRight,
-} from "@phosphor-icons/react";
+} from "@/lib/icons/phosphor";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";

@@ -11,7 +11,7 @@ import {
   Question,
   SignOut,
   CaretRight,
-} from "@phosphor-icons/react"
+} from "@/lib/icons/phosphor"
 import { cn } from "@/lib/utils"
 
 interface SettingsItemProps {

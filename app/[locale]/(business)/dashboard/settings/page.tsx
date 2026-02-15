@@ -17,7 +17,7 @@ import {
   IconUser,
   IconBell,
   IconShield,
-} from "@tabler/icons-react"
+} from "@/lib/icons/tabler"
 
 const PROFILE_SELECT_FOR_BUSINESS_SETTINGS =
   'id,username,display_name,business_name,bio,is_verified_business,tier'

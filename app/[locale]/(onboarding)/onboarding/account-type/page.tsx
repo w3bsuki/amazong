@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { useLocale, useTranslations } from "next-intl"
-import { ArrowRight } from "@phosphor-icons/react"
+import { ArrowRight } from "@/lib/icons/phosphor"
 import { Button } from "@/components/ui/button"
 import { AccountTypeCard, type AccountType } from "../_components/account-type-card"
 import { OnboardingShell } from "../_components/onboarding-shell"

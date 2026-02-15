@@ -1,7 +1,7 @@
 "use client"
 
 import { useFormStatus } from "react-dom"
-import { SpinnerGap } from "@phosphor-icons/react"
+import { SpinnerGap } from "@/lib/icons/phosphor"
 
 import { Button } from "@/components/ui/button"
 

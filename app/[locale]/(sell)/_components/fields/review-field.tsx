@@ -11,7 +11,7 @@ import {
   Package,
   PencilSimple,
   Warning,
-} from "@phosphor-icons/react";
+} from "@/lib/icons/phosphor";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useSellForm, useSellFormContext } from "../sell-form-provider";

@@ -14,7 +14,7 @@ import {
   CheckCircle,
   Lightning,
   Package,
-} from "@phosphor-icons/react/dist/ssr"
+} from "@/lib/icons/phosphor"
 import { Link } from "@/i18n/routing"
 
 export async function AboutPageContent() {

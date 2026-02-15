@@ -3,7 +3,7 @@
 import { useEffect, useState, useTransition } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { useLocale, useTranslations } from "next-intl"
-import { Check, ShoppingBag, Storefront, Package, SpinnerGap } from "@phosphor-icons/react"
+import { Check, ShoppingBag, Storefront, Package, SpinnerGap } from "@/lib/icons/phosphor"
 
 import { Button } from "@/components/ui/button"
 import { OnboardingShell } from "../_components/onboarding-shell"

@@ -1,7 +1,7 @@
 "use client"
 
 import type { ChangeEvent, ReactNode } from "react"
-import { WarningCircle } from "@phosphor-icons/react"
+import { WarningCircle } from "@/lib/icons/phosphor"
 
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"

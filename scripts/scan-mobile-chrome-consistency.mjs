@@ -2,6 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 
 const projectRoot = process.cwd();
+const shouldWriteReport = String(process.env.WRITE_CLEANUP_REPORTS || "") === "1";
 
 const targetFiles = [
   "components/layout/header/mobile/homepage-header.tsx",
@@ -92,14 +93,20 @@ output.push("--------------------------------");
 output.push(`Totals: findings=${findings.length}`);
 
 const reportPath = path.resolve(projectRoot, "cleanup/mobile-chrome-scan-report.txt");
-fs.mkdirSync(path.dirname(reportPath), { recursive: true });
-fs.writeFileSync(reportPath, `${output.join("\n")}\n`, "utf8");
+if (shouldWriteReport) {
+  fs.mkdirSync(path.dirname(reportPath), { recursive: true });
+  fs.writeFileSync(reportPath, `${output.join("\n")}\n`, "utf8");
+}
 
 for (const line of output.slice(0, 40)) {
   console.log(line);
 }
 if (output.length > 40) {
-  console.log("...truncated. See full report:", path.relative(projectRoot, reportPath).replaceAll("\\", "/"));
+  if (shouldWriteReport) {
+    console.log("...truncated. See full report:", path.relative(projectRoot, reportPath).replaceAll("\\", "/"));
+  } else {
+    console.log("...truncated. Set WRITE_CLEANUP_REPORTS=1 to emit a full report file.");
+  }
 }
 
 if (String(process.env.FAIL_ON_FINDINGS || "") === "1") {

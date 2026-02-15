@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useMemo } from "react"
-import { Check, MagnifyingGlass } from "@phosphor-icons/react"
+import { Check, MagnifyingGlass } from "@/lib/icons/phosphor"
 import { cn } from "@/lib/utils"
 import { useTranslations } from "next-intl"
 

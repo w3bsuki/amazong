@@ -8,7 +8,7 @@ import { createClient } from "@/lib/supabase/client"
 import { cn } from "@/lib/utils"
 import { toast } from "sonner"
 import { Link, useRouter } from "@/i18n/routing"
-import { Bell, CheckCircle, Package, ChatCircle, Star, Users, Tag, CaretRight } from "@phosphor-icons/react"
+import { Bell, CheckCircle, Package, ChatCircle, Star, Users, Tag, CaretRight } from "@/lib/icons/phosphor"
 import { formatDistanceToNow } from "date-fns"
 
 type NotificationType = "purchase" | "order_status" | "message" | "review" | "system" | "promotion"

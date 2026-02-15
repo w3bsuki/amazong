@@ -1,7 +1,7 @@
 "use client"
 
 import { useTranslations } from "next-intl"
-import { Eye, Heart, Fire } from "@phosphor-icons/react"
+import { Eye, Heart, Fire } from "@/lib/icons/phosphor"
 import { cn } from "@/lib/utils"
 
 interface ProductSocialProofProps {

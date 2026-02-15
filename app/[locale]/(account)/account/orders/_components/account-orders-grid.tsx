@@ -5,7 +5,7 @@ import Image from "next/image"
 import { Link } from "@/i18n/routing"
 import { formatDistanceToNow } from "date-fns"
 import { bg, enUS } from "date-fns/locale"
-import { IconChevronRight, IconPackage, IconShoppingBag, IconMessageCircle, IconX } from "@tabler/icons-react"
+import { IconChevronRight, IconPackage, IconShoppingBag, IconMessageCircle, IconX } from "@/lib/icons/tabler"
 
 import { Badge } from "@/components/ui/badge"
 import { BuyerOrderActions, type BuyerOrderActionsServerActions } from "./buyer-order-actions"

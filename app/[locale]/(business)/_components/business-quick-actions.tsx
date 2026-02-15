@@ -4,7 +4,7 @@ import {
   IconShoppingCart,
   IconPackage,
   IconChartBar,
-} from "@tabler/icons-react"
+} from "@/lib/icons/tabler"
 import { Button } from "@/components/ui/button"
 
 const quickActions = [

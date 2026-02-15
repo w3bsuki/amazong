@@ -3,7 +3,7 @@
 import * as React from "react"
 import { useRef, useCallback, useEffect } from "react"
 import Image from "next/image"
-import { MagnifyingGlass, Clock, TrendUp, Package, X, ArrowRight, Eye, Robot } from "@phosphor-icons/react"
+import { MagnifyingGlass, Clock, TrendUp, Package, X, ArrowRight, Eye, Robot } from "@/lib/icons/phosphor"
 import { Button } from "@/components/ui/button"
 import { Switch } from "@/components/ui/switch"
 import { Input } from "@/components/ui/input"

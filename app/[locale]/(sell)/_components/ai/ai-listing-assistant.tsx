@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useMemo, useState } from "react";
-import { Sparkle, SpinnerGap, Check, WarningCircle } from "@phosphor-icons/react";
+import { Sparkle, SpinnerGap, Check, WarningCircle } from "@/lib/icons/phosphor";
 import { toast } from "sonner";
 import { useTranslations } from "next-intl";
 

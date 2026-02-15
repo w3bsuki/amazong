@@ -1,6 +1,6 @@
 "use client"
 
-import { IconPackage, IconTruckDelivery, IconClock, IconCurrencyDollar } from "@tabler/icons-react"
+import { IconPackage, IconTruckDelivery, IconClock, IconCurrencyDollar } from "@/lib/icons/tabler"
 
 import { Badge } from "@/components/ui/badge"
 import {

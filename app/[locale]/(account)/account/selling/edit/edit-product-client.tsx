@@ -33,7 +33,7 @@ import {
   Percent,
   FloppyDisk,
   Lightning,
-} from "@phosphor-icons/react"
+} from "@/lib/icons/phosphor"
 
 interface Product {
   id: string

@@ -18,7 +18,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
-import { IconPackage, IconAlertTriangle, IconX, IconCheck, IconPencil } from "@tabler/icons-react"
+import { IconPackage, IconAlertTriangle, IconX, IconCheck, IconPencil } from "@/lib/icons/tabler"
 import { InventoryHeader } from "./_components/inventory-header"
 import { formatCurrencyBGN } from "./_lib/format-currency"
 

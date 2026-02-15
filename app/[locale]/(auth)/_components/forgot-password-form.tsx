@@ -1,7 +1,7 @@
 "use client"
 
 import { useActionState } from "react"
-import { ArrowLeft, Check } from "@phosphor-icons/react"
+import { ArrowLeft, Check } from "@/lib/icons/phosphor"
 import { useTranslations } from "next-intl"
 
 import { SubmitButton } from "@/components/auth/submit-button"

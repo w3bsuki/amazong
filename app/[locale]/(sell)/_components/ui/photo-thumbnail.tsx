@@ -5,7 +5,7 @@ import {
   Trash,
   Star,
   MagnifyingGlassPlus,
-} from "@phosphor-icons/react";
+} from "@/lib/icons/phosphor";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import type { ProductImage } from "@/lib/sell/schema-v4";
@@ -81,6 +81,7 @@ export function PhotoThumbnail({
         type="button"
         onClick={(e) => { e.stopPropagation(); onRemove(); }}
         className="absolute top-1.5 right-1.5 z-10 p-1 rounded-full bg-background text-destructive shadow-sm hover:bg-destructive hover:text-destructive-foreground transition-colors"
+        aria-label="Remove photo"
         title="Remove"
       >
         <Trash className="size-3" weight="bold" />
@@ -98,6 +99,8 @@ export function PhotoThumbnail({
             type="button"
             onClick={(e) => { e.stopPropagation(); onPreview(); }}
             className="p-2 rounded-full bg-background text-foreground shadow-sm"
+            aria-label="Preview photo"
+            title="Preview photo"
           >
             <MagnifyingGlassPlus className="size-4" />
           </button>
@@ -110,6 +113,7 @@ export function PhotoThumbnail({
           type="button"
           onClick={(e) => { e.stopPropagation(); onSetCover(); }}
           className="absolute bottom-1.5 right-1.5 z-10 p-1 rounded-full bg-background text-primary shadow-sm hover:bg-primary hover:text-primary-foreground transition-colors sm:opacity-0 sm:group-hover:opacity-100"
+          aria-label="Set as cover"
           title="Set as cover"
         >
           <Star className="size-3" />

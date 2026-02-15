@@ -7,7 +7,7 @@ import { MessageProvider, useMessages } from "@/components/providers/message-con
 import { ConversationList } from "./conversation-list"
 import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
-import { PencilSimpleLine, MagnifyingGlass, ArrowLeft, Tray, EnvelopeSimple, ShoppingCart, Storefront, ChatCircle } from "@phosphor-icons/react"
+import { PencilSimpleLine, MagnifyingGlass, ArrowLeft, Tray, EnvelopeSimple, ShoppingCart, Storefront, ChatCircle } from "@/lib/icons/phosphor"
 import { Input } from "@/components/ui/input"
 import { Link } from "@/i18n/routing"
 import type { ChatInterfaceServerActions } from "./chat-interface"

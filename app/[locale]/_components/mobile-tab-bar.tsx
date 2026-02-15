@@ -1,7 +1,7 @@
 "use client"
 
 import { type ReactNode, useEffect, useState } from "react"
-import { House, SquaresFour, ChatCircleDots, UserCircle, Plus } from "@phosphor-icons/react"
+import { Compass, House, ChatCircleDots, UserCircle, Plus } from "@/lib/icons/phosphor"
 import { Link, usePathname, useRouter } from "@/i18n/routing"
 import { cn } from "@/lib/utils"
 import { CountBadge } from "@/components/shared/count-badge"
@@ -11,6 +11,7 @@ import {
   MobileBottomNavCoreAction,
   MobileBottomNavDock,
   MobileBottomNavItem,
+  MobileBottomNavLabel,
   MobileBottomNavList,
   MobileBottomNavRoot,
 } from "@/components/ui/mobile-bottom-nav"
@@ -79,40 +80,8 @@ function getFallbackProfileName(user: {
   return "User"
 }
 
-function getFallbackProfileAvatar(user: {
-  user_metadata?: Record<string, unknown>
-} | null): string | null {
-  if (!user) return null
-
-  const metadata = user.user_metadata ?? {}
-  return (
-    getStringValue(metadata.avatar_url) ??
-    getStringValue(metadata.avatarUrl) ??
-    getStringValue(metadata.picture) ??
-    getStringValue(metadata.image)
-  )
-}
-
 function getTabIconWeight(isActive: boolean): "fill" | "regular" {
   return isActive ? "fill" : "regular"
-}
-
-function getTabIconButtonClass(active: boolean, highlighted = false): string {
-  return cn(
-    "inline-flex size-(--control-compact) items-center justify-center rounded-full ring-1 ring-transparent",
-    "motion-safe:transition-[background-color,color,ring-color,transform] motion-safe:duration-fast motion-safe:ease-(--ease-smooth)",
-    "group-active:scale-[0.97]",
-    active
-      ? "bg-hover text-nav-active ring-border-subtle"
-      : cn(
-          "text-nav-inactive group-hover:bg-hover group-hover:text-nav-active group-active:bg-active",
-          highlighted ? "text-nav-active ring-border-subtle" : ""
-        )
-  )
-}
-
-function getProfileAvatarClass(isActive: boolean): string {
-  return cn("size-7", isActive ? "ring-1 ring-primary" : "ring-1 ring-border-subtle")
 }
 
 export function MobileTabBar() {
@@ -136,7 +105,7 @@ export function MobileTabBar() {
   const routeState = getMobileTabBarRouteState(pathname)
 
   const iconClass =
-    "size-(--size-icon) transition-colors motion-safe:duration-fast"
+    "size-(--size-icon) motion-safe:transition-colors motion-safe:duration-fast"
 
   const isHomeActive = isMobileTabPathActive(routeState.normalizedPathname, "/")
   const isCategoriesActive =
@@ -156,21 +125,6 @@ export function MobileTabBar() {
     drawerState.auth.open ||
     isMobileTabPathActive(routeState.normalizedPathname, "/account")
 
-  const tabItemOuterBase = cn(
-    "group flex h-full min-h-(--control-default) w-full items-center justify-center rounded-xl px-1",
-    "tap-transparent transition-colors",
-    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 focus-visible:ring-offset-surface-elevated"
-  )
-
-  const tabItemOuterClass = (active: boolean) =>
-    cn(tabItemOuterBase, active ? "text-nav-active" : "text-nav-inactive")
-
-  const sellButtonClass = (active: boolean) =>
-    cn(
-      "ring-primary ring-offset-2 ring-offset-surface-elevated",
-      active ? "ring-2" : "ring-1"
-    )
-
   const authUser = auth?.user ?? null
   const isAuthenticated = Boolean(authUser)
 
@@ -185,10 +139,9 @@ export function MobileTabBar() {
     }
 
     const fallbackDisplayName = getFallbackProfileName(authUser)
-    const fallbackAvatar = getFallbackProfileAvatar(authUser)
     setProfileIdentity({
       displayName: fallbackDisplayName,
-      avatarUrl: fallbackAvatar,
+      avatarUrl: null,
     })
 
     const cachedIdentity = profileIdentityCache.get(authUser.id)
@@ -215,7 +168,7 @@ export function MobileTabBar() {
             getStringValue(data?.display_name) ??
             getStringValue(data?.full_name) ??
             fallbackDisplayName,
-          avatarUrl: getStringValue(data?.avatar_url) ?? fallbackAvatar,
+          avatarUrl: getStringValue(data?.avatar_url),
         }
 
         profileIdentityCache.set(authUser.id, resolvedIdentity)
@@ -248,10 +201,10 @@ export function MobileTabBar() {
       label: t("home"),
       ariaCurrent: isHomeActive ? "page" : undefined,
       icon: (
-        <House
-          weight={getTabIconWeight(isHomeActive)}
-          className={iconClass}
-        />
+        <>
+          <House weight={getTabIconWeight(isHomeActive)} className={iconClass} />
+          <MobileBottomNavLabel>{t("home")}</MobileBottomNavLabel>
+        </>
       ),
     },
     {
@@ -274,10 +227,10 @@ export function MobileTabBar() {
           }
         : {}),
       icon: (
-        <SquaresFour
-          weight={getTabIconWeight(isCategoriesActive)}
-          className={iconClass}
-        />
+        <>
+          <Compass weight={getTabIconWeight(isCategoriesActive)} className={iconClass} />
+          <MobileBottomNavLabel>{t("categories")}</MobileBottomNavLabel>
+        </>
       ),
     },
     {
@@ -290,16 +243,15 @@ export function MobileTabBar() {
       testId: "mobile-tab-sell",
       ariaCurrent: isSellActive ? "page" : undefined,
       icon: (
-        <MobileBottomNavCoreAction
-          state={isSellActive ? "active" : "inactive"}
-          data-testid="mobile-tab-sell-core"
-          className={sellButtonClass(isSellActive)}
-        >
-          <Plus
-            weight="bold"
-            className="size-(--size-icon) text-current transition-colors motion-safe:duration-fast"
-          />
-        </MobileBottomNavCoreAction>
+        <>
+          <MobileBottomNavCoreAction
+            state={isSellActive ? "active" : "inactive"}
+            data-testid="mobile-tab-sell-core"
+          >
+            <Plus weight="bold" className={iconClass} />
+          </MobileBottomNavCoreAction>
+          <MobileBottomNavLabel>{t("sell")}</MobileBottomNavLabel>
+        </>
       ),
     },
     {
@@ -313,19 +265,19 @@ export function MobileTabBar() {
       ariaHasPopup: "dialog",
       ariaExpanded: drawerState.messages.open,
       icon: (
-        <span className="relative">
-          <ChatCircleDots
-            weight={getTabIconWeight(isChatActive)}
-            className={iconClass}
-          />
-          {unreadCount > 0 && (
-            <CountBadge
-              count={unreadCount}
-              className="absolute -top-1.5 -right-1.5 h-4 min-w-4 bg-notification px-0.5 text-2xs text-primary-foreground ring-2 ring-surface-elevated"
-              aria-hidden="true"
-            />
-          )}
-        </span>
+        <>
+          <span className="relative">
+            <ChatCircleDots weight={getTabIconWeight(isChatActive)} className={iconClass} />
+            {unreadCount > 0 && (
+              <CountBadge
+                count={unreadCount}
+                className="absolute -top-1 -right-2 h-3.5 min-w-3.5 bg-notification px-0.5 text-2xs text-primary-foreground ring-1 ring-surface-elevated"
+                aria-hidden="true"
+              />
+            )}
+          </span>
+          <MobileBottomNavLabel>{t("chat")}</MobileBottomNavLabel>
+        </>
       ),
     },
     {
@@ -345,26 +297,35 @@ export function MobileTabBar() {
       ariaHasPopup: "dialog",
       ariaExpanded: drawerState.account.open || drawerState.auth.open,
       icon: (
-        <span className="inline-flex size-(--control-compact) items-center justify-center rounded-full motion-safe:transition-transform motion-safe:duration-fast motion-safe:ease-(--ease-smooth) group-active:scale-[0.97]">
-          {isAuthenticated ? (
+        <>
+          {isAuthenticated && resolvedProfileAvatar ? (
             <UserAvatar
               name={resolvedProfileName}
               avatarUrl={resolvedProfileAvatar}
               size="sm"
-              className={getProfileAvatarClass(isProfileActive)}
-              fallbackClassName="bg-muted text-2xs font-semibold"
+              className={cn(
+                "size-6 rounded-full border",
+                isProfileActive ? "border-primary" : "border-border"
+              )}
+              fallbackClassName="bg-muted text-2xs font-semibold text-muted-foreground"
             />
           ) : (
-            <Avatar className={cn("bg-muted", getProfileAvatarClass(isProfileActive))}>
+            <Avatar
+              className={cn(
+                "size-6 border bg-muted",
+                isProfileActive ? "border-primary" : "border-border"
+              )}
+            >
               <AvatarFallback className="bg-muted text-muted-foreground">
                 <UserCircle
-                  weight="regular"
-                  className="size-(--size-icon-sm)"
+                  weight={isProfileActive ? "fill" : "regular"}
+                  className="size-5"
                 />
               </AvatarFallback>
             </Avatar>
           )}
-        </span>
+          <MobileBottomNavLabel>{t("profile")}</MobileBottomNavLabel>
+        </>
       ),
     },
   ]
@@ -384,19 +345,6 @@ export function MobileTabBar() {
         <MobileBottomNavList>
           {tabs.map((tab) => {
             const state = tab.active ? "active" : "inactive"
-            const iconContent =
-              tab.emphasis === "core" ? (
-                tab.icon
-              ) : (
-                <span
-                  className={getTabIconButtonClass(
-                    tab.active,
-                    tab.key === "chat" && unreadCount > 0
-                  )}
-                >
-                  {tab.icon}
-                </span>
-              )
 
             return (
               <li key={tab.key} className="h-full">
@@ -405,17 +353,13 @@ export function MobileTabBar() {
                     asChild
                     state={state}
                     emphasis={tab.emphasis}
-                    className={
-                      tab.emphasis === "core"
-                        ? tabItemOuterBase
-                        : tabItemOuterClass(tab.active)
-                    }
+                    className="h-full"
                     aria-label={tab.label}
                     aria-current={tab.ariaCurrent}
                     data-testid={tab.testId}
                   >
                     <Link href={tab.href} prefetch={true}>
-                      {iconContent}
+                      {tab.icon}
                     </Link>
                   </MobileBottomNavItem>
                 ) : (
@@ -423,14 +367,14 @@ export function MobileTabBar() {
                     type="button"
                     state={state}
                     emphasis={tab.emphasis}
-                    className={tabItemOuterClass(tab.active)}
+                    className="h-full"
                     onClick={tab.onClick}
                     aria-label={tab.label}
                     aria-haspopup={tab.ariaHasPopup}
                     aria-expanded={tab.ariaExpanded}
                     data-testid={tab.testId}
                   >
-                    {iconContent}
+                    {tab.icon}
                   </MobileBottomNavItem>
                 )}
               </li>

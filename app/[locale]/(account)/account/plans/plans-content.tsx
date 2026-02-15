@@ -17,7 +17,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
-import { Lightning, X, ArrowsClockwise, CalendarBlank, Warning } from "@phosphor-icons/react"
+import { Lightning, X, ArrowsClockwise, CalendarBlank, Warning } from "@/lib/icons/phosphor"
 import { cn } from "@/lib/utils"
 import { toast } from "sonner"
 import { PlansGrid, type Plan } from "../_components/plan-card"

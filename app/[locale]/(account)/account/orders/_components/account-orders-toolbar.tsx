@@ -5,7 +5,7 @@ import { usePathname, useRouter } from "@/i18n/routing"
 import { useSearchParams } from "next/navigation"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Input } from "@/components/ui/input"
-import { MagnifyingGlass } from "@phosphor-icons/react/dist/ssr"
+import { MagnifyingGlass } from "@/lib/icons/phosphor"
 import { cn } from "@/lib/utils"
 
 type StatusKey = "all" | "open" | "delivered" | "cancelled"

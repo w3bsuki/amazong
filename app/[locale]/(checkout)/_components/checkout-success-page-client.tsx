@@ -13,7 +13,7 @@ import {
   Package,
   Envelope,
   ArrowRight,
-} from "@phosphor-icons/react"
+} from "@/lib/icons/phosphor"
 
 type SuccessState =
   | { status: "idle" }

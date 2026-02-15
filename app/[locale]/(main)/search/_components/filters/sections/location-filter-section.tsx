@@ -1,6 +1,6 @@
 "use client"
 
-import { Crosshair, MapPin } from "@phosphor-icons/react"
+import { Crosshair, MapPin } from "@/lib/icons/phosphor"
 import { useTranslations } from "next-intl"
 import { cn } from "@/lib/utils"
 import { Checkbox } from "@/components/ui/checkbox"

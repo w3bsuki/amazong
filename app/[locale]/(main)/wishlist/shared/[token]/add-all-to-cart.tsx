@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { useCart } from "@/components/providers/cart-context"
 import { toast } from "sonner"
 import { useTranslations } from "next-intl"
-import { ShoppingCart, SpinnerGap } from "@phosphor-icons/react"
+import { ShoppingCart, SpinnerGap } from "@/lib/icons/phosphor"
 
 type SharedWishlistCartItem = {
   product_id: string

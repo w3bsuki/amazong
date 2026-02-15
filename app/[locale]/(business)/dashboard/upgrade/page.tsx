@@ -24,7 +24,7 @@ import {
   IconBuildingStore,
   IconArrowRight,
   IconSparkles,
-} from "@tabler/icons-react"
+} from "@/lib/icons/tabler"
 
 // Translations
 const translations = {

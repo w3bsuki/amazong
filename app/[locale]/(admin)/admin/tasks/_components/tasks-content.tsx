@@ -7,7 +7,7 @@ import {
   IconTrash,
   IconEdit,
   IconCalendar,
-} from "@tabler/icons-react"
+} from "@/lib/icons/tabler"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"

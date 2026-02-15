@@ -14,7 +14,7 @@ import {
   Tag,
   Package,
   ArrowLeft,
-} from "@phosphor-icons/react"
+} from "@/lib/icons/phosphor"
 
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"

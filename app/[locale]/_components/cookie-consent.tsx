@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import { useTranslations } from "next-intl"
 import { Link } from "@/i18n/routing"
 import { Button } from "@/components/ui/button"
-import { X, Cookie } from "@phosphor-icons/react"
+import { X, Cookie } from "@/lib/icons/phosphor"
 
 const COOKIE_CONSENT_KEY = "cookie-consent"
 const COOKIE_CONSENT_EVENT = "treido:cookie-consent"

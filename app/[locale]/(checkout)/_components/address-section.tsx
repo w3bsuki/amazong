@@ -2,7 +2,7 @@
 
 import type { ChangeEvent } from "react";
 import { useTranslations } from "next-intl";
-import { ArrowLeft, Check, MapPin, SpinnerGap, X } from "@phosphor-icons/react";
+import { ArrowLeft, Check, MapPin, SpinnerGap, X } from "@/lib/icons/phosphor";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";

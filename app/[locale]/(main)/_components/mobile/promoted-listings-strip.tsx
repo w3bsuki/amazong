@@ -1,7 +1,7 @@
 "use client"
 
 import { useTranslations } from "next-intl"
-import { Megaphone, ArrowRight } from "@phosphor-icons/react"
+import { Megaphone, ArrowRight } from "@/lib/icons/phosphor"
 
 import type { UIProduct } from "@/lib/types/products"
 import { cn } from "@/lib/utils"

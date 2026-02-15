@@ -1,5 +1,5 @@
 import { setRequestLocale, getTranslations } from "next-intl/server"
-import { Lightning as Zap } from "@phosphor-icons/react/dist/ssr"
+import { Lightning as Zap } from "@/lib/icons/phosphor"
 import type { Metadata } from 'next'
 import { validateLocale } from "@/i18n/routing"
 import { AppBreadcrumb, breadcrumbPresets } from "../../_components/navigation/app-breadcrumb"

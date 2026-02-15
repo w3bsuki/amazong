@@ -26,7 +26,7 @@ import {
   IconTrendingUp,
   IconShoppingCart,
   IconCurrencyDollar,
-} from "@tabler/icons-react"
+} from "@/lib/icons/tabler"
 
 export default async function BusinessCustomersPage() {
   // Requires paid business subscription

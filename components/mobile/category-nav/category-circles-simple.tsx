@@ -5,7 +5,7 @@ import type { CategoryTreeNode } from "@/lib/category-tree"
 import { getCategoryName, getCategorySlugKey } from "@/lib/category-display"
 import { cn } from "@/lib/utils"
 import { useTranslations } from "next-intl"
-import { DotsThree } from "@phosphor-icons/react"
+import { DotsThree } from "@/lib/icons/phosphor"
 import { Link, usePathname } from "@/i18n/routing"
 import { getCategoryIcon } from "@/components/shared/category/category-icons"
 

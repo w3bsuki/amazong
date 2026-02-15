@@ -760,11 +760,11 @@ test.describe("Mobile Responsiveness - Phase 11", () => {
       // Main content should be visible - use #main-content to avoid multiple main elements
       await expect(page.locator("#main-content")).toBeVisible({ timeout: 15000 })
       
-      // Mobile tab bar should render icon-only tabs with Bulgarian accessible names.
+      // Mobile tab bar should render tabs with Bulgarian accessible names and visible labels.
       const mobileTabBar = page.getByTestId("mobile-tab-bar")
       await expect(mobileTabBar).toBeVisible()
       await expect(mobileTabBar.getByRole("link", { name: /начало/i })).toBeVisible()
-      await expect(mobileTabBar).not.toContainText(/начало|обяви|чат|профил/i)
+      await expect(mobileTabBar).toContainText(/начало/i)
       
       // No horizontal overflow
       const hasOverflow = await page.evaluate(() => {

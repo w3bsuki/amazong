@@ -4,7 +4,7 @@ import type { ReactNode } from "react"
 import Image from "next/image"
 import { cn } from "@/lib/utils"
 import { UserAvatar } from "@/components/shared/user-avatar"
-import { CheckCircle } from "@phosphor-icons/react"
+import { CheckCircle } from "@/lib/icons/phosphor"
 
 interface ProfileShellProps {
   /** Display name for the profile */

@@ -8,38 +8,52 @@ const docsSiteContentRoot = path.join(repoRoot, "docs-site", "content");
 const docsSitePublicRoot = path.join(repoRoot, "docs-site", "public");
 
 const canonicalRouteMap = new Map([
-  ["./INDEX.md", "/"],
-  ["./PROJECT.md", "/project"],
-  ["./WORKFLOW.md", "/workflow"],
-  ["./QA.md", "/qa"],
-  ["./RISK.md", "/risk"],
-  ["./REFERENCE.md", "/reference"],
-  ["./domain/AUTH.md", "/auth"],
-  ["./domain/PAYMENTS.md", "/payments"],
-  ["./domain/DATABASE.md", "/database"],
-  ["./domain/API.md", "/api"],
-  ["./domain/ROUTES.md", "/routes"],
-  ["./domain/I18N.md", "/i18n"],
-  ["./ui/DESIGN.md", "/design"],
-  ["./ui/FRONTEND.md", "/frontend"],
+  ["./GUIDE.md", "/guide"],
+  ["./DESIGN.md", "/design"],
+  ["./DOMAINS.md", "/domains"],
+  ["./QUALITY.md", "/quality"],
+  ["./DECISIONS.md", "/decisions"],
   ["./public/00-INDEX.md", "/public-docs"],
-  ["./PRD.md", "/project"],
   ["../ARCHITECTURE.md", "/engineering"],
-  ["../AGENTS.md", "/workflow"],
-  ["../WORKFLOW.md", "/workflow"],
-  ["../QA.md", "/qa"],
-  ["../RISK.md", "/risk"],
-  ["../REFERENCE.md", "/reference"],
-  ["../REQUIREMENTS.md", "/project"],
-  // Root docs links (when syncing root markdown like ARCHITECTURE.md into docs-site).
-  ["./AGENTS.md", "/workflow"],
-  ["./REQUIREMENTS.md", "/project"],
-  ["./docs/WORKFLOW.md", "/workflow"],
-  ["./docs/domain/ROUTES.md", "/routes"],
+  ["../AGENTS.md", "/guide"],
+  ["../REQUIREMENTS.md", "/requirements"],
+  // Compatibility aliases for legacy doc links still present in unchanged files.
+  ["./INDEX.md", "/guide"],
+  ["./PROJECT.md", "/guide"],
+  ["./WORKFLOW.md", "/guide"],
+  ["./QA.md", "/guide"],
+  ["./RISK.md", "/guide"],
+  ["./REFERENCE.md", "/guide"],
+  ["./PRINCIPLES.md", "/guide"],
+  ["./ARCHITECTURE.md", "/domains"],
+  ["./domain/AUTH.md", "/domains"],
+  ["./domain/PAYMENTS.md", "/domains"],
+  ["./domain/DATABASE.md", "/domains"],
+  ["./domain/API.md", "/domains"],
+  ["./domain/ROUTES.md", "/domains"],
+  ["./domain/I18N.md", "/domains"],
+  ["./ui/DESIGN.md", "/design"],
+  ["./ui/FRONTEND.md", "/design"],
+  ["../WORKFLOW.md", "/guide"],
+  ["../QA.md", "/guide"],
+  ["../RISK.md", "/guide"],
+  ["../REFERENCE.md", "/guide"],
+  ["./AGENTS.md", "/guide"],
+  ["./REQUIREMENTS.md", "/requirements"],
+  ["./docs/GUIDE.md", "/guide"],
   ["./docs/DESIGN.md", "/design"],
-  ["./docs/FRONTEND.md", "/frontend"],
+  ["./docs/DOMAINS.md", "/domains"],
+  ["./docs/QUALITY.md", "/quality"],
+  ["./docs/DECISIONS.md", "/decisions"],
+  ["./docs/WORKFLOW.md", "/guide"],
+  ["./docs/QA.md", "/guide"],
+  ["./docs/RISK.md", "/guide"],
+  ["./docs/PRINCIPLES.md", "/guide"],
+  ["./docs/REFERENCE.md", "/guide"],
+  ["./docs/domain/ROUTES.md", "/domains"],
+  ["./docs/domain/DATABASE.md", "/domains"],
   ["./docs/ui/DESIGN.md", "/design"],
-  ["./docs/ui/FRONTEND.md", "/frontend"],
+  ["./docs/ui/FRONTEND.md", "/design"],
 ]);
 
 function normalizePath(p) {
@@ -177,20 +191,13 @@ async function mirrorMarkdownTree(srcDirAbs, destDirAbs) {
 
 async function writeCorePages() {
   const corePages = [
-    { sourceAbs: path.join(docsRoot, "PROJECT.md"), target: "project.mdx" },
     { sourceAbs: path.join(repoRoot, "ARCHITECTURE.md"), target: "engineering.mdx" },
-    { sourceAbs: path.join(docsRoot, "WORKFLOW.md"), target: "workflow.mdx" },
-    { sourceAbs: path.join(docsRoot, "QA.md"), target: "qa.mdx" },
-    { sourceAbs: path.join(docsRoot, "RISK.md"), target: "risk.mdx" },
-    { sourceAbs: path.join(docsRoot, "REFERENCE.md"), target: "reference.mdx" },
-    { sourceAbs: path.join(docsRoot, "domain", "AUTH.md"), target: "auth.mdx" },
-    { sourceAbs: path.join(docsRoot, "domain", "PAYMENTS.md"), target: "payments.mdx" },
-    { sourceAbs: path.join(docsRoot, "domain", "DATABASE.md"), target: "database.mdx" },
-    { sourceAbs: path.join(docsRoot, "domain", "API.md"), target: "api.mdx" },
-    { sourceAbs: path.join(docsRoot, "domain", "ROUTES.md"), target: "routes.mdx" },
-    { sourceAbs: path.join(docsRoot, "domain", "I18N.md"), target: "i18n.mdx" },
-    { sourceAbs: path.join(docsRoot, "ui", "DESIGN.md"), target: "design.mdx" },
-    { sourceAbs: path.join(docsRoot, "ui", "FRONTEND.md"), target: "frontend.mdx" },
+    { sourceAbs: path.join(repoRoot, "REQUIREMENTS.md"), target: "requirements.mdx" },
+    { sourceAbs: path.join(docsRoot, "GUIDE.md"), target: "guide.mdx" },
+    { sourceAbs: path.join(docsRoot, "DESIGN.md"), target: "design.mdx" },
+    { sourceAbs: path.join(docsRoot, "DOMAINS.md"), target: "domains.mdx" },
+    { sourceAbs: path.join(docsRoot, "QUALITY.md"), target: "quality.mdx" },
+    { sourceAbs: path.join(docsRoot, "DECISIONS.md"), target: "decisions.mdx" },
     { sourceAbs: path.join(docsRoot, "public", "00-INDEX.md"), target: "public-docs.mdx" },
   ];
 
@@ -254,20 +261,13 @@ async function writeHomePage() {
 ## Primary Sections
 
 - [Docs Index](/)
-- [Project](/project)
 - [Engineering](/engineering)
-- [Workflow](/workflow)
-- [QA](/qa)
-- [Risk](/risk)
-- [Reference](/reference)
-- [Auth](/auth)
-- [Payments](/payments)
-- [Database](/database)
-- [API](/api)
-- [Routes](/routes)
-- [i18n](/i18n)
+- [Requirements](/requirements)
+- [Guide](/guide)
 - [Design](/design)
-- [Frontend](/frontend)
+- [Domains](/domains)
+- [Quality](/quality)
+- [Decisions](/decisions)
 - [Public Docs](/public-docs)
 
 ## Other

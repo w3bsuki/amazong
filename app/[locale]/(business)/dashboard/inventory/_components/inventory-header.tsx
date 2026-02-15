@@ -1,4 +1,4 @@
-import { IconAlertTriangle, IconCheck, IconPackage, IconX } from "@tabler/icons-react"
+import { IconAlertTriangle, IconCheck, IconPackage, IconX } from "@/lib/icons/tabler"
 
 type InventorySummary = {
   totalStock: number

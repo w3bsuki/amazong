@@ -6,7 +6,7 @@ import {
   IconLogout,
   IconNotification,
   IconUserCircle,
-} from "@tabler/icons-react"
+} from "@/lib/icons/tabler"
 import { useTranslations } from "next-intl"
 
 import { UserAvatar } from "@/components/shared/user-avatar"

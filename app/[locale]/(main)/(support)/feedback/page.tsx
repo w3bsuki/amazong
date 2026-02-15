@@ -8,7 +8,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { 
   ChatCircleDots, Star, Lightbulb, Bug, Heart,
   PaperPlaneTilt, CheckCircle
-} from "@phosphor-icons/react/dist/ssr"
+} from "@/lib/icons/phosphor"
 import { Link } from "@/i18n/routing"
 import type { Metadata } from 'next'
 import { validateLocale } from "@/i18n/routing"

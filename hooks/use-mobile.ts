@@ -1,6 +1,7 @@
 import { useSyncExternalStore } from 'react'
 
 const MOBILE_BREAKPOINT = 768
+const MOBILE_MEDIA_QUERY = `(max-width: ${MOBILE_BREAKPOINT - 1}px)`
 
 /**
  * Hook to detect if the viewport is mobile-sized.
@@ -18,17 +19,22 @@ export function useIsMobile(): boolean {
 }
 
 function subscribe(callback: () => void): () => void {
-  const mql = window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT - 1}px)`)
-  mql.addEventListener('change', callback)
-  window.addEventListener('resize', callback)
+  const mql = window.matchMedia(MOBILE_MEDIA_QUERY)
+  const onChange = () => callback()
+
+  mql.addEventListener('change', onChange)
+  window.addEventListener('resize', onChange)
+  // Force one immediate client snapshot pass after hydration.
+  queueMicrotask(callback)
+
   return () => {
-    mql.removeEventListener('change', callback)
-    window.removeEventListener('resize', callback)
+    mql.removeEventListener('change', onChange)
+    window.removeEventListener('resize', onChange)
   }
 }
 
 function getSnapshot(): boolean {
-  return window.innerWidth < MOBILE_BREAKPOINT
+  return window.matchMedia(MOBILE_MEDIA_QUERY).matches
 }
 
 function getServerSnapshot(): boolean {

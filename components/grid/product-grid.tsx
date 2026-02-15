@@ -117,6 +117,7 @@ export function ProductGrid({
                   condition={product.condition}
                   freeShipping={product.freeShipping ?? false}
                   isBoosted={Boolean(product.isBoosted)}
+                  {...(product.categoryPath ? { categoryPath: product.categoryPath } : {})}
                 />
               ) : preset === "desktop" ? (
                 <DesktopProductCard

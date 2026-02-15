@@ -28,7 +28,7 @@ import {
   IconCopy,
   IconPencil,
   IconTrash,
-} from "@tabler/icons-react"
+} from "@/lib/icons/tabler"
 
 // Placeholder function - would need actual discounts table
 async function getBusinessDiscounts() {

@@ -1,6 +1,6 @@
 "use client"
 
-import { IconTrendingUp, IconTrendingDown, IconMinus, IconSparkles } from "@tabler/icons-react"
+import { IconTrendingUp, IconTrendingDown, IconMinus, IconSparkles } from "@/lib/icons/tabler"
 
 interface AccountHeroCardProps {
   totals: {

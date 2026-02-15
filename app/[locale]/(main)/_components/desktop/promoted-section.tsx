@@ -13,7 +13,7 @@
 
 import * as React from "react"
 import { useTranslations } from "next-intl"
-import { Megaphone, ArrowRight } from "@phosphor-icons/react"
+import { Megaphone, ArrowRight } from "@/lib/icons/phosphor"
 import { cn } from "@/lib/utils"
 import { DesktopProductCard } from "@/components/shared/product/card/desktop"
 import { Button } from "@/components/ui/button"

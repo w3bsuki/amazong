@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Link } from "@/i18n/routing"
 import { useTranslations } from "next-intl"
 import type { User } from "@supabase/supabase-js"
-import { ChatCircle, CaretRight } from "@phosphor-icons/react"
+import { ChatCircle, CaretRight } from "@/lib/icons/phosphor"
 import { createClient } from "@/lib/supabase/client"
 import { CountBadge } from "@/components/shared/count-badge"
 

@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react"
 import { useTranslations } from "next-intl"
 import { useSearchParams } from "next/navigation"
-import { Bell, BellRinging, Check } from "@phosphor-icons/react"
+import { Bell, BellRinging, Check } from "@/lib/icons/phosphor"
 import { Button } from "@/components/ui/button"
 import { useToast } from "@/hooks/use-toast"
 import { cn } from "@/lib/utils"

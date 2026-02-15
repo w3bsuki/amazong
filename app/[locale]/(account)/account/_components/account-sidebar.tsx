@@ -21,7 +21,7 @@ import {
   IconBell,
   IconLogout,
   IconSparkles,
-} from "@tabler/icons-react"
+} from "@/lib/icons/tabler"
 import { PlansModal, type PlansModalServerActions } from "./plans-modal"
 import { Button } from "@/components/ui/button"
 
@@ -46,7 +46,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { IconDotsVertical } from "@tabler/icons-react"
+import { IconDotsVertical } from "@/lib/icons/tabler"
 import { useSidebar } from "@/components/layout/sidebar/sidebar"
 
 const getAccountNavItems = (locale: string) => [

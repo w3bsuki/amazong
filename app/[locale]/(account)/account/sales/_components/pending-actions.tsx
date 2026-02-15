@@ -4,7 +4,7 @@ import { Link } from "@/i18n/routing"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { ChatCircle, Package, WarningCircle } from "@phosphor-icons/react"
+import { ChatCircle, Package, WarningCircle } from "@/lib/icons/phosphor"
 import { useTranslations } from "next-intl"
 
 interface PendingActionsProps {

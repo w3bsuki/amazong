@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { MegaphoneSimple } from "@phosphor-icons/react"
+import { MegaphoneSimple } from "@/lib/icons/phosphor"
 import { Check } from "lucide-react"
 import { Link } from "@/i18n/routing"
 import { useLocale, useTranslations } from "next-intl"
@@ -13,6 +13,7 @@ import { UserAvatar } from "@/components/shared/user-avatar"
 import { useDrawer, type QuickViewProduct } from "@/components/providers/drawer-context"
 import { isBoostActiveNow } from "@/lib/boost/boost-status"
 import { getListingOverlayBadgeVariants } from "@/lib/ui/badge-intent"
+import { getCategoryName } from "@/lib/category-display"
 
 import { ProductCardActions } from "./actions"
 import { ProductCardImage } from "./image"
@@ -79,6 +80,26 @@ export function MobileProductCard({
     const normalized = sellerName?.trim()
     return normalized && normalized.length > 0 ? normalized : null
   }, [sellerName])
+
+  const rootCategoryLabel = React.useMemo(() => {
+    const rootCategory = categoryPath?.[0]
+    if (!rootCategory) return null
+
+    const fallbackName = rootCategory.name?.trim()
+    if (!fallbackName) return null
+
+    const localizedName = getCategoryName(
+      {
+        id: rootCategory.slug || fallbackName,
+        slug: rootCategory.slug || fallbackName,
+        name: fallbackName,
+        name_bg: rootCategory.nameBg ?? null,
+      },
+      locale
+    ).trim()
+
+    return localizedName || fallbackName
+  }, [categoryPath, locale])
 
   const isBoostedActive = React.useMemo(() => {
     if (!isBoosted) return false
@@ -246,6 +267,12 @@ export function MobileProductCard({
             </span>
             <span className="min-w-0 flex-1 truncate text-xs font-medium text-foreground">{sellerNameLabel}</span>
           </div>
+        )}
+
+        {rootCategoryLabel && (
+          <span data-slot="category" className="min-w-0 truncate text-2xs font-medium text-muted-foreground">
+            {rootCategoryLabel}
+          </span>
         )}
 
         <h3

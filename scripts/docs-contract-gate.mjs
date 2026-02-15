@@ -6,91 +6,59 @@ const activeDocsRoot = detectActiveDocsRoot();
 
 const requiredRootFiles = ["AGENTS.md", "ARCHITECTURE.md", "REQUIREMENTS.md", "TASKS.md"];
 
-const requiredActiveDocsFiles = [
-  "INDEX.md",
-  "PROJECT.md",
-  "WORKFLOW.md",
-  "QA.md",
-  "RISK.md",
-  "REFERENCE.md",
-  "QUALITY.md",
-  "PRINCIPLES.md",
-  "DECISIONS.md",
-  "domain/AUTH.md",
-  "domain/PAYMENTS.md",
-  "domain/DATABASE.md",
-  "domain/API.md",
-  "domain/ROUTES.md",
-  "domain/I18N.md",
-  "ui/DESIGN.md",
-  "ui/FRONTEND.md",
-];
+const requiredActiveDocsFiles = ["GUIDE.md", "DESIGN.md", "DOMAINS.md", "QUALITY.md", "DECISIONS.md"];
 
 const requiredHeadingsByFile = new Map([
   [
     "AGENTS.md",
     [
-      "## Context Loading (Default)",
-      "## Optional Context",
+      "## Product",
+      "## Context Loading",
       "## Execution Rules",
       "## High-Risk Pause",
       "## Output Contract",
     ],
   ],
   [
-    "INDEX.md",
-    [
-      "## Start Here",
-      "## Default Load Order",
-      "## Load Only If Needed",
-      "## Archive Map",
-    ],
-  ],
-  [
-    "PROJECT.md",
-    [
-      "## Product Snapshot",
-      "## Current Phase",
-      "## P0 Flows",
-      "## Out of Scope",
-      "## Done Means",
-    ],
-  ],
-  [
-    "WORKFLOW.md",
+    "GUIDE.md",
     [
       "## Task Loop",
       "## Risk Lanes",
-      "## Prompt Packet",
+      "## High-Risk Pause",
       "## Verification Matrix",
       "## Report Format",
+      "## Golden Principles",
+      "## How Principles Evolve",
     ],
   ],
   [
-    "QA.md",
+    "DESIGN.md",
     [
-      "## Gate Matrix",
-      "## When To Run Unit",
-      "## When To Run E2E",
-      "## Manual Checks",
-      "## Release Checks",
+      "## Runtime Truth Paths",
+      "## Token Contract",
+      "## Component Boundaries",
+      "## Server vs Client Defaults",
+      "## Data Fetching + Caching",
+      "## Design Thinking",
+      "## Anti-Slop Rules",
+      "## Mobile UX Quality Bar",
+      "## Ship Criteria",
+      "## Accessibility Baseline",
+      "## Layout + Motion Tokens",
+      "## Verification",
     ],
   ],
   [
-    "RISK.md",
+    "DOMAINS.md",
     [
-      "## Stop-And-Ask Domains",
-      "## Approval Log Format",
-      "## Rollback Expectations",
-    ],
-  ],
-  [
-    "REFERENCE.md",
-    [
-      "## Domain Links",
-      "## Cross-Cutting References",
-      "## Code Truth Paths",
-      "## When To Ignore Docs And Read Code",
+      "## Runtime Truth Paths",
+      "## Auth",
+      "## Database",
+      "## Payments",
+      "## API",
+      "## Routes",
+      "## i18n",
+      "## Verification",
     ],
   ],
   [
@@ -102,13 +70,6 @@ const requiredHeadingsByFile = new Map([
     ],
   ],
   [
-    "PRINCIPLES.md",
-    [
-      "## 1. Parse at the boundary, trust inside",
-      "## 2. Code is runtime truth",
-    ],
-  ],
-  [
     "DECISIONS.md",
     [
       "## Format",
@@ -116,69 +77,24 @@ const requiredHeadingsByFile = new Map([
       "## How To Add A Decision",
     ],
   ],
-  [
-    "domain/AUTH.md",
-    ["## Scope", "## Runtime Truth Paths", "## Verification", "## Deep Dive", "## See Also"],
-  ],
-  [
-    "domain/PAYMENTS.md",
-    ["## Scope", "## Runtime Truth Paths", "## Verification", "## Deep Dive", "## See Also"],
-  ],
-  [
-    "domain/DATABASE.md",
-    ["## Scope", "## Runtime Truth Paths", "## Verification", "## Deep Dive", "## See Also"],
-  ],
-  [
-    "domain/API.md",
-    ["## Scope", "## Runtime Truth Paths", "## Verification", "## Deep Dive", "## See Also"],
-  ],
-  [
-    "domain/ROUTES.md",
-    ["## Scope", "## Runtime Truth Paths", "## Verification", "## Deep Dive", "## See Also"],
-  ],
-  [
-    "domain/I18N.md",
-    ["## Scope", "## Runtime Truth Paths", "## Verification", "## Deep Dive", "## See Also"],
-  ],
-  [
-    "ui/DESIGN.md",
-    [
-      "## Scope",
-      "## Runtime Truth Paths",
-      "### 2.1) Design Thinking (Before Coding)",
-      "### 2.2) Anti-Slop Rules (Banned Patterns)",
-      "## See Also",
-    ],
-  ],
-  [
-    "ui/FRONTEND.md",
-    [
-      "## Scope",
-      "## Runtime Truth Paths",
-      "## 6) Design Quality Bar (Ship Criteria)",
-      "## 8) Verification",
-      "## See Also",
-    ],
-  ],
 ]);
 
 const stalePointerPatterns = [
-  // Retired root-level docs paths (pre-cutover). Avoid matching archive paths like
-  // `pre-cutover-docs/*.md` (the directory name ends with `docs/`).
   /(?<!-)\bdocs\/HARNESS\.md\b/i,
   /(?<!-)\bdocs\/PROMPTS\.md\b/i,
   /(?<!-)\bdocs\/PRD\.md\b/i,
   /(?<!-)\bdocs\/PLANS\.md\b/i,
   /(?<!-)\bdocs\/PRODUCT_SENSE\.md\b/i,
-  // Pre-cutover domain/UI docs lived at docs/*.md. Active docs moved under docs/domain and docs/ui.
-  /(?<!-)\bdocs\/AUTH\.md\b/i,
-  /(?<!-)\bdocs\/PAYMENTS\.md\b/i,
-  /(?<!-)\bdocs\/DATABASE\.md\b/i,
-  /(?<!-)\bdocs\/API\.md\b/i,
-  /(?<!-)\bdocs\/ROUTES\.md\b/i,
-  /(?<!-)\bdocs\/I18N\.md\b/i,
-  /(?<!-)\bdocs\/DESIGN\.md\b/i,
-  /(?<!-)\bdocs\/FRONTEND\.md\b/i,
+  /(?<!-)\bdocs\/INDEX\.md\b/i,
+  /(?<!-)\bdocs\/PROJECT\.md\b/i,
+  /(?<!-)\bdocs\/WORKFLOW\.md\b/i,
+  /(?<!-)\bdocs\/QA\.md\b/i,
+  /(?<!-)\bdocs\/RISK\.md\b/i,
+  /(?<!-)\bdocs\/REFERENCE\.md\b/i,
+  /(?<!-)\bdocs\/PRINCIPLES\.md\b/i,
+  /(?<!-)\bdocs\/ARCHITECTURE\.md\b/i,
+  /(?<!-)\bdocs\/domain\/(AUTH|PAYMENTS|DATABASE|API|ROUTES|I18N)\.md\b/i,
+  /(?<!-)\bdocs\/ui\/(DESIGN|FRONTEND)\.md\b/i,
 ];
 
 function normalizePath(p) {
@@ -243,9 +159,10 @@ function checkStalePointers() {
 
   const filesToCheck = [
     "AGENTS.md",
-    "README.md",
     ".github/copilot-instructions.md",
-    ...requiredActiveDocsFiles.map((p) => `${activeDocsRoot}/${p}`),
+    `${activeDocsRoot}/GUIDE.md`,
+    `${activeDocsRoot}/DESIGN.md`,
+    `${activeDocsRoot}/DOMAINS.md`,
   ];
 
   for (const relPath of filesToCheck) {
@@ -265,25 +182,25 @@ function checkStalePointers() {
 function checkSubstance() {
   const errors = [];
 
-  // These files are required and should contain real guidance, not pointer shells.
-  const domainAndUi = requiredActiveDocsFiles.filter((p) => p.startsWith("domain/") || p.startsWith("ui/"));
+  const substantiveFiles = [
+    { relPath: "GUIDE.md", minNonEmpty: 120 },
+    { relPath: "DESIGN.md", minNonEmpty: 170 },
+    { relPath: "DOMAINS.md", minNonEmpty: 260 },
+    { relPath: "QUALITY.md", minNonEmpty: 50 },
+    { relPath: "DECISIONS.md", minNonEmpty: 50 },
+  ];
 
-  // Cross-cutting docs that must also have substance
-  const crossCuttingSubstance = ["QUALITY.md", "PRINCIPLES.md", "DECISIONS.md"];
-  const substantiveFiles = [...domainAndUi, ...crossCuttingSubstance];
-
-  for (const relPath of substantiveFiles) {
+  for (const { relPath, minNonEmpty } of substantiveFiles) {
     const absPath = path.resolve(repoRoot, activeDocsRoot, relPath);
     if (!fs.existsSync(absPath)) continue;
 
     const text = readText(`${activeDocsRoot}/${relPath}`);
     const lines = text.split("\n");
-    const nonEmptyLines = lines.filter((l) => l.trim().length > 0).length;
+    const nonEmptyLines = lines.filter((line) => line.trim().length > 0).length;
 
-    const minNonEmpty = relPath.startsWith("ui/") ? 70 : 50;
     if (nonEmptyLines < minNonEmpty) {
       errors.push(
-        `Insufficient substance in ${activeDocsRoot}/${relPath}: ${nonEmptyLines} non-empty lines (min ${minNonEmpty})`
+        `Insufficient substance in ${activeDocsRoot}/${relPath}: ${nonEmptyLines} non-empty lines (min ${minNonEmpty})`,
       );
     }
   }

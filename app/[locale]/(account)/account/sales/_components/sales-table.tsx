@@ -19,7 +19,7 @@ import {
   MapPin,
   User,
   Clock,
-} from "@phosphor-icons/react"
+} from "@/lib/icons/phosphor"
 import type { SaleItem } from "../types"
 
 interface SalesTableProps {

@@ -48,7 +48,7 @@ import {
     User,
     Bell,
     Storefront,
-} from "@phosphor-icons/react"
+} from "@/lib/icons/phosphor"
 import { Button } from "@/components/ui/button"
 import { IconButton } from "@/components/ui/icon-button"
 import { Link } from "@/i18n/routing"

@@ -8,7 +8,7 @@ import {
     AccordionItem,
     AccordionTrigger,
 } from "@/components/ui/accordion"
-import { CaretUp } from "@phosphor-icons/react"
+import { CaretUp } from "@/lib/icons/phosphor"
 
 // Social Media Icons (inline SVGs for better performance)
 const FacebookIcon = () => (

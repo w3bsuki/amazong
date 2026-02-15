@@ -1,6 +1,6 @@
 "use client"
 
-import { Crown, Lightning, Package, ChartLine, Headset, Medal, Info } from "@phosphor-icons/react"
+import { Crown, Lightning, Package, ChartLine, Headset, Medal, Info } from "@/lib/icons/phosphor"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"

@@ -13,7 +13,7 @@ import {
   CheckCircle,
   HeartBreak,
   SpinnerGap,
-} from "@phosphor-icons/react"
+} from "@/lib/icons/phosphor"
 import { toast } from "sonner"
 import { UserAvatar } from "@/components/shared/user-avatar"
 

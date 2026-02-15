@@ -1,5 +1,5 @@
 import * as React from "react"
-import { type Icon } from "@tabler/icons-react"
+import { type Icon } from "@/lib/icons/tabler"
 
 import {
   SidebarGroup,

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo, useCallback } from "react";
-import { CaretRight, Check, MagnifyingGlass, CaretLeft, FolderSimple } from "@phosphor-icons/react";
+import { CaretRight, Check, MagnifyingGlass, CaretLeft, FolderSimple } from "@/lib/icons/phosphor";
 import {
   Dialog,
   DialogContent,
@@ -378,6 +378,7 @@ function CategoryModalContent({
   const [childrenById, setChildrenById] = useState<Record<string, Category[]>>({});
   const [loadingChildrenById, setLoadingChildrenById] = useState<Record<string, boolean>>({});
   const tSell = useTranslations("Sell")
+  const tCommon = useTranslations("Common")
 
   const MAX_DEPTH = 4; // L0 -> L1 -> L2 -> L3 -> L4 (supports 647 L4 categories)
   const levelLabels = useMemo(
@@ -554,6 +555,7 @@ function CategoryModalContent({
                     type="button"
                     onClick={handleBack}
                     className="size-8 flex items-center justify-center rounded-lg bg-background border border-border shadow-xs shrink-0 transition-colors hover:bg-hover active:bg-active"
+                    aria-label={tCommon("back")}
                   >
                     <CaretLeft className="size-4" weight="bold" />
                   </button>

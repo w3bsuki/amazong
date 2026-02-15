@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, memo, useMemo } from "react";
-import { Sliders, Plus, X, Info, SpinnerGap, WarningCircle, CheckCircle, CaretRight } from "@phosphor-icons/react";
+import { Sliders, Plus, X, Info, SpinnerGap, WarningCircle, CheckCircle, CaretRight } from "@/lib/icons/phosphor";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";

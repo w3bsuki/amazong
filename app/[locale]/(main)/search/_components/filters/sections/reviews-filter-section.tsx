@@ -1,6 +1,6 @@
 "use client"
 
-import { Check, Star } from "@phosphor-icons/react"
+import { Check, Star } from "@/lib/icons/phosphor"
 import { useTranslations } from "next-intl"
 import { cn } from "@/lib/utils"
 import { AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"

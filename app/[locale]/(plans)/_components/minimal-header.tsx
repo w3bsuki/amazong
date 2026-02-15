@@ -1,7 +1,7 @@
 "use client"
 
 import { Link } from "@/i18n/routing"
-import { ArrowLeft, ShoppingCart } from "@phosphor-icons/react"
+import { ArrowLeft, ShoppingCart } from "@/lib/icons/phosphor"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { useTranslations } from "next-intl"

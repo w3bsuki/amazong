@@ -1,7 +1,7 @@
 "use client"
 
 import { useMemo, useCallback, useEffect, useState } from "react"
-import { ShoppingCart, Package, Minus, Plus, SpinnerGap, Trash, X } from "@phosphor-icons/react"
+import { ShoppingCart, Package, Minus, Plus, SpinnerGap, Trash, X } from "@/lib/icons/phosphor"
 import {
   Drawer,
   DrawerContent,

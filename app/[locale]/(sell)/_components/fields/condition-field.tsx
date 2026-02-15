@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Controller } from "react-hook-form";
-import { Sparkle, Check, CaretRight } from "@phosphor-icons/react";
+import { Sparkle, Check, CaretRight } from "@/lib/icons/phosphor";
 import { Field, FieldLabel, FieldDescription, FieldError, FieldContent } from "@/components/shared/field";
 import { cn } from "@/lib/utils";
 import { conditionOptions } from "@/lib/sell/schema-v4";

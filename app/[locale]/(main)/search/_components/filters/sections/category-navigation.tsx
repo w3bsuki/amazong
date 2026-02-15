@@ -1,6 +1,6 @@
 "use client"
 
-import { CaretDown, CaretRight } from "@phosphor-icons/react"
+import { CaretDown, CaretRight } from "@/lib/icons/phosphor"
 import { useTranslations } from "next-intl"
 import { Link } from "@/i18n/routing"
 import { CategoryBreadcrumbTrail } from "./category-breadcrumb-trail"

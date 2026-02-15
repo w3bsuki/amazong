@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useMemo, useState } from "react"
-import { MapPin } from "@phosphor-icons/react"
+import { MapPin } from "@/lib/icons/phosphor"
 import { useTranslations } from "next-intl"
 import { BULGARIAN_CITIES } from "@/lib/bulgarian-cities"
 import { cn } from "@/lib/utils"

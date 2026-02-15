@@ -7,7 +7,7 @@ import {
   CaretLeft,
   CaretRight,
   X,
-} from "@phosphor-icons/react"
+} from "@/lib/icons/phosphor"
 import { cn } from "@/lib/utils"
 import { useTranslations } from "next-intl"
 import { useFilterCount } from "@/hooks/use-filter-count"

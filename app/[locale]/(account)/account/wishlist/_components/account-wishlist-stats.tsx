@@ -1,6 +1,6 @@
 "use client"
 
-import { IconHeart, IconPackage, IconPackageOff, IconCurrencyDollar } from "@tabler/icons-react"
+import { IconHeart, IconPackage, IconPackageOff, IconCurrencyDollar } from "@/lib/icons/tabler"
 
 import { Badge } from "@/components/ui/badge"
 import {

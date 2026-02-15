@@ -4,6 +4,7 @@ import path from "node:path";
 const projectRoot = process.cwd();
 const targetDirs = process.argv.slice(2);
 const dirs = targetDirs.length ? targetDirs : ["app", "components"]; // workspace-relative
+const shouldWriteReport = String(process.env.WRITE_CLEANUP_REPORTS || "") === "1";
 
 const includeExt = new Set([".ts", ".tsx", ".js", ".jsx", ".css", ".mjs"]);
 
@@ -217,11 +218,13 @@ if (authCandidates.length) {
 }
 
 const reportPath = path.resolve(projectRoot, "cleanup/palette-scan-report.txt");
-try {
-  fs.mkdirSync(path.dirname(reportPath), { recursive: true });
-  fs.writeFileSync(reportPath, reportLines.join("\n"), "utf8");
-} catch {
-  // Best-effort reporting.
+if (shouldWriteReport) {
+  try {
+    fs.mkdirSync(path.dirname(reportPath), { recursive: true });
+    fs.writeFileSync(reportPath, reportLines.join("\n"), "utf8");
+  } catch {
+    // Best-effort reporting.
+  }
 }
 
 console.log("Top offenders (rough match counts)");
@@ -233,7 +236,9 @@ console.log("--------------------------------");
 console.log(
   `Totals: files=${totals.files} palette=${totals.palette} mono=${totals.mono ?? 0} gradient=${totals.gradient} rawGradient=${totals.rawGradient ?? 0} fill=${totals.fill}`
 );
-console.log(`Full report: ${path.relative(projectRoot, reportPath).replaceAll("\\", "/")}`);
+if (shouldWriteReport) {
+  console.log(`Full report: ${path.relative(projectRoot, reportPath).replaceAll("\\", "/")}`);
+}
 console.log(`Auth candidates found: ${authCandidates.length}`);
 
 if (process.env.FAIL_ON_FINDINGS === "1") {

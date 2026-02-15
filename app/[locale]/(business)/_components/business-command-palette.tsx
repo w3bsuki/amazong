@@ -18,7 +18,7 @@ import {
   IconFileText,
   IconTag,
   IconDiscount,
-} from "@tabler/icons-react"
+} from "@/lib/icons/tabler"
 import {
   CommandDialog,
   CommandEmpty,

@@ -15,7 +15,7 @@ import {
   Package,
   MapPin,
   ShieldCheck,
-} from "@phosphor-icons/react"
+} from "@/lib/icons/phosphor"
 import { Link } from "@/i18n/routing"
 import { useTranslations, useLocale } from "next-intl"
 import { cn } from "@/lib/utils"

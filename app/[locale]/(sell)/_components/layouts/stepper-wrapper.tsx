@@ -2,7 +2,7 @@
 
 import { type ReactNode, useRef, useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowRight, CaretLeft, Rocket, X, SpinnerGap } from "@phosphor-icons/react";
+import { ArrowRight, CaretLeft, Rocket, X, SpinnerGap } from "@/lib/icons/phosphor";
 import { Link } from "@/i18n/routing";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -155,6 +155,7 @@ export function StepperWrapper({
           <div className="w-12 flex justify-end">
             <Link 
               href="/"
+              aria-label={tCommon("close")}
               className="size-10 flex items-center justify-center rounded-md hover:bg-muted transition-colors"
             >
               <X className="size-5" />

@@ -19,7 +19,7 @@ import {
   GameController,
   MusicNotes,
   PawPrint,
-} from "@phosphor-icons/react"
+} from "@/lib/icons/phosphor"
 
 import { Button } from "@/components/ui/button"
 import { InterestChip } from "../_components/interest-chip"

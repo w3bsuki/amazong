@@ -84,7 +84,7 @@ import {
   CoffeeBean,
   Carrot,
   SquaresFour,
-} from "@phosphor-icons/react/ssr"
+} from "@/lib/icons/phosphor"
 
 type PhosphorIcon = typeof Monitor
 

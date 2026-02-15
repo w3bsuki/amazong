@@ -4,7 +4,7 @@ import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/h
 import { Button } from "@/components/ui/button"
 import { Link } from "@/i18n/routing"
 import { useLocale, useTranslations } from "next-intl"
-import { Heart } from "@phosphor-icons/react"
+import { Heart } from "@/lib/icons/phosphor"
 import { useEffect, useMemo, useState } from "react"
 
 import { useWishlist, type WishlistItem } from "@/components/providers/wishlist-context"

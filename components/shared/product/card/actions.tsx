@@ -6,7 +6,7 @@ import { useWishlist } from "@/components/providers/wishlist-context"
 import { toast } from "sonner"
 import { useTranslations } from "next-intl"
 import { cn } from "@/lib/utils"
-import { Heart, Plus, ShoppingCart } from "@phosphor-icons/react"
+import { Heart, Plus, ShoppingCart } from "@/lib/icons/phosphor"
 import { IconButton } from "@/components/ui/icon-button"
 
 // =============================================================================

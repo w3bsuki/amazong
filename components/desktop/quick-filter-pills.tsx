@@ -2,7 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
-import { CaretDown, Check, MapPin, Package, Percent, Star } from "@phosphor-icons/react";
+import { CaretDown, Check, MapPin, Package, Percent, Star } from "@/lib/icons/phosphor";
 import {
   DropdownMenu,
   DropdownMenuContent,

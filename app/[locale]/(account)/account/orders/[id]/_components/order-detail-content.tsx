@@ -33,7 +33,7 @@ import {
   ArrowSquareOut,
   SpinnerGap,
   Warning,
-} from "@phosphor-icons/react"
+} from "@/lib/icons/phosphor"
 import { toast } from "sonner"
 import { formatDistanceToNow, format } from "date-fns"
 import { bg, enUS } from "date-fns/locale"

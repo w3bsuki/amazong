@@ -1,7 +1,7 @@
 "use client"
 
 import { Link } from "@/i18n/routing"
-import { IconCirclePlusFilled, IconMail, type Icon } from "@tabler/icons-react"
+import { IconCirclePlusFilled, IconMail, type Icon } from "@/lib/icons/tabler"
 import { useTranslations } from "next-intl"
 
 import { Button } from "@/components/ui/button"

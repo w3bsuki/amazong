@@ -4,7 +4,7 @@ import { MobileCartDropdown } from "@/components/layout/header/cart/mobile-cart-
 import { MobileWishlistButton } from "@/components/shared/wishlist/mobile-wishlist-button"
 import { CategoryCircle } from "@/components/shared/category/category-circle"
 import { getCategoryName, getCategorySlugKey } from "@/lib/category-display"
-import { MagnifyingGlass, ArrowLeft } from "@phosphor-icons/react"
+import { MagnifyingGlass, ArrowLeft } from "@/lib/icons/phosphor"
 import { Link, usePathname } from "@/i18n/routing"
 import { useTranslations } from "next-intl"
 import { cn } from "@/lib/utils"

@@ -8,7 +8,7 @@ import {
   MapPin,
   ShieldCheck,
   Truck,
-} from "@phosphor-icons/react"
+} from "@/lib/icons/phosphor"
 import { X } from "lucide-react"
 import { useTranslations } from "next-intl"
 

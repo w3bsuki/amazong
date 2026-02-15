@@ -9,7 +9,7 @@
 // =============================================================================
 
 import { Star } from "lucide-react"
-import { CheckCircle } from "@phosphor-icons/react"
+import { CheckCircle } from "@/lib/icons/phosphor"
 import { UserAvatar } from "@/components/shared/user-avatar"
 import { Button } from "@/components/ui/button"
 import { useTranslations } from "next-intl"

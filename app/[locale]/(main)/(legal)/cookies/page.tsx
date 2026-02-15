@@ -3,7 +3,7 @@ import { breadcrumbPresets } from "../../../_components/navigation/app-breadcrum
 import { 
   Cookie, Shield, Gear, Eye, Bell, 
   ChartBar, Lock
-} from "@phosphor-icons/react/dist/ssr"
+} from "@/lib/icons/phosphor"
 import type { Metadata } from 'next'
 import { validateLocale } from "@/i18n/routing"
 import { extractLastUpdatedDate, getPublicDoc, parsePublicDocIntro, parsePublicDocSections } from "@/lib/public-docs"

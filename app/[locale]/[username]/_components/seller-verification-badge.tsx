@@ -1,6 +1,6 @@
 "use client"
 
-import { SealCheck, EnvelopeSimple, Phone, IdentificationCard, Buildings } from "@phosphor-icons/react"
+import { SealCheck, EnvelopeSimple, Phone, IdentificationCard, Buildings } from "@/lib/icons/phosphor"
 import { cn } from "@/lib/utils"
 import { useTranslations } from "next-intl"
 import {

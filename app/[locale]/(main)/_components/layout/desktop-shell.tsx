@@ -56,8 +56,8 @@ export interface DesktopShellProps extends React.ComponentProps<"div"> {
 }
 
 const variantStyles = {
-  default: "bg-background",
-  muted: "bg-background", // Clean white - same as default now
+  default: "bg-surface-page",
+  muted: "bg-surface-subtle",
 } as const;
 
 export function DesktopShell({
@@ -80,6 +80,7 @@ export function DesktopShell({
   return (
     <div
       data-slot="desktop-shell"
+      data-variant={variant}
       data-sidebar={hasSidebar ? "visible" : "hidden"}
       data-sidebar-collapsed={sidebarCollapsed}
       className={cn(
@@ -156,16 +157,25 @@ export function DesktopShellSkeleton({
   sidebarItems?: number;
   contentRows?: number;
 }) {
+  const skeletonSidebarWidth = showSidebar
+    ? "var(--layout-sidebar-w)"
+    : "0px";
+
   return (
-    <div className="min-h-dvh bg-background">
+    <div className="min-h-dvh bg-surface-page">
       <div className="container py-4">
         <div
           className={cn(
             "grid items-start",
             showSidebar
-              ? "grid-cols-1 lg:grid-cols-layout-sidebar gap-4 lg:gap-(--layout-gap)"
+              ? "grid-cols-1 lg:grid-cols-shell gap-4 lg:gap-(--layout-gap)"
               : "grid-cols-1"
           )}
+          style={
+            {
+              "--shell-sidebar-w": skeletonSidebarWidth,
+            } as React.CSSProperties
+          }
         >
           {/* Sidebar skeleton */}
           {showSidebar && (

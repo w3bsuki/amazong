@@ -10,7 +10,7 @@ import {
   Package,
   ArrowRight,
   Robot,
-} from "@phosphor-icons/react"
+} from "@/lib/icons/phosphor"
 import { SearchAiChat } from "@/components/shared/search/ai/search-ai-chat"
 import { FieldLabel } from "@/components/shared/field"
 import { Input } from "@/components/ui/input"

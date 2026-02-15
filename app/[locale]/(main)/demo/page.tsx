@@ -5,12 +5,7 @@ import { getBoostedProducts, getCategoryRowProducts, getNewestProducts, toUI } f
 
 import { DemoLandingLab } from "./demo-lab"
 
-export default async function DemoLandingPage({
-  params,
-}: {
-  params: Promise<{ locale: string }>
-}) {
-  const { locale } = await params
+export async function renderDemoLanding(locale: string) {
   setRequestLocale(locale)
 
   const tMobile = await getTranslations({ locale, namespace: "Home.mobile" })
@@ -106,4 +101,13 @@ export default async function DemoLandingPage({
       }}
     />
   )
+}
+
+export default async function DemoLandingPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>
+}) {
+  const { locale } = await params
+  return renderDemoLanding(locale)
 }

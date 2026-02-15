@@ -3,7 +3,7 @@
 import * as React from "react"
 import { useChat } from "@ai-sdk/react"
 import { DefaultChatTransport } from "ai"
-import { PaperPlaneRight, Robot, CircleNotch, ArrowRight } from "@phosphor-icons/react"
+import { PaperPlaneRight, Robot, CircleNotch, ArrowRight } from "@/lib/icons/phosphor"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"

@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react"
 import Image from "next/image"
-import { FunnelSimple } from "@phosphor-icons/react"
+import { FunnelSimple } from "@/lib/icons/phosphor"
 import { useTranslations } from "next-intl"
 
 import { Link } from "@/i18n/routing"
@@ -12,8 +12,11 @@ import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "
 import { getCategoryName } from "@/lib/category-display"
 import type { CategoryTreeNode } from "@/lib/category-tree"
 import type { UIProduct } from "@/lib/types/products"
+import { getHomeChipClass, getHomeChipCountClass, getHomeChipIconClass } from "../_components/mobile/home-chip-styles"
 
 type FeedScope = "promoted" | "newest" | "nearby" | "forYou"
+
+const FEED_SCOPE_ORDER: FeedScope[] = ["promoted", "newest", "nearby", "forYou"]
 
 interface DemoLabLabels {
   seeAll: string
@@ -139,6 +142,7 @@ export function DemoLandingLab({
     nearby: { label: labels.scopeNearby },
     forYou: { label: labels.scopeForYou },
   }
+  const hasCategoryFilters = selectedCategorySlugs.length > 0
   const bannerContent = labels.scopeBanners[scope]
   const bannerProduct = filteredProducts[0] ?? activeProducts[0] ?? heroProduct
 
@@ -167,46 +171,49 @@ export function DemoLandingLab({
       </section>
 
       <section className="sticky top-(--app-header-offset) z-30 bg-surface-glass px-(--spacing-home-inset) py-2 backdrop-blur-sm">
-        <div className="rounded-2xl border border-border-subtle bg-surface-subtle p-1">
-          <div className="flex items-center gap-1">
-            <div className="grid min-w-0 flex-1 grid-cols-4 gap-1">
-              {(Object.keys(scopeMeta) as FeedScope[]).map((item) => {
-                const active = scope === item
-                return (
-                  <button
-                    key={item}
-                    type="button"
-                    aria-pressed={active}
-                    onClick={() => setScope(item)}
-                    className={[
-                      "inline-flex min-h-(--control-default) min-w-0 items-center justify-center rounded-xl px-1.5 text-sm font-semibold whitespace-nowrap tap-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
-                      active
-                        ? "bg-background text-foreground ring-1 ring-border-subtle"
-                        : "text-muted-foreground hover:bg-hover active:bg-active",
-                    ].join(" ")}
-                  >
-                    <span className="truncate">{scopeMeta[item].label}</span>
-                  </button>
-                )
-              })}
-            </div>
+        <div className="-mx-0.5 overflow-x-auto no-scrollbar touch-pan-x">
+          <div className="flex w-max items-center gap-1.5 px-0.5">
+            {FEED_SCOPE_ORDER.map((item) => {
+              const active = scope === item
+              return (
+                <button
+                  key={item}
+                  type="button"
+                  aria-pressed={active}
+                  onClick={() => setScope(item)}
+                  className={getHomeChipClass({
+                    active,
+                    size: "default",
+                    className: "rounded-xl px-2.5 text-xs font-semibold",
+                  })}
+                >
+                  {scopeMeta[item].label}
+                </button>
+              )
+            })}
+
+            <div aria-hidden="true" className="mx-0.5 h-5 w-px shrink-0 bg-border-subtle" />
 
             <button
               type="button"
               onClick={() => setIsFilterOpen(true)}
               aria-label={labels.filterActionLabel}
-              aria-pressed={selectedCategorySlugs.length > 0}
-              className={[
-                "relative inline-flex min-h-(--control-default) min-w-(--control-default) shrink-0 items-center justify-center rounded-xl px-2 text-sm font-semibold tap-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
-                selectedCategorySlugs.length > 0
-                  ? "bg-background text-foreground ring-1 ring-border-subtle"
-                  : "text-muted-foreground hover:bg-hover active:bg-active",
-              ].join(" ")}
+              aria-pressed={hasCategoryFilters}
+              className={getHomeChipClass({
+                active: hasCategoryFilters,
+                size: "default",
+                className: "gap-1.5 rounded-xl px-2.5 text-xs font-semibold",
+              })}
             >
-              <FunnelSimple size={18} weight="regular" aria-hidden="true" />
-              <span className="sr-only">{labels.filterActionLabel}</span>
-              {selectedCategorySlugs.length > 0 ? (
-                <span className="absolute -right-1 -top-1 inline-flex min-w-4 items-center justify-center rounded-full border border-background bg-foreground px-1 text-2xs font-semibold leading-none text-background">
+              <FunnelSimple
+                size={14}
+                weight="regular"
+                aria-hidden="true"
+                className={getHomeChipIconClass(hasCategoryFilters)}
+              />
+              <span>{labels.filterActionLabel}</span>
+              {hasCategoryFilters ? (
+                <span className={getHomeChipCountClass({ active: hasCategoryFilters })}>
                   {selectedCategorySlugs.length}
                 </span>
               ) : null}

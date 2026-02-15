@@ -3,7 +3,7 @@
 import { useWishlist } from "@/components/providers/wishlist-context"
 import { useCart } from "@/components/providers/cart-context"
 import { Button } from "@/components/ui/button"
-import { Heart, ShoppingCart, Trash, ArrowRight, Share, Check, SpinnerGap } from "@phosphor-icons/react"
+import { Heart, ShoppingCart, Trash, ArrowRight, Share, Check, SpinnerGap } from "@/lib/icons/phosphor"
 import Image from "next/image"
 import { Link } from "@/i18n/routing"
 import { useTranslations, useLocale } from "next-intl"

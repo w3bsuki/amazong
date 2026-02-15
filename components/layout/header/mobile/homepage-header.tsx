@@ -2,7 +2,7 @@
 import { SidebarMenu } from "@/components/layout/sidebar/sidebar-menu"
 import { MobileCartDropdown } from "@/components/layout/header/cart/mobile-cart-dropdown"
 import { MobileWishlistButton } from "@/components/shared/wishlist/mobile-wishlist-button"
-import { MagnifyingGlass } from "@phosphor-icons/react"
+import { MagnifyingGlass } from "@/lib/icons/phosphor"
 import { cn } from "@/lib/utils"
 import { Link } from "@/i18n/routing"
 import { useTranslations } from "next-intl"

@@ -6,11 +6,10 @@ import {
   Rocket,
   Sparkle,
   Spinner,
-  ArrowRight,
   Check,
   Warning,
   X,
-} from "@phosphor-icons/react";
+} from "@/lib/icons/phosphor";
 import { Button } from "@/components/ui/button";
 import { PageContainer } from "../layout/page-container";
 import { cn } from "@/lib/utils";
@@ -45,6 +44,7 @@ interface DesktopLayoutProps {
 }
 
 export function DesktopLayout({
+  onSubmit,
   submitError,
   setSubmitError,
   isSubmitting = false,
@@ -64,16 +64,23 @@ export function DesktopLayout({
 
   const formValues = form.watch();
 
-  // Open review screen
-  const handleOpenReview = useCallback(async () => {
+  const handlePrimaryAction = useCallback(async () => {
     setSubmitError(null);
+
+    if (progress === 100) {
+      await form.handleSubmit(
+        (data) => onSubmit(data),
+        () => {
+          window.scrollTo({ top: 0, behavior: "instant" });
+        }
+      )();
+      return;
+    }
+
     const ok = await form.trigger();
     window.scrollTo({ top: 0, behavior: "instant" });
-
-    if (!ok) {
-      // toast handled in form validation
-    }
-  }, [form, setSubmitError]);
+    if (!ok) return;
+  }, [form, onSubmit, progress, setSubmitError]);
 
   // Manual save
   const handleSaveDraft = useCallback(() => {
@@ -101,7 +108,7 @@ export function DesktopLayout({
             <form
               onSubmit={(e) => {
                 e.preventDefault();
-                void handleOpenReview();
+                void handlePrimaryAction();
               }}
               className="space-y-6"
             >
@@ -179,8 +186,7 @@ export function DesktopLayout({
                 ) : progress === 100 ? (
                   <>
                     <Rocket className="size-5" weight="bold" />
-                    {tSell("steps.review.title")}
-                    <ArrowRight className="size-5" weight="bold" />
+                    {tSell("actions.publishListing")}
                   </>
                 ) : (
                   <>

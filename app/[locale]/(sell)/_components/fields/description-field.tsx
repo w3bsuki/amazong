@@ -1,7 +1,7 @@
 "use client";
 
 import { Controller } from "react-hook-form";
-import { TextAlignLeft, TextB, TextItalic, List } from "@phosphor-icons/react";
+import { TextAlignLeft, TextB, TextItalic, List } from "@/lib/icons/phosphor";
 import { Field, FieldLabel, FieldDescription, FieldError, FieldContent } from "@/components/shared/field";
 import { cn } from "@/lib/utils";
 import { useSellForm } from "../sell-form-provider";

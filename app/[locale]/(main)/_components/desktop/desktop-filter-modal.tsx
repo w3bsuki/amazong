@@ -11,7 +11,7 @@ import {
   MagnifyingGlass, 
   Tag,
   CaretDown
-} from '@phosphor-icons/react'
+} from '@/lib/icons/phosphor'
 import { useTranslations, useLocale } from 'next-intl'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'

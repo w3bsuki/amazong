@@ -35,7 +35,7 @@ import {
   Package,
   Info,
   ArrowRight,
-} from "@phosphor-icons/react"
+} from "@/lib/icons/phosphor"
 import { cn } from "@/lib/utils"
 import { toast } from "sonner"
 import { format, formatDistanceToNow } from "date-fns"

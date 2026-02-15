@@ -2,7 +2,7 @@
 
 import Image from "next/image"
 import { Link } from "@/i18n/routing"
-import { Package, Trash } from "@phosphor-icons/react"
+import { Package, Trash } from "@/lib/icons/phosphor"
 import type { ReactNode } from "react"
 
 export interface DropdownItemData {

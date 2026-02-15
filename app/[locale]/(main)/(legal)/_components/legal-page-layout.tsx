@@ -6,10 +6,10 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion"
-import { Envelope, WarningCircle } from "@phosphor-icons/react/dist/ssr"
+import { Envelope, WarningCircle } from "@/lib/icons/phosphor"
 import { Link } from "@/i18n/routing"
 import { AppBreadcrumb, type BreadcrumbItemData } from "../../../_components/navigation/app-breadcrumb"
-import type { Icon } from "@phosphor-icons/react"
+import type { Icon } from "@/lib/icons/phosphor"
 import { PageShell } from "../../../_components/page-shell"
 import ReactMarkdown from "react-markdown"
 import remarkGfm from "remark-gfm"

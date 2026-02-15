@@ -45,6 +45,7 @@ export function AuthStateManager({ children }: { children: ReactNode }) {
   const pathname = usePathname()
   const isInitializedRef = useRef(false)
   const pendingRefreshRef = useRef<Promise<void> | null>(null)
+  const pendingForceRetryRef = useRef(false)
   const lastPathnameRef = useRef<string | null>(null)
   const lastRefreshRef = useRef<number>(0)
 
@@ -76,13 +77,8 @@ export function AuthStateManager({ children }: { children: ReactNode }) {
     })
   }, [])
 
-  const refreshSession = useCallback(async (options?: { forceRetry?: boolean }) => {
-    // Prevent concurrent refreshes
-    if (pendingRefreshRef.current) {
-      return pendingRefreshRef.current
-    }
-
-    pendingRefreshRef.current = (async () => {
+  const refreshSessionOnce = useCallback(
+    async (forceRetry: boolean) => {
       try {
         const readFreshSession = async () => {
           // Fresh client ensures we re-read auth cookies written by server actions.
@@ -96,7 +92,7 @@ export function AuthStateManager({ children }: { children: ReactNode }) {
         } = await readFreshSession()
 
         if (error) throw error
-        if (!session && options?.forceRetry) {
+        if (!session && forceRetry) {
           await new Promise((resolve) => setTimeout(resolve, 180))
           const retry = await readFreshSession()
           session = retry.data.session
@@ -110,13 +106,45 @@ export function AuthStateManager({ children }: { children: ReactNode }) {
         // Avoid logging raw error objects in client (can contain request details).
         console.error("Failed to refresh session")
         setState((prev) => ({ ...prev, isLoading: false, isAuthenticated: Boolean(prev.user) }))
-      } finally {
-        pendingRefreshRef.current = null
       }
-    })()
+    },
+    [setStateFromSession, syncSingletonSession]
+  )
 
-    return pendingRefreshRef.current
-  }, [setStateFromSession, syncSingletonSession])
+  const refreshSession = useCallback(
+    async (options?: { forceRetry?: boolean }) => {
+      if (options?.forceRetry) {
+        pendingForceRetryRef.current = true
+      }
+
+      // Reuse active refresh. Force requests are queued and executed immediately
+      // after the current pass completes.
+      if (pendingRefreshRef.current) {
+        return pendingRefreshRef.current
+      }
+
+      pendingRefreshRef.current = (async () => {
+        try {
+          // Always run at least one refresh pass.
+          const initialForceRetry = pendingForceRetryRef.current
+          pendingForceRetryRef.current = false
+          await refreshSessionOnce(initialForceRetry)
+
+          // Drain any force-refresh requests that arrived while the first pass
+          // was in flight (e.g., login success racing with initial guest refresh).
+          while (pendingForceRetryRef.current) {
+            pendingForceRetryRef.current = false
+            await refreshSessionOnce(true)
+          }
+        } finally {
+          pendingRefreshRef.current = null
+        }
+      })()
+
+      return pendingRefreshRef.current
+    },
+    [refreshSessionOnce]
+  )
 
   const refreshWithThrottle = useCallback(async (forceRetry = false) => {
     const now = Date.now()
@@ -151,14 +179,16 @@ export function AuthStateManager({ children }: { children: ReactNode }) {
     } = supabase.auth.onAuthStateChange(
       async (_event: AuthChangeEvent, session: Session | null) => {
         setStateFromSession(session)
-
+        void syncSingletonSession(session).catch(() => {
+          console.error("Failed to sync auth session")
+        })
       }
     )
 
     return () => {
       subscription.unsubscribe()
     }
-  }, [setStateFromSession])
+  }, [setStateFromSession, syncSingletonSession])
 
   // Sync session on navigation when leaving auth routes. This fixes cases where auth is
   // performed on the server (server actions setting cookies), which won't trigger the

@@ -40,7 +40,7 @@ import {
   PencilSimple,
   ArrowRight,
   Info,
-} from "@phosphor-icons/react"
+} from "@/lib/icons/phosphor"
 import { toast } from "sonner"
 
 export type PublicProfileEditorServerActions = {

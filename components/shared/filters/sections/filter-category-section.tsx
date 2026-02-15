@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { X } from "@phosphor-icons/react";
+import { X } from "@/lib/icons/phosphor";
 import { Link } from "@/i18n/routing";
 import { FilterRadioGroup, FilterRadioItem } from "../controls/filter-radio-group";
 import type { FilterHubSubcategory } from "../filter-hub";

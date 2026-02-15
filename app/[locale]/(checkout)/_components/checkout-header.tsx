@@ -3,7 +3,7 @@
 import { Link } from "@/i18n/routing"
 import { useTranslations } from "next-intl"
 import { usePathname } from "@/i18n/routing"
-import { Lock, ShoppingCart, Check } from "@phosphor-icons/react"
+import { Lock, ShoppingCart, Check } from "@/lib/icons/phosphor"
 import { cn } from "@/lib/utils"
 
 interface CheckoutHeaderProps {

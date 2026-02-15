@@ -12,7 +12,7 @@ import { BUSINESS_PAGE_TITLES, type BusinessRoute } from "../dashboard/_lib/rout
 import {
   IconPlus,
   IconExternalLink,
-} from "@tabler/icons-react"
+} from "@/lib/icons/tabler"
 
 interface BusinessHeaderProps {
   storeName?: string

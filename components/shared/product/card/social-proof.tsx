@@ -1,6 +1,6 @@
 "use client"
 
-import { Star } from "@phosphor-icons/react"
+import { Star } from "@/lib/icons/phosphor"
 
 // =============================================================================
 // TYPES

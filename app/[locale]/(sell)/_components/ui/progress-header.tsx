@@ -1,6 +1,6 @@
 "use client";
 
-import { Spinner, CloudCheck, FloppyDisk, CaretLeft, House } from "@phosphor-icons/react";
+import { Spinner, CloudCheck, FloppyDisk, CaretLeft, House } from "@/lib/icons/phosphor";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { PageContainer } from "../layout/page-container";

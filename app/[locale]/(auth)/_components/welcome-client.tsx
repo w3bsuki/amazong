@@ -17,7 +17,7 @@ import {
   Image as ImageIcon,
   Check,
   Sparkle,
-} from "@phosphor-icons/react"
+} from "@/lib/icons/phosphor"
 import { motion, AnimatePresence } from "framer-motion"
 import Avatar from "boring-avatars"
 import { Button } from "@/components/ui/button"

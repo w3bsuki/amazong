@@ -12,7 +12,7 @@ import {
   Rows,
   Check,
   ArrowsDownUp,
-} from "@phosphor-icons/react"
+} from "@/lib/icons/phosphor"
 import {
   DropdownMenu,
   DropdownMenuContent,

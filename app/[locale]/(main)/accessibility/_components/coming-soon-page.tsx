@@ -7,7 +7,7 @@ import { FieldLabel } from "@/components/shared/field"
 import { Input } from "@/components/ui/input"
 import { 
   RocketLaunch, Bell, ArrowLeft, CheckCircle
-} from "@phosphor-icons/react"
+} from "@/lib/icons/phosphor"
 import { useState, useTransition } from "react"
 import type { ReactNode } from "react"
 import { PageShell } from "../../../_components/page-shell"

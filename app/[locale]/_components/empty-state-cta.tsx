@@ -4,7 +4,7 @@ import { useLocale } from "next-intl"
 import { Link } from "@/i18n/routing"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
-import { Package, Plus, Storefront, MagnifyingGlass, ShoppingBag } from "@phosphor-icons/react"
+import { Package, Plus, Storefront, MagnifyingGlass, ShoppingBag } from "@/lib/icons/phosphor"
 
 // =============================================================================
 // Types

@@ -1,6 +1,6 @@
 "use client"
 
-import { CaretRight, CheckCircle, Star } from "@phosphor-icons/react"
+import { CaretRight, CheckCircle, Star } from "@/lib/icons/phosphor"
 import { useTranslations } from "next-intl"
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"

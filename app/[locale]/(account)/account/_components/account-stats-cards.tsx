@@ -1,6 +1,6 @@
 "use client"
 
-import { IconPackage, IconChartLine, IconBuildingStore, IconMessage, IconHeart, IconChevronRight, IconPlus } from "@tabler/icons-react"
+import { IconPackage, IconChartLine, IconBuildingStore, IconMessage, IconHeart, IconChevronRight, IconPlus } from "@/lib/icons/tabler"
 import { Link } from "@/i18n/routing"
 
 interface AccountStatsProps {

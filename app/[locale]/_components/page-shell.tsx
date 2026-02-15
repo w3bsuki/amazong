@@ -45,7 +45,7 @@ interface PageShellProps extends React.ComponentProps<"div"> {
 }
 
 const variantStyles: Record<PageShellVariant, string> = {
-  default: "bg-background",
+  default: "bg-surface-page",
   muted: "bg-surface-subtle",
 };
 
@@ -59,6 +59,7 @@ export function PageShell({
   return (
     <div
       data-slot="page-shell"
+      data-variant={variant}
       className={cn(
         variantStyles[variant],
         fullHeight && "min-h-dvh",

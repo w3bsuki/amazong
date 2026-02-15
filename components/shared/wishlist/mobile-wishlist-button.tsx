@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { Heart } from "@phosphor-icons/react"
+import { Heart } from "@/lib/icons/phosphor"
 import { useWishlist } from "@/components/providers/wishlist-context"
 import { useTranslations } from "next-intl"
 import { WishlistDrawer } from "@/components/shared/wishlist/wishlist-drawer"

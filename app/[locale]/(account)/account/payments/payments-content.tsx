@@ -23,7 +23,7 @@ import {
     SpinnerGap,
     Shield,
     Lock
-} from "@phosphor-icons/react"
+} from "@/lib/icons/phosphor"
 import { toast } from "sonner"
 
 export type PaymentsContentServerActions = {

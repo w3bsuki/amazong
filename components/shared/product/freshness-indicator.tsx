@@ -1,7 +1,7 @@
 "use client"
 
 import { useLocale, useTranslations } from "next-intl"
-import { Clock } from "@phosphor-icons/react"
+import { Clock } from "@/lib/icons/phosphor"
 import { cn } from "@/lib/utils"
 
 interface FreshnessIndicatorProps {

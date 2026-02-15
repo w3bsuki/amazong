@@ -15,8 +15,8 @@ import {
   XCircle,
   Eye,
   X,
-} from "@phosphor-icons/react"
-import { IconHeart, IconTag } from "@tabler/icons-react"
+} from "@/lib/icons/phosphor"
+import { IconHeart, IconTag } from "@/lib/icons/tabler"
 
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"

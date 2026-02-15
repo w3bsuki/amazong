@@ -1,6 +1,6 @@
 "use client"
 
-import { Package } from "@phosphor-icons/react"
+import { Package } from "@/lib/icons/phosphor"
 import { useTranslations } from "next-intl"
 import { cn } from "@/lib/utils"
 import { Checkbox } from "@/components/ui/checkbox"

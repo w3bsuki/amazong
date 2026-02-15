@@ -11,7 +11,7 @@ import {
   IconTruck,
   IconChevronRight,
   IconRocket,
-} from "@tabler/icons-react"
+} from "@/lib/icons/tabler"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"

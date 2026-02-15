@@ -21,7 +21,7 @@ import {
   IconEye,
   IconMessage,
   IconPrinter,
-} from "@tabler/icons-react"
+} from "@/lib/icons/tabler"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Checkbox } from "@/components/ui/checkbox"

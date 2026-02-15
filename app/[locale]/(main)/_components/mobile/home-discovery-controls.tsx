@@ -9,8 +9,8 @@ import {
   MapPin,
   SquaresFour,
   Star,
-} from "@phosphor-icons/react"
-import type { Icon } from "@phosphor-icons/react"
+} from "@/lib/icons/phosphor"
+import type { Icon } from "@/lib/icons/phosphor"
 import { useTranslations } from "next-intl"
 import { cn } from "@/lib/utils"
 import type { HomeDiscoverySort } from "@/hooks/use-home-discovery-feed"

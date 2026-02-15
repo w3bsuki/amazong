@@ -24,7 +24,7 @@ import {
   IconCalculator,
   IconDownload,
   IconFileSpreadsheet,
-} from "@tabler/icons-react"
+} from "@/lib/icons/tabler"
 
 async function getAccountingData(sellerId: string) {
   const supabase = await createClient()

@@ -13,7 +13,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet"
-import { ChatCircleDots, PaperPlaneTilt, X, Headphones } from "@phosphor-icons/react"
+import { ChatCircleDots, PaperPlaneTilt, X, Headphones } from "@/lib/icons/phosphor"
 import { Spinner } from "./spinner"
 import { useTranslations } from "next-intl"
 import { cn } from "@/lib/utils"

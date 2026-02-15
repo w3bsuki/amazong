@@ -8,7 +8,7 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { IconChartBar, IconTrendingUp, IconCurrencyDollar, IconEye, IconShoppingCart } from "@tabler/icons-react"
+import { IconChartBar, IconTrendingUp, IconCurrencyDollar, IconEye, IconShoppingCart } from "@/lib/icons/tabler"
 import { BusinessEmptyState } from "../../_components/business-empty-state"
 
 export default async function BusinessAnalyticsPage() {

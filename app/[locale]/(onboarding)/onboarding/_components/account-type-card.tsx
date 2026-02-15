@@ -1,6 +1,6 @@
 "use client"
 
-import { User, Storefront, Check } from "@phosphor-icons/react"
+import { User, Storefront, Check } from "@/lib/icons/phosphor"
 import { Card, CardContent } from "@/components/ui/card"
 import { cn } from "@/lib/utils"
 

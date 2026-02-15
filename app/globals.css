@@ -557,6 +557,13 @@ select:-webkit-autofill {
 
 /* ===== MARKETPLACE-SPECIFIC TOKENS ===== */
 @theme {
+  /* === BREAKPOINTS (fixed px to avoid rem drift by browser font-size settings) === */
+  --breakpoint-sm: 640px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
+  --breakpoint-2xl: 1536px;
+
   /* === FONTS === */
   --font-sans: "Inter", var(--font-inter), ui-sans-serif, system-ui, -apple-system,
     "Segoe UI", Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
@@ -593,7 +600,7 @@ select:-webkit-autofill {
 
   /* === LAYOUT HEIGHTS === */
   --spacing-header: 3rem;
-  --spacing-bottom-nav: 3rem;
+  --spacing-bottom-nav: 3.5rem;   /* 56px — icon + label */
   --spacing-button: 2.75rem;
   --spacing-button-sm: 2.25rem;
   --spacing-button-lg: 3rem;

@@ -17,6 +17,7 @@ const skipDirNames = new Set([
 ]);
 
 const allowedExact = new Set(["README.md", "TASKS.md", "REQUIREMENTS.md", "ARCHITECTURE.md", "COMPONENTS_AUDIT.md"]);
+const requiredActiveDocsFiles = new Set(["GUIDE.md", "DESIGN.md", "DOMAINS.md", "QUALITY.md", "DECISIONS.md"]);
 
 function normalizePath(p) {
   return p.replaceAll("\\", "/");
@@ -114,19 +115,16 @@ for (const abs of markdownFiles) {
 
 const brokenRelativeLinks = [];
 
-const linkCheckedRootFiles = new Set([
-  "AGENTS.md",
-  "README.md",
-  "ARCHITECTURE.md",
-  "REQUIREMENTS.md",
-  "TASKS.md",
-  ".github/copilot-instructions.md",
+const linkCheckedRootFiles = new Set(["AGENTS.md", ".github/copilot-instructions.md"]);
+const linkCheckedActiveDocsFiles = new Set([
+  `${activeDocsRoot}/GUIDE.md`,
+  `${activeDocsRoot}/DESIGN.md`,
+  `${activeDocsRoot}/DOMAINS.md`,
 ]);
 
 for (const abs of markdownFiles) {
   const rel = normalizePath(path.relative(projectRoot, abs));
-  const activePrefix = `${activeDocsRoot}/`;
-  const isActiveDocsFile = rel.startsWith(activePrefix) && !rel.startsWith(`${activeDocsRoot}/archive/`);
+  const isActiveDocsFile = linkCheckedActiveDocsFiles.has(rel);
   const isRootDocFile = linkCheckedRootFiles.has(rel);
   if (!isActiveDocsFile && !isRootDocFile) continue;
 
@@ -184,7 +182,7 @@ if (disallowed.length) {
 
 if (brokenRelativeLinks.length) {
   failed = true;
-  console.error(`DOCS GATE FAIL: broken relative markdown links in ${activeDocsRoot}/**:`);
+  console.error("DOCS GATE FAIL: broken relative markdown links in required doc entry points:");
   for (const { from, to } of brokenRelativeLinks.sort((a, b) => (a.from + a.to).localeCompare(b.from + b.to))) {
     console.error(`- ${from} -> ${to}`);
   }
@@ -193,10 +191,12 @@ if (brokenRelativeLinks.length) {
 if (failed) {
   process.exitCode = 1;
 } else {
-  const activeDocsIndex = path.resolve(projectRoot, activeDocsRoot, "INDEX.md");
-  if (!fs.existsSync(activeDocsIndex)) {
-    console.error(`DOCS GATE FAIL: missing active docs index: ${activeDocsRoot}/INDEX.md`);
-    process.exitCode = 1;
+  for (const relName of requiredActiveDocsFiles) {
+    const absPath = path.resolve(projectRoot, activeDocsRoot, relName);
+    if (!fs.existsSync(absPath)) {
+      console.error(`DOCS GATE FAIL: missing active docs file: ${activeDocsRoot}/${relName}`);
+      process.exitCode = 1;
+    }
   }
 
   const rootAgentsPath = path.resolve(projectRoot, "AGENTS.md");

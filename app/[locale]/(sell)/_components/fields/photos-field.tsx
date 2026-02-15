@@ -2,7 +2,7 @@
 
 import { useCallback, useState, useRef } from "react";
 import { useDropzone } from "react-dropzone";
-import { Camera, SpinnerGap, WarningCircle } from "@phosphor-icons/react";
+import { Camera, SpinnerGap, WarningCircle } from "@/lib/icons/phosphor";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Field, FieldLabel, FieldDescription, FieldError, FieldContent } from "@/components/shared/field";

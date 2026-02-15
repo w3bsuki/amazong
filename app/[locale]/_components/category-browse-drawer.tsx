@@ -21,7 +21,7 @@ import { cn } from "@/lib/utils"
 import { useCategoryDrawer } from "@/components/mobile/category-nav/category-drawer-context"
 import { getCategoryName } from "@/lib/category-display"
 import { useCategoryCounts } from "@/hooks/use-category-counts"
-import { ArrowLeft, CaretRight, MagnifyingGlass, X } from "@phosphor-icons/react"
+import { ArrowLeft, CaretRight, MagnifyingGlass, X } from "@/lib/icons/phosphor"
 import { useTranslations } from "next-intl"
 import type { CategoryTreeNode } from "@/lib/category-tree"
 

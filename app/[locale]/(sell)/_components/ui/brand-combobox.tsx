@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { CheckIcon, ShieldCheck, Plus, X } from "lucide-react";
-import { CaretRight } from "@phosphor-icons/react";
+import { CaretRight } from "@/lib/icons/phosphor";
 import { cn } from "@/lib/utils";
 import {
   Command,

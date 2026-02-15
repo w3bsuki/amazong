@@ -1,7 +1,7 @@
 "use client";
 
 import { Controller } from "react-hook-form";
-import { FolderSimple } from "@phosphor-icons/react";
+import { FolderSimple } from "@/lib/icons/phosphor";
 import { Field, FieldLabel, FieldDescription, FieldError, FieldContent } from "@/components/shared/field";
 import { useTranslations } from "next-intl";
 

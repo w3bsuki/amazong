@@ -2,7 +2,7 @@
 
 import { IconButton } from "@/components/ui/icon-button"
 import { UserAvatar } from "@/components/shared/user-avatar"
-import { ArrowLeft, Export, Heart } from "@phosphor-icons/react"
+import { ArrowLeft, Export, Heart } from "@/lib/icons/phosphor"
 import { cn } from "@/lib/utils"
 import { useTranslations } from "next-intl"
 import { useWishlist } from "@/components/providers/wishlist-context"

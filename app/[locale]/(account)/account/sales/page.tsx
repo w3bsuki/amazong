@@ -16,7 +16,7 @@ import {
   ChartLineUp,
   Storefront,
   Plus,
-} from "@phosphor-icons/react/dist/ssr"
+} from "@/lib/icons/phosphor"
 
 import type { SaleItem } from "./types"
 export type { SaleItem } from "./types"

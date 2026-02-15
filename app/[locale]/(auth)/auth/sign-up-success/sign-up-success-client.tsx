@@ -1,7 +1,7 @@
 "use client"
 
 import { Link } from "@/i18n/routing"
-import { CheckCircle, EnvelopeSimple } from "@phosphor-icons/react"
+import { CheckCircle, EnvelopeSimple } from "@/lib/icons/phosphor"
 import { useTranslations } from "next-intl"
 import { useCallback, useState } from "react"
 import { createClient } from "@/lib/supabase/client"

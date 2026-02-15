@@ -7,7 +7,7 @@ import {
   IconChartBar,
   IconArrowRight,
   IconInfoCircle,
-} from "@tabler/icons-react"
+} from "@/lib/icons/tabler"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
 import { Badge } from "@/components/ui/badge"

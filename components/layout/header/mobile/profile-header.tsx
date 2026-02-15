@@ -1,7 +1,7 @@
 "use client"
 
 import { IconButton } from "@/components/ui/icon-button"
-import { ArrowLeft, Export, Gear, ChatCircle } from "@phosphor-icons/react"
+import { ArrowLeft, Export, Gear, ChatCircle } from "@/lib/icons/phosphor"
 import { cn } from "@/lib/utils"
 import { useTranslations } from "next-intl"
 import { Link } from "@/i18n/routing"

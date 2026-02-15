@@ -1,6 +1,6 @@
 import { Link } from "@/i18n/routing"
 import { getTranslations } from "next-intl/server"
-import { WarningCircle, ArrowLeft } from "@phosphor-icons/react/dist/ssr"
+import { WarningCircle, ArrowLeft } from "@/lib/icons/phosphor"
 import { Button } from "@/components/ui/button"
 import { AuthCard } from "../../_components/auth-card"
 

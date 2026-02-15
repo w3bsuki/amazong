@@ -2,7 +2,7 @@
 
 import { useSearchParams } from "next/navigation"
 import { usePathname, useRouter } from "@/i18n/routing"
-import { Star, Sliders, Check, CurrencyDollar } from "@phosphor-icons/react"
+import { Star, Sliders, Check, CurrencyDollar } from "@/lib/icons/phosphor"
 import { ChevronDown } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useTranslations } from "next-intl"

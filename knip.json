@@ -22,9 +22,6 @@
     ".codex/skills/**"
   ],
   "ignoreDependencies": [
-    "@capacitor/android",
-    "@capacitor/core",
-    "@capacitor/ios",
     "tailwindcss",
     "tw-animate-css"
   ],

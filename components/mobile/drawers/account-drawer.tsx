@@ -11,7 +11,7 @@ import {
   Star,
   CaretRight,
   X,
-} from "@phosphor-icons/react"
+} from "@/lib/icons/phosphor"
 import {
   Drawer,
   DrawerContent,

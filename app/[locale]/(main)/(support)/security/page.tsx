@@ -5,7 +5,7 @@ import {
   ShieldCheck, CreditCard, Lock, Eye, 
   Warning, Fingerprint, CheckCircle, EnvelopeSimple,
   LockKey, ShieldStar, UserCircleCheck, Bug
-} from "@phosphor-icons/react/dist/ssr"
+} from "@/lib/icons/phosphor"
 import { Link } from "@/i18n/routing"
 import { Button } from "@/components/ui/button"
 import { PageShell } from "../../../_components/page-shell"

@@ -2,7 +2,7 @@
 
 import { useOptimistic, useTransition } from "react"
 import { Button } from "@/components/ui/button"
-import { Heart, SpinnerGap, UserPlus } from "@phosphor-icons/react"
+import { Heart, SpinnerGap, UserPlus } from "@/lib/icons/phosphor"
 import { toast } from "sonner"
 import { useTranslations } from "next-intl"
 

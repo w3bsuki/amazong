@@ -20,7 +20,7 @@ import {
   Plus,
   ArrowRight,
   Package,
-} from "@phosphor-icons/react"
+} from "@/lib/icons/phosphor"
 import { AppBreadcrumb, breadcrumbPresets } from "../../../_components/navigation/app-breadcrumb"
 import { useTranslations, useLocale } from "next-intl"
 import { useRecentlyViewed } from "@/hooks/use-recently-viewed"

@@ -15,7 +15,7 @@ import {
   Star,
   Storefront,
   User,
-} from "@phosphor-icons/react"
+} from "@/lib/icons/phosphor"
 import { MinimalHeader } from "./minimal-header"
 import { Button } from "@/components/ui/button"
 import { Switch } from "@/components/ui/switch"

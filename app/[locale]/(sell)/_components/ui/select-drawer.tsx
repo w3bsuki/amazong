@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
-import { MagnifyingGlass, Plus, Check } from "@phosphor-icons/react";
+import { MagnifyingGlass, Plus, Check } from "@/lib/icons/phosphor";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import {

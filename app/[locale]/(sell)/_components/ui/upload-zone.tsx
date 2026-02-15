@@ -1,6 +1,6 @@
 "use client";
 
-import { Camera, Plus, SpinnerGap } from "@phosphor-icons/react";
+import { Camera, Plus, SpinnerGap } from "@/lib/icons/phosphor";
 import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
 

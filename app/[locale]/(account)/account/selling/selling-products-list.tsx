@@ -19,7 +19,7 @@ import {
   Trash,
   Pause,
   Play,
-} from "@phosphor-icons/react"
+} from "@/lib/icons/phosphor"
 import { BoostDialog } from "../../../_components/seller/boost-dialog"
 import { toast } from "sonner"
 import { useTranslations } from "next-intl"

@@ -33,7 +33,7 @@ import {
   IconTrash,
   IconGripVertical,
   IconChevronRight,
-} from "@tabler/icons-react"
+} from "@/lib/icons/tabler"
 import { cn } from "@/lib/utils"
 
 // Product form schema - matches database columns

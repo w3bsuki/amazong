@@ -26,7 +26,7 @@ import {
   ProhibitInset,
   Flag,
   ChatCircle,
-} from "@phosphor-icons/react"
+} from "@/lib/icons/phosphor"
 import {
   DropdownMenu,
   DropdownMenuContent,

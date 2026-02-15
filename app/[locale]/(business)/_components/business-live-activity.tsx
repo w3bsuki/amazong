@@ -4,7 +4,7 @@ import * as React from "react"
 import {
   IconUsers,
   IconShoppingCart,
-} from "@tabler/icons-react"
+} from "@/lib/icons/tabler"
 import { cn } from "@/lib/utils"
 
 interface LiveActivityProps {

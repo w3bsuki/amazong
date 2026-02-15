@@ -2,9 +2,9 @@
 
 import { useEffect } from "react"
 import { Button } from "@/components/ui/button"
-import { WarningCircle, ArrowCounterClockwise, House, Storefront, ShoppingCart, Heart, MagnifyingGlass, Users, Tag, Folder, User, CreditCard } from "@phosphor-icons/react"
+import { WarningCircle, ArrowCounterClockwise, House, Storefront, ShoppingCart, Heart, MagnifyingGlass, Users, Tag, Folder, User, CreditCard } from "@/lib/icons/phosphor"
 import { Link } from "@/i18n/routing"
-import type { Icon as PhosphorIcon } from "@phosphor-icons/react"
+import type { Icon as PhosphorIcon } from "@/lib/icons/phosphor"
 
 type ErrorIcon = 
   | "house" 

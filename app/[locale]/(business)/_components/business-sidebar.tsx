@@ -16,7 +16,7 @@ import {
   IconBuildingStore,
   IconTag,
   IconSpeakerphone,
-} from "@tabler/icons-react"
+} from "@/lib/icons/tabler"
 
 import { NavUser } from "../../_components/nav/nav-user"
 import {

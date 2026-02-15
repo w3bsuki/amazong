@@ -20,7 +20,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { IconCheck, IconX } from "@tabler/icons-react"
+import { IconCheck, IconX } from "@/lib/icons/tabler"
 
 // Define seller type to avoid 'any'
 interface Seller {

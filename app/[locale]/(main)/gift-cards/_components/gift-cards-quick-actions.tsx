@@ -1,6 +1,6 @@
 import { Card, CardContent } from "@/components/ui/card"
-import { CreditCard, Gift, Printer } from "@phosphor-icons/react/dist/ssr"
-import { EnvelopeSimple as Mail } from "@phosphor-icons/react/dist/ssr"
+import { CreditCard, Gift, Printer } from "@/lib/icons/phosphor"
+import { EnvelopeSimple as Mail } from "@/lib/icons/phosphor"
 
 export default function GiftCardsQuickActions({ t }: { t: (key: string) => string }) {
   return (

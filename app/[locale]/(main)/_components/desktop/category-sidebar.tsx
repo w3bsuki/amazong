@@ -13,7 +13,7 @@ import {
   ArrowLeft,
   SquaresFour,
   X,
-} from "@phosphor-icons/react"
+} from "@/lib/icons/phosphor"
 import { useTranslations } from "next-intl"
 
 // =============================================================================

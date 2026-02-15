@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import Image from "next/image"
-import { CaretRight, CaretLeft } from "@phosphor-icons/react"
+import { CaretRight, CaretLeft } from "@/lib/icons/phosphor"
 import { useTranslations } from "next-intl"
 
 import { Badge } from "@/components/ui/badge"

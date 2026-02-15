@@ -120,7 +120,7 @@ const nextConfig: NextConfig = {
     serverActions: {
       bodySizeLimit: '10mb',
     },
-    optimizePackageImports: ['@phosphor-icons/react', 'date-fns', 'recharts'],
+    optimizePackageImports: ['date-fns', 'recharts'],
     // Auto-generate .d.ts for loaded env vars (IntelliSense in editor)
     typedEnv: true,
   },

@@ -10,7 +10,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
-import { Star, CheckCircle, Medal, Trophy, Crown } from "@phosphor-icons/react"
+import { Star, CheckCircle, Medal, Trophy, Crown } from "@/lib/icons/phosphor"
 import { useBadges } from "@/hooks/use-badges"
 import { toast } from "sonner"
 

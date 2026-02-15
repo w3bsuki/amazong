@@ -1,7 +1,7 @@
 "use client"
 
 import { useCallback } from "react"
-import { ChatCircle, Circle, Check, X } from "@phosphor-icons/react"
+import { ChatCircle, Circle, Check, X } from "@/lib/icons/phosphor"
 import {
   Drawer,
   DrawerContent,

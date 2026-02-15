@@ -1,7 +1,7 @@
 "use client"
 
 import { useCallback, useEffect, useState } from "react"
-import { X } from "@phosphor-icons/react"
+import { X } from "@/lib/icons/phosphor"
 import { useTranslations } from "next-intl"
 
 import { Link, usePathname } from "@/i18n/routing"

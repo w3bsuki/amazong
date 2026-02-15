@@ -8,7 +8,7 @@ import {
   IconPinFilled,
   IconTrash,
   IconEdit,
-} from "@tabler/icons-react"
+} from "@/lib/icons/tabler"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import {

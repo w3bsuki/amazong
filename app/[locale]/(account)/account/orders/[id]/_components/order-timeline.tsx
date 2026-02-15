@@ -7,7 +7,7 @@ import { Separator } from "@/components/ui/separator"
 import { cn } from "@/lib/utils"
 import { format } from "date-fns"
 import { bg, enUS } from "date-fns/locale"
-import { CheckCircle, Clock, Package, Receipt, Truck } from "@phosphor-icons/react"
+import { CheckCircle, Clock, Package, Receipt, Truck } from "@/lib/icons/phosphor"
 import type { OrderItemStatus } from "@/lib/order-status"
 
 type TimelineOrderItem = {

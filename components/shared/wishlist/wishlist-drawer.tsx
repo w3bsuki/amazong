@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { Heart, ShoppingCart, Trash, ArrowRight, X } from "@phosphor-icons/react"
+import { Heart, ShoppingCart, Trash, ArrowRight, X } from "@/lib/icons/phosphor"
 import {
   Drawer,
   DrawerTrigger,

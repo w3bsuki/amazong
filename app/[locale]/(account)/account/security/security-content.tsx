@@ -22,7 +22,7 @@ import {
     EyeSlash,
     CheckCircle,
     DeviceMobile
-} from "@phosphor-icons/react"
+} from "@/lib/icons/phosphor"
 import { toast } from "sonner"
 import { createClient } from "@/lib/supabase/client"
 import { validatePassword, validateEmail } from "@/lib/validation/auth"

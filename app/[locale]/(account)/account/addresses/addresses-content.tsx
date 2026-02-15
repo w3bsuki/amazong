@@ -37,7 +37,7 @@ import {
     House,
     Briefcase,
     Buildings
-} from "@phosphor-icons/react"
+} from "@/lib/icons/phosphor"
 import { toast } from "sonner"
 import { createClient } from "@/lib/supabase/client"
 import { AccountAddressesStats } from "../_components/account-addresses-stats"

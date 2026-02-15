@@ -4,6 +4,7 @@ import path from "node:path";
 const projectRoot = process.cwd();
 const targetDirs = process.argv.slice(2);
 const dirs = targetDirs.length ? targetDirs : ["app", "components"]; // workspace-relative
+const shouldWriteReport = String(process.env.WRITE_CLEANUP_REPORTS || "") === "1";
 
 const includeExt = new Set([".ts", ".tsx", ".js", ".jsx", ".css", ".mjs"]);
 
@@ -164,9 +165,11 @@ for (const row of byFile.slice(0, 50)) {
 reportLines.push("--------------------------------");
 reportLines.push(`Totals: files=${totals.files} missing=${totals.missing}`);
 
-fs.mkdirSync(path.resolve(projectRoot, "cleanup"), { recursive: true });
 const reportPath = path.resolve(projectRoot, "cleanup/semantic-token-scan-report.txt");
-fs.writeFileSync(reportPath, reportLines.join("\n") + "\n", "utf8");
+if (shouldWriteReport) {
+  fs.mkdirSync(path.resolve(projectRoot, "cleanup"), { recursive: true });
+  fs.writeFileSync(reportPath, reportLines.join("\n") + "\n", "utf8");
+}
 
 console.log(reportLines.slice(0, 2).join("\n"));
 for (const row of byFile.slice(0, 8)) {
@@ -174,9 +177,10 @@ for (const row of byFile.slice(0, 8)) {
 }
 console.log("--------------------------------");
 console.log(`Totals: files=${totals.files} missing=${totals.missing}`);
-console.log(`Full report: ${path.relative(projectRoot, reportPath).replaceAll("\\", "/")}`);
+if (shouldWriteReport) {
+  console.log(`Full report: ${path.relative(projectRoot, reportPath).replaceAll("\\", "/")}`);
+}
 
 if (String(process.env.FAIL_ON_FINDINGS || "") === "1" && totals.files > 0) {
   process.exit(1);
 }
-

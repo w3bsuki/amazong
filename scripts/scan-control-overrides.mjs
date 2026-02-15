@@ -4,6 +4,7 @@ import path from "node:path"
 const projectRoot = process.cwd()
 const targetDirs = process.argv.slice(2)
 const dirs = targetDirs.length ? targetDirs : ["app", "components"]
+const shouldWriteReport = String(process.env.WRITE_CLEANUP_REPORTS || "") === "1"
 
 const includeExt = new Set([".ts", ".tsx", ".js", ".jsx"])
 
@@ -124,14 +125,20 @@ reportLines.push("-------------------------")
 reportLines.push(`Totals: findings=${findings.length}`)
 
 const reportPath = path.resolve(projectRoot, "cleanup/control-override-scan-report.txt")
-fs.mkdirSync(path.dirname(reportPath), { recursive: true })
-fs.writeFileSync(reportPath, `${reportLines.join("\n")}\n`, "utf8")
+if (shouldWriteReport) {
+  fs.mkdirSync(path.dirname(reportPath), { recursive: true })
+  fs.writeFileSync(reportPath, `${reportLines.join("\n")}\n`, "utf8")
+}
 
 for (const line of reportLines.slice(0, 40)) {
   console.log(line)
 }
 if (reportLines.length > 40) {
-  console.log("...truncated. See full report:", path.relative(projectRoot, reportPath).replaceAll("\\", "/"))
+  if (shouldWriteReport) {
+    console.log("...truncated. See full report:", path.relative(projectRoot, reportPath).replaceAll("\\", "/"))
+  } else {
+    console.log("...truncated. Set WRITE_CLEANUP_REPORTS=1 to emit a full report file.")
+  }
 }
 
 if (String(process.env.FAIL_ON_FINDINGS || "") === "1") {

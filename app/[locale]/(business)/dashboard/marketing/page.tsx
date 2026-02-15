@@ -18,7 +18,7 @@ import {
   IconChartBar,
   IconArrowRight,
   IconPlus,
-} from "@tabler/icons-react"
+} from "@/lib/icons/tabler"
 
 const marketingChannels = [
   {

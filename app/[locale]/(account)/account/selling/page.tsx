@@ -19,7 +19,7 @@ import {
   Warning,
   Star,
   ChartLineUp,
-} from "@phosphor-icons/react/dist/ssr"
+} from "@/lib/icons/phosphor"
 import { SellingProductsList } from "./selling-products-list"
 
 interface SellingPageProps {
