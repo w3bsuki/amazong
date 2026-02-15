@@ -10,38 +10,22 @@ test.describe("Mobile Home Feed Controls", () => {
     })
   })
 
-  test("shows tabs and switches between promoted and all", async ({ page, app }) => {
+  test("shows discovery controls anchored to all listings", async ({ page, app }) => {
     await app.goto("/en")
     await app.waitForHydration()
 
+    await expect(page.getByTestId("home-promoted-cta-tile")).toBeVisible()
+    await expect(page.getByTestId("home-promoted-cta-tile")).toHaveAttribute("href", /promoted=true/)
+    await expect(page.getByTestId("home-promoted-cta-tile")).toHaveAttribute("href", /sort=newest/)
+
     await expect(page.getByTestId("home-feed-controls")).toBeVisible()
-    const promotedTab = page.getByTestId("home-feed-tab-promoted")
-    await expect(promotedTab).toHaveAttribute("aria-pressed", "true")
-    await expect(promotedTab).toHaveClass(/bg-foreground/)
-    await expect(promotedTab).toHaveClass(/text-background/)
-    await expect(promotedTab).not.toHaveClass(/bg-promoted|text-promoted-foreground|border-promoted/)
+    await expect(page.getByTestId("home-feed-tab-promoted")).toHaveCount(0)
+    await expect(page.getByTestId("home-feed-tab-all")).toHaveCount(0)
     await expect(page.getByTestId("home-feed-chip-sort-newest")).toBeVisible()
     await expect(page.getByTestId("home-feed-chip-sort-newest")).toHaveAttribute("aria-pressed", "true")
     await expect(page.getByTestId("home-discovery-header-see-all")).toBeVisible()
     await expect(page.getByTestId("home-discovery-header-see-all")).toHaveAttribute("href", /sort=newest/)
-    await expect(page.getByTestId("home-discovery-header-see-all")).toHaveAttribute("href", /promoted=true/)
-    const sellBanner = page.getByTestId("home-start-selling-cta")
-    await expect(sellBanner).toBeVisible()
-    await expect(sellBanner).toHaveClass(/border-primary/)
-    await expect(sellBanner).toHaveClass(/bg-primary/)
-    await expect(sellBanner).not.toHaveClass(/bg-promoted|border-promoted/)
-
-    await page.getByTestId("home-feed-tab-all").click()
-
-    const allTab = page.getByTestId("home-feed-tab-all")
-    await expect(allTab).toHaveAttribute("aria-pressed", "true")
-    await expect(allTab).toHaveClass(/bg-foreground/)
-    await expect(allTab).toHaveClass(/text-background/)
-    await expect(page.getByTestId("home-discovery-header-see-all")).toHaveAttribute("href", /sort=newest/)
-    await expect(page.getByTestId("home-discovery-header-see-all")).not.toHaveAttribute(
-      "href",
-      /promoted=true/
-    )
+    await expect(page.getByTestId("home-discovery-header-see-all")).not.toHaveAttribute("href", /promoted=true/)
   })
 
   test("applies sort from quick chip rail", async ({ page, app }) => {
@@ -63,16 +47,15 @@ test.describe("Mobile Home Feed Controls", () => {
     await expect(page.getByTestId("home-feed-chip-sort-price-asc")).toHaveAttribute("aria-pressed", "true")
     await expect.poll(() => sawPriceAscRequest).toBe(true)
     await expect(page.getByTestId("home-discovery-header-see-all")).toHaveAttribute("href", /sort=price-asc/)
-    await expect(page.getByTestId("home-discovery-header-see-all")).toHaveAttribute("href", /promoted=true/)
+    await expect(page.getByTestId("home-discovery-header-see-all")).not.toHaveAttribute("href", /promoted=true/)
   })
 
-  test("handles promoted empty state and one-tap switch to all", async ({ page, app }) => {
+  test("handles all listings empty state", async ({ page, app }) => {
     await page.route("**/api/products/newest**", async (route) => {
       const url = new URL(route.request().url())
-      const type = url.searchParams.get("type")
       const sort = url.searchParams.get("sort")
 
-      if (type === "promoted" && sort === "rating") {
+      if (sort === "rating") {
         await route.fulfill({
           status: 200,
           contentType: "application/json",
@@ -111,12 +94,7 @@ test.describe("Mobile Home Feed Controls", () => {
 
     await page.getByTestId("home-feed-chip-sort-rating").click()
 
-    await expect(page.getByTestId("home-discovery-empty-promoted")).toBeVisible()
-
-    await page.getByTestId("home-promoted-empty-switch-all").click()
-
-    await expect(page.getByTestId("home-feed-tab-all")).toHaveAttribute("aria-pressed", "true")
-    await expect(page.getByRole("link", { name: /Open product: Fresh all listing/i })).toBeVisible()
+    await expect(page.getByTestId("home-discovery-empty-all")).toBeVisible()
   })
 
   test("applies nearby with stored city", async ({ page, app }) => {

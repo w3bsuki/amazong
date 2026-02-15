@@ -136,10 +136,15 @@ function detectRouteConfig(pathname: string, explicitVariant?: HeaderVariant): R
   if (pathWithoutLocale.startsWith("/search")) {
     return { variant: "homepage" }
   }
+
+  // Demo: use homepage header to showcase the mobile landing flow
+  if (pathWithoutLocale.startsWith("/demo")) {
+    return { variant: "homepage" }
+  }
   
   // Known routes start with: /search, /cart, /checkout, /account, /sell, /plans, /auth
   const segments = pathWithoutLocale.split("/").filter(Boolean)
-  const knownRoutes = ["search", "cart", "checkout", "account", "sell", "plans", "auth", "categories", "api", "assistant"]
+  const knownRoutes = ["search", "cart", "checkout", "account", "sell", "plans", "auth", "categories", "api", "assistant", "demo"]
   
   // Product pages: /{username}/{productSlug} (2+ segments, not a known route)
   if (segments.length >= 2 && segments[0] && !knownRoutes.includes(segments[0])) {

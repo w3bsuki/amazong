@@ -43,6 +43,8 @@ export interface ProductCardBaseProps extends ProductCardData {
   index?: number
   titleLines?: 1 | 2
   showWishlist?: boolean
+  showWishlistAction?: boolean
+  showPromotedBadge?: boolean
   disableQuickView?: boolean
 }
 

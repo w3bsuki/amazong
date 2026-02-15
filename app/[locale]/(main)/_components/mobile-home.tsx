@@ -1,22 +1,19 @@
 "use client"
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
-import { CaretRight } from "@phosphor-icons/react"
 import { useTranslations } from "next-intl"
 import { Link } from "@/i18n/routing"
 import type { UIProduct } from "@/lib/types/products"
 import type { CategoryTreeNode } from "@/lib/category-tree"
 import { BULGARIAN_CITIES } from "@/lib/bulgarian-cities"
 import { useHeader } from "@/components/providers/header-context"
-import { useHomeFeedTabs } from "@/hooks/use-home-feed-tabs"
-import { useCategoryCounts } from "@/hooks/use-category-counts"
+import { useHomeDiscoveryFeed } from "@/hooks/use-home-discovery-feed"
 import { MobileProductCard } from "@/components/shared/product/card/mobile"
 import { CategoryCirclesSimple } from "@/components/mobile/category-nav"
 import { PageShell } from "../../_components/page-shell"
 import { MobileSearchOverlay } from "../../_components/search/mobile-search-overlay"
 import { HomeSectionHeader } from "./mobile/home-section-header"
-import { HomeStickyCategoryPills } from "./mobile/home-sticky-category-pills"
-import { HomeFeedControls } from "./mobile/home-feed-controls"
+import { HomeDiscoveryControls } from "./mobile/home-discovery-controls"
 import { HomeCityPickerSheet } from "./mobile/home-city-picker-sheet"
 import { PromotedListingsStrip } from "./mobile/promoted-listings-strip"
 
@@ -47,7 +44,7 @@ const CURATED_RAIL_PRIORITY: CuratedRailKey[] = ["fashion", "electronics", "auto
 const CURATED_RAIL_HREF: Record<CuratedRailKey, string> = {
   fashion: "/categories/fashion",
   electronics: "/categories/electronics",
-  automotive: "/categories/automotive",
+  automotive: "/automotive",
   deals: "/todays-deals",
 }
 
@@ -69,9 +66,8 @@ export function MobileHome({
   const [searchOpen, setSearchOpen] = useState(false)
   const [cityPickerOpen, setCityPickerOpen] = useState(false)
   const [cityHydrated, setCityHydrated] = useState(false)
-  const [showStickyCategoryPills, setShowStickyCategoryPills] = useState(false)
   const categoryCirclesRef = useRef<HTMLDivElement | null>(null)
-  const { counts: categoryCounts } = useCategoryCounts()
+  const loadMoreRef = useRef<HTMLDivElement | null>(null)
 
   const initialActivePromotedProducts = useMemo(() => {
     const source = promotedProducts ?? []
@@ -85,48 +81,30 @@ export function MobileHome({
   }, [promotedProducts])
 
   const {
-    activeTab,
     sort,
     nearby,
     city,
     products,
     isLoading,
     error,
-    setActiveTab,
     setSort,
     setNearby,
     setCity,
+    loadNextPage,
     retry,
-    buildSearchHref,
-  } = useHomeFeedTabs({
-    initialNewestProducts: initialProducts,
-    initialPromotedProducts: initialActivePromotedProducts,
+  } = useHomeDiscoveryFeed({
+    initialProducts,
+    feedType: "newest",
+    preferInitialProducts: true,
+    limit: 24,
   })
 
-  const visibleProducts = useMemo(() => {
-    if (activeTab !== "promoted") return products.slice(0, 12)
-    const now = Date.now()
-    const activePromoted = products.filter((product) => {
-      if (!product.isBoosted) return false
-      if (!product.boostExpiresAt) return false
-      const expiresAt = Date.parse(product.boostExpiresAt)
-      return Number.isFinite(expiresAt) && expiresAt > now
-    })
-    return activePromoted.slice(0, 12)
-  }, [activeTab, products])
   const cityLabel = useMemo(() => {
     if (!city) return null
     const option = BULGARIAN_CITIES.find((entry) => entry.value === city)
     if (!option) return city
     return locale === "bg" ? option.labelBg : option.label
   }, [city, locale])
-  const discoveryTitle = activeTab === "promoted"
-    ? tMobile("feed.discoveryHeader.promoted")
-    : tMobile("feed.discoveryHeader.all")
-  const discoveryHref = useMemo(
-    () => buildSearchHref({ tab: activeTab, sort, nearby, city }),
-    [activeTab, buildSearchHref, city, nearby, sort]
-  )
 
   const curatedRail = useMemo(() => {
     const sections = curatedSections ?? {
@@ -137,9 +115,9 @@ export function MobileHome({
     }
 
     for (const key of CURATED_RAIL_PRIORITY) {
-      const products = sections[key]
-      if (Array.isArray(products) && products.length > 0) {
-        return { key, products, href: CURATED_RAIL_HREF[key] }
+      const sectionProducts = sections[key]
+      if (Array.isArray(sectionProducts) && sectionProducts.length > 0) {
+        return { key, products: sectionProducts, href: CURATED_RAIL_HREF[key] }
       }
     }
 
@@ -179,6 +157,7 @@ export function MobileHome({
         {...(product.location ? { location: product.location } : {})}
         titleLines={1}
         layout="feed"
+        showWishlistAction={false}
       />
     ),
     []
@@ -221,35 +200,21 @@ export function MobileHome({
   }, [handleHeaderCategorySelect, initialCategories, setHomepageHeader])
 
   useEffect(() => {
-    const target = categoryCirclesRef.current
+    const target = loadMoreRef.current
     if (!target || typeof window === "undefined") return
 
-    let rafId = 0
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const entry = entries[0]
+        if (!entry?.isIntersecting) return
+        loadNextPage()
+      },
+      { rootMargin: "600px 0px" }
+    )
 
-    const updateStickyVisibility = () => {
-      rafId = 0
-      const rect = target.getBoundingClientRect()
-      const shouldShow = rect.bottom <= 0
-      setShowStickyCategoryPills((prev) => (prev === shouldShow ? prev : shouldShow))
-    }
-
-    const queueUpdate = () => {
-      if (rafId !== 0) return
-      rafId = window.requestAnimationFrame(updateStickyVisibility)
-    }
-
-    updateStickyVisibility()
-    window.addEventListener("scroll", queueUpdate, { passive: true })
-    window.addEventListener("resize", queueUpdate)
-
-    return () => {
-      window.removeEventListener("scroll", queueUpdate)
-      window.removeEventListener("resize", queueUpdate)
-      if (rafId !== 0) {
-        window.cancelAnimationFrame(rafId)
-      }
-    }
-  }, [])
+    observer.observe(target)
+    return () => observer.disconnect()
+  }, [loadNextPage])
 
   useEffect(() => {
     if (typeof window === "undefined") return
@@ -294,111 +259,42 @@ export function MobileHome({
         />
       </div>
 
-      <HomeStickyCategoryPills
-        visible={showStickyCategoryPills}
-        categories={initialCategories}
-        locale={locale}
-        categoryCounts={categoryCounts}
-      />
+      <div className="pt-0 pb-4">
+        <PromotedListingsStrip
+          products={initialActivePromotedProducts}
+          showHeader
+          includePromoTile
+          promotedCta={{
+            href: "/search?promoted=true&sort=newest",
+            eyebrow: tMobile("promoBannerEyebrow"),
+            title: tMobile("promoBannerTitle"),
+            subtitle: tMobile("promoBannerSubtitle"),
+            actionLabel: tMobile("seeAll"),
+          }}
+          className="pt-2"
+        />
 
-      <div className="space-y-2 pt-0 pb-4">
-        <section className="px-(--spacing-home-inset)">
-          <Link
-            href="/sell"
-            data-testid="home-start-selling-cta"
-            className="block w-full rounded-xl border border-primary bg-primary px-4 py-3 tap-transparent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-          >
-            <div className="flex min-h-(--control-primary) items-center gap-3">
-              <div className="min-w-0 flex-1">
-                <p className="text-sm font-semibold tracking-tight text-primary-foreground">
-                  {tMobile("sellBannerTitle")}
-                </p>
-                <p className="mt-0.5 text-xs font-medium text-primary-foreground">
-                  {tMobile("sellBannerSubtitle")}
-                </p>
-              </div>
+        <section data-testid="home-section-discovery" className="pt-(--spacing-home-section-gap)">
+          {products.length > 0 ? (
+            <HomeDiscoveryControls
+              sort={sort}
+              nearby={nearby}
+              cityLabel={cityLabel}
+              onSortChange={setSort}
+              onNearbyToggle={handleNearbyToggle}
+              onNearbyConfigure={handleNearbyConfigure}
+              className="mb-0"
+            />
+          ) : null}
 
-              <CaretRight
-                size={18}
-                weight="bold"
-                aria-hidden="true"
-                className="shrink-0 text-primary-foreground"
-              />
-              <span className="sr-only">{tMobile("sellBannerAction")}</span>
-            </div>
-          </Link>
-        </section>
-
-        {initialActivePromotedProducts.length > 0 && (
-          <PromotedListingsStrip
-            products={initialActivePromotedProducts}
-            showQuickScopes={false}
-            className="pt-0.5"
-          />
-        )}
-
-        <section className="pt-0.5">
-          <HomeFeedControls
-            tab={activeTab}
-            sort={sort}
-            nearby={nearby}
-            cityLabel={cityLabel}
-            onTabChange={setActiveTab}
-            onSortChange={setSort}
-            onNearbyToggle={handleNearbyToggle}
-            onNearbyConfigure={handleNearbyConfigure}
-          />
-        </section>
-
-        <section data-testid="home-section-discovery" className="pt-0.5">
-          {visibleProducts.length > 0 ? (
+          {products.length > 0 ? (
             <>
-              <div className="px-(--spacing-home-inset) pb-1">
-                <div className="flex items-center justify-between gap-2">
-                  <h2
-                    data-testid="home-discovery-header-title"
-                    className="min-w-0 truncate text-xl font-semibold tracking-tight text-home-section-title"
-                  >
-                    {discoveryTitle}
-                  </h2>
-                  <Link
-                    href={discoveryHref}
-                    data-testid="home-discovery-header-see-all"
-                    aria-label={tMobile("feed.seeAllAria")}
-                    className="inline-flex min-h-(--spacing-touch-md) shrink-0 items-center rounded-md px-1 -mr-1 text-home-section-action transition-colors hover:text-home-section-title active:bg-active active:text-home-section-title"
-                  >
-                    <span className="sr-only">{tMobile("seeAll")}</span>
-                    <CaretRight size={16} weight="bold" aria-hidden="true" />
-                  </Link>
-                </div>
+              <div className="grid grid-cols-2 gap-(--spacing-home-card-gap) px-(--spacing-home-inset) pt-1 pb-1">
+                {products.map((product, index) => renderHomeCard(product, index))}
               </div>
 
-              <div className="grid grid-cols-2 gap-(--spacing-home-card-gap) px-(--spacing-home-inset) pb-1">
-                {visibleProducts.map((product, index) => renderHomeCard(product, index))}
-              </div>
+              <div ref={loadMoreRef} data-testid="home-discovery-load-more" className="h-10" />
             </>
-          ) : activeTab === "promoted" ? (
-            <div className="px-(--spacing-home-inset)">
-              <div
-                data-testid="home-discovery-empty-promoted"
-                className="rounded-xl border border-border-subtle bg-surface-subtle px-3 py-2"
-              >
-                <div className="flex items-center justify-between gap-2">
-                  <p className="text-xs text-muted-foreground">{tMobile("feed.empty.promoted")}</p>
-                  <button
-                    type="button"
-                    data-testid="home-promoted-empty-switch-all"
-                    onClick={() => {
-                      setActiveTab("all")
-                      setSort("newest")
-                    }}
-                    className="inline-flex min-h-(--spacing-touch-md) items-center rounded-full border border-border-subtle bg-background px-2.5 text-xs font-semibold text-foreground transition-colors hover:bg-hover active:bg-active focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-                  >
-                    {tMobile("feed.empty.switchToAll")}
-                  </button>
-                </div>
-              </div>
-            </div>
           ) : (
             <div className="px-(--spacing-home-inset)">
               <div className="rounded-xl border border-border-subtle bg-surface-subtle px-3 py-2">

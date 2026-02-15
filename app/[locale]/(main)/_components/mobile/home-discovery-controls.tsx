@@ -1,6 +1,15 @@
 "use client"
 
-import { ArrowDown, ArrowUp, Clock, GearSix, MapPin, Star } from "@phosphor-icons/react"
+import { useState } from "react"
+import {
+  ArrowDown,
+  ArrowUp,
+  Clock,
+  GearSix,
+  MapPin,
+  SquaresFour,
+  Star,
+} from "@phosphor-icons/react"
 import type { Icon } from "@phosphor-icons/react"
 import { useTranslations } from "next-intl"
 import { cn } from "@/lib/utils"
@@ -20,10 +29,13 @@ interface HomeDiscoveryControlsProps {
 
 const SORT_CHIP_CONFIG: ReadonlyArray<{
   value: HomeDiscoverySort
-  labelKey: "newest" | "priceLow" | "priceHigh" | "topRated"
+  labelKey: "all" | "newest" | "priceLow" | "priceHigh" | "topRated"
   testId: string
   icon: Icon
+  /** When true this chip matches when sort equals the `value` AND is the initial/default state */
+  isDefault?: boolean
 }> = [
+  { value: "newest", labelKey: "all", testId: "home-feed-chip-sort-all", icon: SquaresFour, isDefault: true },
   { value: "newest", labelKey: "newest", testId: "home-feed-chip-sort-newest", icon: Clock },
   { value: "price-asc", labelKey: "priceLow", testId: "home-feed-chip-sort-price-asc", icon: ArrowDown },
   { value: "price-desc", labelKey: "priceHigh", testId: "home-feed-chip-sort-price-desc", icon: ArrowUp },
@@ -41,16 +53,24 @@ export function HomeDiscoveryControls({
   className,
 }: HomeDiscoveryControlsProps) {
   const tMobile = useTranslations("Home.mobile")
+  /* Track which chip label is visually active — needed because "all" and "newest" both map to sort="newest" */
+  const [activeChipKey, setActiveChipKey] = useState<string>("all")
   const nearbyLabel = nearby && cityLabel
     ? tMobile("feed.nearbyWithCity", { city: cityLabel })
     : tMobile("feed.nearby")
 
+  function handleChipClick(chip: (typeof SORT_CHIP_CONFIG)[number]) {
+    setActiveChipKey(chip.labelKey)
+    onSortChange(chip.value)
+  }
+
   return (
     <section
-      data-testid="home-discovery-controls"
+      data-testid="home-feed-controls"
+      data-slot="home-discovery-controls"
       className={cn(
         sticky
-          ? "sticky top-(--app-header-offset) z-30 border-b border-border-subtle bg-surface-elevated"
+          ? "sticky top-(--app-header-offset) z-30 bg-surface-glass backdrop-blur-sm shadow-2xs"
           : "",
         className
       )}
@@ -60,15 +80,15 @@ export function HomeDiscoveryControls({
         <div className="-mx-0.5 overflow-x-auto no-scrollbar touch-pan-x">
           <div className="flex w-max items-center gap-1.5 px-0.5">
             {SORT_CHIP_CONFIG.map((chip) => {
-              const isActive = sort === chip.value
+              const isActive = activeChipKey === chip.labelKey
               const Icon = chip.icon
               return (
                 <button
-                  key={chip.value}
+                  key={chip.labelKey}
                   type="button"
                   data-testid={chip.testId}
                   aria-pressed={isActive}
-                  onClick={() => onSortChange(chip.value)}
+                  onClick={() => handleChipClick(chip)}
                   className={getHomeChipClass({ active: isActive, className: "gap-1" })}
                 >
                   <Icon

@@ -4,9 +4,12 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import type { UIProduct } from "@/lib/types/products"
 
 export type HomeDiscoverySort = "newest" | "price-asc" | "price-desc" | "rating"
+export type HomeDiscoveryType = "newest" | "promoted"
 
 interface UseHomeDiscoveryFeedOptions {
   initialProducts: UIProduct[]
+  feedType?: HomeDiscoveryType
+  preferInitialProducts?: boolean
   limit?: number
 }
 
@@ -29,12 +32,19 @@ function toSafeProducts(value: unknown): UIProduct[] {
   })
 }
 
-function buildCacheKey(sort: HomeDiscoverySort, nearby: boolean, city: string | null, limit: number): string {
+function buildCacheKey(
+  feedType: HomeDiscoveryType,
+  sort: HomeDiscoverySort,
+  nearby: boolean,
+  city: string | null,
+  limit: number
+): string {
   const effectiveCity = nearby ? city : null
-  return `${sort}|${nearby ? "nearby" : "global"}|${effectiveCity ?? ""}|${limit}`
+  return `${feedType}|${sort}|${nearby ? "nearby" : "global"}|${effectiveCity ?? ""}|${limit}`
 }
 
 async function fetchDiscoveryPage(options: {
+  feedType: HomeDiscoveryType
   sort: HomeDiscoverySort
   nearby: boolean
   city: string | null
@@ -43,7 +53,7 @@ async function fetchDiscoveryPage(options: {
   signal: AbortSignal
 }): Promise<{ products: UIProduct[]; hasMore: boolean }> {
   const params = new URLSearchParams({
-    type: "newest",
+    type: options.feedType,
     sort: options.sort,
     page: String(options.page),
     limit: String(options.limit),
@@ -73,7 +83,12 @@ async function fetchDiscoveryPage(options: {
   return { products, hasMore }
 }
 
-export function useHomeDiscoveryFeed({ initialProducts, limit = 24 }: UseHomeDiscoveryFeedOptions) {
+export function useHomeDiscoveryFeed({
+  initialProducts,
+  feedType = "newest",
+  preferInitialProducts = true,
+  limit = 24,
+}: UseHomeDiscoveryFeedOptions) {
   const [sort, setSort] = useState<HomeDiscoverySort>("newest")
   const [nearby, setNearby] = useState(false)
   const [city, setCity] = useState<string | null>(null)
@@ -90,13 +105,13 @@ export function useHomeDiscoveryFeed({ initialProducts, limit = 24 }: UseHomeDis
 
   useEffect(() => {
     initialProductsRef.current = initialProducts
-    if (sort === "newest" && !nearby) {
+    if (preferInitialProducts && sort === "newest" && !nearby) {
       setProducts(initialProducts)
       setPage(1)
       setHasMore(initialProducts.length === limit)
       setError(null)
     }
-  }, [initialProducts, limit, nearby, sort])
+  }, [initialProducts, limit, nearby, preferInitialProducts, sort])
 
   const buildSearchHref = useCallback(
     (options?: { sort?: HomeDiscoverySort; nearby?: boolean; city?: string | null }) => {
@@ -116,7 +131,10 @@ export function useHomeDiscoveryFeed({ initialProducts, limit = 24 }: UseHomeDis
   )
 
   const effectiveCity = nearby ? city : null
-  const cacheKey = useMemo(() => buildCacheKey(sort, nearby, city, limit), [city, limit, nearby, sort])
+  const cacheKey = useMemo(
+    () => buildCacheKey(feedType, sort, nearby, city, limit),
+    [city, feedType, limit, nearby, sort]
+  )
 
   const loadPage = useCallback(
     async (nextPage: number, mode: "replace" | "append") => {
@@ -128,6 +146,7 @@ export function useHomeDiscoveryFeed({ initialProducts, limit = 24 }: UseHomeDis
 
       try {
         const result = await fetchDiscoveryPage({
+          feedType,
           sort,
           nearby,
           city: effectiveCity,
@@ -163,11 +182,11 @@ export function useHomeDiscoveryFeed({ initialProducts, limit = 24 }: UseHomeDis
         }
       }
     },
-    [cacheKey, effectiveCity, limit, nearby, sort]
+    [cacheKey, effectiveCity, feedType, limit, nearby, sort]
   )
 
   useEffect(() => {
-    if (sort === "newest" && !nearby && initialProductsRef.current.length > 0) {
+    if (preferInitialProducts && sort === "newest" && !nearby && initialProductsRef.current.length > 0) {
       setProducts(initialProductsRef.current)
       setPage(1)
       setHasMore(initialProductsRef.current.length === limit)
@@ -190,7 +209,7 @@ export function useHomeDiscoveryFeed({ initialProducts, limit = 24 }: UseHomeDis
     return () => {
       abortRef.current?.abort()
     }
-  }, [cacheKey, limit, loadPage, nearby, sort])
+  }, [cacheKey, limit, loadPage, nearby, preferInitialProducts, sort])
 
   const loadNextPage = useCallback(() => {
     if (isLoading || error) return
@@ -220,4 +239,3 @@ export function useHomeDiscoveryFeed({ initialProducts, limit = 24 }: UseHomeDis
     buildSearchHref,
   }
 }
-

@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import { MegaphoneSimple } from "@phosphor-icons/react"
 import { Check } from "lucide-react"
 import { Link } from "@/i18n/routing"
 import { useLocale, useTranslations } from "next-intl"
@@ -42,6 +43,8 @@ export function MobileProductCard({
   slug,
   username,
   showWishlist = true,
+  showWishlistAction,
+  showPromotedBadge = true,
   disableQuickView = false,
   index = 0,
   currentUserId,
@@ -59,6 +62,7 @@ export function MobileProductCard({
   const t = useTranslations("Product")
   const locale = useLocale()
   const { openProductQuickView, enabledDrawers, isDrawerSystemEnabled } = useDrawer()
+  const allowWishlistAction = showWishlistAction ?? showWishlist
 
   const isQuickViewEnabled = isDrawerSystemEnabled && enabledDrawers.productQuickView
   const shouldUseDrawerQuickView = isQuickViewEnabled && !disableQuickView
@@ -181,15 +185,22 @@ export function MobileProductCard({
           ratio={mediaRatio}
         />
 
-        {inStock && visibleOverlayBadgeVariants.length > 0 && (
+        {showPromotedBadge && inStock && visibleOverlayBadgeVariants.length > 0 && (
           <div className="pointer-events-none absolute left-1.5 top-1.5 z-10 flex flex-col gap-1">
-            <Badge key="promoted" size="compact" variant="promoted" data-testid="product-card-ad-badge">
-              {t("adBadge")}
+            <Badge
+              key="promoted"
+              size="compact"
+              variant="glass"
+              data-testid="product-card-ad-badge"
+              className="px-1.5"
+            >
+              <MegaphoneSimple size={10} weight="fill" aria-hidden="true" />
+              <span className="sr-only">{t("adBadge")}</span>
             </Badge>
           </div>
         )}
 
-        {showWishlist && (
+        {allowWishlistAction && (
           <div className="absolute right-1.5 top-1.5 z-20">
             <ProductCardActions
               id={id}

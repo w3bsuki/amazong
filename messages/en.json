@@ -231,10 +231,10 @@
             "trustProtected": "Protected",
             "trustFastShip": "Fast Ship",
             "trustBestPrices": "Best Prices",
-            "sellBannerEyebrow": "Sell on Treido",
+            "sellBannerEyebrow": "For sellers",
             "sellBannerTitle": "Sell on Treido",
-            "sellBannerSubtitle": "List in a minute.",
-            "sellBannerAction": "Start",
+            "sellBannerSubtitle": "List your first item in under a minute.",
+            "sellBannerAction": "Get started",
             "browseCategorySubtitle": "Browse all products in this category",
             "forYouTitle": "For you",
             "exploreTabs": {
@@ -291,6 +291,7 @@
                 },
                 "sortTrigger": "Sort",
                 "sort": {
+                    "all": "All",
                     "newest": "Newest",
                     "priceLow": "Price: Low",
                     "priceHigh": "Price: High",

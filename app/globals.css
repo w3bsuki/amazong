@@ -213,6 +213,21 @@ select:-webkit-autofill {
   --home-promoted-surface: var(--surface-subtle);
   --home-promoted-border: var(--border-subtle);
   --home-promoted-text: var(--foreground);
+  --home-promoted-cta-surface: var(--surface-card);
+  --home-promoted-cta-border: var(--border);
+  --home-promoted-cta-text: var(--foreground);
+  --home-promoted-cta-eyebrow: var(--muted-foreground);
+  --home-promoted-cta-subtitle: var(--muted-foreground);
+  --home-promoted-cta-button-surface: var(--primary);
+  --home-promoted-cta-button-text: var(--primary-foreground);
+  --home-promoted-cta-button-border: var(--primary);
+  --home-sell-cta-surface: var(--card);
+  --home-sell-cta-border: var(--border-subtle);
+  --home-sell-cta-text: var(--foreground);
+  --home-sell-cta-action: var(--primary);
+  --home-sell-cta-icon-surface: var(--primary);
+  --home-sell-cta-icon-text: var(--primary-foreground);
+  --home-sell-cta-icon-border: var(--primary);
   --home-section-title: var(--foreground);
   --home-section-action: var(--muted-foreground);
 
@@ -336,6 +351,21 @@ select:-webkit-autofill {
   --home-promoted-surface: var(--surface-subtle);
   --home-promoted-border: var(--border-subtle);
   --home-promoted-text: var(--foreground);
+  --home-promoted-cta-surface: var(--surface-card);
+  --home-promoted-cta-border: var(--border);
+  --home-promoted-cta-text: var(--foreground);
+  --home-promoted-cta-eyebrow: var(--muted-foreground);
+  --home-promoted-cta-subtitle: var(--muted-foreground);
+  --home-promoted-cta-button-surface: var(--primary);
+  --home-promoted-cta-button-text: var(--primary-foreground);
+  --home-promoted-cta-button-border: var(--primary);
+  --home-sell-cta-surface: var(--card);
+  --home-sell-cta-border: var(--border-subtle);
+  --home-sell-cta-text: var(--foreground);
+  --home-sell-cta-action: var(--primary);
+  --home-sell-cta-icon-surface: var(--primary);
+  --home-sell-cta-icon-text: var(--primary-foreground);
+  --home-sell-cta-icon-border: var(--primary);
   --home-section-title: var(--foreground);
   --home-section-action: var(--muted-foreground);
 
@@ -480,6 +510,21 @@ select:-webkit-autofill {
   --color-home-promoted: oklch(var(--home-promoted-surface));
   --color-home-promoted-border: oklch(var(--home-promoted-border));
   --color-home-promoted-text: oklch(var(--home-promoted-text));
+  --color-home-promoted-cta-surface: oklch(var(--home-promoted-cta-surface));
+  --color-home-promoted-cta-border: oklch(var(--home-promoted-cta-border));
+  --color-home-promoted-cta-text: oklch(var(--home-promoted-cta-text));
+  --color-home-promoted-cta-eyebrow: oklch(var(--home-promoted-cta-eyebrow));
+  --color-home-promoted-cta-subtitle: oklch(var(--home-promoted-cta-subtitle));
+  --color-home-promoted-cta-button-surface: oklch(var(--home-promoted-cta-button-surface));
+  --color-home-promoted-cta-button-text: oklch(var(--home-promoted-cta-button-text));
+  --color-home-promoted-cta-button-border: oklch(var(--home-promoted-cta-button-border));
+  --color-home-sell-cta-surface: oklch(var(--home-sell-cta-surface));
+  --color-home-sell-cta-border: oklch(var(--home-sell-cta-border));
+  --color-home-sell-cta-text: oklch(var(--home-sell-cta-text));
+  --color-home-sell-cta-action: oklch(var(--home-sell-cta-action));
+  --color-home-sell-cta-icon-surface: oklch(var(--home-sell-cta-icon-surface));
+  --color-home-sell-cta-icon-text: oklch(var(--home-sell-cta-icon-text));
+  --color-home-sell-cta-icon-border: oklch(var(--home-sell-cta-icon-border));
   --color-home-section-title: oklch(var(--home-section-title));
   --color-home-section-action: oklch(var(--home-section-action));
 
@@ -625,6 +670,7 @@ select:-webkit-autofill {
   --spacing-home-inset: 0.75rem;    /* 12px - landing content inset */
   --spacing-home-section-gap: 1rem; /* 16px - landing section rhythm */
   --spacing-home-card-gap: 0.625rem; /* 10px - tighter, denser landing rhythm */
+  --spacing-home-cta-tile-min-h: 11.5rem; /* 184px - home merchandising CTA tile height */
   --spacing-home-card-column-w: calc((100vw - (var(--spacing-home-inset) * 2) - var(--spacing-home-card-gap)) / 2);
   --spacing-home-promo-card-w: var(--spacing-home-card-column-w); /* keep promoted width aligned to feed grid */
   --spacing-home-promo-rail-card-w: var(--spacing-home-card-column-w); /* legacy alias; emphasis now comes from taller media ratio */

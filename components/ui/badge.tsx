@@ -18,6 +18,7 @@ const badgeVariants = cva(
         default: "border-transparent bg-secondary text-secondary-foreground",
         secondary: "border-border bg-muted text-muted-foreground",
         outline: "border-border bg-background text-foreground",
+        glass: "border-border-subtle bg-surface-glass text-foreground backdrop-blur-sm font-semibold",
         destructive: "border-transparent bg-destructive text-destructive-foreground",
 
         // Canonical semantic statuses
