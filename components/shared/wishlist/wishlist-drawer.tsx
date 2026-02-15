@@ -4,7 +4,6 @@ import { useEffect, useState } from "react"
 import { Heart, ShoppingCart, Trash, ArrowRight, X } from "@/lib/icons/phosphor"
 import {
   Drawer,
-  DrawerTrigger,
   DrawerContent,
   DrawerDescription,
   DrawerHeader,
@@ -23,8 +22,9 @@ import { cn } from "@/lib/utils"
 import { toast } from "sonner"
 
 interface WishlistDrawerProps {
+  open: boolean
+  onOpenChange: (open: boolean) => void
   className?: string
-  children: React.ReactNode
 }
 
 function formatPrice(price: number): string {
@@ -34,8 +34,7 @@ function formatPrice(price: number): string {
   }).format(price)
 }
 
-export function WishlistDrawer({ className, children }: WishlistDrawerProps) {
-  const [open, setOpen] = useState(false)
+export function WishlistDrawer({ open, onOpenChange, className }: WishlistDrawerProps) {
   const [mounted, setMounted] = useState(false)
   const { items, isLoading, removeFromWishlist, totalItems } = useWishlist()
   const { addToCart } = useCart()
@@ -60,8 +59,7 @@ export function WishlistDrawer({ className, children }: WishlistDrawerProps) {
   const contentMaxHeight = items.length <= 2 ? "max-h-dialog-sm" : "max-h-dialog"
 
   return (
-    <Drawer open={open} onOpenChange={setOpen}>
-      <DrawerTrigger asChild>{children}</DrawerTrigger>
+    <Drawer open={open} onOpenChange={onOpenChange}>
       <DrawerContent className={className}>
         <DrawerHeader className="pb-1.5 pt-0 border-b border-border text-left">
             <div className="flex items-center justify-between">
@@ -97,7 +95,7 @@ export function WishlistDrawer({ className, children }: WishlistDrawerProps) {
             </div>
             <p className="text-sm text-foreground font-medium">{t("empty")}</p>
             <p className="text-xs text-muted-foreground mt-0.5 mb-3">{t("emptyDescription")}</p>
-            <Button asChild variant="cta" size="default" onClick={() => setOpen(false)}>
+            <Button asChild variant="cta" size="default" onClick={() => onOpenChange(false)}>
               <Link href="/search" className="gap-1">
                 {t("startShopping")}
                 <ArrowRight size={14} />
@@ -107,7 +105,7 @@ export function WishlistDrawer({ className, children }: WishlistDrawerProps) {
         ) : (
           <DrawerBody className={cn("px-inset", contentMaxHeight)}>
             <div className="pb-2">
-              <Button asChild variant="outline" size="sm" className="w-full" onClick={() => setOpen(false)}>
+              <Button asChild variant="outline" size="sm" className="w-full" onClick={() => onOpenChange(false)}>
                 <Link href="/account/wishlist" className="gap-1">
                   {t("viewAll")}
                   <ArrowRight size={14} />
@@ -125,7 +123,7 @@ export function WishlistDrawer({ className, children }: WishlistDrawerProps) {
                 >
                   <Link
                     href={item.username ? `/${item.username}/${item.slug || item.product_id}` : "#"}
-                    onClick={() => setOpen(false)}
+                    onClick={() => onOpenChange(false)}
                     className="shrink-0"
                   >
                     <div className="size-14 bg-muted rounded-xl overflow-hidden border border-border">
@@ -142,7 +140,7 @@ export function WishlistDrawer({ className, children }: WishlistDrawerProps) {
                   <div className="min-w-0 flex flex-col">
                     <Link
                       href={item.username ? `/${item.username}/${item.slug || item.product_id}` : "#"}
-                      onClick={() => setOpen(false)}
+                      onClick={() => onOpenChange(false)}
                       className="text-sm text-foreground line-clamp-2 leading-snug hover:text-primary"
                     >
                       {item.title}

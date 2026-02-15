@@ -600,7 +600,7 @@ select:-webkit-autofill {
 
   /* === LAYOUT HEIGHTS === */
   --spacing-header: 3rem;
-  --spacing-bottom-nav: 3.5rem;   /* 56px — icon + label */
+  --spacing-bottom-nav: 3rem;     /* 48px — icon-only */
   --spacing-button: 2.75rem;
   --spacing-button-sm: 2.25rem;
   --spacing-button-lg: 3rem;

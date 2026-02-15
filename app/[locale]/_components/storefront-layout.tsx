@@ -15,7 +15,10 @@ export async function StorefrontLayout({
   locale: string
   wrapShell?: StorefrontShellWrapper
 }) {
-  const categories = await getCategoryHierarchy(null, 2)
+  // Keep global layout payload lean:
+  // - L0 categories are enough for header nav + category drawer entry points.
+  // - Deeper levels are fetched lazily by route-specific UIs when needed.
+  const categories = await getCategoryHierarchy(null, 0)
   const shell = (
     <StorefrontShell locale={locale} categories={categories}>
       {children}

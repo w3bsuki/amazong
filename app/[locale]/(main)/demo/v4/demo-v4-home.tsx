@@ -12,6 +12,11 @@ import { getCategoryName } from "@/lib/category-display"
 import { getCategoryIcon } from "@/components/shared/category/category-icons"
 import { MobileProductCard } from "@/components/shared/product/card/mobile"
 import {
+  ACTION_CHIP_CLASS,
+  getPillClass,
+  getPrimaryTabClass,
+} from "../../_lib/mobile-rail-class-recipes"
+import {
   Sheet,
   SheetContent,
   SheetDescription,
@@ -55,35 +60,6 @@ interface DemoV4HomeProps {
 const MAX_VISIBLE_CATEGORY_TABS = 5
 const QUICK_JUMP_CATEGORY_LIMIT = 4
 const SECONDARY_RAIL_TOP = "calc(var(--app-header-offset) + var(--control-default))"
-
-const PRIMARY_TAB_BASE_CLASS =
-  "relative inline-flex min-h-(--control-default) items-center gap-1.5 px-3 text-xs tap-transparent transition-colors duration-fast ease-smooth focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-inset"
-const PRIMARY_TAB_ACTIVE_CLASS = "font-semibold text-foreground"
-const PRIMARY_TAB_INACTIVE_CLASS = "font-medium text-muted-foreground"
-
-const PILL_BASE_CLASS =
-  "inline-flex shrink-0 items-center whitespace-nowrap rounded-full border min-h-(--control-compact) px-2.5 text-xs tap-transparent transition-colors duration-fast ease-smooth focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-1"
-const PILL_ACTIVE_CLASS = "border-foreground bg-foreground text-background font-semibold"
-const PILL_INACTIVE_CLASS =
-  "border-border-subtle bg-surface-subtle text-muted-foreground font-medium"
-
-const ACTION_CHIP_CLASS =
-  "inline-flex shrink-0 min-h-(--control-compact) items-center gap-1 rounded-full border border-border-subtle bg-background px-2.5 text-xs font-semibold text-foreground tap-transparent transition-colors duration-fast ease-smooth hover:bg-hover active:bg-active focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-1"
-
-// =============================================================================
-// Helpers
-// =============================================================================
-
-function getPrimaryTabClass(active: boolean): string {
-  return cn(
-    PRIMARY_TAB_BASE_CLASS,
-    active ? PRIMARY_TAB_ACTIVE_CLASS : PRIMARY_TAB_INACTIVE_CLASS
-  )
-}
-
-function getPillClass(active: boolean): string {
-  return cn(PILL_BASE_CLASS, active ? PILL_ACTIVE_CLASS : PILL_INACTIVE_CLASS)
-}
 
 function productMatchesSlug(product: UIProduct, slug: string): boolean {
   if (product.categorySlug === slug) return true
@@ -262,7 +238,7 @@ export function DemoV4Home({
               role="tab"
               aria-selected={activeCategorySlug === null}
               onClick={() => handlePrimaryTab(null)}
-              className={getPrimaryTabClass(activeCategorySlug === null)}
+              className={getPrimaryTabClass(activeCategorySlug === null, { nowrap: false })}
             >
               {getCategoryIcon("categories", {
                 size: 16,
@@ -287,7 +263,7 @@ export function DemoV4Home({
                   role="tab"
                   aria-selected={active}
                   onClick={() => handlePrimaryTab(category.slug)}
-                  className={getPrimaryTabClass(active)}
+                  className={getPrimaryTabClass(active, { nowrap: false })}
                 >
                   {getCategoryIcon(category.slug, {
                     size: 16,
@@ -310,11 +286,10 @@ export function DemoV4Home({
                 type="button"
                 onClick={() => setCategoryPickerOpen(true)}
                 aria-label={categoryPickerTitle}
-                className={cn(
-                  PRIMARY_TAB_BASE_CLASS,
-                  PRIMARY_TAB_INACTIVE_CLASS,
-                  "border-l border-border-subtle"
-                )}
+                className={getPrimaryTabClass(false, {
+                  nowrap: false,
+                  className: "border-l border-border-subtle",
+                })}
               >
                 <DotsThree size={18} weight="bold" className="shrink-0" />
                 <span>{locale === "bg" ? "Още" : "More"}</span>

@@ -56,6 +56,9 @@ interface DrawerState {
   messages: {
     open: boolean
   }
+  wishlist: {
+    open: boolean
+  }
   account: {
     open: boolean
   }
@@ -73,6 +76,7 @@ interface DrawerContextValue {
     productQuickView: boolean
     cart: boolean
     messages: boolean
+    wishlist: boolean
     account: boolean
     auth: boolean
   }
@@ -87,9 +91,13 @@ interface DrawerContextValue {
   // Messages drawer
   openMessages: () => void
   closeMessages: () => void
+  // Wishlist drawer
+  openWishlist: () => void
+  closeWishlist: () => void
   // Account drawer
   openAccount: () => void
   closeAccount: () => void
+  openAccountAfterAuthClose: () => void
   // Auth drawer
   openAuth: (options?: { mode?: AuthDrawerMode; entrypoint?: AuthDrawerEntrypoint }) => void
   setAuthMode: (mode: AuthDrawerMode) => void
@@ -111,6 +119,7 @@ export function DrawerProvider({ children }: { children: React.ReactNode }) {
     productQuickView: { open: false, product: null },
     cart: { open: false },
     messages: { open: false },
+    wishlist: { open: false },
     account: { open: false },
     auth: { open: false, mode: "login", entrypoint: null },
   })
@@ -122,6 +131,7 @@ export function DrawerProvider({ children }: { children: React.ReactNode }) {
       productQuickView: true,
       cart: true,
       messages: true,
+      wishlist: true,
       account: true,
       auth: true,
     },
@@ -129,9 +139,13 @@ export function DrawerProvider({ children }: { children: React.ReactNode }) {
 
   // Initialize feature flags on client-side
   useEffect(() => {
+    const enabledDrawers = getEnabledDrawers()
     setFeatureFlags({
       isSystemEnabled: isDrawerSystemEnabled(),
-      enabledDrawers: getEnabledDrawers(),
+      enabledDrawers: {
+        ...enabledDrawers,
+        wishlist: true,
+      },
     })
   }, [])
 
@@ -196,6 +210,22 @@ export function DrawerProvider({ children }: { children: React.ReactNode }) {
     }))
   }, [])
 
+  // Wishlist actions
+  const openWishlist = useCallback(() => {
+    if (!featureFlags.enabledDrawers.wishlist) return
+    setState((prev) => ({
+      ...prev,
+      wishlist: { open: true },
+    }))
+  }, [featureFlags.enabledDrawers.wishlist])
+
+  const closeWishlist = useCallback(() => {
+    setState((prev) => ({
+      ...prev,
+      wishlist: { open: false },
+    }))
+  }, [])
+
   // Account actions
   const openAccount = useCallback(() => {
     if (!featureFlags.enabledDrawers.account) return
@@ -214,6 +244,30 @@ export function DrawerProvider({ children }: { children: React.ReactNode }) {
       account: { open: false },
     }))
   }, [])
+
+  const openAccountAfterAuthClose = useCallback(() => {
+    setState((prev) => {
+      const isAccountEnabled = featureFlags.enabledDrawers.account
+
+      if (prev.auth.open) {
+        trackDrawerClose({
+          type: "auth",
+          method: "button",
+          metadata: { mode: prev.auth.mode, entrypoint: prev.auth.entrypoint },
+        })
+      }
+
+      if (isAccountEnabled && !prev.account.open) {
+        trackDrawerOpen({ type: "account" })
+      }
+
+      return {
+        ...prev,
+        account: isAccountEnabled ? { open: true } : prev.account,
+        auth: { ...prev.auth, open: false },
+      }
+    })
+  }, [featureFlags.enabledDrawers.account])
 
   // Auth actions
   const openAuth = useCallback(
@@ -277,8 +331,11 @@ export function DrawerProvider({ children }: { children: React.ReactNode }) {
       closeCart,
       openMessages,
       closeMessages,
+      openWishlist,
+      closeWishlist,
       openAccount,
       closeAccount,
+      openAccountAfterAuthClose,
       openAuth,
       setAuthMode,
       closeAuth,
@@ -293,8 +350,11 @@ export function DrawerProvider({ children }: { children: React.ReactNode }) {
       closeCart,
       openMessages,
       closeMessages,
+      openWishlist,
+      closeWishlist,
       openAccount,
       closeAccount,
+      openAccountAfterAuthClose,
       openAuth,
       setAuthMode,
       closeAuth,

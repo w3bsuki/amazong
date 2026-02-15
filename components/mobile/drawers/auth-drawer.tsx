@@ -41,7 +41,7 @@ export function AuthDrawer({ open, mode, onOpenChange, onModeChange }: AuthDrawe
   const tDrawer = useTranslations("AuthDrawer")
   const tDrawers = useTranslations("Drawers")
   const { refreshSession } = useAuth()
-  const { openAccount } = useDrawer()
+  const { openAccountAfterAuthClose } = useDrawer()
 
   const [didSignUpSucceed, setDidSignUpSucceed] = useState(false)
   const loginTabRef = useRef<HTMLButtonElement | null>(null)
@@ -73,11 +73,8 @@ export function AuthDrawer({ open, mode, onOpenChange, onModeChange }: AuthDrawe
   const handleLoginSuccess = useCallback(async () => {
     await refreshSession({ forceRetry: true })
     router.refresh()
-    onOpenChange(false)
-    window.setTimeout(() => {
-      openAccount()
-    }, 80)
-  }, [onOpenChange, openAccount, refreshSession, router])
+    openAccountAfterAuthClose()
+  }, [openAccountAfterAuthClose, refreshSession, router])
 
   const handleSignUpSuccess = useCallback(() => {
     setDidSignUpSucceed(true)

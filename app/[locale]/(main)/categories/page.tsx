@@ -17,6 +17,10 @@ import type { Metadata } from "next"
 // 
 // Per CATEGORY-BROWSING-AUDIT: Don't duplicate homepage tabs on /categories.
 // =============================================================================
+const QUICK_ACTION_CARD_CLASS =
+  "flex min-h-(--control-default) items-center gap-2 rounded-xl border border-border-subtle bg-background p-2 tap-transparent transition-colors duration-fast ease-smooth hover:bg-hover active:bg-active focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-1"
+const QUICK_ACTION_ICON_CLASS =
+  "flex size-8 shrink-0 items-center justify-center rounded-xl bg-surface-subtle text-primary"
 
 export async function generateMetadata({
   params,
@@ -123,26 +127,26 @@ export default async function CategoriesPage({
         <div className="grid grid-cols-2 gap-2">
           <Link
             href="/sell"
-            className="flex items-center gap-2 p-2 bg-background rounded-xl border border-border"
+            className={QUICK_ACTION_CARD_CLASS}
           >
-            <div className="size-8 rounded-xl bg-selected flex items-center justify-center">
-              <Storefront size={16} weight="fill" className="text-primary" />
+            <div className={QUICK_ACTION_ICON_CLASS}>
+              <Storefront size={16} weight="fill" />
             </div>
-            <div>
-              <div className="text-sm font-medium">{t("quickActions.sell.title")}</div>
+            <div className="min-w-0">
+              <div className="text-sm font-medium text-foreground">{t("quickActions.sell.title")}</div>
               <div className="text-2xs text-muted-foreground">{t("quickActions.sell.subtitle")}</div>
             </div>
           </Link>
 
           <Link
             href="/todays-deals"
-            className="flex items-center gap-2 p-2 bg-background rounded-xl border border-border"
+            className={QUICK_ACTION_CARD_CLASS}
           >
-            <div className="size-8 rounded-xl bg-primary-subtle flex items-center justify-center">
-              <Sparkle size={16} weight="fill" className="text-primary" />
+            <div className={QUICK_ACTION_ICON_CLASS}>
+              <Sparkle size={16} weight="fill" />
             </div>
-            <div>
-              <div className="text-sm font-medium">{t("quickActions.deals.title")}</div>
+            <div className="min-w-0">
+              <div className="text-sm font-medium text-foreground">{t("quickActions.deals.title")}</div>
               <div className="text-2xs text-muted-foreground">{t("quickActions.deals.subtitle")}</div>
             </div>
           </Link>

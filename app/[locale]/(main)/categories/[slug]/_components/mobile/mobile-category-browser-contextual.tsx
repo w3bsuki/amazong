@@ -12,6 +12,7 @@ import { PageShell } from "../../../../../_components/page-shell";
 import { MobileFilterControls } from "../../../../_components/filters/mobile-filter-controls";
 
 type Category = CategoryTreeNode;
+const MOBILE_FEED_FRAME_CLASS = "mx-auto w-full max-w-(--breakpoint-md) pb-tabbar-safe";
 
 interface MobileCategoryBrowserContextualProps {
   locale: string;
@@ -159,41 +160,42 @@ export function MobileCategoryBrowserContextual({
   return (
     <PageShell variant="muted" className="w-full">
       {/* Header is rendered by layout with variant="contextual" */}
+      <div className={MOBILE_FEED_FRAME_CLASS}>
+        <MobileFilterControls
+          locale={locale}
+          attributes={instant.attributes.length ? instant.attributes : filterableAttributes}
+          {...(instant.categorySlug !== "all" ? { categorySlug: instant.categorySlug } : {})}
+          {...(instant.categoryId ? { categoryId: instant.categoryId } : {})}
+          subcategories={(instant.children.length ? instant.children : contextualSubcategories).map((child) => ({
+            id: child.id,
+            name: child.name,
+            name_bg: child.name_bg,
+            slug: child.slug,
+          }))}
+          {...(instant.activeCategoryName ? { categoryName: instant.activeCategoryName } : {})}
+          basePath={`/categories/${instant.categorySlug}`}
+          appliedSearchParams={instant.appliedSearchParams}
+          onApply={handleApplyFilters}
+          onRemoveFilter={handleRemoveFilter}
+          onClearAll={handleClearAllFilters}
+          stickyTop="var(--app-header-offset)"
+          sticky={true}
+          className="z-30"
+        />
 
-      <MobileFilterControls
-        locale={locale}
-        attributes={instant.attributes.length ? instant.attributes : filterableAttributes}
-        {...(instant.categorySlug !== "all" ? { categorySlug: instant.categorySlug } : {})}
-        {...(instant.categoryId ? { categoryId: instant.categoryId } : {})}
-        subcategories={(instant.children.length ? instant.children : contextualSubcategories).map((child) => ({
-          id: child.id,
-          name: child.name,
-          name_bg: child.name_bg,
-          slug: child.slug,
-        }))}
-        {...(instant.activeCategoryName ? { categoryName: instant.activeCategoryName } : {})}
-        basePath={`/categories/${instant.categorySlug}`}
-        appliedSearchParams={instant.appliedSearchParams}
-        onApply={handleApplyFilters}
-        onRemoveFilter={handleRemoveFilter}
-        onClearAll={handleClearAllFilters}
-        stickyTop="var(--app-header-offset)"
-        sticky={true}
-        className="z-30"
-      />
-
-      {/* Product Feed */}
-      <ProductFeed
-        products={instant.feed.products}
-        hasMore={instant.feed.hasMore}
-        isLoading={instant.isLoading}
-        activeSlug={instant.activeSlug}
-        locale={locale}
-        isAllTab={false}
-        activeCategoryName={instant.activeCategoryName}
-        onLoadMore={instant.loadMore}
-        showLoadingOverlay={true}
-      />
+        {/* Product Feed */}
+        <ProductFeed
+          products={instant.feed.products}
+          hasMore={instant.feed.hasMore}
+          isLoading={instant.isLoading}
+          activeSlug={instant.activeSlug}
+          locale={locale}
+          isAllTab={false}
+          activeCategoryName={instant.activeCategoryName}
+          onLoadMore={instant.loadMore}
+          showLoadingOverlay={true}
+        />
+      </div>
     </PageShell>
   );
 }

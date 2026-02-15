@@ -8,6 +8,7 @@ import {
   AccountDrawer,
   AuthDrawer,
 } from "@/components/mobile/drawers"
+import { WishlistDrawer } from "@/components/shared/wishlist/wishlist-drawer"
 import { ProductQuickViewDialog } from "./drawers/product-quick-view-dialog"
 
 /**
@@ -20,6 +21,7 @@ export function GlobalDrawers() {
     closeProductQuickView,
     closeCart,
     closeMessages,
+    closeWishlist,
     closeAccount,
     closeAuth,
     setAuthMode,
@@ -51,6 +53,12 @@ export function GlobalDrawers() {
         open={state.messages.open}
         onOpenChange={(open) => {
           if (!open) closeMessages()
+        }}
+      />
+      <WishlistDrawer
+        open={state.wishlist.open}
+        onOpenChange={(open) => {
+          if (!open) closeWishlist()
         }}
       />
       <AccountDrawer
