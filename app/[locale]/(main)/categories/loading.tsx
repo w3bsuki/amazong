@@ -27,13 +27,13 @@ export default function CategoriesLoading() {
         {Array.from({ length: 10 }).map((_, i) => (
           <div
             key={i}
-            className="flex items-center gap-2 px-inset min-h-touch-lg"
+            className="flex min-h-(--control-default) items-center gap-2 px-inset"
           >
             {/* Category circle */}
-            <Skeleton className="size-14 shrink-0 rounded-full" />
+            <Skeleton className="size-(--control-primary) shrink-0 rounded-full" />
 
             {/* Category info */}
-            <div className="flex-1 min-w-0 py-3 space-y-1.5">
+            <div className="min-w-0 flex-1 space-y-1.5 py-2">
               <Skeleton className="h-4 w-32" />
               <Skeleton className="h-3 w-48" />
             </div>

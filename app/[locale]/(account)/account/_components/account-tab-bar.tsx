@@ -126,11 +126,11 @@ export function AccountTabBar() {
   return (
     <>
       <nav 
-        className="fixed bottom-0 left-0 right-0 z-50 bg-card border-t border-border-subtle lg:hidden pb-safe"
+        className="fixed bottom-0 left-0 right-0 z-50 border-t border-border-subtle bg-background lg:hidden pb-safe"
         role="navigation"
         aria-label={t("tabBarAriaLabel")}
       >
-        <div className="flex items-center justify-around h-14 px-1">
+        <div className="flex h-(--spacing-bottom-nav) items-center justify-around px-inset">
           {tabs.map((tab) => {
             const active = isActive(tab.href, tab.exact)
 
@@ -140,7 +140,7 @@ export function AccountTabBar() {
                 href={tab.href}
                 prefetch={true}
                 className={cn(
-                  "flex flex-col items-center justify-center flex-1 h-full min-w-11 min-h-11 gap-0.5 transition-colors",
+                  "flex h-full min-h-(--control-default) min-w-(--control-default) flex-1 flex-col items-center justify-center gap-0.5 transition-colors",
                   "touch-manipulation tap-transparent",
                   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-md",
                   active ? "text-primary" : "text-muted-foreground",
@@ -166,7 +166,7 @@ export function AccountTabBar() {
             type="button"
             onClick={() => setMoreOpen(true)}
             className={cn(
-              "flex flex-col items-center justify-center flex-1 h-full min-w-11 min-h-11 gap-0.5 transition-colors",
+              "flex h-full min-h-(--control-default) min-w-(--control-default) flex-1 flex-col items-center justify-center gap-0.5 transition-colors",
               "touch-manipulation tap-transparent",
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-md",
               isMoreActive ? "text-primary" : "text-muted-foreground",
@@ -202,7 +202,7 @@ export function AccountTabBar() {
                   prefetch={true}
                   onClick={() => setMoreOpen(false)}
                   className={cn(
-                    "flex items-center gap-2 rounded-lg border px-3 py-2 min-h-11 text-sm font-medium transition-colors",
+                    "flex min-h-(--control-default) items-center gap-2 rounded-lg border px-3 py-2 text-sm font-medium transition-colors",
                     active
                       ? "border-selected-border bg-selected text-primary"
                       : "border-border-subtle bg-background text-foreground hover:bg-hover active:bg-active"

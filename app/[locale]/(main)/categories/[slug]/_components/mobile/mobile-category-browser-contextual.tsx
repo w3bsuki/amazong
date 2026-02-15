@@ -1,18 +1,85 @@
 "use client";
 
-import { useEffect } from "react";
+import { useCallback, useEffect, useMemo, useRef } from "react";
 import type { CategoryTreeNode } from "@/lib/category-tree";
 import type { UIProduct } from "@/lib/data/products";
 import type { CategoryAttribute } from "@/lib/data/categories";
+import { CaretRight } from "@/lib/icons/phosphor";
+import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/routing";
 import { useHeader } from "@/components/providers/header-context";
 import { useInstantCategoryBrowse } from "@/hooks/use-instant-category-browse";
+import { getCategoryName, getCategorySlugKey } from "@/lib/category-display";
+import {
+  getCategoryAttributeKey,
+  getCategoryAttributeLabel,
+  getCategoryAttributeOptions,
+} from "@/lib/filters/category-attribute";
 import { ProductFeed } from "./product-feed";
 import { PageShell } from "../../../../../_components/page-shell";
-import { MobileFilterControls } from "../../../../_components/filters/mobile-filter-controls";
+import {
+  MobileFilterControls,
+  type QuickAttributePill,
+} from "../../../../_components/filters/mobile-filter-controls";
+import { getFilterPillsForCategory } from "../../_lib/filter-priority";
+import { ACTION_CHIP_CLASS } from "../../../../_lib/mobile-rail-class-recipes";
 
 type Category = CategoryTreeNode;
 const MOBILE_FEED_FRAME_CLASS = "mx-auto w-full max-w-(--breakpoint-md) pb-tabbar-safe";
+const MAX_QUICK_ATTRIBUTE_PILLS = 5;
+
+function buildQuickAttributePills(options: {
+  locale: string;
+  categorySlug: string;
+  attributes: CategoryAttribute[];
+  appliedSearchParams: URLSearchParams;
+}): QuickAttributePill[] {
+  const { locale, categorySlug, attributes, appliedSearchParams } = options;
+  if (attributes.length === 0) return [];
+
+  const withOptions = attributes.filter((attr) => {
+    const attrOptions = getCategoryAttributeOptions(attr, locale);
+    return (
+      attr.is_filterable &&
+      (attr.attribute_type === "select" || attr.attribute_type === "multiselect") &&
+      Array.isArray(attrOptions) &&
+      attrOptions.length > 0
+    );
+  });
+  if (withOptions.length === 0) return [];
+
+  const priorityKeys = getFilterPillsForCategory(categorySlug, withOptions).filter(
+    (key) => key !== "price" && key !== "category"
+  );
+
+  const ordered: CategoryAttribute[] = [];
+  const used = new Set<string>();
+
+  for (const priorityKey of priorityKeys) {
+    const match = withOptions.find(
+      (attr) => getCategoryAttributeKey(attr) === priorityKey
+    );
+    if (!match) continue;
+    used.add(match.id);
+    ordered.push(match);
+  }
+
+  for (const attr of withOptions) {
+    if (used.has(attr.id)) continue;
+    ordered.push(attr);
+  }
+
+  return ordered.slice(0, MAX_QUICK_ATTRIBUTE_PILLS).map((attr) => {
+    const attrKey = getCategoryAttributeKey(attr);
+    const selectedCount = appliedSearchParams.getAll(`attr_${attrKey}`).filter(Boolean).length;
+    return {
+      sectionId: `attr_${attr.id}`,
+      label: getCategoryAttributeLabel(attr, locale),
+      active: selectedCount > 0,
+      ...(selectedCount > 0 ? { selectedCount } : {}),
+    };
+  });
+}
 
 interface MobileCategoryBrowserContextualProps {
   locale: string;
@@ -62,6 +129,7 @@ export function MobileCategoryBrowserContextual({
   categoryId,
   parentCategory,
 }: MobileCategoryBrowserContextualProps) {
+  const tCategories = useTranslations("Categories");
   const router = useRouter();
   const { setContextualHeader } = useHeader();
 
@@ -78,44 +146,65 @@ export function MobileCategoryBrowserContextual({
     image_url: cat.image_url ?? null,
   }));
 
+  // Route-level parent is stable while instant browsing updates transient context.
+  const routeParentContext = useMemo(
+    () =>
+      parentCategory
+        ? {
+            id: parentCategory.id,
+            slug: parentCategory.slug,
+            parent_id: parentCategory.parent_id,
+            name: parentCategory.name ?? parentCategory.slug,
+            name_bg: parentCategory.name_bg ?? null,
+          }
+        : null,
+    [parentCategory]
+  );
+
   const instant = useInstantCategoryBrowse({
     enabled: true,
     locale,
     initialSlug: initialProductsSlug,
     initialTitle: contextualInitialTitle,
     initialCategoryId: categoryId,
-    initialParent: parentCategory
-      ? {
-          id: parentCategory.id,
-          slug: parentCategory.slug,
-          parent_id: parentCategory.parent_id,
-          name: parentCategory.name ?? parentCategory.slug,
-          name_bg: parentCategory.name_bg ?? null,
-        }
-      : null,
+    initialParent: routeParentContext,
     initialChildren: initialChildrenForHook,
     initialAttributes: filterableAttributes,
     initialProducts,
   });
 
-  const backHref = contextualBackHref || `/categories`;
+  const fallbackParentHref = routeParentContext?.slug
+    ? `/categories/${routeParentContext.slug}`
+    : null;
+  const backHref = contextualBackHref || fallbackParentHref || `/categories`;
+  const categoryNavigationRef = useRef({
+    parentSlug: instant.parent?.slug ?? null,
+    fallbackParentHref,
+    backHref,
+    setCategorySlug: instant.setCategorySlug,
+  });
 
-  const handleBack = async () => {
-    // Use instant client-side navigation (no page reload)
-    if (instant.parent?.slug) {
-      await instant.setCategorySlug(instant.parent.slug, { clearAttrFilters: true });
-      return;
-    }
-    // Only use router.push for going back to /categories index (no parent)
-    router.push(backHref);
-  };
+  const routeParentContextName = routeParentContext
+    ? tCategories("shortName", {
+        slug: getCategorySlugKey(routeParentContext.slug),
+        name: getCategoryName(routeParentContext, locale),
+      })
+    : null;
+  const showParentContextBanner = Boolean(routeParentContext?.slug && routeParentContextName);
+  const effectiveAttributes = instant.attributes.length ? instant.attributes : filterableAttributes;
 
-  // Use instant client-side navigation for circle clicks
-  const handleCircleClick = async (cat: CategoryTreeNode) => {
-    if (cat?.slug) {
-      await instant.setCategorySlug(cat.slug, { clearAttrFilters: true });
-    }
-  };
+  const quickAttributePills = useMemo(
+    () =>
+      buildQuickAttributePills({
+        locale,
+        categorySlug: instant.categorySlug,
+        attributes: effectiveAttributes,
+        appliedSearchParams: new URLSearchParams(
+          instant.appliedSearchParams?.toString() ?? ""
+        ),
+      }),
+    [effectiveAttributes, instant.appliedSearchParams, instant.categorySlug, locale]
+  );
 
   const handleApplyFilters = async (next: { queryString: string; finalPath: string }) => {
     // finalPath is ignored in instant mode; URL sync is handled by the hook.
@@ -136,6 +225,53 @@ export function MobileCategoryBrowserContextual({
     await instant.setFilters(new URLSearchParams());
   };
 
+  const handleViewAllInParent = async () => {
+    if (!routeParentContext?.slug) return;
+    await instant.setCategorySlug(routeParentContext.slug, { clearAttrFilters: true });
+  };
+
+  useEffect(() => {
+    categoryNavigationRef.current = {
+      parentSlug: instant.parent?.slug ?? null,
+      fallbackParentHref,
+      backHref,
+      setCategorySlug: instant.setCategorySlug,
+    };
+  }, [backHref, fallbackParentHref, instant.parent?.slug, instant.setCategorySlug]);
+
+  const handleBack = useCallback(async () => {
+    const navigation = categoryNavigationRef.current;
+    if (navigation.parentSlug) {
+      await navigation.setCategorySlug(navigation.parentSlug, { clearAttrFilters: true });
+      return;
+    }
+    if (navigation.fallbackParentHref) {
+      router.push(navigation.fallbackParentHref);
+      return;
+    }
+    router.push(navigation.backHref);
+  }, [router]);
+
+  const handleCircleClick = useCallback(async (cat: CategoryTreeNode) => {
+    if (cat?.slug) {
+      await categoryNavigationRef.current.setCategorySlug(cat.slug, { clearAttrFilters: true });
+    }
+  }, []);
+
+  const headerSubcategories = useMemo(
+    () => (instant.children.length ? instant.children : contextualSubcategories),
+    [instant.children, contextualSubcategories]
+  );
+  const headerSubcategorySignature = useMemo(
+    () => headerSubcategories.map((cat) => `${cat.id}:${cat.slug}`).join("|"),
+    [headerSubcategories]
+  );
+  const headerSubcategoriesRef = useRef<CategoryTreeNode[]>(headerSubcategories);
+
+  useEffect(() => {
+    headerSubcategoriesRef.current = headerSubcategories;
+  });
+
   // Provide contextual header state to layout via context
   useEffect(() => {
     setContextualHeader({
@@ -143,27 +279,46 @@ export function MobileCategoryBrowserContextual({
       backHref,
       onBack: handleBack,
       activeSlug: instant.activeSlug,
-      subcategories: instant.children.length ? instant.children : contextualSubcategories,
+      subcategories: headerSubcategoriesRef.current,
       onSubcategoryClick: handleCircleClick,
     });
-    return () => setContextualHeader(null);
   }, [
-    instant.categoryTitle,
-    contextualInitialTitle,
     backHref,
+    contextualInitialTitle,
+    handleBack,
+    handleCircleClick,
+    headerSubcategorySignature,
     instant.activeSlug,
-    instant.children,
-    contextualSubcategories,
+    instant.categoryTitle,
     setContextualHeader,
   ]);
+
+  useEffect(() => {
+    return () => setContextualHeader(null);
+  }, [setContextualHeader]);
 
   return (
     <PageShell variant="muted" className="w-full">
       {/* Header is rendered by layout with variant="contextual" */}
       <div className={MOBILE_FEED_FRAME_CLASS}>
+        {showParentContextBanner && routeParentContextName && (
+          <div className="px-inset pt-1.5">
+            <button
+              type="button"
+              onClick={handleViewAllInParent}
+              className={`${ACTION_CHIP_CLASS} w-full min-h-(--control-default) justify-between gap-2 rounded-xl px-3 text-left touch-manipulation`}
+            >
+              <span className="min-w-0 truncate text-xs font-semibold text-foreground">
+                {tCategories("allIn", { category: routeParentContextName })}
+              </span>
+              <CaretRight size={14} weight="bold" className="shrink-0 text-muted-foreground" />
+            </button>
+          </div>
+        )}
+
         <MobileFilterControls
           locale={locale}
-          attributes={instant.attributes.length ? instant.attributes : filterableAttributes}
+          attributes={effectiveAttributes}
           {...(instant.categorySlug !== "all" ? { categorySlug: instant.categorySlug } : {})}
           {...(instant.categoryId ? { categoryId: instant.categoryId } : {})}
           subcategories={(instant.children.length ? instant.children : contextualSubcategories).map((child) => ({
@@ -175,6 +330,7 @@ export function MobileCategoryBrowserContextual({
           {...(instant.activeCategoryName ? { categoryName: instant.activeCategoryName } : {})}
           basePath={`/categories/${instant.categorySlug}`}
           appliedSearchParams={instant.appliedSearchParams}
+          quickAttributePills={quickAttributePills}
           onApply={handleApplyFilters}
           onRemoveFilter={handleRemoveFilter}
           onClearAll={handleClearAllFilters}

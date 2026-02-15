@@ -600,7 +600,7 @@ select:-webkit-autofill {
 
   /* === LAYOUT HEIGHTS === */
   --spacing-header: 3rem;
-  --spacing-bottom-nav: 3rem;     /* 48px — icon-only */
+  --spacing-bottom-nav: 3rem;     /* 48px — full-width dock */
   --spacing-button: 2.75rem;
   --spacing-button-sm: 2.25rem;
   --spacing-button-lg: 3rem;
@@ -620,6 +620,10 @@ select:-webkit-autofill {
   --control-compact: 2.25rem;    /* 36px - dense icon overlays only */
   --control-default: 2.75rem;    /* 44px - default tap target */
   --control-primary: 3rem;       /* 48px - primary CTA / bars */
+
+  /* === CATEGORY-SPECIFIC TOUCH TARGETS === */
+  --touch-target-category-row: var(--control-primary); /* 48px - category list rows */
+  --touch-target-category-chip: var(--control-default); /* 44px - chips & pills in category flows */
 
   /* Legacy aliases (kept for staged migration) */
   --spacing-touch-xs: 2rem;                /* 32px - non-primary compact surfaces */

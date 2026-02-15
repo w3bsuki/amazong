@@ -6,9 +6,9 @@ import { SlidersHorizontal, ArrowUpDown, MapPin } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useTranslations } from "next-intl"
 import { SortModal } from "@/components/shared/filters/sort-modal"
-import { Button } from "@/components/ui/button"
 import type { CategoryAttribute } from "@/lib/data/categories"
 import { getCategoryAttributeKey } from "@/lib/filters/category-attribute"
+import { getActiveFilterCount } from "@/lib/filters/active-filter-count"
 
 // =============================================================================
 // FILTER/SORT BAR — Clean 50/50 Split Design
@@ -18,7 +18,7 @@ import { getCategoryAttributeKey } from "@/lib/filters/category-attribute"
 // - Right: "Sort" showing current sort → opens sort bottom sheet
 //
 // Design system compliance (.codex/project/DESIGN.md):
-// - Primary 48px controls for main rail actions
+// - 44px default controls, 48px reserved for primary CTA moments
 // - Semantic tokens only (text-muted-foreground, bg-muted)
 // - Tailwind v4 best practices
 // - lucide-react icons (repo standard)
@@ -50,6 +50,19 @@ export interface FilterSortBarProps {
 
 type SortOption = "featured" | "price-asc" | "price-desc" | "rating" | "newest"
 
+const ACTION_CHIP_CLASS =
+  "inline-flex shrink-0 min-h-(--control-compact) items-center gap-1 rounded-full border border-border-subtle bg-background px-2.5 text-xs font-semibold text-foreground tap-transparent transition-colors duration-fast ease-smooth hover:bg-hover active:bg-active focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-1"
+
+const PILL_BASE_CLASS =
+  "inline-flex shrink-0 items-center whitespace-nowrap rounded-full border min-h-(--control-compact) px-2.5 text-xs tap-transparent transition-colors duration-fast ease-smooth focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-1"
+const PILL_ACTIVE_CLASS = "border-foreground bg-foreground text-background font-semibold"
+const PILL_INACTIVE_CLASS =
+  "border-border-subtle bg-surface-subtle text-muted-foreground font-medium"
+
+function getPillClass(active: boolean, className?: string): string {
+  return cn(PILL_BASE_CLASS, active ? PILL_ACTIVE_CLASS : PILL_INACTIVE_CLASS, className)
+}
+
 export function FilterSortBar({
   locale,
   onAllFiltersClick,
@@ -69,22 +82,22 @@ export function FilterSortBar({
 
   const [sortOpen, setSortOpen] = useState(false)
 
-  // Count active filters (memoized for perf)
-  const activeFilterCount = useMemo(() => {
-    let count = 0
-    if (searchParams.get("minPrice") || searchParams.get("maxPrice")) count++
-    if (searchParams.get("minRating")) count++
-    if (searchParams.get("availability")) count++
-    if (searchParams.get("deals") === "true") count++
-    if (searchParams.get("verified") === "true") count++
-    if (searchParams.get("city")) count++
-    if (searchParams.get("nearby") === "true") count++
-    // Count attribute filters
-    for (const attr of attributes) {
-      if (searchParams.getAll(`attr_${getCategoryAttributeKey(attr)}`).length > 0) count++
-    }
-    return count
-  }, [searchParams, attributes])
+  const attributeFilterKeys = useMemo(
+    () =>
+      attributes.map((attr) => `attr_${getCategoryAttributeKey(attr)}`),
+    [attributes]
+  )
+
+  const activeFilterCount = useMemo(
+    () =>
+      getActiveFilterCount(searchParams, {
+        includeDeals: true,
+        includeVerified: true,
+        includeLocation: true,
+        attributeKeys: attributeFilterKeys,
+      }),
+    [searchParams, attributeFilterKeys]
+  )
 
   // Current sort value
   const currentSort = (searchParams.get("sort") || "featured") as SortOption
@@ -110,7 +123,7 @@ export function FilterSortBar({
     <>
       <div
         className={cn(
-          "bg-background px-inset py-2",
+          "bg-background px-inset py-1.5",
           sticky && "sticky z-20",
           className
         )}
@@ -122,11 +135,8 @@ export function FilterSortBar({
             type="button"
             onClick={onLocationChipClick}
             className={cn(
-              "mb-2 inline-flex min-h-(--control-default) max-w-full items-center gap-1.5 rounded-full border px-3 text-sm font-medium",
-              "tap-transparent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth)",
-              locationChipActive
-                ? "border-selected-border bg-selected text-selected-foreground"
-                : "border-border-subtle bg-surface-subtle text-muted-foreground hover:bg-hover hover:text-foreground active:bg-active"
+              getPillClass(locationChipActive, "mb-1.5 max-w-full gap-1.5"),
+              !locationChipActive && "hover:bg-hover hover:text-foreground active:bg-active"
             )}
             aria-haspopup="dialog"
             aria-pressed={locationChipActive}
@@ -138,15 +148,15 @@ export function FilterSortBar({
         )}
 
         {/* 50/50 Tab Bar */}
-        <div className="flex items-stretch gap-2" role="group" aria-label={t("filters")}>
+        <div className="flex items-stretch gap-1.5" role="group" aria-label={t("filters")}>
           {/* Filters Tab */}
-          <Button
+          <button
             type="button"
-            variant="outline"
             onClick={onAllFiltersClick}
             className={cn(
-              "flex-1 h-(--control-primary) rounded-full px-4 gap-2 font-semibold motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth)",
-              hasActiveFilters && "bg-selected border-selected-border text-selected-foreground"
+              ACTION_CHIP_CLASS,
+              "flex-1 min-h-(--control-default) justify-center gap-1.5 px-3",
+              hasActiveFilters && "border-foreground"
             )}
             aria-haspopup="dialog"
             aria-pressed={hasActiveFilters}
@@ -154,20 +164,20 @@ export function FilterSortBar({
             <SlidersHorizontal className="size-4 shrink-0" aria-hidden="true" />
             <span>{t("filters")}</span>
             {hasActiveFilters && (
-              <span className="inline-flex items-center justify-center size-5 rounded-full bg-foreground text-background text-xs font-bold tabular-nums">
+              <span className="inline-flex min-w-5 items-center justify-center rounded-full bg-foreground px-1.5 py-0.5 text-2xs font-semibold text-background tabular-nums">
                 {activeFilterCount}
               </span>
             )}
-          </Button>
+          </button>
 
           {/* Sort Tab */}
-          <Button
+          <button
             type="button"
-            variant="outline"
             onClick={openSort}
             className={cn(
-              "flex-1 h-(--control-primary) rounded-full px-4 gap-2 font-semibold min-w-0 motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth)",
-              isSorted && "bg-selected border-selected-border text-selected-foreground"
+              ACTION_CHIP_CLASS,
+              "flex-1 min-h-(--control-default) min-w-0 justify-center gap-1.5 px-3",
+              isSorted && "border-foreground"
             )}
             aria-haspopup="dialog"
             aria-expanded={sortOpen}
@@ -178,7 +188,7 @@ export function FilterSortBar({
             <span className="truncate min-w-0">
               {isSorted ? sortLabels[currentSort] : t("sortBy")}
             </span>
-          </Button>
+          </button>
         </div>
       </div>
 

@@ -23,6 +23,7 @@ export type FeatureFlagName =
   | "drawerProductQuickView" // Product quick view drawer specifically
   | "drawerCart"             // Cart drawer
   | "drawerMessages"         // Messages drawer
+  | "drawerWishlist"         // Wishlist drawer
   | "drawerAccount"          // Account drawer
   | "drawerAuth"             // Auth drawer
 
@@ -66,6 +67,12 @@ const FEATURE_FLAGS: Record<FeatureFlagName, FeatureFlag> = {
     envOverride: "NEXT_PUBLIC_FEATURE_DRAWER_MESSAGES",
     description: "Enable messages drawer on mobile",
   },
+  drawerWishlist: {
+    enabled: true,
+    rolloutPercentage: 100,
+    envOverride: "NEXT_PUBLIC_FEATURE_DRAWER_WISHLIST",
+    description: "Enable wishlist drawer on mobile",
+  },
   drawerAccount: {
     enabled: true,
     rolloutPercentage: 100,
@@ -96,6 +103,7 @@ const PUBLIC_ENV_OVERRIDES: Record<string, string | undefined> = {
   NEXT_PUBLIC_FEATURE_DRAWER_PRODUCT_QUICK_VIEW: process.env.NEXT_PUBLIC_FEATURE_DRAWER_PRODUCT_QUICK_VIEW,
   NEXT_PUBLIC_FEATURE_DRAWER_CART: process.env.NEXT_PUBLIC_FEATURE_DRAWER_CART,
   NEXT_PUBLIC_FEATURE_DRAWER_MESSAGES: process.env.NEXT_PUBLIC_FEATURE_DRAWER_MESSAGES,
+  NEXT_PUBLIC_FEATURE_DRAWER_WISHLIST: process.env.NEXT_PUBLIC_FEATURE_DRAWER_WISHLIST,
   NEXT_PUBLIC_FEATURE_DRAWER_ACCOUNT: process.env.NEXT_PUBLIC_FEATURE_DRAWER_ACCOUNT,
   NEXT_PUBLIC_FEATURE_DRAWER_AUTH: process.env.NEXT_PUBLIC_FEATURE_DRAWER_AUTH,
 }
@@ -197,6 +205,7 @@ export function getEnabledDrawers() {
     productQuickView: isFeatureEnabled("drawerProductQuickView"),
     cart: isFeatureEnabled("drawerCart"),
     messages: isFeatureEnabled("drawerMessages"),
+    wishlist: isFeatureEnabled("drawerWishlist"),
     account: isFeatureEnabled("drawerAccount"),
     auth: isFeatureEnabled("drawerAuth"),
   }

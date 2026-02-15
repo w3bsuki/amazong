@@ -10,12 +10,14 @@ import {
 } from "@/components/mobile/drawers"
 import { WishlistDrawer } from "@/components/shared/wishlist/wishlist-drawer"
 import { ProductQuickViewDialog } from "./drawers/product-quick-view-dialog"
+import { useIsMobile } from "@/hooks/use-mobile"
 
 /**
  * Global drawer container - renders all drawer instances.
  * Mount once at the app root (inside DrawerProvider).
  */
 export function GlobalDrawers() {
+  const isMobile = useIsMobile()
   const {
     state,
     closeProductQuickView,
@@ -29,20 +31,23 @@ export function GlobalDrawers() {
 
   return (
     <>
-      <ProductQuickViewDrawer
-        open={state.productQuickView.open}
-        onOpenChange={(open) => {
-          if (!open) closeProductQuickView()
-        }}
-        product={state.productQuickView.product}
-      />
-      <ProductQuickViewDialog
-        open={state.productQuickView.open}
-        onOpenChange={(open) => {
-          if (!open) closeProductQuickView()
-        }}
-        product={state.productQuickView.product}
-      />
+      {isMobile ? (
+        <ProductQuickViewDrawer
+          open={state.productQuickView.open}
+          onOpenChange={(open) => {
+            if (!open) closeProductQuickView()
+          }}
+          product={state.productQuickView.product}
+        />
+      ) : (
+        <ProductQuickViewDialog
+          open={state.productQuickView.open}
+          onOpenChange={(open) => {
+            if (!open) closeProductQuickView()
+          }}
+          product={state.productQuickView.product}
+        />
+      )}
       <CartDrawer
         open={state.cart.open}
         onOpenChange={(open) => {

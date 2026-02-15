@@ -14,7 +14,13 @@
 
 import "client-only"
 
-export type DrawerType = "product_quick_view" | "cart" | "messages" | "account" | "auth"
+export type DrawerType =
+  | "product_quick_view"
+  | "cart"
+  | "messages"
+  | "wishlist"
+  | "account"
+  | "auth"
 export type DrawerCloseMethod = "swipe" | "backdrop" | "button" | "escape"
 
 interface DrawerOpenEvent {
@@ -42,6 +48,7 @@ const sessionDrawerViews: Record<DrawerType, number> = {
   product_quick_view: 0,
   cart: 0,
   messages: 0,
+  wishlist: 0,
   account: 0,
   auth: 0,
 }

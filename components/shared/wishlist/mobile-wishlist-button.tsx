@@ -10,7 +10,7 @@ import { useDrawer } from "@/components/providers/drawer-context"
 export function MobileWishlistButton() {
   const [mounted, setMounted] = useState(false)
   const { totalItems } = useWishlist()
-  const { openWishlist } = useDrawer()
+  const { openWishlist, enabledDrawers } = useDrawer()
   const tNav = useTranslations("Navigation")
 
   useEffect(() => {
@@ -37,7 +37,10 @@ export function MobileWishlistButton() {
     <button
       className="relative flex size-touch-md appearance-none items-center justify-center rounded-md border-0 bg-transparent p-0 tap-transparent transition-colors hover:bg-header-hover active:bg-header-active touch-manipulation focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
       aria-label={tNav("wishlist")}
-      onClick={openWishlist}
+      aria-haspopup={enabledDrawers.wishlist ? "dialog" : undefined}
+      onClick={() => {
+        if (enabledDrawers.wishlist) openWishlist()
+      }}
     >
       <span className="relative" aria-hidden="true">
         <Heart weight="regular" className="size-icon-header text-header-text" />

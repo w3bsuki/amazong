@@ -1,14 +1,13 @@
 "use client"
 
 import { type ReactNode, useEffect, useState } from "react"
-import { Compass, House, ChatCircleDots, UserCircle, Plus } from "@/lib/icons/phosphor"
+import { Compass, House, ChatCircleDots, UserCircle, Plus } from "@phosphor-icons/react"
 import { Link, usePathname, useRouter } from "@/i18n/routing"
 import { cn } from "@/lib/utils"
 import { CountBadge } from "@/components/shared/count-badge"
 import { UserAvatar } from "@/components/shared/user-avatar"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import {
-  MobileBottomNavActiveIndicator,
   MobileBottomNavCoreAction,
   MobileBottomNavDock,
   MobileBottomNavItem,
@@ -80,8 +79,8 @@ function getFallbackProfileName(user: {
   return "User"
 }
 
-function getTabIconWeight(isActive: boolean): "bold" | "regular" {
-  return isActive ? "bold" : "regular"
+function getTabIconWeight(isActive: boolean): "fill" | "regular" {
+  return isActive ? "fill" : "regular"
 }
 
 export function MobileTabBar() {
@@ -105,7 +104,7 @@ export function MobileTabBar() {
   const routeState = getMobileTabBarRouteState(pathname)
 
   const iconClass =
-    "size-(--size-icon-header) motion-safe:transition-all motion-safe:duration-fast"
+    "size-(--size-icon-header) motion-safe:transition-colors motion-safe:duration-fast"
 
   const isHomeActive = isMobileTabPathActive(routeState.normalizedPathname, "/")
   const isCategoriesActive =
@@ -201,10 +200,7 @@ export function MobileTabBar() {
       label: t("home"),
       ariaCurrent: isHomeActive ? "page" : undefined,
       icon: (
-        <>
-          <House weight={getTabIconWeight(isHomeActive)} className={iconClass} />
-          <MobileBottomNavActiveIndicator state={isHomeActive ? "active" : "inactive"} />
-        </>
+        <House weight={getTabIconWeight(isHomeActive)} className={iconClass} />
       ),
     },
     {
@@ -227,10 +223,7 @@ export function MobileTabBar() {
           }
         : {}),
       icon: (
-        <>
-          <Compass weight={getTabIconWeight(isCategoriesActive)} className={iconClass} />
-          <MobileBottomNavActiveIndicator state={isCategoriesActive ? "active" : "inactive"} />
-        </>
+        <Compass weight={getTabIconWeight(isCategoriesActive)} className={iconClass} />
       ),
     },
     {
@@ -247,7 +240,7 @@ export function MobileTabBar() {
           state={isSellActive ? "active" : "inactive"}
           data-testid="mobile-tab-sell-core"
         >
-          <Plus weight="bold" className="size-(--size-icon-header)" />
+          <Plus weight="bold" className={iconClass} />
         </MobileBottomNavCoreAction>
       ),
     },
@@ -268,12 +261,11 @@ export function MobileTabBar() {
             {unreadCount > 0 && (
               <CountBadge
                 count={unreadCount}
-                className="absolute -top-1.5 -right-2.5 h-4 min-w-4 bg-notification px-0.5 text-2xs text-primary-foreground ring-2 ring-surface-glass"
+                className="absolute -top-1 -right-2 h-3.5 min-w-3.5 bg-notification px-0.5 text-2xs text-primary-foreground ring-1 ring-surface-glass"
                 aria-hidden="true"
               />
             )}
           </span>
-          <MobileBottomNavActiveIndicator state={isChatActive ? "active" : "inactive"} />
         </>
       ),
     },
@@ -301,7 +293,7 @@ export function MobileTabBar() {
               avatarUrl={resolvedProfileAvatar}
               size="sm"
               className={cn(
-                "size-7 rounded-full ring-2 motion-safe:transition-all motion-safe:duration-fast",
+                "size-6 rounded-full ring-1.5 motion-safe:transition-colors motion-safe:duration-fast",
                 isProfileActive ? "ring-primary" : "ring-transparent"
               )}
               fallbackClassName="bg-muted text-2xs font-semibold text-muted-foreground"
@@ -309,19 +301,18 @@ export function MobileTabBar() {
           ) : (
             <Avatar
               className={cn(
-                "size-7 ring-2 motion-safe:transition-all motion-safe:duration-fast",
+                "size-6 ring-1.5 motion-safe:transition-colors motion-safe:duration-fast",
                 isProfileActive ? "ring-primary" : "ring-transparent"
               )}
             >
               <AvatarFallback className="bg-muted text-muted-foreground">
                 <UserCircle
                   weight={getTabIconWeight(isProfileActive)}
-                  className="size-5"
+                  className="size-4.5"
                 />
               </AvatarFallback>
             </Avatar>
           )}
-          <MobileBottomNavActiveIndicator state={isProfileActive ? "active" : "inactive"} />
         </>
       ),
     },

@@ -139,13 +139,9 @@ export function DrawerProvider({ children }: { children: React.ReactNode }) {
 
   // Initialize feature flags on client-side
   useEffect(() => {
-    const enabledDrawers = getEnabledDrawers()
     setFeatureFlags({
       isSystemEnabled: isDrawerSystemEnabled(),
-      enabledDrawers: {
-        ...enabledDrawers,
-        wishlist: true,
-      },
+      enabledDrawers: getEnabledDrawers(),
     })
   }, [])
 
@@ -213,6 +209,7 @@ export function DrawerProvider({ children }: { children: React.ReactNode }) {
   // Wishlist actions
   const openWishlist = useCallback(() => {
     if (!featureFlags.enabledDrawers.wishlist) return
+    trackDrawerOpen({ type: "wishlist" })
     setState((prev) => ({
       ...prev,
       wishlist: { open: true },
@@ -220,6 +217,7 @@ export function DrawerProvider({ children }: { children: React.ReactNode }) {
   }, [featureFlags.enabledDrawers.wishlist])
 
   const closeWishlist = useCallback(() => {
+    trackDrawerClose({ type: "wishlist", method: "button" })
     setState((prev) => ({
       ...prev,
       wishlist: { open: false },

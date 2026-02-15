@@ -8,6 +8,7 @@ import { Link } from "@/i18n/routing"
 import type { CategoryTreeNode } from "@/lib/category-tree"
 import type { UIProduct } from "@/lib/types/products"
 import { cn } from "@/lib/utils"
+import { getActiveFilterCount } from "@/lib/filters/active-filter-count"
 import { getCategoryName, getCategorySlugKey } from "@/lib/category-display"
 import { getCategoryIcon } from "@/components/shared/category/category-icons"
 import { MobileProductCard } from "@/components/shared/product/card/mobile"
@@ -121,15 +122,6 @@ function buildHomeBrowseHref({
     default:
       return "/search?sort=newest"
   }
-}
-
-function getActiveFilterCount(filters: URLSearchParams): number {
-  let count = 0
-  if (filters.get("minPrice") || filters.get("maxPrice")) count++
-  if (filters.get("minRating")) count++
-  if (filters.get("availability")) count++
-  if (filters.get("city") || filters.get("nearby") === "true") count++
-  return count
 }
 
 // =============================================================================

@@ -11,6 +11,13 @@ import { BULGARIAN_CITIES } from "@/lib/bulgarian-cities"
 import { parseShippingRegion } from "@/lib/shipping"
 import type { CategoryAttribute } from "@/lib/data/categories"
 
+export interface QuickAttributePill {
+  sectionId: `attr_${string}`
+  label: string
+  active: boolean
+  selectedCount?: number
+}
+
 interface MobileFilterControlsProps {
   locale: string
   categorySlug?: string
@@ -25,6 +32,7 @@ interface MobileFilterControlsProps {
   userZone?: string | null
   currentCategory?: { name: string; slug: string } | null
   appliedSearchParams?: URLSearchParams | ReadonlyURLSearchParams
+  quickAttributePills?: QuickAttributePill[]
   onApply?: (next: {
     queryString: string
     finalPath: string
@@ -59,6 +67,7 @@ export function MobileFilterControls({
   userZone,
   currentCategory = null,
   appliedSearchParams,
+  quickAttributePills = [],
   onApply,
   onRemoveFilter,
   onClearAll,
@@ -129,6 +138,12 @@ export function MobileFilterControls({
     setFilterHubOpen(true)
   }, [])
 
+  const openAttributeFilter = useCallback((sectionId: `attr_${string}`) => {
+    setHubMode("single")
+    setHubInitialSection(sectionId)
+    setFilterHubOpen(true)
+  }, [])
+
   const filterChipsProps = {
     ...(currentCategory ? { currentCategory } : {}),
     ...(basePath ? { basePath } : {}),
@@ -156,6 +171,35 @@ export function MobileFilterControls({
 
   return (
     <section className={cn("bg-background", className)}>
+      {quickAttributePills.length > 0 && (
+        <div className="bg-background px-inset pt-1.5 pb-1">
+          <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
+            {quickAttributePills.map((pill) => (
+              <button
+                key={pill.sectionId}
+                type="button"
+                onClick={() => openAttributeFilter(pill.sectionId)}
+                className={cn(
+                  "inline-flex shrink-0 min-h-(--control-compact) items-center gap-1.5 rounded-full border px-2.5 text-xs font-medium tap-transparent motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth) motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
+                  pill.active
+                    ? "border-selected-border bg-selected text-selected-foreground"
+                    : "border-border-subtle bg-surface-subtle text-muted-foreground hover:bg-hover hover:text-foreground active:bg-active"
+                )}
+                aria-haspopup="dialog"
+                aria-pressed={pill.active}
+              >
+                <span>{pill.label}</span>
+                {pill.active && pill.selectedCount && pill.selectedCount > 1 ? (
+                  <span className="inline-flex items-center justify-center rounded-full bg-foreground px-1.5 py-0.5 text-2xs font-semibold text-background tabular-nums">
+                    {pill.selectedCount}
+                  </span>
+                ) : null}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
       <FilterSortBar
         locale={locale}
         onAllFiltersClick={openAllFilters}

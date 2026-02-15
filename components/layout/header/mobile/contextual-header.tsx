@@ -85,8 +85,8 @@ export function MobileContextualHeader({
       {/* Subcategory circles */}
       {subcategories.length > 0 && (
         <div className="border-b border-border-subtle bg-background">
-          <div className="overflow-x-auto px-inset py-1.5 no-scrollbar">
-            <div className="flex items-start gap-1.5">
+          <div className="overflow-x-auto px-inset py-1 no-scrollbar">
+            <div className="flex items-start gap-1">
               {subcategories.map((cat) => {
                 const isActive = !!activeSlug && cat.slug === activeSlug
 
@@ -97,17 +97,17 @@ export function MobileContextualHeader({
                     onClick={() => onSubcategoryClick?.(cat)}
                     active={isActive}
                     labelPlacement="below"
-                    circleClassName="size-(--spacing-category-circle)"
-                    fallbackIconSize={24}
+                    circleClassName="size-(--control-default)"
+                    fallbackIconSize={20}
                     fallbackIconWeight="bold"
                     variant="rail"
                     label={tCategories("shortName", {
                       slug: getCategorySlugKey(cat.slug),
                       name: getCategoryName(cat, locale),
                     })}
-                    className="flex-none w-(--spacing-category-item-nav) tap-transparent"
+                    className="flex-none min-h-(--control-default) w-(--spacing-category-item) tap-transparent"
                     labelClassName={cn(
-                      "truncate",
+                      "truncate text-2xs",
                       isActive ? "text-foreground" : "text-muted-foreground"
                     )}
                   />

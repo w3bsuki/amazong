@@ -21,6 +21,8 @@ const QUICK_ACTION_CARD_CLASS =
   "flex min-h-(--control-default) items-center gap-2 rounded-xl border border-border-subtle bg-background p-2 tap-transparent transition-colors duration-fast ease-smooth hover:bg-hover active:bg-active focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-1"
 const QUICK_ACTION_ICON_CLASS =
   "flex size-8 shrink-0 items-center justify-center rounded-xl bg-surface-subtle text-primary"
+const CATEGORY_ROW_CLASS =
+  "group flex min-h-(--control-default) items-center gap-2.5 px-inset py-1.5 tap-transparent transition-colors duration-fast ease-smooth hover:bg-hover active:bg-active focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-inset"
 
 export async function generateMetadata({
   params,
@@ -83,7 +85,7 @@ export default async function CategoriesPage({
       </div>
 
       {/* Category List */}
-      <div className="divide-y divide-border/60">
+      <div className="divide-y divide-border-subtle">
         {categoriesWithChildren.map((cat) => {
           const children = cat.children ?? []
           const hasChildren = children.length > 0
@@ -92,18 +94,18 @@ export default async function CategoriesPage({
             <Link
               key={cat.slug}
               href={`/categories/${cat.slug}`}
-              className="flex items-center gap-2 px-inset min-h-touch-lg active:bg-active"
+              className={CATEGORY_ROW_CLASS}
             >
               <CategoryCircleVisual
                 category={cat}
                 active={false}
-                className="size-(--spacing-category-circle) shrink-0"
-                fallbackIconSize={24}
+                className="size-(--control-default) shrink-0"
+                fallbackIconSize={20}
                 fallbackIconWeight="duotone"
                 variant="muted"
               />
 
-              <div className="flex-1 min-w-0 py-3">
+              <div className="min-w-0 flex-1">
                 <div className="font-medium text-sm text-foreground">
                   {getCategoryShortName(cat)}
                 </div>
@@ -116,7 +118,11 @@ export default async function CategoriesPage({
                 )}
               </div>
 
-              <CaretRight size={14} weight="bold" className="text-muted-foreground shrink-0" />
+              <CaretRight
+                size={14}
+                weight="bold"
+                className="shrink-0 text-muted-foreground transition-colors duration-fast ease-smooth group-hover:text-foreground group-active:text-foreground"
+              />
             </Link>
           )
         })}
