@@ -32,17 +32,21 @@ function toLegacyIcon(icon: LucideIcon): Icon {
   return function LegacyIcon({ mirrored, style, stroke, strokeWidth, weight, ...rest }) {
     const resolvedStrokeWidth =
       typeof stroke === "number" ? stroke : strokeWidth ?? weightToStrokeWidth(weight);
-    const resolvedStroke = typeof stroke === "string" ? stroke : undefined;
+    const resolvedColor = typeof stroke === "string" ? stroke : undefined;
     const resolvedStyle = mirrored
       ? { ...style, transform: `${style?.transform ?? ""} scaleX(-1)`.trim() }
       : style;
 
     const IconComponent = icon;
+    const colorProps = resolvedColor ? { color: resolvedColor } : {};
+    const strokeWidthProps =
+      typeof resolvedStrokeWidth === "number" ? { strokeWidth: resolvedStrokeWidth } : {};
+
     return (
       <IconComponent
         {...rest}
-        stroke={resolvedStroke}
-        strokeWidth={resolvedStrokeWidth}
+        {...colorProps}
+        {...strokeWidthProps}
         style={resolvedStyle}
       />
     );
