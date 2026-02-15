@@ -1,13 +1,5 @@
 # DESIGN.md — UI + Frontend Contract
 
-> Consolidated design and frontend implementation contract for Treido delivery.
-
-| Field | Value |
-|-------|-------|
-| Owner | treido-orchestrator |
-| Last verified | 2026-02-15 |
-| Refresh cadence | Weekly + whenever style gates or frontend contracts change |
-
 ## Runtime Truth Paths
 
 ### Token + Utility Source
@@ -205,6 +197,8 @@ Every new or modified surface must satisfy all checks:
 - Non-essential animations respect reduced-motion preferences.
 - Semantics and landmarks support assistive navigation.
 - State feedback (loading, error, success) is perceivable without color-only cues.
+- Keep form controls paired with programmatic labels and clear inline errors.
+- Ensure stateful controls expose `aria-pressed`, `aria-expanded`, or equivalent semantics when applicable.
 
 ## Layout + Motion Tokens
 
@@ -220,6 +214,9 @@ Implementation guidance:
 - Use token references for timing/spacing/radius instead of one-off literals.
 - Keep interaction timing consistent across equivalent controls.
 - Reserve stronger motion curves for high-intent transitions.
+- Prefer subtle entrance motion; keep exits faster than entrances for responsiveness.
+- Treat layout density changes as explicit design decisions, not accidental side effects.
+- Reuse motion patterns across similar components to preserve interaction predictability.
 
 ## Verification
 

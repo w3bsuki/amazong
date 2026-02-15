@@ -93,41 +93,39 @@ test.describe('Smoke Tests - Critical Path', () => {
     await app.goto('/en')
     await app.waitForHydration()
 
-    const categoriesRow = page.getByTestId('home-category-circles')
-    const promotedSection = page.getByTestId('home-section-promoted')
-    const promotedHeadlineCard = page.getByTestId('home-promoted-cta-tile')
-    const feedControls = page.getByTestId('home-feed-controls')
-    const discoverySection = page.getByTestId('home-section-discovery')
-    const curatedRail = page.getByTestId('home-section-curated-rail')
+    const primaryRail = page.getByTestId('home-v4-primary-rail')
+    const secondaryRail = page.getByTestId('home-v4-secondary-rail')
+    const contextBanner = page.getByTestId('home-v4-context-banner')
+    const discoverySection = page.getByTestId('home-v4-feed')
+    const moreCategoriesTrigger = page.getByTestId('home-v4-more-categories-trigger')
 
-    await assertVisible(categoriesRow)
-    await assertVisible(promotedSection)
-    await assertVisible(promotedHeadlineCard)
-    await assertVisible(feedControls)
+    await assertVisible(primaryRail)
+    await assertVisible(secondaryRail)
+    await assertVisible(contextBanner)
     await assertVisible(discoverySection)
-    await assertVisible(page.getByTestId('home-feed-chip-sort-newest'))
-    await assertVisible(page.getByTestId('home-feed-chip-nearby'))
+    await assertVisible(page.getByTestId('home-v4-scope-forYou'))
+    await assertVisible(page.getByTestId('home-v4-scope-newest'))
+    await assertVisible(page.getByTestId('home-v4-scope-promoted'))
+    await assertVisible(page.getByTestId('home-v4-scope-nearby'))
+    await assertVisible(page.getByTestId('home-v4-scope-deals'))
+    await assertVisible(page.getByTestId('home-v4-filter-trigger'))
 
-    const categoryBox = await categoriesRow.boundingBox()
-    const promotedBox = await promotedSection.boundingBox()
-    const promotedHeadlineCardBox = await promotedHeadlineCard.boundingBox()
-    const controlsBox = await feedControls.boundingBox()
+    const primaryRailBox = await primaryRail.boundingBox()
+    const secondaryRailBox = await secondaryRail.boundingBox()
+    const bannerBox = await contextBanner.boundingBox()
     const discoveryBox = await discoverySection.boundingBox()
 
-    expect(categoryBox).toBeTruthy()
-    expect(promotedBox).toBeTruthy()
-    expect(promotedHeadlineCardBox).toBeTruthy()
-    expect(controlsBox).toBeTruthy()
+    expect(primaryRailBox).toBeTruthy()
+    expect(secondaryRailBox).toBeTruthy()
+    expect(bannerBox).toBeTruthy()
     expect(discoveryBox).toBeTruthy()
 
-    expect(promotedBox!.y).toBeGreaterThan(categoryBox!.y)
-    expect(discoveryBox!.y).toBeGreaterThan(promotedBox!.y)
-    expect(controlsBox!.y).toBeGreaterThanOrEqual(discoveryBox!.y)
+    expect(secondaryRailBox!.y).toBeGreaterThanOrEqual(primaryRailBox!.y)
+    expect(bannerBox!.y).toBeGreaterThan(secondaryRailBox!.y)
+    expect(discoveryBox!.y).toBeGreaterThanOrEqual(bannerBox!.y)
 
     const firstCard = discoverySection.locator('[data-slot="surface"]').first()
     await assertVisible(firstCard)
-    await assertVisible(page.getByTestId('home-discovery-header-title'))
-    await assertVisible(page.getByTestId('home-discovery-header-see-all'))
     const firstCardBox = await firstCard.boundingBox()
     expect(firstCardBox).toBeTruthy()
 
@@ -143,25 +141,11 @@ test.describe('Smoke Tests - Critical Path', () => {
       .filter({ hasText: /^-\d+%$/ })
     await expect(discountBadges).toHaveCount(0)
 
-    const categoryButtons = categoriesRow.getByRole('button')
-    const buttonCount = await categoryButtons.count()
-    expect(buttonCount).toBeGreaterThan(0)
-
-    const sampleCount = Math.min(5, buttonCount)
-    for (let index = 0; index < sampleCount; index += 1) {
-      const buttonBox = await categoryButtons.nth(index).boundingBox()
-      expect(buttonBox).toBeTruthy()
-      expect(buttonBox!.height).toBeGreaterThanOrEqual(44)
-      expect(buttonBox!.width).toBeGreaterThanOrEqual(44)
-    }
-
-    const hasCuratedRail = await curatedRail.isVisible({ timeout: 2_000 }).catch(() => false)
-    if (hasCuratedRail) {
-      await assertVisible(curatedRail)
-      const curatedBox = await curatedRail.boundingBox()
-      expect(curatedBox).toBeTruthy()
-      expect(curatedBox!.y).toBeGreaterThan(discoveryBox!.y)
-    }
+    await assertVisible(moreCategoriesTrigger)
+    const moreTriggerBox = await moreCategoriesTrigger.boundingBox()
+    expect(moreTriggerBox).toBeTruthy()
+    expect(moreTriggerBox!.height).toBeGreaterThanOrEqual(44)
+    expect(moreTriggerBox!.width).toBeGreaterThanOrEqual(44)
 
     await assertNoErrorBoundary(page)
     app.assertNoConsoleErrors()
@@ -595,7 +579,7 @@ test.describe('Smoke Tests - Critical Path', () => {
   // Error Handling
   // ==========================================================================
 
-  test('404 page shows error state for unknown routes @smoke', async ({ page, app }) => {
+  test('404 page shows error state for unknown routes @smoke', async ({ page }) => {
     // Use 3 segments to avoid matching dynamic seller/product routes.
     const unknownMarker = 'this-route-does-not-exist'
 

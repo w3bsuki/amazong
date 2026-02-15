@@ -8,16 +8,30 @@ const docsSiteContentRoot = path.join(repoRoot, "docs-site", "content");
 const docsSitePublicRoot = path.join(repoRoot, "docs-site", "public");
 
 const canonicalRouteMap = new Map([
+  // Canonical entries (current doc structure)
   ["./GUIDE.md", "/guide"],
   ["./DESIGN.md", "/design"],
   ["./DOMAINS.md", "/domains"],
   ["./QUALITY.md", "/quality"],
   ["./DECISIONS.md", "/decisions"],
+  ["./ARCHITECTURE.md", "/engineering"],
+  ["./TASKS.md", "/requirements"],
   ["./public/00-INDEX.md", "/public-docs"],
   ["../ARCHITECTURE.md", "/engineering"],
   ["../AGENTS.md", "/guide"],
   ["../REQUIREMENTS.md", "/requirements"],
-  // Compatibility aliases for legacy doc links still present in unchanged files.
+  // Root-relative paths (used by root-level markdown files like REQUIREMENTS.md)
+  ["docs/GUIDE.md", "/guide"],
+  ["docs/DESIGN.md", "/design"],
+  ["docs/DOMAINS.md", "/domains"],
+  ["docs/QUALITY.md", "/quality"],
+  ["docs/DECISIONS.md", "/decisions"],
+  ["./docs/GUIDE.md", "/guide"],
+  ["./docs/DESIGN.md", "/design"],
+  ["./docs/DOMAINS.md", "/domains"],
+  ["./docs/QUALITY.md", "/quality"],
+  ["./docs/DECISIONS.md", "/decisions"],
+  // Compatibility aliases — legacy doc paths redirect to new consolidated targets.
   ["./INDEX.md", "/guide"],
   ["./PROJECT.md", "/guide"],
   ["./WORKFLOW.md", "/guide"],
@@ -25,7 +39,6 @@ const canonicalRouteMap = new Map([
   ["./RISK.md", "/guide"],
   ["./REFERENCE.md", "/guide"],
   ["./PRINCIPLES.md", "/guide"],
-  ["./ARCHITECTURE.md", "/domains"],
   ["./domain/AUTH.md", "/domains"],
   ["./domain/PAYMENTS.md", "/domains"],
   ["./domain/DATABASE.md", "/domains"],
@@ -40,20 +53,21 @@ const canonicalRouteMap = new Map([
   ["../REFERENCE.md", "/guide"],
   ["./AGENTS.md", "/guide"],
   ["./REQUIREMENTS.md", "/requirements"],
-  ["./docs/GUIDE.md", "/guide"],
-  ["./docs/DESIGN.md", "/design"],
-  ["./docs/DOMAINS.md", "/domains"],
-  ["./docs/QUALITY.md", "/quality"],
-  ["./docs/DECISIONS.md", "/decisions"],
-  ["./docs/WORKFLOW.md", "/guide"],
-  ["./docs/QA.md", "/guide"],
-  ["./docs/RISK.md", "/guide"],
-  ["./docs/PRINCIPLES.md", "/guide"],
-  ["./docs/REFERENCE.md", "/guide"],
-  ["./docs/domain/ROUTES.md", "/domains"],
-  ["./docs/domain/DATABASE.md", "/domains"],
-  ["./docs/ui/DESIGN.md", "/design"],
-  ["./docs/ui/FRONTEND.md", "/design"],
+  ["docs/PROJECT.md", "/guide"],
+  ["docs/ARCHITECTURE.md", "/domains"],
+  ["docs/WORKFLOW.md", "/guide"],
+  ["docs/QA.md", "/guide"],
+  ["docs/RISK.md", "/guide"],
+  ["docs/PRINCIPLES.md", "/guide"],
+  ["docs/REFERENCE.md", "/guide"],
+  ["docs/domain/AUTH.md", "/domains"],
+  ["docs/domain/PAYMENTS.md", "/domains"],
+  ["docs/domain/API.md", "/domains"],
+  ["docs/domain/ROUTES.md", "/domains"],
+  ["docs/domain/DATABASE.md", "/domains"],
+  ["docs/domain/I18N.md", "/domains"],
+  ["docs/ui/DESIGN.md", "/design"],
+  ["docs/ui/FRONTEND.md", "/design"],
 ]);
 
 function normalizePath(p) {
@@ -106,7 +120,7 @@ function rewriteMarkdownLinks(markdown) {
       return `${label} (\`${clean}\`)`;
     }
 
-    const mapped = canonicalRouteMap.get(target);
+    const mapped = canonicalRouteMap.get(target) ?? canonicalRouteMap.get(`./${target}`);
     if (mapped) {
       return `[${label}](${mapped})`;
     }

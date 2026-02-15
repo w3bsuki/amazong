@@ -94,6 +94,7 @@ export async function GET(request: NextRequest) {
   const maxPrice = searchParams.get("maxPrice")
   const minRating = searchParams.get("minRating")
   const availability = searchParams.get("availability")
+  const deals = searchParams.get("deals") === "true"
 
   // Extract attr_* params for attribute filtering.
   // Keys are stable, canonical attribute keys (e.g. attr_brand=Apple).
@@ -107,7 +108,7 @@ export async function GET(request: NextRequest) {
     const values = searchParams.getAll(key).filter((v) => v && v.length > 0)
     if (values.length > 0) {
       attributeFilters[name] = attributeFilters[name]
-        ? Array.from(new Set([...(attributeFilters[name] || []), ...values]))
+        ? [...new Set([...(attributeFilters[name] || []), ...values])]
         : values
     }
   }
@@ -199,6 +200,9 @@ export async function GET(request: NextRequest) {
       if (maxPrice) query = query.lte('price', Number(maxPrice))
       if (minRating) query = query.gte('rating', Number(minRating))
       if (availability === 'instock') query = query.gt('stock', 0)
+      if (deals) {
+        query = query.or('and(is_on_sale.eq.true,sale_percent.gt.0),list_price.not.is.null')
+      }
       if (effectiveCity) {
         // Nearby mode on Home resolves to the same city constraint.
         query = query.ilike("seller_city", effectiveCity)
@@ -274,6 +278,9 @@ export async function GET(request: NextRequest) {
       if (maxPrice) query = query.lte('price', Number(maxPrice))
       if (minRating) query = query.gte('rating', Number(minRating))
       if (availability === 'instock') query = query.gt('stock', 0)
+      if (deals) {
+        query = query.or('and(is_on_sale.eq.true,sale_percent.gt.0),list_price.not.is.null')
+      }
       if (effectiveCity) {
         // Nearby mode on Home resolves to the same city constraint.
         query = query.ilike("seller_city", effectiveCity)

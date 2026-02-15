@@ -30,9 +30,6 @@ jobs:
       - name: Lint
         run: pnpm -s lint
 
-      - name: Docs check
-        run: pnpm -s docs:check
-
       - name: TS safety gate
         run: pnpm -s ts:gate
 

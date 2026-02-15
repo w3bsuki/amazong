@@ -32,7 +32,7 @@ pnpm -s dupes
   - Priority: Critical
   - Owner: treido-orchestrator
   - Scope: Align launch SSOT and remove production-doc contradictions before phase execution
-  - Verify: `pnpm -s typecheck` · `pnpm -s lint` · `pnpm -s styles:gate` · `pnpm -s docs:check`
+  - Verify: `pnpm -s typecheck` · `pnpm -s lint` · `pnpm -s styles:gate`
   - Files: `docs/PRODUCTION.md` · `docs/TESTING.md` · `docs/PRODUCTION-TEST-PLAN.md` · `docs/ROUTES.md` · `docs/guides/deployment.md` · `production-audit/master.md` · `production-audit/01..18`
 - [x] TASK-1 AUTH: Sign in + sign up logic, UI/UX, styling, mobile polish
   - Priority: Critical
@@ -250,16 +250,16 @@ Notes (2026-01-30):
 - [x] DOCS-001: Docs governance lane — keep workflow docs + gates in sync
   - Priority: Medium
   - Owner: treido-orchestrator
-  - Scope: `AGENTS.md` · `docs/WORKFLOW.md` · `docs/QA.md` · `docs/RISK.md` · `scripts/docs-*.mjs`
-  - Done means: `pnpm -s docs:check` green; process docs include Owner/Last verified/Refresh cadence; no stale migration refs to nonexistent docs trees
-  - Verify: `pnpm -s docs:check`
-  - Status: 2026-02-13 complete — `docs:check` and docs freshness gate passed.
+  - Scope: `AGENTS.md` · `docs/*.md`
+  - Done means: docs consistent with code; no stale refs to nonexistent docs
+  - Verify: `pnpm -s typecheck`
+  - Status: 2026-02-15 complete — docs consolidated, doc gate scripts removed.
 - [x] DOCS-002: Production audit docs — migrate phases to Evidence Log (v2) template
   - Priority: Low
   - Owner: treido-audit
   - Scope: `production-audit/01..18` + `production-audit/master.md`
   - Done means: phase docs use `production-audit/TEMPLATE.md` Evidence Log columns for new runs; legacy phases updated opportunistically
-  - Verify: manual review + `pnpm -s docs:check`
+  - Verify: manual review
   - Status: 2026-02-13 complete — phases `01..18` migrated to `Evidence Log (v2)` schema with method guidance line; master doc note updated.
 
 - [x] BACKLOG-001: Replace chart primitive arbitrary utilities + `any` types (SHADCN-002, TS-010)
@@ -354,7 +354,7 @@ Notes (2026-01-30):
 
 1. Each task references an issue: `(ISSUE-####)` when applicable
 2. Keep tasks small (≤ 1 day)
-3. If a task changes product scope, update `docs/PROJECT.md` + `REQUIREMENTS.md`
+3. If a task changes product scope, update `AGENTS.md` (Product section) + `REQUIREMENTS.md`
 4. Every task should have an Owner (skill): `treido-frontend`, `treido-backend`, `treido-supabase-mcp`, or `treido-audit`
 5. Ownership convention (to avoid task churn):
    - Owners update their own tasks (notes/status) and avoid editing other owners’ tasks.

@@ -226,7 +226,7 @@ lib/                 → pure utilities (no React, no app imports)
 - `components/ui/*` is open code owned by Treido and may be edited.
 - Expected edits include token compliance, accessibility fixes, bug fixes, and variant maintenance.
 - Constraint: keep this layer primitive-only (no domain logic, data fetching, or API calls).
-- Styling and interaction SSOT for this layer: `docs/ui/DESIGN.md` and `docs/ui/FRONTEND.md`.
+- Styling and interaction SSOT for this layer: `docs/DESIGN.md`.
 
 ### Forbidden Imports
 
@@ -348,10 +348,10 @@ Use `requireAuth()` from `lib/auth/require-auth.ts` in server actions.
 ## See Also
 
 - [REQUIREMENTS.md](./REQUIREMENTS.md) — Feature requirements checklist
-- [docs/ui/DESIGN.md](./docs/ui/DESIGN.md) — UI/UX rules
-- [docs/domain/ROUTES.md](./docs/domain/ROUTES.md) — Route map
+- [docs/DESIGN.md](./docs/DESIGN.md) — UI/UX + frontend contract
+- [docs/DOMAINS.md](./docs/DOMAINS.md) — Domain contracts (auth/db/payments/api/routes/i18n)
 - [AGENTS.md](./AGENTS.md) — Entry point + non-negotiables
-- [docs/WORKFLOW.md](./docs/WORKFLOW.md) — Default shipping loop
+- [docs/DECISIONS.md](./docs/DECISIONS.md) — Decision log
 
 ---
 

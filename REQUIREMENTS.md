@@ -21,7 +21,7 @@ Legend: `[x]` Done | `[ ]` In progress or not started (annotated)
 - [x] R1.7: Post-signup onboarding wizard
 - [x] R1.8: Protected route gating (middleware)
 
-→ Deep dive: [docs/domain/AUTH.md](docs/domain/AUTH.md) | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
+→ Deep dive: [docs/DOMAINS.md](docs/DOMAINS.md)
 
 ---
 
@@ -36,9 +36,7 @@ Legend: `[x]` Done | `[ ]` In progress or not started (annotated)
 - [x] R2.7: Delete / unpublish listing
 - [ ] R2.8: Listing analytics — not started (business tier only)
 
-→ Deep dive: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
-
----
+→ Deep dive: [ARCHITECTURE.md](ARCHITECTURE.md)
 
 ## R3: Cart & Checkout (8/8) ✅
 
@@ -51,7 +49,7 @@ Legend: `[x]` Done | `[ ]` In progress or not started (annotated)
 - [x] R3.7: Webhook processing (idempotent)
 - [x] R3.8: Order creation on payment success
 
-→ Deep dive: [docs/domain/PAYMENTS.md](docs/domain/PAYMENTS.md) | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
+→ Deep dive: [docs/DOMAINS.md](docs/DOMAINS.md)
 
 ---
 
@@ -64,7 +62,7 @@ Legend: `[x]` Done | `[ ]` In progress or not started (annotated)
 - [ ] R4.5: Cancel order — in progress (pre-shipment only)
 - [x] R4.6: Confirm received → triggers payout
 
-→ Deep dive: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
+→ Deep dive: [ARCHITECTURE.md](ARCHITECTURE.md)
 
 ---
 
@@ -77,7 +75,7 @@ Legend: `[x]` Done | `[ ]` In progress or not started (annotated)
 - [ ] R5.5: Process refund — in progress (admin-assisted)
 - [x] R5.6: Inventory updates (DB triggers)
 
-→ Deep dive: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
+→ Deep dive: [ARCHITECTURE.md](ARCHITECTURE.md)
 
 ---
 
@@ -90,7 +88,7 @@ Legend: `[x]` Done | `[ ]` In progress or not started (annotated)
 - [x] R6.5: Payout status display
 - [x] R6.6: Delayed payout release (escrow)
 
-→ Deep dive: [docs/domain/PAYMENTS.md](docs/domain/PAYMENTS.md)
+→ Deep dive: [docs/DOMAINS.md](docs/DOMAINS.md)
 
 ---
 
@@ -104,7 +102,7 @@ Legend: `[x]` Done | `[ ]` In progress or not started (annotated)
 - [x] R7.6: Search sorting (relevance, price, date)
 - [ ] R7.7: Saved searches — in progress (client-only, localStorage)
 
-→ Deep dive: [docs/domain/ROUTES.md](docs/domain/ROUTES.md) | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
+→ Deep dive: [docs/DOMAINS.md](docs/DOMAINS.md)
 
 ---
 
@@ -119,7 +117,7 @@ Legend: `[x]` Done | `[ ]` In progress or not started (annotated)
 - [ ] R8.7: Related items — not started (V1.1)
 - [x] R8.8: Recently viewed products
 
-→ Deep dive: [docs/domain/ROUTES.md](docs/domain/ROUTES.md)
+→ Deep dive: [docs/DOMAINS.md](docs/DOMAINS.md)
 
 ---
 
@@ -131,7 +129,7 @@ Legend: `[x]` Done | `[ ]` In progress or not started (annotated)
 - [x] R9.4: Wishlist count indicator
 - [ ] R9.5: Wishlist sharing — not started (DB exists, UI not exposed)
 
-→ Deep dive: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
+→ Deep dive: [ARCHITECTURE.md](ARCHITECTURE.md)
 
 ---
 
@@ -145,7 +143,7 @@ Legend: `[x]` Done | `[ ]` In progress or not started (annotated)
 - [x] R10.6: Report conversation
 - [x] R10.7: Block user
 
-→ Deep dive: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
+→ Deep dive: [ARCHITECTURE.md](ARCHITECTURE.md)
 
 ---
 
@@ -160,7 +158,7 @@ Legend: `[x]` Done | `[ ]` In progress or not started (annotated)
 - [x] R11.7: Delete own review
 - [x] R11.8: Validation rules (no duplicate reviews)
 
-→ Deep dive: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
+→ Deep dive: [ARCHITECTURE.md](ARCHITECTURE.md)
 
 ---
 
@@ -173,7 +171,7 @@ Legend: `[x]` Done | `[ ]` In progress or not started (annotated)
 - [ ] R12.5: Notifications (in-app) — in progress (DB exists, UI partial)
 - [ ] R12.6: Email notifications — not started (backend only)
 
-→ Deep dive: [docs/domain/AUTH.md](docs/domain/AUTH.md) | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
+→ Deep dive: [docs/DOMAINS.md](docs/DOMAINS.md)
 
 ---
 
@@ -186,7 +184,7 @@ Legend: `[x]` Done | `[ ]` In progress or not started (annotated)
 - [ ] R13.5: Admin moderation — in progress (basic)
 - [ ] R13.6: Prohibited items enforcement — in progress (manual)
 
-→ Deep dive: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
+→ Deep dive: [ARCHITECTURE.md](ARCHITECTURE.md)
 
 ---
 
@@ -199,7 +197,7 @@ Legend: `[x]` Done | `[ ]` In progress or not started (annotated)
 - [ ] R14.5: Analytics dashboard — in progress (basic)
 - [x] R14.6: Subscription management
 
-→ Deep dive: [docs/domain/PAYMENTS.md](docs/domain/PAYMENTS.md) | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
+→ Deep dive: [docs/DOMAINS.md](docs/DOMAINS.md)
 
 ---
 
@@ -223,7 +221,7 @@ Legend: `[x]` Done | `[ ]` In progress or not started (annotated)
 - [x] R16.4: Dynamic locale switching
 - [x] R16.5: Currency display (BGN/EUR)
 
-→ Deep dive: [docs/domain/I18N.md](docs/domain/I18N.md)
+→ Deep dive: [docs/DOMAINS.md](docs/DOMAINS.md)
 
 ---
 
@@ -235,7 +233,7 @@ Legend: `[x]` Done | `[ ]` In progress or not started (annotated)
 - [ ] R17.4: Screen reader labels — in progress (partial)
 - [ ] R17.5: WCAG 2.1 AA compliance — in progress
 
-→ Deep dive: [docs/ui/DESIGN.md](docs/ui/DESIGN.md)
+→ Deep dive: [docs/DESIGN.md](docs/DESIGN.md)
 
 ---
 
@@ -288,8 +286,8 @@ Legend: `[x]` Done | `[ ]` In progress or not started (annotated)
 
 ## See Also
 
-- [PROJECT.md](docs/PROJECT.md) — Product snapshot, phase context, and done criteria
-- [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) — Consolidated domain reference
+- [AGENTS.md](AGENTS.md) — Product snapshot and execution contract
+- [docs/DOMAINS.md](docs/DOMAINS.md) — Consolidated domain contracts
 - [docs/DESIGN.md](docs/DESIGN.md) — Consolidated design and frontend contract
 - [TASKS.md](TASKS.md) — Active work queue
 

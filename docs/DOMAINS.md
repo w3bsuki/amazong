@@ -1,12 +1,4 @@
-# DOMAINS.md — Consolidated Domain Contracts
-
-> Unified domain contract for auth, database, payments, API, routes, and i18n.
-
-| Field | Value |
-|-------|-------|
-| Owner | treido-orchestrator |
-| Last verified | 2026-02-15 |
-| Refresh cadence | Weekly + whenever domain behavior or contracts change |
+# DOMAINS.md — Domain Contracts
 
 ## Runtime Truth Paths
 
@@ -355,12 +347,11 @@ Rule: never import route-private modules across route groups.
 
 ## Verification
 
-Use `docs/GUIDE.md` as the verification source of truth. For domain-contract updates, run the docs contract gate plus baseline static checks.
+For domain-contract updates, run baseline static checks:
 
 ```bash
 pnpm -s typecheck
 pnpm -s lint
-pnpm -s docs:check
 ```
 
 *Last updated: 2026-02-15*

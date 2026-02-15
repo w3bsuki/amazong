@@ -1,12 +1,6 @@
 # DECISIONS.md — Decision Log
 
-> Append-only log of architectural and design decisions. Agents use this to understand *why* patterns exist, not just *what* they are.
-
-| Field | Value |
-|-------|-------|
-| Owner | treido-orchestrator |
-| Last verified | 2026-02-13 |
-| Refresh cadence | Append when decisions are made |
+Append-only. Agents read this to understand *why* patterns exist.
 
 ## Format
 
@@ -30,7 +24,7 @@
 - **Decision:** Restructure AGENTS.md as a ~80-line table of contents with progressive disclosure. Deeper knowledge lives in domain docs loaded on demand.
 - **Rationale:** Follows OpenAI Harness Engineering principle: "give the agent a map, not a 1,000-page manual." Context is scarce — a lean entry point preserves it for the actual task.
 - **Alternatives considered:** (a) Keep one large file. (b) Multiple AGENTS.md files per directory. (c) External knowledge base.
-- **Consequences:** Requires mechanical enforcement that pointer targets exist and contain substance (`docs:check`). Agents must follow the progressive disclosure chain.
+- **Consequences:** Requires mechanical enforcement that pointer targets exist and contain substance. Agents must follow the progressive disclosure chain.
 
 ### DEC-002: Semantic tokens enforced by mechanical gates, not documentation alone
 - **Date:** 2026-02-13
@@ -43,7 +37,7 @@
 ### DEC-003: Supabase client selection as a non-negotiable contract
 - **Date:** 2026-02-13
 - **Context:** Early bugs were caused by using `createClient()` (cookie-reading) inside cached functions, or `createStaticClient()` for user-specific data.
-- **Decision:** Define four clients with strict selection rules. Document in `docs/domain/DATABASE.md` and `ARCHITECTURE.md`. Treat violations as bugs.
+- **Decision:** Define four clients with strict selection rules. Document in `docs/DOMAINS.md` and `ARCHITECTURE.md`. Treat violations as bugs.
 - **Rationale:** Wrong client selection causes hard-to-diagnose failures: cache pollution, broken auth, or accidental RLS bypass.
 - **Alternatives considered:** (a) Single client with mode parameter. (b) Wrapper that detects context automatically.
 - **Consequences:** Agents must know which client to use before writing any Supabase query. The selection table is the first thing in the DATABASE domain doc.
@@ -118,7 +112,7 @@
 - **Decision:** Draft an RLS hardening migration that scopes the INSERT policy to `TO service_role`, and update server-side notification inserts to use the service role client.
 - **Rationale:** Prevent abuse/spoofing of in-app notifications and reduce PII integrity risk.
 - **Alternatives considered:** (a) Revoke broad table grants. (b) Use RPC functions for notification inserts. (c) Accept risk and rely on application code only.
-- **Consequences:** Applying the migration is high-risk and requires human approval and rollback planning (per `docs/RISK.md`).
+- **Consequences:** Applying the migration is high-risk and requires human approval and rollback planning (per `AGENTS.md § High-Risk Pause`).
 
 ---
 

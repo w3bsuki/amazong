@@ -4,13 +4,6 @@
   "private": true,
   "packageManager": "pnpm@9.15.4",
   "scripts": {
-    "docs": "cd docs-site && pnpm dev",
-    "docs:install": "cd docs-site && pnpm install",
-    "docs:gate": "node scripts/docs-gate.mjs",
-    "docs:contract": "node scripts/docs-contract-gate.mjs",
-    "docs:check": "pnpm -s docs:gate && pnpm -s docs:contract",
-    "docs:advisory": "node scripts/docs-advisory.mjs",
-    "docs:status:check": "pnpm -s docs:check",
     "styles:scan:palette": "node scripts/scan-tailwind-palette.mjs",
     "styles:scan:arbitrary": "node scripts/scan-tailwind-arbitrary.mjs",
     "styles:scan:tokens": "node scripts/scan-tailwind-semantic-tokens.mjs",

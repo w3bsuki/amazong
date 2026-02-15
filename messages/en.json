@@ -371,6 +371,52 @@
                         }
                     }
                 }
+            },
+            "v4": {
+                "title": "Treido Home",
+                "aria": {
+                    "primaryCategories": "Primary categories"
+                },
+                "scopes": {
+                    "forYou": "For you",
+                    "newest": "New",
+                    "promoted": "Promo",
+                    "nearby": "Nearby",
+                    "deals": "Deals"
+                },
+                "quickJump": {
+                    "label": "Quick jump"
+                },
+                "banner": {
+                    "eyebrowCategory": "Browsing category",
+                    "scopeEyebrow": {
+                        "forYou": "For you",
+                        "newest": "Newest",
+                        "promoted": "Promoted",
+                        "nearby": "Nearby",
+                        "deals": "Deals"
+                    },
+                    "scopeTitle": {
+                        "forYou": "Picked for you",
+                        "newest": "Newest listings",
+                        "promoted": "Promoted listings",
+                        "nearby": "Listings nearby",
+                        "deals": "Deal listings"
+                    }
+                },
+                "actions": {
+                    "filter": "Filter",
+                    "view": "View",
+                    "viewCategory": "Full category",
+                    "exploreScope": "Explore",
+                    "moreCategories": "More",
+                    "openCategories": "Open categories",
+                    "reset": "All listings"
+                },
+                "picker": {
+                    "title": "More categories",
+                    "description": "Pick a category for quick browse or open the full directory."
+                }
             }
         }
     },

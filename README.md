@@ -19,12 +19,13 @@ pnpm -s test:unit
 pnpm -s test:e2e:smoke
 ```
 
-## Docs / Instructions
+## Docs
 
-- Project contract: `AGENTS.md`
-- Docs hub (SSOT): `docs/INDEX.md`
-- Workflow + gates: `docs/WORKFLOW.md`
-- Verification matrix: `docs/QA.md`
+- Agent contract: `AGENTS.md`
+- Architecture: `ARCHITECTURE.md`
+- UI + frontend: `docs/DESIGN.md`
+- Domain contracts: `docs/DOMAINS.md`
+- Decision log: `docs/DECISIONS.md`
 
 ## Storybook
 

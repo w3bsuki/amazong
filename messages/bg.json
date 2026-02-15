@@ -371,6 +371,52 @@
                         }
                     }
                 }
+            },
+            "v4": {
+                "title": "Treido Начало",
+                "aria": {
+                    "primaryCategories": "Основни категории"
+                },
+                "scopes": {
+                    "forYou": "За теб",
+                    "newest": "Нови",
+                    "promoted": "Промо",
+                    "nearby": "Близо",
+                    "deals": "Оферти"
+                },
+                "quickJump": {
+                    "label": "Бърз достъп"
+                },
+                "banner": {
+                    "eyebrowCategory": "Разглеждаш категория",
+                    "scopeEyebrow": {
+                        "forYou": "За теб",
+                        "newest": "Най-нови",
+                        "promoted": "Промотирани",
+                        "nearby": "Наблизо",
+                        "deals": "Оферти"
+                    },
+                    "scopeTitle": {
+                        "forYou": "Подбрано за теб",
+                        "newest": "Най-нови обяви",
+                        "promoted": "Промотирани обяви",
+                        "nearby": "Обяви наблизо",
+                        "deals": "Обяви с оферти"
+                    }
+                },
+                "actions": {
+                    "filter": "Филтър",
+                    "view": "Виж",
+                    "viewCategory": "Пълна категория",
+                    "exploreScope": "Разгледай",
+                    "moreCategories": "Още",
+                    "openCategories": "Отвори категории",
+                    "reset": "Всички обяви"
+                },
+                "picker": {
+                    "title": "Още категории",
+                    "description": "Избери категория за бърз преглед или отвори пълния каталог."
+                }
             }
         }
     },

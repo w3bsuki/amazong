@@ -34,6 +34,5 @@ REUSE_EXISTING_SERVER=true pnpm -s test:e2e:smoke
 ## Reference (read only when needed)
 
 - Boundaries/pause rules: `AGENTS.md`
-- Workflow/gates + principles: `docs/GUIDE.md`
-- Domain quality grades: `docs/QUALITY.md`
+- Domain contracts: `docs/DOMAINS.md`
 - Decision log: `docs/DECISIONS.md`
