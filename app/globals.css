@@ -620,7 +620,7 @@ select:-webkit-autofill {
   --control-compact: 2.25rem;    /* 36px - dense icon overlays only */
   --control-default: 2.75rem;    /* 44px - default tap target */
   --control-primary: 3rem;       /* 48px - primary CTA / bars */
-  --spacing-mobile-rail-gap: 0.5rem;
+  --spacing-mobile-rail-gap: 0px;
   --offset-mobile-primary-rail: var(--app-header-offset);
   --offset-mobile-secondary-rail: calc(var(--app-header-offset) + var(--control-default) + var(--spacing-mobile-rail-gap));
   --offset-mobile-tertiary-rail: calc(var(--offset-mobile-secondary-rail) + var(--control-compact) + var(--spacing-mobile-rail-gap));
