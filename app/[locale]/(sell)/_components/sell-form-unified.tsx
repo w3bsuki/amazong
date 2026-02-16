@@ -261,7 +261,7 @@ function SellFormContent({
       <div className="flex flex-1 flex-col">
         {/* Header */}
         <header className="sticky top-0 z-40 bg-background border-b border-border">
-          <div className="flex items-center justify-center h-14">
+          <div className="flex h-(--control-primary) items-center justify-center md:h-14">
             <span className="text-sm font-medium text-muted-foreground">
               {tSell("success.headerStatus")}
             </span>

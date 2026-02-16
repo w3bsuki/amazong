@@ -401,7 +401,7 @@ export function MobileCategoryBrowserContextual({
         <CategoryPillRail
           items={categoryScopeItems}
           ariaLabel={tCategories("navigationAriaLabel")}
-          stickyTop="var(--app-header-offset)"
+          stickyTop="var(--offset-mobile-primary-rail)"
           sticky={true}
           moreLabel={tCategories("showMore")}
           {...(categoryDrawer ? { onMoreClick: handleScopeMoreClick } : {})}
@@ -426,7 +426,7 @@ export function MobileCategoryBrowserContextual({
           onApply={handleApplyFilters}
           onRemoveFilter={handleRemoveFilter}
           onClearAll={handleClearAllFilters}
-          stickyTop="calc(var(--app-header-offset) + var(--control-compact) + 12px)"
+          stickyTop="calc(var(--offset-mobile-primary-rail) + var(--control-compact) + var(--spacing-mobile-rail-gap))"
           sticky={true}
           className="z-20"
         />

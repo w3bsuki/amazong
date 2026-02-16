@@ -58,7 +58,7 @@ export function MobileContextualHeader({
               <ArrowLeft className="size-6" weight="bold" />
             </Link>
           )}
-          <h1 className="ml-1 max-w-48 truncate text-base font-semibold text-foreground">
+          <h1 className="ml-1 max-w-48 truncate text-sm font-semibold leading-tight text-foreground">
             {title}
           </h1>
         </div>

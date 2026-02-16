@@ -26,7 +26,7 @@ export function CheckoutHeader({ currentStep: propStep }: CheckoutHeaderProps) {
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border bg-card">
       <div className="container">
-        <div className="flex items-center justify-between h-11 md:h-12">
+        <div className="flex h-(--control-primary) items-center justify-between">
           {/* Logo */}
           <Link 
             href="/" 

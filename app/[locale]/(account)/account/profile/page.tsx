@@ -26,6 +26,16 @@ interface ProfilePageProps {
   }>
 }
 
+function buildGeneratedAvatar(seed: string): string {
+  const safeSeed = seed.trim().length > 0 ? seed.trim() : "user"
+  let hash = 0
+  for (let i = 0; i < safeSeed.length; i += 1) {
+    hash = (hash * 31 + safeSeed.charCodeAt(i)) >>> 0
+  }
+  const paletteIndex = hash % 6
+  return `boring-avatar:marble:${paletteIndex}:${safeSeed}`
+}
+
 export default async function ProfilePage({ params }: ProfilePageProps) {
   const { locale: localeParam } = await params
   const locale = localeParam === "bg" ? "bg" : "en"
@@ -85,6 +95,9 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
   // Transform social_links from Json to Record<string, string>
   const profileData = profileRaw ? {
     ...profileRaw,
+    avatar_url:
+      profileRaw.avatar_url ??
+      buildGeneratedAvatar(profileRaw.username ?? user.email ?? user.id),
     email: privateProfile?.email ?? user.email ?? "",
     phone: privateProfile?.phone ?? null,
     vat_number: privateProfile?.vat_number ?? null,
@@ -102,7 +115,7 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
           id: user.id,
           email: user.email || "",
           full_name: null,
-          avatar_url: null,
+          avatar_url: buildGeneratedAvatar(user.email ?? user.id),
           phone: null,
           shipping_region: null,
           country_code: null,

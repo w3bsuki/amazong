@@ -52,11 +52,11 @@ export function MinimalHeader({
       className
     )}>
       <div className="container">
-        <div className="flex h-14 items-center justify-between gap-3">
+        <div className="flex h-(--control-primary) items-center justify-between gap-3 md:h-14">
           {/* Left: Back button or Logo */}
           <div className="flex items-center gap-2.5">
             {showBack && (
-              <Button variant="ghost" size="sm" asChild className="-ml-2">
+              <Button variant="ghost" size="sm" asChild className="-ml-2 h-(--control-default) px-3">
                 <Link href={resolvedBackHref}>
                   <ArrowLeft className="mr-1.5 size-4" />
                   <span className="hidden sm:inline">{resolvedBackLabel}</span>

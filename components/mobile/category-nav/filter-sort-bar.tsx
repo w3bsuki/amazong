@@ -5,6 +5,7 @@ import { useSearchParams, type ReadonlyURLSearchParams } from "next/navigation"
 import { SlidersHorizontal, ArrowUpDown, MapPin } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useTranslations } from "next-intl"
+import { MOBILE_ACTION_CHIP_CLASS, getMobileQuickPillClass } from "@/components/mobile/chrome/mobile-control-recipes"
 import { SortModal } from "@/components/shared/filters/sort-modal"
 import type { CategoryAttribute } from "@/lib/data/categories"
 import { getCategoryAttributeKey } from "@/lib/filters/category-attribute"
@@ -50,25 +51,12 @@ export interface FilterSortBarProps {
 
 type SortOption = "featured" | "price-asc" | "price-desc" | "rating" | "newest"
 
-const ACTION_CHIP_CLASS =
-  "inline-flex shrink-0 min-h-(--control-compact) items-center gap-1 rounded-full border border-border-subtle bg-background px-2.5 text-xs font-semibold text-foreground tap-transparent transition-colors duration-fast ease-smooth hover:bg-hover active:bg-active focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-1"
-
-const PILL_BASE_CLASS =
-  "inline-flex shrink-0 items-center whitespace-nowrap rounded-full border min-h-(--control-compact) px-2.5 text-xs tap-transparent transition-colors duration-fast ease-smooth focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-1"
-const PILL_ACTIVE_CLASS = "border-foreground bg-foreground text-background font-semibold"
-const PILL_INACTIVE_CLASS =
-  "border-border-subtle bg-surface-subtle text-muted-foreground font-medium"
-
-function getPillClass(active: boolean, className?: string): string {
-  return cn(PILL_BASE_CLASS, active ? PILL_ACTIVE_CLASS : PILL_INACTIVE_CLASS, className)
-}
-
 export function FilterSortBar({
   locale,
   onAllFiltersClick,
   appliedSearchParams,
   attributes = [],
-  stickyTop = 80,
+  stickyTop = "var(--offset-mobile-primary-rail)",
   sticky = true,
   basePath,
   className,
@@ -135,7 +123,7 @@ export function FilterSortBar({
             type="button"
             onClick={onLocationChipClick}
             className={cn(
-              getPillClass(locationChipActive, "mb-1.5 max-w-full gap-1.5"),
+              getMobileQuickPillClass(locationChipActive, "mb-1.5 max-w-full gap-1.5"),
               !locationChipActive && "hover:bg-hover hover:text-foreground active:bg-active"
             )}
             aria-haspopup="dialog"
@@ -154,8 +142,8 @@ export function FilterSortBar({
             type="button"
             onClick={onAllFiltersClick}
             className={cn(
-              ACTION_CHIP_CLASS,
-              "flex-1 min-h-(--control-default) justify-center gap-1.5 px-3",
+              MOBILE_ACTION_CHIP_CLASS,
+              "flex-1 min-h-(--control-default) justify-center gap-1.5 px-3 text-sm font-medium",
               hasActiveFilters && "border-foreground"
             )}
             aria-haspopup="dialog"
@@ -175,8 +163,8 @@ export function FilterSortBar({
             type="button"
             onClick={openSort}
             className={cn(
-              ACTION_CHIP_CLASS,
-              "flex-1 min-h-(--control-default) min-w-0 justify-center gap-1.5 px-3",
+              MOBILE_ACTION_CHIP_CLASS,
+              "flex-1 min-h-(--control-default) min-w-0 justify-center gap-1.5 px-3 text-sm font-medium",
               isSorted && "border-foreground"
             )}
             aria-haspopup="dialog"

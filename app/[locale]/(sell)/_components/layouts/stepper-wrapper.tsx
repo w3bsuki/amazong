@@ -37,7 +37,7 @@ const pageTransition = {
 
 // ============================================================================
 // STEPPER WRAPPER - Premium mobile wizard with dot progress & proper CTAs
-// Best practices: h-12 (48px) CTAs, dot progress, clear visual hierarchy
+// Best practices: tokenized 48px CTAs, dot progress, clear visual hierarchy
 // ============================================================================
 
 interface StepConfig {
@@ -113,14 +113,14 @@ export function StepperWrapper({
     <div className="flex flex-1 flex-col">
       {/* Header - Premium minimal with dot progress */}
       <header className="sticky top-0 z-40 bg-background border-b border-border-subtle pt-safe">
-        <div className="flex items-center h-14 px-4">
+        <div className="flex h-(--control-primary) items-center px-4 md:h-14">
           {/* Back button or spacer */}
           <div className="w-12">
             {!isFirstStep && (
               <button
                 type="button"
                 onClick={handleBack}
-                className="size-10 -ml-2 flex items-center justify-center rounded-md hover:bg-muted transition-colors"
+                className="size-(--control-default) -ml-2 flex items-center justify-center rounded-md hover:bg-muted transition-colors"
                 aria-label={tCommon("back")}
               >
                 <CaretLeft className="size-5" weight="bold" />
@@ -156,7 +156,7 @@ export function StepperWrapper({
             <Link 
               href="/"
               aria-label={tCommon("close")}
-              className="size-10 flex items-center justify-center rounded-md hover:bg-muted transition-colors"
+              className="size-(--control-default) flex items-center justify-center rounded-md hover:bg-muted transition-colors"
             >
               <X className="size-5" />
             </Link>
@@ -193,7 +193,7 @@ export function StepperWrapper({
         </div>
       </main>
 
-      {/* Footer CTA - Bold h-12 buttons */}
+      {/* Footer CTA - bold primary-height buttons */}
       <footer className="sticky bottom-0 bg-background border-t border-border-subtle px-4 pt-4 pb-safe">
         <div className="mx-auto max-w-lg pb-4">
           {isLastStep ? (
@@ -202,7 +202,7 @@ export function StepperWrapper({
               onClick={onSubmit}
               disabled={isSubmitting || isSubmitDisabled}
               size="lg"
-              className="w-full h-12 rounded-md text-base font-bold gap-2.5"
+              className="w-full h-(--control-primary) rounded-md text-base font-bold gap-2.5"
             >
               {isSubmitting ? (
                 <>
@@ -221,7 +221,7 @@ export function StepperWrapper({
               type="button"
               onClick={handleNext}
               size="lg"
-              className="w-full h-12 rounded-md text-base font-bold gap-2.5"
+              className="w-full h-(--control-primary) rounded-md text-base font-bold gap-2.5"
               disabled={isNextDisabled}
             >
               {tCommon("continue")}

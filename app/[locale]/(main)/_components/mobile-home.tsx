@@ -56,7 +56,7 @@ interface MobileHomeProps {
 
 const MAX_VISIBLE_CATEGORY_TABS = 5
 const HOME_CITY_STORAGE_KEY = "treido_user_city"
-const SECONDARY_RAIL_TOP = "calc(var(--app-header-offset) + var(--control-default))"
+const SECONDARY_RAIL_TOP = "var(--offset-mobile-secondary-rail)"
 
 const DISCOVERY_SCOPES: readonly HomeDiscoveryScope[] = [
   "forYou",
@@ -378,7 +378,7 @@ export function MobileHome({
 
         <nav
           data-testid="home-v4-primary-rail"
-          className="sticky top-(--app-header-offset) z-30 border-b border-border-subtle bg-background"
+          className="sticky top-(--offset-mobile-primary-rail) z-30 border-b border-border-subtle bg-background"
           role="tablist"
           aria-label={tV4("aria.primaryCategories")}
         >

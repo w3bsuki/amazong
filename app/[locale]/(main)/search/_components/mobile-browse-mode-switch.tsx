@@ -5,6 +5,10 @@ import { useSearchParams } from "next/navigation"
 import { useRouter } from "@/i18n/routing"
 import { useTranslations } from "next-intl"
 import { cn } from "@/lib/utils"
+import {
+  MOBILE_SEGMENTED_CONTAINER_CLASS,
+  getMobileSegmentedTriggerClass,
+} from "@/components/mobile/chrome/mobile-control-recipes"
 import type { BrowseMode } from "../_lib/types"
 
 interface MobileBrowseModeSwitchProps {
@@ -64,7 +68,7 @@ function normalizeForMode(params: URLSearchParams, nextMode: BrowseMode): URLSea
 export function MobileBrowseModeSwitch({
   mode,
   basePath = "/search",
-  stickyTop = "var(--app-header-offset)",
+  stickyTop = "var(--offset-mobile-primary-rail)",
   className,
 }: MobileBrowseModeSwitchProps) {
   const t = useTranslations("SearchFilters")
@@ -88,7 +92,7 @@ export function MobileBrowseModeSwitch({
       data-testid="mobile-browse-mode-switch"
     >
       <div
-        className="grid grid-cols-2 rounded-full border border-border-subtle bg-surface-subtle p-0.5"
+        className={MOBILE_SEGMENTED_CONTAINER_CLASS}
         role="tablist"
         aria-label={t("browseMode")}
       >
@@ -97,12 +101,7 @@ export function MobileBrowseModeSwitch({
           role="tab"
           aria-selected={mode === "listings"}
           onClick={() => switchMode("listings")}
-          className={cn(
-            "inline-flex min-h-(--control-default) items-center justify-center rounded-full px-3 text-sm font-medium transition-colors duration-fast ease-smooth focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-1",
-            mode === "listings"
-              ? "bg-background text-foreground shadow-sm"
-              : "text-muted-foreground hover:text-foreground"
-          )}
+          className={getMobileSegmentedTriggerClass(mode === "listings")}
           data-testid="browse-mode-listings"
         >
           {t("listingsMode")}
@@ -112,12 +111,7 @@ export function MobileBrowseModeSwitch({
           role="tab"
           aria-selected={mode === "sellers"}
           onClick={() => switchMode("sellers")}
-          className={cn(
-            "inline-flex min-h-(--control-default) items-center justify-center rounded-full px-3 text-sm font-medium transition-colors duration-fast ease-smooth focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-1",
-            mode === "sellers"
-              ? "bg-background text-foreground shadow-sm"
-              : "text-muted-foreground hover:text-foreground"
-          )}
+          className={getMobileSegmentedTriggerClass(mode === "sellers")}
           data-testid="browse-mode-sellers"
         >
           {t("sellersMode")}

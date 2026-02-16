@@ -263,7 +263,7 @@ export function MobileTabBar() {
             {unreadCount > 0 && (
               <CountBadge
                 count={unreadCount}
-                className="absolute -top-1.5 -right-2.5 h-4 min-w-4 bg-notification px-0.5 text-2xs text-primary-foreground ring-1 ring-surface-glass"
+                className="absolute -top-1.5 -right-2.5 h-4 min-w-4 bg-notification px-0.5 text-2xs text-primary-foreground ring-1 ring-background"
                 aria-hidden="true"
               />
             )}
@@ -293,7 +293,7 @@ export function MobileTabBar() {
           avatarUrl={profileAvatarValue}
           size="sm"
           className={cn(
-            "size-8 rounded-full ring-1.5 motion-safe:transition-colors motion-safe:duration-fast",
+            "size-7 rounded-full ring-1.5 motion-safe:transition-colors motion-safe:duration-fast",
             isProfileActive ? "ring-primary" : "ring-border-subtle"
           )}
           fallbackClassName="bg-muted text-2xs font-semibold text-muted-foreground"

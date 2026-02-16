@@ -3,6 +3,7 @@
 import * as React from "react"
 import { Link } from "@/i18n/routing"
 import { cn } from "@/lib/utils"
+import { getMobileQuickPillClass } from "@/components/mobile/chrome/mobile-control-recipes"
 import { useCategoryDrawerOptional } from "./category-drawer-context"
 
 export interface CategoryPillRailItem {
@@ -26,12 +27,6 @@ interface CategoryPillRailProps {
   testId?: string
 }
 
-const PILL_BASE_CLASS =
-  "inline-flex min-h-(--control-compact) shrink-0 items-center rounded-full border px-2.5 text-xs font-medium tap-transparent transition-colors duration-fast ease-smooth focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-1"
-const PILL_ACTIVE_CLASS = "border-foreground bg-foreground text-background font-semibold"
-const PILL_INACTIVE_CLASS =
-  "border-border-subtle bg-surface-subtle text-muted-foreground hover:bg-hover hover:text-foreground active:bg-active"
-
 function shouldInterceptLinkClick(event: React.MouseEvent<HTMLAnchorElement>): boolean {
   if (event.defaultPrevented) return false
   if (event.button !== 0) return false
@@ -42,7 +37,7 @@ function shouldInterceptLinkClick(event: React.MouseEvent<HTMLAnchorElement>): b
 export function CategoryPillRail({
   items,
   ariaLabel,
-  stickyTop = "var(--app-header-offset)",
+  stickyTop = "var(--offset-mobile-primary-rail)",
   sticky = true,
   className,
   moreLabel,
@@ -94,7 +89,7 @@ export function CategoryPillRail({
               event.preventDefault()
               item.onSelect()
             }}
-            className={cn(PILL_BASE_CLASS, item.active ? PILL_ACTIVE_CLASS : PILL_INACTIVE_CLASS)}
+            className={getMobileQuickPillClass(Boolean(item.active), !item.active ? "hover:bg-hover hover:text-foreground active:bg-active" : undefined)}
           >
             <span className="max-w-32 truncate">{item.label}</span>
           </Link>
@@ -104,7 +99,7 @@ export function CategoryPillRail({
           <button
             type="button"
             onClick={handleMoreClick}
-            className={cn(PILL_BASE_CLASS, PILL_INACTIVE_CLASS)}
+            className={getMobileQuickPillClass(false, "hover:bg-hover hover:text-foreground active:bg-active")}
             aria-label={moreLabel}
           >
             <span className="max-w-32 truncate">{moreLabel}</span>

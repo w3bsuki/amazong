@@ -45,11 +45,11 @@ export function ProgressHeader({
     <header className="sticky top-0 z-40 bg-background border-b border-border-subtle">
       <PageContainer size="wide">
         {/* Top bar with logo and actions */}
-        <div className="flex items-center justify-between h-14 gap-4">
+        <div className="flex h-(--control-primary) items-center justify-between gap-4 md:h-14">
           {/* Left: Back/Logo */}
           <Link
             href="/"
-            className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors group"
+            className="group flex min-h-(--control-default) items-center gap-2 rounded-md px-1 text-muted-foreground transition-colors hover:text-foreground"
           >
             <CaretLeft className="size-4" weight="bold" />
             <House className="size-5" />
@@ -120,7 +120,7 @@ export function ProgressHeader({
               variant="ghost"
               size="sm"
               onClick={onSaveDraft}
-              className="h-9 px-3 gap-2 text-muted-foreground hover:text-foreground"
+              className="h-(--control-default) gap-2 px-3 text-muted-foreground hover:text-foreground md:h-(--control-compact)"
               disabled={!hasUnsavedChanges}
             >
               <FloppyDisk className="size-4" />

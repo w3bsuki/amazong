@@ -6,6 +6,7 @@ import { useRouter } from "@/i18n/routing"
 import { useTranslations } from "next-intl"
 import { ArrowUpDown, SlidersHorizontal, X } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { MOBILE_ACTION_CHIP_CLASS, getMobileQuickPillClass } from "@/components/mobile/chrome/mobile-control-recipes"
 import type { SellerSortKey } from "../_lib/types"
 import {
   Drawer,
@@ -86,7 +87,7 @@ function applySellerSearchParams(
 
 export function MobileSellerFilterControls({
   basePath = "/search",
-  stickyTop = "calc(var(--app-header-offset) + var(--control-default) + var(--control-compact) + 24px)",
+  stickyTop = "var(--offset-mobile-tertiary-rail)",
   className,
 }: MobileSellerFilterControlsProps) {
   const t = useTranslations("SearchFilters")
@@ -176,11 +177,15 @@ export function MobileSellerFilterControls({
     return t("sortSellerProducts")
   }, [currentSort, t])
 
-  const actionButtonClass =
-    "inline-flex min-h-(--control-default) flex-1 items-center justify-center gap-1.5 rounded-full border border-border-subtle bg-background px-3 text-sm font-medium text-foreground transition-colors duration-fast ease-smooth hover:bg-hover active:bg-active focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-1"
+  const actionButtonClass = cn(
+    MOBILE_ACTION_CHIP_CLASS,
+    "flex-1 min-h-(--control-default) justify-center text-sm font-medium"
+  )
 
-  const chipClass =
-    "inline-flex min-h-(--control-compact) shrink-0 items-center gap-1 rounded-full border border-border-subtle bg-surface-subtle px-2.5 text-xs font-medium text-foreground"
+  const chipClass = getMobileQuickPillClass(
+    false,
+    "gap-1 text-foreground hover:bg-hover hover:text-foreground active:bg-active"
+  )
 
   return (
     <section

@@ -5,25 +5,39 @@ const projectRoot = process.cwd();
 const shouldWriteReport = String(process.env.WRITE_CLEANUP_REPORTS || "") === "1";
 
 const targetFiles = [
+  "components/ui/mobile-bottom-nav.tsx",
+  "components/mobile/chrome/mobile-control-recipes.ts",
+  "components/mobile/category-nav/category-pill-rail.tsx",
+  "components/mobile/category-nav/filter-sort-bar.tsx",
   "components/layout/header/mobile/homepage-header.tsx",
   "components/layout/header/mobile/contextual-header.tsx",
   "components/layout/header/mobile/product-header.tsx",
   "components/layout/header/mobile/profile-header.tsx",
   "components/layout/header/mobile/minimal-header.tsx",
+  "app/[locale]/_components/mobile-tab-bar.tsx",
+  "app/[locale]/(main)/_lib/mobile-rail-class-recipes.ts",
+  "app/[locale]/(main)/search/_components/mobile-browse-mode-switch.tsx",
+  "app/[locale]/(main)/_components/filters/mobile-filter-controls.tsx",
+  "app/[locale]/(main)/search/_components/mobile-seller-filter-controls.tsx",
+  "app/[locale]/(account)/account/_components/account-header.tsx",
+  "app/[locale]/(account)/account/_components/account-tab-bar.tsx",
+  "app/[locale]/(checkout)/_components/checkout-header.tsx",
+  "app/[locale]/(plans)/_components/minimal-header.tsx",
+  "app/[locale]/(sell)/_components/ui/progress-header.tsx",
+  "app/[locale]/(sell)/_components/layouts/stepper-wrapper.tsx",
   "components/layout/header/cart/mobile-cart-dropdown.tsx",
   "components/shared/wishlist/mobile-wishlist-button.tsx",
   "components/layout/sidebar/sidebar-menu.tsx",
-  "components/mobile/category-nav/category-circles-simple.tsx",
-  "app/[locale]/_components/mobile-tab-bar.tsx",
   "app/[locale]/_components/search/mobile-search-overlay.tsx",
-  "app/[locale]/(main)/_components/mobile/home-sticky-category-pills.tsx",
-  "app/[locale]/(main)/_components/mobile/home-scope-bar.tsx",
-  "app/[locale]/(main)/_components/mobile/home-city-drawer.tsx",
-  "app/[locale]/(main)/_components/mobile/home-category-drawer.tsx",
-  "app/[locale]/(main)/_components/mobile/promoted-listings-strip.tsx",
 ];
 
 const checks = [
+  {
+    id: "bottom-nav-glass",
+    files: ["components/ui/mobile-bottom-nav.tsx"],
+    regex: /\b(?:backdrop-blur(?:-[a-z]+)?|bg-surface-glass)\b/g,
+    message: "Use a flat semantic bottom nav surface; avoid glass/blur treatment.",
+  },
   {
     id: "persistent-blur",
     regex: /\bbackdrop-blur(?:-[a-z]+)?\b/g,
@@ -49,6 +63,38 @@ const checks = [
     regex: /\b(?:h-9|h-10|h-11|h-12|size-9|size-10|size-11)\b/g,
     message: "Use control tokens/variants instead of ad-hoc h-/size- classes.",
   },
+  {
+    id: "primary-nav-text-2xs",
+    files: ["app/[locale]/(account)/account/_components/account-tab-bar.tsx"],
+    regex: /\btext-2xs\b/g,
+    message: "Primary mobile nav labels should be at least text-xs.",
+  },
+  {
+    id: "rail-height-hardcoded",
+    files: [
+      "components/mobile/chrome/mobile-control-recipes.ts",
+      "components/mobile/category-nav/category-pill-rail.tsx",
+      "components/mobile/category-nav/filter-sort-bar.tsx",
+      "app/[locale]/(main)/search/_components/mobile-browse-mode-switch.tsx",
+      "app/[locale]/(main)/_components/filters/mobile-filter-controls.tsx",
+      "app/[locale]/(main)/search/_components/mobile-seller-filter-controls.tsx",
+    ],
+    regex: /\b(?:min-h-(?:8|9|10|11|12)|h-(?:8|9|10|11|12))\b/g,
+    message: "Use tokenized control heights in mobile tab/pill rails.",
+  },
+];
+
+const railTokenRequirements = [
+  {
+    file: "components/mobile/chrome/mobile-control-recipes.ts",
+    regex: /min-h-\(--control-default\)/,
+    message: "Primary mobile tab recipes must include --control-default height.",
+  },
+  {
+    file: "components/mobile/chrome/mobile-control-recipes.ts",
+    regex: /min-h-\(--control-compact\)/,
+    message: "Quick pill recipes must include --control-compact height.",
+  },
 ];
 
 const findings = [];
@@ -63,6 +109,7 @@ for (const relativeFile of targetFiles) {
   for (let index = 0; index < lines.length; index += 1) {
     const line = lines[index] ?? "";
     for (const check of checks) {
+      if (Array.isArray(check.files) && !check.files.includes(relativeFile)) continue;
       check.regex.lastIndex = 0;
       if (!check.regex.test(line)) continue;
       findings.push({
@@ -73,6 +120,18 @@ for (const relativeFile of targetFiles) {
         snippet: line.trim(),
       });
     }
+  }
+
+  for (const requirement of railTokenRequirements) {
+    if (requirement.file !== relativeFile) continue;
+    if (requirement.regex.test(source)) continue;
+    findings.push({
+      file: relativeFile,
+      line: 1,
+      check: "missing-rail-token",
+      message: requirement.message,
+      snippet: "Missing required tokenized height rule",
+    });
   }
 }
 

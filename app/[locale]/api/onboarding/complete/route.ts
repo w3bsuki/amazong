@@ -87,6 +87,17 @@ export async function POST(
     }
 
     if (currentProfile?.onboarding_completed) {
+      if (!currentProfile.avatar_url) {
+        const avatarSeed = currentProfile.username ?? body.username ?? user.email ?? user.id
+        const generatedAvatar = buildGeneratedAvatar(avatarSeed, body.avatarPalette)
+        await supabase
+          .from("profiles")
+          .update({
+            avatar_url: generatedAvatar,
+            updated_at: new Date().toISOString(),
+          })
+          .eq("id", user.id)
+      }
       return applyCookies(NextResponse.json({ success: true }))
     }
 

@@ -11,7 +11,7 @@ const mobileBottomNavRootVariants = cva(
 )
 
 const mobileBottomNavDockVariants = cva(
-  "pointer-events-auto w-full rounded-t-3xl border-t border-border bg-surface-glass shadow-sm backdrop-blur-xl px-2 pt-1.5 pb-safe"
+  "pointer-events-auto w-full rounded-t-2xl border-t border-border-subtle bg-background px-2 pt-1 pb-safe"
 )
 
 const mobileBottomNavListVariants = cva(
@@ -19,7 +19,7 @@ const mobileBottomNavListVariants = cva(
 )
 
 const mobileBottomNavItemVariants = cva(
-  "group relative flex h-full w-full items-center justify-center rounded-full tap-transparent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 focus-visible:ring-offset-surface-elevated",
+  "group relative flex h-full w-full items-center justify-center rounded-full tap-transparent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
   {
     variants: {
       state: {
@@ -39,12 +39,12 @@ const mobileBottomNavItemVariants = cva(
 )
 
 const mobileBottomNavCoreActionVariants = cva(
-  "inline-flex size-(--control-default) items-center justify-center rounded-full border shadow-sm",
+  "inline-flex size-(--control-default) items-center justify-center rounded-full border",
   {
     variants: {
       state: {
         active: "border-primary bg-primary text-primary-foreground",
-        inactive: "border-border bg-surface-elevated text-primary",
+        inactive: "border-border-subtle bg-background text-primary",
       },
     },
     defaultVariants: {

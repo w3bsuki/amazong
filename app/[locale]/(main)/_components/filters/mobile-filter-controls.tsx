@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from "react"
 import { useTranslations, useLocale } from "next-intl"
 import { useSearchParams, type ReadonlyURLSearchParams } from "next/navigation"
 import { cn } from "@/lib/utils"
+import { getMobileQuickPillClass } from "@/components/mobile/chrome/mobile-control-recipes"
 import { FilterSortBar } from "@/components/mobile/category-nav/filter-sort-bar"
 import { FilterHub, type FilterHubMode, type FilterHubSection, type FilterHubSubcategory } from "@/components/shared/filters/filter-hub"
 import { FilterChips } from "./filter-chips"
@@ -62,7 +63,7 @@ export function MobileFilterControls({
   subcategories = [],
   categoryName,
   basePath,
-  stickyTop = "var(--app-header-offset)",
+  stickyTop = "var(--offset-mobile-primary-rail)",
   sticky = true,
   userZone,
   currentCategory = null,
@@ -180,10 +181,15 @@ export function MobileFilterControls({
                 type="button"
                 onClick={() => openAttributeFilter(pill.sectionId)}
                 className={cn(
-                  "inline-flex shrink-0 min-h-(--control-compact) items-center gap-1.5 rounded-full border px-2.5 text-xs font-medium tap-transparent motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth) motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
-                  pill.active
-                    ? "border-selected-border bg-selected text-selected-foreground"
-                    : "border-border-subtle bg-surface-subtle text-muted-foreground hover:bg-hover hover:text-foreground active:bg-active"
+                  getMobileQuickPillClass(
+                    pill.active,
+                    cn(
+                      "gap-1.5 motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth) motion-reduce:transition-none focus-visible:ring-ring",
+                      pill.active
+                        ? "border-selected-border bg-selected text-selected-foreground"
+                        : "hover:bg-hover hover:text-foreground active:bg-active"
+                    )
+                  )
                 )}
                 aria-haspopup="dialog"
                 aria-pressed={pill.active}

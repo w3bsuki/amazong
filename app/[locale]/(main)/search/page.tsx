@@ -453,7 +453,7 @@ export default async function SearchPage({
           <CategoryPillRail
             items={railItems}
             ariaLabel={tCategories("navigationAriaLabel")}
-            stickyTop="calc(var(--app-header-offset) + var(--control-default) + 12px)"
+            stickyTop="var(--offset-mobile-secondary-rail)"
             sticky={true}
             moreLabel={tCategories("showMore")}
             testId="mobile-search-category-rail"
@@ -484,7 +484,7 @@ export default async function SearchPage({
                       }
                     : {})}
                   basePath="/search"
-                  stickyTop="calc(var(--app-header-offset) + var(--control-default) + var(--control-compact) + 24px)"
+                  stickyTop="var(--offset-mobile-tertiary-rail)"
                   sticky={true}
                   userZone={userZone ?? null}
                   className="mb-3 z-20"

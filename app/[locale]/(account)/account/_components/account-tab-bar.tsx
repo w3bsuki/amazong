@@ -142,7 +142,7 @@ export function AccountTabBar() {
                 className={cn(
                   "flex h-full min-h-(--control-default) min-w-(--control-default) flex-1 flex-col items-center justify-center gap-0.5 transition-colors",
                   "touch-manipulation tap-transparent",
-                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-md",
+                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 rounded-full",
                   active ? "text-primary" : "text-muted-foreground",
                 )}
                 aria-label={tab.label}
@@ -153,7 +153,7 @@ export function AccountTabBar() {
                   stroke={active ? 2 : 1.5}
                 />
                 <span className={cn(
-                  "text-2xs leading-tight",
+                  "text-xs leading-tight",
                   active ? "font-semibold" : "font-medium"
                 )}>
                   {tab.label}
@@ -168,7 +168,7 @@ export function AccountTabBar() {
             className={cn(
               "flex h-full min-h-(--control-default) min-w-(--control-default) flex-1 flex-col items-center justify-center gap-0.5 transition-colors",
               "touch-manipulation tap-transparent",
-              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-md",
+              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 rounded-full",
               isMoreActive ? "text-primary" : "text-muted-foreground",
             )}
             aria-label={t("tabBar.moreOptionsAriaLabel")}
@@ -176,7 +176,7 @@ export function AccountTabBar() {
             aria-expanded={moreOpen}
           >
             <IconDots className="size-5" stroke={isMoreActive ? 2 : 1.5} />
-            <span className={cn("text-2xs leading-tight", isMoreActive ? "font-semibold" : "font-medium")}>
+            <span className={cn("text-xs leading-tight", isMoreActive ? "font-semibold" : "font-medium")}>
               {t("tabBar.more")}
             </span>
           </button>
