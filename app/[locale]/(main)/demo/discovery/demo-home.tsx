@@ -299,19 +299,6 @@ export function DemoHome({
         </div>
       </nav>
 
-      {/* Context banner: inverted clickable strip separating chrome from feed */}
-      <section>
-        <Link href={fullBrowseHref} className={CONTEXT_BANNER_CLASS}>
-          <div className="min-w-0 py-1.5">
-            <p className="text-2xs font-medium uppercase tracking-wide text-background">
-              {contextEyebrow}
-            </p>
-            <h2 className="min-w-0 truncate text-sm font-semibold text-background">{contextTitle}</h2>
-          </div>
-          <CaretRight size={16} weight="bold" className="shrink-0 text-background" aria-hidden="true" />
-        </Link>
-      </section>
-
       {/* Secondary rail: context pills (scope OR subcategories) */}
       <section
         className="sticky z-20 border-b border-border-subtle bg-surface-glass backdrop-blur-sm"
@@ -387,6 +374,19 @@ export function DemoHome({
             </Link>
           </div>
         </div>
+      </section>
+
+      {/* Context banner: inverted clickable strip separating chrome from feed */}
+      <section>
+        <Link href={fullBrowseHref} className={CONTEXT_BANNER_CLASS}>
+          <div className="min-w-0 py-1.5">
+            <p className="text-2xs font-medium uppercase tracking-wide text-background">
+              {contextEyebrow}
+            </p>
+            <h2 className="min-w-0 truncate text-sm font-semibold text-background">{contextTitle}</h2>
+          </div>
+          <CaretRight size={16} weight="bold" className="shrink-0 text-background" aria-hidden="true" />
+        </Link>
       </section>
 
       {/* Product feed */}

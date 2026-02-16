@@ -120,9 +120,9 @@ test.describe('Smoke Tests - Critical Path', () => {
     expect(bannerBox).toBeTruthy()
     expect(discoveryBox).toBeTruthy()
 
-    expect(bannerBox!.y).toBeGreaterThanOrEqual(primaryRailBox!.y)
-    expect(secondaryRailBox!.y).toBeGreaterThanOrEqual(bannerBox!.y)
-    expect(discoveryBox!.y).toBeGreaterThanOrEqual(secondaryRailBox!.y)
+    expect(secondaryRailBox!.y).toBeGreaterThanOrEqual(primaryRailBox!.y)
+    expect(bannerBox!.y).toBeGreaterThan(secondaryRailBox!.y)
+    expect(discoveryBox!.y).toBeGreaterThanOrEqual(bannerBox!.y)
 
     const firstCard = discoverySection.locator('[data-slot="surface"]').first()
     await assertVisible(firstCard)

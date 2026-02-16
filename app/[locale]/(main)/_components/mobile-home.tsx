@@ -451,20 +451,6 @@ export function MobileHome({
           </div>
         </nav>
 
-        <section data-testid="home-v4-context-banner">
-          <Link href={fullBrowseHref} className={CONTEXT_BANNER_CLASS}>
-            <div className="min-w-0 py-1.5">
-              <p className="text-2xs font-medium uppercase tracking-wide text-background">
-                {contextEyebrow}
-              </p>
-              <h2 data-testid="home-v4-context-title" className="truncate text-sm font-semibold text-background">
-                {contextTitle}
-              </h2>
-            </div>
-            <CaretRight size={16} weight="bold" className="shrink-0 text-background" aria-hidden="true" />
-          </Link>
-        </section>
-
         <section
           data-testid="home-v4-secondary-rail"
           className="sticky z-20 border-b border-border-subtle bg-surface-glass backdrop-blur-sm"
@@ -551,6 +537,20 @@ export function MobileHome({
               </Link>
             </div>
           </div>
+        </section>
+
+        <section data-testid="home-v4-context-banner">
+          <Link href={fullBrowseHref} className={CONTEXT_BANNER_CLASS}>
+            <div className="min-w-0 py-1.5">
+              <p className="text-2xs font-medium uppercase tracking-wide text-background">
+                {contextEyebrow}
+              </p>
+              <h2 data-testid="home-v4-context-title" className="truncate text-sm font-semibold text-background">
+                {contextTitle}
+              </h2>
+            </div>
+            <CaretRight size={16} weight="bold" className="shrink-0 text-background" aria-hidden="true" />
+          </Link>
         </section>
 
         <section data-testid="home-v4-feed" className="pt-2">

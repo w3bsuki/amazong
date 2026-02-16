@@ -128,27 +128,27 @@ test.describe("Mobile Home", () => {
     }).toBe(2)
   })
 
-  test("secondary rail sticks below primary rail after scroll", async ({ page, app }) => {
+  test("secondary rail stays above context banner during scroll", async ({ page, app }) => {
     await app.goto("/en")
     await app.waitForHydration()
 
-    const primaryRail = page.getByTestId("home-v4-primary-rail")
     const secondaryRail = page.getByTestId("home-v4-secondary-rail")
-    await assertVisible(primaryRail)
+    const contextBanner = page.getByTestId("home-v4-context-banner")
     await assertVisible(secondaryRail)
+    await assertVisible(contextBanner)
 
     await page.evaluate(() => window.scrollTo(0, 520))
     await page.waitForTimeout(150)
 
-    const primaryBox = await primaryRail.boundingBox()
     const railBox = await secondaryRail.boundingBox()
-    expect(primaryBox).toBeTruthy()
+    const bannerBox = await contextBanner.boundingBox()
     expect(railBox).toBeTruthy()
+    expect(bannerBox).toBeTruthy()
 
-    if (!primaryBox || !railBox) return
+    if (!railBox || !bannerBox) return
 
     expect(railBox.y).toBeLessThan(220)
-    expect(railBox.y).toBeGreaterThanOrEqual(primaryBox.y + primaryBox.height - 2)
+    expect(railBox.y + railBox.height).toBeLessThanOrEqual(bannerBox.y + 2)
   })
 
   test("opens filter drawer from home contextual controls", async ({ page, app }) => {
