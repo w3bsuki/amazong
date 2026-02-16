@@ -19,6 +19,7 @@ import { HomeBrowseOptionsSheet } from "./mobile/home-browse-options-sheet"
 import { PageShell } from "../../_components/page-shell"
 import {
   ACTION_CHIP_CLASS,
+  CONTEXT_BANNER_CLASS,
   getPillClass,
   getPrimaryTabClass,
 } from "../_lib/mobile-rail-class-recipes"
@@ -538,21 +539,18 @@ export function MobileHome({
           </div>
         </section>
 
-        <section data-testid="home-v4-context-banner" className="px-3 pt-2">
-          <div className="flex min-h-(--control-default) items-center justify-between gap-2 rounded-xl border border-border-subtle bg-surface-subtle px-3">
+        <section data-testid="home-v4-context-banner">
+          <Link href={fullBrowseHref} className={CONTEXT_BANNER_CLASS}>
             <div className="min-w-0 py-1.5">
-              <p className="text-2xs font-semibold uppercase tracking-wide text-muted-foreground">
+              <p className="text-2xs font-medium uppercase tracking-wide text-background">
                 {contextEyebrow}
               </p>
-              <h2 data-testid="home-v4-context-title" className="truncate text-sm font-semibold text-foreground">
+              <h2 data-testid="home-v4-context-title" className="truncate text-sm font-semibold text-background">
                 {contextTitle}
               </h2>
             </div>
-            <Link href={fullBrowseHref} className={ACTION_CHIP_CLASS}>
-              <span>{tV4("actions.view")}</span>
-              <CaretRight size={14} weight="bold" aria-hidden="true" />
-            </Link>
-          </div>
+            <CaretRight size={16} weight="bold" className="shrink-0 text-background" aria-hidden="true" />
+          </Link>
         </section>
 
         <section data-testid="home-v4-feed" className="pt-2">

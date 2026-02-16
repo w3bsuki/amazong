@@ -14,6 +14,9 @@ const MOBILE_QUICK_PILL_INACTIVE_CLASS = "border-border-subtle bg-surface-subtle
 export const MOBILE_ACTION_CHIP_CLASS =
   "inline-flex shrink-0 min-h-(--control-compact) items-center gap-1.5 rounded-full border border-border-subtle bg-background px-3 text-xs font-semibold leading-none text-foreground tap-transparent transition-colors duration-fast ease-smooth hover:bg-hover active:bg-active focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-1"
 
+export const MOBILE_CONTEXT_BANNER_CLASS =
+  "flex min-h-(--control-default) items-center justify-between gap-2 bg-foreground px-4 tap-transparent transition-colors duration-fast ease-smooth active:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-inset"
+
 export const MOBILE_SEGMENTED_CONTAINER_CLASS =
   "grid grid-cols-2 rounded-full border border-border-subtle bg-surface-subtle p-0.5"
 

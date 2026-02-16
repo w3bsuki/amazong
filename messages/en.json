@@ -379,8 +379,8 @@
                 },
                 "scopes": {
                     "forYou": "For you",
-                    "newest": "New",
-                    "promoted": "Promo",
+                    "newest": "Newest",
+                    "promoted": "Promoted",
                     "nearby": "Nearby",
                     "deals": "Deals"
                 },

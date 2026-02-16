@@ -13,6 +13,7 @@ import { getCategoryIcon } from "@/components/shared/category/category-icons"
 import { MobileProductCard } from "@/components/shared/product/card/mobile"
 import {
   ACTION_CHIP_CLASS,
+  CONTEXT_BANNER_CLASS,
   getPillClass,
   getPrimaryTabClass,
 } from "../../_lib/mobile-rail-class-recipes"
@@ -212,7 +213,6 @@ export function DemoHome({
   }, [])
 
   const openCategoriesLabel = locale === "bg" ? "Отвори категории" : "Open categories"
-  const browseLabel = locale === "bg" ? "Преглед" : "Browse"
   const resetAllLabel = locale === "bg" ? "Всички обяви" : "All listings"
   const quickJumpLabel = locale === "bg" ? "Бърз достъп" : "Quick jump"
   const categoryPickerTitle = locale === "bg" ? "Още категории" : "More categories"
@@ -376,20 +376,17 @@ export function DemoHome({
         </div>
       </section>
 
-      {/* Context banner keeps intent clear: quick feed vs full browse */}
-      <section className="px-3 pt-2">
-        <div className="rounded-xl border border-border-subtle bg-surface-subtle px-3 py-2.5">
-          <p className="text-2xs font-semibold uppercase tracking-wide text-muted-foreground">
-            {contextEyebrow}
-          </p>
-          <div className="mt-1 flex items-center justify-between gap-2">
-            <h2 className="min-w-0 truncate text-sm font-semibold text-foreground">{contextTitle}</h2>
-            <Link href={fullBrowseHref} className={ACTION_CHIP_CLASS}>
-              <span>{browseLabel}</span>
-              <CaretRight size={14} weight="bold" aria-hidden="true" />
-            </Link>
+      {/* Context banner: inverted clickable strip separating chrome from feed */}
+      <section>
+        <Link href={fullBrowseHref} className={CONTEXT_BANNER_CLASS}>
+          <div className="min-w-0 py-1.5">
+            <p className="text-2xs font-medium uppercase tracking-wide text-background">
+              {contextEyebrow}
+            </p>
+            <h2 className="min-w-0 truncate text-sm font-semibold text-background">{contextTitle}</h2>
           </div>
-        </div>
+          <CaretRight size={16} weight="bold" className="shrink-0 text-background" aria-hidden="true" />
+        </Link>
       </section>
 
       {/* Product feed */}

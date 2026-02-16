@@ -379,9 +379,9 @@
                 },
                 "scopes": {
                     "forYou": "За теб",
-                    "newest": "Нови",
-                    "promoted": "Промо",
-                    "nearby": "Близо",
+                    "newest": "Най-нови",
+                    "promoted": "Промотирани",
+                    "nearby": "Наблизо",
                     "deals": "Оферти"
                 },
                 "quickJump": {
