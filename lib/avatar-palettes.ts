@@ -3,7 +3,7 @@
  * Note: boring-avatars requires hex colors, not CSS variables.
  */
 
-export const AVATAR_VARIANTS = ["marble", "beam", "pixel", "sunset", "ring", "bauhaus"] as const
+export const AVATAR_VARIANTS = ["marble", "pixel", "sunset", "ring", "bauhaus"] as const
 export type AvatarVariant = (typeof AVATAR_VARIANTS)[number]
 
 export const COLOR_PALETTES: string[][] = [

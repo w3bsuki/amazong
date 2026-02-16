@@ -801,56 +801,6 @@ export async function bulkDeleteProducts(productIds: string[]): Promise<ActionRe
 }
 
 /**
- * Quick update product stock
- */
-async function updateProductStock(
-  productId: string, 
-  stock: number
-): Promise<ActionResult> {
-  try {
-    if (stock < 0) {
-      return { success: false, error: "Stock cannot be negative" }
-    }
-    
-    const supabase = await createClient()
-    
-    // Get current user
-    const { data: { user }, error: authError } = await supabase.auth.getUser()
-    if (authError || !user) {
-      return { success: false, error: "You must be logged in to update stock" }
-    }
-    
-    // Update stock (RLS will ensure user owns the product)
-    const { error: updateError } = await supabase
-      .from("products")
-      .update({ 
-        stock, 
-        updated_at: new Date().toISOString() 
-      })
-      .eq("id", productId)
-      .eq("seller_id", user.id)
-    
-    if (updateError) {
-      console.error("[updateProductStock] Update error:", updateError)
-      return { success: false, error: "Failed to update stock" }
-    }
-
-    // Stock changes may affect list badges; invalidate product + seller lists.
-    await revalidateProductCaches({
-      supabase,
-      sellerId: user.id,
-      productIds: [productId],
-      categoryIds: [],
-    })
-    
-    return { success: true }
-  } catch (error) {
-    console.error("[updateProductStock] Error:", error)
-    return { success: false, error: "An unexpected error occurred" }
-  }
-}
-
-/**
  * Duplicate a product
  */
   export async function duplicateProduct(productId: string): Promise<ActionResult<{ id: string }>> {

@@ -22,7 +22,7 @@ import { SellFormProvider, useSellForm, useSellFormContext, defaultSellFormValue
 import { DesktopLayout, MobileLayout } from "./layouts";
 import { PayoutRequiredModal } from "./ui/payout-required-modal";
 import type { Category } from "../_lib/types";
-import type { SellFormDataV4 } from "@/lib/sell/schema-v4";
+import type { SellFormDataV4 } from "@/lib/sell/schema";
 import type { Locale } from "@/i18n/routing";
 
 type SellerPayoutStatus = {
@@ -414,3 +414,4 @@ function SellFormContent({
     </>
   );
 }
+

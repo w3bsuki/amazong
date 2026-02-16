@@ -10,7 +10,6 @@ import {
   Monitor,
   Laptop,
   House,
-  ShoppingBag,
   GameController,
   TShirt,
   Baby,
@@ -48,41 +47,20 @@ import {
   Package,
   Buildings,
   Ticket,
-  Storefront,
-  Tag,
   Truck,
   Flag,
   DesktopTower,
   Lightning,
-  Plant,
-  Cpu,
-  User,
-  UserCircle,
   Users,
   GenderMale,
   GenderFemale,
-  GenderIntersex,
   Sneaker,
   Dress,
   Hoodie,
   Pants,
   Boot,
   Handbag,
-  Armchair,
-  Bed,
-  Bathtub,
-  CookingPot,
-  Knife,
-  Lamp,
   CoatHanger,
-  Bicycle,
-  Basketball,
-  Football,
-  SoccerBall,
-  TennisBall,
-  Wine,
-  CoffeeBean,
-  Carrot,
   SquaresFour,
 } from "@/lib/icons/phosphor"
 
@@ -229,8 +207,11 @@ function getCategoryIconForSlug(slug: string): PhosphorIcon {
   let best: { key: string; icon: PhosphorIcon } | null = null
   for (const [key, icon] of Object.entries(categoryIconComponents)) {
     if (key === "default") continue
-    if (slugKey.includes(key) || key.includes(slugKey)) {
-      if (!best || key.length > best.key.length) best = { key, icon }
+    if (
+      (slugKey.includes(key) || key.includes(slugKey)) &&
+      (!best || key.length > best.key.length)
+    ) {
+      best = { key, icon }
     }
   }
 

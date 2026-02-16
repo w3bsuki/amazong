@@ -22,7 +22,7 @@ export {
   calculateFormProgress,
   type SellFormDataV4,
   type ProgressItem,
-} from "@/lib/sell/schema-v4";
+} from "@/lib/sell/schema";
 
 // Unified Field Components (with memoized versions)
 export {
@@ -53,3 +53,4 @@ export { SellErrorBoundary } from "./ui/sell-error-boundary";
 
 // Types - Single source of truth
 export * from "../_lib/types";
+

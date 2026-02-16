@@ -19,7 +19,6 @@ import type { HomepageHeaderProps } from "../types"
  */
 export function MobileHomepageHeader({
   user,
-  categories = [],
   userStats,
   onSearchOpen,
 }: HomepageHeaderProps) {
@@ -29,7 +28,7 @@ export function MobileHomepageHeader({
   return (
     <div className="bg-background pt-safe md:hidden">
       <div className="flex h-(--control-primary) items-center px-2">
-        <SidebarMenu user={user} categories={categories} triggerClassName="-ml-1" {...(userStats && { userStats })} />
+        <SidebarMenu user={user} triggerClassName="-ml-1" {...(userStats && { userStats })} />
         <Link href="/" className="-ml-1 shrink-0 rounded-sm tap-transparent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring">
           <span className="text-xl font-extrabold tracking-tight text-foreground">treido.</span>
         </Link>

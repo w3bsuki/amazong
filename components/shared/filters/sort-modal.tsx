@@ -92,7 +92,7 @@ export function SortModal({
       params.delete("page")
 
       const queryString = params.toString()
-      router.push(queryString ? `${resolvedBasePath}?${queryString}` : resolvedBasePath)
+      router.replace(queryString ? `${resolvedBasePath}?${queryString}` : resolvedBasePath)
       onOpenChange(false)
     },
     [onValueChange, onOpenChange, router, resolvedBasePath, searchParams]

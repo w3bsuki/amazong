@@ -35,7 +35,7 @@ export default function ProfilePage() {
   const [isCheckingUsername, setIsCheckingUsername] = useState(false)
   const [usernameAvailable, setUsernameAvailable] = useState<boolean | null>(null)
 
-  const [avatarVariant, setAvatarVariant] = useState<AvatarVariant>("beam")
+  const [avatarVariant, setAvatarVariant] = useState<AvatarVariant>("marble")
   const [avatarPalette] = useState(0)
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null)
   const [useCustomAvatar, setUseCustomAvatar] = useState(false)

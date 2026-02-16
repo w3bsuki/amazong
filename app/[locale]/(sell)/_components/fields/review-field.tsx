@@ -15,7 +15,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useSellForm, useSellFormContext } from "../sell-form-provider";
-import { conditionOptions } from "@/lib/sell/schema-v4";
+import { conditionOptions } from "@/lib/sell/schema";
 import { useTranslations } from "next-intl";
 
 // ============================================================================
@@ -366,3 +366,4 @@ export function ReviewField({ onEditStep }: ReviewFieldProps) {
     </div>
   );
 }
+

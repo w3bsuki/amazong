@@ -12,7 +12,7 @@
 // - default:    Standard pages (hamburger + logo + search below + actions)
 // - homepage:   Homepage (inline search + category pills on mobile)
 // - product:    Product pages (back + seller + share on mobile)
-// - contextual: Category browsing (back + title + subcategory circles)
+// - contextual: Category browsing (back + title; scope pills render in page content)
 // - minimal:    Auth/checkout (just logo)
 // =============================================================================
 
@@ -86,9 +86,9 @@ export interface AppHeaderProps {
   contextualBackHref?: string
   /** Back handler for instant navigation */
   onContextualBack?: () => void
-  /** Subcategories for contextual circles */
+  /** Subcategories for contextual pill rail state */
   contextualSubcategories?: CategoryTreeNode[]
-  /** Callback when subcategory circle is clicked */
+  /** Callback when subcategory pill is clicked */
   onSubcategoryClick?: (cat: CategoryTreeNode) => void
   
   // Legacy props (for gradual migration)
@@ -137,6 +137,11 @@ function detectRouteConfig(pathname: string, explicitVariant?: HeaderVariant): R
     return { variant: "homepage" }
   }
 
+  // Browse aliases and sellers directory use the shopping-style mobile header.
+  if (pathWithoutLocale.startsWith("/browse") || pathWithoutLocale.startsWith("/sellers")) {
+    return { variant: "homepage" }
+  }
+
   // Demo: use homepage header to showcase the mobile landing flow
   if (pathWithoutLocale.startsWith("/demo")) {
     return { variant: "homepage" }
@@ -144,7 +149,7 @@ function detectRouteConfig(pathname: string, explicitVariant?: HeaderVariant): R
   
   // Known routes start with: /search, /cart, /checkout, /account, /sell, /plans, /auth
   const segments = pathWithoutLocale.split("/").filter(Boolean)
-  const knownRoutes = ["search", "cart", "checkout", "account", "sell", "plans", "auth", "categories", "api", "assistant", "demo"]
+  const knownRoutes = ["search", "browse", "sellers", "cart", "checkout", "account", "sell", "plans", "auth", "categories", "api", "assistant", "demo"]
   
   // Product pages: /{username}/{productSlug} (2+ segments, not a known route)
   if (segments.length >= 2 && segments[0] && !knownRoutes.includes(segments[0])) {
@@ -214,7 +219,6 @@ export function AppHeader({
   const effectiveHomepageCategory = headerContext?.homepageHeader?.activeCategory ?? activeCategory
   const effectiveHomepageCategorySelect = headerContext?.homepageHeader?.onCategorySelect ?? onCategorySelect
   const effectiveHomepageSearchOpen = headerContext?.homepageHeader?.onSearchOpen ?? onSearchOpen
-  const effectiveHomepageCategories = headerContext?.homepageHeader?.categories ?? categories
   
   // Avoid hydration mismatch when other client boundaries update HeaderProvider state
   // before the header boundary itself hydrates (e.g., ProductHeaderSync on PDP).
@@ -296,7 +300,6 @@ export function AppHeader({
   const homepageMobileHeader = (
     <MobileHomepageHeader
       user={effectiveUser}
-      categories={effectiveHomepageCategories}
       userStats={userStats}
       activeCategory={effectiveHomepageCategory}
       onCategorySelect={effectiveHomepageCategorySelect}

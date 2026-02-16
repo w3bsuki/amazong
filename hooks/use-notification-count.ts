@@ -20,7 +20,7 @@ export function useNotificationCount(user: User | null) {
     const supabase = createClient()
     const { count: unreadCount, error } = await supabase
       .from("notifications")
-      .select("*", { count: "exact", head: true })
+      .select("id", { count: "exact", head: true })
       .eq("user_id", user.id)
       .eq("is_read", false)
       .neq("type", "message") // Messages handled separately

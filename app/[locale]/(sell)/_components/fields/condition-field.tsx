@@ -5,7 +5,7 @@ import { Controller } from "react-hook-form";
 import { Sparkle, Check, CaretRight } from "@/lib/icons/phosphor";
 import { Field, FieldLabel, FieldDescription, FieldError, FieldContent } from "@/components/shared/field";
 import { cn } from "@/lib/utils";
-import { conditionOptions } from "@/lib/sell/schema-v4";
+import { conditionOptions } from "@/lib/sell/schema";
 import { useSellForm } from "../sell-form-provider";
 import { useTranslations } from "next-intl";
 import {
@@ -215,3 +215,4 @@ export function ConditionField({ className, compact = false }: ConditionFieldPro
     />
   );
 }
+

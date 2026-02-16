@@ -130,7 +130,11 @@ function CategoryPageContent({
     notFound()
   }
 
-  const { current: currentCategory, parent: parentCategory } = categoryContext
+  const {
+    current: currentCategory,
+    parent: parentCategory,
+    siblings: siblingCategories,
+  } = categoryContext
   
   // Fetch subcategories with counts - NEVER filter on category browse pages
   // All children should show as circles; sorting handles curated-first ordering
@@ -153,6 +157,7 @@ function CategoryPageContent({
       searchParamsPromise={searchParamsPromise}
       currentCategory={currentCategory}
       parentCategory={parentCategory}
+      siblingCategories={siblingCategories}
       subcategoriesWithCounts={subcategoriesWithCounts}
       filterableAttributes={filterableAttributes}
       categoryName={categoryName}
@@ -167,6 +172,7 @@ function CategoryPageDynamicContent({
   searchParamsPromise,
   currentCategory,
   parentCategory,
+  siblingCategories,
   subcategoriesWithCounts,
   filterableAttributes,
   categoryName,
@@ -195,6 +201,11 @@ function CategoryPageDynamicContent({
   parentCategory: Awaited<ReturnType<typeof getCategoryContext>> extends infer T
     ? T extends { parent: infer P }
       ? P
+      : never
+    : never
+  siblingCategories: Awaited<ReturnType<typeof getCategoryContext>> extends infer T
+    ? T extends { siblings: infer S }
+      ? S
       : never
     : never
   /** DEC-002: Subcategories with product counts for curated browse UX */
@@ -294,6 +305,7 @@ function CategoryPageDynamicContent({
           }
           // DEC-002: Use subcategoriesWithCounts for curated ordering + visibility filtering
           contextualSubcategories={subcategoriesWithCounts}
+          contextualSiblingCategories={siblingCategories}
           categoryId={categoryId}
           parentCategory={parentCategory ? {
             id: parentCategory.id,

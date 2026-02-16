@@ -5,11 +5,19 @@ interface RouteContext {
   params: Promise<{ badgeId: string }>
 }
 
+interface FeatureBadgeRow {
+  id: string
+  user_id: string
+  is_featured: boolean | null
+}
+
+function isMissingIsFeaturedColumnError(error: { code?: string; message?: string }) {
+  return error.code === "42703" || error.message?.includes("is_featured") === true
+}
+
 /**
  * PATCH /api/badges/feature/[badgeId]
- * Note: is_featured column doesn't exist in DB yet.
- * This endpoint currently returns badge info but toggle is disabled.
- * To enable, add is_featured column to user_badges table.
+ * Toggles featured state for a user-owned badge.
  */
 export async function PATCH(request: NextRequest, { params }: RouteContext) {
   const { supabase, applyCookies } = createRouteHandlerClient(request)
@@ -25,28 +33,47 @@ export async function PATCH(request: NextRequest, { params }: RouteContext) {
     }
     
     // Get the badge and verify ownership
-    const { data: badge, error: badgeError } = await supabase
+    const { data: badgeData, error: badgeError } = await supabase
       .from("user_badges")
-      .select("id, user_id")
+      .select("id, user_id, is_featured")
       .eq("id", badgeId)
       .single()
     
-    if (badgeError || !badge) {
+    if (badgeError || !badgeData) {
+      if (badgeError && isMissingIsFeaturedColumnError(badgeError)) {
+        return json({ error: "Badge feature toggle is unavailable" }, { status: 501 })
+      }
       return json({ error: "Badge not found" }, { status: 404 })
     }
+
+    const badge = badgeData as unknown as FeatureBadgeRow
     
     if (badge.user_id !== user.id) {
       return json({ error: "Forbidden" }, { status: 403 })
     }
-    
-    // NOTE: is_featured column doesn't exist in DB schema yet.
-    // For now, just return success. To enable feature toggle:
-    // 1. Add is_featured boolean column to user_badges table
-    // 2. Uncomment the update logic below
-    
+
+    const nextIsFeatured = !(badge.is_featured ?? false)
+
+    const { data: updatedData, error: updateError } = await supabase
+      .from("user_badges")
+      .update({ is_featured: nextIsFeatured } as never)
+      .eq("id", badgeId)
+      .eq("user_id", user.id)
+      .select("is_featured")
+      .single()
+
+    if (updateError || !updatedData) {
+      if (updateError && isMissingIsFeaturedColumnError(updateError)) {
+        return json({ error: "Badge feature toggle is unavailable" }, { status: 501 })
+      }
+      return json({ error: "Failed to update badge" }, { status: 500 })
+    }
+
+    const updatedBadge = updatedData as unknown as { is_featured: boolean | null }
+
     return json({
       success: true,
-      message: "Badge feature toggle is not yet implemented",
+      is_featured: updatedBadge.is_featured === true,
     })
     
   } catch (error) {

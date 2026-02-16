@@ -22,7 +22,7 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { PanelLeftIcon } from "lucide-react"
 import { useTranslations } from "next-intl"
 
-import { useIsMobile } from "@/hooks/use-mobile"
+import { useIsMobile } from "@/hooks/use-is-mobile"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import {
@@ -47,7 +47,6 @@ const SIDEBAR_WIDTH_ICON = "3rem"
 const SIDEBAR_OFFSET = "calc(var(--sidebar-width) * -1)"
 const SIDEBAR_ICON_GAP = "calc(var(--sidebar-width-icon) + 1rem)"
 const SIDEBAR_ICON_GAP_FLOATING = "calc(var(--sidebar-width-icon) + 1rem + 2px)"
-const SIDEBAR_COLLAPSIBLE_ICON_HIDDEN_CLASS = "group-data-[collapsible=icon]:hidden"
 const SIDEBAR_KEYBOARD_SHORTCUT = "b"
 
 type SidebarContextProps = {

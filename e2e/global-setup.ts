@@ -67,7 +67,12 @@ export default async function globalSetup(config: FullConfig) {
     for (const url of urls) {
        
       console.log(`[e2e] warm: ${url}`)
-      await warmUrl(page, url, { attempts: 8, timeoutMs: 120_000 })
+      try {
+        await warmUrl(page, url, { attempts: 2, timeoutMs: 30_000 })
+      } catch (error) {
+        const message = error instanceof Error ? error.message : String(error)
+        console.warn(`[e2e] warm-skip: ${url} (${message})`)
+      }
     }
   } finally {
     await browser.close()

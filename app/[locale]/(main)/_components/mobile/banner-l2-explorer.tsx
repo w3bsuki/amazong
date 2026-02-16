@@ -67,7 +67,10 @@ export function BannerL2Explorer({
       <div className="overflow-x-auto no-scrollbar">
         <div className="flex w-max items-center gap-1.5 pb-0.5">
           {/* Inline context label */}
-          <span className="shrink-0 pr-0.5 text-2xs font-semibold uppercase tracking-wide text-muted-foreground">
+          <span
+            data-testid="home-v4-l2-context-label"
+            className="shrink-0 pr-0.5 text-2xs font-semibold uppercase tracking-wide text-muted-foreground"
+          >
             {subcategoryLabel}
           </span>
 

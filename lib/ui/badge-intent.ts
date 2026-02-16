@@ -1,4 +1,5 @@
 export type ListingOverlayBadgeVariant = "promoted" | "discount"
+export type SellerVerificationBadgeVariant = "verified-business" | "verified-personal"
 
 interface ListingOverlayBadgeInput {
   isPromoted: boolean
@@ -24,11 +25,6 @@ export function getListingOverlayBadgeVariants({
   return variants
 }
 
-export type SellerVerificationBadgeVariant =
-  | "verified-business"
-  | "verified-personal"
-  | null
-
 interface SellerVerificationBadgeInput {
   isVerified: boolean
   isBusiness: boolean
@@ -37,7 +33,7 @@ interface SellerVerificationBadgeInput {
 export function getSellerVerificationBadgeVariant({
   isVerified,
   isBusiness,
-}: SellerVerificationBadgeInput): SellerVerificationBadgeVariant {
+}: SellerVerificationBadgeInput): SellerVerificationBadgeVariant | null {
   if (!isVerified) return null
   return isBusiness ? "verified-business" : "verified-personal"
 }

@@ -74,6 +74,7 @@ export function useInstantCategoryBrowse(options: {
   initialCategoryId: string | undefined
   initialParent: CategoryLite | null
   initialChildren: CategoryLite[]
+  initialSiblings: CategoryLite[]
   initialAttributes: CategoryAttribute[]
   initialProducts: UIProduct[]
   /** Initial querystring without leading ? (from server searchParams) */
@@ -87,6 +88,7 @@ export function useInstantCategoryBrowse(options: {
     initialCategoryId,
     initialParent,
     initialChildren,
+    initialSiblings,
     initialAttributes,
     initialProducts,
     initialQueryString = "",
@@ -97,6 +99,7 @@ export function useInstantCategoryBrowse(options: {
   const [categoryTitle, setCategoryTitle] = useState(initialTitle)
   const [parent, setParent] = useState<CategoryLite | null>(initialParent)
   const [children, setChildren] = useState<CategoryLite[]>(initialChildren)
+  const [siblings, setSiblings] = useState<CategoryLite[]>(initialSiblings)
   const [attributes, setAttributes] = useState<CategoryAttribute[]>(initialAttributes)
 
   const [appliedParams, setAppliedParams] = useState<URLSearchParams>(() => new URLSearchParams(initialQueryString))
@@ -220,6 +223,7 @@ export function useInstantCategoryBrowse(options: {
       setCategoryTitle(toDisplayName(locale, context.current))
       setParent(context.parent)
       setChildren(context.children)
+      setSiblings(context.siblings)
       setAttributes(context.attributes)
     } catch {
       // If context fails, products still load (best-effort).
@@ -303,6 +307,7 @@ export function useInstantCategoryBrowse(options: {
     categoryTitle,
     parent,
     children,
+    siblings,
     attributes,
     appliedSearchParams: appliedParams,
     feed,

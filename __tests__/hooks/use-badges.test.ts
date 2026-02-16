@@ -182,7 +182,7 @@ describe('hooks/use-badges', () => {
         })
         .mockResolvedValueOnce({
           ok: true,
-          json: async () => ({ is_featured: true })
+          json: async () => ({ success: true, is_featured: true })
         })
       
       const { result } = renderHook(() => useBadges())
@@ -201,6 +201,30 @@ describe('hooks/use-badges', () => {
       expect(mockFetch).toHaveBeenCalledWith('/api/badges/feature/1', {
         method: 'PATCH'
       })
+    })
+
+    it('supports legacy toggle payload without success field', async () => {
+      mockFetch
+        .mockResolvedValueOnce({
+          ok: true,
+          json: async () => ({ badges: [createMockBadge('1', { is_featured: false })] })
+        })
+        .mockResolvedValueOnce({
+          ok: true,
+          json: async () => ({ is_featured: true })
+        })
+
+      const { result } = renderHook(() => useBadges())
+
+      await waitFor(() => {
+        expect(result.current.isLoading).toBe(false)
+      })
+
+      await act(async () => {
+        await result.current.toggleFeatured('1')
+      })
+
+      expect(result.current.badges[0].is_featured).toBe(true)
     })
     
     it('throws error on failed toggle', async () => {
@@ -225,6 +249,32 @@ describe('hooks/use-badges', () => {
           await result.current.toggleFeatured('1')
         })
       }).rejects.toThrow('Max featured badges reached')
+    })
+
+    it('throws clear error when toggle response shape is invalid', async () => {
+      mockFetch
+        .mockResolvedValueOnce({
+          ok: true,
+          json: async () => ({ badges: [createMockBadge('1', { is_featured: false })] })
+        })
+        .mockResolvedValueOnce({
+          ok: true,
+          json: async () => ({ success: true })
+        })
+
+      const { result } = renderHook(() => useBadges())
+
+      await waitFor(() => {
+        expect(result.current.isLoading).toBe(false)
+      })
+
+      await expect(async () => {
+        await act(async () => {
+          await result.current.toggleFeatured('1')
+        })
+      }).rejects.toThrow('Invalid badge feature response')
+
+      expect(result.current.badges[0].is_featured).toBe(false)
     })
   })
   

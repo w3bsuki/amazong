@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/select";
 import { Field, FieldLabel, FieldDescription, FieldContent } from "@/components/shared/field";
 import { cn } from "@/lib/utils";
-import type { ProductAttribute } from "@/lib/sell/schema-v4";
+import type { ProductAttribute } from "@/lib/sell/schema";
 import { useTranslations } from "next-intl";
 import { useSellForm, useSellFormContext } from "../sell-form-provider";
 import { SelectDrawer } from "../ui/select-drawer";
@@ -643,3 +643,4 @@ export function AttributesField({ className, compact = false }: AttributesFieldP
 }
 
 export default memo(AttributesField);
+

@@ -10,7 +10,7 @@ import {
 } from "@/components/mobile/drawers"
 import { WishlistDrawer } from "@/components/shared/wishlist/wishlist-drawer"
 import { ProductQuickViewDialog } from "./drawers/product-quick-view-dialog"
-import { useIsMobile } from "@/hooks/use-mobile"
+import { useIsMobile } from "@/hooks/use-is-mobile"
 
 /**
  * Global drawer container - renders all drawer instances.

@@ -2,7 +2,7 @@
 
 import { useTheme } from 'next-themes'
 import { Toaster as Sonner, ToasterProps } from 'sonner'
-import { useIsMobile } from '@/hooks/use-mobile'
+import { useIsMobile } from '@/hooks/use-is-mobile'
 import { CheckCircle, WarningCircle, Info, XCircle } from '@/lib/icons/phosphor'
 
 const Toaster = ({ ...props }: ToasterProps) => {

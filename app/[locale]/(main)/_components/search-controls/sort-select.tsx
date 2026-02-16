@@ -1,6 +1,6 @@
 "use client"
 
-import { CaretDown, ArrowsDownUp } from "@/lib/icons/phosphor"
+import { ArrowsDownUp } from "@/lib/icons/phosphor"
 import { useTranslations } from "next-intl"
 import { useSearchParams } from "next/navigation"
 import { usePathname, useRouter } from "@/i18n/routing"
@@ -43,7 +43,7 @@ export function SortSelect() {
     }
     
     const queryString = params.toString()
-    router.push(queryString ? `${normalizedPathname}?${queryString}` : normalizedPathname)
+    router.replace(queryString ? `${normalizedPathname}?${queryString}` : normalizedPathname)
   }, [router, normalizedPathname, searchParams])
 
   const isSorted = currentSort !== 'featured'

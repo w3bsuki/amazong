@@ -66,8 +66,6 @@ export interface UserListingStats {
 
 export interface SidebarMenuProps {
     user?: SupabaseUser | null
-    // Categories no longer needed - we link to /categories instead
-    categories?: unknown[]
     triggerClassName?: string
     /** User's listing stats (active + boosted count) - fetched server-side */
     userStats?: UserListingStats

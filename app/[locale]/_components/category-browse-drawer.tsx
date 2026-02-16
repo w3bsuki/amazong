@@ -21,7 +21,14 @@ import { cn } from "@/lib/utils"
 import { useCategoryDrawer } from "@/components/mobile/category-nav/category-drawer-context"
 import { getCategoryName } from "@/lib/category-display"
 import { useCategoryCounts } from "@/hooks/use-category-counts"
-import { ArrowLeft, CaretRight, MagnifyingGlass, X } from "@/lib/icons/phosphor"
+import {
+  ArrowLeft,
+  CaretRight,
+  MagnifyingGlass,
+  Storefront,
+  SquaresFour,
+  X,
+} from "@/lib/icons/phosphor"
 import { useTranslations } from "next-intl"
 import type { CategoryTreeNode } from "@/lib/category-tree"
 
@@ -142,6 +149,18 @@ export function CategoryBrowseDrawer({
     openCategory(category)
   }, [openCategory])
 
+  const handleNavigateToSearch = useCallback(() => {
+    setQuery("")
+    close()
+    router.push("/search")
+  }, [close, router])
+
+  const handleNavigateToSellers = useCallback(() => {
+    setQuery("")
+    close()
+    router.push("/sellers")
+  }, [close, router])
+
   const handleBackToRoot = useCallback(() => {
     setQuery("")
     openRoot()
@@ -245,6 +264,34 @@ export function CategoryBrowseDrawer({
                   <X size={14} />
                 </button>
               )}
+            </div>
+          </div>
+
+          <div className="pb-3">
+            <p className="pb-2 text-2xs font-medium text-muted-foreground">
+              {t("quickLinksTitle")}
+            </p>
+            <div className="grid grid-cols-2 gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="h-(--control-default) justify-start gap-2 rounded-xl"
+                onClick={handleNavigateToSearch}
+              >
+                <SquaresFour size={16} weight="bold" aria-hidden="true" />
+                <span className="truncate">{t("allListings")}</span>
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="h-(--control-default) justify-start gap-2 rounded-xl"
+                onClick={handleNavigateToSellers}
+              >
+                <Storefront size={16} weight="bold" aria-hidden="true" />
+                <span className="truncate">{t("topSellers")}</span>
+              </Button>
             </div>
           </div>
 

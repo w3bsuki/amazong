@@ -40,7 +40,7 @@ const RECENT_SEARCHES_KEY = "recentSearches"
 const RECENT_PRODUCTS_KEY = "recentSearchedProducts"
 
 /** Recent searched product type */
-export interface RecentSearchedProduct {
+interface RecentSearchedProduct {
   id: string
   title: string
   price: number

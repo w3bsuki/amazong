@@ -600,7 +600,7 @@ select:-webkit-autofill {
 
   /* === LAYOUT HEIGHTS === */
   --spacing-header: 3rem;
-  --spacing-bottom-nav: 3rem;     /* 48px — full-width dock */
+  --spacing-bottom-nav: 3.5rem;   /* 56px - mobile bottom navigation dock */
   --spacing-button: 2.75rem;
   --spacing-button-sm: 2.25rem;
   --spacing-button-lg: 3rem;
@@ -657,6 +657,7 @@ select:-webkit-autofill {
   --size-icon-sm: 1.25rem;       /* 20px - compact controls */
   --size-icon: 1.375rem;         /* 22px - default nav/action */
   --size-icon-header: 1.5rem;    /* 24px - header chrome */
+  --size-icon-tab-bar: 1.625rem; /* 26px - mobile tab bar icons */
   --size-icon-lg: 1.75rem;       /* 28px - large/bold */
 
   /* === CATEGORY NAVIGATION === */

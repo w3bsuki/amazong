@@ -1,7 +1,7 @@
 "use client";
 
 import { X } from "@/lib/icons/phosphor";
-import type { ProductImage } from "@/lib/sell/schema-v4";
+import type { ProductImage } from "@/lib/sell/schema";
 
 interface ImagePreviewModalProps {
   image: ProductImage;
@@ -43,3 +43,4 @@ export function ImagePreviewModal({
     </div>
   );
 }
+

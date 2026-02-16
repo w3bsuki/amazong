@@ -8,7 +8,7 @@ import { Progress } from "@/components/ui/progress";
 import { Field, FieldLabel, FieldDescription, FieldError, FieldContent } from "@/components/shared/field";
 import { useTranslations } from "next-intl";
 
-import type { ProductImage } from "@/lib/sell/schema-v4";
+import type { ProductImage } from "@/lib/sell/schema";
 import { compressImage } from "@/lib/image-compression";
 import { useSellForm } from "../sell-form-provider";
 import { PhotoThumbnail, UploadZone, ImagePreviewModal } from "../ui";
@@ -428,4 +428,5 @@ export function PhotosField({
     </>
   );
 }
+
 

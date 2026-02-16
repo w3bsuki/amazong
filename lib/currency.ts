@@ -26,17 +26,17 @@ const currencyConfig: Record<SupportedLocale, { currency: string; symbol: string
 }
 
 /**
- * Get the currency symbol for a given locale
- */
-export function getCurrencySymbol(locale: string): string {
-  return currencyConfig[locale as SupportedLocale]?.symbol || '€'
-}
-
-/**
  * Get the currency code for a given locale
  */
 export function getCurrencyCode(locale: string): string {
   return currencyConfig[locale as SupportedLocale]?.currency || 'EUR'
+}
+
+/**
+ * Get the currency symbol for a given locale
+ */
+export function getCurrencySymbol(locale: string): string {
+  return currencyConfig[locale as SupportedLocale]?.symbol || '€'
 }
 
 /**

@@ -50,15 +50,15 @@ export interface ProductHeaderProps extends BaseHeaderProps {
 export interface ContextualHeaderProps extends BaseHeaderProps {
   /** Title for contextual header (category name) */
   title?: string | undefined
-  /** Active category slug (used for subtle active circle highlight during instant navigation). */
+  /** Active category slug (used for subtle active pill highlight during instant navigation). */
   activeSlug?: string | undefined
   /** Back href for contextual header */
   backHref?: string | undefined
   /** Back handler for instant navigation */
   onBack?: (() => void) | undefined
-  /** Subcategories for contextual circles */
+  /** Subcategories for contextual pill rails rendered by route content. */
   subcategories?: CategoryTreeNode[] | undefined
-  /** Callback when subcategory circle is clicked */
+  /** Callback when subcategory pill is clicked */
   onSubcategoryClick?: ((cat: CategoryTreeNode) => void) | undefined
   /** Hide search/wishlist/cart actions (for assistant page) */
   hideActions?: boolean | undefined

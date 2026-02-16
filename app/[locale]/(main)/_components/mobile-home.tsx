@@ -1,203 +1,199 @@
 "use client"
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
+import { CaretRight, DotsThree, FunnelSimple } from "@/lib/icons/phosphor"
 import { useTranslations } from "next-intl"
+
 import { Link } from "@/i18n/routing"
-import type { UIProduct } from "@/lib/types/products"
 import type { CategoryTreeNode } from "@/lib/category-tree"
-import { BULGARIAN_CITIES } from "@/lib/bulgarian-cities"
-import { useHeader } from "@/components/providers/header-context"
-import { useHomeDiscoveryFeed } from "@/hooks/use-home-discovery-feed"
+import type { UIProduct } from "@/lib/types/products"
+import { cn } from "@/lib/utils"
+import { getActiveFilterCount } from "@/lib/filters/active-filter-count"
+import { getCategoryName, getCategorySlugKey } from "@/lib/category-display"
+import { getCategoryIcon } from "@/components/shared/category/category-icons"
 import { MobileProductCard } from "@/components/shared/product/card/mobile"
-import { CategoryCirclesSimple } from "@/components/mobile/category-nav"
-import { PageShell } from "../../_components/page-shell"
+import { useHeader } from "@/components/providers/header-context"
 import { MobileSearchOverlay } from "../../_components/search/mobile-search-overlay"
-import { HomeSectionHeader } from "./mobile/home-section-header"
-import { HomeDiscoveryControls } from "./mobile/home-discovery-controls"
 import { HomeCityPickerSheet } from "./mobile/home-city-picker-sheet"
-import { PromotedListingsStrip } from "./mobile/promoted-listings-strip"
+import { HomeBrowseOptionsSheet } from "./mobile/home-browse-options-sheet"
+import { PageShell } from "../../_components/page-shell"
+import {
+  ACTION_CHIP_CLASS,
+  getPillClass,
+  getPrimaryTabClass,
+} from "../_lib/mobile-rail-class-recipes"
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet"
+import { FilterHub } from "@/components/shared/filters/filter-hub"
+import {
+  useHomeDiscoveryFeed,
+  type HomeDiscoveryScope,
+} from "@/hooks/use-home-discovery-feed"
 
 // =============================================================================
 // Types
 // =============================================================================
 
-interface CuratedSections {
-  deals: UIProduct[]
-  fashion: UIProduct[]
-  electronics: UIProduct[]
-  automotive: UIProduct[]
-}
-
 interface MobileHomeProps {
-  initialProducts: UIProduct[]
-  promotedProducts?: UIProduct[]
-  curatedSections?: CuratedSections
-  initialCategories: CategoryTreeNode[]
   locale: string
-  user?: { id: string } | null
+  categories: CategoryTreeNode[]
+  forYouProducts: UIProduct[]
+  newestProducts: UIProduct[]
+  promotedProducts: UIProduct[]
+  nearbyProducts: UIProduct[]
+  dealsProducts: UIProduct[]
+  categoryProducts: Record<string, UIProduct[]>
 }
-
-type CuratedRailKey = keyof CuratedSections
-
-const CURATED_RAIL_PRIORITY: CuratedRailKey[] = ["fashion", "electronics", "automotive", "deals"]
-
-const CURATED_RAIL_HREF: Record<CuratedRailKey, string> = {
-  fashion: "/categories/fashion",
-  electronics: "/categories/electronics",
-  automotive: "/automotive",
-  deals: "/todays-deals",
-}
-
-const HOME_CITY_STORAGE_KEY = "treido_user_city"
 
 // =============================================================================
-// Main Component
+// Config
+// =============================================================================
+
+const MAX_VISIBLE_CATEGORY_TABS = 5
+const HOME_CITY_STORAGE_KEY = "treido_user_city"
+const SECONDARY_RAIL_TOP = "calc(var(--app-header-offset) + var(--control-default))"
+
+const DISCOVERY_SCOPES: readonly HomeDiscoveryScope[] = [
+  "forYou",
+  "newest",
+  "promoted",
+  "nearby",
+  "deals",
+]
+
+function renderProductCard(product: UIProduct, index: number) {
+  return (
+    <MobileProductCard
+      key={`${product.id}-${index}`}
+      id={product.id}
+      title={product.title}
+      price={product.price}
+      createdAt={product.createdAt ?? null}
+      originalPrice={product.listPrice ?? null}
+      image={product.image}
+      rating={product.rating}
+      reviews={product.reviews}
+      {...(product.freeShipping === true ? { freeShipping: true } : {})}
+      {...(product.isBoosted ? { isBoosted: true } : {})}
+      {...(product.boostExpiresAt ? { boostExpiresAt: product.boostExpiresAt } : {})}
+      index={index}
+      slug={product.slug ?? null}
+      username={product.storeSlug ?? null}
+      sellerId={product.sellerId ?? null}
+      {...(product.sellerName || product.storeSlug
+        ? { sellerName: product.sellerName || product.storeSlug || "" }
+        : {})}
+      sellerAvatarUrl={product.sellerAvatarUrl || null}
+      sellerTier={product.sellerTier ?? "basic"}
+      sellerVerified={Boolean(product.sellerVerified)}
+      {...(product.condition ? { condition: product.condition } : {})}
+      {...(product.categoryPath ? { categoryPath: product.categoryPath } : {})}
+      {...(product.location ? { location: product.location } : {})}
+      titleLines={1}
+      layout="feed"
+      showWishlistAction={false}
+    />
+  )
+}
+
+function buildHomeBrowseHref({
+  scope,
+  city,
+}: {
+  scope: HomeDiscoveryScope
+  city: string | null
+}): string {
+  switch (scope) {
+    case "promoted":
+      return "/search?promoted=true&sort=newest"
+    case "deals":
+      return "/search?deals=true&sort=newest"
+    case "nearby":
+      return city
+        ? `/search?nearby=true&sort=newest&city=${encodeURIComponent(city)}`
+        : "/search?nearby=true&sort=newest"
+    case "newest":
+    case "forYou":
+    default:
+      return "/search?sort=newest"
+  }
+}
+
+// =============================================================================
+// Component
 // =============================================================================
 
 export function MobileHome({
-  initialProducts,
-  promotedProducts,
-  curatedSections,
-  initialCategories,
   locale,
+  categories,
+  forYouProducts,
+  newestProducts,
+  promotedProducts,
+  nearbyProducts,
+  dealsProducts,
+  categoryProducts,
 }: MobileHomeProps) {
-  const t = useTranslations("Home")
+  const tCategories = useTranslations("Categories")
   const tMobile = useTranslations("Home.mobile")
+  const tV4 = useTranslations("Home.mobile.v4")
+
   const [searchOpen, setSearchOpen] = useState(false)
+  const [categoryPickerOpen, setCategoryPickerOpen] = useState(false)
+  const [filterOpen, setFilterOpen] = useState(false)
+  const [browseOptionsOpen, setBrowseOptionsOpen] = useState(false)
   const [cityPickerOpen, setCityPickerOpen] = useState(false)
+  const [pendingNearbyScope, setPendingNearbyScope] = useState(false)
   const [cityHydrated, setCityHydrated] = useState(false)
-  const categoryCirclesRef = useRef<HTMLDivElement | null>(null)
   const loadMoreRef = useRef<HTMLDivElement | null>(null)
 
-  const initialActivePromotedProducts = useMemo(() => {
-    const source = promotedProducts ?? []
-    const now = Date.now()
-    return source.filter((product) => {
-      if (!product.isBoosted) return false
-      if (!product.boostExpiresAt) return false
-      const expiresAt = Date.parse(product.boostExpiresAt)
-      return Number.isFinite(expiresAt) && expiresAt > now
-    })
-  }, [promotedProducts])
-
   const {
-    sort,
-    nearby,
+    scope,
+    setScope,
+    activeCategorySlug,
+    setActiveCategorySlug,
+    activeSubcategorySlug,
+    setActiveSubcategorySlug,
+    activeL2Slug,
+    setActiveL2Slug,
+    filters,
+    setFilters,
     city,
+    setCity,
+    setNearby,
     products,
     isLoading,
     error,
-    setSort,
-    setNearby,
-    setCity,
     loadNextPage,
     retry,
   } = useHomeDiscoveryFeed({
-    initialProducts,
-    feedType: "newest",
-    preferInitialProducts: true,
+    initialPools: {
+      forYou: forYouProducts,
+      newest: newestProducts,
+      promoted: promotedProducts,
+      nearby: nearbyProducts,
+      deals: dealsProducts,
+    },
+    initialCategoryProducts: categoryProducts,
+    initialScope: "forYou",
     limit: 24,
   })
-
-  const cityLabel = useMemo(() => {
-    if (!city) return null
-    const option = BULGARIAN_CITIES.find((entry) => entry.value === city)
-    if (!option) return city
-    return locale === "bg" ? option.labelBg : option.label
-  }, [city, locale])
-
-  const curatedRail = useMemo(() => {
-    const sections = curatedSections ?? {
-      deals: [],
-      fashion: [],
-      electronics: [],
-      automotive: [],
-    }
-
-    for (const key of CURATED_RAIL_PRIORITY) {
-      const sectionProducts = sections[key]
-      if (Array.isArray(sectionProducts) && sectionProducts.length > 0) {
-        return { key, products: sectionProducts, href: CURATED_RAIL_HREF[key] }
-      }
-    }
-
-    return null
-  }, [curatedSections])
-
-  // Homepage category navigation is drawer-based; avoid legacy `?tab=` URL state.
-  const handleHeaderCategorySelect = useCallback(() => {}, [])
-
-  const renderHomeCard = useCallback(
-    (product: UIProduct, index: number) => (
-      <MobileProductCard
-        key={product.id}
-        id={product.id}
-        title={product.title}
-        price={product.price}
-        createdAt={product.createdAt ?? null}
-        originalPrice={product.listPrice ?? null}
-        image={product.image}
-        rating={product.rating}
-        reviews={product.reviews}
-        {...(product.freeShipping === true ? { freeShipping: true } : {})}
-        {...(product.isBoosted ? { isBoosted: true } : {})}
-        {...(product.boostExpiresAt ? { boostExpiresAt: product.boostExpiresAt } : {})}
-        index={index}
-        slug={product.slug ?? null}
-        username={product.storeSlug ?? null}
-        sellerId={product.sellerId ?? null}
-        {...((product.sellerName || product.storeSlug)
-          ? { sellerName: product.sellerName || product.storeSlug || "" }
-          : {})}
-        sellerAvatarUrl={product.sellerAvatarUrl || null}
-        sellerTier={product.sellerTier ?? "basic"}
-        sellerVerified={Boolean(product.sellerVerified)}
-        {...(product.condition ? { condition: product.condition } : {})}
-        {...(product.categoryPath ? { categoryPath: product.categoryPath } : {})}
-        {...(product.location ? { location: product.location } : {})}
-        titleLines={1}
-        layout="feed"
-        showWishlistAction={false}
-      />
-    ),
-    []
-  )
-
-  const handleNearbyToggle = useCallback(() => {
-    if (nearby) {
-      setNearby(false)
-      return
-    }
-    if (city) {
-      setNearby(true)
-      return
-    }
-    setCityPickerOpen(true)
-  }, [city, nearby, setNearby])
-
-  const handleNearbyConfigure = useCallback(() => {
-    setCityPickerOpen(true)
-  }, [])
-
-  const handleCitySelect = useCallback(
-    (nextCity: string) => {
-      setCity(nextCity)
-      setNearby(true)
-    },
-    [setCity, setNearby]
-  )
 
   const { setHomepageHeader } = useHeader()
 
   useEffect(() => {
     setHomepageHeader({
-      activeCategory: "all",
-      onCategorySelect: handleHeaderCategorySelect,
+      activeCategory: activeCategorySlug ?? "all",
+      onCategorySelect: () => {},
       onSearchOpen: () => setSearchOpen(true),
-      categories: initialCategories,
+      categories,
     })
     return () => setHomepageHeader(null)
-  }, [handleHeaderCategorySelect, initialCategories, setHomepageHeader])
+  }, [activeCategorySlug, categories, setHomepageHeader])
 
   useEffect(() => {
     const target = loadMoreRef.current
@@ -243,6 +239,132 @@ export function MobileHome({
     }
   }, [city, cityHydrated])
 
+  const visibleCategoryTabs = useMemo(
+    () => categories.slice(0, MAX_VISIBLE_CATEGORY_TABS),
+    [categories]
+  )
+  const overflowCategories = useMemo(
+    () => categories.slice(MAX_VISIBLE_CATEGORY_TABS),
+    [categories]
+  )
+
+  const activeCategory = useMemo(
+    () => categories.find((category) => category.slug === activeCategorySlug) ?? null,
+    [activeCategorySlug, categories]
+  )
+  const activeSubcategories = activeCategory?.children ?? []
+  const activeSubcategory = activeSubcategories.find((sub) => sub.slug === activeSubcategorySlug) ?? null
+  const activeL2Categories = activeSubcategory?.children ?? []
+
+  const activeFilterCount = useMemo(() => getActiveFilterCount(filters), [filters])
+  const hasActiveFilters = activeFilterCount > 0
+
+  const getCategoryLabel = useCallback((category: CategoryTreeNode) => {
+    return tCategories("shortName", {
+      slug: getCategorySlugKey(category.slug),
+      name: getCategoryName(category, locale),
+    })
+  }, [locale, tCategories])
+
+  const activeCategoryLabel = activeCategory ? getCategoryLabel(activeCategory) : null
+  const activeSubcategoryLabel = activeSubcategory ? getCategoryLabel(activeSubcategory) : null
+  const activeL2Category = activeL2Categories.find((category) => category.slug === activeL2Slug) ?? null
+  const activeL2Label = activeL2Category ? getCategoryLabel(activeL2Category) : null
+  const contextTitle = activeCategoryLabel && activeSubcategoryLabel && activeL2Label
+    ? tV4("banner.categoryPathDeepTitle", {
+      parent: activeCategoryLabel,
+      child: activeSubcategoryLabel,
+      leaf: activeL2Label,
+    })
+    : activeCategoryLabel && activeSubcategoryLabel
+      ? tV4("banner.categoryPathTitle", {
+        parent: activeCategoryLabel,
+        child: activeSubcategoryLabel,
+      })
+      : activeSubcategoryLabel ?? activeCategoryLabel ?? tV4(`banner.scopeTitle.${scope}`)
+
+  const contextEyebrow = activeCategory
+    ? tV4("banner.eyebrowCategory")
+    : tV4(`banner.scopeEyebrow.${scope}`)
+
+  const fullBrowseHref = activeL2Slug
+    ? `/categories/${activeL2Slug}`
+    : activeSubcategorySlug
+    ? `/categories/${activeSubcategorySlug}`
+    : activeCategorySlug
+      ? `/categories/${activeCategorySlug}`
+      : buildHomeBrowseHref({ scope, city })
+  const fullBrowseLabel = activeCategorySlug
+    ? tV4("actions.viewCategory")
+    : tV4("actions.exploreScope")
+  const showBrowseOptionsTrigger = activeSubcategorySlug !== null && activeL2Categories.length > 0
+
+  const handlePrimaryTab = useCallback((slug: string | null) => {
+    setActiveCategorySlug(slug)
+    setActiveSubcategorySlug(null)
+    setActiveL2Slug(null)
+  }, [setActiveCategorySlug, setActiveSubcategorySlug, setActiveL2Slug])
+
+  const handleScopeSelect = useCallback((nextScope: HomeDiscoveryScope) => {
+    if (nextScope === "nearby" && !city) {
+      setPendingNearbyScope(true)
+      setCityPickerOpen(true)
+      return
+    }
+    setScope(nextScope)
+    setNearby(nextScope === "nearby")
+  }, [city, setNearby, setScope])
+
+  const handleOverflowCategoryPick = useCallback((slug: string) => {
+    setCategoryPickerOpen(false)
+    setActiveCategorySlug(slug)
+    setActiveSubcategorySlug(null)
+    setActiveL2Slug(null)
+  }, [setActiveCategorySlug, setActiveSubcategorySlug, setActiveL2Slug])
+
+  const handleSubcategoryPill = useCallback((slug: string | null) => {
+    setActiveSubcategorySlug((previous) => (previous === slug ? null : slug))
+    setActiveL2Slug(null)
+  }, [setActiveSubcategorySlug, setActiveL2Slug])
+
+  const handleL2Select = useCallback((slug: string | null) => {
+    setActiveL2Slug(slug)
+  }, [setActiveL2Slug])
+
+  const handleBrowseOptionsSelect = useCallback((slug: string | null) => {
+    handleL2Select(slug)
+    setBrowseOptionsOpen(false)
+  }, [handleL2Select])
+
+  const handleApplyFilters = useCallback((next: { queryString: string }) => {
+    const params = new URLSearchParams(next.queryString)
+    setFilters(params)
+  }, [setFilters])
+
+  const handleCitySelect = useCallback((nextCity: string) => {
+    setCity(nextCity)
+    setFilters(new URLSearchParams([["city", nextCity], ["nearby", "true"]]))
+    if (pendingNearbyScope) {
+      setScope("nearby")
+      setNearby(true)
+      setPendingNearbyScope(false)
+    }
+  }, [pendingNearbyScope, setCity, setFilters, setNearby, setScope])
+
+  const handleResetAll = useCallback(() => {
+    setActiveCategorySlug(null)
+    setActiveSubcategorySlug(null)
+    setActiveL2Slug(null)
+    setScope("forYou")
+    setNearby(false)
+    setFilters(new URLSearchParams())
+  }, [setActiveCategorySlug, setActiveSubcategorySlug, setActiveL2Slug, setScope, setNearby, setFilters])
+
+  useEffect(() => {
+    if (showBrowseOptionsTrigger) return
+    setBrowseOptionsOpen(false)
+  }, [showBrowseOptionsTrigger])
+
   return (
     <PageShell variant="default" className="pb-4">
       <MobileSearchOverlay
@@ -251,66 +373,212 @@ export function MobileHome({
         onOpenChange={setSearchOpen}
       />
 
-      <div ref={categoryCirclesRef} data-testid="home-category-circles" className="bg-background">
-        <CategoryCirclesSimple
-          categories={initialCategories}
-          locale={locale}
-          maxVisible={7}
-        />
-      </div>
+      <div className="mx-auto w-full max-w-(--breakpoint-md) pb-tabbar-safe">
+        <h1 className="sr-only">{tV4("title")}</h1>
 
-      <div className="pt-0 pb-4">
-        <PromotedListingsStrip
-          products={initialActivePromotedProducts}
-          showHeader
-          includePromoTile
-          promotedCta={{
-            href: "/search?promoted=true&sort=newest",
-            eyebrow: tMobile("promoBannerEyebrow"),
-            title: tMobile("promoBannerTitle"),
-            subtitle: tMobile("promoBannerSubtitle"),
-            actionLabel: tMobile("seeAll"),
-          }}
-          className="pt-2"
-        />
+        <nav
+          data-testid="home-v4-primary-rail"
+          className="sticky top-(--app-header-offset) z-30 border-b border-border-subtle bg-background"
+          role="tablist"
+          aria-label={tV4("aria.primaryCategories")}
+        >
+          <div className="overflow-x-auto no-scrollbar">
+            <div className="flex w-max min-w-full items-stretch">
+              <button
+                type="button"
+                role="tab"
+                aria-selected={activeCategorySlug === null}
+                onClick={() => handlePrimaryTab(null)}
+                className={getPrimaryTabClass(activeCategorySlug === null)}
+              >
+                {getCategoryIcon("categories", {
+                  size: 16,
+                  weight: activeCategorySlug === null ? "fill" : "regular",
+                  className: "shrink-0",
+                })}
+                <span>{tCategories("all")}</span>
+                {activeCategorySlug === null && (
+                  <span
+                    className="absolute inset-x-2 bottom-0 h-0.5 rounded-full bg-foreground"
+                    aria-hidden="true"
+                  />
+                )}
+              </button>
 
-        <section data-testid="home-section-discovery" className="pt-(--spacing-home-section-gap)">
-          {products.length > 0 ? (
-            <HomeDiscoveryControls
-              sort={sort}
-              nearby={nearby}
-              cityLabel={cityLabel}
-              onSortChange={setSort}
-              onNearbyToggle={handleNearbyToggle}
-              onNearbyConfigure={handleNearbyConfigure}
-              className="mb-0"
-            />
-          ) : null}
+              {visibleCategoryTabs.map((category) => {
+                const active = activeCategorySlug === category.slug
+                return (
+                  <button
+                    key={category.slug}
+                    type="button"
+                    role="tab"
+                    aria-selected={active}
+                    onClick={() => handlePrimaryTab(category.slug)}
+                    className={getPrimaryTabClass(active)}
+                  >
+                    {getCategoryIcon(category.slug, {
+                      size: 16,
+                      weight: active ? "fill" : "regular",
+                      className: "shrink-0",
+                    })}
+                    <span className="whitespace-nowrap">{getCategoryLabel(category)}</span>
+                    {active && (
+                      <span
+                        className="absolute inset-x-2 bottom-0 h-0.5 rounded-full bg-foreground"
+                        aria-hidden="true"
+                      />
+                    )}
+                  </button>
+                )
+              })}
 
+              {overflowCategories.length > 0 && (
+                <button
+                  type="button"
+                  data-testid="home-v4-more-categories-trigger"
+                  onClick={() => setCategoryPickerOpen(true)}
+                  aria-label={tV4("actions.moreCategories")}
+                  className={getPrimaryTabClass(false, {
+                    className: "border-l border-border-subtle",
+                  })}
+                >
+                  <DotsThree size={18} weight="bold" className="shrink-0" />
+                  <span>{tV4("actions.moreCategories")}</span>
+                </button>
+              )}
+            </div>
+          </div>
+        </nav>
+
+        <section
+          data-testid="home-v4-secondary-rail"
+          className="sticky z-20 border-b border-border-subtle bg-surface-glass backdrop-blur-sm"
+          style={{ top: SECONDARY_RAIL_TOP }}
+        >
+          <div className="overflow-x-auto no-scrollbar">
+            <div className="flex w-max items-center gap-1.5 px-3 py-2">
+              {activeCategorySlug === null ? (
+                DISCOVERY_SCOPES.map((entry) => {
+                  const active = scope === entry
+                  return (
+                    <button
+                      key={entry}
+                      type="button"
+                      data-testid={`home-v4-scope-${entry}`}
+                      aria-pressed={active}
+                      onClick={() => handleScopeSelect(entry)}
+                      className={getPillClass(active)}
+                    >
+                      {tV4(`scopes.${entry}`)}
+                    </button>
+                  )
+                })
+              ) : (
+                <>
+                  <button
+                    type="button"
+                    aria-pressed={activeSubcategorySlug === null}
+                    onClick={() => handleSubcategoryPill(null)}
+                    className={getPillClass(activeSubcategorySlug === null)}
+                  >
+                    {tCategories("all")}
+                  </button>
+                  {activeSubcategories.map((subcategory) => {
+                    const active = activeSubcategorySlug === subcategory.slug
+                    return (
+                      <button
+                        key={subcategory.slug}
+                        type="button"
+                        aria-pressed={active}
+                        onClick={() => handleSubcategoryPill(subcategory.slug)}
+                        className={getPillClass(active)}
+                      >
+                        {getCategoryLabel(subcategory)}
+                      </button>
+                    )
+                  })}
+                </>
+              )}
+
+              <div aria-hidden="true" className="mx-0.5 h-5 w-px shrink-0 bg-border-subtle" />
+
+              {showBrowseOptionsTrigger && (
+                <button
+                  type="button"
+                  data-testid="home-v4-browse-options-trigger"
+                  onClick={() => setBrowseOptionsOpen(true)}
+                  className={ACTION_CHIP_CLASS}
+                >
+                  <DotsThree size={14} weight="bold" aria-hidden="true" />
+                  <span>{tV4("actions.browseOptions")}</span>
+                </button>
+              )}
+
+              <button
+                type="button"
+                data-testid="home-v4-filter-trigger"
+                aria-pressed={hasActiveFilters}
+                onClick={() => setFilterOpen(true)}
+                className={cn(ACTION_CHIP_CLASS, hasActiveFilters && "border-foreground")}
+              >
+                <FunnelSimple size={14} weight={hasActiveFilters ? "fill" : "regular"} aria-hidden="true" />
+                <span>{tV4("actions.filter")}</span>
+                {hasActiveFilters && (
+                  <span className="inline-flex min-w-5 items-center justify-center rounded-full bg-foreground px-1.5 py-0.5 text-2xs font-semibold text-background">
+                    {activeFilterCount}
+                  </span>
+                )}
+              </button>
+
+              <Link href={fullBrowseHref} className={ACTION_CHIP_CLASS}>
+                <span>{fullBrowseLabel}</span>
+                <CaretRight size={14} weight="bold" aria-hidden="true" />
+              </Link>
+            </div>
+          </div>
+        </section>
+
+        <section data-testid="home-v4-context-banner" className="px-3 pt-2">
+          <div className="flex min-h-(--control-default) items-center justify-between gap-2 rounded-xl border border-border-subtle bg-surface-subtle px-3">
+            <div className="min-w-0 py-1.5">
+              <p className="text-2xs font-semibold uppercase tracking-wide text-muted-foreground">
+                {contextEyebrow}
+              </p>
+              <h2 data-testid="home-v4-context-title" className="truncate text-sm font-semibold text-foreground">
+                {contextTitle}
+              </h2>
+            </div>
+            <Link href={fullBrowseHref} className={ACTION_CHIP_CLASS}>
+              <span>{tV4("actions.view")}</span>
+              <CaretRight size={14} weight="bold" aria-hidden="true" />
+            </Link>
+          </div>
+        </section>
+
+        <section data-testid="home-v4-feed" className="pt-2">
           {products.length > 0 ? (
             <>
-              <div className="grid grid-cols-2 gap-(--spacing-home-card-gap) px-(--spacing-home-inset) pt-1 pb-1">
-                {products.map((product, index) => renderHomeCard(product, index))}
+              <div className="grid grid-cols-2 gap-(--spacing-home-card-gap) px-2 pb-1">
+                {products.map((product, index) => renderProductCard(product, index))}
               </div>
-
-              <div ref={loadMoreRef} data-testid="home-discovery-load-more" className="h-10" />
+              <div ref={loadMoreRef} data-testid="home-v4-load-more" className="h-10" />
             </>
           ) : (
-            <div className="px-(--spacing-home-inset)">
-              <div className="rounded-xl border border-border-subtle bg-surface-subtle px-3 py-2">
-                <p
-                  data-testid="home-discovery-empty-all"
-                  className="text-xs text-muted-foreground"
-                >
-                  {tMobile("feed.empty.all")}
-                </p>
-              </div>
+            <div className="flex flex-col items-center justify-center px-6 py-14">
+              <p className="text-sm text-muted-foreground">{tMobile("feed.empty.all")}</p>
+              <button
+                type="button"
+                onClick={handleResetAll}
+                className="mt-3 inline-flex min-h-(--control-default) items-center rounded-full border border-border-subtle bg-surface-subtle px-3 text-xs font-semibold text-foreground tap-transparent transition-colors duration-fast ease-smooth hover:bg-hover active:bg-active focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-1"
+              >
+                {tV4("actions.reset")}
+              </button>
             </div>
           )}
         </section>
 
         {isLoading && (
-          <div className="px-(--spacing-home-inset)">
+          <div className="px-3 pb-2">
             <div className="rounded-xl border border-border-subtle bg-surface-subtle px-3 py-2">
               <p className="text-xs text-muted-foreground">{tMobile("feed.loading")}</p>
             </div>
@@ -318,44 +586,101 @@ export function MobileHome({
         )}
 
         {error && (
-          <div className="px-(--spacing-home-inset)">
+          <div className="px-3 pb-2">
             <div className="flex items-center justify-between gap-2 rounded-xl border border-border-subtle bg-surface-subtle px-3 py-2">
               <p className="text-xs text-muted-foreground">{tMobile("feed.error")}</p>
               <button
                 type="button"
-                data-testid="home-feed-retry"
                 onClick={retry}
-                className="inline-flex min-h-(--spacing-touch-md) items-center rounded-full border border-border-subtle bg-background px-2.5 text-xs font-semibold text-foreground transition-colors hover:bg-hover active:bg-active focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                className="inline-flex min-h-(--control-default) items-center rounded-full border border-border-subtle bg-background px-3 text-xs font-semibold text-foreground transition-colors hover:bg-hover active:bg-active focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
               >
                 {tMobile("feed.retry")}
               </button>
             </div>
           </div>
         )}
-
-        {curatedRail && (
-          <section data-testid="home-section-curated-rail" className="pt-(--spacing-home-section-gap)">
-            <HomeSectionHeader
-              title={t(`sections.${curatedRail.key}`)}
-              href={curatedRail.href}
-              actionLabel={tMobile("seeAll")}
-            />
-
-            <div className="overflow-x-auto scroll-smooth no-scrollbar">
-              <div className="flex snap-x snap-mandatory gap-(--spacing-home-card-gap) px-(--spacing-home-inset) pb-1.5">
-                {curatedRail.products.slice(0, 10).map((product, index) => (
-                  <div
-                    key={product.id}
-                    className="w-(--spacing-home-card-column-w) shrink-0 snap-start"
-                  >
-                    {renderHomeCard(product, index)}
-                  </div>
-                ))}
-              </div>
-            </div>
-          </section>
-        )}
       </div>
+
+      <Sheet open={categoryPickerOpen} onOpenChange={setCategoryPickerOpen}>
+        <SheetContent
+          side="bottom"
+          data-testid="home-v4-category-picker"
+          className="max-h-dialog overflow-hidden rounded-t-2xl p-0"
+        >
+          <SheetHeader className="border-b border-border-subtle px-4 pr-14">
+            <SheetTitle>{tV4("picker.title")}</SheetTitle>
+            <SheetDescription>{tV4("picker.description")}</SheetDescription>
+          </SheetHeader>
+
+          <div className="overflow-y-auto px-4 py-3">
+            <div className="mb-3 flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setCategoryPickerOpen(false)
+                  handleResetAll()
+                }}
+                className={ACTION_CHIP_CLASS}
+              >
+                {tV4("actions.reset")}
+              </button>
+              <Link
+                href="/categories"
+                onClick={() => setCategoryPickerOpen(false)}
+                className={ACTION_CHIP_CLASS}
+              >
+                {tV4("actions.openCategories")}
+              </Link>
+            </div>
+
+            <div className="grid grid-cols-2 gap-2 pb-2">
+              {categories.map((category) => {
+                const active = activeCategorySlug === category.slug
+                return (
+                  <button
+                    key={category.id}
+                    type="button"
+                    onClick={() => handleOverflowCategoryPick(category.slug)}
+                    aria-pressed={active}
+                    className={cn(
+                      "inline-flex min-h-(--control-default) items-center justify-center rounded-xl border px-3 text-xs font-semibold tap-transparent transition-colors duration-fast ease-smooth hover:bg-hover active:bg-active focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-1",
+                      active
+                        ? "border-foreground bg-foreground text-background"
+                        : "border-border-subtle bg-surface-subtle text-foreground"
+                    )}
+                  >
+                    <span className="truncate">{getCategoryLabel(category)}</span>
+                  </button>
+                )
+              })}
+            </div>
+          </div>
+        </SheetContent>
+      </Sheet>
+
+      <HomeBrowseOptionsSheet
+        open={browseOptionsOpen}
+        onOpenChange={setBrowseOptionsOpen}
+        locale={locale}
+        subcategoryLabel={activeSubcategoryLabel ?? ""}
+        categories={activeL2Categories}
+        activeSlug={activeL2Slug}
+        onSelect={handleBrowseOptionsSelect}
+        fullBrowseHref={fullBrowseHref}
+      />
+
+      <FilterHub
+        open={filterOpen}
+        onOpenChange={setFilterOpen}
+        locale={locale}
+        resultsCount={products.length}
+        attributes={[]}
+        subcategories={[]}
+        appliedSearchParams={filters}
+        onApply={handleApplyFilters}
+        mode="full"
+        initialSection={null}
+      />
 
       <HomeCityPickerSheet
         open={cityPickerOpen}

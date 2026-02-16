@@ -16,11 +16,33 @@ test.describe("Mobile Browse Filters", () => {
 
     const tabBar = page.getByTestId("mobile-tab-bar")
     await expect(tabBar).toBeVisible()
-    await tabBar.getByRole("button", { name: /categories/i }).click()
+    await tabBar.getByRole("button", { name: /categories|browse/i }).click()
 
     const categoryDrawer = page.getByTestId("mobile-category-drawer")
     await expect(categoryDrawer).toBeVisible()
     await expect(categoryDrawer.getByRole("textbox", { name: /search categories/i })).toBeVisible()
+  })
+
+  test("categories scope rail show more opens drawer in scoped context", async ({ page, app }) => {
+    await app.goto("/en/categories")
+    await app.waitForHydration()
+
+    const categoryLink = page.locator('a[href^="/en/categories/"]').first()
+    await expect(categoryLink).toBeVisible()
+    await categoryLink.click()
+    await app.waitForHydration()
+
+    const scopeRail = page.getByTestId("mobile-category-scope-rail")
+    await expect(scopeRail).toBeVisible()
+
+    const showMoreButton = scopeRail.getByRole("button", { name: /show more/i })
+    await expect(showMoreButton).toBeVisible()
+    await showMoreButton.click()
+
+    const categoryDrawer = page.getByTestId("mobile-category-drawer")
+    await expect(categoryDrawer).toBeVisible()
+    await expect(categoryDrawer.getByRole("button", { name: /all in/i })).toBeVisible()
+    await expect(categoryDrawer.locator('[data-slot="drawer-title"]')).not.toHaveText(/^categories$/i)
   })
 
   test("search page shows sticky mobile filter controls and location chip", async ({ page, app }) => {

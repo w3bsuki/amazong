@@ -1,105 +1,225 @@
+import { z } from "zod"
+import { cookies } from "next/headers"
+import { Suspense } from "react"
+import { setRequestLocale, getTranslations } from "next-intl/server"
+import type { Metadata } from "next"
+
+import { Link } from "@/i18n/routing"
 import { createStaticClient } from "@/lib/supabase/server"
+import { getShippingFilter, parseShippingRegion } from "@/lib/shipping"
+import { normalizeAttributeKey } from "@/lib/attributes/normalize-attribute-key"
+import { getCategoryContext } from "@/lib/data/categories"
+import { getCategoryName, getCategorySlugKey } from "@/lib/category-display"
+import { CategoryPillRail, type CategoryPillRailItem } from "@/components/mobile/category-nav"
+import { ProductGrid, type ProductGridProduct } from "@/components/grid"
+
 import { SearchFilters } from "./_components/filters/search-filters"
-import { SubcategoryTabs } from "../_components/category/subcategory-tabs"
 import { SearchHeader } from "./_components/search-header"
-import { searchProducts } from "./_lib/search-products"
-import type { Category, Product } from "./_lib/types"
 import { DesktopFilters } from "./_components/desktop-filters"
+import { MobileFilterControls } from "../_components/filters/mobile-filter-controls"
 import { FilterChips } from "../_components/filters/filter-chips"
 import { SortSelect } from "../_components/search-controls/sort-select"
 import { SearchPagination } from "../_components/search-controls/search-pagination"
 import { EmptyStateCTA } from "../../_components/empty-state-cta"
 import { DesktopShell } from "../_components/layout/desktop-shell.server"
-import { ProductGrid, type ProductGridProduct } from "@/components/grid"
 import { PageShell } from "../../_components/page-shell"
-import { Suspense } from "react"
-import { setRequestLocale, getTranslations } from "next-intl/server"
-import { cookies } from "next/headers"
-import type { Metadata } from 'next'
-import { getShippingFilter, parseShippingRegion } from '@/lib/shipping'
-import { ITEMS_PER_PAGE } from "../_lib/pagination"
-import { getCategoryContext } from "@/lib/data/categories"
+import { searchProducts } from "./_lib/search-products"
+import { parseSellerSearchFilters, searchSellers } from "./_lib/search-sellers"
+import type {
+  BrowseMode,
+  Category,
+  Product,
+  SellerResultCard,
+} from "./_lib/types"
 import type { CategoryAttribute } from "@/lib/data/categories"
-import { normalizeAttributeKey } from "@/lib/attributes/normalize-attribute-key"
-import { MobileFilterControls } from "../_components/filters/mobile-filter-controls"
+import { ITEMS_PER_PAGE } from "../_lib/pagination"
+import { MobileBrowseModeSwitch } from "./_components/mobile-browse-mode-switch"
+import { MobileSellerFilterControls } from "./_components/mobile-seller-filter-controls"
+import { SellerResultsList } from "./_components/seller-results-list"
 
-export async function generateMetadata({ params, searchParams }: {
+const BrowseModeSchema = z.enum(["listings", "sellers"])
+
+const SELLER_FILTER_KEYS = new Set([
+  "sellerSort",
+  "sellerVerified",
+  "sellerMinRating",
+  "sellerMinListings",
+])
+
+const LISTING_FILTER_KEYS = new Set([
+  "minPrice",
+  "maxPrice",
+  "minRating",
+  "subcategory",
+  "tag",
+  "deals",
+  "promoted",
+  "verified",
+  "brand",
+  "availability",
+  "sort",
+])
+
+function toSingleValue(value: string | string[] | undefined): string | undefined {
+  if (Array.isArray(value)) return value[0]
+  return value
+}
+
+function toUrlSearchParams(input: Record<string, string | string[] | undefined>): URLSearchParams {
+  const next = new URLSearchParams()
+  for (const [key, value] of Object.entries(input)) {
+    if (!value) continue
+    if (Array.isArray(value)) {
+      for (const entry of value) {
+        next.append(key, entry)
+      }
+      continue
+    }
+    next.set(key, value)
+  }
+  return next
+}
+
+function normalizeModeParams(params: URLSearchParams, mode: BrowseMode): URLSearchParams {
+  const next = new URLSearchParams(params.toString())
+  next.delete("page")
+
+  if (mode === "sellers") {
+    next.set("mode", "sellers")
+    for (const key of next.keys()) {
+      if (LISTING_FILTER_KEYS.has(key) || key.startsWith("attr_")) next.delete(key)
+    }
+    return next
+  }
+
+  next.delete("mode")
+  for (const key of next.keys()) {
+    if (SELLER_FILTER_KEYS.has(key)) next.delete(key)
+  }
+  return next
+}
+
+function buildModeHref(params: URLSearchParams, mode: BrowseMode): string {
+  const normalized = normalizeModeParams(params, mode)
+  const queryString = normalized.toString()
+  return queryString ? `/search?${queryString}` : "/search"
+}
+
+function buildCategoryHref(
+  params: URLSearchParams,
+  mode: BrowseMode,
+  categorySlug: string | null
+): string {
+  const next = normalizeModeParams(params, mode)
+  if (categorySlug) {
+    next.set("category", categorySlug)
+  } else {
+    next.delete("category")
+  }
+  const queryString = next.toString()
+  return queryString ? `/search?${queryString}` : "/search"
+}
+
+function extractAttributeFilters(
+  searchParams: Record<string, string | string[] | undefined>
+): Record<string, string | string[]> {
+  const filters: Record<string, string | string[]> = {}
+
+  for (const [key, value] of Object.entries(searchParams)) {
+    if (!key.startsWith("attr_") || !value) continue
+    const rawName = key.replace("attr_", "")
+    const attrKey = normalizeAttributeKey(rawName) || rawName
+    const nextValues = Array.isArray(value) ? value : [value]
+    const existing = filters[attrKey]
+    if (!existing) {
+      filters[attrKey] = nextValues
+      continue
+    }
+    const existingValues = Array.isArray(existing) ? existing : [existing]
+    filters[attrKey] = [...new Set([...existingValues, ...nextValues])]
+  }
+
+  return filters
+}
+
+export async function generateMetadata({
+  params,
+  searchParams,
+}: {
   params: Promise<{ locale: string }>
-  searchParams: Promise<{ q?: string; category?: string }>
+  searchParams: Promise<{ q?: string; category?: string; mode?: string }>
 }): Promise<Metadata> {
   const { locale } = await params
   setRequestLocale(locale)
-  const resolvedSearchParams = await searchParams;
-  const query = resolvedSearchParams.q || '';
-  const category = resolvedSearchParams.category || '';
+  const resolvedSearchParams = await searchParams
+  const query = resolvedSearchParams.q || ""
+  const category = resolvedSearchParams.category || ""
+  const parsedMode = BrowseModeSchema.safeParse(resolvedSearchParams.mode)
+  const mode: BrowseMode = parsedMode.success ? parsedMode.data : "listings"
 
-  let title = 'Search Results';
-  if (query) {
-    title = `"${query}" - Search Results`;
+  let title = "Search Results"
+  if (mode === "sellers") {
+    title = query ? `"${query}" - Seller Results` : "Browse Sellers"
+  } else if (query) {
+    title = `"${query}" - Search Results`
   } else if (category) {
-    title = `${category.charAt(0).toUpperCase() + category.slice(1)} - Shop`;
+    title = `${category.charAt(0).toUpperCase() + category.slice(1)} - Shop`
   }
 
   return {
     title,
-    description: query
-      ? `Find the best deals on "${query}" at Treido. Fast shipping and great prices.`
-      : 'Browse our wide selection of products. Find electronics, fashion, home goods and more.',
-  };
+    description:
+      mode === "sellers"
+        ? query
+          ? `Browse top sellers for "${query}" on Treido.`
+          : "Discover trusted sellers and browse their listings on Treido."
+        : query
+          ? `Find the best deals on "${query}" at Treido. Fast shipping and great prices.`
+          : "Browse our wide selection of products. Find electronics, fashion, home goods and more.",
+  }
 }
-
 
 export default async function SearchPage({
   params,
   searchParams: searchParamsPromise,
 }: {
   params: Promise<{ locale: string }>
-  searchParams: Promise<{
-    q?: string
-    category?: string
-    minPrice?: string
-    maxPrice?: string
-    minRating?: string
-    subcategory?: string
-    tag?: string
-    deals?: string
-    promoted?: string
-    nearby?: string
-    city?: string
-    verified?: string
-    brand?: string
-    availability?: string
-    sort?: string
-    page?: string
-    [key: string]: string | string[] | undefined  // Dynamic attr_* params
-  }>
+  searchParams: Promise<Record<string, string | string[] | undefined>>
 }) {
   const { locale } = await params
   setRequestLocale(locale)
   const searchParams = await searchParamsPromise
   const supabase = createStaticClient()
-  const query = searchParams.q || ""
-  const currentPage = Math.max(1, Number.parseInt(searchParams.page || "1", 10))
+
+  const parsedMode = BrowseModeSchema.safeParse(toSingleValue(searchParams.mode))
+  const browseMode: BrowseMode = parsedMode.success ? parsedMode.data : "listings"
+
+  const query = toSingleValue(searchParams.q) || ""
+  const categorySlug = toSingleValue(searchParams.category)
+  const currentPage = Math.max(1, Number.parseInt(toSingleValue(searchParams.page) || "1", 10))
 
   // Read shipping zone from cookie (set by header "Доставка до" dropdown)
   // Only filter if user has selected a specific zone (not WW = worldwide = show all)
   const cookieStore = await cookies()
-  const userZone = cookieStore.get('user-zone')?.value
+  const userZone = cookieStore.get("user-zone")?.value
   const parsedZone = parseShippingRegion(userZone)
-  const shippingFilter = parsedZone !== 'WW'
-    ? (getShippingFilter(parsedZone) || undefined)
-    : undefined
+  const shippingFilter = parsedZone !== "WW" ? (getShippingFilter(parsedZone) || undefined) : undefined
 
   let products: Product[] = []
   let totalProducts = 0
+  let sellers: SellerResultCard[] = []
+  let totalSellers = 0
   let currentCategory: Category | null = null
-  let parentCategory: Category | null = null
+  let siblingCategories: Category[] = []
   let subcategories: Category[] = []
   let allCategories: Category[] = []
   let allCategoriesWithSubs: { category: Category; subs: Category[] }[] = []
   const brands: string[] = []
   let filterableAttributes: CategoryAttribute[] = []
-  let categoryIdForFilters: string | undefined = undefined
+  let categoryIdForFilters: string | undefined
+
+  // Build rails and desktop mode links from current URL params
+  const searchUrlParams = toUrlSearchParams(searchParams)
 
   if (supabase) {
     // Fetch L0 categories first (with subcategories fetched separately)
@@ -120,7 +240,7 @@ export default async function SearchPage({
 
       // Fetch L1 subcategories for all root categories
       // Order by display_order first (curated), then name (DEC-002 compliance)
-      const rootIds = rootCats.map(c => c.id)
+      const rootIds = rootCats.map((c) => c.id)
       const { data: subCats } = await supabase
         .from("categories")
         .select("id, name, name_bg, slug, parent_id, image_url, display_order")
@@ -129,126 +249,108 @@ export default async function SearchPage({
         .order("name", { ascending: true })
 
       // Build the hierarchical structure for the sidebar
-      allCategoriesWithSubs = rootCats.map(cat => ({
+      allCategoriesWithSubs = rootCats.map((cat) => ({
         category: cat,
-        subs: (subCats || []).filter(c => c.parent_id === cat.id)
+        subs: (subCats || []).filter((c) => c.parent_id === cat.id),
       }))
 
       // Also store subCats for category lookup
       const allCats = [...rootCats, ...(subCats || [])]
 
       // If a category is specified, get its details and subcategories
-      if (searchParams.category) {
-        // Find the category from our already fetched data
-        const categoryData = allCats.find(c => c.slug === searchParams.category) || null
+      if (categorySlug) {
+        const categoryData = allCats.find((c) => c.slug === categorySlug) || null
 
         if (categoryData) {
           currentCategory = categoryData
           categoryIdForFilters = categoryData.id
 
-          // Check if this is a subcategory (has parent_id)
           if (categoryData.parent_id) {
-            parentCategory = allCats.find(c => c.id === categoryData.parent_id) || null
-            // No subcategories for a subcategory
+            siblingCategories = allCats.filter((c) => c.parent_id === categoryData.parent_id)
             subcategories = []
           } else {
-            // This is a main category - get its subcategories
-            subcategories = allCats.filter(c => c.parent_id === categoryData.id)
+            subcategories = allCats.filter((c) => c.parent_id === categoryData.id)
+            siblingCategories = []
           }
+        }
+      }
 
-          // Build product query with category filter
-          // Get products from this category AND all its subcategories
-          const categoryIds = [categoryData.id, ...subcategories.map(s => s.id)]
+      if (browseMode === "listings") {
+        const attributeFilters = extractAttributeFilters(searchParams)
+        const categoryIds =
+          currentCategory != null
+            ? currentCategory.parent_id
+              ? [currentCategory.id]
+              : [currentCategory.id, ...subcategories.map((s) => s.id)]
+            : null
 
-          // Extract attr_* params for attribute filtering
-          const attributeFilters: Record<string, string | string[]> = {}
-          for (const [key, value] of Object.entries(searchParams)) {
-            if (key.startsWith('attr_') && value) {
-              const rawName = key.replace('attr_', '')
-              const attrKey = normalizeAttributeKey(rawName) || rawName
-              const nextValues = Array.isArray(value) ? value : [value]
-              const existing = attributeFilters[attrKey]
-              if (!existing) {
-                attributeFilters[attrKey] = nextValues
-              } else {
-                const existingValues = Array.isArray(existing) ? existing : [existing]
-                attributeFilters[attrKey] = Array.from(new Set([...existingValues, ...nextValues]))
-              }
-            }
-          }
-
-          // Use the helper function with pagination and shipping filter
-          const result = await searchProducts(supabase, query, categoryIds, {
-            minPrice: searchParams.minPrice,
-            maxPrice: searchParams.maxPrice,
-            tag: searchParams.tag,
-            minRating: searchParams.minRating,
-            deals: searchParams.deals,
-            promoted: searchParams.promoted,
-            nearby: searchParams.nearby,
-            city: searchParams.city,
-            verified: searchParams.verified,
-            availability: searchParams.availability,
-            sort: searchParams.sort,
+        const result = await searchProducts(
+          supabase,
+          query,
+          categoryIds,
+          {
+            minPrice: toSingleValue(searchParams.minPrice),
+            maxPrice: toSingleValue(searchParams.maxPrice),
+            tag: toSingleValue(searchParams.tag),
+            minRating: toSingleValue(searchParams.minRating),
+            deals: toSingleValue(searchParams.deals),
+            promoted: toSingleValue(searchParams.promoted),
+            nearby: toSingleValue(searchParams.nearby),
+            city: toSingleValue(searchParams.city),
+            verified: toSingleValue(searchParams.verified),
+            availability: toSingleValue(searchParams.availability),
+            sort: toSingleValue(searchParams.sort),
             attributes: Object.keys(attributeFilters).length > 0 ? attributeFilters : undefined,
-          }, currentPage, ITEMS_PER_PAGE, shippingFilter)
-          products = result.products
-          totalProducts = result.total
-        }
-      } else {
-        // No category filter - get all products filtered by shipping zone
-        // Extract attr_* params for attribute filtering
-        const attributeFilters: Record<string, string | string[]> = {}
-        for (const [key, value] of Object.entries(searchParams)) {
-          if (key.startsWith('attr_') && value) {
-            const rawName = key.replace('attr_', '')
-            const attrKey = normalizeAttributeKey(rawName) || rawName
-            const nextValues = Array.isArray(value) ? value : [value]
-            const existing = attributeFilters[attrKey]
-            if (!existing) {
-              attributeFilters[attrKey] = nextValues
-            } else {
-              const existingValues = Array.isArray(existing) ? existing : [existing]
-              attributeFilters[attrKey] = Array.from(new Set([...existingValues, ...nextValues]))
-            }
-          }
-        }
+          },
+          currentPage,
+          ITEMS_PER_PAGE,
+          shippingFilter
+        )
 
-        const result = await searchProducts(supabase, query, null, {
-          minPrice: searchParams.minPrice,
-          maxPrice: searchParams.maxPrice,
-          tag: searchParams.tag,
-          minRating: searchParams.minRating,
-          deals: searchParams.deals,
-          promoted: searchParams.promoted,
-          nearby: searchParams.nearby,
-          city: searchParams.city,
-          verified: searchParams.verified,
-          availability: searchParams.availability,
-          sort: searchParams.sort,
-          attributes: Object.keys(attributeFilters).length > 0 ? attributeFilters : undefined,
-        }, currentPage, ITEMS_PER_PAGE, shippingFilter)
         products = result.products
         totalProducts = result.total
+      } else {
+        const sellerSortParam = toSingleValue(searchParams.sellerSort)
+        const sellerVerifiedParam = toSingleValue(searchParams.sellerVerified)
+        const sellerMinRatingParam = toSingleValue(searchParams.sellerMinRating)
+        const sellerMinListingsParam = toSingleValue(searchParams.sellerMinListings)
+        const cityParam = toSingleValue(searchParams.city)
+        const nearbyParam = toSingleValue(searchParams.nearby)
+
+        const sellerFilters = parseSellerSearchFilters({
+          ...(sellerSortParam ? { sellerSort: sellerSortParam } : {}),
+          ...(sellerVerifiedParam ? { sellerVerified: sellerVerifiedParam } : {}),
+          ...(sellerMinRatingParam ? { sellerMinRating: sellerMinRatingParam } : {}),
+          ...(sellerMinListingsParam ? { sellerMinListings: sellerMinListingsParam } : {}),
+          ...(cityParam ? { city: cityParam } : {}),
+          ...(nearbyParam ? { nearby: nearbyParam } : {}),
+        })
+
+        const sellerCategorySlug = currentCategory?.slug ?? categorySlug
+        const sellerResults = await searchSellers(supabase, {
+          query,
+          ...(sellerCategorySlug ? { categorySlug: sellerCategorySlug } : {}),
+          filters: sellerFilters,
+          page: currentPage,
+          limit: ITEMS_PER_PAGE,
+        })
+        sellers = sellerResults.sellers
+        totalSellers = sellerResults.total
       }
     }
-
-    // Extract unique brands from products for the filter
-    // This would ideally come from a brands table, but for now we can extract from products
-    // brands = [...new Set(products.map(p => p.brand).filter(Boolean))]
   }
 
   // For mobile quick filters, fetch filterable attributes for the active category (if any)
-  if (searchParams.category) {
-    const ctx = await getCategoryContext(searchParams.category)
+  if (browseMode === "listings" && categorySlug) {
+    const ctx = await getCategoryContext(categorySlug)
     if (ctx) {
       filterableAttributes = ctx.attributes
       categoryIdForFilters = ctx.current.id
     }
   }
 
-  // Get translations for search page UI
-  const t = await getTranslations('SearchFilters')
+  const t = await getTranslations("SearchFilters")
+  const tCategories = await getTranslations("Categories")
 
   // Transform products for ProductGrid
   const gridProducts: ProductGridProduct[] = products.map((product) => ({
@@ -262,7 +364,8 @@ export default async function SearchPage({
     slug: product.slug ?? null,
     storeSlug: product.profiles?.username ?? null,
     sellerId: product.profiles?.id ?? null,
-    sellerName: product.profiles?.display_name || product.profiles?.business_name || product.profiles?.username || undefined,
+    sellerName:
+      product.profiles?.display_name || product.profiles?.business_name || product.profiles?.username || undefined,
     sellerAvatarUrl: product.profiles?.avatar_url ?? null,
     sellerTier:
       product.profiles?.account_type === "business"
@@ -276,12 +379,52 @@ export default async function SearchPage({
   }))
 
   const categoryName = currentCategory
-    ? (locale === "bg" && currentCategory.name_bg)
+    ? locale === "bg" && currentCategory.name_bg
       ? currentCategory.name_bg
       : currentCategory.name
     : undefined
 
-  // Sidebar content for desktop
+  const totalResults = browseMode === "sellers" ? totalSellers : totalProducts
+
+  const modeListingsHref = buildModeHref(searchUrlParams, "listings")
+  const modeSellersHref = buildModeHref(searchUrlParams, "sellers")
+
+  const railCategories = currentCategory
+    ? (subcategories.length > 0 ? subcategories : siblingCategories).filter((cat) => cat.slug !== currentCategory.slug)
+    : allCategories.slice(0, 8)
+
+  const allRailLabel = currentCategory
+    ? tCategories("allIn", {
+        category:
+          categoryName ??
+          tCategories("shortName", {
+            slug: currentCategory ? getCategorySlugKey(currentCategory.slug) : "other",
+            name: currentCategory?.name ?? "",
+          }),
+      })
+    : tCategories("headerTitleAll")
+
+  const railItems: CategoryPillRailItem[] = [
+    {
+      id: "all-categories",
+      label: allRailLabel,
+      href: buildCategoryHref(searchUrlParams, browseMode, currentCategory ? currentCategory.slug : null),
+      active: !currentCategory || Boolean(currentCategory),
+      title: allRailLabel,
+    },
+    ...railCategories.map((category) => ({
+      id: category.id,
+      label: tCategories("shortName", {
+        slug: getCategorySlugKey(category.slug),
+        name: getCategoryName(category, locale),
+      }),
+      href: buildCategoryHref(searchUrlParams, browseMode, category.slug),
+      active: currentCategory?.slug === category.slug,
+      title: locale === "bg" && category.name_bg ? category.name_bg : category.name,
+    })),
+  ]
+
+  // Sidebar content for desktop listings mode
   const sidebarContent = (
     <div className="bg-sidebar rounded-lg p-4">
       <Suspense>
@@ -301,90 +444,105 @@ export default async function SearchPage({
       {/* Mobile Layout */}
       <PageShell variant="muted" className="lg:hidden overflow-x-hidden">
         <div className="container overflow-x-hidden py-4">
-          {/* Show SubcategoryTabs when in a category, SearchHeader otherwise */}
-          {currentCategory ? (
-            <Suspense>
-              <SubcategoryTabs
-                currentCategory={currentCategory}
-                subcategories={subcategories}
-                parentCategory={parentCategory}
-              />
-            </Suspense>
-          ) : (
-            <Suspense>
-              <SearchHeader
-                query={query}
-                category={searchParams.category}
-                totalResults={products.length}
-              />
-            </Suspense>
-          )}
-
-          {/* Mobile Filter Controls */}
           <Suspense>
-            <MobileFilterControls
-              locale={locale}
-              {...(currentCategory?.slug ? { categorySlug: currentCategory.slug } : {})}
-              {...(categoryIdForFilters ? { categoryId: categoryIdForFilters } : {})}
-              {...(query ? { searchQuery: query } : {})}
-              attributes={filterableAttributes}
-              subcategories={subcategories.map((c) => ({
-                id: c.id,
-                name: c.name,
-                name_bg: c.name_bg,
-                slug: c.slug,
-              }))}
-              {...(categoryName ? { categoryName } : {})}
-              {...(currentCategory
-                ? {
-                    currentCategory: {
-                      name: categoryName ?? currentCategory.name,
-                      slug: currentCategory.slug,
-                    },
-                  }
-                : {})}
-              basePath="/search"
-              stickyTop="var(--app-header-offset)"
-              sticky={true}
-              userZone={userZone ?? null}
-              className="mb-3"
-            />
+            <SearchHeader query={query} category={categorySlug} totalResults={totalResults} />
           </Suspense>
 
-          {/* Mobile Results Info Strip */}
-          <div className="sm:hidden mb-4 flex items-center justify-between text-sm text-muted-foreground bg-surface-subtle rounded-lg px-3 py-2.5">
-            <span>
-              <span className="font-semibold text-foreground">{totalProducts}</span> {totalProducts === 1 ? t('product') : t('products')}
-            </span>
-            {currentCategory && (
-              <span className="text-xs bg-selected text-primary px-2 py-0.5 rounded-full font-medium">
-                {categoryName}
-              </span>
-            )}
-          </div>
+          <MobileBrowseModeSwitch mode={browseMode} basePath="/search" className="mb-1" />
 
-          {/* Mobile Product Grid */}
-          <ProductGrid
-            products={gridProducts}
-            viewMode="grid"
-            preset="mobile-feed"
-            density="compact"
+          <CategoryPillRail
+            items={railItems}
+            ariaLabel={tCategories("navigationAriaLabel")}
+            stickyTop="calc(var(--app-header-offset) + var(--control-default) + 12px)"
+            sticky={true}
+            moreLabel={tCategories("showMore")}
+            testId="mobile-search-category-rail"
           />
 
-          {products.length === 0 && (
-            <EmptyStateCTA
-              variant={query ? "no-search" : "no-category"}
-              {...(query ? { searchQuery: query } : {})}
-              {...(categoryName ? { categoryName } : {})}
-              className="mt-8"
-            />
+          {browseMode === "listings" ? (
+            <>
+              <Suspense>
+                <MobileFilterControls
+                  locale={locale}
+                  {...(currentCategory?.slug ? { categorySlug: currentCategory.slug } : {})}
+                  {...(categoryIdForFilters ? { categoryId: categoryIdForFilters } : {})}
+                  {...(query ? { searchQuery: query } : {})}
+                  attributes={filterableAttributes}
+                  subcategories={subcategories.map((c) => ({
+                    id: c.id,
+                    name: c.name,
+                    name_bg: c.name_bg,
+                    slug: c.slug,
+                  }))}
+                  {...(categoryName ? { categoryName } : {})}
+                  {...(currentCategory
+                    ? {
+                        currentCategory: {
+                          name: categoryName ?? currentCategory.name,
+                          slug: currentCategory.slug,
+                        },
+                      }
+                    : {})}
+                  basePath="/search"
+                  stickyTop="calc(var(--app-header-offset) + var(--control-default) + var(--control-compact) + 24px)"
+                  sticky={true}
+                  userZone={userZone ?? null}
+                  className="mb-3 z-20"
+                />
+              </Suspense>
+
+              <div className="mb-4 flex items-center justify-between rounded-lg bg-surface-subtle px-3 py-2.5 text-sm text-muted-foreground sm:hidden">
+                <span>
+                  <span className="font-semibold text-foreground">{totalProducts}</span>{" "}
+                  {totalProducts === 1 ? t("product") : t("products")}
+                </span>
+                {currentCategory && (
+                  <span className="rounded-full bg-selected px-2 py-0.5 text-xs font-medium text-primary">
+                    {categoryName}
+                  </span>
+                )}
+              </div>
+
+              <ProductGrid products={gridProducts} viewMode="grid" preset="mobile-feed" density="compact" />
+
+              {products.length === 0 && (
+                <EmptyStateCTA
+                  variant={query ? "no-search" : "no-category"}
+                  {...(query ? { searchQuery: query } : {})}
+                  {...(categoryName ? { categoryName } : {})}
+                  className="mt-8"
+                />
+              )}
+            </>
+          ) : (
+            <>
+              <MobileSellerFilterControls basePath="/search" className="mb-3" />
+
+              <div className="mb-4 flex items-center justify-between rounded-lg bg-surface-subtle px-3 py-2.5 text-sm text-muted-foreground sm:hidden">
+                <span>
+                  <span className="font-semibold text-foreground">{totalSellers}</span>{" "}
+                  {t("sellersFound")}
+                </span>
+                <span className="rounded-full bg-selected px-2 py-0.5 text-xs font-medium text-primary">
+                  {t("sellersMode")}
+                </span>
+              </div>
+
+              <SellerResultsList
+                sellers={sellers}
+                locale={locale}
+                emptyTitle={t("noSellersFound")}
+                emptyDescription={t("noSellersFoundDescription")}
+                verifiedLabel={t("verifiedSellersBadge")}
+                listingsLabel={t("sellerListingsLabel")}
+              />
+            </>
           )}
 
-          {/* Pagination */}
-          {products.length > 0 && (
+          {totalResults > 0 && (
             <Suspense>
               <SearchPagination
-                totalItems={totalProducts}
+                totalItems={totalResults}
                 itemsPerPage={ITEMS_PER_PAGE}
                 currentPage={currentPage}
               />
@@ -393,82 +551,105 @@ export default async function SearchPage({
         </div>
       </PageShell>
 
-      {/* Desktop Layout with DesktopShell */}
+      {/* Desktop Layout */}
       <DesktopShell
         variant="muted"
         className="hidden lg:block"
-        sidebar={sidebarContent}
-        sidebarSticky
+        sidebar={browseMode === "listings" ? sidebarContent : undefined}
+        sidebarSticky={browseMode === "listings"}
       >
-        {/* Show SubcategoryTabs when in a category, SearchHeader otherwise */}
-        {currentCategory ? (
-          <Suspense>
-            <SubcategoryTabs
-              currentCategory={currentCategory}
-              subcategories={subcategories}
-              parentCategory={parentCategory}
-            />
-          </Suspense>
+        <Suspense>
+          <SearchHeader query={query} category={categorySlug} totalResults={totalResults} />
+        </Suspense>
+
+        <div className="mb-2 flex items-center gap-2">
+          <Link
+            href={modeListingsHref}
+            className={browseMode === "listings"
+              ? "inline-flex min-h-(--control-compact) items-center rounded-full border border-foreground bg-foreground px-3 text-xs font-semibold text-background"
+              : "inline-flex min-h-(--control-compact) items-center rounded-full border border-border-subtle bg-background px-3 text-xs font-medium text-muted-foreground hover:bg-hover hover:text-foreground"}
+          >
+            {t("listingsMode")}
+          </Link>
+          <Link
+            href={modeSellersHref}
+            className={browseMode === "sellers"
+              ? "inline-flex min-h-(--control-compact) items-center rounded-full border border-foreground bg-foreground px-3 text-xs font-semibold text-background"
+              : "inline-flex min-h-(--control-compact) items-center rounded-full border border-border-subtle bg-background px-3 text-xs font-medium text-muted-foreground hover:bg-hover hover:text-foreground"}
+          >
+            {t("sellersMode")}
+          </Link>
+        </div>
+
+        {browseMode === "listings" ? (
+          <>
+            <div className="mb-4">
+              <Suspense>
+                <FilterChips currentCategory={currentCategory} />
+              </Suspense>
+            </div>
+
+            <div className="mb-4 flex items-center gap-2">
+              <div className="max-w-44">
+                <SortSelect />
+              </div>
+              <div className="flex items-center gap-2">
+                <Suspense>
+                  <DesktopFilters />
+                </Suspense>
+              </div>
+              <p className="ml-auto whitespace-nowrap text-sm text-muted-foreground">
+                <span className="font-semibold text-foreground">{totalProducts}</span>
+                <span> {t("results")}</span>
+                {query && (
+                  <span>
+                    {" "}
+                    {t("for")} <span className="font-medium text-primary">&quot;{query}&quot;</span>
+                  </span>
+                )}
+                {currentCategory && !query && (
+                  <span>
+                    {" "}
+                    {t("in")} <span className="font-medium">{categoryName}</span>
+                  </span>
+                )}
+              </p>
+            </div>
+
+            <div>
+              {products.length === 0 ? (
+                <EmptyStateCTA
+                  variant={query ? "no-search" : "no-category"}
+                  {...(query ? { searchQuery: query } : {})}
+                  {...(categoryName ? { categoryName } : {})}
+                  className="mt-4"
+                />
+              ) : (
+                <ProductGrid products={gridProducts} viewMode="grid" />
+              )}
+            </div>
+          </>
         ) : (
-          <Suspense>
-            <SearchHeader
-              query={query}
-              category={searchParams.category}
-              totalResults={products.length}
+          <>
+            <p className="text-sm text-muted-foreground">
+              <span className="font-semibold text-foreground">{totalSellers}</span>{" "}
+              {t("sellersFound")}
+            </p>
+            <SellerResultsList
+              sellers={sellers}
+              locale={locale}
+              emptyTitle={t("noSellersFound")}
+              emptyDescription={t("noSellersFoundDescription")}
+              verifiedLabel={t("verifiedSellersBadge")}
+              listingsLabel={t("sellerListingsLabel")}
             />
-          </Suspense>
+          </>
         )}
 
-        {/* Active Filter Pills */}
-        <div className="mb-4">
-          <Suspense>
-            <FilterChips currentCategory={currentCategory} />
-          </Suspense>
-        </div>
-
-        {/* Desktop Filter & Sort Row */}
-        <div className="flex mb-4 items-center gap-2">
-          <div className="max-w-44">
-            <SortSelect />
-          </div>
-          <div className="flex items-center gap-2">
-            <Suspense>
-              <DesktopFilters />
-            </Suspense>
-          </div>
-          <p className="text-sm text-muted-foreground ml-auto whitespace-nowrap">
-            <span className="font-semibold text-foreground">{totalProducts}</span>
-            <span> {t('results')}</span>
-            {query && (
-              <span>
-                {" "}{t('for')} <span className="font-medium text-primary">&quot;{query}&quot;</span>
-              </span>
-            )}
-            {currentCategory && !query && (
-              <span> {t('in')} <span className="font-medium">{categoryName}</span></span>
-            )}
-          </p>
-        </div>
-
-        {/* Product Grid with container queries */}
-        <div>
-          {products.length === 0 ? (
-            <EmptyStateCTA
-              variant={query ? "no-search" : "no-category"}
-              {...(query ? { searchQuery: query } : {})}
-              {...(categoryName ? { categoryName } : {})}
-              className="mt-4"
-            />
-          ) : (
-            <ProductGrid products={gridProducts} viewMode="grid" />
-          )}
-        </div>
-
-        {/* Pagination */}
-        {products.length > 0 && (
+        {totalResults > 0 && (
           <Suspense>
             <SearchPagination
-              totalItems={totalProducts}
+              totalItems={totalResults}
               itemsPerPage={ITEMS_PER_PAGE}
               currentPage={currentPage}
             />
@@ -478,4 +659,3 @@ export default async function SearchPage({
     </>
   )
 }
-

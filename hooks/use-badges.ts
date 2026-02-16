@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect, useCallback } from "react"
+import { z } from "zod"
 import type { DisplayBadge } from "@/lib/types/badges"
 
 interface BadgeWithMeta extends DisplayBadge {
@@ -17,6 +18,11 @@ interface UseBadgesResult {
   toggleFeatured: (badgeId: string) => Promise<boolean>
   evaluateBadges: (context?: string) => Promise<string[]>
 }
+
+const toggleFeaturedResponseSchema = z.object({
+  success: z.boolean().optional(),
+  is_featured: z.boolean(),
+})
 
 /**
  * Hook for managing user badges
@@ -64,12 +70,18 @@ export function useBadges(): UseBadgesResult {
       })
       
       if (!response.ok) {
-        const data = (await response.json()) as { error?: string }
-        throw new Error(typeof data.error === "string" ? data.error : "Failed to update badge")
+        const data = (await response.json().catch(() => null)) as { error?: unknown } | null
+        const message = typeof data?.error === "string" ? data.error : "Failed to update badge"
+        throw new Error(message)
       }
       
-      const data = (await response.json()) as { is_featured?: boolean }
-      const isFeatured = Boolean(data.is_featured)
+      const data = (await response.json()) as unknown
+      const parsedResponse = toggleFeaturedResponseSchema.safeParse(data)
+      if (!parsedResponse.success) {
+        throw new Error("Invalid badge feature response: expected { is_featured: boolean }")
+      }
+
+      const isFeatured = parsedResponse.data.is_featured
       
       // Update local state
       setBadges(prev => prev.map(badge => 

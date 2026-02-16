@@ -36,25 +36,20 @@ export function canSellerUpdateStatus(currentStatus: OrderItemStatus): boolean {
   return ["pending", "received", "processing", "shipped"].includes(currentStatus)
 }
 
-// Get available next statuses for seller
+const ORDER_STATUS_TRANSITIONS: Record<OrderItemStatus, OrderItemStatus[]> = {
+  pending: ["received"],
+  received: ["processing"],
+  processing: ["shipped"],
+  shipped: ["delivered"],
+  delivered: [],
+  cancelled: [],
+}
+
+/**
+ * Returns available next statuses for manual seller transitions.
+ */
 export function getNextStatusOptions(currentStatus: OrderItemStatus): OrderItemStatus[] {
-  const statusOrder: OrderItemStatus[] = ["pending", "received", "processing", "shipped", "delivered"]
-  const currentIndex = statusOrder.indexOf(currentStatus)
-  
-  if (currentIndex === -1 || currentIndex >= statusOrder.length - 1) {
-    return []
-  }
-  
-  // Can go to next status or skip to shipped (if received/processing)
-  const next = statusOrder[currentIndex + 1]
-  const options: OrderItemStatus[] = next ? [next] : []
-  
-  // Allow marking as cancelled from any non-delivered status
-  if (currentStatus !== 'delivered' && currentStatus !== 'cancelled') {
-    options.push("cancelled")
-  }
-  
-  return options
+  return ORDER_STATUS_TRANSITIONS[currentStatus] ?? []
 }
 
 export const SHIPPING_CARRIER_VALUES = [

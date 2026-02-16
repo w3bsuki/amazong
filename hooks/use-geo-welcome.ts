@@ -57,7 +57,7 @@ function getLocaleForRegion(region: ShippingRegion): Locale {
   return 'en';
 }
 
-export interface GeoWelcomeState {
+interface GeoWelcomeState {
   isOpen: boolean;
   detectedCountry: string;
   detectedRegion: ShippingRegion;

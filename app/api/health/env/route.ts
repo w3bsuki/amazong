@@ -14,8 +14,11 @@ const CHECKS: EnvCheck[] = [
 ]
 
 export async function GET() {
-  // This endpoint is useful during staging/dev, but should not be publicly exposed in production.
-  if (process.env.NODE_ENV === 'production') {
+  const isEnvHealthcheckEnabled = process.env.ENABLE_ENV_HEALTHCHECK === 'true'
+
+  // Disabled by default in every environment and only enabled with explicit opt-in.
+  // Production remains blocked unless ENABLE_ENV_HEALTHCHECK=true is set.
+  if (!isEnvHealthcheckEnabled) {
     return new Response(null, { status: 404 })
   }
 

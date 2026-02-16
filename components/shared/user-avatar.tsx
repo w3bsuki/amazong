@@ -29,9 +29,10 @@ function parseBoringAvatar(
   if (!value || !value.startsWith("boring-avatar:")) return null
   const [, variantRaw, paletteRaw, seedRaw] = value.split(":")
 
-  const variant = AVATAR_VARIANTS.includes(variantRaw as AvatarVariant)
+  const variantBase = AVATAR_VARIANTS.includes(variantRaw as AvatarVariant)
     ? (variantRaw as AvatarVariant)
     : AVATAR_VARIANTS[0]
+  const variant = variantBase
 
   const paletteIndex = Number.parseInt(paletteRaw || "0", 10)
   const colors =
@@ -40,15 +41,15 @@ function parseBoringAvatar(
   return { variant, colors, name: seedRaw || fallbackName || "user" }
 }
 
-function initialsFromName(name: string): string {
-  const parts = name.trim().split(/\s+/).filter(Boolean)
-  if (parts.length === 0) return "?"
+function getPaletteIndexFromSeed(seed: string): number {
+  if (COLOR_PALETTES.length === 0) return 0
 
-  const first = parts[0]?.[0] ?? ""
-  const second = parts.length > 1 ? parts[1]?.[0] ?? "" : parts[0]?.[1] ?? ""
-  const initials = (first + second).toUpperCase()
+  let hash = 0
+  for (let i = 0; i < seed.length; i += 1) {
+    hash = (hash * 31 + seed.charCodeAt(i)) >>> 0
+  }
 
-  return initials || "?"
+  return hash % COLOR_PALETTES.length
 }
 
 export type UserAvatarProps = {
@@ -71,6 +72,10 @@ export function UserAvatar({
   fallbackClassName,
 }: UserAvatarProps) {
   const boringAvatar = parseBoringAvatar(avatarUrl, name)
+  const generatedFallback = parseBoringAvatar(
+    `boring-avatar:marble:${getPaletteIndexFromSeed(name)}:${name}`,
+    name
+  )
   const src = boringAvatar ? undefined : safeAvatarSrc(avatarUrl)
   const label = alt ?? name
 
@@ -90,8 +95,19 @@ export function UserAvatar({
           />
         </AvatarFallback>
       ) : (
-        <AvatarFallback className={cn("text-sm font-semibold", fallbackClassName)}>
-          {initialsFromName(name)}
+        <AvatarFallback className={cn("bg-transparent p-0", fallbackClassName)}>
+          {generatedFallback ? (
+            <BoringAvatar
+              size={80}
+              name={generatedFallback.name}
+              variant={generatedFallback.variant}
+              colors={generatedFallback.colors}
+              className="size-full"
+              aria-label={label}
+            />
+          ) : (
+            <span className="text-sm font-semibold">U</span>
+          )}
         </AvatarFallback>
       )}
     </Avatar>

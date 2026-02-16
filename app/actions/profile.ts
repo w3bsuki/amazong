@@ -1,6 +1,6 @@
 "use server"
 
-import { createClient, createAdminClient } from "@/lib/supabase/server"
+import { createClient } from "@/lib/supabase/server"
 import { revalidateTag } from "next/cache"
 import { z } from "zod"
 
@@ -34,8 +34,49 @@ const passwordSchema = z.object({
   path: ["confirmPassword"],
 })
 
+const ALLOWED_AVATAR_VARIANTS = ["marble", "pixel", "sunset", "ring", "bauhaus"] as const
+
+function getPaletteIndexFromSeed(seed: string): number {
+  const paletteCount = 6
+  if (seed.length === 0) return 0
+
+  let hash = 0
+  for (let i = 0; i < seed.length; i += 1) {
+    hash = (hash * 31 + seed.charCodeAt(i)) >>> 0
+  }
+
+  return hash % paletteCount
+}
+
+function buildGeneratedAvatar(seed: string, paletteIndex?: number): string {
+  const resolvedSeed = seed.trim().length > 0 ? seed.trim() : "user"
+  const resolvedPalette = paletteIndex ?? getPaletteIndexFromSeed(resolvedSeed)
+  return `boring-avatar:marble:${resolvedPalette}:${resolvedSeed}`
+}
+
+function isGeneratedAvatar(value: string): boolean {
+  if (!value.startsWith("boring-avatar:")) return false
+  const [, variant, palette, seed] = value.split(":")
+  if (!variant || !palette || !seed) return false
+  if (!ALLOWED_AVATAR_VARIANTS.includes(variant as (typeof ALLOWED_AVATAR_VARIANTS)[number])) return false
+  return Number.isInteger(Number.parseInt(palette, 10))
+}
+
+function isSafeAvatarUrl(value: string): boolean {
+  if (isGeneratedAvatar(value)) return true
+  try {
+    const parsed = new URL(value)
+    return parsed.protocol === "http:" || parsed.protocol === "https:"
+  } catch {
+    return false
+  }
+}
+
 const avatarUrlSchema = z.object({
-  avatar_url: z.string().url("Invalid avatar URL").max(500, "Avatar URL too long"),
+  avatar_url: z
+    .string()
+    .max(500, "Avatar URL too long")
+    .refine((value) => isSafeAvatarUrl(value), "Invalid avatar value"),
 })
 
 // =====================================================
@@ -320,6 +361,7 @@ export async function setAvatarUrl(formData: FormData): Promise<{
 // =====================================================
 export async function deleteAvatar(): Promise<{
   success: boolean
+  avatarUrl?: string
   error?: string
 }> {
   try {
@@ -333,31 +375,38 @@ export async function deleteAvatar(): Promise<{
       return { success: false, error: "Not authenticated" }
     }
 
-    // Get current avatar URL
+    // Get current avatar URL + username (used for deterministic generated fallback)
     const { data: profile } = await supabase
       .from("profiles")
-      .select("avatar_url")
+      .select("avatar_url, username")
       .eq("id", user.id)
       .single()
 
-    // If there's an avatar, try to delete it from storage
-    if (profile?.avatar_url) {
-      // Extract the file path from the URL
-      const url = new URL(profile.avatar_url)
-      const pathParts = url.pathname.split("/avatars/")
-      if (pathParts.length > 1) {
-        const filePath = pathParts[1]
-        if (filePath) {
-          await supabase.storage.from("avatars").remove([filePath])
+    const currentAvatar = profile?.avatar_url
+    const usernameSeed = profile?.username ?? user.email?.split("@")[0] ?? user.id
+    const generatedAvatar = buildGeneratedAvatar(usernameSeed)
+
+    // If there's a custom storage avatar, try to delete it from storage.
+    if (currentAvatar && !isGeneratedAvatar(currentAvatar)) {
+      try {
+        const url = new URL(currentAvatar)
+        const pathParts = url.pathname.split("/avatars/")
+        if (pathParts.length > 1) {
+          const filePath = pathParts[1]
+          if (filePath) {
+            await supabase.storage.from("avatars").remove([filePath])
+          }
         }
+      } catch {
+        // Ignore invalid legacy avatar URLs; we still reset to generated avatar below.
       }
     }
 
-    // Update profile to remove avatar URL
+    // Lock-down rule: never leave avatar_url empty in production.
     const { error: updateError } = await supabase
       .from("profiles")
       .update({
-        avatar_url: null,
+        avatar_url: generatedAvatar,
         updated_at: new Date().toISOString(),
       })
       .eq("id", user.id)
@@ -367,7 +416,7 @@ export async function deleteAvatar(): Promise<{
     }
 
     revalidateTag("profiles", "max")
-    return { success: true }
+    return { success: true, avatarUrl: generatedAvatar }
   } catch (error) {
     console.error("deleteAvatar error:", error)
     return { success: false, error: "An unexpected error occurred" }
@@ -492,43 +541,3 @@ export async function updatePassword(formData: FormData): Promise<{
   }
 }
 
-// =====================================================
-// DELETE ACCOUNT
-// =====================================================
-async function deleteAccount(): Promise<{
-  success: boolean
-  error?: string
-}> {
-  try {
-    const supabase = await createClient()
-    if (!supabase) {
-      return { success: false, error: "Failed to connect to database" }
-    }
-
-    const { data: { user }, error: authError } = await supabase.auth.getUser()
-    if (authError || !user) {
-      return { success: false, error: "Not authenticated" }
-    }
-
-    const userId = user.id
-
-    // Use admin client to delete user
-    const adminClient = await createAdminClient()
-    if (!adminClient) {
-      return { success: false, error: "Failed to initialize admin client" }
-    }
-
-    // Delete user from auth (this will cascade to profiles due to RLS)
-    const { error: deleteError } = await adminClient.auth.admin.deleteUser(userId)
-
-    if (deleteError) {
-      console.error("deleteAccount error:", deleteError)
-      return { success: false, error: "Failed to delete account" }
-    }
-
-    return { success: true }
-  } catch (error) {
-    console.error("deleteAccount error:", error)
-    return { success: false, error: "An unexpected error occurred" }
-  }
-}

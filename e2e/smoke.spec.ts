@@ -323,7 +323,7 @@ test.describe('Smoke Tests - Critical Path', () => {
     const tabBar = page.getByTestId('mobile-tab-bar')
     await assertVisible(tabBar)
 
-    await tabBar.getByRole('button', { name: /categories/i }).click()
+    await tabBar.getByRole('button', { name: /categories|browse/i }).click()
 
     const categoryDrawer = page.getByTestId('mobile-category-drawer')
     await assertVisible(categoryDrawer)

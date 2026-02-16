@@ -1,13 +1,6 @@
 import { z } from "zod"
 export { getPasswordStrength, type PasswordStrengthLabelKey } from "./password-strength"
 
-// Password validation schema with baseline requirements
-export const passwordSchema = z
-  .string()
-  .min(8, { message: "errors.passwordMin" })
-  .regex(/[a-zA-Z]/, { message: "errors.passwordLetter" })
-  .regex(/[0-9]/, { message: "errors.passwordNumber" })
-
 // Email validation schema
 export const emailSchema = z
   .string()
@@ -24,6 +17,14 @@ export const emailSchema = z
     },
     { message: "errors.emailInvalid" }
   )
+
+export const passwordSchema = z
+  .string()
+  .min(1, { message: "errors.passwordRequired" })
+  .min(8, { message: "errors.passwordMin" })
+  .max(72, { message: "errors.passwordMax" })
+  .regex(/[a-zA-Z]/, { message: "errors.passwordLetter" })
+  .regex(/[0-9]/, { message: "errors.passwordNumber" })
 
 // Username validation schema
 const usernameSchema = z

@@ -1,7 +1,7 @@
 import { Suspense } from "react"
 import type { Metadata } from "next"
 import { getTranslations, setRequestLocale } from "next-intl/server"
-import { MobileHomeV4 } from "./_components/mobile-home-v4"
+import { MobileHome } from "./_components/mobile-home"
 import { 
   getNewestProducts, 
   getBoostedProducts, 
@@ -11,14 +11,14 @@ import {
 } from "@/lib/data/products"
 import { getCategoryHierarchy } from "@/lib/data/categories"
 import type { UIProduct } from "@/lib/types/products"
-import { buildForYouPool } from "@/lib/home-v4-pools"
+import { buildForYouPool } from "@/lib/home-pools"
 import { 
   DesktopHome, 
   DesktopHomeSkeleton 
 } from "./_components/desktop-home"
 
-const HOME_V4_CATEGORY_POOL_LIMIT = 6
-const HOME_V4_POOL_SIZE = 24
+const HOME_CATEGORY_POOL_LIMIT = 6
+const HOME_POOL_SIZE = 24
 
 function toUiRows(rows: Awaited<ReturnType<typeof getNewestProducts>>): UIProduct[] {
   return rows.map((product) => toUI(product)).filter((product) => Boolean(product.image))
@@ -46,12 +46,12 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
   // L0 + L1 + L2 only (~3,400 categories, ~60KB gzipped).
   // L3 (~9,700 categories) are lazy-loaded when L2 is clicked.
   const categoriesWithChildren = await getCategoryHierarchy(null, 2)
-  const v4CategorySlugs = categoriesWithChildren
-    .slice(0, HOME_V4_CATEGORY_POOL_LIMIT)
+  const categorySlugs = categoriesWithChildren
+    .slice(0, HOME_CATEGORY_POOL_LIMIT)
     .map((category) => category.slug)
 
   // Fetch initial products for mobile tabs (newest) AND promoted listings
-  // Also fetch curated category sections and optional V4 category pools in parallel.
+  // Also fetch curated category sections and category pools in parallel.
   const [
     newestProducts, 
     boostedProducts,
@@ -59,18 +59,18 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
     fashionProducts,
     electronicsProducts,
     automotiveProducts,
-    v4CategoryRows,
+    categoryRows,
   ] = await Promise.all([
-    getNewestProducts(HOME_V4_POOL_SIZE),
-    getBoostedProducts(HOME_V4_POOL_SIZE), // Promoted listings (client filters expired boosts)
-    getDealsProducts(HOME_V4_POOL_SIZE),
+    getNewestProducts(HOME_POOL_SIZE),
+    getBoostedProducts(HOME_POOL_SIZE), // Promoted listings (client filters expired boosts)
+    getDealsProducts(HOME_POOL_SIZE),
     getCategoryRowProducts("fashion", 10),      // Fashion section
     getCategoryRowProducts("electronics", 10),  // Electronics section
     getCategoryRowProducts("automotive", 10),   // Automotive section
     Promise.all(
-      v4CategorySlugs.map(async (slug) => ({
+      categorySlugs.map(async (slug) => ({
         slug,
-        rows: await getCategoryRowProducts(slug, HOME_V4_POOL_SIZE),
+        rows: await getCategoryRowProducts(slug, HOME_POOL_SIZE),
       }))
     ),
   ])
@@ -80,10 +80,10 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
   const dealsUiProducts = toUiRows(dealsProducts)
   const nearbyProducts = initialProducts
     .filter((product) => typeof product.location === "string" && product.location.trim().length > 0)
-    .slice(0, HOME_V4_POOL_SIZE)
-  const forYouProducts = buildForYouPool(promotedProducts, initialProducts, HOME_V4_POOL_SIZE)
-  const v4CategoryProducts = Object.fromEntries(
-    v4CategoryRows.map((entry) => [entry.slug, toUiRows(entry.rows).slice(0, HOME_V4_POOL_SIZE)])
+    .slice(0, HOME_POOL_SIZE)
+  const forYouProducts = buildForYouPool(promotedProducts, initialProducts, HOME_POOL_SIZE)
+  const categoryProducts = Object.fromEntries(
+    categoryRows.map((entry) => [entry.slug, toUiRows(entry.rows).slice(0, HOME_POOL_SIZE)])
   )
   
   // Curated sections data
@@ -107,15 +107,15 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
       */}
       <div className="w-full md:hidden">
         <Suspense fallback={<div className="h-screen w-full bg-background animate-pulse" />}>
-          <MobileHomeV4
+          <MobileHome
             locale={locale}
             categories={categoriesWithChildren}
             forYouProducts={forYouProducts}
             newestProducts={initialProducts}
             promotedProducts={promotedProducts}
-            nearbyProducts={nearbyProducts.length > 0 ? nearbyProducts : initialProducts.slice(0, HOME_V4_POOL_SIZE)}
+            nearbyProducts={nearbyProducts.length > 0 ? nearbyProducts : initialProducts.slice(0, HOME_POOL_SIZE)}
             dealsProducts={dealsUiProducts}
-            categoryProducts={v4CategoryProducts}
+            categoryProducts={categoryProducts}
           />
         </Suspense>
       </div>

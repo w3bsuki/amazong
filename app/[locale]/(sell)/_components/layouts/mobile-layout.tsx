@@ -10,7 +10,7 @@ import {
   StepReview,
 } from "../steps";
 import { StepperWrapper } from "./stepper-wrapper";
-import type { SellFormDataV4 } from "@/lib/sell/schema-v4";
+import type { SellFormDataV4 } from "@/lib/sell/schema";
 
 // ============================================================================
 // MOBILE LAYOUT - Premium 5-step wizard with Framer Motion animations
@@ -155,3 +155,4 @@ export function MobileLayout({ onSubmit, isSubmitting = false }: MobileLayoutPro
     </StepperWrapper>
   );
 }
+

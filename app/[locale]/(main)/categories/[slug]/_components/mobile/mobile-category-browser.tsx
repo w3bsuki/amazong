@@ -16,6 +16,7 @@ interface MobileCategoryBrowserProps {
   contextualCategoryName?: string
   contextualBackHref?: string
   contextualSubcategories?: Category[]
+  contextualSiblingCategories?: Category[]
   categoryId?: string
   parentCategory?: {
     id: string
@@ -34,6 +35,7 @@ export function MobileCategoryBrowser({
   contextualCategoryName,
   contextualBackHref,
   contextualSubcategories = [],
+  contextualSiblingCategories = [],
   categoryId,
   parentCategory,
 }: MobileCategoryBrowserProps) {
@@ -48,6 +50,7 @@ export function MobileCategoryBrowser({
       contextualCategoryName={contextualCategoryName ?? ""}
       {...(contextualBackHref ? { contextualBackHref } : {})}
       contextualSubcategories={contextualSubcategories}
+      contextualSiblingCategories={contextualSiblingCategories}
       filterableAttributes={filterableAttributes}
       {...(categoryId ? { categoryId } : {})}
       parentCategory={parentCategory ?? null}

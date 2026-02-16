@@ -39,7 +39,7 @@ export interface ContextualHeaderState {
   title: string
   backHref: string
   onBack?: () => void
-  /** Active category slug (for subtle active highlight during instant navigation). */
+  /** Active category slug (for subtle active pill highlight during instant navigation). */
   activeSlug?: string
   subcategories?: CategoryTreeNode[]
   onSubcategoryClick?: (cat: CategoryTreeNode) => void

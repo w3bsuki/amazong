@@ -117,7 +117,7 @@
         "search": "Search",
         "wishlist": "Wishlist",
         "chat": "Chat",
-        "categories": "Categories",
+        "categories": "Browse",
         "profile": "Profile",
         "mobileNavigation": "Mobile navigation"
     },
@@ -402,9 +402,12 @@
                         "promoted": "Promoted listings",
                         "nearby": "Listings nearby",
                         "deals": "Deal listings"
-                    }
+                    },
+                    "categoryPathTitle": "{parent} / {child}",
+                    "categoryPathDeepTitle": "{parent} / {child} / {leaf}"
                 },
                 "actions": {
+                    "browseOptions": "Browse options",
                     "filter": "Filter",
                     "view": "View",
                     "viewCategory": "Full category",
@@ -412,6 +415,11 @@
                     "moreCategories": "More",
                     "openCategories": "Open categories",
                     "reset": "All listings"
+                },
+                "browseSheet": {
+                    "title": "Browse options",
+                    "description": "Pick a deeper category or open the full shopping view.",
+                    "allInSubcategory": "All in {subcategory}"
                 },
                 "picker": {
                     "title": "More categories",
@@ -730,6 +738,9 @@
         "ariaLabel": "Browse categories",
         "searchPlaceholder": "Search categories",
         "searchAriaLabel": "Search categories",
+        "quickLinksTitle": "Quick browse",
+        "allListings": "All listings",
+        "topSellers": "Top sellers",
         "categories": "Categories",
         "subcategories": "Subcategories",
         "noCategories": "No categories available",
@@ -1911,7 +1922,33 @@
         "selectCity": "Select city",
         "nearMe": "Near me",
         "clear": "Clear",
-        "moreFilters": "More filters"
+        "moreFilters": "More filters",
+        "browseMode": "Browse mode",
+        "listingsMode": "Listings",
+        "sellersMode": "Sellers",
+        "sellersFound": "sellers",
+        "searchSellersPlaceholder": "Search sellers",
+        "sellerFilters": "Seller filters",
+        "sellerSort": "Sort sellers",
+        "sortSellerProducts": "Most listings",
+        "sortSellerRating": "Highest rated",
+        "sortSellerNewest": "Newest sellers",
+        "verifiedSellers": "Verified sellers only",
+        "verifiedSellersBadge": "Verified",
+        "sellerMinRatingChip": "{rating}+ stars",
+        "sellerMinListingsChip": "{count}+ listings",
+        "minSellerRating": "Minimum rating",
+        "anyRating": "Any rating",
+        "rating4Plus": "4.0+ stars",
+        "rating45Plus": "4.5+ stars",
+        "minSellerListings": "Minimum listings",
+        "anyListings": "Any amount",
+        "listings5Plus": "5+ listings",
+        "listings10Plus": "10+ listings",
+        "listings20Plus": "20+ listings",
+        "sellerListingsLabel": "listings",
+        "noSellersFound": "No sellers found",
+        "noSellersFoundDescription": "Try changing your seller filters or search terms."
     },
     "CartDropdown": {
         "title": "Shopping Cart",

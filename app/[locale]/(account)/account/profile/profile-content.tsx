@@ -50,7 +50,7 @@ export type ProfileContentServerActions = {
     avatarUrl?: string
     error?: string
   }>
-  deleteAvatar: () => Promise<{ success: boolean; error?: string }>
+  deleteAvatar: () => Promise<{ success: boolean; avatarUrl?: string; error?: string }>
   setAvatarUrl: (formData: FormData) => Promise<{
     success: boolean
     avatarUrl?: string
@@ -101,17 +101,17 @@ const SHIPPING_REGIONS = [
 ]
 
 // Format: boring-avatar:variant:paletteIndex:seed
-// Variants: marble, beam, pixel, sunset, ring, bauhaus
+// Variants: marble, pixel, sunset, ring, bauhaus
 // Palettes: 0-5 (see lib/avatar-palettes.ts)
 const PRESET_AVATARS = [
   "boring-avatar:marble:0:Nova",
-  "boring-avatar:beam:1:Riley",
   "boring-avatar:sunset:2:Kai",
   "boring-avatar:bauhaus:3:Zoe",
   "boring-avatar:ring:4:Max",
   "boring-avatar:pixel:5:Luna",
   "boring-avatar:marble:1:Aria",
-  "boring-avatar:beam:2:Theo",
+  "boring-avatar:sunset:4:Theo",
+  "boring-avatar:ring:0:Riley",
 ]
 
 function AvatarImg({ src, alt, size, className }: { src: string; alt: string; size: number; className?: string }) {
@@ -216,10 +216,10 @@ export function ProfileContent({
     setIsUploadingAvatar(false)
 
     if (result.success) {
-      setAvatarPreview(null)
-      toast.success(locale === "bg" ? "Аватарът е премахнат" : "Avatar removed")
+      setAvatarPreview(result.avatarUrl ?? profile.avatar_url)
+      toast.success(locale === "bg" ? "Аватарът е нулиран" : "Avatar reset")
     } else {
-      toast.error(result.error || (locale === "bg" ? "Грешка при премахване" : "Error removing avatar"))
+      toast.error(result.error || (locale === "bg" ? "Грешка при нулиране" : "Error resetting avatar"))
     }
   }
 
@@ -419,7 +419,7 @@ export function ProfileContent({
                   disabled={isUploadingAvatar}
                 >
                   <Trash className="size-4 mr-1.5" />
-                  {locale === "bg" ? "Премахни" : "Remove"}
+                  {locale === "bg" ? "Нулирай" : "Reset"}
                 </Button>
               )}
             </div>

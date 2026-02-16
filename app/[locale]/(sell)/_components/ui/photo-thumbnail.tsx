@@ -8,7 +8,7 @@ import {
 } from "@/lib/icons/phosphor";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
-import type { ProductImage } from "@/lib/sell/schema-v4";
+import type { ProductImage } from "@/lib/sell/schema";
 
 interface PhotoThumbnailProps {
   image: ProductImage;
@@ -122,3 +122,4 @@ export function PhotoThumbnail({
     </div>
   );
 }
+

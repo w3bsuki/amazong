@@ -119,7 +119,7 @@ test.describe("Mobile Responsiveness - Phase 11", () => {
       
       // Verify all tab bar items are present (use tabBar as parent to avoid ambiguity)
       const homeTab = tabBar.getByRole("link", { name: "Home" })
-      const categoriesTab = tabBar.getByRole("button", { name: /categories/i })
+      const categoriesTab = tabBar.getByRole("button", { name: /categories|browse/i })
       const sellTab = tabBar.getByRole("link", { name: "Sell" })
       const chatTabByRole = tabBar.getByRole("button", { name: /chat/i })
       const chatTab = tabBar.getByTestId("mobile-tab-chat")
@@ -212,7 +212,7 @@ test.describe("Mobile Responsiveness - Phase 11", () => {
       
       // Click categories button in tab bar
       const tabBar = page.getByTestId("mobile-tab-bar")
-      await tabBar.getByRole("button", { name: /categories/i }).click()
+      await tabBar.getByRole("button", { name: /categories|browse/i }).click()
       
       // Category drawer should open
       const categoryDrawer = page.getByTestId("mobile-category-drawer")

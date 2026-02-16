@@ -82,61 +82,35 @@ export function inferLocaleFromRequest(
   bodyLocale?: unknown,
 ): SupportedLocale {
   if (bodyLocale) return normalizeLocale(bodyLocale)
+  return inferLocaleFromHeaders(req.headers)
+}
 
-  const headerLocale = req.headers.get('x-next-intl-locale')
-  if (headerLocale) return normalizeLocale(headerLocale)
-
-  const referer = req.headers.get('referer')
-  if (referer) {
-    try {
-      const url = new URL(referer)
-      const firstSegment = url.pathname.split('/').filter(Boolean)[0]
-      if (firstSegment) return normalizeLocale(firstSegment)
-    } catch {
-      // ignore invalid referer
-    }
+function inferLocaleFromUrl(urlValue: string | null): SupportedLocale | null {
+  if (!urlValue) return null
+  try {
+    const url = new URL(urlValue)
+    const firstSegment = url.pathname.split('/').filter(Boolean)[0]
+    return firstSegment ? normalizeLocale(firstSegment) : null
+  } catch {
+    return null
   }
-
-  return 'en'
 }
 
 /**
- * Infer locale from headers() async call (Next.js server context).
- *
- * Checks in order:
- * 1. x-next-intl-locale header
- * 2. First path segment of Referer header
- * 3. First path segment of Origin header (fallback - only useful if origin includes locale path)
- * 4. Defaults to 'en'
+ * Infer locale from header-like objects (request headers or equivalent mocks).
+ * Priority: x-next-intl-locale > referer path segment > origin path segment > en.
  */
-export function inferLocaleFromHeaders(headersList: {
-  get: (name: string) => string | null
-}): SupportedLocale {
-  const headerLocale = headersList.get('x-next-intl-locale')
+export function inferLocaleFromHeaders(
+  headers: { get: (name: string) => string | null },
+): SupportedLocale {
+  const headerLocale = headers.get('x-next-intl-locale')
   if (headerLocale) return normalizeLocale(headerLocale)
 
-  const referer = headersList.get('referer')
-  if (referer) {
-    try {
-      const url = new URL(referer)
-      const firstSegment = url.pathname.split('/').filter(Boolean)[0]
-      if (firstSegment) return normalizeLocale(firstSegment)
-    } catch {
-      // ignore invalid referer
-    }
-  }
+  const refererLocale = inferLocaleFromUrl(headers.get('referer'))
+  if (refererLocale) return refererLocale
 
-  // Origin fallback (rarely useful since origin typically has no path, but included for completeness)
-  const origin = headersList.get('origin')
-  if (origin) {
-    try {
-      const url = new URL(origin)
-      const firstSegment = url.pathname.split('/').filter(Boolean)[0]
-      if (firstSegment) return normalizeLocale(firstSegment)
-    } catch {
-      // ignore invalid origin
-    }
-  }
+  const originLocale = inferLocaleFromUrl(headers.get('origin'))
+  if (originLocale) return originLocale
 
   return 'en'
 }

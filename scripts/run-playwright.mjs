@@ -3,7 +3,7 @@ import net from 'node:net'
 import path from 'node:path'
 import { setTimeout as delay } from 'node:timers/promises'
 
-const READY_PATH = process.env.PW_READY_PATH || '/api/health/env'
+const READY_PATH = process.env.PW_READY_PATH || '/api/health/ready'
 
 async function detectRunningBaseURL() {
   if (process.env.BASE_URL) return process.env.BASE_URL

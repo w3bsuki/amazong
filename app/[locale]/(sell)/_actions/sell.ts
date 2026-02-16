@@ -1,7 +1,7 @@
 "use server"
 
 import { z } from "zod"
-import { sellFormSchemaV4 } from "@/lib/sell/schema-v4"
+import { sellFormSchemaV4 } from "@/lib/sell/schema"
 import { createAdminClient, createClient } from "@/lib/supabase/server"
 import { normalizeAttributeKey } from "@/lib/attributes/normalize-attribute-key"
 
@@ -285,3 +285,4 @@ export async function createListing(args: { sellerId: string; data: unknown }): 
     },
   }
 }
+

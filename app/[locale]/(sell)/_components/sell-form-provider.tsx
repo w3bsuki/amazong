@@ -9,7 +9,7 @@ import {
   defaultSellFormValuesV4,
   calculateFormProgress,
   type ProgressItem,
-} from "@/lib/sell/schema-v4";
+} from "@/lib/sell/schema";
 import type { Locale } from "@/i18n/routing";
 import type { Category } from "../_lib/types";
 
@@ -280,3 +280,4 @@ export function SellFormProvider({
 
 export { sellFormSchemaV4, defaultSellFormValuesV4, calculateFormProgress };
 export type { SellFormDataV4, ProgressItem };
+

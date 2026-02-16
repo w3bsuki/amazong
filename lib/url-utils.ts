@@ -59,40 +59,28 @@ export function getProductUrlWithLocale(product: ProductUrlParams, locale: strin
 }
 
 /**
- * Generates an absolute product URL with domain.
- * Useful for social sharing, canonical URLs, and sitemaps.
- * 
- * @param product - Product data
- * @param locale - Locale code
- * @param baseUrl - Base URL (defaults to NEXT_PUBLIC_SITE_URL or 'https://treido.eu')
- * @returns Absolute URL (e.g., 'https://treido.eu/en/john-store/blue-widget')
+ * Generates an absolute product URL. Falls back to locale-prefixed relative URL when base is missing.
  */
 export function getAbsoluteProductUrl(
-  product: ProductUrlParams, 
+  product: ProductUrlParams,
   locale: string,
-  baseUrl?: string
+  baseUrl?: string,
 ): string {
-  const base = baseUrl || process.env.NEXT_PUBLIC_SITE_URL || 'https://treido.eu'
-  return `${base}${getProductUrlWithLocale(product, locale)}`
+  const path = getProductUrlWithLocale(product, locale)
+  if (!baseUrl) return path
+  return `${baseUrl.replace(/\/$/, '')}${path}`
 }
 
 /**
- * Generates a seller/store profile URL.
- * 
- * @param username - Seller's username
- * @returns Profile URL (e.g., '/john-store')
+ * Generates seller profile URL.
  */
 export function getSellerUrl(username: string): string {
   return `/${username}`
 }
 
 /**
- * Generates a seller/store profile URL with locale.
- * 
- * @param username - Seller's username
- * @param locale - Locale code
- * @returns Full profile URL with locale (e.g., '/en/john-store')
+ * Generates locale-prefixed seller profile URL.
  */
 export function getSellerUrlWithLocale(username: string, locale: string): string {
-  return `/${locale}/${username}`
+  return `/${locale}${getSellerUrl(username)}`
 }

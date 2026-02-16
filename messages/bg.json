@@ -402,9 +402,12 @@
                         "promoted": "Промотирани обяви",
                         "nearby": "Обяви наблизо",
                         "deals": "Обяви с оферти"
-                    }
+                    },
+                    "categoryPathTitle": "{parent} / {child}",
+                    "categoryPathDeepTitle": "{parent} / {child} / {leaf}"
                 },
                 "actions": {
+                    "browseOptions": "Опции",
                     "filter": "Филтър",
                     "view": "Виж",
                     "viewCategory": "Пълна категория",
@@ -412,6 +415,11 @@
                     "moreCategories": "Още",
                     "openCategories": "Отвори категории",
                     "reset": "Всички обяви"
+                },
+                "browseSheet": {
+                    "title": "Опции за разглеждане",
+                    "description": "Избери по-дълбока категория или отвори пълния изглед за пазаруване.",
+                    "allInSubcategory": "Всичко в {subcategory}"
                 },
                 "picker": {
                     "title": "Още категории",
@@ -730,6 +738,9 @@
         "ariaLabel": "Разглеждане на категории",
         "searchPlaceholder": "Търси категории",
         "searchAriaLabel": "Търси категории",
+        "quickLinksTitle": "Бърз преглед",
+        "allListings": "Всички обяви",
+        "topSellers": "Топ продавачи",
         "categories": "Категории",
         "subcategories": "Подкатегории",
         "noCategories": "Няма налични категории",
@@ -1911,7 +1922,33 @@
         "selectCity": "Изберете град",
         "nearMe": "Наблизо",
         "clear": "Изчисти",
-        "moreFilters": "Още филтри"
+        "moreFilters": "Още филтри",
+        "browseMode": "Режим на разглеждане",
+        "listingsMode": "Обяви",
+        "sellersMode": "Продавачи",
+        "sellersFound": "продавача",
+        "searchSellersPlaceholder": "Търси продавачи",
+        "sellerFilters": "Филтри за продавачи",
+        "sellerSort": "Сортирай продавачите",
+        "sortSellerProducts": "Най-много обяви",
+        "sortSellerRating": "Най-висок рейтинг",
+        "sortSellerNewest": "Най-нови продавачи",
+        "verifiedSellers": "Само верифицирани продавачи",
+        "verifiedSellersBadge": "Верифициран",
+        "sellerMinRatingChip": "{rating}+ звезди",
+        "sellerMinListingsChip": "{count}+ обяви",
+        "minSellerRating": "Минимален рейтинг",
+        "anyRating": "Всеки рейтинг",
+        "rating4Plus": "4.0+ звезди",
+        "rating45Plus": "4.5+ звезди",
+        "minSellerListings": "Минимално обяви",
+        "anyListings": "Без минимум",
+        "listings5Plus": "5+ обяви",
+        "listings10Plus": "10+ обяви",
+        "listings20Plus": "20+ обяви",
+        "sellerListingsLabel": "обяви",
+        "noSellersFound": "Няма намерени продавачи",
+        "noSellersFoundDescription": "Опитайте с други филтри или ключови думи."
     },
     "CartDropdown": {
         "title": "Количка",

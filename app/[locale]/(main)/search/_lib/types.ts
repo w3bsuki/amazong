@@ -1,3 +1,7 @@
+export type BrowseMode = "listings" | "sellers"
+
+export type SellerSortKey = "products" | "rating" | "newest"
+
 export interface Category {
   id: string
   name: string
@@ -33,6 +37,27 @@ export interface Product {
   } | null
   attributes?: Record<string, string> | null
   categories?: { slug: string } | null
+}
+
+export interface SellerSearchFilters {
+  sellerSort: SellerSortKey
+  sellerVerified: boolean
+  sellerMinRating?: number | undefined
+  sellerMinListings?: number | undefined
+  city?: string | undefined
+  nearby?: boolean | undefined
+}
+
+export interface SellerResultCard {
+  id: string
+  username: string | null
+  store_name: string
+  description: string | null
+  verified: boolean
+  created_at: string
+  product_count: number
+  total_rating: number | null
+  avatar_url: string | null
 }
 
 export interface SearchProductFilters {

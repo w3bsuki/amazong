@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
-import { conditionOptions } from "@/lib/sell/schema-v4";
+import { conditionOptions } from "@/lib/sell/schema";
 import { useSellForm, useSellFormContext } from "../sell-form-provider";
 import type { Category } from "../../_lib/types";
 
@@ -433,3 +433,4 @@ export function AiListingAssistant() {
     </div>
   );
 }
+

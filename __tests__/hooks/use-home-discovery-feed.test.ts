@@ -16,10 +16,24 @@ function createProduct(id: string): UIProduct {
   }
 }
 
+function createEmptyPools() {
+  return {
+    forYou: [] as UIProduct[],
+    newest: [] as UIProduct[],
+    promoted: [] as UIProduct[],
+    nearby: [] as UIProduct[],
+    deals: [] as UIProduct[],
+  }
+}
+
 describe("hooks/use-home-discovery-feed", () => {
   beforeEach(() => {
     vi.stubGlobal("fetch", mockFetch)
     mockFetch.mockReset()
+    mockFetch.mockResolvedValue({
+      ok: true,
+      json: async () => ({ products: [], hasMore: false }),
+    })
   })
 
   afterEach(() => {
@@ -27,132 +41,322 @@ describe("hooks/use-home-discovery-feed", () => {
     vi.restoreAllMocks()
   })
 
-  it("uses initial products by default without fetching", async () => {
-    const initialProducts = [createProduct("n0")]
+  it("uses initial pool products before network fetch", async () => {
+    const initial = createProduct("for-you-1")
+    const pools = createEmptyPools()
+    pools.forYou = [initial]
 
     const { result } = renderHook(() =>
-      useHomeDiscoveryFeed({ initialProducts, limit: 24 })
+      useHomeDiscoveryFeed({ initialPools: pools, initialScope: "forYou", limit: 24 })
     )
 
     await waitFor(() => {
-      expect(result.current.sort).toBe("newest")
-      expect(result.current.nearby).toBe(false)
-      expect(result.current.city).toBeNull()
-      expect(result.current.products[0]?.id).toBe("n0")
+      expect(result.current.products[0]?.id).toBe("for-you-1")
+      expect(result.current.scope).toBe("forYou")
     })
 
     expect(mockFetch).not.toHaveBeenCalled()
   })
 
-  it("fetches page 1 when sort changes", async () => {
-    mockFetch.mockImplementation((url: string) => {
-      const href = String(url)
-      if (href.includes("type=newest") && href.includes("sort=price-asc") && href.includes("page=1")) {
+  it("maps promoted scope to type=promoted", async () => {
+    mockFetch.mockImplementation((input: string) => {
+      const url = String(input)
+      if (url.includes("type=promoted")) {
         return Promise.resolve({
           ok: true,
-          json: async () => ({ products: [createProduct("p1")], hasMore: false }),
+          json: async () => ({ products: [createProduct("promoted-1")], hasMore: false }),
         })
       }
       return Promise.resolve({
         ok: true,
-        json: async () => ({ products: [] }),
+        json: async () => ({ products: [], hasMore: false }),
       })
     })
 
-    const initialProducts = [createProduct("n0")]
-
     const { result } = renderHook(() =>
-      useHomeDiscoveryFeed({ initialProducts, limit: 24 })
+      useHomeDiscoveryFeed({ initialPools: createEmptyPools(), initialScope: "forYou", limit: 24 })
     )
 
     act(() => {
-      result.current.setSort("price-asc")
+      result.current.setScope("promoted")
     })
 
     await waitFor(() => {
       const calledUrls = mockFetch.mock.calls.map((call) => String(call[0] ?? ""))
-      expect(calledUrls.some((href) => href.includes("type=newest") && href.includes("sort=price-asc"))).toBe(true)
-      expect(result.current.products[0]?.id).toBe("p1")
+      expect(calledUrls.some((href) => href.includes("type=promoted"))).toBe(true)
+      expect(result.current.products[0]?.id).toBe("promoted-1")
     })
   })
 
-  it("includes nearby and city in discovery requests", async () => {
-    mockFetch.mockImplementation((url: string) => {
-      const href = String(url)
-      if (href.includes("type=newest") && href.includes("nearby=true") && href.includes("city=sofia")) {
+  it("maps deals scope to deals=true", async () => {
+    mockFetch.mockImplementation((input: string) => {
+      const url = String(input)
+      if (url.includes("deals=true")) {
         return Promise.resolve({
           ok: true,
-          json: async () => ({ products: [createProduct("nearby")], hasMore: false }),
+          json: async () => ({ products: [createProduct("deal-1")], hasMore: false }),
         })
       }
       return Promise.resolve({
         ok: true,
-        json: async () => ({ products: [] }),
+        json: async () => ({ products: [], hasMore: false }),
       })
     })
 
-    const initialProducts = [createProduct("n0")]
+    const { result } = renderHook(() =>
+      useHomeDiscoveryFeed({ initialPools: createEmptyPools(), initialScope: "forYou", limit: 24 })
+    )
+
+    act(() => {
+      result.current.setScope("deals")
+    })
+
+    await waitFor(() => {
+      const calledUrls = mockFetch.mock.calls.map((call) => String(call[0] ?? ""))
+      expect(calledUrls.some((href) => href.includes("deals=true"))).toBe(true)
+      expect(result.current.products[0]?.id).toBe("deal-1")
+    })
+  })
+
+  it("applies category and subcategory context to request params", async () => {
+    mockFetch.mockImplementation((input: string) => {
+      const url = String(input)
+      if (url.includes("category=fashion-mens")) {
+        return Promise.resolve({
+          ok: true,
+          json: async () => ({ products: [createProduct("subcat-1")], hasMore: false }),
+        })
+      }
+      if (url.includes("category=fashion")) {
+        return Promise.resolve({
+          ok: true,
+          json: async () => ({ products: [createProduct("cat-1")], hasMore: false }),
+        })
+      }
+      return Promise.resolve({
+        ok: true,
+        json: async () => ({ products: [], hasMore: false }),
+      })
+    })
 
     const { result } = renderHook(() =>
-      useHomeDiscoveryFeed({ initialProducts, limit: 24 })
+      useHomeDiscoveryFeed({ initialPools: createEmptyPools(), initialScope: "forYou", limit: 24 })
+    )
+
+    act(() => {
+      result.current.setActiveCategorySlug("fashion")
+    })
+
+    await waitFor(() => {
+      expect(result.current.products[0]?.id).toBe("cat-1")
+    })
+
+    act(() => {
+      result.current.setActiveSubcategorySlug("fashion-mens")
+    })
+
+    await waitFor(() => {
+      const calledUrls = mockFetch.mock.calls.map((call) => String(call[0] ?? ""))
+      expect(calledUrls.some((href) => href.includes("category=fashion-mens"))).toBe(true)
+      expect(result.current.products[0]?.id).toBe("subcat-1")
+    })
+  })
+
+  it("applies light filter params and nearby city in requests", async () => {
+    mockFetch.mockImplementation((input: string) => {
+      const url = String(input)
+      if (
+        url.includes("minPrice=50") &&
+        url.includes("maxPrice=400") &&
+        url.includes("minRating=4") &&
+        url.includes("availability=instock") &&
+        url.includes("nearby=true") &&
+        url.includes("city=sofia")
+      ) {
+        return Promise.resolve({
+          ok: true,
+          json: async () => ({ products: [createProduct("filtered-1")], hasMore: false }),
+        })
+      }
+      return Promise.resolve({
+        ok: true,
+        json: async () => ({ products: [], hasMore: false }),
+      })
+    })
+
+    const { result } = renderHook(() =>
+      useHomeDiscoveryFeed({ initialPools: createEmptyPools(), initialScope: "forYou", limit: 24 })
+    )
+
+    act(() => {
+      result.current.setFilters(
+        new URLSearchParams([
+          ["minPrice", "50"],
+          ["maxPrice", "400"],
+          ["minRating", "4"],
+          ["availability", "instock"],
+          ["nearby", "true"],
+          ["city", "sofia"],
+        ])
+      )
+    })
+
+    await waitFor(() => {
+      const calledUrls = mockFetch.mock.calls.map((call) => String(call[0] ?? ""))
+      expect(
+        calledUrls.some((href) =>
+          href.includes("minPrice=50") &&
+          href.includes("maxPrice=400") &&
+          href.includes("minRating=4") &&
+          href.includes("availability=instock") &&
+          href.includes("nearby=true") &&
+          href.includes("city=sofia")
+        )
+      ).toBe(true)
+      expect(result.current.products[0]?.id).toBe("filtered-1")
+    })
+  })
+
+  it("does not apply persisted city when nearby scope/filter is inactive", async () => {
+    mockFetch.mockImplementation((input: string) => {
+      const url = String(input)
+      if (!url.includes("city=") && url.includes("type=newest")) {
+        return Promise.resolve({
+          ok: true,
+          json: async () => ({ products: [createProduct("global-1")], hasMore: false }),
+        })
+      }
+      return Promise.resolve({
+        ok: true,
+        json: async () => ({ products: [createProduct("city-filtered")], hasMore: false }),
+      })
+    })
+
+    const { result } = renderHook(() =>
+      useHomeDiscoveryFeed({ initialPools: createEmptyPools(), initialScope: "forYou", limit: 24 })
     )
 
     act(() => {
       result.current.setCity("sofia")
-      result.current.setNearby(true)
     })
 
     await waitFor(() => {
       const calledUrls = mockFetch.mock.calls.map((call) => String(call[0] ?? ""))
-      expect(calledUrls.some((href) => href.includes("nearby=true") && href.includes("city=sofia"))).toBe(true)
-      expect(result.current.products[0]?.id).toBe("nearby")
+      expect(calledUrls.some((href) => href.includes("city=sofia"))).toBe(false)
+      expect(result.current.products[0]?.id).toBe("global-1")
     })
   })
 
-  it("paginates and appends new products", async () => {
-    mockFetch.mockImplementation((url: string) => {
-      const href = String(url)
-      if (href.includes("type=newest") && href.includes("sort=price-desc") && href.includes("page=1")) {
+  it("reuses cached scope results when switching back", async () => {
+    let promotedRequests = 0
+    mockFetch.mockImplementation((input: string) => {
+      const url = String(input)
+      if (url.includes("type=promoted")) {
+        promotedRequests += 1
         return Promise.resolve({
           ok: true,
-          json: async () => ({ products: [createProduct("p1")], hasMore: true }),
+          json: async () => ({ products: [createProduct("promoted-cache")], hasMore: false }),
         })
       }
-      if (href.includes("type=newest") && href.includes("sort=price-desc") && href.includes("page=2")) {
+      if (url.includes("type=newest")) {
         return Promise.resolve({
           ok: true,
-          json: async () => ({ products: [createProduct("p2")], hasMore: false }),
+          json: async () => ({ products: [createProduct("newest-cache")], hasMore: false }),
         })
       }
       return Promise.resolve({
         ok: true,
-        json: async () => ({ products: [] }),
+        json: async () => ({ products: [], hasMore: false }),
       })
     })
 
-    const initialProducts = [createProduct("n0")]
-
     const { result } = renderHook(() =>
-      useHomeDiscoveryFeed({ initialProducts, limit: 24 })
+      useHomeDiscoveryFeed({ initialPools: createEmptyPools(), initialScope: "forYou", limit: 24 })
     )
 
     act(() => {
-      result.current.setSort("price-desc")
+      result.current.setScope("promoted")
     })
-
     await waitFor(() => {
-      expect(result.current.products.map((p) => p.id)).toEqual(["p1"])
-      expect(result.current.hasMore).toBe(true)
+      expect(result.current.products[0]?.id).toBe("promoted-cache")
     })
 
     act(() => {
-      result.current.loadNextPage()
+      result.current.setScope("newest")
+    })
+    await waitFor(() => {
+      expect(result.current.products[0]?.id).toBe("newest-cache")
     })
 
-    await waitFor(() => {
-      expect(result.current.products.map((p) => p.id)).toEqual(["p1", "p2"])
-      expect(result.current.hasMore).toBe(false)
+    act(() => {
+      result.current.setScope("promoted")
     })
+    await waitFor(() => {
+      expect(result.current.products[0]?.id).toBe("promoted-cache")
+    })
+
+    expect(promotedRequests).toBe(1)
+  })
+
+  it("isolates cache entries by filter state and restores cached baseline", async () => {
+    let promotedBaselineRequests = 0
+    let promotedFilteredRequests = 0
+
+    mockFetch.mockImplementation((input: string) => {
+      const url = String(input)
+
+      if (url.includes("type=promoted") && url.includes("minPrice=100")) {
+        promotedFilteredRequests += 1
+        return Promise.resolve({
+          ok: true,
+          json: async () => ({ products: [createProduct("promoted-filtered")], hasMore: false }),
+        })
+      }
+
+      if (url.includes("type=promoted")) {
+        promotedBaselineRequests += 1
+        return Promise.resolve({
+          ok: true,
+          json: async () => ({ products: [createProduct("promoted-baseline")], hasMore: false }),
+        })
+      }
+
+      return Promise.resolve({
+        ok: true,
+        json: async () => ({ products: [], hasMore: false }),
+      })
+    })
+
+    const { result } = renderHook(() =>
+      useHomeDiscoveryFeed({ initialPools: createEmptyPools(), initialScope: "forYou", limit: 24 })
+    )
+
+    act(() => {
+      result.current.setScope("promoted")
+    })
+    await waitFor(() => {
+      expect(result.current.products[0]?.id).toBe("promoted-baseline")
+    })
+    const baselineRequestsAfterFirstLoad = promotedBaselineRequests
+
+    act(() => {
+      result.current.setFilters(new URLSearchParams([["minPrice", "100"]]))
+    })
+    await waitFor(() => {
+      expect(result.current.products[0]?.id).toBe("promoted-filtered")
+    })
+    const filteredRequestsAfterFilterApply = promotedFilteredRequests
+
+    act(() => {
+      result.current.setFilters(new URLSearchParams())
+    })
+    await waitFor(() => {
+      expect(result.current.products[0]?.id).toBe("promoted-baseline")
+    })
+
+    expect(promotedFilteredRequests).toBe(filteredRequestsAfterFilterApply)
+    expect(promotedFilteredRequests).toBeGreaterThanOrEqual(1)
+    expect(promotedBaselineRequests).toBe(baselineRequestsAfterFirstLoad)
   })
 })
 

@@ -37,16 +37,6 @@ function TableBody({ className, ...props }: React.ComponentProps<'tbody'>) {
   )
 }
 
-function TableFooter({ className, ...props }: React.ComponentProps<'tfoot'>) {
-  return (
-    <tfoot
-      data-slot="table-footer"
-      className={cn('bg-surface-subtle border-t font-medium', className)}
-      {...props}
-    />
-  )
-}
-
 function TableRow({ className, ...props }: React.ComponentProps<'tr'>) {
   return (
     <tr

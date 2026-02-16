@@ -29,6 +29,20 @@ const requestSchema = z.object({
 
 type OnboardingCompleteRequest = z.infer<typeof requestSchema>
 
+function getPaletteIndexFromSeed(seed: string): number {
+  let hash = 0
+  for (let i = 0; i < seed.length; i += 1) {
+    hash = (hash * 31 + seed.charCodeAt(i)) >>> 0
+  }
+  return hash % 6
+}
+
+function buildGeneratedAvatar(seed: string, palette?: number): string {
+  const safeSeed = seed.trim().length > 0 ? seed.trim() : "user"
+  const paletteIndex = palette ?? getPaletteIndexFromSeed(safeSeed)
+  return `boring-avatar:marble:${paletteIndex}:${safeSeed}`
+}
+
 export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ locale: string }> }
@@ -62,7 +76,7 @@ export async function POST(
     // changing protected/sensitive profile fields.
     const { data: currentProfile, error: currentProfileError } = await supabase
       .from("profiles")
-      .select("onboarding_completed")
+      .select("onboarding_completed, avatar_url, username")
       .eq("id", user.id)
       .single()
 
@@ -112,6 +126,12 @@ export async function POST(
     if (body.accountType === "business") {
       if (body.businessName) profileUpdate.business_name = body.businessName
       if (body.website) profileUpdate.website_url = body.website
+    }
+
+    const avatarSeed = currentProfile?.username ?? body.username ?? user.email ?? user.id
+    const generatedAvatar = buildGeneratedAvatar(avatarSeed, body.avatarPalette)
+    if (body.avatarType === "generated" || !currentProfile?.avatar_url) {
+      profileUpdate.avatar_url = generatedAvatar
     }
 
     // Update profile. Service role bypasses column grants; fallback respects grants.

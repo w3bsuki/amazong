@@ -2,12 +2,9 @@
 
 import { MobileCartDropdown } from "@/components/layout/header/cart/mobile-cart-dropdown"
 import { MobileWishlistButton } from "@/components/shared/wishlist/mobile-wishlist-button"
-import { CategoryCircle } from "@/components/shared/category/category-circle"
-import { getCategoryName, getCategorySlugKey } from "@/lib/category-display"
 import { MagnifyingGlass, ArrowLeft } from "@/lib/icons/phosphor"
 import { Link, usePathname } from "@/i18n/routing"
 import { useTranslations } from "next-intl"
-import { cn } from "@/lib/utils"
 import { buildSearchHref } from "@/components/shared/search/overlay/search-context"
 import type { ContextualHeaderProps } from "../types"
 
@@ -15,8 +12,9 @@ import type { ContextualHeaderProps } from "../types"
  * Mobile Contextual Header
  * 
  * Category browsing header with:
- * - Back button + Category title + Search/Cart actions
- * - Subcategory circles row for drilling down
+ * - Back button + Category title + Search/Cart actions.
+ * 
+ * Category scope pills are rendered by route content below the header.
  * 
  * Used for: Category browsing (mobile only)
  */
@@ -25,13 +23,9 @@ export function MobileContextualHeader({
   activeSlug,
   backHref = "/categories",
   onBack,
-  subcategories = [],
-  onSubcategoryClick,
-  locale,
   hideActions = false,
 }: ContextualHeaderProps) {
   const tCommon = useTranslations("Common")
-  const tCategories = useTranslations("Categories")
   const pathname = usePathname()
   const pathCategorySlug = pathname.match(/\/categories\/([^/?#]+)/)?.[1] ?? null
   const effectiveCategorySlug = activeSlug ?? pathCategorySlug
@@ -82,41 +76,6 @@ export function MobileContextualHeader({
           </div>
         )}
       </div>
-      {/* Subcategory circles */}
-      {subcategories.length > 0 && (
-        <div className="border-b border-border-subtle bg-background">
-          <div className="overflow-x-auto px-inset py-1 no-scrollbar">
-            <div className="flex items-start gap-1">
-              {subcategories.map((cat) => {
-                const isActive = !!activeSlug && cat.slug === activeSlug
-
-                return (
-                  <CategoryCircle
-                    key={cat.id}
-                    category={cat}
-                    onClick={() => onSubcategoryClick?.(cat)}
-                    active={isActive}
-                    labelPlacement="below"
-                    circleClassName="size-(--control-default)"
-                    fallbackIconSize={20}
-                    fallbackIconWeight="bold"
-                    variant="rail"
-                    label={tCategories("shortName", {
-                      slug: getCategorySlugKey(cat.slug),
-                      name: getCategoryName(cat, locale),
-                    })}
-                    className="flex-none min-h-(--control-default) w-(--spacing-category-item) tap-transparent"
-                    labelClassName={cn(
-                      "truncate text-2xs",
-                      isActive ? "text-foreground" : "text-muted-foreground"
-                    )}
-                  />
-                )
-              })}
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   )
 }

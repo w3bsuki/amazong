@@ -1,5 +1,7 @@
 export { CategoryCirclesSimple } from "./category-circles-simple"
 export type { CategoryCirclesSimpleProps } from "./category-circles-simple"
+export { CategoryPillRail } from "./category-pill-rail"
+export type { CategoryPillRailProps, CategoryPillRailItem } from "./category-pill-rail"
 
 // Phase 1: Contextual category navigation (Vinted-style)
 // ContextualCategoryHeader is handled by AppHeader

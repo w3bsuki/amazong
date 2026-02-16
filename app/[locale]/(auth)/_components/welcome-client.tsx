@@ -42,7 +42,7 @@ export function WelcomeClient({ locale }: { locale: string }) {
   const [isPending, startTransition] = useTransition()
 
   const [step, setStep] = useState(1)
-  const [selectedVariant, setSelectedVariant] = useState<AvatarVariant>("beam")
+  const [selectedVariant, setSelectedVariant] = useState<AvatarVariant>("marble")
   const [selectedPalette, setSelectedPalette] = useState(0)
   const [displayName, setDisplayName] = useState("")
   const [bio, setBio] = useState("")

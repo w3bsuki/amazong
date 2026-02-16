@@ -11,7 +11,7 @@ const mobileBottomNavRootVariants = cva(
 )
 
 const mobileBottomNavDockVariants = cva(
-  "pointer-events-auto w-full rounded-t-2xl bg-surface-glass shadow-sm backdrop-blur-xl px-2 pt-1.5 pb-safe"
+  "pointer-events-auto w-full rounded-t-3xl border-t border-border bg-surface-glass shadow-sm backdrop-blur-xl px-2 pt-1.5 pb-safe"
 )
 
 const mobileBottomNavListVariants = cva(
@@ -19,12 +19,12 @@ const mobileBottomNavListVariants = cva(
 )
 
 const mobileBottomNavItemVariants = cva(
-  "group relative flex h-full w-full items-center justify-center rounded-full tap-transparent motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth) active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 focus-visible:ring-offset-surface-elevated",
+  "group relative flex h-full w-full items-center justify-center rounded-full tap-transparent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 focus-visible:ring-offset-surface-elevated",
   {
     variants: {
       state: {
-        active: "text-primary",
-        inactive: "text-nav-inactive hover:text-foreground",
+        active: "text-nav-active",
+        inactive: "text-nav-inactive",
       },
       emphasis: {
         default: "",
@@ -39,12 +39,12 @@ const mobileBottomNavItemVariants = cva(
 )
 
 const mobileBottomNavCoreActionVariants = cva(
-  "inline-flex size-(--control-default) items-center justify-center rounded-full shadow-sm motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth)",
+  "inline-flex size-(--control-default) items-center justify-center rounded-full border shadow-sm",
   {
     variants: {
       state: {
-        active: "bg-primary text-primary-foreground",
-        inactive: "bg-primary text-primary-foreground",
+        active: "border-primary bg-primary text-primary-foreground",
+        inactive: "border-border bg-surface-elevated text-primary",
       },
     },
     defaultVariants: {
@@ -109,6 +109,7 @@ function MobileBottomNavItem({
   return (
     <Comp
       data-slot="mobile-bottom-nav-item"
+      data-state={state}
       className={cn(mobileBottomNavItemVariants({ state, emphasis }), className)}
       {...props}
     />
@@ -137,60 +138,10 @@ function MobileBottomNavCoreAction({
   )
 }
 
-const mobileBottomNavLabelVariants = cva(
-  "w-full truncate text-center text-2xs font-medium leading-none tracking-(--letter-spacing-wide) text-current select-none"
-)
-
-function MobileBottomNavLabel({
-  className,
-  ...props
-}: React.ComponentProps<"span">) {
-  return (
-    <span
-      data-slot="mobile-bottom-nav-label"
-      className={cn(mobileBottomNavLabelVariants(), className)}
-      {...props}
-    />
-  )
-}
-
-const mobileBottomNavActiveIndicatorVariants = cva(
-  "h-0.5 rounded-full motion-safe:transition-all motion-safe:duration-fast motion-safe:ease-(--ease-smooth)",
-  {
-    variants: {
-      state: {
-        active: "w-4 bg-primary",
-        inactive: "w-0 bg-transparent",
-      },
-    },
-    defaultVariants: {
-      state: "inactive",
-    },
-  }
-)
-
-function MobileBottomNavActiveIndicator({
-  className,
-  state,
-  ...props
-}: React.ComponentProps<"span"> &
-  VariantProps<typeof mobileBottomNavActiveIndicatorVariants>) {
-  return (
-    <span
-      data-slot="mobile-bottom-nav-active-indicator"
-      className={cn(mobileBottomNavActiveIndicatorVariants({ state }), className)}
-      aria-hidden="true"
-      {...props}
-    />
-  )
-}
-
 export {
   MobileBottomNavRoot,
   MobileBottomNavDock,
   MobileBottomNavList,
   MobileBottomNavItem,
   MobileBottomNavCoreAction,
-  MobileBottomNavLabel,
-  MobileBottomNavActiveIndicator,
 }

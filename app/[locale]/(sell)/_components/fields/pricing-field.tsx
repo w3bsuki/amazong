@@ -25,7 +25,7 @@ import {
 } from "@/components/ui/select";
 import { Field, FieldLabel, FieldDescription, FieldError, FieldContent } from "@/components/shared/field";
 import { cn } from "@/lib/utils";
-import { formatOptions } from "@/lib/sell/schema-v4";
+import { formatOptions } from "@/lib/sell/schema";
 import { useSellForm, useSellFormContext } from "../sell-form-provider";
 import { SelectDrawer } from "../ui/select-drawer";
 import { useTranslations } from "next-intl";
@@ -477,4 +477,5 @@ export function PricingField({ className, categoryId, idPrefix = "sell-form", co
     </Field>
   );
 }
+
 

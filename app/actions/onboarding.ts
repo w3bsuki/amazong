@@ -31,6 +31,20 @@ const onboardingSchema = z.object({
   avatarPalette: z.number().optional(),
 })
 
+function getPaletteIndexFromSeed(seed: string): number {
+  let hash = 0
+  for (let i = 0; i < seed.length; i += 1) {
+    hash = (hash * 31 + seed.charCodeAt(i)) >>> 0
+  }
+  return hash % 6
+}
+
+function buildGeneratedAvatar(seed: string, palette?: number): string {
+  const safeSeed = seed.trim().length > 0 ? seed.trim() : "user"
+  const paletteIndex = palette ?? getPaletteIndexFromSeed(safeSeed)
+  return `boring-avatar:marble:${paletteIndex}:${safeSeed}`
+}
+
 export async function completePostSignupOnboarding(
   data: OnboardingData,
   avatarFile: File | null,
@@ -94,9 +108,13 @@ export async function completePostSignupOnboarding(
       const { data: { publicUrl } } = supabase.storage.from("avatars").getPublicUrl(filePath)
       avatarUrl = publicUrl
     }
-  } else if (avatarType === "generated" && avatarVariant !== undefined) {
-    // Store as a special format that can be parsed by the avatar component
-    avatarUrl = `boring-avatar:${avatarVariant}:${avatarPalette ?? 0}:${username}`
+  } else if (avatarType === "generated") {
+    // Lock-down rule: generated avatar must always resolve to a supported preset.
+    avatarUrl = buildGeneratedAvatar(username, avatarPalette)
+  }
+
+  if (!avatarUrl) {
+    avatarUrl = buildGeneratedAvatar(username)
   }
 
   // Upload cover image if provided (business only)
@@ -125,7 +143,7 @@ export async function completePostSignupOnboarding(
   // Only update if values are provided
   if (displayName) updateData.display_name = displayName
   if (bio) updateData.bio = bio
-  if (avatarUrl) updateData.avatar_url = avatarUrl
+  updateData.avatar_url = avatarUrl
   if (bannerUrl) updateData.banner_url = bannerUrl
   if (location) updateData.location = location
   

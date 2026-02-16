@@ -15,7 +15,7 @@ import type { QuickViewProduct } from "@/components/providers/drawer-context"
 import { useCart } from "@/components/providers/cart-context"
 import { ProductQuickViewContent } from "@/components/shared/product/quick-view/product-quick-view-content"
 import { QuickViewSkeleton } from "@/components/shared/product/quick-view/quick-view-skeleton"
-import { useIsMobile } from "@/hooks/use-mobile"
+import { useIsMobile } from "@/hooks/use-is-mobile"
 import { useProductQuickViewDetails } from "@/hooks/use-product-quick-view-details"
 import { PLACEHOLDER_IMAGE_PATH } from "@/lib/normalize-image-url"
 

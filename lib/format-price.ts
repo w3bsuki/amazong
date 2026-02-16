@@ -48,55 +48,6 @@ export function formatPrice(
 }
 
 /**
- * Format price parts for split display (e.g., Amazon-style €29⁹⁹)
- */
-export interface PriceParts {
-  symbol: string
-  wholePart: string
-  decimalPart: string
-  symbolPosition: 'before' | 'after'
-}
-
-export function formatPriceParts(amount: number, locale: string = 'en'): PriceParts {
-  const parts = formatEurPriceParts(amount, locale)
-  return {
-    symbol: parts.symbol,
-    wholePart: parts.wholePart,
-    decimalPart: parts.decimalPart,
-    symbolPosition: parts.symbolPosition,
-  }
-}
-
-/**
- * Format price range (for filters, etc.)
- */
-export function formatPriceRange(
-  min: number,
-  max: number,
-  locale: string = 'en'
-): string {
-  return `${formatPrice(min, { locale })} - ${formatPrice(max, { locale })}`
-}
-
-/**
- * Format discount display
- * @returns Object with formatted prices and discount percentage
- */
-export function formatDiscount(
-  currentPrice: number,
-  originalPrice: number,
-  locale: string = 'en'
-) {
-  const discountPercent = Math.round((1 - currentPrice / originalPrice) * 100)
-  
-  return {
-    current: formatPrice(currentPrice, { locale }),
-    original: formatPrice(originalPrice, { locale }),
-    percentage: discountPercent,
-  }
-}
-
-/**
  * Check if a price should show a discount
  */
 export function hasDiscount(originalPrice: number | null | undefined, currentPrice: number): boolean {
@@ -109,4 +60,54 @@ export function hasDiscount(originalPrice: number | null | undefined, currentPri
 export function getDiscountPercentage(originalPrice: number, currentPrice: number): number {
   if (originalPrice <= 0) return 0
   return Math.round((1 - currentPrice / originalPrice) * 100)
+}
+
+export interface FormattedPriceParts {
+  symbol: string
+  wholePart: string
+  decimalPart: string
+  symbolPosition: 'before' | 'after'
+}
+
+/**
+ * Format price parts for split display (e.g. symbol + whole + decimals)
+ */
+export function formatPriceParts(amount: number, locale: string): FormattedPriceParts {
+  const parts = formatEurPriceParts(amount, locale)
+  return {
+    symbol: parts.symbol,
+    wholePart: parts.wholePart,
+    decimalPart: parts.decimalPart,
+    symbolPosition: parts.symbolPosition,
+  }
+}
+
+/**
+ * Format an inclusive price range for display.
+ */
+export function formatPriceRange(minPrice: number, maxPrice: number, locale = 'en'): string {
+  return `${formatPrice(minPrice, { locale })} - ${formatPrice(maxPrice, { locale })}`
+}
+
+interface FormattedDiscount {
+  percentage: number
+  amountSaved: number
+  originalFormatted: string
+  currentFormatted: string
+}
+
+/**
+ * Format discount details for UI badges/labels.
+ */
+export function formatDiscount(
+  currentPrice: number,
+  originalPrice: number,
+  locale = 'en',
+): FormattedDiscount {
+  return {
+    percentage: getDiscountPercentage(originalPrice, currentPrice),
+    amountSaved: Math.max(0, originalPrice - currentPrice),
+    originalFormatted: formatPrice(originalPrice, { locale }),
+    currentFormatted: formatPrice(currentPrice, { locale }),
+  }
 }

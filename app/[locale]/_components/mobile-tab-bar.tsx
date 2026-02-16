@@ -1,12 +1,11 @@
 "use client"
 
 import { type ReactNode, useEffect, useState } from "react"
-import { Compass, House, ChatCircleDots, UserCircle, Plus } from "@phosphor-icons/react"
+import { Compass, House, ChatCircleDots, Plus } from "@phosphor-icons/react"
 import { Link, usePathname, useRouter } from "@/i18n/routing"
 import { cn } from "@/lib/utils"
 import { CountBadge } from "@/components/shared/count-badge"
 import { UserAvatar } from "@/components/shared/user-avatar"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import {
   MobileBottomNavCoreAction,
   MobileBottomNavDock,
@@ -104,7 +103,7 @@ export function MobileTabBar() {
   const routeState = getMobileTabBarRouteState(pathname)
 
   const iconClass =
-    "size-(--size-icon-header) motion-safe:transition-colors motion-safe:duration-fast"
+    "size-(--size-icon-tab-bar) motion-safe:transition-colors motion-safe:duration-fast"
 
   const isHomeActive = isMobileTabPathActive(routeState.normalizedPathname, "/")
   const isCategoriesActive =
@@ -186,6 +185,9 @@ export function MobileTabBar() {
 
   const resolvedProfileName = profileIdentity?.displayName ?? "User"
   const resolvedProfileAvatar = profileIdentity?.avatarUrl ?? null
+  const profileAvatarValue = isAuthenticated
+    ? (resolvedProfileAvatar ?? `boring-avatar:marble:2:${authUser?.id ?? resolvedProfileName}`)
+    : "boring-avatar:marble:1:guest"
 
   // Avoid SSR/hydration mismatches caused by client-only UI (drawers/portals).
   if (!mounted) return null
@@ -240,7 +242,7 @@ export function MobileTabBar() {
           state={isSellActive ? "active" : "inactive"}
           data-testid="mobile-tab-sell-core"
         >
-          <Plus weight="bold" className={iconClass} />
+          <Plus weight="bold" className="size-(--size-icon-lg)" />
         </MobileBottomNavCoreAction>
       ),
     },
@@ -261,7 +263,7 @@ export function MobileTabBar() {
             {unreadCount > 0 && (
               <CountBadge
                 count={unreadCount}
-                className="absolute -top-1 -right-2 h-3.5 min-w-3.5 bg-notification px-0.5 text-2xs text-primary-foreground ring-1 ring-surface-glass"
+                className="absolute -top-1.5 -right-2.5 h-4 min-w-4 bg-notification px-0.5 text-2xs text-primary-foreground ring-1 ring-surface-glass"
                 aria-hidden="true"
               />
             )}
@@ -286,34 +288,16 @@ export function MobileTabBar() {
       ariaHasPopup: "dialog",
       ariaExpanded: drawerState.account.open || drawerState.auth.open,
       icon: (
-        <>
-          {isAuthenticated && resolvedProfileAvatar ? (
-            <UserAvatar
-              name={resolvedProfileName}
-              avatarUrl={resolvedProfileAvatar}
-              size="sm"
-              className={cn(
-                "size-6 rounded-full ring-1.5 motion-safe:transition-colors motion-safe:duration-fast",
-                isProfileActive ? "ring-primary" : "ring-transparent"
-              )}
-              fallbackClassName="bg-muted text-2xs font-semibold text-muted-foreground"
-            />
-          ) : (
-            <Avatar
-              className={cn(
-                "size-6 ring-1.5 motion-safe:transition-colors motion-safe:duration-fast",
-                isProfileActive ? "ring-primary" : "ring-transparent"
-              )}
-            >
-              <AvatarFallback className="bg-muted text-muted-foreground">
-                <UserCircle
-                  weight={getTabIconWeight(isProfileActive)}
-                  className="size-4.5"
-                />
-              </AvatarFallback>
-            </Avatar>
+        <UserAvatar
+          name={resolvedProfileName}
+          avatarUrl={profileAvatarValue}
+          size="sm"
+          className={cn(
+            "size-8 rounded-full ring-1.5 motion-safe:transition-colors motion-safe:duration-fast",
+            isProfileActive ? "ring-primary" : "ring-border-subtle"
           )}
-        </>
+          fallbackClassName="bg-muted text-2xs font-semibold text-muted-foreground"
+        />
       ),
     },
   ]
