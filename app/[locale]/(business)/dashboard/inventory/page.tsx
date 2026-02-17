@@ -18,7 +18,8 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
-import { IconPackage, IconAlertTriangle, IconX, IconCheck, IconPencil } from "@/lib/icons/tabler"
+import { TriangleAlert as IconAlertTriangle, Check as IconCheck, Package as IconPackage, Pencil as IconPencil, X as IconX } from "lucide-react";
+
 import { InventoryHeader } from "./_components/inventory-header"
 import { formatCurrencyBGN } from "./_lib/format-currency"
 

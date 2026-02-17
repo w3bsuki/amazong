@@ -3,15 +3,8 @@
 import * as React from 'react'
 import { useSearchParams } from 'next/navigation'
 import { useRouter, usePathname } from '@/i18n/routing'
-import { 
-  Sliders, 
-  X, 
-  Star, 
-  Check, 
-  MagnifyingGlass, 
-  Tag,
-  CaretDown
-} from '@/lib/icons/phosphor'
+import { ChevronDown as CaretDown, Check, Search as MagnifyingGlass, SlidersHorizontal as Sliders, Star, Tag, X } from "lucide-react";
+
 import { useTranslations, useLocale } from 'next-intl'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
@@ -196,7 +189,7 @@ export function DesktopFilterModal({
         className
       )}
     >
-      <Sliders size={16} weight="regular" />
+      <Sliders size={16} />
       <span>{t('filters')}</span>
       {activeFilterCount > 0 && (
         <Badge variant="default" className="h-5 min-w-5 px-1.5 text-xs">
@@ -222,7 +215,7 @@ export function DesktopFilterModal({
         <div className="flex shrink-0 items-center justify-between px-6 py-5 border-b bg-background">
           <div className="flex items-center gap-3">
             <div className="p-2.5 rounded-md bg-selected">
-              <Sliders size={22} className="text-primary" weight="duotone" />
+              <Sliders size={22} className="text-primary" />
             </div>
             <div>
               <DialogTitle className="text-lg font-semibold tracking-tight">{t('filters')}</DialogTitle>
@@ -238,7 +231,7 @@ export function DesktopFilterModal({
               className="rounded-full hover:bg-muted"
               aria-label={t('closeFilters')}
             >
-              <X size={20} weight="bold" aria-hidden="true" />
+              <X size={20} aria-hidden="true" />
             </Button>
           </DialogClose>
         </div>
@@ -252,7 +245,7 @@ export function DesktopFilterModal({
               {/* Price Card - Compact */}
               <div className="p-4 rounded-md border border-border-subtle bg-secondary/20">
                 <h4 className="text-sm font-semibold tracking-tight flex items-center gap-2 mb-3">
-                  <Tag size={15} className="text-primary" weight="duotone" />
+                  <Tag size={15} className="text-primary" />
                   {t('price')}
                 </h4>
                 <div className="flex flex-wrap gap-1.5 mb-3">
@@ -303,7 +296,7 @@ export function DesktopFilterModal({
               {/* Rating Card - Compact */}
               <div className="p-4 rounded-md border border-border-subtle bg-secondary/20">
                 <h4 className="text-sm font-semibold tracking-tight flex items-center gap-2 mb-3">
-                  <Star size={15} className="text-rating" weight="fill" />
+                  <Star size={15} className="text-rating" />
                   {t('customerReviews')}
                 </h4>
                 <div className="grid grid-cols-4 gap-1.5">
@@ -326,7 +319,6 @@ export function DesktopFilterModal({
                             <Star 
                               key={i} 
                               size={10} 
-                              weight="fill" 
                               className="text-rating"
                             />
                           ))}

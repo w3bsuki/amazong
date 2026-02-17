@@ -5,15 +5,8 @@ import { useTranslations } from "next-intl"
 import { Link } from "@/i18n/routing"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-import {
-  Storefront,
-  Star,
-  Users,
-  Package,
-  CheckCircle,
-  HeartBreak,
-  SpinnerGap,
-} from "@/lib/icons/phosphor"
+import { CircleCheck as CheckCircle, HeartCrack as HeartBreak, Package, LoaderCircle as SpinnerGap, Star, Store as Storefront, Users } from "lucide-react";
+
 import { toast } from "sonner"
 import { UserAvatar } from "@/components/shared/user-avatar"
 
@@ -144,7 +137,7 @@ export function FollowingContent({
                         {seller.store_name}
                       </Link>
                       {seller.verified && (
-                        <CheckCircle className="size-4 text-info shrink-0" weight="fill" />
+                        <CheckCircle className="size-4 text-info shrink-0" />
                       )}
                     </div>
 
@@ -158,7 +151,7 @@ export function FollowingContent({
                     {stats && (
                       <div className="flex items-center gap-3 mt-2 text-xs text-muted-foreground">
                         <span className="flex items-center gap-1">
-                          <Star className="size-3.5" weight="fill" />
+                          <Star className="size-3.5" />
                           {stats.average_rating?.toFixed(1) || "0.0"}
                         </span>
                         <span className="flex items-center gap-1">

@@ -31,13 +31,8 @@ import {
     AlertDialogHeader,
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
-import { 
-    Plus, 
-    SpinnerGap,
-    House,
-    Briefcase,
-    Buildings
-} from "@/lib/icons/phosphor"
+import { Briefcase, Building2 as Buildings, House, Plus, LoaderCircle as SpinnerGap } from "lucide-react";
+
 import { toast } from "sonner"
 import { createClient } from "@/lib/supabase/client"
 import { AccountAddressesStats } from "../_components/account-addresses-stats"
@@ -305,7 +300,7 @@ export function AddressesContent({ initialAddresses }: AddressesContentProps) {
             <div className="flex items-center justify-between sm:hidden">
                 <AccountAddressesStats stats={stats} />
                 <Button onClick={openAddDialog} size="sm" className="h-8 gap-1.5">
-                    <Plus className="size-4" weight="bold" />
+                    <Plus className="size-4" />
                     {t("actions.addAddress")}
                 </Button>
             </div>

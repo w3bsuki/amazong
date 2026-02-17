@@ -13,16 +13,8 @@ import {
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog"
-import { 
-    Envelope, 
-    Key, 
-    Shield,
-    SpinnerGap,
-    Eye,
-    EyeSlash,
-    CheckCircle,
-    DeviceMobile
-} from "@/lib/icons/phosphor"
+import { CircleCheck as CheckCircle, Smartphone as DeviceMobile, Mail as Envelope, Eye, EyeOff as EyeSlash, Key, Shield, LoaderCircle as SpinnerGap } from "lucide-react";
+
 import { toast } from "sonner"
 import { createClient } from "@/lib/supabase/client"
 import { validatePassword, validateEmail } from "@/lib/validation/auth"
@@ -166,7 +158,7 @@ export function SecurityContent({ locale, userEmail }: SecurityContentProps) {
                         <p className="text-xs text-muted-foreground truncate">{userEmail}</p>
                     </div>
                     <div className="flex items-center gap-1.5 text-xs text-success">
-                        <CheckCircle className="size-3.5" weight="fill" />
+                        <CheckCircle className="size-3.5" />
                         <span className="hidden sm:inline">{locale === 'bg' ? 'Потвърден' : 'Verified'}</span>
                     </div>
                 </button>
@@ -209,7 +201,7 @@ export function SecurityContent({ locale, userEmail }: SecurityContentProps) {
             {/* Security Tips - Simplified */}
             <div className="rounded-lg border bg-surface-subtle p-3">
                 <div className="flex items-center gap-2 mb-2">
-                    <Shield className="size-4 text-primary" weight="fill" />
+                    <Shield className="size-4 text-primary" />
                     <span className="text-sm font-medium">{locale === 'bg' ? 'Съвети' : 'Tips'}</span>
                 </div>
                 <ul className="space-y-1.5 text-xs text-muted-foreground">

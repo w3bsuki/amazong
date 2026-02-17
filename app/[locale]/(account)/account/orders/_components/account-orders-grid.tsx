@@ -5,7 +5,8 @@ import Image from "next/image"
 import { Link } from "@/i18n/routing"
 import { formatDistanceToNow } from "date-fns"
 import { bg, enUS } from "date-fns/locale"
-import { IconChevronRight, IconPackage, IconShoppingBag, IconMessageCircle, IconX } from "@/lib/icons/tabler"
+import { ChevronRight as IconChevronRight, MessageCircle as IconMessageCircle, Package as IconPackage, ShoppingBag as IconShoppingBag, X as IconX } from "lucide-react";
+
 
 import { Badge } from "@/components/ui/badge"
 import { BuyerOrderActions, type BuyerOrderActionsServerActions } from "./buyer-order-actions"

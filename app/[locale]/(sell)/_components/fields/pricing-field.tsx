@@ -2,17 +2,8 @@
 
 import { useState, useCallback, useEffect } from "react";
 import { Controller } from "react-hook-form";
-import {
-  Tag,
-  Gavel,
-  CurrencyDollar,
-  TrendUp,
-  TrendDown,
-  Minus,
-  Plus,
-  Handshake,
-  CaretRight,
-} from "@/lib/icons/phosphor";
+import { ChevronRight as CaretRight, DollarSign as CurrencyDollar, Gavel, Handshake, Minus, Plus, Tag, TrendingDown as TrendDown, TrendingUp as TrendUp } from "lucide-react";
+
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
@@ -167,7 +158,7 @@ function QuantityStepper({
         className="h-full px-4 flex items-center justify-center hover:bg-muted disabled:opacity-40 disabled:cursor-not-allowed transition-colors touch-manipulation border-r border-border-subtle"
         aria-label={tSell("steps.pricing.quantityDecreaseAriaLabel")}
       >
-        <Minus className="size-4" weight="bold" />
+        <Minus className="size-4" />
       </button>
       <Input
         type="number"
@@ -189,7 +180,7 @@ function QuantityStepper({
         className="h-full px-4 flex items-center justify-center hover:bg-muted disabled:opacity-40 disabled:cursor-not-allowed transition-colors touch-manipulation border-l border-border-subtle"
         aria-label={tSell("steps.pricing.quantityIncreaseAriaLabel")}
       >
-        <Plus className="size-4" weight="bold" />
+        <Plus className="size-4" />
       </button>
     </div>
   );
@@ -263,7 +254,7 @@ export function PricingField({ className, categoryId, idPrefix = "sell-form", co
                   : "border-border bg-background hover:border-hover-border text-muted-foreground hover:text-foreground"
               )}
             >
-              <Icon className="size-5" weight={isSelected ? "fill" : "bold"} />
+              <Icon className="size-5" />
               <span className="text-sm">
                 {label}
               </span>
@@ -418,7 +409,7 @@ export function PricingField({ className, categoryId, idPrefix = "sell-form", co
             ? "bg-selected text-primary" 
             : "bg-muted text-muted-foreground"
         )}>
-          <Handshake className="size-5" weight={acceptOffers ? "fill" : "regular"} />
+          <Handshake className="size-5" />
         </div>
         <div className="flex-1 text-left min-w-0">
           <span className={cn(
@@ -448,7 +439,7 @@ export function PricingField({ className, categoryId, idPrefix = "sell-form", co
           <div className="p-section pb-form border-b border-border-subtle bg-surface-subtle">
             <div className="flex items-center gap-form-sm">
               <div className="flex size-10 items-center justify-center rounded-md bg-form-section-bg border border-form-section-border shadow-xs">
-                <CurrencyDollar className="size-5 text-muted-foreground" weight="bold" />
+                <CurrencyDollar className="size-5 text-muted-foreground" />
               </div>
               <div>
                 <FieldLabel className="text-sm font-bold tracking-tight text-foreground">

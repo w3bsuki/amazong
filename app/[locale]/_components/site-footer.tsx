@@ -8,7 +8,8 @@ import {
     AccordionItem,
     AccordionTrigger,
 } from "@/components/ui/accordion"
-import { CaretUp } from "@/lib/icons/phosphor"
+import { ChevronUp as CaretUp } from "lucide-react";
+
 
 // Social Media Icons (inline SVGs for better performance)
 const FacebookIcon = () => (
@@ -126,7 +127,7 @@ export function SiteFooter() {
             links: [
                 { label: t('membershipProgram'), href: "/plans" },
                 { label: t('giftCards'), href: "/gift-cards" },
-                { label: t('giftRegistry'), href: "/registry" },
+                { label: t('giftRegistry'), href: "/gift-cards" },
                 { label: t('accessibility'), href: "/accessibility" },
             ]
         },
@@ -166,7 +167,7 @@ export function SiteFooter() {
                 aria-label={t('backToTop')}
             >
                 <span className="text-sm font-normal text-background inline-flex items-center gap-1.5">
-                    <CaretUp size={16} weight="regular" />
+                    <CaretUp size={16} />
                     {t('backToTop')}
                 </span>
             </button>

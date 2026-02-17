@@ -1,6 +1,7 @@
 "use client"
 
-import { SealCheck, EnvelopeSimple, Phone, IdentificationCard, Buildings } from "@/lib/icons/phosphor"
+import { Building2 as Buildings, Mail as EnvelopeSimple, IdCard as IdentificationCard, Phone, BadgeCheck as SealCheck } from "lucide-react";
+
 import { cn } from "@/lib/utils"
 import { useTranslations } from "next-intl"
 import {
@@ -91,23 +92,23 @@ function SellerVerificationBadge({
   const tooltipContent = (
     <div className="space-y-1 text-xs">
       <div className={cn("flex items-center gap-1.5", emailVerified ? "text-foreground" : "text-muted-foreground opacity-50")}>
-        <EnvelopeSimple size={12} weight={emailVerified ? "fill" : "regular"} />
+        <EnvelopeSimple size={12} />
         <span>{t("email")}</span>
         {emailVerified && <span className="text-muted-foreground">✓</span>}
       </div>
       <div className={cn("flex items-center gap-1.5", phoneVerified ? "text-foreground" : "text-muted-foreground opacity-50")}>
-        <Phone size={12} weight={phoneVerified ? "fill" : "regular"} />
+        <Phone size={12} />
         <span>{t("phone")}</span>
         {phoneVerified && <span className="text-muted-foreground">✓</span>}
       </div>
       <div className={cn("flex items-center gap-1.5", idVerified ? "text-foreground" : "text-muted-foreground opacity-50")}>
-        <IdentificationCard size={12} weight={idVerified ? "fill" : "regular"} />
+        <IdentificationCard size={12} />
         <span>{t("id")}</span>
         {idVerified && <span className="text-muted-foreground">✓</span>}
       </div>
       {isVerifiedBusiness && (
         <div className="flex items-center gap-1.5 text-verify-business font-medium pt-1 border-t border-border">
-          <Buildings size={12} weight="fill" />
+          <Buildings size={12} />
           <span>{t("verifiedBusiness")}</span>
         </div>
       )}
@@ -126,7 +127,7 @@ function SellerVerificationBadge({
             tier === 1 && "bg-muted text-verify-email",
             className
           )}>
-            <SealCheck size={iconSize} weight="fill" />
+            <SealCheck size={iconSize} />
             <span>{label}</span>
           </span>
         </TooltipTrigger>
@@ -144,13 +145,13 @@ function SellerVerificationBadge({
         <span className={cn("inline-flex items-center shrink-0", color, className)}>
           {tier >= 4 ? (
             // Business: Building icon
-            <Buildings size={iconSize} weight="fill" />
+            <Buildings size={iconSize} />
           ) : (
             // Personal: 1-3 checkmarks based on tier
             <>
-              <SealCheck size={iconSize} weight="fill" />
-              {tier >= 2 && <SealCheck size={iconSize} weight="fill" className="-ml-1" />}
-              {tier >= 3 && <SealCheck size={iconSize} weight="fill" className="-ml-1" />}
+              <SealCheck size={iconSize} />
+              {tier >= 2 && <SealCheck size={iconSize} className="-ml-1" />}
+              {tier >= 3 && <SealCheck size={iconSize} className="-ml-1" />}
             </>
           )}
         </span>

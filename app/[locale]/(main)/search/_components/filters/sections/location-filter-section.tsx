@@ -1,6 +1,7 @@
 "use client"
 
-import { Crosshair, MapPin } from "@/lib/icons/phosphor"
+import { Crosshair, MapPin } from "lucide-react";
+
 import { useTranslations } from "next-intl"
 import { cn } from "@/lib/utils"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -48,7 +49,7 @@ export function LocationFilterSection({
             <SelectContent className="max-h-64">
               <SelectItem value="all">
                 <span className="flex items-center gap-2">
-                  <MapPin size={14} weight="regular" />
+                  <MapPin size={14} />
                   {t("anyLocation")}
                 </span>
               </SelectItem>
@@ -75,7 +76,7 @@ export function LocationFilterSection({
               onCheckedChange={onToggleNearby}
             />
             <span className="text-sm flex items-center gap-1.5">
-              <Crosshair size={16} weight="regular" className="text-primary" />
+              <Crosshair size={16} className="text-primary" />
               {t("nearMe")}
             </span>
           </label>

@@ -6,17 +6,9 @@ import { Link } from "@/i18n/routing"
 import { useTranslations } from "next-intl"
 import { getProductUrl } from "@/lib/url-utils"
 import { toast } from "sonner"
-import {
-  Heart,
-  ShoppingCart,
-  Trash,
-  ArrowRight,
-  Package,
-  XCircle,
-  Eye,
-  X,
-} from "@/lib/icons/phosphor"
-import { IconHeart, IconTag } from "@/lib/icons/tabler"
+import { ArrowRight, Eye, Heart, Heart as IconHeart, Tag as IconTag, Package, ShoppingCart, Trash, X, CircleX as XCircle } from "lucide-react";
+
+
 
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -174,7 +166,7 @@ export function AccountWishlistGrid({ items, locale, onRemove }: WishlistGridPro
       <Card>
         <CardContent className="flex flex-col items-center justify-center py-12 text-center">
           <div className="flex size-16 items-center justify-center rounded-full bg-muted border border-border mb-4">
-            <Heart className="size-8 text-destructive" weight="fill" />
+            <Heart className="size-8 text-destructive" />
           </div>
           <h3 className="font-semibold text-lg">{t("empty")}</h3>
           <p className="text-muted-foreground text-sm mt-1 max-w-sm">
@@ -228,11 +220,11 @@ export function AccountWishlistGrid({ items, locale, onRemove }: WishlistGridPro
                 {/* Stock indicator badge */}
                 {item.stock > 0 ? (
                   <div className="absolute top-2 right-2 flex size-6 items-center justify-center rounded-full bg-success">
-                    <Package weight="fill" className="size-3.5 text-primary-foreground" />
+                    <Package className="size-3.5 text-primary-foreground" />
                   </div>
                 ) : (
                   <div className="absolute top-2 right-2 flex items-center gap-1 px-2 py-1 rounded-full bg-warning">
-                    <XCircle weight="fill" className="size-3 text-foreground" />
+                    <XCircle className="size-3 text-foreground" />
                     <span className="text-2xs font-semibold text-foreground">{labels.outOfStock}</span>
                   </div>
                 )}
@@ -253,7 +245,7 @@ export function AccountWishlistGrid({ items, locale, onRemove }: WishlistGridPro
                     aria-label={locale === "bg" ? `Добави ${item.title} в количката` : `Add ${item.title} to cart`}
                     className="absolute bottom-2 right-2 flex size-11 items-center justify-center rounded-full bg-foreground"
                   >
-                    <ShoppingCart weight="fill" className="size-4 text-overlay-text" />
+                    <ShoppingCart className="size-4 text-overlay-text" />
                   </button>
                 )}
               </div>
@@ -334,12 +326,12 @@ export function AccountWishlistGrid({ items, locale, onRemove }: WishlistGridPro
                     <span className="text-muted-foreground">{labels.availability}</span>
                     {item.stock > 0 ? (
                       <Badge variant="outline" className="border-success/20 bg-success/10 text-success">
-                        <Package weight="fill" className="size-3 mr-1" />
+                        <Package className="size-3 mr-1" />
                         {item.stock} {labels.inStock}
                       </Badge>
                     ) : (
                       <Badge variant="outline" className="border-warning/20 bg-warning/10 text-warning">
-                        <XCircle weight="fill" className="size-3 mr-1" />
+                        <XCircle className="size-3 mr-1" />
                         {labels.outOfStock}
                       </Badge>
                     )}
@@ -425,12 +417,12 @@ export function AccountWishlistGrid({ items, locale, onRemove }: WishlistGridPro
               {/* Stock indicator */}
               {item.stock > 0 ? (
                 <div className="absolute top-3 right-3 z-20 flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-success">
-                  <Package weight="fill" className="size-3.5 text-primary-foreground" />
+                  <Package className="size-3.5 text-primary-foreground" />
                   <span className="text-xs font-semibold text-primary-foreground">{item.stock}</span>
                 </div>
               ) : (
                 <div className="absolute top-3 right-3 z-20 flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-warning">
-                  <XCircle weight="fill" className="size-3.5 text-foreground" />
+                  <XCircle className="size-3.5 text-foreground" />
                   <span className="text-xs font-semibold text-foreground">{labels.outOfStock}</span>
                 </div>
               )}

@@ -9,24 +9,8 @@ import { UserAvatar } from "@/components/shared/user-avatar"
 import { useMessages, type Message } from "@/components/providers/message-context"
 import { createClient } from "@/lib/supabase/client"
 import { Skeleton } from "@/components/ui/skeleton"
-import {
-  PaperPlaneTilt,
-  ArrowLeft,
-  X,
-  Archive,
-  CircleNotch,
-  Checks,
-  Check,
-  Phone,
-  VideoCamera,
-  Info,
-  Image as ImageIcon,
-  Heart,
-  Package,
-  ProhibitInset,
-  Flag,
-  ChatCircle,
-} from "@/lib/icons/phosphor"
+import { Archive, ArrowLeft, MessageCircle as ChatCircle, Check, CheckCheck as Checks, LoaderCircle as CircleNotch, Flag, Heart, Image as ImageIcon, Info, Package, Send as PaperPlaneTilt, Phone, Ban as ProhibitInset, Video as VideoCamera, X } from "lucide-react";
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -283,7 +267,6 @@ export function ChatInterface({
           <div className="flex size-20 items-center justify-center rounded-full border-2 border-border">
             <ChatCircle
               size={40}
-              weight="regular"
               className="text-muted-foreground"
             />
           </div>
@@ -359,7 +342,7 @@ export function ChatInterface({
                 aria-label={t("back")}
                 className="flex items-center justify-center size-9 rounded-full hover:bg-hover active:bg-active transition-colors lg:hidden"
               >
-                <ArrowLeft size={22} weight="regular" className="text-foreground" />
+                <ArrowLeft size={22} className="text-foreground" />
               </button>
             )}
 
@@ -399,14 +382,14 @@ export function ChatInterface({
                 aria-label="Voice call"
                 className="flex items-center justify-center size-9 rounded-full hover:bg-muted transition-colors"
               >
-                <Phone size={20} weight="regular" className="text-foreground" />
+                <Phone size={20} className="text-foreground" />
               </button>
               <button
                 type="button"
                 aria-label="Video call"
                 className="flex items-center justify-center size-9 rounded-full hover:bg-muted transition-colors"
               >
-                <VideoCamera size={20} weight="regular" className="text-foreground" />
+                <VideoCamera size={20} className="text-foreground" />
               </button>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -415,23 +398,23 @@ export function ChatInterface({
                     aria-label="More actions"
                     className="flex items-center justify-center size-9 rounded-full hover:bg-muted transition-colors"
                   >
-                    <Info size={22} weight="regular" className="text-foreground" />
+                    <Info size={22} className="text-foreground" />
                   </button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-48">
                   {!isClosed && (
                     <DropdownMenuItem onClick={() => closeConversation(currentConversation.id)}>
-                      <X size={16} weight="regular" className="mr-2" />
+                      <X size={16} className="mr-2" />
                       {t("closeConversation")}
                     </DropdownMenuItem>
                   )}
                   <DropdownMenuItem>
-                    <Archive size={16} weight="regular" className="mr-2" />
+                    <Archive size={16} className="mr-2" />
                     {t("archiveConversation")}
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={handleReportConversation} disabled={isReporting}>
-                    <Flag size={16} weight="regular" className="mr-2" />
+                    <Flag size={16} className="mr-2" />
                     {isReporting ? t("reporting") : t("reportConversation")}
                   </DropdownMenuItem>
                   <DropdownMenuItem
@@ -439,7 +422,7 @@ export function ChatInterface({
                     disabled={isBlocking}
                     className="text-destructive focus:text-destructive focus:bg-destructive-subtle"
                   >
-                    <ProhibitInset size={16} weight="regular" className="mr-2" />
+                    <ProhibitInset size={16} className="mr-2" />
                     {isBlocking ? t("blocking") : t("blockUser")}
                   </DropdownMenuItem>
                 </DropdownMenuContent>
@@ -574,7 +557,7 @@ export function ChatInterface({
                           </Link>
                         ) : (
                           <div className="flex items-center justify-center w-16 bg-muted shrink-0">
-                            <Package size={24} weight="regular" className="text-muted-foreground" />
+                            <Package size={24} className="text-muted-foreground" />
                           </div>
                         )}
 
@@ -582,7 +565,7 @@ export function ChatInterface({
                         <div className="flex-1 min-w-0 px-3 py-2">
                           {/* Header row */}
                           <div className="flex items-center gap-1.5">
-                            <Package size={12} weight="fill" className="text-primary shrink-0" />
+                            <Package size={12} className="text-primary shrink-0" />
                             <span className="text-xs font-medium text-primary">
                               {t("orderLabel")}
                             </span>
@@ -713,9 +696,9 @@ export function ChatInterface({
                         </span>
                         {isOwn &&
                           (message.is_read ? (
-                            <Checks size={12} weight="bold" className="text-foreground" />
+                            <Checks size={12} className="text-foreground" />
                           ) : (
-                            <Check size={12} weight="regular" className="text-foreground" />
+                            <Check size={12} className="text-foreground" />
                           ))}
                       </div>
                     )}
@@ -729,7 +712,7 @@ export function ChatInterface({
                         isOwn ? "-left-9" : "-right-9"
                       )}
                     >
-                      <Heart size={14} weight="regular" className="text-muted-foreground" />
+                      <Heart size={14} className="text-muted-foreground" />
                     </span>
                   </div>
                 </div>
@@ -790,9 +773,9 @@ export function ChatInterface({
               className="flex items-center justify-center size-10 rounded-full hover:bg-hover active:bg-active transition-colors shrink-0 disabled:opacity-50"
             >
               {isUploadingImage ? (
-                <CircleNotch size={22} weight="regular" className="text-primary animate-spin motion-reduce:animate-none" />
+                <CircleNotch size={22} className="text-primary animate-spin motion-reduce:animate-none" />
               ) : (
-                <ImageIcon size={22} weight="regular" className="text-primary" />
+                <ImageIcon size={22} className="text-primary" />
               )}
             </button>
 
@@ -824,9 +807,9 @@ export function ChatInterface({
               )}
             >
               {isSending ? (
-                <CircleNotch size={18} weight="regular" className="animate-spin motion-reduce:animate-none" />
+                <CircleNotch size={18} className="animate-spin motion-reduce:animate-none" />
               ) : (
-                <PaperPlaneTilt size={18} weight="fill" />
+                <PaperPlaneTilt size={18} />
               )}
             </button>
           </div>

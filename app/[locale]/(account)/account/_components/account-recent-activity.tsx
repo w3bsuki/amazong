@@ -6,7 +6,8 @@ import { useEffect, useState } from "react"
 import { Link } from "@/i18n/routing"
 import Image from "next/image"
 import { Badge } from "@/components/ui/badge"
-import { IconChevronRight, IconPackage, IconPhoto, IconShoppingBag } from "@/lib/icons/tabler"
+import { ChevronRight as IconChevronRight, Package as IconPackage, Image as IconPhoto, ShoppingBag as IconShoppingBag } from "lucide-react";
+
 
 // Extracted to avoid creating component during render
 function SectionHeader({ title, href, viewAllText }: { title: string; href: string; viewAllText: string }) {

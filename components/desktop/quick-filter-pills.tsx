@@ -2,7 +2,8 @@
 
 import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
-import { CaretDown, Check, MapPin, Package, Percent, Star } from "@/lib/icons/phosphor";
+import { ChevronDown as CaretDown, Check, MapPin, Package, Percent, Star } from "lucide-react";
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -52,7 +53,7 @@ export function QuickFilterPills({
             aria-pressed={isActive}
             className={cn(pillBase, isActive ? pillActive : pillInactive)}
           >
-            <Icon size={16} weight={isActive ? "fill" : "regular"} className="shrink-0" />
+            <Icon size={16} className="shrink-0" />
             <span>{t(filter.labelKey)}</span>
           </button>
         );
@@ -62,7 +63,7 @@ export function QuickFilterPills({
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <button type="button" className={cn(pillBase, userCity ? pillActive : pillInactive)}>
-              <MapPin size={16} weight={userCity ? "fill" : "regular"} className="shrink-0" />
+              <MapPin size={16} className="shrink-0" />
               <span className="max-w-28 truncate">
                 {userCity
                   ? BULGARIAN_CITIES.find((c) => c.value === userCity)?.[locale === "bg" ? "labelBg" : "label"] ??

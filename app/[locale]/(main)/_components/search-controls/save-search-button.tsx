@@ -3,7 +3,8 @@
 import { useEffect, useMemo, useState } from "react"
 import { useTranslations } from "next-intl"
 import { useSearchParams } from "next/navigation"
-import { Bell, BellRinging, Check } from "@/lib/icons/phosphor"
+import { Bell, BellRing as BellRinging, Check } from "lucide-react";
+
 import { Button } from "@/components/ui/button"
 import { useToast } from "@/hooks/use-toast"
 import { cn } from "@/lib/utils"
@@ -126,7 +127,7 @@ export function SaveSearchButton({ query, category, className }: SaveSearchButto
     >
       {isSaved ? (
         <>
-          <Check size={16} weight="bold" className="text-success" />
+          <Check size={16} className="text-success" />
           <span className="hidden sm:inline">{t("saved")}</span>
         </>
       ) : (

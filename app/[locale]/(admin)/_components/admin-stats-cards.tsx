@@ -1,6 +1,7 @@
 "use client"
 
-import { IconTrendingUp, IconUsers, IconBox, IconShoppingCart, IconCurrencyDollar, IconBuildingStore } from "@/lib/icons/tabler"
+import { Box as IconBox, Store as IconBuildingStore, DollarSign as IconCurrencyDollar, ShoppingCart as IconShoppingCart, TrendingUp as IconTrendingUp, Users as IconUsers } from "lucide-react";
+
 import { useLocale, useTranslations } from "next-intl"
 
 import { Badge } from "@/components/ui/badge"

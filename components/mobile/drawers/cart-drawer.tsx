@@ -1,7 +1,8 @@
 "use client"
 
 import { useMemo, useCallback, useEffect, useState } from "react"
-import { ShoppingCart, Package, Minus, Plus, SpinnerGap, Trash, X } from "@/lib/icons/phosphor"
+import { Minus, Package, Plus, ShoppingCart, LoaderCircle as SpinnerGap, Trash, X } from "lucide-react";
+
 import {
   Drawer,
   DrawerContent,
@@ -100,7 +101,7 @@ export function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
         <DrawerHeader className="pb-1.5 pt-0 border-b border-border text-left">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-1.5">
-              <ShoppingCart size={16} weight="regular" className="text-muted-foreground" />
+              <ShoppingCart size={16} className="text-muted-foreground" />
               <DrawerTitle className="text-sm font-semibold">{t("title")}</DrawerTitle>
               <span className="text-xs text-muted-foreground">({isReady ? totalItems : "..."})</span>
             </div>
@@ -111,7 +112,7 @@ export function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
                 size="icon-default"
                 className="text-muted-foreground hover:text-foreground hover:bg-muted active:bg-muted motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth)"
               >
-                <X size={20} weight="light" />
+                <X size={20} />
               </IconButton>
             </DrawerClose>
           </div>
@@ -120,12 +121,12 @@ export function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
 
         {!isReady ? (
           <div className="flex flex-col items-center justify-center px-inset py-5" aria-live="polite">
-            <SpinnerGap size={20} weight="bold" className="animate-spin text-muted-foreground" />
+            <SpinnerGap size={20} className="animate-spin text-muted-foreground" />
           </div>
         ) : items.length === 0 ? (
           <div className="flex flex-col items-center justify-center px-inset py-5">
             <div className="size-11 bg-muted rounded-xl flex items-center justify-center mb-2">
-              <ShoppingCart size={22} weight="regular" className="text-muted-foreground" />
+              <ShoppingCart size={22} className="text-muted-foreground" />
             </div>
             <p className="text-sm text-foreground font-medium">{t("empty")}</p>
             <p className="text-xs text-muted-foreground mt-0.5">
@@ -149,7 +150,7 @@ export function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
                       <CartDrawerItemImage src={item.image} alt={item.title} priority={index === 0} />
                     ) : (
                       <div className="size-full flex items-center justify-center text-muted-foreground">
-                        <Package size={20} weight="regular" />
+                        <Package size={20} />
                       </div>
                     )}
                   </div>
@@ -175,7 +176,7 @@ export function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
                         className="text-muted-foreground hover:bg-destructive-subtle hover:text-destructive motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth)"
                         onClick={() => removeFromCart(item.id, item.variantId)}
                       >
-                        <Trash weight="regular" />
+                        <Trash />
                       </IconButton>
                     </div>
                     <div className="flex items-center justify-end gap-1">
@@ -190,7 +191,7 @@ export function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
                             : removeFromCart(item.id, item.variantId)
                         }
                       >
-                        <Minus weight="bold" />
+                        <Minus />
                       </IconButton>
                       <span className="min-w-touch text-sm font-medium tabular-nums text-foreground text-center">{item.quantity}</span>
                       <IconButton
@@ -200,7 +201,7 @@ export function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
                         className="text-muted-foreground hover:bg-muted hover:text-foreground motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth)"
                         onClick={() => updateQuantity(item.id, item.quantity + 1, item.variantId)}
                       >
-                        <Plus weight="bold" />
+                        <Plus />
                       </IconButton>
                     </div>
                   </div>
@@ -213,7 +214,7 @@ export function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
         <DrawerFooter className="border-t border-border gap-1.5">
           {!isReady ? (
             <div className="flex items-center justify-center py-2">
-              <SpinnerGap size={16} weight="bold" className="animate-spin text-muted-foreground" />
+              <SpinnerGap size={16} className="animate-spin text-muted-foreground" />
             </div>
           ) : items.length === 0 ? (
             <Button variant="cta" size="primary" className="w-full" asChild>

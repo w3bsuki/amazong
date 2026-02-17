@@ -3,7 +3,8 @@
 import { useTheme } from 'next-themes'
 import { Toaster as Sonner, ToasterProps } from 'sonner'
 import { useIsMobile } from '@/hooks/use-is-mobile'
-import { CheckCircle, WarningCircle, Info, XCircle } from '@/lib/icons/phosphor'
+import { CircleCheck as CheckCircle, Info, CircleAlert as WarningCircle, CircleX as XCircle } from "lucide-react";
+
 
 const Toaster = ({ ...props }: ToasterProps) => {
   const { theme = 'system' } = useTheme()
@@ -31,13 +32,13 @@ const Toaster = ({ ...props }: ToasterProps) => {
       // Custom icons
       icons={{
         success: (
-          <CheckCircle className="size-5 text-success" weight="fill" />
+          <CheckCircle className="size-5 text-success" />
         ),
-        error: <XCircle className="size-5 text-destructive" weight="fill" />,
+        error: <XCircle className="size-5 text-destructive" />,
         warning: (
-          <WarningCircle className="size-5 text-warning" weight="fill" />
+          <WarningCircle className="size-5 text-warning" />
         ),
-        info: <Info className="size-5 text-info" weight="fill" />,
+        info: <Info className="size-5 text-info" />,
       }}
       // Toast options
       toastOptions={{

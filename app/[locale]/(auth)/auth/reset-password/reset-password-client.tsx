@@ -10,7 +10,8 @@ import { z } from "zod"
 import { Field, FieldContent, FieldError, FieldLabel } from "@/components/shared/field"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { SpinnerGap, Check, Lock, ArrowLeft, Eye, EyeSlash } from "@/lib/icons/phosphor"
+import { ArrowLeft, Check, Eye, EyeOff as EyeSlash, Lock, LoaderCircle as SpinnerGap } from "lucide-react";
+
 import { useRouter } from "@/i18n/routing"
 import { AuthCard } from "../../_components/auth-card"
 
@@ -138,7 +139,7 @@ export default function ResetPasswordPage() {
       >
         <div className="flex flex-col items-center gap-4 py-2">
           <div className="inline-flex size-16 items-center justify-center rounded-full bg-destructive-subtle text-destructive">
-            <Lock className="size-8" weight="bold" />
+            <Lock className="size-8" />
           </div>
           <Button asChild variant="outline" size="default" className="w-full">
             <Link href="/auth/forgot-password">{t("requestNewLink")}</Link>
@@ -158,7 +159,7 @@ export default function ResetPasswordPage() {
       >
         <div className="flex flex-col items-center gap-4 py-2">
           <div className="inline-flex size-16 items-center justify-center rounded-full bg-success-subtle text-success">
-            <Check className="size-8" weight="bold" />
+            <Check className="size-8" />
           </div>
           <Button asChild variant="outline" size="default" className="w-full">
             <Link href="/auth/login" className="inline-flex items-center justify-center gap-2">
@@ -291,7 +292,7 @@ export default function ResetPasswordPage() {
           >
             {isPending ? (
               <>
-                <SpinnerGap className="size-5 animate-spin motion-reduce:animate-none" weight="bold" />
+                <SpinnerGap className="size-5 animate-spin motion-reduce:animate-none" />
                 {t("updating")}
               </>
             ) : (

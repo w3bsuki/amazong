@@ -3,7 +3,8 @@
 import * as React from "react"
 import { useRef, useCallback, useEffect } from "react"
 import Image from "next/image"
-import { MagnifyingGlass, Clock, TrendUp, Package, X, ArrowRight, Eye, Robot } from "@/lib/icons/phosphor"
+import { ArrowRight, Clock, Eye, Search as MagnifyingGlass, Package, Bot as Robot, TrendingUp as TrendUp, X } from "lucide-react";
+
 import { Button } from "@/components/ui/button"
 import { Switch } from "@/components/ui/switch"
 import { Input } from "@/components/ui/input"
@@ -133,7 +134,6 @@ export function DesktopSearch() {
           >
             <MagnifyingGlass
               size={18}
-              weight="regular"
               className="absolute left-4 text-search-placeholder pointer-events-none"
             />
 
@@ -165,12 +165,12 @@ export function DesktopSearch() {
                   aria-label={tNav("clearSearch")}
                 className="absolute top-1/2 right-24 -translate-y-1/2 rounded-sm text-muted-foreground tap-transparent motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth) motion-reduce:transition-none hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
               >
-                <X size={16} weight="regular" />
+                <X size={16} />
               </button>
             )}
 
             <div className="absolute right-10 top-1/2 -translate-y-1/2 flex items-center gap-1.5">
-              <Robot size={14} weight={aiMode ? "fill" : "regular"} className={aiMode ? "text-primary" : "text-muted-foreground"} />
+              <Robot size={14} className={aiMode ? "text-primary" : "text-muted-foreground"} />
               <Switch
                 checked={aiMode}
                 onCheckedChange={(checked) => { setAiMode(checked); setIsOpen(true); }}
@@ -185,7 +185,7 @@ export function DesktopSearch() {
               aria-label={tNav("search")}
               className="absolute right-1 top-1/2 -translate-y-1/2 rounded-full focus-visible:outline-none"
             >
-              <MagnifyingGlass size={16} weight="bold" />
+              <MagnifyingGlass size={16} />
             </Button>
           </form>
         </PopoverAnchor>
@@ -210,7 +210,7 @@ export function DesktopSearch() {
               <div className="border-b border-border">
                 <div className="flex items-center justify-between px-4 py-2.5 bg-surface-subtle">
                   <span className="flex items-center gap-2 text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                    <Package size={14} weight="regular" />
+                    <Package size={14} />
                     {tSearch("products")}
                   </span>
                   <Link 
@@ -219,7 +219,7 @@ export function DesktopSearch() {
                     onClick={() => setIsOpen(false)}
                   >
                     {tSearch("viewAll")}
-                    <ArrowRight size={12} weight="regular" />
+                    <ArrowRight size={12} />
                   </Link>
                 </div>
                 <div className="p-2">
@@ -241,7 +241,7 @@ export function DesktopSearch() {
                           />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center">
-                            <Package size={20} weight="regular" className="text-muted-foreground" />
+                            <Package size={20} className="text-muted-foreground" />
                           </div>
                         )}
                       </div>
@@ -253,7 +253,7 @@ export function DesktopSearch() {
                           {formatPrice(product.price)}
                         </p>
                       </div>
-                      <ArrowRight size={16} weight="regular" className="text-muted-foreground opacity-0 motion-safe:transition-opacity motion-safe:duration-fast motion-safe:ease-(--ease-smooth) motion-reduce:transition-none group-hover:opacity-100" />
+                      <ArrowRight size={16} className="text-muted-foreground opacity-0 motion-safe:transition-opacity motion-safe:duration-fast motion-safe:ease-(--ease-smooth) motion-reduce:transition-none group-hover:opacity-100" />
                     </button>
                   ))}
                 </div>
@@ -265,7 +265,7 @@ export function DesktopSearch() {
               <div className="border-b border-border">
                 <div className="flex items-center justify-between px-4 py-2.5 bg-surface-subtle">
                   <span className="flex items-center gap-2 text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                    <Eye size={14} weight="regular" />
+                    <Eye size={14} />
                     {tSearch("recentlyViewed")}
                   </span>
                   <button
@@ -296,7 +296,7 @@ export function DesktopSearch() {
                             />
                           ) : (
                             <div className="w-full h-full flex items-center justify-center">
-                              <Package size={24} weight="regular" className="text-muted-foreground" />
+                              <Package size={24} className="text-muted-foreground" />
                             </div>
                           )}
                         </div>
@@ -318,7 +318,7 @@ export function DesktopSearch() {
               <div className="border-b border-border">
                 <div className="flex items-center justify-between px-4 py-2.5 bg-surface-subtle">
                   <span className="flex items-center gap-2 text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                    <Clock size={14} weight="regular" />
+                    <Clock size={14} />
                     {tSearch("recentSearches")}
                   </span>
                   <button
@@ -349,7 +349,7 @@ export function DesktopSearch() {
                             />
                           ) : (
                             <div className="w-full h-full flex items-center justify-center">
-                              <Package size={24} weight="regular" className="text-muted-foreground" />
+                              <Package size={24} className="text-muted-foreground" />
                             </div>
                           )}
                         </div>
@@ -371,7 +371,7 @@ export function DesktopSearch() {
               <div>
                 <div className="flex items-center gap-2 px-4 py-2.5 bg-surface-subtle">
                   <span className="flex items-center gap-2 text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                    <TrendUp size={14} weight="regular" />
+                    <TrendUp size={14} />
                     {tSearch("trending")}
                   </span>
                 </div>
@@ -389,7 +389,7 @@ export function DesktopSearch() {
                       <span className="text-sm text-foreground group-hover:text-primary flex-1">
                         {search}
                       </span>
-                      <ArrowRight size={14} weight="regular" className="text-muted-foreground opacity-0 motion-safe:transition-opacity motion-safe:duration-fast motion-safe:ease-(--ease-smooth) motion-reduce:transition-none group-hover:opacity-100" />
+                      <ArrowRight size={14} className="text-muted-foreground opacity-0 motion-safe:transition-opacity motion-safe:duration-fast motion-safe:ease-(--ease-smooth) motion-reduce:transition-none group-hover:opacity-100" />
                     </button>
                   ))}
                 </div>
@@ -409,7 +409,7 @@ export function DesktopSearch() {
             {/* No Results */}
             {!isSearching && query && query.length >= minSearchLength && products.length === 0 && (
               <div className="px-4 py-8 text-center">
-                <Package size={40} weight="regular" className="text-muted-foreground mx-auto mb-2" />
+                <Package size={40} className="text-muted-foreground mx-auto mb-2" />
                 <p className="text-sm text-muted-foreground">
                   {tSearch("noResultsFor", { query })}
                 </p>

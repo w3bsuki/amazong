@@ -1,14 +1,7 @@
 import { Link } from "@/i18n/routing"
 import { getTranslations } from "next-intl/server"
-import {
-  IconBox,
-  IconPlus,
-  IconShoppingCart,
-  IconPackage,
-  IconChartBar,
-  IconSearch,
-  IconArrowRight,
-} from "@/lib/icons/tabler"
+import { ArrowRight as IconArrowRight, Box as IconBox, ChartColumn as IconChartBar, Package as IconPackage, Plus as IconPlus, Search as IconSearch, ShoppingCart as IconShoppingCart } from "lucide-react";
+
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"

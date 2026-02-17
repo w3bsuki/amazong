@@ -1,21 +1,8 @@
 "use client"
 
-import { useState, type ComponentType } from "react"
-import { 
-  IconUser, 
-  IconPackage, 
-  IconBuildingStore, 
-  IconCrown, 
-  IconDots,
-  IconLock,
-  IconMapPin,
-  IconCreditCard,
-  IconReceipt,
-  IconBell,
-  IconHeart,
-  IconChartLine,
-  IconMessage,
-} from "@/lib/icons/tabler"
+import { useState } from "react"
+import { Bell as IconBell, Store as IconBuildingStore, ChartLine as IconChartLine, CreditCard as IconCreditCard, Crown as IconCrown, Ellipsis as IconDots, Heart as IconHeart, Lock as IconLock, MapPin as IconMapPin, MessageCircle as IconMessage, Package as IconPackage, Receipt as IconReceipt, User as IconUser, type LucideIcon } from "lucide-react";
+
 import { Link, usePathname } from "@/i18n/routing"
 import { cn } from "@/lib/utils"
 import { useTranslations } from "next-intl"
@@ -24,7 +11,7 @@ import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "
 type AccountNavItem = {
   label: string
   href: string
-  icon: ComponentType<{ className?: string; stroke?: string | number }>
+  icon: LucideIcon
   exact?: boolean
 }
 
@@ -150,7 +137,7 @@ export function AccountTabBar() {
               >
                 <tab.icon 
                   className="size-5"
-                  stroke={active ? 2 : 1.5}
+                  stroke={active ? "2" : "1.5"}
                 />
                 <span className={cn(
                   "text-xs leading-tight",
@@ -175,7 +162,7 @@ export function AccountTabBar() {
             aria-haspopup="dialog"
             aria-expanded={moreOpen}
           >
-            <IconDots className="size-5" stroke={isMoreActive ? 2 : 1.5} />
+            <IconDots className="size-5" stroke={isMoreActive ? "2" : "1.5"} />
             <span className={cn("text-xs leading-tight", isMoreActive ? "font-semibold" : "font-medium")}>
               {t("tabBar.more")}
             </span>
@@ -209,7 +196,7 @@ export function AccountTabBar() {
                   )}
                   aria-current={active ? "page" : undefined}
                 >
-                  <item.icon className="size-4 shrink-0" stroke={active ? 2 : 1.75} />
+                  <item.icon className="size-4 shrink-0" stroke={active ? "2" : "1.75"} />
                   <span className="truncate">{item.label}</span>
                 </Link>
               )

@@ -3,7 +3,8 @@
 import { Link } from "@/i18n/routing"
 import { useTranslations } from "next-intl"
 import { usePathname } from "@/i18n/routing"
-import { Lock, ShoppingCart, Check } from "@/lib/icons/phosphor"
+import { Check, Lock, ShoppingCart } from "lucide-react";
+
 import { cn } from "@/lib/utils"
 
 interface CheckoutHeaderProps {
@@ -33,7 +34,7 @@ export function CheckoutHeader({ currentStep: propStep }: CheckoutHeaderProps) {
             className="flex items-center gap-1.5 shrink-0"
             aria-label={t("backToHome")}
           >
-            <ShoppingCart className="size-4 text-primary" weight="fill" />
+            <ShoppingCart className="size-4 text-primary" />
             <span className="text-sm font-semibold text-foreground">Treido</span>
           </Link>
 
@@ -55,7 +56,7 @@ export function CheckoutHeader({ currentStep: propStep }: CheckoutHeaderProps) {
                         !isStepComplete && !isStepActive && "bg-muted text-muted-foreground"
                       )}
                     >
-                      {isStepComplete ? <Check className="size-3" weight="bold" /> : step.id}
+                      {isStepComplete ? <Check className="size-3" /> : step.id}
                     </div>
                     <span className={cn(
                       "text-xs font-medium",
@@ -90,7 +91,7 @@ export function CheckoutHeader({ currentStep: propStep }: CheckoutHeaderProps) {
 
           {/* Secure badge */}
           <div className="flex items-center gap-1 text-success">
-            <Lock className="size-3.5" weight="fill" />
+            <Lock className="size-3.5" />
             <span className="text-2xs font-medium hidden sm:inline">{t("secureCheckout")}</span>
           </div>
         </div>

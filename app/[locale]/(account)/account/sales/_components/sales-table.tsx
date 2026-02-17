@@ -13,13 +13,8 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
-import {
-  Package,
-  Eye,
-  MapPin,
-  User,
-  Clock,
-} from "@/lib/icons/phosphor"
+import { Clock, Eye, MapPin, Package, User } from "lucide-react";
+
 import type { SaleItem } from "../types"
 
 interface SalesTableProps {
@@ -116,7 +111,7 @@ export function SalesTable({ sales, locale }: SalesTableProps) {
               <TableCell>
                 <div className="flex items-center gap-2">
                   <div className="size-8 rounded-full bg-muted flex items-center justify-center shrink-0">
-                    <User className="size-4 text-muted-foreground" weight="duotone" />
+                    <User className="size-4 text-muted-foreground" />
                   </div>
                   <div className="min-w-0">
                     <p className="text-sm font-medium truncate">

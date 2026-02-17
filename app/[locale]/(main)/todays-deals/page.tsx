@@ -1,5 +1,6 @@
 import { setRequestLocale, getTranslations } from "next-intl/server"
-import { Lightning as Zap } from "@/lib/icons/phosphor"
+import { Zap } from "lucide-react";
+
 import type { Metadata } from 'next'
 import { validateLocale } from "@/i18n/routing"
 import { AppBreadcrumb, breadcrumbPresets } from "../../_components/navigation/app-breadcrumb"
@@ -54,7 +55,7 @@ export default async function TodaysDealsPage({
       <section className="mt-4 border-y border-border bg-surface-subtle">
         <div className="container py-6 sm:py-8 flex items-start gap-4">
           <div className="size-12 sm:size-14 shrink-0 rounded-full bg-deal text-deal-foreground flex items-center justify-center">
-            <Zap className="size-6 sm:size-7" weight="duotone" />
+            <Zap className="size-6 sm:size-7" />
           </div>
           <div className="min-w-0">
             <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">{t("title")}</h1>

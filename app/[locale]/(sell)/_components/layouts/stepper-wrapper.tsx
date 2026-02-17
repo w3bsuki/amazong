@@ -2,7 +2,8 @@
 
 import { type ReactNode, useRef, useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowRight, CaretLeft, Rocket, X, SpinnerGap } from "@/lib/icons/phosphor";
+import { ArrowRight, ChevronLeft as CaretLeft, Rocket, LoaderCircle as SpinnerGap, X } from "lucide-react";
+
 import { Link } from "@/i18n/routing";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -123,7 +124,7 @@ export function StepperWrapper({
                 className="size-(--control-default) -ml-2 flex items-center justify-center rounded-md hover:bg-muted transition-colors"
                 aria-label={tCommon("back")}
               >
-                <CaretLeft className="size-5" weight="bold" />
+                <CaretLeft className="size-5" />
               </button>
             )}
           </div>
@@ -211,7 +212,7 @@ export function StepperWrapper({
                 </>
               ) : (
                 <>
-                  <Rocket className="size-5" weight="fill" />
+                  <Rocket className="size-5" />
                   {tSell("actions.publishListing")}
                 </>
               )}
@@ -225,7 +226,7 @@ export function StepperWrapper({
               disabled={isNextDisabled}
             >
               {tCommon("continue")}
-              <ArrowRight className="size-5" weight="bold" />
+              <ArrowRight className="size-5" />
             </Button>
           )}
         </div>

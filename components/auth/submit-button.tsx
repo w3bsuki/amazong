@@ -1,7 +1,8 @@
 "use client"
 
 import { useFormStatus } from "react-dom"
-import { SpinnerGap } from "@/lib/icons/phosphor"
+import { LoaderCircle as SpinnerGap } from "lucide-react";
+
 
 import { Button } from "@/components/ui/button"
 
@@ -32,7 +33,6 @@ export function SubmitButton({
           <SpinnerGap
             aria-hidden="true"
             className="size-5 animate-spin motion-reduce:animate-none"
-            weight="bold"
           />
           {pendingLabel}
         </span>

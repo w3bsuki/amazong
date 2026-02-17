@@ -6,63 +6,8 @@
  */
 
 import * as React from "react"
-import {
-  Monitor,
-  Laptop,
-  House,
-  GameController,
-  TShirt,
-  Baby,
-  Heart,
-  Wrench,
-  Car,
-  Gift,
-  BookOpen,
-  Barbell,
-  Dog,
-  Lightbulb,
-  DeviceMobile,
-  DeviceTablet,
-  Watch,
-  Headphones,
-  Camera,
-  Television,
-  MusicNotes,
-  Briefcase,
-  ForkKnife,
-  Leaf,
-  Code,
-  ShoppingCart,
-  Diamond,
-  Palette,
-  Pill,
-  GraduationCap,
-  Guitar,
-  FilmStrip,
-  Flask,
-  Trophy,
-  Hammer,
-  Flower,
-  PaintBrush,
-  Package,
-  Buildings,
-  Ticket,
-  Truck,
-  Flag,
-  DesktopTower,
-  Lightning,
-  Users,
-  GenderMale,
-  GenderFemale,
-  Sneaker,
-  Dress,
-  Hoodie,
-  Pants,
-  Boot,
-  Handbag,
-  CoatHanger,
-  SquaresFour,
-} from "@/lib/icons/phosphor"
+import { Baby, Dumbbell as Barbell, BookOpen, Footprints as Boot, Briefcase, Building2 as Buildings, Camera, Car, Shirt as CoatHanger, Code, Computer as DesktopTower, Smartphone as DeviceMobile, Tablet as DeviceTablet, Diamond, Dog, Shirt as Dress, Film as FilmStrip, Flag, FlaskConical as Flask, Flower, Utensils as ForkKnife, Gamepad2 as GameController, Venus as GenderFemale, Mars as GenderMale, Gift, GraduationCap, Guitar, Hammer, Handbag, Headphones, Heart, Shirt as Hoodie, House, Laptop, Leaf, Lightbulb, Zap as Lightning, Monitor, Music as MusicNotes, Package, Brush as PaintBrush, Palette, Shirt as Pants, Pill, ShoppingCart, Shirt as Sneaker, LayoutGrid as SquaresFour, Tv as Television, Ticket, Trophy, Truck, Shirt as TShirt, Users, Watch, Wrench } from "lucide-react";
+
 
 type PhosphorIcon = typeof Monitor
 
@@ -233,7 +178,7 @@ export function getCategoryIcon(slug: string, options: CategoryIconOptions = {})
   const { size = 20, className = "", weight = "bold" } = options
 
   const Icon = getCategoryIconForSlug(slug)
-  return <Icon size={size} weight={weight} className={className} />
+  return <Icon size={size} className={className} />
 }
 
 // ============================================================================

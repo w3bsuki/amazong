@@ -4,7 +4,8 @@ import type { ReactNode } from "react"
 import Image from "next/image"
 import { cn } from "@/lib/utils"
 import { UserAvatar } from "@/components/shared/user-avatar"
-import { CheckCircle } from "@/lib/icons/phosphor"
+import { CircleCheck as CheckCircle } from "lucide-react";
+
 
 interface ProfileShellProps {
   /** Display name for the profile */
@@ -81,7 +82,7 @@ export function ProfileShell({
             />
             {isVerifiedBusiness ? (
               <div className="absolute -bottom-0.5 -right-0.5 bg-primary rounded-full p-0.5 border-2 border-background">
-                <CheckCircle className="size-3.5 text-primary-foreground" weight="fill" />
+                <CheckCircle className="size-3.5 text-primary-foreground" />
               </div>
             ) : null}
           </div>

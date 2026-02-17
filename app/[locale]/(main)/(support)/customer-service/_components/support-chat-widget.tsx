@@ -13,7 +13,8 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet"
-import { ChatCircleDots, PaperPlaneTilt, X, Headphones } from "@/lib/icons/phosphor"
+import { MessageCircleMore as ChatCircleDots, Headphones, Send as PaperPlaneTilt, X } from "lucide-react";
+
 import { Spinner } from "./spinner"
 import { useTranslations } from "next-intl"
 import { cn } from "@/lib/utils"
@@ -288,7 +289,7 @@ export function SupportChatWidget({
             )}
             aria-label={t("startChatting")}
           >
-            <ChatCircleDots className="size-6" weight="fill" />
+            <ChatCircleDots className="size-6" />
           </Button>
         </SheetTrigger>
       )}
@@ -300,7 +301,7 @@ export function SupportChatWidget({
         <SheetHeader className="px-4 py-3 border-b bg-primary text-primary-foreground">
           <div className="flex items-center gap-3">
             <div className="size-10 bg-muted rounded-full flex items-center justify-center">
-              <Headphones className="size-5" weight="fill" />
+              <Headphones className="size-5" />
             </div>
             <div className="flex-1">
               <SheetTitle className="text-primary-foreground text-lg">{t("contactUs")}</SheetTitle>
@@ -401,7 +402,7 @@ export function SupportChatWidget({
                 {isSending ? (
                   <Spinner className="size-4" label={tCommon("loading")} />
                 ) : (
-                  <PaperPlaneTilt className="size-4" weight="fill" />
+                  <PaperPlaneTilt className="size-4" />
                 )}
               </Button>
             </div>

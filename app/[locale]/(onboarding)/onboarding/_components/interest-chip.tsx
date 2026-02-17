@@ -1,6 +1,7 @@
 "use client"
 
-import { Check } from "@/lib/icons/phosphor"
+import { Check } from "lucide-react";
+
 import { cn } from "@/lib/utils"
 
 interface InterestChipProps {
@@ -33,7 +34,7 @@ export function InterestChip({
     >
       {icon && <span className="size-4">{icon}</span>}
       <span>{label}</span>
-      {selected && <Check className="size-4" weight="bold" />}
+      {selected && <Check className="size-4" />}
     </button>
   )
 }

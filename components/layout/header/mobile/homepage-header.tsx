@@ -2,7 +2,8 @@
 import { SidebarMenu } from "@/components/layout/sidebar/sidebar-menu"
 import { MobileCartDropdown } from "@/components/layout/header/cart/mobile-cart-dropdown"
 import { MobileWishlistButton } from "@/components/shared/wishlist/mobile-wishlist-button"
-import { MagnifyingGlass } from "@/lib/icons/phosphor"
+import { Search as MagnifyingGlass } from "lucide-react";
+
 import { cn } from "@/lib/utils"
 import { Link } from "@/i18n/routing"
 import { useTranslations } from "next-intl"
@@ -49,7 +50,7 @@ export function MobileHomepageHeader({
               "group-hover:bg-hover group-active:bg-active"
             )}
           >
-            <MagnifyingGlass size={16} weight="regular" className="shrink-0 text-muted-foreground" />
+            <MagnifyingGlass size={16} className="shrink-0 text-muted-foreground" />
             <span className="flex-1 truncate text-xs font-medium text-muted-foreground">{searchPlaceholder}</span>
           </span>
         </button>

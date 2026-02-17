@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useMemo, useCallback } from "react";
-import { CaretRight, Check, MagnifyingGlass, CaretLeft, FolderSimple } from "@/lib/icons/phosphor";
+import { ChevronLeft as CaretLeft, ChevronRight as CaretRight, Check, Folder as FolderSimple, Search as MagnifyingGlass } from "lucide-react";
+
 import {
   Dialog,
   DialogContent,
@@ -63,7 +64,6 @@ function CategorySearchInput({
           "absolute top-1/2 -translate-y-1/2 text-muted-foreground",
           compact ? "left-2.5 size-4" : "left-3.5 size-5 text-muted-foreground"
         )} 
-        weight="bold" 
       />
       <Input
         value={value}
@@ -298,10 +298,10 @@ export function CategorySelector({
       <div className="flex items-center gap-2 shrink-0">
         {selectedCategory && (
           <div className="size-5 rounded-full bg-selected flex items-center justify-center">
-            <Check className="size-3 text-primary" weight="bold" />
+            <Check className="size-3 text-primary" />
           </div>
         )}
-        <CaretRight className="size-4 text-muted-foreground" weight="bold" />
+        <CaretRight className="size-4 text-muted-foreground" />
       </div>
     </button>
   );
@@ -557,11 +557,11 @@ function CategoryModalContent({
                     className="size-8 flex items-center justify-center rounded-lg bg-background border border-border shadow-xs shrink-0 transition-colors hover:bg-hover active:bg-active"
                     aria-label={tCommon("back")}
                   >
-                    <CaretLeft className="size-4" weight="bold" />
+                    <CaretLeft className="size-4" />
                   </button>
                 ) : (
                   <div className="size-8 flex items-center justify-center rounded-lg bg-selected border border-selected-border shrink-0">
-                    <FolderSimple className="size-4 text-primary" weight="bold" />
+                    <FolderSimple className="size-4 text-primary" />
                   </div>
                 )}
                 
@@ -734,11 +734,11 @@ function CategoryCard({
         <div className="shrink-0">
           {hasChildren ? (
             <div className="size-5 rounded-full bg-surface-subtle flex items-center justify-center">
-              <CaretRight className="size-3 text-muted-foreground" weight="bold" />
+              <CaretRight className="size-3 text-muted-foreground" />
             </div>
           ) : isSelected ? (
             <div className="size-5 rounded-full bg-primary flex items-center justify-center">
-              <Check className="size-2.5 text-primary-foreground" weight="bold" />
+              <Check className="size-2.5 text-primary-foreground" />
             </div>
           ) : (
             <div className="size-5 rounded-full border border-border-subtle" />

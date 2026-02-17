@@ -17,14 +17,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { 
-  IconReceipt, 
-  IconCurrencyDollar, 
-  IconPercentage, 
-  IconCalculator,
-  IconDownload,
-  IconFileSpreadsheet,
-} from "@/lib/icons/tabler"
+import { Calculator as IconCalculator, DollarSign as IconCurrencyDollar, Download as IconDownload, FileSpreadsheet as IconFileSpreadsheet, Percent as IconPercentage, Receipt as IconReceipt } from "lucide-react";
+
 
 async function getAccountingData(sellerId: string) {
   const supabase = await createClient()

@@ -15,15 +15,8 @@ import {
     AlertDialogHeader,
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
-import { 
-    Plus, 
-    CreditCard, 
-    Trash, 
-    Star,
-    SpinnerGap,
-    Shield,
-    Lock
-} from "@/lib/icons/phosphor"
+import { CreditCard, Lock, Plus, Shield, LoaderCircle as SpinnerGap, Star, Trash } from "lucide-react";
+
 import { toast } from "sonner"
 
 export type PaymentsContentServerActions = {
@@ -201,7 +194,7 @@ export function PaymentsContent({
                     {isAddingCard ? (
                         <SpinnerGap className="size-4 animate-spin" />
                     ) : (
-                        <Plus className="size-4" weight="bold" />
+                        <Plus className="size-4" />
                     )}
                     {locale === 'bg' ? 'Добави карта' : 'Add Card'}
                 </Button>
@@ -210,7 +203,7 @@ export function PaymentsContent({
             {/* Security Notice */}
             <Card className="bg-surface-subtle border-muted">
                 <CardContent className="flex items-start gap-3 pt-4">
-                    <Shield className="size-5 text-primary shrink-0 mt-0.5" weight="fill" />
+                    <Shield className="size-5 text-primary shrink-0 mt-0.5" />
                     <div className="text-sm">
                         <p className="font-medium">
                             {locale === 'bg' ? 'Вашите данни са защитени' : 'Your data is secure'}
@@ -255,7 +248,7 @@ export function PaymentsContent({
                                 <CardContent className="flex items-center justify-between py-4">
                                     <div className="flex items-center gap-4">
                                         <div className={`w-12 h-8 rounded flex items-center justify-center ${style.bg}`}>
-                                            <CreditCard className={`size-5 ${style.text}`} weight="fill" />
+                                            <CreditCard className={`size-5 ${style.text}`} />
                                         </div>
                                         <div>
                                             <div className="flex items-center gap-2">
@@ -264,7 +257,7 @@ export function PaymentsContent({
                                                 </span>
                                                 {method.is_default && (
                                                     <Badge variant="secondary" className="text-xs">
-                                                        <Star className="size-3 mr-1" weight="fill" />
+                                                        <Star className="size-3 mr-1" />
                                                         {locale === 'bg' ? 'По подразбиране' : 'Default'}
                                                     </Badge>
                                                 )}

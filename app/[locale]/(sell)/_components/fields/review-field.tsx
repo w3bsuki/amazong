@@ -1,17 +1,8 @@
 "use client";
 
 import Image from "next/image";
-import {
-  CheckCircle,
-  Camera,
-  FolderOpen,
-  CurrencyDollar,
-  Truck,
-  Tag,
-  Package,
-  PencilSimple,
-  Warning,
-} from "@/lib/icons/phosphor";
+import { Camera, CircleCheck as CheckCircle, DollarSign as CurrencyDollar, FolderOpen, Package, Pencil as PencilSimple, Tag, Truck, TriangleAlert as Warning } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useSellForm, useSellFormContext } from "../sell-form-provider";
@@ -57,7 +48,7 @@ function ReviewSection({
             <Icon className={cn(
               "size-4.5",
               isComplete ? "text-success" : "text-muted-foreground"
-            )} weight="fill" />
+            )} />
           </div>
           <span className="text-sm font-bold text-foreground">{title}</span>
         </div>
@@ -153,7 +144,7 @@ export function ReviewField({ onEditStep }: ReviewFieldProps) {
         <div className="p-4 rounded-2xl bg-surface-subtle border border-border">
           <div className="flex items-start gap-3.5">
             <div className="size-10 rounded-xl bg-warning/10 flex items-center justify-center shrink-0">
-              <Warning className="size-5 text-warning" weight="fill" />
+              <Warning className="size-5 text-warning" />
             </div>
             <div>
               <p className="text-sm font-bold text-foreground">
@@ -323,7 +314,7 @@ export function ReviewField({ onEditStep }: ReviewFieldProps) {
           {/* Accept offers */}
           {acceptOffers && (
             <div className="flex items-center gap-2 text-sm text-success">
-              <CheckCircle className="size-4" weight="fill" />
+              <CheckCircle className="size-4" />
               {tSell("review.labels.acceptsOffers")}
             </div>
           )}

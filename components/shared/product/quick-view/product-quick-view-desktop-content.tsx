@@ -1,15 +1,8 @@
 "use client"
 
-import {
-  ArrowSquareOut,
-  ArrowsClockwise,
-  Heart,
-  LinkSimple,
-  MapPin,
-  ShieldCheck,
-  Truck,
-} from "@/lib/icons/phosphor"
-import { X } from "lucide-react"
+import { RefreshCw as ArrowsClockwise, SquareArrowOutUpRight as ArrowSquareOut, Heart, Link as LinkSimple, MapPin, ShieldCheck, Truck, X } from "lucide-react";
+
+
 import { useTranslations } from "next-intl"
 
 import { Badge } from "@/components/ui/badge"
@@ -77,7 +70,7 @@ export function ProductQuickViewDesktopContent({
             disabled={!shareEnabled}
             className="border border-border-subtle bg-background text-muted-foreground hover:bg-hover hover:text-foreground active:bg-active"
           >
-            <LinkSimple size={16} weight="bold" />
+            <LinkSimple size={16} />
           </IconButton>
           <IconButton
             type="button"
@@ -95,7 +88,6 @@ export function ProductQuickViewDesktopContent({
           >
             <Heart
               size={16}
-              weight={inWishlist ? "fill" : "regular"}
               className={cn(inWishlist && "fill-primary text-primary")}
             />
           </IconButton>
@@ -200,7 +192,7 @@ export function ProductQuickViewDesktopContent({
 
             <div className="rounded-xl border border-border-subtle bg-surface-subtle p-3 text-sm text-muted-foreground">
               <div className="flex items-start gap-2">
-                <ShieldCheck size={17} weight="fill" className="mt-0.5 shrink-0" />
+                <ShieldCheck size={17} className="mt-0.5 shrink-0" />
                 <div className="min-w-0 flex-1">
                   <p className="font-semibold tracking-tight text-foreground">{tProduct("buyerProtection")}</p>
                   <p className="text-xs text-muted-foreground">{tProduct("buyerProtectionBadgeSubtitle")}</p>
@@ -220,7 +212,7 @@ export function ProductQuickViewDesktopContent({
               className="w-full justify-center gap-2"
             >
               {tModal("viewFullPage")}
-              <ArrowSquareOut size={16} weight="bold" />
+              <ArrowSquareOut size={16} />
             </Button>
           </div>
         </div>

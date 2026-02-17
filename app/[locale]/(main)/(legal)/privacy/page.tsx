@@ -1,9 +1,7 @@
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import { breadcrumbPresets } from "../../../_components/navigation/app-breadcrumb"
-import { 
-  Shield, Eye, Lock, FileText, Database, Bell, 
-  Cookie, UserCheck, Globe, Gear
-} from "@/lib/icons/phosphor"
+import { Bell, Cookie, Database, Eye, FileText, Settings as Gear, Globe, Lock, Shield, UserCheck } from "lucide-react";
+
 import type { Metadata } from 'next'
 import { validateLocale } from "@/i18n/routing"
 import { extractLastUpdatedDate, getPublicDoc, parsePublicDocIntro, parsePublicDocSections } from "@/lib/public-docs"

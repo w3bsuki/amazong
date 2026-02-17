@@ -1,0 +1,24 @@
+{
+  "generatedAt": "2026-02-17T00:24:54.673Z",
+  "sections": {
+    "clientBoundary": {
+      "totalFiles": 777,
+      "useClientFiles": 362,
+      "useClientRatio": 46.59
+    },
+    "oversized": {
+      "over300": 125,
+      "over500": 44
+    },
+    "routes": {
+      "pageCount": 91,
+      "missingLoading": 38,
+      "missingMetadata": 58
+    },
+    "duplicates": {
+      "clones": 259,
+      "duplicatedLines": 5069,
+      "percentage": 3.15
+    }
+  }
+}

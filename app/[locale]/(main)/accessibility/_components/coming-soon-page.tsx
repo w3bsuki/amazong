@@ -5,9 +5,8 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { FieldLabel } from "@/components/shared/field"
 import { Input } from "@/components/ui/input"
-import { 
-  RocketLaunch, Bell, ArrowLeft, CheckCircle
-} from "@/lib/icons/phosphor"
+import { ArrowLeft, Bell, CircleCheck as CheckCircle, Rocket as RocketLaunch } from "lucide-react";
+
 import { useState, useTransition } from "react"
 import type { ReactNode } from "react"
 import { PageShell } from "../../../_components/page-shell"
@@ -87,7 +86,7 @@ export function ComingSoonPage({
 
           {/* Timeline badge */}
           <div className="inline-flex items-center gap-2 px-4 py-2 bg-urgency-stock-bg text-urgency-stock-text rounded-full text-sm font-medium mb-4">
-            <RocketLaunch className="size-4" weight="fill" />
+            <RocketLaunch className="size-4" />
             {labels.expectedLaunch}: {timeline}
           </div>
 
@@ -132,7 +131,7 @@ export function ComingSoonPage({
                 </form>
               ) : (
                 <div className="flex items-center justify-center gap-3 text-status-success">
-                  <CheckCircle className="size-6" weight="fill" />
+                  <CheckCircle className="size-6" />
                   <span className="font-medium">{labels.subscribed}</span>
                 </div>
               )}
@@ -148,7 +147,7 @@ export function ComingSoonPage({
               <ul className="space-y-3">
                 {features.map((feature, index) => (
                   <li key={index} className="flex items-start gap-3">
-                    <CheckCircle className="size-5 text-primary shrink-0 mt-0.5" weight="fill" />
+                    <CheckCircle className="size-5 text-primary shrink-0 mt-0.5" />
                     <span className="text-muted-foreground">{feature}</span>
                   </li>
                 ))}

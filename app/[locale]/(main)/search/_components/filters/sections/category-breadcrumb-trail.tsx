@@ -2,7 +2,8 @@
 
 import { Link } from "@/i18n/routing"
 import { useLocale, useTranslations } from "next-intl"
-import { CaretRight, House } from "@/lib/icons/phosphor"
+import { ChevronRight as CaretRight, House } from "lucide-react";
+
 import { cn } from "@/lib/utils"
 
 interface BreadcrumbCategory {
@@ -61,7 +62,7 @@ export function CategoryBreadcrumbTrail({ ancestry, className }: CategoryBreadcr
         href="/categories"
         className="flex items-center gap-1.5 text-muted-foreground hover:text-foreground transition-colors py-1 group"
       >
-        <House size={14} weight="regular" className="shrink-0 opacity-60 group-hover:opacity-100" />
+        <House size={14} className="shrink-0 opacity-60 group-hover:opacity-100" />
         <span className="hover:underline">{t("allCategories")}</span>
       </Link>
 
@@ -75,7 +76,6 @@ export function CategoryBreadcrumbTrail({ ancestry, className }: CategoryBreadcr
           >
             <CaretRight
               size={10}
-              weight="bold"
               className="text-muted-foreground mr-1 shrink-0"
             />
             <Link
@@ -94,7 +94,6 @@ export function CategoryBreadcrumbTrail({ ancestry, className }: CategoryBreadcr
         >
           <CaretRight
             size={10}
-            weight="bold"
             className="text-primary mr-1 shrink-0"
           />
           <span className="font-semibold text-foreground py-0.5 truncate">

@@ -4,7 +4,8 @@ import { useState, useEffect } from "react"
 import { useTranslations } from "next-intl"
 import { Link } from "@/i18n/routing"
 import { Button } from "@/components/ui/button"
-import { X, Cookie } from "@/lib/icons/phosphor"
+import { Cookie, X } from "lucide-react";
+
 
 const COOKIE_CONSENT_KEY = "cookie-consent"
 const COOKIE_CONSENT_EVENT = "treido:cookie-consent"
@@ -70,7 +71,7 @@ export function CookieConsent() {
                 <div className="p-4">
                     <div className="flex items-start justify-between mb-3">
                         <h2 id="cookie-consent-title" className="text-base font-semibold text-foreground flex items-center gap-2">
-                            <Cookie size={16} weight="regular" className="text-interactive" />
+                            <Cookie size={16} className="text-interactive" />
                             {t('title')}
                         </h2>
                         <button
@@ -78,7 +79,7 @@ export function CookieConsent() {
                             className="p-1.5 text-muted-foreground hover:text-foreground tap-transparent rounded-md hover:bg-muted transition-colors"
                             aria-label={t('close')}
                         >
-                            <X size={20} weight="regular" />
+                            <X size={20} />
                         </button>
                     </div>
                     <p id="cookie-consent-description" className="text-sm text-muted-foreground mb-4 leading-relaxed">
@@ -116,7 +117,7 @@ export function CookieConsent() {
                 <div className="container py-4">
                     <div className="flex items-center justify-between gap-4">
                         <div className="flex-1 flex items-center gap-3">
-                            <Cookie size={20} weight="regular" className="text-accent shrink-0" />
+                            <Cookie size={20} className="text-accent shrink-0" />
                             <p className="text-sm text-foreground">
                                 <span className="font-semibold text-primary-foreground">{t('title')}</span>
                                 {" "}{t('descriptionShort')}

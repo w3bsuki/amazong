@@ -3,7 +3,8 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { useLocale, useTranslations } from "next-intl"
-import { ArrowRight } from "@/lib/icons/phosphor"
+import { ArrowRight } from "lucide-react";
+
 import { Button } from "@/components/ui/button"
 import { AccountTypeCard, type AccountType } from "../_components/account-type-card"
 import { OnboardingShell } from "../_components/onboarding-shell"
@@ -31,7 +32,7 @@ export default function AccountTypePage() {
       footer={
         <Button onClick={handleContinue} disabled={!selectedType} size="lg" className="w-full">
           {t("common.continue")}
-          <ArrowRight className="size-5" weight="bold" />
+          <ArrowRight className="size-5" />
         </Button>
       }
     >

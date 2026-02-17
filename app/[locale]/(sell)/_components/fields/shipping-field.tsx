@@ -1,13 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import {
-  Truck,
-  MapPin,
-  House,
-  Package,
-  CaretRight,
-} from "@/lib/icons/phosphor";
+import { ChevronRight as CaretRight, House, MapPin, Package, Truck } from "lucide-react";
+
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -82,7 +77,7 @@ function ShippingRegionCard({
         <Icon className={cn(
           "size-4.5",
           isSelected ? "text-primary" : "text-muted-foreground"
-        )} weight={isSelected ? "fill" : "bold"} />
+        )} />
       </div>
 
       {/* Content */}
@@ -338,7 +333,7 @@ export function ShippingField({ className, compact = false }: ShippingFieldProps
                     "size-11 rounded-xl flex items-center justify-center shrink-0 transition-colors",
                     sellerCity ? "bg-selected text-primary" : "bg-muted text-muted-foreground"
                   )}>
-                    <MapPin className="size-5" weight={sellerCity ? "fill" : "regular"} />
+                    <MapPin className="size-5" />
                   </div>
                   <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-1.5">
@@ -357,7 +352,7 @@ export function ShippingField({ className, compact = false }: ShippingFieldProps
                 <CaretRight className={cn(
                   "size-5 shrink-0 transition-colors",
                   sellerCity ? "text-primary" : "text-text-subtle"
-                )} weight="bold" />
+                )} />
               </button>
               <SelectDrawer
                 isOpen={isCityDrawerOpen}
@@ -431,7 +426,7 @@ export function ShippingField({ className, compact = false }: ShippingFieldProps
             ? "bg-selected text-primary" 
             : "bg-muted text-muted-foreground"
         )}>
-          <Truck className="size-5" weight={freeShipping ? "fill" : "regular"} />
+          <Truck className="size-5" />
         </div>
         <div className="flex-1 text-left min-w-0">
           <span className="text-base font-semibold block">
@@ -481,7 +476,7 @@ export function ShippingField({ className, compact = false }: ShippingFieldProps
       {/* Package Dimensions */}
       <div className="space-y-3">
         <div className="flex items-center gap-2">
-          <Package className="size-4 text-muted-foreground" weight="bold" />
+          <Package className="size-4 text-muted-foreground" />
           <Label className="text-sm font-semibold">
             {tSell("shipping.dimensions.title")}{" "}
             <span className="font-normal opacity-60">{tSell("common.optionalParenthetical")}</span>
@@ -526,7 +521,7 @@ export function ShippingField({ className, compact = false }: ShippingFieldProps
                   {tSell("shipping.processing.days", { count: processingDays })}
                 </span>
               </div>
-              <CaretRight className="size-4 text-text-subtle shrink-0 ml-2" weight="bold" />
+              <CaretRight className="size-4 text-text-subtle shrink-0 ml-2" />
             </button>
             <SelectDrawer
               isOpen={isProcessingDrawerOpen}
@@ -576,7 +571,7 @@ export function ShippingField({ className, compact = false }: ShippingFieldProps
           <div className="p-4 pb-3 border-b border-border-subtle bg-surface-subtle">
             <div className="flex items-center gap-3.5">
               <div className="flex size-10 items-center justify-center rounded-md bg-form-section-bg border border-form-section-border shadow-xs">
-                <Truck className="size-5 text-muted-foreground" weight="bold" />
+                <Truck className="size-5 text-muted-foreground" />
               </div>
               <div>
                 <FieldLabel className="text-sm font-bold tracking-tight text-foreground">
@@ -596,7 +591,7 @@ export function ShippingField({ className, compact = false }: ShippingFieldProps
           {/* Compact Label - hidden if we use label inside */}
           <div className="hidden">
             <div className="flex items-center gap-2 mb-2">
-              <Truck className="size-4 text-muted-foreground" weight="bold" />
+              <Truck className="size-4 text-muted-foreground" />
               <FieldLabel className="text-sm font-medium">
                 {tSell("shipping.section.title")}
               </FieldLabel>

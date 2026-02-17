@@ -4,19 +4,8 @@ import { useState, useTransition } from "react"
 import { Link } from "@/i18n/routing"
 import { useRouter } from "@/i18n/routing"
 import { formatDistanceToNow } from "date-fns"
-import {
-  ArrowLeft,
-  ArrowRight,
-  CheckCircle,
-  MagnifyingGlass,
-  MapPin,
-  Package,
-  ShoppingBag,
-  SpinnerGap,
-  Star,
-  Storefront,
-  Users,
-} from "@/lib/icons/phosphor"
+import { ArrowLeft, ArrowRight, CircleCheck as CheckCircle, Search as MagnifyingGlass, MapPin, Package, ShoppingBag, LoaderCircle as SpinnerGap, Star, Store as Storefront, Users } from "lucide-react";
+
 
 import { AppBreadcrumb } from "../../../_components/navigation/app-breadcrumb"
 import { Badge } from "@/components/ui/badge"
@@ -73,7 +62,7 @@ function MemberCard({ member, locale }: { member: Member; locale: string }) {
               />
               {(member.is_verified_business || member.verified) && (
                 <div className="absolute -bottom-0.5 -right-0.5 bg-info rounded-full p-0.5 border-2 border-background">
-                  <CheckCircle className="size-3 text-info-foreground" weight="fill" />
+                  <CheckCircle className="size-3 text-info-foreground" />
                 </div>
               )}
             </div>
@@ -96,7 +85,7 @@ function MemberCard({ member, locale }: { member: Member; locale: string }) {
                     variant="outline"
                     className="text-2xs px-1.5 py-0 gap-0.5 text-rating border-rating/30 bg-rating/10"
                   >
-                    <Star className="size-3" weight="fill" />
+                    <Star className="size-3" />
                     {member.tier}
                   </Badge>
                 )}
@@ -178,7 +167,7 @@ export default function MembersPageClient({
 
           <div className="flex items-center gap-3 mb-2">
             <div className="size-12 sm:size-14 bg-hover rounded-full flex items-center justify-center">
-              <Users className="size-6 sm:size-7 text-primary-foreground" weight="fill" />
+              <Users className="size-6 sm:size-7 text-primary-foreground" />
             </div>
             <div>
               <h1 className="text-2xl sm:text-4xl font-bold tracking-tight">{locale === "bg" ? "Общност" : "Community"}</h1>

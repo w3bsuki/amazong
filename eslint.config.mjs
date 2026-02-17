@@ -13,6 +13,17 @@ const tsconfigRootDir = path.dirname(fileURLToPath(import.meta.url));
 
 const baseRestrictedImportPatterns = [
   {
+    group: [
+      "@/lib/icons/phosphor",
+      "@/lib/icons/tabler",
+      "@/lib/icons/lucide-picker",
+      "@/lib/icons/compat",
+      "@phosphor-icons/react",
+    ],
+    message:
+      "Legacy icon compatibility imports are removed. Use explicit icons from `lucide-react` instead.",
+  },
+  {
     group: ["@/components/ui/use-*", "@/components/ui/**/use-*"],
     message:
       "Hooks must live in /hooks (do not create or import hooks from components/ui).",

@@ -5,22 +5,8 @@ import Image from "next/image"
 import { Link } from "@/i18n/routing"
 import { useRouter } from "@/i18n/routing"
 import { toast } from "sonner"
-import {
-  IconPlus,
-  IconPencil,
-  IconTrash,
-  IconExternalLink,
-  IconPackage,
-  IconSearch,
-  IconChevronDown,
-  IconChevronUp,
-  IconSelector,
-  IconCopy,
-  IconDownload,
-  IconDotsVertical,
-  IconX,
-  IconRefresh,
-} from "@/lib/icons/tabler"
+import { ChevronDown as IconChevronDown, ChevronUp as IconChevronUp, Copy as IconCopy, EllipsisVertical as IconDotsVertical, Download as IconDownload, ExternalLink as IconExternalLink, Package as IconPackage, Pencil as IconPencil, Plus as IconPlus, RefreshCw as IconRefresh, Search as IconSearch, ChevronsUpDown as IconSelector, Trash as IconTrash, X as IconX } from "lucide-react";
+
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Checkbox } from "@/components/ui/checkbox"

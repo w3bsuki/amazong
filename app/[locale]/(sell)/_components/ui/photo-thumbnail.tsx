@@ -1,11 +1,8 @@
 "use client";
 
 import Image from "next/image";
-import {
-  Trash,
-  Star,
-  MagnifyingGlassPlus,
-} from "@/lib/icons/phosphor";
+import { Search as MagnifyingGlassPlus, Star, Trash } from "lucide-react";
+
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import type { ProductImage } from "@/lib/sell/schema";
@@ -70,7 +67,7 @@ export function PhotoThumbnail({
       {isCover && (
         <div className="absolute top-1.5 left-1.5 z-10">
           <Badge variant="secondary" className="px-1.5 py-0 gap-1 font-bold text-2xs uppercase tracking-wider bg-background text-primary border-none shadow-sm h-5">
-            <Star className="size-2" weight="fill" />
+            <Star className="size-2" />
             Cover
           </Badge>
         </div>
@@ -84,7 +81,7 @@ export function PhotoThumbnail({
         aria-label="Remove photo"
         title="Remove"
       >
-        <Trash className="size-3" weight="bold" />
+        <Trash className="size-3" />
       </button>
 
       {/* Position Number - Bottom left */}

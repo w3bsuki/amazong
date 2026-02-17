@@ -4,7 +4,8 @@ import * as React from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { toast } from "sonner"
-import { DownloadSimple } from "@/lib/icons/phosphor"
+import { Download as DownloadSimple } from "lucide-react";
+
 import { useTranslations } from "next-intl"
 
 function toYmd(date: Date) {

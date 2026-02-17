@@ -1,6 +1,7 @@
 "use client"
 
-import { IconPackage, IconTruckDelivery, IconClock, IconCurrencyDollar } from "@/lib/icons/tabler"
+import { Clock as IconClock, DollarSign as IconCurrencyDollar, Package as IconPackage, Truck as IconTruckDelivery } from "lucide-react";
+
 
 import { Badge } from "@/components/ui/badge"
 import {

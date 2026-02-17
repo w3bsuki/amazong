@@ -1,7 +1,8 @@
 "use client"
 
 import { useCallback, useEffect, useMemo, useRef, useState, type KeyboardEvent } from "react"
-import { CheckCircle, X } from "@/lib/icons/phosphor"
+import { CircleCheck as CheckCircle, X } from "lucide-react";
+
 import { useRouter } from "next/navigation"
 import { useLocale, useTranslations } from "next-intl"
 
@@ -125,7 +126,7 @@ export function AuthDrawer({ open, mode, onOpenChange, onModeChange }: AuthDrawe
                 size="icon-default"
                 className="text-muted-foreground hover:bg-hover hover:text-foreground active:bg-active focus-visible:ring-2 focus-visible:ring-focus-ring motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth)"
               >
-                <X size={16} weight="bold" />
+                <X size={16} />
               </IconButton>
             </DrawerClose>
           </div>
@@ -199,7 +200,7 @@ export function AuthDrawer({ open, mode, onOpenChange, onModeChange }: AuthDrawe
               className="flex flex-col items-center justify-center gap-3 py-8 text-center"
             >
               <span className="inline-flex size-(--control-primary) items-center justify-center rounded-full bg-primary-subtle text-primary">
-                <CheckCircle size={26} weight="fill" />
+                <CheckCircle size={26} />
               </span>
               <div className="space-y-1">
                 <p className="text-base font-semibold text-foreground">{tAuth("checkYourEmail")}</p>

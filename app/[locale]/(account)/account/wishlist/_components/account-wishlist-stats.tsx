@@ -1,6 +1,7 @@
 "use client"
 
-import { IconHeart, IconPackage, IconPackageOff, IconCurrencyDollar } from "@/lib/icons/tabler"
+import { DollarSign as IconCurrencyDollar, Heart as IconHeart, Package as IconPackage, PackageX as IconPackageOff } from "lucide-react";
+
 
 import { Badge } from "@/components/ui/badge"
 import {

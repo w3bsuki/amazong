@@ -6,13 +6,8 @@ import { useTranslations } from "next-intl"
 import { cn } from "@/lib/utils"
 import type { CategoryAttribute } from "@/lib/data/categories"
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
-import {
-  CaretDown,
-  SquaresFour,
-  Rows,
-  Check,
-  ArrowsDownUp,
-} from "@/lib/icons/phosphor"
+import { ArrowUpDown as ArrowsDownUp, ChevronDown as CaretDown, Check, Rows3 as Rows, LayoutGrid as SquaresFour } from "lucide-react";
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -167,7 +162,7 @@ export function FeedToolbar({
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <button type="button" className={cn(pillBase, pillInactive)}>
-            <ArrowsDownUp size={16} weight="regular" className="shrink-0" />
+            <ArrowsDownUp size={16} className="shrink-0" />
             <span>{t(currentSortLabel)}</span>
             <CaretDown className="size-4 opacity-60 shrink-0" aria-hidden="true" />
           </button>
@@ -234,14 +229,14 @@ export function FeedToolbar({
           aria-label={tViewMode("gridView")}
           className="size-8 p-0 rounded-md data-[state=on]:bg-background data-[state=on]:shadow-sm"
         >
-          <SquaresFour size={18} weight={viewMode === "grid" ? "fill" : "regular"} />
+          <SquaresFour size={18} />
         </ToggleGroupItem>
         <ToggleGroupItem
           value="list"
           aria-label={tViewMode("listView")}
           className="size-8 p-0 rounded-md data-[state=on]:bg-background data-[state=on]:shadow-sm"
         >
-          <Rows size={18} weight={viewMode === "list" ? "fill" : "regular"} />
+          <Rows size={18} />
         </ToggleGroupItem>
       </ToggleGroup>
     </div>

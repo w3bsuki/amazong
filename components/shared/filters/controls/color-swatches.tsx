@@ -1,6 +1,7 @@
 "use client"
 
-import { Check } from "@/lib/icons/phosphor"
+import { Check } from "lucide-react";
+
 import { cn } from "@/lib/utils"
 
 // =============================================================================
@@ -118,7 +119,6 @@ export function ColorSwatches({
               {isActive && (
                 <Check
                   size={16}
-                  weight="bold"
                   className={cn(
                     hex && isLight ? "text-foreground" : "text-overlay-text",
                     !hex && "text-primary"

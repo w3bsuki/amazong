@@ -1,6 +1,7 @@
 "use client"
 
-import { Star } from "@/lib/icons/phosphor"
+import { Star } from "lucide-react";
+
 
 // =============================================================================
 // TYPES
@@ -47,7 +48,7 @@ function ProductCardSocialProof({
     <span className="inline-flex items-center gap-1 text-2xs font-medium text-muted-foreground">
       {hasRating && (
         <>
-          <Star size={11} weight="fill" className="text-top-rated" />
+          <Star size={11} className="text-top-rated" />
           <span className="tabular-nums text-foreground">
             {rating.toFixed(1)}
           </span>

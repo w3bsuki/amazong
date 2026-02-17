@@ -4,20 +4,8 @@ import { Link, useRouter } from "@/i18n/routing"
 import Image from "next/image"
 import { useEffect, useState, useTransition } from "react"
 import { createClient } from "@/lib/supabase/client"
-import {
-  Confetti,
-  ShoppingBag,
-  Storefront,
-  UserCircle,
-  ArrowRight,
-  ArrowLeft,
-  SpinnerGap,
-  CheckCircle,
-  Camera,
-  Image as ImageIcon,
-  Check,
-  Sparkle,
-} from "@/lib/icons/phosphor"
+import { ArrowLeft, ArrowRight, Camera, Check, CircleCheck as CheckCircle, PartyPopper as Confetti, Image as ImageIcon, ShoppingBag, Sparkles as Sparkle, LoaderCircle as SpinnerGap, Store as Storefront, CircleUser as UserCircle } from "lucide-react";
+
 import { motion, AnimatePresence } from "framer-motion"
 import Avatar from "boring-avatars"
 import { Button } from "@/components/ui/button"
@@ -155,7 +143,7 @@ export function WelcomeClient({ locale }: { locale: string }) {
   if (isLoading) {
     return (
       <div className="min-h-dvh flex items-center justify-center">
-        <SpinnerGap className="size-8 text-primary animate-spin motion-reduce:animate-none" weight="bold" />
+        <SpinnerGap className="size-8 text-primary animate-spin motion-reduce:animate-none" />
       </div>
     )
   }
@@ -190,8 +178,8 @@ export function WelcomeClient({ locale }: { locale: string }) {
                 <div className="absolute inset-0 overflow-hidden">
                   <div className="absolute -top-4 -right-4 w-24 h-24 bg-hover rounded-full" />
                   <div className="absolute -bottom-8 -left-8 w-32 h-32 bg-hover rounded-full" />
-                  <Confetti className="absolute top-4 right-4 size-8 text-foreground opacity-80" weight="fill" />
-                  <Confetti className="absolute bottom-4 left-4 size-6 text-foreground opacity-80" weight="fill" />
+                  <Confetti className="absolute top-4 right-4 size-8 text-foreground opacity-80" />
+                  <Confetti className="absolute bottom-4 left-4 size-6 text-foreground opacity-80" />
                 </div>
 
                 <div className="relative">
@@ -201,7 +189,7 @@ export function WelcomeClient({ locale }: { locale: string }) {
                     transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
                     className="size-20 bg-muted rounded-full flex items-center justify-center mx-auto mb-4"
                   >
-                    <CheckCircle className="size-12 text-primary-foreground" weight="fill" />
+                    <CheckCircle className="size-12 text-primary-foreground" />
                   </motion.div>
                   <motion.h1
                     initial={{ opacity: 0, y: 10 }}
@@ -233,7 +221,7 @@ export function WelcomeClient({ locale }: { locale: string }) {
                     onClick={() => setStep(2)}
                     className="w-full h-12 bg-primary text-primary-foreground hover:bg-interactive-hover"
                   >
-                    <Sparkle className="size-5 mr-2" weight="fill" />
+                    <Sparkle className="size-5 mr-2" />
                     Get Started
                   </Button>
                   <button
@@ -293,7 +281,7 @@ export function WelcomeClient({ locale }: { locale: string }) {
                       className="absolute bottom-0 right-0 size-8 bg-primary text-primary-foreground hover:bg-interactive-hover rounded-full flex items-center justify-center cursor-pointer shadow-sm transition-colors"
                       aria-label="Upload avatar image"
                     >
-                      <Camera className="size-4 text-primary-foreground" weight="bold" />
+                      <Camera className="size-4 text-primary-foreground" />
                       <input type="file" accept="image/*" className="hidden" onChange={handleFileChange} />
                     </label>
                   </div>
@@ -481,7 +469,7 @@ export function WelcomeClient({ locale }: { locale: string }) {
                   transition={{ type: "spring", stiffness: 200, delay: 0.1 }}
                   className="size-20 bg-selected rounded-full flex items-center justify-center mx-auto mb-4"
                 >
-                  <Check className="size-10 text-primary" weight="bold" />
+                  <Check className="size-10 text-primary" />
                 </motion.div>
 
                 <h2 className="text-xl font-semibold text-foreground mb-2">You&apos;re all set! 🎉</h2>
@@ -495,7 +483,7 @@ export function WelcomeClient({ locale }: { locale: string }) {
                       className="flex items-center gap-4 p-4 bg-surface-subtle hover:bg-hover active:bg-active rounded-xl border border-border transition-colors group"
                     >
                       <div className="size-12 bg-selected rounded-xl flex items-center justify-center shrink-0">
-                        <ShoppingBag className="size-6 text-primary" weight="duotone" />
+                        <ShoppingBag className="size-6 text-primary" />
                       </div>
                       <div className="flex-1 min-w-0">
                         <h3 className="font-medium text-foreground">Browse Products</h3>
@@ -512,7 +500,7 @@ export function WelcomeClient({ locale }: { locale: string }) {
                       className="flex items-center gap-4 p-4 bg-surface-subtle hover:bg-hover active:bg-active rounded-xl border border-border transition-colors group"
                     >
                       <div className="size-12 bg-primary rounded-xl flex items-center justify-center shrink-0">
-                        <Storefront className="size-6 text-primary-foreground" weight="fill" />
+                        <Storefront className="size-6 text-primary-foreground" />
                       </div>
                       <div className="flex-1 min-w-0">
                         <h3 className="font-medium text-foreground">Start Selling</h3>
@@ -529,7 +517,7 @@ export function WelcomeClient({ locale }: { locale: string }) {
                       className="flex items-center gap-4 p-4 bg-surface-subtle hover:bg-hover active:bg-active rounded-xl border border-border transition-colors group"
                     >
                       <div className="size-12 bg-selected rounded-xl flex items-center justify-center shrink-0">
-                        <UserCircle className="size-6 text-primary" weight="duotone" />
+                        <UserCircle className="size-6 text-primary" />
                       </div>
                       <div className="flex-1 min-w-0">
                         <h3 className="font-medium text-foreground">View Your Profile</h3>

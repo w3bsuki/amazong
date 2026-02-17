@@ -1,7 +1,8 @@
 "use client"
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
-import { CaretRight, DotsThree, FunnelSimple } from "@/lib/icons/phosphor"
+import { ChevronRight as CaretRight, Ellipsis as DotsThree, Funnel as FunnelSimple } from "lucide-react";
+
 import { useTranslations } from "next-intl"
 
 import { Link } from "@/i18n/routing"
@@ -98,7 +99,6 @@ function renderProductCard(product: UIProduct, index: number) {
       {...(product.location ? { location: product.location } : {})}
       titleLines={1}
       layout="feed"
-      showWishlistAction={false}
     />
   )
 }
@@ -508,7 +508,7 @@ export function MobileHome({
                     className: "border-l border-border-subtle",
                   })}
                 >
-                  <DotsThree size={18} weight="bold" className="shrink-0" />
+                  <DotsThree size={18} className="shrink-0" />
                   <span>{tV4("actions.moreCategories")}</span>
                 </button>
               )}
@@ -573,7 +573,7 @@ export function MobileHome({
                     onClick={() => setBrowseOptionsOpen(true)}
                     className={ACTION_CHIP_CLASS}
                   >
-                    <DotsThree size={14} weight="bold" aria-hidden="true" />
+                    <DotsThree size={14} aria-hidden="true" />
                     <span>{tV4("actions.browseOptions")}</span>
                   </button>
                 )}
@@ -585,7 +585,7 @@ export function MobileHome({
                   onClick={() => setFilterOpen(true)}
                   className={cn(ACTION_CHIP_CLASS, hasActiveFilters && "border-foreground")}
                 >
-                  <FunnelSimple size={14} weight={hasActiveFilters ? "fill" : "regular"} aria-hidden="true" />
+                  <FunnelSimple size={14} aria-hidden="true" />
                   <span>{tV4("actions.filter")}</span>
                   {hasActiveFilters && (
                     <span className="inline-flex min-w-5 items-center justify-center rounded-full bg-foreground px-1.5 py-0.5 text-2xs font-semibold text-background">
@@ -607,7 +607,7 @@ export function MobileHome({
             <h2 data-testid="home-v4-context-title" className="min-w-0 truncate text-xs font-semibold">
               {contextTitle}
             </h2>
-            <CaretRight size={14} weight="bold" className="shrink-0 text-muted-foreground" aria-hidden="true" />
+            <CaretRight size={14} className="shrink-0 text-muted-foreground" aria-hidden="true" />
           </Link>
         </section>
 

@@ -3,22 +3,8 @@
 import * as React from "react"
 import { useRouter } from "@/i18n/routing"
 import { useTranslations } from "next-intl"
-import {
-  IconSearch,
-  IconBox,
-  IconShoppingCart,
-  IconPlus,
-  IconChartBar,
-  IconSettings,
-  IconPackage,
-  IconReceipt,
-  IconUsers,
-  IconHome,
-  IconArrowRight,
-  IconFileText,
-  IconTag,
-  IconDiscount,
-} from "@/lib/icons/tabler"
+import { ArrowRight as IconArrowRight, Box as IconBox, ChartColumn as IconChartBar, BadgePercent as IconDiscount, FileText as IconFileText, House as IconHome, Package as IconPackage, Plus as IconPlus, Receipt as IconReceipt, Search as IconSearch, Settings as IconSettings, ShoppingCart as IconShoppingCart, Tag as IconTag, Users as IconUsers } from "lucide-react";
+
 import {
   CommandDialog,
   CommandEmpty,

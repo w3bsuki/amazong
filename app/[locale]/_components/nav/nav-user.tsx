@@ -1,12 +1,7 @@
 "use client"
 
-import {
-  IconCreditCard,
-  IconDotsVertical,
-  IconLogout,
-  IconNotification,
-  IconUserCircle,
-} from "@/lib/icons/tabler"
+import { CreditCard as IconCreditCard, EllipsisVertical as IconDotsVertical, LogOut as IconLogout, Bell as IconNotification, CircleUser as IconUserCircle } from "lucide-react";
+
 import { useTranslations } from "next-intl"
 
 import { UserAvatar } from "@/components/shared/user-avatar"

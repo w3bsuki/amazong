@@ -1,6 +1,7 @@
 "use client"
 
-import { User, Storefront, Check } from "@/lib/icons/phosphor"
+import { Check, Store as Storefront, User } from "lucide-react";
+
 import { Card, CardContent } from "@/components/ui/card"
 import { cn } from "@/lib/utils"
 
@@ -53,7 +54,7 @@ export function AccountTypeCard({
                 : "bg-secondary text-foreground"
             )}
           >
-            <Icon className="size-6" weight={selected ? "fill" : "duotone"} />
+            <Icon className="size-6" />
           </div>
 
           {/* Content */}
@@ -71,7 +72,7 @@ export function AccountTypeCard({
                 : "border-input bg-background"
             )}
           >
-            {selected && <Check className="size-3.5 text-primary-foreground" weight="bold" />}
+            {selected && <Check className="size-3.5 text-primary-foreground" />}
           </div>
         </div>
       </CardContent>

@@ -1,7 +1,8 @@
 "use client"
 
 import type { ReactNode } from "react"
-import { ArrowLeft } from "@/lib/icons/phosphor"
+import { ArrowLeft } from "lucide-react";
+
 
 import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
@@ -40,7 +41,7 @@ export function OnboardingShell({
               onClick={onBack}
               aria-label={backLabel}
             >
-              <ArrowLeft className="size-5" weight="bold" />
+              <ArrowLeft className="size-5" />
             </Button>
           ) : (
             <div className="size-11" aria-hidden="true" />

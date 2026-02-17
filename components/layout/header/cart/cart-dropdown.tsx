@@ -6,7 +6,8 @@ import { IconButton } from "@/components/ui/icon-button"
 import { Link } from "@/i18n/routing"
 import { useTranslations, useLocale } from "next-intl"
 import { useCart, type CartItem } from "@/components/providers/cart-context"
-import { ShoppingCart, Package, Minus, Plus, SpinnerGap, Trash } from "@/lib/icons/phosphor"
+import { Minus, Package, Plus, ShoppingCart, LoaderCircle as SpinnerGap, Trash } from "lucide-react";
+
 import Image from "next/image"
 import { useCallback } from "react"
 import { CountBadge } from "@/components/shared/count-badge"
@@ -47,7 +48,7 @@ export function CartDropdown() {
         >
           <div className="relative inline-flex size-10 cursor-pointer items-center justify-center rounded-md border border-transparent text-header-text motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth) motion-reduce:transition-none hover:border-header-text/20 hover:bg-header-hover [&_svg]:size-6">
             <span className="relative" aria-hidden="true">
-              <ShoppingCart weight="regular" />
+              <ShoppingCart />
               {isReady && totalItems > 0 && (
                 <CountBadge
                   count={totalItems}
@@ -68,7 +69,7 @@ export function CartDropdown() {
       >
         <div className="flex items-center justify-between px-3 py-2 bg-muted border-b border-border">
           <div className="flex items-center gap-1.5">
-            <ShoppingCart size={16} weight="regular" className="text-muted-foreground" />
+            <ShoppingCart size={16} className="text-muted-foreground" />
             <h3 className="font-semibold text-sm text-foreground">{t("title")}</h3>
             <span className="text-xs text-muted-foreground">({isReady ? totalItems : "..."})</span>
           </div>
@@ -76,11 +77,11 @@ export function CartDropdown() {
 
         {!isReady ? (
           <div className="p-4 text-center" aria-live="polite">
-            <SpinnerGap size={20} weight="bold" className="mx-auto animate-spin text-muted-foreground" />
+            <SpinnerGap size={20} className="mx-auto animate-spin text-muted-foreground" />
           </div>
         ) : items.length === 0 ? (
           <div className="p-3 text-center">
-            <ShoppingCart size={36} weight="light" className="text-muted-foreground mx-auto mb-2" />
+            <ShoppingCart size={36} className="text-muted-foreground mx-auto mb-2" />
             <p className="text-muted-foreground text-sm mb-3">{t("empty")}</p>
             <Button variant="cta" size="default" className="w-full" asChild>
               <Link href="/search">
@@ -105,7 +106,7 @@ export function CartDropdown() {
                         />
                       ) : (
                         <div className="size-full flex items-center justify-center text-muted-foreground">
-                          <Package size={18} weight="regular" />
+                          <Package size={18} />
                         </div>
                       )}
                     </div>
@@ -141,7 +142,7 @@ export function CartDropdown() {
                           className="text-muted-foreground motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth) motion-reduce:transition-none hover:bg-muted hover:text-foreground"
                           aria-label={t("decreaseQuantity")}
                         >
-                          <Minus weight="bold" />
+                          <Minus />
                         </IconButton>
                         <span className="text-xs font-medium text-foreground min-w-touch text-center">
                           {item.quantity}
@@ -156,7 +157,7 @@ export function CartDropdown() {
                           className="text-muted-foreground motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth) motion-reduce:transition-none hover:bg-muted hover:text-foreground"
                           aria-label={t("increaseQuantity")}
                         >
-                          <Plus weight="bold" />
+                          <Plus />
                         </IconButton>
                       </div>
                       <IconButton
@@ -169,7 +170,7 @@ export function CartDropdown() {
                         className="text-muted-foreground motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth) motion-reduce:transition-none hover:bg-destructive-subtle hover:text-destructive"
                         aria-label={t("removeItem")}
                       >
-                        <Trash weight="regular" />
+                        <Trash />
                       </IconButton>
                     </div>
                   </div>

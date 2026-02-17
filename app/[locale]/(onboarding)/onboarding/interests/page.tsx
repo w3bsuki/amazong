@@ -3,23 +3,8 @@
 import { useState, useTransition } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { useLocale, useTranslations } from "next-intl"
-import {
-  ArrowRight,
-  TShirt,
-  Desktop,
-  House,
-  Car,
-  Basketball,
-  Sparkle,
-  Hamburger,
-  Wrench,
-  Baby,
-  Palette,
-  Books,
-  GameController,
-  MusicNotes,
-  PawPrint,
-} from "@/lib/icons/phosphor"
+import { ArrowRight, Baby, Dribbble as Basketball, BookOpen as Books, Car, Monitor as Desktop, Gamepad2 as GameController, Menu as Hamburger, House, Music as MusicNotes, Palette, PawPrint, Sparkles as Sparkle, Shirt as TShirt, Wrench } from "lucide-react";
+
 
 import { Button } from "@/components/ui/button"
 import { InterestChip } from "../_components/interest-chip"
@@ -27,20 +12,20 @@ import { OnboardingShell } from "../_components/onboarding-shell"
 import { cn } from "@/lib/utils"
 
 const CATEGORY_ITEMS = [
-  { key: "fashion", icon: <TShirt weight="fill" /> },
-  { key: "electronics", icon: <Desktop weight="fill" /> },
-  { key: "home", icon: <House weight="fill" /> },
-  { key: "automotive", icon: <Car weight="fill" /> },
-  { key: "sports", icon: <Basketball weight="fill" /> },
-  { key: "beauty", icon: <Sparkle weight="fill" /> },
-  { key: "food", icon: <Hamburger weight="fill" /> },
-  { key: "services", icon: <Wrench weight="fill" /> },
-  { key: "kids", icon: <Baby weight="fill" /> },
-  { key: "art", icon: <Palette weight="fill" /> },
-  { key: "books", icon: <Books weight="fill" /> },
-  { key: "gaming", icon: <GameController weight="fill" /> },
-  { key: "music", icon: <MusicNotes weight="fill" /> },
-  { key: "pets", icon: <PawPrint weight="fill" /> },
+  { key: "fashion", icon: <TShirt /> },
+  { key: "electronics", icon: <Desktop /> },
+  { key: "home", icon: <House /> },
+  { key: "automotive", icon: <Car /> },
+  { key: "sports", icon: <Basketball /> },
+  { key: "beauty", icon: <Sparkle /> },
+  { key: "food", icon: <Hamburger /> },
+  { key: "services", icon: <Wrench /> },
+  { key: "kids", icon: <Baby /> },
+  { key: "art", icon: <Palette /> },
+  { key: "books", icon: <Books /> },
+  { key: "gaming", icon: <GameController /> },
+  { key: "music", icon: <MusicNotes /> },
+  { key: "pets", icon: <PawPrint /> },
 ] as const
 
 export default function InterestsPage() {
@@ -114,7 +99,7 @@ export default function InterestsPage() {
             className="w-full"
           >
             {t("common.continue")}
-            <ArrowRight className="size-5" weight="bold" />
+            <ArrowRight className="size-5" />
           </Button>
           <Button variant="ghost" onClick={handleSkip} disabled={isPending} className="w-full">
             {t("common.skipForNow")}

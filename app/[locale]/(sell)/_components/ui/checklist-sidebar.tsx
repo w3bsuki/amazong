@@ -1,6 +1,7 @@
 "use client";
 
-import { Check } from "@/lib/icons/phosphor";
+import { Check } from "lucide-react";
+
 import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
 
@@ -45,7 +46,7 @@ export function ChecklistSidebar({
                 ? "bg-primary border-primary text-primary-foreground" 
                 : "bg-background border-border text-muted-foreground"
             )}>
-              {item.completed && <Check className="size-3" weight="bold" />}
+              {item.completed && <Check className="size-3" />}
               {!item.completed && <span className="text-xs font-semibold">{index + 1}</span>}
             </div>
             <span className={cn(

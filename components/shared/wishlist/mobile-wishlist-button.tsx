@@ -1,7 +1,8 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { Heart } from "@/lib/icons/phosphor"
+import { Heart } from "lucide-react";
+
 import { useWishlist } from "@/components/providers/wishlist-context"
 import { useTranslations } from "next-intl"
 import { CountBadge } from "@/components/shared/count-badge"
@@ -27,7 +28,7 @@ export function MobileWishlistButton() {
         aria-label={tNav("wishlist")}
       >
         <span className="relative" aria-hidden="true">
-          <Heart weight="regular" className="size-icon-header text-header-text" />
+          <Heart className="size-icon-header text-header-text" />
         </span>
       </span>
     )
@@ -43,7 +44,7 @@ export function MobileWishlistButton() {
       }}
     >
       <span className="relative" aria-hidden="true">
-        <Heart weight="regular" className="size-icon-header text-header-text" />
+        <Heart className="size-icon-header text-header-text" />
         {totalItems > 0 && (
           <CountBadge
             count={totalItems}

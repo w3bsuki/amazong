@@ -1,11 +1,8 @@
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import { AppBreadcrumb } from "../../../_components/navigation/app-breadcrumb"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { 
-  ShieldCheck, CreditCard, Lock, Eye, 
-  Warning, Fingerprint, CheckCircle, EnvelopeSimple,
-  LockKey, ShieldStar, UserCircleCheck, Bug
-} from "@/lib/icons/phosphor"
+import { Bug, CircleCheck as CheckCircle, CreditCard, Mail as EnvelopeSimple, Eye, Fingerprint, Lock, KeyRound as LockKey, ShieldCheck, Shield as ShieldStar, CircleUserRound as UserCircleCheck, TriangleAlert as Warning } from "lucide-react";
+
 import { Link } from "@/i18n/routing"
 import { Button } from "@/components/ui/button"
 import { PageShell } from "../../../_components/page-shell"
@@ -74,7 +71,7 @@ export default async function SecurityPage({
           </div>
           <div className="flex items-center gap-4 mb-4">
             <div className="size-14 bg-hover rounded-full flex items-center justify-center">
-              <ShieldCheck className="size-7 text-primary-foreground" weight="fill" />
+              <ShieldCheck className="size-7 text-primary-foreground" />
             </div>
             <div>
               <h1 className="text-2xl md:text-4xl font-bold tracking-tight">{t('heroTitle')}</h1>
@@ -125,7 +122,7 @@ export default async function SecurityPage({
                 <CardContent className="p-5">
                   <div className="flex items-start gap-4">
                     <div className="size-12 bg-surface-subtle rounded-lg flex items-center justify-center shrink-0">
-                      <feature.icon className="size-6 text-primary" weight="duotone" />
+                      <feature.icon className="size-6 text-primary" />
                     </div>
                     <div>
                       <h3 className="font-semibold tracking-tight mb-1">{feature.title}</h3>
@@ -148,7 +145,7 @@ export default async function SecurityPage({
                 <CardContent className="p-5">
                   <div className="flex items-start gap-4">
                     <div className="size-12 bg-success/10 rounded-lg flex items-center justify-center shrink-0">
-                      <feature.icon className="size-6 text-success" weight="duotone" />
+                      <feature.icon className="size-6 text-success" />
                     </div>
                     <div>
                       <h3 className="font-semibold tracking-tight mb-1">{feature.title}</h3>
@@ -171,7 +168,7 @@ export default async function SecurityPage({
                 <CardContent className="p-5">
                   <div className="flex items-start gap-4">
                     <div className="size-12 bg-warning/10 rounded-lg flex items-center justify-center shrink-0">
-                      <feature.icon className="size-6 text-warning" weight="duotone" />
+                      <feature.icon className="size-6 text-warning" />
                     </div>
                     <div>
                       <h3 className="font-semibold tracking-tight mb-1">{feature.title}</h3>
@@ -196,19 +193,19 @@ export default async function SecurityPage({
             <p className="text-muted-foreground">{t('dataProtectionDesc')}</p>
             <ul className="space-y-2">
               <li className="flex items-start gap-2">
-                <CheckCircle className="size-5 text-success shrink-0 mt-0.5" weight="fill" />
+                <CheckCircle className="size-5 text-success shrink-0 mt-0.5" />
                 <span>{t('gdprCompliance')}</span>
               </li>
               <li className="flex items-start gap-2">
-                <CheckCircle className="size-5 text-success shrink-0 mt-0.5" weight="fill" />
+                <CheckCircle className="size-5 text-success shrink-0 mt-0.5" />
                 <span>{t('dataEncryption')}</span>
               </li>
               <li className="flex items-start gap-2">
-                <CheckCircle className="size-5 text-success shrink-0 mt-0.5" weight="fill" />
+                <CheckCircle className="size-5 text-success shrink-0 mt-0.5" />
                 <span>{t('regularAudits')}</span>
               </li>
               <li className="flex items-start gap-2">
-                <CheckCircle className="size-5 text-success shrink-0 mt-0.5" weight="fill" />
+                <CheckCircle className="size-5 text-success shrink-0 mt-0.5" />
                 <span>{t('dataMinimization')}</span>
               </li>
             </ul>
@@ -221,7 +218,7 @@ export default async function SecurityPage({
             <div className="flex flex-col md:flex-row md:items-center gap-4">
               <div className="flex items-center gap-4">
                 <div className="size-14 bg-selected rounded-full flex items-center justify-center shrink-0">
-                  <ShieldCheck className="size-7 text-primary" weight="fill" />
+                  <ShieldCheck className="size-7 text-primary" />
                 </div>
                 <div>
                   <h3 className="text-xl font-bold tracking-tight">{t('reportIssue')}</h3>

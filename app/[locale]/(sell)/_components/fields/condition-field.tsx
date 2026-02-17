@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { Controller } from "react-hook-form";
-import { Sparkle, Check, CaretRight } from "@/lib/icons/phosphor";
+import { ChevronRight as CaretRight, Check, Sparkles as Sparkle } from "lucide-react";
+
 import { Field, FieldLabel, FieldDescription, FieldError, FieldContent } from "@/components/shared/field";
 import { cn } from "@/lib/utils";
 import { conditionOptions } from "@/lib/sell/schema";
@@ -48,7 +49,7 @@ export function ConditionField({ className, compact = false }: ConditionFieldPro
             {!compact && (
               <div className="flex items-center gap-3.5 mb-4">
                 <div className="flex size-10 items-center justify-center rounded-md bg-form-section-bg border border-form-section-border shadow-xs">
-                  <Sparkle className="size-5 text-muted-foreground" weight="bold" />
+                  <Sparkle className="size-5 text-muted-foreground" />
                 </div>
                 <div>
                   <FieldLabel className="text-sm font-bold tracking-tight text-foreground">
@@ -91,7 +92,7 @@ export function ConditionField({ className, compact = false }: ConditionFieldPro
                         "size-11 rounded-xl flex items-center justify-center shrink-0 transition-colors",
                         selectedLabel ? "bg-selected text-primary" : "bg-muted text-muted-foreground"
                       )}>
-                        <Sparkle className="size-5" weight={selectedLabel ? "fill" : "regular"} />
+                        <Sparkle className="size-5" />
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-1.5">
@@ -110,7 +111,7 @@ export function ConditionField({ className, compact = false }: ConditionFieldPro
                       <CaretRight className={cn(
                         "size-5 shrink-0 transition-colors",
                         selectedLabel ? "text-primary" : "text-text-subtle"
-                      )} weight="bold" />
+                      )} />
                     </button>
                   </DrawerTrigger>
                   <DrawerContent className="max-h-dialog">
@@ -149,7 +150,6 @@ export function ConditionField({ className, compact = false }: ConditionFieldPro
                                   "size-6 transition-colors",
                                   isSelected ? "text-primary" : "text-muted-foreground"
                                 )} 
-                                weight={isSelected ? "fill" : "regular"} 
                               />
                             </div>
                             <div className="flex-1 min-w-0 py-0.5">
@@ -162,7 +162,7 @@ export function ConditionField({ className, compact = false }: ConditionFieldPro
                             </div>
                             {isSelected && (
                               <div className="size-7 rounded-full bg-primary flex items-center justify-center shrink-0">
-                                <Check className="size-4 text-primary-foreground" weight="bold" />
+                                <Check className="size-4 text-primary-foreground" />
                               </div>
                             )}
                           </button>

@@ -17,7 +17,8 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
-import { Lightning, X, ArrowsClockwise, CalendarBlank, Warning } from "@/lib/icons/phosphor"
+import { RefreshCw as ArrowsClockwise, Calendar as CalendarBlank, Zap as Lightning, TriangleAlert as Warning, X } from "lucide-react";
+
 import { cn } from "@/lib/utils"
 import { toast } from "sonner"
 import { PlansGrid, type Plan } from "../_components/plan-card"
@@ -325,7 +326,7 @@ export function PlansContent({
               {/* Cancellation Warning */}
               {isCancelledButActive && (
                 <div className="flex items-start gap-2 p-2 rounded-md bg-warning/10 text-warning text-xs">
-                  <Warning className="size-4 shrink-0 mt-0.5" weight="fill" />
+                  <Warning className="size-4 shrink-0 mt-0.5" />
                   <span>
                     {locale === "bg"
                       ? "След тази дата ще бъдете прехвърлени към безплатния план. Можете да се абонирате отново по всяко време."
@@ -483,7 +484,7 @@ export function PlansContent({
           <CardHeader className="p-4 pb-2 md:p-4 md:pb-4">
             <div className="flex items-center gap-2">
               <div className="p-1.5 rounded-md bg-muted">
-                <Lightning className="size-4 text-primary" weight="fill" />
+                <Lightning className="size-4 text-primary" />
               </div>
               <div>
                 <CardTitle className="text-base md:text-lg">

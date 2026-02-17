@@ -9,17 +9,8 @@ import { cn } from "@/lib/utils"
 import type { CategoryAttribute } from "@/lib/data/categories"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import {
-  CaretDown,
-  SquaresFour,
-  Rows,
-  Check,
-  Package,
-  Star,
-  Percent,
-  Sliders,
-  DotsThree,
-} from "@/lib/icons/phosphor"
+import { ChevronDown as CaretDown, Check, Ellipsis as DotsThree, Package, Percent, Rows3 as Rows, SlidersHorizontal as Sliders, LayoutGrid as SquaresFour, Star } from "lucide-react";
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -332,7 +323,7 @@ export function DesktopFilterToolbar({
                 size="default"
                 className={cn(pillBase, totalActiveFilters > 0 ? pillActive : pillInactive)}
               >
-                <Sliders size={14} weight="regular" className="shrink-0" />
+                <Sliders size={14} className="shrink-0" />
                 <span>{tFilters("filters")}</span>
                 {totalActiveFilters > 0 && (
                   <Badge variant="default" className="h-4 min-w-4 px-1 text-2xs rounded-full">
@@ -352,7 +343,7 @@ export function DesktopFilterToolbar({
               size="default"
               className={cn(pillBase, activeQuickFilters.length > 0 ? pillActive : pillInactive)}
             >
-              <DotsThree size={14} weight="bold" className="shrink-0" />
+              <DotsThree size={14} className="shrink-0" />
               <span>{t("tabs.moreFilters", { count: overflowCount })}</span>
             </Button>
           </DropdownMenuTrigger>
@@ -366,7 +357,7 @@ export function DesktopFilterToolbar({
                   onClick={() => toggleQuickFilter(filter)}
                   className={cn(isActive && "bg-accent")}
                 >
-                  <Icon size={16} weight={isActive ? "fill" : "regular"} className="shrink-0 mr-2" />
+                  <Icon size={16} className="shrink-0 mr-2" />
                   <span className="flex-1">{t(filter.labelKey)}</span>
                   {isActive && <Check className="size-4 text-primary" />}
                 </DropdownMenuItem>
@@ -389,14 +380,14 @@ export function DesktopFilterToolbar({
           aria-label={tViewMode("gridView")}
           className="size-11 p-0 rounded-full data-[state=on]:bg-background"
         >
-          <SquaresFour size={16} weight={viewMode === "grid" ? "fill" : "regular"} />
+          <SquaresFour size={16} />
         </ToggleGroupItem>
         <ToggleGroupItem
           value="list"
           aria-label={tViewMode("listView")}
           className="size-11 p-0 rounded-full data-[state=on]:bg-background"
         >
-          <Rows size={16} weight={viewMode === "list" ? "fill" : "regular"} />
+          <Rows size={16} />
         </ToggleGroupItem>
       </ToggleGroup>
     </div>

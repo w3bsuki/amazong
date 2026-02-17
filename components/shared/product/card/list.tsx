@@ -13,7 +13,8 @@ import { ProductCardActions } from "./actions"
 import { ProductCardPrice } from "./price"
 import { FreshnessIndicator } from "../freshness-indicator"
 import { VerifiedSellerBadge } from "../verified-seller-badge"
-import { Truck, MapPin, ShieldCheck } from "@/lib/icons/phosphor"
+import { MapPin, ShieldCheck, Truck } from "lucide-react";
+
 import Image from "next/image"
 import { normalizeImageUrl } from "@/lib/normalize-image-url"
 import { Badge } from "@/components/ui/badge"
@@ -321,13 +322,13 @@ export function ProductCardList({
         <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1">
           {freeShipping && (
             <span className="inline-flex items-center gap-1 text-xs font-medium text-success">
-              <Truck size={14} weight="bold" />
+              <Truck size={14} />
               {t("freeShipping")}
             </span>
           )}
           {showBuyerProtection && (
             <span className="inline-flex items-center gap-1 text-xs font-medium text-muted-foreground">
-              <ShieldCheck size={14} weight="fill" />
+              <ShieldCheck size={14} />
               {t("buyerProtectionInline")}
             </span>
           )}

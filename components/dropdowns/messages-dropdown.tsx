@@ -6,7 +6,8 @@ import { Button } from "@/components/ui/button"
 import { Link } from "@/i18n/routing"
 import { useTranslations } from "next-intl"
 import type { User } from "@supabase/supabase-js"
-import { ChatCircle, CaretRight } from "@/lib/icons/phosphor"
+import { ChevronRight as CaretRight, MessageCircle as ChatCircle } from "lucide-react";
+
 import { createClient } from "@/lib/supabase/client"
 import { CountBadge } from "@/components/shared/count-badge"
 
@@ -102,7 +103,7 @@ export function MessagesDropdown({ user }: MessagesDropdownProps) {
         >
           <div className="inline-flex items-center justify-center border border-transparent hover:border-header-text/20 rounded-md text-header-text hover:text-header-text hover:bg-header-hover active:bg-header-active relative size-11 [&_svg]:size-6 cursor-pointer tap-transparent motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth) motion-reduce:transition-none">
           <span className="relative" aria-hidden="true">
-            <ChatCircle weight="regular" />
+            <ChatCircle />
             {unreadCount > 0 && (
               <CountBadge
                 count={unreadCount}
@@ -122,7 +123,7 @@ export function MessagesDropdown({ user }: MessagesDropdownProps) {
       >
         {/* Header */}
         <div className="flex items-center gap-2 p-4 bg-muted border-b border-border">
-          <ChatCircle size={20} weight="regular" className="text-muted-foreground" />
+          <ChatCircle size={20} className="text-muted-foreground" />
           <h3 className="font-semibold text-base text-foreground">{t("title")}</h3>
           {unreadCount > 0 && (
             <span className="text-xs bg-notification text-primary-foreground px-2 py-0.5 rounded-full" aria-hidden="true">

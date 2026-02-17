@@ -3,17 +3,8 @@
 import * as React from "react"
 import { Link } from "@/i18n/routing"
 import { formatDistanceToNow } from "date-fns"
-import {
-  IconBell,
-  IconShoppingCart,
-  IconPackage,
-  IconStar,
-  IconAlertTriangle,
-  IconCheck,
-  IconX,
-  IconSettings,
-  IconDots,
-} from "@/lib/icons/tabler"
+import { TriangleAlert as IconAlertTriangle, Bell as IconBell, Check as IconCheck, Ellipsis as IconDots, Package as IconPackage, Settings as IconSettings, ShoppingCart as IconShoppingCart, Star as IconStar, X as IconX } from "lucide-react";
+
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { ScrollArea } from "@/components/ui/scroll-area"

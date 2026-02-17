@@ -1,7 +1,8 @@
 "use client"
 
 import { useActionState, useEffect, useMemo, useRef, useState } from "react"
-import { Check, CheckCircle, Eye, EyeSlash, SpinnerGap, X } from "@/lib/icons/phosphor"
+import { Check, CircleCheck as CheckCircle, Eye, EyeOff as EyeSlash, LoaderCircle as SpinnerGap, X } from "lucide-react";
+
 import { useTranslations } from "next-intl"
 
 import { SubmitButton } from "@/components/auth/submit-button"
@@ -136,7 +137,6 @@ export function SignUpFormBody({
           <span className="sr-only">{t("usernameAvailabilityChecking")}</span>
           <SpinnerGap
             className="size-4 animate-spin motion-reduce:animate-none text-muted-foreground"
-            weight="bold"
             aria-hidden="true"
           />
         </span>
@@ -151,7 +151,7 @@ export function SignUpFormBody({
           aria-label={t("usernameAvailabilityAvailable")}
         >
           <span className="sr-only">{t("usernameAvailabilityAvailable")}</span>
-          <CheckCircle className="size-4 text-success" weight="fill" aria-hidden="true" />
+          <CheckCircle className="size-4 text-success" aria-hidden="true" />
         </span>
       )
     }
@@ -327,7 +327,7 @@ export function SignUpFormBody({
                     className={`flex items-center gap-1.5 text-xs transition-colors ${req.met ? "text-foreground" : "text-muted-foreground"}`}
                   >
                     {req.met ? (
-                      <Check className="size-3" weight="bold" aria-hidden="true" />
+                      <Check className="size-3" aria-hidden="true" />
                     ) : (
                       <X className="size-3" aria-hidden="true" />
                     )}

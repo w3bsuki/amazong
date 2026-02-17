@@ -1,6 +1,7 @@
 "use client";
 
-import { Camera, Plus, SpinnerGap } from "@/lib/icons/phosphor";
+import { Camera, Plus, LoaderCircle as SpinnerGap } from "lucide-react";
+
 import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
 
@@ -62,9 +63,9 @@ export function UploadZone({
         <>
           <div className="size-20 rounded-2xl bg-surface-subtle flex items-center justify-center mb-4">
             {isDragActive ? (
-              <Plus className="size-10 text-primary" weight="bold" />
+              <Plus className="size-10 text-primary" />
             ) : (
-              <Camera className="size-10 text-primary" weight="fill" />
+              <Camera className="size-10 text-primary" />
             )}
           </div>
           <div className="text-center space-y-1">

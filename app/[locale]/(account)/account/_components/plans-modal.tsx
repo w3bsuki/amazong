@@ -3,12 +3,8 @@
 import { useState, useEffect, useCallback, useMemo } from "react"
 import { Link } from "@/i18n/routing"
 import { useRouter } from "@/i18n/routing"
-import { 
-  Buildings, 
-  User, 
-  ArrowRight,
-  SealCheck,
-} from "@/lib/icons/phosphor"
+import { ArrowRight, Building2 as Buildings, BadgeCheck as SealCheck, User } from "lucide-react";
+
 import { useLocale } from "next-intl"
 import {
   Dialog,
@@ -207,7 +203,7 @@ export function PlansModal({
           <DialogHeader className="text-center sm:text-center space-y-1">
             <div className="flex items-center justify-center">
               <Badge variant="secondary" className="text-2xs px-2 py-0.5">
-                <SealCheck weight="fill" className="size-2.5 mr-1 text-primary" />
+                <SealCheck className="size-2.5 mr-1 text-primary" />
                 {t.noHiddenFees}
               </Badge>
             </div>
@@ -234,7 +230,7 @@ export function PlansModal({
                 )}
                 aria-pressed={accountType === "personal"}
               >
-                <User weight={accountType === "personal" ? "fill" : "regular"} className="size-3" />
+                <User className="size-3" />
                 {t.personal}
               </button>
               <button
@@ -248,7 +244,7 @@ export function PlansModal({
                 )}
                 aria-pressed={accountType === "business"}
               >
-                <Buildings weight={accountType === "business" ? "fill" : "regular"} className="size-3" />
+                <Buildings className="size-3" />
                 {t.business}
               </button>
             </div>

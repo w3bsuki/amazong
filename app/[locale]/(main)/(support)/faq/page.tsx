@@ -1,11 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { 
-  Package, 
-  CreditCard, 
-  ArrowsClockwise, 
-  User, 
-  Shield
-} from "@/lib/icons/phosphor"
+import { RefreshCw as ArrowsClockwise, CreditCard, Package, Shield, User } from "lucide-react";
+
 import { Link } from "@/i18n/routing"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import { AppBreadcrumb } from "../../../_components/navigation/app-breadcrumb"

@@ -1,13 +1,7 @@
 import * as React from "react"
 import { Link } from "@/i18n/routing"
-import {
-  IconTrendingUp,
-  IconTrendingDown,
-  IconMinus,
-  IconChartBar,
-  IconArrowRight,
-  IconInfoCircle,
-} from "@/lib/icons/tabler"
+import { ArrowRight as IconArrowRight, ChartColumn as IconChartBar, Info as IconInfoCircle, Minus as IconMinus, TrendingDown as IconTrendingDown, TrendingUp as IconTrendingUp } from "lucide-react";
+
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
 import { Badge } from "@/components/ui/badge"

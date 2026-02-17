@@ -1,7 +1,8 @@
 "use client"
 
 import { useState, useMemo } from "react"
-import { Check, MagnifyingGlass } from "@/lib/icons/phosphor"
+import { Check, Search as MagnifyingGlass } from "lucide-react";
+
 import { cn } from "@/lib/utils"
 import { useTranslations } from "next-intl"
 
@@ -61,7 +62,6 @@ export function FilterList({
         <div className="relative">
           <MagnifyingGlass
             size={16}
-            weight="regular"
             className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
           />
           <input
@@ -108,7 +108,7 @@ export function FilterList({
                     isActive ? "bg-primary border-primary" : "border-input"
                   )}
                 >
-                  {isActive && <Check size={12} weight="bold" className="text-primary-foreground" />}
+                  {isActive && <Check size={12} className="text-primary-foreground" />}
                 </div>
                 <span className="text-sm">{option}</span>
               </button>

@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect, useCallback, memo, useMemo } from "react";
-import { Sliders, Plus, X, Info, SpinnerGap, WarningCircle, CheckCircle, CaretRight } from "@/lib/icons/phosphor";
+import { ChevronRight as CaretRight, CircleCheck as CheckCircle, Info, Plus, SlidersHorizontal as Sliders, LoaderCircle as SpinnerGap, CircleAlert as WarningCircle, X } from "lucide-react";
+
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -112,7 +113,7 @@ function AttributeSelect({
               {displayValue || placeholder || tSell("fields.attributes.placeholders.selectEllipsis")}
             </span>
           </div>
-          <CaretRight className="size-4 text-muted-foreground shrink-0 ml-2" weight="bold" />
+          <CaretRight className="size-4 text-muted-foreground shrink-0 ml-2" />
         </button>
         <SelectDrawer
           isOpen={isOpen}
@@ -324,9 +325,9 @@ export function AttributesField({ className, compact = false }: AttributesFieldP
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-2 text-sm font-bold">
               {filledDbRequiredSmartCount === dbRequiredSmartCount ? (
-                <CheckCircle className="size-4 text-primary" weight="fill" />
+                <CheckCircle className="size-4 text-primary" />
               ) : (
-                <WarningCircle className="size-4 text-muted-foreground" weight="fill" />
+                <WarningCircle className="size-4 text-muted-foreground" />
               )}
               <span className="text-foreground uppercase tracking-wider text-xs">
                 {tSell("steps.details.mainSpecificsLabel")}
@@ -498,7 +499,7 @@ export function AttributesField({ className, compact = false }: AttributesFieldP
       {!isLoading && dbRequiredSmart.length === 0 && dbAttributes.length > 0 && (
         <div className="space-y-4">
           <div className="flex items-center gap-2 text-xs font-bold text-muted-foreground uppercase tracking-wider">
-            <Info className="size-4" weight="bold" />
+            <Info className="size-4" />
             {tSell("fields.attributes.helpBuyersHint")}
           </div>
 
@@ -570,7 +571,7 @@ export function AttributesField({ className, compact = false }: AttributesFieldP
                     className="size-8 flex items-center justify-center rounded-lg hover:bg-destructive-subtle text-muted-foreground hover:text-destructive transition-colors"
                     aria-label={tSell("fields.attributes.custom.removeAriaLabel")}
                   >
-                    <X className="size-4" weight="bold" />
+                    <X className="size-4" />
                   </button>
                 </div>
               ))}
@@ -605,7 +606,7 @@ export function AttributesField({ className, compact = false }: AttributesFieldP
               disabled={!newAttrName.trim() || !newAttrValue.trim()}
               className="h-10 rounded-md border-selected-border text-primary font-bold text-xs uppercase tracking-widest hover:bg-hover active:bg-active"
             >
-              <Plus className="size-3.5 mr-2" weight="bold" />
+              <Plus className="size-3.5 mr-2" />
               {tSell("fields.attributes.custom.addButton")}
             </Button>
           </div>
@@ -621,7 +622,7 @@ export function AttributesField({ className, compact = false }: AttributesFieldP
           <div className="p-4 pb-3 border-b border-border-subtle bg-surface-subtle">
             <div className="flex items-center gap-3.5">
               <div className="flex size-10 items-center justify-center rounded-md bg-background border border-border shadow-xs">
-                <Sliders className="size-5 text-muted-foreground" weight="bold" />
+                <Sliders className="size-5 text-muted-foreground" />
               </div>
               <div>
                 <FieldLabel className="text-sm font-bold tracking-tight text-foreground">

@@ -1,8 +1,9 @@
 "use client"
 
 import * as React from "react"
-import { MegaphoneSimple } from "@/lib/icons/phosphor"
-import { Check } from "lucide-react"
+import { Check, Megaphone as MegaphoneSimple } from "lucide-react";
+
+
 import { Link } from "@/i18n/routing"
 import { useLocale, useTranslations } from "next-intl"
 
@@ -216,7 +217,7 @@ export function MobileProductCard({
               data-testid="product-card-ad-badge"
               className="px-1.5"
             >
-              <MegaphoneSimple size={10} weight="fill" aria-hidden="true" />
+              <MegaphoneSimple size={10} aria-hidden="true" />
               <span className="sr-only">{t("adBadge")}</span>
             </Badge>
           </div>

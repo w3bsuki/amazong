@@ -19,21 +19,8 @@ import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { Checkbox } from "@/components/ui/checkbox"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import {
-  ArrowLeft,
-  Package,
-  Truck,
-  MapPin,
-  Clock,
-  CheckCircle,
-  XCircle,
-  ChatCircle,
-  Receipt,
-  Copy,
-  ArrowSquareOut,
-  SpinnerGap,
-  Warning,
-} from "@/lib/icons/phosphor"
+import { ArrowLeft, SquareArrowOutUpRight as ArrowSquareOut, MessageCircle as ChatCircle, CircleCheck as CheckCircle, Clock, Copy, MapPin, Package, Receipt, LoaderCircle as SpinnerGap, Truck, TriangleAlert as Warning, CircleX as XCircle } from "lucide-react";
+
 import { toast } from "sonner"
 import { formatDistanceToNow, format } from "date-fns"
 import { bg, enUS } from "date-fns/locale"
@@ -352,7 +339,7 @@ export function OrderDetailContent({ locale, order, existingSellerFeedbackSeller
           </div>
         </div>
         <Badge variant="secondary" className={`${statusConfig.color} ${statusConfig.text}`}>
-          <StatusIcon className="size-3.5 mr-1" weight="fill" />
+          <StatusIcon className="size-3.5 mr-1" />
           {locale === "bg" ? statusConfig.labelBg : statusConfig.label}
         </Badge>
       </div>
@@ -375,7 +362,7 @@ export function OrderDetailContent({ locale, order, existingSellerFeedbackSeller
                   <div className="flex flex-col items-center flex-1">
                     <div className={`size-8 rounded-full flex items-center justify-center transition-colors ${isActive ? `${config.color} ${config.text}` : "bg-muted text-muted-foreground"
                       }`}>
-                      <Icon className="size-4" weight={isCurrent ? "fill" : "regular"} />
+                      <Icon className="size-4" />
                     </div>
                     <span className={`text-xs mt-1.5 ${isActive ? "font-medium" : "text-muted-foreground"}`}>
                       {locale === "bg" ? config.labelBg : config.label}

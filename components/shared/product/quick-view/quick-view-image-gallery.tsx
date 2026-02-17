@@ -2,7 +2,8 @@
 
 import * as React from "react"
 import Image from "next/image"
-import { CaretRight, CaretLeft } from "@/lib/icons/phosphor"
+import { ChevronLeft as CaretLeft, ChevronRight as CaretRight } from "lucide-react";
+
 import { useTranslations } from "next-intl"
 
 import { Badge } from "@/components/ui/badge"
@@ -88,7 +89,7 @@ export function QuickViewImageGallery({
                   className="absolute left-3 top-1/2 -translate-y-1/2 rounded-full border border-border-subtle bg-background hover:bg-hover active:bg-active"
                   aria-label={tProduct("previousImage")}
                 >
-                  <CaretLeft size={20} weight="bold" />
+                  <CaretLeft size={20} />
                 </Button>
                 <Button
                   type="button"
@@ -98,7 +99,7 @@ export function QuickViewImageGallery({
                   className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full border border-border-subtle bg-background hover:bg-hover active:bg-active"
                   aria-label={tProduct("nextImage")}
                 >
-                  <CaretRight size={20} weight="bold" />
+                  <CaretRight size={20} />
                 </Button>
               </>
             )}
@@ -182,7 +183,7 @@ export function QuickViewImageGallery({
               className="absolute left-2 top-1/2 -translate-y-1/2 rounded-full border border-border-subtle bg-background text-foreground touch-manipulation hover:bg-hover active:bg-active"
               aria-label={tProduct("previousImage")}
             >
-              <CaretLeft size={16} weight="bold" />
+              <CaretLeft size={16} />
             </Button>
             <Button
               type="button"
@@ -192,7 +193,7 @@ export function QuickViewImageGallery({
               className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full border border-border-subtle bg-background text-foreground touch-manipulation hover:bg-hover active:bg-active"
               aria-label={tProduct("nextImage")}
             >
-              <CaretRight size={16} weight="bold" />
+              <CaretRight size={16} />
             </Button>
           </>
         )}

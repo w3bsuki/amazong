@@ -2,7 +2,8 @@
 
 import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
-import { CaretDown, Check } from "@/lib/icons/phosphor";
+import { ChevronDown as CaretDown, Check } from "lucide-react";
+
 import {
   DropdownMenu,
   DropdownMenuContent,

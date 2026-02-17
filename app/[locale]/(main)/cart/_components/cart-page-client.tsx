@@ -8,19 +8,8 @@ import { Button } from "@/components/ui/button"
 import { IconButton } from "@/components/ui/icon-button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
-import {
-  CheckCircle,
-  ShoppingCart,
-  Trash,
-  Heart,
-  SpinnerGap,
-  Truck,
-  ShieldCheck,
-  Minus,
-  Plus,
-  ArrowRight,
-  Package,
-} from "@/lib/icons/phosphor"
+import { ArrowRight, CircleCheck as CheckCircle, Heart, Minus, Package, Plus, ShieldCheck, ShoppingCart, LoaderCircle as SpinnerGap, Trash, Truck } from "lucide-react";
+
 import { AppBreadcrumb, breadcrumbPresets } from "../../../_components/navigation/app-breadcrumb"
 import { useTranslations, useLocale } from "next-intl"
 import { useRecentlyViewed } from "@/hooks/use-recently-viewed"
@@ -139,7 +128,7 @@ export default function CartPageClient() {
 
           <div className="mt-8 lg:mt-12 max-w-md mx-auto text-center">
             <div className="size-24 bg-surface-subtle rounded-full flex items-center justify-center mx-auto mb-6">
-              <ShoppingCart className="size-10 text-muted-foreground" weight="duotone" />
+              <ShoppingCart className="size-10 text-muted-foreground" />
             </div>
             <h1 className="text-2xl font-semibold tracking-tight mb-2">{t("emptyTitle")}</h1>
             <p className="text-muted-foreground mb-8">{t("emptyDescription")}</p>
@@ -226,7 +215,7 @@ export default function CartPageClient() {
                       <CartPageItemImage src={item.image} alt={item.title} priority={index === 0} />
                     ) : (
                       <div className="size-full flex items-center justify-center text-muted-foreground">
-                        <Package size={28} weight="duotone" />
+                        <Package size={28} />
                       </div>
                     )}
                   </Link>
@@ -243,7 +232,7 @@ export default function CartPageClient() {
                     
                     {/* Stock badge */}
                     <div className="flex items-center gap-1 mt-1">
-                      <CheckCircle className="size-3 text-success" weight="fill" />
+                      <CheckCircle className="size-3 text-success" />
                       <span className="text-2xs text-success">{t("inStock")}</span>
                     </div>
 
@@ -278,7 +267,7 @@ export default function CartPageClient() {
                         className="rounded-none border-r border-border hover:bg-muted disabled:opacity-30"
                         aria-label={tCartDropdown("decreaseQuantity")}
                       >
-                        <Minus className="size-3.5" weight="bold" />
+                        <Minus className="size-3.5" />
                       </IconButton>
                       <span className="min-w-touch text-center text-sm font-semibold tabular-nums">{item.quantity}</span>
                       <IconButton
@@ -289,7 +278,7 @@ export default function CartPageClient() {
                         className="rounded-none border-l border-border hover:bg-muted disabled:opacity-30"
                         aria-label={tCartDropdown("increaseQuantity")}
                       >
-                        <Plus className="size-3.5" weight="bold" />
+                        <Plus className="size-3.5" />
                       </IconButton>
                     </div>
 
@@ -351,11 +340,11 @@ export default function CartPageClient() {
 
                   <div className="mt-6 pt-4 border-t border-border space-y-2">
                     <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                      <ShieldCheck className="size-4 text-success" weight="fill" />
+                      <ShieldCheck className="size-4 text-success" />
                       <span>{t("secureCheckout")}</span>
                     </div>
                     <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                      <Truck className="size-4 text-primary" weight="fill" />
+                      <Truck className="size-4 text-primary" />
                       <span>{t("returns30Day")}</span>
                     </div>
                   </div>

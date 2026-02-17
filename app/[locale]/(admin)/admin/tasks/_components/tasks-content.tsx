@@ -2,12 +2,8 @@
 
 import * as React from "react"
 import { useState } from "react"
-import {
-  IconPlus,
-  IconTrash,
-  IconEdit,
-  IconCalendar,
-} from "@/lib/icons/tabler"
+import { Calendar as IconCalendar, Pencil as IconEdit, Plus as IconPlus, Trash as IconTrash } from "lucide-react";
+
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"

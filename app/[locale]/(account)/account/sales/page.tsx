@@ -11,12 +11,8 @@ import { ExportSales } from "./_components/export-sales"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import {
-  CurrencyCircleDollar,
-  ChartLineUp,
-  Storefront,
-  Plus,
-} from "@/lib/icons/phosphor"
+import { ChartLine as ChartLineUp, CircleDollarSign as CurrencyCircleDollar, Plus, Store as Storefront } from "lucide-react";
+
 
 import type { SaleItem } from "./types"
 export type { SaleItem } from "./types"
@@ -282,7 +278,7 @@ export default async function SalesPage({ params, searchParams }: SalesPageProps
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mt-4 mb-6">
           <div className="flex items-center gap-4">
             <div className="size-14 sm:size-16 rounded-md bg-muted border border-border flex items-center justify-center">
-              <ChartLineUp weight="fill" className="size-7 sm:size-8 text-muted-foreground" />
+              <ChartLineUp className="size-7 sm:size-8 text-muted-foreground" />
             </div>
             <div>
               <h1 className="text-xl sm:text-2xl font-bold text-foreground">
@@ -302,7 +298,7 @@ export default async function SalesPage({ params, searchParams }: SalesPageProps
             </Button>
             <Button asChild>
               <Link href="/sell">
-                <Plus weight="bold" className="size-4 mr-2" />
+                <Plus className="size-4 mr-2" />
                 {t("sales.actions.newListing")}
               </Link>
             </Button>
@@ -410,7 +406,7 @@ export default async function SalesPage({ params, searchParams }: SalesPageProps
             <CardContent className="py-16">
               <div className="text-center">
                 <div className="size-20 bg-muted rounded-full mx-auto flex items-center justify-center mb-4">
-                  <CurrencyCircleDollar weight="duotone" className="size-10 text-muted-foreground" />
+                  <CurrencyCircleDollar className="size-10 text-muted-foreground" />
                 </div>
                 <h3 className="text-lg font-semibold text-foreground mb-2">
                   {t("sales.empty.title")}
@@ -420,7 +416,7 @@ export default async function SalesPage({ params, searchParams }: SalesPageProps
                 </p>
                 <Button asChild>
                   <Link href="/sell">
-                    <Plus weight="bold" className="size-4 mr-2" />
+                    <Plus className="size-4 mr-2" />
                     {t("sales.empty.cta")}
                   </Link>
                 </Button>

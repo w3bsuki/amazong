@@ -2,9 +2,11 @@
 
 import { useEffect } from "react"
 import { Button } from "@/components/ui/button"
-import { WarningCircle, ArrowCounterClockwise, House, Storefront, ShoppingCart, Heart, MagnifyingGlass, Users, Tag, Folder, User, CreditCard } from "@/lib/icons/phosphor"
+import { RefreshCcw as ArrowCounterClockwise, CreditCard, Folder, Heart, House, Search as MagnifyingGlass, ShoppingCart, Store as Storefront, Tag, User, Users, CircleAlert as WarningCircle } from "lucide-react";
+import { type LucideIcon as PhosphorIcon } from "lucide-react";
+
 import { Link } from "@/i18n/routing"
-import type { Icon as PhosphorIcon } from "@/lib/icons/phosphor"
+
 
 type ErrorIcon = 
   | "house" 
@@ -88,7 +90,7 @@ export function ErrorBoundaryUI({
     <div className="min-h-(--page-section-min-h) flex items-center justify-center px-4">
       <div className="text-center max-w-md">
         <div className="size-20 bg-destructive-subtle rounded-full flex items-center justify-center mx-auto mb-3">
-          <WarningCircle className="size-10 text-destructive" weight="fill" />
+          <WarningCircle className="size-10 text-destructive" />
         </div>
 
         <h1 className="text-2xl font-bold text-foreground mb-2">{title}</h1>

@@ -3,7 +3,8 @@
 import { useEffect, useState, useTransition } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { useLocale, useTranslations } from "next-intl"
-import { ArrowRight, Camera, SpinnerGap, Check, X } from "@/lib/icons/phosphor"
+import { ArrowRight, Camera, Check, LoaderCircle as SpinnerGap, X } from "lucide-react";
+
 import Image from "next/image"
 import Avatar from "boring-avatars"
 
@@ -123,7 +124,7 @@ export default function ProfilePage() {
     if (usernameAvailable === true) {
       return (
         <span className="flex items-center gap-1.5 text-xs text-success">
-          <Check className="size-4" weight="bold" />
+          <Check className="size-4" />
           {t("profile.available")}
         </span>
       )
@@ -164,7 +165,7 @@ export default function ProfilePage() {
           ) : (
             <>
               {t("common.continue")}
-              <ArrowRight className="size-5" weight="bold" />
+              <ArrowRight className="size-5" />
             </>
           )}
         </Button>
@@ -200,7 +201,7 @@ export default function ProfilePage() {
                 className="absolute -bottom-1 -right-1 size-7 bg-primary text-primary-foreground rounded-full flex items-center justify-center cursor-pointer hover:bg-interactive-hover transition-colors shadow-sm"
                 aria-label={t("profile.profileImageLabel")}
               >
-                <Camera className="size-3.5" weight="bold" />
+                <Camera className="size-3.5" />
                 <input type="file" accept="image/*" className="hidden" onChange={handleAvatarChange} />
               </label>
             </div>

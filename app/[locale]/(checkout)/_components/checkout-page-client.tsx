@@ -6,16 +6,8 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { createClient } from "@/lib/supabase/client"
-import {
-  ShoppingCart,
-  SpinnerGap,
-  Lock,
-  ArrowLeft,
-  Truck,
-  Package,
-  MapPin,
-  ShieldCheck,
-} from "@/lib/icons/phosphor"
+import { ArrowLeft, Lock, MapPin, Package, ShieldCheck, ShoppingCart, LoaderCircle as SpinnerGap, Truck } from "lucide-react";
+
 import { Link } from "@/i18n/routing"
 import { useTranslations, useLocale } from "next-intl"
 import { cn } from "@/lib/utils"
@@ -358,7 +350,7 @@ export default function CheckoutPageClient({
             >
               <div className="flex gap-3">
                 <div className="mt-0.5 shrink-0">
-                  <Lock className="size-4 text-primary" weight="fill" />
+                  <Lock className="size-4 text-primary" />
                 </div>
                 <div className="min-w-0 flex-1">
                   <p className="text-sm font-medium text-foreground">
@@ -389,7 +381,7 @@ export default function CheckoutPageClient({
               <CardHeader className="border-b">
                 <div className="flex items-center justify-between">
                   <CardTitle className="flex items-center gap-2 text-sm">
-                    <MapPin className="size-4 text-primary" weight="fill" />
+                    <MapPin className="size-4 text-primary" />
                     {t("shippingAddress")}
                   </CardTitle>
                   {isAuthenticated && (
@@ -421,7 +413,7 @@ export default function CheckoutPageClient({
             <Card>
               <CardHeader className="border-b">
                 <CardTitle className="flex items-center gap-2 text-sm">
-                  <Truck className="size-4 text-primary" weight="fill" />
+                  <Truck className="size-4 text-primary" />
                   {t("shippingMethod")}
                 </CardTitle>
               </CardHeader>
@@ -441,7 +433,7 @@ export default function CheckoutPageClient({
             <CardHeader className="border-b">
               <div className="flex items-center justify-between">
                 <CardTitle className="flex items-center gap-2 text-sm">
-                  <Package className="size-4 text-primary" weight="fill" />
+                  <Package className="size-4 text-primary" />
                   {t("orderItems")}
                   <Badge variant="secondary" className="ml-1">{totalItems}</Badge>
                 </CardTitle>
@@ -481,8 +473,8 @@ export default function CheckoutPageClient({
 
           {/* Trust badges */}
           <div className="flex items-center justify-center gap-4 py-1 text-2xs text-muted-foreground">
-            <span className="flex items-center gap-1"><Lock className="size-3" weight="fill" />{t("securePayment")}</span>
-            <span className="flex items-center gap-1"><ShieldCheck className="size-3" weight="fill" />{t("buyerProtection")}</span>
+            <span className="flex items-center gap-1"><Lock className="size-3" />{t("securePayment")}</span>
+            <span className="flex items-center gap-1"><ShieldCheck className="size-3" />{t("buyerProtection")}</span>
           </div>
 
           <div className="h-20" aria-hidden="true" />
@@ -496,16 +488,16 @@ export default function CheckoutPageClient({
       )}>
         <div className="px-4 py-3 pb-safe">
           <div className="flex items-center gap-2 mb-2 text-xs text-muted-foreground justify-center">
-            <Lock className="size-3.5 text-success" weight="fill" />
+            <Lock className="size-3.5 text-success" />
             <span>{t("secureCheckout")}</span>
             <span>•</span>
-            <ShieldCheck className="size-3.5 text-success" weight="fill" />
+            <ShieldCheck className="size-3.5 text-success" />
             <span>{t("buyerProtection")}</span>
           </div>
           {isAuthGateActive ? (
             <Button asChild size="lg" className="w-full font-semibold">
               <Link href={authLoginHref}>
-                <Lock className="size-4 mr-2" weight="fill" />
+                <Lock className="size-4 mr-2" />
                 {tAuth("signIn")}
               </Link>
             </Button>
@@ -523,7 +515,7 @@ export default function CheckoutPageClient({
                 </>
               ) : (
                 <>
-                  <Lock className="size-4 mr-2" weight="fill" />
+                  <Lock className="size-4 mr-2" />
                   {t("completeOrder")} · {formatPrice(total)}
                 </>
               )}
@@ -542,7 +534,7 @@ export default function CheckoutPageClient({
             >
               <div className="flex items-start justify-between gap-4">
                 <div className="flex items-start gap-3">
-                  <Lock className="mt-0.5 size-5 text-primary" weight="fill" />
+                  <Lock className="mt-0.5 size-5 text-primary" />
                   <div className="min-w-0">
                     <p className="text-sm font-medium text-foreground">
                       {checkoutNotice.title}
@@ -584,7 +576,7 @@ export default function CheckoutPageClient({
                   <CardHeader className="border-b px-5">
                     <div className="flex items-center justify-between">
                       <CardTitle className="flex items-center gap-2.5 text-base">
-                        <MapPin className="size-5 text-primary" weight="fill" />
+                        <MapPin className="size-5 text-primary" />
                         {t("shippingAddress")}
                       </CardTitle>
                       {isAuthenticated && <Link href="/account/addresses" className="text-xs text-primary font-medium">{t("manageAddresses")}</Link>}
@@ -614,7 +606,7 @@ export default function CheckoutPageClient({
                 <Card>
                   <CardHeader className="border-b px-5">
                     <CardTitle className="flex items-center gap-2.5 text-base">
-                      <Truck className="size-5 text-primary" weight="fill" />
+                      <Truck className="size-5 text-primary" />
                       {t("shippingMethod")}
                     </CardTitle>
                   </CardHeader>
@@ -633,7 +625,7 @@ export default function CheckoutPageClient({
                 <CardHeader className="border-b px-5">
                   <div className="flex items-center justify-between">
                     <CardTitle className="flex items-center gap-2.5 text-base">
-                      <Package className="size-5 text-primary" weight="fill" />
+                      <Package className="size-5 text-primary" />
                       {t("orderItems")}
                       <Badge variant="secondary" className="ml-1">{totalItems}</Badge>
                     </CardTitle>
@@ -682,7 +674,7 @@ export default function CheckoutPageClient({
                   {isAuthGateActive ? (
                     <Button asChild size="lg" className="w-full font-semibold">
                       <Link href={authLoginHref}>
-                        <Lock className="size-4 mr-2" weight="fill" />
+                        <Lock className="size-4 mr-2" />
                         {tAuth("signIn")}
                       </Link>
                     </Button>
@@ -700,7 +692,7 @@ export default function CheckoutPageClient({
                         </>
                       ) : (
                         <>
-                          <Lock className="size-4 mr-2" weight="fill" />
+                          <Lock className="size-4 mr-2" />
                           {t("proceedToPayment")}
                         </>
                       )}
@@ -709,11 +701,11 @@ export default function CheckoutPageClient({
 
                   <div className="flex items-center justify-center gap-4 text-xs text-muted-foreground pt-2">
                     <div className="flex items-center gap-1.5">
-                      <Lock className="size-3.5 text-success" weight="fill" />
+                      <Lock className="size-3.5 text-success" />
                       <span>{t("secureCheckout")}</span>
                     </div>
                     <div className="flex items-center gap-1.5">
-                      <ShieldCheck className="size-3.5 text-success" weight="fill" />
+                      <ShieldCheck className="size-3.5 text-success" />
                       <span>{t("buyerProtection")}</span>
                     </div>
                   </div>

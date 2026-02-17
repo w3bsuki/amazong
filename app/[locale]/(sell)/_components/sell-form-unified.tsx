@@ -2,16 +2,8 @@
 
 import { useState, useCallback, useTransition } from "react";
 import { toast } from "sonner";
-import {
-  CheckCircle,
-  House,
-  Plus,
-  Share,
-  Eye,
-  SpinnerGap,
-  CloudArrowUp,
-  Lightning,
-} from "@/lib/icons/phosphor";
+import { CircleCheck as CheckCircle, CloudUpload as CloudArrowUp, Eye, House, Zap as Lightning, Plus, Share, LoaderCircle as SpinnerGap } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/client";
 import { Link, validateLocale } from "@/i18n/routing";
@@ -228,7 +220,7 @@ function SellFormContent({
             <div className="absolute inset-0 rounded-full border-4 border-border border-t-primary animate-spin" />
             {/* Inner icon */}
             <div className="absolute inset-0 flex items-center justify-center">
-              <CloudArrowUp className="size-10 text-primary animate-bounce" weight="bold" />
+              <CloudArrowUp className="size-10 text-primary animate-bounce" />
             </div>
           </div>
 
@@ -242,7 +234,7 @@ function SellFormContent({
           </div>
 
           <div className="flex items-center justify-center gap-2 text-xs font-bold text-primary uppercase tracking-widest">
-            <SpinnerGap className="size-4 animate-spin" weight="bold" />
+            <SpinnerGap className="size-4 animate-spin" />
             <span>{tSell("publish.pleaseWait")}</span>
           </div>
         </div>
@@ -273,7 +265,7 @@ function SellFormContent({
           <div className="w-full max-w-sm text-center space-y-8">
             {/* Success icon - clean, no animation */}
             <div className="mx-auto w-20 h-20 bg-success rounded-full flex items-center justify-center">
-              <CheckCircle className="size-10 text-success-foreground" weight="fill" />
+              <CheckCircle className="size-10 text-success-foreground" />
             </div>
 
             {/* Success message */}
@@ -322,7 +314,7 @@ function SellFormContent({
                     locale={locale}
                     trigger={
                       <Button variant="outline" className="w-full h-12 gap-2 rounded-md font-semibold">
-                        <Lightning className="size-5 text-primary" weight="fill" />
+                        <Lightning className="size-5 text-primary" />
                         {tBoost("title")}
                       </Button>
                     }

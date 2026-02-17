@@ -1,6 +1,7 @@
 "use client"
 
-import { IconTrendingUp, IconTrendingDown, IconMinus, IconSparkles } from "@/lib/icons/tabler"
+import { Minus as IconMinus, Sparkles as IconSparkles, TrendingDown as IconTrendingDown, TrendingUp as IconTrendingUp } from "lucide-react";
+
 
 interface AccountHeroCardProps {
   totals: {

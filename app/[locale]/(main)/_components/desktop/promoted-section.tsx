@@ -13,7 +13,8 @@
 
 import * as React from "react"
 import { useTranslations } from "next-intl"
-import { Megaphone, ArrowRight } from "@/lib/icons/phosphor"
+import { ArrowRight, Megaphone } from "lucide-react";
+
 import { cn } from "@/lib/utils"
 import { DesktopProductCard } from "@/components/shared/product/card/desktop"
 import { Button } from "@/components/ui/button"
@@ -86,7 +87,7 @@ export function PromotedSection({
       <div className="flex items-center justify-between px-4 py-3 bg-promoted">
         <div className="flex items-center gap-3">
           <div className="flex items-center justify-center size-9 rounded-lg bg-promoted-muted">
-            <Megaphone size={20} weight="fill" className="text-promoted" />
+            <Megaphone size={20} className="text-promoted" />
           </div>
           <h2 className="text-lg font-bold tracking-tight text-promoted-foreground">
             {t("promotedTitle")}

@@ -1,6 +1,7 @@
 import { Card, CardContent } from "@/components/ui/card"
-import { CreditCard, Gift, Printer } from "@/lib/icons/phosphor"
-import { EnvelopeSimple as Mail } from "@/lib/icons/phosphor"
+import { CreditCard, Gift, Mail, Printer } from "lucide-react";
+
+
 
 export default function GiftCardsQuickActions({ t }: { t: (key: string) => string }) {
   return (

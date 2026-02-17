@@ -12,12 +12,8 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import { 
-  IconBuildingStore, 
-  IconUser,
-  IconBell,
-  IconShield,
-} from "@/lib/icons/tabler"
+import { Bell as IconBell, Store as IconBuildingStore, Shield as IconShield, User as IconUser } from "lucide-react";
+
 
 const PROFILE_SELECT_FOR_BUSINESS_SETTINGS =
   'id,username,display_name,business_name,bio,is_verified_business,tier'

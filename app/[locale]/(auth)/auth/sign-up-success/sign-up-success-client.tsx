@@ -1,7 +1,8 @@
 "use client"
 
 import { Link } from "@/i18n/routing"
-import { CheckCircle, EnvelopeSimple } from "@/lib/icons/phosphor"
+import { CircleCheck as CheckCircle, Mail as EnvelopeSimple } from "lucide-react";
+
 import { useTranslations } from "next-intl"
 import { useCallback, useState } from "react"
 import { createClient } from "@/lib/supabase/client"
@@ -60,12 +61,12 @@ export default function SignUpSuccessClient() {
       <div className="space-y-5">
         <div className="flex items-center justify-center">
           <div className="inline-flex size-14 items-center justify-center rounded-full bg-success-subtle text-success">
-            <CheckCircle className="size-8" weight="fill" />
+            <CheckCircle className="size-8" />
           </div>
         </div>
 
         <div className="flex items-start gap-3 rounded-xl border border-selected-border bg-selected p-4 text-left">
-          <EnvelopeSimple className="mt-0.5 size-5 shrink-0 text-primary" weight="duotone" />
+          <EnvelopeSimple className="mt-0.5 size-5 shrink-0 text-primary" />
           <div>
             <p className="text-sm font-medium text-foreground">{t("checkYourEmail")}</p>
             <p className="text-xs text-muted-foreground">{t("confirmEmailInstructions")}</p>

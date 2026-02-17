@@ -13,17 +13,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
-import {
-  Lightning,
-  SpinnerGap,
-  CheckCircle,
-  Rocket,
-  Eye,
-  TrendUp,
-  Clock,
-  Crown,
-  CaretRight,
-} from "@/lib/icons/phosphor"
+import { ChevronRight as CaretRight, CircleCheck as CheckCircle, Clock, Crown, Eye, Zap as Lightning, Rocket, LoaderCircle as SpinnerGap, TrendingUp as TrendUp } from "lucide-react";
+
 import { cn } from "@/lib/utils"
 import { toast } from "sonner"
 import { useTranslations } from "next-intl"
@@ -188,7 +179,7 @@ export function BoostDialog({ product, locale, trigger, onBoostSuccess }: BoostD
     return (
       <div className="flex flex-col gap-1">
         <Badge className="bg-selected text-primary border-0 gap-1">
-          <Lightning className="size-3" weight="fill" />
+          <Lightning className="size-3" />
           {timeLeft 
             ? t('timeLeft', { days: timeLeft.days, hours: timeLeft.hours })
             : t('boostActive')
@@ -213,7 +204,7 @@ export function BoostDialog({ product, locale, trigger, onBoostSuccess }: BoostD
       <DialogTrigger asChild>
         {trigger || (
           <Button variant="outline" size="sm" className="gap-1.5 text-primary border-selected-border hover:bg-hover hover:text-primary">
-            <Lightning className="size-4" weight="bold" />
+            <Lightning className="size-4" />
             {wasBoostExpired ? t('reboost') : t('trigger')}
           </Button>
         )}
@@ -222,7 +213,7 @@ export function BoostDialog({ product, locale, trigger, onBoostSuccess }: BoostD
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <div className="size-10 rounded-lg bg-selected flex items-center justify-center">
-              <Rocket className="size-5 text-primary" weight="fill" />
+              <Rocket className="size-5 text-primary" />
             </div>
             {t('title')}
           </DialogTitle>
@@ -320,7 +311,7 @@ export function BoostDialog({ product, locale, trigger, onBoostSuccess }: BoostD
                 { icon: Clock, text: t('feature4') },
               ].map((feature, i) => (
                 <div key={i} className="flex items-center gap-2 text-sm">
-                  <CheckCircle className="size-4 text-success" weight="fill" />
+                  <CheckCircle className="size-4 text-success" />
                   <span className="text-muted-foreground">{feature.text}</span>
                 </div>
               ))}
@@ -341,7 +332,7 @@ export function BoostDialog({ product, locale, trigger, onBoostSuccess }: BoostD
               </>
             ) : (
               <>
-                <Lightning className="size-4" weight="fill" />
+                <Lightning className="size-4" />
                 {t('boostNow')} • {formatPriceEur(selectedPricing?.priceEur ?? 0)}
               </>
             )}
@@ -367,7 +358,7 @@ export function BoostDialog({ product, locale, trigger, onBoostSuccess }: BoostD
           >
             <div className="flex items-center gap-3">
               <div className="size-9 rounded-lg bg-selected flex items-center justify-center">
-                <Crown className="size-5 text-primary" weight="fill" />
+                <Crown className="size-5 text-primary" />
               </div>
               <div className="text-left">
                 <p className="text-sm font-medium">

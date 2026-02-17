@@ -1,7 +1,9 @@
 "use client"
 
 import { Link } from "@/i18n/routing"
-import { IconCirclePlusFilled, IconMail, type Icon } from "@/lib/icons/tabler"
+import { CirclePlus as IconCirclePlusFilled, Mail as IconMail } from "lucide-react";
+import { type LucideIcon as Icon } from "lucide-react";
+
 import { useTranslations } from "next-intl"
 
 import { Button } from "@/components/ui/button"

@@ -2,8 +2,9 @@
 
 import { useSearchParams } from "next/navigation"
 import { usePathname, useRouter } from "@/i18n/routing"
-import { Star, Sliders, Check, CurrencyDollar } from "@/lib/icons/phosphor"
-import { ChevronDown } from "lucide-react"
+import { Check, ChevronDown, DollarSign as CurrencyDollar, SlidersHorizontal as Sliders, Star } from "lucide-react";
+
+
 import { cn } from "@/lib/utils"
 import { useTranslations } from "next-intl"
 import { Button } from "@/components/ui/button"
@@ -107,7 +108,7 @@ export function DesktopFilters({ attributes = [], categorySlug, categoryId }: De
             size="sm"
             className={cn(triggerClass, hasPriceFilter && triggerActiveClass)}
           >
-            <CurrencyDollar size={14} weight="regular" className="shrink-0" />
+            <CurrencyDollar size={14} className="shrink-0" />
             <span className="max-w-24 truncate">{getPriceLabel()}</span>
             <ChevronDown className="size-3 opacity-50 shrink-0" />
           </Button>
@@ -150,7 +151,7 @@ export function DesktopFilters({ attributes = [], categorySlug, categoryId }: De
             size="sm"
             className={cn(triggerClass, hasRatingFilter && triggerActiveClass)}
           >
-            <Star size={14} weight={hasRatingFilter ? "fill" : "regular"} className="shrink-0 text-rating" />
+            <Star size={14} className="shrink-0 text-rating" />
             <span className="max-w-28 truncate">{getRatingLabel()}</span>
             <ChevronDown className="size-3 opacity-50 shrink-0" />
           </Button>
@@ -167,7 +168,7 @@ export function DesktopFilters({ attributes = [], categorySlug, categoryId }: De
                 >
                   <span className="flex text-rating">
                     {[...Array(5)].map((_, i) => (
-                      <Star key={i} size={14} weight={i < stars ? "fill" : "regular"} />
+                      <Star key={i} size={14} />
                     ))}
                   </span>
                   <span className="text-muted-foreground">{t('andUp')}</span>
@@ -202,7 +203,7 @@ export function DesktopFilters({ attributes = [], categorySlug, categoryId }: De
               size="sm"
               className={cn(triggerClass, activeFilterCount > 0 && triggerActiveClass)}
             >
-              <Sliders size={14} weight="regular" className="shrink-0" />
+              <Sliders size={14} className="shrink-0" />
               <span>{t('filters')}</span>
               {activeFilterCount > 0 && (
                 <Badge variant="default" className="h-4 min-w-4 px-1 text-2xs rounded-full">

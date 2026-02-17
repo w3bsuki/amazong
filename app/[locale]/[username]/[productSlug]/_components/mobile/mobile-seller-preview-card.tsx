@@ -8,8 +8,9 @@
 // and "View Profile" button that opens seller drawer.
 // =============================================================================
 
-import { Star } from "lucide-react"
-import { CheckCircle } from "@/lib/icons/phosphor"
+import { CircleCheck as CheckCircle, Star } from "lucide-react";
+
+
 import { UserAvatar } from "@/components/shared/user-avatar"
 import { Button } from "@/components/ui/button"
 import { useTranslations } from "next-intl"
@@ -72,7 +73,7 @@ export function MobileSellerPreviewCard({
           <div className="flex items-center gap-1.5">
             <h3 className="font-semibold text-foreground truncate">{seller.name}</h3>
             {seller.verified && (
-              <CheckCircle weight="fill" className="size-4 text-primary shrink-0" />
+              <CheckCircle className="size-4 text-primary shrink-0" />
             )}
           </div>
           

@@ -20,13 +20,8 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { BusinessEmptyState } from "../../_components/business-empty-state"
-import {
-  IconUsers,
-  IconMessage,
-  IconTrendingUp,
-  IconShoppingCart,
-  IconCurrencyDollar,
-} from "@/lib/icons/tabler"
+import { DollarSign as IconCurrencyDollar, MessageCircle as IconMessage, ShoppingCart as IconShoppingCart, TrendingUp as IconTrendingUp, Users as IconUsers } from "lucide-react";
+
 
 export default async function BusinessCustomersPage() {
   // Requires paid business subscription

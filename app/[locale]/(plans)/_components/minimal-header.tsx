@@ -1,7 +1,8 @@
 "use client"
 
 import { Link } from "@/i18n/routing"
-import { ArrowLeft, ShoppingCart } from "@/lib/icons/phosphor"
+import { ArrowLeft, ShoppingCart } from "lucide-react";
+
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { useTranslations } from "next-intl"
@@ -70,7 +71,7 @@ export function MinimalHeader({
               className="flex items-center gap-2 hover:opacity-80 transition-opacity focus:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-sm"
               aria-label={tCommon("goToHomepage")}
             >
-              <ShoppingCart className="size-6 text-primary" weight="duotone" />
+              <ShoppingCart className="size-6 text-primary" />
               <span className="text-xl font-semibold tracking-tight">treido.</span>
             </Link>
           </div>

@@ -7,7 +7,8 @@ import { Separator } from "@/components/ui/separator"
 import { cn } from "@/lib/utils"
 import { format } from "date-fns"
 import { bg, enUS } from "date-fns/locale"
-import { CheckCircle, Clock, Package, Receipt, Truck } from "@/lib/icons/phosphor"
+import { CircleCheck as CheckCircle, Clock, Package, Receipt, Truck } from "lucide-react";
+
 import type { OrderItemStatus } from "@/lib/order-status"
 
 type TimelineOrderItem = {
@@ -160,7 +161,7 @@ export function OrderTimeline({ locale, orderCreatedAt, orderStatus, orderItems 
                         isDone ? "bg-foreground text-background border-foreground" : "bg-muted text-muted-foreground"
                       )}
                     >
-                      <Icon className="size-4" weight={isDone ? "fill" : "regular"} />
+                      <Icon className="size-4" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between gap-2">

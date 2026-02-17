@@ -9,7 +9,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
-import { IconExternalLink } from "@/lib/icons/tabler"
+import { ExternalLink as IconExternalLink } from "lucide-react";
+
 
 interface AdminProduct {
   id: string

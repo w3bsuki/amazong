@@ -1,7 +1,8 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { X } from "@/lib/icons/phosphor";
+import { X } from "lucide-react";
+
 import { Link } from "@/i18n/routing";
 import { FilterRadioGroup, FilterRadioItem } from "../controls/filter-radio-group";
 import type { FilterHubSubcategory } from "../filter-hub";
@@ -50,7 +51,7 @@ export function FilterCategorySection({
             aria-label={t("browseAllCategories")}
             title={t("browseAllCategories")}
           >
-            <X size={14} weight="bold" />
+            <X size={14} />
           </Link>
         </div>
 

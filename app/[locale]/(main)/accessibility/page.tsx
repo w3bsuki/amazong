@@ -1,6 +1,7 @@
 import { setRequestLocale, getTranslations } from "next-intl/server"
 import { ComingSoonPage } from "./_components/coming-soon-page"
-import { Wheelchair } from "@/lib/icons/phosphor"
+import { Accessibility as Wheelchair } from "lucide-react";
+
 import type { Metadata } from 'next'
 import { validateLocale } from "@/i18n/routing"
 
@@ -30,7 +31,7 @@ export default async function AccessibilityPage({
   
   return (
     <ComingSoonPage
-      icon={<Wheelchair className="size-10" weight="duotone" />}
+      icon={<Wheelchair className="size-10" />}
       title={t('title')}
       description={t('description')}
       timeline={t('timeline')}

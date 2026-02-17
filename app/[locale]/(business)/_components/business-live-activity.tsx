@@ -1,10 +1,8 @@
 "use client"
 
 import * as React from "react"
-import {
-  IconUsers,
-  IconShoppingCart,
-} from "@/lib/icons/tabler"
+import { ShoppingCart as IconShoppingCart, Users as IconUsers } from "lucide-react";
+
 import { cn } from "@/lib/utils"
 
 interface LiveActivityProps {

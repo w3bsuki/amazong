@@ -2,7 +2,8 @@
 
 import { useEffect } from "react"
 import { Button } from "@/components/ui/button"
-import { ArrowClockwise, WarningCircle } from "@/lib/icons/phosphor"
+import { RefreshCw as ArrowClockwise, CircleAlert as WarningCircle } from "lucide-react";
+
 import {
   NextIntlClientProvider,
   useTranslations,
@@ -41,7 +42,7 @@ function GlobalErrorContent({
     <div className="flex min-h-dvh flex-col items-center justify-center bg-background p-4">
       <div className="mx-auto max-w-md text-center">
         <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-card ring-1 ring-destructive">
-          <WarningCircle className="h-10 w-10 text-destructive" weight="duotone" />
+          <WarningCircle className="h-10 w-10 text-destructive" />
         </div>
         <h1 className="mb-2 text-2xl font-bold tracking-tight">{t("title")}</h1>
         <p className="mb-6 text-muted-foreground">

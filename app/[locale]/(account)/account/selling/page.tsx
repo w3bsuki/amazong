@@ -10,16 +10,8 @@ import {
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import {
-  Plus,
-  Package,
-  Storefront,
-  CurrencyCircleDollar,
-  ShoppingCart,
-  Warning,
-  Star,
-  ChartLineUp,
-} from "@/lib/icons/phosphor"
+import { ChartLine as ChartLineUp, CircleDollarSign as CurrencyCircleDollar, Package, Plus, ShoppingCart, Star, Store as Storefront, TriangleAlert as Warning } from "lucide-react";
+
 import { SellingProductsList } from "./selling-products-list"
 
 interface SellingPageProps {
@@ -135,20 +127,20 @@ export default async function SellingPage({ params }: SellingPageProps) {
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
             <div className="size-11 rounded-full bg-muted border border-border flex items-center justify-center">
-              <Storefront weight="fill" className="size-5 text-muted-foreground" />
+              <Storefront className="size-5 text-muted-foreground" />
             </div>
             <div>
               <div className="flex items-center gap-1.5">
                 <span className="font-semibold">{seller.store_name}</span>
                 {seller.verified && (
-                  <Star weight="fill" className="size-3.5 text-success" />
+                  <Star className="size-3.5 text-success" />
                 )}
               </div>
             </div>
           </div>
           <Button asChild size="sm" className="gap-1.5 rounded-full px-4">
             <Link href="/sell">
-              <Plus weight="bold" className="size-4" />
+              <Plus className="size-4" />
               {t("selling.actions.add")}
             </Link>
           </Button>
@@ -157,7 +149,7 @@ export default async function SellingPage({ params }: SellingPageProps) {
         {/* Revolut-style stats pills */}
         <div className="flex items-center gap-3 text-sm">
           <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-background border border-border-subtle">
-            <Package weight="duotone" className="size-4 text-primary" />
+            <Package className="size-4 text-primary" />
             <span className="font-semibold">{totalProducts}</span>
             <span className="text-muted-foreground">
               {t("selling.stats.productsLabel", { count: totalProducts })}
@@ -177,14 +169,14 @@ export default async function SellingPage({ params }: SellingPageProps) {
       <div className="hidden sm:flex sm:flex-row sm:items-center sm:justify-between gap-4">
         <div className="flex items-center gap-4">
           <div className="size-14 rounded-md bg-muted border border-border flex items-center justify-center">
-            <Storefront weight="fill" className="size-7 text-muted-foreground" />
+            <Storefront className="size-7 text-muted-foreground" />
           </div>
           <div>
             <div className="flex items-center gap-2 flex-wrap">
               <h2 className="text-xl font-bold text-foreground">{seller.store_name}</h2>
               {seller.verified && (
                 <Badge variant="secondary" className="bg-success/10 text-success border-0">
-                  <Star weight="fill" className="size-3 mr-1" />
+                  <Star className="size-3 mr-1" />
                   {t("selling.badges.verified")}
                 </Badge>
               )}
@@ -197,13 +189,13 @@ export default async function SellingPage({ params }: SellingPageProps) {
         <div className="flex items-center gap-2">
           <Button asChild variant="outline" className="gap-2 rounded-full">
             <Link href="/account/sales">
-              <ChartLineUp weight="bold" className="size-4" />
+              <ChartLineUp className="size-4" />
               {t("selling.actions.sales")}
             </Link>
           </Button>
           <Button asChild className="gap-2 rounded-full">
             <Link href="/sell">
-              <Plus weight="bold" className="size-4" />
+              <Plus className="size-4" />
               {t("selling.actions.newListing")}
             </Link>
           </Button>
@@ -215,7 +207,7 @@ export default async function SellingPage({ params }: SellingPageProps) {
         <Card className="@container/card">
           <CardHeader className="p-4">
             <CardDescription className="flex items-center gap-1.5">
-              <Package weight="duotone" className="size-4 shrink-0 text-muted-foreground" />
+              <Package className="size-4 shrink-0 text-muted-foreground" />
               <span className="truncate">{t("selling.stats.products.title")}</span>
             </CardDescription>
             <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
@@ -232,7 +224,7 @@ export default async function SellingPage({ params }: SellingPageProps) {
         <Card className="@container/card">
           <CardHeader className="p-4">
             <CardDescription className="flex items-center gap-1.5">
-              <CurrencyCircleDollar weight="duotone" className="size-4 shrink-0 text-success" />
+              <CurrencyCircleDollar className="size-4 shrink-0 text-success" />
               <span className="truncate">{t("selling.stats.value.title")}</span>
             </CardDescription>
             <CardTitle className="text-2xl font-semibold tabular-nums text-success @[250px]/card:text-3xl">
@@ -249,7 +241,7 @@ export default async function SellingPage({ params }: SellingPageProps) {
         <Card className="@container/card">
           <CardHeader className="p-4">
             <CardDescription className="flex items-center gap-1.5">
-              <ShoppingCart weight="duotone" className="size-4 shrink-0" />
+              <ShoppingCart className="size-4 shrink-0" />
               <span className="truncate">{t("selling.stats.orders.title")}</span>
             </CardDescription>
             <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
@@ -266,7 +258,7 @@ export default async function SellingPage({ params }: SellingPageProps) {
         <Card className={`@container/card ${lowStockProducts > 0 ? "border-warning/20" : ""}`}>
           <CardHeader className="p-4">
             <CardDescription className="flex items-center gap-1.5">
-              <Warning weight="duotone" className="size-4 shrink-0" />
+              <Warning className="size-4 shrink-0" />
               <span className="truncate">{t("selling.stats.lowStock.title")}</span>
             </CardDescription>
             <CardTitle className={`text-2xl font-semibold tabular-nums @[250px]/card:text-3xl ${lowStockProducts > 0 ? 'text-warning' : ''}`}>
@@ -321,7 +313,7 @@ export default async function SellingPage({ params }: SellingPageProps) {
             </div>
             <Button asChild variant="outline" size="sm" className="rounded-full">
               <Link href="/sell">
-                <Plus weight="bold" className="size-4 mr-2" />
+                <Plus className="size-4 mr-2" />
                 {t("selling.actions.add")}
               </Link>
             </Button>

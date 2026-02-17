@@ -24,16 +24,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import {
-  IconX,
-  IconCheck,
-  IconLoader2,
-  IconPhoto,
-  IconUpload,
-  IconTrash,
-  IconGripVertical,
-  IconChevronRight,
-} from "@/lib/icons/tabler"
+import { Check as IconCheck, ChevronRight as IconChevronRight, GripVertical as IconGripVertical, LoaderCircle as IconLoader2, Image as IconPhoto, Trash as IconTrash, Upload as IconUpload, X as IconX } from "lucide-react";
+
 import { cn } from "@/lib/utils"
 
 // Product form schema - matches database columns

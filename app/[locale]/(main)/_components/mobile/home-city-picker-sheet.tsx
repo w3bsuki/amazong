@@ -1,7 +1,8 @@
 "use client"
 
 import { useEffect, useMemo, useState } from "react"
-import { MapPin } from "@/lib/icons/phosphor"
+import { MapPin } from "lucide-react";
+
 import { useTranslations } from "next-intl"
 import { BULGARIAN_CITIES } from "@/lib/bulgarian-cities"
 import { cn } from "@/lib/utils"
@@ -106,7 +107,7 @@ export function HomeCityPickerSheet({
                     )}
                   >
                     <span className="min-w-0 truncate">{label}</span>
-                    {isSelected && <MapPin size={14} weight="fill" aria-hidden="true" />}
+                    {isSelected && <MapPin size={14} aria-hidden="true" />}
                   </button>
                 )
               })}

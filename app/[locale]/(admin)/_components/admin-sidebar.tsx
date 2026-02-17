@@ -3,17 +3,8 @@
 import * as React from "react"
 import { Link } from "@/i18n/routing"
 import { useTranslations } from "next-intl"
-import {
-  IconDashboard,
-  IconUsers,
-  IconBox,
-  IconShoppingCart,
-  IconBuildingStore,
-  IconHome,
-  IconFileText,
-  IconChecklist,
-  IconNote,
-} from "@/lib/icons/tabler"
+import { Box as IconBox, Store as IconBuildingStore, ListChecks as IconChecklist, LayoutDashboard as IconDashboard, FileText as IconFileText, House as IconHome, NotebookText as IconNote, ShoppingCart as IconShoppingCart, Users as IconUsers } from "lucide-react";
+
 
 import { NavMain } from "../../_components/nav/nav-main"
 import { NavSecondary } from "../../_components/nav/nav-secondary"

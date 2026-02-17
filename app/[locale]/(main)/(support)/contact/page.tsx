@@ -5,11 +5,8 @@ import { Button } from "@/components/ui/button"
 import { Field, FieldContent, FieldDescription, FieldLabel } from "@/components/shared/field"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
-import { 
-  Envelope, Phone, MapPin, Clock, 
-  Headphones, Package, CreditCard, Question,
-  CaretRight, PaperPlaneTilt, ShieldCheck
-} from "@/lib/icons/phosphor"
+import { ChevronRight as CaretRight, Clock, CreditCard, Mail as Envelope, Headphones, MapPin, Package, Send as PaperPlaneTilt, Phone, CircleHelp as Question, ShieldCheck } from "lucide-react";
+
 import { PageShell } from "../../../_components/page-shell"
 import { Link } from "@/i18n/routing"
 import type { Metadata } from 'next'

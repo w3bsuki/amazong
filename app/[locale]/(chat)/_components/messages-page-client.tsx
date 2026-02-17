@@ -7,7 +7,8 @@ import { MessageProvider, useMessages } from "@/components/providers/message-con
 import { ConversationList } from "./conversation-list"
 import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
-import { PencilSimpleLine, MagnifyingGlass, ArrowLeft, Tray, EnvelopeSimple, ShoppingCart, Storefront, ChatCircle } from "@/lib/icons/phosphor"
+import { ArrowLeft, MessageCircle as ChatCircle, Mail as EnvelopeSimple, Search as MagnifyingGlass, PencilLine as PencilSimpleLine, ShoppingCart, Store as Storefront, Inbox as Tray } from "lucide-react";
+
 import { Input } from "@/components/ui/input"
 import { Link } from "@/i18n/routing"
 import type { ChatInterfaceServerActions } from "./chat-interface"
@@ -96,8 +97,7 @@ function ChatBottomTabs({
               )}
             >
               <Icon 
-                className="size-5" 
-                weight={isActive ? "fill" : "regular"}
+                className="size-5"
               />
               <span className={cn(
                 "text-2xs font-medium",
@@ -162,7 +162,7 @@ function MessagesContent({ actions }: { actions: ChatInterfaceServerActions }) {
                 className="flex items-center justify-center size-9 rounded-full hover:bg-muted transition-colors lg:hidden"
                 aria-label={labels.back}
               >
-                <ArrowLeft size={20} weight="regular" />
+                <ArrowLeft size={20} />
               </Link>
               <h1 className="text-xl font-bold">{labels.title}</h1>
             </div>
@@ -171,7 +171,7 @@ function MessagesContent({ actions }: { actions: ChatInterfaceServerActions }) {
               className="flex items-center justify-center size-9 rounded-full bg-primary text-primary-foreground hover:bg-interactive-hover transition-colors"
               aria-label={labels.newMessage}
             >
-              <PencilSimpleLine size={20} weight="regular" />
+              <PencilSimpleLine size={20} />
             </button>
           </div>
           
@@ -192,7 +192,7 @@ function MessagesContent({ actions }: { actions: ChatInterfaceServerActions }) {
               className="hidden lg:flex shrink-0 items-center justify-center size-10 rounded-full bg-primary text-primary-foreground hover:bg-interactive-hover transition-colors"
               aria-label={labels.newMessage}
             >
-              <PencilSimpleLine size={20} weight="regular" />
+              <PencilSimpleLine size={20} />
             </button>
           </div>
         </div>
@@ -230,7 +230,7 @@ function MessagesContent({ actions }: { actions: ChatInterfaceServerActions }) {
           <div className="hidden lg:flex flex-col items-center justify-center h-full bg-surface-subtle">
             <div className="flex flex-col items-center gap-4 p-4 text-center max-w-sm">
               <div className="flex size-20 items-center justify-center rounded-full border-2 border-border bg-background">
-                <ChatCircle size={40} weight="regular" className="text-muted-foreground" />
+                <ChatCircle size={40} className="text-muted-foreground" />
               </div>
               <div>
                 <h3 className="text-lg font-semibold mb-1">{t("selectConversation")}</h3>

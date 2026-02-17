@@ -4,7 +4,8 @@ import { useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Check, Crown, Buildings, User, SpinnerGap } from "@/lib/icons/phosphor"
+import { Building2 as Buildings, Check, Crown, LoaderCircle as SpinnerGap, User } from "lucide-react";
+
 import { cn } from "@/lib/utils"
 import { toast } from "sonner"
 
@@ -74,9 +75,9 @@ export function UpgradeContent({
   }
 
   const planIcons: Record<string, React.ReactNode> = {
-    basic: <User className="size-5" weight="duotone" />,
-    premium: <Crown className="size-5" weight="duotone" />,
-    business: <Buildings className="size-5" weight="duotone" />,
+    basic: <User className="size-5" />,
+    premium: <Crown className="size-5" />,
+    business: <Buildings className="size-5" />,
   }
 
   // Filter to only show upgrade options (plans higher than current)
@@ -124,7 +125,7 @@ export function UpgradeContent({
   if (upgradePlans.length === 0) {
     return (
       <div className="text-center py-8">
-        <Crown className="size-12 mx-auto mb-4 text-primary" weight="duotone" />
+        <Crown className="size-12 mx-auto mb-4 text-primary" />
         <h3 className="text-lg font-semibold mb-2">
           {locale === 'bg' ? 'Вие сте на най-високия план!' : "You're on the highest plan!"}
         </h3>
@@ -253,7 +254,7 @@ export function UpgradeContent({
                 <ul className="space-y-1.5">
                   {features.slice(0, 4).map((feature: string, index: number) => (
                     <li key={index} className="flex items-start gap-2 text-sm">
-                      <Check className="size-4 text-primary mt-0.5 shrink-0" weight="bold" />
+                      <Check className="size-4 text-primary mt-0.5 shrink-0" />
                       <span className="line-clamp-1">{feature}</span>
                     </li>
                   ))}

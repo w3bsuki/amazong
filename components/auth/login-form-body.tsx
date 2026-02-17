@@ -1,7 +1,8 @@
 "use client"
 
 import { useActionState, useEffect, useMemo, useRef, useState } from "react"
-import { Eye, EyeSlash } from "@/lib/icons/phosphor"
+import { Eye, EyeOff as EyeSlash } from "lucide-react";
+
 import { useTranslations } from "next-intl"
 
 import { SubmitButton } from "@/components/auth/submit-button"

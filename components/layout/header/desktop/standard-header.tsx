@@ -8,7 +8,8 @@ import {
 import { CartDropdown } from "@/components/layout/header/cart/cart-dropdown"
 import { DesktopSearch } from "./desktop-search"
 import { Button } from "@/components/ui/button"
-import { Camera } from "@/lib/icons/phosphor"
+import { Camera } from "lucide-react";
+
 import { Link } from "@/i18n/routing"
 import { useTranslations } from "next-intl"
 import { useNotificationCount } from "@/hooks/use-notification-count"
@@ -63,7 +64,7 @@ export function DesktopStandardHeader({
               {/* Primary CTA: Create Listing */}
               <Button variant="secondary" size="sm" className="ml-2" asChild>
                 <Link href="/sell">
-                  <Camera weight="regular" className="size-4" />
+                  <Camera className="size-4" />
                   <span className="hidden xl:inline">{t("createListing")}</span>
                 </Link>
               </Button>

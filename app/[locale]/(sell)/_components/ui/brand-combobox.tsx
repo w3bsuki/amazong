@@ -1,8 +1,9 @@
 "use client";
 
 import * as React from "react";
-import { CheckIcon, ShieldCheck, Plus, X } from "lucide-react";
-import { CaretRight } from "@/lib/icons/phosphor";
+import { ChevronRight as CaretRight, CheckIcon, Plus, ShieldCheck, X } from "lucide-react";
+
+
 import { cn } from "@/lib/utils";
 import {
   Command,
@@ -316,7 +317,7 @@ export function BrandCombobox({
             <X className="size-3.5 text-muted-foreground" />
           </button>
         )}
-        <CaretRight className="size-4 text-muted-foreground" weight="bold" />
+        <CaretRight className="size-4 text-muted-foreground" />
       </div>
     </button>
   );

@@ -21,14 +21,8 @@ import { cn } from "@/lib/utils"
 import { useCategoryDrawer } from "@/components/mobile/category-nav/category-drawer-context"
 import { getCategoryName } from "@/lib/category-display"
 import { useCategoryCounts } from "@/hooks/use-category-counts"
-import {
-  ArrowLeft,
-  CaretRight,
-  MagnifyingGlass,
-  Storefront,
-  SquaresFour,
-  X,
-} from "@/lib/icons/phosphor"
+import { ArrowLeft, ChevronRight as CaretRight, Search as MagnifyingGlass, LayoutGrid as SquaresFour, Store as Storefront, X } from "lucide-react";
+
 import { useTranslations } from "next-intl"
 import type { CategoryTreeNode } from "@/lib/category-tree"
 
@@ -214,7 +208,7 @@ export function CategoryBrowseDrawer({
                 onClick={handleBackToRoot}
                 className="shrink-0 text-muted-foreground hover:bg-hover hover:text-foreground active:bg-active focus-visible:ring-2 focus-visible:ring-focus-ring"
               >
-                <ArrowLeft size={16} weight="bold" aria-hidden="true" />
+                <ArrowLeft size={16} aria-hidden="true" />
               </IconButton>
             ) : (
               <span className="size-(--control-compact) shrink-0" aria-hidden="true" />
@@ -279,7 +273,7 @@ export function CategoryBrowseDrawer({
                 className="h-(--control-default) justify-start gap-2 rounded-xl"
                 onClick={handleNavigateToSearch}
               >
-                <SquaresFour size={16} weight="bold" aria-hidden="true" />
+                <SquaresFour size={16} aria-hidden="true" />
                 <span className="truncate">{t("allListings")}</span>
               </Button>
               <Button
@@ -289,7 +283,7 @@ export function CategoryBrowseDrawer({
                 className="h-(--control-default) justify-start gap-2 rounded-xl"
                 onClick={handleNavigateToSellers}
               >
-                <Storefront size={16} weight="bold" aria-hidden="true" />
+                <Storefront size={16} aria-hidden="true" />
                 <span className="truncate">{t("topSellers")}</span>
               </Button>
             </div>
@@ -333,7 +327,6 @@ export function CategoryBrowseDrawer({
                   </span>
                   <CaretRight
                     size={16}
-                    weight="bold"
                     className="shrink-0 text-muted-foreground"
                     aria-hidden="true"
                   />

@@ -1,6 +1,7 @@
 "use client";
 
-import { X } from "@/lib/icons/phosphor";
+import { X } from "lucide-react";
+
 import type { ProductImage } from "@/lib/sell/schema";
 
 interface ImagePreviewModalProps {
@@ -32,7 +33,7 @@ export function ImagePreviewModal({
         className="absolute top-4 right-4 p-3 rounded-full bg-overlay-light/10 hover:bg-overlay-light/20 text-overlay-text transition-colors min-h-11 min-w-11"
         aria-label="Close preview"
       >
-        <X className="size-6" weight="bold" />
+        <X className="size-6" />
       </button>
       <img
         src={image.url}

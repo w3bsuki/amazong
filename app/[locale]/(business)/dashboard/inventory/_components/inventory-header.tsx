@@ -1,4 +1,5 @@
-import { IconAlertTriangle, IconCheck, IconPackage, IconX } from "@/lib/icons/tabler"
+import { TriangleAlert as IconAlertTriangle, Check as IconCheck, Package as IconPackage, X as IconX } from "lucide-react";
+
 
 type InventorySummary = {
   totalStock: number

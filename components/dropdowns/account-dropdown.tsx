@@ -5,7 +5,8 @@ import { Button } from "@/components/ui/button"
 import { Link } from "@/i18n/routing"
 import { useTranslations } from "next-intl"
 import type { User } from "@supabase/supabase-js"
-import { SpinnerGap, UserCircle, Package, Storefront, ChatCircle, Gear, SignOut, CaretRight, CaretDown, Bell } from "@/lib/icons/phosphor"
+import { Bell, ChevronDown as CaretDown, ChevronRight as CaretRight, MessageCircle as ChatCircle, Settings as Gear, Package, LogOut as SignOut, LoaderCircle as SpinnerGap, Store as Storefront, CircleUser as UserCircle } from "lucide-react";
+
 import { useState } from "react"
 import { cn } from "@/lib/utils"
 import { CountBadge } from "@/components/shared/count-badge"
@@ -58,7 +59,7 @@ export function AccountDropdown({ user, variant = "icon", notificationCount = 0,
       <div className="flex items-center gap-2" aria-hidden="true">
         {/* Avatar with notification badge */}
         <div className="relative flex items-center justify-center text-header-text-muted">
-          <UserCircle weight="fill" className="size-7" />
+          <UserCircle className="size-7" />
           {notificationCount > 0 && (
             <CountBadge
               count={notificationCount}
@@ -77,13 +78,13 @@ export function AccountDropdown({ user, variant = "icon", notificationCount = 0,
         </div>
       </div>
       {/* Dropdown arrow indicator */}
-      <CaretDown weight="bold" className="size-3 text-header-text-muted ml-0.5" aria-hidden="true" />
+      <CaretDown className="size-3 text-header-text-muted ml-0.5" aria-hidden="true" />
     </div>
   ) : (
     <div
       className={cn("inline-flex items-center justify-center rounded-md text-header-text hover:bg-header-hover active:bg-header-active relative size-11 [&_svg]:size-6 cursor-pointer tap-transparent motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth) motion-reduce:transition-none", className)}
     >
-      <UserCircle weight="fill" />
+      <UserCircle />
       {notificationCount > 0 && (
         <CountBadge
           count={notificationCount}
@@ -138,7 +139,7 @@ export function AccountDropdown({ user, variant = "icon", notificationCount = 0,
               {/* Notifications link with badge */}
               <Link href="/account/notifications" className={cn(menuLinkClass, "justify-between")}>
                 <span className="flex items-center gap-2.5">
-                  <Bell size={16} weight="regular" className="text-muted-foreground" />
+                  <Bell size={16} className="text-muted-foreground" />
                   {tNotifications("title")}
                 </span>
                 {notificationCount > 0 && (
@@ -148,19 +149,19 @@ export function AccountDropdown({ user, variant = "icon", notificationCount = 0,
                 )}
               </Link>
               <Link href="/account/orders" className={menuLinkClass}>
-                <Package size={16} weight="regular" className="text-muted-foreground" />
+                <Package size={16} className="text-muted-foreground" />
                 {tAccount("header.orders")}
               </Link>
               <Link href="/account/sales" className={menuLinkClass}>
-                <Storefront size={16} weight="regular" className="text-muted-foreground" />
+                <Storefront size={16} className="text-muted-foreground" />
                 {tAccount("header.sales")}
               </Link>
               <Link href="/chat" className={menuLinkClass}>
-                <ChatCircle size={16} weight="regular" className="text-muted-foreground" />
+                <ChatCircle size={16} className="text-muted-foreground" />
                 {t("messages")}
               </Link>
               <Link href="/account/settings" className={menuLinkClass}>
-                <Gear size={16} weight="regular" className="text-muted-foreground" />
+                <Gear size={16} className="text-muted-foreground" />
                 {tAccountDrawer("settings")}
               </Link>
             </nav>
@@ -169,7 +170,7 @@ export function AccountDropdown({ user, variant = "icon", notificationCount = 0,
             <div className="border-t border-border py-1">
               <Link href="/account" className={cn(menuLinkClass, "justify-between")}>
                 <span>{tAccount("header.myAccount")}</span>
-                <CaretRight size={14} weight="regular" className="text-muted-foreground" />
+                <CaretRight size={14} className="text-muted-foreground" />
               </Link>
             </div>
 
@@ -185,7 +186,7 @@ export function AccountDropdown({ user, variant = "icon", notificationCount = 0,
                   {isSigningOut ? (
                     <SpinnerGap size={16} className="animate-spin" />
                   ) : (
-                    <SignOut size={16} weight="regular" />
+                    <SignOut size={16} />
                   )}
                   {t("signOut")}
                 </Button>

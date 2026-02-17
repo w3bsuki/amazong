@@ -2,7 +2,8 @@
 
 import { IconButton } from "@/components/ui/icon-button"
 import { UserAvatar } from "@/components/shared/user-avatar"
-import { ArrowLeft, Export, Heart } from "@/lib/icons/phosphor"
+import { ArrowLeft, Share as Export, Heart } from "lucide-react";
+
 import { cn } from "@/lib/utils"
 import { useTranslations } from "next-intl"
 import { useWishlist } from "@/components/providers/wishlist-context"
@@ -88,7 +89,7 @@ export function MobileProductHeader({
           aria-label={tProduct("back")}
           onClick={onBack}
         >
-          <ArrowLeft className="size-icon-sm" weight="bold" />
+          <ArrowLeft className="size-icon-sm" />
         </IconButton>
 
         {/* Center Content: Avatar + Title */}
@@ -146,8 +147,7 @@ export function MobileProductHeader({
                   isWishlisted 
                     ? "fill-wishlist-active text-wishlist-active" 
                     : "text-foreground"
-                )} 
-                weight={isWishlisted ? "fill" : "regular"}
+                )}
               />
             </IconButton>
           )}
@@ -162,7 +162,7 @@ export function MobileProductHeader({
             aria-label={tProduct("share")}
             onClick={handleShare}
           >
-            <Export className="size-icon-sm" weight="bold" />
+            <Export className="size-icon-sm" />
           </IconButton>
         </div>
       </div>

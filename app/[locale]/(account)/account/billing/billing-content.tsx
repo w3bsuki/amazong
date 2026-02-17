@@ -17,25 +17,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import {
-  Receipt,
-  CreditCard,
-  Crown,
-  Lightning,
-  ArrowUpRight,
-  Download,
-  ArrowSquareOut,
-  CalendarBlank,
-  CurrencyCircleDollar,
-  CheckCircle,
-  Clock,
-  XCircle,
-  SpinnerGap,
-  Sparkle,
-  Package,
-  Info,
-  ArrowRight,
-} from "@/lib/icons/phosphor"
+import { ArrowRight, SquareArrowOutUpRight as ArrowSquareOut, ArrowUpRight, Calendar as CalendarBlank, CircleCheck as CheckCircle, Clock, CreditCard, Crown, CircleDollarSign as CurrencyCircleDollar, Download, Info, Zap as Lightning, Package, Receipt, Sparkles as Sparkle, LoaderCircle as SpinnerGap, CircleX as XCircle } from "lucide-react";
+
 import { cn } from "@/lib/utils"
 import { toast } from "sonner"
 import { format, formatDistanceToNow } from "date-fns"
@@ -271,7 +254,7 @@ export function BillingContent({
       case 'succeeded':
         return (
           <Badge variant="secondary" className="bg-success/10 text-success">
-            <CheckCircle className="size-3 mr-1" weight="fill" />
+            <CheckCircle className="size-3 mr-1" />
             {t.paid}
           </Badge>
         )
@@ -279,7 +262,7 @@ export function BillingContent({
       case 'pending':
         return (
           <Badge variant="secondary" className="bg-warning/10 text-warning">
-            <Clock className="size-3 mr-1" weight="fill" />
+            <Clock className="size-3 mr-1" />
             {t.open}
           </Badge>
         )
@@ -287,7 +270,7 @@ export function BillingContent({
       case 'failed':
         return (
           <Badge variant="secondary" className="bg-destructive-subtle text-destructive">
-            <XCircle className="size-3 mr-1" weight="fill" />
+            <XCircle className="size-3 mr-1" />
             {t.void}
           </Badge>
         )
@@ -341,7 +324,7 @@ export function BillingContent({
             </Link>
             <Link href={withLocale("/account/plans")}>
               <Button size="sm" className="gap-1.5">
-                <Crown className="size-4" weight="fill" />
+                <Crown className="size-4" />
                 {t.viewPlans}
               </Button>
             </Link>
@@ -354,7 +337,7 @@ export function BillingContent({
         <Card className="border-dashed">
           <CardContent className="flex flex-col items-center justify-center py-12 text-center">
             <div className="rounded-full bg-selected p-4 mb-4">
-              <Crown className="size-8 text-primary" weight="duotone" />
+              <Crown className="size-8 text-primary" />
             </div>
             <h2 className="text-lg font-semibold mb-2">{t.startSelling}</h2>
             <p className="text-muted-foreground text-sm max-w-md mb-4">
@@ -376,7 +359,7 @@ export function BillingContent({
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between gap-4">
               <CardTitle className="text-lg flex items-center gap-2">
-                <Crown className="size-5 text-primary" weight="fill" />
+                <Crown className="size-5 text-primary" />
                 {t.currentPlan}
               </CardTitle>
               {subscription && (
@@ -405,9 +388,9 @@ export function BillingContent({
                         "bg-muted"
                   )}>
                     {seller.tier === 'business' ? (
-                      <Sparkle className="size-5 text-primary" weight="fill" />
+                      <Sparkle className="size-5 text-primary" />
                     ) : seller.tier === 'premium' ? (
-                      <Crown className="size-5 text-warning" weight="fill" />
+                      <Crown className="size-5 text-warning" />
                     ) : (
                       <Package className="size-5 text-muted-foreground" />
                     )}
@@ -472,7 +455,7 @@ export function BillingContent({
                 {seller.tier !== 'business' && (
                   <Link href={withLocale("/account/plans")}>
                     <Button className="gap-1.5 w-full">
-                      <ArrowUpRight className="size-4" weight="bold" />
+                      <ArrowUpRight className="size-4" />
                       {t.upgradePlan}
                     </Button>
                   </Link>
@@ -663,7 +646,7 @@ export function BillingContent({
                 </div>
                 <Link href={withLocale("/account/selling")}>
                   <Button size="sm" className="gap-1.5">
-                    <Lightning className="size-4" weight="fill" />
+                    <Lightning className="size-4" />
                     {t.boostProduct}
                   </Button>
                 </Link>
@@ -730,7 +713,7 @@ export function BillingContent({
                               <TableCell>
                                 {boost.is_active && !isExpired ? (
                                   <Badge className="bg-selected text-primary">
-                                    <Lightning className="size-3 mr-1" weight="fill" />
+                                    <Lightning className="size-3 mr-1" />
                                     {t.activeBadge}
                                   </Badge>
                                 ) : (

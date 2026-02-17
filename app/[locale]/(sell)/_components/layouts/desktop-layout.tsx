@@ -2,14 +2,8 @@
 
 import { useCallback } from "react";
 import { useTranslations } from "next-intl";
-import {
-  Rocket,
-  Sparkle,
-  Spinner,
-  Check,
-  Warning,
-  X,
-} from "@/lib/icons/phosphor";
+import { Check, Rocket, Sparkles as Sparkle, Loader as Spinner, TriangleAlert as Warning, X } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
 import { PageContainer } from "../layout/page-container";
 import { cn } from "@/lib/utils";
@@ -185,12 +179,12 @@ export function DesktopLayout({
                   </>
                 ) : progress === 100 ? (
                   <>
-                    <Rocket className="size-5" weight="bold" />
+                    <Rocket className="size-5" />
                     {tSell("actions.publishListing")}
                   </>
                 ) : (
                   <>
-                    <Sparkle className="size-5" weight="bold" />
+                    <Sparkle className="size-5" />
                     {tSell("desktop.reviewProgress", { percent: progress })}
                   </>
                 )}
@@ -213,7 +207,7 @@ export function DesktopLayout({
               <div className="p-4 rounded-md border border-border bg-background shadow-xs">
                 <div className="flex items-center gap-2.5 mb-4">
                   <div className="flex size-8 items-center justify-center rounded-md bg-selected border border-selected-border">
-                    <Sparkle className="size-4 text-primary" weight="bold" />
+                    <Sparkle className="size-4 text-primary" />
                   </div>
                   <h4 className="text-sm font-semibold text-foreground">
                     {tSell("desktop.sellingTips.title")}
@@ -227,7 +221,7 @@ export function DesktopLayout({
                   ].map((tip, index) => (
                     <li key={index} className="flex items-start gap-3">
                       <div className="size-4 rounded-full bg-selected flex items-center justify-center shrink-0 mt-0.5">
-                        <Check className="size-2.5 text-primary" weight="bold" />
+                        <Check className="size-2.5 text-primary" />
                       </div>
                       <span className="text-sm text-muted-foreground leading-relaxed">
                         {tip}

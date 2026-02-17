@@ -4,24 +4,8 @@ import * as React from "react"
 import { Link } from "@/i18n/routing"
 import { usePathname } from "@/i18n/routing"
 import { useLocale } from "next-intl"
-import {
-  IconUser,
-  IconPackage,
-  IconHeart,
-  IconMessage,
-  IconLock,
-  IconMapPin,
-  IconCreditCard,
-  IconReceipt,
-  IconBuildingStore,
-  IconChartLine,
-  IconCrown,
-  IconHome,
-  IconSettings,
-  IconBell,
-  IconLogout,
-  IconSparkles,
-} from "@/lib/icons/tabler"
+import { Bell as IconBell, Store as IconBuildingStore, ChartLine as IconChartLine, CreditCard as IconCreditCard, Crown as IconCrown, EllipsisVertical as IconDotsVertical, Heart as IconHeart, House as IconHome, Lock as IconLock, LogOut as IconLogout, MapPin as IconMapPin, MessageCircle as IconMessage, Package as IconPackage, Receipt as IconReceipt, Settings as IconSettings, Sparkles as IconSparkles, User as IconUser } from "lucide-react";
+
 import { PlansModal, type PlansModalServerActions } from "./plans-modal"
 import { Button } from "@/components/ui/button"
 
@@ -46,7 +30,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { IconDotsVertical } from "@/lib/icons/tabler"
+
 import { useSidebar } from "@/components/layout/sidebar/sidebar"
 
 const getAccountNavItems = (locale: string) => [

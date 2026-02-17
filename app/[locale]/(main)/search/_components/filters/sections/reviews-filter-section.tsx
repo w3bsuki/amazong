@@ -1,6 +1,7 @@
 "use client"
 
-import { Check, Star } from "@/lib/icons/phosphor"
+import { Check, Star } from "lucide-react";
+
 import { useTranslations } from "next-intl"
 import { cn } from "@/lib/utils"
 import { AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
@@ -40,13 +41,12 @@ export function ReviewsFilterSection({ currentRating, onRatingChange }: ReviewsF
                     <Star
                       key={index}
                       size={16}
-                      weight={index < stars ? "fill" : "regular"}
                       aria-hidden="true"
                     />
                   ))}
                 </div>
                 <span className="text-sm">{t("andUp")}</span>
-                {isActive && <Check size={16} weight="regular" className="ml-auto text-primary" aria-hidden="true" />}
+                {isActive && <Check size={16} className="ml-auto text-primary" aria-hidden="true" />}
               </button>
             )
           })}

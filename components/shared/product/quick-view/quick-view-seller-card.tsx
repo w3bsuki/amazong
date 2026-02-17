@@ -1,6 +1,7 @@
 "use client"
 
-import { CaretRight, CheckCircle, Star } from "@/lib/icons/phosphor"
+import { ChevronRight as CaretRight, CircleCheck as CheckCircle, Star } from "lucide-react";
+
 import { useTranslations } from "next-intl"
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -72,13 +73,13 @@ export function QuickViewSellerCard({
           <div className="mt-0.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
             {hasVerification && (
               <span className="inline-flex items-center gap-1">
-                <CheckCircle size={12} weight="fill" />
+                <CheckCircle size={12} />
                 {tProduct("verifiedSeller")}
               </span>
             )}
             {hasRating && (
               <span className="inline-flex items-center gap-1 tabular-nums">
-                <Star size={12} weight="fill" className="text-muted-foreground" />
+                <Star size={12} className="text-muted-foreground" />
                 <span>{rating.toFixed(1)}</span>
                 {typeof reviews === "number" && reviews > 0 ? <span>({reviews})</span> : null}
               </span>

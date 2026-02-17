@@ -1,10 +1,7 @@
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import { breadcrumbPresets } from "../../../_components/navigation/app-breadcrumb"
-import { 
-  FileText, ShoppingBag, CreditCard, Truck, Scales,
-  Warning, Users, Prohibit, ArrowCounterClockwise, Shield, 
-  Gavel, CheckCircle
-} from "@/lib/icons/phosphor"
+import { RefreshCcw as ArrowCounterClockwise, CircleCheck as CheckCircle, CreditCard, FileText, Gavel, Ban as Prohibit, Scale as Scales, Shield, ShoppingBag, Truck, Users, TriangleAlert as Warning } from "lucide-react";
+
 import type { Metadata } from 'next'
 import { validateLocale } from "@/i18n/routing"
 import { extractLastUpdatedDate, getPublicDoc, parsePublicDocIntro, parsePublicDocSections } from "@/lib/public-docs"

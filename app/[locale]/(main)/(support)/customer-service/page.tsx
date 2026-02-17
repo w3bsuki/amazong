@@ -1,7 +1,8 @@
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
-import { Package, CreditCard, User, Shield, Question, MagnifyingGlass as Search } from "@/lib/icons/phosphor"
+import { CreditCard, Package, CircleHelp as Question, Search, Shield, User } from "lucide-react";
+
 import { Link } from "@/i18n/routing"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import { AppBreadcrumb, breadcrumbPresets } from "../../../_components/navigation/app-breadcrumb"

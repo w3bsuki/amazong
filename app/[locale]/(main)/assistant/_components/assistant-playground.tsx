@@ -3,18 +3,8 @@
 import { useMemo, useState, useRef, useEffect } from "react"
 import { DefaultChatTransport } from "ai"
 import { useChat } from "@ai-sdk/react"
-import {
-  CircleNotch,
-  Robot,
-  Sparkle,
-  PaperPlaneTilt,
-  Lightning,
-  ShoppingBag,
-  MagnifyingGlass,
-  Tag,
-  Package,
-  ArrowLeft,
-} from "@/lib/icons/phosphor"
+import { ArrowLeft, LoaderCircle as CircleNotch, Zap as Lightning, Search as MagnifyingGlass, Package, Send as PaperPlaneTilt, Bot as Robot, ShoppingBag, Sparkles as Sparkle, Tag } from "lucide-react";
+
 
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
@@ -89,7 +79,7 @@ function AssistantAvatar({ size = "md" }: { size?: "sm" | "md" | "lg" }) {
   return (
     <Avatar className={cn(sizeClasses[size], "shrink-0")}>
       <AvatarFallback className="bg-primary text-primary-foreground">
-        <Robot size={size === "lg" ? 20 : size === "md" ? 16 : 14} weight="fill" />
+        <Robot size={size === "lg" ? 20 : size === "md" ? 16 : 14} />
       </AvatarFallback>
     </Avatar>
   )
@@ -151,7 +141,6 @@ function SuggestionChip({
     >
       <Icon
         size={16}
-        weight="bold"
         className="shrink-0 text-primary"
       />
       <span className="line-clamp-1">{children}</span>
@@ -173,14 +162,14 @@ function WelcomeScreen({
       <div className="relative mb-5">
         <Avatar className="size-16 shadow-lg md:size-20">
           <AvatarFallback className="bg-primary text-primary-foreground">
-            <Robot size={32} weight="fill" className="md:hidden" />
-            <Robot size={40} weight="fill" className="hidden md:block" />
+            <Robot size={32} className="md:hidden" />
+            <Robot size={40} className="hidden md:block" />
           </AvatarFallback>
         </Avatar>
         <div className="absolute -bottom-1 -right-1">
           <Avatar className="size-7 ring-2 ring-background shadow-md">
             <AvatarFallback className="bg-card">
-              <Sparkle size={14} weight="fill" className="text-primary" />
+              <Sparkle size={14} className="text-primary" />
             </AvatarFallback>
           </Avatar>
         </div>
@@ -202,7 +191,7 @@ function WelcomeScreen({
           { icon: ShoppingBag, text: "Best Deals" },
         ].map(({ icon: Icon, text }) => (
           <Badge key={text} variant="secondary" className="gap-1 px-2.5 py-1">
-            <Icon size={12} weight="bold" className="text-primary" />
+            <Icon size={12} className="text-primary" />
             {text}
           </Badge>
         ))}
@@ -309,7 +298,7 @@ export function AssistantPlayground({
           aria-label={locale === "bg" ? "Назад" : "Back"}
           className="size-10 flex items-center justify-center rounded-full -ml-1 tap-transparent active:bg-muted transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
         >
-          <ArrowLeft className="size-5" weight="bold" />
+          <ArrowLeft className="size-5" />
         </Link>
         <AssistantAvatar size="md" />
         <div className="flex-1 min-w-0">
@@ -397,7 +386,7 @@ export function AssistantPlayground({
                                       variant="default"
                                       className="gap-0.5 px-1.5 py-0.5 text-2xs"
                                     >
-                                      <Sparkle size={8} weight="fill" />
+                                      <Sparkle size={8} />
                                       Top
                                     </Badge>
                                   ),
@@ -462,7 +451,7 @@ export function AssistantPlayground({
             {isLoading ? (
               <CircleNotch size={18} className="animate-spin" />
             ) : (
-              <PaperPlaneTilt size={18} weight="fill" />
+              <PaperPlaneTilt size={18} />
             )}
           </Button>
         </form>

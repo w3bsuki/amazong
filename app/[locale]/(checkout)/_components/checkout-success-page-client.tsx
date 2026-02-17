@@ -6,14 +6,8 @@ import { Link } from "@/i18n/routing"
 import { useTranslations } from "next-intl"
 import { Button } from "@/components/ui/button"
 import type { VerifyAndCreateOrderResult } from "../_actions/checkout"
-import {
-  CheckCircle,
-  XCircle,
-  SpinnerGap,
-  Package,
-  Envelope,
-  ArrowRight,
-} from "@/lib/icons/phosphor"
+import { ArrowRight, CircleCheck as CheckCircle, Mail as Envelope, Package, LoaderCircle as SpinnerGap, CircleX as XCircle } from "lucide-react";
+
 
 type SuccessState =
   | { status: "idle" }
@@ -84,7 +78,7 @@ export default function CheckoutSuccessPageClient({
       <div className="min-h-(--page-section-min-h) flex items-center justify-center px-3">
         <div className="text-center max-w-sm">
           <div className="size-14 bg-destructive-subtle rounded-full flex items-center justify-center mx-auto mb-3">
-            <XCircle className="size-7 text-destructive" weight="fill" />
+            <XCircle className="size-7 text-destructive" />
           </div>
           <p className="text-sm font-semibold mb-1">{t("paymentFailed")}</p>
           <p className="text-xs text-muted-foreground mb-4">{state.message}</p>
@@ -107,7 +101,7 @@ export default function CheckoutSuccessPageClient({
       <div className="text-center max-w-sm w-full">
         {/* Success icon */}
         <div className="size-16 bg-success/10 rounded-full flex items-center justify-center mx-auto mb-4">
-          <CheckCircle className="size-8 text-success" weight="fill" />
+          <CheckCircle className="size-8 text-success" />
         </div>
         
         <h1 className="text-lg font-semibold mb-1">{t("paymentSuccessful")}</h1>
@@ -124,11 +118,11 @@ export default function CheckoutSuccessPageClient({
         {/* Quick info */}
         <div className="space-y-2 mb-6 text-left">
           <div className="flex items-center gap-2 text-sm">
-            <Package className="size-4 text-primary shrink-0" weight="fill" />
+            <Package className="size-4 text-primary shrink-0" />
             <span className="text-muted-foreground">{t("orderCreatedDescription")}</span>
           </div>
           <div className="flex items-center gap-2 text-sm">
-            <Envelope className="size-4 text-primary shrink-0" weight="fill" />
+            <Envelope className="size-4 text-primary shrink-0" />
             <span className="text-muted-foreground">{t("confirmationEmail")}</span>
           </div>
         </div>

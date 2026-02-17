@@ -3,7 +3,8 @@
 import { useEffect, useState, useTransition } from "react"
 import { useRouter } from "next/navigation"
 import { useLocale, useTranslations } from "next-intl"
-import { ArrowRight, Camera, SpinnerGap, Check, X, Globe, MapPin } from "@/lib/icons/phosphor"
+import { ArrowRight, Camera, Check, Globe, MapPin, LoaderCircle as SpinnerGap, X } from "lucide-react";
+
 import Image from "next/image"
 import Avatar from "boring-avatars"
 
@@ -147,7 +148,7 @@ export default function BusinessProfilePage() {
     if (usernameAvailable === true) {
       return (
         <span className="flex items-center gap-1.5 text-xs text-success">
-          <Check className="size-4" weight="bold" />
+          <Check className="size-4" />
           {t("businessProfile.available")}
         </span>
       )
@@ -183,7 +184,7 @@ export default function BusinessProfilePage() {
           ) : (
             <>
               {t("common.continue")}
-              <ArrowRight className="size-5" weight="bold" />
+              <ArrowRight className="size-5" />
             </>
           )}
         </Button>
@@ -217,7 +218,7 @@ export default function BusinessProfilePage() {
                 className="absolute -bottom-1 -right-1 size-7 bg-primary text-primary-foreground rounded-full flex items-center justify-center cursor-pointer hover:bg-interactive-hover transition-colors shadow-sm"
                 aria-label={t("businessProfile.logoLabel")}
               >
-                <Camera className="size-3.5" weight="bold" />
+                <Camera className="size-3.5" />
                 <input type="file" accept="image/*" className="hidden" onChange={handleLogoChange} />
               </label>
             </div>
@@ -287,7 +288,7 @@ export default function BusinessProfilePage() {
           </Label>
           <div className="mt-2 flex items-center border rounded-lg overflow-hidden focus-within:ring-2 focus-within:ring-ring">
             <div className="px-3 flex items-center bg-secondary border-r h-11">
-              <Globe className="size-4 text-muted-foreground" weight="duotone" />
+              <Globe className="size-4 text-muted-foreground" />
             </div>
             <input
               id="website"
@@ -306,7 +307,7 @@ export default function BusinessProfilePage() {
           </Label>
           <div className="mt-2 flex items-center border rounded-lg overflow-hidden focus-within:ring-2 focus-within:ring-ring">
             <div className="px-3 flex items-center bg-secondary border-r h-11">
-              <MapPin className="size-4 text-muted-foreground" weight="duotone" />
+              <MapPin className="size-4 text-muted-foreground" />
             </div>
             <input
               id="location"

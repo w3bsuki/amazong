@@ -2,7 +2,8 @@
 
 import type { ChangeEvent } from "react";
 import { useTranslations } from "next-intl";
-import { ArrowLeft, Check, MapPin, SpinnerGap, X } from "@/lib/icons/phosphor";
+import { ArrowLeft, Check, MapPin, LoaderCircle as SpinnerGap, X } from "lucide-react";
+
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -68,7 +69,7 @@ export function AddressSection({
           <div className="rounded-lg border-2 border-selected-border bg-selected p-4">
             <div className="flex items-start gap-3">
               <div className="size-10 rounded-full bg-selected flex items-center justify-center shrink-0">
-                <MapPin className="size-5 text-primary" weight="fill" />
+                <MapPin className="size-5 text-primary" />
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-1">
@@ -88,7 +89,7 @@ export function AddressSection({
                   {selected.city}, {selected.state} {selected.postal_code}
                 </p>
               </div>
-              <Check className="size-5 text-primary shrink-0" weight="bold" />
+              <Check className="size-5 text-primary shrink-0" />
             </div>
             {savedAddresses.length > 1 && (
               <Button
@@ -154,7 +155,7 @@ export function AddressSection({
                           {addr.city}, {addr.state} {addr.postal_code}
                         </p>
                       </div>
-                      {isSelected && <Check className="size-5 text-primary shrink-0" weight="bold" />}
+                      {isSelected && <Check className="size-5 text-primary shrink-0" />}
                     </label>
                   );
                 })}
@@ -167,7 +168,7 @@ export function AddressSection({
                 }}
                 className="w-full"
               >
-                <MapPin className="size-4 mr-2" weight="regular" />
+                <MapPin className="size-4 mr-2" />
                 {t("addNewAddress")}
               </Button>
             </DrawerBody>

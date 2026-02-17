@@ -1,7 +1,8 @@
 "use client"
 
 import { IconButton } from "@/components/ui/icon-button"
-import { ArrowLeft, Export, Gear, ChatCircle } from "@/lib/icons/phosphor"
+import { ArrowLeft, MessageCircle as ChatCircle, Share as Export, Settings as Gear } from "lucide-react";
+
 import { cn } from "@/lib/utils"
 import { useTranslations } from "next-intl"
 import { Link } from "@/i18n/routing"
@@ -69,7 +70,7 @@ export function MobileProfileHeader({
             aria-label={tNav("back")}
             onClick={onBack}
           >
-            <ArrowLeft className="size-icon-sm" weight="bold" />
+            <ArrowLeft className="size-icon-sm" />
           </IconButton>
         ) : null}
 
@@ -90,7 +91,7 @@ export function MobileProfileHeader({
             aria-label={tProfile("share")}
             onClick={handleShare}
           >
-            <Export className="size-icon-sm" weight="bold" />
+            <Export className="size-icon-sm" />
           </IconButton>
 
           {/* Context-aware action: Account for own profile, Message for others */}
@@ -104,7 +105,7 @@ export function MobileProfileHeader({
               aria-label={tProfile("settings")}
             >
                 <Link href="/account">
-                  <Gear className="size-icon-sm" weight="bold" />
+                  <Gear className="size-icon-sm" />
                 </Link>
             </IconButton>
           ) : sellerId ? (
@@ -117,7 +118,7 @@ export function MobileProfileHeader({
               aria-label={tProfile("message")}
             >
               <Link href={`/chat?to=${sellerId}`}>
-                <ChatCircle className="size-icon-sm" weight="bold" />
+                <ChatCircle className="size-icon-sm" />
               </Link>
             </IconButton>
           ) : null}

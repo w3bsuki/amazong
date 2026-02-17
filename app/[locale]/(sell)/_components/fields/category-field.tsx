@@ -1,7 +1,8 @@
 "use client";
 
 import { Controller } from "react-hook-form";
-import { FolderSimple } from "@/lib/icons/phosphor";
+import { Folder as FolderSimple } from "lucide-react";
+
 import { Field, FieldLabel, FieldDescription, FieldError, FieldContent } from "@/components/shared/field";
 import { useTranslations } from "next-intl";
 
@@ -61,7 +62,7 @@ export function CategoryField({ onCategoryChange, className, compact = false }: 
               <div className="p-section pb-form border-b border-border-subtle bg-surface-subtle">
                 <div className="flex items-center gap-form-sm">
                   <div className="flex size-10 items-center justify-center rounded-md bg-background border border-border shadow-xs">
-                    <FolderSimple className="size-5 text-muted-foreground" weight="bold" />
+                    <FolderSimple className="size-5 text-muted-foreground" />
                   </div>
                   <div>
                     <FieldLabel className="text-sm font-bold tracking-tight text-foreground">

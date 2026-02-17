@@ -8,7 +8,8 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { IconChartBar, IconTrendingUp, IconCurrencyDollar, IconEye, IconShoppingCart } from "@/lib/icons/tabler"
+import { ChartColumn as IconChartBar, DollarSign as IconCurrencyDollar, Eye as IconEye, ShoppingCart as IconShoppingCart, TrendingUp as IconTrendingUp } from "lucide-react";
+
 import { BusinessEmptyState } from "../../_components/business-empty-state"
 
 export default async function BusinessAnalyticsPage() {

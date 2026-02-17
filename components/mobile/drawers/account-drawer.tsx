@@ -1,17 +1,8 @@
 "use client"
 
 import { useCallback, useEffect, useState } from "react"
-import {
-  User,
-  Package,
-  ChatCircle,
-  Storefront,
-  Heart,
-  Gear,
-  Star,
-  CaretRight,
-  X,
-} from "@/lib/icons/phosphor"
+import { ChevronRight as CaretRight, MessageCircle as ChatCircle, Settings as Gear, Heart, Package, Star, Store as Storefront, User, X } from "lucide-react";
+
 import {
   Drawer,
   DrawerContent,
@@ -226,7 +217,7 @@ export function AccountDrawer({ open, onOpenChange }: AccountDrawerProps) {
         <DrawerHeader className="border-b border-border-subtle px-inset py-2.5 text-left">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-1.5">
-              <User size={16} weight="regular" className="text-muted-foreground" />
+              <User size={16} className="text-muted-foreground" />
               <DrawerTitle className="text-sm font-semibold">{tAccount("title")}</DrawerTitle>
             </div>
             <DrawerClose asChild>
@@ -236,7 +227,7 @@ export function AccountDrawer({ open, onOpenChange }: AccountDrawerProps) {
                 size="icon-default"
                 className="text-muted-foreground hover:bg-hover hover:text-foreground active:bg-active focus-visible:ring-2 focus-visible:ring-focus-ring motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth)"
               >
-                <X size={16} weight="bold" />
+                <X size={16} />
               </IconButton>
             </DrawerClose>
           </div>
@@ -248,7 +239,7 @@ export function AccountDrawer({ open, onOpenChange }: AccountDrawerProps) {
             <div className="rounded-2xl border border-border-subtle bg-background px-4 py-5">
               <div className="flex flex-col items-center justify-center text-center">
                 <div className="mb-2 flex size-(--control-default) items-center justify-center rounded-xl bg-surface-subtle">
-                  <User size={22} weight="regular" className="text-muted-foreground" />
+                  <User size={22} className="text-muted-foreground" />
                 </div>
                 <p className="text-sm font-medium text-foreground">{tAccount("signInPrompt")}</p>
                 <p className="mt-0.5 text-xs text-muted-foreground">{tAccount("signInDescription")}</p>
@@ -299,7 +290,7 @@ export function AccountDrawer({ open, onOpenChange }: AccountDrawerProps) {
                   <div className="flex items-center gap-2 text-sm text-muted-foreground">
                     {rating > 0 && (
                       <span className="inline-flex items-center gap-0.5">
-                        <Star size={14} weight="fill" className="text-rating" />
+                        <Star size={14} className="text-rating" />
                         {rating.toFixed(1)}
                       </span>
                     )}
@@ -332,7 +323,7 @@ export function AccountDrawer({ open, onOpenChange }: AccountDrawerProps) {
                   )}
                 >
                   <div className="flex min-w-0 items-center gap-3">
-                    <link.icon size={20} weight="regular" className="shrink-0 text-muted-foreground" />
+                    <link.icon size={20} className="shrink-0 text-muted-foreground" />
                     <span className="truncate text-sm font-medium text-foreground">{link.label}</span>
                   </div>
                   <div className="flex shrink-0 items-center gap-2">

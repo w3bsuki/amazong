@@ -6,12 +6,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import {
-  ShoppingCart,
-  TrendUp,
-  TrendDown,
-  Receipt,
-} from "@/lib/icons/phosphor"
+import { Receipt, ShoppingCart, TrendingDown as TrendDown, TrendingUp as TrendUp } from "lucide-react";
+
 import { getTranslations } from "next-intl/server"
 
 interface SalesStatsProps {

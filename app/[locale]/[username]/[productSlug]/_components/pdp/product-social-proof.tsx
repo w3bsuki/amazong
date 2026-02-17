@@ -1,7 +1,8 @@
 "use client"
 
 import { useTranslations } from "next-intl"
-import { Eye, Heart, Fire } from "@/lib/icons/phosphor"
+import { Eye, Flame as Fire, Heart } from "lucide-react";
+
 import { cn } from "@/lib/utils"
 
 interface ProductSocialProofProps {
@@ -51,7 +52,7 @@ export function ProductSocialProof({
       {/* Favorites count */}
       {hasFavorites && (
         <span className="inline-flex items-center gap-1.5">
-          <Heart size={16} className="text-favorite" weight="fill" />
+          <Heart size={16} className="text-favorite" />
           <span>
             {t("favoritesCount", { count: favoritesCount })}
           </span>
@@ -61,7 +62,7 @@ export function ProductSocialProof({
       {/* Hot indicator */}
       {isHot && (
         <span className="inline-flex items-center gap-1 rounded-full bg-hot-bg px-2 py-0.5 text-xs font-medium text-hot">
-          <Fire size={12} weight="fill" />
+          <Fire size={12} />
           {t("popular")}
         </span>
       )}

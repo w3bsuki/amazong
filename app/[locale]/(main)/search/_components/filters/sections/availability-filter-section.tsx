@@ -1,6 +1,7 @@
 "use client"
 
-import { Package } from "@/lib/icons/phosphor"
+import { Package } from "lucide-react";
+
 import { useTranslations } from "next-intl"
 import { cn } from "@/lib/utils"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -39,7 +40,7 @@ export function AvailabilityFilterSection({
             onCheckedChange={() => onAvailabilityChange(isInStock ? null : "instock")}
           />
           <span className="text-sm flex items-center gap-1.5">
-            <Package size={16} weight="regular" className="text-stock-available" />
+            <Package size={16} className="text-stock-available" />
             {t("includeOutOfStock")}
           </span>
         </label>

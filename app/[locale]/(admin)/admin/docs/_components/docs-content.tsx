@@ -5,14 +5,8 @@ import { useState } from "react"
 import { useLocale, useTranslations } from "next-intl"
 import ReactMarkdown from "react-markdown"
 import remarkGfm from "remark-gfm"
-import {
-  IconFileText,
-  IconPlus,
-  IconSearch,
-  IconEdit,
-  IconTrash,
-  IconX,
-} from "@/lib/icons/tabler"
+import { Pencil as IconEdit, FileText as IconFileText, Plus as IconPlus, Search as IconSearch, Trash as IconTrash, X as IconX } from "lucide-react";
+
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"

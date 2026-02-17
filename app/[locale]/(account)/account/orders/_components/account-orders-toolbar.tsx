@@ -5,7 +5,8 @@ import { usePathname, useRouter } from "@/i18n/routing"
 import { useSearchParams } from "next/navigation"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Input } from "@/components/ui/input"
-import { MagnifyingGlass } from "@/lib/icons/phosphor"
+import { Search as MagnifyingGlass } from "lucide-react";
+
 import { cn } from "@/lib/utils"
 
 type StatusKey = "all" | "open" | "delivered" | "cancelled"

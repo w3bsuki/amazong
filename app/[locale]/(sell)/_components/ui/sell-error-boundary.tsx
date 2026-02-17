@@ -3,7 +3,8 @@
 import { Component, type ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { WarningCircle, ArrowCounterClockwise, FloppyDisk, House } from "@/lib/icons/phosphor";
+import { RefreshCcw as ArrowCounterClockwise, Save as FloppyDisk, House, CircleAlert as WarningCircle } from "lucide-react";
+
 import { Link } from "@/i18n/routing";
 
 interface SellErrorBoundaryProps {
@@ -66,7 +67,7 @@ export class SellErrorBoundary extends Component<SellErrorBoundaryProps, SellErr
           <Card className="max-w-md w-full rounded-md">
             <CardHeader className="text-center pb-2">
               <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-destructive-subtle">
-                <WarningCircle className="h-8 w-8 text-destructive" weight="duotone" />
+                <WarningCircle className="h-8 w-8 text-destructive" />
               </div>
               <CardTitle className="text-lg font-semibold">
                 Something went wrong
@@ -80,7 +81,7 @@ export class SellErrorBoundary extends Component<SellErrorBoundaryProps, SellErr
               {/* Draft recovery notice */}
               {this.state.hasDraft && (
                 <div className="flex items-start gap-3 rounded-lg bg-success/10 p-3 text-sm">
-                  <FloppyDisk className="h-5 w-5 text-success shrink-0 mt-0.5" weight="duotone" />
+                  <FloppyDisk className="h-5 w-5 text-success shrink-0 mt-0.5" />
                   <div>
                     <p className="font-medium text-success">
                       Draft available

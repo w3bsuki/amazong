@@ -1,7 +1,8 @@
 "use client"
 
 import { useCallback, useEffect, useState } from "react"
-import { X } from "@/lib/icons/phosphor"
+import { X } from "lucide-react";
+
 import { useTranslations } from "next-intl"
 
 import { Link, usePathname } from "@/i18n/routing"
@@ -114,7 +115,7 @@ export function GuestSellCta() {
               onClick={dismissForCooldown}
               aria-label={t("dismissAriaLabel")}
             >
-              <X size={16} weight="regular" />
+              <X size={16} />
             </Button>
           </div>
           <div className="grid grid-cols-1 gap-2 pt-1 md:grid-cols-2">

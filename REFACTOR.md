@@ -752,7 +752,7 @@ Check off items as you complete them. **Update this in real-time.**
 
 ### Phase 5: Dependencies
 - [ ] Ran knip — acted on findings
-- [ ] Icon library audit — consolidated or optimized
+- [x] Icon library audit — consolidated or optimized
 - [ ] AI SDK audit — removed unused
 - [ ] Heavy dep evaluation — lighter alternatives or dynamic
 - [ ] Duplicate code detection — fixed
@@ -889,6 +889,39 @@ Check off items as you complete them. **Update this in real-time.**
 **Next session should:**
 - Start Phase 2 with `components/shared/product/card/` server/client boundary splitting.
 - Re-evaluate whether `components/shared/filters/*` should be moved with a coordinated move of `components/mobile/category-nav/*` consumers.
+
+### Session 3 — 2026-02-17
+**Phase(s):** Wave 0 (metrics rails), Wave 1 (route surface cleanup), Wave 2 (icon contract removal)
+**Duration:** ~4h
+**Changes:**
+- `scripts/architecture-scan.mjs`: added repeatable architecture metrics scanner (client boundaries, oversized files, route completeness, duplicate blocks via jscpd) with baseline/gate mode.
+- `package.json`: added `architecture:scan*` and `architecture:gate*` script family.
+- `scripts/architecture-gate.baseline.json`: recorded baseline metrics before route/icon mutations.
+- `next.config.ts`: removed stale phosphor optimize-import entry and added permanent redirects for deleted route surface.
+- `app/[locale]/_components/site-footer.tsx`: replaced `/registry` link target with `/gift-cards`.
+- `app/[locale]/_components/app-header.tsx`: removed demo route detection/allowlist handling.
+- `app/[locale]/[username]/page.tsx`: removed demo-route hotfix fallback/import coupling.
+- `eslint.config.mjs`: added hard legacy-icon import bans (`@/lib/icons/phosphor`, `@/lib/icons/tabler`, `@/lib/icons/lucide-picker`, `@/lib/icons/compat`, `@phosphor-icons/react`).
+- `app/**`, `components/**`: migrated legacy icon imports to direct `lucide-react` imports and normalized legacy phosphor-only props.
+**Deleted:**
+- `app/[locale]/(main)/demo/**`: removed production demo route tree.
+- `app/[locale]/(main)/registry/**`: removed legacy registry route tree.
+- `lib/icons/compat.tsx`: removed compatibility abstraction.
+- `lib/icons/lucide-picker.ts`: removed legacy picker indirection.
+- `lib/icons/phosphor.ts`: removed phosphor compatibility surface.
+- `lib/icons/tabler.ts`: removed tabler compatibility surface.
+**Decisions:**
+- Route surface default is now strict production-only: demo and registry are removed and canonicalized via redirects.
+- Icon strategy is now direct-import only (`lucide-react`) with no local compatibility indirection.
+**Flagged (needs human review):**
+- `REUSE_EXISTING_SERVER=true pnpm -s test:e2e:smoke` did not complete in this environment (route warm-up timeouts and early process termination before final pass/fail summary).
+**Metrics:**
+- Baseline (`scripts/architecture-gate.baseline.json`): files=777, `"use client"`=362, `>300`=125, `>500`=44, pages=91, missing loading=38, missing metadata=58, clones=259 (3.15%).
+- After Wave 1/2 (`pnpm -s architecture:scan`): files=762, `"use client"`=357, `>300`=120, `>500`=43, pages=86, missing loading=34, missing metadata=54, clones=247 (3.06%).
+**Next session should:**
+- Start Wave 3 server/client boundary reduction in the fixed folder order (beginning with `components/shared/product/card`).
+- Add dynamic imports for heavy non-critical UI surfaces (Wave 4) and rerun analyzer.
+- Continue lint hardening toward <=120 warnings, prioritizing restricted imports and hook deps first.
 
 ---
 

@@ -2,7 +2,8 @@
 
 import { MobileCartDropdown } from "@/components/layout/header/cart/mobile-cart-dropdown"
 import { MobileWishlistButton } from "@/components/shared/wishlist/mobile-wishlist-button"
-import { MagnifyingGlass, ArrowLeft } from "@/lib/icons/phosphor"
+import { ArrowLeft, Search as MagnifyingGlass } from "lucide-react";
+
 import { Link, usePathname } from "@/i18n/routing"
 import { useTranslations } from "next-intl"
 import { buildSearchHref } from "@/components/shared/search/overlay/search-context"
@@ -47,7 +48,7 @@ export function MobileContextualHeader({
               className="flex size-(--control-default) -ml-1 items-center justify-center rounded-full tap-transparent motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth) motion-reduce:transition-none active:bg-active focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
               aria-label={tCommon("back")}
             >
-              <ArrowLeft className="size-6" weight="bold" />
+              <ArrowLeft className="size-6" />
             </button>
           ) : (
             <Link
@@ -55,7 +56,7 @@ export function MobileContextualHeader({
               className="flex size-(--control-default) -ml-1 items-center justify-center rounded-full tap-transparent motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth) motion-reduce:transition-none active:bg-active focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
               aria-label={tCommon("back")}
             >
-              <ArrowLeft className="size-6" weight="bold" />
+              <ArrowLeft className="size-6" />
             </Link>
           )}
           <h1 className="ml-1 max-w-48 truncate text-sm font-semibold leading-tight text-foreground">
@@ -69,7 +70,7 @@ export function MobileContextualHeader({
               className="flex size-(--control-default) items-center justify-center rounded-full tap-transparent motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth) motion-reduce:transition-none active:bg-active focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
               aria-label={tCommon("search")}
             >
-              <MagnifyingGlass className="size-6" weight="regular" />
+              <MagnifyingGlass className="size-6" />
             </Link>
             <MobileWishlistButton />
             <MobileCartDropdown />

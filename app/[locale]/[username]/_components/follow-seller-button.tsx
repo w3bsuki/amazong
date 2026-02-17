@@ -2,7 +2,8 @@
 
 import { useOptimistic, useTransition } from "react"
 import { Button } from "@/components/ui/button"
-import { Heart, SpinnerGap, UserPlus } from "@/lib/icons/phosphor"
+import { Heart, LoaderCircle as SpinnerGap, UserPlus } from "lucide-react";
+
 import { toast } from "sonner"
 import { useTranslations } from "next-intl"
 
@@ -93,7 +94,7 @@ export function FollowSellerButton({
       {isPending ? (
         <SpinnerGap className="size-4 animate-spin" />
       ) : optimisticFollowing ? (
-        <Heart className="size-4" weight="fill" />
+        <Heart className="size-4" />
       ) : (
         <UserPlus className="size-4" />
       )}

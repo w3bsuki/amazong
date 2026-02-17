@@ -14,25 +14,8 @@ import {
   ProfileSettingsPanel,
   ProfileHeaderSync,
 } from "./_components/profile"
-import {
-  Star,
-  MapPin,
-  Calendar,
-  Package,
-  Storefront,
-  Globe,
-  FacebookLogo,
-  InstagramLogo,
-  TwitterLogo,
-  TiktokLogo,
-  YoutubeLogo,
-  PencilSimple,
-  ShareNetwork,
-  ArrowRight,
-  Gear,
-  ChatCircle,
-  Users,
-} from "@/lib/icons/phosphor"
+import { ArrowRight, Calendar, MessageCircle as ChatCircle, Facebook as FacebookLogo, Settings as Gear, Globe, Instagram as InstagramLogo, MapPin, Package, Pencil as PencilSimple, Share2 as ShareNetwork, Star, Store as Storefront, Music2 as TiktokLogo, Bird as TwitterLogo, Users, Youtube as YoutubeLogo } from "lucide-react";
+
 import { MobileProductCard } from "@/components/shared/product/card/mobile"
 import { FollowSellerButton, type FollowSellerActions } from "./_components/follow-seller-button"
 import { SellerVerificationBadge } from "./_components/seller-verification-badge"
@@ -129,11 +112,11 @@ function StarRating({ rating, count, size = "sm" }: { rating: number; count: num
 
   for (let i = 0; i < 5; i++) {
     if (i < fullStars) {
-      stars.push(<Star key={i} weight="fill" className={`text-rating ${size === "md" ? "size-5" : "size-4"}`} />)
+      stars.push(<Star key={i} className={`text-rating ${size === "md" ? "size-5" : "size-4"}`} />)
     } else if (i === fullStars && hasHalf) {
-      stars.push(<Star key={i} weight="duotone" className={`text-rating ${size === "md" ? "size-5" : "size-4"}`} />)
+      stars.push(<Star key={i} className={`text-rating ${size === "md" ? "size-5" : "size-4"}`} />)
     } else {
-      stars.push(<Star key={i} weight="regular" className={`text-rating-empty ${size === "md" ? "size-5" : "size-4"}`} />)
+      stars.push(<Star key={i} className={`text-rating-empty ${size === "md" ? "size-5" : "size-4"}`} />)
     }
   }
 
@@ -207,11 +190,11 @@ export function PublicProfileClient({
   const memberSince = profile.created_at ? new Date(profile.created_at) : null
 
   const socialIcons: Record<string, React.ReactNode> = {
-    facebook: <FacebookLogo className="size-5" weight="fill" />,
-    instagram: <InstagramLogo className="size-5" weight="fill" />,
-    twitter: <TwitterLogo className="size-5" weight="fill" />,
-    tiktok: <TiktokLogo className="size-5" weight="fill" />,
-    youtube: <YoutubeLogo className="size-5" weight="fill" />,
+    facebook: <FacebookLogo className="size-5" />,
+    instagram: <InstagramLogo className="size-5" />,
+    twitter: <TwitterLogo className="size-5" />,
+    tiktok: <TiktokLogo className="size-5" />,
+    youtube: <YoutubeLogo className="size-5" />,
   }
 
   const memberSinceLabel =

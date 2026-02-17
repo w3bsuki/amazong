@@ -1,6 +1,7 @@
 import { Link } from "@/i18n/routing"
 import { getTranslations } from "next-intl/server"
-import { WarningCircle, ArrowLeft } from "@/lib/icons/phosphor"
+import { ArrowLeft, CircleAlert as WarningCircle } from "lucide-react";
+
 import { Button } from "@/components/ui/button"
 import { AuthCard } from "../../_components/auth-card"
 
@@ -30,7 +31,7 @@ export default async function AuthErrorPage({
       <div className="space-y-5">
         <div className="flex items-center justify-center">
           <div className="inline-flex size-14 items-center justify-center rounded-full bg-destructive-subtle text-destructive">
-            <WarningCircle className="size-8" weight="fill" />
+            <WarningCircle className="size-8" />
           </div>
         </div>
 

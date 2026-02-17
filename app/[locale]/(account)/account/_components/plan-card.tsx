@@ -1,6 +1,7 @@
 "use client"
 
-import { Check, User, Crown, Buildings, Rocket, SpinnerGap } from "@/lib/icons/phosphor"
+import { Building2 as Buildings, Check, Crown, Rocket, LoaderCircle as SpinnerGap, User } from "lucide-react";
+
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
@@ -50,13 +51,13 @@ interface PlanCardProps {
 function getPlanIcon(tier: string) {
   switch (tier) {
     case "basic":
-      return <User weight="duotone" className="size-5" />
+      return <User className="size-5" />
     case "premium":
-      return <Crown weight="fill" className="size-5" />
+      return <Crown className="size-5" />
     case "business":
-      return <Buildings weight="duotone" className="size-5" />
+      return <Buildings className="size-5" />
     default:
-      return <Rocket weight="duotone" className="size-5" />
+      return <Rocket className="size-5" />
   }
 }
 
@@ -216,7 +217,6 @@ export function PlanCard({
           {visibleFeatures.map((feature, i) => (
             <li key={i} className="flex items-start gap-2 text-xs">
               <Check
-                weight="bold"
                 className={cn(
                   "size-3.5 shrink-0 mt-0.5",
                   isPopular ? "text-primary" : isBest ? "text-rating" : "text-muted-foreground"

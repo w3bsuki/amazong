@@ -8,7 +8,8 @@ import { cn } from "@/lib/utils"
 import { UserAvatar } from "@/components/shared/user-avatar"
 import { useMessages, type Conversation } from "@/components/providers/message-context"
 import { Skeleton } from "@/components/ui/skeleton"
-import { ChatCircle, Check, Checks } from "@/lib/icons/phosphor"
+import { MessageCircle as ChatCircle, Check, CheckCheck as Checks } from "lucide-react";
+
 import Image from "next/image"
 
 // Filter types matching the chat bottom tabs
@@ -123,7 +124,6 @@ export function ConversationList({
         <div className="flex size-14 items-center justify-center rounded-full bg-muted mb-3">
           <ChatCircle
             size={28}
-            weight="regular"
             className="text-muted-foreground"
           />
         </div>
@@ -313,7 +313,7 @@ function ConversationItem({
               {hasUnread ? (
                 <Check size={14} className="text-muted-foreground" />
               ) : (
-                <Checks size={14} className="text-primary" weight="bold" />
+                <Checks size={14} className="text-primary" />
               )}
             </span>
           )}

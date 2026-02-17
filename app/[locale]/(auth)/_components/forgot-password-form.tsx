@@ -1,7 +1,8 @@
 "use client"
 
 import { useActionState } from "react"
-import { ArrowLeft, Check } from "@/lib/icons/phosphor"
+import { ArrowLeft, Check } from "lucide-react";
+
 import { useTranslations } from "next-intl"
 
 import { SubmitButton } from "@/components/auth/submit-button"
@@ -46,7 +47,7 @@ export function ForgotPasswordForm({
       >
         <div className="flex items-center justify-center py-1">
           <div className="inline-flex size-16 items-center justify-center rounded-full bg-primary-subtle text-primary">
-            <Check className="size-8" weight="bold" />
+            <Check className="size-8" />
           </div>
         </div>
       </AuthCard>

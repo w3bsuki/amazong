@@ -23,24 +23,8 @@ import {
   Alert,
   AlertDescription,
 } from "@/components/ui/alert"
-import {
-  At,
-  User,
-  Camera,
-  Image as ImageIcon,
-  MapPin,
-  Globe,
-  FacebookLogo,
-  InstagramLogo,
-  TwitterLogo,
-  TiktokLogo,
-  Storefront,
-  CheckCircle,
-  SpinnerGap,
-  PencilSimple,
-  ArrowRight,
-  Info,
-} from "@/lib/icons/phosphor"
+import { ArrowRight, AtSign as At, Camera, CircleCheck as CheckCircle, Facebook as FacebookLogo, Globe, Image as ImageIcon, Info, Instagram as InstagramLogo, MapPin, Pencil as PencilSimple, LoaderCircle as SpinnerGap, Store as Storefront, Music2 as TiktokLogo, Bird as TwitterLogo, User } from "lucide-react";
+
 import { toast } from "sonner"
 
 export type PublicProfileEditorServerActions = {
@@ -366,7 +350,7 @@ export function PublicProfileEditor({
                         <SpinnerGap className="absolute right-3 top-1/2 -translate-y-1/2 size-4 animate-spin" />
                       )}
                       {!isCheckingUsername && usernameAvailable === true && (
-                        <CheckCircle className="absolute right-3 top-1/2 -translate-y-1/2 size-4 text-success" weight="fill" />
+                        <CheckCircle className="absolute right-3 top-1/2 -translate-y-1/2 size-4 text-success" />
                       )}
                     </div>
                     {usernameAvailable === false && (
@@ -624,7 +608,7 @@ export function PublicProfileEditor({
               </Badge>
               {isBusiness && profile.verified_business && (
                 <Badge variant="outline" className="gap-1 text-info border-info/30 bg-info/10">
-                  <CheckCircle className="size-3" weight="fill" />
+                  <CheckCircle className="size-3" />
                   {locale === "bg" ? "Верифициран" : "Verified"}
                 </Badge>
               )}

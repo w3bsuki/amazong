@@ -1,15 +1,8 @@
 "use client"
 
-import {
-  ArrowSquareOut,
-  ArrowsClockwise,
-  Heart,
-  LinkSimple,
-  MapPin,
-  ShieldCheck,
-  Truck,
-} from "@/lib/icons/phosphor"
-import { X } from "lucide-react"
+import { RefreshCw as ArrowsClockwise, SquareArrowOutUpRight as ArrowSquareOut, Heart, Link as LinkSimple, MapPin, ShieldCheck, Truck, X } from "lucide-react";
+
+
 import { useTranslations } from "next-intl"
 
 import { Badge } from "@/components/ui/badge"
@@ -80,7 +73,7 @@ export function ProductQuickViewMobileContent({
               disabled={!shareEnabled}
               className="border border-border-subtle bg-background text-muted-foreground hover:bg-hover hover:text-foreground active:bg-active"
             >
-              <LinkSimple size={18} weight="bold" />
+              <LinkSimple size={18} />
             </IconButton>
             <IconButton
               type="button"
@@ -98,7 +91,6 @@ export function ProductQuickViewMobileContent({
             >
               <Heart
                 size={18}
-                weight={inWishlist ? "fill" : "regular"}
                 className={cn(inWishlist && "fill-primary text-primary")}
               />
             </IconButton>
@@ -165,7 +157,7 @@ export function ProductQuickViewMobileContent({
 
             <div className="flex flex-wrap items-center gap-1.5">
               <Badge variant={freeShipping ? "shipping-free" : "shipping"} size="compact">
-                <Truck weight="bold" />
+                <Truck />
                 {freeShipping ? tProduct("freeShipping") : tProduct("shippingAvailable")}
               </Badge>
 
@@ -179,7 +171,7 @@ export function ProductQuickViewMobileContent({
 
               {location ? (
                 <Badge size="compact" variant="outline" className="max-w-full">
-                  <MapPin weight="bold" />
+                  <MapPin />
                   <span className="truncate">{location}</span>
                 </Badge>
               ) : showLocationSkeleton ? (
@@ -212,7 +204,7 @@ export function ProductQuickViewMobileContent({
 
           <div className="rounded-xl border border-border-subtle bg-card p-3 text-sm text-muted-foreground">
             <div className="flex items-start gap-2">
-              <ShieldCheck size={17} weight="fill" className="mt-0.5 shrink-0" />
+              <ShieldCheck size={17} className="mt-0.5 shrink-0" />
               <div className="min-w-0 flex-1">
                 <p className="font-semibold tracking-tight text-foreground">{tProduct("buyerProtection")}</p>
                 <p className="text-xs text-muted-foreground">{tProduct("buyerProtectionBadgeSubtitle")}</p>
@@ -232,7 +224,7 @@ export function ProductQuickViewMobileContent({
             className="w-full justify-center gap-2"
           >
             {tModal("viewFullPage")}
-            <ArrowSquareOut size={16} weight="bold" />
+            <ArrowSquareOut size={16} />
           </Button>
         </div>
       </div>

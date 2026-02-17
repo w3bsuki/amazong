@@ -3,7 +3,8 @@
 import { useWishlist } from "@/components/providers/wishlist-context"
 import { useCart } from "@/components/providers/cart-context"
 import { Button } from "@/components/ui/button"
-import { Heart, ShoppingCart, Trash, ArrowRight, Share, Check, SpinnerGap } from "@/lib/icons/phosphor"
+import { ArrowRight, Check, Heart, Share, ShoppingCart, LoaderCircle as SpinnerGap, Trash } from "lucide-react";
+
 import Image from "next/image"
 import { Link } from "@/i18n/routing"
 import { useTranslations, useLocale } from "next-intl"
@@ -138,13 +139,13 @@ export default function WishlistPageClient() {
           </nav>
 
           <h1 className="text-xl md:text-2xl font-bold tracking-tight text-foreground mb-6 flex items-center gap-2">
-            <Heart className="h-5 w-5 md:h-6 md:w-6" weight="fill" />
+            <Heart className="h-5 w-5 md:h-6 md:w-6" />
             {t("title")}
           </h1>
 
           <div className="bg-card rounded-md border border-border p-4 md:p-4 text-center">
             <div className="size-20 md:size-24 bg-muted rounded-full flex items-center justify-center mx-auto mb-6">
-              <Heart className="size-10 md:size-12 text-muted-foreground" weight="duotone" />
+              <Heart className="size-10 md:size-12 text-muted-foreground" />
             </div>
             <h2 className="text-lg md:text-xl font-semibold tracking-tight text-foreground mb-2">{t("empty")}</h2>
             <p className="text-muted-foreground mb-6 max-w-md mx-auto">{t("emptyDescription")}</p>
@@ -175,7 +176,7 @@ export default function WishlistPageClient() {
         {/* Header with title and actions */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
           <h1 className="text-xl md:text-2xl font-bold tracking-tight text-foreground flex items-center gap-2">
-            <Heart className="h-5 w-5 md:h-6 md:w-6 text-wishlist" weight="fill" />
+            <Heart className="h-5 w-5 md:h-6 md:w-6 text-wishlist" />
             {t("title")} <span className="text-muted-foreground font-normal">({items.length})</span>
           </h1>
 
@@ -234,7 +235,7 @@ export default function WishlistPageClient() {
                     className="absolute top-2 right-2 p-2 rounded-full bg-background hover:bg-hover border border-border text-muted-foreground hover:text-destructive transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
                     aria-label={t("remove")}
                   >
-                    <Trash size={16} weight="regular" />
+                    <Trash size={16} />
                   </button>
                 </div>
               </Link>

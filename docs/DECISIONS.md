@@ -114,6 +114,22 @@ Append-only. Agents read this to understand *why* patterns exist.
 - **Alternatives considered:** (a) Revoke broad table grants. (b) Use RPC functions for notification inserts. (c) Accept risk and rely on application code only.
 - **Consequences:** Applying the migration is high-risk and requires human approval and rollback planning (per `AGENTS.md § High-Risk Pause`).
 
+### DEC-013: Remove demo/registry route surface from production URLs
+- **Date:** 2026-02-17
+- **Context:** `/demo/*` and `/registry` were still routable and linked in parts of the UI, increasing public surface area and maintenance risk with no launch-critical value.
+- **Decision:** Delete `app/[locale]/(main)/demo/**` and `app/[locale]/(main)/registry/**`, then add permanent redirects in `next.config.ts` for `/:locale/demo/:path* -> /:locale` and `/:locale/registry -> /:locale/gift-cards`.
+- **Rationale:** Smaller route surface reduces accidental regressions, keeps dynamic profile routes clean, and enforces a clearer production contract.
+- **Alternatives considered:** (a) Keep routes behind feature flags. (b) Soft-hide links but keep pages. (c) Temporary redirects without deleting source routes.
+- **Consequences:** Legacy demo/registry deep links now canonicalize via redirects; any future experiments should live behind explicit internal dev-only routes.
+
+### DEC-014: Remove legacy icon compatibility layer and enforce direct Lucide imports
+- **Date:** 2026-02-17
+- **Context:** `@/lib/icons/phosphor` and `@/lib/icons/tabler` compatibility shims depended on a large `lucide-picker` indirection that increased bundle pressure and hid icon contracts.
+- **Decision:** Migrate callsites to direct `lucide-react` imports, delete `lib/icons/{phosphor,tabler,lucide-picker,compat}.tsx`, remove stale optimize-package entry for phosphor, and ban legacy icon imports via `no-restricted-imports`.
+- **Rationale:** Direct imports are tree-shakable, explicit, and easier for AI/humans to reason about during refactors.
+- **Alternatives considered:** (a) Keep compatibility layer and prune mappings. (b) Partial migration by route group. (c) Introduce another icon abstraction.
+- **Consequences:** Icon visual weight variants from phosphor were normalized to lucide defaults; future icon changes must use direct `lucide-react` symbols.
+
 ---
 
 ## How To Add A Decision
@@ -124,4 +140,4 @@ Append-only. Agents read this to understand *why* patterns exist.
 4. Link to related docs or TASKS.md entries if applicable.
 5. Bump `Last verified` date.
 
-*Last updated: 2026-02-13*
+*Last updated: 2026-02-17*

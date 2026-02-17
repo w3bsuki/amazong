@@ -1,5 +1,6 @@
 import * as React from "react"
-import { type Icon } from "@/lib/icons/tabler"
+import { type LucideIcon as Icon } from "lucide-react";
+
 
 import {
   SidebarGroup,

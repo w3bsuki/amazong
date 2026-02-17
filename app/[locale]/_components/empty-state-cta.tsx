@@ -4,7 +4,8 @@ import { useLocale } from "next-intl"
 import { Link } from "@/i18n/routing"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
-import { Package, Plus, Storefront, MagnifyingGlass, ShoppingBag } from "@/lib/icons/phosphor"
+import { Search as MagnifyingGlass, Package, Plus, ShoppingBag, Store as Storefront } from "lucide-react";
+
 
 // =============================================================================
 // Types
@@ -137,7 +138,7 @@ export function EmptyStateCTA({
     )}>
       {/* Icon */}
       <div className="mb-4 rounded-full bg-muted p-4">
-        {icon || <Icon size={32} weight="duotone" className="text-muted-foreground" />}
+        {icon || <Icon size={32} className="text-muted-foreground" />}
       </div>
 
       {/* Title */}
@@ -154,7 +155,7 @@ export function EmptyStateCTA({
       {showCTA && (
         <Button asChild variant="cta" className="rounded-full">
           <Link href={ctaHref || content.href}>
-            <Plus size={18} weight="bold" />
+            <Plus size={18} />
             {ctaLabel || content.cta[locale]}
           </Link>
         </Button>

@@ -3,20 +3,8 @@
 import * as React from "react"
 import { Link } from "@/i18n/routing"
 import { usePathname } from "@/i18n/routing"
-import {
-  IconDashboard,
-  IconBox,
-  IconShoppingCart,
-  IconPackage,
-  IconChartBar,
-  IconReceipt,
-  IconSettings,
-  IconHome,
-  IconUsers,
-  IconBuildingStore,
-  IconTag,
-  IconSpeakerphone,
-} from "@/lib/icons/tabler"
+import { Box as IconBox, Store as IconBuildingStore, ChartColumn as IconChartBar, LayoutDashboard as IconDashboard, House as IconHome, Package as IconPackage, Receipt as IconReceipt, Settings as IconSettings, ShoppingCart as IconShoppingCart, Megaphone as IconSpeakerphone, Tag as IconTag, Users as IconUsers } from "lucide-react";
+
 
 import { NavUser } from "../../_components/nav/nav-user"
 import {

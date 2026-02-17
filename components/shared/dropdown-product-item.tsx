@@ -2,7 +2,8 @@
 
 import Image from "next/image"
 import { Link } from "@/i18n/routing"
-import { Package, Trash } from "@/lib/icons/phosphor"
+import { Package, Trash } from "lucide-react";
+
 import type { ReactNode } from "react"
 
 export interface DropdownItemData {
@@ -42,7 +43,7 @@ export function DropdownProductItem({
             />
           ) : (
             <div className="size-full flex items-center justify-center text-muted-foreground">
-              <Package size={18} weight="regular" />
+              <Package size={18} />
             </div>
           )}
         </div>
@@ -68,7 +69,7 @@ export function DropdownProductItem({
         className="size-6 self-start flex items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-destructive-subtle hover:text-destructive focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
         aria-label={removeLabel}
       >
-        <Trash size={14} weight="regular" />
+        <Trash size={14} />
       </button>
     </div>
   )

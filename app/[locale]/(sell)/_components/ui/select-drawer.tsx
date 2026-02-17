@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
-import { MagnifyingGlass, Plus, Check } from "@/lib/icons/phosphor";
+import { Check, Search as MagnifyingGlass, Plus } from "lucide-react";
+
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import {
@@ -144,7 +145,7 @@ export function SelectDrawer({
                   )}>
                     {opt}
                   </span>
-                  {isSelected && <Check className="size-4 text-primary" weight="bold" />}
+                  {isSelected && <Check className="size-4 text-primary" />}
                 </button>
               );
             })}

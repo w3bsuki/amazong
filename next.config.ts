@@ -123,7 +123,6 @@ const nextConfig: NextConfig = {
     optimizePackageImports: [
       'date-fns',
       'recharts',
-      '@phosphor-icons/react',
       'lucide-react',
       'framer-motion',
       '@radix-ui/react-accordion',
@@ -156,6 +155,16 @@ const nextConfig: NextConfig = {
       {
         source: '/:locale/u/:username',
         destination: '/:locale/:username',
+        permanent: true,
+      },
+      {
+        source: '/:locale/demo/:path*',
+        destination: '/:locale',
+        permanent: true,
+      },
+      {
+        source: '/:locale/registry',
+        destination: '/:locale/gift-cards',
         permanent: true,
       },
     ]

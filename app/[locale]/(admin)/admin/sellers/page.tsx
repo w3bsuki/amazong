@@ -20,7 +20,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { IconCheck, IconX } from "@/lib/icons/tabler"
+import { Check as IconCheck, X as IconX } from "lucide-react";
+
 
 // Define seller type to avoid 'any'
 interface Seller {

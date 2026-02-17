@@ -6,22 +6,8 @@ import { Link } from "@/i18n/routing"
 import { useRouter } from "@/i18n/routing"
 import { toast } from "sonner"
 import { format } from "date-fns"
-import {
-  IconSearch,
-  IconChevronDown,
-  IconDotsVertical,
-  IconTruck,
-  IconCheck,
-  IconX,
-  IconRefresh,
-  IconPackage,
-  IconDownload,
-  IconSelector,
-  IconChevronUp,
-  IconEye,
-  IconMessage,
-  IconPrinter,
-} from "@/lib/icons/tabler"
+import { Check as IconCheck, ChevronDown as IconChevronDown, ChevronUp as IconChevronUp, EllipsisVertical as IconDotsVertical, Download as IconDownload, Eye as IconEye, MessageCircle as IconMessage, Package as IconPackage, Printer as IconPrinter, RefreshCw as IconRefresh, Search as IconSearch, ChevronsUpDown as IconSelector, Truck as IconTruck, X as IconX } from "lucide-react";
+
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Checkbox } from "@/components/ui/checkbox"

@@ -1,6 +1,7 @@
 "use client";
 
-import { Spinner, CloudCheck, FloppyDisk, CaretLeft, House } from "@/lib/icons/phosphor";
+import { ChevronLeft as CaretLeft, CloudCheck, Save as FloppyDisk, House, Loader as Spinner } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { PageContainer } from "../layout/page-container";
@@ -51,7 +52,7 @@ export function ProgressHeader({
             href="/"
             className="group flex min-h-(--control-default) items-center gap-2 rounded-md px-1 text-muted-foreground transition-colors hover:text-foreground"
           >
-            <CaretLeft className="size-4" weight="bold" />
+            <CaretLeft className="size-4" />
             <House className="size-5" />
             <span className="hidden sm:inline text-sm font-medium">
               {tNav("home")}

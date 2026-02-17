@@ -3,7 +3,8 @@
 import { useEffect, useState, useTransition } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { useLocale, useTranslations } from "next-intl"
-import { Check, ShoppingBag, Storefront, Package, SpinnerGap } from "@/lib/icons/phosphor"
+import { Check, Package, ShoppingBag, LoaderCircle as SpinnerGap, Store as Storefront } from "lucide-react";
+
 
 import { Button } from "@/components/ui/button"
 import { OnboardingShell } from "../_components/onboarding-shell"
@@ -75,7 +76,7 @@ export default function CompletePage() {
   if (isSaving) {
     return (
       <div className="flex flex-col items-center justify-center min-h-dvh space-y-4">
-        <SpinnerGap className="size-10 animate-spin motion-reduce:animate-none text-primary" weight="bold" />
+        <SpinnerGap className="size-10 animate-spin motion-reduce:animate-none text-primary" />
         <p className="text-muted-foreground">{t("complete.saving")}</p>
       </div>
     )
@@ -101,7 +102,7 @@ export default function CompletePage() {
       footer={
         <div className="space-y-2">
           <Button onClick={() => handleNavigation(`/${locale}`)} size="lg" disabled={isPending} className="w-full">
-            <ShoppingBag className="size-5" weight="fill" />
+            <ShoppingBag className="size-5" />
             {t("complete.startBrowsing")}
           </Button>
 
@@ -112,7 +113,7 @@ export default function CompletePage() {
             disabled={isPending}
             className="w-full"
           >
-            <Package className="size-5" weight="fill" />
+            <Package className="size-5" />
             {t("complete.listFirstItem")}
           </Button>
 
@@ -123,7 +124,7 @@ export default function CompletePage() {
               disabled={isPending}
               className="w-full"
             >
-              <Storefront className="size-5" weight="fill" />
+              <Storefront className="size-5" />
               {t("complete.completeStore")}
             </Button>
           ) : null}
@@ -132,7 +133,7 @@ export default function CompletePage() {
     >
       <div className="flex flex-col items-center text-center space-y-4">
         <div className="size-16 bg-primary rounded-full flex items-center justify-center shadow-sm">
-          <Check className="size-8 text-primary-foreground" weight="bold" />
+          <Check className="size-8 text-primary-foreground" />
         </div>
       </div>
     </OnboardingShell>

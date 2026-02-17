@@ -1,7 +1,8 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { Airplane, Lightning, Truck } from "@/lib/icons/phosphor";
+import { Plane as Airplane, Zap as Lightning, Truck } from "lucide-react";
+
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { cn } from "@/lib/utils";
 import { SHIPPING_COSTS, type ShippingMethod } from "./checkout-types";
@@ -67,7 +68,6 @@ export function ShippingMethodSection({
               <RadioGroupItem value={opt.id} id={`shipping-${opt.id}`} className="shrink-0" />
               <Icon
                 className={cn("size-5", isSelected ? "text-primary" : "text-muted-foreground")}
-                weight={isSelected ? "fill" : "regular"}
               />
               <div className="flex-1">
                 <p className="text-sm font-medium">{opt.label}</p>

@@ -25,30 +25,8 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import {
-    List,
-    X,
-    SignIn as SignInIcon,
-    ChatCircleText,
-    Heart,
-    Receipt,
-    SignOut,
-    SpinnerGap,
-    ChartLineUp,
-    CaretRight,
-    UserCircle,
-    Gear,
-    Package,
-    RocketLaunch,
-    Plus,
-    Lifebuoy,
-    MapPin,
-    CreditCard,
-    SquaresFour,
-    User,
-    Bell,
-    Storefront,
-} from "@/lib/icons/phosphor"
+import { Bell, ChevronRight as CaretRight, ChartLine as ChartLineUp, MessageCircle as ChatCircleText, CreditCard, Settings as Gear, Heart, LifeBuoy as Lifebuoy, List, MapPin, Package, Plus, Receipt, Rocket as RocketLaunch, LogIn as SignInIcon, LogOut as SignOut, LoaderCircle as SpinnerGap, LayoutGrid as SquaresFour, Store as Storefront, User, CircleUser as UserCircle, X } from "lucide-react";
+
 import { Button } from "@/components/ui/button"
 import { IconButton } from "@/components/ui/icon-button"
 import { Link } from "@/i18n/routing"
@@ -92,9 +70,9 @@ function NavLink({
             onClick={onClick}
             className="flex min-h-(--control-primary) items-center gap-4 rounded-lg px-4 tap-transparent motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth) motion-reduce:transition-none hover:bg-hover active:bg-active focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
         >
-            <Icon size={22} weight="regular" className="text-muted-foreground shrink-0" />
+            <Icon size={22} className="text-muted-foreground shrink-0" />
             <span className="text-sm font-medium text-foreground flex-1">{label}</span>
-            <CaretRight size={16} weight="bold" className="text-muted-foreground shrink-0" />
+            <CaretRight size={16} className="text-muted-foreground shrink-0" />
         </Link>
     )
 }
@@ -150,7 +128,7 @@ export function SidebarMenu({ user, triggerClassName, userStats }: SidebarMenuPr
                 aria-hidden="true"
                 data-testid="mobile-menu-trigger"
             >
-                <List weight="bold" />
+                <List />
             </span>
         )
     }
@@ -174,7 +152,7 @@ export function SidebarMenu({ user, triggerClassName, userStats }: SidebarMenuPr
                     aria-label={t("title")}
                     data-testid="mobile-menu-trigger"
                 >
-                    <List weight="bold" />
+                    <List />
                 </Button>
             </DrawerTrigger>
 
@@ -202,7 +180,7 @@ export function SidebarMenu({ user, triggerClassName, userStats }: SidebarMenuPr
                                 className="flex min-w-0 items-center gap-2.5 rounded-lg tap-transparent motion-safe:transition-opacity motion-safe:duration-fast motion-safe:ease-(--ease-smooth) motion-reduce:transition-none hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
                             >
                                 <div className="size-touch shrink-0 rounded-full bg-selected flex items-center justify-center">
-                                    <UserCircle size={26} weight="fill" className="text-primary" />
+                                    <UserCircle size={26} className="text-primary" />
                                 </div>
                                 <span className="text-foreground text-base font-semibold truncate max-w-32">
                                     {firstName || displayName}
@@ -212,7 +190,7 @@ export function SidebarMenu({ user, triggerClassName, userStats }: SidebarMenuPr
                             <div className="flex items-center gap-2">
                                 <Button asChild size="sm" variant="cta">
                                     <Link href="/auth/login" onClick={() => setOpen(false)} className="gap-1.5">
-                                        <SignInIcon size={20} weight="bold" />
+                                        <SignInIcon size={20} />
                                         <span>{t("signIn")}</span>
                                     </Link>
                                 </Button>
@@ -236,7 +214,7 @@ export function SidebarMenu({ user, triggerClassName, userStats }: SidebarMenuPr
                                     className="flex size-touch items-center justify-center rounded-full text-muted-foreground tap-transparent motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth) motion-reduce:transition-none hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
                                     aria-label={tAccountDrawer("settings")}
                                 >
-                                    <Gear size={22} weight="regular" />
+                                    <Gear size={22} />
                                 </Link>
                             )}
 
@@ -282,7 +260,7 @@ export function SidebarMenu({ user, triggerClassName, userStats }: SidebarMenuPr
                                     variant="ghost"
                                     className="text-foreground hover:bg-muted active:bg-active"
                                 >
-                                    <X size={22} weight="bold" />
+                                    <X size={22} />
                                 </IconButton>
                             </DrawerClose>
                         </div>
@@ -308,7 +286,7 @@ export function SidebarMenu({ user, triggerClassName, userStats }: SidebarMenuPr
                                     onClick={() => setOpen(false)}
                                     className="mb-2 flex h-touch w-full items-center justify-center gap-1.5 rounded-lg bg-primary font-semibold text-primary-foreground tap-transparent motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth) motion-reduce:transition-none hover:bg-interactive-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
                                 >
-                                    <Plus size={18} weight="bold" />
+                                    <Plus size={18} />
                                     <span className="text-sm">{tMenu("newListing")}</span>
                                 </Link>
                                 {/* Stats row - 2 column grid */}
@@ -318,7 +296,7 @@ export function SidebarMenu({ user, triggerClassName, userStats }: SidebarMenuPr
                                         onClick={() => setOpen(false)}
                                         className="flex h-touch items-center justify-center gap-1.5 rounded-lg border border-border bg-surface-subtle tap-transparent motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth) motion-reduce:transition-none hover:border-hover-border hover:bg-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
                                     >
-                                        <Package size={18} weight="duotone" className="text-primary" />
+                                        <Package size={18} className="text-primary" />
                                         <span className="text-sm font-semibold tabular-nums">{userStats?.activeListings ?? 0}</span>
                                         <span className="text-xs text-muted-foreground">{tMenu("active")}</span>
                                     </Link>
@@ -327,7 +305,7 @@ export function SidebarMenu({ user, triggerClassName, userStats }: SidebarMenuPr
                                         onClick={() => setOpen(false)}
                                         className="flex h-touch items-center justify-center gap-1.5 rounded-lg border border-border bg-surface-subtle tap-transparent motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth) motion-reduce:transition-none hover:border-hover-border hover:bg-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
                                     >
-                                        <RocketLaunch size={18} weight="duotone" className="text-primary" />
+                                        <RocketLaunch size={18} className="text-primary" />
                                         <span className="text-sm font-semibold tabular-nums">{userStats?.boostedListings ?? 0}</span>
                                         <span className="text-xs text-muted-foreground">{tMenu("boosted")}</span>
                                     </Link>
@@ -434,7 +412,7 @@ export function SidebarMenu({ user, triggerClassName, userStats }: SidebarMenuPr
                         /* Unauthenticated - Show categories link and info */
                         <section className="px-3 py-4">
                             <div className="text-center py-8">
-                                <UserCircle size={48} weight="duotone" className="mx-auto text-muted-foreground mb-3" />
+                                <UserCircle size={48} className="mx-auto text-muted-foreground mb-3" />
                                 <h3 className="text-base font-semibold text-foreground mb-1">
                                     {tAccountDrawer("signInPrompt")}
                                 </h3>
@@ -447,7 +425,7 @@ export function SidebarMenu({ user, triggerClassName, userStats }: SidebarMenuPr
                                         onClick={() => setOpen(false)}
                                         className="flex min-h-(--control-default) items-center justify-center gap-2 rounded-full bg-primary px-6 text-sm font-semibold text-primary-foreground tap-transparent motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth) motion-reduce:transition-none hover:bg-interactive-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
                                     >
-                                        <SignInIcon size={18} weight="bold" />
+                                        <SignInIcon size={18} />
                                         <span>{t("signIn")}</span>
                                     </Link>
                                     <Link
@@ -489,7 +467,7 @@ export function SidebarMenu({ user, triggerClassName, userStats }: SidebarMenuPr
                                         {isSigningOut ? (
                                             <SpinnerGap size={18} className="animate-spin" />
                                         ) : (
-                                            <SignOut size={18} weight="regular" />
+                                            <SignOut size={18} />
                                         )}
                                         <span>{tNavUser("logOut")}</span>
                                     </button>

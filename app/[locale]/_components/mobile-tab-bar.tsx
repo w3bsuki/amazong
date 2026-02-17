@@ -1,7 +1,8 @@
 "use client"
 
 import { type ReactNode, useEffect, useState } from "react"
-import { House, SquaresFour, ChatCircleDots, Plus } from "@/lib/icons/phosphor"
+import { MessageCircleMore as ChatCircleDots, House, Plus, LayoutGrid as SquaresFour } from "lucide-react";
+
 import { Link, usePathname, useRouter } from "@/i18n/routing"
 import { cn } from "@/lib/utils"
 import { CountBadge } from "@/components/shared/count-badge"

@@ -2,7 +2,8 @@ import { validateLocale, Link } from "@/i18n/routing"
 import { setRequestLocale, getTranslations } from "next-intl/server"
 import { getCategoryHierarchy } from "@/lib/data/categories"
 import { getCategoryName, getCategorySlugKey } from "@/lib/category-display"
-import { CaretRight, Storefront, Sparkle } from "@/lib/icons/phosphor"
+import { ChevronRight as CaretRight, Sparkles as Sparkle, Store as Storefront } from "lucide-react";
+
 import { CategoryCircleVisual } from "../_components/category/category-circle-visual"
 import { PageShell } from "../../_components/page-shell"
 import { CategoriesHeaderSync } from "./_components/categories-header-sync"
@@ -120,7 +121,6 @@ export default async function CategoriesPage({
 
               <CaretRight
                 size={14}
-                weight="bold"
                 className="shrink-0 text-muted-foreground transition-colors duration-fast ease-smooth group-hover:text-foreground group-active:text-foreground"
               />
             </Link>
@@ -136,7 +136,7 @@ export default async function CategoriesPage({
             className={QUICK_ACTION_CARD_CLASS}
           >
             <div className={QUICK_ACTION_ICON_CLASS}>
-              <Storefront size={16} weight="fill" />
+              <Storefront size={16} />
             </div>
             <div className="min-w-0">
               <div className="text-sm font-medium text-foreground">{t("quickActions.sell.title")}</div>
@@ -149,7 +149,7 @@ export default async function CategoriesPage({
             className={QUICK_ACTION_CARD_CLASS}
           >
             <div className={QUICK_ACTION_ICON_CLASS}>
-              <Sparkle size={16} weight="fill" />
+              <Sparkle size={16} />
             </div>
             <div className="min-w-0">
               <div className="text-sm font-medium text-foreground">{t("quickActions.deals.title")}</div>

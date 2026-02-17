@@ -6,7 +6,8 @@ import { useWishlist } from "@/components/providers/wishlist-context"
 import { toast } from "sonner"
 import { useTranslations } from "next-intl"
 import { cn } from "@/lib/utils"
-import { Heart, Plus, ShoppingCart } from "@/lib/icons/phosphor"
+import { Heart, Plus, ShoppingCart } from "lucide-react";
+
 import { IconButton } from "@/components/ui/icon-button"
 
 // =============================================================================
@@ -128,7 +129,6 @@ export function ProductCardActions({
                 >
                     <Heart
                         className={cn(overlayDensity === "compact" ? "size-3.5" : "size-4", inWishlist && "fill-primary text-primary")}
-                        weight={inWishlist ? "fill" : "regular"}
                     />
                 </IconButton>
             )}
@@ -150,9 +150,9 @@ export function ProductCardActions({
                     aria-label={inCart ? t("inCart") : t("addToCart")}
                 >
                     {inCart ? (
-                        <ShoppingCart className={overlayDensity === "compact" ? "size-4" : "size-5"} weight="fill" />
+                        <ShoppingCart className={overlayDensity === "compact" ? "size-4" : "size-5"} />
                     ) : (
-                        <Plus className={overlayDensity === "compact" ? "size-4" : "size-5"} weight="bold" />
+                        <Plus className={overlayDensity === "compact" ? "size-4" : "size-5"} />
                     )}
                 </IconButton>
             )}

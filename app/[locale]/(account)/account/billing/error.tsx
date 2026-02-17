@@ -4,7 +4,8 @@ import { useEffect } from "react"
 import { useTranslations } from "next-intl"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { WarningCircle, ArrowClockwise } from "@/lib/icons/phosphor"
+import { RefreshCw as ArrowClockwise, CircleAlert as WarningCircle } from "lucide-react";
+
 
 export default function BillingError({
   error,
@@ -25,7 +26,7 @@ export default function BillingError({
         <Card className="border-destructive/50">
           <CardContent className="flex flex-col items-center justify-center py-12 text-center">
             <div className="rounded-full bg-destructive-subtle p-4 mb-4">
-              <WarningCircle className="size-8 text-destructive" weight="duotone" />
+              <WarningCircle className="size-8 text-destructive" />
             </div>
             <h2 className="text-lg font-semibold mb-2">
               {t("title")}

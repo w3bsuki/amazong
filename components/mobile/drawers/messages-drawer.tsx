@@ -1,7 +1,8 @@
 "use client"
 
 import { useCallback } from "react"
-import { ChatCircle, Circle, Check, X } from "@/lib/icons/phosphor"
+import { MessageCircle as ChatCircle, Check, Circle, X } from "lucide-react";
+
 import {
   Drawer,
   DrawerContent,
@@ -102,7 +103,7 @@ export function MessagesDrawer({ open, onOpenChange }: MessagesDrawerProps) {
         <DrawerHeader className="pb-1.5 pt-0 text-left">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-1.5">
-              <ChatCircle size={16} weight="regular" className="text-muted-foreground" />
+              <ChatCircle size={16} className="text-muted-foreground" />
               <DrawerTitle className="text-sm font-semibold">{t("messages")}</DrawerTitle>
               {totalUnreadCount > 0 && (
                 <span className="text-xs text-destructive font-medium">
@@ -117,7 +118,7 @@ export function MessagesDrawer({ open, onOpenChange }: MessagesDrawerProps) {
                 size="icon-default"
                 className="text-muted-foreground hover:text-foreground hover:bg-muted active:bg-muted motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth)"
               >
-                <X size={20} weight="light" />
+                <X size={20} />
               </IconButton>
             </DrawerClose>
           </div>
@@ -127,7 +128,7 @@ export function MessagesDrawer({ open, onOpenChange }: MessagesDrawerProps) {
         {!user ? (
           <div className="flex flex-col items-center justify-center px-inset py-5">
             <div className="mb-2 flex size-(--control-default) items-center justify-center rounded-xl bg-muted">
-              <ChatCircle size={22} weight="regular" className="text-muted-foreground" />
+              <ChatCircle size={22} className="text-muted-foreground" />
             </div>
             <p className="text-sm text-foreground font-medium">
               {t("signInPrompt")}
@@ -143,7 +144,7 @@ export function MessagesDrawer({ open, onOpenChange }: MessagesDrawerProps) {
         ) : recentConversations.length === 0 ? (
           <div className="flex flex-col items-center justify-center px-inset py-5">
             <div className="mb-2 flex size-(--control-default) items-center justify-center rounded-xl bg-muted">
-              <ChatCircle size={22} weight="regular" className="text-muted-foreground" />
+              <ChatCircle size={22} className="text-muted-foreground" />
             </div>
             <p className="text-sm text-foreground font-medium">{tMessages("noConversations")}</p>
             <p className="text-xs text-muted-foreground mt-0.5">
@@ -201,9 +202,9 @@ export function MessagesDrawer({ open, onOpenChange }: MessagesDrawerProps) {
                           {unread > 0 ? tMessages("unread") : tMessages("read")}
                         </span>
                         {unread > 0 ? (
-                          <Circle size={8} weight="fill" className="text-destructive" aria-hidden="true" />
+                          <Circle size={8} className="text-destructive" aria-hidden="true" />
                         ) : (
-                          <Check size={12} weight="bold" className="text-muted-foreground" aria-hidden="true" />
+                          <Check size={12} className="text-muted-foreground" aria-hidden="true" />
                         )}
                       </div>
                     </div>

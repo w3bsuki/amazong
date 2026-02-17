@@ -2,7 +2,8 @@ import { createClient } from "@/lib/supabase/server"
 import { redirect } from "@/i18n/routing"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import { UpgradeContent } from "./upgrade-content"
-import { ArrowLeft } from "@/lib/icons/phosphor"
+import { ArrowLeft } from "lucide-react";
+
 import { Link } from "@/i18n/routing"
 import { getPlansForUpgrade, PRIVATE_PROFILE_SELECT_FOR_UPGRADE, PROFILE_SELECT_FOR_UPGRADE } from "@/lib/data/plans"
 import { createSubscriptionCheckoutSession } from "@/app/actions/subscriptions"

@@ -3,7 +3,8 @@
 import { useEffect, useMemo, useRef, useState, useTransition } from "react"
 import { usePathname, useRouter } from "@/i18n/routing"
 import { useSearchParams } from "next/navigation"
-import { IconSearch, IconX, IconFilter, IconCheck, IconPackage, IconPackageOff, IconChevronDown } from "@/lib/icons/tabler"
+import { Check as IconCheck, ChevronDown as IconChevronDown, Filter as IconFilter, Package as IconPackage, PackageX as IconPackageOff, Search as IconSearch, X as IconX } from "lucide-react";
+
 import { cn } from "@/lib/utils"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"

@@ -6,14 +6,8 @@ import { cn } from "@/lib/utils"
 import type { CategoryTreeNode } from "@/lib/category-tree"
 import { getCategoryName } from "@/lib/category-display"
 import { getCategoryIcon } from "../category/category-icons"
-import {
-  CaretDown,
-  CaretRight,
-  CaretUp,
-  ArrowLeft,
-  SquaresFour,
-  X,
-} from "@/lib/icons/phosphor"
+import { ArrowLeft, ChevronDown as CaretDown, ChevronRight as CaretRight, ChevronUp as CaretUp, LayoutGrid as SquaresFour, X } from "lucide-react";
+
 import { useTranslations } from "next-intl"
 
 // =============================================================================
@@ -155,7 +149,7 @@ export function CompactCategorySidebar({
         {/* Back button */}
         {viewLevel > 0 && (
           <button type="button" onClick={handleBack} className={itemInactive}>
-            <ArrowLeft size={18} weight="bold" className="shrink-0" />
+            <ArrowLeft size={18} className="shrink-0" />
             <span className="flex-1 truncate">
               {viewLevel === 1
                 ? tCommon("allCategories")
@@ -171,7 +165,7 @@ export function CompactCategorySidebar({
             onClick={() => onCategorySelect([], null)}
             className={selectedPath.length === 0 ? itemActive : itemInactive}
           >
-            <SquaresFour size={20} weight={selectedPath.length === 0 ? "fill" : "regular"} className="shrink-0" />
+            <SquaresFour size={20} className="shrink-0" />
             <span className="flex-1 font-medium">{tCommon("allCategories")}</span>
             <span className="text-xs tabular-nums opacity-70">
               {isMounted && totalCount > 0 ? totalCount : "—"}
@@ -183,7 +177,7 @@ export function CompactCategorySidebar({
         {viewLevel > 0 && headerCategory && (
           <div className="flex items-center gap-1">
             <div className={cn(itemActive, "flex-1 pr-1.5")} role="presentation">
-              <SquaresFour size={18} weight="fill" className="shrink-0" />
+              <SquaresFour size={18} className="shrink-0" />
               <span className="flex-1 truncate">
                 {tCategories("allIn", { category: getCategoryName(headerCategory, locale) })}
               </span>
@@ -204,7 +198,7 @@ export function CompactCategorySidebar({
                 aria-label={tCategories("backToAllCategories")}
                 title={tCategories("backToAllCategories")}
               >
-                <X size={12} weight="bold" />
+                <X size={12} />
               </button>
             </div>
           </div>
@@ -234,7 +228,7 @@ export function CompactCategorySidebar({
                 <span className="text-xs tabular-nums opacity-70">{count}</span>
               )}
               {hasChildren && (
-                <CaretRight size={14} weight="bold" className={cn("shrink-0", selected ? "text-background/70" : "text-muted-foreground")} />
+                <CaretRight size={14} className={cn("shrink-0", selected ? "text-background/70" : "text-muted-foreground")} />
               )}
             </button>
           )
@@ -249,12 +243,12 @@ export function CompactCategorySidebar({
           >
             {isExpanded ? (
               <>
-                <CaretUp size={14} weight="bold" />
+                <CaretUp size={14} />
                 {tCategories("showLessShort")}
               </>
             ) : (
               <>
-                <CaretDown size={14} weight="bold" />
+                <CaretDown size={14} />
                 {tCategories("moreCount", { count: hiddenCount })}
               </>
             )}

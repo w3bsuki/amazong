@@ -5,10 +5,8 @@ import { Button } from "@/components/ui/button"
 import { Field, FieldContent, FieldDescription, FieldLabel } from "@/components/shared/field"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
-import { 
-  ChatCircleDots, Star, Lightbulb, Bug, Heart,
-  PaperPlaneTilt, CheckCircle
-} from "@/lib/icons/phosphor"
+import { Bug, MessageCircleMore as ChatCircleDots, CircleCheck as CheckCircle, Heart, Lightbulb, Send as PaperPlaneTilt, Star } from "lucide-react";
+
 import { Link } from "@/i18n/routing"
 import type { Metadata } from 'next'
 import { validateLocale } from "@/i18n/routing"
@@ -62,7 +60,7 @@ export default async function FeedbackPage({
           </div>
           <div className="max-w-2xl">
             <div className="flex items-center gap-3 mb-3">
-              <ChatCircleDots className="size-8" weight="duotone" />
+              <ChatCircleDots className="size-8" />
               <h1 className="text-2xl md:text-4xl font-bold tracking-tight">{t('heroTitle')}</h1>
             </div>
             <p className="text-foreground text-lg">{t('heroSubtitle')}</p>
@@ -85,7 +83,7 @@ export default async function FeedbackPage({
               <Card key={index} className="text-center">
                 <CardContent className="p-5">
                   <div className="size-12 bg-surface-subtle rounded-full flex items-center justify-center mx-auto mb-3">
-                    <type.icon className="size-6 text-primary" weight="duotone" />
+                    <type.icon className="size-6 text-primary" />
                   </div>
                   <h3 className="font-semibold tracking-tight text-sm mb-1">{type.title}</h3>
                   <p className="text-xs text-muted-foreground">{type.desc}</p>
@@ -144,7 +142,7 @@ export default async function FeedbackPage({
 
               {/* Trust message */}
               <div className="mt-6 pt-6 border-t flex items-start gap-3 text-sm text-muted-foreground">
-                <CheckCircle className="size-5 text-success shrink-0 mt-0.5" weight="fill" />
+                <CheckCircle className="size-5 text-success shrink-0 mt-0.5" />
                 <p>{t('trustMessage')}</p>
               </div>
             </CardContent>

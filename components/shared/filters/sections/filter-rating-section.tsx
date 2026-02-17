@@ -1,7 +1,8 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { Star } from "@/lib/icons/phosphor";
+import { Star } from "lucide-react";
+
 import { Checkbox } from "@/components/ui/checkbox";
 import { cn } from "@/lib/utils";
 
@@ -49,7 +50,7 @@ export function FilterRatingSection({ minRating, onChange }: FilterRatingSection
             />
             <div className="flex text-rating">
               {[...Array(5)].map((_, i) => (
-                <Star key={i} size={18} weight={i < stars ? "fill" : "regular"} />
+                <Star key={i} size={18} />
               ))}
             </div>
             <span className="text-sm">{t("andUp")}</span>

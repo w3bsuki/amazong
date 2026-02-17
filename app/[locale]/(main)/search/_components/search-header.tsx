@@ -2,7 +2,8 @@
 
 import { Link } from "@/i18n/routing"
 import { useTranslations } from "next-intl"
-import { CaretRight, MagnifyingGlass } from "@/lib/icons/phosphor"
+import { ChevronRight as CaretRight, Search as MagnifyingGlass } from "lucide-react";
+
 import { SaveSearchButton } from "../../_components/search-controls/save-search-button"
 
 interface SearchHeaderProps {
@@ -28,9 +29,9 @@ export function SearchHeader({ query, category, totalResults }: SearchHeaderProp
             </Link>
           </li>
           <li className="flex items-center gap-1">
-            <CaretRight size={14} weight="regular" className="text-muted-foreground" />
+            <CaretRight size={14} className="text-muted-foreground" />
             <span className="text-muted-foreground flex items-center gap-1">
-              <MagnifyingGlass size={14} weight="regular" />
+              <MagnifyingGlass size={14} />
               {query ? t('searchResults') : t('allProducts')}
             </span>
           </li>

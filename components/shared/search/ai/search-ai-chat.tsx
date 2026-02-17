@@ -3,7 +3,8 @@
 import * as React from "react"
 import { useChat } from "@ai-sdk/react"
 import { DefaultChatTransport } from "ai"
-import { PaperPlaneRight, Robot, CircleNotch, ArrowRight } from "@/lib/icons/phosphor"
+import { ArrowRight, LoaderCircle as CircleNotch, Send as PaperPlaneRight, Bot as Robot } from "lucide-react";
+
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
@@ -74,7 +75,7 @@ function AssistantAvatar({ size = "sm" }: { size?: "sm" | "md" }) {
   return (
     <Avatar className={cn(sizeClasses[size], "shrink-0")}>
       <AvatarFallback className="bg-primary text-primary-foreground">
-        <Robot size={size === "md" ? 16 : 14} weight="fill" />
+        <Robot size={size === "md" ? 16 : 14} />
       </AvatarFallback>
     </Avatar>
   )
@@ -155,7 +156,7 @@ export function SearchAiChat({ className, onClose, compact = false }: SearchAiCh
           )}>
             <Avatar className="size-12 mb-4">
               <AvatarFallback className="bg-selected text-primary">
-                <Robot size={24} weight="fill" />
+                <Robot size={24} />
               </AvatarFallback>
             </Avatar>
             <h3 className="mb-1 text-base font-semibold tracking-tight text-foreground">
@@ -317,7 +318,7 @@ export function SearchAiChat({ className, onClose, compact = false }: SearchAiCh
             {isLoading ? (
               <CircleNotch size={18} className="animate-spin" />
             ) : (
-              <PaperPlaneRight size={18} weight="fill" />
+              <PaperPlaneRight size={18} />
             )}
           </Button>
         </div>

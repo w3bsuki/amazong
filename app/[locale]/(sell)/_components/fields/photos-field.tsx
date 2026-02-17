@@ -2,7 +2,8 @@
 
 import { useCallback, useState, useRef } from "react";
 import { useDropzone } from "react-dropzone";
-import { Camera, SpinnerGap, WarningCircle } from "@/lib/icons/phosphor";
+import { Camera, LoaderCircle as SpinnerGap, CircleAlert as WarningCircle } from "lucide-react";
+
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Field, FieldLabel, FieldDescription, FieldError, FieldContent } from "@/components/shared/field";
@@ -36,9 +37,9 @@ function UploadProgressItem({ upload }: { upload: UploadProgress }) {
     <div className="flex items-center gap-3 p-2 rounded-lg bg-surface-subtle">
       <div className="h-10 w-10 rounded bg-muted flex items-center justify-center shrink-0">
         {upload.status === "done" ? (
-          <Camera className="h-5 w-5 text-primary" weight="fill" />
+          <Camera className="h-5 w-5 text-primary" />
         ) : upload.status === "error" ? (
-          <WarningCircle className="h-5 w-5 text-destructive" weight="fill" />
+          <WarningCircle className="h-5 w-5 text-destructive" />
         ) : (
           <SpinnerGap className="h-5 w-5 animate-spin text-primary" />
         )}
@@ -278,7 +279,7 @@ export function PhotosField({
               <div className="flex items-start justify-between gap-4">
                 <div className="flex items-center gap-3.5">
                   <div className="flex size-10 items-center justify-center rounded-md bg-form-section-bg border border-form-section-border shadow-xs">
-                    <Camera className="size-5 text-muted-foreground" weight="bold" />
+                    <Camera className="size-5 text-muted-foreground" />
                   </div>
                   <div>
                     <FieldLabel className="text-sm font-bold tracking-tight text-foreground">

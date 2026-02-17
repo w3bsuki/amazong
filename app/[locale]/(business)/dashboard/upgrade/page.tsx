@@ -13,18 +13,8 @@ import {
 } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import {
-  IconRocket,
-  IconChartBar,
-  IconUsers,
-  IconShoppingCart,
-  IconCheck,
-  IconX,
-  IconCrown,
-  IconBuildingStore,
-  IconArrowRight,
-  IconSparkles,
-} from "@/lib/icons/tabler"
+import { ArrowRight as IconArrowRight, Store as IconBuildingStore, ChartColumn as IconChartBar, Check as IconCheck, Crown as IconCrown, Rocket as IconRocket, ShoppingCart as IconShoppingCart, Sparkles as IconSparkles, Users as IconUsers, X as IconX } from "lucide-react";
+
 
 // Translations
 const translations = {

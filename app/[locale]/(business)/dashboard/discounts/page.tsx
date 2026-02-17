@@ -19,16 +19,8 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { BusinessEmptyState } from "../../_components/business-empty-state"
-import {
-  IconTag,
-  IconPlus,
-  IconPercentage,
-  IconCurrencyDollar,
-  IconUsers,
-  IconCopy,
-  IconPencil,
-  IconTrash,
-} from "@/lib/icons/tabler"
+import { Copy as IconCopy, DollarSign as IconCurrencyDollar, Pencil as IconPencil, Percent as IconPercentage, Plus as IconPlus, Tag as IconTag, Trash as IconTrash, Users as IconUsers } from "lucide-react";
+
 
 // Placeholder function - would need actual discounts table
 async function getBusinessDiscounts() {

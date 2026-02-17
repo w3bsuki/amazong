@@ -1,7 +1,8 @@
 "use client"
 
 import { useCallback } from "react"
-import { CaretRight } from "@/lib/icons/phosphor"
+import { ChevronRight as CaretRight } from "lucide-react";
+
 import { useTranslations } from "next-intl"
 
 import { Link } from "@/i18n/routing"
@@ -117,11 +118,11 @@ export function HomeBrowseOptionsSheet({
             <div className="grid grid-cols-2 gap-2">
               <Link href={fullBrowseHref} onClick={() => onOpenChange(false)} className={LINK_CHIP_CLASS}>
                 <span className="truncate">{tV4("actions.viewCategory")}</span>
-                <CaretRight size={14} weight="bold" aria-hidden="true" />
+                <CaretRight size={14} aria-hidden="true" />
               </Link>
               <Link href="/categories" onClick={() => onOpenChange(false)} className={LINK_CHIP_CLASS}>
                 <span className="truncate">{tV4("actions.openCategories")}</span>
-                <CaretRight size={14} weight="bold" aria-hidden="true" />
+                <CaretRight size={14} aria-hidden="true" />
               </Link>
             </div>
           </div>

@@ -1,6 +1,7 @@
 "use client"
 
-import { Crown, Lightning, Package, ChartLine, Headset, Medal, Info } from "@/lib/icons/phosphor"
+import { ChartLine, Crown, Headset, Info, Zap as Lightning, Medal, Package } from "lucide-react";
+
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -88,7 +89,6 @@ export function SubscriptionBenefitsCard({
         )}>
           <div className="flex items-center gap-2">
             <Crown 
-              weight={isPaidPlan ? "fill" : "regular"} 
               className={cn("size-5", isPaidPlan ? "text-primary" : "text-muted-foreground")} 
             />
             <div>
@@ -131,7 +131,7 @@ export function SubscriptionBenefitsCard({
             <div className="space-y-2">
               <div className="flex items-center justify-between text-sm">
                 <div className="flex items-center gap-2">
-                  <Lightning weight="fill" className="size-4 text-primary" />
+                  <Lightning className="size-4 text-primary" />
                   <span>{t("subscriptionBenefitsCard.boostsLabel")}</span>
                   {boostsResetAt && (
                     <TooltipProvider delayDuration={200}>
@@ -162,7 +162,7 @@ export function SubscriptionBenefitsCard({
             {/* Priority Support */}
             {prioritySupport && (
               <div className="flex items-center gap-2 text-sm">
-                <Headset weight="duotone" className="size-4 text-success" />
+                <Headset className="size-4 text-success" />
                 <span>{t("subscriptionBenefitsCard.prioritySupportLabel")}</span>
                 <Badge variant="secondary" className="ml-auto text-2xs">✓</Badge>
               </div>
@@ -171,7 +171,7 @@ export function SubscriptionBenefitsCard({
             {/* Analytics */}
             {analyticsAccess && analyticsAccess !== "none" && (
               <div className="flex items-center gap-2 text-sm">
-                <ChartLine weight="duotone" className="size-4 text-info" />
+                <ChartLine className="size-4 text-info" />
                 <span>{t("subscriptionBenefitsCard.analyticsLabel")}</span>
                 <Badge variant="secondary" className="ml-auto text-2xs">
                   {getAnalyticsLabel(analyticsAccess)}
@@ -182,7 +182,7 @@ export function SubscriptionBenefitsCard({
             {/* Seller Badge */}
             {badgeType && (
               <div className="flex items-center gap-2 text-sm">
-                <Medal weight="duotone" className="size-4 text-verified" />
+                <Medal className="size-4 text-verified" />
                 <span>{t("subscriptionBenefitsCard.sellerBadgeLabel")}</span>
                 <Badge variant="secondary" className="ml-auto text-2xs">
                   {getBadgeLabel(badgeType)}

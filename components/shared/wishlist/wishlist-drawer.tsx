@@ -1,7 +1,8 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { Heart, ShoppingCart, Trash, ArrowRight, X } from "@/lib/icons/phosphor"
+import { ArrowRight, Heart, ShoppingCart, Trash, X } from "lucide-react";
+
 import {
   Drawer,
   DrawerContent,
@@ -64,7 +65,7 @@ export function WishlistDrawer({ open, onOpenChange, className }: WishlistDrawer
         <DrawerHeader className="pb-1.5 pt-0 border-b border-border text-left">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-1">
-              <Heart size={16} weight="fill" className="text-wishlist" />
+              <Heart size={16} className="text-wishlist" />
               <DrawerTitle className="text-sm font-semibold tracking-tight">{t("title")}</DrawerTitle>
               <span className="text-xs text-muted-foreground" suppressHydrationWarning>
                 ({mounted ? totalItems : 0})
@@ -77,7 +78,7 @@ export function WishlistDrawer({ open, onOpenChange, className }: WishlistDrawer
                 size="icon-compact"
                 className="text-muted-foreground hover:text-foreground hover:bg-muted active:bg-muted"
               >
-                <X size={20} weight="light" />
+                <X size={20} />
               </IconButton>
             </DrawerClose>
           </div>
@@ -91,7 +92,7 @@ export function WishlistDrawer({ open, onOpenChange, className }: WishlistDrawer
         ) : items.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-5 px-inset text-center">
             <div className="size-11 bg-muted rounded-xl flex items-center justify-center mb-2">
-              <Heart size={22} weight="duotone" className="text-muted-foreground" />
+              <Heart size={22} className="text-muted-foreground" />
             </div>
             <p className="text-sm text-foreground font-medium">{t("empty")}</p>
             <p className="text-xs text-muted-foreground mt-0.5 mb-3">{t("emptyDescription")}</p>
@@ -157,7 +158,7 @@ export function WishlistDrawer({ open, onOpenChange, className }: WishlistDrawer
                       className="text-foreground hover:bg-muted active:bg-muted"
                       aria-label={t("add")}
                     >
-                      <ShoppingCart size={18} weight="regular" />
+                      <ShoppingCart size={18} />
                     </IconButton>
                     <IconButton
                       data-vaul-no-drag
@@ -170,7 +171,7 @@ export function WishlistDrawer({ open, onOpenChange, className }: WishlistDrawer
                       className="text-muted-foreground hover:text-destructive hover:bg-destructive-subtle active:bg-destructive-subtle"
                       aria-label={t("remove")}
                     >
-                      <Trash size={16} weight="regular" />
+                      <Trash size={16} />
                     </IconButton>
                   </div>
                 </div>

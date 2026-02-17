@@ -2,7 +2,8 @@
 
 import { useState } from "react"
 import { useTranslations } from "next-intl"
-import { MapPin, House, Briefcase, Star, Plus, Pencil, Trash, Phone, X } from "@/lib/icons/phosphor"
+import { Briefcase, House, MapPin, Pencil, Phone, Plus, Star, Trash, X } from "lucide-react";
+
 
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -100,14 +101,14 @@ export function AccountAddressesGrid({
       <Card>
         <CardContent className="flex flex-col items-center justify-center py-12 text-center">
           <div className="flex size-16 items-center justify-center rounded-full bg-muted mb-4">
-            <MapPin className="size-8 text-muted-foreground" weight="duotone" />
+            <MapPin className="size-8 text-muted-foreground" />
           </div>
           <h3 className="font-semibold text-lg">{t("noAddresses")}</h3>
           <p className="text-muted-foreground text-sm mt-1 max-w-sm">
             {t("noAddressesDescription")}
           </p>
           <Button onClick={onAdd} className="mt-6 gap-2">
-            <Plus className="size-4" weight="bold" />
+            <Plus className="size-4" />
             {t("addFirst")}
           </Button>
         </CardContent>
@@ -132,12 +133,12 @@ export function AccountAddressesGrid({
               <CardHeader className="pb-2">
                 <div className="flex items-start justify-between gap-2">
                   <div className="flex items-center gap-2 min-w-0">
-                    <LabelIcon className={`size-5 shrink-0 ${getLabelColor(address.label)}`} weight="duotone" />
+                    <LabelIcon className={`size-5 shrink-0 ${getLabelColor(address.label)}`} />
                     <CardTitle className="text-base truncate">{address.label}</CardTitle>
                   </div>
                   {address.is_default && (
                     <Badge variant="secondary" className="shrink-0 text-xs bg-selected text-primary border-0">
-                      <Star className="size-3 mr-1" weight="fill" />
+                      <Star className="size-3 mr-1" />
                       {t("default")}
                     </Badge>
                   )}
@@ -154,11 +155,11 @@ export function AccountAddressesGrid({
           <DrawerHeader className="border-b border-border-subtle text-left">
             <div className="flex items-start justify-between gap-3">
               <DrawerTitle className="flex items-center gap-2">
-                <LabelIcon className={`size-5 ${getLabelColor(address.label)}`} weight="duotone" />
+                <LabelIcon className={`size-5 ${getLabelColor(address.label)}`} />
                 {address.label}
                 {address.is_default && (
                   <Badge variant="secondary" className="ml-2 text-xs bg-selected text-primary border-0">
-                    <Star className="size-3 mr-1" weight="fill" />
+                    <Star className="size-3 mr-1" />
                     {t("default")}
                   </Badge>
                 )}
@@ -249,11 +250,11 @@ export function AccountAddressesGrid({
         <CardHeader className="pb-3">
           <div className="flex items-start justify-between">
             <div className="flex items-center gap-2">
-              <LabelIcon className={`size-5 ${getLabelColor(address.label)}`} weight="duotone" />
+              <LabelIcon className={`size-5 ${getLabelColor(address.label)}`} />
               <CardTitle className="text-base">{address.label}</CardTitle>
               {address.is_default && (
                 <Badge variant="secondary" className="text-xs bg-selected text-primary border-0">
-                  <Star className="size-3 mr-1" weight="fill" />
+                  <Star className="size-3 mr-1" />
                   {t("default")}
                 </Badge>
               )}

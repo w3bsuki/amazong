@@ -9,10 +9,8 @@ import { Badge } from "@/components/ui/badge"
 import { BusinessCommandPalette } from "./business-command-palette"
 import { BusinessNotifications } from "./business-notifications"
 import { BUSINESS_PAGE_TITLES, type BusinessRoute } from "../dashboard/_lib/routes"
-import {
-  IconPlus,
-  IconExternalLink,
-} from "@/lib/icons/tabler"
+import { ExternalLink as IconExternalLink, Plus as IconPlus } from "lucide-react";
+
 
 interface BusinessHeaderProps {
   storeName?: string

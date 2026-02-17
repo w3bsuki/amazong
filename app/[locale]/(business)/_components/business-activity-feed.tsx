@@ -1,14 +1,8 @@
 import * as React from "react"
 import { Link } from "@/i18n/routing"
 import { formatDistanceToNow } from "date-fns"
-import {
-  IconShoppingCart,
-  IconBox,
-  IconUser,
-  IconStar,
-  IconArrowRight,
-  IconCheck,
-} from "@/lib/icons/tabler"
+import { ArrowRight as IconArrowRight, Box as IconBox, Check as IconCheck, ShoppingCart as IconShoppingCart, Star as IconStar, User as IconUser } from "lucide-react";
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"

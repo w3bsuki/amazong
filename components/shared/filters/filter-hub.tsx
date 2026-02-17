@@ -3,11 +3,8 @@
 import { useState, useCallback, useEffect, useMemo, startTransition } from "react"
 import { useSearchParams, type ReadonlyURLSearchParams } from "next/navigation"
 import { usePathname, useRouter } from "@/i18n/routing"
-import {
-  CaretLeft,
-  CaretRight,
-  X,
-} from "@/lib/icons/phosphor"
+import { ChevronLeft as CaretLeft, ChevronRight as CaretRight, X } from "lucide-react";
+
 import { cn } from "@/lib/utils"
 import { useTranslations } from "next-intl"
 import { useFilterCount } from "@/hooks/use-filter-count"
@@ -431,7 +428,7 @@ export function FilterHub({
                     className="size-11 flex items-center justify-center rounded-full transition-colors hover:bg-hover active:bg-active focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
                     aria-label={tHub("close")}
                   >
-                    <X size={18} weight="bold" />
+                    <X size={18} />
                   </button>
                 </div>
               </>
@@ -442,7 +439,7 @@ export function FilterHub({
                 onClick={() => setActiveSection(null)}
                 className="flex items-center gap-2 font-semibold text-foreground transition-opacity active:opacity-70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
               >
-                <CaretLeft size={20} weight="bold" />
+                <CaretLeft size={20} />
                 <span className="text-base">
                   {currentSectionLabel}
                 </span>
@@ -495,7 +492,6 @@ export function FilterHub({
                     </div>
                     <CaretRight
                       size={16}
-                      weight="bold"
                       className="text-muted-foreground"
                     />
                   </button>

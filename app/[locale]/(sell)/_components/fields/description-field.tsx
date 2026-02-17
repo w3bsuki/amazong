@@ -1,7 +1,8 @@
 "use client";
 
 import { Controller } from "react-hook-form";
-import { TextAlignLeft, TextB, TextItalic, List } from "@/lib/icons/phosphor";
+import { List, AlignLeft as TextAlignLeft, Bold as TextB, Italic as TextItalic } from "lucide-react";
+
 import { Field, FieldLabel, FieldDescription, FieldError, FieldContent } from "@/components/shared/field";
 import { cn } from "@/lib/utils";
 import { useSellForm } from "../sell-form-provider";
@@ -49,7 +50,7 @@ export function DescriptionField({
             <div className="p-4 pb-3 border-b border-border-subtle bg-surface-subtle">
               <div className="flex items-center gap-3.5">
                 <div className="flex size-10 items-center justify-center rounded-md bg-background border border-border shadow-xs">
-                  <TextAlignLeft className="size-5 text-muted-foreground" weight="bold" />
+                  <TextAlignLeft className="size-5 text-muted-foreground" />
                 </div>
                 <div>
                   <FieldLabel className="text-sm font-bold tracking-tight text-foreground">
@@ -110,7 +111,7 @@ export function DescriptionField({
                      title={tSell("fields.description.toolbar.boldTitle")}
                      aria-label={tSell("fields.description.toolbar.boldAriaLabel")}
                    >
-                     <TextB className="size-3.5" weight="bold" />
+                     <TextB className="size-3.5" />
                    </button>
                    <button
                      type="button"
@@ -118,7 +119,7 @@ export function DescriptionField({
                      title={tSell("fields.description.toolbar.italicTitle")}
                      aria-label={tSell("fields.description.toolbar.italicAriaLabel")}
                    >
-                     <TextItalic className="size-3.5" weight="bold" />
+                     <TextItalic className="size-3.5" />
                    </button>
                    <button
                      type="button"
@@ -126,7 +127,7 @@ export function DescriptionField({
                      title={tSell("fields.description.toolbar.listTitle")}
                      aria-label={tSell("fields.description.toolbar.listAriaLabel")}
                    >
-                     <List className="size-3.5" weight="bold" />
+                     <List className="size-3.5" />
                    </button>
                  </div>
                 <span

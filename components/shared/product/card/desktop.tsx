@@ -3,7 +3,8 @@
 import * as React from "react"
 import { Link } from "@/i18n/routing"
 import { useLocale, useTranslations } from "next-intl"
-import { Lightning } from "@/lib/icons/phosphor"
+import { Zap as Lightning } from "lucide-react";
+
 
 import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
@@ -232,7 +233,7 @@ export function DesktopProductCard({
                     role="img"
                     aria-label={t("adBadge")}
                   >
-                    <Lightning size={14} weight="fill" />
+                    <Lightning size={14} />
                   </span>
                 )
               }

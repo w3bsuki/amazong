@@ -2,20 +2,8 @@
 
 import { Link, useRouter } from "@/i18n/routing"
 import { useEffect, useMemo, useRef, useState } from "react"
-import {
-  ChartBar,
-  Check,
-  CreditCard,
-  Crown,
-  Lightning,
-  Question,
-  Rocket,
-  ShieldCheck,
-  Sparkle,
-  Star,
-  Storefront,
-  User,
-} from "@/lib/icons/phosphor"
+import { ChartColumn as ChartBar, Check, CreditCard, Crown, Zap as Lightning, CircleHelp as Question, Rocket, ShieldCheck, Sparkles as Sparkle, Star, Store as Storefront, User } from "lucide-react";
+
 import { MinimalHeader } from "./minimal-header"
 import { Button } from "@/components/ui/button"
 import { Switch } from "@/components/ui/switch"
@@ -71,12 +59,12 @@ export type PlansPageClientServerActions = {
 }
 
 const planIcons: Record<string, React.ReactNode> = {
-  free: <User weight="regular" className="size-4" />,
-  basic: <User weight="regular" className="size-4" />,
-  starter: <Storefront weight="regular" className="size-4" />,
-  premium: <Crown weight="regular" className="size-4" />,
-  pro: <Star weight="regular" className="size-4" />,
-  ultimate: <Rocket weight="regular" className="size-4" />,
+  free: <User className="size-4" />,
+  basic: <User className="size-4" />,
+  starter: <Storefront className="size-4" />,
+  premium: <Crown className="size-4" />,
+  pro: <Star className="size-4" />,
+  ultimate: <Rocket className="size-4" />,
 }
 
 type PlansFeatureIconKey = "lightning" | "rocket" | "sparkle"
@@ -315,7 +303,7 @@ export default function PlansPageClient(props: {
                 activeSection === id && "bg-muted text-foreground"
               )}
             >
-              <Icon className="size-4" weight={activeSection === id ? "fill" : "regular"} />
+              <Icon className="size-4" />
               <span className="text-sm">{t.nav[id as keyof typeof t.nav]}</span>
             </Button>
           ))}
@@ -407,7 +395,7 @@ export default function PlansPageClient(props: {
                   const sellerFee = Number(plan.seller_fee_percent ?? 0)
                   const icon =
                     planIcons[plan.tier?.toLowerCase() ?? "basic"] ?? (
-                      <User weight="regular" className="size-4" />
+                      <User className="size-4" />
                     )
 
                   return (
@@ -463,7 +451,7 @@ export default function PlansPageClient(props: {
                         <PricingCard.List>
                           {features.map((feature, i) => (
                             <PricingCard.ListItem key={i}>
-                              <Check weight="bold" className="mt-0.5 size-3.5 shrink-0" />
+                              <Check className="mt-0.5 size-3.5 shrink-0" />
                               <span>{feature}</span>
                             </PricingCard.ListItem>
                           ))}
@@ -497,7 +485,7 @@ export default function PlansPageClient(props: {
               return (
                   <div key={i} className="flex flex-col items-center bg-background p-4 text-center">
                     <div className="mb-4 flex size-11 items-center justify-center rounded-lg bg-selected">
-                    <Icon className="size-5 text-primary" weight="fill" />
+                    <Icon className="size-5 text-primary" />
                   </div>
                   <h3 className="text-sm font-semibold">{feature.title}</h3>
                   <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
@@ -633,7 +621,7 @@ export default function PlansPageClient(props: {
                       </TableCell>
                       <TableCell className="pr-4 text-center">
                         {plan.priority_support ? (
-                          <Check weight="bold" className="mx-auto size-5 text-primary" />
+                          <Check className="mx-auto size-5 text-primary" />
                         ) : (
                           <span className="text-muted-foreground">—</span>
                         )}
@@ -655,7 +643,7 @@ export default function PlansPageClient(props: {
         >
           <div className="flex flex-col items-center gap-4 rounded-md border border-selected-border bg-hover p-4 text-center sm:flex-row sm:text-left">
             <div className="flex size-12 shrink-0 items-center justify-center rounded-lg bg-selected">
-              <ShieldCheck className="size-6 text-primary" weight="fill" />
+              <ShieldCheck className="size-6 text-primary" />
             </div>
             <div>
               <h3 className="font-semibold">{t.guarantee.title}</h3>

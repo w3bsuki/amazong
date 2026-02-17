@@ -10,7 +10,8 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
-import { Star, CheckCircle, Medal, Trophy, Crown } from "@/lib/icons/phosphor"
+import { CircleCheck as CheckCircle, Crown, Medal, Star, Trophy } from "lucide-react";
+
 import { useBadges } from "@/hooks/use-badges"
 import { toast } from "sonner"
 
@@ -40,18 +41,18 @@ export function AccountBadges({ locale = "en" }: AccountBadgesProps) {
   const getCategoryIcon = (category: string) => {
     switch (category) {
       case "verification":
-        return <CheckCircle className="size-4" weight="fill" />
+        return <CheckCircle className="size-4" />
       case "seller_milestone_personal":
       case "seller_milestone_business":
       case "buyer_milestone":
-        return <Medal className="size-4" weight="fill" />
+        return <Medal className="size-4" />
       case "seller_sales":
-        return <Trophy className="size-4" weight="fill" />
+        return <Trophy className="size-4" />
       case "seller_rating":
       case "buyer_rating":
-        return <Star className="size-4" weight="fill" />
+        return <Star className="size-4" />
       default:
-        return <Crown className="size-4" weight="fill" />
+        return <Crown className="size-4" />
     }
   }
   
@@ -171,7 +172,7 @@ export function AccountBadges({ locale = "en" }: AccountBadgesProps) {
                         <span>{badge.name}</span>
                         {badge.is_featured && (
                           <span className="absolute -top-1 -right-1 size-4 rounded-full bg-rating flex items-center justify-center">
-                            <Star className="size-2.5 text-foreground" weight="fill" />
+                            <Star className="size-2.5 text-foreground" />
                           </span>
                         )}
                       </button>
@@ -221,7 +222,7 @@ export function AccountBadges({ locale = "en" }: AccountBadgesProps) {
                         <span className="text-lg">{badge.icon}</span>
                         {badge.is_featured && (
                           <span className="absolute -top-0.5 -right-0.5 size-3 rounded-full bg-rating flex items-center justify-center">
-                            <Star className="size-2 text-foreground" weight="fill" />
+                            <Star className="size-2 text-foreground" />
                           </span>
                         )}
                       </button>

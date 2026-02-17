@@ -3,15 +3,8 @@
 import { Link } from "@/i18n/routing"
 import { useTranslations } from "next-intl"
 import { Switch } from "@/components/ui/switch"
-import {
-  Bell,
-  Shield,
-  CreditCard,
-  GlobeSimple,
-  Question,
-  SignOut,
-  CaretRight,
-} from "@/lib/icons/phosphor"
+import { Bell, ChevronRight as CaretRight, CreditCard, Globe as GlobeSimple, CircleHelp as Question, Shield, LogOut as SignOut } from "lucide-react";
+
 import { cn } from "@/lib/utils"
 
 interface SettingsItemProps {
@@ -111,35 +104,35 @@ export function ProfileSettingsPanel({ onSignOut }: ProfileSettingsPanelProps) {
   return (
     <div className="space-y-2 pb-4">
       <SettingsItem
-        icon={<Bell className="size-5" weight="fill" />}
+        icon={<Bell className="size-5" />}
         label={t("notifications")}
         description={t("notificationsDescription")}
         href="/account/notifications"
       />
       
       <SettingsItem
-        icon={<Shield className="size-5" weight="fill" />}
+        icon={<Shield className="size-5" />}
         label={t("security")}
         description={t("securityDescription")}
         href="/account/security"
       />
       
       <SettingsItem
-        icon={<CreditCard className="size-5" weight="fill" />}
+        icon={<CreditCard className="size-5" />}
         label={t("paymentMethods")}
         description={t("paymentMethodsDescription")}
         href="/account/payments"
       />
       
       <SettingsItem
-        icon={<GlobeSimple className="size-5" weight="fill" />}
+        icon={<GlobeSimple className="size-5" />}
         label={t("languageRegion")}
         description={t("languageRegionDescription")}
         href="/account/settings"
       />
       
       <SettingsItem
-        icon={<Question className="size-5" weight="fill" />}
+        icon={<Question className="size-5" />}
         label={t("helpSupport")}
         description={t("helpSupportDescription")}
         href="/support"
@@ -147,7 +140,7 @@ export function ProfileSettingsPanel({ onSignOut }: ProfileSettingsPanelProps) {
 
       {onSignOut && (
         <SettingsItem
-          icon={<SignOut className="size-5" weight="fill" />}
+          icon={<SignOut className="size-5" />}
           label={t("signOut")}
           description={t("signOutDescription")}
           danger

@@ -1,4 +1,5 @@
-import { IconTrendingUp, IconBox, IconShoppingCart, IconCurrencyDollar, IconEye, IconStar } from "@/lib/icons/tabler"
+import { Box as IconBox, DollarSign as IconCurrencyDollar, Eye as IconEye, ShoppingCart as IconShoppingCart, Star as IconStar, TrendingUp as IconTrendingUp } from "lucide-react";
+
 
 import { Badge } from "@/components/ui/badge"
 import {

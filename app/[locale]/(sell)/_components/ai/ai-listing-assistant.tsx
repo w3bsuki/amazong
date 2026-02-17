@@ -1,7 +1,8 @@
 "use client";
 
 import { useCallback, useMemo, useState } from "react";
-import { Sparkle, SpinnerGap, Check, WarningCircle } from "@/lib/icons/phosphor";
+import { Check, Sparkles as Sparkle, LoaderCircle as SpinnerGap, CircleAlert as WarningCircle } from "lucide-react";
+
 import { toast } from "sonner";
 import { useTranslations } from "next-intl";
 
@@ -276,7 +277,7 @@ export function AiListingAssistant() {
         disabled={images.length === 0}
         className="w-full h-11 gap-2 border-dashed border-border"
        >
-         <Sparkle className="size-4" weight="fill" />
+         <Sparkle className="size-4" />
          <span className="text-sm">
            {tSell("aiAssistant.label")}
          </span>
@@ -295,7 +296,7 @@ export function AiListingAssistant() {
       {/* Header with close */}
        <div className="flex items-center justify-between">
          <div className="flex items-center gap-2">
-           <Sparkle className="size-4 text-primary" weight="fill" />
+           <Sparkle className="size-4 text-primary" />
            <span className="text-sm font-medium">{tSell("aiAssistant.label")}</span>
          </div>
          <Button

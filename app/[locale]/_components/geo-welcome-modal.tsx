@@ -13,7 +13,8 @@ import {
 import { useGeoWelcome } from '@/hooks/use-geo-welcome';
 import { getCountryName } from '@/lib/geolocation';
 import type { ShippingRegion } from '@/lib/shipping';
-import { Globe, X } from '@/lib/icons/phosphor';
+import { Globe, X } from "lucide-react";
+
 
 // Region flag emojis
 const REGION_FLAGS: Record<ShippingRegion, string> = {
@@ -133,7 +134,7 @@ export function GeoWelcomeModal({ locale }: GeoWelcomeModalProps) {
       <div className="pointer-events-auto mx-3 md:mx-0 w-auto max-w-sm rounded-lg border border-border bg-card p-4 shadow-lg">
         <div className="flex items-start gap-3">
           <div className="mt-0.5 flex size-10 items-center justify-center rounded-full bg-muted">
-            <Globe size={18} weight="duotone" className="text-foreground" />
+            <Globe size={18} className="text-foreground" />
           </div>
 
           <div className="min-w-0 flex-1">
@@ -153,7 +154,7 @@ export function GeoWelcomeModal({ locale }: GeoWelcomeModalProps) {
             onClick={closeModal}
             aria-label={t('close')}
           >
-            <X size={16} weight="regular" />
+            <X size={16} />
           </Button>
         </div>
 

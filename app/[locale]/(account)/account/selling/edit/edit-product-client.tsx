@@ -25,15 +25,8 @@ import { BULGARIAN_CITIES } from "@/lib/bulgarian-cities"
 import { useToast } from "@/hooks/use-toast"
 import { BoostDialog } from "../../../../_components/seller/boost-dialog"
 import { useTranslations } from "next-intl"
-import {
-  ArrowLeft,
-  Package,
-  Tag,
-  CurrencyCircleDollar,
-  Percent,
-  FloppyDisk,
-  Lightning,
-} from "@/lib/icons/phosphor"
+import { ArrowLeft, CircleDollarSign as CurrencyCircleDollar, Save as FloppyDisk, Zap as Lightning, Package, Percent, Tag } from "lucide-react";
+
 
 interface Product {
   id: string
@@ -393,7 +386,7 @@ export function EditProductClient({ productId, locale }: EditProductClientProps)
 
                   {calculateDiscount() > 0 && (
                     <div className="flex items-center gap-2 p-3 bg-destructive-subtle rounded-md">
-                      <Tag className="size-4 text-deal" weight="fill" />
+                      <Tag className="size-4 text-deal" />
                       <span className="text-sm font-medium text-deal">
                         {t("selling.edit.sale.discountPreview", { percent: calculateDiscount() })}
                       </span>
@@ -528,7 +521,7 @@ export function EditProductClient({ productId, locale }: EditProductClientProps)
           <Card>
             <CardHeader>
               <CardTitle className="text-base flex items-center gap-2">
-                <Lightning className="size-5 text-primary" weight="fill" />
+                <Lightning className="size-5 text-primary" />
                 {t("selling.edit.sidebar.boostTitle")}
               </CardTitle>
               <CardDescription>

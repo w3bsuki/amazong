@@ -1,6 +1,7 @@
 "use client"
 
-import { ShoppingCart } from "@/lib/icons/phosphor"
+import { ShoppingCart } from "lucide-react";
+
 
 import { useRouter } from "@/i18n/routing"
 import { useTranslations } from "next-intl"
@@ -33,7 +34,7 @@ export function MobileCartDropdown() {
       }}
     >
       <span className="relative" aria-hidden="true">
-        <ShoppingCart className="size-icon-header text-header-text" weight="regular" />
+        <ShoppingCart className="size-icon-header text-header-text" />
         {displayItems > 0 && (
           <CountBadge
             count={displayItems}

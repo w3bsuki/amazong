@@ -1,7 +1,8 @@
 "use client"
 
 import { useLocale, useTranslations } from "next-intl"
-import { Clock } from "@/lib/icons/phosphor"
+import { Clock } from "lucide-react";
+
 import { cn } from "@/lib/utils"
 
 interface FreshnessIndicatorProps {
@@ -103,7 +104,7 @@ export function FreshnessIndicator({
           className
         )}
       >
-        {showIcon && <Clock size={10} weight="bold" />}
+        {showIcon && <Clock size={10} />}
         {label}
       </span>
     )
@@ -118,7 +119,7 @@ export function FreshnessIndicator({
         className
       )}
     >
-      {showIcon && <Clock size={10} weight={isFresh ? "bold" : "regular"} />}
+      {showIcon && <Clock size={10} />}
       {label}
     </span>
   )

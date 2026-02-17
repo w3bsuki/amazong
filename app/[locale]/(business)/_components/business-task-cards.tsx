@@ -1,9 +1,6 @@
 import { Link } from "@/i18n/routing"
-import {
-  IconAlertTriangle,
-  IconStar,
-  IconShoppingCart,
-} from "@/lib/icons/tabler"
+import { TriangleAlert as IconAlertTriangle, ShoppingCart as IconShoppingCart, Star as IconStar } from "lucide-react";
+
 import { cn } from "@/lib/utils"
 
 interface TasksCount {

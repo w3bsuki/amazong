@@ -8,7 +8,8 @@ import { createClient } from "@/lib/supabase/client"
 import { cn } from "@/lib/utils"
 import { toast } from "sonner"
 import { Link, useRouter } from "@/i18n/routing"
-import { Bell, CheckCircle, Package, ChatCircle, Star, Users, Tag, CaretRight } from "@/lib/icons/phosphor"
+import { Bell, ChevronRight as CaretRight, MessageCircle as ChatCircle, CircleCheck as CheckCircle, Package, Star, Tag, Users } from "lucide-react";
+
 import { formatDistanceToNow } from "date-fns"
 
 type NotificationType = "purchase" | "order_status" | "message" | "review" | "system" | "promotion"
@@ -61,19 +62,19 @@ const DEFAULT_PREFS: NotificationPreferences = {
 const getNotificationIcon = (type: NotificationType) => {
   switch (type) {
     case "purchase":
-      return <Package size={18} weight="duotone" className="text-success" />
+      return <Package size={18} className="text-success" />
     case "order_status":
-      return <Package size={18} weight="duotone" className="text-info" />
+      return <Package size={18} className="text-info" />
     case "message":
-      return <ChatCircle size={18} weight="duotone" className="text-primary" />
+      return <ChatCircle size={18} className="text-primary" />
     case "review":
-      return <Star size={18} weight="duotone" className="text-warning" />
+      return <Star size={18} className="text-warning" />
     case "system":
-      return <Users size={18} weight="duotone" className="text-muted-foreground" />
+      return <Users size={18} className="text-muted-foreground" />
     case "promotion":
-      return <Tag size={18} weight="duotone" className="text-destructive" />
+      return <Tag size={18} className="text-destructive" />
     default:
-      return <Bell size={18} weight="duotone" />
+      return <Bell size={18} />
   }
 }
 
@@ -291,7 +292,7 @@ export function NotificationsContent({
       <div className="rounded-lg border bg-card overflow-hidden">
         <div className="flex items-center justify-between p-4 bg-muted border-b border-border">
           <div className="flex items-center gap-2">
-            <Bell size={20} weight="regular" className="text-muted-foreground" />
+            <Bell size={20} className="text-muted-foreground" />
             <div className="font-semibold text-base text-foreground">
               {t("title")}
             </div>
@@ -320,7 +321,7 @@ export function NotificationsContent({
           </div>
         ) : visibleNotifications.length === 0 ? (
           <div className="p-4 text-center">
-            <Bell size={40} weight="thin" className="mx-auto mb-2 text-muted-foreground" />
+            <Bell size={40} className="mx-auto mb-2 text-muted-foreground" />
             <p className="text-sm text-muted-foreground">
               {t("empty")}
             </p>

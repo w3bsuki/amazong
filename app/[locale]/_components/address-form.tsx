@@ -1,7 +1,8 @@
 "use client"
 
 import type { ChangeEvent, ReactNode } from "react"
-import { WarningCircle } from "@/lib/icons/phosphor"
+import { CircleAlert as WarningCircle } from "lucide-react";
+
 
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -49,7 +50,7 @@ function AddressField({ field }: { field: AddressFieldConfig }) {
       />
       {isInvalid && (
         <p id={`${field.id}-error`} className="text-xs text-destructive flex items-center gap-1">
-          <WarningCircle className="size-3.5 shrink-0" weight="fill" />
+          <WarningCircle className="size-3.5 shrink-0" />
           <span>{field.error}</span>
         </p>
       )}

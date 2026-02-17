@@ -1,6 +1,7 @@
 "use client"
 
-import { ArrowsDownUp } from "@/lib/icons/phosphor"
+import { ArrowUpDown as ArrowsDownUp } from "lucide-react";
+
 import { useTranslations } from "next-intl"
 import { useSearchParams } from "next/navigation"
 import { usePathname, useRouter } from "@/i18n/routing"
@@ -63,7 +64,7 @@ export function SortSelect() {
         )}
         aria-label={t('sortBy')}
       >
-        <ArrowsDownUp size={14} weight="regular" className={cn(
+        <ArrowsDownUp size={14} className={cn(
           isSorted ? "text-primary" : "text-muted-foreground",
           "shrink-0"
         )} aria-hidden="true" />

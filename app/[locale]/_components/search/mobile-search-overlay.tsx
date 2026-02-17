@@ -2,15 +2,8 @@
 
 import * as React from "react"
 import { useRef, useEffect, useCallback, useId } from "react"
-import {
-  MagnifyingGlass,
-  X,
-  Clock,
-  TrendUp,
-  Package,
-  ArrowRight,
-  Robot,
-} from "@/lib/icons/phosphor"
+import { ArrowRight, Clock, Search as MagnifyingGlass, Package, Bot as Robot, TrendingUp as TrendUp, X } from "lucide-react";
+
 import { SearchAiChat } from "@/components/shared/search/ai/search-ai-chat"
 import { FieldLabel } from "@/components/shared/field"
 import { Input } from "@/components/ui/input"
@@ -221,7 +214,7 @@ export function MobileSearchOverlay({
           aria-haspopup="dialog"
           aria-expanded={isOpen}
         >
-          <MagnifyingGlass size={24} weight="regular" aria-hidden="true" />
+          <MagnifyingGlass size={24} aria-hidden="true" />
         </button>
       )}
 
@@ -251,7 +244,7 @@ export function MobileSearchOverlay({
             <div className="flex items-center justify-between">
               {isAiModeAvailable ? (
                 <div className="flex items-center gap-2">
-                  <Robot size={16} weight={aiMode ? "fill" : "regular"} className={aiMode ? "text-primary" : "text-muted-foreground"} />
+                  <Robot size={16} className={aiMode ? "text-primary" : "text-muted-foreground"} />
                   <span className={cn("text-sm font-medium", aiMode ? "text-foreground" : "text-muted-foreground")}>
                     {tSearch("aiMode")}
                   </span>
@@ -284,7 +277,6 @@ export function MobileSearchOverlay({
               >
                 <MagnifyingGlass
                   size={18}
-                  weight="regular"
                   className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none"
                   aria-hidden="true"
                 />
@@ -314,7 +306,7 @@ export function MobileSearchOverlay({
                     className="absolute right-2 top-1/2 -translate-y-1/2 size-touch-xs rounded-full flex items-center justify-center bg-muted text-muted-foreground hover:bg-hover active:bg-active hover:text-foreground"
                     aria-label={tSearch("clear")}
                   >
-                    <X size={12} weight="bold" aria-hidden="true" />
+                    <X size={12} aria-hidden="true" />
                   </button>
                 )}
               </form>
@@ -343,7 +335,7 @@ export function MobileSearchOverlay({
               <section aria-labelledby="products-heading" className="border-b border-border">
                 <div className="flex items-center justify-between px-inset py-2 bg-muted">
                   <h3 id="products-heading" className="flex items-center gap-2 text-xs font-semibold text-muted-foreground uppercase tracking-wide">
-                    <Package size={14} weight="regular" aria-hidden="true" />
+                    <Package size={14} aria-hidden="true" />
                     {tSearch("products")}
                   </h3>
                   <button
@@ -352,7 +344,7 @@ export function MobileSearchOverlay({
                     className="text-xs text-link font-medium flex items-center gap-1 hover:text-link-hover"
                   >
                     {tSearch("viewAll")}
-                    <ArrowRight size={12} weight="regular" aria-hidden="true" />
+                    <ArrowRight size={12} aria-hidden="true" />
                   </button>
                 </div>
 
@@ -376,7 +368,7 @@ export function MobileSearchOverlay({
                             />
                           ) : (
                             <div className="w-full h-full flex items-center justify-center" aria-hidden="true">
-                              <Package size={24} weight="regular" className="text-muted-foreground" />
+                              <Package size={24} className="text-muted-foreground" />
                             </div>
                           )}
                         </div>
@@ -384,7 +376,7 @@ export function MobileSearchOverlay({
                           <p className="text-sm font-medium text-foreground line-clamp-2">{product.title}</p>
                           <p className="text-sm font-bold text-price-sale mt-0.5">{formatPrice(product.price)}</p>
                         </div>
-                        <ArrowRight size={16} weight="regular" className="text-muted-foreground shrink-0" aria-hidden="true" />
+                        <ArrowRight size={16} className="text-muted-foreground shrink-0" aria-hidden="true" />
                       </button>
                     </li>
                   ))}
@@ -395,7 +387,7 @@ export function MobileSearchOverlay({
             {/* No Results */}
             {!isSearching && query.length >= minSearchLength && products.length === 0 && (
               <div role="status" aria-live="polite" className="px-inset py-10 text-center">
-                <Package size={48} weight="regular" className="text-muted-foreground mx-auto mb-3" aria-hidden="true" />
+                <Package size={48} className="text-muted-foreground mx-auto mb-3" aria-hidden="true" />
                 <p className="text-base font-medium text-foreground">
                   {tSearch("noResultsFor", { query })}
                 </p>
@@ -411,7 +403,7 @@ export function MobileSearchOverlay({
                   <section aria-labelledby="recent-searches-heading" className="border-b border-border">
                     <div className="flex items-center justify-between px-inset py-2 bg-muted">
                       <h3 id="recent-searches-heading" className="flex items-center gap-2 text-xs font-semibold text-muted-foreground uppercase tracking-wide">
-                        <Clock size={14} weight="regular" aria-hidden="true" />
+                        <Clock size={14} aria-hidden="true" />
                         {tSearch("recentSearches")}
                       </h3>
                       <button
@@ -430,9 +422,9 @@ export function MobileSearchOverlay({
                             onClick={() => handleSearch(search)}
                             className="w-full flex items-center gap-2 px-inset py-3 hover:bg-hover active:bg-active text-left touch-manipulation transition-colors"
                           >
-                            <Clock size={18} weight="regular" className="text-muted-foreground shrink-0" aria-hidden="true" />
+                            <Clock size={18} className="text-muted-foreground shrink-0" aria-hidden="true" />
                             <span className="flex-1 text-base text-foreground">{search}</span>
-                            <ArrowRight size={16} weight="regular" className="text-muted-foreground shrink-0" aria-hidden="true" />
+                            <ArrowRight size={16} className="text-muted-foreground shrink-0" aria-hidden="true" />
                           </button>
                         </li>
                       ))}
@@ -444,7 +436,7 @@ export function MobileSearchOverlay({
                 <section aria-labelledby="trending-searches-heading" className="border-b border-border">
                   <div className="flex items-center gap-2 px-inset py-2 bg-muted">
                     <h3 id="trending-searches-heading" className="flex items-center gap-2 text-xs font-semibold text-muted-foreground uppercase tracking-wide">
-                      <TrendUp size={14} weight="regular" aria-hidden="true" />
+                      <TrendUp size={14} aria-hidden="true" />
                       {tSearch("trending")}
                     </h3>
                   </div>
@@ -460,7 +452,7 @@ export function MobileSearchOverlay({
                             {index + 1}
                           </span>
                           <span className="flex-1 text-base text-foreground">{search}</span>
-                          <ArrowRight size={16} weight="regular" className="text-muted-foreground shrink-0" aria-hidden="true" />
+                          <ArrowRight size={16} className="text-muted-foreground shrink-0" aria-hidden="true" />
                         </button>
                       </li>
                     ))}

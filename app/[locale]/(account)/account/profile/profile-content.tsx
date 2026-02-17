@@ -22,22 +22,8 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import {
-  User,
-  Camera,
-  Envelope,
-  Key, 
-  SpinnerGap,
-  Eye,
-  EyeSlash,
-  CheckCircle,
-  Trash,
-  MapPin,
-  Phone,
-  Globe,
-  UserCircle,
-  GearSix,
-} from "@/lib/icons/phosphor"
+import { Camera, CircleCheck as CheckCircle, Mail as Envelope, Eye, EyeOff as EyeSlash, Settings2 as GearSix, Globe, Key, MapPin, Phone, LoaderCircle as SpinnerGap, Trash, User, CircleUser as UserCircle } from "lucide-react";
+
 import { toast } from "sonner"
 import { validatePassword, validateEmail } from "@/lib/validation/auth"
 import { PublicProfileEditor, type PublicProfileEditorServerActions } from "./public-profile-editor"
@@ -398,7 +384,7 @@ export function ProfileContent({
                 className="absolute -bottom-1 -right-1 size-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center shadow-md hover:bg-interactive-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                 aria-label={locale === "bg" ? "Качи нова профилна снимка" : "Upload new profile picture"}
               >
-                <Camera className="size-4" weight="fill" />
+                <Camera className="size-4" />
               </button>
               <input
                 ref={fileInputRef}
@@ -607,7 +593,7 @@ export function ProfileContent({
               <p className="text-xs text-muted-foreground truncate">{profile.email}</p>
             </div>
             <div className="flex items-center gap-1.5 text-xs text-success">
-              <CheckCircle className="size-3.5" weight="fill" />
+              <CheckCircle className="size-3.5" />
               <span className="hidden sm:inline">{locale === "bg" ? "Потвърден" : "Verified"}</span>
             </div>
           </button>

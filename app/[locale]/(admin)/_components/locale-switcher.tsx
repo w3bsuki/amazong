@@ -4,7 +4,8 @@ import * as React from "react"
 import { useLocale, useTranslations } from "next-intl"
 import { useSearchParams } from "next/navigation"
 import { Link, usePathname } from "@/i18n/routing"
-import { IconLanguage, IconCheck } from "@/lib/icons/tabler"
+import { Check as IconCheck, Languages as IconLanguage } from "lucide-react";
+
 import {
   DropdownMenu,
   DropdownMenuContent,

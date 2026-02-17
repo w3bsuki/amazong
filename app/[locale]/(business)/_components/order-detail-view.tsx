@@ -6,22 +6,8 @@ import { Link } from "@/i18n/routing"
 import { useRouter } from "@/i18n/routing"
 import { toast } from "sonner"
 import { format } from "date-fns"
-import {
-  IconArrowLeft,
-  IconPackage,
-  IconTruck,
-  IconCheck,
-  IconX,
-  IconRefresh,
-  IconMessage,
-  IconPrinter,
-  IconMail,
-  IconPhone,
-  IconMapPin,
-  IconClock,
-  IconChevronDown,
-  IconCopy,
-} from "@/lib/icons/tabler"
+import { ArrowLeft as IconArrowLeft, Check as IconCheck, ChevronDown as IconChevronDown, Clock as IconClock, Copy as IconCopy, Mail as IconMail, MapPin as IconMapPin, MessageCircle as IconMessage, Package as IconPackage, Phone as IconPhone, Printer as IconPrinter, RefreshCw as IconRefresh, Truck as IconTruck, X as IconX } from "lucide-react";
+
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"

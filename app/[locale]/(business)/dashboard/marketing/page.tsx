@@ -9,16 +9,8 @@ import {
 } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import {
-  IconBrandFacebook,
-  IconBrandGoogle,
-  IconMail,
-  IconTag,
-  IconRocket,
-  IconChartBar,
-  IconArrowRight,
-  IconPlus,
-} from "@/lib/icons/tabler"
+import { ArrowRight as IconArrowRight, Facebook as IconBrandFacebook, Globe as IconBrandGoogle, ChartColumn as IconChartBar, Mail as IconMail, Plus as IconPlus, Rocket as IconRocket, Tag as IconTag } from "lucide-react";
+
 
 const marketingChannels = [
   {

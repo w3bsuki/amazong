@@ -1,6 +1,7 @@
 "use client"
 
-import { CaretDown, CaretRight } from "@/lib/icons/phosphor"
+import { ChevronDown as CaretDown, ChevronRight as CaretRight } from "lucide-react";
+
 import { useTranslations } from "next-intl"
 import { Link } from "@/i18n/routing"
 import { CategoryBreadcrumbTrail } from "./category-breadcrumb-trail"
@@ -56,7 +57,7 @@ export function CategoryNavigation({
               href={`/categories/${parentCategory.slug}`}
               className="text-sm text-muted-foreground hover:text-primary hover:underline min-h-11 flex items-center gap-1 mb-2"
             >
-              <CaretRight size={14} weight="bold" className="rotate-180" />
+              <CaretRight size={14} className="rotate-180" />
               {getCategoryName(parentCategory, locale)}
             </Link>
           ) : (
@@ -65,7 +66,7 @@ export function CategoryNavigation({
               onClick={onToggleShowAllCategories}
               className="text-sm text-muted-foreground hover:text-primary min-h-11 flex items-center gap-1 w-full mb-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
             >
-              <CaretRight size={14} weight="bold" className={showAllCategories ? "rotate-90" : "rotate-180"} />
+              <CaretRight size={14} className={showAllCategories ? "rotate-90" : "rotate-180"} />
               <span className="hover:underline">{tCommon("allCategories")}</span>
             </button>
           )}
@@ -141,9 +142,9 @@ export function CategoryNavigation({
                         aria-expanded={isExpanded}
                       >
                         {isExpanded ? (
-                          <CaretDown size={16} weight="regular" className="text-sidebar-muted-foreground" aria-hidden="true" />
+                          <CaretDown size={16} className="text-sidebar-muted-foreground" aria-hidden="true" />
                         ) : (
-                          <CaretRight size={16} weight="regular" className="text-sidebar-muted-foreground" aria-hidden="true" />
+                          <CaretRight size={16} className="text-sidebar-muted-foreground" aria-hidden="true" />
                         )}
                       </button>
                     )}

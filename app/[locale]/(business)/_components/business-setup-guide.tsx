@@ -2,16 +2,8 @@
 
 import * as React from "react"
 import { Link } from "@/i18n/routing"
-import {
-  IconCheck,
-  IconX,
-  IconBox,
-  IconBuildingStore,
-  IconCreditCard,
-  IconTruck,
-  IconChevronRight,
-  IconRocket,
-} from "@/lib/icons/tabler"
+import { Box as IconBox, Store as IconBuildingStore, Check as IconCheck, ChevronRight as IconChevronRight, CreditCard as IconCreditCard, Rocket as IconRocket, Truck as IconTruck, X as IconX } from "lucide-react";
+
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"

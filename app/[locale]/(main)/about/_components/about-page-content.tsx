@@ -2,19 +2,8 @@ import { getTranslations } from "next-intl/server"
 import { Card, CardContent } from "@/components/ui/card"
 import { AppBreadcrumb, breadcrumbPresets } from "../../../_components/navigation/app-breadcrumb"
 import { PageShell } from "../../../_components/page-shell"
-import {
-  Users,
-  Heart,
-  Shield,
-  Truck,
-  Trophy,
-  Target,
-  Leaf,
-  Headphones,
-  CheckCircle,
-  Lightning,
-  Package,
-} from "@/lib/icons/phosphor"
+import { CircleCheck as CheckCircle, Headphones, Heart, Leaf, Zap as Lightning, Package, Shield, Target, Trophy, Truck, Users } from "lucide-react";
+
 import { Link } from "@/i18n/routing"
 
 export async function AboutPageContent() {

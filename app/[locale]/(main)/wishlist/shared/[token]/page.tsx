@@ -4,7 +4,8 @@ import Image from "next/image"
 import { Link } from "@/i18n/routing"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Gift, ShoppingCart } from "@/lib/icons/phosphor"
+import { Gift, ShoppingCart } from "lucide-react";
+
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import type { Database } from "@/lib/supabase/database.types"
 import { AddAllToCartButton } from "./add-all-to-cart"

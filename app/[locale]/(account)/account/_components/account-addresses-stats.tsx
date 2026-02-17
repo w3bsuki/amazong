@@ -1,7 +1,8 @@
 "use client"
 
 import { useTranslations } from "next-intl"
-import { MapPin, House, Briefcase, Star } from "@/lib/icons/phosphor"
+import { Briefcase, House, MapPin, Star } from "lucide-react";
+
 
 import { Badge } from "@/components/ui/badge"
 import {
@@ -29,7 +30,7 @@ export function AccountAddressesStats({ stats }: AddressesStatsProps) {
       {/* Mobile: Simple inline stats */}
       <div className="flex items-center gap-4 text-sm sm:hidden">
         <div className="flex items-center gap-1.5">
-          <MapPin className="size-4 text-muted-foreground" weight="duotone" />
+          <MapPin className="size-4 text-muted-foreground" />
           <span className="font-medium">{stats.total}</span>
           <span className="text-muted-foreground">
             {stats.total === 1 ? t("addressSingular") : t("addressPlural")}
@@ -49,7 +50,7 @@ export function AccountAddressesStats({ stats }: AddressesStatsProps) {
         <Card className="@container/card">
           <CardHeader>
             <CardDescription className="flex items-center gap-1.5">
-              <MapPin className="size-4 shrink-0" weight="duotone" />
+              <MapPin className="size-4 shrink-0" />
               <span className="truncate">{t("totalAddresses")}</span>
             </CardDescription>
             <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
@@ -66,7 +67,7 @@ export function AccountAddressesStats({ stats }: AddressesStatsProps) {
         <Card className="@container/card">
           <CardHeader>
             <CardDescription className="flex items-center gap-1.5">
-              <Star className="size-4 shrink-0" weight="duotone" />
+              <Star className="size-4 shrink-0" />
               <span className="truncate">{t("defaultAddress")}</span>
             </CardDescription>
             <CardTitle className={`text-2xl font-semibold tabular-nums @[250px]/card:text-3xl ${stats.defaultCount > 0 ? 'text-primary' : ''}`}>
@@ -89,7 +90,7 @@ export function AccountAddressesStats({ stats }: AddressesStatsProps) {
         <Card className="@container/card">
           <CardHeader>
             <CardDescription className="flex items-center gap-1.5">
-              <House className="size-4 shrink-0" weight="duotone" />
+              <House className="size-4 shrink-0" />
               <span className="truncate">{t("home")}</span>
             </CardDescription>
             <CardTitle className="text-2xl font-semibold tabular-nums text-success @[250px]/card:text-3xl">
@@ -106,7 +107,7 @@ export function AccountAddressesStats({ stats }: AddressesStatsProps) {
         <Card className="@container/card">
           <CardHeader>
             <CardDescription className="flex items-center gap-1.5">
-              <Briefcase className="size-4 shrink-0" weight="duotone" />
+              <Briefcase className="size-4 shrink-0" />
               <span className="truncate">{t("work")}</span>
             </CardDescription>
             <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">

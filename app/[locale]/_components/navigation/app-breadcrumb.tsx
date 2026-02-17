@@ -1,6 +1,6 @@
 import * as React from "react"
 import { Link } from "@/i18n/routing"
-import { House } from "@/lib/icons/phosphor"
+import { House } from "lucide-react"
 import {
   Breadcrumb,
   BreadcrumbList,
@@ -60,7 +60,7 @@ export function AppBreadcrumb({
             <BreadcrumbItem>
               <BreadcrumbLink asChild>
                 <Link href="/" className="flex items-center gap-1 min-h-6 min-w-6 p-1 -m-1">
-                  <House size={16} weight="regular" aria-hidden="true" />
+                  <House size={16} aria-hidden="true" />
                   <span className="hidden sm:inline">{homeLabel}</span>
                 </Link>
               </BreadcrumbLink>
@@ -109,7 +109,6 @@ export const breadcrumbPresets = (t: (key: string) => string) => {
     todaysDeals: [{ label: t("todaysDeals") }],
     customerService: [{ label: t("customerService") }],
     giftCards: [{ label: t("giftCards") }],
-    registry: [{ label: t("registry") }],
     sell: [{ label: t("sell") }],
     account: [{ label: t("account") }],
     cart: [{ label: t("cart") }],

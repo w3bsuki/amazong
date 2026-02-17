@@ -1,7 +1,8 @@
 "use client";
 
 import { Controller } from "react-hook-form";
-import { TextAa } from "@/lib/icons/phosphor";
+import { Type as TextAa } from "lucide-react";
+
 import { Input } from "@/components/ui/input";
 import { Field, FieldLabel, FieldDescription, FieldError, FieldContent } from "@/components/shared/field";
 import { cn } from "@/lib/utils";
@@ -51,7 +52,7 @@ export function TitleField({
             <div className="p-4 pb-3 border-b border-form-section-border bg-surface-subtle">
               <div className="flex items-center gap-3.5">
                 <div className="flex size-10 items-center justify-center rounded-md bg-form-section-bg border border-form-section-border shadow-xs">
-                  <TextAa className="size-5 text-muted-foreground" weight="bold" />
+                  <TextAa className="size-5 text-muted-foreground" />
                 </div>
                 <div>
                   <FieldLabel className="text-sm font-bold tracking-tight text-foreground">

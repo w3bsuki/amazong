@@ -8,18 +8,8 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import {
-  Plus,
-  Package,
-  Eye,
-  Pencil,
-  Star,
-  Tag,
-  Lightning,
-  Trash,
-  Pause,
-  Play,
-} from "@/lib/icons/phosphor"
+import { Eye, Zap as Lightning, Package, Pause, Pencil, Play, Plus, Star, Tag, Trash } from "lucide-react";
+
 import { BoostDialog } from "../../../_components/seller/boost-dialog"
 import { toast } from "sonner"
 import { useTranslations } from "next-intl"
@@ -370,7 +360,7 @@ export function SellingProductsList({ products, sellerUsername, locale, actions 
     return (
       <div className="text-center py-12 sm:py-16">
         <div className="size-16 sm:size-20 rounded-full mx-auto flex items-center justify-center mb-4 bg-muted border border-border">
-          <Package weight="duotone" className="size-8 sm:size-10 text-muted-foreground" />
+          <Package className="size-8 sm:size-10 text-muted-foreground" />
         </div>
         <h3 className="text-lg font-semibold text-foreground mb-2">
           {t('noProductsTitle')}
@@ -380,7 +370,7 @@ export function SellingProductsList({ products, sellerUsername, locale, actions 
         </p>
         <Button asChild className="rounded-full">
           <Link href="/sell">
-            <Plus weight="bold" className="size-4 mr-2" />
+            <Plus className="size-4 mr-2" />
             {t('createListing')}
           </Link>
         </Button>
@@ -417,13 +407,13 @@ export function SellingProductsList({ products, sellerUsername, locale, actions 
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center">
-                    <Package className="size-8 text-muted-foreground" weight="duotone" />
+                    <Package className="size-8 text-muted-foreground" />
                   </div>
                 )}
                 {boosted && (
                   <div className="absolute top-1.5 left-1.5">
                     <Badge className="bg-primary text-primary-foreground text-2xs px-1.5 py-0.5 gap-0.5 shadow-sm">
-                      <Lightning className="size-2.5" weight="fill" />
+                      <Lightning className="size-2.5" />
                     </Badge>
                   </div>
                 )}
@@ -445,7 +435,7 @@ export function SellingProductsList({ products, sellerUsername, locale, actions 
                       </span>
                       {saleActive && salePercent > 0 && (
                         <Badge variant="secondary" className="bg-destructive-subtle text-deal border-0 text-2xs px-1.5 py-0">
-                          <Tag weight="fill" className="size-2.5 mr-0.5" />
+                          <Tag className="size-2.5 mr-0.5" />
                           -{salePercent}%
                         </Badge>
                       )}
@@ -459,7 +449,7 @@ export function SellingProductsList({ products, sellerUsername, locale, actions 
                       </span>
                       {boosted && timeLeft && (
                         <Badge variant="secondary" className="bg-selected text-primary border-0 text-2xs px-1.5 py-0">
-                          <Lightning weight="fill" className="size-2.5 mr-0.5" />
+                          <Lightning className="size-2.5 mr-0.5" />
                           {tBoost('timeLeft', { days: timeLeft.days, hours: timeLeft.hours })}
                         </Badge>
                       )}
@@ -476,7 +466,6 @@ export function SellingProductsList({ products, sellerUsername, locale, actions 
                           <Star
                             key={i}
                             size={10}
-                            weight={i < Math.floor(product.rating || 0) ? "fill" : "regular"}
                             className="text-rating"
                           />
                         ))}
@@ -495,7 +484,7 @@ export function SellingProductsList({ products, sellerUsername, locale, actions 
                       onClick={() => openDiscountDialog(product)}
                       title={t('discountTooltip')}
                     >
-                      <Tag className="size-4" weight="bold" />
+                      <Tag className="size-4" />
                     </Button>
                     {/* Show boost dialog if not currently boosted OR if boost expired (re-boost) */}
                     {(!boosted) && (
@@ -509,7 +498,7 @@ export function SellingProductsList({ products, sellerUsername, locale, actions 
                             className={`${boostExpired ? 'text-muted-foreground hover:text-primary' : 'text-primary'} hover:bg-hover`}
                             title={boostExpired ? tBoost('reboost') : tBoost('trigger')}
                           >
-                            <Lightning className="size-4" weight="bold" />
+                            <Lightning className="size-4" />
                           </Button>
                         }
                       />
@@ -522,9 +511,9 @@ export function SellingProductsList({ products, sellerUsername, locale, actions 
                       disabled={togglingId === product.id}
                     >
                       {product.status === 'draft' ? (
-                        <Play className="size-4 text-success" weight="fill" />
+                        <Play className="size-4 text-success" />
                       ) : (
-                        <Pause className="size-4 text-warning" weight="fill" />
+                        <Pause className="size-4 text-warning" />
                       )}
                     </Button>
                     <Button asChild variant="ghost" size="icon-sm">
@@ -601,13 +590,13 @@ export function SellingProductsList({ products, sellerUsername, locale, actions 
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center">
-                    <Package className="size-6 text-muted-foreground" weight="duotone" />
+                    <Package className="size-6 text-muted-foreground" />
                   </div>
                 )}
                 {boosted && (
                   <div className="absolute top-1 left-1">
                     <Badge className="bg-primary text-primary-foreground text-2xs px-1 py-0 gap-0.5">
-                      <Lightning className="size-2.5" weight="fill" />
+                      <Lightning className="size-2.5" />
                     </Badge>
                   </div>
                 )}
@@ -624,13 +613,13 @@ export function SellingProductsList({ products, sellerUsername, locale, actions 
                   </Link>
                   {saleActive && salePercent > 0 && (
                     <Badge variant="secondary" className="bg-destructive-subtle text-deal border-0 text-xs shrink-0">
-                      <Tag weight="fill" className="size-3 mr-0.5" />
+                      <Tag className="size-3 mr-0.5" />
                       -{salePercent}%
                     </Badge>
                   )}
                   {boosted && timeLeft && (
                     <Badge variant="secondary" className="bg-selected text-primary border-0 text-xs shrink-0" title={product.boost_expires_at ? tBoost('boostActiveUntil', { date: formatBoostExpiry(product.boost_expires_at) }) : undefined}>
-                      <Lightning weight="fill" className="size-3 mr-0.5" />
+                      <Lightning className="size-3 mr-0.5" />
                       {tBoost('timeLeft', { days: timeLeft.days, hours: timeLeft.hours })}
                     </Badge>
                   )}
@@ -668,7 +657,6 @@ export function SellingProductsList({ products, sellerUsername, locale, actions 
                       <Star
                         key={i}
                         size={12}
-                        weight={i < Math.floor(product.rating || 0) ? "fill" : "regular"}
                         className="text-rating"
                       />
                     ))}
@@ -692,7 +680,7 @@ export function SellingProductsList({ products, sellerUsername, locale, actions 
                         size="sm"
                         className={`gap-1.5 ${boostExpired ? 'text-muted-foreground border-border hover:text-primary hover:border-selected-border' : 'text-primary border-selected-border'} hover:bg-hover px-3 rounded-full`}
                       >
-                        <Lightning className="size-4" weight="bold" />
+                        <Lightning className="size-4" />
                         {boostExpired ? tBoost('reboost') : tBoost('trigger')}
                       </Button>
                     }
@@ -705,7 +693,7 @@ export function SellingProductsList({ products, sellerUsername, locale, actions 
                   onClick={() => openDiscountDialog(product)}
                   title={t('discountTooltip')}
                 >
-                  <Tag className="size-4" weight="bold" />
+                  <Tag className="size-4" />
                 </Button>
                 {/* Pause/Unpause Button */}
                 <Button
@@ -719,9 +707,9 @@ export function SellingProductsList({ products, sellerUsername, locale, actions 
                   }
                 >
                   {product.status === 'draft' ? (
-                    <Play className="size-4 text-success" weight="fill" />
+                    <Play className="size-4 text-success" />
                   ) : (
-                    <Pause className="size-4 text-warning" weight="fill" />
+                    <Pause className="size-4 text-warning" />
                   )}
                 </Button>
                 <Button asChild variant="ghost" size="icon-sm">

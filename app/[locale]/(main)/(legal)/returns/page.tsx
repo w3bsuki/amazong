@@ -8,11 +8,8 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion"
-import { 
-  ArrowCounterClockwise, Package, Clock, CheckCircle, Question,
-  Truck, CreditCard, WarningCircle, FileText, 
-  CaretRight, Printer, MapPin, ShieldCheck, Prohibit
-} from "@/lib/icons/phosphor"
+import { RefreshCcw as ArrowCounterClockwise, ChevronRight as CaretRight, CircleCheck as CheckCircle, Clock, CreditCard, FileText, MapPin, Package, Printer, Ban as Prohibit, CircleHelp as Question, ShieldCheck, Truck, CircleAlert as WarningCircle } from "lucide-react";
+
 import { Link } from "@/i18n/routing"
 import type { Metadata } from 'next'
 import { validateLocale } from "@/i18n/routing"

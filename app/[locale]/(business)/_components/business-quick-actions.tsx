@@ -1,10 +1,6 @@
 import { Link } from "@/i18n/routing"
-import {
-  IconPlus,
-  IconShoppingCart,
-  IconPackage,
-  IconChartBar,
-} from "@/lib/icons/tabler"
+import { ChartColumn as IconChartBar, Package as IconPackage, Plus as IconPlus, ShoppingCart as IconShoppingCart } from "lucide-react";
+
 import { Button } from "@/components/ui/button"
 
 const quickActions = [
