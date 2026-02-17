@@ -1,5 +1,3 @@
-"use client";
-
 import { X } from "lucide-react";
 
 import type { ProductImage } from "@/lib/sell/schema";
@@ -44,4 +42,5 @@ export function ImagePreviewModal({
     </div>
   );
 }
+
 

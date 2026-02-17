@@ -1,5 +1,3 @@
-"use client"
-
 // =============================================================================
 // MOBILE TRUST SECTIONS
 // =============================================================================
@@ -65,3 +63,4 @@ export function MobileReportButton({ onReport, className }: MobileReportButtonPr
     </button>
   )
 }
+

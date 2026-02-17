@@ -1,5 +1,3 @@
-"use client";
-
 import { useTranslations } from "next-intl";
 import { Star } from "lucide-react";
 
@@ -62,3 +60,4 @@ export function FilterRatingSection({ minRating, onChange }: FilterRatingSection
 }
 
 export type { FilterRatingSectionProps };
+

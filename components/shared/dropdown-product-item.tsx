@@ -1,5 +1,3 @@
-"use client"
-
 import Image from "next/image"
 import { Link } from "@/i18n/routing"
 import { Package, Trash } from "lucide-react";
@@ -74,3 +72,4 @@ export function DropdownProductItem({
     </div>
   )
 }
+

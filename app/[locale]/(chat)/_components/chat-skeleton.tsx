@@ -1,5 +1,3 @@
-"use client"
-
 import { Skeleton } from "@/components/ui/skeleton"
 
 /**
@@ -43,3 +41,4 @@ export function ChatInterfaceSkeleton() {
     </div>
   )
 }
+

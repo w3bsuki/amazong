@@ -1,5 +1,3 @@
-"use client"
-
 import { Store as IconBuildingStore, ChartLine as IconChartLine, ChevronRight as IconChevronRight, Heart as IconHeart, MessageCircle as IconMessage, Package as IconPackage, Plus as IconPlus } from "lucide-react";
 
 import { Link } from "@/i18n/routing"
@@ -122,3 +120,4 @@ export function AccountStatsCards({ totals, locale }: AccountStatsProps) {
     </>
   )
 }
+

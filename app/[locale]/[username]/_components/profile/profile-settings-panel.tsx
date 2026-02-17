@@ -1,5 +1,3 @@
-"use client"
-
 import { Link } from "@/i18n/routing"
 import { useTranslations } from "next-intl"
 import { Switch } from "@/components/ui/switch"
@@ -150,3 +148,4 @@ export function ProfileSettingsPanel({ onSignOut }: ProfileSettingsPanelProps) {
     </div>
   )
 }
+

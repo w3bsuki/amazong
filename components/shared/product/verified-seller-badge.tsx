@@ -1,5 +1,3 @@
-"use client"
-
 import { Check } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
@@ -46,3 +44,4 @@ export function VerifiedSellerBadge({
 }
 
 export type { VerifiedSellerBadgeProps }
+

@@ -1,5 +1,3 @@
-"use client"
-
 import { Building2 as Buildings, Check, Crown, Rocket, LoaderCircle as SpinnerGap, User } from "lucide-react";
 
 import { Button } from "@/components/ui/button"
@@ -356,3 +354,4 @@ export function PlansGridSkeleton({ count = 3, variant = "full" }: { count?: num
     </div>
   )
 }
+

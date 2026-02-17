@@ -1,5 +1,3 @@
-"use client"
-
 import * as React from "react"
 import { cn } from "@/lib/utils"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -45,3 +43,4 @@ export function ProductGridSkeleton({ viewMode, count = 18 }: ProductGridSkeleto
     </div>
   )
 }
+

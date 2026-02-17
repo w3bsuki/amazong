@@ -1,5 +1,3 @@
-"use client"
-
 import { useState } from "react"
 import { useTranslations } from "next-intl"
 import { Briefcase, House, MapPin, Pencil, Phone, Plus, Star, Trash, X } from "lucide-react";
@@ -350,3 +348,4 @@ export function AccountAddressesGrid({
     </div>
   )
 }
+

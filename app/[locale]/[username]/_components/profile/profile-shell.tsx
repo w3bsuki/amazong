@@ -1,5 +1,3 @@
-"use client"
-
 import type { ReactNode } from "react"
 import Image from "next/image"
 import { cn } from "@/lib/utils"
@@ -119,3 +117,4 @@ export function ProfileShell({
     </div>
   )
 }
+

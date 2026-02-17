@@ -1,5 +1,3 @@
-"use client"
-
 import * as React from "react"
 import { Link } from "@/i18n/routing"
 import { cn } from "@/lib/utils"
@@ -284,3 +282,4 @@ export function SubcategoryCircles({
     </div>
   )
 }
+

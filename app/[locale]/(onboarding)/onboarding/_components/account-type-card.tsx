@@ -1,5 +1,3 @@
-"use client"
-
 import { Check, Store as Storefront, User } from "lucide-react";
 
 import { Card, CardContent } from "@/components/ui/card"
@@ -79,3 +77,4 @@ export function AccountTypeCard({
     </Card>
   )
 }
+

@@ -1,5 +1,3 @@
-"use client"
-
 import { useCallback } from "react"
 import { ChevronRight as CaretRight } from "lucide-react";
 
@@ -131,3 +129,4 @@ export function HomeBrowseOptionsSheet({
     </Drawer>
   )
 }
+

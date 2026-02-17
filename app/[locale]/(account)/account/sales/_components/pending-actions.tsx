@@ -1,5 +1,3 @@
-"use client"
-
 import { Link } from "@/i18n/routing"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -100,3 +98,4 @@ export function PendingActions({
     </Card>
   )
 }
+

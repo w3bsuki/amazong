@@ -1,5 +1,3 @@
-"use client"
-
 import { useTranslations } from "next-intl"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -105,3 +103,4 @@ export function PriceFilterSection({
     </AccordionItem>
   )
 }
+

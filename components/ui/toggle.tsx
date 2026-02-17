@@ -1,5 +1,3 @@
-"use client"
-
 import { cva } from "class-variance-authority"
 
 const toggleVariants = cva(
@@ -25,3 +23,4 @@ const toggleVariants = cva(
 )
 
 export { toggleVariants }
+

@@ -1,5 +1,3 @@
-"use client"
-
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
 import { Link } from "@/i18n/routing"
@@ -104,3 +102,4 @@ export default function SellersGrid({
     </div>
   )
 }
+

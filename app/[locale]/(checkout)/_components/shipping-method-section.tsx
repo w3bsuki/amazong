@@ -1,5 +1,3 @@
-"use client";
-
 import { useTranslations } from "next-intl";
 import { Plane as Airplane, Zap as Lightning, Truck } from "lucide-react";
 
@@ -115,4 +113,5 @@ export function ShippingMethodSection({
 }
 
 export type { ShippingMethodSectionProps };
+
 

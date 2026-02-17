@@ -1,5 +1,3 @@
-"use client"
-
 import { ChevronRight as CaretRight, CircleCheck as CheckCircle, Star } from "lucide-react";
 
 import { useTranslations } from "next-intl"
@@ -90,3 +88,4 @@ export function QuickViewSellerCard({
     </button>
   )
 }
+

@@ -1,5 +1,3 @@
-"use client"
-
 import { useMemo } from "react"
 import { useTranslations } from "next-intl"
 
@@ -36,3 +34,4 @@ export function SignUpForm({
     </AuthCard>
   )
 }
+

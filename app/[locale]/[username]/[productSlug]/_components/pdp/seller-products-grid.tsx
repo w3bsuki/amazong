@@ -1,5 +1,3 @@
-"use client"
-
 import { useLocale, useTranslations } from "next-intl"
 import { Link } from "@/i18n/routing"
 import { ProductMiniCard } from "@/components/shared/product/card/mini"
@@ -70,3 +68,4 @@ export function SellerProductsGrid({ products, sellerUsername }: SellerProductsG
     </div>
   )
 }
+

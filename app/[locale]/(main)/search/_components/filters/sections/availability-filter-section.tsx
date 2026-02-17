@@ -1,5 +1,3 @@
-"use client"
-
 import { Package } from "lucide-react";
 
 import { useTranslations } from "next-intl"
@@ -48,3 +46,4 @@ export function AvailabilityFilterSection({
     </AccordionItem>
   )
 }
+

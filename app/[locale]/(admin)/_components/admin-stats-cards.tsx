@@ -1,5 +1,3 @@
-"use client"
-
 import { Box as IconBox, Store as IconBuildingStore, DollarSign as IconCurrencyDollar, ShoppingCart as IconShoppingCart, TrendingUp as IconTrendingUp, Users as IconUsers } from "lucide-react";
 
 import { useLocale, useTranslations } from "next-intl"
@@ -143,3 +141,4 @@ export function AdminStatsCards({ totals }: AdminStatsProps) {
     </div>
   )
 }
+

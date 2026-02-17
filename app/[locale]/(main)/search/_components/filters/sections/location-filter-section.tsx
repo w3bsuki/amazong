@@ -1,5 +1,3 @@
-"use client"
-
 import { Crosshair, MapPin } from "lucide-react";
 
 import { useTranslations } from "next-intl"
@@ -85,3 +83,4 @@ export function LocationFilterSection({
     </AccordionItem>
   )
 }
+

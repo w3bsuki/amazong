@@ -1,5 +1,3 @@
-"use client"
-
 import { Link } from "@/i18n/routing"
 import { ArrowLeft, ShoppingCart } from "lucide-react";
 
@@ -87,3 +85,4 @@ export function MinimalHeader({
     </header>
   )
 }
+

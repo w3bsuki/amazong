@@ -1,5 +1,3 @@
-"use client"
-
 import { cn } from "@/lib/utils"
 
 interface StatItemProps {
@@ -49,3 +47,4 @@ export function ProfileStats({ stats, className }: ProfileStatsProps) {
     </div>
   )
 }
+

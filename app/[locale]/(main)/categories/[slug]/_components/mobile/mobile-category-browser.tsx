@@ -1,5 +1,3 @@
-"use client"
-
 import { useLocale } from "next-intl"
 import type { CategoryTreeNode } from "@/lib/category-tree"
 import type { UIProduct } from "@/lib/data/products"
@@ -57,3 +55,4 @@ export function MobileCategoryBrowser({
     />
   )
 }
+

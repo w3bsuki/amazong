@@ -1,5 +1,3 @@
-"use client"
-
 import { ChartLine, Crown, Headset, Info, Zap as Lightning, Medal, Package } from "lucide-react";
 
 import { Card, CardContent } from "@/components/ui/card"
@@ -211,3 +209,4 @@ export function SubscriptionBenefitsCard({
     </Card>
   )
 }
+

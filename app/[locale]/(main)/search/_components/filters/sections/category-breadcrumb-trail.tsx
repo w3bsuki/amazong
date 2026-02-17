@@ -1,5 +1,3 @@
-"use client"
-
 import { Link } from "@/i18n/routing"
 import { useLocale, useTranslations } from "next-intl"
 import { ChevronRight as CaretRight, House } from "lucide-react";
@@ -104,3 +102,4 @@ export function CategoryBreadcrumbTrail({ ancestry, className }: CategoryBreadcr
     </nav>
   )
 }
+

@@ -1,5 +1,3 @@
-"use client";
-
 import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 import { ChevronDown as CaretDown, Check } from "lucide-react";
@@ -182,3 +180,4 @@ export function CategoryAttributeDropdowns({
 }
 
 export type { CategoryAttributeDropdownsProps };
+

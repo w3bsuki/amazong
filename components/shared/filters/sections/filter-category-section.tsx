@@ -1,5 +1,3 @@
-"use client";
-
 import { useTranslations } from "next-intl";
 import { X } from "lucide-react";
 
@@ -73,3 +71,4 @@ export function FilterCategorySection({
 }
 
 export type { FilterCategorySectionProps };
+

@@ -1,5 +1,3 @@
-"use client"
-
 import { Building2 as Buildings, Mail as EnvelopeSimple, IdCard as IdentificationCard, Phone, BadgeCheck as SealCheck } from "lucide-react";
 
 import { cn } from "@/lib/utils"
@@ -173,3 +171,4 @@ export {
   type SellerVerificationBadgeProps,
   type VerificationLevel 
 }
+

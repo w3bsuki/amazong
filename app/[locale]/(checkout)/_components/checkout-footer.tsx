@@ -1,5 +1,3 @@
-"use client"
-
 import { useTranslations } from "next-intl"
 
 export function CheckoutFooter() {
@@ -16,3 +14,4 @@ export function CheckoutFooter() {
     </footer>
   )
 }
+

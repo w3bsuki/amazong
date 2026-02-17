@@ -1,5 +1,3 @@
-"use client";
-
 import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 
@@ -57,3 +55,4 @@ export function SpecificationsList({ specifications }: SpecificationsListProps) 
 }
 
 export type { SpecItem, SpecificationsListProps };
+

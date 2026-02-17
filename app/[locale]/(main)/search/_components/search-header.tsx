@@ -1,5 +1,3 @@
-"use client"
-
 import { Link } from "@/i18n/routing"
 import { useTranslations } from "next-intl"
 import { ChevronRight as CaretRight, Search as MagnifyingGlass } from "lucide-react";
@@ -60,3 +58,4 @@ export function SearchHeader({ query, category, totalResults }: SearchHeaderProp
     </div>
   )
 }
+

@@ -1,5 +1,3 @@
-"use client"
-
 import { Link } from "@/i18n/routing"
 import { CirclePlus as IconCirclePlusFilled, Mail as IconMail } from "lucide-react";
 import { type LucideIcon as Icon } from "lucide-react";
@@ -66,3 +64,4 @@ export function NavMain({
     </SidebarGroup>
   )
 }
+

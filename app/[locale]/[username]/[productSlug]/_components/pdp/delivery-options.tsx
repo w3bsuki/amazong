@@ -1,5 +1,3 @@
-"use client";
-
 import { useTranslations } from "next-intl";
 import { MapPin, Truck } from "lucide-react";
 
@@ -42,3 +40,4 @@ export function DeliveryOptions({ pickupOnly, freeShipping }: DeliveryOptionsPro
 }
 
 export type { DeliveryOptionsProps };
+

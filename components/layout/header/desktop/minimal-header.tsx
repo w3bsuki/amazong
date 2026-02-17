@@ -1,5 +1,3 @@
-"use client"
-
 import { Link } from "@/i18n/routing"
 import type { MinimalHeaderProps } from "../types"
 
@@ -21,3 +19,4 @@ export function DesktopMinimalHeader({}: MinimalHeaderProps) {
     </div>
   )
 }
+

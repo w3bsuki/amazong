@@ -1,5 +1,3 @@
-"use client"
-
 import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts"
 import { useTranslations } from "next-intl"
 import {
@@ -115,3 +113,4 @@ export function SalesChart({ data, locale }: SalesChartProps) {
     </ChartContainer>
   )
 }
+

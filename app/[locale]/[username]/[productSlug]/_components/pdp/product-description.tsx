@@ -1,5 +1,3 @@
-"use client";
-
 import { useTranslations } from "next-intl";
 
 interface ProductDescriptionProps {
@@ -24,3 +22,4 @@ export function ProductDescription({ description }: ProductDescriptionProps) {
 }
 
 export type { ProductDescriptionProps };
+

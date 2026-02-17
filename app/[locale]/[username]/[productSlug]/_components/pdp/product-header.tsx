@@ -1,5 +1,3 @@
-"use client";
-
 import { useTranslations } from "next-intl";
 import { Truck } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -74,3 +72,4 @@ export function ProductHeader({
 }
 
 export type { ProductHeaderProps };
+

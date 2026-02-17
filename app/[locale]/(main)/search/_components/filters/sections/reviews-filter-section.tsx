@@ -1,5 +1,3 @@
-"use client"
-
 import { Check, Star } from "lucide-react";
 
 import { useTranslations } from "next-intl"
@@ -55,3 +53,4 @@ export function ReviewsFilterSection({ currentRating, onRatingChange }: ReviewsF
     </AccordionItem>
   )
 }
+

@@ -1,5 +1,3 @@
-"use client"
-
 import { Link } from "@/i18n/routing"
 import Image from "next/image"
 import { Badge } from "@/components/ui/badge"
@@ -178,3 +176,4 @@ export function SalesTable({ sales, locale }: SalesTableProps) {
     </div>
   )
 }
+

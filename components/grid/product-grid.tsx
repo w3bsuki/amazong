@@ -2,8 +2,6 @@
  * ProductGrid — Responsive product grid
  */
 
-"use client"
-
 import * as React from "react"
 import { cn } from "@/lib/utils"
 import { DesktopProductCard } from "@/components/shared/product/card/desktop"
@@ -229,3 +227,4 @@ export function ProductGridSkeleton({
     </div>
   )
 }
+

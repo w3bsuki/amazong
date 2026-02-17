@@ -1,5 +1,3 @@
-"use client";
-
 import { useTranslations } from "next-intl";
 import { Package, RotateCcw, ShieldCheck } from "lucide-react";
 
@@ -51,3 +49,4 @@ export function ShippingReturnsInfo({ pickupOnly }: ShippingReturnsInfoProps) {
 }
 
 export type { ShippingReturnsInfoProps };
+

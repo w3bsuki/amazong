@@ -1,5 +1,3 @@
-"use client"
-
 import { useTranslations } from "next-intl"
 import { PhotosField, TitleField } from "../fields"
 import { StepLayout } from "./step-layout"
@@ -24,3 +22,4 @@ export function StepWhat() {
     </StepLayout>
   )
 }
+

@@ -1,5 +1,3 @@
-"use client"
-
 /**
  * Desktop Promoted Section
  * 
@@ -143,3 +141,4 @@ export function PromotedSection({
     </section>
   )
 }
+

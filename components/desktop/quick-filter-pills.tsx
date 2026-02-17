@@ -1,5 +1,3 @@
-"use client";
-
 import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 import { ChevronDown as CaretDown, Check, MapPin, Package, Percent, Star } from "lucide-react";
@@ -95,4 +93,5 @@ export function QuickFilterPills({
 }
 
 export type { QuickFilterPillsProps };
+
 

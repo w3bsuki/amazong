@@ -1,5 +1,3 @@
-"use client";
-
 import { useTranslations } from "next-intl"
 import { AuthGateCard } from "../../_components/auth/auth-gate-card"
 
@@ -17,3 +15,4 @@ export function SignInPrompt() {
     </div>
   )
 }
+

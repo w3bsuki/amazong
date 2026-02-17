@@ -1,5 +1,3 @@
-"use client"
-
 import { useLocale, useTranslations } from "next-intl"
 import { ChevronRight } from "lucide-react"
 import { Link } from "@/i18n/routing"
@@ -70,3 +68,4 @@ export function SimilarItemsGrid({
 }
 
 export type { SimilarProduct, SimilarItemsGridProps }
+

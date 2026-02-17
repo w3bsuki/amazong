@@ -1,5 +1,3 @@
-"use client"
-
 import { RefreshCw as ArrowsClockwise, SquareArrowOutUpRight as ArrowSquareOut, Heart, Link as LinkSimple, MapPin, ShieldCheck, Truck, X } from "lucide-react";
 
 
@@ -245,3 +243,4 @@ export function ProductQuickViewDesktopContent({
     </div>
   )
 }
+

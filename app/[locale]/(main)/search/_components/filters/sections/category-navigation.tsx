@@ -1,5 +1,3 @@
-"use client"
-
 import { ChevronDown as CaretDown, ChevronRight as CaretRight } from "lucide-react";
 
 import { useTranslations } from "next-intl"
@@ -172,3 +170,4 @@ export function CategoryNavigation({
     </div>
   )
 }
+

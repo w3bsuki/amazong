@@ -1,5 +1,3 @@
-"use client";
-
 import type { ChangeEvent } from "react";
 import { useTranslations } from "next-intl";
 import { ArrowLeft, Check, MapPin, LoaderCircle as SpinnerGap, X } from "lucide-react";
@@ -298,4 +296,5 @@ export function AddressSection({
 }
 
 export type { AddressSectionProps };
+
 

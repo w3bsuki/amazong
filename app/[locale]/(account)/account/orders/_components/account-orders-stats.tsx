@@ -1,5 +1,3 @@
-"use client"
-
 import { Clock as IconClock, DollarSign as IconCurrencyDollar, Package as IconPackage, Truck as IconTruckDelivery } from "lucide-react";
 
 
@@ -144,3 +142,4 @@ export function AccountOrdersStats({ stats, locale }: OrdersStatsProps) {
     </>
   )
 }
+

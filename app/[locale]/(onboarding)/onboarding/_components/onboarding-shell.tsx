@@ -1,5 +1,3 @@
-"use client"
-
 import type { ReactNode } from "react"
 import { ArrowLeft } from "lucide-react";
 
@@ -86,4 +84,5 @@ export function OnboardingShell({
     </div>
   )
 }
+
 

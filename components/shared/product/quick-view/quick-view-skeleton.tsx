@@ -1,5 +1,3 @@
-"use client"
-
 import { Skeleton } from "@/components/ui/skeleton"
 
 export function QuickViewSkeleton() {
@@ -57,3 +55,4 @@ export function QuickViewSkeleton() {
     </div>
   )
 }
+

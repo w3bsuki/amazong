@@ -1,5 +1,3 @@
-"use client"
-
 import type { ChangeEvent, ReactNode } from "react"
 import { CircleAlert as WarningCircle } from "lucide-react";
 
@@ -91,3 +89,4 @@ export function AddressFormFields({
     </div>
   )
 }
+

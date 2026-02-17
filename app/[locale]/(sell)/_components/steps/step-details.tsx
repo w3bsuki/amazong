@@ -1,5 +1,3 @@
-"use client"
-
 import { useTranslations } from "next-intl"
 import {
   AttributesField,
@@ -27,3 +25,4 @@ export function StepDetails() {
     </StepLayout>
   )
 }
+

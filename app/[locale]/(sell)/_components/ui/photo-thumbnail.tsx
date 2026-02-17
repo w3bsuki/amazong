@@ -1,5 +1,3 @@
-"use client";
-
 import Image from "next/image";
 import { Search as MagnifyingGlassPlus, Star, Trash } from "lucide-react";
 
@@ -119,4 +117,5 @@ export function PhotoThumbnail({
     </div>
   );
 }
+
 

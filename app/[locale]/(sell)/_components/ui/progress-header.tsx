@@ -1,5 +1,3 @@
-"use client";
-
 import { ChevronLeft as CaretLeft, CloudCheck, Save as FloppyDisk, House, Loader as Spinner } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -148,3 +146,4 @@ export function ProgressHeader({
     </header>
   );
 }
+

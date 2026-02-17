@@ -1,5 +1,3 @@
-"use client"
-
 import { DollarSign as IconCurrencyDollar, Heart as IconHeart, Package as IconPackage, PackageX as IconPackageOff } from "lucide-react";
 
 
@@ -150,3 +148,4 @@ export function AccountWishlistStats({ stats, locale }: WishlistStatsProps) {
     </>
   )
 }
+

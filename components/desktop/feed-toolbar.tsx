@@ -1,5 +1,3 @@
-"use client"
-
 import * as React from "react"
 import { useMemo } from "react"
 import { useTranslations } from "next-intl"
@@ -242,3 +240,4 @@ export function FeedToolbar({
     </div>
   )
 }
+

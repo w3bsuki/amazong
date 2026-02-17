@@ -1,5 +1,3 @@
-"use client"
-
 import * as React from "react"
 import { Link } from "@/i18n/routing"
 import { useTranslations } from "next-intl"
@@ -107,3 +105,4 @@ export function AdminSidebar({ user, ...props }: AdminSidebarProps) {
     </Sidebar>
   )
 }
+

@@ -1,5 +1,3 @@
-"use client"
-
 import { useTranslations } from "next-intl"
 import { Eye, Flame as Fire, Heart } from "lucide-react";
 
@@ -69,3 +67,4 @@ export function ProductSocialProof({
     </div>
   )
 }
+

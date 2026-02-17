@@ -1,5 +1,3 @@
-"use client";
-
 import { Clock, Eye, Folder } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -91,3 +89,4 @@ export function MetaRow({
 }
 
 export type { CategorySummary, MetaRowProps };
+

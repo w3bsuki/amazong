@@ -6,8 +6,6 @@
 // Brand/Model/Condition/Warranty, automotive shows Make/Model/Year/Mileage, etc.)
 // =============================================================================
 
-"use client"
-
 import { cn } from "@/lib/utils"
 import type { ResolvedHeroSpec } from "@/lib/view-models/product-page"
 
@@ -93,3 +91,4 @@ export function HeroSpecs({
     </div>
   )
 }
+

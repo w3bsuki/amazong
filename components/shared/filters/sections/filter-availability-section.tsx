@@ -1,5 +1,3 @@
-"use client";
-
 import { useTranslations } from "next-intl";
 import { FilterCheckboxItem } from "../controls/filter-checkbox-item";
 
@@ -27,3 +25,4 @@ export function FilterAvailabilitySection({ availability, onChange }: FilterAvai
 }
 
 export type { FilterAvailabilitySectionProps };
+

@@ -1,5 +1,3 @@
-"use client"
-
 import { useTranslations } from "next-intl"
 import { Briefcase, House, MapPin, Star } from "lucide-react";
 
@@ -124,3 +122,4 @@ export function AccountAddressesStats({ stats }: AddressesStatsProps) {
     </>
   )
 }
+

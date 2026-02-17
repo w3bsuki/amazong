@@ -1,5 +1,3 @@
-"use client";
-
 import { Camera, Plus, LoaderCircle as SpinnerGap } from "lucide-react";
 
 import { cn } from "@/lib/utils";
@@ -88,3 +86,4 @@ export function UploadZone({
     </div>
   );
 }
+
