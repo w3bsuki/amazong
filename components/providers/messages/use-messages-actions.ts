@@ -1,5 +1,3 @@
-"use client"
-
 import { useCallback, type Dispatch, type SetStateAction } from "react"
 import { createClient } from "@/lib/supabase/client"
 import type { Conversation, Message } from "@/lib/types/messages"
@@ -212,3 +210,4 @@ export function useMessagesActions({
     closeConversation,
   }
 }
+

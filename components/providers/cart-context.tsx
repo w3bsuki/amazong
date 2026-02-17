@@ -1,5 +1,3 @@
-"use client"
-
 import type React from "react"
 import { createContext, useCallback, useContext, useEffect, useState, useRef } from "react"
 import { createClient } from "@/lib/supabase/client"
@@ -524,3 +522,4 @@ export function useCart(): CartContextType {
   }
   return context
 }
+

@@ -1,5 +1,3 @@
-"use client"
-
 import * as React from "react"
 import { cn } from "@/lib/utils"
 import { useCurrencyOptional, EUR_TO_BGN_RATE } from "@/components/providers/currency-context"
@@ -226,3 +224,4 @@ function ProductCardPrice({
 // =============================================================================
 
 export { ProductCardPrice, type ProductCardPriceProps }
+

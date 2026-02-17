@@ -1,5 +1,3 @@
-"use client"
-
 import type React from "react"
 import { createContext, useCallback, useContext, useEffect, useState } from "react"
 import { EUR_TO_BGN_RATE } from "@/lib/currency"
@@ -98,3 +96,4 @@ export function CurrencyProvider({ children }: { children: React.ReactNode }) {
 export function useCurrencyOptional() {
   return useContext(CurrencyContext)
 }
+

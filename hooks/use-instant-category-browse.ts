@@ -1,5 +1,3 @@
-"use client"
-
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import type { UIProduct } from "@/lib/data/products"
 import type { CategoryAttribute } from "@/lib/data/categories"
@@ -322,3 +320,4 @@ export function useInstantCategoryBrowse(options: {
     prefetchCategory,
   }
 }
+

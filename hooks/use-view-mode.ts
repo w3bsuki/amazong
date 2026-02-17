@@ -1,5 +1,3 @@
-"use client"
-
 import { useCallback, useEffect, useState } from "react"
 
 type ViewMode = "grid" | "list"
@@ -31,3 +29,4 @@ export function useViewMode(defaultMode: ViewMode = "grid"): [ViewMode, (mode: V
   // Return default until hydrated to avoid hydration mismatch
   return [isHydrated ? viewMode : defaultMode, setMode]
 }
+

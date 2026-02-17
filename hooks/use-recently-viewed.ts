@@ -1,5 +1,3 @@
-"use client"
-
 import { useState, useEffect, useCallback } from "react"
 import { safeJsonParse } from "@/lib/safe-json"
 
@@ -88,3 +86,4 @@ export function useRecentlyViewed() {
     isLoaded,
   }
 }
+

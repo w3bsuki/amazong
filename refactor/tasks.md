@@ -31,12 +31,49 @@
 
 ## Phase 2 — Client Boundary & Bundle
 
-⬜ Not created yet. Planned after Phase 1 review.
+**Goal:** Reduce client-side JS. Remove unnecessary `"use client"`. Lazy-load heavy components.
+
+| Agent | Scope | Status |
+|-------|-------|--------|
+| Agent 1 | `"use client"` audit on `components/` | ⬜ Not started |
+| Agent 2 | `"use client"` audit on `app/` | ⬜ Not started |
+| Agent 3 | Dynamic imports + bundle optimization | ⬜ Not started |
+
+**Verification:** ⬜ `pnpm -s typecheck && pnpm -s lint && pnpm -s styles:gate && pnpm -s test:unit`
+
+**Metrics before:** _(fill from Phase 1 after)_
+**Metrics after:** _(fill after phase completes)_
+
+---
 
 ## Phase 3 — Data & Performance
 
-⬜ Not created yet. Planned after Phase 2 review.
+**Goal:** Caching, query optimization, dependency cleanup.
+
+| Agent | Scope | Status |
+|-------|-------|--------|
+| Agent 1 | Caching (`"use cache"`, cacheLife, cacheTag) | ⬜ Not started |
+| Agent 2 | Data layer (select, client→server, Supabase clients) | ⬜ Not started |
+| Agent 3 | Dependency diet (knip, unused deps, heavy deps) | ⬜ Not started |
+
+**Verification:** ⬜ `pnpm -s typecheck && pnpm -s lint && pnpm -s styles:gate && pnpm -s test:unit`
+
+**Metrics before:** _(fill from Phase 2 after)_
+**Metrics after:** _(fill after phase completes)_
+
+---
 
 ## Phase 4 — Polish
 
-⬜ Not created yet. Planned after Phase 3 review.
+**Goal:** Route completeness, CSS cleanup, code quality, final metrics.
+
+| Agent | Scope | Status |
+|-------|-------|--------|
+| Agent 1 | Route completeness (loading, metadata, error) | ⬜ Not started |
+| Agent 2 | CSS & styling cleanup | ⬜ Not started |
+| Agent 3 | Code quality (oversized files, dead code, tests, i18n) | ⬜ Not started |
+
+**Verification:** ⬜ `pnpm -s typecheck && pnpm -s lint && pnpm -s styles:gate && pnpm -s test:unit`
+
+**Metrics before:** _(fill from Phase 3 after)_
+**Metrics after (FINAL):** _(fill after phase completes)_

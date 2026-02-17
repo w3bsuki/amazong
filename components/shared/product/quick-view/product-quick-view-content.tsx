@@ -1,5 +1,3 @@
-"use client"
-
 import * as React from "react"
 import { useLocale, useTranslations } from "next-intl"
 import { toast } from "sonner"
@@ -198,3 +196,4 @@ export function ProductQuickViewContent({
 
   return <ProductQuickViewDesktopContent {...sharedProps} />
 }
+

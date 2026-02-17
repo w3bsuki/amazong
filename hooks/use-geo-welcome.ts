@@ -1,5 +1,3 @@
-'use client';
-
 import { useState, useEffect, useCallback } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { getShippingRegion, type ShippingRegion } from '@/lib/shipping';
@@ -312,4 +310,5 @@ function getRegionCountryCode(region: ShippingRegion): string {
   };
   return regionToCountry[region];
 }
+
 

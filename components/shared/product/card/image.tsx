@@ -1,5 +1,3 @@
-"use client"
-
 import * as React from "react"
 import Image from "next/image"
 import { AspectRatio } from "@/components/ui/aspect-ratio"
@@ -86,3 +84,4 @@ function ProductCardImage({
 // =============================================================================
 
 export { ProductCardImage, type ProductCardImageProps }
+

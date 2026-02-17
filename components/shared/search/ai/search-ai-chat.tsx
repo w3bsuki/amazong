@@ -1,5 +1,3 @@
-"use client"
-
 import * as React from "react"
 import { useChat } from "@ai-sdk/react"
 import { DefaultChatTransport } from "ai"
@@ -335,3 +333,4 @@ export function SearchAiChat({ className, onClose, compact = false }: SearchAiCh
     </div>
   )
 }
+

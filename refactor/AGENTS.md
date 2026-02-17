@@ -77,8 +77,8 @@ For existing refactor history, known bloat signals, session logs:
 | Phase | Focus | Status |
 |-------|-------|--------|
 | **Phase 1** | Discovery Audit — folder-tree ownership, find waste | Ready |
-| **Phase 2** | Client Boundary & Bundle — "use client" reduction, dynamic imports | Planned after Phase 1 |
-| **Phase 3** | Data & Performance — caching, server-side data, dep diet | Planned after Phase 2 |
-| **Phase 4** | Polish — route completeness, CSS, code quality, final metrics | Planned after Phase 3 |
+| **Phase 2** | Client Boundary & Bundle — "use client" reduction, dynamic imports | Ready |
+| **Phase 3** | Data & Performance — caching, server-side data, dep diet | Ready |
+| **Phase 4** | Polish — route completeness, CSS, code quality, final metrics | Ready |
 
-Only the current phase has detailed agent files. Future phases are designed by Copilot + Human after reviewing prior phase results.
+All phases have detailed agent files ready. Execute sequentially — verify each phase before starting the next.

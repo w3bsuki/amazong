@@ -1,5 +1,3 @@
-"use client"
-
 import { useEffect, useRef, useCallback, type Dispatch, type SetStateAction } from "react"
 import type { RealtimeChannel } from "@supabase/supabase-js"
 import { createClient } from "@/lib/supabase/client"
@@ -185,3 +183,4 @@ export function useTypingIndicator() {
 
   return { sendTypingIndicator }
 }
+

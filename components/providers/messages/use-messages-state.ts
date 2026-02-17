@@ -1,5 +1,3 @@
-"use client"
-
 import { useState, useCallback, useEffect, type Dispatch, type SetStateAction } from "react"
 import { createClient } from "@/lib/supabase/client"
 import type { Conversation, Message } from "@/lib/types/messages"
@@ -288,3 +286,4 @@ export function incrementUnreadCount(
         new Date(a.last_message_at || a.created_at).getTime()
     )
 }
+

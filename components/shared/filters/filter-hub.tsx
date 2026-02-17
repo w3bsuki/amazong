@@ -1,5 +1,3 @@
-"use client"
-
 import { useState, useCallback, useEffect, useMemo, startTransition } from "react"
 import { useSearchParams, type ReadonlyURLSearchParams } from "next/navigation"
 import { usePathname, useRouter } from "@/i18n/routing"
@@ -632,3 +630,4 @@ export function FilterHub({
     </Drawer>
   )
 }
+

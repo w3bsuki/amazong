@@ -1,5 +1,3 @@
-"use client"
-
 import { useCallback, useEffect, useMemo, useState } from "react"
 import type { ReadonlyURLSearchParams } from "next/navigation"
 import type { CategoryAttribute } from "@/lib/data/categories"
@@ -143,3 +141,4 @@ export function usePendingFilters({
     hasPendingFilterValues,
   }
 }
+

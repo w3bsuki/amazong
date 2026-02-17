@@ -1,5 +1,3 @@
-"use client"
-
 import * as React from "react"
 import { useCart } from "@/components/providers/cart-context"
 import { useWishlist } from "@/components/providers/wishlist-context"
@@ -159,3 +157,4 @@ export function ProductCardActions({
         </div>
     )
 }
+

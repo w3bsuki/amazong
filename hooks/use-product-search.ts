@@ -1,5 +1,3 @@
-"use client"
-
 import { useState, useEffect, useCallback } from "react"
 import { useLocale } from "next-intl"
 import { safeJsonParse } from "@/lib/safe-json"
@@ -290,3 +288,4 @@ export function useProductSearch(maxResults: number = 8) {
     minSearchLength: MIN_SEARCH_LENGTH,
   }
 }
+

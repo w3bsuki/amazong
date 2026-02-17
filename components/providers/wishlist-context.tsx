@@ -1,5 +1,3 @@
-"use client"
-
 import type React from "react"
 import { createContext, useContext, useState, useEffect, useCallback, useOptimistic, useRef, startTransition } from "react"
 import { createClient } from "@/lib/supabase/client"
@@ -335,3 +333,4 @@ export function useWishlist(): WishlistContextType {
   }
   return context
 }
+

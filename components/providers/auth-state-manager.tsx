@@ -1,5 +1,3 @@
-"use client"
-
 import {
   createContext,
   useContext,
@@ -269,3 +267,4 @@ export function useAuth(): AuthContextType {
 export function useAuthOptional() {
   return useContext(AuthContext)
 }
+

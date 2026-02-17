@@ -1,5 +1,3 @@
-"use client"
-
 import * as React from "react"
 
 import type { QuickViewProduct } from "@/components/providers/drawer-context"

@@ -1,5 +1,3 @@
-"use client"
-
 import * as React from "react"
 import { createContext, useContext, useCallback, useState, useMemo, useEffect } from "react"
 import { trackDrawerOpen, trackDrawerClose } from "@/components/providers/_lib/analytics-drawer"
@@ -391,3 +389,4 @@ export function useDrawer(): DrawerContextValue {
   }
   return context
 }
+

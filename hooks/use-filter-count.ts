@@ -1,5 +1,3 @@
-"use client"
-
 import { useState, useEffect, useRef, useCallback, useMemo } from "react"
 
 /**
@@ -185,3 +183,4 @@ export function useFilterCount(params: FilterCountParams): UseFilterCountResult 
 
   return { count, isLoading, error }
 }
+

@@ -1,5 +1,3 @@
-"use client"
-
 import { useState, useEffect, useCallback, useRef } from "react"
 
 interface CategoryCounts {
@@ -208,3 +206,4 @@ export function useCategoryCounts(options?: UseCategoryCountsOptions): UseCatego
 
   return { counts, isLoading, error, refetch }
 }
+

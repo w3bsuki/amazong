@@ -1,5 +1,3 @@
-"use client"
-
 import React, { createContext, useContext, useCallback, useEffect, useRef } from "react"
 import { useRouter } from "@/i18n/routing"
 
@@ -233,4 +231,5 @@ export function MessageProvider({ children, initialSellerId, initialProductId }:
     </MessageContext.Provider>
   )
 }
+
 

@@ -1,5 +1,3 @@
-"use client"
-
 import { useEffect, useState } from "react"
 import { ArrowRight, Heart, ShoppingCart, Trash, X } from "lucide-react";
 
@@ -183,3 +181,4 @@ export function WishlistDrawer({ open, onOpenChange, className }: WishlistDrawer
     </Drawer>
   )
 }
+

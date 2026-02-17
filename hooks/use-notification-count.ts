@@ -1,5 +1,3 @@
-"use client"
-
 import { useState, useEffect, useCallback } from "react"
 import { createClient } from "@/lib/supabase/client"
 import { User } from "@supabase/supabase-js"
@@ -64,3 +62,4 @@ export function useNotificationCount(user: User | null) {
 
   return count
 }
+

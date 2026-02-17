@@ -1,5 +1,3 @@
-"use client"
-
 import { useState, useEffect, useCallback } from "react"
 import { z } from "zod"
 import type { DisplayBadge } from "@/lib/types/badges"
@@ -134,3 +132,4 @@ export function useBadges(): UseBadgesResult {
     evaluateBadges,
   }
 }
+
