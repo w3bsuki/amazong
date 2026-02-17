@@ -10,6 +10,8 @@ import { isNextPrerenderInterrupted } from "@/lib/next/is-next-prerender-interru
 // Cache for 1 hour, stale for 5 min (counts don't need to be real-time)
 const CACHE_TTL_SECONDS = 3600
 const CACHE_STALE_WHILE_REVALIDATE = 300
+const shouldLogCategoryCountsErrors =
+  process.env.NODE_ENV === "development" && process.env.NEXT_PUBLIC_E2E !== "true"
 
 interface CategoryCount {
   slug: string
@@ -70,10 +72,8 @@ async function getCategoryCountsCached(): Promise<CategoryCount[]> {
       .select('category_id, subtree_product_count')
       .in('category_id', categoryIds)
 
-    if (statsError) {
-      if (process.env.NODE_ENV === "development") {
-        console.debug("Category counts: Error fetching category_stats:", statsError?.message)
-      }
+    if (statsError && shouldLogCategoryCountsErrors) {
+      console.debug("Category counts: Error fetching category_stats:", statsError?.message)
     }
 
     const countByCategoryId = new Map<string, number>()
@@ -91,7 +91,7 @@ async function getCategoryCountsCached(): Promise<CategoryCount[]> {
     if (isNextPrerenderInterrupted(error)) throw error
     
     // Log only in development
-    if (process.env.NODE_ENV === "development") {
+    if (shouldLogCategoryCountsErrors) {
       const message = error instanceof Error ? error.message : "Unknown error"
       console.debug("Category counts: Cache function error:", message)
     }
@@ -122,7 +122,7 @@ export async function GET() {
     if (isNextPrerenderInterrupted(error)) throw error
     
     // Log only in development to avoid production noise
-    if (process.env.NODE_ENV === "development") {
+    if (shouldLogCategoryCountsErrors) {
       const message = error instanceof Error ? error.message : "Unknown error"
       console.debug("Category Counts API Error:", message)
     }
