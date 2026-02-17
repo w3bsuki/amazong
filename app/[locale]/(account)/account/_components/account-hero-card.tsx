@@ -1,5 +1,3 @@
-"use client"
-
 import { Minus as IconMinus, Sparkles as IconSparkles, TrendingDown as IconTrendingDown, TrendingUp as IconTrendingUp } from "lucide-react";
 
 

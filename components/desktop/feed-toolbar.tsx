@@ -197,7 +197,6 @@ export function FeedToolbar({
       {categorySlug && categoryFilters.length > 0 ? (
         // Category selected: show category-specific filters (Size, Brand, Color, etc.)
         <CategoryAttributeDropdowns
-          locale={locale}
           filters={filters}
           onFiltersChange={onFiltersChange}
           inlineFilters={inlineFilters}

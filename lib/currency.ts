@@ -5,7 +5,7 @@
  * - English locale: €29.99 (symbol before, dot decimal)
  */
 
-import { formatCurrencyAmount, formatEurPriceParts } from "./price-formatting"
+import { formatCurrencyAmount, formatEurPriceParts, type PriceParts } from "./price-formatting"
 
 export type SupportedLocale = 'en' | 'bg'
 
@@ -51,19 +51,6 @@ export function formatPrice(amount: number, locale: string): string {
 /**
  * Format price parts for split display (e.g., €29⁹⁹ or 29⁹⁹ €)
  */
-export interface PriceParts {
-  symbol: string
-  wholePart: string
-  decimalPart: string
-  symbolPosition: 'before' | 'after'
-}
-
 export function formatPriceParts(amount: number, locale: string): PriceParts {
-  const parts = formatEurPriceParts(amount, locale)
-  return {
-    symbol: parts.symbol,
-    wholePart: parts.wholePart,
-    decimalPart: parts.decimalPart,
-    symbolPosition: parts.symbolPosition,
-  }
+  return formatEurPriceParts(amount, locale)
 }

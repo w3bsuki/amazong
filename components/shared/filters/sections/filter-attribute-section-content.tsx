@@ -95,12 +95,12 @@ export function FilterAttributeSectionContent({
 
     return (
       <FilterCheckboxList {...checkboxListProps}>
-        {options.map((option, idx) => {
+        {options.map((option) => {
           const isActive = selectedValues.includes(option)
 
           return (
             <FilterCheckboxItem
-              key={idx}
+              key={option}
               checked={isActive}
               onCheckedChange={(checked) => {
                 if (!allowMulti) {

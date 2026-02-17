@@ -27,10 +27,9 @@ function parseBoringAvatar(
   if (!value || !value.startsWith("boring-avatar:")) return null
   const [, variantRaw, paletteRaw, seedRaw] = value.split(":")
 
-  const variantBase = AVATAR_VARIANTS.includes(variantRaw as AvatarVariant)
+  const variant = AVATAR_VARIANTS.includes(variantRaw as AvatarVariant)
     ? (variantRaw as AvatarVariant)
     : AVATAR_VARIANTS[0]
-  const variant = variantBase
 
   const paletteIndex = Number.parseInt(paletteRaw || "0", 10)
   const colors =

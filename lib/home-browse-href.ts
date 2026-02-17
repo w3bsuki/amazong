@@ -9,7 +9,7 @@ const HOME_FILTER_KEYS = [
   "nearby",
 ] as const
 
-function normalizeHomeDiscoveryFilters(input: URLSearchParams): URLSearchParams {
+export function normalizeHomeDiscoveryFilters(input: URLSearchParams): URLSearchParams {
   const next = new URLSearchParams()
   for (const key of HOME_FILTER_KEYS) {
     const value = input.get(key)
@@ -44,12 +44,18 @@ function getEffectiveDiscoveryScope(
   return activeCategorySlug || activeSubcategorySlug || activeL2Slug ? "newest" : scope
 }
 
-function resolveDiscoveryFilterState(options: {
+export interface HomeDiscoveryFilterState {
+  effectiveNearby: boolean
+  effectiveCity: string | null
+  hasFilteredCity: boolean
+}
+
+export function resolveDiscoveryFilterState(options: {
   filters: URLSearchParams
   city: string | null
   nearby: boolean
   effectiveScope: HomeDiscoveryScope
-}): { effectiveNearby: boolean; effectiveCity: string | null; hasFilteredCity: boolean } {
+}): HomeDiscoveryFilterState {
   const { filters, city, nearby, effectiveScope } = options
   const filteredNearby = filters.get("nearby") === "true"
   const filteredCity = filters.get("city")

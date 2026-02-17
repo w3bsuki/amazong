@@ -10,11 +10,12 @@
 
 | Agent | Scope | Status |
 |-------|-------|--------|
-| Agent 1 | `components/` tree | ⬜ Not started |
-| Agent 2 | `lib/` + `hooks/` | ⬜ Not started |
-| Agent 3 | `app/` (routes, actions, api) | ⬜ Not started |
+| Agent 1 | `components/` tree | ✅ Completed |
+| Agent 2 | `lib/` + `hooks/` | ✅ Completed |
+| Agent 3 | `app/` (routes, actions, api) | ✅ Completed |
 
-**Verification:** ⬜ `pnpm -s typecheck && pnpm -s lint && pnpm -s styles:gate && pnpm -s test:unit`
+**Verification:** ✅ `pnpm -s typecheck && pnpm -s lint && pnpm -s styles:gate && pnpm -s test:unit`
+**Additional check:** ⚠️ `REUSE_EXISTING_SERVER=true pnpm -s test:e2e:smoke` failed (16 failed, 8 passed, 2 skipped)
 
 **Metrics before:**
 | Metric | Value |
@@ -25,7 +26,17 @@
 | >500-line files | 44 |
 | Clones | 247 (3.06%) |
 
-**Metrics after:** _(fill after phase completes)_
+**Metrics after:**
+| Metric | Value |
+|--------|-------|
+| Files | 803 |
+| `"use client"` | 218 (client-boundary count) |
+| >300-line files | 121 |
+| >500-line files | 43 |
+| Clones | 257 (3.86%) |
+
+**Notable scan notes after Phase 1:**
+- Routes: `pages=86`, `missingLoading=0`, `missingMetadata=53`
 
 ---
 

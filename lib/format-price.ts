@@ -5,7 +5,7 @@
  * All prices are stored and displayed in EUR for consistency.
  */
 
-import { formatCurrencyAmount, formatEurPriceParts } from "./price-formatting"
+import { formatCurrencyAmount, formatEurPriceParts, type PriceParts } from "./price-formatting"
 
 export const BASE_CURRENCY = 'EUR' as const
 
@@ -62,24 +62,13 @@ export function getDiscountPercentage(originalPrice: number, currentPrice: numbe
   return Math.round((1 - currentPrice / originalPrice) * 100)
 }
 
-export interface FormattedPriceParts {
-  symbol: string
-  wholePart: string
-  decimalPart: string
-  symbolPosition: 'before' | 'after'
-}
+export type FormattedPriceParts = PriceParts
 
 /**
  * Format price parts for split display (e.g. symbol + whole + decimals)
  */
 export function formatPriceParts(amount: number, locale: string): FormattedPriceParts {
-  const parts = formatEurPriceParts(amount, locale)
-  return {
-    symbol: parts.symbol,
-    wholePart: parts.wholePart,
-    decimalPart: parts.decimalPart,
-    symbolPosition: parts.symbolPosition,
-  }
+  return formatEurPriceParts(amount, locale)
 }
 
 /**

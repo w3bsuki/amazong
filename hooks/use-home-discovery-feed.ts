@@ -1,7 +1,12 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
+import {
+  normalizeHomeDiscoveryFilters,
+  resolveDiscoveryFilterState,
+  type HomeDiscoveryScope,
+} from "@/lib/home-browse-href"
 import type { UIProduct } from "@/lib/types/products"
 
-export type HomeDiscoveryScope = "forYou" | "newest" | "promoted" | "nearby" | "deals"
+export type { HomeDiscoveryScope }
 
 interface HomeInitialPools {
   forYou: UIProduct[]
@@ -23,8 +28,6 @@ interface FeedResponse {
   hasMore?: unknown
 }
 
-const LIGHT_FILTER_KEYS = ["minPrice", "maxPrice", "minRating", "availability", "city", "nearby"] as const
-
 function toSafeProducts(value: unknown): UIProduct[] {
   if (!Array.isArray(value)) return []
   return value.filter((item): item is UIProduct => {
@@ -37,25 +40,6 @@ function toSafeProducts(value: unknown): UIProduct[] {
       typeof product.image === "string"
     )
   })
-}
-
-function normalizeFilterParams(input: URLSearchParams): URLSearchParams {
-  const next = new URLSearchParams()
-  for (const key of LIGHT_FILTER_KEYS) {
-    const value = input.get(key)
-    if (!value) continue
-
-    if (key === "nearby") {
-      if (value === "true") next.set("nearby", "true")
-      continue
-    }
-    if (key === "availability") {
-      if (value === "instock") next.set("availability", "instock")
-      continue
-    }
-    next.set(key, value)
-  }
-  return next
 }
 
 function productMatchesSlug(product: UIProduct, slug: string): boolean {
@@ -135,20 +119,18 @@ function buildRequestParams({
     params.set("deals", "true")
   }
 
-  const scopedNearby = effectiveScope === "nearby"
-  const filteredNearby = filters.get("nearby") === "true"
-  const filteredCity = filters.get("city")
-  const hasFilteredCity = typeof filteredCity === "string" && filteredCity.length > 0
-  const effectiveNearby = scopedNearby || nearby || filteredNearby
-  const effectiveCity =
-    (hasFilteredCity ? filteredCity : null) ??
-    (effectiveNearby ? city : null)
+  const locationState = resolveDiscoveryFilterState({
+    filters,
+    city,
+    nearby,
+    effectiveScope,
+  })
 
-  if (effectiveNearby) {
+  if (locationState.effectiveNearby) {
     params.set("nearby", "true")
-    if (effectiveCity) params.set("city", effectiveCity)
-  } else if (hasFilteredCity && effectiveCity) {
-    params.set("city", effectiveCity)
+    if (locationState.effectiveCity) params.set("city", locationState.effectiveCity)
+  } else if (locationState.hasFilteredCity && locationState.effectiveCity) {
+    params.set("city", locationState.effectiveCity)
   }
 
   const categorySlug = activeL2Slug ?? activeSubcategorySlug ?? activeCategorySlug
@@ -303,15 +285,14 @@ export function useHomeDiscoveryFeed({
       return
     }
 
-    const filteredNearby = filters.get("nearby") === "true"
-    const filteredCity = filters.get("city")
-    const hasFilteredCity = typeof filteredCity === "string" && filteredCity.length > 0
-    const effectiveNearby = scope === "nearby" || nearby || filteredNearby
-    const effectiveCity =
-      (hasFilteredCity ? filteredCity : null) ??
-      (effectiveNearby ? city : null)
+    const locationState = resolveDiscoveryFilterState({
+      filters,
+      city,
+      nearby,
+      effectiveScope: scope,
+    })
 
-    if (!filtersActive && !effectiveNearby && !effectiveCity) {
+    if (!filtersActive && !locationState.effectiveNearby && !locationState.effectiveCity) {
       if (activeCategorySlug && initialCategoryProducts[activeCategorySlug]) {
         const source = initialCategoryProducts[activeCategorySlug] ?? []
         const effectiveSlug = activeL2Slug ?? activeSubcategorySlug
@@ -367,7 +348,7 @@ export function useHomeDiscoveryFeed({
 
   const setFilters = useCallback(
     (nextFilters: URLSearchParams) => {
-      const normalized = normalizeFilterParams(nextFilters)
+      const normalized = normalizeHomeDiscoveryFilters(nextFilters)
       setFiltersState(normalized)
 
       const nextCity = normalized.get("city")

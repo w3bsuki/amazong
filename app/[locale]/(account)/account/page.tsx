@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server"
 import { redirect } from "@/i18n/routing"
 import { getTranslations, setRequestLocale } from "next-intl/server"
+import type { Metadata } from "next"
 import { AccountHeroCard } from "./_components/account-hero-card"
 import { AccountStatsCards } from "./_components/account-stats-cards"
 import { AccountChart } from "./_components/account-chart"
@@ -12,6 +13,16 @@ interface AccountPageProps {
   params: Promise<{
     locale: string
   }>
+}
+
+export async function generateMetadata({ params }: AccountPageProps): Promise<Metadata> {
+  const { locale: localeParam } = await params
+  const locale = localeParam === "bg" ? "bg" : "en"
+  const t = await getTranslations({ locale, namespace: "Account" })
+
+  return {
+    title: t("header.overview"),
+  }
 }
 
 export default async function AccountPage({ params }: AccountPageProps) {

@@ -26,7 +26,6 @@ export type CategoryFilterDef = {
 };
 
 interface CategoryAttributeDropdownsProps {
-  locale: string;
   filters: FilterState;
   onFiltersChange: (next: FilterState) => void;
   inlineFilters: CategoryFilterDef[];
