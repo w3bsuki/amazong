@@ -1,5 +1,3 @@
-"use client"
-
 import * as React from "react"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { cn } from "@/lib/utils"

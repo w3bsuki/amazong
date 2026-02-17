@@ -4,7 +4,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server"
 import type { Metadata } from "next"
 import { AccountHeroCard } from "./_components/account-hero-card"
 import { AccountStatsCards } from "./_components/account-stats-cards"
-import { AccountChart } from "./_components/account-chart"
+import { AccountChartLazy } from "./_components/account-chart-lazy"
 import { AccountRecentActivity } from "./_components/account-recent-activity"
 import { AccountBadges } from "./_components/account-badges"
 import { SubscriptionBenefitsCard } from "./_components/subscription-benefits-card"
@@ -168,7 +168,7 @@ export default async function AccountPage({ params }: AccountPageProps) {
       
       {/* Chart - desktop only */}
       <div className="hidden sm:block">
-        <AccountChart locale={locale} />
+        <AccountChartLazy locale={locale} />
       </div>
       
       {/* Recent activity sections */}

@@ -14,7 +14,6 @@
 import { useEffect, useRef, useState } from "react"
 import { useTranslations } from "next-intl"
 import Image from "next/image"
-import PhotoSwipeLightbox from "photoswipe/lightbox"
 import "photoswipe/style.css"
 import { Share2, ZoomIn } from "lucide-react"
 import { cn } from "@/lib/utils"
@@ -27,6 +26,11 @@ export interface DesktopGalleryProps {
   className?: string
 }
 
+type LightboxHandle = {
+  destroy: () => void
+  loadAndOpen: (index: number) => void
+}
+
 export function DesktopGallery({
   images,
   galleryID = "desktop-gallery",
@@ -35,26 +39,41 @@ export function DesktopGallery({
   const t = useTranslations("Product")
   const [activeIndex, setActiveIndex] = useState(0)
   const [isZoomed, setIsZoomed] = useState(false)
-  const lightboxRef = useRef<PhotoSwipeLightbox | null>(null)
+  const lightboxRef = useRef<LightboxHandle | null>(null)
 
   // Initialize PhotoSwipe lightbox
   useEffect(() => {
-    const lightbox = new PhotoSwipeLightbox({
-      gallery: `#${galleryID}`,
-      children: "a",
-      bgOpacity: 1,
-      wheelToZoom: true,
-      arrowPrev: true,
-      arrowNext: true,
-      close: true,
-      zoom: true,
-      counter: true,
-      mainClass: "pswp--treido",
-      pswpModule: () => import("photoswipe"),
-    })
-    lightbox.init()
-    lightboxRef.current = lightbox
-    return () => lightbox.destroy()
+    let cancelled = false
+
+    const setupLightbox = async () => {
+      const { default: PhotoSwipeLightbox } = await import("photoswipe/lightbox")
+      if (cancelled) return
+
+      const lightbox = new PhotoSwipeLightbox({
+        gallery: `#${galleryID}`,
+        children: "a",
+        bgOpacity: 1,
+        wheelToZoom: true,
+        arrowPrev: true,
+        arrowNext: true,
+        close: true,
+        zoom: true,
+        counter: true,
+        mainClass: "pswp--treido",
+        pswpModule: () => import("photoswipe"),
+      })
+
+      lightbox.init()
+      lightboxRef.current = lightbox
+    }
+
+    void setupLightbox()
+
+    return () => {
+      cancelled = true
+      lightboxRef.current?.destroy()
+      lightboxRef.current = null
+    }
   }, [galleryID])
 
   if (!images || images.length === 0) return null

@@ -2,9 +2,9 @@
 
 import * as React from "react"
 import { useRef, useEffect, useCallback, useId } from "react"
+import dynamic from "next/dynamic"
 import { ArrowRight, Clock, Search as MagnifyingGlass, Package, Bot as Robot, TrendingUp as TrendUp, X } from "lucide-react";
 
-import { SearchAiChat } from "@/components/shared/search/ai/search-ai-chat"
 import { FieldLabel } from "@/components/shared/field"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -15,6 +15,14 @@ import Image from "next/image"
 import { cn } from "@/lib/utils"
 import { useProductSearch } from "@/hooks/use-product-search"
 import { buildSearchHref, type SearchLaunchContext } from "@/components/shared/search/overlay/search-context"
+
+const SearchAiChat = dynamic(
+  () => import("@/components/shared/search/ai/search-ai-chat").then((mod) => mod.SearchAiChat),
+  {
+    ssr: false,
+    loading: () => <div className="h-full animate-pulse bg-muted" />,
+  }
+)
 
 interface MobileSearchOverlayProps {
   className?: string

@@ -46,14 +46,34 @@
 
 | Agent | Scope | Status |
 |-------|-------|--------|
-| Agent 1 | `"use client"` audit on `components/` | ⬜ Not started |
-| Agent 2 | `"use client"` audit on `app/` | ⬜ Not started |
-| Agent 3 | Dynamic imports + bundle optimization | ⬜ Not started |
+| Agent 1 | `"use client"` audit on `components/` | ✅ Completed |
+| Agent 2 | `"use client"` audit on `app/` | ✅ Completed |
+| Agent 3 | Dynamic imports + bundle optimization | ✅ Completed |
 
-**Verification:** ⬜ `pnpm -s typecheck && pnpm -s lint && pnpm -s styles:gate && pnpm -s test:unit`
+**Verification:** ✅ `pnpm -s typecheck && pnpm -s lint && pnpm -s styles:gate && pnpm -s test:unit`
+**Build:** ✅ `pnpm -s build`
+**Additional check:** ⚠️ `REUSE_EXISTING_SERVER=true pnpm -s test:e2e:smoke` failed (17 failed, 7 passed, 2 skipped)
 
-**Metrics before:** _(fill from Phase 1 after)_
-**Metrics after:** _(fill after phase completes)_
+**Metrics before:**
+| Metric | Value |
+|--------|-------|
+| Files | 803 |
+| `"use client"` | 218 (client-boundary count) |
+| >300-line files | 121 |
+| >500-line files | 43 |
+| Clones | 257 (3.86%) |
+
+**Metrics after:**
+| Metric | Value |
+|--------|-------|
+| Files | 805 |
+| `"use client"` | 215 (client-boundary count) |
+| >300-line files | 120 |
+| >500-line files | 43 |
+| Clones | 247 (3.06%) |
+
+**Notable scan notes after Phase 2:**
+- Routes: `pages=86`, `missingLoading=0`, `missingMetadata=53`
 
 ---
 

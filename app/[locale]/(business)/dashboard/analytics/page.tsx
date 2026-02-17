@@ -1,5 +1,5 @@
 import { requireDashboardAccess, getBusinessDashboardStats } from "@/lib/auth/business"
-import { ChartAreaInteractive } from "../../../_components/charts/chart-area-interactive"
+import { ChartAreaInteractiveLazy } from "../../../_components/charts/chart-area-interactive-lazy"
 import {
   Card,
   CardContent,
@@ -151,7 +151,7 @@ export default async function BusinessAnalyticsPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <ChartAreaInteractive />
+          <ChartAreaInteractiveLazy />
         </CardContent>
       </Card>
 

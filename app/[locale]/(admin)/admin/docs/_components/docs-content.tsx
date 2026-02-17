@@ -2,9 +2,8 @@
 
 import * as React from "react"
 import { useState } from "react"
+import dynamic from "next/dynamic"
 import { useLocale, useTranslations } from "next-intl"
-import ReactMarkdown from "react-markdown"
-import remarkGfm from "remark-gfm"
 import { Pencil as IconEdit, FileText as IconFileText, Plus as IconPlus, Search as IconSearch, Trash as IconTrash, X as IconX } from "lucide-react";
 
 import { Button } from "@/components/ui/button"
@@ -124,6 +123,20 @@ const STATUS_COLORS: Record<string, string> = {
 }
 
 const STATUSES = ["draft", "published", "archived"] as const
+
+const DocMarkdownContent = dynamic(
+  () => import("./doc-markdown-content").then((mod) => mod.DocMarkdownContent),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="space-y-3">
+        <div className="h-4 w-full animate-pulse rounded bg-muted" />
+        <div className="h-4 w-11/12 animate-pulse rounded bg-muted" />
+        <div className="h-4 w-10/12 animate-pulse rounded bg-muted" />
+      </div>
+    ),
+  }
+)
 
 export function AdminDocsContent({ initialDocs }: { initialDocs: AdminDoc[] }) {
   const locale = useLocale()
@@ -542,78 +555,7 @@ function DocEditor({
         {/* Content */}
         <div className="flex-1 min-h-0 overflow-y-auto p-4 sm:p-8">
           <div className="mx-auto w-full">
-            <ReactMarkdown 
-              remarkPlugins={[remarkGfm]}
-              components={{
-                h1: ({ children }) => <h1 className="text-2xl font-bold mb-4 mt-6 first:mt-0">{children}</h1>,
-                h2: ({ children }) => <h2 className="text-xl font-semibold mb-3 mt-5 pb-2 border-b">{children}</h2>,
-                h3: ({ children }) => <h3 className="text-lg font-semibold mb-2 mt-4">{children}</h3>,
-                h4: ({ children }) => <h4 className="text-base font-semibold mb-2 mt-3">{children}</h4>,
-                p: ({ children }) => <p className="mb-3 text-sm leading-relaxed">{children}</p>,
-                ul: ({ children }) => <ul className="list-disc pl-5 mb-3 text-sm space-y-1">{children}</ul>,
-                ol: ({ children }) => <ol className="list-decimal pl-5 mb-3 text-sm space-y-1">{children}</ol>,
-                li: ({ children }) => <li className="text-sm">{children}</li>,
-                strong: ({ children }) => <strong className="font-semibold">{children}</strong>,
-                hr: () => <hr className="my-6 border-border" />,
-                a: ({ children, href }) => (
-                  <a
-                    href={href}
-                    className="text-link underline underline-offset-4 hover:text-link-hover"
-                    target={href?.startsWith("http") ? "_blank" : undefined}
-                    rel={href?.startsWith("http") ? "noreferrer" : undefined}
-                  >
-                    {children}
-                  </a>
-                ),
-                blockquote: ({ children }) => (
-                  <blockquote className="border-l-4 border-selected-border pl-4 italic text-muted-foreground my-3">
-                    {children}
-                  </blockquote>
-                ),
-                pre: ({ children }) => (
-                  <pre className="my-4 overflow-x-auto rounded-md border border-border bg-muted p-3 text-xs leading-relaxed">
-                    {children}
-                  </pre>
-                ),
-                code: ({ className, children, ...props }) => {
-                  const isBlock = typeof className === "string" && className.startsWith("language-")
-
-                  if (!isBlock) {
-                    return (
-                      <code
-                        className="bg-muted px-1.5 py-0.5 rounded text-xs font-mono"
-                        {...props}
-                      >
-                        {children}
-                      </code>
-                    )
-                  }
-
-                  return (
-                    <code
-                      className={className ? `${className} block font-mono` : "block font-mono"}
-                      {...props}
-                    >
-                      {children}
-                    </code>
-                  )
-                },
-                table: ({ children }) => (
-                  <div className="my-4 rounded-md border border-border">
-                    <Table className="whitespace-normal">
-                      {children}
-                    </Table>
-                  </div>
-                ),
-                thead: ({ children }) => <TableHeader className="bg-surface-subtle">{children}</TableHeader>,
-                tbody: ({ children }) => <TableBody>{children}</TableBody>,
-                tr: ({ children }) => <TableRow className="hover:bg-hover">{children}</TableRow>,
-                th: ({ children }) => <TableHead className="whitespace-normal align-top">{children}</TableHead>,
-                td: ({ children }) => <TableCell className="whitespace-normal align-top">{children}</TableCell>,
-              }}
-            >
-              {doc.content || t("viewer.noContent")}
-            </ReactMarkdown>
+            <DocMarkdownContent content={doc.content || t("viewer.noContent")} />
           </div>
         </div>
 

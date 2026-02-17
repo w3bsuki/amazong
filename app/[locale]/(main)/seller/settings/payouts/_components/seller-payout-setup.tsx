@@ -2,7 +2,6 @@
 
 import { useState } from "react"
 import { useLocale, useTranslations } from "next-intl"
-import { motion } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import {
@@ -132,57 +131,33 @@ export function SellerPayoutSetup({ payoutStatus, variant = "full" }: Props) {
     return (
     <div className="flex flex-col items-center justify-center text-center max-w-md mx-auto py-8 px-4">
       {/* Icon */}
-      <motion.div
-        initial={{ scale: 0.8, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        transition={{ duration: 0.3 }}
-        className="size-20 rounded-2xl bg-primary flex items-center justify-center mb-6 shadow-lg shadow-primary"
-      >
+      <div className="size-20 rounded-2xl bg-primary flex items-center justify-center mb-6 shadow-lg shadow-primary">
         {isComplete ? (
           <CheckCircle2 className="size-10 text-primary-foreground" strokeWidth={2} />
         ) : (
           <Wallet className="size-10 text-primary-foreground" strokeWidth={2} />
         )}
-      </motion.div>
+      </div>
 
       {/* Title */}
-      <motion.h1
-        initial={{ y: 10, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.3, delay: 0.1 }}
-        className="text-2xl sm:text-3xl font-bold text-foreground mb-3"
-      >
+      <h1 className="text-2xl sm:text-3xl font-bold text-foreground mb-3">
         {title}
-      </motion.h1>
+      </h1>
 
       {/* Description */}
-      <motion.p
-        initial={{ y: 10, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.3, delay: 0.15 }}
-        className="text-muted-foreground text-base mb-8 max-w-sm"
-      >
+      <p className="text-muted-foreground text-base mb-8 max-w-sm">
         {fullDescription}
-      </motion.p>
+      </p>
 
       {/* Error */}
       {error && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="w-full p-3 mb-6 bg-destructive-subtle text-destructive rounded-lg text-sm"
-        >
+        <div className="w-full p-3 mb-6 bg-destructive-subtle text-destructive rounded-lg text-sm">
           {error}
-        </motion.div>
+        </div>
       )}
 
       {/* CTA Button */}
-      <motion.div
-        initial={{ y: 10, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.3, delay: 0.2 }}
-        className="w-full"
-      >
+      <div className="w-full">
         {!isComplete ? (
           <Button
             onClick={handleStartOnboarding}
@@ -213,16 +188,11 @@ export function SellerPayoutSetup({ payoutStatus, variant = "full" }: Props) {
             <ExternalLink className="size-5 ml-2" />
           </Button>
         )}
-      </motion.div>
+      </div>
 
       {/* Progress indicators for incomplete setup */}
       {hasStarted && !isComplete && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.3 }}
-          className="mt-8 w-full space-y-2"
-        >
+        <div className="mt-8 w-full space-y-2">
           <div className="flex items-center gap-2 text-sm">
             <div className={`size-5 rounded-full flex items-center justify-center ${payoutStatus?.details_submitted ? "bg-success text-success-foreground" : "bg-muted text-muted-foreground"}`}>
               {payoutStatus?.details_submitted ? <CheckCircle2 className="size-3" /> : <span className="text-xs">1</span>}
@@ -247,17 +217,12 @@ export function SellerPayoutSetup({ payoutStatus, variant = "full" }: Props) {
               {t("payoutsEnabled")}
             </span>
           </div>
-        </motion.div>
+        </div>
       )}
 
       {/* Benefits - only for new setup */}
       {!hasStarted && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.3 }}
-          className="mt-10 pt-8 border-t border-border w-full"
-        >
+        <div className="mt-10 pt-8 border-t border-border w-full">
           <div className="grid gap-4 text-left">
             <div className="flex items-start gap-3">
               <div className="size-8 rounded-lg bg-selected flex items-center justify-center shrink-0">
@@ -278,7 +243,7 @@ export function SellerPayoutSetup({ payoutStatus, variant = "full" }: Props) {
               </div>
             </div>
           </div>
-        </motion.div>
+        </div>
       )}
     </div>
     )

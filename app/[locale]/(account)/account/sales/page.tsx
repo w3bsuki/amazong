@@ -3,7 +3,7 @@ import { Link, redirect } from "@/i18n/routing"
 import { getTranslations } from "next-intl/server"
 import { AppBreadcrumb } from "../../../_components/navigation/app-breadcrumb"
 import { PageShell } from "../../../_components/page-shell"
-import { SalesChart } from "./_components/sales-chart"
+import { SalesChartLazy } from "./_components/sales-chart-lazy"
 import { SalesStats } from "./_components/sales-stats"
 import { SalesTable } from "./_components/sales-table"
 import { PendingActions } from "./_components/pending-actions"
@@ -373,7 +373,7 @@ export default async function SalesPage({ params, searchParams }: SalesPageProps
             </div>
           </CardHeader>
           <CardContent>
-            <SalesChart data={chartData} locale={locale} />
+            <SalesChartLazy data={chartData} locale={locale} />
           </CardContent>
         </Card>
 

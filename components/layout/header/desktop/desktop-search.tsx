@@ -3,13 +3,13 @@
 import * as React from "react"
 import { useRef, useCallback, useEffect } from "react"
 import Image from "next/image"
+import dynamic from "next/dynamic"
 import { ArrowRight, Clock, Eye, Search as MagnifyingGlass, Package, Bot as Robot, TrendingUp as TrendUp, X } from "lucide-react";
 
 import { Button } from "@/components/ui/button"
 import { Switch } from "@/components/ui/switch"
 import { Input } from "@/components/ui/input"
 import { FieldLabel } from "@/components/shared/field"
-import { SearchAiChat } from "@/components/shared/search/ai/search-ai-chat"
 import {
   Popover,
   PopoverContent,
@@ -19,6 +19,14 @@ import { Link, useRouter } from "@/i18n/routing"
 import { useTranslations, useLocale } from "next-intl"
 import { useRecentlyViewed } from "@/hooks/use-recently-viewed"
 import { useProductSearch } from "@/hooks/use-product-search"
+
+const SearchAiChat = dynamic(
+  () => import("@/components/shared/search/ai/search-ai-chat").then((mod) => mod.SearchAiChat),
+  {
+    ssr: false,
+    loading: () => <div className="h-96 animate-pulse rounded-lg bg-muted" />,
+  }
+)
 
 export function DesktopSearch() {
   const router = useRouter()

@@ -1,4 +1,4 @@
-import { ChartAreaInteractive } from "../../_components/charts/chart-area-interactive"
+import { ChartAreaInteractiveLazy } from "../../_components/charts/chart-area-interactive-lazy"
 import { AdminStatsCards } from "../_components/admin-stats-cards"
 import { AdminRecentActivity } from "../_components/admin-recent-activity"
 import { getAdminStats } from "@/lib/auth/admin"
@@ -15,7 +15,7 @@ export default async function AdminPage() {
     <div className="flex flex-col gap-4 py-4 md:gap-4 md:py-6">
       <AdminStatsCards totals={stats.totals} />
       <div className="px-4 lg:px-6">
-        <ChartAreaInteractive />
+        <ChartAreaInteractiveLazy />
       </div>
       <AdminRecentActivity 
         users={stats.recent.users}

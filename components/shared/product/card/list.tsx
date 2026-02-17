@@ -1,6 +1,5 @@
 "use client"
 
-import * as React from "react"
 import { Link } from "@/i18n/routing"
 import { useLocale, useTranslations } from "next-intl"
 import { cn } from "@/lib/utils"
@@ -122,14 +121,12 @@ export function ProductCardList({
   const isOwnProduct = !!(currentUserId && sellerId && currentUserId === sellerId)
 
   // Category-aware smart badges
-  const smartBadges = React.useMemo(() => {
-    return computeBadgeSpecsClient({
-      categorySlug: categorySlug || null,
-      rootCategorySlug: rootCategorySlug || null,
-      condition: condition || null,
-      attributes,
-    })
-  }, [categorySlug, rootCategorySlug, condition, attributes])
+  const smartBadges = computeBadgeSpecsClient({
+    categorySlug: categorySlug || null,
+    rootCategorySlug: rootCategorySlug || null,
+    condition: condition || null,
+    attributes,
+  })
 
   const formatBadgeValue = (badge: { key: string; value: string }): string => {
     if (badge.key === "condition") {
@@ -153,18 +150,17 @@ export function ProductCardList({
   }
 
   // Fallback condition label for categories that show condition
-  const conditionLabel = React.useMemo(() => {
-    // If smart badges already include condition, don't duplicate
-    if (smartBadges.some(b => b.key === "condition")) return null
-    // If this category shouldn't show condition, skip
+  // If smart badges already include condition, don't duplicate.
+  const conditionLabel = (() => {
+    if (smartBadges.some((badge) => badge.key === "condition")) return null
     if (!shouldShowConditionBadge(categorySlug || null, rootCategorySlug || null)) return null
     if (!condition) return null
     const key = getConditionKey(condition)
     if (key) return t(key)
     return condition.slice(0, 8)
-  }, [condition, t, smartBadges, categorySlug, rootCategorySlug])
+  })()
 
-  const rootCategoryLabel = React.useMemo(() => {
+  const rootCategoryLabel = (() => {
     const rootCategory = categoryPath?.[0]
     if (!rootCategory) return null
 
@@ -182,7 +178,7 @@ export function ProductCardList({
     ).trim()
 
     return localizedName || fallbackName
-  }, [categoryPath, locale])
+  })()
 
   const hasDiscount = originalPrice && originalPrice > price
   const discountPercent = hasDiscount

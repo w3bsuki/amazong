@@ -1,4 +1,4 @@
-import { ChartAreaInteractive } from "../../_components/charts/chart-area-interactive"
+import { ChartAreaInteractiveLazy } from "../../_components/charts/chart-area-interactive-lazy"
 import { BusinessStatsCards } from "../_components/business-stats-cards"
 import { BusinessRecentActivity } from "../_components/business-recent-activity"
 import { BusinessQuickActions } from "../_components/business-quick-actions"
@@ -66,7 +66,7 @@ export default async function BusinessDashboardPage() {
       
       {/* Revenue Chart */}
       <div className="px-4 lg:px-6">
-        <ChartAreaInteractive />
+        <ChartAreaInteractiveLazy />
       </div>
       
       {/* Performance Score & Activity Feed - Two Column Layout */}
