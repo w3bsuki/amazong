@@ -55,15 +55,20 @@ describe("MobileProductCard", () => {
         sellerName="Treido"
         sellerTier="business"
         sellerVerified
+        categoryPath={[{ slug: "electronics", name: "Electronics" }]}
         isBoosted
       />
     )
 
     expect(screen.getByTestId("product-card-ad-badge")).toBeInTheDocument()
+    const categoryLabel = screen.getByText("Electronics")
+    expect(categoryLabel.closest('[data-slot="category"]')).toBeInTheDocument()
+
     const sellerRow = screen.getByTestId("product-card-seller-row")
     expect(sellerRow).toBeInTheDocument()
     expect(sellerRow).toHaveTextContent("Treido")
     expect(sellerRow).not.toHaveTextContent("justNow")
+    expect(Boolean(categoryLabel.compareDocumentPosition(sellerRow) & Node.DOCUMENT_POSITION_FOLLOWING)).toBe(true)
 
     const priceRow = screen.getByTestId("product-card-price-row")
     expect(priceRow).toBeInTheDocument()

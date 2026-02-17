@@ -39,7 +39,7 @@ export function ShareWishlistButton({
   const shareUrl = useMemo(() => {
     if (!shareToken) return ""
     const origin = typeof window !== "undefined" ? window.location.origin : ""
-    return `${origin}/${locale}/wishlist/${shareToken}`
+    return `${origin}/${locale}/wishlist/shared/${shareToken}`
   }, [locale, shareToken])
 
   async function enableSharing() {

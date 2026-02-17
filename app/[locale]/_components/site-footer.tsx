@@ -83,7 +83,7 @@ export function SiteFooter() {
         "/", // Homepage/landing
         "/about", // Company
         "/terms", "/privacy", "/cookies", "/accessibility", // Legal
-        "/customer-service", "/contact", "/help", "/returns", "/security", "/feedback", // Support
+        "/customer-service", "/contact", "/returns", "/security", "/feedback", // Support
         "/sellers", // Business
     ]
     

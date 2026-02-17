@@ -13,6 +13,13 @@ const handleI18nRouting = createMiddleware(routing);
  */
 export default async function proxy(request: NextRequest) {
   const response = handleI18nRouting(request);
+  const isPrefetchRequest =
+    request.headers.get('next-router-prefetch') !== null ||
+    request.headers.get('purpose') === 'prefetch'
+
+  if (isPrefetchRequest) {
+    return response
+  }
 
   // Pass pathname to layout for conditional rendering (request headers, not response headers)
   const overrideHeaders = response.headers.get('x-middleware-override-headers');

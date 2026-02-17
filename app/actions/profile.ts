@@ -1,7 +1,7 @@
 "use server"
 
 import { createClient } from "@/lib/supabase/server"
-import { revalidateTag } from "next/cache"
+import { revalidatePublicProfileTagsForUser } from "@/lib/cache/revalidate-profile-tags"
 import { z } from "zod"
 
 // =====================================================
@@ -209,7 +209,7 @@ export async function updateProfile(formData: FormData): Promise<{
       return { success: false, error: "Failed to update profile" }
     }
 
-    revalidateTag("profiles", "max")
+    await revalidatePublicProfileTagsForUser(supabase, user.id, "max")
     return { success: true }
   } catch (error) {
     console.error("updateProfile error:", error)
@@ -294,7 +294,7 @@ export async function uploadAvatar(formData: FormData): Promise<{
       return { success: false, error: "Failed to update profile with new avatar" }
     }
 
-    revalidateTag("profiles", "max")
+    await revalidatePublicProfileTagsForUser(supabase, user.id, "max")
     return { success: true, avatarUrl: publicUrl }
   } catch (error) {
     console.error("uploadAvatar error:", error)
@@ -348,7 +348,7 @@ export async function setAvatarUrl(formData: FormData): Promise<{
       return { success: false, error: "Failed to update avatar" }
     }
 
-    revalidateTag("profiles", "max")
+    await revalidatePublicProfileTagsForUser(supabase, user.id, "max")
     return { success: true, avatarUrl }
   } catch (error) {
     console.error("setAvatarUrl error:", error)
@@ -415,7 +415,7 @@ export async function deleteAvatar(): Promise<{
       return { success: false, error: "Failed to update profile" }
     }
 
-    revalidateTag("profiles", "max")
+    await revalidatePublicProfileTagsForUser(supabase, user.id, "max")
     return { success: true, avatarUrl: generatedAvatar }
   } catch (error) {
     console.error("deleteAvatar error:", error)

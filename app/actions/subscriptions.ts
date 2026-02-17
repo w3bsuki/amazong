@@ -2,6 +2,7 @@
 
 import { z } from "zod"
 import { errorEnvelope, successEnvelope, type Envelope } from "@/lib/api/envelope"
+import { revalidatePublicProfileTagsForUser } from "@/lib/cache/revalidate-profile-tags"
 import { createAdminClient, createClient } from "@/lib/supabase/server"
 import { stripe } from "@/lib/stripe"
 import { ID_AND_STRIPE_CUSTOMER_ID_SELECT, STRIPE_CUSTOMER_ID_SELECT } from "@/lib/supabase/selects/billing"
@@ -451,7 +452,7 @@ export async function cancelSubscription(): Promise<ActionResult> {
       return { success: false, error: "Failed to update subscription" }
     }
 
-    revalidateTag("profiles", "max")
+    await revalidatePublicProfileTagsForUser(supabase, user.id, "max")
     revalidateTag("subscriptions", "max")
     return { success: true }
   } catch (error) {
@@ -516,7 +517,7 @@ export async function reactivateSubscription(): Promise<ActionResult> {
       return { success: false, error: "Failed to update subscription" }
     }
 
-    revalidateTag("profiles", "max")
+    await revalidatePublicProfileTagsForUser(supabase, user.id, "max")
     revalidateTag("subscriptions", "max")
     return { success: true }
   } catch (error) {

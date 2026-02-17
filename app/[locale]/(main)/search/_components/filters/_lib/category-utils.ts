@@ -1,4 +1,4 @@
-import type { Category } from "../_types"
+import type { Category } from "../types"
 
 export function isValidCategory(category: Category): boolean {
   const name = category.name.toLowerCase()

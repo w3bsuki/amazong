@@ -1,82 +1,11 @@
 # ARCHITECTURE.md — System Architecture
 
-> Technical architecture reference. Module boundaries, data flow, caching patterns.
-
-| Scope | Technical system design |
-|-------|------------------------|
-| Audience | AI agents, developers |
-| Type | Concept |
+> Deep technical reference. Load when making structural changes, adding routes, or working with caching/data flow.
+> For project identity, conventions, and rules, see `AGENTS.md`.
 
 ---
 
-## Quick Reference
-
-| Layer | Technology |
-|-------|------------|
-| Framework | Next.js 16 (App Router) + React 19 + TypeScript |
-| Styling | Tailwind CSS v4 + shadcn/ui (Radix) + lucide-react |
-| i18n | next-intl |
-| Database | Supabase (Postgres + RLS) |
-| Auth | Supabase Auth via `@supabase/ssr` |
-| Storage | Supabase Storage |
-| Payments | Stripe + Stripe Connect |
-| Testing | Vitest (unit) + Playwright (E2E) |
-
----
-
-## 1. Directory Structure
-
-| Directory | Purpose |
-|-----------|---------|
-| `app/[locale]/` | Locale-scoped routes (en/bg) |
-| `app/actions/` | Shared server actions |
-| `app/api/` | Route handlers (webhooks, REST) |
-| `components/ui/` | shadcn primitives only (editable Treido-owned open code; keep app/domain logic out) |
-| `components/shared/` | Shared composites (cards, fields, filters) |
-| `components/layout/` | Header, footer, sidebars, shells |
-| `components/providers/` | Context providers |
-| `components/mobile/` | Mobile-specific components |
-| `components/desktop/` | Desktop-specific components |
-| `hooks/` | Reusable React hooks |
-| `lib/` | Pure utilities, clients, domain helpers |
-| `i18n/` | next-intl routing config |
-| `messages/` | Translation files (en.json, bg.json) |
-
----
-
-## 2. Route Groups
-
-All routes live under `app/[locale]/`. Route groups share layouts.
-
-| Group | Layout | Purpose |
-|-------|--------|---------|
-| `(main)` | Full nav + footer | Homepage, search, categories, cart |
-| `(account)` | Account sidebar | Settings, orders, profile |
-| `(auth)` | Minimal chrome | Login, signup, password flows |
-| `(sell)` | Seller nav | Create listing flow |
-| `(checkout)` | Minimal | Payment flow |
-| `(business)` | Business dashboard | B2B features |
-| `(chat)` | Messaging | Buyer/seller conversations |
-| `(plans)` | Plans/pricing | Subscription selection |
-| `(admin)` | Admin panel | Site administration |
-| `[username]/` | Public profiles | Seller pages + product detail |
-
-### Route-Private Conventions
-
-Keep route-specific code private:
-
-| Convention | Purpose |
-|------------|---------|
-| `_components/` | Route-specific components |
-| `_actions/` | Route-specific server actions |
-| `_lib/` | Route-specific utilities |
-| `_providers/` | Route-specific context |
-
-**Rule:** Never import across route groups.
-
----
-
-## 3. Module Reference (`lib/`)
+## 1. Module Reference (`lib/`)
 
 | Module | Purpose |
 |--------|---------|
@@ -104,7 +33,7 @@ Keep route-specific code private:
 
 ---
 
-## 4. Supabase Clients
+## 2. Supabase Clients
 
 | Client | Use Case | File |
 |--------|----------|------|
@@ -123,7 +52,7 @@ Keep route-specific code private:
 
 ---
 
-## 5. Data Flow
+## 3. Data Flow
 
 ### Request Flow
 
@@ -167,7 +96,7 @@ Request → proxy.ts → i18n routing → geo detection → session refresh → 
 
 ---
 
-## 6. Caching Patterns
+## 4. Caching Patterns
 
 ### Cache Profiles
 
@@ -208,7 +137,7 @@ export async function getCategories() {
 
 ---
 
-## 7. Import Rules
+## 5. Import Rules
 
 ### Boundaries
 
@@ -236,7 +165,7 @@ lib/                 → pure utilities (no React, no app imports)
 
 ---
 
-## 8. Component Patterns
+## 6. Component Patterns
 
 ### Server vs Client
 
@@ -257,25 +186,7 @@ lib/                 → pure utilities (no React, no app imports)
 
 ---
 
-## 9. UI Ownership Map
-
-| UI Element | Location |
-|------------|----------|
-| App header | `components/layout/header/app-header.tsx` |
-| Mobile header | `components/layout/header/mobile/` |
-| Desktop header | `components/layout/header/desktop/` |
-| Footer | `components/layout/footer/site-footer.tsx` |
-| Desktop shell | `components/layout/desktop-shell.tsx` |
-| Product cards | `components/shared/product/product-card.tsx` |
-| Quick view (shared) | `components/shared/product/quick-view/` |
-| Quick view (desktop) | `components/desktop/product/product-quick-view-dialog.tsx` |
-| Quick view (mobile) | `components/mobile/drawers/product-quick-view-drawer.tsx` |
-| Cart (desktop) | `components/layout/header/cart/cart-dropdown.tsx` |
-| Cart (mobile drawer) | `components/mobile/drawers/cart-drawer.tsx` |
-
----
-
-## 10. Security Rules
+## 7. Security Rules
 
 ### Supabase
 
@@ -306,7 +217,7 @@ Use `requireAuth()` from `lib/auth/require-auth.ts` in server actions.
 
 ---
 
-## 11. Performance Rules
+## 8. Performance Rules
 
 ### Avoid
 
@@ -323,37 +234,17 @@ Use `requireAuth()` from `lib/auth/require-auth.ts` in server actions.
 
 ---
 
-## 12. Ownership Domains
-
-> "Departments" are responsibility zones, not separate executors. Treido ships through a single implementation workflow.
-
-| Domain | Ownership | Owns |
-|--------|-----------|------|
-| Styling | Current implementer | Tailwind v4 semantic token rails + shadcn-safe patterns |
-| UI/UX design | Current implementer | Hierarchy, spacing, states, polish |
-| Next.js App Router | Current implementer | Route/layout boundaries, Server vs Client, cache-safe request patterns |
-| Data + auth | Current implementer | Supabase client selection, query shape, auth/session boundaries |
-| Payments | Current implementer | Checkout/webhooks/idempotency safety |
-| Testing | Current implementer | Playwright + Next.js reliability and CI stability |
-| Accessibility | Current implementer | WCAG 2.2 AA semantics, keyboard/focus, screen-reader support |
-
-### Optional Runtime State
-
-- `.codex/TASKS.md` — active task queue (only if you want a backlog)
-- `.codex/DECISIONS.md` — decision log (only if you need traceability)
-- `.codex/SHIPPED.md` — shipped log
-
 ---
 
 ## See Also
 
-- [REQUIREMENTS.md](./REQUIREMENTS.md) — Feature requirements checklist
+- [AGENTS.md](./AGENTS.md) — Project identity, conventions, rules, component map
 - [docs/DESIGN.md](./docs/DESIGN.md) — UI/UX + frontend contract
 - [docs/DOMAINS.md](./docs/DOMAINS.md) — Domain contracts (auth/db/payments/api/routes/i18n)
-- [AGENTS.md](./AGENTS.md) — Entry point + non-negotiables
 - [docs/DECISIONS.md](./docs/DECISIONS.md) — Decision log
+- [docs/features/](./docs/features/) — Per-feature documentation
 
 ---
 
-*Last updated: 2026-02-13*
+*Last updated: 2026-02-16*
 

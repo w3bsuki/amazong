@@ -13,7 +13,7 @@ import {
   ProfileTabs,
   ProfileSettingsPanel,
   ProfileHeaderSync,
-} from "@/components/shared/profile"
+} from "./_components/profile"
 import {
   Star,
   MapPin,

@@ -42,11 +42,11 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
   setRequestLocale(locale)
   const t = await getTranslations("Home")
 
-  // Fetch categories with children for mobile subcategory circles.
-  // L0 + L1 + L2 only (~3,400 categories, ~60KB gzipped).
-  // L3 (~9,700 categories) are lazy-loaded when L2 is clicked.
-  const categoriesWithChildren = await getCategoryHierarchy(null, 2)
-  const categorySlugs = categoriesWithChildren
+  // Keep the initial home payload small on mobile:
+  // - Load only L0 roots in the HTML payload.
+  // - Deeper levels are fetched lazily on interaction.
+  const rootCategories = await getCategoryHierarchy(null, 0)
+  const categorySlugs = rootCategories
     .slice(0, HOME_CATEGORY_POOL_LIMIT)
     .map((category) => category.slug)
 
@@ -109,7 +109,7 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
         <Suspense fallback={<div className="h-screen w-full bg-background animate-pulse" />}>
           <MobileHome
             locale={locale}
-            categories={categoriesWithChildren}
+            categories={rootCategories}
             forYouProducts={forYouProducts}
             newestProducts={initialProducts}
             promotedProducts={promotedProducts}
@@ -130,7 +130,7 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
         <Suspense fallback={<DesktopHomeSkeleton />}>
           <DesktopHome
             locale={locale}
-            categories={categoriesWithChildren}
+            categories={rootCategories}
             initialProducts={initialProducts}
             promotedProducts={promotedProducts}
             curatedSections={curatedSections}

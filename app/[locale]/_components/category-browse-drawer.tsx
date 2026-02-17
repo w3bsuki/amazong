@@ -62,7 +62,6 @@ export function CategoryBrowseDrawer({
   const router = useRouter()
   const t = useTranslations("CategoryDrawer")
   const tCommon = useTranslations("Common")
-  const { counts: categoryCounts, refetch: refetchCategoryCounts } = useCategoryCounts()
   const {
     isOpen,
     rootCategories,
@@ -76,6 +75,7 @@ export function CategoryBrowseDrawer({
     setChildren,
     setLoading,
   } = useCategoryDrawer()
+  const { counts: categoryCounts, refetch: refetchCategoryCounts } = useCategoryCounts({ enabled: isOpen })
   const [query, setQuery] = useState("")
 
   // Handle drawer open state change

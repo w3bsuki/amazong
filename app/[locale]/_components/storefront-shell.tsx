@@ -2,16 +2,11 @@ import type { ReactNode } from "react"
 
 import { AppHeader } from "./app-header"
 import { SiteFooter } from "./site-footer"
-import { MobileTabBar } from "./mobile-tab-bar"
-import { CookieConsent } from "./cookie-consent"
-import { Toaster } from "./providers/sonner"
 import { HeaderProvider } from "@/components/providers/header-context"
-import { GeoWelcomeModal } from "./geo-welcome-modal"
-import { GuestSellCta } from "./guest-sell-cta"
 import { SkipLinks } from "./skip-links"
 import { PageShell } from "./page-shell"
 import { CategoryDrawerProvider } from "@/components/mobile/category-nav"
-import { CategoryBrowseDrawer } from "./category-browse-drawer"
+import { DeferredStorefrontUi } from "./deferred-storefront-ui"
 import type { CategoryTreeNode } from "@/lib/category-tree"
 
 export function StorefrontShell({
@@ -36,12 +31,7 @@ export function StorefrontShell({
           </main>
 
           <SiteFooter />
-          <MobileTabBar />
-          <CategoryBrowseDrawer locale={locale} />
-          <Toaster />
-          <CookieConsent />
-          <GeoWelcomeModal locale={locale} />
-          <GuestSellCta />
+          <DeferredStorefrontUi locale={locale} />
         </PageShell>
       </HeaderProvider>
     </CategoryDrawerProvider>

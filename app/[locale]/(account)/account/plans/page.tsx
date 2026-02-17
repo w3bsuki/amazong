@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/server"
 import { redirect } from "@/i18n/routing"
-import { getTranslations } from "next-intl/server"
+import { getTranslations, setRequestLocale } from "next-intl/server"
 import { PlansContent } from "./plans-content"
 import {
   PLANS_SELECT_FOR_PLANS_PAGE,
@@ -23,6 +23,7 @@ interface PlansPageProps {
 export default async function PlansPage({ params }: PlansPageProps) {
   const { locale: localeParam } = await params
   const locale = localeParam === "bg" ? "bg" : "en"
+  setRequestLocale(locale)
   const supabase = await createClient()
   const t = await getTranslations({ locale, namespace: "Account" })
 

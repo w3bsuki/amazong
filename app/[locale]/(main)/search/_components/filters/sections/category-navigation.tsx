@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl"
 import { Link } from "@/i18n/routing"
 import { CategoryBreadcrumbTrail } from "./category-breadcrumb-trail"
 import { getCategoryName, isValidCategory } from "../_lib/category-utils"
-import type { BreadcrumbCategory, Category, CategoryWithSubcategories } from "../_types"
+import type { BreadcrumbCategory, Category, CategoryWithSubcategories } from "../types"
 
 interface CategoryNavigationProps {
   categories: Category[]

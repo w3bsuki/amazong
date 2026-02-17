@@ -2,10 +2,10 @@
 
 import { useEffect, useState } from "react"
 import { createClient } from "@/lib/supabase/client"
-import { AccountSidebar } from "./account/_components/account-sidebar"
-import { AccountHeader } from "./account/_components/account-header"
-import { AccountTabBar } from "./account/_components/account-tab-bar"
-import type { PlansModalServerActions } from "./account/_components/plans-modal"
+import { AccountSidebar } from "../account/_components/account-sidebar"
+import { AccountHeader } from "../account/_components/account-header"
+import { AccountTabBar } from "../account/_components/account-tab-bar"
+import type { PlansModalServerActions } from "../account/_components/plans-modal"
 import {
   SidebarInset,
   SidebarProvider,

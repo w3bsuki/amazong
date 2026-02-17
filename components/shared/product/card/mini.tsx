@@ -111,7 +111,7 @@ export function ProductMiniCard({
   if (!href) return body
 
   return (
-    <Link href={href} className="block tap-transparent" onClick={onClick}>
+    <Link href={href} prefetch={false} className="block tap-transparent" onClick={onClick}>
       {body}
     </Link>
   )

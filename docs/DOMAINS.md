@@ -1,5 +1,8 @@
 # DOMAINS.md — Domain Contracts
 
+> Load when working on auth, database, payments, API routes, or i18n.
+> For project identity and rules, see `AGENTS.md`. For feature-specific context, check `docs/features/`.
+
 ## Runtime Truth Paths
 
 ### Auth

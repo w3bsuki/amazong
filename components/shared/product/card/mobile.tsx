@@ -188,6 +188,7 @@ export function MobileProductCard({
     >
       <Link
         href={productUrl}
+        prefetch={false}
         data-slot="product-card-link"
         className="absolute inset-0 z-10 rounded-xl outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
         aria-label={t("openProduct", { title })}
@@ -242,6 +243,17 @@ export function MobileProductCard({
       </div>
 
       <CardContent className="flex flex-col gap-1 p-2 pt-2">
+        {rootCategoryLabel && (
+          <Badge
+            data-slot="category"
+            size="compact"
+            variant="category"
+            className="max-w-full justify-start overflow-hidden px-1.5 text-2xs"
+          >
+            <span className="truncate">{rootCategoryLabel}</span>
+          </Badge>
+        )}
+
         {sellerNameLabel && (
           <div
             className="flex min-w-0 items-center gap-1.5 text-2xs text-muted-foreground"
@@ -267,12 +279,6 @@ export function MobileProductCard({
             </span>
             <span className="min-w-0 flex-1 truncate text-xs font-medium text-foreground">{sellerNameLabel}</span>
           </div>
-        )}
-
-        {rootCategoryLabel && (
-          <span data-slot="category" className="min-w-0 truncate text-2xs font-medium text-muted-foreground">
-            {rootCategoryLabel}
-          </span>
         )}
 
         <h3

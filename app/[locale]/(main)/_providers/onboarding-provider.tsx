@@ -34,7 +34,7 @@ interface RawProfileData {
 }
 
 // Routes that should always be accessible without onboarding
-const BYPASS_PREFIXES = ["/onboarding", "/auth", "/api", "/terms", "/privacy", "/help", "/search", "/cart", "/categories"]
+const BYPASS_PREFIXES = ["/onboarding", "/auth", "/api", "/terms", "/privacy", "/customer-service", "/search", "/cart", "/categories"]
 
 function stripLocale(pathname: string) {
   return pathname.replace(/^\/(en|bg)(?=\/|$)/, "") || "/"

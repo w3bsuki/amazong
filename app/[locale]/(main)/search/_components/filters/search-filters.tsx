@@ -10,7 +10,7 @@ import { ReviewsFilterSection } from "./sections/reviews-filter-section"
 import { PriceFilterSection } from "./sections/price-filter-section"
 import { LocationFilterSection } from "./sections/location-filter-section"
 import { AvailabilityFilterSection } from "./sections/availability-filter-section"
-import type { BreadcrumbCategory, Category, CategoryWithSubcategories } from "./_types"
+import type { BreadcrumbCategory, Category, CategoryWithSubcategories } from "./types"
 
 interface SearchFiltersProps {
   categories: Category[]

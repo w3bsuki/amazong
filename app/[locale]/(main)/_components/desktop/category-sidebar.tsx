@@ -5,7 +5,7 @@ import { useState, useEffect, useMemo } from "react"
 import { cn } from "@/lib/utils"
 import type { CategoryTreeNode } from "@/lib/category-tree"
 import { getCategoryName } from "@/lib/category-display"
-import { getCategoryIcon } from "@/components/shared/category/category-icons"
+import { getCategoryIcon } from "../category/category-icons"
 import {
   CaretDown,
   CaretRight,

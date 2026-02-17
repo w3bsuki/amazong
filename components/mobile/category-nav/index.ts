@@ -1,5 +1,3 @@
-export { CategoryCirclesSimple } from "./category-circles-simple"
-export type { CategoryCirclesSimpleProps } from "./category-circles-simple"
 export { CategoryPillRail } from "./category-pill-rail"
 export type { CategoryPillRailProps, CategoryPillRailItem } from "./category-pill-rail"
 

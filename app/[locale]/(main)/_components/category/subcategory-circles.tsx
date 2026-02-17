@@ -4,7 +4,7 @@ import * as React from "react"
 import { Link } from "@/i18n/routing"
 import { cn } from "@/lib/utils"
 import { useLocale, useTranslations } from "next-intl"
-import { CategoryCircleVisual } from "@/components/shared/category/category-circle-visual"
+import { CategoryCircleVisual } from "./category-circle-visual"
 
 interface Category {
   id: string
@@ -162,7 +162,7 @@ export function SubcategoryCircles({
             ) : (
               <Link
                 href={buildUrl(currentCategory.slug)}
-                prefetch={true}
+                prefetch={false}
                 className={cn(
                   "flex flex-col items-center gap-1 group shrink-0 touch-manipulation",
                   isDesktop
@@ -268,7 +268,7 @@ export function SubcategoryCircles({
               <Link
                 key={subcat.id}
                 href={buildUrl(subcat.slug)}
-                prefetch={true}
+                prefetch={false}
                 aria-current={isActive ? "page" : undefined}
                 className={itemClasses}
               >

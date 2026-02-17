@@ -7,9 +7,9 @@ import { cn } from "@/lib/utils"
 import { useTranslations } from "next-intl"
 import { DotsThree } from "@/lib/icons/phosphor"
 import { Link, usePathname } from "@/i18n/routing"
-import { getCategoryIcon } from "@/components/shared/category/category-icons"
+import { getCategoryIcon } from "../../_components/category/category-icons"
 
-import { useCategoryDrawerOptional } from "./category-drawer-context"
+import { useCategoryDrawerOptional } from "@/components/mobile/category-nav/category-drawer-context"
 
 // =============================================================================
 // Types
@@ -129,7 +129,7 @@ export function CategoryCirclesSimple({
         ) : (
           <Link
             href={rootHref}
-            prefetch={true}
+            prefetch={false}
             className={cn(ITEM_BASE_CLASS, getItemStateClass(rootRouteActive), ITEM_WIDTH_CLASS)}
             aria-label={rootLabel}
             aria-current={rootRouteActive ? "page" : undefined}
@@ -184,7 +184,7 @@ export function CategoryCirclesSimple({
             <Link
               key={category.slug}
               href={`/categories/${category.slug}` as const}
-              prefetch={true}
+              prefetch={false}
               className={cn(ITEM_BASE_CLASS, getItemStateClass(routeActive), ITEM_WIDTH_CLASS)}
               aria-label={label}
               aria-current={routeActive ? "page" : undefined}
@@ -225,7 +225,7 @@ export function CategoryCirclesSimple({
         ) : (
           <Link
             href={rootHref}
-            prefetch={true}
+            prefetch={false}
             className={cn(ITEM_BASE_CLASS, getItemStateClass(rootRouteActive), ITEM_WIDTH_CLASS)}
             aria-label={tMobile("moreCategories")}
             aria-current={rootRouteActive ? "page" : undefined}

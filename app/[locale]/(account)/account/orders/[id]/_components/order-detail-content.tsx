@@ -595,7 +595,7 @@ export function OrderDetailContent({ locale, order, existingSellerFeedbackSeller
 
                       {/* Actions */}
                       <div className="flex gap-2 mt-3">
-                        <Link href={`/messages?seller=${item.seller_id}`}>
+                        <Link href={`/chat?seller=${item.seller_id}`}>
                           <Button variant="outline" size="sm" className="h-7">
                             <ChatCircle className="size-3.5 mr-1" />
                             {locale === "bg" ? "Съобщение" : "Message"}

@@ -13,10 +13,10 @@ export async function renderDemoLanding(locale: string) {
   const tCommon = await getTranslations({ locale, namespace: "Common" })
 
   const [categories, newestRows, boostedRows, forYouRows] = await Promise.all([
-    getCategoryHierarchy(null, 2),
-    getNewestProducts(30),
-    getBoostedProducts(24),
-    getCategoryRowProducts("fashion", 24),
+    getCategoryHierarchy(null, 0),
+    getNewestProducts(16),
+    getBoostedProducts(16),
+    getCategoryRowProducts("fashion", 16),
   ])
 
   const newestProducts = newestRows.map((product) => toUI(product)).filter((product) => Boolean(product.image))

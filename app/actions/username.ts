@@ -1,6 +1,10 @@
 "use server"
 
 import { createAdminClient, createClient } from "@/lib/supabase/server"
+import {
+  revalidatePublicProfileTagsByUsername,
+  revalidatePublicProfileTagsForUser,
+} from "@/lib/cache/revalidate-profile-tags"
 import { revalidateTag } from "next/cache"
 import { z } from "zod"
 
@@ -167,15 +171,10 @@ export async function setUsername(username: string): Promise<{
       return { success: false, error: "Failed to update username" }
     }
 
-    revalidateTag("profiles", "max")
-    revalidateTag(`profile-${normalizedUsername}`, "max")
-    revalidateTag(`profile-meta-${normalizedUsername}`, "max")
     revalidateTag(`seller-${user.id}`, "max")
-    revalidateTag(`seller-${normalizedUsername}`, "max")
+    revalidatePublicProfileTagsByUsername(normalizedUsername, "max")
     if (previousUsername) {
-      revalidateTag(`profile-${previousUsername}`, "max")
-      revalidateTag(`profile-meta-${previousUsername}`, "max")
-      revalidateTag(`seller-${previousUsername}`, "max")
+      revalidatePublicProfileTagsByUsername(previousUsername, "max")
     }
     
     return { success: true }
@@ -243,7 +242,7 @@ export async function updatePublicProfile(data: z.infer<typeof publicProfileSche
       return { success: false, error: "Failed to update profile" }
     }
     
-    revalidateTag("profiles", "max")
+    await revalidatePublicProfileTagsForUser(supabase, user.id, "max")
     
     return { success: true }
   } catch (error) {
@@ -323,7 +322,7 @@ export async function uploadBanner(formData: FormData): Promise<{
       return { success: false, error: "Failed to save banner URL" }
     }
 
-    revalidateTag("profiles", "max")
+    await revalidatePublicProfileTagsForUser(supabase, user.id, "max")
     
     return { success: true, bannerUrl }
   } catch (error) {
@@ -419,7 +418,7 @@ export async function upgradeToBusinessAccount(data: z.infer<typeof businessUpgr
         { onConflict: "seller_id" }
       )
     
-    revalidateTag("profiles", "max")
+    await revalidatePublicProfileTagsForUser(supabase, userId, "max")
     
     return { success: true }
   } catch (error) {
@@ -482,7 +481,7 @@ export async function downgradeToPersonalAccount(): Promise<{
       return { success: false, error: "Failed to downgrade account" }
     }
     
-    revalidateTag("profiles", "max")
+    await revalidatePublicProfileTagsForUser(supabase, user.id, "max")
     
     return { success: true }
   } catch (error) {

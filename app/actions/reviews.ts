@@ -1,6 +1,7 @@
 "use server"
 
 import { createClient } from "@/lib/supabase/server"
+import { revalidatePublicProfileTagsByUsername } from "@/lib/cache/revalidate-profile-tags"
 import { revalidateTag } from "next/cache"
 
 // ============================================================================
@@ -137,8 +138,9 @@ export async function submitReview(input: SubmitReviewInput): Promise<ReviewResu
 
   // 9. Revalidate cached product/review data
   revalidateTag(`reviews:product:${input.productId}`, "products")
-  revalidateTag("products:list", "products")
   revalidateTag(`product:${input.productId}`, "products")
+  revalidateTag(`seller-${product.seller_id}`, "products")
+  revalidateTag(`seller-products-${product.seller_id}`, "products")
   
   // Also revalidate the seller's store page
   const { data: sellerProfile } = await supabase
@@ -147,13 +149,7 @@ export async function submitReview(input: SubmitReviewInput): Promise<ReviewResu
     .eq("id", product.seller_id)
     .single()
   
-  revalidateTag("profiles", "user")
-  if (sellerProfile?.username) {
-    revalidateTag(`seller-${sellerProfile.username}`, "products")
-    const lower = sellerProfile.username.toLowerCase()
-    revalidateTag(`profile-${lower}`, "user")
-    revalidateTag(`profile-meta-${lower}`, "user")
-  }
+  revalidatePublicProfileTagsByUsername(sellerProfile?.username, "user")
 
   return { 
     success: true, 
@@ -315,8 +311,27 @@ export async function deleteReview(reviewId: string): Promise<{ success: boolean
   }
 
   revalidateTag(`reviews:product:${review.product_id}`, "products")
-  revalidateTag("products:list", "products")
   revalidateTag(`product:${review.product_id}`, "products")
+
+  const { data: product } = await supabase
+    .from("products")
+    .select("seller_id")
+    .eq("id", review.product_id)
+    .maybeSingle()
+
+  const sellerId = product?.seller_id
+  if (sellerId) {
+    revalidateTag(`seller-${sellerId}`, "products")
+    revalidateTag(`seller-products-${sellerId}`, "products")
+
+    const { data: sellerProfile } = await supabase
+      .from("profiles")
+      .select("username")
+      .eq("id", sellerId)
+      .maybeSingle()
+
+    revalidatePublicProfileTagsByUsername(sellerProfile?.username, "user")
+  }
 
   return { success: true }
 }

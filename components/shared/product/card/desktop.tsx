@@ -202,6 +202,7 @@ export function DesktopProductCard({
     >
       <Link
         href={productUrl}
+        prefetch={false}
         data-slot="product-card-link"
         className="absolute inset-0 z-10 rounded-xl outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
         aria-label={t("openProduct", { title })}

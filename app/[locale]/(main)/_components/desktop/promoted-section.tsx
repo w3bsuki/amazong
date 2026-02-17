@@ -17,7 +17,7 @@ import { Megaphone, ArrowRight } from "@/lib/icons/phosphor"
 import { cn } from "@/lib/utils"
 import { DesktopProductCard } from "@/components/shared/product/card/desktop"
 import { Button } from "@/components/ui/button"
-import Link from "next/link"
+import { Link } from "@/i18n/routing"
 
 // =============================================================================
 // TYPES
@@ -100,7 +100,7 @@ export function PromotedSection({
           asChild
           className="border-promoted-foreground bg-promoted-foreground text-promoted hover:bg-background hover:text-promoted"
         >
-          <Link href={`/${locale}?tab=promoted`}>
+          <Link href="/?tab=promoted" locale={locale}>
             {t("viewAll")}
             <ArrowRight size={14} className="ml-1.5" />
           </Link>

@@ -13,6 +13,10 @@ interface UseCategoryCountsResult {
   refetch: () => void
 }
 
+interface UseCategoryCountsOptions {
+  enabled?: boolean
+}
+
 // Cache key for localStorage - v4 invalidates older partial payloads.
 const CACHE_KEY = "category-counts-v4"
 const CACHE_TTL_MS = 60 * 60 * 1000 // 1 hour
@@ -75,7 +79,8 @@ function saveToCache(counts: CategoryCounts): void {
  * Uses localStorage for client-side caching to avoid repeated fetches.
  * Fails gracefully without console errors - uses cached data as fallback.
  */
-export function useCategoryCounts(): UseCategoryCountsResult {
+export function useCategoryCounts(options?: UseCategoryCountsOptions): UseCategoryCountsResult {
+  const enabled = options?.enabled ?? true
   const [counts, setCounts] = useState<CategoryCounts>(() => getFromCache() || {})
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -152,14 +157,22 @@ export function useCategoryCounts(): UseCategoryCountsResult {
 
   // Public refetch function (creates new abort controller)
   const refetch = useCallback(() => {
+    if (!enabled) return
     // Cancel any in-flight request
     abortControllerRef.current?.abort()
     abortControllerRef.current = new AbortController()
     retryCountRef.current = 0
     fetchCounts(abortControllerRef.current.signal)
-  }, [fetchCounts])
+  }, [enabled, fetchCounts])
 
   useEffect(() => {
+    if (!enabled) {
+      abortControllerRef.current?.abort()
+      setIsLoading(false)
+      setError(null)
+      return
+    }
+
     // Only fetch on client-side and only once
     if (typeof window === "undefined" || hasFetched) return
     
@@ -191,7 +204,7 @@ export function useCategoryCounts(): UseCategoryCountsResult {
     return () => {
       abortControllerRef.current?.abort()
     }
-  }, [fetchCounts, hasFetched])
+  }, [enabled, fetchCounts, hasFetched])
 
   return { counts, isLoading, error, refetch }
 }

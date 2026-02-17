@@ -6,12 +6,12 @@ import { FunnelSimple } from "@/lib/icons/phosphor"
 import { useTranslations } from "next-intl"
 
 import { Link } from "@/i18n/routing"
-import { CategoryCirclesSimple } from "@/components/mobile/category-nav"
 import { MobileProductCard } from "@/components/shared/product/card/mobile"
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet"
 import { getCategoryName } from "@/lib/category-display"
 import type { CategoryTreeNode } from "@/lib/category-tree"
 import type { UIProduct } from "@/lib/types/products"
+import { CategoryCirclesSimple } from "./_components/category-circles-simple"
 import { getHomeChipClass, getHomeChipCountClass, getHomeChipIconClass } from "../_components/mobile/home-chip-styles"
 
 type FeedScope = "promoted" | "newest" | "nearby" | "forYou"

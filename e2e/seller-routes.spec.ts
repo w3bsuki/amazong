@@ -45,7 +45,7 @@ test.describe('Seller Routes - UX Audit Phase 6', () => {
     test.skip(!creds, 'Set TEST_USER_EMAIL/TEST_USER_PASSWORD to run authenticated seller route checks')
     await loginWithPassword(page, creds!)
 
-    await app.goto('/en/seller/dashboard', { timeout: 60_000, retries: 3 })
+    await app.goto('/en/dashboard', { timeout: 60_000, retries: 3 })
 
     await expect(page.getByText(/something went wrong/i)).not.toBeVisible()
 

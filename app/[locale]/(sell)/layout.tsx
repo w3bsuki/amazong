@@ -1,7 +1,7 @@
 import { setRequestLocale } from 'next-intl/server'
 import Script from 'next/script'
 import { routing } from '@/i18n/routing'
-import { PerformanceMeasureGuard } from './PerformanceMeasureGuard'
+import { PerformanceMeasureGuard } from './performance-measure-guard'
 import { PageShell } from "../_components/page-shell"
 
 // Generate static params for all supported locales

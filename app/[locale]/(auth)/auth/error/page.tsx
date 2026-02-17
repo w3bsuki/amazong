@@ -57,7 +57,7 @@ export default async function AuthErrorPage({
 
         <p className="text-xs text-center text-muted-foreground">
           {t("needHelp")}{" "}
-          <Link href="/help" className="inline-flex min-h-11 items-center text-primary hover:underline">
+          <Link href="/customer-service" className="inline-flex min-h-11 items-center text-primary hover:underline">
             {t("contactSupport")}
           </Link>
         </p>

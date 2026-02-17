@@ -388,7 +388,7 @@ Launch a safe, complete marketplace MVP (Vinted-style). **No COD**.
 
 ## V1 must-have
 
-- Listings: create/edit, photos, categories, search/browse
+- Listings: create/edit, photos, categories, search
 - Chat: buyer ↔ seller
 - Checkout: Stripe payment + Buyer Protection fee
 - Orders: lifecycle, status tracking, receipts

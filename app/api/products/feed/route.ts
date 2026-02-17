@@ -8,38 +8,60 @@ import {
 } from "@/lib/api/response-helpers"
 import { z } from "zod"
 
+const FEED_TYPE_VALUES = [
+  'all',
+  'newest',
+  'promoted',
+  'deals',
+  'top_rated',
+  'most_viewed',
+  'best_sellers',
+  'price_low',
+  'price_high',
+  'free_shipping',
+  'ending_soon',
+  'nearby',
+  'near_me',
+] as const
+
+const FeedTypeSchema = z.enum(FEED_TYPE_VALUES)
+
 const FeedQuerySchema = z.object({
-  type: z
-    .enum([
-      'all',
-      'newest',
-      'promoted',
-      'deals',
-      'top_rated',
-      'most_viewed',
-      'best_sellers',
-      'price_low',
-      'price_high',
-      'free_shipping',
-      'ending_soon',
-      'nearby',
-      'near_me',
-    ])
-    .optional()
-    .default('all'),
+  type: FeedTypeSchema.optional(),
+  sort: FeedTypeSchema.optional(),
   category: z.string().trim().min(1).max(64).optional(),
   city: z.string().trim().min(1).max(80).optional(),
+  filters: z.string().trim().max(200).optional(),
 })
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams
   const parsedQuery = FeedQuerySchema.safeParse({
     type: searchParams.get("type") ?? undefined,
+    sort: searchParams.get("sort") ?? undefined,
     category: searchParams.get("category") ?? undefined,
     city: searchParams.get("city") ?? undefined,
+    filters: searchParams.get("filters") ?? undefined,
   })
 
-  const type = parsedQuery.success ? parsedQuery.data.type : "all"
+  const filterTypes = new Set(
+    (parsedQuery.success ? parsedQuery.data.filters : "")
+      ?.split(",")
+      .map((value) => value.trim())
+      .filter(Boolean) ?? []
+  )
+
+  let type: (typeof FEED_TYPE_VALUES)[number] = "all"
+  if (parsedQuery.success) {
+    type = parsedQuery.data.type ?? parsedQuery.data.sort ?? "all"
+    if (type === "all") {
+      if (filterTypes.has("nearby") || filterTypes.has("near_me")) type = "nearby"
+      if (filterTypes.has("promoted")) type = "promoted"
+      if (filterTypes.has("deals")) type = "deals"
+      if (filterTypes.has("free_shipping")) type = "free_shipping"
+    }
+  }
+
   const { page, limit: safeLimit, offset } = parsePaginationParams(searchParams)
   const category = parsedQuery.success ? parsedQuery.data.category : undefined
   const city = parsedQuery.success ? parsedQuery.data.city : undefined
@@ -218,12 +240,15 @@ export async function GET(request: NextRequest) {
     const totalCount = count || 0
     const hasMore = offset + products.length < totalCount
 
-    return cachedJsonResponse({
-      products,
-      hasMore,
-      totalCount,
-      page,
-    })
+    return cachedJsonResponse(
+      {
+        products,
+        hasMore,
+        totalCount,
+        page,
+      },
+      type === "deals" ? "deals" : "products"
+    )
   } catch (error) {
     console.error("[API] Feed products exception:", error)
     return NextResponse.json({ 

@@ -24,6 +24,7 @@ import { Button } from "@/components/ui/button"
 import { EmptyStateCTA } from "../../_components/empty-state-cta"
 import { useCategoryCounts } from "@/hooks/use-category-counts"
 import { useCategoryAttributes } from "@/hooks/use-category-attributes"
+import { useIsMobile } from "@/hooks/use-is-mobile"
 import { useViewMode } from "@/hooks/use-view-mode"
 import type { CategoryTreeNode } from "@/lib/category-tree"
 import { getCategoryName, type CategoryDisplay } from "@/lib/category-display"
@@ -119,6 +120,7 @@ export function DesktopHome({
     quickFilters: [],
   })
   const [viewMode, setViewMode] = useViewMode("grid")
+  const isMobileViewport = useIsMobile()
   
   // User's city for nearby filtering (persisted in localStorage)
   const [userCity, setUserCity] = useState<string>("sofia")
@@ -139,7 +141,7 @@ export function DesktopHome({
     }
   }, [])
 
-  const { counts: categoryCounts } = useCategoryCounts()
+  const { counts: categoryCounts } = useCategoryCounts({ enabled: !isMobileViewport })
   const pageSize = 24
 
   const activeCategorySlug = useMemo(() => {

@@ -13,7 +13,7 @@ export { UploadZone } from "./upload-zone";
 export { ImagePreviewModal } from "./image-preview-modal";
 
 // Category picker
-export { CategorySelector } from "./category-modal";
+export { CategorySelector } from "./category-selector";
 
 // Brand components
 export { BrandCombobox } from "./brand-combobox";

@@ -20,7 +20,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-is-mobile";
 import { useTranslations } from "next-intl";
-import type { Category, CategoryPathItem } from "../../../_lib/types";
+import type { Category, CategoryPathItem } from "../../_lib/types";
 
 // ============================================================================
 // Types

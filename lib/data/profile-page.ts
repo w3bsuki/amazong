@@ -91,7 +91,7 @@ export interface ProfilePageData {
  */
 export async function getPublicProfileData(username: string): Promise<ProfilePageData | null> {
   'use cache'
-  cacheTag('profiles', `profile-${username.toLowerCase()}`)
+  cacheTag(`profile-${username.toLowerCase()}`)
   cacheLife('user')
 
   const supabase = createStaticClient()
@@ -274,7 +274,7 @@ export async function getPublicProfileData(username: string): Promise<ProfilePag
  */
 export async function getProfileMetadata(username: string) {
   'use cache'
-  cacheTag('profiles', `profile-meta-${username.toLowerCase()}`)
+  cacheTag(`profile-meta-${username.toLowerCase()}`)
   cacheLife('user')
 
   const supabase = createStaticClient()

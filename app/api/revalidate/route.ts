@@ -1,5 +1,6 @@
 import { revalidateTag } from 'next/cache'
 import { NextRequest, NextResponse } from 'next/server'
+import { z } from 'zod'
 import { logger } from '@/lib/logger'
 
 // =============================================================================
@@ -12,118 +13,186 @@ import { logger } from '@/lib/logger'
 // Usage: POST /api/revalidate with JSON body { tag: 'categories', secret: '...' }
 // =============================================================================
 
-type SupabaseWebhookEvent = {
-  type?: 'INSERT' | 'UPDATE' | 'DELETE'
-  table?: string
-  schema?: string
-  record?: Record<string, unknown> | null
-  old_record?: Record<string, unknown> | null
-}
+const MAX_TAGS_PER_REQUEST = 32
+const REVALIDATION_DEDUPE_WINDOW_MS = 30_000
+const TAG_PATTERN = /^[a-z0-9:_-]{1,120}$/i
+const STRUCTURAL_CATEGORY_FIELDS = [
+  'slug',
+  'parent_id',
+  'name',
+  'name_bg',
+  'display_order',
+  'icon',
+  'image_url',
+] as const
+const recentRevalidations = new Map<string, number>()
 
-type RevalidateScope =
-  | {
-      scope: 'categories'
-      categorySlug?: string
-      parentId?: string
-      previousCategorySlug?: string
-      previousParentId?: string
-    }
-  | {
-      scope: 'attributes'
-      categoryId?: string
-      previousCategoryId?: string
-    }
+const stringValueSchema = z.string().trim().min(1).max(120)
 
-interface RevalidateRequest {
-  secret: string
+const SupabaseWebhookEventSchema = z.object({
+  type: z.enum(['INSERT', 'UPDATE', 'DELETE']).optional(),
+  table: stringValueSchema.optional(),
+  schema: stringValueSchema.optional(),
+  record: z.record(z.string(), z.unknown()).nullish(),
+  old_record: z.record(z.string(), z.unknown()).nullish(),
+})
 
-  // Raw tags (backward compatible)
-  tag?: string
-  tags?: string[]
+const RevalidateRequestSchema = z.object({
+  secret: z.string().min(1),
+  tag: stringValueSchema.optional(),
+  tags: z.array(stringValueSchema).max(MAX_TAGS_PER_REQUEST).optional(),
+  scope: z.enum(['categories', 'attributes']).optional(),
+  categorySlug: stringValueSchema.optional(),
+  parentId: stringValueSchema.optional(),
+  previousCategorySlug: stringValueSchema.optional(),
+  previousParentId: stringValueSchema.optional(),
+  categoryId: stringValueSchema.optional(),
+  previousCategoryId: stringValueSchema.optional(),
+  supabase: SupabaseWebhookEventSchema.optional(),
+})
 
-  // Higher-level invalidation helpers
-  scope?: RevalidateScope['scope']
-  categorySlug?: string
-  parentId?: string
-  previousCategorySlug?: string
-  previousParentId?: string
-  categoryId?: string
-  previousCategoryId?: string
-
-  // Supabase Database Webhooks payload (optional)
-  supabase?: SupabaseWebhookEvent
-}
+type SupabaseWebhookEvent = z.infer<typeof SupabaseWebhookEventSchema>
+type RevalidateRequest = z.infer<typeof RevalidateRequestSchema>
 
 function asString(value: unknown): string | null {
   return typeof value === 'string' && value.length > 0 ? value : null
 }
 
+function asRecord(value: unknown): Record<string, unknown> {
+  return value && typeof value === 'object' ? (value as Record<string, unknown>) : {}
+}
+
+function normalizeTag(tag: string | null | undefined): string | null {
+  if (typeof tag !== 'string') return null
+  const trimmed = tag.trim()
+  return TAG_PATTERN.test(trimmed) ? trimmed : null
+}
+
+function addTag(out: Set<string>, tag: string | null | undefined): void {
+  const normalized = normalizeTag(tag)
+  if (normalized) out.add(normalized)
+}
+
+function hasCategoryStructuralChange(supabase: SupabaseWebhookEvent): boolean {
+  const record = asRecord(supabase.record)
+  const oldRecord = asRecord(supabase.old_record)
+
+  if (supabase.type === 'INSERT' || supabase.type === 'DELETE') return true
+  if (supabase.type !== 'UPDATE') return true
+
+  return STRUCTURAL_CATEGORY_FIELDS.some((field) => {
+    const next = record[field]
+    const prev = oldRecord[field]
+    return JSON.stringify(next ?? null) !== JSON.stringify(prev ?? null)
+  })
+}
+
 function collectTagsForRequest(body: RevalidateRequest): string[] {
   const out = new Set<string>()
 
-  if (body.tag) out.add(body.tag)
+  addTag(out, body.tag)
   if (body.tags && body.tags.length > 0) {
     for (const t of body.tags) {
-      if (typeof t === 'string' && t.length > 0) out.add(t)
+      addTag(out, t)
     }
   }
 
   if (body.scope === 'categories') {
-    out.add('categories:tree')
-    out.add('categories:sell')
-    out.add('categories:sell:depth:3')
+    addTag(out, 'categories:tree')
+    addTag(out, 'categories:sell')
+    addTag(out, 'categories:sell:depth:3')
 
     const categorySlug = asString(body.categorySlug)
     const previousCategorySlug = asString(body.previousCategorySlug)
     const parentId = asString(body.parentId)
     const previousParentId = asString(body.previousParentId)
 
-    if (categorySlug) out.add(`category:${categorySlug}`)
-    if (previousCategorySlug) out.add(`category:${previousCategorySlug}`)
+    addTag(out, categorySlug ? `category:${categorySlug}` : null)
+    addTag(out, previousCategorySlug ? `category:${previousCategorySlug}` : null)
 
-    if (parentId) out.add(`category-children:${parentId}`)
-    if (previousParentId) out.add(`category-children:${previousParentId}`)
+    addTag(out, parentId ? `category-children:${parentId}` : null)
+    addTag(out, previousParentId ? `category-children:${previousParentId}` : null)
   }
 
   if (body.scope === 'attributes') {
     const categoryId = asString(body.categoryId)
     const previousCategoryId = asString(body.previousCategoryId)
 
-    if (categoryId) out.add(`attrs:category:${categoryId}`)
-    if (previousCategoryId) out.add(`attrs:category:${previousCategoryId}`)
+    addTag(out, categoryId ? `attrs:category:${categoryId}` : null)
+    addTag(out, previousCategoryId ? `attrs:category:${previousCategoryId}` : null)
   }
 
   const supabase = body.supabase
   if (supabase?.table === 'categories') {
-    out.add('categories:tree')
-    out.add('categories:sell')
-    out.add('categories:sell:depth:3')
-    const rec: Record<string, unknown> = supabase.record ?? {}
-    const old: Record<string, unknown> = supabase.old_record ?? {}
+    const rec = asRecord(supabase.record)
+    const old = asRecord(supabase.old_record)
 
     const slug = asString(rec["slug"])
     const oldSlug = asString(old["slug"])
     const parentId = asString(rec["parent_id"])
     const oldParentId = asString(old["parent_id"])
 
-    if (slug) out.add(`category:${slug}`)
-    if (oldSlug) out.add(`category:${oldSlug}`)
-    if (parentId) out.add(`category-children:${parentId}`)
-    if (oldParentId) out.add(`category-children:${oldParentId}`)
+    addTag(out, slug ? `category:${slug}` : null)
+    addTag(out, oldSlug ? `category:${oldSlug}` : null)
+    addTag(out, parentId ? `category-children:${parentId}` : null)
+    addTag(out, oldParentId ? `category-children:${oldParentId}` : null)
+
+    if (hasCategoryStructuralChange(supabase)) {
+      addTag(out, 'categories:tree')
+      addTag(out, 'categories:sell')
+      addTag(out, 'categories:sell:depth:3')
+    }
   }
 
   if (supabase?.table === 'category_attributes') {
-    const rec: Record<string, unknown> = supabase.record ?? {}
-    const old: Record<string, unknown> = supabase.old_record ?? {}
+    const rec = asRecord(supabase.record)
+    const old = asRecord(supabase.old_record)
 
     const categoryId = asString(rec["category_id"])
     const oldCategoryId = asString(old["category_id"])
 
-    if (categoryId) out.add(`attrs:category:${categoryId}`)
-    if (oldCategoryId) out.add(`attrs:category:${oldCategoryId}`)
+    addTag(out, categoryId ? `attrs:category:${categoryId}` : null)
+    addTag(out, oldCategoryId ? `attrs:category:${oldCategoryId}` : null)
   }
 
-  return Array.from(out)
+  return Array.from(out).slice(0, MAX_TAGS_PER_REQUEST)
+}
+
+function buildFingerprint(body: RevalidateRequest, tags: string[]): string {
+  const supabase = body.supabase
+  const record = asRecord(supabase?.record)
+  const oldRecord = asRecord(supabase?.old_record)
+  const recordId = asString(record["id"]) ?? ''
+  const oldRecordId = asString(oldRecord["id"]) ?? ''
+
+  return JSON.stringify({
+    scope: body.scope ?? null,
+    categorySlug: body.categorySlug ?? null,
+    parentId: body.parentId ?? null,
+    previousCategorySlug: body.previousCategorySlug ?? null,
+    previousParentId: body.previousParentId ?? null,
+    categoryId: body.categoryId ?? null,
+    previousCategoryId: body.previousCategoryId ?? null,
+    supabase: supabase
+      ? {
+          type: supabase.type ?? null,
+          schema: supabase.schema ?? null,
+          table: supabase.table ?? null,
+          recordId,
+          oldRecordId,
+        }
+      : null,
+    tags: [...tags].sort(),
+  })
+}
+
+function rememberFingerprint(fingerprint: string, nowMs: number): void {
+  recentRevalidations.set(fingerprint, nowMs)
+  for (const [key, ts] of recentRevalidations.entries()) {
+    if (nowMs - ts > REVALIDATION_DEDUPE_WINDOW_MS) {
+      recentRevalidations.delete(key)
+    }
+  }
 }
 
 /**
@@ -147,7 +216,18 @@ function collectTagsForRequest(body: RevalidateRequest): string[] {
  */
 export async function POST(request: NextRequest) {
   try {
-    const body: RevalidateRequest = await request.json()
+    const parsedBody = RevalidateRequestSchema.safeParse(await request.json())
+    if (!parsedBody.success) {
+      return NextResponse.json(
+        {
+          error: 'Invalid request body',
+          details: parsedBody.error.issues.map((issue) => issue.message),
+        },
+        { status: 400 },
+      )
+    }
+
+    const body = parsedBody.data
     const { secret } = body
     
     // Validate webhook secret
@@ -173,6 +253,21 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       )
     }
+
+    const nowMs = Date.now()
+    const fingerprint = buildFingerprint(body, tagsToRevalidate)
+    const lastSeenAt = recentRevalidations.get(fingerprint)
+
+    if (typeof lastSeenAt === 'number' && nowMs - lastSeenAt <= REVALIDATION_DEDUPE_WINDOW_MS) {
+      return NextResponse.json({
+        revalidated: false,
+        deduped: true,
+        tags: tagsToRevalidate,
+        timestamp: new Date(nowMs).toISOString(),
+      })
+    }
+
+    rememberFingerprint(fingerprint, nowMs)
     
     const revalidatedTags: string[] = []
     const failedTags: string[] = []
@@ -191,7 +286,8 @@ export async function POST(request: NextRequest) {
       revalidated: true,
       tags: revalidatedTags,
       failed: failedTags.length > 0 ? failedTags : undefined,
-      timestamp: new Date().toISOString()
+      deduped: false,
+      timestamp: new Date(nowMs).toISOString()
     })
     
   } catch (error) {

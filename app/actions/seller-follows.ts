@@ -1,6 +1,7 @@
 "use server"
 
 import { createClient } from "@/lib/supabase/server"
+import { revalidatePublicProfileTagsForUser } from "@/lib/cache/revalidate-profile-tags"
 import { revalidateTag } from "next/cache"
 
 // =====================================================
@@ -42,7 +43,7 @@ export async function followSeller(sellerId: string) {
   }
 
   revalidateTag("follows", "max")
-  revalidateTag("profiles", "max")
+  await revalidatePublicProfileTagsForUser(supabase, sellerId, "max")
   return { success: true }
 }
 
@@ -65,7 +66,7 @@ export async function unfollowSeller(sellerId: string) {
   }
 
   revalidateTag("follows", "max")
-  revalidateTag("profiles", "max")
+  await revalidatePublicProfileTagsForUser(supabase, sellerId, "max")
   return { success: true }
 }
 

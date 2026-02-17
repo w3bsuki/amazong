@@ -10,7 +10,8 @@ import type { UIProduct } from "@/lib/types/products"
 import { cn } from "@/lib/utils"
 import { getActiveFilterCount } from "@/lib/filters/active-filter-count"
 import { getCategoryName, getCategorySlugKey } from "@/lib/category-display"
-import { getCategoryIcon } from "@/components/shared/category/category-icons"
+import { buildHomeBrowseHref } from "@/lib/home-browse-href"
+import { getCategoryIcon } from "./category/category-icons"
 import { MobileProductCard } from "@/components/shared/product/card/mobile"
 import { useHeader } from "@/components/providers/header-context"
 import { MobileSearchOverlay } from "../../_components/search/mobile-search-overlay"
@@ -19,7 +20,6 @@ import { HomeBrowseOptionsSheet } from "./mobile/home-browse-options-sheet"
 import { PageShell } from "../../_components/page-shell"
 import {
   ACTION_CHIP_CLASS,
-  CONTEXT_BANNER_CLASS,
   getPillClass,
   getPrimaryTabClass,
 } from "../_lib/mobile-rail-class-recipes"
@@ -31,10 +31,8 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet"
 import { FilterHub } from "@/components/shared/filters/filter-hub"
-import {
-  useHomeDiscoveryFeed,
-  type HomeDiscoveryScope,
-} from "@/hooks/use-home-discovery-feed"
+import { useHomeDiscoveryFeed } from "@/hooks/use-home-discovery-feed"
+import type { HomeDiscoveryScope } from "@/hooks/use-home-discovery-feed"
 
 // =============================================================================
 // Types
@@ -51,13 +49,16 @@ interface MobileHomeProps {
   categoryProducts: Record<string, UIProduct[]>
 }
 
+interface CategoryChildrenResponse {
+  children?: CategoryTreeNode[]
+}
+
 // =============================================================================
 // Config
 // =============================================================================
 
 const MAX_VISIBLE_CATEGORY_TABS = 5
 const HOME_CITY_STORAGE_KEY = "treido_user_city"
-const SECONDARY_RAIL_TOP = "var(--offset-mobile-secondary-rail)"
 
 const DISCOVERY_SCOPES: readonly HomeDiscoveryScope[] = [
   "forYou",
@@ -102,29 +103,6 @@ function renderProductCard(product: UIProduct, index: number) {
   )
 }
 
-function buildHomeBrowseHref({
-  scope,
-  city,
-}: {
-  scope: HomeDiscoveryScope
-  city: string | null
-}): string {
-  switch (scope) {
-    case "promoted":
-      return "/search?promoted=true&sort=newest"
-    case "deals":
-      return "/search?deals=true&sort=newest"
-    case "nearby":
-      return city
-        ? `/search?nearby=true&sort=newest&city=${encodeURIComponent(city)}`
-        : "/search?nearby=true&sort=newest"
-    case "newest":
-    case "forYou":
-    default:
-      return "/search?sort=newest"
-  }
-}
-
 // =============================================================================
 // Component
 // =============================================================================
@@ -150,7 +128,9 @@ export function MobileHome({
   const [cityPickerOpen, setCityPickerOpen] = useState(false)
   const [pendingNearbyScope, setPendingNearbyScope] = useState(false)
   const [cityHydrated, setCityHydrated] = useState(false)
+  const [childrenByParentId, setChildrenByParentId] = useState<Record<string, CategoryTreeNode[]>>({})
   const loadMoreRef = useRef<HTMLDivElement | null>(null)
+  const loadingParentIdsRef = useRef<Set<string>>(new Set())
 
   const {
     scope,
@@ -165,6 +145,7 @@ export function MobileHome({
     setFilters,
     city,
     setCity,
+    nearby,
     setNearby,
     products,
     isLoading,
@@ -240,6 +221,47 @@ export function MobileHome({
     }
   }, [city, cityHydrated])
 
+  const fetchChildrenByParentId = useCallback(async (parentId: string) => {
+    if (!parentId) return
+
+    if (Object.prototype.hasOwnProperty.call(childrenByParentId, parentId)) return
+    if (loadingParentIdsRef.current.has(parentId)) return
+
+    loadingParentIdsRef.current.add(parentId)
+    try {
+      const response = await fetch(`/api/categories/${encodeURIComponent(parentId)}/children`, {
+        method: "GET",
+        credentials: "same-origin",
+      })
+
+      if (!response.ok) {
+        setChildrenByParentId((previous) =>
+          Object.prototype.hasOwnProperty.call(previous, parentId)
+            ? previous
+            : { ...previous, [parentId]: [] }
+        )
+        return
+      }
+
+      const payload = (await response.json()) as CategoryChildrenResponse
+      const children = Array.isArray(payload.children) ? payload.children : []
+
+      setChildrenByParentId((previous) =>
+        Object.prototype.hasOwnProperty.call(previous, parentId)
+          ? previous
+          : { ...previous, [parentId]: children }
+      )
+    } catch {
+      setChildrenByParentId((previous) =>
+        Object.prototype.hasOwnProperty.call(previous, parentId)
+          ? previous
+          : { ...previous, [parentId]: [] }
+      )
+    } finally {
+      loadingParentIdsRef.current.delete(parentId)
+    }
+  }, [childrenByParentId])
+
   const visibleCategoryTabs = useMemo(
     () => categories.slice(0, MAX_VISIBLE_CATEGORY_TABS),
     [categories]
@@ -253,9 +275,57 @@ export function MobileHome({
     () => categories.find((category) => category.slug === activeCategorySlug) ?? null,
     [activeCategorySlug, categories]
   )
-  const activeSubcategories = activeCategory?.children ?? []
+  const activeSubcategories = useMemo(() => {
+    if (!activeCategory) return []
+    if (Object.prototype.hasOwnProperty.call(childrenByParentId, activeCategory.id)) {
+      return childrenByParentId[activeCategory.id] ?? []
+    }
+    return activeCategory.children ?? []
+  }, [activeCategory, childrenByParentId])
   const activeSubcategory = activeSubcategories.find((sub) => sub.slug === activeSubcategorySlug) ?? null
-  const activeL2Categories = activeSubcategory?.children ?? []
+  const activeL2Categories = useMemo(() => {
+    if (!activeSubcategory) return []
+    if (Object.prototype.hasOwnProperty.call(childrenByParentId, activeSubcategory.id)) {
+      return childrenByParentId[activeSubcategory.id] ?? []
+    }
+    return activeSubcategory.children ?? []
+  }, [activeSubcategory, childrenByParentId])
+
+  useEffect(() => {
+    if (!activeCategory) return
+
+    if (Object.prototype.hasOwnProperty.call(childrenByParentId, activeCategory.id)) return
+
+    const seededChildren = activeCategory.children ?? []
+    if (seededChildren.length > 0) {
+      setChildrenByParentId((previous) =>
+        Object.prototype.hasOwnProperty.call(previous, activeCategory.id)
+          ? previous
+          : { ...previous, [activeCategory.id]: seededChildren }
+      )
+      return
+    }
+
+    void fetchChildrenByParentId(activeCategory.id)
+  }, [activeCategory, childrenByParentId, fetchChildrenByParentId])
+
+  useEffect(() => {
+    if (!activeSubcategory) return
+
+    if (Object.prototype.hasOwnProperty.call(childrenByParentId, activeSubcategory.id)) return
+
+    const seededChildren = activeSubcategory.children ?? []
+    if (seededChildren.length > 0) {
+      setChildrenByParentId((previous) =>
+        Object.prototype.hasOwnProperty.call(previous, activeSubcategory.id)
+          ? previous
+          : { ...previous, [activeSubcategory.id]: seededChildren }
+      )
+      return
+    }
+
+    void fetchChildrenByParentId(activeSubcategory.id)
+  }, [activeSubcategory, childrenByParentId, fetchChildrenByParentId])
 
   const activeFilterCount = useMemo(() => getActiveFilterCount(filters), [filters])
   const hasActiveFilters = activeFilterCount > 0
@@ -284,20 +354,15 @@ export function MobileHome({
       })
       : activeSubcategoryLabel ?? activeCategoryLabel ?? tV4(`banner.scopeTitle.${scope}`)
 
-  const contextEyebrow = activeCategory
-    ? tV4("banner.eyebrowCategory")
-    : tV4(`banner.scopeEyebrow.${scope}`)
-
-  const fullBrowseHref = activeL2Slug
-    ? `/categories/${activeL2Slug}`
-    : activeSubcategorySlug
-    ? `/categories/${activeSubcategorySlug}`
-    : activeCategorySlug
-      ? `/categories/${activeCategorySlug}`
-      : buildHomeBrowseHref({ scope, city })
-  const fullBrowseLabel = activeCategorySlug
-    ? tV4("actions.viewCategory")
-    : tV4("actions.exploreScope")
+  const fullBrowseHref = buildHomeBrowseHref({
+    scope,
+    activeCategorySlug,
+    activeSubcategorySlug,
+    activeL2Slug,
+    filters,
+    city,
+    nearby,
+  })
   const showBrowseOptionsTrigger = activeSubcategorySlug !== null && activeL2Categories.length > 0
 
   const handlePrimaryTab = useCallback((slug: string | null) => {
@@ -377,18 +442,19 @@ export function MobileHome({
       <div className="mx-auto w-full max-w-(--breakpoint-md) pb-tabbar-safe">
         <h1 className="sr-only">{tV4("title")}</h1>
 
-        <nav
-          data-testid="home-v4-primary-rail"
+        <div
+          data-testid="home-v4-rails"
           className="sticky top-(--offset-mobile-primary-rail) z-30 border-b border-border-subtle bg-background"
-          role="tablist"
-          aria-label={tV4("aria.primaryCategories")}
         >
-          <div className="overflow-x-auto no-scrollbar">
+          <nav
+            data-testid="home-v4-primary-rail"
+            className="overflow-x-auto no-scrollbar"
+            aria-label={tV4("aria.primaryCategories")}
+          >
             <div className="flex w-max min-w-full items-stretch">
               <button
                 type="button"
-                role="tab"
-                aria-selected={activeCategorySlug === null}
+                aria-pressed={activeCategorySlug === null}
                 onClick={() => handlePrimaryTab(null)}
                 className={getPrimaryTabClass(activeCategorySlug === null)}
               >
@@ -412,8 +478,7 @@ export function MobileHome({
                   <button
                     key={category.slug}
                     type="button"
-                    role="tab"
-                    aria-selected={active}
+                    aria-pressed={active}
                     onClick={() => handlePrimaryTab(category.slug)}
                     className={getPrimaryTabClass(active)}
                   >
@@ -448,115 +513,108 @@ export function MobileHome({
                 </button>
               )}
             </div>
-          </div>
-        </nav>
+          </nav>
 
-        <section
-          data-testid="home-v4-secondary-rail"
-          className="sticky z-20 border-b border-border-subtle bg-surface-glass backdrop-blur-sm"
-          style={{ top: SECONDARY_RAIL_TOP }}
-        >
-          <div className="overflow-x-auto no-scrollbar">
-            <div className="flex w-max items-center gap-1.5 px-3 py-2">
-              {activeCategorySlug === null ? (
-                DISCOVERY_SCOPES.map((entry) => {
-                  const active = scope === entry
-                  return (
-                    <button
-                      key={entry}
-                      type="button"
-                      data-testid={`home-v4-scope-${entry}`}
-                      aria-pressed={active}
-                      onClick={() => handleScopeSelect(entry)}
-                      className={getPillClass(active)}
-                    >
-                      {tV4(`scopes.${entry}`)}
-                    </button>
-                  )
-                })
-              ) : (
-                <>
-                  <button
-                    type="button"
-                    aria-pressed={activeSubcategorySlug === null}
-                    onClick={() => handleSubcategoryPill(null)}
-                    className={getPillClass(activeSubcategorySlug === null)}
-                  >
-                    {tCategories("all")}
-                  </button>
-                  {activeSubcategories.map((subcategory) => {
-                    const active = activeSubcategorySlug === subcategory.slug
+          <section
+            data-testid="home-v4-secondary-rail"
+            className="border-t border-border-subtle bg-surface-glass backdrop-blur-sm"
+          >
+            <div className="overflow-x-auto no-scrollbar">
+              <div className="flex w-max items-center gap-1.5 px-inset py-1">
+                {activeCategorySlug === null ? (
+                  DISCOVERY_SCOPES.map((entry) => {
+                    const active = scope === entry
                     return (
                       <button
-                        key={subcategory.slug}
+                        key={entry}
                         type="button"
+                        data-testid={`home-v4-scope-${entry}`}
                         aria-pressed={active}
-                        onClick={() => handleSubcategoryPill(subcategory.slug)}
+                        onClick={() => handleScopeSelect(entry)}
                         className={getPillClass(active)}
                       >
-                        {getCategoryLabel(subcategory)}
+                        {tV4(`scopes.${entry}`)}
                       </button>
                     )
-                  })}
-                </>
-              )}
+                  })
+                ) : (
+                  <>
+                    <button
+                      type="button"
+                      aria-pressed={activeSubcategorySlug === null}
+                      onClick={() => handleSubcategoryPill(null)}
+                      className={getPillClass(activeSubcategorySlug === null)}
+                    >
+                      {tCategories("all")}
+                    </button>
+                    {activeSubcategories.map((subcategory) => {
+                      const active = activeSubcategorySlug === subcategory.slug
+                      return (
+                        <button
+                          key={subcategory.slug}
+                          type="button"
+                          aria-pressed={active}
+                          onClick={() => handleSubcategoryPill(subcategory.slug)}
+                          className={getPillClass(active)}
+                        >
+                          {getCategoryLabel(subcategory)}
+                        </button>
+                      )
+                    })}
+                  </>
+                )}
 
-              <div aria-hidden="true" className="mx-0.5 h-5 w-px shrink-0 bg-border-subtle" />
+                <div aria-hidden="true" className="mx-0.5 h-5 w-px shrink-0 bg-border-subtle" />
 
-              {showBrowseOptionsTrigger && (
+                {showBrowseOptionsTrigger && (
+                  <button
+                    type="button"
+                    data-testid="home-v4-browse-options-trigger"
+                    onClick={() => setBrowseOptionsOpen(true)}
+                    className={ACTION_CHIP_CLASS}
+                  >
+                    <DotsThree size={14} weight="bold" aria-hidden="true" />
+                    <span>{tV4("actions.browseOptions")}</span>
+                  </button>
+                )}
+
                 <button
                   type="button"
-                  data-testid="home-v4-browse-options-trigger"
-                  onClick={() => setBrowseOptionsOpen(true)}
-                  className={ACTION_CHIP_CLASS}
+                  data-testid="home-v4-filter-trigger"
+                  aria-pressed={hasActiveFilters}
+                  onClick={() => setFilterOpen(true)}
+                  className={cn(ACTION_CHIP_CLASS, hasActiveFilters && "border-foreground")}
                 >
-                  <DotsThree size={14} weight="bold" aria-hidden="true" />
-                  <span>{tV4("actions.browseOptions")}</span>
+                  <FunnelSimple size={14} weight={hasActiveFilters ? "fill" : "regular"} aria-hidden="true" />
+                  <span>{tV4("actions.filter")}</span>
+                  {hasActiveFilters && (
+                    <span className="inline-flex min-w-5 items-center justify-center rounded-full bg-foreground px-1.5 py-0.5 text-2xs font-semibold text-background">
+                      {activeFilterCount}
+                    </span>
+                  )}
                 </button>
-              )}
 
-              <button
-                type="button"
-                data-testid="home-v4-filter-trigger"
-                aria-pressed={hasActiveFilters}
-                onClick={() => setFilterOpen(true)}
-                className={cn(ACTION_CHIP_CLASS, hasActiveFilters && "border-foreground")}
-              >
-                <FunnelSimple size={14} weight={hasActiveFilters ? "fill" : "regular"} aria-hidden="true" />
-                <span>{tV4("actions.filter")}</span>
-                {hasActiveFilters && (
-                  <span className="inline-flex min-w-5 items-center justify-center rounded-full bg-foreground px-1.5 py-0.5 text-2xs font-semibold text-background">
-                    {activeFilterCount}
-                  </span>
-                )}
-              </button>
-
-              <Link href={fullBrowseHref} className={ACTION_CHIP_CLASS}>
-                <span>{fullBrowseLabel}</span>
-                <CaretRight size={14} weight="bold" aria-hidden="true" />
-              </Link>
+              </div>
             </div>
-          </div>
-        </section>
+          </section>
+        </div>
 
-        <section data-testid="home-v4-context-banner">
-          <Link href={fullBrowseHref} className={CONTEXT_BANNER_CLASS}>
-            <div className="min-w-0 py-1.5">
-              <p className="text-2xs font-medium uppercase tracking-wide text-background">
-                {contextEyebrow}
-              </p>
-              <h2 data-testid="home-v4-context-title" className="truncate text-sm font-semibold text-background">
-                {contextTitle}
-              </h2>
-            </div>
-            <CaretRight size={16} weight="bold" className="shrink-0 text-background" aria-hidden="true" />
+        <section data-testid="home-v4-context-banner" className="px-inset pb-1 pt-0.5">
+          <Link
+            href={fullBrowseHref}
+            className="flex min-h-(--control-compact) items-center justify-between gap-2 rounded-lg border border-border-subtle bg-surface-subtle px-3 text-foreground tap-transparent transition-colors duration-fast ease-smooth hover:bg-hover active:bg-active focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-1"
+          >
+            <h2 data-testid="home-v4-context-title" className="min-w-0 truncate text-xs font-semibold">
+              {contextTitle}
+            </h2>
+            <CaretRight size={14} weight="bold" className="shrink-0 text-muted-foreground" aria-hidden="true" />
           </Link>
         </section>
 
-        <section data-testid="home-v4-feed" className="pt-2">
+        <section data-testid="home-v4-feed" className="pt-1">
           {products.length > 0 ? (
             <>
-              <div className="grid grid-cols-2 gap-(--spacing-home-card-gap) px-2 pb-1">
+              <div className="grid grid-cols-2 gap-(--spacing-home-card-gap) px-inset pb-1">
                 {products.map((product, index) => renderProductCard(product, index))}
               </div>
               <div ref={loadMoreRef} data-testid="home-v4-load-more" className="h-10" />

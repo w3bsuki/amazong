@@ -180,3 +180,50 @@ REASON: Apply knip-reported dead-export cleanup without changing runtime behavio
 FILES: `lib/currency.ts`; `lib/stripe-locale.ts`; `lib/order-status.ts`; `lib/validation/auth.ts`; `hooks/use-toast.ts`; `lib/format-price.ts`; `lib/url-utils.ts`; `lib/ui/badge-intent.ts`.
 RISK: Low — changes are export-surface reductions only; remaining logic paths are unchanged.
 APPROVAL: Not required — no DB schema, auth/access control, payments/webhooks, or destructive data operations touched.
+## 2026-02-16 — Route Alias Consolidation (Canonical Paths)
+DECISION: Remove redirect-only/duplicate alias routes and rewire callsites to canonical routes: `/search`, `/chat`, `/customer-service`, `/wishlist/shared/[token]`, and `/dashboard`.
+REASON: Reduce App Router bloat, remove duplicate entry points, and keep one canonical URL per flow.
+FILES: `app/[locale]/(main)/browse/page.tsx` (removed); `app/[locale]/(main)/(support)/help/page.tsx` (removed); `app/[locale]/(main)/(support)/help/loading.tsx` (removed); `app/[locale]/(main)/messages/page.tsx` (removed); `app/[locale]/(main)/wishlist/[token]/page.tsx` (removed); `app/[locale]/(main)/seller/dashboard/page.tsx` (removed); `app/[locale]/(main)/seller/dashboard/loading.tsx` (removed); `app/[locale]/(main)/seller/dashboard/error.tsx` (removed); `app/[locale]/(main)/seller/dashboard/_components/seller-dashboard-loading-skeleton.tsx` (removed); `app/[locale]/(account)/account/selling/edit/page.tsx` (removed); `app/[locale]/(account)/account/orders/[id]/_components/order-detail-content.tsx`; `app/[locale]/(account)/account/wishlist/_components/share-wishlist-button.tsx`; `app/[locale]/(auth)/auth/error/page.tsx`; `app/[locale]/(main)/_providers/onboarding-provider.tsx`; `app/[locale]/_components/app-header.tsx`; `app/[locale]/_components/site-footer.tsx`; `app/sitemap.ts`; `e2e/seller-routes.spec.ts`; `app/api/admin/docs/seed/templates.ts`.
+RISK: Medium-low — URL aliases removed; internal links/tests updated to canonical routes.
+APPROVAL: Not required — no DB schema, auth/access control, payments/webhooks, or destructive data operations touched.
+
+## 2026-02-16 — Demo-Only Component Rehoming
+DECISION: Move `CategoryCirclesSimple` out of shared mobile components into route-private demo components.
+REASON: Component is used only by the demo landing route and should not inflate shared mobile surface area.
+FILES: `components/mobile/category-nav/category-circles-simple.tsx` (moved to `app/[locale]/(main)/demo/_components/category-circles-simple.tsx`); `app/[locale]/(main)/demo/demo-lab.tsx`; `components/mobile/category-nav/index.ts`.
+RISK: Low — import path and module ownership cleanup only; runtime behavior unchanged.
+APPROVAL: Not required — no DB schema, auth/access control, payments/webhooks, or destructive data operations touched.
+
+## 2026-02-16 — Account Layout Private Component Normalization
+DECISION: Move `account-layout-content.tsx` into `(account)/_components` and update its import path from layout.
+REASON: Align account route group with private-folder conventions and keep route composition files colocated.
+FILES: `app/[locale]/(account)/account-layout-content.tsx` (moved to `app/[locale]/(account)/_components/account-layout-content.tsx`); `app/[locale]/(account)/layout.tsx`.
+RISK: Low — file move + relative import updates only.
+APPROVAL: Not required — no DB schema, auth/access control, payments/webhooks, or destructive data operations touched.
+## 2026-02-16 — i18n Server Locale Alignment
+DECISION: Add missing `setRequestLocale(locale)` calls on account server pages and migrate remaining internal desktop promoted link to locale-aware routing.
+REASON: Ensure next-intl server rendering uses the active locale consistently and remove last internal `next/link` usage in audited scope.
+FILES: `app/[locale]/(account)/account/page.tsx`; `app/[locale]/(account)/account/plans/page.tsx`; `app/[locale]/(main)/_components/desktop/promoted-section.tsx`.
+RISK: Low — i18n wiring updates only; no business logic changes.
+APPROVAL: Not required — no DB schema, auth/access control, payments/webhooks, or destructive data operations touched.
+
+## 2026-02-16 — UI Toast Primitive Removal
+DECISION: Remove unused `components/ui/toast.tsx` and inline required toast type contracts in `hooks/use-toast.ts`.
+REASON: `components/ui/toast.tsx` had no runtime consumers and only provided types to the hook.
+FILES: `components/ui/toast.tsx` (removed); `hooks/use-toast.ts`.
+RISK: Low — type-source migration only; toast hook behavior unchanged.
+APPROVAL: Not required — no DB schema, auth/access control, payments/webhooks, or destructive data operations touched.
+
+## 2026-02-16 — Unused Dependency Prune
+DECISION: Remove `@phosphor-icons/react` and `@radix-ui/react-toast` from dependencies.
+REASON: Both packages became unused after icon and toast surface cleanup (`knip` confirmed).
+FILES: `package.json`; `pnpm-lock.yaml`.
+RISK: Low — dependency surface reduction only.
+APPROVAL: Not required — no DB schema, auth/access control, payments/webhooks, or destructive data operations touched.
+
+## 2026-02-16 — Cleanup Temp Artifact Removal
+DECISION: Delete stray `temp-i18n.py` artifact.
+REASON: Temporary file was not part of runtime or documented cleanup assets.
+FILES: `temp-i18n.py` (removed).
+RISK: None — temporary file only.
+APPROVAL: Not required — no DB schema, auth/access control, payments/webhooks, or destructive data operations touched.

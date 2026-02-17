@@ -272,7 +272,7 @@ export async function getProductsByCategorySlug(
   zone?: ShippingRegion
 ): Promise<Product[]> {
   'use cache'
-  cacheTag('products:list', `products:category:${categorySlug}`)
+  cacheTag(`products:category:${categorySlug}`)
   cacheLife('products')
   try {
     const supabase = createStaticClient()
@@ -324,7 +324,7 @@ export async function getProductsByCategorySlug(
  */
 export async function getProducts(type: QueryType, limit = 36, zone?: ShippingRegion): Promise<Product[]> {
   'use cache'
-  cacheTag('products:list', `products:type:${type}`)
+  cacheTag(`products:type:${type}`)
   cacheLife(type === 'deals' ? 'deals' : 'products')
   try {
     const supabase = createStaticClient()

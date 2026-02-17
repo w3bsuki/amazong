@@ -1,6 +1,7 @@
 "use server"
 
 import { createClient, createAdminClient } from "@/lib/supabase/server"
+import { revalidatePublicProfileTagsByUsername } from "@/lib/cache/revalidate-profile-tags"
 import { errorEnvelope, successEnvelope, type Envelope } from "@/lib/api/envelope"
 import { stripe } from "@/lib/stripe"
 import { STRIPE_CUSTOMER_ID_SELECT } from "@/lib/supabase/selects/billing"
@@ -30,15 +31,18 @@ interface ProfileBoostData {
 
 function revalidateBoostCaches(productId: string, userId: string) {
   const tags = [
-    "products:list",
-    "profiles",
     `product:${productId}`,
     `seller-${userId}`,
     `seller-products-${userId}`,
+    "products:type:newest",
+    "products:type:featured",
+    "products:type:bestsellers",
+    "products:type:deals",
+    "products:type:promo",
   ]
 
   for (const tag of tags) {
-    revalidateTag(tag, "max")
+    revalidateTag(tag, "products")
   }
 }
 
@@ -162,6 +166,12 @@ export async function useSubscriptionBoost(productId: string): Promise<BoostResu
     })
 
   revalidateBoostCaches(productId, userId)
+  const { data: sellerProfile } = await supabase
+    .from("profiles")
+    .select("username")
+    .eq("id", userId)
+    .maybeSingle()
+  revalidatePublicProfileTagsByUsername(sellerProfile?.username, "user")
 
   return {
     success: true,

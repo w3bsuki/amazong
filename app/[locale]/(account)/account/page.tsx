@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/server"
 import { redirect } from "@/i18n/routing"
-import { getTranslations } from "next-intl/server"
+import { getTranslations, setRequestLocale } from "next-intl/server"
 import { AccountHeroCard } from "./_components/account-hero-card"
 import { AccountStatsCards } from "./_components/account-stats-cards"
 import { AccountChart } from "./_components/account-chart"
@@ -17,6 +17,7 @@ interface AccountPageProps {
 export default async function AccountPage({ params }: AccountPageProps) {
   const { locale: localeParam } = await params
   const locale = localeParam === "bg" ? "bg" : "en"
+  setRequestLocale(locale)
   const t = await getTranslations({ locale, namespace: "Account" })
   const supabase = await createClient()
 

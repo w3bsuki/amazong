@@ -137,8 +137,8 @@ function detectRouteConfig(pathname: string, explicitVariant?: HeaderVariant): R
     return { variant: "homepage" }
   }
 
-  // Browse aliases and sellers directory use the shopping-style mobile header.
-  if (pathWithoutLocale.startsWith("/browse") || pathWithoutLocale.startsWith("/sellers")) {
+  // Sellers directory uses the shopping-style mobile header.
+  if (pathWithoutLocale.startsWith("/sellers")) {
     return { variant: "homepage" }
   }
 
@@ -149,7 +149,7 @@ function detectRouteConfig(pathname: string, explicitVariant?: HeaderVariant): R
   
   // Known routes start with: /search, /cart, /checkout, /account, /sell, /plans, /auth
   const segments = pathWithoutLocale.split("/").filter(Boolean)
-  const knownRoutes = ["search", "browse", "sellers", "cart", "checkout", "account", "sell", "plans", "auth", "categories", "api", "assistant", "demo"]
+  const knownRoutes = ["search", "sellers", "cart", "checkout", "account", "sell", "plans", "auth", "categories", "api", "assistant", "demo"]
   
   // Product pages: /{username}/{productSlug} (2+ segments, not a known route)
   if (segments.length >= 2 && segments[0] && !knownRoutes.includes(segments[0])) {

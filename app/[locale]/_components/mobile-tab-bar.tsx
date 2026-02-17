@@ -1,7 +1,7 @@
 "use client"
 
 import { type ReactNode, useEffect, useState } from "react"
-import { Compass, House, ChatCircleDots, Plus } from "@phosphor-icons/react"
+import { House, SquaresFour, ChatCircleDots, Plus } from "@/lib/icons/phosphor"
 import { Link, usePathname, useRouter } from "@/i18n/routing"
 import { cn } from "@/lib/utils"
 import { CountBadge } from "@/components/shared/count-badge"
@@ -78,8 +78,8 @@ function getFallbackProfileName(user: {
   return "User"
 }
 
-function getTabIconWeight(isActive: boolean): "fill" | "regular" {
-  return isActive ? "fill" : "regular"
+function getTabIconStrokeWidth(isActive: boolean): number {
+  return isActive ? 2.5 : 1.75
 }
 
 export function MobileTabBar() {
@@ -202,7 +202,7 @@ export function MobileTabBar() {
       label: t("home"),
       ariaCurrent: isHomeActive ? "page" : undefined,
       icon: (
-        <House weight={getTabIconWeight(isHomeActive)} className={iconClass} />
+        <House strokeWidth={getTabIconStrokeWidth(isHomeActive)} className={iconClass} />
       ),
     },
     {
@@ -225,7 +225,7 @@ export function MobileTabBar() {
           }
         : {}),
       icon: (
-        <Compass weight={getTabIconWeight(isCategoriesActive)} className={iconClass} />
+        <SquaresFour strokeWidth={getTabIconStrokeWidth(isCategoriesActive)} className={iconClass} />
       ),
     },
     {
@@ -242,7 +242,7 @@ export function MobileTabBar() {
           state={isSellActive ? "active" : "inactive"}
           data-testid="mobile-tab-sell-core"
         >
-          <Plus weight="bold" className="size-(--size-icon-lg)" />
+          <Plus strokeWidth={2.75} className="size-(--size-icon-lg)" />
         </MobileBottomNavCoreAction>
       ),
     },
@@ -259,7 +259,7 @@ export function MobileTabBar() {
       icon: (
         <>
           <span className="relative">
-            <ChatCircleDots weight={getTabIconWeight(isChatActive)} className={iconClass} />
+            <ChatCircleDots strokeWidth={getTabIconStrokeWidth(isChatActive)} className={iconClass} />
             {unreadCount > 0 && (
               <CountBadge
                 count={unreadCount}
@@ -330,7 +330,7 @@ export function MobileTabBar() {
                     aria-current={tab.ariaCurrent}
                     data-testid={tab.testId}
                   >
-                    <Link href={tab.href} prefetch={true}>
+                    <Link href={tab.href} prefetch={false}>
                       {tab.icon}
                     </Link>
                   </MobileBottomNavItem>

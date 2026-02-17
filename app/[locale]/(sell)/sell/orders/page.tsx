@@ -9,7 +9,7 @@ import {
   updateOrderItemStatus,
 } from "@/app/actions/orders"
 import { submitBuyerFeedback } from "@/app/actions/buyer-feedback"
-import { SellerOrdersClient } from "./client"
+import { SellerOrdersClient } from "./seller-orders-client"
 
 export const metadata = {
   title: "Your Orders | Seller Dashboard",

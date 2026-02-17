@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { SellPageClient } from "./client";
+import { SellPageClient } from "./sell-page-client";
 import { getSellCategories } from "./_lib/categories";
 import { createListing } from "../_actions/sell";
 import type { Metadata } from "next";

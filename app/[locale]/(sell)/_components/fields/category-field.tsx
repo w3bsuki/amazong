@@ -6,7 +6,7 @@ import { Field, FieldLabel, FieldDescription, FieldError, FieldContent } from "@
 import { useTranslations } from "next-intl";
 
 import { useSellForm, useSellFormContext } from "../sell-form-provider";
-import { CategorySelector } from "../ui/category-modal";
+import { CategorySelector } from "../ui/category-selector";
 import type { CategoryPathItem } from "../../_lib/types";
 
 // ============================================================================

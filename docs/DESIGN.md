@@ -1,5 +1,8 @@
 # DESIGN.md — UI + Frontend Contract
 
+> Load when doing UI work, styling, layout, or component changes.
+> For project identity and rules, see `AGENTS.md`. For feature-specific context, check `docs/features/`.
+
 ## Runtime Truth Paths
 
 ### Token + Utility Source

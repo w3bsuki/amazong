@@ -9,7 +9,7 @@ import type { CategoryTreeNode } from "@/lib/category-tree"
 import type { UIProduct } from "@/lib/types/products"
 import { cn } from "@/lib/utils"
 import { getCategoryName } from "@/lib/category-display"
-import { getCategoryIcon } from "@/components/shared/category/category-icons"
+import { getCategoryIcon } from "../../_components/category/category-icons"
 import { MobileProductCard } from "@/components/shared/product/card/mobile"
 import {
   Sheet,

@@ -4,7 +4,7 @@ import { SubcategoryCircles } from "./subcategory-circles"
 import { useLocale, useTranslations } from "next-intl"
 import { useSearchParams } from "next/navigation"
 
-import { CategoryCircleVisual } from "@/components/shared/category/category-circle-visual"
+import { CategoryCircleVisual } from "./category-circle-visual"
 
 interface Category {
   id: string
