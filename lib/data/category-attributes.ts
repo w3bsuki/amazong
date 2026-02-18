@@ -1,6 +1,7 @@
 import 'server-only'
 
 import type { SupabaseClient } from '@supabase/supabase-js'
+import { cacheLife, cacheTag } from 'next/cache'
 import { createStaticClient } from '@/lib/supabase/server'
 import type { Database } from '@/lib/supabase/database.types'
 import { CATEGORY_ATTRIBUTES_SELECT } from '@/lib/supabase/selects/categories'
@@ -243,12 +244,16 @@ export async function resolveCategoryAttributes(params: {
   includeGlobal?: boolean
   filterableOnly?: boolean
 }): Promise<{ categoryId: string | null; attributes: CategoryAttribute[]; ancestorIds: string[] }> {
+  'use cache'
+  cacheLife('categories')
+
   const {
     slugOrId,
     includeParents = true,
     includeGlobal = true,
     filterableOnly = false,
   } = params
+
   const supabase = createStaticClient()
   const categoryId = await resolveCategoryId(supabase, slugOrId)
 
@@ -256,11 +261,21 @@ export async function resolveCategoryAttributes(params: {
     return { categoryId: null, attributes: [], ancestorIds: [] }
   }
 
+  cacheTag(`category:${slugOrId}`)
+  cacheTag(`category:${categoryId}`)
+
   const { attributes, ancestorIds } = await resolveCategoryAttributesWithClient(supabase, categoryId, {
     includeParents,
     includeGlobal,
     filterableOnly,
   })
+
+  for (const id of ancestorIds) {
+    cacheTag(`attrs:category:${id}`)
+  }
+  if (includeGlobal) {
+    cacheTag('attrs:global')
+  }
 
   return { categoryId, attributes, ancestorIds }
 }

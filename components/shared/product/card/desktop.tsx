@@ -9,16 +9,20 @@ import { Zap as Lightning } from "lucide-react";
 import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
-import { useDrawer, type QuickViewProduct } from "@/components/providers/drawer-context"
-import { isBoostActiveNow } from "@/lib/boost/boost-status"
+import { useDrawer } from "@/components/providers/drawer-context"
 import { shouldShowConditionBadge } from "@/lib/badges/category-badge-specs"
-import { getListingOverlayBadgeVariants } from "@/lib/ui/badge-intent"
-import { getCategoryName } from "@/lib/category-display"
 
 import { ProductCardActions } from "./actions"
 import { ProductCardImage } from "./image"
 import { ProductCardPrice } from "./price"
 import { ProductCardSocialProof } from "./social-proof"
+import {
+  buildQuickViewProduct,
+  getDiscountPercent,
+  getOverlayBadgeVariants,
+  getProductUrl,
+  getRootCategoryLabel,
+} from "./metadata"
 import { FreshnessIndicator } from "../freshness-indicator"
 import { VerifiedSellerBadge } from "../verified-seller-badge"
 import { getConditionKey } from "../_lib/condition"
@@ -68,13 +72,10 @@ export function DesktopProductCard({
   const isQuickViewEnabled = isDrawerSystemEnabled && enabledDrawers.productQuickView
   const shouldUseDrawerQuickView = isQuickViewEnabled && !disableQuickView
 
-  const productUrl = username ? `/${username}/${slug || id}` : "#"
+  const productUrl = getProductUrl(username, slug, id)
   const isOwnProduct = !!(currentUserId && sellerId && currentUserId === sellerId)
 
-  const hasDiscount = Boolean(originalPrice && originalPrice > price)
-  const discountPercent = hasDiscount
-    ? Math.round((((originalPrice ?? 0) - price) / (originalPrice ?? 1)) * 100)
-    : (salePercent ?? 0)
+  const discountPercent = getDiscountPercent(price, originalPrice, salePercent)
 
   const hasRating = typeof rating === "number" && rating > 0
   const hasSoldCount = typeof soldCount === "number" && soldCount > 0
@@ -95,42 +96,15 @@ export function DesktopProductCard({
   }, [condition, shouldShowCondition, t])
 
   const rootCategoryLabel = React.useMemo(() => {
-    const rootCategory = categoryPath?.[0]
-    if (!rootCategory) return null
-
-    const fallbackName = rootCategory.name?.trim()
-    if (!fallbackName) return null
-
-    const localizedName = getCategoryName(
-      {
-        id: rootCategory.slug || fallbackName,
-        slug: rootCategory.slug || fallbackName,
-        name: fallbackName,
-        name_bg: rootCategory.nameBg ?? null,
-      },
-      locale
-    ).trim()
-
-    return localizedName || fallbackName
+    return getRootCategoryLabel(categoryPath, locale)
   }, [categoryPath, locale])
 
   const locationLabel = React.useMemo(() => location?.trim() || null, [location])
   const hasFreshness = Boolean(createdAt)
 
-  const isBoostedActive = React.useMemo(() => {
-    if (!isBoosted) return false
-    if (!boostExpiresAt) return true
-    return isBoostActiveNow({ is_boosted: true, boost_expires_at: boostExpiresAt })
-  }, [boostExpiresAt, isBoosted])
-
   const overlayBadgeVariants = React.useMemo(
-    () =>
-      getListingOverlayBadgeVariants({
-        isPromoted: isBoostedActive,
-        discountPercent,
-        minDiscountPercent: 5,
-      }),
-    [discountPercent, isBoostedActive]
+    () => getOverlayBadgeVariants({ isBoosted, boostExpiresAt, discountPercent }),
+    [boostExpiresAt, discountPercent, isBoosted]
   )
 
   const hasTrustSignals = Boolean(freeShipping || sellerVerified)
@@ -142,29 +116,29 @@ export function DesktopProductCard({
       if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return
 
       e.preventDefault()
-      const quickViewData: QuickViewProduct = {
+      const quickViewData = buildQuickViewProduct({
         id,
         title,
         price,
         image,
-        ...(typeof window !== "undefined" ? { sourceScrollY: window.scrollY } : {}),
-        ...(images ? { images } : {}),
-        ...(originalPrice != null ? { originalPrice } : {}),
-        ...(description != null ? { description } : {}),
-        ...(categoryPath ? { categoryPath } : {}),
-        ...(condition != null ? { condition } : {}),
-        ...(location != null ? { location } : {}),
-        ...(freeShipping !== undefined ? { freeShipping } : {}),
-        ...(rating !== undefined ? { rating } : {}),
-        ...(reviews !== undefined ? { reviews } : {}),
-        ...(inStock !== undefined ? { inStock } : {}),
-        ...(slug != null ? { slug } : {}),
-        ...(username != null ? { username } : {}),
-        ...(sellerId != null ? { sellerId } : {}),
-        ...(sellerName != null ? { sellerName } : {}),
-        ...(sellerAvatarUrl != null ? { sellerAvatarUrl } : {}),
-        ...(sellerVerified !== undefined ? { sellerVerified } : {}),
-      }
+        images,
+        originalPrice,
+        description,
+        categoryPath,
+        condition,
+        location,
+        freeShipping,
+        rating,
+        reviews,
+        inStock,
+        slug,
+        username,
+        sellerId,
+        sellerName,
+        sellerAvatarUrl,
+        sellerVerified,
+        includeFreeShipping: true,
+      })
       openDrawer("productQuickView", { product: quickViewData })
     },
     [

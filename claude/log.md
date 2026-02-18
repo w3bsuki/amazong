@@ -5,6 +5,52 @@
 
 ---
 
+### 2026-02-18 — Doc System Overhaul ("Soul.md" Audit)
+
+**Goal:** Full audit of all project documentation. Research soul.md patterns. Make docs AI-perfect.
+
+**Research phase:**
+- Read all 4,500+ lines of existing documentation
+- Researched soul.md concept: community pattern for giving AI agents identity/context/instructions
+- Studied Claude Code CLAUDE.md, Cursor .cursorrules, Cline SKILL.md, OpenAI AGENTS.md patterns
+- Key insight: AGENTS.md is converging as the cross-tool standard. Our setup was already well-aligned.
+
+**Audit findings:**
+- 3 parallel orchestration systems (codex/, refactor/, root pointers) creating confusion
+- claude.md was 130 lines doing 6 jobs — identity-confused
+- PROJECT-MAP.md (650 lines) was stale and less useful than just exploring the codebase
+- DOCS-STRUCTURE.md duplicated what AGENTS.md already does
+- PRD.md at 570 lines was too big for AI context in most sessions
+- No single "where are we?" snapshot for launch readiness
+
+**What I did:**
+1. Rewrote `claude.md` as soul.md style (~60 lines): identity + state + protocol + routing
+2. Restructured `AGENTS.md`: added doc philosophy section, updated routing table, fixed Active Work
+3. Rewrote `TASKS.md`: added launch readiness dashboard (19 areas with status)
+4. Created lean `docs/PRD.md` (~170 lines focused on AI needs), archived full version to `docs/PRD-full.md`
+5. Deleted stale files:
+   - `codex/` folder (28 superseded audit files)
+   - `MASTER-PLAN.md`, `REFACTOR.md` (5-line pointer files)
+   - `docs/PROJECT-MAP.md` (650 stale lines)
+   - `docs/DOCS-STRUCTURE.md` (merged into AGENTS.md)
+   - `refactor/AGENTS.md` (redundant)
+   - `refactor/phase1-4/` (completed phases)
+6. Updated all cross-references: DESIGN.md, PROGRAM.md, copilot-instructions.md
+7. Updated persistent memory
+
+**Net result:**
+- Deleted ~40 files, ~3,000+ lines of stale documentation
+- Doc loading path: AGENTS.md (~100 lines) → routes to exactly what you need
+- AI bootstrap: read claude.md (60 lines) + AGENTS.md (100 lines) = ready to work in 160 lines
+- Every doc has one job. No duplication.
+
+**Doc inventory now:**
+```
+Root: AGENTS.md, claude.md, TASKS.md
+docs/: PRD.md (lean), PRD-full.md (archive), STACK.md, DESIGN.md, DECISIONS.md, features/*.md
+refactor/: CURRENT.md, PROGRAM.md, shared-rules.md, lean-sweep/*, log.md, tasks.md
+```
+
 ### 2026-02-18 — Lean Sweep Planning
 
 **Goal:** Design comprehensive de-engineering refactor plan for Codex execution.

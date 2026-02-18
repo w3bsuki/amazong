@@ -659,6 +659,10 @@ export async function getCategoryRowProducts(
   limit = 10,
   zone?: ShippingRegion
 ): Promise<Product[]> {
+  'use cache'
+  cacheLife('products')
+  cacheTag(`products:category:${categorySlug}`)
+
   return getProductsByCategorySlug(categorySlug, limit, zone)
 }
 
@@ -669,6 +673,10 @@ export async function getCategoryRowProducts(
  * Expired boosts are filtered client-side where "current time" is allowed.
  */
 export async function getBoostedProducts(limit = 36, zone?: ShippingRegion): Promise<Product[]> {
+  'use cache'
+  cacheLife('products')
+  cacheTag('products:type:featured')
+
   const products = await getProducts('featured', limit * 2, zone)
   return products.filter((p) => Boolean(p.is_boosted) && Boolean(p.boost_expires_at)).slice(0, limit)
 }

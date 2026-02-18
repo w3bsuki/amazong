@@ -9,9 +9,6 @@ import { Box as IconBox, Store as IconBuildingStore, ChartColumn as IconChartBar
 import { NavUser } from "../../_components/nav/nav-user"
 import {
   Sidebar,
-  SidebarContent,
-  SidebarFooter,
-  SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
@@ -20,6 +17,7 @@ import {
   SidebarGroupContent,
   useSidebar,
 } from "@/components/layout/sidebar/sidebar"
+import { DashboardSidebar } from "@/components/shared/dashboard-sidebar"
 import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
 import { BUSINESS_NAV, type BusinessRoute } from "../dashboard/_lib/routes"
@@ -155,8 +153,9 @@ export function BusinessSidebar({
   const tierLabel = tierLabels[subscriptionTier] || 'Free'
 
   return (
-    <Sidebar collapsible="offcanvas" {...props}>
-      <SidebarHeader>
+    <DashboardSidebar
+      {...props}
+      header={
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton
@@ -195,9 +194,10 @@ export function BusinessSidebar({
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
-      </SidebarHeader>
-
-      <SidebarContent className="gap-0">
+      }
+      contentClassName="gap-0"
+      footer={<NavUser user={user} />}
+    >
         {/* Main Sales Section */}
         <SidebarGroup className="py-2">
           <SidebarGroupContent>
@@ -310,11 +310,6 @@ export function BusinessSidebar({
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
-      </SidebarContent>
-
-      <SidebarFooter>
-        <NavUser user={user} />
-      </SidebarFooter>
-    </Sidebar>
+    </DashboardSidebar>
   )
 }

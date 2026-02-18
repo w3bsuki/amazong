@@ -1,12 +1,10 @@
 "use client"
 
 import { useEffect, useMemo, useState, useTransition } from "react"
-import Image from "next/image"
 import { Link } from "@/i18n/routing"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Separator } from "@/components/ui/separator"
 import {
   Dialog,
   DialogContent,
@@ -28,6 +26,11 @@ import { getOrderStatusFromItems, type OrderItemStatus } from "@/lib/order-statu
 import { OrderTimeline } from "./order-timeline"
 import { BuyerOrderActions, type BuyerOrderActionsServerActions } from "../../_components/buyer-order-actions"
 import { useTranslations } from "next-intl"
+import { OrderHeader } from "@/components/shared/order-detail/order-header"
+import { OrderPriceSummaryRows } from "@/components/shared/order-detail/order-price-summary"
+import { OrderListProductThumb } from "@/components/shared/order-list-item"
+import { OrderDetailItemShell, OrderItemsList } from "@/components/shared/order-detail/order-items-list"
+import { OrderDetailSideCard } from "@/components/shared/order-detail/order-side-card"
 
 export type OrderDetailContentServerActions = BuyerOrderActionsServerActions & {
   requestReturn: (
@@ -309,40 +312,31 @@ export function OrderDetailContent({ locale, order, existingSellerFeedbackSeller
   return (
     <div className="space-y-6">
       {/* Back Button & Header */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex items-center gap-3">
-          <Link href="/account/orders">
-            <Button variant="ghost" size="icon-sm" aria-label={tCommon("back")}>
-              <ArrowLeft className="size-4" />
-            </Button>
-          </Link>
-          <div>
-            <div className="flex items-center gap-2">
-              <h2 className="text-lg font-semibold">
-                {locale === "bg" ? "Поръчка" : "Order"} #{order.id.slice(0, 8).toUpperCase()}
-              </h2>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="size-6"
-                onClick={() => copyToClipboard(order.id, locale === "bg" ? "ID" : "ID")}
-                aria-label={tCommon("copyOrderId")}
-              >
-                <Copy className="size-3" />
-              </Button>
-            </div>
-            <p className="text-sm text-muted-foreground">
-              {format(new Date(order.created_at), "PPP", { locale: dateLocale })}
-              {" · "}
-              {formatDistanceToNow(new Date(order.created_at), { addSuffix: true, locale: dateLocale })}
-            </p>
-          </div>
-        </div>
-        <Badge variant="secondary" className={`${statusConfig.color} ${statusConfig.text}`}>
-          <StatusIcon className="size-3.5 mr-1" />
-          {locale === "bg" ? statusConfig.labelBg : statusConfig.label}
-        </Badge>
-      </div>
+      <OrderHeader
+        backHref="/account/orders"
+        backButton={<ArrowLeft className="size-4" />}
+        backAriaLabel={tCommon("back")}
+        backButtonSize="icon-sm"
+        title={locale === "bg" ? "Поръчка" : "Order"}
+        orderId={order.id}
+        uppercaseOrderId
+        orderIdLength={8}
+        titleClassName="text-lg font-semibold tracking-normal"
+        subtitle={`${format(new Date(order.created_at), "PPP", { locale: dateLocale })} · ${formatDistanceToNow(new Date(order.created_at), {
+          addSuffix: true,
+          locale: dateLocale,
+        })}`}
+        copyAriaLabel={tCommon("copyOrderId")}
+        onCopy={() => copyToClipboard(order.id, locale === "bg" ? "ID" : "ID")}
+        rightContent={
+          <Badge variant="secondary" className={`${statusConfig.color} ${statusConfig.text}`}>
+            <StatusIcon className="size-3.5 mr-1" />
+            {locale === "bg" ? statusConfig.labelBg : statusConfig.label}
+          </Badge>
+        }
+        className="sm:items-center"
+        leftClassName="items-center"
+      />
 
       {/* Order Progress */}
       <Card>
@@ -417,6 +411,81 @@ export function OrderDetailContent({ locale, order, existingSellerFeedbackSeller
         </Card>
       )}
 
+      <Dialog open={isFeedbackDialogOpen} onOpenChange={setIsFeedbackDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{locale === "bg" ? "Обратна връзка" : "Seller feedback"}</DialogTitle>
+            <DialogDescription>
+              {locale === "bg"
+                ? "Оценете качеството на поръчката и комуникацията."
+                : "Rate the order experience and communication."}
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label>{locale === "bg" ? "Оценка" : "Rating"}</Label>
+              <RadioGroup
+                value={String(feedbackRating)}
+                onValueChange={(v) => setFeedbackRating(Number(v))}
+                className="flex flex-wrap gap-3"
+              >
+                {[5, 4, 3, 2, 1].map((r) => (
+                  <div key={r} className="flex items-center gap-2">
+                    <RadioGroupItem value={String(r)} id={`rating-${r}`} />
+                    <Label htmlFor={`rating-${r}`}>{r}</Label>
+                  </div>
+                ))}
+              </RadioGroup>
+            </div>
+
+            <div className="space-y-2">
+              <Label>{locale === "bg" ? "Детайли" : "Details"}</Label>
+              <div className="space-y-2">
+                <label className="flex items-center gap-2 text-sm">
+                  <Checkbox checked={itemAsDescribed} onCheckedChange={(v) => setItemAsDescribed(Boolean(v))} />
+                  {locale === "bg" ? "Описанието отговаря" : "Item as described"}
+                </label>
+                <label className="flex items-center gap-2 text-sm">
+                  <Checkbox checked={shippingSpeed} onCheckedChange={(v) => setShippingSpeed(Boolean(v))} />
+                  {locale === "bg" ? "Бърза доставка" : "Fast shipping"}
+                </label>
+                <label className="flex items-center gap-2 text-sm">
+                  <Checkbox checked={communication} onCheckedChange={(v) => setCommunication(Boolean(v))} />
+                  {locale === "bg" ? "Добра комуникация" : "Good communication"}
+                </label>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="seller-feedback-comment">{locale === "bg" ? "Коментар (по избор)" : "Comment (optional)"}</Label>
+              <Textarea
+                id="seller-feedback-comment"
+                value={feedbackComment}
+                onChange={(e) => setFeedbackComment(e.target.value)}
+                rows={4}
+              />
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsFeedbackDialogOpen(false)}>
+              {locale === "bg" ? "Отказ" : "Cancel"}
+            </Button>
+            <Button onClick={submitFeedback} disabled={isSubmittingFeedback}>
+              {isSubmittingFeedback ? (
+                <>
+                  <SpinnerGap className="size-4 mr-2 animate-spin" />
+                  {locale === "bg" ? "Изпращане..." : "Submitting..."}
+                </>
+              ) : (
+                locale === "bg" ? "Изпрати" : "Submit"
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       <div className="grid gap-4 lg:grid-cols-3">
         {/* Order Items */}
         <div className="lg:col-span-2 space-y-4">
@@ -426,110 +495,24 @@ export function OrderDetailContent({ locale, order, existingSellerFeedbackSeller
                 {locale === "bg" ? "Продукти" : "Items"} ({order.order_items.length})
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
-              {order.order_items.map((item) => {
-                const itemStatus = item.status || "pending"
-                const itemConfig = getStatusConfig(itemStatus)
-                const firstImage = item.product?.images?.[0]
+            <CardContent>
+              <OrderItemsList>
+                {order.order_items.map((item) => {
+                  const itemStatus = item.status || "pending"
+                  const itemConfig = getStatusConfig(itemStatus)
+                  const firstImage = item.product?.images?.[0]
 
-                return (
-                  <div key={item.id} className="flex gap-4 p-3 rounded-lg border bg-card">
-                    {/* Product Image */}
-                    <div className="relative size-20 rounded-md overflow-hidden bg-muted shrink-0">
-                      {firstImage ? (
-                        <Image
-                          src={firstImage}
-                          alt={item.product?.title || "Product"}
-                          fill
-                          className="object-cover"
-                        />
-                      ) : (
-                        <div className="size-full flex items-center justify-center">
-                          <Package className="size-8 text-muted-foreground" />
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Product Info */}
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-start justify-between gap-2">
+                  return (
+                    <OrderDetailItemShell
+                      key={item.id}
+                      imageSrc={firstImage}
+                      imageAlt={item.product?.title || "Product"}
+                      imageSizes="80px"
+                      content={
                         <div>
+                          <div className="flex items-start justify-between gap-2">
+                            <div>
 
-                          {/* Seller feedback dialog */}
-                          <Dialog open={isFeedbackDialogOpen} onOpenChange={setIsFeedbackDialogOpen}>
-                            <DialogContent>
-                              <DialogHeader>
-                                <DialogTitle>{locale === "bg" ? "Обратна връзка" : "Seller feedback"}</DialogTitle>
-                                <DialogDescription>
-                                  {locale === "bg"
-                                    ? "Оценете качеството на поръчката и комуникацията."
-                                    : "Rate the order experience and communication."}
-                                </DialogDescription>
-                              </DialogHeader>
-
-                              <div className="space-y-4">
-                                <div className="space-y-2">
-                                  <Label>{locale === "bg" ? "Оценка" : "Rating"}</Label>
-                                  <RadioGroup
-                                    value={String(feedbackRating)}
-                                    onValueChange={(v) => setFeedbackRating(Number(v))}
-                                    className="flex flex-wrap gap-3"
-                                  >
-                                    {[5, 4, 3, 2, 1].map((r) => (
-                                      <div key={r} className="flex items-center gap-2">
-                                        <RadioGroupItem value={String(r)} id={`rating-${r}`} />
-                                        <Label htmlFor={`rating-${r}`}>{r}</Label>
-                                      </div>
-                                    ))}
-                                  </RadioGroup>
-                                </div>
-
-                                <div className="space-y-2">
-                                  <Label>{locale === "bg" ? "Детайли" : "Details"}</Label>
-                                  <div className="space-y-2">
-                                    <label className="flex items-center gap-2 text-sm">
-                                      <Checkbox checked={itemAsDescribed} onCheckedChange={(v) => setItemAsDescribed(Boolean(v))} />
-                                      {locale === "bg" ? "Описанието отговаря" : "Item as described"}
-                                    </label>
-                                    <label className="flex items-center gap-2 text-sm">
-                                      <Checkbox checked={shippingSpeed} onCheckedChange={(v) => setShippingSpeed(Boolean(v))} />
-                                      {locale === "bg" ? "Бърза доставка" : "Fast shipping"}
-                                    </label>
-                                    <label className="flex items-center gap-2 text-sm">
-                                      <Checkbox checked={communication} onCheckedChange={(v) => setCommunication(Boolean(v))} />
-                                      {locale === "bg" ? "Добра комуникация" : "Good communication"}
-                                    </label>
-                                  </div>
-                                </div>
-
-                                <div className="space-y-2">
-                                  <Label htmlFor="seller-feedback-comment">{locale === "bg" ? "Коментар (по избор)" : "Comment (optional)"}</Label>
-                                  <Textarea
-                                    id="seller-feedback-comment"
-                                    value={feedbackComment}
-                                    onChange={(e) => setFeedbackComment(e.target.value)}
-                                    rows={4}
-                                  />
-                                </div>
-                              </div>
-
-                              <DialogFooter>
-                                <Button variant="outline" onClick={() => setIsFeedbackDialogOpen(false)}>
-                                  {locale === "bg" ? "Отказ" : "Cancel"}
-                                </Button>
-                                <Button onClick={submitFeedback} disabled={isSubmittingFeedback}>
-                                  {isSubmittingFeedback ? (
-                                    <>
-                                      <SpinnerGap className="size-4 mr-2 animate-spin" />
-                                      {locale === "bg" ? "Изпращане..." : "Submitting..."}
-                                    </>
-                                  ) : (
-                                    locale === "bg" ? "Изпрати" : "Submit"
-                                  )}
-                                </Button>
-                              </DialogFooter>
-                            </DialogContent>
-                          </Dialog>
                           <Link
                             href={
                               item.seller?.username
@@ -545,82 +528,84 @@ export function OrderDetailContent({ locale, order, existingSellerFeedbackSeller
                               {locale === "bg" ? "От" : "From"}: {item.seller.store_name}
                             </p>
                           )}
-                        </div>
-                        <Badge variant="outline" className="shrink-0">
-                          {locale === "bg" ? itemConfig.labelBg : itemConfig.label}
-                        </Badge>
-                      </div>
+                            </div>
+                            <Badge variant="outline" className="shrink-0">
+                              {locale === "bg" ? itemConfig.labelBg : itemConfig.label}
+                            </Badge>
+                          </div>
 
-                      <div className="flex items-center justify-between mt-2">
-                        <p className="text-sm">
-                          {item.quantity} × {formatPrice(item.price_at_purchase)}
-                        </p>
-                        <p className="font-medium">
-                          {formatPrice(item.quantity * item.price_at_purchase)}
-                        </p>
-                      </div>
+                          <div className="mt-2 flex items-center justify-between">
+                            <p className="text-sm">
+                              {item.quantity} × {formatPrice(item.price_at_purchase)}
+                            </p>
+                            <p className="font-medium">
+                              {formatPrice(item.quantity * item.price_at_purchase)}
+                            </p>
+                          </div>
 
-                      {/* Tracking Info */}
-                      {item.tracking_number && (
-                        <div className="flex items-center gap-2 mt-2 p-2 rounded bg-surface-subtle">
-                          <Truck className="size-4 text-muted-foreground" />
-                          <span className="text-sm flex-1">
-                            {item.shipping_carrier && CARRIERS[item.shipping_carrier.toLowerCase()]?.name}
-                            : {item.tracking_number}
-                          </span>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="h-7"
-                            onClick={() => openTracking(item)}
-                          >
-                            <ArrowSquareOut className="size-3.5" />
-                            {locale === "bg" ? "Проследи" : "Track"}
-                          </Button>
-                        </div>
-                      )}
+                          {/* Tracking Info */}
+                          {item.tracking_number && (
+                            <div className="mt-2 flex items-center gap-2 rounded bg-surface-subtle p-2">
+                              <Truck className="size-4 text-muted-foreground" />
+                              <span className="text-sm flex-1">
+                                {item.shipping_carrier && CARRIERS[item.shipping_carrier.toLowerCase()]?.name}
+                                : {item.tracking_number}
+                              </span>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="h-7"
+                                onClick={() => openTracking(item)}
+                              >
+                                <ArrowSquareOut className="size-3.5" />
+                                {locale === "bg" ? "Проследи" : "Track"}
+                              </Button>
+                            </div>
+                          )}
 
-                      {/* Actions */}
-                      <div className="flex gap-2 mt-3">
-                        <Link href={`/chat?seller=${item.seller_id}`}>
-                          <Button variant="outline" size="sm" className="h-7">
-                            <ChatCircle className="size-3.5 mr-1" />
-                            {locale === "bg" ? "Съобщение" : "Message"}
-                          </Button>
-                        </Link>
-                        {itemStatus === "delivered" && (
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            className="h-7"
-                            onClick={() => {
-                              setSelectedItem(item)
-                              setIsReturnDialogOpen(true)
-                            }}
-                          >
-                            <Warning className="size-3.5 mr-1" />
-                            {locale === "bg" ? "Върни" : "Return"}
-                          </Button>
-                        )}
-                      </div>
-                      {(itemStatus === "shipped" || itemStatus === "delivered") && (
-                        <div className="mt-2">
-                          <BuyerOrderActions
-                            orderItemId={item.id}
-                            currentStatus={itemStatus}
-                            sellerId={item.seller_id}
-                            conversationId={conversationId ?? null}
-                            locale={locale}
-                            orderId={order.id}
-                            actions={actions}
-                            mode="report-only"
-                          />
+                          {/* Actions */}
+                          <div className="mt-3 flex gap-2">
+                            <Link href={`/chat?seller=${item.seller_id}`}>
+                              <Button variant="outline" size="sm" className="h-7">
+                                <ChatCircle className="size-3.5 mr-1" />
+                                {locale === "bg" ? "Съобщение" : "Message"}
+                              </Button>
+                            </Link>
+                            {itemStatus === "delivered" && (
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                className="h-7"
+                                onClick={() => {
+                                  setSelectedItem(item)
+                                  setIsReturnDialogOpen(true)
+                                }}
+                              >
+                                <Warning className="size-3.5 mr-1" />
+                                {locale === "bg" ? "Върни" : "Return"}
+                              </Button>
+                            )}
+                          </div>
+                          {(itemStatus === "shipped" || itemStatus === "delivered") && (
+                            <div className="mt-2">
+                              <BuyerOrderActions
+                                orderItemId={item.id}
+                                currentStatus={itemStatus}
+                                sellerId={item.seller_id}
+                                conversationId={conversationId ?? null}
+                                locale={locale}
+                                orderId={order.id}
+                                actions={actions}
+                                mode="report-only"
+                              />
+                            </div>
+                          )}
                         </div>
-                      )}
-                    </div>
-                  </div>
-                )
-              })}
+                      }
+                    />
+                  )
+                })}
+              </OrderItemsList>
             </CardContent>
           </Card>
         </div>
@@ -633,19 +618,14 @@ export function OrderDetailContent({ locale, order, existingSellerFeedbackSeller
               <CardTitle className="text-base">{locale === "bg" ? "Обобщение" : "Summary"}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
-              <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">{locale === "bg" ? "Междинна сума" : "Subtotal"}</span>
-                <span>{formatPrice(subtotal)}</span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">{locale === "bg" ? "Доставка" : "Shipping"}</span>
-                <span>{shipping === 0 ? (locale === "bg" ? "Безплатна" : "Free") : formatPrice(shipping)}</span>
-              </div>
-              <Separator />
-              <div className="flex justify-between font-medium">
-                <span>{locale === "bg" ? "Общо" : "Total"}</span>
-                <span>{formatPrice(total)}</span>
-              </div>
+              <OrderPriceSummaryRows
+                subtotalLabel={locale === "bg" ? "Междинна сума" : "Subtotal"}
+                subtotalValue={formatPrice(subtotal)}
+                shippingLabel={locale === "bg" ? "Доставка" : "Shipping"}
+                shippingValue={shipping === 0 ? (locale === "bg" ? "Безплатна" : "Free") : formatPrice(shipping)}
+                totalLabel={locale === "bg" ? "Общо" : "Total"}
+                totalValue={formatPrice(total)}
+              />
               {stripePaymentIntentId && (
                 <div className="flex items-center gap-2 text-xs text-muted-foreground pt-2">
                   <Receipt className="size-3.5" />
@@ -680,53 +660,51 @@ export function OrderDetailContent({ locale, order, existingSellerFeedbackSeller
 
           {/* Shipping Address */}
           {shippingAddress && (
-            <Card>
-              <CardHeader className="pb-3">
-                <CardTitle className="text-base flex items-center gap-2">
+            <OrderDetailSideCard
+              title={
+                <>
                   <MapPin className="size-4" />
                   {locale === "bg" ? "Адрес за доставка" : "Shipping Address"}
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-sm space-y-1">
-                  {order.shipping_address?.name && (
-                    <p className="font-medium">{order.shipping_address.name}</p>
-                  )}
-                  <p>{shippingAddress.line1}</p>
-                  {shippingAddress.line2 && <p>{shippingAddress.line2}</p>}
-                  <p>
-                    {[shippingAddress.city, shippingAddress.state, shippingAddress.postal_code]
-                      .filter(Boolean)
-                      .join(", ")}
-                  </p>
-                  <p>{shippingAddress.country}</p>
-                  {order.shipping_address?.email && (
-                    <p className="text-muted-foreground">{order.shipping_address.email}</p>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
+                </>
+              }
+              titleClassName="text-base flex items-center gap-2"
+            >
+              <div className="text-sm space-y-1">
+                {order.shipping_address?.name && (
+                  <p className="font-medium">{order.shipping_address.name}</p>
+                )}
+                <p>{shippingAddress.line1}</p>
+                {shippingAddress.line2 && <p>{shippingAddress.line2}</p>}
+                <p>
+                  {[shippingAddress.city, shippingAddress.state, shippingAddress.postal_code]
+                    .filter(Boolean)
+                    .join(", ")}
+                </p>
+                <p>{shippingAddress.country}</p>
+                {order.shipping_address?.email && (
+                  <p className="text-muted-foreground">{order.shipping_address.email}</p>
+                )}
+              </div>
+            </OrderDetailSideCard>
           )}
 
           {/* Help */}
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base">{locale === "bg" ? "Нужда от помощ?" : "Need Help?"}</CardTitle>
-              <CardDescription>
-                {locale === "bg"
-                  ? "Свържете се с продавача или поддръжката"
-                  : "Contact the seller or support"}
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-2">
-              <Link href="/support">
-                <Button variant="outline" className="w-full justify-start">
-                  <ChatCircle className="size-4 mr-2" />
-                  {locale === "bg" ? "Свържете се с поддръжката" : "Contact Support"}
-                </Button>
-              </Link>
-            </CardContent>
-          </Card>
+          <OrderDetailSideCard
+            title={locale === "bg" ? "Нужда от помощ?" : "Need Help?"}
+            description={
+              locale === "bg"
+                ? "Свържете се с продавача или поддръжката"
+                : "Contact the seller or support"
+            }
+            contentClassName="space-y-2"
+          >
+            <Link href="/support">
+              <Button variant="outline" className="w-full justify-start">
+                <ChatCircle className="size-4 mr-2" />
+                {locale === "bg" ? "Свържете се с поддръжката" : "Contact Support"}
+              </Button>
+            </Link>
+          </OrderDetailSideCard>
         </div>
       </div>
 
@@ -743,20 +721,13 @@ export function OrderDetailContent({ locale, order, existingSellerFeedbackSeller
           </DialogHeader>
           {selectedItem && (
             <div className="flex items-center gap-3 p-3 rounded-lg border bg-surface-subtle">
-              <div className="relative size-12 rounded overflow-hidden bg-muted">
-                {selectedItem.product?.images?.[0] ? (
-                  <Image
-                    src={selectedItem.product.images[0]}
-                    alt={selectedItem.product.title || "Product"}
-                    fill
-                    className="object-cover"
-                  />
-                ) : (
-                  <div className="size-full flex items-center justify-center">
-                    <Package className="size-5 text-muted-foreground" />
-                  </div>
-                )}
-              </div>
+              <OrderListProductThumb
+                imageSrc={selectedItem.product?.images?.[0]}
+                alt={selectedItem.product?.title || "Product"}
+                className="size-12 rounded bg-muted"
+                sizes="48px"
+                fallbackClassName="text-muted-foreground"
+              />
               <div className="flex-1 min-w-0">
                 <p className="font-medium text-sm line-clamp-1">{selectedItem.product?.title}</p>
                 <p className="text-xs text-muted-foreground">

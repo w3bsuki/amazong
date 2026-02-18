@@ -1,7 +1,6 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import Image from "next/image"
 import { Link } from "@/i18n/routing"
 import { formatDistanceToNow } from "date-fns"
 import { bg, enUS } from "date-fns/locale"
@@ -9,10 +8,10 @@ import { ChevronRight as IconChevronRight, MessageCircle as IconMessageCircle, P
 
 
 import { Badge } from "@/components/ui/badge"
-import { BuyerOrderActions, type BuyerOrderActionsServerActions } from "./buyer-order-actions"
+import { BuyerOrderActions } from "./buyer-order-actions"
 import { Button } from "@/components/ui/button"
 import { OrderStatusBadge } from "../../../../_components/orders/order-status-badge"
-import type { OrderItemStatus, OrderStatusKey } from "@/lib/order-status"
+import type { OrderItemStatus } from "@/lib/order-status"
 import { getOrderStatusFromItems } from "@/lib/order-status"
 import {
   Card,
@@ -41,68 +40,23 @@ import {
 } from "@/components/ui/sheet"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Separator } from "@/components/ui/separator"
-
-type OrderStatus =
-  | "pending"
-  | "processing"
-  | "paid"
-  | "shipped"
-  | "delivered"
-  | "cancelled"
-  | string
-
-type OrderProduct = {
-  id: string
-  title: string | null
-  images: string[] | null
-  slug?: string | null
-  price?: number | null
-}
-
-type OrderItemRow = {
-  id: string
-  product_id: string
-  seller_id?: string
-  seller_username?: string | null
-  quantity: number
-  price_at_purchase?: number
-  product?: OrderProduct | null
-  // New status fields
-  status?: OrderItemStatus
-  tracking_number?: string | null
-  shipping_carrier?: string | null
-  shipped_at?: string | null
-}
-
-type OrderRow = {
-  id: string
-  created_at: string
-  status: OrderStatus | null
-  fulfillment_status?: OrderStatus | null
-  total_amount: number | string | null
-  order_items: OrderItemRow[]
-}
-
-export type AccountOrdersGridServerActions = BuyerOrderActionsServerActions & {
-  getOrderConversation: (
-    orderId: string,
-    sellerId: string
-  ) => Promise<{ conversationId: string | null; error?: string }>
-}
-
-interface AccountOrdersGridProps {
-  orders: OrderRow[]
-  locale: string
-  actions: AccountOrdersGridServerActions
-}
+import { OrderListProductThumb, OrderListStatusBadge } from "@/components/shared/order-list-item"
+import { OrderSummaryLine } from "@/components/shared/order-summary-line"
+import type { AccountOrdersGridProps } from "./account-orders-grid.types"
+export type { AccountOrdersGridServerActions } from "./account-orders-grid.types"
+import {
+  formatOrderCurrency,
+  getOrderGridText,
+  getProductHref,
+  isOrderStatusKey,
+} from "./account-orders-grid.utils"
 
 export function AccountOrdersGrid({ orders, locale, actions }: AccountOrdersGridProps) {
   const dateLocale = locale === "bg" ? bg : enUS
   const [conversationMap, setConversationMap] = useState<Map<string, string>>(new Map())
   const [openMobileOrderId, setOpenMobileOrderId] = useState<string | null>(null)
-  const isOrderStatusKey = (value: unknown): value is OrderStatusKey =>
-    typeof value === "string" &&
-    ["pending", "paid", "processing", "shipped", "delivered", "cancelled"].includes(value)
+  const formatCurrency = (value: number) => formatOrderCurrency(value, locale)
+  const t = getOrderGridText(locale)
 
   // Fetch conversation IDs for each order
   useEffect(() => {
@@ -125,80 +79,6 @@ export function AccountOrdersGrid({ orders, locale, actions }: AccountOrdersGrid
       fetchConversations()
     }
   }, [actions, orders])
-
-  const formatCurrency = (value: number) =>
-    new Intl.NumberFormat(locale, {
-      style: "currency",
-      currency: locale === "bg" ? "BGN" : "EUR",
-      maximumFractionDigits: 2,
-    }).format(value)
-
-  const getStatusColor = (status: OrderStatus | null) => {
-    switch (status) {
-      case "paid":
-        return "bg-success/10 text-success border-success/20"
-      case "pending":
-        return "bg-warning/10 text-warning border-warning/20"
-      case "processing":
-        return "bg-order-processing/10 text-order-processing border-order-processing/20"
-      case "shipped":
-        return "bg-order-shipped/10 text-order-shipped border-order-shipped/20"
-      case "partially_shipped":
-        return "bg-order-shipped/10 text-order-shipped border-order-shipped/20"
-      case "delivered":
-        return "bg-success/10 text-success border-success/20"
-      case "cancelled":
-        return "bg-error/10 text-error border-error/20"
-      default:
-        return "bg-muted text-muted-foreground border-border"
-    }
-  }
-
-  const getStatusText = (status: OrderStatus | null) => {
-    if (locale === "bg") {
-      switch (status) {
-        case "paid":
-          return "Платена"
-        case "pending":
-          return "Изчакване"
-        case "processing":
-          return "Обработка"
-        case "shipped":
-          return "Изпратена"
-        case "partially_shipped":
-          return "Частично изпратена"
-        case "delivered":
-          return "Доставена"
-        case "cancelled":
-          return "Отменена"
-        default:
-          return status || "Неизвестен"
-      }
-    }
-    if (status === "partially_shipped") return "Partially shipped"
-    return status ? status.charAt(0).toUpperCase() + status.slice(1) : "Unknown"
-  }
-
-  const getProductHref = (item: OrderItemRow) => {
-    if (!item.seller_username) return "#"
-    return `/${item.seller_username}/${item.product?.slug || item.product_id}`
-  }
-
-  const t = {
-    order: locale === "bg" ? "Поръчка" : "Order",
-    items: locale === "bg" ? "артикула" : "items",
-    item: locale === "bg" ? "артикул" : "item",
-    viewOrder: locale === "bg" ? "Виж поръчката" : "View order",
-    orderDetails: locale === "bg" ? "Детайли за поръчката" : "Order Details",
-    placed: locale === "bg" ? "Направена" : "Placed",
-    status: locale === "bg" ? "Статус" : "Status",
-    total: locale === "bg" ? "Общо" : "Total",
-    qty: locale === "bg" ? "Количество" : "Qty",
-    viewProduct: locale === "bg" ? "Виж продукта" : "View product",
-    noOrders: locale === "bg" ? "Няма поръчки" : "No orders found",
-    noOrdersDesc: locale === "bg" ? "Когато направите поръчка, тя ще се появи тук." : "When you place an order, it will appear here.",
-    startShopping: locale === "bg" ? "Към магазина" : "Start shopping",
-  }
 
   // Empty state
   if (orders.length === 0) {
@@ -274,29 +154,21 @@ export function AccountOrdersGrid({ orders, locale, actions }: AccountOrdersGrid
                     {visibleItems.map((item) => {
                       const image = item.product?.images?.[0]
                       return (
-                        <div
+                        <OrderListProductThumb
                           key={item.id}
-                          className="relative size-14 rounded-md overflow-hidden bg-card border border-border shrink-0"
-                        >
-                          {image ? (
-                            <Image
-                              src={image}
-                              alt=""
-                              fill
-                              className="object-cover"
-                              sizes="56px"
-                            />
-                          ) : (
-                            <div className="flex size-full items-center justify-center">
-                              <IconPackage className="size-6 text-muted-foreground" strokeWidth={1.5} />
-                            </div>
-                          )}
-                          {item.quantity > 1 && (
-                            <div className="absolute -bottom-0.5 -right-0.5 flex size-5 items-center justify-center rounded-full bg-primary text-2xs font-bold text-primary-foreground shadow-sm">
-                              x{item.quantity}
-                            </div>
-                          )}
-                        </div>
+                          imageSrc={image}
+                          alt=""
+                          className="size-14 rounded-md border border-border bg-card shrink-0"
+                          sizes="56px"
+                          fallbackClassName="text-muted-foreground"
+                          overlay={
+                            item.quantity > 1 ? (
+                              <div className="absolute -bottom-0.5 -right-0.5 flex size-5 items-center justify-center rounded-full bg-primary text-2xs font-bold text-primary-foreground shadow-sm">
+                                x{item.quantity}
+                              </div>
+                            ) : null
+                          }
+                        />
                       )
                     })}
                     {remainingCount > 0 && (
@@ -309,9 +181,7 @@ export function AccountOrdersGrid({ orders, locale, actions }: AccountOrdersGrid
                   {/* Footer: Status + Item count + View link */}
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <Badge variant="outline" className={`text-2xs font-medium ${getStatusColor(displayStatus)}`}>
-                        {getStatusText(displayStatus)}
-                      </Badge>
+                      <OrderListStatusBadge status={displayStatus} locale={locale} className="text-2xs font-medium" />
                       <span className="text-xs text-muted-foreground">
                         {itemCount} {itemCount === 1 ? t.item : t.items}
                       </span>
@@ -336,12 +206,7 @@ export function AccountOrdersGrid({ orders, locale, actions }: AccountOrdersGrid
                     </DrawerClose>
                   </div>
                   <DrawerDescription>
-                    <Badge
-                      variant="outline"
-                      className={getStatusColor(displayStatus)}
-                    >
-                      {getStatusText(displayStatus)}
-                    </Badge>
+                    <OrderListStatusBadge status={displayStatus} locale={locale} />
                   </DrawerDescription>
                 </DrawerHeader>
                 <DrawerBody className="px-4 py-4">
@@ -384,68 +249,71 @@ export function AccountOrdersGrid({ orders, locale, actions }: AccountOrdersGrid
                         const itemStatus = item.status || 'pending'
 
                         return (
-                          <div key={item.id} className="flex gap-3">
-                            <Link href={href} className="shrink-0">
-                              <div className="relative size-16 overflow-hidden rounded-lg border bg-muted">
-                                <Image
-                                  src={image}
-                                  alt={title}
-                                  fill
-                                  sizes="64px"
-                                  className="object-contain"
-                                />
-                              </div>
-                            </Link>
-                            <div className="min-w-0 flex-1">
+                          <OrderSummaryLine
+                            key={item.id}
+                            thumb={{
+                              href,
+                              linkClassName: "shrink-0",
+                              imageSrc: image,
+                              alt: title,
+                              className: "size-16 rounded-lg border bg-muted",
+                              imageClassName: "object-contain",
+                              sizes: "64px",
+                              fallbackClassName: "text-muted-foreground",
+                            }}
+                            title={
                               <Link
                                 href={href}
                                 className="text-sm font-medium hover:underline line-clamp-2"
                               >
                                 {title}
                               </Link>
+                            }
+                            statusSlot={
                               <div className="flex items-center gap-2 mt-1">
                                 <OrderStatusBadge status={itemStatus as OrderItemStatus} size="sm" />
                               </div>
-                              <p className="text-xs text-muted-foreground mt-1">
-                                {t.qty}: {item.quantity}
+                            }
+                          >
+                            <p className="text-xs text-muted-foreground mt-1">
+                              {t.qty}: {item.quantity}
+                            </p>
+                            {item.price_at_purchase && (
+                              <p className="text-sm font-medium mt-1 tabular-nums">
+                                {formatCurrency(item.price_at_purchase)}
                               </p>
-                              {item.price_at_purchase && (
-                                <p className="text-sm font-medium mt-1 tabular-nums">
-                                  {formatCurrency(item.price_at_purchase)}
-                                </p>
-                              )}
-                              {/* Tracking info */}
-                              {item.tracking_number && (
-                                <p className="text-xs text-muted-foreground mt-1">
-                                  📍 {item.tracking_number} {item.shipping_carrier && `(${item.shipping_carrier})`}
-                                </p>
-                              )}
-                              {/* Buyer Actions: Confirm Delivery & Rate Seller */}
-                              {item.seller_id && (itemStatus === 'shipped' || itemStatus === 'delivered') && (
-                                <div className="mt-2">
-                                  <BuyerOrderActions
-                                    orderItemId={item.id}
-                                    currentStatus={itemStatus as OrderItemStatus}
-                                    sellerId={item.seller_id}
-                                    conversationId={conversationMap.get(order.id) ?? null}
-                                    locale={locale}
-                                    orderId={order.id}
-                                    actions={actions}
-                                  />
-                                </div>
-                              )}
-                              {/* Chat link (shown for other statuses) */}
-                              {item.seller_id && itemStatus !== 'shipped' && itemStatus !== 'delivered' && conversationMap.get(order.id) && (
-                                <Link
-                                  href={`/chat/${conversationMap.get(order.id)}`}
-                                  className="inline-flex items-center gap-1 text-xs text-primary hover:underline mt-2"
-                                >
-                                  <IconMessageCircle className="size-3" />
-                                  {locale === "bg" ? "Чат с продавача" : "Chat with seller"}
-                                </Link>
-                              )}
-                            </div>
-                          </div>
+                            )}
+                            {/* Tracking info */}
+                            {item.tracking_number && (
+                              <p className="text-xs text-muted-foreground mt-1">
+                                📍 {item.tracking_number} {item.shipping_carrier && `(${item.shipping_carrier})`}
+                              </p>
+                            )}
+                            {/* Buyer Actions: Confirm Delivery & Rate Seller */}
+                            {item.seller_id && (itemStatus === 'shipped' || itemStatus === 'delivered') && (
+                              <div className="mt-2">
+                                <BuyerOrderActions
+                                  orderItemId={item.id}
+                                  currentStatus={itemStatus as OrderItemStatus}
+                                  sellerId={item.seller_id}
+                                  conversationId={conversationMap.get(order.id) ?? null}
+                                  locale={locale}
+                                  orderId={order.id}
+                                  actions={actions}
+                                />
+                              </div>
+                            )}
+                            {/* Chat link (shown for other statuses) */}
+                            {item.seller_id && itemStatus !== 'shipped' && itemStatus !== 'delivered' && conversationMap.get(order.id) && (
+                              <Link
+                                href={`/chat/${conversationMap.get(order.id)}`}
+                                className="inline-flex items-center gap-1 text-xs text-primary hover:underline mt-2"
+                              >
+                                <IconMessageCircle className="size-3" />
+                                {locale === "bg" ? "Чат с продавача" : "Chat with seller"}
+                              </Link>
+                            )}
+                          </OrderSummaryLine>
                         )
                       })}
                     </div>
@@ -495,18 +363,15 @@ export function AccountOrdersGrid({ orders, locale, actions }: AccountOrdersGrid
                           const image =
                             item.product?.images?.[0] || "/placeholder.svg"
                           return (
-                            <div
+                            <OrderListProductThumb
                               key={item.id}
-                              className="relative size-10 rounded-md border-2 border-background bg-muted overflow-hidden ring-1 ring-border"
-                            >
-                              <Image
-                                src={image}
-                                alt=""
-                                fill
-                                sizes="40px"
-                                className="object-contain"
-                              />
-                            </div>
+                              imageSrc={image}
+                              alt=""
+                              className="size-10 rounded-md border-2 border-background bg-muted ring-1 ring-border"
+                              imageClassName="object-contain"
+                              sizes="40px"
+                              fallbackClassName="text-muted-foreground"
+                            />
                           )
                         })}
                         {remainingCount > 0 && (
@@ -528,12 +393,7 @@ export function AccountOrdersGrid({ orders, locale, actions }: AccountOrdersGrid
                         </p>
                       </div>
                       <div>
-                        <Badge
-                          variant="outline"
-                          className={getStatusColor(status)}
-                        >
-                          {getStatusText(status)}
-                        </Badge>
+                        <OrderListStatusBadge status={status} locale={locale} />
                       </div>
                       <div className="text-sm text-muted-foreground">
                         {formatDistanceToNow(new Date(order.created_at), {
@@ -564,12 +424,7 @@ export function AccountOrdersGrid({ orders, locale, actions }: AccountOrdersGrid
                         {t.order} #{order.id.slice(0, 8)}
                       </SheetTitle>
                       <SheetDescription className="flex items-center gap-2">
-                        <Badge
-                          variant="outline"
-                          className={getStatusColor(status)}
-                        >
-                          {getStatusText(status)}
-                        </Badge>
+                        <OrderListStatusBadge status={status} locale={locale} />
                         <span className="text-muted-foreground">
                           {new Date(order.created_at).toLocaleDateString(
                             locale,
@@ -612,84 +467,84 @@ export function AccountOrdersGrid({ orders, locale, actions }: AccountOrdersGrid
                             const itemStatus = item.status || 'pending'
 
                             return (
-                              <div
+                              <OrderSummaryLine
                                 key={item.id}
-                                className="flex gap-4 p-3 rounded-lg border bg-card"
-                              >
-                                <Link href={href} className="shrink-0">
-                                  <div className="relative size-20 overflow-hidden rounded-lg border bg-muted">
-                                    <Image
-                                      src={image}
-                                      alt={title}
-                                      fill
-                                      sizes="80px"
-                                      className="object-contain"
-                                    />
-                                  </div>
-                                </Link>
-                                <div className="min-w-0 flex-1">
+                                className="gap-4 p-3 rounded-lg border bg-card"
+                                thumb={{
+                                  href,
+                                  linkClassName: "shrink-0",
+                                  imageSrc: image,
+                                  alt: title,
+                                  className: "size-20 rounded-lg border bg-muted",
+                                  imageClassName: "object-contain",
+                                  sizes: "80px",
+                                  fallbackClassName: "text-muted-foreground",
+                                }}
+                                title={
                                   <Link
                                     href={href}
                                     className="font-medium hover:underline line-clamp-2"
                                   >
                                     {title}
                                   </Link>
-                                  {/* Item Status */}
+                                }
+                                statusSlot={
                                   <div className="flex items-center gap-2 mt-1.5">
                                     <OrderStatusBadge status={itemStatus as OrderItemStatus} size="sm" />
                                   </div>
-                                  <p className="text-sm text-muted-foreground mt-1">
-                                    {t.qty}: {item.quantity}
+                                }
+                              >
+                                <p className="text-sm text-muted-foreground mt-1">
+                                  {t.qty}: {item.quantity}
+                                </p>
+                                {item.price_at_purchase && (
+                                  <p className="text-sm font-semibold mt-2 tabular-nums">
+                                    {formatCurrency(item.price_at_purchase)}
                                   </p>
-                                  {item.price_at_purchase && (
-                                    <p className="text-sm font-semibold mt-2 tabular-nums">
-                                      {formatCurrency(item.price_at_purchase)}
-                                    </p>
-                                  )}
-                                  {/* Tracking info */}
-                                  {item.tracking_number && (
-                                    <div className="text-sm text-muted-foreground mt-2 flex items-center gap-1">
-                                      <span>📍</span>
-                                      <span className="font-mono">{item.tracking_number}</span>
-                                      {item.shipping_carrier && <span>({item.shipping_carrier})</span>}
-                                    </div>
-                                  )}
-                                  {/* Actions */}
-                                  <div className="flex items-center gap-3 mt-3">
-                                    <Link
-                                      href={href}
-                                      className="inline-flex items-center text-sm text-primary hover:underline"
-                                    >
-                                      {t.viewProduct}
-                                      <IconChevronRight className="size-3 ml-0.5" />
-                                    </Link>
-                                    {/* Show chat only if NOT showing buyer actions */}
-                                    {item.seller_id && itemStatus !== 'shipped' && itemStatus !== 'delivered' && conversationMap.get(order.id) && (
-                                      <Link
-                                        href={`/chat/${conversationMap.get(order.id)}`}
-                                        className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
-                                      >
-                                        <IconMessageCircle className="size-4" />
-                                        {locale === "bg" ? "Чат" : "Chat"}
-                                      </Link>
-                                    )}
+                                )}
+                                {/* Tracking info */}
+                                {item.tracking_number && (
+                                  <div className="text-sm text-muted-foreground mt-2 flex items-center gap-1">
+                                    <span>📍</span>
+                                    <span className="font-mono">{item.tracking_number}</span>
+                                    {item.shipping_carrier && <span>({item.shipping_carrier})</span>}
                                   </div>
-                                  {/* Buyer Actions: Confirm Delivery & Rate Seller */}
-                                  {item.seller_id && (itemStatus === 'shipped' || itemStatus === 'delivered') && (
-                                    <div className="mt-3 pt-3 border-t">
-                                      <BuyerOrderActions
-                                        orderItemId={item.id}
-                                        currentStatus={itemStatus as OrderItemStatus}
-                                        sellerId={item.seller_id}
-                                        conversationId={conversationMap.get(order.id) ?? null}
-                                        locale={locale}
-                                        orderId={order.id}
-                                        actions={actions}
-                                      />
-                                    </div>
+                                )}
+                                {/* Actions */}
+                                <div className="flex items-center gap-3 mt-3">
+                                  <Link
+                                    href={href}
+                                    className="inline-flex items-center text-sm text-primary hover:underline"
+                                  >
+                                    {t.viewProduct}
+                                    <IconChevronRight className="size-3 ml-0.5" />
+                                  </Link>
+                                  {/* Show chat only if NOT showing buyer actions */}
+                                  {item.seller_id && itemStatus !== 'shipped' && itemStatus !== 'delivered' && conversationMap.get(order.id) && (
+                                    <Link
+                                      href={`/chat/${conversationMap.get(order.id)}`}
+                                      className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
+                                    >
+                                      <IconMessageCircle className="size-4" />
+                                      {locale === "bg" ? "Чат" : "Chat"}
+                                    </Link>
                                   )}
                                 </div>
-                              </div>
+                                {/* Buyer Actions: Confirm Delivery & Rate Seller */}
+                                {item.seller_id && (itemStatus === 'shipped' || itemStatus === 'delivered') && (
+                                  <div className="mt-3 pt-3 border-t">
+                                    <BuyerOrderActions
+                                      orderItemId={item.id}
+                                      currentStatus={itemStatus as OrderItemStatus}
+                                      sellerId={item.seller_id}
+                                      conversationId={conversationMap.get(order.id) ?? null}
+                                      locale={locale}
+                                      orderId={order.id}
+                                      actions={actions}
+                                    />
+                                  </div>
+                                )}
+                              </OrderSummaryLine>
                             )
                           })}
                         </div>

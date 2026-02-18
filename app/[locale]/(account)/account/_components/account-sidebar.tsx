@@ -8,12 +8,10 @@ import { Bell as IconBell, Store as IconBuildingStore, ChartLine as IconChartLin
 
 import { PlansModal, type PlansModalServerActions } from "./plans-modal"
 import { Button } from "@/components/ui/button"
+import { DashboardSidebar } from "@/components/shared/dashboard-sidebar"
 
 import {
   Sidebar,
-  SidebarContent,
-  SidebarFooter,
-  SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
@@ -226,8 +224,9 @@ export function AccountSidebar({ user, plansModalActions, ...props }: AccountSid
   }
 
   return (
-    <Sidebar collapsible="offcanvas" {...props}>
-      <SidebarHeader>
+    <DashboardSidebar
+      {...props}
+      header={
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton
@@ -245,8 +244,9 @@ export function AccountSidebar({ user, plansModalActions, ...props }: AccountSid
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
-      </SidebarHeader>
-      <SidebarContent>
+      }
+      footer={<AccountNavUser user={user} />}
+    >
         {/* Main Navigation */}
         <SidebarGroup>
           <SidebarGroupContent>
@@ -365,10 +365,6 @@ export function AccountSidebar({ user, plansModalActions, ...props }: AccountSid
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
-      </SidebarContent>
-      <SidebarFooter>
-        <AccountNavUser user={user} />
-      </SidebarFooter>
-    </Sidebar>
+    </DashboardSidebar>
   )
 }

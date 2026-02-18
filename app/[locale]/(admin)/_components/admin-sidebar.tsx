@@ -7,11 +7,9 @@ import { Box as IconBox, Store as IconBuildingStore, ListChecks as IconChecklist
 import { NavMain } from "../../_components/nav/nav-main"
 import { NavSecondary } from "../../_components/nav/nav-secondary"
 import { NavUser } from "../../_components/nav/nav-user"
+import { DashboardSidebar } from "@/components/shared/dashboard-sidebar"
 import {
   Sidebar,
-  SidebarContent,
-  SidebarFooter,
-  SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
@@ -80,8 +78,9 @@ export function AdminSidebar({ user, ...props }: AdminSidebarProps) {
   ]
 
   return (
-    <Sidebar collapsible="offcanvas" {...props}>
-      <SidebarHeader>
+    <DashboardSidebar
+      {...props}
+      header={
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton asChild className="data-[slot=sidebar-menu-button]:p-1.5!">
@@ -94,15 +93,12 @@ export function AdminSidebar({ user, ...props }: AdminSidebarProps) {
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
-      </SidebarHeader>
-      <SidebarContent>
+      }
+      footer={<NavUser user={user} />}
+    >
         <NavMain items={adminNavItems} />
         <NavSecondary items={adminSecondaryNav} className="mt-auto" />
-      </SidebarContent>
-      <SidebarFooter>
-        <NavUser user={user} />
-      </SidebarFooter>
-    </Sidebar>
+    </DashboardSidebar>
   )
 }
 

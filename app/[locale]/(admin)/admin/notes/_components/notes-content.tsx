@@ -1,35 +1,16 @@
 "use client"
 
-import * as React from "react"
 import { useState } from "react"
-import { Pencil as IconEdit, Pin as IconPin, Pin as IconPinFilled, Plus as IconPlus, Trash as IconTrash } from "lucide-react";
+import { Plus as IconPlus } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import { Label } from "@/components/ui/label"
-import { useLocale, useTranslations } from "next-intl"
+import { useTranslations } from "next-intl"
 import { createClient } from "@/lib/supabase/client"
 import { toast } from "sonner"
-import { cn } from "@/lib/utils"
 
-interface AdminNote {
-  id: string
-  title: string
-  content: string | null
-  is_pinned: boolean | null
-  author_id: string | null
-  created_at: string | null
-  updated_at: string | null
-}
+import { NoteCard } from "./note-card"
+import { NoteDialog } from "./note-dialog"
+import type { AdminNote, NoteSavePayload } from "./types"
 
 export function AdminNotesContent({ initialNotes }: { initialNotes: AdminNote[] }) {
   const t = useTranslations("AdminNotes")
@@ -58,7 +39,7 @@ export function AdminNotesContent({ initialNotes }: { initialNotes: AdminNote[] 
     setNotes(notes.map((n) => (n.id === note.id ? { ...n, is_pinned: !n.is_pinned } : n)))
   }
 
-  const handleSave = async (note: Partial<AdminNote> & { id?: string }) => {
+  const handleSave = async (note: NoteSavePayload) => {
     if (note.id) {
       // Update - build object conditionally to satisfy exactOptionalPropertyTypes
       const updateData: Record<string, string | null> = {
@@ -167,153 +148,5 @@ export function AdminNotesContent({ initialNotes }: { initialNotes: AdminNote[] 
         onSave={handleSave}
       />
     </div>
-  )
-}
-
-function NoteCard({
-  note,
-  onTogglePin,
-  onEdit,
-  onDelete,
-}: {
-  note: AdminNote
-  onTogglePin: () => void
-  onEdit: () => void
-  onDelete: () => void
-}) {
-  const t = useTranslations("AdminNotes")
-  const locale = useLocale()
-
-  return (
-    <Card className={cn("group", note.is_pinned && "border-selected-border bg-hover")}>
-      <CardHeader className="p-4 pb-2">
-        <div className="flex items-start justify-between gap-2">
-          <CardTitle className="text-base leading-tight">{note.title}</CardTitle>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="size-7 min-h-11 min-w-11 shrink-0"
-            aria-label={note.is_pinned ? t("aria.unpin") : t("aria.pin")}
-            title={note.is_pinned ? t("aria.unpin") : t("aria.pin")}
-            onClick={onTogglePin}
-          >
-            {note.is_pinned ? (
-              <IconPinFilled className="size-4 text-primary" />
-            ) : (
-              <IconPin className="size-4" />
-            )}
-          </Button>
-        </div>
-      </CardHeader>
-      <CardContent className="p-4 pt-0">
-        {note.content && (
-          <p className="text-sm text-muted-foreground line-clamp-4 whitespace-pre-wrap">
-            {note.content}
-          </p>
-        )}
-        <div className="flex items-center justify-between mt-3 pt-3 border-t">
-          <span className="text-xs text-muted-foreground">
-            {note.updated_at ? new Date(note.updated_at).toLocaleDateString(locale) : t("dateEmpty")}
-          </span>
-          <div className="flex gap-1 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="size-7 min-h-11 min-w-11"
-              onClick={onEdit}
-              aria-label={t("aria.edit")}
-              title={t("aria.edit")}
-            >
-              <IconEdit className="size-3.5" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="size-7 min-h-11 min-w-11"
-              onClick={onDelete}
-              aria-label={t("aria.delete")}
-              title={t("aria.delete")}
-            >
-              <IconTrash className="size-3.5" />
-            </Button>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
-  )
-}
-
-function NoteDialog({
-  note,
-  open,
-  onOpenChange,
-  onSave,
-}: {
-  note: AdminNote | null
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  onSave: (note: Partial<AdminNote> & { id?: string }) => void
-}) {
-  const [title, setTitle] = useState(note?.title || "")
-  const [content, setContent] = useState(note?.content || "")
-  const t = useTranslations("AdminNotes")
-
-  React.useEffect(() => {
-    if (open) {
-      setTitle(note?.title || "")
-      setContent(note?.content || "")
-    }
-  }, [open, note])
-
-  const handleSubmit = () => {
-    if (!title.trim()) {
-      toast.error(t("toasts.titleRequired"))
-      return
-    }
-    onSave({
-      ...(note?.id ? { id: note.id } : {}),
-      title,
-      content: content || null,
-    })
-  }
-
-  return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>{note ? t("dialog.titleEdit") : t("dialog.titleNew")}</DialogTitle>
-        </DialogHeader>
-        <div className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="title">{t("labels.title")}</Label>
-            <Input
-              id="title"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder={t("placeholders.title")}
-            />
-          </div>
-          
-          <div className="space-y-2">
-            <Label htmlFor="content">{t("labels.content")}</Label>
-            <Textarea
-              id="content"
-              value={content}
-              onChange={(e) => setContent(e.target.value)}
-              placeholder={t("placeholders.content")}
-              rows={8}
-            />
-          </div>
-        </div>
-        <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)}>
-            {t("buttons.cancel")}
-          </Button>
-          <Button onClick={handleSubmit}>
-            {note ? t("buttons.saveChanges") : t("buttons.createNote")}
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
   )
 }

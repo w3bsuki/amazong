@@ -782,6 +782,12 @@ export async function getSubcategoriesForBrowse(
   parentId: string | null,
   filterForBrowse: boolean = false
 ): Promise<CategoryWithCount[]> {
+  'use cache'
+  cacheLife('categories')
+  cacheTag(`subcategories:${parentId || 'root'}:counts`)
+  if (parentId) cacheTag(`category-children:${parentId}`)
+  cacheTag('categories:tree')
+
   // Always fetch all counts (we filter in TS for flexibility)
   const subcats = await getSubcategoriesWithCounts(parentId, false)
   

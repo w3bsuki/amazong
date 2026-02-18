@@ -1,13 +1,7 @@
 import { useEffect, useState } from "react"
-import { ArrowRight, Heart, ShoppingCart, Trash, X } from "lucide-react";
+import { ArrowRight, Heart, ShoppingCart, Trash } from "lucide-react";
 
 import {
-  Drawer,
-  DrawerContent,
-  DrawerDescription,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerClose,
   DrawerBody,
 } from "@/components/ui/drawer"
 import { Button } from "@/components/ui/button"
@@ -16,6 +10,7 @@ import { Link } from "@/i18n/routing"
 import { useTranslations } from "next-intl"
 import { useWishlist } from "@/components/providers/wishlist-context"
 import { useCart } from "@/components/providers/cart-context"
+import { DrawerShell } from "@/components/shared/drawer-shell"
 import Image from "next/image"
 import { cn } from "@/lib/utils"
 import { toast } from "sonner"
@@ -58,30 +53,25 @@ export function WishlistDrawer({ open, onOpenChange, className }: WishlistDrawer
   const contentMaxHeight = items.length <= 2 ? "max-h-dialog-sm" : "max-h-dialog"
 
   return (
-    <Drawer open={open} onOpenChange={onOpenChange}>
-      <DrawerContent className={className}>
-        <DrawerHeader className="pb-1.5 pt-0 border-b border-border text-left">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-1">
-              <Heart size={16} className="text-wishlist" />
-              <DrawerTitle className="text-sm font-semibold tracking-tight">{t("title")}</DrawerTitle>
-              <span className="text-xs text-muted-foreground" suppressHydrationWarning>
-                ({mounted ? totalItems : 0})
-              </span>
-            </div>
-            <DrawerClose asChild>
-              <IconButton
-                aria-label={t("close")}
-                variant="ghost"
-                size="icon-compact"
-                className="text-muted-foreground hover:text-foreground hover:bg-muted active:bg-muted"
-              >
-                <X size={20} />
-              </IconButton>
-            </DrawerClose>
-          </div>
-          <DrawerDescription className="sr-only">{t("description")}</DrawerDescription>
-        </DrawerHeader>
+    <DrawerShell
+      open={open}
+      onOpenChange={onOpenChange}
+      title={t("title")}
+      closeLabel={t("close")}
+      description={t("description")}
+      icon={<Heart size={16} className="text-wishlist" />}
+      titleClassName="tracking-tight"
+      titleSuffix={
+        <span className="text-xs text-muted-foreground" suppressHydrationWarning>
+          ({mounted ? totalItems : 0})
+        </span>
+      }
+      contentClassName={className}
+      headerClassName="pb-1.5 pt-0 border-b border-border text-left"
+      closeButtonClassName="text-muted-foreground hover:text-foreground hover:bg-muted active:bg-muted"
+      closeButtonSize="icon-compact"
+      closeIconSize={20}
+    >
 
         {isLoading ? (
           <div className="flex items-center justify-center py-8">
@@ -177,8 +167,7 @@ export function WishlistDrawer({ open, onOpenChange, className }: WishlistDrawer
             </div>
           </DrawerBody>
         )}
-      </DrawerContent>
-    </Drawer>
+    </DrawerShell>
   )
 }
 

@@ -2,7 +2,7 @@
 
 > **Scope:** Add caching to read-heavy fetchers. Move client data to server. Fix Supabase client usage.
 > **Read `refactor/shared-rules.md` first.**
-> **Read `ARCHITECTURE.md` §2 (Supabase Clients) and §4 (Caching Patterns).**
+> **Read `docs/STACK.md` § Supabase and § Next.js (cache profiles).**
 
 ---
 
@@ -89,7 +89,7 @@ grep -rn "createClient()" app/api/ --include="*.ts"
 grep -rn "createBrowserClient" app/actions/ --include="*.ts"
 ```
 
-Fix any mismatches per the mapping in `ARCHITECTURE.md` §2.
+Fix any mismatches per the client table in `docs/STACK.md` § Supabase.
 
 ## DON'T TOUCH
 - `lib/auth/` queries

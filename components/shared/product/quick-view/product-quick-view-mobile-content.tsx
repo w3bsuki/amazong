@@ -1,17 +1,22 @@
-import { RefreshCw as ArrowsClockwise, SquareArrowOutUpRight as ArrowSquareOut, Heart, Link as LinkSimple, MapPin, ShieldCheck, Truck, X } from "lucide-react";
+import { SquareArrowOutUpRight as ArrowSquareOut, MapPin } from "lucide-react"
 
 
 import { useTranslations } from "next-intl"
 
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { IconButton } from "@/components/ui/icon-button"
 import { Skeleton } from "@/components/ui/skeleton"
 import { getConditionBadgeVariant } from "@/components/shared/product/_lib/condition-badges"
-import { cn } from "@/lib/utils"
 
 import type { ProductQuickViewViewProps } from "./product-quick-view-content"
 import { QuickViewImageGallery } from "./quick-view-image-gallery"
+import {
+  QuickViewActionButtons,
+  QuickViewFooterActions,
+  QuickViewProtectionCard,
+  QuickViewSellerSkeletonCard,
+  QuickViewShippingBadge,
+} from "./quick-view-chrome"
 import { QuickViewSellerCard } from "./quick-view-seller-card"
 
 export function ProductQuickViewMobileContent({
@@ -61,48 +66,21 @@ export function ProductQuickViewMobileContent({
             {tDrawers("quickView")}
           </p>
 
-          <div className="flex items-center gap-1.5">
-            <IconButton
-              type="button"
-              variant="ghost"
-              size="icon-default"
-              onClick={onCopyLink}
-              aria-label={tModal("copyLink")}
-              disabled={!shareEnabled}
-              className="border border-border-subtle bg-background text-muted-foreground hover:bg-hover hover:text-foreground active:bg-active"
-            >
-              <LinkSimple size={18} />
-            </IconButton>
-            <IconButton
-              type="button"
-              variant="ghost"
-              size="icon-default"
-              onClick={onToggleWishlist}
-              aria-label={inWishlist ? tProduct("removeFromWatchlist") : tProduct("addToWatchlist")}
-              disabled={wishlistPending}
-              className={cn(
-                "border border-border-subtle bg-background",
-                inWishlist
-                  ? "text-primary hover:bg-hover active:bg-active"
-                  : "text-muted-foreground hover:bg-hover hover:text-foreground active:bg-active"
-              )}
-            >
-              <Heart
-                size={18}
-                className={cn(inWishlist && "fill-primary text-primary")}
-              />
-            </IconButton>
-            <IconButton
-              type="button"
-              variant="ghost"
-              size="icon-default"
-              className="border border-border-subtle bg-background text-muted-foreground hover:bg-hover hover:text-foreground active:bg-active"
-              onClick={() => onRequestClose?.()}
-              aria-label={tDrawers("close")}
-            >
-              <X className="size-4.5" />
-            </IconButton>
-          </div>
+          <QuickViewActionButtons
+            copyAriaLabel={tModal("copyLink")}
+            wishlistAriaLabel={inWishlist ? tProduct("removeFromWatchlist") : tProduct("addToWatchlist")}
+            closeAriaLabel={tDrawers("close")}
+            inWishlist={inWishlist}
+            wishlistPending={wishlistPending}
+            shareEnabled={shareEnabled}
+            onCopyLink={onCopyLink}
+            onToggleWishlist={onToggleWishlist}
+            onRequestClose={onRequestClose}
+            buttonSize="icon-default"
+            iconSize={18}
+            closeIconClassName="size-4.5"
+            className="gap-1.5"
+          />
         </div>
       </div>
 
@@ -154,10 +132,10 @@ export function ProductQuickViewMobileContent({
             </div>
 
             <div className="flex flex-wrap items-center gap-1.5">
-              <Badge variant={freeShipping ? "shipping-free" : "shipping"} size="compact">
-                <Truck />
-                {freeShipping ? tProduct("freeShipping") : tProduct("shippingAvailable")}
-              </Badge>
+              <QuickViewShippingBadge
+                freeShipping={freeShipping}
+                label={freeShipping ? tProduct("freeShipping") : tProduct("shippingAvailable")}
+              />
 
               {conditionLabel ? (
                 <Badge size="compact" variant={getConditionBadgeVariant(condition)}>
@@ -179,15 +157,11 @@ export function ProductQuickViewMobileContent({
           </div>
 
           {showSellerSkeleton ? (
-            <div className="rounded-xl border border-border-subtle bg-card p-3">
-              <div className="flex items-center gap-3">
-                <Skeleton className="size-(--control-default) rounded-full" />
-                <div className="min-w-0 flex-1 space-y-1.5">
-                  <Skeleton className="h-4 w-32" />
-                  <Skeleton className="h-3 w-20" />
-                </div>
-              </div>
-            </div>
+            <QuickViewSellerSkeletonCard
+              className="bg-card"
+              titleSkeletonClassName="w-32"
+              subtitleSkeletonClassName="w-20"
+            />
           ) : (
             <QuickViewSellerCard
               compact
@@ -200,19 +174,12 @@ export function ProductQuickViewMobileContent({
             />
           )}
 
-          <div className="rounded-xl border border-border-subtle bg-card p-3 text-sm text-muted-foreground">
-            <div className="flex items-start gap-2">
-              <ShieldCheck size={17} className="mt-0.5 shrink-0" />
-              <div className="min-w-0 flex-1">
-                <p className="font-semibold tracking-tight text-foreground">{tProduct("buyerProtection")}</p>
-                <p className="text-xs text-muted-foreground">{tProduct("buyerProtectionBadgeSubtitle")}</p>
-              </div>
-            </div>
-            <div className="mt-2 flex items-center gap-2 text-xs">
-              <ArrowsClockwise size={16} className="shrink-0" />
-              <span>{tProduct("easyReturns")}</span>
-            </div>
-          </div>
+          <QuickViewProtectionCard
+            title={tProduct("buyerProtection")}
+            subtitle={tProduct("buyerProtectionBadgeSubtitle")}
+            easyReturns={tProduct("easyReturns")}
+            className="bg-card"
+          />
 
           <Button
             type="button"
@@ -228,29 +195,14 @@ export function ProductQuickViewMobileContent({
       </div>
 
       <div className="sticky bottom-0 z-20 shrink-0 border-t border-border bg-surface-elevated px-4 py-2.5 pb-safe-max">
-        <div className="grid grid-cols-2 gap-2">
-          <Button
-            type="button"
-            variant="default"
-            size="primary"
-            className="w-full"
-            onClick={onBuyNow}
-            disabled={!inStock}
-          >
-            {tProduct("buyNow")}
-          </Button>
-          <Button
-            type="button"
-            variant="outline"
-            size="primary"
-            className="w-full"
-            onClick={onAddToCart}
-            aria-label={tProduct("addToCart")}
-            disabled={!inStock}
-          >
-            {tProduct("add")}
-          </Button>
-        </div>
+        <QuickViewFooterActions
+          buyNowLabel={tProduct("buyNow")}
+          addToCartLabel={tProduct("add")}
+          addToCartAriaLabel={tProduct("addToCart")}
+          onBuyNow={onBuyNow}
+          onAddToCart={onAddToCart}
+          inStock={inStock}
+        />
       </div>
     </div>
   )

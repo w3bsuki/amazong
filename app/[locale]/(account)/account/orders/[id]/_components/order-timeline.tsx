@@ -1,7 +1,7 @@
 import { useMemo } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
+import { OrderDetailSideCard } from "@/components/shared/order-detail/order-side-card"
 import { cn } from "@/lib/utils"
 import { format } from "date-fns"
 import { bg, enUS } from "date-fns/locale"
@@ -135,11 +135,7 @@ export function OrderTimeline({ locale, orderCreatedAt, orderStatus, orderItems 
   const anyKnownTimestamps = steps.some((s) => s.at)
 
   return (
-    <Card>
-      <CardHeader className="pb-3">
-        <CardTitle className="text-base">{locale === "bg" ? "Хронология" : "Timeline"}</CardTitle>
-      </CardHeader>
-      <CardContent>
+    <OrderDetailSideCard title={locale === "bg" ? "Хронология" : "Timeline"}>
         {!anyKnownTimestamps ? (
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <Clock className="size-4" />
@@ -185,8 +181,7 @@ export function OrderTimeline({ locale, orderCreatedAt, orderStatus, orderItems 
             })}
           </div>
         )}
-      </CardContent>
-    </Card>
+    </OrderDetailSideCard>
   )
 }
 

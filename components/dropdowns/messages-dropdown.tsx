@@ -8,8 +8,9 @@ import type { User } from "@supabase/supabase-js"
 import { ChevronRight as CaretRight, MessageCircle as ChatCircle } from "lucide-react";
 
 import { createClient } from "@/lib/supabase/client"
-import { CountBadge } from "@/components/shared/count-badge"
 import { HeaderDropdown } from "@/components/shared/header-dropdown"
+import { HeaderDropdownFooter, HeaderDropdownTitleRow } from "@/components/shared/header-dropdown-shell"
+import { HeaderIconTrigger } from "@/components/shared/header-icon-trigger"
 
 interface MessagesDropdownProps {
   user: User | null
@@ -100,29 +101,19 @@ export function MessagesDropdown({ user }: MessagesDropdownProps) {
       open={isOpen}
       onOpenChange={setIsOpen}
       trigger={
-        <div className="inline-flex items-center justify-center border border-transparent hover:border-header-text/20 rounded-md text-header-text hover:text-header-text hover:bg-header-hover active:bg-header-active relative size-11 [&_svg]:size-6 cursor-pointer tap-transparent motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth) motion-reduce:transition-none">
-          <span className="relative" aria-hidden="true">
-            <ChatCircle />
-            {unreadCount > 0 && (
-              <CountBadge
-                count={unreadCount}
-                className="absolute -top-1 -right-1 bg-notification text-primary-foreground ring-2 ring-header-bg h-4.5 min-w-4.5 px-1 text-2xs shadow-sm"
-                aria-hidden="true"
-              />
-            )}
-          </span>
-        </div>
+        <HeaderIconTrigger
+          icon={<ChatCircle />}
+          badgeCount={unreadCount}
+          className="hover:text-header-text"
+          badgeClassName="absolute -top-1 -right-1 bg-notification text-primary-foreground ring-2 ring-header-bg h-4.5 min-w-4.5 px-1 text-2xs shadow-sm"
+        />
       }
     >
-        <div className="flex items-center gap-2 p-4 bg-muted border-b border-border">
-          <ChatCircle size={20} className="text-muted-foreground" />
-          <h3 className="font-semibold text-base text-foreground">{t("title")}</h3>
-          {unreadCount > 0 && (
-            <span className="text-xs bg-notification text-primary-foreground px-2 py-0.5 rounded-full" aria-hidden="true">
-              {unreadCount}
-            </span>
-          )}
-        </div>
+        <HeaderDropdownTitleRow
+          icon={<ChatCircle size={20} />}
+          title={t("title")}
+          count={unreadCount}
+        />
 
         {/* Content */}
         <div className="p-4">
@@ -134,14 +125,14 @@ export function MessagesDropdown({ user }: MessagesDropdownProps) {
         </div>
 
         {/* Footer */}
-        <div className="p-3 bg-muted border-t border-border">
+        <HeaderDropdownFooter>
           <Button asChild variant="cta" className="w-full h-9 text-sm">
             <Link href="/chat" onClick={() => setIsOpen(false)}>
               {t("openInbox")}
               <CaretRight size={14} className="ml-1" />
             </Link>
           </Button>
-        </div>
+        </HeaderDropdownFooter>
     </HeaderDropdown>
   )
 }

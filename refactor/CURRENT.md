@@ -1,6 +1,8 @@
 # Current Refactor Task
 
 > **Read this file first.** It tells you exactly where we are and what to do next.
+> **Autopilot protocol:** `refactor/autopilot.md` — the execution loop.
+> **Shared rules:** `refactor/shared-rules.md` — read before every task.
 
 ---
 
@@ -8,52 +10,52 @@
 
 | | |
 |---|---|
-| **Phase** | Lean Sweep (replaces old Phase 3+4) |
-| **Last completed** | Phase B — Action Consolidation (2026-02-18) |
-| **Next action** | Execute Lean Sweep Phase C below |
+| **Mode** | Autopilot — full domain-by-domain audit + refactor |
+| **Current task** | Domain 1 — (account) route group |
+| **Sessions so far** | 18 (batches 0-2 + lean sweep A-E) |
 
-## Metrics (post-Phase 2)
+## Metrics
 
 | Metric | Baseline | Now | Target |
 |--------|----------|-----|--------|
-| Files | 762 | 819 | <700 |
-| Total LOC | ~48K | ~43K | <35K |
-| `"use client"` | 357 | 216 | <150 |
-| >300-line files | 125 | 118 | <15 |
+| Files | 762 | 852 | <650 |
+| LOC (source) | ~48K | ~43K | <30K |
+| `"use client"` | 357 | 217 | <120 |
+| >300L files | 125 | 93 | <20 |
+| Tiny <50L files | — | 286 | <100 |
 | Missing metadata | 58 | 53 | 0 |
-| Clone % | 3.06% | 3.04% | <2% |
+| Clone % | 3.06% | 2.80% | <1.5% |
 
-## Task Queue — Lean Sweep
+## Domain Task Queue
 
-Execute tasks in order. Check off when done. **One task per session.**
+Each domain task is a full audit + refactor of that area. Read `refactor/autopilot.md` for the execution loop.
 
-> All agent files are in `refactor/lean-sweep/`. Read `lean-sweep/README.md` for context.
+- [x] Batches 0-2 + Lean Sweep A-E (sessions 1-18)
+- [ ] **Domain 1: (account)** → `refactor/domains/01-account.md` — 92f/16.8K LOC
+- [ ] **Domain 2: (main)** → `refactor/domains/02-main.md` — 135f/16K LOC
+- [ ] **Domain 3: (sell) + (business)** → `refactor/domains/03-sell-business.md` — 106f/16.6K LOC
+- [ ] **Domain 4: Small routes** → `refactor/domains/04-small-routes.md` — 159f/16.6K LOC
+- [ ] **Domain 5: components/** → `refactor/domains/05-components.md` — 142f/14.5K LOC
+- [ ] **Domain 6: lib/ + actions/ + api/** → `refactor/domains/06-lib-actions-api.md` — 169f/26.3K LOC
+- [ ] **Domain 7: Cross-cutting + final** → `refactor/domains/07-cross-cutting-final.md` — metadata, CSS, dead code, build, report
 
-- [x] **A: Dead Code Purge** → Read `lean-sweep/agent-a-dead-code.md` then execute
-- [x] **B: Action Consolidation** → Read `lean-sweep/agent-b-actions.md` then execute
-- [ ] **C: Shared Primitives** → Read `lean-sweep/agent-c-shared-primitives.md` then execute
-- [ ] **D: Provider Simplification** → Read `lean-sweep/agent-d-providers.md` then execute
-- [ ] **E: Utility Consolidation** → Read `lean-sweep/agent-e-utilities.md` then execute
-- [ ] **F: Data Layer & Caching** → Read `lean-sweep/agent-f-data-layer.md` then execute
-- [ ] **G: Final Polish** → Read `lean-sweep/agent-g-polish.md` then execute
+## How to Run
 
-## How to Run a Session
-
+### Autopilot (full autonomous run)
 ```
-1. You already read root AGENTS.md (auto-loaded). Good.
-2. You are reading this file (CURRENT.md). Good.
-3. Read `refactor/shared-rules.md` — mandatory rules.
-4. Pick the first unchecked task above.
-5. Read the linked agent file in `refactor/lean-sweep/`.
-6. Execute. Work in logical batches. Follow shared-rules.md.
-7. When done:
-   a. Run verification (see AGENTS.md § Verify).
-   b. Check off your task.
-   c. Update the metrics table above.
-   d. Log changes in `refactor/lean-sweep/extractions.md`.
-   e. Append a summary to `refactor/log.md`.
+Read refactor/autopilot.md. Execute all remaining tasks following the loop protocol.
+```
+
+### Single domain
+```
+Read refactor/CURRENT.md. Execute the first unchecked domain task.
+```
+
+### Resume
+```
+Read refactor/autopilot.md. Continue from where you left off.
 ```
 
 ---
 
-*Updated: 2026-02-18 — Lean Sweep plan replaces old Phase 3+4*
+*Updated: 2026-02-18 — Full domain-by-domain audit + refactor. 7 domain tasks.*

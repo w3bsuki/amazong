@@ -2,6 +2,7 @@
 
 > Updated after each session. Reviewed by Human + Copilot before next phase.
 > For active task and what to do now → Read `CURRENT.md`.
+> For the staged refactor program (Batch 0-8) → Read `PROGRAM.md`.
 > For session-by-session history → Read `log.md`.
 
 ---
@@ -10,13 +11,25 @@
 
 | Metric | Baseline | Post-P1 | Post-P2 | Post-P3 | Post-P4 | Target |
 |--------|----------|---------|---------|---------|---------|--------|
-| Files | 762 | 803 | 805 | — | — | — |
-| `"use client"` | 357 | 218 | 215 | — | — | <150 |
-| >300-line files | 125 | 121 | 120 | — | — | <80 |
-| >500-line files | 44 | 43 | 43 | — | — | <20 |
-| Missing metadata | 58 | 53 | 53 | — | — | 0 |
-| Missing loading | 38 | 0 | 0 | — | — | 0 |
-| Clone % | 3.06% | 3.86% | 3.06% | — | — | <2% |
+| Files | 762 | 803 | 805 | 830 | 852 | — |
+| `"use client"` | 357 | 218 | 215 | 216 | 217 | <150 |
+| >300-line files | 125 | 121 | 120 | 117 | 114 | <80 |
+| >500-line files | 44 | 43 | 43 | 39 | 38 | <20 |
+| Missing metadata | 58 | 53 | 53 | 53 | 53 | 0 |
+| Missing loading | 38 | 0 | 0 | 0 | 0 | 0 |
+| Clone % | 3.06% | 3.86% | 3.06% | 2.97% | 2.80% | <2% |
+
+## Active Batch Program
+
+- [x] Batch 0 — Baseline lock + hygiene guardrails
+- [x] Batch 1 — Shared UI primitives + drawer/dropdown dedupe
+- [x] Batch 2 — Cross-route shared primitives
+- [ ] Batch 3 — Large-screen decomposition
+- [ ] Batch 4 — Data layer + cache correctness
+- [ ] Batch 5 — Action layer rationalization
+- [ ] Batch 6 — High-risk last phase
+- [ ] Batch 7 — Route hygiene
+- [ ] Batch 8 — Final hardening
 
 ---
 
@@ -48,7 +61,7 @@
 
 | Agent | Scope | Status |
 |-------|-------|--------|
-| Agent 1 | Caching (`"use cache"`, cacheLife, cacheTag) | ⬜ |
+| Agent 1 | Caching (`"use cache"`, cacheLife, cacheTag) | ◕ |
 | Agent 2 | Data layer (select, client→server, Supabase clients) | ⬜ |
 | Agent 3 | Dependency diet (knip, unused deps, heavy deps) | ⬜ |
 
@@ -68,4 +81,4 @@
 
 ---
 
-*Updated: 2026-02-17*
+*Updated: 2026-02-18*

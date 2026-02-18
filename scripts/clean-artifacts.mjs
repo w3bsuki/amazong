@@ -5,12 +5,15 @@ const repoRoot = process.cwd()
 
 const deleteTargets = [
   '.next',
+  '.tmp',
+  '.playwright-mcp',
   'out',
   'coverage',
   '.lighthouseci',
   'playwright-report',
   'blob-report',
   'test-results',
+  path.join('docs', 'audit-screenshots'),
 ]
 
 const deleteFileExactTargets = [
@@ -68,11 +71,11 @@ async function main() {
     return deleteFilePrefixTargets.some(prefix => name.startsWith(prefix))
   })
 
-  const targets = [
+  const targets = [...new Set([
     ...deleteTargets,
     ...prefixed,
     ...matchedFiles,
-  ].map(p => path.join(repoRoot, p))
+  ])].map(p => path.join(repoRoot, p))
 
   if (dryRun) {
     console.log('Dry run. Would delete:')

@@ -8,9 +8,10 @@ import { Heart } from "lucide-react";
 import { useEffect, useMemo, useState } from "react"
 
 import { useWishlist, type WishlistItem } from "@/components/providers/wishlist-context"
-import { CountBadge } from "@/components/shared/count-badge"
 import { DropdownProductItem } from "@/components/shared/dropdown-product-item"
 import { HeaderDropdown } from "@/components/shared/header-dropdown"
+import { HeaderDropdownFooter } from "@/components/shared/header-dropdown-shell"
+import { HeaderIconTrigger } from "@/components/shared/header-icon-trigger"
 
 function buildProductUrl(item: WishlistItem) {
   if (!item.username) return "#"
@@ -46,18 +47,11 @@ export function WishlistDropdown() {
       ariaLabel={`${tNav("wishlist")}${itemCountSuffix}`}
       widthClassName="w-72"
       trigger={
-        <div className="inline-flex items-center justify-center border border-transparent hover:border-header-text/20 rounded-md text-header-text hover:bg-header-hover active:bg-header-active relative size-11 [&_svg]:size-6 cursor-pointer tap-transparent motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth) motion-reduce:transition-none">
-          <span className="relative" aria-hidden="true">
-            <Heart />
-            {mounted && displayItems > 0 && (
-              <CountBadge
-                count={displayItems}
-                className="absolute -top-1 -right-1.5 bg-wishlist-active text-primary-foreground ring-2 ring-header-bg h-4 min-w-4 px-1 text-2xs"
-                aria-hidden="true"
-              />
-            )}
-          </span>
-        </div>
+        <HeaderIconTrigger
+          icon={<Heart />}
+          badgeCount={mounted ? displayItems : 0}
+          badgeClassName="absolute -top-1 -right-1.5 bg-wishlist-active text-primary-foreground ring-2 ring-header-bg h-4 min-w-4 px-1 text-2xs"
+        />
       }
     >
         <div className="flex items-center justify-between px-3 py-2 bg-muted border-b border-border">
@@ -105,13 +99,13 @@ export function WishlistDropdown() {
               )}
             </div>
 
-            <div className="px-3 py-2 bg-muted border-t border-border">
+            <HeaderDropdownFooter className="px-3 py-2">
               <Button asChild variant="cta" size="default" className="w-full">
                 <Link href="/account/wishlist">
                   {t("viewAll")}
                 </Link>
               </Button>
-            </div>
+            </HeaderDropdownFooter>
           </>
         )}
     </HeaderDropdown>

@@ -1,7 +1,7 @@
 import 'server-only'
 
 import { cacheLife, cacheTag } from 'next/cache'
-import { createStaticClient, createClient } from '@/lib/supabase/server'
+import { createStaticClient } from '@/lib/supabase/server'
 
 // =============================================================================
 // Select projections — canonical fields to avoid drift
@@ -97,7 +97,11 @@ export async function getActivePlans(): Promise<SubscriptionPlan[]> {
  * Fetch plans for upgrade UI (minimal fields)
  */
 export async function getPlansForUpgrade(): Promise<UpgradePlan[]> {
-  const client = await createClient()
+  'use cache'
+  cacheTag('plans')
+  cacheLife('max')
+
+  const client = createStaticClient()
   const { data } = await client
     .from('subscription_plans')
     .select(PLANS_SELECT_FOR_UPGRADE)

@@ -14,7 +14,11 @@ Post-signup onboarding wizard. Session management via HTTP-only cookies.
 - `app/api/auth/sign-out/route.ts` — Sign-out route handler (POST for mutation, GET for redirect)
 - `lib/supabase/middleware.ts` — Session refresh in middleware (`updateSession()`)
 - `lib/auth/require-auth.ts` — Server-side auth guards (`requireAuth`, `requireAuthOrFail`)
+- `lib/auth/admin.ts` — Admin role check
+- `lib/auth/business.ts` — Business account check
 - `proxy.ts` — Entry middleware, delegates to updateSession for protected routes
+- `app/[locale]/(onboarding)/` — Onboarding wizard route group
+- `app/[locale]/(main)/_providers/onboarding-provider.tsx` — Onboarding gate provider
 
 ## How it works
 **Server path:** Request → `proxy.ts` → `updateSession()` → refreshes cookies for protected routes → App Router
@@ -31,6 +35,8 @@ Post-signup onboarding wizard. Session management via HTTP-only cookies.
 - Sign-out is POST-only for mutation safety; GET redirects
 - Redirect targets validated with `safeNextPath()` in confirm route
 - Onboarding: `profiles.onboarding_completed` gates incomplete users to `/onboarding`
+- `OnboardingProvider` redirects incomplete users except on explicit bypass routes
+- Email-confirm flow redirects new incomplete users to `/?onboarding=true`
 
 ## Dependencies
 - `@supabase/ssr` for cookie-based session management

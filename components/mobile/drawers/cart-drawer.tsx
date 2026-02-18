@@ -1,15 +1,9 @@
 "use client"
 
 import { useMemo, useCallback, useEffect, useState } from "react"
-import { Minus, Package, Plus, ShoppingCart, LoaderCircle as SpinnerGap, Trash, X } from "lucide-react";
+import { Minus, Package, Plus, ShoppingCart, LoaderCircle as SpinnerGap, Trash } from "lucide-react";
 
 import {
-  Drawer,
-  DrawerContent,
-  DrawerDescription,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerClose,
   DrawerFooter,
   DrawerBody,
 } from "@/components/ui/drawer"
@@ -18,6 +12,7 @@ import { IconButton } from "@/components/ui/icon-button"
 import { Link } from "@/i18n/routing"
 import { useTranslations, useLocale } from "next-intl"
 import { useCart, type CartItem } from "@/components/providers/cart-context"
+import { DrawerShell } from "@/components/shared/drawer-shell"
 import Image from "next/image"
 import { cn } from "@/lib/utils"
 import { normalizeImageUrl, PLACEHOLDER_IMAGE_PATH } from "@/lib/normalize-image-url"
@@ -96,28 +91,18 @@ export function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
   const handleClose = useCallback(() => onOpenChange(false), [onOpenChange])
 
   return (
-    <Drawer open={open} onOpenChange={onOpenChange}>
-      <DrawerContent>
-        <DrawerHeader className="pb-1.5 pt-0 border-b border-border text-left">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-1.5">
-              <ShoppingCart size={16} className="text-muted-foreground" />
-              <DrawerTitle className="text-sm font-semibold">{t("title")}</DrawerTitle>
-              <span className="text-xs text-muted-foreground">({isReady ? totalItems : "..."})</span>
-            </div>
-            <DrawerClose asChild>
-              <IconButton
-                aria-label={t("close")}
-                variant="ghost"
-                size="icon-default"
-                className="text-muted-foreground hover:text-foreground hover:bg-muted active:bg-muted motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth)"
-              >
-                <X size={20} />
-              </IconButton>
-            </DrawerClose>
-          </div>
-          <DrawerDescription className="sr-only">{t("description")}</DrawerDescription>
-        </DrawerHeader>
+    <DrawerShell
+      open={open}
+      onOpenChange={onOpenChange}
+      title={t("title")}
+      closeLabel={t("close")}
+      description={t("description")}
+      icon={<ShoppingCart size={16} className="text-muted-foreground" />}
+      titleSuffix={<span className="text-xs text-muted-foreground">({isReady ? totalItems : "..."})</span>}
+      headerClassName="pb-1.5 pt-0 border-b border-border text-left"
+      closeButtonClassName="text-muted-foreground hover:text-foreground hover:bg-muted active:bg-muted motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth)"
+      closeIconSize={20}
+    >
 
         {!isReady ? (
           <div className="flex flex-col items-center justify-center px-inset py-5" aria-live="polite">
@@ -241,7 +226,6 @@ export function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
             </>
           )}
         </DrawerFooter>
-      </DrawerContent>
-    </Drawer>
+    </DrawerShell>
   )
 }

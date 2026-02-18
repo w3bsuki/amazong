@@ -3,9 +3,8 @@
 import { useTranslations } from "next-intl"
 import { usePathname } from "@/i18n/routing"
 import { Link } from "@/i18n/routing"
+import { DashboardHeaderShell } from "@/components/shared/dashboard-header-shell"
 import { Button } from "@/components/ui/button"
-import { Separator } from "@/components/ui/separator"
-import { SidebarTrigger } from "@/components/layout/sidebar/sidebar"
 
 const PATH_TO_KEY: Record<string, string> = {
   '/account': 'overview',
@@ -45,22 +44,15 @@ export function AccountHeader() {
   }
 
   return (
-    <header className="flex h-(--header-height) shrink-0 items-center gap-2 border-b transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-(--header-height)">
-      <div className="flex w-full items-center gap-1 px-4 lg:gap-2 lg:px-6">
-        <SidebarTrigger className="-ml-1 size-(--control-default) md:size-7" />
-        <Separator
-          orientation="vertical"
-          className="mx-2 data-[orientation=vertical]:h-4"
-        />
-        <div className="text-sm font-semibold leading-tight text-foreground">{getPageTitle()}</div>
-        <div className="ml-auto flex items-center gap-2">
-          <Button variant="ghost" asChild size="sm" className="hidden sm:flex">
-            <Link href="/" className="dark:text-foreground">
-              {t('backToStore')}
-            </Link>
-          </Button>
-        </div>
+    <DashboardHeaderShell triggerClassName="-ml-1 size-(--control-default) md:size-7">
+      <div className="text-sm font-semibold leading-tight text-foreground">{getPageTitle()}</div>
+      <div className="ml-auto flex items-center gap-2">
+        <Button variant="ghost" asChild size="sm" className="hidden sm:flex">
+          <Link href="/" className="dark:text-foreground">
+            {t('backToStore')}
+          </Link>
+        </Button>
       </div>
-    </header>
+    </DashboardHeaderShell>
   )
 }

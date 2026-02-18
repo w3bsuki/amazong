@@ -27,6 +27,10 @@ Stripe Connect handles seller payouts with escrow/delayed release.
 
 **Fee model:** Fees configured in DB (`subscription_plans`). Runtime: `getFeesForSeller()` + `calculateTransactionFees()` in `lib/stripe-connect.ts`. Never hardcode fees in UI.
 
+**Connect accounts:** Express type. Payout readiness gated by three fields: `details_submitted`, `charges_enabled`, `payouts_enabled`. Connect webhook updates these. Use them as the gating contract for seller payout UX.
+
+**Saved payment methods:** Setup-mode flow in `app/actions/payments.ts` persists `private_profiles.stripe_customer_id` + `user_payment_methods` records from verified webhook events.
+
 **Secret rotation:** `STRIPE_WEBHOOK_SECRET` supports comma/newline-separated values for zero-downtime rotation.
 
 ## Conventions

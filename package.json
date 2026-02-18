@@ -26,6 +26,8 @@
     "architecture:scan:duplicates": "node scripts/architecture-scan.mjs --section duplicates",
     "architecture:gate": "cross-env FAIL_ON_FINDINGS=1 node scripts/architecture-scan.mjs --section all",
     "architecture:gate:baseline": "node scripts/architecture-scan.mjs --section all --update-baseline",
+    "refactor:baseline": "pnpm -s clean:artifacts:dry && pnpm -s architecture:scan && pnpm -s dupes",
+    "refactor:verify": "pnpm -s typecheck && pnpm -s lint && pnpm -s styles:gate && pnpm -s test:unit",
     "start": "next start",
     "analyze": "ANALYZE=true next build",
     "test": "pnpm test:unit && pnpm test:e2e:smoke",

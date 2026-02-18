@@ -1,24 +1,18 @@
 "use client"
 
 import { useCallback, useEffect, useMemo, useRef, useState, type KeyboardEvent } from "react"
-import { CircleCheck as CheckCircle, X } from "lucide-react";
+import { CircleCheck as CheckCircle } from "lucide-react";
 
 import { useRouter } from "next/navigation"
 import { useLocale, useTranslations } from "next-intl"
 
 import {
-  Drawer,
   DrawerBody,
-  DrawerClose,
-  DrawerContent,
-  DrawerDescription,
-  DrawerHeader,
-  DrawerTitle,
 } from "@/components/ui/drawer"
 import { Button } from "@/components/ui/button"
-import { IconButton } from "@/components/ui/icon-button"
 import { LoginFormBody } from "@/components/auth/login-form-body"
 import { SignUpFormBody } from "@/components/auth/sign-up-form-body"
+import { DrawerShell } from "@/components/shared/drawer-shell"
 import {
   checkUsernameAvailability,
   loginInPlace,
@@ -114,73 +108,68 @@ export function AuthDrawer({ open, mode, onOpenChange, onModeChange }: AuthDrawe
   )
 
   return (
-    <Drawer open={open} onOpenChange={onOpenChange}>
-      <DrawerContent className="max-h-dialog rounded-t-2xl" data-testid="mobile-auth-drawer">
-        <DrawerHeader className="border-b border-border-subtle px-inset py-2.5 text-left">
-          <div className="flex items-center justify-between">
-            <DrawerTitle className="text-sm font-semibold">{tDrawer("title")}</DrawerTitle>
-            <DrawerClose asChild>
-              <IconButton
-                aria-label={tDrawers("close")}
-                variant="ghost"
-                size="icon-default"
-                className="text-muted-foreground hover:bg-hover hover:text-foreground active:bg-active focus-visible:ring-2 focus-visible:ring-focus-ring motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth)"
-              >
-                <X size={16} />
-              </IconButton>
-            </DrawerClose>
-          </div>
-          <DrawerDescription className="max-w-sm">{tDrawer("description")}</DrawerDescription>
-
-          {!didSignUpSucceed && (
-            <div
-              className="mt-3 grid grid-cols-2 gap-1 rounded-xl border border-border-subtle bg-surface-subtle p-1"
-              role="tablist"
-              aria-label={tDrawer("tabsLabel")}
+    <DrawerShell
+      open={open}
+      onOpenChange={onOpenChange}
+      title={tDrawer("title")}
+      closeLabel={tDrawers("close")}
+      description={tDrawer("description")}
+      contentClassName="max-h-dialog rounded-t-2xl"
+      headerClassName="border-b border-border-subtle px-inset py-2.5 text-left"
+      descriptionClassName="max-w-sm"
+      closeButtonClassName="text-muted-foreground hover:bg-hover hover:text-foreground active:bg-active focus-visible:ring-2 focus-visible:ring-focus-ring motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth)"
+      dataTestId="mobile-auth-drawer"
+      headerExtra={
+        !didSignUpSucceed ? (
+          <div
+            className="mt-3 grid grid-cols-2 gap-1 rounded-xl border border-border-subtle bg-surface-subtle p-1"
+            role="tablist"
+            aria-label={tDrawer("tabsLabel")}
+          >
+            <button
+              ref={loginTabRef}
+              id="auth-drawer-tab-login"
+              type="button"
+              role="tab"
+              aria-selected={isLoginMode}
+              aria-controls="auth-drawer-panel-login"
+              tabIndex={isLoginMode ? 0 : -1}
+              className={cn(
+                "min-h-(--spacing-touch-md) rounded-lg px-3 text-sm font-medium tap-transparent active:bg-active motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth)",
+                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring",
+                isLoginMode
+                  ? "bg-background text-foreground shadow-2xs"
+                  : "text-muted-foreground hover:bg-hover hover:text-foreground"
+              )}
+              onKeyDown={handleTabKeyDown}
+              onClick={() => handleSwitchMode("login")}
             >
-              <button
-                ref={loginTabRef}
-                id="auth-drawer-tab-login"
-                type="button"
-                role="tab"
-                aria-selected={isLoginMode}
-                aria-controls="auth-drawer-panel-login"
-                tabIndex={isLoginMode ? 0 : -1}
-                className={cn(
-                  "min-h-(--spacing-touch-md) rounded-lg px-3 text-sm font-medium tap-transparent active:bg-active motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth)",
-                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring",
-                  isLoginMode
-                    ? "bg-background text-foreground shadow-2xs"
-                    : "text-muted-foreground hover:bg-hover hover:text-foreground"
-                )}
-                onKeyDown={handleTabKeyDown}
-                onClick={() => handleSwitchMode("login")}
-              >
-                {tAuth("signIn")}
-              </button>
-              <button
-                ref={signUpTabRef}
-                id="auth-drawer-tab-signup"
-                type="button"
-                role="tab"
-                aria-selected={!isLoginMode}
-                aria-controls="auth-drawer-panel-signup"
-                tabIndex={!isLoginMode ? 0 : -1}
-                className={cn(
-                  "min-h-(--spacing-touch-md) rounded-lg px-3 text-sm font-medium tap-transparent active:bg-active motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth)",
-                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring",
-                  !isLoginMode
-                    ? "bg-background text-foreground shadow-2xs"
-                    : "text-muted-foreground hover:bg-hover hover:text-foreground"
-                )}
-                onKeyDown={handleTabKeyDown}
-                onClick={() => handleSwitchMode("signup")}
-              >
-                {tAuth("signUp")}
-              </button>
-            </div>
-          )}
-        </DrawerHeader>
+              {tAuth("signIn")}
+            </button>
+            <button
+              ref={signUpTabRef}
+              id="auth-drawer-tab-signup"
+              type="button"
+              role="tab"
+              aria-selected={!isLoginMode}
+              aria-controls="auth-drawer-panel-signup"
+              tabIndex={!isLoginMode ? 0 : -1}
+              className={cn(
+                "min-h-(--spacing-touch-md) rounded-lg px-3 text-sm font-medium tap-transparent active:bg-active motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth)",
+                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring",
+                !isLoginMode
+                  ? "bg-background text-foreground shadow-2xs"
+                  : "text-muted-foreground hover:bg-hover hover:text-foreground"
+              )}
+              onKeyDown={handleTabKeyDown}
+              onClick={() => handleSwitchMode("signup")}
+            >
+              {tAuth("signUp")}
+            </button>
+          </div>
+        ) : null
+      }
+    >
 
         <DrawerBody className="px-inset py-3 pb-2">
           {isLoginMode ? (
@@ -240,7 +229,6 @@ export function AuthDrawer({ open, mode, onOpenChange, onModeChange }: AuthDrawe
             </div>
           )}
         </DrawerBody>
-      </DrawerContent>
-    </Drawer>
+    </DrawerShell>
   )
 }

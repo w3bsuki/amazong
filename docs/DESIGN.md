@@ -1,232 +1,482 @@
 # DESIGN.md — UI + Frontend Contract
 
-> Load when doing UI work, styling, layout, or component changes.
-> For project identity and rules, see `AGENTS.md`. For feature-specific context, check `docs/features/`.
+> Load when doing ANY UI work: styling, layout, components, pages, responsive behavior.
+> This doc defines what Treido looks like, how it feels, and our UI patterns.
+> For product context see `docs/PRD.md`. For tech stack see `docs/STACK.md`.
 
-## Runtime Truth Paths
+### External References
 
-### Token + Utility Source
+For framework knowledge, read the official docs — not this file:
 
-- `app/globals.css` is the token source of truth.
-- `app/utilities.css` defines shared layout and safe-area utilities.
-- Raw color definitions belong in CSS token files only.
+- **shadcn/ui:** https://ui.shadcn.com — component API, variants, installation
+- **Tailwind CSS v4:** https://tailwindcss.com/docs — utilities, responsive, dark mode
+- **Radix UI:** https://www.radix-ui.com/primitives — accessibility, primitives behavior
+- **Vaul:** https://vaul.emilkowal.ski — drawer behavior, snap points
+- **Framer Motion:** https://motion.dev — animation API
+- **Anthropic — Building effective agents:** https://github.com/anthropics/anthropic-cookbook — UI patterns for AI-assisted interfaces
 
-### Component + Route Layers
+If a **context7 MCP** is available, use `resolve-library-id` + `get-library-docs` for any shadcn/Tailwind/Radix question.
 
-- `components/ui/**`: primitive UI building blocks.
-- `components/shared/**`: reusable composed UI.
-- `components/layout/**`: shell/navigation/footer structures.
-- `components/providers/**`: thin providers and app wiring.
-- `app/[locale]/**`: route-level composition and page behavior.
-- `hooks/**`: reusable client hooks.
-- `lib/**`: pure shared logic/clients (no React UI).
+---
 
-### Enforcement Rails
+## 1. Brand & Visual Identity
 
-- `scripts/scan-tailwind-palette.mjs`
-- `scripts/scan-tailwind-arbitrary.mjs`
-- `scripts/scan-tailwind-semantic-tokens.mjs`
-- `scripts/scan-tailwind-token-alpha.mjs`
-- `scripts/scan-mobile-chrome-consistency.mjs`
-- `scripts/scan-control-overrides.mjs`
+### Personality
 
-## Token Contract
+**Premium & Clean.** Treido feels like Stripe meets a modern marketplace — calm confidence, not visual noise. The app should communicate trust, simplicity, and professionalism.
+
+| Attribute | What it means in UI |
+|-----------|-------------------|
+| **Trustworthy** | Consistent spacing, clear hierarchy, no visual tricks, secure-feeling checkout |
+| **Simple** | Minimum viable UI. If 3 fields work, don't use 8. If 2 steps work, don't use 5 |
+| **Modern** | Current design language. Soft shadows, generous radius, clean sans-serif, subtle motion |
+| **Scannable** | Users find what they need in 2 seconds. Clear CTAs, breathing room, obvious hierarchy |
+| **Touch-confident** | Every tap target feels intentional. Nothing cramped, nothing ambiguous |
+
+### What Treido Is NOT
+
+- Not playful/youthful (Vinted, Depop) — no bright colors, no bouncy animations
+- Not dense/utilitarian (Amazon, eBay) — no information overload, no cramped grids
+- Not cluttered (OLX, Bazar) — no ad noise, no visual chaos
+- Not generic (template sites) — intentional details, not default everything
+
+### Color Strategy
+
+| Budget | Usage | Tokens |
+|--------|-------|--------|
+| 70% | Neutral surfaces | `background`, `surface-subtle`, `surface-page`, `card` |
+| 20% | Contrast elements | `foreground`, `muted-foreground`, `border`, `border-subtle` |
+| 10% | Accent & status | `primary`, `destructive`, category badges, promoted indicators |
+
+The primary accent is Twitter Blue — used sparingly for primary actions, active states, and key CTAs. Everything else is neutral. Destructive red for errors, discounts, and warnings only.
+
+### Color System
+
+OKLCH-based tokens defined in `app/globals.css`. Full light + dark theme.
+
+- **Light theme:** White backgrounds, near-black text, subtle gray borders
+- **Dark theme:** Full dark mode with matching semantic tokens (ships with system-preference auto-detect)
+- Category-specific color families exist for 11 categories (tech, fashion, home, sports, etc.)
+
+---
+
+## 2. Typography
+
+### Font Stack
+
+| Role | Font | Usage |
+|------|------|-------|
+| Sans (primary) | Inter | All UI text, headings, labels, buttons. Consider migrating to Geist for stronger identity. |
+| Serif | Source Serif 4 | Rich text content, editorial surfaces (sparingly) |
+| Mono | JetBrains Mono | Code, technical data, IDs |
+
+### Type Scale
+
+Custom scale optimized for mobile readability and information density:
+
+| Token | Size | Usage |
+|-------|------|-------|
+| `text-2xs` | 10px | Timestamps, micro-labels |
+| `text-tiny` | 11px | Meta info, dot-separated details, condition tags |
+| `text-compact` | 13px | Card titles, secondary info, dense lists |
+| `text-body` | 14px | Default body text |
+| `text-reading` | 15px | Long-form content, descriptions |
+| `text-price` | 16px | Price display |
+| `heading-3` | 16px | Section subheadings |
+| `heading-2` | 17px | Section headings |
+| `heading-1` | 18px | Page headings |
+
+### Typography Rules
+
+- Every surface must have visible typographic hierarchy (heading → subhead → body → meta)
+- Use `font-semibold` for emphasis, not `font-bold` (bold is too heavy for UI text)
+- Card titles: `text-compact font-semibold`, 1-2 lines max with truncation
+- Prices: `text-price font-semibold` — prices should pop visually
+- Meta text (condition, location, timestamps): `text-tiny text-muted-foreground`
+- iOS zoom prevention: all text inputs have `font-size: 16px !important` globally
+
+---
+
+## 3. Responsive Strategy
+
+### Philosophy
+
+**Mobile-first design, desktop excellence.** Mobile layouts are designed first (most traffic is mobile). Desktop gets its own patterns — not stretched mobile, but purpose-built for larger screens.
+
+### Breakpoint System
+
+| Breakpoint | Width | What changes |
+|------------|-------|-------------|
+| Default | 0-639px | Mobile layout: single column, bottom nav, drawers/sheets |
+| `sm` | 640px | Minor width adjustments, drawer constraints |
+| `md` | 768px | **Primary split.** Desktop header replaces mobile header. Bottom nav hidden. |
+| `lg` | 1024px | Sidebar appears. Multi-column layouts activate. |
+| `xl` | 1280px | Wider content areas, more horizontal space |
+| `2xl` | 1536px | Max content width for ultra-wide screens |
+
+### The Mobile/Desktop Split
+
+The codebase uses a **hard split at `md` (768px)**. This is NOT responsive scaling — it's separate component trees:
+
+```
+Mobile (< 768px)               Desktop (≥ 768px)
+─────────────────               ──────────────────
+MobileHome                      DesktopHome
+Mobile header variants          StandardHeader (single row)
+Bottom tab bar                  no bottom nav
+Drawers (bottom sheets)         Dialogs (modals)
+Product quick view drawer       Product quick view dialog
+```
+
+Pattern: `<div className="md:hidden">` for mobile, `<div className="hidden md:block">` for desktop.
+
+For overlay components, `useIsMobile()` hook selects Drawer vs Dialog.
+
+### Mobile Layout
+
+```
+┌──────────────────────────┐
+│  Fixed header (variant)  │  ← Route determines header variant
+├──────────────────────────┤
+│                          │
+│  Scrollable content      │  ← pt-app-header, pb-tabbar-safe
+│                          │
+│  (full-width, edge to    │
+│   edge with page inset)  │
+│                          │
+├──────────────────────────┤
+│  Fixed bottom tab bar    │  ← 5 tabs: Home, Categories, Sell, Chat, Profile
+└──────────────────────────┘
+```
+
+**Mobile header variants** (selected by route):
+- `homepage` — hamburger + "treido." logo + search pill + wishlist + cart
+- `product` — back + seller info + share
+- `contextual` — back + title + optional actions (categories, assistant)
+- `profile` — back + profile info + follow
+- `minimal` — logo only (auth, checkout)
+
+**Mobile tab bar** (5 tabs):
+1. Home (House) — navigate to `/`
+2. Categories (LayoutGrid) — open category drawer or navigate to `/categories`
+3. Sell (Plus) — navigate to `/sell` — **core action** with circular accent treatment
+4. Chat (MessageCircle) — open messages drawer, shows unread badge
+5. Profile (avatar) — open account drawer (auth) or auth drawer (guest)
+
+Tab bar hidden on: product page (sticky buy box), cart (sticky checkout footer), assistant (chat input).
+
+### Desktop Layout
+
+```
+┌────────────────────────────────────────────────┐
+│  Sticky header: Logo | Search | Actions | CTA  │
+├──────────┬─────────────────────────────────────┤
+│          │                                     │
+│ Sidebar  │  Main content area                  │
+│ (lg+)    │  (product grid, forms, dashboards)  │
+│          │                                     │
+│ Category │  Toolbar: count, sort, view toggle  │
+│ tree or  │                                     │
+│ filters  │  Grid/list of items                 │
+│          │                                     │
+└──────────┴─────────────────────────────────────┘
+```
+
+**Desktop header** (single row, `h-16`):
+- Left: Logo ("treido.") + account dropdown
+- Center: Search (flex-1, max-w-2xl)
+- Right (auth): Messages + Wishlist + Cart dropdowns + "Create Listing" button
+- Right (guest): Sign In + Register + Cart
+
+**Key desktop patterns:**
+- **Modal browsing:** Products open in full-width dialogs — user never loses scroll position or browse context. This is a core differentiator.
+- **Sidebar navigation:** Category tree + filters in a sticky sidebar (visible at `lg+`). Tree navigation with counts.
+- **Multi-panel dashboards:** Business dashboard shows multiple data panels simultaneously.
+- **Dense but readable:** More info per viewport than mobile, but still clean with breathing room.
+
+**Desktop shell** (`DesktopShell`): CSS Grid with sidebar column + content column. Sidebar sticky with `--sticky-top` and `--sidebar-max-h` vars. Container-constrained for max-width.
+
+---
+
+## 4. Component Patterns
+
+### Product Cards
+
+Two distinct card components:
+
+**Mobile card** (`MobileProductCard`):
+- Image (4:3 for feed, 1:1 for rails) with `rounded-t-xl`
+- Overlay: promoted badge (top-left), wishlist heart (top-right)
+- Content: category badge → seller row (avatar + name) → title (1-2 lines) → price + freshness
+- Stretch-link pattern: invisible absolute Link covering entire card
+- Displayed in 2-column grid (`grid-cols-2`, gap `10px`)
+
+**Desktop card** (`DesktopProductCard`):
+- Image 1:1 ratio
+- More info density: title + category + price + original price + rating + sold count + freshness
+- Meta row: condition, location, free shipping, verified seller (dot-separated)
+
+**Card styling:** Subtle shadow, no hard border. `rounded-xl shadow-xs`. Cards should feel like they float slightly above the surface, not boxed in.
+
+When changing cards: preserve the stretch-link pattern, keep touch targets generous, ensure images lazy-load with proper dimensions.
+
+### Overlays: Drawers vs Dialogs vs Sheets
+
+| Component | When | Visual |
+|-----------|------|--------|
+| **Drawer** (Vaul) | Mobile bottom overlays: product quick view, filters, category picker, account | Bottom: `rounded-t-2xl`, drag handle, max 90dvh. Side: full-width mobile, constrained tablet+ |
+| **Dialog** (Radix) | Desktop overlays: product quick view, modals, confirmations | Centered, `rounded-2xl`, backdrop blur, shadow. Full-width variant for product: `max-w-6xl` |
+| **Sheet** (Radix) | Persistent side panels, mobile filter hub, category sheets | Side variants with `rounded-l-2xl` / `rounded-r-2xl`, bottom with `rounded-t-2xl` |
+
+**Global drawers** (mounted at root, managed by `useDrawer()` context):
+- Product quick view (drawer on mobile, dialog on desktop)
+- Cart, Messages, Wishlist, Account, Auth
+
+**DrawerShell**: Standard wrapper with header, close button, title/description. Use for consistent drawer layout.
+
+### Forms
+
+- Use `Field` / `FieldLabel` / `FieldError` from `components/shared/field.tsx`
+- shadcn/ui primitives for inputs (Input, Textarea, Select, Checkbox, RadioGroup, Switch, Slider)
+- iOS zoom prevention applied globally for text inputs
+- Zod validation at boundaries, react-hook-form for client forms
+
+### Sell Flow
+
+**Target format:** Drawer/sheet on mobile, modal on desktop. User stays on the current page — listing creation doesn't break browsing context.
+
+Steps (minimal):
+1. Upload photos
+2. Title, description, category (hierarchical picker), condition
+3. Price, location (pre-filled from profile), review + publish
+
+Design goal: under 2 minutes for a basic listing. Keep the form simple — don't ask for data you can infer or default.
+
+### Empty States
+
+5 variants: `no-listings`, `no-search`, `no-category`, `no-favorites`, `no-orders`.
+Structure: rounded icon in muted circle → title → description → CTA button.
+Content is bilingual (EN/BG).
+
+### Loading States
+
+- **SSR streaming** for initial page loads — near-instant first paint, no visible loading
+- **Skeleton screens** for async client content (infinite scroll pages, drawer content, data that loads after interaction)
+- Skeletons must match the shape of the content they replace (card skeletons shaped like cards, not generic rectangles)
+- No spinners — they feel dated. Skeleton + streaming is the standard.
+
+### Page Shell
+
+`PageShell` wraps page content. Two variants:
+- `default` — `bg-surface-page` (white/dark canvas) for content-heavy pages
+- `muted` — `bg-surface-subtle` (slightly tinted) for grid pages so cards pop against the background
+
+---
+
+## 5. Spacing & Layout Tokens
+
+### Token Reference
+
+| Token | Value | Usage |
+|-------|-------|-------|
+| `--app-header-offset` | Dynamic (measured) | Header height for content offset |
+| `--spacing-bottom-nav` | 3.25rem (52px) | Tab bar height for safe area padding |
+| `--control-compact` | 36px | Dense controls (when space is tight) |
+| `--control-default` | 44px | Standard interactive controls |
+| `--control-primary` | 48px | Primary action buttons |
+| `--page-inset-mobile` | 8px | Page edge padding on mobile |
+| `--page-inset-tablet` | 12px | Page edge padding on tablet |
+| `--page-inset-desktop` | 16px | Page edge padding on desktop |
+| `--spacing-home-card-gap` | 10px | Product grid gap |
+| `--sidebar-width` | 17.5rem (280px) | Desktop sidebar width |
+| `--sidebar-width-collapsed` | 4rem | Collapsed sidebar width |
+| `--product-card-min-w` | 12.5rem (200px) | Minimum product card width |
+
+### Radius Scale
+
+iOS-inspired corner radius. Base: `0.5rem` (8px).
+
+| Token | Value | Usage |
+|-------|-------|-------|
+| `--radius-sm` | 6px | Small chips, badges |
+| `--radius` | 8px | Buttons, inputs, general |
+| `--radius-md` | 8px | Default component radius |
+| `--radius-card` | `--radius-md` | Cards |
+| `--radius-lg` | 12px | Larger containers, modals |
+| `--radius-2xl` | 16px | Bottom sheets, large overlays |
+| `--radius-4xl` | 20px | Special treatments |
+
+### Spacing Rules
+
+- Use Tailwind's spacing scale. Don't invent arbitrary values.
+- Use token references for component-specific spacing (card gap, page inset, control size).
+- Spacing should create rhythm — consistent gaps between same-type elements, larger gaps between sections.
+- For layout density changes (compact vs spacious), use explicit design decisions, not accidental inconsistency.
+
+---
+
+## 6. Motion & Animation
+
+### Philosophy
+
+Between minimal and tasteful. Motion communicates feedback and structure — never decoration.
+
+| Do | Don't |
+|----|-------|
+| Button press feedback (subtle scale) | Bouncing logos |
+| Modal/drawer open/close transitions | Decorative parallax or scroll effects |
+| Page transition (if fast and useful) | Auto-playing carousels |
+| Loading skeleton pulse | Repeated fade-in animations on scroll |
+| Hover state transitions | Spring physics on every element |
+
+### Motion Tokens
+
+| Token | Value | Usage |
+|-------|-------|-------|
+| `--duration-instant` | 50ms | Immediate feedback (active state) |
+| `--duration-fast` | 100ms | Quick transitions (hover, focus) |
+| `--duration-normal` | 200ms | Standard transitions |
+| `--duration-slow` | 300ms | Larger animations (modal open) |
+| `--ease-snappy` | cubic-bezier | Responsive, quick deceleration |
+| `--ease-smooth` | cubic-bezier | Gentle, natural movement |
+
+### Motion Rules
+
+- Entrances are slower than exits (modal opens at 200ms, closes at 150ms-ish)
+- Honor `prefers-reduced-motion` for all non-essential animation
+- Same motion pattern for same component type (all drawers animate the same way)
+- Touch feedback is mandatory — every tappable element needs a visible press state
+
+---
+
+## 7. Token Contract
 
 ### Semantic Tokens Only
 
-- Use semantic utility classes (`bg-background`, `text-foreground`, `border-border`, `ring-ring`, `bg-card`, `text-muted-foreground`).
-- Add new color semantics as `--color-<token-name>` in `app/globals.css`.
-- Prefer token-based sizing/spacing utilities over hardcoded values.
-- Keep component styling expressed through semantics, not literal palette values.
-- Treat token naming as API: clear names, stable meaning, no alias chains that hide intent.
+All styling uses semantic tokens. Never raw colors, palette classes, or arbitrary values.
+
+```
+CORRECT:  bg-background text-foreground border-border
+WRONG:    bg-white text-black border-gray-200
+WRONG:    bg-[#fff] text-[oklch(0.18 0.02 255)]
+```
+
+- New color needs → add `--color-<token-name>` in `app/globals.css`
+- Token naming is API — clear names, stable meaning, no alias chains
 
 ### Forbidden Patterns
 
-The patterns below are expected to fail style gates:
+Enforced by scanner scripts in `scripts/`. These WILL fail `pnpm -s styles:gate`:
 
-| Pattern | Examples | Enforced by |
-|---|---|---|
-| Palette utilities | `bg-gray-100`, `text-slate-900`, `border-blue-200`, `fill-orange-400` | `scan-tailwind-palette.mjs` |
+| Pattern | Examples | Scanner |
+|---------|----------|---------|
+| Palette utilities | `bg-gray-100`, `text-slate-900`, `fill-orange-400` | `scan-tailwind-palette.mjs` |
 | Mono shortcuts | `bg-white`, `text-black`, `border-white/10` | `scan-tailwind-palette.mjs` |
-| Gradient clusters | `bg-gradient-to-*`, `from-*`, `via-*`, `to-*`, raw `*-gradient(...)` | `scan-tailwind-palette.mjs` |
-| Arbitrary class values | `w-[560px]`, `text-[13px]`, `rounded-[10px]`, `shadow-[...]` | `scan-tailwind-arbitrary.mjs` |
-| Raw TSX/JS colors | `#fff`, `#000000`, `oklch(...)` literals | `scan-tailwind-arbitrary.mjs` |
-| Token-alpha shortcuts | `bg-primary/10`, `ring-ring/20`, `border-border/40` | `scan-tailwind-token-alpha.mjs` |
-
-Design intent of these bans:
-
-- Keep visual language coherent across features.
-- Prevent one-off classes from bypassing shared tokens.
-- Maintain reliable theme and brand adjustments from a single token layer.
+| Gradients | `bg-gradient-to-*`, `from-*`, `via-*`, `to-*` | `scan-tailwind-palette.mjs` |
+| Arbitrary values | `w-[560px]`, `text-[13px]`, `rounded-[10px]` | `scan-tailwind-arbitrary.mjs` |
+| Raw hex/oklch in TSX | `#fff`, `#000`, `oklch(...)` | `scan-tailwind-arbitrary.mjs` |
+| Token-alpha | `bg-primary/10`, `ring-ring/20` | `scan-tailwind-token-alpha.mjs` |
 
 ### Allowed Exceptions
 
-- `app/globals.css` intentionally contains raw `oklch(...)` token definitions.
-- `components/shared/filters/controls/color-swatches.tsx` may contain raw swatch values.
-- Any additional exception must be explicit, file-scoped, and documented in the same PR.
+- `app/globals.css` — raw `oklch(...)` token definitions (that's where tokens are SOURCE defined)
+- `components/shared/filters/controls/color-swatches.tsx` — raw swatch color values
+- Additional exceptions must be explicit, file-scoped, and documented
 
-## Component Boundaries
+---
 
-| Location | Use |
-|---|---|
-| `components/ui/*` | Primitives only; no domain logic or direct data fetching |
-| `components/shared/*` | Reusable composites (cards, filters, fields) |
-| `components/layout/*` | App shells (header/nav/footer/chrome) |
-| `components/providers/*` | Thin context providers and wiring |
-| `app/**/_components/*` | Route-private UI composition |
-| `hooks/*` | Shared client hooks |
-| `lib/*` | Pure utilities/clients; no React and no `app/` imports |
+## 8. Component Organization
 
-Boundary invariants:
+Components follow a strict layering (see `AGENTS.md` § Conventions for full rules):
 
-- Route-private `_components/`, `_actions/`, `_lib/`, `_providers/` never cross route-group boundaries.
-- Shared behavior graduates into `components/shared/*`, `hooks/*`, or `lib/*`.
-- `components/ui/*` is editable open code, but stays primitive-only.
-
-## Server vs Client Defaults
-
-- Default to Server Components for rendering and data composition.
-- Add `"use client"` only for state, effects, DOM APIs, or event handlers.
-- Keep client components prop-driven.
-- Keep auth checks and core data access server-side.
-- If client state mirrors server truth, document ownership and invalidation rules.
-
-## Data Fetching + Caching
-
-Primary rules:
-
-- Prefer Server Component fetches for initial render.
-- Use cached functions (`"use cache"`, `cacheLife`, `cacheTag`) only with `createStaticClient()`.
-- Avoid `cookies()` or `headers()` within cached functions.
-- Avoid `select('*')` in hot paths; project required columns explicitly.
-- Use stable query ordering for predictable cache behavior.
-
-Safe vs unsafe patterns:
-
-| Pattern | Status | Rationale |
-|---|---|---|
-| Server-rendered initial fetch | Preferred | Keeps data and auth checks close to server truth |
-| `createStaticClient()` inside cache | Required | Avoids request-specific state in cached paths |
-| Cookie/header reads inside cache | Forbidden | Breaks cache correctness and can cause subtle leaks |
-| Client-side mini data layer for server-owned data | Avoid | Duplicates ownership and increases state drift |
-
-## Design Thinking
-
-Apply this pre-flight before coding or revising a surface:
-
-1. Purpose: What user outcome is this surface responsible for right now?
-2. Tone: What emotional register should the user feel in this moment?
-3. Memorable detail: What one detail makes this feel intentionally designed?
-4. Brand check: Does this feel like Treido (calm, scannable, touch-confident)?
-
-Pre-flight output expected in implementation notes:
-
-- One-sentence purpose statement.
-- One tone adjective (or short pair).
-- One intentional detail to preserve during iteration.
-
-Color usage ratio target:
-
-- 70% neutral surfaces (`background`, `surface-subtle`, `card`)
-- 20% neutral contrast (`foreground`, `muted-foreground`, borders)
-- 10% accent/status (`primary`, `destructive`, badges)
-
-## Anti-Slop Rules
-
-Avoid shipping these patterns:
-
-- Typography slop: weak hierarchy, heading/body parity, ignored tracking tokens.
-- Layout slop: repeated card grids with no rhythm, uniform spacing everywhere.
-- Color slop: palette leaks, generic gradient defaults, missing state contrast.
-- Motion slop: decorative animation loops, repeated fade-ins, missing press feedback.
-- Component slop: default-heavy shadows, unlabeled icon-only actions, skeleton-only UX without meaningful state.
-
-Corrective moves when slop appears:
-
-- Reduce visual noise before adding new elements.
-- Reassert hierarchy with type scale, spacing rhythm, and contrast.
-- Replace decorative motion with feedback-driven transitions.
-- Add explicit empty/loading/error states tied to user intent.
-
-## Mobile UX Quality Bar
-
-### Touch Targets
-
-- Default interactive controls: `--control-default` (44px).
-- Primary controls: `--control-primary` (48px).
-- Compact controls: `--control-compact` (36px) only where density requires it.
-
-### Safe Areas
-
-Use safe-area utilities from `app/utilities.css` where relevant:
-
-- `pt-safe`
-- `pb-safe`
-- `pt-app-header`
-- `pb-tabbar-safe`
-
-### Overflow
-
-- No page-level horizontal scrolling on mobile widths.
-- Content that can overflow must intentionally scroll within bounded containers.
-
-### Motion
-
-- Motion should communicate response and structure, not decoration.
-- Honor `prefers-reduced-motion` for non-essential animation.
-
-### Focus
-
-- Keyboard focus must be visible for all interactive controls.
-- Focus indicators must remain legible against semantic surfaces.
-
-## Ship Criteria
-
-Every new or modified surface must satisfy all checks:
-
-1. Purpose and user state are explicit.
-2. Typographic hierarchy is visible and intentional.
-3. Interaction states exist where relevant (hover, active, focus-visible, disabled, selected).
-4. Layout rhythm is deliberate, with density changes where useful.
-5. Motion is feedback-first and reduced-motion aware.
-6. Touch target sizing meets mobile baseline requirements.
-7. Mobile widths avoid horizontal overflow.
-
-## Accessibility Baseline
-
-- Primary flows are keyboard reachable end-to-end.
-- All interactive elements expose visible focus states.
-- Icon-only controls include explicit labels.
-- Non-essential animations respect reduced-motion preferences.
-- Semantics and landmarks support assistive navigation.
-- State feedback (loading, error, success) is perceivable without color-only cues.
-- Keep form controls paired with programmatic labels and clear inline errors.
-- Ensure stateful controls expose `aria-pressed`, `aria-expanded`, or equivalent semantics when applicable.
-
-## Layout + Motion Tokens
-
-Current runtime token contract:
-
-- Bottom nav spacing: `--spacing-bottom-nav` (`3rem`) used by `components/ui/mobile-bottom-nav.tsx` and utilities.
-- Radius tokens: `--radius`, `--radius-card`, `--radius-lg`, and related derivatives in `app/globals.css`.
-- Typography tokens: `--font-*` and `--letter-spacing-*` in `app/globals.css`.
-- Motion tokens: `--duration-*` and `--ease-*` in `app/globals.css`.
-
-Implementation guidance:
-
-- Use token references for timing/spacing/radius instead of one-off literals.
-- Keep interaction timing consistent across equivalent controls.
-- Reserve stronger motion curves for high-intent transitions.
-- Prefer subtle entrance motion; keep exits faster than entrances for responsiveness.
-- Treat layout density changes as explicit design decisions, not accidental side effects.
-- Reuse motion patterns across similar components to preserve interaction predictability.
-
-## Verification
-
-```bash
-pnpm -s typecheck
-pnpm -s lint
-pnpm -s styles:gate
+```
+components/ui/       → shadcn primitives (editable, no domain logic)
+components/shared/   → composed UI (product cards, fields, filters, drawers)
+components/layout/   → app shells (header, sidebar, footer)
+app/**/_components/  → route-private UI (never import across route groups)
 ```
 
-*Last updated: 2026-02-15*
+**Graduation path:** when a `_components/` component is needed by another route group → extract to `components/shared/`.
+
+---
+
+## 9. Page Quality — Current State
+
+| Surface | Mobile | Desktop | Priority |
+|---------|--------|---------|----------|
+| Homepage / feed | Semi-polished | Good | Medium (refine) |
+| Product quick view | Functional | Good (modal pattern) | Medium |
+| Product page (PDP) | Needs cleanup | Decent | High |
+| Search | **Broken** | Needs work | **Critical** |
+| Categories | Minimal (pills only) | Has sidebar tree | High |
+| Sell form | **Terrible** | Needs redesign | **Critical** — target: drawer/modal |
+| Chat | Semi-decent | Needs work | Medium |
+| Account/Profile | **Broken on mobile** | Incomplete | **Critical** |
+| Checkout | Functional | Basic | Medium |
+| Business dashboard | Scaffolded | In progress | Medium |
+
+### Ship Criteria
+
+Every page must meet ALL of these before it ships:
+
+1. **Purpose is clear.** User knows what they can do on this page within 2 seconds.
+2. **Hierarchy is visible.** Heading → subhead → body → meta. Not everything the same size.
+3. **Interaction states exist.** Every interactive element has: default, hover, active/pressed, focus-visible, disabled (where applicable).
+4. **Responsive works.** Test at 375px (iPhone SE), 768px (iPad), 1280px (laptop), 1920px (desktop).
+5. **Touch targets are adequate.** Minimum 44px on mobile. Primary actions: 48px.
+6. **No horizontal overflow** on mobile.
+7. **Loading states defined.** Skeleton for async content, streaming for SSR.
+8. **Error states defined.** What happens when data fails? Network error? Empty result?
+9. **Empty states defined.** What shows when there's no content?
+
+### Design Pre-flight
+
+Before building or revising any surface, answer:
+1. What user outcome is this surface responsible for?
+2. What should the user feel? (one adjective: confident, focused, delighted, calm)
+3. What one intentional detail makes this feel like Treido, not a template?
+
+---
+
+## 10. Anti-Slop Rules
+
+These patterns make the app feel generic or broken. Catch and fix them:
+
+| Slop | Example | Fix |
+|------|---------|-----|
+| Typography slop | Everything is 14px, no heading hierarchy | Use the type scale. Headings must be visibly different from body |
+| Layout slop | Identical spacing everywhere, no rhythm | Vary spacing by content relationship. Tighter within groups, looser between sections |
+| Color slop | Primary blue used on 10 different things | Primary is for primary actions ONLY. Status/category colors for everything else |
+| Motion slop | Every element fades in on scroll | Remove decorative motion. Only feedback-driven transitions |
+| Component slop | Heavy shadows, unlabeled icons, skeleton-only loading with no real state | Soft shadows. Label all icon buttons. Show meaningful empty/error states |
+| Density slop | Cramped mobile layout or empty desktop layout | Mobile: breathe. Desktop: use the space with multi-column, not just wider margins |
+
+---
+
+## 11. Accessibility Baseline
+
+Non-negotiable for every surface:
+
+- Keyboard reachable: all primary flows work without a mouse
+- Visible focus states: focus-visible ring on all interactive elements
+- Labeled controls: icon-only buttons have `aria-label` or visible text
+- Reduced motion: `prefers-reduced-motion` honored for non-essential animation
+- Landmarks: semantic HTML (`main`, `nav`, `section`, `aside`)
+- State feedback: loading/error/success perceivable without color alone
+- Form labels: every input has a programmatic label + inline error messages
+- ARIA states: `aria-pressed`, `aria-expanded`, `aria-selected` where applicable
+
+---
+
+## Key Files
+
+- `app/globals.css` — all design tokens (OKLCH definitions, dark mode, custom utilities)
+- `app/utilities.css` — safe-area utilities, layout helpers
+- `app/shadcn-components.css` — shadcn component tokens
+- `components/ui/` — shadcn primitives
+- `components/shared/` — composed UI components
+- Token enforcement: `pnpm -s styles:gate` (see `docs/STACK.md` § Build & Quality Gates)
+
+---
+
+*Last updated: 2026-02-18*

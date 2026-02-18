@@ -1,7 +1,6 @@
 "use client"
 
 import * as React from "react"
-import Image from "next/image"
 import { Link } from "@/i18n/routing"
 import { useRouter } from "@/i18n/routing"
 import { toast } from "sonner"
@@ -33,90 +32,22 @@ import {
   TabsTrigger,
 } from "@/components/ui/tabs"
 import { cn } from "@/lib/utils"
-
-// Order type definitions
-interface OrderCustomer {
-  id: string
-  email?: string | null
-  full_name: string | null
-}
-
-interface OrderProduct {
-  id: string
-  title: string
-  images: string[] | null
-  sku: string | null
-}
-
-interface Order {
-  id: string
-  status: string | null
-  created_at: string
-  shipping_address: Record<string, unknown> | null
-  user: OrderCustomer | OrderCustomer[] | null
-}
-
-interface OrderItem {
-  id: string
-  quantity: number
-  price_at_purchase: number
-  order_id: string
-  product_id: string
-  seller_id: string
-  order: Order | Order[] | null
-  product: OrderProduct | OrderProduct[] | null
-  user?: { id: string; email?: string | null; full_name: string | null } | null
-}
-
-interface OrdersTableProps {
-  initialOrders: OrderItem[]
-  total: number
-  sellerId: string
-}
-
-type OrderStatus = "all" | "pending" | "processing" | "shipped" | "delivered" | "cancelled"
-type SortField = "created_at" | "total" | "customer"
-type SortOrder = "asc" | "desc"
-
-const STATUS_CONFIG = {
-  pending: {
-    label: "Unfulfilled",
-    color: "bg-muted text-foreground border-border",
-    icon: IconPackage
-  },
-  processing: {
-    label: "In Progress",
-    color: "bg-selected text-primary border-selected-border",
-    icon: IconRefresh
-  },
-  shipped: {
-    label: "Shipped",
-    color: "bg-muted text-foreground border-border",
-    icon: IconTruck
-  },
-  delivered: {
-    label: "Delivered",
-    color: "bg-success/10 text-success border-success/20",
-    icon: IconCheck
-  },
-  cancelled: {
-    label: "Cancelled",
-    color: "bg-destructive-subtle text-destructive border-destructive/20",
-    icon: IconX
-  },
-  paid: {
-    label: "Paid",
-    color: "bg-success/10 text-success border-success/20",
-    icon: IconCheck
-  },
-} as const
-
-type StatusKey = keyof typeof STATUS_CONFIG
-
-function getStatusConfig(status: string): (typeof STATUS_CONFIG)[StatusKey] {
-  if (status in STATUS_CONFIG) return STATUS_CONFIG[status as StatusKey]
-  return STATUS_CONFIG.pending
-}
+import { OrderListStatusBadge } from "@/components/shared/order-list-item"
+import { OrderSummaryLine } from "@/components/shared/order-summary-line"
+import { getStatusConfig } from "./orders-table.constants"
+import type {
+  OrderItem,
+  OrderStatus,
+  OrdersTableProps,
+  SortField,
+  SortOrder,
+} from "./orders-table.types"
+import {
+  formatCurrency,
+  getCustomer,
+  getOrder,
+  getProduct,
+} from "./orders-table.utils"
 
 export function OrdersTable({
   initialOrders,
@@ -129,22 +60,6 @@ export function OrdersTable({
   const [statusFilter, setStatusFilter] = React.useState<OrderStatus>("all")
   const [sortField, setSortField] = React.useState<SortField>("created_at")
   const [sortOrder, setSortOrder] = React.useState<SortOrder>("desc")
-
-  // Helper to extract order data from potentially nested structure
-  const getOrder = (item: OrderItem): Order | null => {
-    if (!item.order) return null
-    return Array.isArray(item.order) ? (item.order.at(0) ?? null) : item.order
-  }
-
-  const getProduct = (item: OrderItem): OrderProduct | null => {
-    if (!item.product) return null
-    return Array.isArray(item.product) ? (item.product.at(0) ?? null) : item.product
-  }
-
-  const getCustomer = (order: Order | null): OrderCustomer | null => {
-    if (!order?.user) return null
-    return Array.isArray(order.user) ? (order.user.at(0) ?? null) : order.user
-  }
 
   // Count orders by status
   const statusCounts = React.useMemo(() => {
@@ -247,14 +162,6 @@ export function OrdersTable({
     return sortOrder === "asc"
       ? <IconChevronUp className="size-3.5" />
       : <IconChevronDown className="size-3.5" />
-  }
-
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('bg-BG', {
-      style: 'currency',
-      currency: 'BGN',
-      maximumFractionDigits: 2,
-    }).format(value)
   }
 
   const handleBulkStatusUpdate = async (newStatus: string) => {
@@ -512,32 +419,28 @@ export function OrdersTable({
                       </div>
                     </TableCell>
                     <TableCell>
-                      <div className="flex items-center gap-3">
-                        <div className="relative size-10 rounded-md overflow-hidden bg-muted shrink-0">
-                          {firstImage ? (
-                            <Image
-                              src={firstImage}
-                              alt={product?.title || "Product"}
-                              fill
-                              className="object-cover"
-                            />
-                          ) : (
-                            <div className="flex size-full items-center justify-center">
-                              <IconPackage className="size-4 text-muted-foreground" />
-                            </div>
-                          )}
-                        </div>
-                        <div className="min-w-0">
+                      <OrderSummaryLine
+                        className="items-center"
+                        thumb={{
+                          imageSrc: firstImage,
+                          alt: product?.title || "Product",
+                          className: "size-10 rounded-md bg-muted shrink-0",
+                          sizes: "40px",
+                          fallbackClassName: "text-muted-foreground",
+                        }}
+                        contentClassName="min-w-0 flex-initial"
+                        title={(
                           <p className="text-sm font-medium truncate max-w-48">
                             {product?.title || "Unknown Product"}
                           </p>
-                          {product?.sku && (
-                            <p className="text-xs text-muted-foreground font-mono">
-                              {product.sku}
-                            </p>
-                          )}
-                        </div>
-                      </div>
+                        )}
+                      >
+                        {product?.sku && (
+                          <p className="text-xs text-muted-foreground font-mono">
+                            {product.sku}
+                          </p>
+                        )}
+                      </OrderSummaryLine>
                     </TableCell>
                     <TableCell className="hidden md:table-cell text-center tabular-nums">
                       {item.quantity}
@@ -546,13 +449,12 @@ export function OrdersTable({
                       {formatCurrency(item.price_at_purchase * item.quantity)}
                     </TableCell>
                     <TableCell>
-                      <Badge
-                        variant="outline"
-                        className={cn("gap-1", statusConfig.color)}
-                      >
-                        <StatusIcon className="size-3" />
-                        {statusConfig.label}
-                      </Badge>
+                      <OrderListStatusBadge
+                        status={status}
+                        label={statusConfig.label}
+                        className="gap-1"
+                        icon={<StatusIcon className="size-3" />}
+                      />
                     </TableCell>
                     <TableCell>
                       <DropdownMenu>

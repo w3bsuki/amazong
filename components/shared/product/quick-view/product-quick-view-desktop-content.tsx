@@ -1,17 +1,21 @@
-import { RefreshCw as ArrowsClockwise, SquareArrowOutUpRight as ArrowSquareOut, Heart, Link as LinkSimple, MapPin, ShieldCheck, Truck, X } from "lucide-react";
+import { SquareArrowOutUpRight as ArrowSquareOut, MapPin, Truck } from "lucide-react"
 
 
 import { useTranslations } from "next-intl"
 
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { IconButton } from "@/components/ui/icon-button"
 import { Skeleton } from "@/components/ui/skeleton"
 import { getConditionBadgeVariant } from "@/components/shared/product/_lib/condition-badges"
-import { cn } from "@/lib/utils"
 
 import type { ProductQuickViewViewProps } from "./product-quick-view-content"
 import { QuickViewImageGallery } from "./quick-view-image-gallery"
+import {
+  QuickViewActionButtons,
+  QuickViewFooterActions,
+  QuickViewProtectionCard,
+  QuickViewSellerSkeletonCard,
+} from "./quick-view-chrome"
 import { QuickViewSellerCard } from "./quick-view-seller-card"
 
 export function ProductQuickViewDesktopContent({
@@ -59,46 +63,21 @@ export function ProductQuickViewDesktopContent({
           <h2 className="min-w-0 flex-1 truncate text-base font-semibold tracking-tight text-foreground">
             {titleText}
           </h2>
-          <IconButton
-            type="button"
-            variant="ghost"
-            size="icon-compact"
-            onClick={onCopyLink}
-            aria-label={tModal("copyLink")}
-            disabled={!shareEnabled}
-            className="border border-border-subtle bg-background text-muted-foreground hover:bg-hover hover:text-foreground active:bg-active"
-          >
-            <LinkSimple size={16} />
-          </IconButton>
-          <IconButton
-            type="button"
-            variant="ghost"
-            size="icon-compact"
-            onClick={onToggleWishlist}
-            aria-label={inWishlist ? tProduct("removeFromWatchlist") : tProduct("addToWatchlist")}
-            disabled={wishlistPending}
-            className={cn(
-              "border border-border-subtle bg-background",
-              inWishlist
-                ? "text-primary hover:bg-hover active:bg-active"
-                : "text-muted-foreground hover:bg-hover hover:text-foreground active:bg-active"
-            )}
-          >
-            <Heart
-              size={16}
-              className={cn(inWishlist && "fill-primary text-primary")}
-            />
-          </IconButton>
-          <IconButton
-            type="button"
-            variant="ghost"
-            size="icon-compact"
-            className="border border-border-subtle bg-background text-muted-foreground hover:bg-hover hover:text-foreground active:bg-active"
-            onClick={() => onRequestClose?.()}
-            aria-label={tDrawers("close")}
-          >
-            <X className="size-4" />
-          </IconButton>
+          <QuickViewActionButtons
+            copyAriaLabel={tModal("copyLink")}
+            wishlistAriaLabel={inWishlist ? tProduct("removeFromWatchlist") : tProduct("addToWatchlist")}
+            closeAriaLabel={tDrawers("close")}
+            inWishlist={inWishlist}
+            wishlistPending={wishlistPending}
+            shareEnabled={shareEnabled}
+            onCopyLink={onCopyLink}
+            onToggleWishlist={onToggleWishlist}
+            onRequestClose={onRequestClose}
+            buttonSize="icon-compact"
+            iconSize={16}
+            closeIconClassName="size-4"
+            className="gap-2"
+          />
         </div>
       </div>
 
@@ -167,15 +146,11 @@ export function ProductQuickViewDesktopContent({
 
           <div className="space-y-3 lg:col-span-2">
             {showSellerSkeleton ? (
-              <div className="rounded-xl border border-border-subtle bg-surface-subtle p-3">
-                <div className="flex items-center gap-3">
-                  <Skeleton className="size-(--control-default) rounded-full" />
-                  <div className="min-w-0 flex-1 space-y-1.5">
-                    <Skeleton className="h-4 w-36" />
-                    <Skeleton className="h-3 w-24" />
-                  </div>
-                </div>
-              </div>
+              <QuickViewSellerSkeletonCard
+                className="bg-surface-subtle"
+                titleSkeletonClassName="w-36"
+                subtitleSkeletonClassName="w-24"
+              />
             ) : (
               <QuickViewSellerCard
                 compact
@@ -188,19 +163,12 @@ export function ProductQuickViewDesktopContent({
               />
             )}
 
-            <div className="rounded-xl border border-border-subtle bg-surface-subtle p-3 text-sm text-muted-foreground">
-              <div className="flex items-start gap-2">
-                <ShieldCheck size={17} className="mt-0.5 shrink-0" />
-                <div className="min-w-0 flex-1">
-                  <p className="font-semibold tracking-tight text-foreground">{tProduct("buyerProtection")}</p>
-                  <p className="text-xs text-muted-foreground">{tProduct("buyerProtectionBadgeSubtitle")}</p>
-                </div>
-              </div>
-              <div className="mt-2 flex items-center gap-2 text-xs">
-                <ArrowsClockwise size={16} className="shrink-0" />
-                <span>{tProduct("easyReturns")}</span>
-              </div>
-            </div>
+            <QuickViewProtectionCard
+              title={tProduct("buyerProtection")}
+              subtitle={tProduct("buyerProtectionBadgeSubtitle")}
+              easyReturns={tProduct("easyReturns")}
+              className="bg-surface-subtle"
+            />
 
             <Button
               type="button"
@@ -217,28 +185,13 @@ export function ProductQuickViewDesktopContent({
       </div>
 
       <div className="sticky bottom-0 z-20 shrink-0 border-t border-border bg-surface-elevated px-4 py-3 pb-safe-max lg:px-6">
-        <div className="grid grid-cols-2 gap-2">
-          <Button
-            type="button"
-            variant="default"
-            size="primary"
-            className="w-full"
-            onClick={onBuyNow}
-            disabled={!inStock}
-          >
-            {tProduct("buyNow")}
-          </Button>
-          <Button
-            type="button"
-            variant="outline"
-            size="primary"
-            className="w-full"
-            onClick={onAddToCart}
-            disabled={!inStock}
-          >
-            {tProduct("addToCart")}
-          </Button>
-        </div>
+        <QuickViewFooterActions
+          buyNowLabel={tProduct("buyNow")}
+          addToCartLabel={tProduct("addToCart")}
+          onBuyNow={onBuyNow}
+          onAddToCart={onAddToCart}
+          inStock={inStock}
+        />
       </div>
     </div>
   )

@@ -1,23 +1,17 @@
 "use client"
 
 import { useCallback } from "react"
-import { MessageCircle as ChatCircle, Check, Circle, X } from "lucide-react";
+import { MessageCircle as ChatCircle, Check, Circle } from "lucide-react";
 
 import {
-  Drawer,
-  DrawerContent,
-  DrawerDescription,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerClose,
   DrawerFooter,
   DrawerBody,
 } from "@/components/ui/drawer"
 import { Button } from "@/components/ui/button"
-import { IconButton } from "@/components/ui/icon-button"
 import { Link } from "@/i18n/routing"
 import { useTranslations } from "next-intl"
 import { useMessages, type Conversation } from "@/components/providers/message-context"
+import { DrawerShell } from "@/components/shared/drawer-shell"
 import { cn } from "@/lib/utils"
 import { useAuth } from "@/components/providers/auth-state-manager"
 import { UserAvatar } from "@/components/shared/user-avatar"
@@ -98,32 +92,25 @@ export function MessagesDrawer({ open, onOpenChange }: MessagesDrawerProps) {
   )
 
   return (
-    <Drawer open={open} onOpenChange={onOpenChange}>
-      <DrawerContent className="max-h-dialog-sm">
-        <DrawerHeader className="pb-1.5 pt-0 text-left">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-1.5">
-              <ChatCircle size={16} className="text-muted-foreground" />
-              <DrawerTitle className="text-sm font-semibold">{t("messages")}</DrawerTitle>
-              {totalUnreadCount > 0 && (
-                <span className="text-xs text-destructive font-medium">
-                  ({t("unreadCount", { count: totalUnreadCount })})
-                </span>
-              )}
-            </div>
-            <DrawerClose asChild>
-              <IconButton
-                aria-label={t("close")}
-                variant="ghost"
-                size="icon-default"
-                className="text-muted-foreground hover:text-foreground hover:bg-muted active:bg-muted motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth)"
-              >
-                <X size={20} />
-              </IconButton>
-            </DrawerClose>
-          </div>
-          <DrawerDescription className="sr-only">{t("description")}</DrawerDescription>
-        </DrawerHeader>
+    <DrawerShell
+      open={open}
+      onOpenChange={onOpenChange}
+      title={t("messages")}
+      closeLabel={t("close")}
+      description={t("description")}
+      icon={<ChatCircle size={16} className="text-muted-foreground" />}
+      titleSuffix={
+        totalUnreadCount > 0 ? (
+          <span className="text-xs text-destructive font-medium">
+            ({t("unreadCount", { count: totalUnreadCount })})
+          </span>
+        ) : null
+      }
+      contentClassName="max-h-dialog-sm"
+      headerClassName="pb-1.5 pt-0 text-left"
+      closeButtonClassName="text-muted-foreground hover:text-foreground hover:bg-muted active:bg-muted motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth)"
+      closeIconSize={20}
+    >
 
         {!user ? (
           <div className="flex flex-col items-center justify-center px-inset py-5">
@@ -237,7 +224,6 @@ export function MessagesDrawer({ open, onOpenChange }: MessagesDrawerProps) {
             </Button>
           </Link>
         </DrawerFooter>
-      </DrawerContent>
-    </Drawer>
+    </DrawerShell>
   )
 }

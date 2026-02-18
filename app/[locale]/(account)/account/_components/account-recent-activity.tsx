@@ -6,24 +6,9 @@ import { useEffect, useState } from "react"
 import { Link } from "@/i18n/routing"
 import Image from "next/image"
 import { Badge } from "@/components/ui/badge"
-import { ChevronRight as IconChevronRight, Package as IconPackage, Image as IconPhoto, ShoppingBag as IconShoppingBag } from "lucide-react";
+import { Package as IconPackage, Image as IconPhoto, ShoppingBag as IconShoppingBag } from "lucide-react";
+import { ActivityListShell, ActivitySectionHeader } from "@/components/shared/activity-feed"
 
-
-// Extracted to avoid creating component during render
-function SectionHeader({ title, href, viewAllText }: { title: string; href: string; viewAllText: string }) {
-  return (
-    <div className="flex items-center justify-between px-1 mb-3">
-      <span className="font-semibold text-base text-foreground">{title}</span>
-      <Link
-        href={href}
-        className="text-xs font-medium text-link hover:text-link-hover transition-colors flex items-center gap-0.5"
-      >
-        {viewAllText}
-        <IconChevronRight className="size-3.5" />
-      </Link>
-    </div>
-  )
-}
 
 interface RecentOrder {
   id: string
@@ -139,7 +124,7 @@ export function AccountRecentActivity({ orders, products, sales, locale }: Accou
     <div className="space-y-6">
       {/* Recent Orders Section - Horizontal scroll on mobile */}
       <div>
-        <SectionHeader title={t.recentOrders} href="/account/orders" viewAllText={t.viewAll} />
+        <ActivitySectionHeader title={t.recentOrders} href="/account/orders" actionLabel={t.viewAll} />
         {orders.length === 0 ? (
           <div className="rounded-md bg-card border border-border p-4 text-center">
             <div className="flex size-14 mx-auto items-center justify-center rounded-md bg-muted border border-border mb-3">
@@ -210,64 +195,62 @@ export function AccountRecentActivity({ orders, products, sales, locale }: Accou
              </div>
 
              {/* Desktop: List view */}
-            <div className="hidden md:block rounded-md bg-card border border-border overflow-hidden">
-              <div className="divide-y divide-border/50">
-                {orders.slice(0, 3).map((order) => {
-                  const getProductImage = (products: { images?: string[] } | { images?: string[] }[] | null): string | undefined => {
-                    if (!products) return undefined
-                    if (Array.isArray(products)) return products[0]?.images?.[0]
-                    return products.images?.[0]
-                  }
-                  const firstImage = order.order_items?.find(item => getProductImage(item.products))
-                  const firstImageUrl = firstImage ? getProductImage(firstImage.products) : undefined
-                  const itemCount = order.order_items?.length || 0
+            <ActivityListShell className="hidden md:block">
+              {orders.slice(0, 3).map((order) => {
+                const getProductImage = (products: { images?: string[] } | { images?: string[] }[] | null): string | undefined => {
+                  if (!products) return undefined
+                  if (Array.isArray(products)) return products[0]?.images?.[0]
+                  return products.images?.[0]
+                }
+                const firstImage = order.order_items?.find(item => getProductImage(item.products))
+                const firstImageUrl = firstImage ? getProductImage(firstImage.products) : undefined
+                const itemCount = order.order_items?.length || 0
 
-                  return (
-                    <Link
-                      key={order.id}
-                      href={`/account/orders/${order.id}`}
-                      className="flex items-center gap-3 p-4 hover:bg-hover active:bg-active transition-colors"
-                    >
-                      <div className="relative size-11 rounded-md overflow-hidden bg-card border border-border shrink-0">
-                        {firstImageUrl ? (
-                          <>
-                            <Image
-                              src={firstImageUrl}
-                              alt={`Order #${order.id.slice(0, 4)}`}
-                              fill
-                              className="object-cover"
-                              sizes="44px"
-                            />
-                            {itemCount > 1 && (
-                              <div className="absolute -bottom-0.5 -right-0.5 flex size-5 items-center justify-center rounded-full bg-primary text-2xs font-bold text-primary-foreground shadow-sm">
-                                +{itemCount - 1}
-                              </div>
-                            )}
-                          </>
-                        ) : (
-                          <div className="flex size-full items-center justify-center">
-                            <IconPackage className="size-5 text-muted-foreground" strokeWidth={1.5} />
-                          </div>
-                        )}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-semibold text-foreground">
-                          {formatCurrency(order.total_amount)}
+                return (
+                  <Link
+                    key={order.id}
+                    href={`/account/orders/${order.id}`}
+                    className="flex items-center gap-3 p-4 hover:bg-hover active:bg-active transition-colors"
+                  >
+                    <div className="relative size-11 rounded-md overflow-hidden bg-card border border-border shrink-0">
+                      {firstImageUrl ? (
+                        <>
+                          <Image
+                            src={firstImageUrl}
+                            alt={`Order #${order.id.slice(0, 4)}`}
+                            fill
+                            className="object-cover"
+                            sizes="44px"
+                          />
+                          {itemCount > 1 && (
+                            <div className="absolute -bottom-0.5 -right-0.5 flex size-5 items-center justify-center rounded-full bg-primary text-2xs font-bold text-primary-foreground shadow-sm">
+                              +{itemCount - 1}
+                            </div>
+                          )}
+                        </>
+                      ) : (
+                        <div className="flex size-full items-center justify-center">
+                          <IconPackage className="size-5 text-muted-foreground" strokeWidth={1.5} />
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-semibold text-foreground">
+                        {formatCurrency(order.total_amount)}
+                      </p>
+                      {formatRelative(order.created_at, true) && (
+                        <p className="text-xs text-muted-foreground mt-0.5">
+                          {formatRelative(order.created_at, true)}
                         </p>
-                        {formatRelative(order.created_at, true) && (
-                          <p className="text-xs text-muted-foreground mt-0.5">
-                            {formatRelative(order.created_at, true)}
-                          </p>
-                        )}
-                      </div>
-                      <Badge variant="outline" className={`text-2xs font-medium shrink-0 ${getStatusColor(order.status)}`}>
-                        {getStatusText(order.status)}
-                      </Badge>
-                    </Link>
-                  )
-                })}
-              </div>
-            </div>
+                      )}
+                    </div>
+                    <Badge variant="outline" className={`text-2xs font-medium shrink-0 ${getStatusColor(order.status)}`}>
+                      {getStatusText(order.status)}
+                    </Badge>
+                  </Link>
+                )
+              })}
+            </ActivityListShell>
           </>
         )}
       </div>
@@ -275,7 +258,7 @@ export function AccountRecentActivity({ orders, products, sales, locale }: Accou
       {/* My Products Section - Only show if has products */}
       {products.length > 0 && (
         <div>
-          <SectionHeader title={t.myProducts} href="/account/selling" viewAllText={t.viewAll} />
+          <ActivitySectionHeader title={t.myProducts} href="/account/selling" actionLabel={t.viewAll} />
 
           {/* Mobile: Horizontal scroll cards */}
           <div className="md:hidden -mx-4 px-4 overflow-x-auto no-scrollbar">
@@ -319,94 +302,90 @@ export function AccountRecentActivity({ orders, products, sales, locale }: Accou
           </div>
 
           {/* Desktop: List view */}
-          <div className="hidden md:block rounded-md bg-card border border-border overflow-hidden">
-            <div className="divide-y divide-border/50">
-              {products.slice(0, 3).map((product) => (
-                <Link
-                  key={product.id}
-                  href={getProductHref(product)}
-                  className="flex items-center gap-3 p-4 hover:bg-hover active:bg-active transition-colors"
-                >
-                  <div className="relative size-11 rounded-md overflow-hidden bg-card border border-border shrink-0">
-                    {product.images?.[0] ? (
-                      <Image
-                        src={product.images[0]}
-                        alt={product.title}
-                        fill
-                        className="object-cover"
-                        sizes="44px"
-                      />
-                    ) : (
-                      <div className="flex size-full items-center justify-center">
-                        <IconPhoto className="size-5 text-muted-foreground" strokeWidth={1.5} />
-                      </div>
-                    )}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold text-foreground truncate">
-                      {product.title}
-                    </p>
-                    <p className="text-xs text-muted-foreground mt-0.5">
-                      {product.stock} {t.inStock}
-                    </p>
-                  </div>
-                  <span className="text-sm font-bold text-success">
-                    {formatCurrency(product.price)}
-                  </span>
-                </Link>
-              ))}
-            </div>
-          </div>
+          <ActivityListShell className="hidden md:block">
+            {products.slice(0, 3).map((product) => (
+              <Link
+                key={product.id}
+                href={getProductHref(product)}
+                className="flex items-center gap-3 p-4 hover:bg-hover active:bg-active transition-colors"
+              >
+                <div className="relative size-11 rounded-md overflow-hidden bg-card border border-border shrink-0">
+                  {product.images?.[0] ? (
+                    <Image
+                      src={product.images[0]}
+                      alt={product.title}
+                      fill
+                      className="object-cover"
+                      sizes="44px"
+                    />
+                  ) : (
+                    <div className="flex size-full items-center justify-center">
+                      <IconPhoto className="size-5 text-muted-foreground" strokeWidth={1.5} />
+                    </div>
+                  )}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-semibold text-foreground truncate">
+                    {product.title}
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    {product.stock} {t.inStock}
+                  </p>
+                </div>
+                <span className="text-sm font-bold text-success">
+                  {formatCurrency(product.price)}
+                </span>
+              </Link>
+            ))}
+          </ActivityListShell>
         </div>
       )}
 
       {/* Recent Sales Section - Only show if has sales */}
       {sales.length > 0 && (
         <div>
-          <SectionHeader title={t.recentSales} href="/account/sales" viewAllText={t.viewAll} />
-          <div className="rounded-md bg-card border border-border overflow-hidden">
-            <div className="divide-y divide-border/50">
-              {sales.slice(0, 3).map((sale, index) => (
-                <div key={`${sale.id}-${index}`} className="flex items-center gap-3 p-4">
-                  {/* Product Image or Quantity Badge */}
-                  <div className="relative size-11 rounded-md overflow-hidden bg-success/10 shrink-0">
-                    {sale.product_image ? (
-                      <>
-                        <Image
-                          src={sale.product_image}
-                          alt={sale.product_title || 'Product'}
-                          fill
-                          className="object-cover"
-                          sizes="44px"
-                        />
-                        {/* Quantity badge overlay */}
-                        <div className="absolute -bottom-0.5 -right-0.5 flex size-5 items-center justify-center rounded-full bg-success text-2xs font-bold text-primary-foreground shadow-sm">
-                          {sale.quantity}
-                        </div>
-                      </>
-                    ) : (
-                      <div className="flex size-full items-center justify-center">
-                        <span className="text-sm font-bold text-success">x{sale.quantity}</span>
+          <ActivitySectionHeader title={t.recentSales} href="/account/sales" actionLabel={t.viewAll} />
+          <ActivityListShell>
+            {sales.slice(0, 3).map((sale, index) => (
+              <div key={`${sale.id}-${index}`} className="flex items-center gap-3 p-4">
+                {/* Product Image or Quantity Badge */}
+                <div className="relative size-11 rounded-md overflow-hidden bg-success/10 shrink-0">
+                  {sale.product_image ? (
+                    <>
+                      <Image
+                        src={sale.product_image}
+                        alt={sale.product_title || 'Product'}
+                        fill
+                        className="object-cover"
+                        sizes="44px"
+                      />
+                      {/* Quantity badge overlay */}
+                      <div className="absolute -bottom-0.5 -right-0.5 flex size-5 items-center justify-center rounded-full bg-success text-2xs font-bold text-primary-foreground shadow-sm">
+                        {sale.quantity}
                       </div>
-                    )}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold text-foreground truncate">
-                      {sale.product_title || `Item #${sale.id.slice(0, 6)}`}
-                    </p>
-                    {sale.created_at && formatRelative(sale.created_at, true) && (
-                      <p className="text-xs text-muted-foreground mt-0.5">
-                        {formatRelative(sale.created_at, true)}
-                      </p>
-                    )}
-                  </div>
-                  <span className="text-sm font-bold text-success">
-                    +{formatCurrency(sale.price_at_purchase * sale.quantity)}
-                  </span>
+                    </>
+                  ) : (
+                    <div className="flex size-full items-center justify-center">
+                      <span className="text-sm font-bold text-success">x{sale.quantity}</span>
+                    </div>
+                  )}
                 </div>
-              ))}
-            </div>
-          </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-semibold text-foreground truncate">
+                    {sale.product_title || `Item #${sale.id.slice(0, 6)}`}
+                  </p>
+                  {sale.created_at && formatRelative(sale.created_at, true) && (
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      {formatRelative(sale.created_at, true)}
+                    </p>
+                  )}
+                </div>
+                <span className="text-sm font-bold text-success">
+                  +{formatCurrency(sale.price_at_purchase * sale.quantity)}
+                </span>
+              </div>
+            ))}
+          </ActivityListShell>
         </div>
       )}
     </div>

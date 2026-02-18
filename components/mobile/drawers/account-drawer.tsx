@@ -1,28 +1,20 @@
 "use client"
 
 import { useCallback, useEffect, useState } from "react"
-import { ChevronRight as CaretRight, MessageCircle as ChatCircle, Settings as Gear, Heart, Package, Star, Store as Storefront, User, X } from "lucide-react";
+import { MessageCircle as ChatCircle, Settings as Gear, Heart, Package, Star, Store as Storefront, User } from "lucide-react";
 
-import {
-  Drawer,
-  DrawerContent,
-  DrawerDescription,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerClose,
-  DrawerBody,
-} from "@/components/ui/drawer"
+import { DrawerBody } from "@/components/ui/drawer"
 import { Button } from "@/components/ui/button"
-import { IconButton } from "@/components/ui/icon-button"
 import { Link } from "@/i18n/routing"
 import { useTranslations, useLocale } from "next-intl"
 import { useAuth } from "@/components/providers/auth-state-manager"
 import { useMessages } from "@/components/providers/message-context"
 import { useWishlist } from "@/components/providers/wishlist-context"
 import { useDrawer } from "@/components/providers/drawer-context"
+import { AccountDrawerQuickLinks, type AccountDrawerMenuItem } from "@/components/shared/account-menu-items"
+import { DrawerShell } from "@/components/shared/drawer-shell"
 import { createClient } from "@/lib/supabase/client"
 import Image from "next/image"
-import { cn } from "@/lib/utils"
 import { normalizeImageUrl, PLACEHOLDER_IMAGE_PATH } from "@/lib/normalize-image-url"
 import { UserAvatar } from "@/components/shared/user-avatar"
 
@@ -173,66 +165,57 @@ export function AccountDrawer({ open, onOpenChange }: AccountDrawerProps) {
   )
 
   // Quick links with badges
-  const quickLinks = [
+  const quickLinks: AccountDrawerMenuItem[] = [
     {
       href: "/account/orders",
       icon: Package,
       label: tAccount("orders"),
       badge: stats.pendingOrders > 0 ? tAccount("pending", { count: stats.pendingOrders }) : null,
-      badgeType: "warning" as const,
+      badgeTone: "warning",
     },
     {
       href: "/chat",
       icon: ChatCircle,
       label: tAccount("messagesLink"),
       badge: totalUnreadCount > 0 ? tAccount("unread", { count: totalUnreadCount }) : null,
-      badgeType: "destructive" as const,
+      badgeTone: "destructive",
     },
     {
       href: "/account/selling",
       icon: Storefront,
       label: tAccount("myListings"),
       badge: stats.activeListings > 0 ? tAccount("active", { count: stats.activeListings }) : null,
-      badgeType: "muted" as const,
+      badgeTone: "muted",
     },
     {
       href: "/account/wishlist",
       icon: Heart,
       label: tAccount("wishlist"),
       badge: wishlistCount > 0 ? tAccount("items", { count: wishlistCount }) : null,
-      badgeType: "muted" as const,
+      badgeTone: "muted",
     },
     {
       href: "/account/settings",
       icon: Gear,
       label: tAccount("settings"),
       badge: null,
-      badgeType: "muted" as const,
+      badgeTone: "muted",
     },
   ]
 
   return (
-    <Drawer open={open} onOpenChange={onOpenChange}>
-      <DrawerContent className="max-h-dialog rounded-t-2xl" data-testid="mobile-account-drawer">
-        <DrawerHeader className="border-b border-border-subtle px-inset py-2.5 text-left">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-1.5">
-              <User size={16} className="text-muted-foreground" />
-              <DrawerTitle className="text-sm font-semibold">{tAccount("title")}</DrawerTitle>
-            </div>
-            <DrawerClose asChild>
-              <IconButton
-                aria-label={tAccount("close")}
-                variant="ghost"
-                size="icon-default"
-                className="text-muted-foreground hover:bg-hover hover:text-foreground active:bg-active focus-visible:ring-2 focus-visible:ring-focus-ring motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth)"
-              >
-                <X size={16} />
-              </IconButton>
-            </DrawerClose>
-          </div>
-          <DrawerDescription className="sr-only">{tAccount("description")}</DrawerDescription>
-        </DrawerHeader>
+    <DrawerShell
+      open={open}
+      onOpenChange={onOpenChange}
+      title={tAccount("title")}
+      closeLabel={tAccount("close")}
+      description={tAccount("description")}
+      icon={<User size={16} className="text-muted-foreground" />}
+      contentClassName="max-h-dialog rounded-t-2xl"
+      headerClassName="border-b border-border-subtle px-inset py-2.5 text-left"
+      closeButtonClassName="text-muted-foreground hover:bg-hover hover:text-foreground active:bg-active focus-visible:ring-2 focus-visible:ring-focus-ring motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth)"
+      dataTestId="mobile-account-drawer"
+    >
 
         {!user || authLoading ? (
           <DrawerBody className="px-inset py-3 pb-4">
@@ -308,42 +291,12 @@ export function AccountDrawer({ open, onOpenChange }: AccountDrawerProps) {
             </div>
 
             {/* Quick links */}
-            <div className="mt-3 space-y-2" data-testid="account-drawer-quick-links">
-              {quickLinks.map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  onClick={handleClose}
-                  data-testid="account-drawer-quick-link"
-                  className={cn(
-                    "flex min-h-(--spacing-touch-md) w-full items-center justify-between gap-3 rounded-xl border border-border-subtle bg-background px-3.5 text-left",
-                    "tap-transparent motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth)",
-                    "hover:border-border hover:bg-hover active:bg-active",
-                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
-                  )}
-                >
-                  <div className="flex min-w-0 items-center gap-3">
-                    <link.icon size={20} className="shrink-0 text-muted-foreground" />
-                    <span className="truncate text-sm font-medium text-foreground">{link.label}</span>
-                  </div>
-                  <div className="flex shrink-0 items-center gap-2">
-                    {link.badge && (
-                      <span
-                        className={cn(
-                          "rounded-full px-2 py-0.5 text-2xs font-medium",
-                          link.badgeType === "destructive" && "text-destructive bg-destructive-subtle",
-                          link.badgeType === "warning" && "text-primary bg-primary-subtle",
-                          link.badgeType === "muted" && "text-muted-foreground bg-surface-subtle"
-                        )}
-                      >
-                        {link.badge}
-                      </span>
-                    )}
-                    <CaretRight size={16} className="text-muted-foreground" aria-hidden="true" />
-                  </div>
-                </Link>
-              ))}
-            </div>
+            <AccountDrawerQuickLinks
+              className="mt-3 space-y-2"
+              dataTestId="account-drawer-quick-links"
+              items={quickLinks}
+              onItemClick={handleClose}
+            />
 
             {/* Recent listings */}
             {recentListings.length > 0 && (
@@ -398,7 +351,6 @@ export function AccountDrawer({ open, onOpenChange }: AccountDrawerProps) {
             </div>
           </DrawerBody>
         )}
-      </DrawerContent>
-    </Drawer>
+    </DrawerShell>
   )
 }
