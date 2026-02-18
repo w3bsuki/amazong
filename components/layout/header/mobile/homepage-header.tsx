@@ -28,9 +28,9 @@ export function MobileHomepageHeader({
 
   return (
     <div className="bg-background pt-safe md:hidden">
-      <div className="flex h-(--control-primary) items-center px-inset">
-        <SidebarMenu user={user} triggerClassName="-ml-1" {...(userStats && { userStats })} />
-        <Link href="/" className="-ml-1 shrink-0 rounded-sm tap-transparent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring">
+      <div className="flex h-(--control-primary) items-center gap-0.5 px-0.5">
+        <SidebarMenu user={user} {...(userStats && { userStats })} />
+        <Link href="/" className="shrink-0 rounded-sm tap-transparent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring">
           <span className="text-xl font-extrabold tracking-tight text-foreground">treido.</span>
         </Link>
         <button

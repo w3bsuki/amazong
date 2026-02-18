@@ -70,11 +70,11 @@ export function MobileHomeRails({
     <>
       <div
         data-testid="home-v4-rails"
-        className="sticky top-(--offset-mobile-primary-rail) z-30 bg-background"
+        className="sticky top-(--offset-mobile-primary-rail) z-30 border-b border-border-subtle bg-background"
       >
         <nav
           data-testid="home-v4-primary-rail"
-          className="overflow-x-auto no-scrollbar border-b border-border-subtle"
+          className="overflow-x-auto no-scrollbar"
           aria-label={tV4("aria.primaryCategories")}
         >
           <div className="flex w-max min-w-full items-stretch">
@@ -143,7 +143,7 @@ export function MobileHomeRails({
 
         <section
           data-testid="home-v4-secondary-rail"
-          className="border-b border-border-subtle bg-background"
+          className="bg-background"
         >
           <div className="overflow-x-auto no-scrollbar">
             <div className="flex w-max items-center gap-1.5 px-inset py-1.5">
@@ -226,14 +226,14 @@ export function MobileHomeRails({
 
       <section
         data-testid="home-v4-context-banner"
-        className="flex min-h-8 items-center justify-between gap-2 bg-surface-section-header px-inset"
+        className="flex min-h-9 items-center justify-between gap-2 bg-surface-section-header px-inset py-2"
       >
-        <h2 data-testid="home-v4-context-title" className="min-w-0 truncate text-xs font-semibold text-muted-foreground">
+        <h2 data-testid="home-v4-context-title" className="min-w-0 truncate text-sm font-semibold text-muted-foreground">
           {contextTitle}
         </h2>
         <Link
           href={fullBrowseHref}
-          className="inline-flex shrink-0 items-center gap-0.5 text-2xs font-medium text-muted-foreground tap-transparent transition-colors duration-fast ease-smooth hover:text-foreground active:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:rounded-sm"
+          className="inline-flex shrink-0 items-center gap-0.5 text-xs font-medium text-muted-foreground tap-transparent transition-colors duration-fast ease-smooth hover:text-foreground active:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:rounded-sm"
         >
           <span>{tV4("actions.seeAll")}</span>
           <CaretRight size={12} className="shrink-0" aria-hidden="true" />
