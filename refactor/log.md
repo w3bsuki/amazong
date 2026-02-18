@@ -460,3 +460,187 @@
 
 **Next session should:**
 - Continue Batch 3 with checkout decomposition (`checkout-page-client.tsx`) while avoiding payment/webhook internals, then continue Phase F invalidation/client-context audit.
+
+### Session 19 — 2026-02-18 (Codex Phase 0 rebaseline + workflow SSOT)
+
+**Phase(s):** Preflight rebaseline before Domain 1  
+**Changes:**
+- Rebaselined stale refactor metrics/docs:
+  - `refactor/CURRENT.md` metrics table now reflects live baseline (`852` files, `~115K` LOC, `217` `"use client"`, `114` `>300L`, `286` tiny `<50L`, `53` missing metadata, `2.80%` clones).
+  - `refactor/PROGRAM.md` baseline snapshot aligned to live scan values.
+  - `refactor/autopilot.md` current-state table corrected for `>300L` and key-insight percentages.
+- Added workflow SSOT docs:
+  - `docs/WORKFLOW.md` (canonical source-of-truth map + conflict policy).
+  - `docs/GATES.md` (quality-gate runbook + canonical dead-code command).
+  - `docs/FEATURE-MAP.md` (feature docs to route/component map).
+- Added tracker deconfliction note:
+  - `TASKS.md` now explicitly defers refactor queue/status to `refactor/CURRENT.md`.
+- Fixed dead-code workflow blocker in protocol docs:
+  - Updated `refactor/domains/07-cross-cutting-final.md` to use `pnpm -s knip` (stable command in this environment) instead of compact reporter mode.
+- Captured immutable entry artifacts:
+  - `.tmp/architecture-entry.json`
+  - `.tmp/dupes-entry.txt`
+
+**Verification:**
+- `pnpm -s knip` ✅
+- `pnpm -s architecture:scan --write .tmp/architecture-entry.json` ✅
+- `pnpm -s dupes > .tmp/dupes-entry.txt` ✅
+
+**Metrics snapshot (architecture:scan):**
+- Files: `852`
+- `"use client"`: `217`
+- `>300` lines: `114`
+- `>500` lines: `38`
+- Missing metadata: `53`
+- Clones: `232` (`2.80%`)
+
+**Next session should:**
+- Execute Domain 1 (`(account)`) audit/refactor loop with hotspot-first priority, then run full gate and update trackers.
+
+### Session 20 — 2026-02-18 (Codex Domain 1 hotspot pass A)
+
+**Phase(s):** Domain 1 (`(account)`) — hotspot-first decomposition (orders + billing + profile editor)  
+**Audit findings (targeted):**
+- Largest remaining `(account)` monoliths were still concentrated in `selling-products-list.tsx`, `profile-content.tsx`, and `public-profile-editor.tsx`, with secondary concentration in orders/billing internals.
+- Prior split state had a broken `order-detail-content.tsx` extraction (type incompatibilities + stale imports) that blocked clean Domain 1 continuation.
+- Account domain continued to carry avoidable client-boundary declarations on child-only modules.
+
+**Changes:**
+- Stabilized and completed in-progress orders split:
+  - Added `app/[locale]/(account)/account/orders/[id]/_components/order-detail-feedback.tsx`
+  - Added `app/[locale]/(account)/account/orders/[id]/_components/order-detail-items-card.tsx`
+  - Refactored `app/[locale]/(account)/account/orders/[id]/_components/order-detail-content.tsx` into orchestration-first composition.
+- Split account orders grid into mobile/desktop modules:
+  - Added `app/[locale]/(account)/account/orders/_components/account-orders-grid-mobile.tsx`
+  - Added `app/[locale]/(account)/account/orders/_components/account-orders-grid-desktop.tsx`
+  - Refactored `app/[locale]/(account)/account/orders/_components/account-orders-grid.tsx` to lightweight coordinator.
+- Decomposed billing monolith:
+  - Added `app/[locale]/(account)/account/billing/billing.types.ts`
+  - Added `app/[locale]/(account)/account/billing/billing-current-plan-card.tsx`
+  - Added `app/[locale]/(account)/account/billing/billing-history-tabs.tsx`
+  - Refactored `app/[locale]/(account)/account/billing/billing-content.tsx` from 729L to orchestration + child modules.
+- Decomposed `public-profile-editor.tsx` hotspot:
+  - Added `app/[locale]/(account)/account/profile/public-profile-editor.types.ts`
+  - Added `app/[locale]/(account)/account/profile/public-profile-username-card.tsx`
+  - Added `app/[locale]/(account)/account/profile/public-profile-banner-card.tsx`
+  - Added `app/[locale]/(account)/account/profile/public-profile-info-card.tsx`
+  - Added `app/[locale]/(account)/account/profile/public-profile-account-type-card.tsx`
+  - Refactored `app/[locale]/(account)/account/profile/public-profile-editor.tsx` from 707L to orchestration module.
+- Client-boundary cleanup:
+  - Removed unnecessary `"use client"` from split child files where parent boundary already applies.
+
+**Verification:**
+- `pnpm -s typecheck` ✅
+- `pnpm -s lint` ✅ (warnings only; no errors)
+- `pnpm -s styles:gate` ✅
+- `pnpm -s test:unit` ✅
+- `pnpm -s architecture:scan` ✅
+
+**Metrics snapshot (architecture:scan):**
+- Files: `864`
+- `"use client"`: `218`
+- `>300` lines: `112`
+- `>500` lines: `34`
+- Missing metadata: `53`
+- Clones: `236` (`2.84%`)
+
+**Next session should:**
+- Continue Domain 1 hotspot queue in strict order with `profile-content.tsx` and `selling-products-list.tsx`, while adding merge/deletion passes to offset file-count growth from decomposition.
+
+### Session 21 — 2026-02-18 (Codex Domain 1 completion)
+
+**Phase(s):** Domain 1 (`(account)`) — hotspot-first completion + gate + tracker closeout  
+**Audit findings (targeted):**
+- Remaining `(account)` files above 500 lines were reduced to three hotspots: `edit-product-client.tsx`, `account-wishlist-grid.tsx`, and `plans-content.tsx`.
+- Domain 1 split work introduced type-location drift (wishlist type import path), fixed during completion pass.
+
+**Changes:**
+- Completed high-impact profile + selling decompositions:
+  - Split `profile-content.tsx` into focused route-private modules:
+    - `profile-account.types.ts`
+    - `profile-avatar-card.tsx`
+    - `profile-personal-info-card.tsx`
+    - `profile-security-card.tsx`
+    - `profile-email-dialog.tsx`
+    - `profile-password-dialog.tsx`
+  - Split `selling-products-list.tsx` into focused route-private modules:
+    - `selling-products-list.types.ts`
+    - `selling-products-mobile-list.tsx`
+    - `selling-products-desktop-list.tsx`
+    - `selling-products-discount-dialog.tsx`
+- Completed final Domain 1 >500L reductions:
+  - Added `app/[locale]/(account)/account/selling/edit/edit-product.types.ts`
+  - Added `app/[locale]/(account)/account/selling/edit/edit-product.utils.ts`
+  - Refactored `edit-product-client.tsx` to use extracted types/helpers.
+  - Added `app/[locale]/(account)/account/wishlist/_components/account-wishlist.types.ts`
+  - Refactored `account-wishlist-grid.tsx` and `wishlist-content.tsx` to use extracted wishlist types.
+  - Added `app/[locale]/(account)/account/plans/plans-content.types.ts`
+  - Refactored `plans-content.tsx` to use extracted plan mapping/types.
+- Domain 1 exit criteria checkpoint:
+  - `NO_FILES_OVER_500` within `app/[locale]/(account)`.
+
+**Verification:**
+- `pnpm -s typecheck` ✅
+- `pnpm -s lint` ✅ (warnings only; no errors)
+- `pnpm -s styles:gate` ✅
+- `pnpm -s test:unit` ✅
+- `pnpm -s architecture:scan` ✅
+
+**Metrics snapshot (architecture:scan):**
+- Files: `878`
+- `"use client"`: `218`
+- `>300` lines: `112`
+- `>500` lines: `31`
+- Missing metadata: `53`
+- Clones: `236` (`2.82%`)
+
+**Next session should:**
+- Start Domain 2 (`(main)`) in strict hotspot-first order from `refactor/domains/02-main.md` and keep the same per-domain gate/log loop.
+
+### Session 22 — 2026-02-18 (Codex Domain 2 completion)
+
+**Phase(s):** Domain 2 (`(main)`) — full audit + refactor closeout  
+**Audit findings (targeted):**
+- Dead-code scan across `app/[locale]/(main)/_components` found no zero-import deletions after grep confirmation.
+- Tiny-file pressure was concentrated in route-private type/utils fragments; 19 non-magic tiny files remained after the first consolidation wave.
+- Late pass found four remaining Domain 2 hotspots over threshold (`mobile-home.tsx`, `search/page.tsx`, `mobile-seller-filter-controls.tsx`, and `mobile-category-browser-contextual.tsx`).
+
+**Changes:**
+- Completed final hotspot split for contextual mobile category browsing:
+  - Added `app/[locale]/(main)/categories/[slug]/_components/mobile/mobile-category-browser-contextual-utils.ts`
+  - Added `app/[locale]/(main)/categories/[slug]/_components/mobile/mobile-category-browser-contextual-view.tsx`
+  - Reduced `mobile-category-browser-contextual.tsx` to 280L orchestration-only.
+- Completed threshold cleanup for the remaining near-limit hotspots:
+  - Added `app/[locale]/(main)/_components/mobile-home/use-home-city-storage.ts` and reduced `mobile-home.tsx` to 298L.
+  - Added `app/[locale]/(main)/search/_lib/search-page-metadata.ts` and reduced `search/page.tsx` to 299L.
+  - Added `app/[locale]/(main)/search/_components/mobile-seller-active-chips.tsx` and reduced `mobile-seller-filter-controls.tsx` to 279L.
+- Completed tiny-file merge/deletion pass in `(main)` route group (pagination/types/utils/small presentational fragments merged into parent/sibling modules where cohesive).
+- Finished Domain 2 `use client` audit and kept required client boundaries; no unsafe removals.
+- Resolved strict typing regressions introduced by Domain 2 split modules:
+  - unified local `Translate` signatures with `next-intl` value types
+  - fixed `exactOptionalPropertyTypes` mismatches for optional props and nullable IDs
+  - aligned cart/search/category extracted-section contracts.
+- Marked Domain 2 complete in `refactor/CURRENT.md`, advanced current task to Domain 3, and refreshed metrics table.
+
+**File count delta:**
+- Source files: `878` → `888` (`+10` net)
+
+**Verification:**
+- `pnpm -s typecheck` ✅
+- `pnpm -s lint` ✅ (warnings only; no errors)
+- `pnpm -s styles:gate` ✅
+- `pnpm -s test:unit` ✅
+- `pnpm -s architecture:scan` ✅
+
+**Metrics snapshot (architecture:scan + local source count):**
+- Files: `888`
+- LOC (source): `~129K`
+- `"use client"`: `222`
+- `>300` lines: `103`
+- `>500` lines: `27`
+- Tiny `<50L` files: `244`
+- Missing metadata: `53`
+- Clones: `234` (`2.78%`)
+
+**Next session should:**
+- Start Domain 3 (`(sell) + (business)`) via `refactor/domains/03-sell-business.md`, beginning with dead-code + tiny-file consolidation before hotspot splits.

@@ -6,10 +6,18 @@ import { Link } from "@/i18n/routing"
 import { useTranslations } from "next-intl"
 import { getProductUrl } from "@/lib/url-utils"
 import { toast } from "sonner"
-import { ArrowRight, Eye, Heart, Heart as IconHeart, Tag as IconTag, Package, ShoppingCart, Trash, X, CircleX as XCircle } from "lucide-react";
-
-
-
+import {
+  ArrowRight,
+  Eye,
+  Heart,
+  Heart as IconHeart,
+  Tag as IconTag,
+  Package,
+  ShoppingCart,
+  Trash,
+  X,
+  CircleX as XCircle,
+} from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -28,50 +36,19 @@ import { Separator } from "@/components/ui/separator"
 import { useCart } from "@/components/providers/cart-context"
 import { createClient } from "@/lib/supabase/client"
 import { cn } from "@/lib/utils"
+import type { AccountWishlistGridProps, WishlistItem } from "./account-wishlist.types"
 
-export interface WishlistItem {
-  id: string
-  product_id: string
-  title: string
-  price: number
-  image: string
-  stock: number
-  created_at: string
-  category_id?: string | null
-  category_name?: string | null
-  category_slug?: string | null
-  /** Product slug for SEO-friendly URLs */
-  slug?: string | null
-  /** Seller username for SEO-friendly URLs */
-  username?: string | null
-}
-
-interface WishlistGridProps {
-  items: WishlistItem[]
-  locale: string
-  onRemove: (productId: string) => void
-}
-
-export function AccountWishlistGrid({ items, locale, onRemove }: WishlistGridProps) {
+export function AccountWishlistGrid({ items, locale, onRemove }: AccountWishlistGridProps) {
   const t = useTranslations("Wishlist")
   const { addToCart } = useCart()
   const [selectedItem, setSelectedItem] = useState<WishlistItem | null>(null)
   const [removingId, setRemovingId] = useState<string | null>(null)
 
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat(locale, {
-      style: 'currency',
-      currency: 'EUR',
-    }).format(value)
-  }
+  const formatCurrency = (value: number) =>
+    new Intl.NumberFormat(locale, { style: "currency", currency: "EUR" }).format(value)
 
-  const formatDate = (date: string) => {
-    return new Date(date).toLocaleDateString(locale, {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
-    })
-  }
+  const formatDate = (date: string) =>
+    new Date(date).toLocaleDateString(locale, { year: "numeric", month: "short", day: "numeric" })
 
   const handleMoveToCart = async (item: WishlistItem) => {
     if (item.stock <= 0) {
@@ -87,7 +64,6 @@ export function AccountWishlistGrid({ items, locale, onRemove }: WishlistGridPro
       quantity: 1,
     })
 
-    // Remove from wishlist after adding to cart
     await handleRemove(item.product_id)
     toast.success(locale === 'bg' ? 'Преместено в количката' : 'Moved to cart')
     setSelectedItem(null)
@@ -148,19 +124,17 @@ export function AccountWishlistGrid({ items, locale, onRemove }: WishlistGridPro
   }
 
   const labels = {
-    addedOn: locale === 'bg' ? 'Добавено на' : 'Added on',
-    price: locale === 'bg' ? 'Цена' : 'Price',
-    availability: locale === 'bg' ? 'Наличност' : 'Availability',
-    inStock: locale === 'bg' ? 'в наличност' : 'in stock',
-    outOfStock: locale === 'bg' ? 'Продадено' : 'Sold',
-    moveToCart: locale === 'bg' ? 'В количката' : 'Add to Cart',
-    viewProduct: locale === 'bg' ? 'Виж' : 'View',
-    remove: locale === 'bg' ? 'Премахни' : 'Remove',
-    addAllToCart: locale === 'bg' ? 'Добави всички в количката' : 'Add All to Cart',
-    category: locale === 'bg' ? 'Категория' : 'Category',
+    addedOn: locale === "bg" ? "Добавено на" : "Added on",
+    price: locale === "bg" ? "Цена" : "Price",
+    availability: locale === "bg" ? "Наличност" : "Availability",
+    inStock: locale === "bg" ? "в наличност" : "in stock",
+    outOfStock: locale === "bg" ? "Продадено" : "Sold",
+    moveToCart: locale === "bg" ? "В количката" : "Add to Cart",
+    viewProduct: locale === "bg" ? "Виж" : "View",
+    remove: locale === "bg" ? "Премахни" : "Remove",
+    addAllToCart: locale === "bg" ? "Добави всички в количката" : "Add All to Cart",
   }
 
-  // Empty state
   if (items.length === 0) {
     return (
       <Card>
@@ -185,8 +159,6 @@ export function AccountWishlistGrid({ items, locale, onRemove }: WishlistGridPro
 
   return (
     <>
-      {/* Mobile: Vertical 2-column grid - much better for browsing wishlist */}
-      {/* pb-20 adds padding for the floating "Add All" button */}
       <div className="grid grid-cols-2 gap-3 pb-20 md:hidden md:pb-0">
         {items.map((item) => (
           <Drawer key={item.id} open={selectedItem?.id === item.id} onOpenChange={(open) => !open && setSelectedItem(null)}>

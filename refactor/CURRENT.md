@@ -11,28 +11,28 @@
 | | |
 |---|---|
 | **Mode** | Autopilot — full domain-by-domain audit + refactor |
-| **Current task** | Domain 1 — (account) route group |
-| **Sessions so far** | 18 (batches 0-2 + lean sweep A-E) |
+| **Current task** | Domain 3 — (sell) + (business) route groups |
+| **Sessions so far** | 22 (phase 0 rebaseline + Domains 1-2 completed) |
 
 ## Metrics
 
-| Metric | Baseline | Now | Target |
+| Metric | Baseline (2026-02-18 Rebaseline) | Now | Target |
 |--------|----------|-----|--------|
-| Files | 762 | 852 | <650 |
-| LOC (source) | ~48K | ~43K | <30K |
-| `"use client"` | 357 | 217 | <120 |
-| >300L files | 125 | 93 | <20 |
-| Tiny <50L files | — | 286 | <100 |
-| Missing metadata | 58 | 53 | 0 |
-| Clone % | 3.06% | 2.80% | <1.5% |
+| Files | 852 | 888 | <650 |
+| LOC (source) | ~115K | ~129K | <85K |
+| `"use client"` | 217 | 222 | <120 |
+| >300L files | 114 | 103 | <20 |
+| Tiny <50L files | 286 | 244 | <100 |
+| Missing metadata | 53 | 53 | 0 |
+| Clone % | 2.80% | 2.78% | <1.5% |
 
 ## Domain Task Queue
 
 Each domain task is a full audit + refactor of that area. Read `refactor/autopilot.md` for the execution loop.
 
 - [x] Batches 0-2 + Lean Sweep A-E (sessions 1-18)
-- [ ] **Domain 1: (account)** → `refactor/domains/01-account.md` — 92f/16.8K LOC
-- [ ] **Domain 2: (main)** → `refactor/domains/02-main.md` — 135f/16K LOC
+- [x] **Domain 1: (account)** → `refactor/domains/01-account.md` — 92f/16.8K LOC
+- [x] **Domain 2: (main)** → `refactor/domains/02-main.md` — 135f/16K LOC
 - [ ] **Domain 3: (sell) + (business)** → `refactor/domains/03-sell-business.md` — 106f/16.6K LOC
 - [ ] **Domain 4: Small routes** → `refactor/domains/04-small-routes.md` — 159f/16.6K LOC
 - [ ] **Domain 5: components/** → `refactor/domains/05-components.md` — 142f/14.5K LOC
@@ -58,4 +58,4 @@ Read refactor/autopilot.md. Continue from where you left off.
 
 ---
 
-*Updated: 2026-02-18 — Full domain-by-domain audit + refactor. 7 domain tasks.*
+*Updated: 2026-02-18 — Domain 2 complete; next up is Domain 3 (sell + business).*

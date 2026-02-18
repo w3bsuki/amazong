@@ -74,5 +74,7 @@ REUSE_EXISTING_SERVER=true pnpm -s test:e2e:smoke
 
 Active refactoring tracked in `refactor/CURRENT.md`.
 Batches 0-2 complete. Batch 3 (large-screen decomposition) active.
+For refactor execution order, metrics, and task status, `refactor/CURRENT.md` is authoritative.
+`TASKS.md` remains launch-readiness SSOT and should not be used as the refactor queue.
 
 *Last updated: 2026-02-18*

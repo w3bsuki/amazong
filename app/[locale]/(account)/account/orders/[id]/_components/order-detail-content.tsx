@@ -1,9 +1,9 @@
 "use client"
 
-import { useEffect, useMemo, useState, useTransition } from "react"
+import { useState } from "react"
 import { Link } from "@/i18n/routing"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import {
   Dialog,
@@ -15,22 +15,21 @@ import {
 } from "@/components/ui/dialog"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
-import { Checkbox } from "@/components/ui/checkbox"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { ArrowLeft, SquareArrowOutUpRight as ArrowSquareOut, MessageCircle as ChatCircle, CircleCheck as CheckCircle, Clock, Copy, MapPin, Package, Receipt, LoaderCircle as SpinnerGap, Truck, TriangleAlert as Warning, CircleX as XCircle } from "lucide-react";
+import { ArrowLeft, MessageCircle as ChatCircle, CircleCheck as CheckCircle, Clock, Copy, MapPin, Package, Receipt, LoaderCircle as SpinnerGap, Truck, CircleX as XCircle } from "lucide-react"
 
 import { toast } from "sonner"
 import { formatDistanceToNow, format } from "date-fns"
 import { bg, enUS } from "date-fns/locale"
 import { getOrderStatusFromItems, type OrderItemStatus } from "@/lib/order-status"
 import { OrderTimeline } from "./order-timeline"
-import { BuyerOrderActions, type BuyerOrderActionsServerActions } from "../../_components/buyer-order-actions"
+import { type BuyerOrderActionsServerActions } from "../../_components/buyer-order-actions"
 import { useTranslations } from "next-intl"
 import { OrderHeader } from "@/components/shared/order-detail/order-header"
 import { OrderPriceSummaryRows } from "@/components/shared/order-detail/order-price-summary"
 import { OrderListProductThumb } from "@/components/shared/order-list-item"
-import { OrderDetailItemShell, OrderItemsList } from "@/components/shared/order-detail/order-items-list"
 import { OrderDetailSideCard } from "@/components/shared/order-detail/order-side-card"
+import { OrderDetailFeedback } from "./order-detail-feedback"
+import { OrderDetailItemsCard } from "./order-detail-items-card"
 
 export type OrderDetailContentServerActions = BuyerOrderActionsServerActions & {
   requestReturn: (
@@ -145,17 +144,6 @@ export function OrderDetailContent({ locale, order, existingSellerFeedbackSeller
   const [selectedItem, setSelectedItem] = useState<OrderItem | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
-  const [isFeedbackDialogOpen, setIsFeedbackDialogOpen] = useState(false)
-  const [feedbackSellerId, setFeedbackSellerId] = useState<string | null>(null)
-  const [feedbackRating, setFeedbackRating] = useState<number>(5)
-  const [feedbackComment, setFeedbackComment] = useState<string>("")
-  const [itemAsDescribed, setItemAsDescribed] = useState(true)
-  const [shippingSpeed, setShippingSpeed] = useState(true)
-  const [communication, setCommunication] = useState(true)
-  const [feedbackDismissed, setFeedbackDismissed] = useState(false)
-  const [submittedSellerIds, setSubmittedSellerIds] = useState<Set<string>>(new Set())
-  const [isSubmittingFeedback, startFeedbackTransition] = useTransition()
-
   const dateLocale = locale === "bg" ? bg : enUS
   const fallbackStatus = order.status && isOrderStatusKey(order.status) ? order.status : "pending"
   const derivedStatus = getOrderStatusFromItems(
@@ -163,7 +151,6 @@ export function OrderDetailContent({ locale, order, existingSellerFeedbackSeller
     fallbackStatus
   )
   const orderStatusKey: OrderStatusKey = isOrderStatusKey(derivedStatus) ? derivedStatus : "pending"
-  const orderStatus = orderStatusKey
   const statusConfig = STATUS_CONFIG[orderStatusKey]
   const StatusIcon = statusConfig.icon
   const stripePaymentIntentId = order.stripe_payment_intent_id
@@ -228,85 +215,9 @@ export function OrderDetailContent({ locale, order, existingSellerFeedbackSeller
 
   const shippingAddress = order.shipping_address?.address
 
-  useEffect(() => {
-    try {
-      const key = `seller_feedback_prompt_dismissed_order_${order.id}`
-      setFeedbackDismissed(localStorage.getItem(key) === "1")
-    } catch {
-      // ignore
-    }
-  }, [order.id])
-
-  const pendingFeedbackSellers = useMemo(() => {
-    const existing = new Set(existingSellerFeedbackSellerIds || [])
-    const map = new Map<string, { sellerId: string; storeName: string }>()
-    const nowMs = Date.now()
-
-    for (const item of order.order_items) {
-      if (!item.seller?.id) continue
-      const sellerId = item.seller.id
-      if (existing.has(sellerId)) continue
-      if (submittedSellerIds.has(sellerId)) continue
-
-      if (!item.delivered_at) continue
-      const delivered = new Date(item.delivered_at)
-      if (Number.isNaN(delivered.getTime())) continue
-
-      const threeDaysMs = 3 * 24 * 60 * 60 * 1000
-      if (nowMs - delivered.getTime() < threeDaysMs) continue
-
-      if (!map.has(sellerId)) {
-        map.set(sellerId, { sellerId, storeName: item.seller.store_name })
-      }
-    }
-
-    return [...map.values()]
-  }, [order.order_items, existingSellerFeedbackSellerIds, submittedSellerIds])
-
-  const shouldShowFeedbackPrompt = pendingFeedbackSellers.length > 0 && !feedbackDismissed
-
-  const openFeedbackDialog = (sellerId: string) => {
-    setFeedbackSellerId(sellerId)
-    setFeedbackRating(5)
-    setFeedbackComment("")
-    setItemAsDescribed(true)
-    setShippingSpeed(true)
-    setCommunication(true)
-    setIsFeedbackDialogOpen(true)
-  }
-
-  const dismissFeedbackPrompt = () => {
-    try {
-      const key = `seller_feedback_prompt_dismissed_order_${order.id}`
-      localStorage.setItem(key, "1")
-    } catch {
-      // ignore
-    }
-    setFeedbackDismissed(true)
-  }
-
-  const submitFeedback = () => {
-    if (!feedbackSellerId) return
-    startFeedbackTransition(async () => {
-      const result = await actions.submitSellerFeedback({
-        sellerId: feedbackSellerId,
-        orderId: order.id,
-        rating: feedbackRating,
-        comment: feedbackComment.trim(),
-        itemAsDescribed,
-        shippingSpeed,
-        communication,
-      })
-
-      if (result.success) {
-        toast.success(locale === "bg" ? "Благодарим за обратната връзка" : "Thanks for your feedback")
-        setSubmittedSellerIds((prev) => new Set(prev).add(feedbackSellerId))
-        setIsFeedbackDialogOpen(false)
-        setFeedbackSellerId(null)
-      } else {
-        toast.error(result.error || (locale === "bg" ? "Грешка" : "Error"))
-      }
-    })
+  const openReturnDialog = (item: OrderItem) => {
+    setSelectedItem(item)
+    setIsReturnDialogOpen(true)
   }
 
   return (
@@ -327,7 +238,7 @@ export function OrderDetailContent({ locale, order, existingSellerFeedbackSeller
           locale: dateLocale,
         })}`}
         copyAriaLabel={tCommon("copyOrderId")}
-        onCopy={() => copyToClipboard(order.id, locale === "bg" ? "ID" : "ID")}
+        onCopy={() => copyToClipboard(order.id, "ID")}
         rightContent={
           <Badge variant="secondary" className={`${statusConfig.color} ${statusConfig.text}`}>
             <StatusIcon className="size-3.5 mr-1" />
@@ -349,7 +260,6 @@ export function OrderDetailContent({ locale, order, existingSellerFeedbackSeller
               const config = STATUS_CONFIG[status]
               const Icon = config.icon
               const isActive = arr.indexOf(normalizeProgressStatus(orderStatusKey)) >= index
-              const isCurrent = orderStatus === status
 
               return (
                 <div key={status} className="flex items-center flex-1">
@@ -373,241 +283,39 @@ export function OrderDetailContent({ locale, order, existingSellerFeedbackSeller
         </CardContent>
       </Card>
 
-      {/* Feedback prompt (after delivery + 3 days) */}
-      {shouldShowFeedbackPrompt && (
-        <Card>
-          <CardHeader className="pb-3">
-            <div className="flex items-start justify-between gap-3">
-              <div>
-                <CardTitle className="text-base">
-                  {locale === "bg" ? "Оценете продавача" : "Rate your seller"}
-                </CardTitle>
-                <CardDescription>
-                  {locale === "bg"
-                    ? "Помогнете на други купувачи с обратна връзка."
-                    : "Help other buyers with quick feedback."}
-                </CardDescription>
-              </div>
-              <Button variant="ghost" size="sm" onClick={dismissFeedbackPrompt}>
-                {locale === "bg" ? "Скрий" : "Dismiss"}
-              </Button>
-            </div>
-          </CardHeader>
-          <CardContent className="flex flex-col gap-3">
-            {pendingFeedbackSellers.map((s) => (
-              <div key={s.sellerId} className="flex items-center justify-between gap-3">
-                <div className="min-w-0">
-                  <div className="text-sm font-medium truncate">{s.storeName}</div>
-                  <div className="text-xs text-muted-foreground">
-                    {locale === "bg" ? "Оставете оценка за поръчката" : "Leave feedback for this order"}
-                  </div>
-                </div>
-                <Button size="sm" onClick={() => openFeedbackDialog(s.sellerId)}>
-                  {locale === "bg" ? "Оцени" : "Review"}
-                </Button>
-              </div>
-            ))}
-          </CardContent>
-        </Card>
-      )}
-
-      <Dialog open={isFeedbackDialogOpen} onOpenChange={setIsFeedbackDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{locale === "bg" ? "Обратна връзка" : "Seller feedback"}</DialogTitle>
-            <DialogDescription>
-              {locale === "bg"
-                ? "Оценете качеството на поръчката и комуникацията."
-                : "Rate the order experience and communication."}
-            </DialogDescription>
-          </DialogHeader>
-
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <Label>{locale === "bg" ? "Оценка" : "Rating"}</Label>
-              <RadioGroup
-                value={String(feedbackRating)}
-                onValueChange={(v) => setFeedbackRating(Number(v))}
-                className="flex flex-wrap gap-3"
-              >
-                {[5, 4, 3, 2, 1].map((r) => (
-                  <div key={r} className="flex items-center gap-2">
-                    <RadioGroupItem value={String(r)} id={`rating-${r}`} />
-                    <Label htmlFor={`rating-${r}`}>{r}</Label>
-                  </div>
-                ))}
-              </RadioGroup>
-            </div>
-
-            <div className="space-y-2">
-              <Label>{locale === "bg" ? "Детайли" : "Details"}</Label>
-              <div className="space-y-2">
-                <label className="flex items-center gap-2 text-sm">
-                  <Checkbox checked={itemAsDescribed} onCheckedChange={(v) => setItemAsDescribed(Boolean(v))} />
-                  {locale === "bg" ? "Описанието отговаря" : "Item as described"}
-                </label>
-                <label className="flex items-center gap-2 text-sm">
-                  <Checkbox checked={shippingSpeed} onCheckedChange={(v) => setShippingSpeed(Boolean(v))} />
-                  {locale === "bg" ? "Бърза доставка" : "Fast shipping"}
-                </label>
-                <label className="flex items-center gap-2 text-sm">
-                  <Checkbox checked={communication} onCheckedChange={(v) => setCommunication(Boolean(v))} />
-                  {locale === "bg" ? "Добра комуникация" : "Good communication"}
-                </label>
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="seller-feedback-comment">{locale === "bg" ? "Коментар (по избор)" : "Comment (optional)"}</Label>
-              <Textarea
-                id="seller-feedback-comment"
-                value={feedbackComment}
-                onChange={(e) => setFeedbackComment(e.target.value)}
-                rows={4}
-              />
-            </div>
-          </div>
-
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setIsFeedbackDialogOpen(false)}>
-              {locale === "bg" ? "Отказ" : "Cancel"}
-            </Button>
-            <Button onClick={submitFeedback} disabled={isSubmittingFeedback}>
-              {isSubmittingFeedback ? (
-                <>
-                  <SpinnerGap className="size-4 mr-2 animate-spin" />
-                  {locale === "bg" ? "Изпращане..." : "Submitting..."}
-                </>
-              ) : (
-                locale === "bg" ? "Изпрати" : "Submit"
-              )}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <OrderDetailFeedback
+        locale={locale}
+        orderId={order.id}
+        orderItems={order.order_items.map((item) => ({
+          seller: item.seller
+            ? {
+              id: item.seller.id,
+              store_name: item.seller.store_name,
+            }
+            : null,
+          delivered_at: item.delivered_at,
+        }))}
+        {...(existingSellerFeedbackSellerIds
+          ? { existingSellerFeedbackSellerIds }
+          : {})}
+        submitSellerFeedback={actions.submitSellerFeedback}
+      />
 
       <div className="grid gap-4 lg:grid-cols-3">
         {/* Order Items */}
         <div className="lg:col-span-2 space-y-4">
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base">
-                {locale === "bg" ? "Продукти" : "Items"} ({order.order_items.length})
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <OrderItemsList>
-                {order.order_items.map((item) => {
-                  const itemStatus = item.status || "pending"
-                  const itemConfig = getStatusConfig(itemStatus)
-                  const firstImage = item.product?.images?.[0]
-
-                  return (
-                    <OrderDetailItemShell
-                      key={item.id}
-                      imageSrc={firstImage}
-                      imageAlt={item.product?.title || "Product"}
-                      imageSizes="80px"
-                      content={
-                        <div>
-                          <div className="flex items-start justify-between gap-2">
-                            <div>
-
-                          <Link
-                            href={
-                              item.seller?.username
-                                ? `/${item.seller.username}/${item.product?.slug || item.product_id}`
-                                : "#"
-                            }
-                            className="font-medium hover:underline line-clamp-2"
-                          >
-                            {item.product?.title || "Unknown Product"}
-                          </Link>
-                          {item.seller && (
-                            <p className="text-sm text-muted-foreground">
-                              {locale === "bg" ? "От" : "From"}: {item.seller.store_name}
-                            </p>
-                          )}
-                            </div>
-                            <Badge variant="outline" className="shrink-0">
-                              {locale === "bg" ? itemConfig.labelBg : itemConfig.label}
-                            </Badge>
-                          </div>
-
-                          <div className="mt-2 flex items-center justify-between">
-                            <p className="text-sm">
-                              {item.quantity} × {formatPrice(item.price_at_purchase)}
-                            </p>
-                            <p className="font-medium">
-                              {formatPrice(item.quantity * item.price_at_purchase)}
-                            </p>
-                          </div>
-
-                          {/* Tracking Info */}
-                          {item.tracking_number && (
-                            <div className="mt-2 flex items-center gap-2 rounded bg-surface-subtle p-2">
-                              <Truck className="size-4 text-muted-foreground" />
-                              <span className="text-sm flex-1">
-                                {item.shipping_carrier && CARRIERS[item.shipping_carrier.toLowerCase()]?.name}
-                                : {item.tracking_number}
-                              </span>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                className="h-7"
-                                onClick={() => openTracking(item)}
-                              >
-                                <ArrowSquareOut className="size-3.5" />
-                                {locale === "bg" ? "Проследи" : "Track"}
-                              </Button>
-                            </div>
-                          )}
-
-                          {/* Actions */}
-                          <div className="mt-3 flex gap-2">
-                            <Link href={`/chat?seller=${item.seller_id}`}>
-                              <Button variant="outline" size="sm" className="h-7">
-                                <ChatCircle className="size-3.5 mr-1" />
-                                {locale === "bg" ? "Съобщение" : "Message"}
-                              </Button>
-                            </Link>
-                            {itemStatus === "delivered" && (
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                className="h-7"
-                                onClick={() => {
-                                  setSelectedItem(item)
-                                  setIsReturnDialogOpen(true)
-                                }}
-                              >
-                                <Warning className="size-3.5 mr-1" />
-                                {locale === "bg" ? "Върни" : "Return"}
-                              </Button>
-                            )}
-                          </div>
-                          {(itemStatus === "shipped" || itemStatus === "delivered") && (
-                            <div className="mt-2">
-                              <BuyerOrderActions
-                                orderItemId={item.id}
-                                currentStatus={itemStatus}
-                                sellerId={item.seller_id}
-                                conversationId={conversationId ?? null}
-                                locale={locale}
-                                orderId={order.id}
-                                actions={actions}
-                                mode="report-only"
-                              />
-                            </div>
-                          )}
-                        </div>
-                      }
-                    />
-                  )
-                })}
-              </OrderItemsList>
-            </CardContent>
-          </Card>
+          <OrderDetailItemsCard
+            locale={locale}
+            orderId={order.id}
+            conversationId={conversationId ?? null}
+            orderItems={order.order_items}
+            actions={actions}
+            formatPrice={formatPrice}
+            getStatusView={getStatusConfig}
+            openTracking={openTracking}
+            requestReturn={openReturnDialog}
+            carriers={CARRIERS}
+          />
         </div>
 
         {/* Order Summary & Shipping */}

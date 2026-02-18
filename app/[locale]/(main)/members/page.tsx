@@ -2,8 +2,7 @@ import { validateLocale } from "@/i18n/routing"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import type { Metadata } from "next"
 import MembersPageClient from "./_components/members-page-client"
-import type { MembersSearchParams } from "./_lib/members-types"
-import { getMembersPageData } from "./_lib/get-members-page-data"
+import { getMembersPageData, type MembersSearchParams } from "./_lib/get-members-page-data"
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale: localeParam } = await params

@@ -25,36 +25,17 @@ import { BULGARIAN_CITIES } from "@/lib/bulgarian-cities"
 import { useToast } from "@/hooks/use-toast"
 import { BoostDialog } from "../../../../_components/seller/boost-dialog"
 import { useTranslations } from "next-intl"
-import { ArrowLeft, CircleDollarSign as CurrencyCircleDollar, Save as FloppyDisk, Zap as Lightning, Package, Percent, Tag } from "lucide-react";
-
-
-interface Product {
-  id: string
-  title: string
-  slug?: string | null
-  description: string | null
-  price: number
-  list_price: number | null
-  is_on_sale?: boolean | null
-  sale_percent?: number | null
-  sale_end_date?: string | null
-  seller_city?: string | null
-  stock: number
-  images: string[] | null
-  is_boosted: boolean | null
-  boost_expires_at: string | null
-  is_featured: boolean | null
-  ships_to_bulgaria: boolean | null
-  ships_to_europe: boolean | null
-  ships_to_usa: boolean | null
-  ships_to_worldwide: boolean | null
-  [key: string]: unknown // Allow other DB fields
-}
-
-interface EditProductClientProps {
-  productId: string
-  locale: string
-}
+import {
+  ArrowLeft,
+  CircleDollarSign as CurrencyCircleDollar,
+  Save as FloppyDisk,
+  Zap as Lightning,
+  Package,
+  Percent,
+  Tag,
+} from "lucide-react"
+import { calculateSaleDiscount, toSaleEndDateIso } from "./edit-product.utils"
+import type { EditableProduct, EditProductClientProps } from "./edit-product.types"
 
 export function EditProductClient({ productId, locale }: EditProductClientProps) {
   const router = useRouter()
@@ -63,7 +44,7 @@ export function EditProductClient({ productId, locale }: EditProductClientProps)
 
   const [isLoading, setIsLoading] = useState(true)
   const [isSaving, setIsSaving] = useState(false)
-  const [product, setProduct] = useState<Product | null>(null)
+  const [product, setProduct] = useState<EditableProduct | null>(null)
   const [sellerUsername, setSellerUsername] = useState<string | null>(null)
 
   // Form state
@@ -165,20 +146,7 @@ export function EditProductClient({ productId, locale }: EditProductClientProps)
     fetchProduct()
   }, [productId, router, locale, toast])
 
-  const calculateDiscount = () => {
-    if (!isOnSale || !originalPrice || !price) return 0
-    const orig = Number.parseFloat(originalPrice)
-    const current = Number.parseFloat(price)
-    if (orig <= 0 || current >= orig) return 0
-    return Math.round(((orig - current) / orig) * 100)
-  }
-
-  const getSaleEndDateIso = (): string | null => {
-    if (!saleEndDateLocal) return null
-    const d = new Date(saleEndDateLocal)
-    if (Number.isNaN(d.getTime())) return null
-    return d.toISOString()
-  }
+  const discountPercent = calculateSaleDiscount({ isOnSale, originalPrice, price })
 
   const handleSave = async () => {
     if (!product) return
@@ -202,8 +170,8 @@ export function EditProductClient({ productId, locale }: EditProductClientProps)
     if (isOnSale && originalPrice) {
       updateData.list_price = Number.parseFloat(originalPrice)
       updateData.is_on_sale = true
-      updateData.sale_percent = calculateDiscount()
-      updateData.sale_end_date = getSaleEndDateIso()
+      updateData.sale_percent = discountPercent
+      updateData.sale_end_date = toSaleEndDateIso(saleEndDateLocal)
     } else {
       updateData.list_price = null
       updateData.is_on_sale = false
@@ -384,11 +352,11 @@ export function EditProductClient({ productId, locale }: EditProductClientProps)
                     />
                   </div>
 
-                  {calculateDiscount() > 0 && (
+                  {discountPercent > 0 && (
                     <div className="flex items-center gap-2 p-3 bg-destructive-subtle rounded-md">
                       <Tag className="size-4 text-deal" />
                       <span className="text-sm font-medium text-deal">
-                        {t("selling.edit.sale.discountPreview", { percent: calculateDiscount() })}
+                        {t("selling.edit.sale.discountPreview", { percent: discountPercent })}
                       </span>
                     </div>
                   )}
@@ -497,9 +465,9 @@ export function EditProductClient({ productId, locale }: EditProductClientProps)
                     <Package className="size-12 text-muted-foreground" />
                   </div>
                 )}
-                {isOnSale && calculateDiscount() > 0 && (
+                {isOnSale && discountPercent > 0 && (
                   <div className="absolute top-2 left-2 bg-deal text-deal-foreground text-xs font-bold px-2 py-1 rounded">
-                    -{calculateDiscount()}%
+                    -{discountPercent}%
                   </div>
                 )}
               </div>

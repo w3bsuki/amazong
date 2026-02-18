@@ -19,16 +19,16 @@ pnpm -s typecheck && pnpm -s lint && pnpm -s styles:gate && pnpm -s test:unit
 
 ---
 
-## Baseline (2026-02-18)
+## Baseline (2026-02-18 Rebaseline)
 
 | Metric | Value |
 |--------|-------|
-| Source files (`app/components/lib/hooks`) | 819 |
-| Total LOC (`app/components/lib/hooks`) | ~42.8K |
-| `"use client"` files | 216 |
-| >300-line files | 118 |
-| Duplicate clones | 243 |
-| Clone % | 3.04% |
+| Source files (`app/components/lib/hooks`) | 852 |
+| Total LOC (`app/components/lib/hooks`) | ~115K |
+| `"use client"` files | 217 |
+| >300-line files | 114 |
+| Duplicate clones | 232 |
+| Clone % | 2.80% |
 
 ---
 
@@ -46,15 +46,15 @@ pnpm -s typecheck && pnpm -s lint && pnpm -s styles:gate && pnpm -s test:unit
 
 ---
 
-## Latest Snapshot (Batch 3 in progress; Phase F in progress, 2026-02-18)
+## Latest Snapshot (Domain 1 completion, 2026-02-18)
 
 | Metric | Value |
 |--------|-------|
-| Source files (`app/components/lib/hooks`) | 852 |
-| `"use client"` files | 217 |
-| >300-line files | 114 |
-| Duplicate clones | 232 |
-| Clone % | 2.80% |
+| Source files (`app/components/lib/hooks`) | 878 |
+| `"use client"` files | 218 |
+| >300-line files | 112 |
+| Duplicate clones | 236 |
+| Clone % | 2.82% |
 
 ---
 

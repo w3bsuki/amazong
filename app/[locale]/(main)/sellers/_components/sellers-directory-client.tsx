@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react"
 import { useTranslations } from "next-intl"
 
-import type { Seller } from "../_lib/top-sellers-types"
+import type { Seller } from "../_lib/get-top-sellers"
 
 import { Input } from "@/components/ui/input"
 import {

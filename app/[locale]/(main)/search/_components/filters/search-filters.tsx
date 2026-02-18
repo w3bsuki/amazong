@@ -5,12 +5,16 @@ import { useRouter } from "@/i18n/routing"
 import { useLocale, useTranslations } from "next-intl"
 import { useCallback, useEffect, useState } from "react"
 import { Accordion } from "@/components/ui/accordion"
-import { CategoryNavigation } from "./sections/category-navigation"
+import {
+  CategoryNavigation,
+  type BreadcrumbCategory,
+  type Category,
+  type CategoryWithSubcategories,
+} from "./sections/category-navigation"
 import { ReviewsFilterSection } from "./sections/reviews-filter-section"
 import { PriceFilterSection } from "./sections/price-filter-section"
 import { LocationFilterSection } from "./sections/location-filter-section"
 import { AvailabilityFilterSection } from "./sections/availability-filter-section"
-import type { BreadcrumbCategory, Category, CategoryWithSubcategories } from "./types"
 
 interface SearchFiltersProps {
   categories: Category[]

@@ -4,22 +4,14 @@ import { useCallback, useEffect, useMemo, useState } from "react"
 import { useSearchParams } from "next/navigation"
 import { useRouter } from "@/i18n/routing"
 import { useTranslations } from "next-intl"
-import { ArrowUpDown, SlidersHorizontal, X } from "lucide-react"
+import { ArrowUpDown, SlidersHorizontal } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { MOBILE_ACTION_CHIP_CLASS, getMobileQuickPillClass } from "@/components/mobile/chrome/mobile-control-recipes"
 import type { SellerSortKey } from "../_lib/types"
-import {
-  Drawer,
-  DrawerBody,
-  DrawerContent,
-  DrawerFooter,
-  DrawerHeader,
-  DrawerTitle,
-} from "@/components/ui/drawer"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { FilterRadioGroup, FilterRadioItem } from "@/components/shared/filters/controls/filter-radio-group"
-import { FilterCheckboxItem } from "@/components/shared/filters/controls/filter-checkbox-item"
+import { MobileSellerFilterDrawer, MobileSellerSortDrawer } from "./mobile-seller-filter-drawers"
+import { MobileSellerActiveChips } from "./mobile-seller-active-chips"
 
 interface MobileSellerFilterControlsProps {
   basePath?: string
@@ -168,6 +160,12 @@ export function MobileSellerFilterControls({
     replaceUrl(next)
     setFiltersOpen(false)
   }, [replaceUrl, searchParams])
+  const clearSingleFilter = useCallback(
+    (next: { sellerVerified?: boolean; sellerMinRating?: number | null; sellerMinListings?: number | null }) => {
+      replaceUrl(applySellerSearchParams(new URLSearchParams(searchParams.toString()), next))
+    },
+    [replaceUrl, searchParams]
+  )
 
   const hasActiveFilters = currentVerified || currentMinRating > 0 || currentMinListings > 0
 
@@ -240,142 +238,40 @@ export function MobileSellerFilterControls({
         </button>
       </div>
 
-      {hasActiveFilters && (
-        <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-1">
-          {currentVerified && (
-            <button
-              type="button"
-              onClick={() =>
-                replaceUrl(
-                  applySellerSearchParams(new URLSearchParams(searchParams.toString()), {
-                    sellerVerified: false,
-                  })
-                )
-              }
-              className={chipClass}
-            >
-              <span>{t("verifiedSellers")}</span>
-              <X className="size-3.5" aria-hidden="true" />
-            </button>
-          )}
-          {currentMinRating > 0 && (
-            <button
-              type="button"
-              onClick={() =>
-                replaceUrl(
-                  applySellerSearchParams(new URLSearchParams(searchParams.toString()), {
-                    sellerMinRating: null,
-                  })
-                )
-              }
-              className={chipClass}
-            >
-              <span>{t("sellerMinRatingChip", { rating: currentMinRating })}</span>
-              <X className="size-3.5" aria-hidden="true" />
-            </button>
-          )}
-          {currentMinListings > 0 && (
-            <button
-              type="button"
-              onClick={() =>
-                replaceUrl(
-                  applySellerSearchParams(new URLSearchParams(searchParams.toString()), {
-                    sellerMinListings: null,
-                  })
-                )
-              }
-              className={chipClass}
-            >
-              <span>{t("sellerMinListingsChip", { count: currentMinListings })}</span>
-              <X className="size-3.5" aria-hidden="true" />
-            </button>
-          )}
-          <button type="button" onClick={clearFilters} className={chipClass}>
-            <span>{t("clear")}</span>
-          </button>
-        </div>
-      )}
+      <MobileSellerActiveChips
+        currentVerified={currentVerified}
+        currentMinRating={currentMinRating}
+        currentMinListings={currentMinListings}
+        chipClass={chipClass}
+        t={t}
+        onClearVerified={() => clearSingleFilter({ sellerVerified: false })}
+        onClearMinRating={() => clearSingleFilter({ sellerMinRating: null })}
+        onClearMinListings={() => clearSingleFilter({ sellerMinListings: null })}
+        onClearAll={clearFilters}
+      />
 
-      <Drawer open={sortOpen} onOpenChange={setSortOpen}>
-        <DrawerContent aria-label={t("sellerSort")}>
-          <DrawerHeader className="border-b border-border-subtle px-inset py-3">
-            <DrawerTitle className="text-base font-semibold">{t("sellerSort")}</DrawerTitle>
-          </DrawerHeader>
-          <DrawerBody className="px-0">
-            <FilterRadioGroup value={currentSort} onValueChange={(value) => applySort(value as SellerSortKey)}>
-              <FilterRadioItem value="products" fullBleed>
-                {t("sortSellerProducts")}
-              </FilterRadioItem>
-              <FilterRadioItem value="rating" fullBleed>
-                {t("sortSellerRating")}
-              </FilterRadioItem>
-              <FilterRadioItem value="newest" fullBleed>
-                {t("sortSellerNewest")}
-              </FilterRadioItem>
-            </FilterRadioGroup>
-          </DrawerBody>
-        </DrawerContent>
-      </Drawer>
+      <MobileSellerSortDrawer
+        open={sortOpen}
+        onOpenChange={setSortOpen}
+        currentSort={currentSort}
+        applySort={applySort}
+        t={t}
+      />
 
-      <Drawer open={filtersOpen} onOpenChange={setFiltersOpen}>
-        <DrawerContent aria-label={t("sellerFilters")}>
-          <DrawerHeader className="border-b border-border-subtle px-inset py-3">
-            <DrawerTitle className="text-base font-semibold">{t("sellerFilters")}</DrawerTitle>
-          </DrawerHeader>
-          <DrawerBody className="px-0 pb-safe-max">
-            <div className="-mx-inset">
-              <FilterCheckboxItem
-                checked={pendingVerified}
-                onCheckedChange={(checked) => setPendingVerified(Boolean(checked))}
-                fullBleed
-              >
-                {t("verifiedSellers")}
-              </FilterCheckboxItem>
-
-              <div className="border-t border-border-subtle px-inset py-2">
-                <p className="pb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                  {t("minSellerRating")}
-                </p>
-                <FilterRadioGroup
-                  value={String(pendingRating)}
-                  onValueChange={(value) => setPendingRating(Number(value))}
-                  className="rounded-xl border border-border-subtle"
-                >
-                  <FilterRadioItem value="0">{t("anyRating")}</FilterRadioItem>
-                  <FilterRadioItem value="4">{t("rating4Plus")}</FilterRadioItem>
-                  <FilterRadioItem value="4.5">{t("rating45Plus")}</FilterRadioItem>
-                </FilterRadioGroup>
-              </div>
-
-              <div className="border-t border-border-subtle px-inset py-2">
-                <p className="pb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                  {t("minSellerListings")}
-                </p>
-                <FilterRadioGroup
-                  value={String(pendingListings)}
-                  onValueChange={(value) => setPendingListings(Number(value))}
-                  className="rounded-xl border border-border-subtle"
-                >
-                  <FilterRadioItem value="0">{t("anyListings")}</FilterRadioItem>
-                  <FilterRadioItem value="5">{t("listings5Plus")}</FilterRadioItem>
-                  <FilterRadioItem value="10">{t("listings10Plus")}</FilterRadioItem>
-                  <FilterRadioItem value="20">{t("listings20Plus")}</FilterRadioItem>
-                </FilterRadioGroup>
-              </div>
-            </div>
-          </DrawerBody>
-          <DrawerFooter className="border-t border-border-subtle px-inset py-2">
-            <div className="grid grid-cols-2 gap-2">
-              <Button type="button" variant="outline" onClick={clearFilters}>
-                {t("clear")}
-              </Button>
-              <Button type="button" onClick={applyFilters}>
-                {applyLabel}
-              </Button>
-            </div>
-          </DrawerFooter>
-        </DrawerContent>
-      </Drawer>
+      <MobileSellerFilterDrawer
+        open={filtersOpen}
+        onOpenChange={setFiltersOpen}
+        pendingVerified={pendingVerified}
+        setPendingVerified={setPendingVerified}
+        pendingRating={pendingRating}
+        setPendingRating={setPendingRating}
+        pendingListings={pendingListings}
+        setPendingListings={setPendingListings}
+        clearFilters={clearFilters}
+        applyFilters={applyFilters}
+        applyLabel={applyLabel}
+        t={t}
+      />
     </section>
   )
 }

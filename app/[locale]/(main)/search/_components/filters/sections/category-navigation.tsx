@@ -3,8 +3,39 @@ import { ChevronDown as CaretDown, ChevronRight as CaretRight } from "lucide-rea
 import { useTranslations } from "next-intl"
 import { Link } from "@/i18n/routing"
 import { CategoryBreadcrumbTrail } from "./category-breadcrumb-trail"
-import { getCategoryName, isValidCategory } from "../_lib/category-utils"
-import type { BreadcrumbCategory, Category, CategoryWithSubcategories } from "../types"
+
+export interface Category {
+  id: string
+  name: string
+  name_bg: string | null
+  slug: string
+  parent_id: string | null
+  image_url?: string | null
+}
+
+export interface BreadcrumbCategory {
+  slug: string
+  name: string
+  name_bg: string | null
+}
+
+export interface CategoryWithSubcategories {
+  category: Category
+  subs: Category[]
+}
+
+function isValidCategory(category: Category): boolean {
+  const name = category.name.toLowerCase()
+  return !name.includes("[deprecated]") && !name.includes("[moved]") && !name.includes("[duplicate]")
+}
+
+function getCategoryName(category: Category, locale: string): string {
+  if (locale === "bg" && category.name_bg) {
+    return category.name_bg
+  }
+
+  return category.name
+}
 
 interface CategoryNavigationProps {
   categories: Category[]

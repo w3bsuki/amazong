@@ -9,16 +9,16 @@
 
 | Metric | Now | Target |
 |--------|-----|--------|
-| Files | 852 | <650 |
-| LOC (source) | ~115K | <85K |
-| `"use client"` | 217 | <120 |
-| >300L files | 93 | <20 |
-| Tiny <50L files | 286 | <100 |
-| Clone % | 2.80% | <1.5% |
+| Files | 878 | <650 |
+| LOC (source) | ~118K | <85K |
+| `"use client"` | 218 | <120 |
+| >300L files | 112 | <20 |
+| Tiny <50L files | 292 | <100 |
+| Clone % | 2.82% | <1.5% |
 
-**Key insight:** 286 files (33%) are under 50 lines — over-extracted fragments.
-93 files (11%) are over 300 lines — under-split monoliths.
-These two extremes account for 44% of all files and represent the biggest reduction opportunity.
+**Key insight:** 292 files (33%) are under 50 lines — over-extracted fragments.
+112 files (13%) are over 300 lines — under-split monoliths.
+These two extremes account for 46% of all files and remain the biggest reduction opportunity.
 
 ---
 

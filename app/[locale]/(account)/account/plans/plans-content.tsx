@@ -17,11 +17,21 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
-import { RefreshCw as ArrowsClockwise, Calendar as CalendarBlank, Zap as Lightning, TriangleAlert as Warning, X } from "lucide-react";
+import {
+  RefreshCw as ArrowsClockwise,
+  Calendar as CalendarBlank,
+  Zap as Lightning,
+  TriangleAlert as Warning,
+  X,
+} from "lucide-react"
 
 import { cn } from "@/lib/utils"
 import { toast } from "sonner"
 import { PlansGrid, type Plan } from "../_components/plan-card"
+import {
+  mapSubscriptionPlanToPlan,
+  type PlansContentProps,
+} from "./plans-content.types"
 
 export type PlansContentServerActions = {
   cancelSubscription: () => Promise<{ success: boolean; error?: string }>
@@ -34,96 +44,6 @@ export type PlansContentServerActions = {
     billingPeriod: "monthly" | "yearly"
     locale?: "en" | "bg"
   }) => Promise<{ url?: string; error?: string }>
-}
-
-interface SubscriptionPlan {
-  id: string
-  tier: string
-  name: string
-  account_type?: string | null
-  price_monthly: number
-  price_yearly: number
-  // Fee structure (all paid by seller from earnings)
-  final_value_fee?: number | null
-  insertion_fee?: number | null
-  per_order_fee?: number | null
-  commission_rate?: number | null
-  max_listings?: number | null
-  boosts_included?: number | null
-  priority_support?: boolean | null
-  analytics_access?: string | null
-  badge_type?: string | null
-  description?: string | null
-  description_bg?: string | null
-  features: unknown // Json type from DB
-  // DB column names
-  stripe_price_monthly_id?: string | null
-  stripe_price_yearly_id?: string | null
-  is_active?: boolean | null
-}
-
-interface Seller {
-  id: string
-  tier: string
-  account_type?: "personal" | "business"
-  final_value_fee?: number
-  insertion_fee?: number
-  commission_rate?: number  // Legacy
-  [key: string]: unknown
-}
-
-interface Subscription {
-  id: string
-  seller_id: string
-  plan_type: string
-  status: string
-  billing_period?: string
-  expires_at?: string
-  auto_renew?: boolean
-  stripe_subscription_id: string | null
-  [key: string]: unknown
-}
-
-interface PlansContentProps {
-  locale: string
-  plans: SubscriptionPlan[]
-  currentTier: string
-  seller: Seller | null
-  currentSubscription: Subscription | null
-  actions: PlansContentServerActions
-}
-
-// Convert SubscriptionPlan to Plan interface for shared component
-function toPlan(sp: SubscriptionPlan): Plan {
-  // Validate account_type is a valid literal type
-  const accountType = sp.account_type === "business" ? "business" : "personal"
-
-  // Parse features from Json to string array
-  const features: string[] = Array.isArray(sp.features)
-    ? sp.features.filter((f): f is string => typeof f === "string")
-    : []
-
-  return {
-    id: sp.id,
-    name: sp.name,
-    tier: sp.tier,
-    account_type: accountType,
-    price_monthly: sp.price_monthly,
-    price_yearly: sp.price_yearly,
-    max_listings: sp.max_listings ?? null,
-    // Simple fee structure: just % when sold (no insertion or per-order fees)
-    final_value_fee: sp.final_value_fee ?? sp.commission_rate ?? 12,
-    insertion_fee: 0,  // No longer used
-    per_order_fee: 0,  // No longer used
-    ...(typeof sp.commission_rate === "number" ? { commission_rate: sp.commission_rate } : {}),
-    boosts_included: sp.boosts_included ?? 0,
-    priority_support: sp.priority_support ?? false,
-    analytics_access: sp.analytics_access ?? "none",
-    badge_type: sp.badge_type ?? null,
-    description: sp.description ?? "",
-    description_bg: sp.description_bg ?? "",
-    features,
-  }
 }
 
 export function PlansContent({
@@ -264,7 +184,7 @@ export function PlansContent({
 
   // Plans are already filtered by account type from server
   // Just map to Plan interface for display
-  const mappedPlans = plans.map(toPlan)
+  const mappedPlans = plans.map(mapSubscriptionPlanToPlan)
 
   return (
     <div className="space-y-6">

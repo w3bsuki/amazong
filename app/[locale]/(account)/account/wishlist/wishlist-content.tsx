@@ -2,9 +2,10 @@
 
 import { useMemo, useState } from "react"
 import { AccountWishlistStats } from "./_components/account-wishlist-stats"
-import { AccountWishlistGrid, type WishlistItem } from "./_components/account-wishlist-grid"
+import { AccountWishlistGrid } from "./_components/account-wishlist-grid"
 import { AccountWishlistToolbar, type WishlistCategory } from "./_components/account-wishlist-toolbar"
 import { ShareWishlistButton } from "./_components/share-wishlist-button"
+import type { WishlistItem } from "./_components/account-wishlist.types"
 
 interface WishlistContentProps {
   initialItems: WishlistItem[]

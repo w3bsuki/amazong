@@ -1,6 +1,5 @@
 import { createStaticClient } from "@/lib/supabase/server"
-import { ITEMS_PER_PAGE } from "../../_lib/pagination"
-import type { Product, SearchProductFilters } from "./types"
+import { ITEMS_PER_PAGE, type Product, type SearchProductFilters } from "./types"
 import { isBoostActiveNow } from "@/lib/boost/boost-status"
 import { applySharedProductFilters, applySharedProductSort } from "@/lib/data/search-products"
 

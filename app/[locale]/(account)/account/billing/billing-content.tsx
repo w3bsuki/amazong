@@ -1,118 +1,32 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useEffect, useState } from "react"
 import { useTranslations } from "next-intl"
 import { Link } from "@/i18n/routing"
-import Image from "next/image"
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Skeleton } from "@/components/ui/skeleton"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
-import { ArrowRight, SquareArrowOutUpRight as ArrowSquareOut, ArrowUpRight, Calendar as CalendarBlank, CircleCheck as CheckCircle, Clock, CreditCard, Crown, CircleDollarSign as CurrencyCircleDollar, Download, Info, Zap as Lightning, Package, Receipt, Sparkles as Sparkle, LoaderCircle as SpinnerGap, CircleX as XCircle } from "lucide-react";
-
-import { cn } from "@/lib/utils"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent } from "@/components/ui/card"
 import { toast } from "sonner"
-import { format, formatDistanceToNow } from "date-fns"
 import { bg, enUS } from "date-fns/locale"
+import {
+  ArrowRight,
+  CircleCheck as CheckCircle,
+  CircleX as XCircle,
+  Clock,
+  CreditCard,
+  Crown,
+  Info,
+} from "lucide-react"
+import { BillingCurrentPlanCard } from "./billing-current-plan-card"
+import { BillingHistoryTabs } from "./billing-history-tabs"
+import type {
+  BillingContentProps,
+  BillingText,
+  Charge,
+  Invoice,
+} from "./billing.types"
 
-export type BillingContentServerActions = {
-  createBillingPortalSession: (args?: {
-    locale?: "en" | "bg"
-  }) => Promise<{ url?: string; error?: string }>
-}
-
-interface SubscriptionPlan {
-  id: string
-  name: string
-  tier: string
-  price_monthly: number
-  price_yearly: number
-  commission_rate: number
-  features: string[]
-}
-
-interface Subscription {
-  id: string
-  seller_id: string
-  plan_type: string
-  status: string
-  price_paid: number
-  billing_period: string
-  starts_at: string
-  expires_at: string
-  stripe_subscription_id: string | null
-  subscription_plans?: SubscriptionPlan
-}
-
-interface Seller {
-  id: string
-  tier: string
-  commission_rate: number
-  stripe_customer_id: string | null
-  store_name?: string
-}
-
-interface Boost {
-  id: string
-  product_id: string
-  price_paid: number
-  duration_days: number
-  starts_at: string
-  expires_at: string
-  is_active: boolean
-  created_at: string
-  products?: {
-    id: string
-    title: string
-    images: string[]
-  }
-}
-
-interface Invoice {
-  id: string
-  number: string | null
-  status: string | null
-  amount_paid: number
-  amount_due: number
-  currency: string
-  created: number
-  hosted_invoice_url: string | null
-  invoice_pdf: string | null
-  description: string | null
-  subscription: string | null
-  period_start: number | null
-  period_end: number | null
-}
-
-interface Charge {
-  id: string
-  amount: number
-  currency: string
-  status: string
-  created: number
-  description: string | null
-  receipt_url: string | null
-  metadata: Record<string, string>
-}
-
-interface BillingContentProps {
-  locale: string
-  seller: Seller | null
-  subscription: Subscription | null
-  boosts: Boost[]
-  hasStripeCustomer: boolean
-  userEmail: string
-  actions: BillingContentServerActions
-}
+export type { BillingContentServerActions } from "./billing.types"
 
 export function BillingContent({
   locale,
@@ -129,11 +43,10 @@ export function BillingContent({
   const [isLoading, setIsLoading] = useState(true)
   const [isPortalLoading, setIsPortalLoading] = useState(false)
 
-  const dateLocale = locale === 'bg' ? bg : enUS
+  const dateLocale = locale === "bg" ? bg : enUS
   const withLocale = (path: string) => `/${locale}${path}`
 
-  // Translations
-  const t = {
+  const t: BillingText = {
     title: tBilling("title"),
     subtitle: tBilling("subtitle"),
     currentPlan: tBilling("currentPlan"),
@@ -194,7 +107,6 @@ export function BillingContent({
     expiredBadge: tBilling("expiredBadge"),
   }
 
-  // Fetch invoices from API
   useEffect(() => {
     async function fetchBillingData() {
       if (!hasStripeCustomer) {
@@ -203,14 +115,18 @@ export function BillingContent({
       }
 
       try {
-        const response = await fetch('/api/billing/invoices')
-        if (!response.ok) throw new Error('Failed to fetch')
+        const response = await fetch("/api/billing/invoices")
+        if (!response.ok) throw new Error("Failed to fetch")
 
-        const data = await response.json()
-        setInvoices(data.invoices || [])
-        setCharges(data.charges || [])
+        const data = (await response.json()) as {
+          invoices?: Invoice[]
+          charges?: Charge[]
+        }
+
+        setInvoices(Array.isArray(data.invoices) ? data.invoices : [])
+        setCharges(Array.isArray(data.charges) ? data.charges : [])
       } catch (error) {
-        console.error('Error fetching billing data:', error)
+        console.error("Error fetching billing data:", error)
         toast.error(t.loadingError)
       } finally {
         setIsLoading(false)
@@ -220,54 +136,52 @@ export function BillingContent({
     fetchBillingData()
   }, [hasStripeCustomer, t.loadingError])
 
-  // Format currency
-  const formatCurrency = (amount: number, currency: string = 'bgn') => {
-    // Stripe amounts are in smallest currency unit (stotinki for BGN)
-    const value = currency.toLowerCase() === 'bgn' ? amount / 100 : amount / 100
+  const formatCurrency = (amount: number, currency = "bgn") => {
+    const value = amount / 100
     return new Intl.NumberFormat(locale, {
-      style: 'currency',
+      style: "currency",
       currency: currency.toUpperCase(),
     }).format(value)
   }
 
-  // Format local price (already in major units)
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat(locale, {
-      style: 'currency',
-      currency: 'BGN',
+      style: "currency",
+      currency: "BGN",
     }).format(price)
   }
 
-  // Get plan display name
   const getPlanName = (tier: string) => {
     switch (tier) {
-      case 'premium': return t.premiumPlan
-      case 'business': return t.businessPlan
-      default: return t.basicPlan
+      case "premium":
+        return t.premiumPlan
+      case "business":
+        return t.businessPlan
+      default:
+        return t.basicPlan
     }
   }
 
-  // Get status badge
   const getStatusBadge = (status: string | null) => {
     switch (status) {
-      case 'paid':
-      case 'succeeded':
+      case "paid":
+      case "succeeded":
         return (
           <Badge variant="secondary" className="bg-success/10 text-success">
             <CheckCircle className="size-3 mr-1" />
             {t.paid}
           </Badge>
         )
-      case 'open':
-      case 'pending':
+      case "open":
+      case "pending":
         return (
           <Badge variant="secondary" className="bg-warning/10 text-warning">
             <Clock className="size-3 mr-1" />
             {t.open}
           </Badge>
         )
-      case 'void':
-      case 'failed':
+      case "void":
+      case "failed":
         return (
           <Badge variant="secondary" className="bg-destructive-subtle text-destructive">
             <XCircle className="size-3 mr-1" />
@@ -275,20 +189,15 @@ export function BillingContent({
           </Badge>
         )
       default:
-        return (
-          <Badge variant="secondary">
-            {status || t.draft}
-          </Badge>
-        )
+        return <Badge variant="secondary">{status || t.draft}</Badge>
     }
   }
 
-  // Handle manage subscription portal
   const handleManageSubscription = async () => {
     setIsPortalLoading(true)
     try {
       const { url, error } = await actions.createBillingPortalSession({
-        locale: locale === 'bg' ? 'bg' : 'en',
+        locale: locale === "bg" ? "bg" : "en",
       })
 
       if (error) {
@@ -299,7 +208,7 @@ export function BillingContent({
         window.location.href = url
       }
     } catch (error) {
-      console.error('Portal error:', error)
+      console.error("Portal error:", error)
       toast.error(t.portalOpenError)
     } finally {
       setIsPortalLoading(false)
@@ -308,7 +217,6 @@ export function BillingContent({
 
   return (
     <div className="grid gap-4">
-      {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">{t.title}</h1>
@@ -332,7 +240,6 @@ export function BillingContent({
         )}
       </div>
 
-      {/* Not a Seller State */}
       {!seller && (
         <Card className="border-dashed">
           <CardContent className="flex flex-col items-center justify-center py-12 text-center">
@@ -340,9 +247,7 @@ export function BillingContent({
               <Crown className="size-8 text-primary" />
             </div>
             <h2 className="text-lg font-semibold mb-2">{t.startSelling}</h2>
-            <p className="text-muted-foreground text-sm max-w-md mb-4">
-              {t.becomeSeller}
-            </p>
+            <p className="text-muted-foreground text-sm max-w-md mb-4">{t.becomeSeller}</p>
             <Link href={withLocale("/sell")}>
               <Button className="gap-1.5">
                 {t.startSelling}
@@ -353,408 +258,42 @@ export function BillingContent({
         </Card>
       )}
 
-      {/* Current Plan Card */}
       {seller && (
-        <Card>
-          <CardHeader className="pb-3">
-            <div className="flex items-center justify-between gap-4">
-              <CardTitle className="text-lg flex items-center gap-2">
-                <Crown className="size-5 text-primary" />
-                {t.currentPlan}
-              </CardTitle>
-              {subscription && (
-                <Badge
-                  variant={subscription.status === 'active' ? 'default' : 'secondary'}
-                  className={cn(
-                    subscription.status === 'active' && 'bg-success'
-                  )}
-                >
-                  {subscription.status === 'active' ? t.active :
-                    subscription.status === 'cancelled' ? t.cancelled :
-                      subscription.status === 'expired' ? t.expired : t.pending}
-                </Badge>
-              )}
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 lg:grid-cols-content-auto items-center gap-4">
-              {/* Plan Info */}
-              <div className="grid gap-3">
-                <div className="flex items-center gap-3">
-                  <div className={cn(
-                    "p-2.5 rounded-md",
-                    seller.tier === 'business' ? "bg-selected" :
-                      seller.tier === 'premium' ? "bg-warning/10" :
-                        "bg-muted"
-                  )}>
-                    {seller.tier === 'business' ? (
-                      <Sparkle className="size-5 text-primary" />
-                    ) : seller.tier === 'premium' ? (
-                      <Crown className="size-5 text-warning" />
-                    ) : (
-                      <Package className="size-5 text-muted-foreground" />
-                    )}
-                  </div>
-                  <div>
-                    <p className="font-semibold text-lg capitalize">
-                      {getPlanName(seller.tier)}
-                    </p>
-                    <p className="text-sm text-muted-foreground">
-                      {t.commission}: {seller.commission_rate}%
-                    </p>
-                  </div>
-                </div>
-
-                {/* Subscription Details */}
-                {subscription && (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2 text-sm">
-                    <div className="flex items-center gap-1.5 text-muted-foreground">
-                      <CalendarBlank className="size-4" />
-                      <span>{t.nextBilling}:</span>
-                      <span className="text-foreground font-medium">
-                        {format(new Date(subscription.expires_at), 'PP', { locale: dateLocale })}
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-1.5 text-muted-foreground">
-                      <CurrencyCircleDollar className="size-4" />
-                      <span>{t.billingPeriod}:</span>
-                      <span className="text-foreground font-medium">
-                        {subscription.billing_period === 'yearly' ? t.yearly : t.monthly}
-                        {' • '}
-                        {formatPrice(subscription.price_paid)}
-                      </span>
-                    </div>
-                  </div>
-                )}
-
-                {/* Free Plan Notice */}
-                {!subscription && seller.tier === 'basic' && (
-                  <p className="text-sm text-muted-foreground">
-                    {t.freePlanDescription}
-                  </p>
-                )}
-              </div>
-
-              {/* Actions */}
-              <div className="grid grid-cols-2 sm:flex sm:flex-row gap-2">
-                {subscription?.stripe_subscription_id && (
-                  <Button
-                    variant="outline"
-                    onClick={handleManageSubscription}
-                    disabled={isPortalLoading}
-                    className="gap-1.5"
-                  >
-                    {isPortalLoading ? (
-                      <SpinnerGap className="size-4 animate-spin" />
-                    ) : (
-                      <ArrowSquareOut className="size-4" />
-                    )}
-                    {t.managePlan}
-                  </Button>
-                )}
-                {seller.tier !== 'business' && (
-                  <Link href={withLocale("/account/plans")}>
-                    <Button className="gap-1.5 w-full">
-                      <ArrowUpRight className="size-4" />
-                      {t.upgradePlan}
-                    </Button>
-                  </Link>
-                )}
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+        <BillingCurrentPlanCard
+          seller={seller}
+          subscription={subscription}
+          t={t}
+          dateLocale={dateLocale}
+          formatPrice={formatPrice}
+          getPlanName={getPlanName}
+          withLocale={withLocale}
+          handleManageSubscription={handleManageSubscription}
+          isPortalLoading={isPortalLoading}
+        />
       )}
 
-      {/* Billing History Tabs */}
       {seller && (
-        <Tabs defaultValue="invoices" className="grid gap-4">
-          <TabsList>
-            <TabsTrigger value="invoices" className="gap-1.5">
-              <Receipt className="size-4" />
-              {t.invoices}
-            </TabsTrigger>
-            <TabsTrigger value="boosts" className="gap-1.5">
-              <Lightning className="size-4" />
-              {t.boostPurchases}
-            </TabsTrigger>
-          </TabsList>
-
-          {/* Invoices Tab */}
-          <TabsContent value="invoices">
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-base">{t.paymentHistory}</CardTitle>
-                <CardDescription>
-                  {t.paidPlanDescription}
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                {isLoading ? (
-                  <div className="grid gap-3">
-                    {[1, 2, 3].map((i) => (
-                      <div key={i} className="flex items-center gap-4">
-                        <Skeleton className="h-10 w-10 rounded shrink-0" />
-                        <div className="grid gap-2 flex-1">
-                          <Skeleton className="h-4 w-48" />
-                          <Skeleton className="h-3 w-32" />
-                        </div>
-                        <Skeleton className="h-6 w-16 shrink-0" />
-                      </div>
-                    ))}
-                  </div>
-                ) : invoices.length === 0 && charges.length === 0 ? (
-                  <div className="text-center py-8">
-                    <Receipt className="size-12 text-muted-foreground mx-auto mb-3" />
-                    <p className="text-muted-foreground">{t.noInvoices}</p>
-                    <p className="text-sm text-muted-foreground mt-1">
-                      {t.noBillingYet}
-                    </p>
-                  </div>
-                ) : (
-                  <div className="overflow-x-auto -mx-6 px-6">
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>{t.date}</TableHead>
-                          <TableHead>{t.description}</TableHead>
-                          <TableHead>{t.amount}</TableHead>
-                          <TableHead>{t.status}</TableHead>
-                          <TableHead className="text-right">{t.actions}</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {invoices.map((invoice) => (
-                          <TableRow key={invoice.id}>
-                            <TableCell className="whitespace-nowrap">
-                              {format(new Date(invoice.created * 1000), 'PP', { locale: dateLocale })}
-                            </TableCell>
-                            <TableCell>
-                              <div className="flex items-center gap-2">
-                                <Crown className="size-4 text-warning shrink-0" />
-                                <span className="truncate max-w-52">
-                                  {invoice.description || t.sellerSubscription}
-                                  {invoice.number && (
-                                    <span className="text-muted-foreground ml-1">
-                                      #{invoice.number}
-                                    </span>
-                                  )}
-                                </span>
-                              </div>
-                            </TableCell>
-                            <TableCell className="font-medium">
-                              {formatCurrency(invoice.amount_paid, invoice.currency)}
-                            </TableCell>
-                            <TableCell>
-                              {getStatusBadge(invoice.status)}
-                            </TableCell>
-                            <TableCell className="text-right">
-                              <div className="flex items-center justify-end gap-1">
-                                {invoice.hosted_invoice_url && (
-                                  <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    asChild
-                                  >
-                                    <a
-                                      href={invoice.hosted_invoice_url}
-                                      target="_blank"
-                                      rel="noopener noreferrer"
-                                    >
-                                      <ArrowSquareOut className="size-4" />
-                                    </a>
-                                  </Button>
-                                )}
-                                {invoice.invoice_pdf && (
-                                  <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    asChild
-                                  >
-                                    <a
-                                      href={invoice.invoice_pdf}
-                                      target="_blank"
-                                      rel="noopener noreferrer"
-                                    >
-                                      <Download className="size-4" />
-                                    </a>
-                                  </Button>
-                                )}
-                              </div>
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                        {/* One-time charges (boosts, etc.) */}
-                        {charges.map((charge) => (
-                          <TableRow key={charge.id}>
-                            <TableCell className="whitespace-nowrap">
-                              {format(new Date(charge.created * 1000), 'PP', { locale: dateLocale })}
-                            </TableCell>
-                            <TableCell>
-                              <div className="flex items-center gap-2">
-                                <Lightning className="size-4 text-primary shrink-0" />
-                                <span className="truncate max-w-52">
-                                      {charge.description ||
-                                    (charge.metadata?.type === 'listing_boost'
-                                      ? t.listingBoost
-                                      : t.paymentFallback)}
-                                </span>
-                              </div>
-                            </TableCell>
-                            <TableCell className="font-medium">
-                              {formatCurrency(charge.amount, charge.currency)}
-                            </TableCell>
-                            <TableCell>
-                              {getStatusBadge(charge.status)}
-                            </TableCell>
-                            <TableCell className="text-right">
-                              {charge.receipt_url && (
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  asChild
-                                >
-                                  <a
-                                    href={charge.receipt_url}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                  >
-                                    <ArrowSquareOut className="size-4" />
-                                  </a>
-                                </Button>
-                              )}
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          {/* Boosts Tab */}
-          <TabsContent value="boosts">
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between gap-4">
-                <div>
-                  <CardTitle className="text-base">{t.boostPurchases}</CardTitle>
-                  <CardDescription>
-                    {t.noBoostsDescription}
-                  </CardDescription>
-                </div>
-                <Link href={withLocale("/account/selling")}>
-                  <Button size="sm" className="gap-1.5">
-                    <Lightning className="size-4" />
-                    {t.boostProduct}
-                  </Button>
-                </Link>
-              </CardHeader>
-              <CardContent>
-                {boosts.length === 0 ? (
-                  <div className="text-center py-8">
-                    <Lightning className="size-12 text-muted-foreground mx-auto mb-3" />
-                    <p className="text-muted-foreground">{t.noBoosts}</p>
-                    <p className="text-sm text-muted-foreground mt-1">
-                      {t.boostHint}
-                    </p>
-                    <Link href={withLocale("/account/selling")} className="mt-4 inline-block">
-                      <Button variant="outline" size="sm" className="gap-1.5">
-                        <Lightning className="size-4" />
-                        {t.boostProduct}
-                      </Button>
-                    </Link>
-                  </div>
-                ) : (
-                  <div className="overflow-x-auto -mx-6 px-6">
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>{t.product}</TableHead>
-                          <TableHead>{t.duration}</TableHead>
-                          <TableHead>{t.amount}</TableHead>
-                          <TableHead>{t.status}</TableHead>
-                          <TableHead>{t.date}</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {boosts.map((boost) => {
-                          const isExpired = new Date(boost.expires_at) < new Date()
-                          const expiresIn = formatDistanceToNow(new Date(boost.expires_at), {
-                            locale: dateLocale,
-                            addSuffix: true,
-                          })
-
-                          return (
-                            <TableRow key={boost.id}>
-                              <TableCell>
-                                <div className="flex items-center gap-3">
-                                  {boost.products?.images?.[0] && (
-                                    <Image
-                                      src={boost.products.images[0]}
-                                      alt=""
-                                      width={40}
-                                      height={40}
-                                      className="size-10 rounded object-cover"
-                                    />
-                                  )}
-                                  <span className="truncate max-w-44 font-medium">
-                                    {boost.products?.title || boost.product_id}
-                                  </span>
-                                </div>
-                              </TableCell>
-                              <TableCell>
-                                {boost.duration_days} {t.days}
-                              </TableCell>
-                              <TableCell className="font-medium">
-                                {formatPrice(boost.price_paid)}
-                              </TableCell>
-                              <TableCell>
-                                {boost.is_active && !isExpired ? (
-                                  <Badge className="bg-selected text-primary">
-                                    <Lightning className="size-3 mr-1" />
-                                    {t.activeBadge}
-                                  </Badge>
-                                ) : (
-                                  <Badge variant="secondary">
-                                    {t.expired2}
-                                  </Badge>
-                                )}
-                              </TableCell>
-                              <TableCell className="text-muted-foreground">
-                                {format(new Date(boost.created_at), 'PP', { locale: dateLocale })}
-                                {boost.is_active && !isExpired && (
-                                  <div className="text-xs text-primary mt-0.5">
-                                    {t.expiresIn} {expiresIn}
-                                  </div>
-                                )}
-                              </TableCell>
-                            </TableRow>
-                          )
-                        })}
-                      </TableBody>
-                    </Table>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
+        <BillingHistoryTabs
+          boosts={boosts}
+          invoices={invoices}
+          charges={charges}
+          isLoading={isLoading}
+          dateLocale={dateLocale}
+          t={t}
+          withLocale={withLocale}
+          formatCurrency={formatCurrency}
+          formatPrice={formatPrice}
+          getStatusBadge={getStatusBadge}
+        />
       )}
 
-      {/* Quick Info */}
       {seller && hasStripeCustomer && (
         <Card className="bg-surface-subtle border-dashed">
           <CardContent className="flex items-start gap-4 pt-4">
             <Info className="size-5 text-muted-foreground mt-0.5 shrink-0" />
             <div className="text-sm text-muted-foreground grid gap-1">
-              <p>
-                {t.noInvoicesDescription}
-              </p>
-              <p>
-                {tBilling("billingEmail", { email: userEmail })}
-              </p>
+              <p>{t.noInvoicesDescription}</p>
+              <p>{tBilling("billingEmail", { email: userEmail })}</p>
             </div>
           </CardContent>
         </Card>

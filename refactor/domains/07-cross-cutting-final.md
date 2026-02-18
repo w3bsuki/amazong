@@ -38,7 +38,7 @@ Fix every violation. Then:
 ## Step 3: Dead code final pass
 
 ```bash
-pnpm -s exec knip --reporter compact
+pnpm -s knip
 ```
 Remove everything knip flags. Grep-verify before deleting.
 

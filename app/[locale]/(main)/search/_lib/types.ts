@@ -2,6 +2,8 @@ export type BrowseMode = "listings" | "sellers"
 
 export type SellerSortKey = "products" | "rating" | "newest"
 
+export const ITEMS_PER_PAGE = 20
+
 export interface Category {
   id: string
   name: string
