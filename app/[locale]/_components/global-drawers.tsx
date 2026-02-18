@@ -19,13 +19,10 @@ import { useIsMobile } from "@/hooks/use-is-mobile"
 export function GlobalDrawers() {
   const isMobile = useIsMobile()
   const {
-    state,
-    closeProductQuickView,
-    closeCart,
-    closeMessages,
-    closeWishlist,
-    closeAccount,
-    closeAuth,
+    activeDrawer,
+    quickViewProduct,
+    authState,
+    closeDrawer,
     setAuthMode,
   } = useDrawer()
 
@@ -33,50 +30,50 @@ export function GlobalDrawers() {
     <>
       {isMobile ? (
         <ProductQuickViewDrawer
-          open={state.productQuickView.open}
+          open={activeDrawer === "productQuickView"}
           onOpenChange={(open) => {
-            if (!open) closeProductQuickView()
+            if (!open && activeDrawer === "productQuickView") closeDrawer()
           }}
-          product={state.productQuickView.product}
+          product={quickViewProduct}
         />
       ) : (
         <ProductQuickViewDialog
-          open={state.productQuickView.open}
+          open={activeDrawer === "productQuickView"}
           onOpenChange={(open) => {
-            if (!open) closeProductQuickView()
+            if (!open && activeDrawer === "productQuickView") closeDrawer()
           }}
-          product={state.productQuickView.product}
+          product={quickViewProduct}
         />
       )}
       <CartDrawer
-        open={state.cart.open}
+        open={activeDrawer === "cart"}
         onOpenChange={(open) => {
-          if (!open) closeCart()
+          if (!open && activeDrawer === "cart") closeDrawer()
         }}
       />
       <MessagesDrawer
-        open={state.messages.open}
+        open={activeDrawer === "messages"}
         onOpenChange={(open) => {
-          if (!open) closeMessages()
+          if (!open && activeDrawer === "messages") closeDrawer()
         }}
       />
       <WishlistDrawer
-        open={state.wishlist.open}
+        open={activeDrawer === "wishlist"}
         onOpenChange={(open) => {
-          if (!open) closeWishlist()
+          if (!open && activeDrawer === "wishlist") closeDrawer()
         }}
       />
       <AccountDrawer
-        open={state.account.open}
+        open={activeDrawer === "account"}
         onOpenChange={(open) => {
-          if (!open) closeAccount()
+          if (!open && activeDrawer === "account") closeDrawer()
         }}
       />
       <AuthDrawer
-        open={state.auth.open}
-        mode={state.auth.mode}
+        open={activeDrawer === "auth"}
+        mode={authState.mode}
         onOpenChange={(open) => {
-          if (!open) closeAuth()
+          if (!open && activeDrawer === "auth") closeDrawer()
         }}
         onModeChange={setAuthMode}
       />

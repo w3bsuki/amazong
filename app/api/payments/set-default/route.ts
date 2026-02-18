@@ -5,7 +5,7 @@ import {
     STRIPE_CUSTOMER_ID_SELECT,
     USER_PAYMENT_METHOD_VERIFICATION_SELECT,
 } from "@/lib/supabase/selects/billing"
-import { logError } from "@/lib/structured-log"
+import { logError } from "@/lib/logger"
 import { NextResponse } from "next/server"
 import { z } from "zod"
 

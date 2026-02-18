@@ -2,10 +2,9 @@ import { NextRequest, NextResponse } from 'next/server'
 import { errorEnvelope, successEnvelope } from '@/lib/api/envelope'
 import { stripe } from '@/lib/stripe'
 import { createRouteHandlerClient, createStaticClient } from '@/lib/supabase/server'
-import { eurToBgnApprox } from '@/lib/currency'
 import { isBoostActiveNow } from '@/lib/boost/boost-status'
 import { buildLocaleUrl } from '@/lib/stripe-locale'
-import { logError } from '@/lib/structured-log'
+import { logError } from '@/lib/logger'
 import { ID_AND_STRIPE_CUSTOMER_ID_SELECT } from '@/lib/supabase/selects/billing'
 import { getTranslations } from 'next-intl/server'
 import { z } from 'zod'
@@ -183,7 +182,6 @@ export async function POST(req: NextRequest) {
       url: session.url,
       sku: pricingMeta.sku,
       priceEur,
-      priceBgn: eurToBgnApprox(priceEur),
       durationKey: pricingMeta.durationKey,
       locale: resolvedLocale,
     }))
@@ -242,7 +240,6 @@ export async function GET() {
         days,
         sku,
         priceEur,
-        priceBgn: eurToBgnApprox(priceEur),
         durationKey,
         currency: "EUR",
       }

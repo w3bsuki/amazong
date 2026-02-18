@@ -205,47 +205,49 @@ export function AppHeader({
   
   // Get dynamic header state from context (if provided by pages)
   const headerContext = useHeaderOptional()
+  const hydratedHeaderState = isHydrated ? headerContext?.headerState ?? null : null
+  const homepageHeaderState = hydratedHeaderState?.type === "homepage" ? hydratedHeaderState.value : null
+  const contextualHeaderState = hydratedHeaderState?.type === "contextual" ? hydratedHeaderState.value : null
+  const productHeaderState = hydratedHeaderState?.type === "product" ? hydratedHeaderState.value : null
+  const profileHeaderState = hydratedHeaderState?.type === "profile" ? hydratedHeaderState.value : null
   
   // Auto-detect route config from pathname
   const routeConfig = detectRouteConfig(pathname, explicitVariant)
   const variant = routeConfig.variant
 
   // Merge props with context values (context takes precedence for dynamic state)
-  const effectiveHomepageCategory = headerContext?.homepageHeader?.activeCategory ?? activeCategory
-  const effectiveHomepageCategorySelect = headerContext?.homepageHeader?.onCategorySelect ?? onCategorySelect
-  const effectiveHomepageSearchOpen = headerContext?.homepageHeader?.onSearchOpen ?? onSearchOpen
+  const effectiveHomepageCategory = homepageHeaderState?.activeCategory ?? activeCategory
+  const effectiveHomepageCategorySelect = homepageHeaderState?.onCategorySelect ?? onCategorySelect
+  const effectiveHomepageSearchOpen = homepageHeaderState?.onSearchOpen ?? onSearchOpen
   
   // Avoid hydration mismatch when other client boundaries update HeaderProvider state
   // before the header boundary itself hydrates (e.g., ProductHeaderSync on PDP).
-  const hydratedContextualHeader = isHydrated ? headerContext?.contextualHeader : null
-  const effectiveContextualTitle = hydratedContextualHeader?.title ?? contextualTitle
+  const effectiveContextualTitle = contextualHeaderState?.title ?? contextualTitle
   const effectiveContextualActiveSlug =
-    hydratedContextualHeader?.activeSlug ?? contextualActiveSlug
-  const effectiveContextualBackHref = hydratedContextualHeader?.backHref ?? contextualBackHref
-  const effectiveContextualBack = hydratedContextualHeader?.onBack ?? onContextualBack
+    contextualHeaderState?.activeSlug ?? contextualActiveSlug
+  const effectiveContextualBackHref = contextualHeaderState?.backHref ?? contextualBackHref
+  const effectiveContextualBack = contextualHeaderState?.onBack ?? onContextualBack
   const effectiveContextualSubcategories =
-    hydratedContextualHeader?.subcategories ?? contextualSubcategories
+    contextualHeaderState?.subcategories ?? contextualSubcategories
   const effectiveContextualSubcategoryClick =
-    hydratedContextualHeader?.onSubcategoryClick ?? onSubcategoryClick
-  const effectiveContextualHideActions = hydratedContextualHeader?.hideActions ?? false
+    contextualHeaderState?.onSubcategoryClick ?? onSubcategoryClick
+  const effectiveContextualHideActions = contextualHeaderState?.hideActions ?? false
 
-  const hydratedProductHeader = isHydrated ? headerContext?.productHeader : null
-  const effectiveProductTitle = hydratedProductHeader?.productTitle ?? productTitle
-  const effectiveSellerName = hydratedProductHeader?.sellerName ?? sellerName
-  const effectiveSellerUsername = hydratedProductHeader?.sellerUsername ?? sellerUsername
-  const effectiveSellerAvatarUrl = hydratedProductHeader?.sellerAvatarUrl ?? sellerAvatarUrl
-  const effectiveProductId = hydratedProductHeader?.productId ?? productId
-  const effectiveProductPrice = hydratedProductHeader?.productPrice ?? productPrice
-  const effectiveProductImage = hydratedProductHeader?.productImage ?? productImage
+  const effectiveProductTitle = productHeaderState?.productTitle ?? productTitle
+  const effectiveSellerName = productHeaderState?.sellerName ?? sellerName
+  const effectiveSellerUsername = productHeaderState?.sellerUsername ?? sellerUsername
+  const effectiveSellerAvatarUrl = productHeaderState?.sellerAvatarUrl ?? sellerAvatarUrl
+  const effectiveProductId = productHeaderState?.productId ?? productId
+  const effectiveProductPrice = productHeaderState?.productPrice ?? productPrice
+  const effectiveProductImage = productHeaderState?.productImage ?? productImage
 
   // Profile header context (for profile pages)
-  const hydratedProfileHeader = isHydrated ? headerContext?.profileHeader : null
-  const effectiveProfileDisplayName = hydratedProfileHeader?.displayName ?? null
-  const effectiveProfileUsername = hydratedProfileHeader?.username ?? null
-  const effectiveProfileAvatarUrl = hydratedProfileHeader?.avatarUrl ?? null
-  const effectiveProfileIsOwn = hydratedProfileHeader?.isOwnProfile ?? false
-  const effectiveProfileIsFollowing = hydratedProfileHeader?.isFollowing ?? false
-  const effectiveProfileSellerId = hydratedProfileHeader?.sellerId ?? null
+  const effectiveProfileDisplayName = profileHeaderState?.displayName ?? null
+  const effectiveProfileUsername = profileHeaderState?.username ?? null
+  const effectiveProfileAvatarUrl = profileHeaderState?.avatarUrl ?? null
+  const effectiveProfileIsOwn = profileHeaderState?.isOwnProfile ?? false
+  const effectiveProfileIsFollowing = profileHeaderState?.isFollowing ?? false
+  const effectiveProfileSellerId = profileHeaderState?.sellerId ?? null
 
   // Mark header as hydrated for E2E tests
   useEffect(() => {

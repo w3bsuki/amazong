@@ -22,23 +22,26 @@ export function ProductHeaderSync({
   productImage?: string | null
 }) {
   const header = useHeaderOptional()
-  const setProductHeader = header?.setProductHeader
+  const setHeaderState = header?.setHeaderState
 
   useEffect(() => {
-    if (!setProductHeader) return
+    if (!setHeaderState) return
 
-    setProductHeader({
-      productTitle,
-      sellerName,
-      sellerUsername,
-      sellerAvatarUrl,
-      ...(productId !== undefined ? { productId } : {}),
-      ...(productPrice !== undefined ? { productPrice } : {}),
-      ...(productImage !== undefined ? { productImage } : {}),
+    setHeaderState({
+      type: "product",
+      value: {
+        productTitle,
+        sellerName,
+        sellerUsername,
+        sellerAvatarUrl,
+        ...(productId !== undefined ? { productId } : {}),
+        ...(productPrice !== undefined ? { productPrice } : {}),
+        ...(productImage !== undefined ? { productImage } : {}),
+      },
     })
 
-    return () => setProductHeader(null)
-  }, [productTitle, sellerName, sellerUsername, sellerAvatarUrl, productId, productPrice, productImage, setProductHeader])
+    return () => setHeaderState(null)
+  }, [productTitle, sellerName, sellerUsername, sellerAvatarUrl, productId, productPrice, productImage, setHeaderState])
 
   return null
 }

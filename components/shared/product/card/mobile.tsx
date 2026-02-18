@@ -63,7 +63,7 @@ export function MobileProductCard({
 }: MobileProductCardProps) {
   const t = useTranslations("Product")
   const locale = useLocale()
-  const { openProductQuickView, enabledDrawers, isDrawerSystemEnabled } = useDrawer()
+  const { openDrawer, enabledDrawers, isDrawerSystemEnabled } = useDrawer()
   const allowWishlistAction = showWishlistAction ?? showWishlist
 
   const isQuickViewEnabled = isDrawerSystemEnabled && enabledDrawers.productQuickView
@@ -152,7 +152,7 @@ export function MobileProductCard({
         ...(sellerAvatarUrl != null ? { sellerAvatarUrl } : {}),
         ...(sellerVerified !== undefined ? { sellerVerified } : {}),
       }
-      openProductQuickView(quickViewData)
+      openDrawer("productQuickView", { product: quickViewData })
     },
     [
       categoryPath,
@@ -163,7 +163,7 @@ export function MobileProductCard({
       images,
       inStock,
       location,
-      openProductQuickView,
+      openDrawer,
       originalPrice,
       price,
       rating,

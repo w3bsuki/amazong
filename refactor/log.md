@@ -77,3 +77,68 @@
 ---
 
 *Append new sessions below this line.*
+
+### Session 7 — 2026-02-18 (Codex Lean Sweep A)
+
+**Phase(s):** Preflight Stabilization + Lean Sweep Phase A (Dead Code Purge)  
+**Changes:**
+- Fixed pre-existing `typecheck` break in `app/[locale]/(main)/page.tsx` by removing stale homepage payload branches and aligning props with current component contracts.
+- Removed dead files found by knip:
+  - `app/[locale]/(main)/_components/responsive-home.tsx`
+  - `app/[locale]/(main)/_components/mobile/home-chip-styles.ts`
+  - `components/ui/toggle.tsx` (after inlining `toggleVariants` into `components/ui/toggle-group.tsx`)
+- Removed dead exports:
+  - `getDealsProducts` + obsolete legacy constants in `lib/data/products.ts`
+  - `MOBILE_CONTEXT_BANNER_CLASS` chain in mobile rail recipes.
+- Captured baseline metrics artifact at `.tmp/lean-sweep-baseline.json`.
+
+**Verification:**
+- `pnpm -s knip` ✅ clean
+- `pnpm -s typecheck && pnpm -s lint && pnpm -s styles:gate && pnpm -s test:unit` ✅ (lint warnings only; no errors)
+
+**Metrics snapshot (architecture:scan):**
+- Files: `806`
+- `"use client"`: `215`
+- `>300` lines: `121`
+- Missing metadata: `53`
+- Clone %: `3.05`
+
+**Next session should:**
+- Execute Phase B (Server Action Consolidation), starting with `requireAuth()` adoption and `canSellerRateBuyer` deduplication.
+
+### Session 8 — 2026-02-18 (Codex Lean Sweep B + C/D/E sweep)
+
+**Phase(s):** Phase B complete; substantial Phase C/D/E execution  
+**Changes:**
+- Completed action consolidation:
+  - Split `orders.ts`, `products.ts`, and `username.ts` into focused modules with stable re-export barrels.
+  - Migrated those action families from manual auth checks to `requireAuth()`-based flows.
+  - Removed duplicate seller-rating eligibility implementation outside canonical orders path.
+- Shared primitive extractions:
+  - Added `components/shared/stat-card.tsx`; migrated account/business desktop stats consumers.
+  - Added `components/shared/header-dropdown.tsx`; migrated account/messages/wishlist header dropdowns.
+- Provider simplification:
+  - Refactored drawer context to single `activeDrawer` model and centralized transition analytics.
+  - Removed Storybook fallback branch from `useDrawer`.
+  - Migrated global drawers, mobile tab bar, card triggers, cart/wishlist triggers, and account drawer actions to new drawer API.
+  - Refactored header context from parallel setters to a discriminated `headerState` channel; migrated header sync clients + app-header.
+- Utility consolidation:
+  - Added shared query helper module `lib/data/search-products.ts` and adapted both route search modules.
+  - Completed image utility overlap audit (kept files separate due non-overlapping concerns).
+
+**Verification:**
+- `pnpm -s typecheck` ✅
+- `pnpm -s lint` ✅ (warnings only)
+- `pnpm -s styles:gate` ✅
+- `pnpm -s test:unit` ✅
+- `pnpm -s architecture:scan --write .tmp/lean-sweep-progress.json` captured current metrics
+
+**Metrics snapshot (architecture:scan):**
+- Files: `819`
+- `"use client"`: `216`
+- `>300` lines: `118`
+- Missing metadata: `53`
+- Clone %: `3.04`
+
+**Next session should:**
+- Continue Phase C large extractions (order list/detail primitives, dashboard shells, activity feed, account menu items), then run phase gate and mark C complete before moving F/G.

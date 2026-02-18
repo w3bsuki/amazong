@@ -116,7 +116,7 @@ vi.mock("@/lib/order-conversations", () => ({
   ensureOrderConversations: vi.fn(),
 }))
 
-vi.mock("@/lib/structured-log", () => ({
+vi.mock("@/lib/logger", () => ({
   logError: vi.fn(),
 }))
 

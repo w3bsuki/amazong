@@ -1,5 +1,5 @@
 import { cn } from '@/lib/utils'
-import { formatPrice, formatPriceParts } from '@/lib/currency'
+import { formatPrice, formatPriceParts } from '@/lib/price'
 
 interface ProductPriceProps {
   price: number
@@ -46,8 +46,8 @@ export function ProductPrice({
   const classes = sizeClasses[size]
   
   // Accessible label for screen readers
-  const accessiblePrice = formatPrice(price, locale)
-  const accessibleOriginal = originalPrice ? formatPrice(originalPrice, locale) : null
+  const accessiblePrice = formatPrice(price, { locale })
+  const accessibleOriginal = originalPrice ? formatPrice(originalPrice, { locale }) : null
   const discountLabel = hasDiscount && accessibleOriginal ? `, was ${accessibleOriginal}` : ""
   const accessibleLabel = showAccessibleLabel
     ? `Price: ${accessiblePrice}${discountLabel}`
@@ -104,7 +104,7 @@ export function ProductPrice({
           className={cn("text-price-original line-through tabular-nums", classes.original)}
           aria-hidden="true"
         >
-          {formatPrice(originalPrice, locale)}
+          {formatPrice(originalPrice, { locale })}
         </span>
       )}
     </div>

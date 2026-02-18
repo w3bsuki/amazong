@@ -66,7 +66,7 @@ export function AccountDrawer({ open, onOpenChange }: AccountDrawerProps) {
   const { user, isLoading: authLoading } = useAuth()
   const { totalUnreadCount } = useMessages()
   const { totalItems: wishlistCount } = useWishlist()
-  const { openAuth } = useDrawer()
+  const { openDrawer } = useDrawer()
   const t = useTranslations("Drawers")
   const tAccount = useTranslations("AccountDrawer")
   const tAuth = useTranslations("Auth")
@@ -250,7 +250,7 @@ export function AccountDrawer({ open, onOpenChange }: AccountDrawerProps) {
                   className="w-full"
                   onClick={() => {
                     handleClose()
-                    openAuth({ mode: "login", entrypoint: "account_drawer" })
+                    openDrawer("auth", { mode: "login", entrypoint: "account_drawer" })
                   }}
                 >
                   {tAccount("signIn")}
@@ -261,7 +261,7 @@ export function AccountDrawer({ open, onOpenChange }: AccountDrawerProps) {
                   className="w-full"
                   onClick={() => {
                     handleClose()
-                    openAuth({ mode: "signup", entrypoint: "account_drawer" })
+                    openDrawer("auth", { mode: "signup", entrypoint: "account_drawer" })
                   }}
                 >
                   {tAuth("createAccount")}

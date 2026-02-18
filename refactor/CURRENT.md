@@ -9,19 +9,19 @@
 | | |
 |---|---|
 | **Phase** | Lean Sweep (replaces old Phase 3+4) |
-| **Last completed** | Phase 2 — Client Boundary & Bundle (2026-02-17) |
-| **Next action** | Execute Lean Sweep Phase A below |
+| **Last completed** | Phase B — Action Consolidation (2026-02-18) |
+| **Next action** | Execute Lean Sweep Phase C below |
 
 ## Metrics (post-Phase 2)
 
 | Metric | Baseline | Now | Target |
 |--------|----------|-----|--------|
-| Files | 762 | 809 | <700 |
+| Files | 762 | 819 | <700 |
 | Total LOC | ~48K | ~43K | <35K |
-| `"use client"` | 357 | 215 | <150 |
-| >300-line files | 125 | 31 | <15 |
+| `"use client"` | 357 | 216 | <150 |
+| >300-line files | 125 | 118 | <15 |
 | Missing metadata | 58 | 53 | 0 |
-| Clone % | 3.06% | 3.06% | <2% |
+| Clone % | 3.06% | 3.04% | <2% |
 
 ## Task Queue — Lean Sweep
 
@@ -29,8 +29,8 @@ Execute tasks in order. Check off when done. **One task per session.**
 
 > All agent files are in `refactor/lean-sweep/`. Read `lean-sweep/README.md` for context.
 
-- [ ] **A: Dead Code Purge** → Read `lean-sweep/agent-a-dead-code.md` then execute
-- [ ] **B: Action Consolidation** → Read `lean-sweep/agent-b-actions.md` then execute
+- [x] **A: Dead Code Purge** → Read `lean-sweep/agent-a-dead-code.md` then execute
+- [x] **B: Action Consolidation** → Read `lean-sweep/agent-b-actions.md` then execute
 - [ ] **C: Shared Primitives** → Read `lean-sweep/agent-c-shared-primitives.md` then execute
 - [ ] **D: Provider Simplification** → Read `lean-sweep/agent-d-providers.md` then execute
 - [ ] **E: Utility Consolidation** → Read `lean-sweep/agent-e-utilities.md` then execute

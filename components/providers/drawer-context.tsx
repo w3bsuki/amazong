@@ -1,37 +1,34 @@
 import * as React from "react"
-import { createContext, useContext, useCallback, useState, useMemo, useEffect } from "react"
-import { trackDrawerOpen, trackDrawerClose } from "@/components/providers/_lib/analytics-drawer"
-import { isDrawerSystemEnabled, getEnabledDrawers } from "@/lib/feature-flags"
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react"
+import { trackDrawerClose, trackDrawerOpen } from "@/components/providers/_lib/analytics-drawer"
+import { getEnabledDrawers, isDrawerSystemEnabled } from "@/lib/feature-flags"
 import type { ProductCardData } from "@/components/shared/product/card/types"
 
-// =============================================================================
-// TYPES
-// =============================================================================
-
 /** Product data passed to quick view drawer. */
-export interface QuickViewProduct extends Pick<
-  ProductCardData,
-  | "id"
-  | "title"
-  | "price"
-  | "image"
-  | "images"
-  | "originalPrice"
-  | "description"
-  | "categoryPath"
-  | "condition"
-  | "location"
-  | "freeShipping"
-  | "rating"
-  | "reviews"
-  | "inStock"
-  | "slug"
-  | "username"
-  | "sellerId"
-  | "sellerName"
-  | "sellerAvatarUrl"
-  | "sellerVerified"
-> {
+export interface QuickViewProduct
+  extends Pick<
+    ProductCardData,
+    | "id"
+    | "title"
+    | "price"
+    | "image"
+    | "images"
+    | "originalPrice"
+    | "description"
+    | "categoryPath"
+    | "condition"
+    | "location"
+    | "freeShipping"
+    | "rating"
+    | "reviews"
+    | "inStock"
+    | "slug"
+    | "username"
+    | "sellerId"
+    | "sellerName"
+    | "sellerAvatarUrl"
+    | "sellerVerified"
+  > {
   sourceScrollY?: number
 }
 
@@ -43,33 +40,17 @@ export type AuthDrawerEntrypoint =
   | "cart_drawer"
   | "other"
 
-interface DrawerState {
-  productQuickView: {
-    open: boolean
-    product: QuickViewProduct | null
-  }
-  cart: {
-    open: boolean
-  }
-  messages: {
-    open: boolean
-  }
-  wishlist: {
-    open: boolean
-  }
-  account: {
-    open: boolean
-  }
-  auth: {
-    open: boolean
-    mode: AuthDrawerMode
-    entrypoint: AuthDrawerEntrypoint | null
-  }
+export type DrawerName = "productQuickView" | "cart" | "messages" | "wishlist" | "account" | "auth"
+
+interface AuthDrawerState {
+  mode: AuthDrawerMode
+  entrypoint: AuthDrawerEntrypoint | null
 }
 
 interface DrawerContextValue {
-  state: DrawerState
-  /** Feature flags - which drawers are enabled */
+  activeDrawer: DrawerName | null
+  quickViewProduct: QuickViewProduct | null
+  authState: AuthDrawerState
   enabledDrawers: {
     productQuickView: boolean
     cart: boolean
@@ -78,51 +59,39 @@ interface DrawerContextValue {
     account: boolean
     auth: boolean
   }
-  /** Whether the drawer system is enabled at all */
   isDrawerSystemEnabled: boolean
-  // Product quick view
-  openProductQuickView: (product: QuickViewProduct) => void
-  closeProductQuickView: () => void
-  // Cart drawer
-  openCart: () => void
-  closeCart: () => void
-  // Messages drawer
-  openMessages: () => void
-  closeMessages: () => void
-  // Wishlist drawer
-  openWishlist: () => void
-  closeWishlist: () => void
-  // Account drawer
-  openAccount: () => void
-  closeAccount: () => void
-  openAccountAfterAuthClose: () => void
-  // Auth drawer
-  openAuth: (options?: { mode?: AuthDrawerMode; entrypoint?: AuthDrawerEntrypoint }) => void
+  openDrawer: (
+    name: DrawerName,
+    options?: {
+      product?: QuickViewProduct
+      mode?: AuthDrawerMode
+      entrypoint?: AuthDrawerEntrypoint
+    }
+  ) => void
+  closeDrawer: () => void
   setAuthMode: (mode: AuthDrawerMode) => void
-  closeAuth: () => void
+  openAccountAfterAuthClose: () => void
 }
-
-// =============================================================================
-// CONTEXT
-// =============================================================================
 
 const DrawerContext = createContext<DrawerContextValue | null>(null)
 
-// =============================================================================
-// PROVIDER
-// =============================================================================
+const drawerAnalyticsType: Record<DrawerName, "product_quick_view" | "cart" | "messages" | "wishlist" | "account" | "auth"> = {
+  productQuickView: "product_quick_view",
+  cart: "cart",
+  messages: "messages",
+  wishlist: "wishlist",
+  account: "account",
+  auth: "auth",
+}
 
 export function DrawerProvider({ children }: { children: React.ReactNode }) {
-  const [state, setState] = useState<DrawerState>({
-    productQuickView: { open: false, product: null },
-    cart: { open: false },
-    messages: { open: false },
-    wishlist: { open: false },
-    account: { open: false },
-    auth: { open: false, mode: "login", entrypoint: null },
+  const [activeDrawer, setActiveDrawer] = useState<DrawerName | null>(null)
+  const [quickViewProduct, setQuickViewProduct] = useState<QuickViewProduct | null>(null)
+  const [authState, setAuthState] = useState<AuthDrawerState>({
+    mode: "login",
+    entrypoint: null,
   })
 
-  // Feature flags state (computed once on mount for consistency during session)
   const [featureFlags, setFeatureFlags] = useState({
     isSystemEnabled: true,
     enabledDrawers: {
@@ -135,7 +104,6 @@ export function DrawerProvider({ children }: { children: React.ReactNode }) {
     },
   })
 
-  // Initialize feature flags on client-side
   useEffect(() => {
     setFeatureFlags({
       isSystemEnabled: isDrawerSystemEnabled(),
@@ -143,250 +111,126 @@ export function DrawerProvider({ children }: { children: React.ReactNode }) {
     })
   }, [])
 
-  // Product quick view actions
-  const openProductQuickView = useCallback((product: QuickViewProduct) => {
-    if (!featureFlags.enabledDrawers.productQuickView) return
-    const scrollY = typeof window !== "undefined" ? window.scrollY : undefined
-    trackDrawerOpen({ type: "product_quick_view", productId: product.id })
-    setState((prev) => ({
-      ...prev,
-      productQuickView: {
-        open: true,
-        product: {
-          ...product,
-          ...(product.sourceScrollY == null && scrollY != null ? { sourceScrollY: scrollY } : {}),
-        },
-      },
-    }))
-  }, [featureFlags.enabledDrawers.productQuickView])
+  const previousDrawerRef = useRef<DrawerName | null>(null)
+  useEffect(() => {
+    const previousDrawer = previousDrawerRef.current
 
-  const closeProductQuickView = useCallback(() => {
-    trackDrawerClose({ type: "product_quick_view", method: "button" })
-    setState((prev) => ({
-      ...prev,
-      productQuickView: { open: false, product: null },
-    }))
-  }, [])
+    if (previousDrawer && previousDrawer !== activeDrawer) {
+      trackDrawerClose({
+        type: drawerAnalyticsType[previousDrawer],
+        method: "button",
+        ...(previousDrawer === "auth"
+          ? { metadata: { mode: authState.mode, entrypoint: authState.entrypoint } }
+          : {}),
+      })
+    }
 
-  // Cart actions
-  const openCart = useCallback(() => {
-    if (!featureFlags.enabledDrawers.cart) return
-    trackDrawerOpen({ type: "cart" })
-    setState((prev) => ({
-      ...prev,
-      cart: { open: true },
-    }))
-  }, [featureFlags.enabledDrawers.cart])
+    if (activeDrawer && activeDrawer !== previousDrawer) {
+      if (activeDrawer === "productQuickView") {
+        trackDrawerOpen(
+          quickViewProduct?.id
+            ? {
+                type: drawerAnalyticsType[activeDrawer],
+                productId: quickViewProduct.id,
+              }
+            : { type: drawerAnalyticsType[activeDrawer] }
+        )
+      } else if (activeDrawer === "auth") {
+        trackDrawerOpen({
+          type: drawerAnalyticsType[activeDrawer],
+          metadata: { mode: authState.mode, entrypoint: authState.entrypoint },
+        })
+      } else {
+        trackDrawerOpen({ type: drawerAnalyticsType[activeDrawer] })
+      }
+    }
 
-  const closeCart = useCallback(() => {
-    trackDrawerClose({ type: "cart", method: "button" })
-    setState((prev) => ({
-      ...prev,
-      cart: { open: false },
-    }))
-  }, [])
+    previousDrawerRef.current = activeDrawer
+  }, [activeDrawer, authState.entrypoint, authState.mode, quickViewProduct?.id])
 
-  // Messages actions
-  const openMessages = useCallback(() => {
-    if (!featureFlags.enabledDrawers.messages) return
-    trackDrawerOpen({ type: "messages" })
-    setState((prev) => ({
-      ...prev,
-      messages: { open: true },
-    }))
-  }, [featureFlags.enabledDrawers.messages])
+  const openDrawer = useCallback<DrawerContextValue["openDrawer"]>(
+    (name, options) => {
+      if (!featureFlags.isSystemEnabled) return
+      if (!featureFlags.enabledDrawers[name]) return
 
-  const closeMessages = useCallback(() => {
-    trackDrawerClose({ type: "messages", method: "button" })
-    setState((prev) => ({
-      ...prev,
-      messages: { open: false },
-    }))
-  }, [])
+      if (name === "productQuickView") {
+        if (!options?.product) return
+        const scrollY = typeof window !== "undefined" ? window.scrollY : undefined
+        setQuickViewProduct({
+          ...options.product,
+          ...(options.product.sourceScrollY == null && scrollY != null ? { sourceScrollY: scrollY } : {}),
+        })
+      } else {
+        setQuickViewProduct(null)
+      }
 
-  // Wishlist actions
-  const openWishlist = useCallback(() => {
-    if (!featureFlags.enabledDrawers.wishlist) return
-    trackDrawerOpen({ type: "wishlist" })
-    setState((prev) => ({
-      ...prev,
-      wishlist: { open: true },
-    }))
-  }, [featureFlags.enabledDrawers.wishlist])
-
-  const closeWishlist = useCallback(() => {
-    trackDrawerClose({ type: "wishlist", method: "button" })
-    setState((prev) => ({
-      ...prev,
-      wishlist: { open: false },
-    }))
-  }, [])
-
-  // Account actions
-  const openAccount = useCallback(() => {
-    if (!featureFlags.enabledDrawers.account) return
-    trackDrawerOpen({ type: "account" })
-    setState((prev) => ({
-      ...prev,
-      account: { open: true },
-      auth: { ...prev.auth, open: false },
-    }))
-  }, [featureFlags.enabledDrawers.account])
-
-  const closeAccount = useCallback(() => {
-    trackDrawerClose({ type: "account", method: "button" })
-    setState((prev) => ({
-      ...prev,
-      account: { open: false },
-    }))
-  }, [])
-
-  const openAccountAfterAuthClose = useCallback(() => {
-    setState((prev) => {
-      const isAccountEnabled = featureFlags.enabledDrawers.account
-
-      if (prev.auth.open) {
-        trackDrawerClose({
-          type: "auth",
-          method: "button",
-          metadata: { mode: prev.auth.mode, entrypoint: prev.auth.entrypoint },
+      if (name === "auth") {
+        setAuthState({
+          mode: options?.mode ?? "login",
+          entrypoint: options?.entrypoint ?? null,
         })
       }
 
-      if (isAccountEnabled && !prev.account.open) {
-        trackDrawerOpen({ type: "account" })
-      }
-
-      return {
-        ...prev,
-        account: isAccountEnabled ? { open: true } : prev.account,
-        auth: { ...prev.auth, open: false },
-      }
-    })
-  }, [featureFlags.enabledDrawers.account])
-
-  // Auth actions
-  const openAuth = useCallback(
-    (options?: { mode?: AuthDrawerMode; entrypoint?: AuthDrawerEntrypoint }) => {
-      if (!featureFlags.enabledDrawers.auth) return
-      const mode = options?.mode ?? "login"
-      const entrypoint = options?.entrypoint
-      trackDrawerOpen({
-        type: "auth",
-        metadata: { mode, entrypoint },
-      })
-      setState((prev) => ({
-        ...prev,
-        account: { open: false },
-        auth: {
-          open: true,
-          mode,
-          entrypoint: entrypoint ?? null,
-        },
-      }))
+      setActiveDrawer(name)
     },
-    [featureFlags.enabledDrawers.auth]
+    [featureFlags.enabledDrawers, featureFlags.isSystemEnabled]
   )
 
+  const closeDrawer = useCallback(() => {
+    if (activeDrawer === "productQuickView") {
+      setQuickViewProduct(null)
+    }
+    if (activeDrawer === "auth") {
+      setAuthState((previous) => ({ ...previous, entrypoint: null }))
+    }
+    setActiveDrawer(null)
+  }, [activeDrawer])
+
   const setAuthMode = useCallback((mode: AuthDrawerMode) => {
-    setState((prev) => ({
-      ...prev,
-      auth: {
-        ...prev.auth,
-        mode,
-      },
-    }))
+    setAuthState((previous) => ({ ...previous, mode }))
   }, [])
 
-  const closeAuth = useCallback(() => {
-    setState((prev) => {
-      if (!prev.auth.open) return prev
-      trackDrawerClose({
-        type: "auth",
-        method: "button",
-        metadata: { mode: prev.auth.mode, entrypoint: prev.auth.entrypoint },
-      })
-      return {
-        ...prev,
-        auth: {
-          ...prev.auth,
-          open: false,
-        },
-      }
-    })
-  }, [])
+  const openAccountAfterAuthClose = useCallback(() => {
+    if (!featureFlags.enabledDrawers.account) {
+      setActiveDrawer(null)
+      return
+    }
+    setQuickViewProduct(null)
+    setActiveDrawer("account")
+  }, [featureFlags.enabledDrawers.account])
 
   const value = useMemo<DrawerContextValue>(
     () => ({
-      state,
+      activeDrawer,
+      quickViewProduct,
+      authState,
       enabledDrawers: featureFlags.enabledDrawers,
       isDrawerSystemEnabled: featureFlags.isSystemEnabled,
-      openProductQuickView,
-      closeProductQuickView,
-      openCart,
-      closeCart,
-      openMessages,
-      closeMessages,
-      openWishlist,
-      closeWishlist,
-      openAccount,
-      closeAccount,
-      openAccountAfterAuthClose,
-      openAuth,
+      openDrawer,
+      closeDrawer,
       setAuthMode,
-      closeAuth,
+      openAccountAfterAuthClose,
     }),
     [
-      state,
+      activeDrawer,
+      authState,
       featureFlags.enabledDrawers,
       featureFlags.isSystemEnabled,
-      openProductQuickView,
-      closeProductQuickView,
-      openCart,
-      closeCart,
-      openMessages,
-      closeMessages,
-      openWishlist,
-      closeWishlist,
-      openAccount,
-      closeAccount,
-      openAccountAfterAuthClose,
-      openAuth,
+      quickViewProduct,
+      openDrawer,
+      closeDrawer,
       setAuthMode,
-      closeAuth,
+      openAccountAfterAuthClose,
     ]
   )
 
-  return (
-    <DrawerContext.Provider value={value}>
-      {children}
-    </DrawerContext.Provider>
-  )
+  return <DrawerContext.Provider value={value}>{children}</DrawerContext.Provider>
 }
 
-// =============================================================================
-// HOOK
-// =============================================================================
-
 export function useDrawer(): DrawerContextValue {
-  // In Storybook, use the mock context if available
-  const storybookDrawerContext =
-    typeof window !== "undefined"
-      ? (window as unknown as { __STORYBOOK_DRAWER_CONTEXT__?: unknown }).__STORYBOOK_DRAWER_CONTEXT__
-      : undefined
-
-  if (storybookDrawerContext) {
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    const mockContext = useContext(
-      storybookDrawerContext as React.Context<DrawerContextValue | undefined>
-    )
-    if (mockContext) return mockContext
-  }
-  // eslint-disable-next-line react-hooks/rules-of-hooks
   const context = useContext(DrawerContext)
   if (!context) {
     throw new Error("useDrawer must be used within a DrawerProvider")
   }
   return context
 }
-

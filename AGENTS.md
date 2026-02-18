@@ -17,6 +17,7 @@ Next.js 16 · React 19 · TypeScript · Tailwind v4 · shadcn/ui · Supabase · 
 
 | Working on | Read first |
 |------------|------------|
+| Understanding the product | `PRD.md` |
 | Navigating / finding files | `docs/PROJECT-MAP.md` |
 | Refactoring | `refactor/CURRENT.md` → linked task file → `refactor/shared-rules.md` |
 | Architecture, modules, caching | `ARCHITECTURE.md` |

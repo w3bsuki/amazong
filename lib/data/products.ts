@@ -644,22 +644,11 @@ function toCarouselProducts(products: Product[], options?: { isBoosted?: boolean
 // Legacy Exports - For backward compatibility (remove after migration)
 // =============================================================================
 
-const getGlobalDeals = (limit = 50, zone?: ShippingRegion) => getProducts('deals', limit, zone)
 export const getNewestProducts = (limit = 36, zone?: ShippingRegion) => getProducts('newest', limit, zone)
-const getPromoProducts = (limit = 36, zone?: ShippingRegion) => getProducts('promo', limit, zone)
-const getBestSellers = (limit = 36, zone?: ShippingRegion) => getProducts('bestsellers', limit, zone)
 
 // =============================================================================
 // Homepage Curated Sections - Fetchers for category rows
 // =============================================================================
-
-/**
- * Get products currently on sale (deals/promo).
- * Used for "Today's Offers" section on homepage.
- */
-export async function getDealsProducts(limit = 10, zone?: ShippingRegion): Promise<Product[]> {
-  return getProducts('deals', limit, zone)
-}
 
 /**
  * Get products for a specific root category (L0).

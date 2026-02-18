@@ -1,7 +1,6 @@
 "use client"
 
 import { useState, useEffect, useCallback } from "react"
-import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card"
 import { Button } from "@/components/ui/button"
 import { Link } from "@/i18n/routing"
 import { useTranslations } from "next-intl"
@@ -10,6 +9,7 @@ import { ChevronRight as CaretRight, MessageCircle as ChatCircle } from "lucide-
 
 import { createClient } from "@/lib/supabase/client"
 import { CountBadge } from "@/components/shared/count-badge"
+import { HeaderDropdown } from "@/components/shared/header-dropdown"
 
 interface MessagesDropdownProps {
   user: User | null
@@ -93,15 +93,14 @@ export function MessagesDropdown({ user }: MessagesDropdownProps) {
   }
 
   return (
-    <HoverCard open={isOpen} onOpenChange={setIsOpen} openDelay={100} closeDelay={200}>
-      <HoverCardTrigger asChild>
-        <Link
-          href="/chat"
-          data-testid="messages-dropdown"
-          className="block rounded-md outline-none focus-visible:outline-2 focus-visible:outline-ring"
-          aria-label={`${t("title")}${unreadSuffix}`}
-        >
-          <div className="inline-flex items-center justify-center border border-transparent hover:border-header-text/20 rounded-md text-header-text hover:text-header-text hover:bg-header-hover active:bg-header-active relative size-11 [&_svg]:size-6 cursor-pointer tap-transparent motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth) motion-reduce:transition-none">
+    <HeaderDropdown
+      triggerHref="/chat"
+      triggerTestId="messages-dropdown"
+      ariaLabel={`${t("title")}${unreadSuffix}`}
+      open={isOpen}
+      onOpenChange={setIsOpen}
+      trigger={
+        <div className="inline-flex items-center justify-center border border-transparent hover:border-header-text/20 rounded-md text-header-text hover:text-header-text hover:bg-header-hover active:bg-header-active relative size-11 [&_svg]:size-6 cursor-pointer tap-transparent motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth) motion-reduce:transition-none">
           <span className="relative" aria-hidden="true">
             <ChatCircle />
             {unreadCount > 0 && (
@@ -112,16 +111,9 @@ export function MessagesDropdown({ user }: MessagesDropdownProps) {
               />
             )}
           </span>
-          </div>
-        </Link>
-      </HoverCardTrigger>
-      <HoverCardContent
-        className="w-64 p-0 bg-popover text-popover-foreground border border-border z-50 rounded-md overflow-hidden shadow-dropdown"
-        align="end"
-        sideOffset={8}
-        collisionPadding={10}
-      >
-        {/* Header */}
+        </div>
+      }
+    >
         <div className="flex items-center gap-2 p-4 bg-muted border-b border-border">
           <ChatCircle size={20} className="text-muted-foreground" />
           <h3 className="font-semibold text-base text-foreground">{t("title")}</h3>
@@ -150,7 +142,6 @@ export function MessagesDropdown({ user }: MessagesDropdownProps) {
             </Link>
           </Button>
         </div>
-      </HoverCardContent>
-    </HoverCard>
+    </HeaderDropdown>
   )
 }

@@ -3,7 +3,7 @@ import { createAdminClient } from '@/lib/supabase/server';
 import { stripe } from '@/lib/stripe';
 import { getStripeWebhookSecrets } from '@/lib/env';
 import { ensureOrderConversations } from "@/lib/order-conversations"
-import { logError } from "@/lib/structured-log"
+import { logError } from "@/lib/logger"
 import type Stripe from 'stripe';
 import { z } from "zod"
 

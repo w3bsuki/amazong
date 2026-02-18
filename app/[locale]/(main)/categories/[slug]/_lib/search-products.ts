@@ -1,8 +1,8 @@
 import { createStaticClient } from "@/lib/supabase/server"
 import { ITEMS_PER_PAGE } from "../../../_lib/pagination"
 import type { CategoryProductFilters, Product } from "./types"
-import { normalizeAttributeKey } from "@/lib/attributes/normalize-attribute-key"
-import { logEvent } from "@/lib/structured-log"
+import { applySharedProductFilters, applySharedProductSort } from "@/lib/data/search-products"
+import { logEvent } from "@/lib/logger"
 
 export async function searchProducts(
   supabase: ReturnType<typeof createStaticClient>,
@@ -38,65 +38,9 @@ export async function searchProducts(
     dbQuery = dbQuery.or(shippingFilter)
   }
 
-  if (filters.minPrice) {
-    countQuery = countQuery.gte("price", Number(filters.minPrice))
-    dbQuery = dbQuery.gte("price", Number(filters.minPrice))
-  }
-  if (filters.maxPrice) {
-    countQuery = countQuery.lte("price", Number(filters.maxPrice))
-    dbQuery = dbQuery.lte("price", Number(filters.maxPrice))
-  }
-  if (filters.tag) {
-    countQuery = countQuery.contains("tags", [filters.tag])
-    dbQuery = dbQuery.contains("tags", [filters.tag])
-  }
-  if (filters.minRating) {
-    countQuery = countQuery.gte("rating", Number(filters.minRating))
-    dbQuery = dbQuery.gte("rating", Number(filters.minRating))
-  }
-  if (filters.availability === "instock") {
-    countQuery = countQuery.gt("stock", 0)
-    dbQuery = dbQuery.gt("stock", 0)
-  }
-
-  if (filters.attributes) {
-    for (const [rawAttrName, attrValue] of Object.entries(filters.attributes)) {
-      if (!attrValue) continue
-
-      const attrName = normalizeAttributeKey(rawAttrName) || rawAttrName
-
-      if (Array.isArray(attrValue)) {
-        const values = attrValue.filter((v): v is string => typeof v === "string" && v.length > 0)
-        if (values.length === 1) {
-          countQuery = countQuery.contains("attributes", { [attrName]: values[0] })
-          dbQuery = dbQuery.contains("attributes", { [attrName]: values[0] })
-        } else if (values.length > 1) {
-          countQuery = countQuery.in(`attributes->>${attrName}`, values)
-          dbQuery = dbQuery.in(`attributes->>${attrName}`, values)
-        }
-      } else if (typeof attrValue === "string" && attrValue.length > 0) {
-        countQuery = countQuery.contains("attributes", { [attrName]: attrValue })
-        dbQuery = dbQuery.contains("attributes", { [attrName]: attrValue })
-      }
-    }
-  }
-
-  switch (filters.sort) {
-    case "newest":
-      dbQuery = dbQuery.order("created_at", { ascending: false })
-      break
-    case "price-asc":
-      dbQuery = dbQuery.order("price", { ascending: true })
-      break
-    case "price-desc":
-      dbQuery = dbQuery.order("price", { ascending: false })
-      break
-    case "rating":
-      dbQuery = dbQuery.order("rating", { ascending: false, nullsFirst: false })
-      break
-    default:
-      dbQuery = dbQuery.order("rating", { ascending: false, nullsFirst: false })
-  }
+  countQuery = applySharedProductFilters(countQuery, filters)
+  dbQuery = applySharedProductFilters(dbQuery, filters)
+  dbQuery = applySharedProductSort(dbQuery, filters.sort)
 
   dbQuery = dbQuery.range(offset, offset + limit - 1)
 

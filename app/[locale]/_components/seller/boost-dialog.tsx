@@ -23,7 +23,6 @@ type PricingOption = {
   days: number
   sku: string
   priceEur: number
-  priceBgn: number
   durationKey: string
   currency: string
 }
@@ -56,10 +55,6 @@ export function BoostDialog({ product, locale, trigger, onBoostSuccess }: BoostD
       currency: 'EUR',
       minimumFractionDigits: 2,
     }).format(price)
-  }
-
-  const formatPriceBgn = (price: number) => {
-    return t('priceBgn', { price: price.toFixed(2) })
   }
 
   useEffect(() => {
@@ -284,9 +279,6 @@ export function BoostDialog({ product, locale, trigger, onBoostSuccess }: BoostD
                         isSelected ? "text-primary" : "text-foreground"
                       )}>
                         {formatPriceEur(option.priceEur)}
-                      </span>
-                      <span className="text-2xs text-muted-foreground">
-                        {formatPriceBgn(option.priceBgn)}
                       </span>
                       {option.days > 1 && (
                         <span className="text-2xs text-muted-foreground mt-0.5">

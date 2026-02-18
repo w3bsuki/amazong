@@ -39,6 +39,7 @@
 
 | Date | File | What changed |
 |------|------|-------------|
+| 2026-02-18 | `PRD.md` | Created — product story, user journeys, revenue model, future vision |
 | 2026-02-18 | `MASTER-PLAN.md` | v2 — lean checkpoint list, points to `codex/NN-domain.md` docs |
 | 2026-02-18 | `codex/01-16-*.md` | Created — 16 domain instruction docs for Codex |
 | 2026-02-18 | `claude.md` | Updated state to Master Plan approach |

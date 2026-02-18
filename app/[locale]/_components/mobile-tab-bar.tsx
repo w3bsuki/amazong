@@ -99,7 +99,7 @@ export function MobileTabBar() {
   const unreadCount = totalUnreadCount
 
   // Get drawer actions for chat/account/auth buttons
-  const { openMessages, openAccount, openAuth, state: drawerState } = useDrawer()
+  const { openDrawer, activeDrawer } = useDrawer()
 
   const routeState = getMobileTabBarRouteState(pathname)
 
@@ -113,15 +113,15 @@ export function MobileTabBar() {
   const isSellActive = isMobileTabPathActive(routeState.normalizedPathname, "/sell")
   const isChatActive =
     isMobileTabPathActive(routeState.normalizedPathname, "/chat") ||
-    drawerState.messages.open
+    activeDrawer === "messages"
   const chatAriaLabel = unreadCount > 0 ? `${t("chat")} (${unreadCount})` : t("chat")
   const isCategoryDrawerEnabled = Boolean(categoryDrawer)
   const categoryTriggerA11yProps = isCategoryDrawerEnabled
     ? { "aria-haspopup": "dialog" as const, "aria-expanded": categoryDrawer?.isOpen }
     : {}
   const isProfileActive =
-    drawerState.account.open ||
-    drawerState.auth.open ||
+    activeDrawer === "account" ||
+    activeDrawer === "auth" ||
     isMobileTabPathActive(routeState.normalizedPathname, "/account")
 
   const authUser = auth?.user ?? null
@@ -254,9 +254,9 @@ export function MobileTabBar() {
       active: isChatActive,
       label: chatAriaLabel,
       testId: "mobile-tab-chat",
-      onClick: openMessages,
+      onClick: () => openDrawer("messages"),
       ariaHasPopup: "dialog",
-      ariaExpanded: drawerState.messages.open,
+      ariaExpanded: activeDrawer === "messages",
       icon: (
         <>
           <span className="relative">
@@ -281,13 +281,13 @@ export function MobileTabBar() {
       testId: "mobile-tab-profile",
       onClick: () => {
         if (isAuthenticated) {
-          openAccount()
+          openDrawer("account")
           return
         }
-        openAuth({ mode: "login", entrypoint: "profile_tab" })
+        openDrawer("auth", { mode: "login", entrypoint: "profile_tab" })
       },
       ariaHasPopup: "dialog",
-      ariaExpanded: drawerState.account.open || drawerState.auth.open,
+      ariaExpanded: activeDrawer === "account" || activeDrawer === "auth",
       icon: (
         <UserAvatar
           name={resolvedProfileName}

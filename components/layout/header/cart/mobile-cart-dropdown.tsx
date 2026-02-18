@@ -14,7 +14,7 @@ const CART_BADGE_MAX = Number.MAX_SAFE_INTEGER
 export function MobileCartDropdown() {
   const router = useRouter()
   const { totalItems, isReady } = useCart()
-  const { openCart, enabledDrawers } = useDrawer()
+  const { openDrawer, enabledDrawers } = useDrawer()
   const tNav = useTranslations("Navigation")
   const displayItems = isReady ? totalItems : 0
   const cartAriaLabel = displayItems > 0 ? `${tNav("cart")} (${displayItems})` : tNav("cart")
@@ -27,7 +27,7 @@ export function MobileCartDropdown() {
       aria-haspopup={enabledDrawers.cart ? "dialog" : undefined}
       onClick={() => {
         if (enabledDrawers.cart) {
-          openCart()
+          openDrawer("cart")
           return
         }
         router.push("/cart")

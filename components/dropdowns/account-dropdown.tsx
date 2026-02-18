@@ -1,6 +1,5 @@
 "use client"
 
-import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card"
 import { Button } from "@/components/ui/button"
 import { Link } from "@/i18n/routing"
 import { useTranslations } from "next-intl"
@@ -10,6 +9,7 @@ import { Bell, ChevronDown as CaretDown, ChevronRight as CaretRight, MessageCirc
 import { useState } from "react"
 import { cn } from "@/lib/utils"
 import { CountBadge } from "@/components/shared/count-badge"
+import { HeaderDropdown } from "@/components/shared/header-dropdown"
 
 interface AccountDropdownProps {
   user: User | null
@@ -97,22 +97,13 @@ export function AccountDropdown({ user, variant = "icon", notificationCount = 0,
 
   // For authenticated users OR full variant, show the dropdown
   return (
-    <HoverCard openDelay={100} closeDelay={200}>
-      <HoverCardTrigger asChild>
-        <Link
-          href={user ? "/account" : "/auth/login"}
-          className="block rounded-md outline-none focus-visible:outline-2 focus-visible:outline-ring"
-          aria-label={`${t("hello")}, ${user?.email?.split("@")[0] || t("signIn")}. ${t("accountAndLists")}${notificationSuffix}`}
-        >
-          {triggerContent}
-        </Link>
-      </HoverCardTrigger>
-      <HoverCardContent
-        className="w-56 p-0 bg-popover text-popover-foreground border border-border z-50 rounded-md overflow-hidden shadow-dropdown"
-        align={variant === "full" ? "start" : "end"}
-        sideOffset={8}
-        collisionPadding={10}
-      >
+    <HeaderDropdown
+      triggerHref={user ? "/account" : "/auth/login"}
+      ariaLabel={`${t("hello")}, ${user?.email?.split("@")[0] || t("signIn")}. ${t("accountAndLists")}${notificationSuffix}`}
+      trigger={triggerContent}
+      widthClassName="w-56"
+      align={variant === "full" ? "start" : "end"}
+    >
         {!user ? (
           <div className="p-3">
             <Button asChild className="w-full bg-primary hover:bg-interactive-hover text-primary-foreground">
@@ -194,7 +185,6 @@ export function AccountDropdown({ user, variant = "icon", notificationCount = 0,
             </div>
           </>
         )}
-      </HoverCardContent>
-    </HoverCard>
+    </HeaderDropdown>
   )
 }

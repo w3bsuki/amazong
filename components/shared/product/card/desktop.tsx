@@ -63,7 +63,7 @@ export function DesktopProductCard({
 }: DesktopProductCardProps) {
   const t = useTranslations("Product")
   const locale = useLocale()
-  const { openProductQuickView, enabledDrawers, isDrawerSystemEnabled } = useDrawer()
+  const { openDrawer, enabledDrawers, isDrawerSystemEnabled } = useDrawer()
 
   const isQuickViewEnabled = isDrawerSystemEnabled && enabledDrawers.productQuickView
   const shouldUseDrawerQuickView = isQuickViewEnabled && !disableQuickView
@@ -165,7 +165,7 @@ export function DesktopProductCard({
         ...(sellerAvatarUrl != null ? { sellerAvatarUrl } : {}),
         ...(sellerVerified !== undefined ? { sellerVerified } : {}),
       }
-      openProductQuickView(quickViewData)
+      openDrawer("productQuickView", { product: quickViewData })
     },
     [
       categoryPath,
@@ -177,7 +177,7 @@ export function DesktopProductCard({
       images,
       inStock,
       location,
-      openProductQuickView,
+      openDrawer,
       originalPrice,
       price,
       rating,

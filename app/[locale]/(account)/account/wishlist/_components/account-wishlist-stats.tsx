@@ -2,13 +2,7 @@ import { DollarSign as IconCurrencyDollar, Heart as IconHeart, Package as IconPa
 
 
 import { Badge } from "@/components/ui/badge"
-import {
-  Card,
-  CardAction,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
+import { StatCard, StatCardGrid } from "@/components/shared/stat-card"
 
 interface WishlistStatsProps {
   stats: {
@@ -64,87 +58,60 @@ export function AccountWishlistStats({ stats, locale }: WishlistStatsProps) {
       </div>
 
       {/* Desktop: Full stats cards */}
-      <div className="hidden sm:grid grid-cols-2 gap-3 @xl/main:grid-cols-4">
-        <Card className="@container/card">
-          <CardHeader>
-            <CardDescription className="flex items-center gap-1.5">
-              <IconHeart className="size-4 shrink-0 text-destructive" />
-              <span className="truncate">{t.totalItems}</span>
-            </CardDescription>
-            <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-              {stats.total.toLocaleString()}
-            </CardTitle>
-            <CardAction>
-              <Badge variant="outline" className="text-info border-border-subtle bg-info/10">
-                {t.saved}
-              </Badge>
-            </CardAction>
-          </CardHeader>
-        </Card>
+      <StatCardGrid className="hidden sm:grid">
+        <StatCard
+          icon={IconHeart}
+          iconClassName="text-destructive"
+          label={t.totalItems}
+          value={stats.total.toLocaleString()}
+          badge={
+            <Badge variant="outline" className="text-info border-border-subtle bg-info/10">
+              {t.saved}
+            </Badge>
+          }
+        />
 
-        <Card className="@container/card">
-          <CardHeader>
-            <CardDescription className="flex items-center gap-1.5">
-              <IconPackage className="size-4 shrink-0" />
-              <span className="truncate">{t.inStock}</span>
-            </CardDescription>
-            <CardTitle className={`text-2xl font-semibold tabular-nums @[250px]/card:text-3xl ${stats.inStock > 0 ? 'text-success' : ''}`}>
-              {stats.inStock.toLocaleString()}
-            </CardTitle>
-            <CardAction>
-              {stats.inStock > 0 ? (
-                <Badge variant="outline" className="text-success border-success/20 bg-success/10">
-                  {t.available}
-                </Badge>
-              ) : (
-                <Badge variant="outline" className="text-muted-foreground border-border">
-                  {t.available}
-                </Badge>
-              )}
-            </CardAction>
-          </CardHeader>
-        </Card>
+        <StatCard
+          icon={IconPackage}
+          label={t.inStock}
+          value={stats.inStock.toLocaleString()}
+          valueClassName={stats.inStock > 0 ? "text-success" : undefined}
+          badge={
+            <Badge
+              variant="outline"
+              className={stats.inStock > 0 ? "text-success border-success/20 bg-success/10" : "text-muted-foreground border-border"}
+            >
+              {t.available}
+            </Badge>
+          }
+        />
 
-        <Card className="@container/card">
-          <CardHeader>
-            <CardDescription className="flex items-center gap-1.5">
-              <IconPackageOff className="size-4 shrink-0" />
-              <span className="truncate">{t.outOfStock}</span>
-            </CardDescription>
-            <CardTitle className={`text-2xl font-semibold tabular-nums @[250px]/card:text-3xl ${stats.outOfStock > 0 ? 'text-warning' : ''}`}>
-              {stats.outOfStock.toLocaleString()}
-            </CardTitle>
-            <CardAction>
-              {stats.outOfStock > 0 ? (
-                <Badge variant="outline" className="text-warning border-warning/20 bg-warning/10">
-                  {t.unavailable}
-                </Badge>
-              ) : (
-                <Badge variant="outline" className="text-muted-foreground border-border">
-                  {t.unavailable}
-                </Badge>
-              )}
-            </CardAction>
-          </CardHeader>
-        </Card>
+        <StatCard
+          icon={IconPackageOff}
+          label={t.outOfStock}
+          value={stats.outOfStock.toLocaleString()}
+          valueClassName={stats.outOfStock > 0 ? "text-warning" : undefined}
+          badge={
+            <Badge
+              variant="outline"
+              className={stats.outOfStock > 0 ? "text-warning border-warning/20 bg-warning/10" : "text-muted-foreground border-border"}
+            >
+              {t.unavailable}
+            </Badge>
+          }
+        />
 
-        <Card className="@container/card">
-          <CardHeader>
-            <CardDescription className="flex items-center gap-1.5">
-              <IconCurrencyDollar className="size-4 shrink-0" />
-              <span className="truncate">{t.totalValue}</span>
-            </CardDescription>
-            <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-              {formatCurrency(stats.totalValue)}
-            </CardTitle>
-            <CardAction>
-              <Badge variant="outline" className="text-info border-border-subtle bg-info/10">
-                {t.wishlistValue}
-              </Badge>
-            </CardAction>
-          </CardHeader>
-        </Card>
-      </div>
+        <StatCard
+          icon={IconCurrencyDollar}
+          label={t.totalValue}
+          value={formatCurrency(stats.totalValue)}
+          badge={
+            <Badge variant="outline" className="text-info border-border-subtle bg-info/10">
+              {t.wishlistValue}
+            </Badge>
+          }
+        />
+      </StatCardGrid>
     </>
   )
 }

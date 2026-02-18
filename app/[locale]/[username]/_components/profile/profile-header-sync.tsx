@@ -39,22 +39,25 @@ export function ProfileHeaderSync({
   isFollowing,
   sellerId,
 }: ProfileHeaderSyncProps) {
-  const { setProfileHeader } = useHeader()
+  const { setHeaderState } = useHeader()
 
   useEffect(() => {
-    setProfileHeader({
-      displayName,
-      username,
-      avatarUrl,
-      isOwnProfile,
-      isFollowing,
-      sellerId,
+    setHeaderState({
+      type: "profile",
+      value: {
+        displayName,
+        username,
+        avatarUrl,
+        isOwnProfile,
+        isFollowing,
+        sellerId,
+      },
     })
 
     return () => {
-      setProfileHeader(null)
+      setHeaderState(null)
     }
-  }, [displayName, username, avatarUrl, isOwnProfile, isFollowing, sellerId, setProfileHeader])
+  }, [displayName, username, avatarUrl, isOwnProfile, isFollowing, sellerId, setHeaderState])
 
   // This component renders nothing - it just syncs data
   return null

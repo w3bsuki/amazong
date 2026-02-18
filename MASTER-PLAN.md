@@ -7,13 +7,14 @@
 ## How This Works
 
 ```
-1. Read this file — find the first unchecked domain
-2. Read the linked doc (codex/NN-domain.md)
-3. The doc tells you: what must work, which files to audit
-4. You audit those files — find dead code, duplication, bloat, over-engineering
-5. You refactor — same features, less code
-6. Verify: pnpm -s typecheck && pnpm -s lint && pnpm -s test:unit
-7. Update the progress table below — check off the domain, fill in metrics
+1. Read PRD.md — understand what Treido is and what it does
+2. Read this file — find the first unchecked domain
+3. Read the linked doc (codex/NN-domain.md)
+4. The doc tells you: what must work, which files to audit
+5. You audit those files — find dead code, duplication, bloat, over-engineering
+6. You refactor — same features, less code
+7. Verify: pnpm -s typecheck && pnpm -s lint && pnpm -s test:unit
+8. Update the progress table below — check off the domain, fill in metrics
 ```
 
 **Rules:**

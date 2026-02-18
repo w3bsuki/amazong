@@ -1,6 +1,5 @@
 "use client"
 
-import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card"
 import { Button } from "@/components/ui/button"
 import { Link } from "@/i18n/routing"
 import { useLocale, useTranslations } from "next-intl"
@@ -11,6 +10,7 @@ import { useEffect, useMemo, useState } from "react"
 import { useWishlist, type WishlistItem } from "@/components/providers/wishlist-context"
 import { CountBadge } from "@/components/shared/count-badge"
 import { DropdownProductItem } from "@/components/shared/dropdown-product-item"
+import { HeaderDropdown } from "@/components/shared/header-dropdown"
 
 function buildProductUrl(item: WishlistItem) {
   if (!item.username) return "#"
@@ -41,36 +41,25 @@ export function WishlistDropdown() {
   const topItems = useMemo(() => items.slice(0, 4), [items])
 
   return (
-    <HoverCard openDelay={100} closeDelay={200}>
-      <HoverCardTrigger asChild>
-        <Link
-          href="/account/wishlist"
-          className="block rounded-md outline-none focus-visible:outline-2 focus-visible:outline-ring"
-          aria-label={`${tNav("wishlist")}${itemCountSuffix}`}
-        >
-          <div
-            className="inline-flex items-center justify-center border border-transparent hover:border-header-text/20 rounded-md text-header-text hover:bg-header-hover active:bg-header-active relative size-11 [&_svg]:size-6 cursor-pointer tap-transparent motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth) motion-reduce:transition-none"
-          >
-            <span className="relative" aria-hidden="true">
-              <Heart />
-              {mounted && displayItems > 0 && (
-                <CountBadge
-                  count={displayItems}
-                  className="absolute -top-1 -right-1.5 bg-wishlist-active text-primary-foreground ring-2 ring-header-bg h-4 min-w-4 px-1 text-2xs"
-                  aria-hidden="true"
-                />
-              )}
-            </span>
-          </div>
-        </Link>
-      </HoverCardTrigger>
-
-      <HoverCardContent
-        className="w-72 p-0 bg-popover text-popover-foreground border border-border z-50 rounded-md overflow-hidden shadow-dropdown"
-        align="end"
-        sideOffset={8}
-        collisionPadding={10}
-      >
+    <HeaderDropdown
+      triggerHref="/account/wishlist"
+      ariaLabel={`${tNav("wishlist")}${itemCountSuffix}`}
+      widthClassName="w-72"
+      trigger={
+        <div className="inline-flex items-center justify-center border border-transparent hover:border-header-text/20 rounded-md text-header-text hover:bg-header-hover active:bg-header-active relative size-11 [&_svg]:size-6 cursor-pointer tap-transparent motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth) motion-reduce:transition-none">
+          <span className="relative" aria-hidden="true">
+            <Heart />
+            {mounted && displayItems > 0 && (
+              <CountBadge
+                count={displayItems}
+                className="absolute -top-1 -right-1.5 bg-wishlist-active text-primary-foreground ring-2 ring-header-bg h-4 min-w-4 px-1 text-2xs"
+                aria-hidden="true"
+              />
+            )}
+          </span>
+        </div>
+      }
+    >
         <div className="flex items-center justify-between px-3 py-2 bg-muted border-b border-border">
           <div className="flex items-center gap-1.5">
             <Heart size={16} className="text-muted-foreground" />
@@ -125,7 +114,6 @@ export function WishlistDropdown() {
             </div>
           </>
         )}
-      </HoverCardContent>
-    </HoverCard>
+    </HeaderDropdown>
   )
 }

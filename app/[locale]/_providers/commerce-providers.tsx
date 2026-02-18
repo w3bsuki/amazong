@@ -7,7 +7,6 @@ import { AuthStateManager } from "@/components/providers/auth-state-manager"
 import { CartProvider } from "@/components/providers/cart-context"
 import { WishlistProvider } from "@/components/providers/wishlist-context"
 import { MessageProvider } from "@/components/providers/message-context"
-import { CurrencyProvider } from "@/components/providers/currency-context"
 import { DrawerProvider, useDrawer } from "@/components/providers/drawer-context"
 
 const GlobalDrawers = dynamic(
@@ -52,29 +51,27 @@ export function CommerceProviders({ children }: { children: ReactNode }) {
 
   return (
     <AuthStateManager>
-      <CurrencyProvider>
-        <CartProvider>
-          <WishlistProvider>
-            <DrawerProvider>
-              <DeferredMessageProvider>
-                {children}
-                {shouldMountGlobalDrawers ? (
-                  <Suspense fallback={null}>
-                    <GlobalDrawers />
-                  </Suspense>
-                ) : null}
-              </DeferredMessageProvider>
-            </DrawerProvider>
-          </WishlistProvider>
-        </CartProvider>
-      </CurrencyProvider>
+      <CartProvider>
+        <WishlistProvider>
+          <DrawerProvider>
+            <DeferredMessageProvider>
+              {children}
+              {shouldMountGlobalDrawers ? (
+                <Suspense fallback={null}>
+                  <GlobalDrawers />
+                </Suspense>
+              ) : null}
+            </DeferredMessageProvider>
+          </DrawerProvider>
+        </WishlistProvider>
+      </CartProvider>
     </AuthStateManager>
   )
 }
 
 function DeferredMessageProvider({ children }: { children: ReactNode }) {
-  const { state } = useDrawer()
-  const shouldEnableMessages = state.messages.open || state.account.open
+  const { activeDrawer } = useDrawer()
+  const shouldEnableMessages = activeDrawer === "messages" || activeDrawer === "account"
 
   return <MessageProvider enabled={shouldEnableMessages}>{children}</MessageProvider>
 }

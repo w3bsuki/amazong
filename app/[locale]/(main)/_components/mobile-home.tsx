@@ -154,17 +154,20 @@ export function MobileHome({
     limit: 24,
   })
 
-  const { setHomepageHeader } = useHeader()
+  const { setHeaderState } = useHeader()
 
   useEffect(() => {
-    setHomepageHeader({
-      activeCategory: activeCategorySlug ?? "all",
-      onCategorySelect: () => {},
-      onSearchOpen: () => setSearchOpen(true),
-      categories,
+    setHeaderState({
+      type: "homepage",
+      value: {
+        activeCategory: activeCategorySlug ?? "all",
+        onCategorySelect: () => {},
+        onSearchOpen: () => setSearchOpen(true),
+        categories,
+      },
     })
-    return () => setHomepageHeader(null)
-  }, [activeCategorySlug, categories, setHomepageHeader])
+    return () => setHeaderState(null)
+  }, [activeCategorySlug, categories, setHeaderState])
 
   useEffect(() => {
     const target = loadMoreRef.current

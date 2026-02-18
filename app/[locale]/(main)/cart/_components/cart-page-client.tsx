@@ -73,9 +73,7 @@ export default function CartPageClient() {
 
   useEffect(() => {
     if (!header) return
-    header.setHomepageHeader(null)
-    header.setContextualHeader(null)
-    header.setProductHeader(null)
+    header.setHeaderState(null)
   }, [header])
   
   // Cart is "effectively ready" if either fully ready or timed out

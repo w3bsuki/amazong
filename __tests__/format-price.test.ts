@@ -6,9 +6,9 @@ import {
   formatPriceRange,
   getDiscountPercentage,
   hasDiscount,
-} from '@/lib/format-price'
+} from '@/lib/price'
 
-describe('lib/format-price', () => {
+describe('lib/price (format helpers)', () => {
   it('formats EUR price in en locale', () => {
     const result = formatPrice(29.99, { locale: 'en' })
     expect(result).toContain('€')

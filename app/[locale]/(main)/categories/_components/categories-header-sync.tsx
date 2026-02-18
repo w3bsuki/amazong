@@ -10,16 +10,19 @@ import { useHeader } from "@/components/providers/header-context"
  * Renders nothing - just syncs state to HeaderContext.
  */
 export function CategoriesHeaderSync({ title }: { title: string }) {
-  const { setContextualHeader } = useHeader()
+  const { setHeaderState } = useHeader()
 
   useEffect(() => {
-    setContextualHeader({
-      title,
-      backHref: "/",
-      subcategories: [],
+    setHeaderState({
+      type: "contextual",
+      value: {
+        title,
+        backHref: "/",
+        subcategories: [],
+      },
     })
-    return () => setContextualHeader(null)
-  }, [title, setContextualHeader])
+    return () => setHeaderState(null)
+  }, [title, setHeaderState])
 
   return null
 }

@@ -2,7 +2,7 @@ import { NextResponse } from "next/server"
 import { createAdminClient } from "@/lib/supabase/server"
 import { stripe } from "@/lib/stripe"
 import { getStripeConnectWebhookSecrets } from "@/lib/env"
-import { logError, logEvent } from "@/lib/structured-log"
+import { logError, logEvent } from "@/lib/logger"
 import type Stripe from "stripe"
 
 /**

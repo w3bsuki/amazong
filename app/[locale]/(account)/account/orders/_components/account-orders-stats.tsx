@@ -2,13 +2,7 @@ import { Clock as IconClock, DollarSign as IconCurrencyDollar, Package as IconPa
 
 
 import { Badge } from "@/components/ui/badge"
-import {
-  Card,
-  CardAction,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
+import { StatCard, StatCardGrid } from "@/components/shared/stat-card"
 
 interface OrdersStatsProps {
   stats: {
@@ -64,81 +58,56 @@ export function AccountOrdersStats({ stats, locale }: OrdersStatsProps) {
       </div>
 
       {/* Desktop: Full stats cards */}
-      <div className="hidden sm:grid grid-cols-2 gap-3 @xl/main:grid-cols-4">
-        <Card className="@container/card">
-          <CardHeader>
-            <CardDescription className="flex items-center gap-1.5">
-              <IconPackage className="size-4 shrink-0" />
-              <span className="truncate">{t.totalOrders}</span>
-            </CardDescription>
-            <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-              {stats.total.toLocaleString()}
-            </CardTitle>
-            <CardAction>
-              <Badge variant="outline" className="text-muted-foreground border-border">
-                {t.allTime}
-              </Badge>
-            </CardAction>
-          </CardHeader>
-        </Card>
+      <StatCardGrid className="hidden sm:grid">
+        <StatCard
+          icon={IconPackage}
+          label={t.totalOrders}
+          value={stats.total.toLocaleString()}
+          badge={
+            <Badge variant="outline" className="text-muted-foreground border-border">
+              {t.allTime}
+            </Badge>
+          }
+        />
 
-        <Card className="@container/card">
-          <CardHeader>
-            <CardDescription className="flex items-center gap-1.5">
-              <IconClock className="size-4 shrink-0" />
-              <span className="truncate">{t.inProgress}</span>
-            </CardDescription>
-            <CardTitle className={`text-2xl font-semibold tabular-nums @[250px]/card:text-3xl ${stats.pending > 0 ? 'text-warning' : ''}`}>
-              {stats.pending.toLocaleString()}
-            </CardTitle>
-            <CardAction>
-              {stats.pending > 0 ? (
-                <Badge variant="outline" className="border-warning/20 bg-warning/10 text-warning">
-                  {t.pending}
-                </Badge>
-              ) : (
-                <Badge variant="outline" className="text-muted-foreground border-border">
-                  {t.pending}
-                </Badge>
-              )}
-            </CardAction>
-          </CardHeader>
-        </Card>
+        <StatCard
+          icon={IconClock}
+          label={t.inProgress}
+          value={stats.pending.toLocaleString()}
+          valueClassName={stats.pending > 0 ? "text-warning" : undefined}
+          badge={
+            <Badge
+              variant="outline"
+              className={stats.pending > 0 ? "border-warning/20 bg-warning/10 text-warning" : "text-muted-foreground border-border"}
+            >
+              {t.pending}
+            </Badge>
+          }
+        />
 
-        <Card className="@container/card">
-          <CardHeader>
-            <CardDescription className="flex items-center gap-1.5">
-              <IconTruckDelivery className="size-4 shrink-0" />
-              <span className="truncate">{t.delivered}</span>
-            </CardDescription>
-            <CardTitle className="text-2xl font-semibold tabular-nums text-success @[250px]/card:text-3xl">
-              {stats.delivered.toLocaleString()}
-            </CardTitle>
-            <CardAction>
-              <Badge variant="outline" className="border-success/20 bg-success/10 text-success">
-                {t.completed}
-              </Badge>
-            </CardAction>
-          </CardHeader>
-        </Card>
+        <StatCard
+          icon={IconTruckDelivery}
+          label={t.delivered}
+          value={stats.delivered.toLocaleString()}
+          valueClassName="text-success"
+          badge={
+            <Badge variant="outline" className="border-success/20 bg-success/10 text-success">
+              {t.completed}
+            </Badge>
+          }
+        />
 
-        <Card className="@container/card">
-          <CardHeader>
-            <CardDescription className="flex items-center gap-1.5">
-              <IconCurrencyDollar className="size-4 shrink-0" />
-              <span className="truncate">{t.totalSpent}</span>
-            </CardDescription>
-            <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-              {formatCurrency(stats.totalSpend)}
-            </CardTitle>
-            <CardAction>
-              <Badge variant="outline" className="text-info border-border-subtle bg-info/10">
-                {t.lifetime}
-              </Badge>
-            </CardAction>
-          </CardHeader>
-        </Card>
-      </div>
+        <StatCard
+          icon={IconCurrencyDollar}
+          label={t.totalSpent}
+          value={formatCurrency(stats.totalSpend)}
+          badge={
+            <Badge variant="outline" className="text-info border-border-subtle bg-info/10">
+              {t.lifetime}
+            </Badge>
+          }
+        />
+      </StatCardGrid>
     </>
   )
 }

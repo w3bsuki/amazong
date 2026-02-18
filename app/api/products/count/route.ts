@@ -4,7 +4,7 @@ import type { Database } from "@/lib/supabase/database.types"
 import { getPublicSupabaseEnv } from "@/lib/supabase/shared"
 import { getShippingFilter, parseShippingRegion } from "@/lib/shipping"
 import { normalizeAttributeKey } from "@/lib/attributes/normalize-attribute-key"
-import { logError } from "@/lib/structured-log"
+import { logError } from "@/lib/logger"
 import { z } from "zod"
 
 /**

@@ -1,6 +1,7 @@
 "use server"
 
 import { createClient } from "@/lib/supabase/server"
+import { requireAuth } from "@/lib/auth/require-auth"
 import { revalidateTag } from "next/cache"
 
 // =====================================================
@@ -47,16 +48,11 @@ export async function submitBuyerFeedback(
   input: BuyerFeedbackInput
 ): Promise<{ success: boolean; error?: string; data?: BuyerFeedback }> {
   try {
-    const supabase = await createClient()
-    if (!supabase) {
-      return { success: false, error: "Failed to connect to database" }
-    }
-
-    // Get current user (must be seller)
-    const { data: { user }, error: authError } = await supabase.auth.getUser()
-    if (authError || !user) {
+    const auth = await requireAuth()
+    if (!auth) {
       return { success: false, error: "Not authenticated" }
     }
+    const { user, supabase } = auth
 
     // Verify user is a seller (has is_seller flag)
     const { data: profile, error: profileError } = await supabase
@@ -155,67 +151,6 @@ export async function submitBuyerFeedback(
 }
 
 // =====================================================
-// CHECK IF SELLER CAN RATE BUYER
-// =====================================================
-export async function canSellerRateBuyer(
-  orderId: string
-): Promise<{ canRate: boolean; reason?: string; buyerId?: string }> {
-  try {
-    const supabase = await createClient()
-    if (!supabase) {
-      return { canRate: false, reason: "Database connection failed" }
-    }
-
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) {
-      return { canRate: false, reason: "Not authenticated" }
-    }
-
-    // Check if user is seller and has this order
-    const { data: orderItem, error } = await supabase
-      .from("order_items")
-      .select(`
-        id,
-        status,
-        order:orders!inner(
-          id,
-          user_id
-        )
-      `)
-      .eq("order_id", orderId)
-      .eq("seller_id", user.id)
-      .single()
-
-    if (error || !orderItem) {
-      return { canRate: false, reason: "Order not found" }
-    }
-
-    // Check order status
-    if (!["delivered", "completed", "shipped"].includes(orderItem.status || "")) {
-      return { canRate: false, reason: "Order must be delivered before rating" }
-    }
-
-    // Check if already rated
-    const { data: existing } = await supabase
-      .from("buyer_feedback")
-      .select("id")
-      .eq("seller_id", user.id)
-      .eq("order_id", orderId)
-      .maybeSingle()
-
-    if (existing) {
-      return { canRate: false, reason: "Already rated this buyer" }
-    }
-
-    const order = orderItem.order as unknown as { id: string; user_id: string }
-    return { canRate: true, buyerId: order.user_id }
-  } catch (error) {
-    console.error("canSellerRateBuyer error:", error)
-    return { canRate: false, reason: "Error checking rating status" }
-  }
-}
-
-// =====================================================
 // GET BUYER'S RECEIVED RATINGS (for /account/ratings page)
 // =====================================================
 export async function getBuyerReceivedRatings(
@@ -231,15 +166,11 @@ export async function getBuyerReceivedRatings(
   error?: string
 }> {
   try {
-    const supabase = await createClient()
-    if (!supabase) {
-      return { success: false, error: "Database connection failed" }
-    }
-
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) {
+    const auth = await requireAuth()
+    if (!auth) {
       return { success: false, error: "Not authenticated" }
     }
+    const { user, supabase } = auth
 
     const limit = options?.limit || 20
     const offset = options?.offset || 0
@@ -389,15 +320,11 @@ export async function getSellerGivenFeedback(
   error?: string
 }> {
   try {
-    const supabase = await createClient()
-    if (!supabase) {
-      return { success: false, error: "Database connection failed" }
-    }
-
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) {
+    const auth = await requireAuth()
+    if (!auth) {
       return { success: false, error: "Not authenticated" }
     }
+    const { user, supabase } = auth
 
     const limit = options?.limit || 20
     const offset = options?.offset || 0
@@ -451,15 +378,11 @@ export async function updateBuyerFeedback(
   updates: Partial<Pick<BuyerFeedbackInput, "rating" | "comment" | "payment_promptness" | "communication" | "reasonable_expectations">>
 ): Promise<{ success: boolean; error?: string }> {
   try {
-    const supabase = await createClient()
-    if (!supabase) {
-      return { success: false, error: "Database connection failed" }
-    }
-
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) {
+    const auth = await requireAuth()
+    if (!auth) {
       return { success: false, error: "Not authenticated" }
     }
+    const { user, supabase } = auth
 
     // Verify ownership and check time window (7 days)
     const { data: existing, error: fetchError } = await supabase
@@ -515,15 +438,11 @@ export async function deleteBuyerFeedback(
   feedbackId: string
 ): Promise<{ success: boolean; error?: string }> {
   try {
-    const supabase = await createClient()
-    if (!supabase) {
-      return { success: false, error: "Database connection failed" }
-    }
-
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) {
+    const auth = await requireAuth()
+    if (!auth) {
       return { success: false, error: "Not authenticated" }
     }
+    const { user, supabase } = auth
 
     // Verify ownership
     const { error } = await supabase

@@ -1,6 +1,5 @@
 import * as React from "react"
 import { cn } from "@/lib/utils"
-import { useCurrencyOptional, EUR_TO_BGN_RATE } from "@/components/providers/currency-context"
 import { Badge } from "@/components/ui/badge"
 
 // =============================================================================
@@ -14,8 +13,6 @@ interface ProductCardPriceProps {
   conditionLabel?: string | null | undefined
   showBuyerProtection?: boolean
   buyerProtectionLabel?: string
-  /** Show secondary currency inline (e.g., "€12.34 / 24,13 лв.") */
-  showDualCurrency?: boolean
   /** Compact mode for mobile - smaller typography */
   compact?: boolean
   /** Slightly stronger hierarchy for home feed cards */
@@ -45,7 +42,6 @@ function ProductCardPrice({
   conditionLabel,
   showBuyerProtection = false,
   buyerProtectionLabel,
-  showDualCurrency = false,
   compact = false,
   homeEmphasis = false,
   priceEmphasis = "default",
@@ -55,27 +51,18 @@ function ProductCardPrice({
   presentation = "default",
   forceSymbolPrefix = false,
 }: ProductCardPriceProps) {
-  const currencyCtx = useCurrencyOptional()
-  const selectedCurrency = currencyCtx?.currency ?? "EUR"
-
   // Derived values
   const hasDiscount = Boolean(showOriginalPrice && originalPrice && originalPrice > price)
 
-  // Convert price based on selected currency
-  const displayPrice = selectedCurrency === "BGN" ? price * EUR_TO_BGN_RATE : price
-  const displayOriginalPrice = originalPrice && selectedCurrency === "BGN" 
-    ? originalPrice * EUR_TO_BGN_RATE 
-    : originalPrice
-
-  const formatCurrencyValue = React.useCallback((value: number, currency: "EUR" | "BGN") => {
+  const formatCurrencyValue = React.useCallback((value: number) => {
     const formatter = new Intl.NumberFormat(locale === "bg" ? "bg-BG" : "en-IE", {
       style: "currency",
-      currency,
+      currency: "EUR",
       minimumFractionDigits: 0,
       maximumFractionDigits: 2,
     })
 
-    if (!forceSymbolPrefix || currency !== "EUR") {
+    if (!forceSymbolPrefix) {
       return formatter.format(value)
     }
 
@@ -90,22 +77,12 @@ function ProductCardPrice({
   }, [forceSymbolPrefix, locale])
 
   // Price formatting (memoized for performance)
-  const formattedPrice = React.useMemo(() => {
-    return formatCurrencyValue(displayPrice, selectedCurrency)
-  }, [displayPrice, formatCurrencyValue, selectedCurrency])
+  const formattedPrice = React.useMemo(() => formatCurrencyValue(price), [formatCurrencyValue, price])
 
   const formattedOriginalPrice = React.useMemo(() => {
-    if (!displayOriginalPrice) return null
-    return formatCurrencyValue(displayOriginalPrice, selectedCurrency)
-  }, [displayOriginalPrice, formatCurrencyValue, selectedCurrency])
-
-  // Secondary currency (opposite of selected)
-  const secondaryCurrency = selectedCurrency === "EUR" ? "BGN" : "EUR"
-  const secondaryPrice = selectedCurrency === "EUR" ? price * EUR_TO_BGN_RATE : price
-  const formattedSecondaryPrice = React.useMemo(() => {
-    if (!showDualCurrency) return null
-    return formatCurrencyValue(secondaryPrice, secondaryCurrency)
-  }, [formatCurrencyValue, secondaryCurrency, secondaryPrice, showDualCurrency])
+    if (!originalPrice) return null
+    return formatCurrencyValue(originalPrice)
+  }, [formatCurrencyValue, originalPrice])
 
   const priceRow = (
     <div className={cn("flex items-baseline gap-1", homeEmphasis ? "flex-nowrap" : "flex-wrap")}>
@@ -126,12 +103,6 @@ function ProductCardPrice({
           compact && !homeEmphasis ? "text-2xs" : "text-compact"
         )}>
           {formattedOriginalPrice}
-        </span>
-      )}
-      {/* Secondary currency (dual currency mode) */}
-      {showDualCurrency && formattedSecondaryPrice && (
-        <span className="text-2xs text-muted-foreground tabular-nums">
-          ({formattedSecondaryPrice})
         </span>
       )}
       {trailingLabel && (
@@ -163,11 +134,6 @@ function ProductCardPrice({
           compact && !homeEmphasis ? "text-2xs" : "text-compact"
         )}>
           {formattedOriginalPrice}
-        </span>
-      )}
-      {showDualCurrency && formattedSecondaryPrice && (
-        <span className="text-2xs text-muted-foreground tabular-nums">
-          ({formattedSecondaryPrice})
         </span>
       )}
       {trailingLabel && (

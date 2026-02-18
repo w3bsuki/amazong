@@ -145,7 +145,7 @@ export function MobileCategoryBrowserContextual({
 }: MobileCategoryBrowserContextualProps) {
   const tCategories = useTranslations("Categories")
   const router = useRouter()
-  const { setContextualHeader } = useHeader()
+  const { setHeaderState } = useHeader()
   const categoryDrawer = useCategoryDrawerOptional()
 
   const contextualInitialTitle = contextualCategoryName || ""
@@ -375,11 +375,14 @@ export function MobileCategoryBrowserContextual({
 
   // Provide contextual header state to layout via context
   useEffect(() => {
-    setContextualHeader({
-      title: instant.categoryTitle || contextualInitialTitle,
-      backHref,
-      onBack: handleBack,
-      activeSlug: instant.activeSlug,
+    setHeaderState({
+      type: "contextual",
+      value: {
+        title: instant.categoryTitle || contextualInitialTitle,
+        backHref,
+        onBack: handleBack,
+        activeSlug: instant.activeSlug,
+      },
     })
   }, [
     backHref,
@@ -387,12 +390,12 @@ export function MobileCategoryBrowserContextual({
     handleBack,
     instant.activeSlug,
     instant.categoryTitle,
-    setContextualHeader,
+    setHeaderState,
   ])
 
   useEffect(() => {
-    return () => setContextualHeader(null)
-  }, [setContextualHeader])
+    return () => setHeaderState(null)
+  }, [setHeaderState])
 
   return (
     <PageShell variant="muted" className="w-full">

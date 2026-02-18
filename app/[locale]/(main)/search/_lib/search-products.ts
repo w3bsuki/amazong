@@ -2,7 +2,7 @@ import { createStaticClient } from "@/lib/supabase/server"
 import { ITEMS_PER_PAGE } from "../../_lib/pagination"
 import type { Product, SearchProductFilters } from "./types"
 import { isBoostActiveNow } from "@/lib/boost/boost-status"
-import { normalizeAttributeKey } from "@/lib/attributes/normalize-attribute-key"
+import { applySharedProductFilters, applySharedProductSort } from "@/lib/data/search-products"
 
 type SearchQueryResult = {
   data?: unknown[] | null
@@ -65,10 +65,8 @@ export async function searchProducts(
 
     if (categoryIds && categoryIds.length > 0) next = next.in("category_id", categoryIds)
 
-    if (filters.minPrice) next = next.gte("price", Number(filters.minPrice))
-    if (filters.maxPrice) next = next.lte("price", Number(filters.maxPrice))
-    if (filters.tag) next = next.contains("tags", [filters.tag])
-    if (filters.minRating) next = next.gte("rating", Number(filters.minRating))
+    next = applySharedProductFilters(next, filters)
+
     if (filters.nearby === "true") {
       const normalizedCity = filters.city?.trim().toLowerCase()
       const targetCity =
@@ -80,26 +78,6 @@ export async function searchProducts(
 
     // Verified sellers (business verification)
     if (filters.verified === "true") next = next.eq("profiles.is_verified_business", true)
-    if (filters.availability === "instock") next = next.gt("stock", 0)
-
-    if (filters.attributes) {
-      for (const [rawAttrName, attrValue] of Object.entries(filters.attributes)) {
-        if (!attrValue) continue
-
-        const attrName = normalizeAttributeKey(rawAttrName) || rawAttrName
-
-        if (Array.isArray(attrValue)) {
-          const values = attrValue.filter((v): v is string => typeof v === "string" && v.length > 0)
-          if (values.length === 1) {
-            next = next.contains("attributes", { [attrName]: values[0] })
-          } else if (values.length > 1) {
-            next = next.in(`attributes->>${attrName}`, values)
-          }
-        } else if (typeof attrValue === "string" && attrValue.length > 0) {
-          next = next.contains("attributes", { [attrName]: attrValue })
-        }
-      }
-    }
 
     if (query) {
       next = next.or(`title.ilike.%${query}%,description.ilike.%${query}%`)
@@ -109,18 +87,7 @@ export async function searchProducts(
   }
 
   const applySecondarySort = (q: SearchQuery) => {
-    switch (filters.sort) {
-      case "newest":
-        return q.order("created_at", { ascending: false })
-      case "price-asc":
-        return q.order("price", { ascending: true })
-      case "price-desc":
-        return q.order("price", { ascending: false })
-      case "rating":
-        return q.order("rating", { ascending: false, nullsFirst: false })
-      default:
-        return q.order("rating", { ascending: false, nullsFirst: false })
-    }
+    return applySharedProductSort(q, filters.sort)
   }
 
   const { count: boostedCountRaw } = await applyFilters(buildCountBase())

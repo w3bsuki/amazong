@@ -1,14 +1,12 @@
 import { describe, expect, it } from 'vitest'
 import {
-  EUR_TO_BGN_RATE,
-  eurToBgnApprox,
   formatPrice,
   formatPriceParts,
   getCurrencyCode,
   getCurrencySymbol,
-} from '@/lib/currency'
+} from '@/lib/price'
 
-describe('lib/currency', () => {
+describe('lib/price (currency surface)', () => {
   describe('getCurrencySymbol', () => {
     it('returns € for English locale', () => {
       expect(getCurrencySymbol('en')).toBe('€')
@@ -38,37 +36,37 @@ describe('lib/currency', () => {
 
   describe('formatPrice', () => {
     it('formats price in English locale (Irish English EUR format)', () => {
-      const result = formatPrice(29.99, 'en')
+      const result = formatPrice(29.99, { locale: 'en' })
       expect(result).toContain('€')
       expect(result).toContain('29')
       expect(result).toContain('99')
     })
 
     it('formats price in Bulgarian locale with comma decimal', () => {
-      const result = formatPrice(29.99, 'bg')
+      const result = formatPrice(29.99, { locale: 'bg' })
       expect(result).toContain('€')
       // Bulgarian uses comma as decimal separator
       expect(result).toMatch(/29,99/)
     })
 
     it('formats large prices correctly', () => {
-      const resultEn = formatPrice(1234.56, 'en')
+      const resultEn = formatPrice(1234.56, { locale: 'en' })
       expect(resultEn).toContain('1')
       expect(resultEn).toContain('234')
       expect(resultEn).toContain('56')
 
-      const resultBg = formatPrice(1234.56, 'bg')
+      const resultBg = formatPrice(1234.56, { locale: 'bg' })
       expect(resultBg).toContain('€')
     })
 
     it('formats zero correctly', () => {
-      const result = formatPrice(0, 'en')
+      const result = formatPrice(0, { locale: 'en' })
       expect(result).toContain('€')
       expect(result).toContain('0')
     })
 
     it('always shows 2 decimal places', () => {
-      const result = formatPrice(10, 'en')
+      const result = formatPrice(10, { locale: 'en' })
       expect(result).toMatch(/10[.,]00/)
     })
   })
@@ -103,23 +101,4 @@ describe('lib/currency', () => {
     })
   })
 
-  describe('eurToBgnApprox', () => {
-    it('uses the fixed BGN/EUR rate constant', () => {
-      expect(EUR_TO_BGN_RATE).toBeCloseTo(1.95583, 5)
-    })
-
-    it('rounds to 2 decimals for display (examples)', () => {
-      expect(eurToBgnApprox(0)).toBe(0)
-      expect(eurToBgnApprox(1)).toBe(1.96)
-      expect(eurToBgnApprox(0.99)).toBe(1.94)
-      expect(eurToBgnApprox(4.99)).toBe(9.76)
-      expect(eurToBgnApprox(14.99)).toBe(29.32)
-    })
-
-    it('is stable for formatting via toFixed(2)', () => {
-      expect(eurToBgnApprox(0.99).toFixed(2)).toBe('1.94')
-      expect(eurToBgnApprox(4.99).toFixed(2)).toBe('9.76')
-      expect(eurToBgnApprox(14.99).toFixed(2)).toBe('29.32')
-    })
-  })
 })
