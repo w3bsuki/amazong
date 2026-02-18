@@ -92,38 +92,45 @@ export default async function CategoriesPage({
           const hasChildren = children.length > 0
 
           return (
-            <Link
-              key={cat.slug}
-              href={`/categories/${cat.slug}`}
-              className={CATEGORY_ROW_CLASS}
-            >
-              <CategoryCircleVisual
-                category={cat}
-                active={false}
-                className="size-(--control-default) shrink-0"
-                fallbackIconSize={20}
-                fallbackIconWeight="duotone"
-                variant="muted"
-              />
+            <div key={cat.slug} className="group">
+              <Link
+                href={`/categories/${cat.slug}`}
+                className={CATEGORY_ROW_CLASS}
+              >
+                <CategoryCircleVisual
+                  category={cat}
+                  active={false}
+                  className="size-(--control-default) shrink-0"
+                  fallbackIconSize={20}
+                  fallbackIconWeight="duotone"
+                  variant="muted"
+                />
 
-              <div className="min-w-0 flex-1">
-                <div className="font-medium text-sm text-foreground">
-                  {getCategoryShortName(cat)}
-                </div>
-                {hasChildren && (
-                  <div className="text-xs text-muted-foreground mt-0.5 line-clamp-2 leading-relaxed">
-                    {children
-                      .map((c) => getCategoryShortName(c))
-                      .join(' • ')}
+                <div className="min-w-0 flex-1">
+                  <div className="font-medium text-sm text-foreground">
+                    {getCategoryShortName(cat)}
                   </div>
-                )}
-              </div>
+                </div>
 
-              <CaretRight
-                size={14}
-                className="shrink-0 text-muted-foreground transition-colors duration-fast ease-smooth group-hover:text-foreground group-active:text-foreground"
-              />
-            </Link>
+                <CaretRight
+                  size={14}
+                  className="shrink-0 text-muted-foreground transition-colors duration-fast ease-smooth group-hover:text-foreground group-active:text-foreground"
+                />
+              </Link>
+              {hasChildren && (
+                <div className="flex flex-wrap gap-1.5 px-inset pb-2 -mt-0.5" style={{ paddingLeft: "calc(var(--page-inset-mobile) + var(--control-default) + 10px)" }}>
+                  {children.map((c) => (
+                    <Link
+                      key={c.slug}
+                      href={`/categories/${c.slug}`}
+                      className="inline-flex items-center rounded-full border border-border-subtle bg-surface-subtle px-2.5 py-1 text-2xs font-medium text-muted-foreground transition-colors duration-fast ease-smooth hover:bg-hover hover:text-foreground active:bg-active tap-transparent"
+                    >
+                      {getCategoryShortName(c)}
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </div>
           )
         })}
       </div>

@@ -644,3 +644,151 @@
 
 **Next session should:**
 - Start Domain 3 (`(sell) + (business)`) via `refactor/domains/03-sell-business.md`, beginning with dead-code + tiny-file consolidation before hotspot splits.
+
+### Session 23 — 2026-02-18 (Codex Domain 3 completion)
+
+**Phase(s):** Domain 3 (`(sell)` + `(business)`) — full audit + refactor closeout  
+**Audit findings (targeted):**
+- Dead-code scan across route-private `_components` in both domains found **0 zero-import component files** (import-graph + grep confirmation).
+- Tiny-file pressure was concentrated in `(sell)` barrel indirection and one-use helper files in `(business)/dashboard/inventory`.
+- Core hotspots were still concentrated in:
+  - `(business)`: `product-form-modal.tsx` (744L), `products-table.tsx` (715L)
+  - `(sell)`: `ui/category-selector.tsx` (694L), `fields/attributes-field.tsx` (597L), `fields/shipping-field.tsx` (577L)
+
+**Changes:**
+- Tiny-file merge/deletion pass:
+  - Removed `(sell)` route-private barrel files and rewired direct imports:
+    - `app/[locale]/(sell)/_components/index.ts`
+    - `app/[locale]/(sell)/_components/fields/index.ts`
+    - `app/[locale]/(sell)/_components/layouts/index.ts`
+    - `app/[locale]/(sell)/_components/steps/index.ts`
+    - `app/[locale]/(sell)/_components/ui/index.ts`
+  - Inlined one-use `(sell)` sign-in prompt into `sell/sell-page-client.tsx`; removed `app/[locale]/(sell)/_components/sign-in-prompt.tsx`.
+  - Inlined one-use `(business)` inventory helpers into `dashboard/inventory/page.tsx`; removed:
+    - `app/[locale]/(business)/dashboard/inventory/_components/inventory-header.tsx`
+    - `app/[locale]/(business)/dashboard/inventory/_lib/format-currency.ts`
+- `use client` audit:
+  - Removed redundant child-level client directives where parent client boundaries already own hydration (safe-only removals in `(sell)` step/submodule files).
+- Hotspot decomposition to `<300L`:
+  - Split `(business)` product modal into focused modules:
+    - `product-form-modal.tsx` → 253L orchestration
+    - extracted schema/types/category-selector/main-column/side-column modules
+  - Split `(business)` products table into focused modules:
+    - `products-table.tsx` → 271L orchestration
+    - extracted toolbar/grid/row/types/mappers modules
+  - Split `(sell)` category selector:
+    - `ui/category-selector.tsx` → 169L shell
+    - extracted modal-content/shared/types modules
+  - Split `(sell)` attributes field:
+    - `fields/attributes-field.tsx` → 275L orchestration
+    - extracted input/grid/custom/types modules
+  - Split `(sell)` shipping field:
+    - `fields/shipping-field.tsx` → 137L orchestration
+    - extracted location/logistics section modules
+- Marked Domain 3 complete in `refactor/CURRENT.md`, advanced current task to Domain 4, and refreshed metrics table.
+
+**File count delta:**
+- Source files (`app`+`components`+`lib`+`hooks`, ts/tsx): `888` → `899` (`+11` net)
+
+**Verification:**
+- `pnpm -s typecheck && pnpm -s lint && pnpm -s styles:gate && pnpm -s test:unit` ✅ (lint warnings only; no errors)
+- `pnpm -s architecture:scan` ✅
+
+**Metrics snapshot (architecture:scan + local source count):**
+- Files: `899`
+- LOC (source): `~117K` (`117,291`)
+- `"use client"`: `219`
+- `>300` lines: `100`
+- `>500` lines: `22`
+- Tiny `<50L` files: `277`
+- Missing metadata: `53`
+- Clones: `227` (`2.64%`)
+
+**Next session should:**
+- Start Domain 4 (`small routes`) via `refactor/domains/04-small-routes.md`, beginning with dead-code + tiny-file consolidation before hotspot splits.
+
+### Session 24 — 2026-02-18 (Codex Domain 4 completion)
+
+**Phase(s):** Domain 4 (`(admin)` + `(chat)` + `(checkout)` + `(onboarding)` + `(auth)` + `(plans)` + `[username]`) — full audit + refactor closeout  
+**Audit findings by sub-domain:**
+- `(admin)`: no >300L hotspot remained; one unnecessary client boundary found in docs markdown renderer.
+- `(chat)`: `chat-interface.tsx` was oversized; `messages-page-client.tsx` carried dead `showChat` state.
+- `(checkout)`: both `checkout-page-client.tsx` and `_actions/checkout.ts` were oversized and tightly coupled.
+- `(onboarding)`: over-fragmented tiny wrappers (`page.tsx`/`loading.tsx`) duplicated across steps.
+- `(auth)`: `components/auth/sign-up-form-body.tsx` oversized; repeated tiny route loading wrappers.
+- `(plans)`: `plans-page-client.tsx` oversized with mixed concerns and unreachable loading branch.
+- `[username]`: `profile-client.tsx` oversized and route-private profile barrel (`_components/profile/index.ts`) became deletable after split.
+
+**Concrete changes:**
+- Wrote full per-file audit map (LOC + purpose) artifact:
+  - `refactor/domains/04-small-routes-audit.md`
+- Split required hotspots below 300L:
+  - `app/[locale]/[username]/profile-client.tsx` → extracted:
+    - `app/[locale]/[username]/profile-client.types.ts`
+    - `app/[locale]/[username]/profile-client.helpers.tsx`
+    - `app/[locale]/[username]/profile-client-tabs.tsx`
+    - `app/[locale]/[username]/profile-client-header.tsx`
+  - `app/[locale]/(chat)/_components/chat-interface.tsx` → extracted:
+    - `app/[locale]/(chat)/_components/chat-interface-header.tsx`
+    - `app/[locale]/(chat)/_components/chat-interface-messages.tsx`
+    - `app/[locale]/(chat)/_components/chat-interface-input.tsx`
+    - `app/[locale]/(chat)/_components/use-chat-interface-actions.ts`
+  - `app/[locale]/(checkout)/_components/checkout-page-client.tsx` → extracted:
+    - `app/[locale]/(checkout)/_components/checkout-page-layout.tsx`
+    - `app/[locale]/(checkout)/_components/checkout-page-notice.ts`
+    - `app/[locale]/(checkout)/_components/use-checkout-address-form.ts`
+  - `app/[locale]/(checkout)/_actions/checkout.ts` → structural split only (session/fees/verify):
+    - `app/[locale]/(checkout)/_actions/checkout-session.ts`
+    - `app/[locale]/(checkout)/_actions/checkout-fees.ts`
+    - `app/[locale]/(checkout)/_actions/checkout-verify.ts`
+    - `app/[locale]/(checkout)/_actions/checkout-helpers.ts`
+    - `app/[locale]/(checkout)/_actions/checkout.ts` reduced to barrel exports
+  - `components/auth/sign-up-form-body.tsx` → extracted:
+    - `components/auth/sign-up-form-fields.tsx`
+    - `components/auth/sign-up-form-footer.tsx`
+  - `app/[locale]/(plans)/_components/plans-page-client.tsx` → extracted:
+    - `app/[locale]/(plans)/_components/plans-page-client.types.ts`
+    - `app/[locale]/(plans)/_components/plans-page-client.config.tsx`
+    - `app/[locale]/(plans)/_components/plans-page-client.helpers.ts`
+    - `app/[locale]/(plans)/_components/plans-page-sections.tsx`
+- Dead-code pass:
+  - Removed dead route-private file after grep confirmation:
+    - `app/[locale]/[username]/_components/profile/index.ts`
+  - Removed dead chat state logic:
+    - `showChat` state and related branch logic from `app/[locale]/(chat)/_components/messages-page-client.tsx`
+- Tiny-file merge pass:
+  - Consolidated duplicate onboarding loading wrappers via re-export to shared parent loading:
+    - `app/[locale]/(onboarding)/onboarding/{account-type,business-profile,interests,profile,complete}/loading.tsx`
+  - Consolidated duplicate auth loading wrappers via re-export to `auth/loading.tsx`:
+    - `app/[locale]/(auth)/auth/{login,forgot-password,sign-up,error,reset-password,welcome}/loading.tsx`
+  - Replaced tiny wrapper page components with direct re-exports:
+    - onboarding step pages (`account-type`, `business-profile`, `interests`, `profile`, `complete`)
+    - auth pages (`reset-password`, `sign-up-success`)
+- `"use client"` audit:
+  - Removed unnecessary directive from:
+    - `app/[locale]/(admin)/admin/docs/_components/doc-markdown-content.tsx`
+
+**File count delta:**
+- Source files (`app` + `components` + `lib` + `hooks`, ts/tsx): `899` → `920` (`+21` net)
+
+**Verification:**
+- `pnpm -s typecheck` ✅
+- `pnpm -s lint` ✅ (warnings only; no errors)
+- `pnpm -s styles:gate` ✅
+- `pnpm -s test:unit` ✅
+- `pnpm -s architecture:scan` ✅
+
+**Metrics snapshot (architecture:scan + local source count):**
+- Files: `920`
+- LOC (source): `~118K` (`118,261`)
+- `"use client"`: `219`
+- `>300` lines: `100`
+- `>500` lines: `18`
+- Tiny `<50L` files: `280`
+- Missing metadata: `53`
+- Clones: `234` (`2.77%`)
+
+**Remaining risks / follow-ups:**
+- Clone and tiny-file metrics regressed slightly due decomposition fan-out; Domain 5 should prioritize merge/consolidation over new extractions where possible.
+- `architecture:scan` still reports high `>300` file count (`100`) outside Domain 4 scope; this remains the primary cross-domain debt.
+- Lint remains warning-heavy project-wide (no errors), so follow-up should focus only on warnings introduced/owned by next domain scope.

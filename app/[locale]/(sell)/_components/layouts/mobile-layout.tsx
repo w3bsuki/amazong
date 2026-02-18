@@ -2,13 +2,11 @@
 
 import { useMemo } from "react";
 import { useSellForm, useSellFormContext } from "../sell-form-provider";
-import {
-  StepWhat,
-  StepCategory,
-  StepDetails,
-  StepPricing,
-  StepReview,
-} from "../steps";
+import { StepCategory } from "../steps/step-category";
+import { StepDetails } from "../steps/step-details";
+import { StepPricing } from "../steps/step-pricing";
+import { StepReview } from "../steps/step-review";
+import { StepWhat } from "../steps/step-what";
 import { StepperWrapper } from "./stepper-wrapper";
 import type { SellFormDataV4 } from "@/lib/sell/schema";
 

@@ -4,8 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from "react"
 import { useTranslations, useLocale } from "next-intl"
 import { useSearchParams, type ReadonlyURLSearchParams } from "next/navigation"
 import { cn } from "@/lib/utils"
-import { getMobileQuickPillClass } from "@/components/mobile/chrome/mobile-control-recipes"
-import { FilterSortBar } from "@/components/mobile/category-nav/filter-sort-bar"
+import { FilterSortBar, type FilterSortBarQuickPill } from "@/components/mobile/category-nav/filter-sort-bar"
 import { FilterHub, type FilterHubMode, type FilterHubSection, type FilterHubSubcategory } from "@/components/shared/filters/filter-hub"
 import { FilterChips } from "./filter-chips"
 import { BULGARIAN_CITIES } from "@/lib/bulgarian-cities"
@@ -172,40 +171,6 @@ export function MobileFilterControls({
 
   return (
     <section className={cn("bg-background", className)}>
-      {quickAttributePills.length > 0 && (
-        <div className="bg-background px-inset pt-1.5 pb-1">
-          <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
-            {quickAttributePills.map((pill) => (
-              <button
-                key={pill.sectionId}
-                type="button"
-                onClick={() => openAttributeFilter(pill.sectionId)}
-                className={cn(
-                  getMobileQuickPillClass(
-                    pill.active,
-                    cn(
-                      "gap-1.5 motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth) motion-reduce:transition-none focus-visible:ring-ring",
-                      pill.active
-                        ? "border-selected-border bg-selected text-selected-foreground"
-                        : "hover:bg-hover hover:text-foreground active:bg-active"
-                    )
-                  )
-                )}
-                aria-haspopup="dialog"
-                aria-pressed={pill.active}
-              >
-                <span>{pill.label}</span>
-                {pill.active && pill.selectedCount && pill.selectedCount > 1 ? (
-                  <span className="inline-flex items-center justify-center rounded-full bg-foreground px-1.5 py-0.5 text-2xs font-semibold text-background tabular-nums">
-                    {pill.selectedCount}
-                  </span>
-                ) : null}
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
-
       <FilterSortBar
         locale={locale}
         onAllFiltersClick={openAllFilters}
@@ -217,6 +182,8 @@ export function MobileFilterControls({
         locationChipLabel={locationChipLabel}
         locationChipActive={hasExplicitLocation}
         onLocationChipClick={openLocationFilter}
+        quickAttributePills={quickAttributePills as FilterSortBarQuickPill[]}
+        onAttributeChipClick={openAttributeFilter}
       />
 
       <div className="bg-background px-inset py-1">

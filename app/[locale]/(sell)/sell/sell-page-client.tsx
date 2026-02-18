@@ -5,15 +5,12 @@ import { Link } from "@/i18n/routing";
 import { createClient } from "@/lib/supabase/client";
 import { useLocale, useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
-import { ProgressHeader } from "../_components/ui";
-import {
-  SignInPrompt,
-  SellFormSkeleton,
-  SellErrorBoundary,
-  UnifiedSellForm,
-  type Category,
-  type Seller
-} from "../_components";
+import { AuthGateCard } from "../../_components/auth/auth-gate-card";
+import { SellErrorBoundary } from "../_components/ui/sell-error-boundary";
+import { ProgressHeader } from "../_components/ui/progress-header";
+import { SellFormSkeleton } from "../_components/ui/sell-section-skeleton";
+import { UnifiedSellForm } from "../_components/sell-form-unified";
+import type { Category, Seller } from "../_lib/types";
 
 export type SellerPayoutStatus = {
   stripe_connect_account_id: string | null;
@@ -32,6 +29,21 @@ interface SellPageClientProps {
   initialPayoutStatus?: SellerPayoutStatus;
   categories: Category[];
   createListingAction: CreateListingAction;
+}
+
+function SellSignInPrompt() {
+  const tSelling = useTranslations("SellingDropdown")
+  const tSell = useTranslations("Sell")
+
+  return (
+    <div className="container-content py-6 sm:py-8 lg:py-16 flex justify-center">
+      <AuthGateCard
+        title={tSelling("signInToSell")}
+        description={tSell("startSellingBanner.compact.subtitle")}
+        nextPath="/sell"
+      />
+    </div>
+  )
 }
 
 export function SellPageClient({
@@ -146,7 +158,7 @@ export function SellPageClient({
           totalSteps={4}
         />
         <div className="flex-1 flex flex-col justify-center overflow-y-auto">
-          <SignInPrompt />
+          <SellSignInPrompt />
         </div>
       </div>
     );

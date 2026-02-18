@@ -2,7 +2,11 @@
 
 import type { CategoryAttribute } from "@/lib/data/categories"
 import type { UIProduct } from "@/lib/data/products"
-import { CategoryPillRail } from "@/components/mobile/category-nav"
+import {
+  CategoryDrilldownRail,
+  type DrilldownSegment,
+  type DrilldownOption,
+} from "@/components/mobile/category-nav"
 import {
   MobileFilterControls,
   type QuickAttributePill,
@@ -11,7 +15,6 @@ import { PageShell } from "../../../../../_components/page-shell"
 import { ProductFeed } from "./product-feed"
 import {
   toFilterSubcategories,
-  type CategoryScopeItem,
   type ScopeCategory,
 } from "./mobile-category-browser-contextual-utils"
 
@@ -19,7 +22,12 @@ const MOBILE_FEED_FRAME_CLASS = "mx-auto w-full max-w-(--breakpoint-md) pb-tabba
 
 interface MobileCategoryBrowserContextualViewProps {
   locale: string
-  categoryScopeItems: CategoryScopeItem[]
+  drilldownPath: DrilldownSegment[]
+  drilldownOptions: DrilldownOption[]
+  drilldownAllLabel: string
+  onDrillDown: (slug: string, label: string) => void
+  onDrillBack: () => void
+  onSegmentTap?: (index: number) => void
   canOpenScopeDrawer: boolean
   onScopeMoreClick: () => void
   navigationAriaLabel: string
@@ -43,7 +51,12 @@ interface MobileCategoryBrowserContextualViewProps {
 
 export function MobileCategoryBrowserContextualView({
   locale,
-  categoryScopeItems,
+  drilldownPath,
+  drilldownOptions,
+  drilldownAllLabel,
+  onDrillDown,
+  onDrillBack,
+  onSegmentTap,
   canOpenScopeDrawer,
   onScopeMoreClick,
   navigationAriaLabel,
@@ -67,13 +80,18 @@ export function MobileCategoryBrowserContextualView({
   return (
     <PageShell variant="muted" className="w-full">
       <div className={MOBILE_FEED_FRAME_CLASS}>
-        <CategoryPillRail
-          items={categoryScopeItems}
+        <CategoryDrilldownRail
+          selectedPath={drilldownPath}
+          options={drilldownOptions}
+          allLabel={drilldownAllLabel}
+          onOptionSelect={onDrillDown}
+          onGoBack={onDrillBack}
+          {...(onSegmentTap ? { onSegmentTap } : {})}
+          moreLabel={showMoreLabel}
+          {...(canOpenScopeDrawer ? { onMoreClick: onScopeMoreClick } : {})}
           ariaLabel={navigationAriaLabel}
           stickyTop="var(--offset-mobile-primary-rail)"
           sticky={true}
-          moreLabel={showMoreLabel}
-          {...(canOpenScopeDrawer ? { onMoreClick: onScopeMoreClick } : {})}
           testId="mobile-category-scope-rail"
         />
 

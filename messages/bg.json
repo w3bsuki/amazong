@@ -409,6 +409,7 @@
                 "actions": {
                     "browseOptions": "Опции",
                     "filter": "Филтър",
+                    "seeAll": "Виж всички",
                     "view": "Виж",
                     "viewCategory": "Пълна категория",
                     "exploreScope": "Разгледай",

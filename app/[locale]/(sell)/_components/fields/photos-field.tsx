@@ -12,7 +12,9 @@ import { useTranslations } from "next-intl";
 import type { ProductImage } from "@/lib/sell/schema";
 import { compressImage } from "@/lib/image-compression";
 import { useSellForm } from "../sell-form-provider";
-import { PhotoThumbnail, UploadZone, ImagePreviewModal } from "../ui";
+import { PhotoThumbnail } from "../ui/photo-thumbnail";
+import { ImagePreviewModal } from "../ui/image-preview-modal";
+import { UploadZone } from "../ui/upload-zone";
 // Note: AiListingAssistant will be updated in Phase 3 to use context pattern
 
 const EMPTY_IMAGES: ProductImage[] = [];

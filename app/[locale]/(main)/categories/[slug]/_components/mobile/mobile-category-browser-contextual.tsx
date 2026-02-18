@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useEffect, useMemo, useRef } from "react"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import type { CategoryTreeNode } from "@/lib/category-tree"
 import type { UIProduct } from "@/lib/data/products"
 import type { CategoryAttribute } from "@/lib/data/categories"
@@ -11,11 +11,10 @@ import { useInstantCategoryBrowse } from "@/hooks/use-instant-category-browse"
 import { getCategoryName, getCategorySlugKey } from "@/lib/category-display"
 import { useCategoryDrawerOptional } from "@/components/mobile/category-nav"
 import { MobileCategoryBrowserContextualView } from "./mobile-category-browser-contextual-view"
+import type { DrilldownSegment, DrilldownOption } from "@/components/mobile/category-nav/category-drilldown-rail"
 import {
-  buildCategoryScopeItems,
   buildQuickAttributePills,
   buildScopedDrawerCategory,
-  stripAttributeFilters,
   toScopedCategoryList,
   type ScopeCategory,
 } from "./mobile-category-browser-contextual-utils"
@@ -118,24 +117,114 @@ export function MobileCategoryBrowserContextual({
       image_url: parent.image_url ?? null,
     }
   }, [instant.parent, routeParentContext])
-  const currentScopeParentName = currentScopeParent
-    ? tCategories("shortName", {
-        slug: getCategorySlugKey(currentScopeParent.slug),
-        name: getCategoryName(currentScopeParent, locale),
-      })
-    : null
-
-  const railBaseParams = useMemo(
-    () => stripAttributeFilters(new URLSearchParams(instant.appliedSearchParams?.toString() ?? "")),
-    [instant.appliedSearchParams]
-  )
 
   const railCategories = useMemo(
     () => (instant.children.length > 0 ? instant.children : instant.siblings) as ScopeCategory[],
     [instant.children, instant.siblings]
   )
 
-  const scopeLabel = currentScopeParentName ?? instant.activeCategoryName ?? contextualInitialTitle
+  // ---------------------------------------------------------------------------
+  // Drilldown state — compound breadcrumb pill
+  // ---------------------------------------------------------------------------
+  const [drilldownPath, setDrilldownPath] = useState<DrilldownSegment[]>([])
+  const drilldownPathRef = useRef(drilldownPath)
+
+  useEffect(() => {
+    drilldownPathRef.current = drilldownPath
+  }, [drilldownPath])
+
+  // Reset drilldown when route slug changes (full page navigation)
+  useEffect(() => {
+    setDrilldownPath([])
+  }, [initialProductsSlug])
+
+  // Sync drilldown path on browser back/forward (popstate)
+  useEffect(() => {
+    const handlePopState = () => {
+      const path = window.location.pathname
+      const match = path.match(/\/categories\/([^/?]+)/)
+      const urlSlug = match?.[1] ? decodeURIComponent(match[1]) : null
+
+      if (!urlSlug) return
+
+      // Find the slug in the current drilldown path
+      const currentPath = drilldownPathRef.current
+      const idx = currentPath.findIndex((seg) => seg.slug === urlSlug)
+
+      if (idx >= 0) {
+        // User went back to a previous drilldown level — trim to that point
+        setDrilldownPath(currentPath.slice(0, idx + 1))
+      } else if (urlSlug === initialProductsSlug) {
+        // User went all the way back to the root route
+        setDrilldownPath([])
+      }
+      // Otherwise the URL is for a category not in the drilldown path — leave as-is
+    }
+
+    window.addEventListener("popstate", handlePopState)
+    return () => window.removeEventListener("popstate", handlePopState)
+  }, [initialProductsSlug])
+
+  const drilldownOptions: DrilldownOption[] = useMemo(
+    () =>
+      railCategories
+        .filter((cat) => cat.slug !== instant.categorySlug)
+        .map((cat) => ({
+          id: cat.id,
+          label: tCategories("shortName", {
+            slug: getCategorySlugKey(cat.slug),
+            name: getCategoryName(cat, locale),
+          }),
+          slug: cat.slug,
+        })),
+    [railCategories, tCategories, locale, instant.categorySlug]
+  )
+
+  const drilldownAllLabel = tCategories("all")
+
+  const handleDrillDown = useCallback(
+    (slug: string, label: string) => {
+      setDrilldownPath((prev) => [...prev, { slug, label }])
+      void instant.setCategorySlug(slug, { clearAttrFilters: true })
+    },
+    [instant]
+  )
+
+  const handleDrillBack = useCallback(() => {
+    const currentPath = drilldownPathRef.current
+    const newPath = currentPath.slice(0, -1)
+    setDrilldownPath(newPath)
+
+    if (newPath.length > 0) {
+      const target = newPath[newPath.length - 1]
+      if (target) {
+        void instant.setCategorySlug(target.slug, {
+          clearAttrFilters: true,
+        })
+      }
+    } else {
+      void instant.setCategorySlug(initialProductsSlug, {
+        clearAttrFilters: true,
+      })
+    }
+  }, [initialProductsSlug, instant])
+
+  const handleSegmentTap = useCallback(
+    (index: number) => {
+      const currentPath = drilldownPathRef.current
+      const newPath = currentPath.slice(0, index + 1)
+      setDrilldownPath(newPath)
+
+      const target = newPath[newPath.length - 1]
+      if (target) {
+        void instant.setCategorySlug(target.slug, { clearAttrFilters: true })
+      } else {
+        void instant.setCategorySlug(initialProductsSlug, { clearAttrFilters: true })
+      }
+    },
+    [initialProductsSlug, instant]
+  )
+
   const scopedDrawerCategory = useMemo(
     () =>
       buildScopedDrawerCategory({
@@ -155,19 +244,6 @@ export function MobileCategoryBrowserContextual({
       railCategories,
     ]
   )
-
-  const categoryScopeItems = buildCategoryScopeItems({
-    locale,
-    railCategories,
-    currentScopeParent,
-    currentCategorySlug: instant.categorySlug,
-    scopeLabel,
-    railBaseParams,
-    tCategories,
-    onSelectCategory: (slug) => {
-      void instant.setCategorySlug(slug, { clearAttrFilters: true })
-    },
-  })
 
   const quickAttributePills = useMemo(
     () =>
@@ -253,7 +329,12 @@ export function MobileCategoryBrowserContextual({
   return (
     <MobileCategoryBrowserContextualView
       locale={locale}
-      categoryScopeItems={categoryScopeItems}
+      drilldownPath={drilldownPath}
+      drilldownOptions={drilldownOptions}
+      drilldownAllLabel={drilldownAllLabel}
+      onDrillDown={handleDrillDown}
+      onDrillBack={handleDrillBack}
+      onSegmentTap={handleSegmentTap}
       canOpenScopeDrawer={Boolean(categoryDrawer)}
       onScopeMoreClick={handleScopeMoreClick}
       navigationAriaLabel={tCategories("navigationAriaLabel")}

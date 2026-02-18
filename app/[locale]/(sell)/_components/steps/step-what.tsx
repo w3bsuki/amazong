@@ -1,5 +1,6 @@
 import { useTranslations } from "next-intl"
-import { PhotosField, TitleField } from "../fields"
+import { PhotosField } from "../fields/photos-field"
+import { TitleField } from "../fields/title-field"
 import { StepLayout } from "./step-layout"
 
 // ============================================================================

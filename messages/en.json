@@ -409,6 +409,7 @@
                 "actions": {
                     "browseOptions": "Browse options",
                     "filter": "Filter",
+                    "seeAll": "See all",
                     "view": "View",
                     "viewCategory": "Full category",
                     "exploreScope": "Explore",

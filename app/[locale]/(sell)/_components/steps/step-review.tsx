@@ -1,7 +1,5 @@
-"use client"
-
 import { useTranslations } from "next-intl"
-import { ReviewField } from "../fields"
+import { ReviewField } from "../fields/review-field"
 import { useSellFormContext } from "../sell-form-provider"
 import { StepLayout } from "./step-layout"
 

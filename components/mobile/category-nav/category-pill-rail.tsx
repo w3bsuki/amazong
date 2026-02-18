@@ -3,7 +3,7 @@
 import * as React from "react"
 import { Link } from "@/i18n/routing"
 import { cn } from "@/lib/utils"
-import { getMobileQuickPillClass } from "@/components/mobile/chrome/mobile-control-recipes"
+import { getMobileQuickPillClass, getMobilePrimaryTabClass } from "@/components/mobile/chrome/mobile-control-recipes"
 import { useCategoryDrawerOptional } from "./category-drawer-context"
 
 export interface CategoryPillRailItem {
@@ -25,6 +25,8 @@ interface CategoryPillRailProps {
   drawerRootSlug?: string | null
   onMoreClick?: (() => void) | undefined
   testId?: string
+  /** "pill" = rounded pill chips (default). "tab" = underline tab style matching landing page primary rail. */
+  variant?: "pill" | "tab"
 }
 
 function shouldInterceptLinkClick(event: React.MouseEvent<HTMLAnchorElement>): boolean {
@@ -44,8 +46,10 @@ export function CategoryPillRail({
   drawerRootSlug = null,
   onMoreClick,
   testId,
+  variant = "pill",
 }: CategoryPillRailProps) {
   const drawer = useCategoryDrawerOptional()
+  const isTab = variant === "tab"
 
   const handleMoreClick = React.useCallback(() => {
     if (onMoreClick) {
@@ -68,14 +72,34 @@ export function CategoryPillRail({
 
   if (items.length === 0) return null
 
+  const getItemClass = (active: boolean) =>
+    isTab
+      ? getMobilePrimaryTabClass(active)
+      : getMobileQuickPillClass(active, !active ? "hover:bg-hover hover:text-foreground active:bg-active" : undefined)
+
+  const getMoreClass = () =>
+    isTab
+      ? getMobilePrimaryTabClass(false)
+      : getMobileQuickPillClass(false, "hover:bg-hover hover:text-foreground active:bg-active")
+
   return (
     <nav
       aria-label={ariaLabel}
-      className={cn("bg-background px-inset py-1.5", sticky && "sticky z-30", className)}
+      className={cn(
+        isTab
+          ? "border-b border-border-subtle bg-background overflow-x-auto no-scrollbar"
+          : "bg-background px-inset py-1.5",
+        sticky && "sticky z-30",
+        className,
+      )}
       style={sticky ? { top: stickyTop } : undefined}
       {...(testId ? { "data-testid": testId } : {})}
     >
-      <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
+      <div className={cn(
+        isTab
+          ? "flex w-max min-w-full items-stretch"
+          : "flex items-center gap-1.5 overflow-x-auto no-scrollbar",
+      )}>
         {items.map((item) => (
           <Link
             key={item.id}
@@ -89,9 +113,15 @@ export function CategoryPillRail({
               event.preventDefault()
               item.onSelect()
             }}
-            className={getMobileQuickPillClass(Boolean(item.active), !item.active ? "hover:bg-hover hover:text-foreground active:bg-active" : undefined)}
+            className={getItemClass(Boolean(item.active))}
           >
-            <span className="max-w-32 truncate">{item.label}</span>
+            <span className={isTab ? "whitespace-nowrap" : "max-w-32 truncate"}>{item.label}</span>
+            {isTab && item.active && (
+              <span
+                className="absolute inset-x-2 bottom-0 h-0.5 rounded-full bg-foreground"
+                aria-hidden="true"
+              />
+            )}
           </Link>
         ))}
 
@@ -99,10 +129,10 @@ export function CategoryPillRail({
           <button
             type="button"
             onClick={handleMoreClick}
-            className={getMobileQuickPillClass(false, "hover:bg-hover hover:text-foreground active:bg-active")}
+            className={getMoreClass()}
             aria-label={moreLabel}
           >
-            <span className="max-w-32 truncate">{moreLabel}</span>
+            <span className={isTab ? "whitespace-nowrap" : "max-w-32 truncate"}>{moreLabel}</span>
           </button>
         )}
       </div>

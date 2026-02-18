@@ -20,13 +20,66 @@ import {
 import { Button } from "@/components/ui/button"
 import { TriangleAlert as IconAlertTriangle, Check as IconCheck, Package as IconPackage, Pencil as IconPencil, X as IconX } from "lucide-react";
 
-import { InventoryHeader } from "./_components/inventory-header"
-import { formatCurrencyBGN } from "./_lib/format-currency"
-
 function getVariantCount(product: unknown): number {
   if (!product || typeof product !== "object") return 0
   const value = (product as Record<string, unknown>).variant_count
   return typeof value === "number" ? value : 0
+}
+
+function formatCurrencyBGN(value: number): string {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "BGN",
+    maximumFractionDigits: 2,
+  }).format(value)
+}
+
+type InventorySummary = {
+  totalStock: number
+  totalProducts: number
+  lowStockCount: number
+  outOfStockCount: number
+}
+
+function InventoryHeader({ summary }: { summary: InventorySummary }) {
+  const inStockCount = summary.totalProducts - summary.lowStockCount - summary.outOfStockCount
+
+  return (
+    <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+      <div className="space-y-1">
+        <div className="flex items-center gap-3 flex-wrap">
+          <h1 className="text-2xl font-bold tracking-tight">Inventory</h1>
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-muted">
+              <IconPackage className="size-3" />
+              <span className="tabular-nums">{summary.totalStock.toLocaleString()}</span>
+              <span className="opacity-70">total units</span>
+            </span>
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-success/10 text-success">
+              <IconCheck className="size-3" />
+              <span className="tabular-nums">{inStockCount}</span>
+              <span className="opacity-70">in stock</span>
+            </span>
+            {summary.lowStockCount > 0 && (
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-warning/10 text-warning">
+                <IconAlertTriangle className="size-3" />
+                <span className="tabular-nums">{summary.lowStockCount}</span>
+                <span className="opacity-70">low</span>
+              </span>
+            )}
+            {summary.outOfStockCount > 0 && (
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-destructive-subtle text-destructive">
+                <IconX className="size-3" />
+                <span className="tabular-nums">{summary.outOfStockCount}</span>
+                <span className="opacity-70">out</span>
+              </span>
+            )}
+          </div>
+        </div>
+        <p className="text-muted-foreground text-sm">Manage stock levels across {summary.totalProducts} products</p>
+      </div>
+    </div>
+  )
 }
 
 export default async function BusinessInventoryPage() {

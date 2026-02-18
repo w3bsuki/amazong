@@ -11,7 +11,8 @@ import { BoostDialog } from "../../_components/seller/boost-dialog";
 import { useTranslations } from "next-intl";
 
 import { SellFormProvider, useSellForm, useSellFormContext, defaultSellFormValuesV4 } from "./sell-form-provider";
-import { DesktopLayout, MobileLayout } from "./layouts";
+import { DesktopLayout } from "./layouts/desktop-layout";
+import { MobileLayout } from "./layouts/mobile-layout";
 import { PayoutRequiredModal } from "./ui/payout-required-modal";
 import type { Category } from "../_lib/types";
 import type { SellFormDataV4 } from "@/lib/sell/schema";

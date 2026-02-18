@@ -116,8 +116,7 @@ function ChatBottomTabs({
 function MessagesContent({ actions }: { actions: ChatInterfaceServerActions }) {
   const t = useTranslations("Messages")
   const router = useRouter()
-  
-  const [showChat, setShowChat] = useState(false)
+
   const [searchQuery, setSearchQuery] = useState("")
   const [activeFilter, setActiveFilter] = useState<MessageFilter>("all")
   const { currentConversation } = useMessages()
@@ -136,19 +135,13 @@ function MessagesContent({ actions }: { actions: ChatInterfaceServerActions }) {
     router.push(`/chat/${conversationId}`)
   }
 
-  // Handle back from inline chat view (desktop only)
-  const handleBackFromChat = () => {
-    setShowChat(false)
-    router.push("/chat")
-  }
-
   return (
     <div className="flex h-full w-full overflow-hidden bg-background">
       {/* Conversation list - full width on mobile, sidebar on desktop */}
       <div
         className={cn(
           "w-full flex flex-col overflow-hidden lg:w-80 xl:w-96 lg:border-r border-border-subtle",
-          showChat ? "hidden lg:flex" : "flex"
+          "flex"
         )}
       >
         {/* Header with back button, title and search */}
@@ -215,13 +208,12 @@ function MessagesContent({ actions }: { actions: ChatInterfaceServerActions }) {
       {/* Chat area */}
       <div className={cn(
         "flex-1 flex flex-col overflow-hidden",
-        showChat ? "flex" : "hidden lg:flex"
+        "hidden lg:flex"
       )}>
           {currentConversation ? (
             <Suspense fallback={<ChatInterfaceSkeleton />}>
             <ChatInterface
               className="h-full"
-              onBack={handleBackFromChat}
               actions={actions}
             />
             </Suspense>

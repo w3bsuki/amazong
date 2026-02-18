@@ -1,9 +1,7 @@
-"use client"
-
 import { useCallback } from "react"
 import { useTranslations } from "next-intl"
 import type { CategoryPathItem } from "../../_lib/types"
-import { CategoryField } from "../fields"
+import { CategoryField } from "../fields/category-field"
 import { useSellFormContext } from "../sell-form-provider"
 import { StepLayout } from "./step-layout"
 

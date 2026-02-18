@@ -10,17 +10,18 @@ import { cn } from "@/lib/utils";
 
 import { useSellForm, useSellFormContext } from "../sell-form-provider";
 import {
-  PhotosField,
-  CategoryField,
-  ConditionField,
-  TitleField,
-  DescriptionField,
-  BrandField,
-  PricingField,
-  ShippingField,
   AttributesField,
-} from "../fields";
-import { ProgressHeader, ChecklistSidebar } from "../ui";
+} from "../fields/attributes-field";
+import { BrandField } from "../fields/brand-field";
+import { CategoryField } from "../fields/category-field";
+import { ConditionField } from "../fields/condition-field";
+import { DescriptionField } from "../fields/description-field";
+import { PhotosField } from "../fields/photos-field";
+import { PricingField } from "../fields/pricing-field";
+import { ShippingField } from "../fields/shipping-field";
+import { TitleField } from "../fields/title-field";
+import { ChecklistSidebar } from "../ui/checklist-sidebar";
+import { ProgressHeader } from "../ui/progress-header";
 import { AiListingAssistant } from "../ai/ai-listing-assistant";
 
 // ============================================================================

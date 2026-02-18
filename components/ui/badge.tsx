@@ -71,7 +71,7 @@ const badgeVariants = cva(
         "verified-solid": "border-transparent bg-verified-business text-verified-business-foreground",
         "top-rated": "border-transparent bg-top-rated text-top-rated-foreground",
 
-        category: "border-border bg-category-badge-bg text-category-badge-text",
+        category: "border-category-badge-border bg-category-badge-bg text-category-badge-text",
 
         // Backward-compatible aliases
         "condition-pro": "border-border bg-background text-foreground font-semibold tracking-wide",

@@ -2,27 +2,28 @@
 
 import { useState, useMemo, useCallback } from "react"
 import { useSearchParams, type ReadonlyURLSearchParams } from "next/navigation"
-import { SlidersHorizontal, ArrowUpDown, MapPin } from "lucide-react"
+import { SlidersHorizontal, ArrowUpDown, MapPin, ChevronDown } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useTranslations } from "next-intl"
-import { MOBILE_ACTION_CHIP_CLASS, getMobileQuickPillClass } from "@/components/mobile/chrome/mobile-control-recipes"
+import { MOBILE_ACTION_CHIP_CLASS } from "@/components/mobile/chrome/mobile-control-recipes"
 import { SortModal } from "@/components/shared/filters/sort-modal"
 import type { CategoryAttribute } from "@/lib/data/categories"
 import { getCategoryAttributeKey } from "@/lib/filters/category-attribute"
 import { getActiveFilterCount } from "@/lib/filters/active-filter-count"
 
+export interface FilterSortBarQuickPill {
+  sectionId: `attr_${string}`
+  label: string
+  active: boolean
+  selectedCount?: number
+}
+
 // =============================================================================
-// FILTER/SORT BAR — Clean 50/50 Split Design
+// FILTER/SORT BAR — Horizontal Scroll Rail
 //
-// OLX/Vinted/Depop inspired: Two equal tab-style buttons
-// - Left: "Filters" with active count badge → opens FilterHub drawer
-// - Right: "Sort" showing current sort → opens sort bottom sheet
-//
-// Design system compliance (.codex/project/DESIGN.md):
-// - 44px default controls, 48px reserved for primary CTA moments
-// - Semantic tokens only (text-muted-foreground, bg-muted)
-// - Tailwind v4 best practices
-// - lucide-react icons (repo standard)
+// Single row of action chips: Filters | Sort | Location | [Attr1 ▾] | [Attr2 ▾]
+// All chips use MOBILE_ACTION_CHIP_CLASS for uniform visual weight.
+// Horizontally scrollable — no vertical stacking.
 // =============================================================================
 export interface FilterSortBarProps {
   /** Current locale for i18n */
@@ -41,12 +42,16 @@ export interface FilterSortBarProps {
   basePath?: string | undefined
   /** Additional CSS classes */
   className?: string
-  /** Optional compact location button shown above filter/sort row */
+  /** Optional compact location button */
   locationChipLabel?: string | null
   /** Whether location has explicit city/nearby filters applied */
   locationChipActive?: boolean
   /** Called when location chip is clicked */
   onLocationChipClick?: () => void
+  /** Quick attribute pills to render inline in the rail */
+  quickAttributePills?: FilterSortBarQuickPill[]
+  /** Called when an attribute chip is clicked */
+  onAttributeChipClick?: (sectionId: `attr_${string}`) => void
 }
 
 type SortOption = "featured" | "price-asc" | "price-desc" | "rating" | "newest"
@@ -63,6 +68,8 @@ export function FilterSortBar({
   locationChipLabel,
   locationChipActive = false,
   onLocationChipClick,
+  quickAttributePills = [],
+  onAttributeChipClick,
 }: FilterSortBarProps) {
   const t = useTranslations("SearchFilters")
   const searchParamsFromRouter = useSearchParams()
@@ -118,38 +125,23 @@ export function FilterSortBar({
         style={sticky ? { top: stickyTop } : undefined}
         data-testid="mobile-filter-sort-bar"
       >
-        {onLocationChipClick && locationChipLabel && (
-          <button
-            type="button"
-            onClick={onLocationChipClick}
-            className={cn(
-              getMobileQuickPillClass(locationChipActive, "mb-1.5 max-w-full gap-1.5"),
-              !locationChipActive && "hover:bg-hover hover:text-foreground active:bg-active"
-            )}
-            aria-haspopup="dialog"
-            aria-pressed={locationChipActive}
-            data-testid="mobile-location-chip"
-          >
-            <MapPin className="size-4 shrink-0" aria-hidden="true" />
-            <span className="min-w-0 truncate">{locationChipLabel}</span>
-          </button>
-        )}
-
-        {/* 50/50 Tab Bar */}
-        <div className="flex items-stretch gap-1.5" role="group" aria-label={t("filters")}>
-          {/* Filters Tab */}
+        <div
+          className="flex items-center gap-1.5 overflow-x-auto no-scrollbar"
+          role="group"
+          aria-label={t("filters")}
+        >
+          {/* Filters chip */}
           <button
             type="button"
             onClick={onAllFiltersClick}
             className={cn(
               MOBILE_ACTION_CHIP_CLASS,
-              "flex-1 min-h-(--control-default) justify-center gap-1.5 px-3 text-sm font-medium",
               hasActiveFilters && "border-foreground"
             )}
             aria-haspopup="dialog"
             aria-pressed={hasActiveFilters}
           >
-            <SlidersHorizontal className="size-4 shrink-0" aria-hidden="true" />
+            <SlidersHorizontal className="size-3.5 shrink-0" aria-hidden="true" />
             <span>{t("filters")}</span>
             {hasActiveFilters && (
               <span className="inline-flex min-w-5 items-center justify-center rounded-full bg-foreground px-1.5 py-0.5 text-2xs font-semibold text-background tabular-nums">
@@ -158,13 +150,12 @@ export function FilterSortBar({
             )}
           </button>
 
-          {/* Sort Tab */}
+          {/* Sort chip */}
           <button
             type="button"
             onClick={openSort}
             className={cn(
               MOBILE_ACTION_CHIP_CLASS,
-              "flex-1 min-h-(--control-default) min-w-0 justify-center gap-1.5 px-3 text-sm font-medium",
               isSorted && "border-foreground"
             )}
             aria-haspopup="dialog"
@@ -172,11 +163,57 @@ export function FilterSortBar({
             aria-pressed={isSorted}
             aria-label={`${t("sortBy")}: ${sortLabels[currentSort]}`}
           >
-            <ArrowUpDown className="size-4 shrink-0" aria-hidden="true" />
-            <span className="truncate min-w-0">
+            <ArrowUpDown className="size-3.5 shrink-0" aria-hidden="true" />
+            <span className="whitespace-nowrap">
               {isSorted ? sortLabels[currentSort] : t("sortBy")}
             </span>
           </button>
+
+          {/* Location chip */}
+          {onLocationChipClick && locationChipLabel && (
+            <button
+              type="button"
+              onClick={onLocationChipClick}
+              className={cn(
+                MOBILE_ACTION_CHIP_CLASS,
+                locationChipActive && "border-foreground"
+              )}
+              aria-haspopup="dialog"
+              aria-pressed={locationChipActive}
+              data-testid="mobile-location-chip"
+            >
+              <MapPin className="size-3.5 shrink-0" aria-hidden="true" />
+              <span className="whitespace-nowrap max-w-28 truncate">{locationChipLabel}</span>
+            </button>
+          )}
+
+          {/* Inline attribute chips */}
+          {quickAttributePills.length > 0 && onAttributeChipClick && (
+            <>
+              {quickAttributePills.map((pill) => (
+                <button
+                  key={pill.sectionId}
+                  type="button"
+                  onClick={() => onAttributeChipClick(pill.sectionId)}
+                  className={cn(
+                    MOBILE_ACTION_CHIP_CLASS,
+                    pill.active && "border-foreground"
+                  )}
+                  aria-haspopup="dialog"
+                  aria-pressed={pill.active}
+                >
+                  <span className="whitespace-nowrap">{pill.label}</span>
+                  {pill.active && pill.selectedCount && pill.selectedCount > 1 ? (
+                    <span className="inline-flex items-center justify-center rounded-full bg-foreground px-1.5 py-0.5 text-2xs font-semibold text-background tabular-nums">
+                      {pill.selectedCount}
+                    </span>
+                  ) : (
+                    <ChevronDown className="size-3 shrink-0 text-muted-foreground" aria-hidden="true" />
+                  )}
+                </button>
+              ))}
+            </>
+          )}
         </div>
       </div>
 

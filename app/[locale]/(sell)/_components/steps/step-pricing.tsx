@@ -1,7 +1,6 @@
-"use client"
-
 import { useTranslations } from "next-intl"
-import { PricingField, ShippingField } from "../fields"
+import { PricingField } from "../fields/pricing-field"
+import { ShippingField } from "../fields/shipping-field"
 import { useSellForm } from "../sell-form-provider"
 import { StepLayout } from "./step-layout"
 

@@ -1,26 +1,18 @@
 "use client"
 
 import { useState, useEffect, useRef } from "react"
-import { format, isToday, isYesterday, isSameDay } from "date-fns"
 import { useTranslations, useLocale } from "next-intl"
 import { bg, enUS } from "date-fns/locale"
 import { cn } from "@/lib/utils"
-import { UserAvatar } from "@/components/shared/user-avatar"
-import { useMessages, type Message } from "@/components/providers/message-context"
+import { useMessages } from "@/components/providers/message-context"
 import { createClient } from "@/lib/supabase/client"
-import { Skeleton } from "@/components/ui/skeleton"
-import { Archive, ArrowLeft, MessageCircle as ChatCircle, Check, CheckCheck as Checks, LoaderCircle as CircleNotch, Flag, Heart, Image as ImageIcon, Info, Package, Send as PaperPlaneTilt, Phone, Ban as ProhibitInset, Video as VideoCamera, X } from "lucide-react";
-
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+import { MessageCircle as ChatCircle } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
-import { Link } from "@/i18n/routing"
-import Image from "next/image"
+
+import { ChatInterfaceHeader } from "./chat-interface-header"
+import { ChatInterfaceInput } from "./chat-interface-input"
+import { ChatMessagesPane } from "./chat-interface-messages"
+import { useChatInterfaceActions } from "./use-chat-interface-actions"
 
 export type ChatInterfaceServerActions = {
   blockUser: (
@@ -71,9 +63,6 @@ export function ChatInterface({
   const { toast } = useToast()
   const [inputValue, setInputValue] = useState("")
   const [isSending, setIsSending] = useState(false)
-  const [isUploadingImage, setIsUploadingImage] = useState(false)
-  const [isBlocking, setIsBlocking] = useState(false)
-  const [isReporting, setIsReporting] = useState(false)
   const [currentUserId, setCurrentUserId] = useState<string | null>(null)
 
   // Get current user
@@ -132,127 +121,24 @@ export function ChatInterface({
     }
   }
 
-  // Handle image upload
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (!file) return
-
-    // Validate file
-    if (!file.type.startsWith("image/")) {
-      console.error("File must be an image")
-      return
-    }
-
-    if (file.size > 5 * 1024 * 1024) {
-      console.error("Image too large (max 5MB)")
-      return
-    }
-
-    setIsUploadingImage(true)
-    try {
-      const formData = new FormData()
-      formData.append("file", file)
-
-      const response = await fetch("/api/upload-chat-image", {
-        method: "POST",
-        body: formData,
-      })
-
-      if (!response.ok) {
-        const payload: unknown = await response.json()
-        const uploadError =
-          typeof payload === "object" && payload && "error" in payload
-            ? String((payload as { error?: unknown }).error ?? "Upload failed")
-            : "Upload failed"
-        throw new Error(uploadError)
-      }
-
-      const payload: unknown = await response.json()
-      const imageUrl =
-        typeof payload === "object" && payload && "url" in payload
-          ? (payload as { url?: unknown }).url
-          : undefined
-      if (typeof imageUrl !== "string" || imageUrl.length === 0) {
-        throw new Error("Upload response missing URL")
-      }
-
-      // Send message with image attachment
-      await sendMessage("", imageUrl)
-    } catch (err) {
-      console.error("Error uploading image:", err)
-    } finally {
-      setIsUploadingImage(false)
-      // Reset file input
-      if (fileInputRef.current) {
-        fileInputRef.current.value = ""
-      }
-    }
-  }
-
-  // Handle blocking user
-  const handleBlockUser = async () => {
-    if (!currentConversation) return
-
-    // Determine who to block (the other party)
-    const userToBlock =
-      currentUserId === currentConversation.buyer_id
-        ? currentConversation.seller_id
-        : currentConversation.buyer_id
-
-    setIsBlocking(true)
-    try {
-      const result = await actions.blockUser(userToBlock)
-      if (result.success) {
-        toast({
-          title: t("toasts.userBlocked.title"),
-          description: t("toasts.userBlocked.description"),
-        })
-        // Close the conversation
-        await closeConversation(currentConversation.id)
-      } else {
-        throw new Error(result.error || "Failed to block user")
-      }
-    } catch (err) {
-      console.error("Error blocking user:", err)
-      toast({
-        title: tCommon("error"),
-        description: t("toasts.blockUserFailed.description"),
-        variant: "destructive",
-      })
-    } finally {
-      setIsBlocking(false)
-    }
-  }
-
-  // Handle reporting conversation
-  const handleReportConversation = async () => {
-    if (!currentConversation) return
-
-    setIsReporting(true)
-    try {
-      const result = await actions.reportConversation(
-        currentConversation.id,
-        "inappropriate"
-      )
-      if (result.success) {
-        toast({
-          title: t("toasts.reportSubmitted.title"),
-          description: t("toasts.reportSubmitted.description"),
-        })
-      } else {
-        throw new Error(result.error || "Failed to report")
-      }
-    } catch (err) {
-      console.error("Error reporting conversation:", err)
-      toast({
-        title: tCommon("error"),
-        description: t("toasts.reportConversationFailed.description"),
-        variant: "destructive",
-      })
-    } finally {
-      setIsReporting(false)
-    }
-  }
+  const {
+    isUploadingImage,
+    isBlocking,
+    isReporting,
+    handleImageUpload,
+    handleBlockUser,
+    handleReportConversation,
+  } = useChatInterfaceActions({
+    actions,
+    currentConversation,
+    currentUserId,
+    closeConversation,
+    sendMessage,
+    fileInputRef,
+    toast,
+    t,
+    tCommon,
+  })
 
   // No conversation selected state - Instagram style
   if (!currentConversation) {
@@ -306,423 +192,44 @@ export function ChatInterface({
       ? `/${currentConversation.seller_profile.username}/${currentConversation.product.id}`
       : "#"
 
-  // Format date separator
-  const formatDateSeparator = (date: Date) => {
-    if (isToday(date)) return tFreshness("today")
-    if (isYesterday(date)) return tFreshness("yesterday")
-    return format(date, "d MMM yyyy", { locale: dateLocale })
-  }
-
-  // Group messages by date and add separators
-  const messagesWithSeparators: Array<
-    { type: "separator"; date: Date } | { type: "message"; message: Message }
-  > = []
-  let lastDate: Date | null = null
-
-  messages.forEach((message) => {
-    const msgDate = new Date(message.created_at)
-    if (!lastDate || !isSameDay(lastDate, msgDate)) {
-      messagesWithSeparators.push({ type: "separator", date: msgDate })
-      lastDate = msgDate
-    }
-    messagesWithSeparators.push({ type: "message", message })
-  })
-
   return (
     <div className={cn("flex h-full flex-col bg-background overflow-hidden", className)}>
-      {/* Header - Compact mobile style with safe area */}
       {showHeader && (
-        <div className="shrink-0 border-b border-border px-2 py-2 pt-safe-max-xs bg-background">
-          <div className="flex items-center gap-2">
-            {/* Back button (mobile) */}
-            {onBack && (
-              <button
-                type="button"
-                onClick={onBack}
-                aria-label={t("back")}
-                className="flex items-center justify-center size-9 rounded-full hover:bg-hover active:bg-active transition-colors lg:hidden"
-              >
-                <ArrowLeft size={22} className="text-foreground" />
-              </button>
-            )}
-
-            {/* Avatar - smaller on mobile */}
-            <Link href={`/seller/${currentConversation.seller_id}`} className="shrink-0">
-              <UserAvatar
-                name={displayName}
-                avatarUrl={avatarUrl ?? null}
-                className="size-10"
-                fallbackClassName="bg-primary text-primary-foreground text-sm font-semibold"
-              />
-            </Link>
-
-            {/* Name and status - tighter */}
-            <div className="flex-1 min-w-0">
-              <h2 className="font-semibold text-sm text-foreground truncate leading-tight">
-                {displayName}
-              </h2>
-              {currentConversation.product ? (
-                <Link
-                  href={productHref}
-                  className="text-xs text-muted-foreground hover:text-foreground transition-colors truncate block leading-tight"
-                >
-                  {currentConversation.product.title}
-                </Link>
-              ) : (
-                <p className="text-xs text-muted-foreground leading-tight">
-                  {isClosed ? t("closed") : t("active")}
-                </p>
-              )}
-            </div>
-
-            {/* Action buttons - compact */}
-            <div className="flex items-center">
-              <button
-                type="button"
-                aria-label="Voice call"
-                className="flex items-center justify-center size-9 rounded-full hover:bg-muted transition-colors"
-              >
-                <Phone size={20} className="text-foreground" />
-              </button>
-              <button
-                type="button"
-                aria-label="Video call"
-                className="flex items-center justify-center size-9 rounded-full hover:bg-muted transition-colors"
-              >
-                <VideoCamera size={20} className="text-foreground" />
-              </button>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <button
-                    type="button"
-                    aria-label="More actions"
-                    className="flex items-center justify-center size-9 rounded-full hover:bg-muted transition-colors"
-                  >
-                    <Info size={22} className="text-foreground" />
-                  </button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-48">
-                  {!isClosed && (
-                    <DropdownMenuItem onClick={() => closeConversation(currentConversation.id)}>
-                      <X size={16} className="mr-2" />
-                      {t("closeConversation")}
-                    </DropdownMenuItem>
-                  )}
-                  <DropdownMenuItem>
-                    <Archive size={16} className="mr-2" />
-                    {t("archiveConversation")}
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={handleReportConversation} disabled={isReporting}>
-                    <Flag size={16} className="mr-2" />
-                    {isReporting ? t("reporting") : t("reportConversation")}
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onClick={handleBlockUser}
-                    disabled={isBlocking}
-                    className="text-destructive focus:text-destructive focus:bg-destructive-subtle"
-                  >
-                    <ProhibitInset size={16} className="mr-2" />
-                    {isBlocking ? t("blocking") : t("blockUser")}
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
-          </div>
-        </div>
+        <ChatInterfaceHeader
+          t={t}
+          displayName={displayName}
+          avatarUrl={avatarUrl ?? null}
+          sellerId={currentConversation.seller_id}
+          productHref={productHref}
+          productTitle={currentConversation.product?.title}
+          isClosed={isClosed}
+          onBack={onBack}
+          onCloseConversation={() => closeConversation(currentConversation.id)}
+          onReportConversation={handleReportConversation}
+          onBlockUser={handleBlockUser}
+          isReporting={isReporting}
+          isBlocking={isBlocking}
+        />
       )}
 
-      {/* Messages area - proper mobile padding */}
       <div
         ref={messagesContainerRef}
         className="flex-1 min-h-0 overflow-y-auto overscroll-contain px-3 py-3"
       >
-        {isLoadingMessages ? (
-          <div className="space-y-4">
-            {[1, 2, 3, 4].map((i) => (
-              <div
-                key={i}
-                className={cn("flex items-end gap-2", i % 2 === 0 && "justify-end")}
-              >
-                {i % 2 !== 0 && <Skeleton className="size-7 rounded-full shrink-0" />}
-                <Skeleton
-                  className={cn(
-                    "h-12 rounded-md",
-                    i % 2 === 0 ? "w-40 rounded-br-md" : "w-48 rounded-bl-md"
-                  )}
-                />
-              </div>
-            ))}
-          </div>
-        ) : messages.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-full text-center">
-            {/* Profile card for new conversations */}
-            <div className="flex flex-col items-center gap-3 mb-6">
-              <UserAvatar
-                name={displayName}
-                avatarUrl={avatarUrl ?? null}
-                className="size-24"
-                fallbackClassName="bg-primary text-primary-foreground text-2xl font-bold"
-              />
-              <div>
-                <h3 className="text-lg font-semibold text-foreground">{displayName}</h3>
-                {currentConversation.product && (
-                  <p className="text-sm text-muted-foreground">
-                    {currentConversation.product.title}
-                  </p>
-                )}
-              </div>
-            </div>
-            <p className="text-sm text-muted-foreground max-w-xs">
-              {t("startConversationDisclaimer")}
-            </p>
-          </div>
-        ) : (
-          <div className="space-y-1">
-            {messagesWithSeparators.map((item, index) => {
-              if (item.type === "separator") {
-                // Check if next item is an order notification - if so, skip separator (it renders below the banner)
-                const nextItem = messagesWithSeparators[index + 1]
-                if (nextItem?.type === "message") {
-                  const isNextOrderNotification =
-                    nextItem.message.message_type === "system" &&
-                    (nextItem.message.content.includes("New Order") ||
-                      nextItem.message.content.includes("Нова поръчка"))
-                  if (isNextOrderNotification) {
-                    return null // Separator will be rendered below the order banner
-                  }
-                }
-
-                return (
-                  <div key={`sep-${index}`} className="flex items-center justify-center py-4">
-                    <span className="text-xs text-muted-foreground bg-muted px-3 py-1 rounded-full">
-                      {formatDateSeparator(item.date)}
-                    </span>
-                  </div>
-                )
-              }
-
-              const message = item.message
-              const isOwn = message.sender_id === currentUserId
-              const isSystemMessage = message.message_type === "system"
-
-              // Check if this is the last message in a group from same sender
-              const nextItem = messagesWithSeparators[index + 1]
-              const isLastInGroup =
-                !nextItem ||
-                nextItem.type === "separator" ||
-                nextItem.message.sender_id !== message.sender_id
-
-              // Check previous item for avatar display
-              const prevItem = messagesWithSeparators[index - 1]
-
-              // System messages render as notification banners
-              if (isSystemMessage) {
-                // Parse order notification data from message content
-                const isOrderNotification =
-                  message.content.includes("New Order") || message.content.includes("Нова поръчка")
-                const productImage = currentConversation?.product?.images?.[0]
-
-                // Extract order details from message - Price: $20.00 format
-                const priceMatch = message.content.match(
-                  /Price:\s*\$?([\d,.]+)|Цена:\s*\$?([\d,.]+)/
-                )
-                const price = priceMatch ? priceMatch[1] || priceMatch[2] : null
-                const quantityMatch = message.content.match(
-                  /Quantity:\s*(\d+)|Количество:\s*(\d+)/
-                )
-                const quantity = quantityMatch ? quantityMatch[1] || quantityMatch[2] : "1"
-
-                // Check if previous item was a date separator (to render it below the banner)
-                const hadDateSeparator = prevItem?.type === "separator"
-                const separatorDate = hadDateSeparator ? prevItem.date : null
-
-                // Order notification banner
-                if (isOrderNotification && currentConversation?.product) {
-                  return (
-                    <div key={message.id} className="mt-2">
-                      {/* Minimal order notification card */}
-                      <div className="flex items-stretch gap-0 rounded-lg border border-border bg-card overflow-hidden">
-                        {/* Product image - clickable */}
-                        {productImage ? (
-                          <Link href={productHref} className="shrink-0">
-                            <div className="relative w-16 h-full min-h-16 bg-muted">
-                              <Image
-                                src={productImage}
-                                alt={currentConversation.product.title}
-                                fill
-                                className="object-cover"
-                              />
-                            </div>
-                          </Link>
-                        ) : (
-                          <div className="flex items-center justify-center w-16 bg-muted shrink-0">
-                            <Package size={24} className="text-muted-foreground" />
-                          </div>
-                        )}
-
-                        {/* Order info */}
-                        <div className="flex-1 min-w-0 px-3 py-2">
-                          {/* Header row */}
-                          <div className="flex items-center gap-1.5">
-                            <Package size={12} className="text-primary shrink-0" />
-                            <span className="text-xs font-medium text-primary">
-                              {t("orderLabel")}
-                            </span>
-                            <span className="text-2xs text-muted-foreground ml-auto">
-                              {format(new Date(message.created_at), "MMM d, HH:mm", { locale: dateLocale })}
-                            </span>
-                          </div>
-
-                          {/* Product title */}
-                          <p className="text-sm font-medium text-foreground truncate mt-0.5">
-                            {currentConversation.product.title}
-                          </p>
-
-                          {/* Price & quantity row */}
-                          <div className="flex items-center gap-2 mt-1">
-                            {price && (
-                              <span className="text-xs font-medium text-foreground">${price}</span>
-                            )}
-                            {quantity !== "1" && (
-                              <span className="text-xs text-muted-foreground">× {quantity}</span>
-                            )}
-                            <span className="inline-flex items-center gap-1 text-2xs text-warning ml-auto">
-                              <span className="size-1.5 rounded-full bg-warning animate-pulse motion-reduce:animate-none" />
-                              {t("orderStatusPending")}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Date separator BELOW the order banner */}
-                      {separatorDate && (
-                        <div className="flex items-center justify-center py-3">
-                          <span className="text-xs text-muted-foreground bg-muted px-3 py-1 rounded-full">
-                            {formatDateSeparator(separatorDate)}
-                          </span>
-                        </div>
-                      )}
-                    </div>
-                  )
-                }
-
-                // Generic system message (status updates, etc.)
-                return (
-                  <div key={message.id} className="flex justify-center my-3">
-                    <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-surface-subtle border border-border-subtle">
-                      <span className="text-xs text-muted-foreground">
-                        {message.content.replaceAll('**', "").replaceAll('_', "").split("\n")[0]}
-                      </span>
-                      <span className="text-2xs text-muted-foreground">
-                        {format(new Date(message.created_at), "HH:mm")}
-                      </span>
-                    </div>
-                  </div>
-                )
-              }
-
-              return (
-                <div
-                  key={message.id}
-                  className={cn(
-                    "flex items-end gap-2",
-                    isOwn && "justify-end",
-                    !isLastInGroup && "mb-0.5"
-                  )}
-                >
-                  {/* Avatar - only show for received messages and last in group */}
-                  {!isOwn && (
-                    <div className="shrink-0 w-7">
-                      {isLastInGroup && (
-                        <UserAvatar
-                          name={displayName}
-                          avatarUrl={avatarUrl ?? null}
-                          className="size-7"
-                          fallbackClassName="bg-primary text-primary-foreground text-2xs font-semibold"
-                        />
-                      )}
-                    </div>
-                  )}
-
-                  {/* Message bubble */}
-                  <div
-                    className={cn(
-                      "max-w-(--chat-message-max-w) relative group",
-                      message.message_type === "image" ? "p-1" : "px-3 py-1.5",
-                      isOwn
-                        ? "bg-primary text-primary-foreground rounded-2xl rounded-br-md"
-                        : "bg-muted rounded-2xl rounded-bl-md"
-                    )}
-                  >
-                    {/* Message content - image or text */}
-                    {message.message_type === "image" && message.attachment_url ? (
-                      <a
-                        href={message.attachment_url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="block"
-                      >
-                        <Image
-                          src={message.attachment_url}
-                          alt="Shared image"
-                          width={240}
-                          height={240}
-                          className="rounded-xl max-w-60 w-auto h-auto object-cover cursor-pointer hover:opacity-95 transition-opacity"
-                          unoptimized
-                        />
-                      </a>
-                    ) : (
-                      <p className="text-sm leading-snug whitespace-pre-wrap break-words">
-                        {message.content}
-                      </p>
-                    )}
-
-                    {/* Time - show on last message in group */}
-                    {isLastInGroup && (
-                      <div
-                        className={cn(
-                          "flex items-center gap-1 mt-1",
-                          isOwn ? "justify-end" : "justify-start"
-                        )}
-                      >
-                        <span
-                          className={cn(
-                            "text-2xs",
-                            isOwn ? "text-foreground" : "text-muted-foreground"
-                          )}
-                        >
-                          {format(new Date(message.created_at), "HH:mm")}
-                        </span>
-                        {isOwn &&
-                          (message.is_read ? (
-                            <Checks size={12} className="text-foreground" />
-                          ) : (
-                            <Check size={12} className="text-foreground" />
-                          ))}
-                      </div>
-                    )}
-
-                    {/* Like reaction button - appears on hover */}
-                    <span
-                      aria-hidden="true"
-                      className={cn(
-                        "absolute top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity",
-                        "flex items-center justify-center size-7 rounded-full bg-background border border-border shadow-sm hover:bg-accent",
-                        isOwn ? "-left-9" : "-right-9"
-                      )}
-                    >
-                      <Heart size={14} className="text-muted-foreground" />
-                    </span>
-                  </div>
-                </div>
-              )
-            })}
-          </div>
-        )}
+        <ChatMessagesPane
+          messages={messages}
+          isLoadingMessages={isLoadingMessages}
+          currentUserId={currentUserId}
+          displayName={displayName}
+          avatarUrl={avatarUrl ?? null}
+          currentConversation={currentConversation}
+          productHref={productHref}
+          t={t}
+          tFreshness={tFreshness}
+          dateLocale={dateLocale}
+        />
       </div>
 
-      {/* Typing indicator - fixed height to prevent layout shift */}
       <div className="h-6 px-4 flex items-center">
         {isOtherUserTyping && !isClosed && (
           <div className="flex items-center gap-2 text-xs text-muted-foreground">
@@ -747,76 +254,20 @@ export function ChatInterface({
         )}
       </div>
 
-      {/* Input area - with safe area for mobile */}
-      <div className="shrink-0 border-t border-border px-2 py-2 bg-background pb-safe-max-xs">
-        {isClosed ? (
-          <div className="flex items-center justify-center py-2 px-4 rounded-full bg-muted">
-            <p className="text-sm text-muted-foreground">{t("conversationClosed")}</p>
-          </div>
-        ) : (
-          <div className="flex items-end gap-1.5">
-            {/* Hidden file input for image upload */}
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/*"
-              onChange={handleImageUpload}
-              className="hidden"
-            />
-
-            {/* Image upload button */}
-            <button
-              type="button"
-              onClick={() => fileInputRef.current?.click()}
-              disabled={isUploadingImage || isSending}
-              aria-label={t("attachImage")}
-              className="flex items-center justify-center size-10 rounded-full hover:bg-hover active:bg-active transition-colors shrink-0 disabled:opacity-50"
-            >
-              {isUploadingImage ? (
-                <CircleNotch size={22} className="text-primary animate-spin motion-reduce:animate-none" />
-              ) : (
-                <ImageIcon size={22} className="text-primary" />
-              )}
-            </button>
-
-            {/* Input container - using ring pattern from shadcn */}
-            <div className="flex-1 flex items-end gap-2 px-3 py-2 rounded-full bg-surface-subtle ring-1 ring-border focus-within:ring-2 focus-within:ring-ring transition-shadow min-h-10">
-              <textarea
-                ref={inputRef}
-                value={inputValue}
-                onChange={handleInputChange}
-                onKeyDown={handleKeyDown}
-                placeholder={t("typeMessage")}
-                disabled={isSending || isUploadingImage}
-                rows={1}
-                className="no-focus-ring flex-1 bg-transparent text-base placeholder:text-muted-foreground resize-none outline-none min-h-5 max-h-24 py-0 leading-5"
-              />
-            </div>
-
-            {/* Send button */}
-            <button
-              type="button"
-              onClick={handleSend}
-              disabled={isSending || isUploadingImage || !inputValue.trim()}
-              aria-label={t("send")}
-              className={cn(
-                "flex items-center justify-center size-10 rounded-full transition-colors shrink-0 disabled:opacity-50",
-                inputValue.trim()
-                  ? "bg-primary text-primary-foreground hover:bg-interactive-hover"
-                  : "bg-muted text-muted-foreground"
-              )}
-            >
-              {isSending ? (
-                <CircleNotch size={18} className="animate-spin motion-reduce:animate-none" />
-              ) : (
-                <PaperPlaneTilt size={18} />
-              )}
-            </button>
-          </div>
-        )}
-
-        {error && <p className="text-xs text-destructive mt-2 text-center">{error}</p>}
-      </div>
+      <ChatInterfaceInput
+        t={t}
+        isClosed={isClosed}
+        error={error}
+        inputRef={inputRef}
+        fileInputRef={fileInputRef}
+        inputValue={inputValue}
+        onInputChange={handleInputChange}
+        onKeyDown={handleKeyDown}
+        onSend={handleSend}
+        onImageUpload={handleImageUpload}
+        isSending={isSending}
+        isUploadingImage={isUploadingImage}
+      />
     </div>
   )
 }

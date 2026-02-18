@@ -205,6 +205,7 @@ select:-webkit-autofill {
   /* App surfaces */
   --surface-page: var(--background);
   --surface-subtle: var(--muted);
+  --surface-section-header: var(--muted);
   --surface-card: var(--card);
   --surface-elevated: var(--background);
   --surface-gallery: 0.10 0 0;
@@ -343,6 +344,7 @@ select:-webkit-autofill {
 
   --surface-page: var(--background);
   --surface-subtle: var(--muted);
+  --surface-section-header: var(--muted);
   --surface-card: var(--card);
   --surface-elevated: var(--card);
   --surface-gallery: 0.08 0 0;
@@ -507,6 +509,7 @@ select:-webkit-autofill {
   --color-surface-overlay: oklch(var(--surface-overlay));
   --color-surface-floating: oklch(var(--surface-floating));
   --color-surface-glass: oklch(var(--surface-glass));
+  --color-surface-section-header: oklch(var(--surface-section-header));
   --color-home-promoted: oklch(var(--home-promoted-surface));
   --color-home-promoted-border: oklch(var(--home-promoted-border));
   --color-home-promoted-text: oklch(var(--home-promoted-text));
@@ -742,11 +745,11 @@ select:-webkit-autofill {
   --color-verified: var(--color-verified-personal);
   --color-shipping-free: var(--color-muted-foreground);
 
-  /* === COLORS: Category Badge === */
-  --color-category-badge-bg: var(--color-category-business-bg);
-  --color-category-badge-border: var(--color-category-business-ring);
-  --color-category-badge-text: var(--color-category-business-fg);
-  --color-category-badge-icon: var(--color-category-business-fg);
+  /* === COLORS: Category Badge (neutral — calm context, not emphasis) === */
+  --color-category-badge-bg: var(--color-surface-subtle);
+  --color-category-badge-border: var(--color-border-subtle);
+  --color-category-badge-text: var(--color-muted-foreground);
+  --color-category-badge-icon: var(--color-muted-foreground);
 
   /* === COLORS: Badge System - Professional E-commerce === */
   /* 
