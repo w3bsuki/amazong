@@ -1,8 +1,14 @@
-# opus.md — Copilot (Opus) Working Memory
+# opus.md — ARCHIVED
 
-> This file is the persistent context between me (GitHub Copilot / Claude Opus) and the human developer.
-> Load this file at the start of every new chat to resume where we left off.
-> It tracks: what we've discussed, what we've built, what's in progress, and what's next.
+> **This file is superseded by `claude.md` + `claude/log.md`.**
+> - `claude.md` — current state and role (read this at session start)
+> - `claude/log.md` — session history archive
+>
+> This file is kept for historical reference only. Do not update it.
+
+---
+
+# Original Content (archived 2026-02-17)
 
 ---
 
@@ -105,22 +111,108 @@ For full project identity → read `AGENTS.md`.
 **Files rewritten:** `AGENTS.md`, `TASKS.md`
 **Files updated:** `.github/copilot-instructions.md`, `opus.md`
 
+### Session 4 — 2026-02-17: Refactor Orchestration System v2
+
+**Problem:** Codex CLI sessions had no continuity. REFACTOR.md was 810 lines — too long for any agent to consume efficiently. No "where are we now" file. Agents didn't know what was done or what to do next. The refactor/ folder had good content but terrible navigation.
+
+**Research done:**
+1. Fetched Codex CLI docs — key finding: reads AGENTS.md from repo root + CWD, merges top-down. System prompt looks for verification commands.
+2. Fetched Claude Code memory docs — hierarchical CLAUDE.md system, auto-memory in ~/.claude/projects/, path-specific rules.
+3. Fetched GitHub Copilot custom instructions docs — supports AGENTS.md, .github/copilot-instructions.md, path-specific .instructions.md.
+
+**What we built: The 3-file context model**
+
+An AI agent needs exactly 3 things per session:
+1. **Identity** (~165 lines) — What is this project? Rules? → Root `AGENTS.md` (auto-loaded)
+2. **Task** (~40 lines) — What should I do right now? → `refactor/CURRENT.md` (the session bookmark)
+3. **Instructions** (~80 lines) — How exactly? → `refactor/phase3/agent1.md` (task-specific)
+
+Total context: ~285 lines. Previous system: ~810 lines of REFACTOR.md alone.
+
+**Key innovation: CURRENT.md**
+A single file that changes after every session. It tells any new agent:
+- Current phase and status
+- Current metrics (table)
+- Task queue with checkboxes (pick first unchecked)
+- Session protocol (step by step)
+- End-of-session checklist
+
+This is the "bookmark" — the bridge between sessions.
+
+**Files created:**
+- `refactor/CURRENT.md` — session continuity hub
+- `refactor/log.md` — session history (extracted from REFACTOR.md)
+
+**Files rewritten:**
+- `AGENTS.md` — added "Active Work — Refactor" section with clear routing to CURRENT.md, added refactor/ to project map, tightened deep context table
+- `refactor/AGENTS.md` — slimmed from verbose protocol to concise pointer doc
+- `refactor/tasks.md` — updated to current state, added metrics-over-time table, fixed stale statuses
+
+**Files updated:**
+- `TASKS.md` — fixed stale refactor reference ("Phase 2 is next" → "Phase 3 is next")
+- `.github/copilot-instructions.md` — point to CURRENT.md instead of REFACTOR.md
+- `opus.md` — this entry
+
+### Session 5 — 2026-02-17: AGENTS.md v3 — Kill the Verification Spam
+
+**Problem:** Codex was spamming `pnpm -s typecheck`, `pnpm -s lint`, `pnpm -s styles:gate` after every single file edit, wasting most of its context window on running commands instead of understanding code. Root cause: verification commands appeared in **9 different places** across the files Codex loads per session, and `# Always — after every file change:` in AGENTS.md literally instructed it to run the full gate on every edit.
+
+**Research done:**
+1. Fetched Codex CLI README — confirmed system prompt behavior: "Find and run any programmatic checks in AGENTS.md"
+2. Read OpenAI's own Codex repo AGENTS.md — their format prioritizes conventions over verification
+3. Audited all 9 places verification commands appeared (AGENTS.md, shared-rules.md, CURRENT.md, 6 task files)
+
+**Root cause analysis:**
+- AGENTS.md §2 "Verify (Run After Every Change)" with comment `# Always — after every file change:` → Codex treated this as "run full suite after every file edit"
+- shared-rules.md §1 "Verification (After Every Change)" repeated same commands in tiered form
+- CURRENT.md "Session End Checklist" repeated same commands again
+- Every task file had its own "## Verification" with per-change typecheck commands
+- Total duplication: 9 code blocks telling Codex to verify → agent spent more time verifying than coding
+
+**What we did:**
+1. **Rewrote AGENTS.md from scratch** (~85 lines, down from ~165):
+   - "How to Work" section leads with cognitive instructions (read before writing, grep before deleting, think in batches)
+   - Context loading table as first-class navigation
+   - Compact codebase map (dual-column layout)
+   - Stack table trimmed to essentials
+   - Constraints section — only damage-prevention rules
+   - Conventions — 6 compact lines
+   - Active Work — 1-line pointer to CURRENT.md
+   - **Verify section at the END** with exactly ONE code block: "Run once when your task is complete"
+2. **Cleaned shared-rules.md**: Removed entire "Verification (After Every Change)" section + redundant "Project Context" footer
+3. **Cleaned CURRENT.md**: Removed "Session End Checklist" code block, simplified session protocol to reference AGENTS.md
+4. **Updated all 6 task files** (phase3/agent1-3, phase4/agent1-3): Replaced each task's ## Verification section with "See root `AGENTS.md` § Verify"
+5. **Updated .github/copilot-instructions.md**: Fixed section reference
+
+**Key design changes:**
+- Verification commands now exist in EXACTLY ONE PLACE: AGENTS.md § Verify (last section)
+- "After every file change" → "Run once when your task is complete"
+- "Think in batches" instruction explicitly tells Codex NOT to verify after every edit
+- Cognitive instructions ("read before writing") positioned before mechanical ones
+- ~48% reduction in total instruction text loaded per refactor session (405 lines → ~210 lines)
+
+**Files changed:** `AGENTS.md`, `refactor/shared-rules.md`, `refactor/CURRENT.md`, 6 task files, `.github/copilot-instructions.md`
+
 ---
 
 ## Current State of Documentation
 
 | File | Purpose | Status |
 |------|---------|--------|
-| `AGENTS.md` | Project identity for all AI agents | ✅ Rewritten (Session 3) |
-| `ARCHITECTURE.md` | Deep technical reference | ✅ Trimmed (Session 1) |
+| `AGENTS.md` | Project identity for all AI agents | ✅ Rewritten (Session 4) |
+| `refactor/CURRENT.md` | **Session continuity** — what to do now | ✅ New (Session 4) |
+| `refactor/log.md` | Session history (append-only) | ✅ New (Session 4) |
+| `refactor/shared-rules.md` | Mandatory refactor rules | ✅ Current |
+| `refactor/tasks.md` | Progress tracker with metrics | ✅ Updated (Session 4) |
+| `refactor/phase3/*.md` | Phase 3 task files | ✅ Ready |
+| `refactor/phase4/*.md` | Phase 4 task files | ✅ Ready |
+| `REFACTOR.md` | Full refactor knowledge base (reference) | ✅ Reference-only |
+| `ARCHITECTURE.md` | Deep technical reference | ✅ Current |
 | `docs/DESIGN.md` | UI/frontend contract | ✅ Current |
 | `docs/DOMAINS.md` | Domain contracts (auth/DB/payments) | ✅ Current |
 | `docs/DECISIONS.md` | Append-only decision log | ✅ 12 decisions |
 | `docs/features/*.md` | Per-feature session memory | ✅ 7 docs + template |
-| `REFACTOR.md` | Codex CLI refactor orchestration | ✅ Fresh (Session 2) |
-| `TASKS.md` | Active task queue | ✅ Trimmed to active-only (Session 3) |
-| `.codex/CLEANUP-DECISIONS.md` | Cleanup decision log | ✅ Active |
-| `REQUIREMENTS.md` | Feature list (119 features) | ✅ Reference-only |
+| `TASKS.md` | Active task queue | ✅ Updated (Session 4) |
 | `opus.md` | This file — our working memory | ✅ Active |
 
 ---
@@ -130,14 +222,15 @@ For full project identity → read `AGENTS.md`.
 ### Docs
 - [ ] More `docs/features/` docs needed: messaging, reviews, wishlist, orders, profiles, admin, onboarding, categories, cart, boost system
 
-### Codebase (for Codex to fix via REFACTOR.md)
-- [ ] 200+ "use client" files — many unnecessary
-- [ ] Two icon libraries (`@phosphor-icons/react` + `lucide-react`)
-- [ ] Heavy deps not in `optimizePackageImports`
-- [ ] Missing `loading.tsx` on some routes
-- [ ] Caching underutilized (`"use cache"` barely used)
-- [ ] `demo/` routes still in production build
-- [ ] Some files 400+ lines, need splitting
+### Codebase (tracked in refactor/CURRENT.md)
+- [x] ~~200+ "use client" files~~ — reduced from 357 → 215 (Phases 1-2)
+- [x] ~~Two icon libraries~~ — consolidated to lucide-react only (Session 3)
+- [x] ~~Missing `loading.tsx`~~ — all routes now have loading states (Phase 1)
+- [x] ~~Demo routes~~ — removed (Session 3)
+- [ ] Caching underutilized (`"use cache"` barely used) → Phase 3, Agent 1
+- [ ] Some files 400+ lines, need splitting → Phase 4, Agent 3
+- [ ] 53 pages missing metadata → Phase 4, Agent 1
+- [ ] Unused dependencies → Phase 3, Agent 3
 
 ### Product (human decisions needed)
 - [ ] LAUNCH-001 through LAUNCH-004 and LAUNCH-007 still open in TASKS.md
@@ -179,7 +272,7 @@ pnpm -s knip
 pnpm -s dupes
 
 # Start Codex refactor session
-# Tell Codex: "Read REFACTOR.md completely. Read AGENTS.md. Execute Phase 0, then Phase 1."
+# Tell Codex: "Read refactor/CURRENT.md. Execute the next unchecked task."
 ```
 
 ---

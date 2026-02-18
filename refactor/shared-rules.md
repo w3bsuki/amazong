@@ -1,21 +1,6 @@
 # Shared Rules — All Agents
 
-> Read this BEFORE your agent task. These rules are non-negotiable.
-
----
-
-## Verification (After Every Change)
-
-```bash
-# After modifying a file:
-pnpm -s typecheck
-
-# After completing a folder:
-pnpm -s typecheck && pnpm -s lint
-
-# After completing your full scope:
-pnpm -s typecheck && pnpm -s lint && pnpm -s styles:gate && pnpm -s test:unit
-```
+> Read this BEFORE your agent task.
 
 ---
 
@@ -103,10 +88,3 @@ hooks/                 → shared React hooks (used by 2+ route groups)
 - Semantic tokens only: `bg-background`, `text-foreground`, `border-border`, `bg-primary`
 - Forbidden: palette classes (`bg-gray-100`), raw hex (`#fff`), arbitrary values (`w-[560px]`)
 - Enforced by: `pnpm -s styles:gate`
-
----
-
-## Project Context
-
-For full project identity, stack, conventions → read root `AGENTS.md`.
-For refactor history, known bloat signals → read root `REFACTOR.md` (read-only).

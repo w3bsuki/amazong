@@ -177,6 +177,14 @@ export function MobileSellerFilterControls({
     return t("sortSellerProducts")
   }, [currentSort, t])
 
+  const applyLabel = useMemo(() => {
+    try {
+      return t("apply")
+    } catch {
+      return t("showResults")
+    }
+  }, [t])
+
   const actionButtonClass = cn(
     MOBILE_ACTION_CHIP_CLASS,
     "flex-1 min-h-(--control-default) justify-center text-sm font-medium"
@@ -362,7 +370,7 @@ export function MobileSellerFilterControls({
                 {t("clear")}
               </Button>
               <Button type="button" onClick={applyFilters}>
-                {t("apply")}
+                {applyLabel}
               </Button>
             </div>
           </DrawerFooter>

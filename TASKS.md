@@ -35,7 +35,8 @@ pnpm -s knip && pnpm -s dupes
 
 ## 🔧 Codebase Refactor
 
-Active refactoring tracked in `REFACTOR.md` (Phases 0–9, progress tracker in section 8).
-Phase 0–1 complete. Phase 2 (server/client boundary audit) is next.
+Active refactoring tracked in `refactor/CURRENT.md`.
+Phases 1-2 complete. Phase 3 (Data & Performance) is next.
+Full knowledge base in `REFACTOR.md`. Session history in `refactor/log.md`.
 
 *Last updated: 2026-02-17*

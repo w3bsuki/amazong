@@ -77,8 +77,7 @@ For each: can the loop query be replaced with a single batch query using `.in()`
 
 ## Verification
 
-After each query change: `pnpm -s typecheck`
-After all changes: `pnpm -s typecheck && pnpm -s lint && pnpm -s styles:gate && pnpm -s test:unit`
+See root `AGENTS.md` § Verify.
 
 ## Output
 

@@ -1,6 +1,7 @@
 import { BusinessSidebar } from "../_components/business-sidebar"
 import { BusinessHeader } from "../_components/business-header"
 import { Suspense } from "react"
+import { setRequestLocale } from "next-intl/server"
 import { 
   requireBusinessSeller, 
   getPendingTasksCount, 
@@ -12,16 +13,24 @@ import {
   SidebarProvider,
 } from "@/components/layout/sidebar/sidebar"
 import { connection } from "next/server"
+import { FullRouteIntlProvider } from "../../_providers/route-intl-provider"
 
-export default function BusinessDashboardLayout({
+export default async function BusinessDashboardLayout({
   children,
+  params,
 }: {
   children: React.ReactNode
+  params: Promise<{ locale: string }>
 }) {
+  const { locale } = await params
+  setRequestLocale(locale)
+
   return (
-    <Suspense fallback={null}>
-      <BusinessDashboardLayoutInner>{children}</BusinessDashboardLayoutInner>
-    </Suspense>
+    <FullRouteIntlProvider locale={locale}>
+      <Suspense fallback={null}>
+        <BusinessDashboardLayoutInner>{children}</BusinessDashboardLayoutInner>
+      </Suspense>
+    </FullRouteIntlProvider>
   )
 }
 

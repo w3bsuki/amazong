@@ -8,7 +8,7 @@ import { CartProvider } from "@/components/providers/cart-context"
 import { WishlistProvider } from "@/components/providers/wishlist-context"
 import { MessageProvider } from "@/components/providers/message-context"
 import { CurrencyProvider } from "@/components/providers/currency-context"
-import { DrawerProvider } from "@/components/providers/drawer-context"
+import { DrawerProvider, useDrawer } from "@/components/providers/drawer-context"
 
 const GlobalDrawers = dynamic(
   () => import("../_components/global-drawers").then((mod) => mod.GlobalDrawers),
@@ -56,18 +56,25 @@ export function CommerceProviders({ children }: { children: ReactNode }) {
         <CartProvider>
           <WishlistProvider>
             <DrawerProvider>
-              <MessageProvider>
+              <DeferredMessageProvider>
                 {children}
                 {shouldMountGlobalDrawers ? (
                   <Suspense fallback={null}>
                     <GlobalDrawers />
                   </Suspense>
                 ) : null}
-              </MessageProvider>
+              </DeferredMessageProvider>
             </DrawerProvider>
           </WishlistProvider>
         </CartProvider>
       </CurrencyProvider>
     </AuthStateManager>
   )
+}
+
+function DeferredMessageProvider({ children }: { children: ReactNode }) {
+  const { state } = useDrawer()
+  const shouldEnableMessages = state.messages.open || state.account.open
+
+  return <MessageProvider enabled={shouldEnableMessages}>{children}</MessageProvider>
 }

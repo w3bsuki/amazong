@@ -12,6 +12,9 @@ const CACHE_TTL_SECONDS = 3600
 const CACHE_STALE_WHILE_REVALIDATE = 300
 const shouldLogCategoryCountsErrors =
   process.env.NODE_ENV === "development" && process.env.NEXT_PUBLIC_E2E !== "true"
+let hasLoggedCategoryStatsError = false
+let hasLoggedCategoryCacheError = false
+let hasLoggedCategoryRouteError = false
 
 interface CategoryCount {
   slug: string
@@ -72,7 +75,8 @@ async function getCategoryCountsCached(): Promise<CategoryCount[]> {
       .select('category_id, subtree_product_count')
       .in('category_id', categoryIds)
 
-    if (statsError && shouldLogCategoryCountsErrors) {
+    if (statsError && shouldLogCategoryCountsErrors && !hasLoggedCategoryStatsError) {
+      hasLoggedCategoryStatsError = true
       console.debug("Category counts: Error fetching category_stats:", statsError?.message)
     }
 
@@ -91,7 +95,8 @@ async function getCategoryCountsCached(): Promise<CategoryCount[]> {
     if (isNextPrerenderInterrupted(error)) throw error
     
     // Log only in development
-    if (shouldLogCategoryCountsErrors) {
+    if (shouldLogCategoryCountsErrors && !hasLoggedCategoryCacheError) {
+      hasLoggedCategoryCacheError = true
       const message = error instanceof Error ? error.message : "Unknown error"
       console.debug("Category counts: Cache function error:", message)
     }
@@ -122,7 +127,8 @@ export async function GET() {
     if (isNextPrerenderInterrupted(error)) throw error
     
     // Log only in development to avoid production noise
-    if (shouldLogCategoryCountsErrors) {
+    if (shouldLogCategoryCountsErrors && !hasLoggedCategoryRouteError) {
+      hasLoggedCategoryRouteError = true
       const message = error instanceof Error ? error.message : "Unknown error"
       console.debug("Category Counts API Error:", message)
     }

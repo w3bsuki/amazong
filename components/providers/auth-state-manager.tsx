@@ -50,14 +50,18 @@ export function AuthStateManager({ children }: { children: ReactNode }) {
   const syncSingletonSession = useCallback(async (session: Session | null) => {
     const singletonClient = createClient()
 
-    if (!session?.access_token || !session.refresh_token) {
-      await singletonClient.auth.signOut({ scope: "local" })
-      return
-    }
-
     const {
       data: { session: singletonSession },
     } = await singletonClient.auth.getSession()
+
+    if (!session?.access_token || !session.refresh_token) {
+      // Avoid recursive SIGNED_OUT loops: only clear local auth state
+      // when the singleton currently has an active session.
+      if (singletonSession) {
+        await singletonClient.auth.signOut({ scope: "local" })
+      }
+      return
+    }
 
     if (singletonSession?.access_token === session.access_token) return
 
@@ -175,11 +179,8 @@ export function AuthStateManager({ children }: { children: ReactNode }) {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(
-      async (_event: AuthChangeEvent, session: Session | null) => {
+      (_event: AuthChangeEvent, session: Session | null) => {
         setStateFromSession(session)
-        void syncSingletonSession(session).catch(() => {
-          console.error("Failed to sync auth session")
-        })
       }
     )
 

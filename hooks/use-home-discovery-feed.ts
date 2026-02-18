@@ -10,10 +10,10 @@ export type { HomeDiscoveryScope }
 
 interface HomeInitialPools {
   forYou: UIProduct[]
-  newest: UIProduct[]
-  promoted: UIProduct[]
-  nearby: UIProduct[]
-  deals: UIProduct[]
+  newest?: UIProduct[]
+  promoted?: UIProduct[]
+  nearby?: UIProduct[]
+  deals?: UIProduct[]
 }
 
 interface UseHomeDiscoveryFeedOptions {
@@ -27,6 +27,8 @@ interface FeedResponse {
   products?: unknown
   hasMore?: unknown
 }
+
+type HomePoolMap = Record<HomeDiscoveryScope, UIProduct[]>
 
 function toSafeProducts(value: unknown): UIProduct[] {
   if (!Array.isArray(value)) return []
@@ -186,6 +188,17 @@ export function useHomeDiscoveryFeed({
   initialScope = "forYou",
   limit = 24,
 }: UseHomeDiscoveryFeedOptions) {
+  const resolvedInitialPools = useMemo<HomePoolMap>(
+    () => ({
+      forYou: initialPools.forYou ?? [],
+      newest: initialPools.newest ?? [],
+      promoted: initialPools.promoted ?? [],
+      nearby: initialPools.nearby ?? [],
+      deals: initialPools.deals ?? [],
+    }),
+    [initialPools]
+  )
+
   const [scope, setScope] = useState<HomeDiscoveryScope>(initialScope)
   const [activeCategorySlug, setActiveCategorySlug] = useState<string | null>(null)
   const [activeSubcategorySlug, setActiveSubcategorySlug] = useState<string | null>(null)
@@ -194,14 +207,20 @@ export function useHomeDiscoveryFeed({
   const [city, setCity] = useState<string | null>(null)
   const [nearby, setNearby] = useState(false)
 
-  const [products, setProducts] = useState<UIProduct[]>(initialPools[initialScope] ?? [])
+  const [products, setProducts] = useState<UIProduct[]>(resolvedInitialPools[initialScope] ?? [])
   const [page, setPage] = useState(1)
-  const [hasMore, setHasMore] = useState((initialPools[initialScope] ?? []).length >= limit)
+  const [hasMore, setHasMore] = useState((resolvedInitialPools[initialScope] ?? []).length >= limit)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   const cacheRef = useRef<Map<string, { products: UIProduct[]; hasMore: boolean }>>(new Map())
   const abortRef = useRef<AbortController | null>(null)
+  const pageRef = useRef(page)
+  const hasMoreRef = useRef(hasMore)
+  const isLoadingRef = useRef(isLoading)
+  const errorRef = useRef(error)
+  const loadPageRef = useRef<((nextPage: number, mode: "replace" | "append") => Promise<void>) | null>(null)
+  const appendInFlightRef = useRef(false)
 
   const filtersKey = useMemo(() => filters.toString(), [filters])
   const filtersActive = filtersKey.length > 0
@@ -275,6 +294,26 @@ export function useHomeDiscoveryFeed({
   )
 
   useEffect(() => {
+    pageRef.current = page
+  }, [page])
+
+  useEffect(() => {
+    hasMoreRef.current = hasMore
+  }, [hasMore])
+
+  useEffect(() => {
+    isLoadingRef.current = isLoading
+  }, [isLoading])
+
+  useEffect(() => {
+    errorRef.current = error
+  }, [error])
+
+  useEffect(() => {
+    loadPageRef.current = loadPage
+  }, [loadPage])
+
+  useEffect(() => {
     const cached = cacheRef.current.get(cacheKey)
     if (cached) {
       setProducts(cached.products)
@@ -313,7 +352,7 @@ export function useHomeDiscoveryFeed({
       }
 
       if (!activeCategorySlug && !activeSubcategorySlug) {
-        const source = initialPools[scope] ?? []
+        const source = resolvedInitialPools[scope] ?? []
         if (source.length > 0) {
           setProducts(source)
           setPage(1)
@@ -341,7 +380,7 @@ export function useHomeDiscoveryFeed({
     city,
     nearby,
     limit,
-    initialPools,
+    resolvedInitialPools,
     initialCategoryProducts,
     loadPage,
   ])
@@ -374,9 +413,19 @@ export function useHomeDiscoveryFeed({
   }, [scope])
 
   const loadNextPage = useCallback(() => {
-    if (isLoading || error || !hasMore) return
-    void loadPage(page + 1, "append")
-  }, [isLoading, error, hasMore, loadPage, page])
+    if (appendInFlightRef.current) return
+    if (isLoadingRef.current || errorRef.current || !hasMoreRef.current) return
+
+    const handler = loadPageRef.current
+    if (!handler) return
+
+    appendInFlightRef.current = true
+    isLoadingRef.current = true
+
+    void handler(pageRef.current + 1, "append").finally(() => {
+      appendInFlightRef.current = false
+    })
+  }, [])
 
   const retry = useCallback(() => {
     cacheRef.current.delete(cacheKey)

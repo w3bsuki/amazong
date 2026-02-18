@@ -37,9 +37,6 @@ import { PromotedSection } from "./desktop/promoted-section"
 import { DesktopShell, DesktopShellSkeleton } from "./layout/desktop-shell"
 import { ProductGrid, type ProductGridProduct } from "@/components/grid"
 import { SubcategoryCircles } from "./category/subcategory-circles"
-import type { UIProduct } from "@/lib/data/products"
-
-import type { User } from "@supabase/supabase-js"
 
 // =============================================================================
 // TYPES
@@ -75,20 +72,11 @@ interface Product {
   attributes?: Record<string, unknown>
 }
 
-interface CuratedSections {
-  deals: UIProduct[]
-  fashion: UIProduct[]
-  electronics: UIProduct[]
-  automotive: UIProduct[]
-}
-
 interface DesktopHomeProps {
   locale: string
   categories: CategoryTreeNode[]
   initialProducts?: Product[]
   promotedProducts?: Product[]
-  curatedSections?: CuratedSections
-  user?: User | null
 }
 
 // =============================================================================
@@ -100,8 +88,6 @@ export function DesktopHome({
   categories,
   initialProducts = [],
   promotedProducts = [],
-  // curatedSections not used on desktop - category discovery via sidebar
-  user,
 }: DesktopHomeProps) {
   const t = useTranslations("TabbedProductFeed")
 
@@ -302,14 +288,13 @@ export function DesktopHome({
     []
   )
 
-  // Initial fetch
+  // Initial fetch — only if server provided no products
   const initialFetchDone = useRef(initialProducts.length > 0)
   useEffect(() => {
-    if (!initialFetchDone.current) {
-      initialFetchDone.current = true
-      fetchProducts(activeTab, 1, pageSize, false, activeCategorySlug, userCity, filters.quickFilters)
-    }
-  }, [])
+    if (initialFetchDone.current) return
+    initialFetchDone.current = true
+    fetchProducts(activeTab, 1, pageSize, false, activeCategorySlug, userCity, filters.quickFilters)
+  }, [activeTab, activeCategorySlug, userCity, filters.quickFilters, fetchProducts])
 
   // Fetch on tab/category/city/filters change
   const prevTab = useRef(activeTab)

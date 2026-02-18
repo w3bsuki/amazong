@@ -1,10 +1,12 @@
 import { headers } from "next/headers"
 import { connection } from "next/server"
+import { setRequestLocale } from "next-intl/server"
 import type { ReactNode } from "react"
 
 import { redirect } from "@/i18n/routing"
 import { createClient } from "@/lib/supabase/server"
 import { PageShell } from "../_components/page-shell"
+import { FullRouteIntlProvider } from "../_providers/route-intl-provider"
 
 export default async function OnboardingLayout({
   children,
@@ -14,6 +16,7 @@ export default async function OnboardingLayout({
   params: Promise<{ locale: string }>
 }) {
   const { locale } = await params
+  setRequestLocale(locale)
 
   // Onboarding is user-scoped and must not be statically rendered.
   await connection()
@@ -34,9 +37,11 @@ export default async function OnboardingLayout({
   }
 
   return (
-    <PageShell variant="muted" className="flex justify-center">
-      <div className="w-full max-w-md">{children}</div>
-    </PageShell>
+    <FullRouteIntlProvider locale={locale}>
+      <PageShell variant="muted" className="flex justify-center">
+        <div className="w-full max-w-md">{children}</div>
+      </PageShell>
+    </FullRouteIntlProvider>
   )
 }
 

@@ -43,11 +43,7 @@ interface MobileHomeProps {
   locale: string
   categories: CategoryTreeNode[]
   forYouProducts: UIProduct[]
-  newestProducts: UIProduct[]
-  promotedProducts: UIProduct[]
-  nearbyProducts: UIProduct[]
-  dealsProducts: UIProduct[]
-  categoryProducts: Record<string, UIProduct[]>
+  categoryProducts?: Record<string, UIProduct[]>
 }
 
 interface CategoryChildrenResponse {
@@ -111,11 +107,7 @@ export function MobileHome({
   locale,
   categories,
   forYouProducts,
-  newestProducts,
-  promotedProducts,
-  nearbyProducts,
-  dealsProducts,
-  categoryProducts,
+  categoryProducts = {},
 }: MobileHomeProps) {
   const tCategories = useTranslations("Categories")
   const tMobile = useTranslations("Home.mobile")
@@ -131,6 +123,9 @@ export function MobileHome({
   const [childrenByParentId, setChildrenByParentId] = useState<Record<string, CategoryTreeNode[]>>({})
   const loadMoreRef = useRef<HTMLDivElement | null>(null)
   const loadingParentIdsRef = useRef<Set<string>>(new Set())
+  const childrenByParentIdRef = useRef(childrenByParentId)
+  childrenByParentIdRef.current = childrenByParentId
+  const initialPools = useMemo(() => ({ forYou: forYouProducts }), [forYouProducts])
 
   const {
     scope,
@@ -153,13 +148,7 @@ export function MobileHome({
     loadNextPage,
     retry,
   } = useHomeDiscoveryFeed({
-    initialPools: {
-      forYou: forYouProducts,
-      newest: newestProducts,
-      promoted: promotedProducts,
-      nearby: nearbyProducts,
-      deals: dealsProducts,
-    },
+    initialPools,
     initialCategoryProducts: categoryProducts,
     initialScope: "forYou",
     limit: 24,
@@ -224,7 +213,7 @@ export function MobileHome({
   const fetchChildrenByParentId = useCallback(async (parentId: string) => {
     if (!parentId) return
 
-    if (Object.prototype.hasOwnProperty.call(childrenByParentId, parentId)) return
+    if (Object.prototype.hasOwnProperty.call(childrenByParentIdRef.current, parentId)) return
     if (loadingParentIdsRef.current.has(parentId)) return
 
     loadingParentIdsRef.current.add(parentId)
@@ -260,7 +249,7 @@ export function MobileHome({
     } finally {
       loadingParentIdsRef.current.delete(parentId)
     }
-  }, [childrenByParentId])
+  }, [])
 
   const visibleCategoryTabs = useMemo(
     () => categories.slice(0, MAX_VISIBLE_CATEGORY_TABS),
@@ -294,7 +283,7 @@ export function MobileHome({
   useEffect(() => {
     if (!activeCategory) return
 
-    if (Object.prototype.hasOwnProperty.call(childrenByParentId, activeCategory.id)) return
+    if (Object.prototype.hasOwnProperty.call(childrenByParentIdRef.current, activeCategory.id)) return
 
     const seededChildren = activeCategory.children ?? []
     if (seededChildren.length > 0) {
@@ -307,12 +296,12 @@ export function MobileHome({
     }
 
     void fetchChildrenByParentId(activeCategory.id)
-  }, [activeCategory, childrenByParentId, fetchChildrenByParentId])
+  }, [activeCategory, fetchChildrenByParentId])
 
   useEffect(() => {
     if (!activeSubcategory) return
 
-    if (Object.prototype.hasOwnProperty.call(childrenByParentId, activeSubcategory.id)) return
+    if (Object.prototype.hasOwnProperty.call(childrenByParentIdRef.current, activeSubcategory.id)) return
 
     const seededChildren = activeSubcategory.children ?? []
     if (seededChildren.length > 0) {
@@ -325,7 +314,7 @@ export function MobileHome({
     }
 
     void fetchChildrenByParentId(activeSubcategory.id)
-  }, [activeSubcategory, childrenByParentId, fetchChildrenByParentId])
+  }, [activeSubcategory, fetchChildrenByParentId])
 
   const activeFilterCount = useMemo(() => getActiveFilterCount(filters), [filters])
   const hasActiveFilters = activeFilterCount > 0

@@ -100,9 +100,8 @@ If multiple libraries serve the same purpose → consolidate to one.
 
 ## Verification
 
-After each dependency removal: `pnpm -s typecheck`
-After all changes: `pnpm -s typecheck && pnpm -s lint && pnpm -s styles:gate && pnpm -s test:unit`
-Final: `pnpm build` to verify no runtime breakage.
+See root `AGENTS.md` § Verify.
+After removing dependencies, also run `pnpm build` to catch runtime issues.
 
 ## Output
 

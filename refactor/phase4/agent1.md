@@ -115,8 +115,7 @@ export default function Layout({ children }) {
 
 ## Verification
 
-After each batch of changes: `pnpm -s typecheck && pnpm -s lint`
-After all changes: `pnpm -s typecheck && pnpm -s lint && pnpm -s styles:gate && pnpm -s test:unit`
+See root `AGENTS.md` § Verify.
 
 ## Output
 

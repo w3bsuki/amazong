@@ -4,6 +4,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server"
 import { routing } from "@/i18n/routing"
 import { PageShell } from "../_components/page-shell"
 import { CommerceProviders } from "../_providers/commerce-providers"
+import { FullRouteIntlProvider } from "../_providers/route-intl-provider"
 import type { Metadata } from "next"
 
 // Generate static params for all supported locales
@@ -49,15 +50,17 @@ export default async function CheckoutLayout({
   setRequestLocale(locale)
 
   return (
-    <CommerceProviders>
-      <PageShell variant="muted" className="flex flex-col">
-        <CheckoutHeader />
-        <main className="flex-1">
-          {children}
-        </main>
-        <CheckoutFooter />
-      </PageShell>
-    </CommerceProviders>
+    <FullRouteIntlProvider locale={locale}>
+      <CommerceProviders>
+        <PageShell variant="muted" className="flex flex-col">
+          <CheckoutHeader />
+          <main className="flex-1">
+            {children}
+          </main>
+          <CheckoutFooter />
+        </PageShell>
+      </CommerceProviders>
+    </FullRouteIntlProvider>
   )
 }
 

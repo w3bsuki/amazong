@@ -3,6 +3,7 @@ import Script from 'next/script'
 import { routing } from '@/i18n/routing'
 import { PerformanceMeasureGuard } from './performance-measure-guard'
 import { PageShell } from "../_components/page-shell"
+import { FullRouteIntlProvider } from "../_providers/route-intl-provider"
 
 // Generate static params for all supported locales
 export function generateStaticParams() {
@@ -28,12 +29,13 @@ export default async function SellLayout({
   setRequestLocale(locale);
 
   return (
-    <>
-      <Script
-        id="perf-measure-guard"
-        strategy="beforeInteractive"
-      >
-        {`(() => {
+    <FullRouteIntlProvider locale={locale}>
+      <>
+        <Script
+          id="perf-measure-guard"
+          strategy="beforeInteractive"
+        >
+          {`(() => {
   try {
     const perf = globalThis.performance;
     if (!perf || typeof perf.measure !== 'function') return;
@@ -53,15 +55,16 @@ export default async function SellLayout({
     // noop
   }
 })();`}
-      </Script>
-      <PerformanceMeasureGuard />
-      <PageShell variant="muted" className="flex flex-col">
-        {/* Main content - header is rendered by client component for user state */}
-        <main className="flex-1 flex flex-col">
-          {children}
-        </main>
-      </PageShell>
-    </>
+        </Script>
+        <PerformanceMeasureGuard />
+        <PageShell variant="muted" className="flex flex-col">
+          {/* Main content - header is rendered by client component for user state */}
+          <main className="flex-1 flex flex-col">
+            {children}
+          </main>
+        </PageShell>
+      </>
+    </FullRouteIntlProvider>
   )
 }
 

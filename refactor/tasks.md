@@ -1,110 +1,71 @@
 # Refactor Progress Tracker
 
-> Updated by Codex after each phase. Reviewed by Human + Copilot before next phase is created.
+> Updated after each session. Reviewed by Human + Copilot before next phase.
+> For active task and what to do now → Read `CURRENT.md`.
+> For session-by-session history → Read `log.md`.
 
 ---
 
-## Phase 1 — Discovery Audit
+## Metrics Over Time
 
-**Goal:** Full folder-tree audit. Find waste, fix safe issues, flag risky ones.
-
-| Agent | Scope | Status |
-|-------|-------|--------|
-| Agent 1 | `components/` tree | ✅ Completed |
-| Agent 2 | `lib/` + `hooks/` | ✅ Completed |
-| Agent 3 | `app/` (routes, actions, api) | ✅ Completed |
-
-**Verification:** ✅ `pnpm -s typecheck && pnpm -s lint && pnpm -s styles:gate && pnpm -s test:unit`
-**Additional check:** ⚠️ `REUSE_EXISTING_SERVER=true pnpm -s test:e2e:smoke` failed (16 failed, 8 passed, 2 skipped)
-
-**Metrics before:**
-| Metric | Value |
-|--------|-------|
-| Files | 762 |
-| `"use client"` | 357 |
-| >300-line files | 125 |
-| >500-line files | 44 |
-| Clones | 247 (3.06%) |
-
-**Metrics after:**
-| Metric | Value |
-|--------|-------|
-| Files | 803 |
-| `"use client"` | 218 (client-boundary count) |
-| >300-line files | 121 |
-| >500-line files | 43 |
-| Clones | 257 (3.86%) |
-
-**Notable scan notes after Phase 1:**
-- Routes: `pages=86`, `missingLoading=0`, `missingMetadata=53`
+| Metric | Baseline | Post-P1 | Post-P2 | Post-P3 | Post-P4 | Target |
+|--------|----------|---------|---------|---------|---------|--------|
+| Files | 762 | 803 | 805 | — | — | — |
+| `"use client"` | 357 | 218 | 215 | — | — | <150 |
+| >300-line files | 125 | 121 | 120 | — | — | <80 |
+| >500-line files | 44 | 43 | 43 | — | — | <20 |
+| Missing metadata | 58 | 53 | 53 | — | — | 0 |
+| Missing loading | 38 | 0 | 0 | — | — | 0 |
+| Clone % | 3.06% | 3.86% | 3.06% | — | — | <2% |
 
 ---
 
-## Phase 2 — Client Boundary & Bundle
-
-**Goal:** Reduce client-side JS. Remove unnecessary `"use client"`. Lazy-load heavy components.
+## Phase 1 — Discovery Audit ✅
 
 | Agent | Scope | Status |
 |-------|-------|--------|
-| Agent 1 | `"use client"` audit on `components/` | ✅ Completed |
-| Agent 2 | `"use client"` audit on `app/` | ✅ Completed |
-| Agent 3 | Dynamic imports + bundle optimization | ✅ Completed |
+| Agent 1 | `components/` tree | ✅ |
+| Agent 2 | `lib/` + `hooks/` | ✅ |
+| Agent 3 | `app/` (routes, actions, api) | ✅ |
 
-**Verification:** ✅ `pnpm -s typecheck && pnpm -s lint && pnpm -s styles:gate && pnpm -s test:unit`
-**Build:** ✅ `pnpm -s build`
-**Additional check:** ⚠️ `REUSE_EXISTING_SERVER=true pnpm -s test:e2e:smoke` failed (17 failed, 7 passed, 2 skipped)
-
-**Metrics before:**
-| Metric | Value |
-|--------|-------|
-| Files | 803 |
-| `"use client"` | 218 (client-boundary count) |
-| >300-line files | 121 |
-| >500-line files | 43 |
-| Clones | 257 (3.86%) |
-
-**Metrics after:**
-| Metric | Value |
-|--------|-------|
-| Files | 805 |
-| `"use client"` | 215 (client-boundary count) |
-| >300-line files | 120 |
-| >500-line files | 43 |
-| Clones | 247 (3.06%) |
-
-**Notable scan notes after Phase 2:**
-- Routes: `pages=86`, `missingLoading=0`, `missingMetadata=53`
+**Gate:** ✅ typecheck + lint + styles:gate + test:unit
 
 ---
 
-## Phase 3 — Data & Performance
-
-**Goal:** Caching, query optimization, dependency cleanup.
+## Phase 2 — Client Boundary & Bundle ✅
 
 | Agent | Scope | Status |
 |-------|-------|--------|
-| Agent 1 | Caching (`"use cache"`, cacheLife, cacheTag) | ⬜ Not started |
-| Agent 2 | Data layer (select, client→server, Supabase clients) | ⬜ Not started |
-| Agent 3 | Dependency diet (knip, unused deps, heavy deps) | ⬜ Not started |
+| Agent 1 | `"use client"` audit on `components/` | ✅ |
+| Agent 2 | `"use client"` audit on `app/` | ✅ |
+| Agent 3 | Dynamic imports + bundle optimization | ✅ |
 
-**Verification:** ⬜ `pnpm -s typecheck && pnpm -s lint && pnpm -s styles:gate && pnpm -s test:unit`
-
-**Metrics before:** _(fill from Phase 2 after)_
-**Metrics after:** _(fill after phase completes)_
+**Gate:** ✅ typecheck + lint + styles:gate + test:unit + build
 
 ---
 
-## Phase 4 — Polish
-
-**Goal:** Route completeness, CSS cleanup, code quality, final metrics.
+## Phase 3 — Data & Performance ⬜
 
 | Agent | Scope | Status |
 |-------|-------|--------|
-| Agent 1 | Route completeness (loading, metadata, error) | ⬜ Not started |
-| Agent 2 | CSS & styling cleanup | ⬜ Not started |
-| Agent 3 | Code quality (oversized files, dead code, tests, i18n) | ⬜ Not started |
+| Agent 1 | Caching (`"use cache"`, cacheLife, cacheTag) | ⬜ |
+| Agent 2 | Data layer (select, client→server, Supabase clients) | ⬜ |
+| Agent 3 | Dependency diet (knip, unused deps, heavy deps) | ⬜ |
 
-**Verification:** ⬜ `pnpm -s typecheck && pnpm -s lint && pnpm -s styles:gate && pnpm -s test:unit`
+**Gate:** ⬜ typecheck + lint + styles:gate + test:unit
 
-**Metrics before:** _(fill from Phase 3 after)_
-**Metrics after (FINAL):** _(fill after phase completes)_
+---
+
+## Phase 4 — Polish & Completeness ⬜
+
+| Agent | Scope | Status |
+|-------|-------|--------|
+| Agent 1 | Route completeness (loading, metadata, error) | ⬜ |
+| Agent 2 | CSS & styling cleanup | ⬜ |
+| Agent 3 | Code quality (oversized files, dead code, tests, i18n) | ⬜ |
+
+**Gate:** ⬜ typecheck + lint + styles:gate + test:unit + build
+
+---
+
+*Updated: 2026-02-17*

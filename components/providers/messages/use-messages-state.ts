@@ -42,7 +42,7 @@ export interface UseMessagesStateReturn extends MessagesState, MessagesStateActi
 /**
  * Hook to manage messages state - state management + data fetching
  */
-export function useMessagesState(): UseMessagesStateReturn {
+export function useMessagesState({ enabled = true }: { enabled?: boolean } = {}): UseMessagesStateReturn {
   const supabase = createClient()
 
   // Core state
@@ -52,7 +52,7 @@ export function useMessagesState(): UseMessagesStateReturn {
   const [messages, setMessages] = useState<Message[]>([])
   const [totalUnreadCount, setTotalUnreadCount] = useState(0)
   // Start as true - we're always loading initially until we check auth
-  const [isLoading, setIsLoading] = useState(true)
+  const [isLoading, setIsLoading] = useState(enabled)
   const [isLoadingMessages, setIsLoadingMessages] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [isOtherUserTyping, setIsOtherUserTyping] = useState(false)
@@ -62,10 +62,27 @@ export function useMessagesState(): UseMessagesStateReturn {
   // =============================================================================
 
   useEffect(() => {
+    if (!enabled) {
+      setCurrentUserId(null)
+      setConversations([])
+      setCurrentConversation(null)
+      setMessages([])
+      setTotalUnreadCount(0)
+      setError(null)
+      setIsLoading(false)
+      setIsLoadingMessages(false)
+      return
+    }
+
+    let cancelled = false
+
     const getUser = async () => {
+      setIsLoading(true)
       const {
         data: { user },
       } = await supabase.auth.getUser()
+      if (cancelled) return
+
       if (user) {
         setCurrentUserId(user.id)
       } else {
@@ -73,15 +90,19 @@ export function useMessagesState(): UseMessagesStateReturn {
         setIsLoading(false)
       }
     }
-    getUser()
-  }, [supabase])
+    void getUser()
+
+    return () => {
+      cancelled = true
+    }
+  }, [enabled, supabase])
 
   // =============================================================================
   // REFRESH UNREAD COUNT
   // =============================================================================
 
   const refreshUnreadCount = useCallback(async () => {
-    if (!currentUserId) return
+    if (!enabled || !currentUserId) return
 
     try {
       const count = await fetchTotalUnreadCount(supabase)
@@ -89,14 +110,14 @@ export function useMessagesState(): UseMessagesStateReturn {
     } catch (err) {
       console.error("Error fetching unread count:", err)
     }
-  }, [supabase, currentUserId])
+  }, [enabled, supabase, currentUserId])
 
   // =============================================================================
   // LOAD CONVERSATIONS
   // =============================================================================
 
   const loadConversations = useCallback(async () => {
-    if (!currentUserId) return
+    if (!enabled || !currentUserId) return
 
     setIsLoading(true)
     setError(null)
@@ -111,7 +132,7 @@ export function useMessagesState(): UseMessagesStateReturn {
     } finally {
       setIsLoading(false)
     }
-  }, [supabase, currentUserId])
+  }, [enabled, supabase, currentUserId])
 
   // =============================================================================
   // SELECT CONVERSATION & LOAD MESSAGES
@@ -150,10 +171,9 @@ export function useMessagesState(): UseMessagesStateReturn {
   // =============================================================================
 
   useEffect(() => {
-    if (currentUserId) {
-      loadConversations()
-    }
-  }, [currentUserId, loadConversations])
+    if (!enabled || !currentUserId) return
+    void loadConversations()
+  }, [enabled, currentUserId, loadConversations])
 
   return {
     // State

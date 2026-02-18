@@ -68,8 +68,7 @@ If a product is updated but `revalidateTag("products")` isn't called in the upda
 
 ## Verification
 
-After each change: `pnpm -s typecheck`
-After all changes: `pnpm -s typecheck && pnpm -s lint && pnpm -s styles:gate && pnpm -s test:unit`
+See root `AGENTS.md` § Verify.
 
 ## Output
 

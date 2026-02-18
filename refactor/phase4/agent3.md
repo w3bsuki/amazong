@@ -99,8 +99,7 @@ If you find English strings hardcoded in JSX that should be translated — flag 
 
 ## Verification
 
-After each file split: `pnpm -s typecheck`
-After all changes: `pnpm -s typecheck && pnpm -s lint && pnpm -s styles:gate && pnpm -s test:unit`
+See root `AGENTS.md` § Verify.
 
 ## Output
 

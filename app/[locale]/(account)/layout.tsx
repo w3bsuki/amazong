@@ -8,6 +8,7 @@ import { headers } from "next/headers";
 import { createSubscriptionCheckoutSession } from "@/app/actions/subscriptions";
 import { connection } from "next/server";
 import { CommerceProviders } from "../_providers/commerce-providers";
+import { FullRouteIntlProvider } from "../_providers/route-intl-provider";
 import type { Metadata } from "next";
 
 // Generate static params for all supported locales
@@ -129,13 +130,15 @@ export default async function AccountLayout({
     setRequestLocale(locale);
 
     return (
-        <Suspense fallback={<AccountLayoutSkeleton />}>
-            <CommerceProviders>
-                <AccountLayoutGate modal={modal} locale={locale}>
-                    {children}
-                </AccountLayoutGate>
-            </CommerceProviders>
-        </Suspense>
+        <FullRouteIntlProvider locale={locale}>
+            <Suspense fallback={<AccountLayoutSkeleton />}>
+                <CommerceProviders>
+                    <AccountLayoutGate modal={modal} locale={locale}>
+                        {children}
+                    </AccountLayoutGate>
+                </CommerceProviders>
+            </Suspense>
+        </FullRouteIntlProvider>
     );
 }
 

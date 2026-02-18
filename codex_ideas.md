@@ -204,6 +204,87 @@ If AI surface cannot beat baseline on conversion or retention, keep it as assist
 
 ---
 
+## Iteration 02 (Codex): Synthesis of `opus_ideas.md` + `codex_ideas.md`
+
+Date: 2026-02-17
+
+### What Opus gets right
+
+1. Correct strategic frame: keep two surfaces (`treido.eu` browse, `ai.treido.eu` assistant).
+2. Correct architecture default: same app, new route group first.
+3. Correct UX warning: pure chat is weak for discovery; need browse/feed and visual results.
+4. Strong external-discovery ambition: OpenAPI + machine-readable capability exposure.
+
+### What needed tightening
+
+1. Scope is too broad for first ship (includes many Phase 3+ capabilities too early).
+2. Some items assume ideal infra before proving shopping conversion lift.
+3. Discoverability stack is oversized for MVP if core retrieval/ranking quality is not solved first.
+4. Dual-assistant-path risk was not explicitly closed (Next API + Supabase function drift).
+
+### Combined decision (recommended)
+
+Ship a constrained Hybrid Agent MVP with hard boundaries:
+
+1. Keep existing marketplace as primary revenue surface.
+2. Launch AI surface as complementary assistant with optional browse tab.
+3. Prioritize retrieval quality, ranking quality, and mobile speed over protocol expansion.
+4. Defer MCP/plugins/partner integrations until conversion and trust metrics are healthy.
+
+### Critical gaps both docs should explicitly enforce
+
+1. Ranking policy:
+- Define how promoted listings blend with relevance.
+- Add disclosure behavior for sponsored/promoted placements.
+
+2. Reliability policy:
+- No quote/availability guarantees without fresh tool data.
+- Handle stale inventory and out-of-stock transitions gracefully.
+
+3. Permission model:
+- Public read APIs must stay strictly read-only and RLS-safe.
+- Separate anonymous, authenticated buyer, seller, and admin tool scopes.
+
+4. Decision-quality testing:
+- Add an eval suite for top shopping intents (cars, electronics, budget queries, nearby, condition-sensitive requests).
+- Track failed-answer classes (hallucination, wrong filters, poor ranking, no-result when results exist).
+
+5. Latency and cost SLOs:
+- Define max acceptable end-to-first-product latency on mobile.
+- Define target cost per assisted session and degrade gracefully under load.
+
+### Simplified execution path (recommended)
+
+#### Gate 0: Harden current assistant first (in existing route)
+1. Improve tool coverage for newest/promoted/nearby.
+2. Add telemetry and eval harness.
+3. Measure real session outcomes against baseline browse/search.
+
+#### Gate 1: Launch `/(agent)` + `ai.treido.eu`
+1. Chat + Browse tabs only.
+2. Inline listing cards and quick refinement actions.
+3. Anonymous browsing allowed; auth required for shortlist/cart/checkout.
+
+#### Gate 2: Conversion optimization
+1. Improve ranking and personalization.
+2. Add shortlist memory and better comparison flows.
+3. Validate KPI lift before expanding protocol surface.
+
+#### Gate 3: External AI discoverability
+1. Publish stable, versioned read API + schema.
+2. Add machine-readable capability metadata.
+3. Add MCP or other adapters only after API reliability and governance are stable.
+
+### Default answer to your core question
+
+"Should we replace frontend with an AI agent?"
+
+No. Replace only a subset of journeys. Keep both interaction modes and let users switch instantly.
+
+That gives you future-facing AI UX without sacrificing browse-led conversion and trust.
+
+---
+
 ## Iteration Template (Use for next updates)
 
 For each new idea cycle, append:

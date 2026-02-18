@@ -1,8 +1,8 @@
 import type { ReactNode } from 'react'
-import { getMessages } from 'next-intl/server'
 
 import { ThemeProvider } from './_providers/theme-provider'
 import { IntlClientProvider } from './_providers/intl-client-provider'
+import { ROOT_INTL_NAMESPACES, getScopedMessages } from '@/lib/i18n/scoped-messages'
 
 export default async function LocaleProviders({
   locale,
@@ -11,8 +11,7 @@ export default async function LocaleProviders({
   locale: string
   children: ReactNode
 }) {
-  // Providing all messages to the client side
-  const messages = await getMessages()
+  const messages = await getScopedMessages(locale, ROOT_INTL_NAMESPACES)
 
   return (
     <IntlClientProvider locale={locale} messages={messages}>

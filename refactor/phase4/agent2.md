@@ -80,8 +80,7 @@ Common violations:
 
 ## Verification
 
-After each CSS change: `pnpm -s styles:gate`
-After all changes: `pnpm -s typecheck && pnpm -s lint && pnpm -s styles:gate && pnpm -s test:unit`
+See root `AGENTS.md` § Verify.
 
 ## Output
 

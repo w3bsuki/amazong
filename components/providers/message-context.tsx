@@ -69,6 +69,7 @@ interface MessageProviderProps {
   children: React.ReactNode
   initialSellerId?: string | undefined
   initialProductId?: string | undefined
+  enabled?: boolean
 }
 
 function MessageAutoStartConversation({
@@ -126,7 +127,12 @@ function MessageAutoStartConversation({
   return null
 }
 
-export function MessageProvider({ children, initialSellerId, initialProductId }: MessageProviderProps) {
+export function MessageProvider({
+  children,
+  initialSellerId,
+  initialProductId,
+  enabled = true,
+}: MessageProviderProps) {
   // State management hook
   const {
     currentUserId,
@@ -146,7 +152,7 @@ export function MessageProvider({ children, initialSellerId, initialProductId }:
     loadConversations,
     selectConversation: selectConversationBase,
     refreshUnreadCount,
-  } = useMessagesState()
+  } = useMessagesState({ enabled })
 
   // Actions hook
   const { markAsRead, sendMessage, startConversation, closeConversation } =

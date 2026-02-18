@@ -1,5 +1,7 @@
 import { OnboardingProvider } from "./_providers/onboarding-provider";
 import { StorefrontLayout } from "../_components/storefront-layout";
+import { RouteIntlProvider } from "../_providers/route-intl-provider";
+import { MAIN_ROUTE_INTL_NAMESPACES, ROOT_INTL_NAMESPACES } from "@/lib/i18n/scoped-messages";
 
 /**
  * Main Layout
@@ -19,13 +21,21 @@ export default async function MainLayout({
     params: Promise<{ locale: string }>;
 }) {
     const { locale } = await params;
+    const localizedRouteChildren = (
+        <RouteIntlProvider
+            locale={locale}
+            namespaces={[...ROOT_INTL_NAMESPACES, ...MAIN_ROUTE_INTL_NAMESPACES]}
+        >
+            {children}
+        </RouteIntlProvider>
+    );
 
     return (
         <StorefrontLayout
             locale={locale}
             wrapShell={(shell) => <OnboardingProvider locale={locale}>{shell}</OnboardingProvider>}
         >
-            {children}
+            {localizedRouteChildren}
         </StorefrontLayout>
     );
 }

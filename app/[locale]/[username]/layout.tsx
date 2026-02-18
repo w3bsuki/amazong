@@ -1,4 +1,6 @@
 import { StorefrontLayout } from "../_components/storefront-layout";
+import { RouteIntlProvider } from "../_providers/route-intl-provider";
+import { ROOT_INTL_NAMESPACES, USERNAME_ROUTE_INTL_NAMESPACES } from "@/lib/i18n/scoped-messages";
 
 /**
  * Username/Store Route Layout
@@ -18,7 +20,16 @@ export default async function UsernameLayout({
 }) {
     const { locale } = await params;
 
+    const localizedRouteChildren = (
+        <RouteIntlProvider
+            locale={locale}
+            namespaces={[...ROOT_INTL_NAMESPACES, ...USERNAME_ROUTE_INTL_NAMESPACES]}
+        >
+            {children}
+        </RouteIntlProvider>
+    );
+
     return (
-        <StorefrontLayout locale={locale}>{children}</StorefrontLayout>
+        <StorefrontLayout locale={locale}>{localizedRouteChildren}</StorefrontLayout>
     );
 }
