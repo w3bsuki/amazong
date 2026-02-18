@@ -11,7 +11,7 @@ import { cn } from "@/lib/utils"
 import { formatPrice } from "@/lib/price"
 import { normalizeImageUrl, PLACEHOLDER_IMAGE_PATH } from "@/lib/normalize-image-url"
 
-export interface ProductMiniCardProps {
+interface ProductMiniCardProps {
   id: string
   title: string
   price: number

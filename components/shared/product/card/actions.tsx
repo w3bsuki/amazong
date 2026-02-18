@@ -12,7 +12,7 @@ import { IconButton } from "@/components/ui/icon-button"
 // PRODUCT CARD ACTIONS - Client-only interactive elements
 // =============================================================================
 
-export interface ProductCardActionsProps {
+interface ProductCardActionsProps {
     // Required for cart/wishlist
     id: string
     title: string

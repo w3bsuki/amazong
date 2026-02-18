@@ -1,8 +1,7 @@
 import { useTranslations } from "next-intl";
 import { Truck } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { getConditionBadgeVariant } from "@/components/shared/product/_lib/condition-badges";
-import { getConditionKey } from "@/components/shared/product/_lib/condition";
+import { getConditionBadgeVariant, getConditionKey } from "@/components/shared/product/_lib/condition";
 
 interface ProductHeaderProps {
   title: string;

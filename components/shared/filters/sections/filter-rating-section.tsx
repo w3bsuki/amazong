@@ -59,5 +59,4 @@ export function FilterRatingSection({ minRating, onChange }: FilterRatingSection
   );
 }
 
-export type { FilterRatingSectionProps };
 

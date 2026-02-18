@@ -6,7 +6,7 @@ import { useTranslations } from "next-intl"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
-import { getConditionBadgeVariant } from "@/components/shared/product/_lib/condition-badges"
+import { getConditionBadgeVariant } from "@/components/shared/product/_lib/condition"
 
 import type { ProductQuickViewViewProps } from "./product-quick-view-content"
 import { QuickViewImageGallery } from "./quick-view-image-gallery"

@@ -3,9 +3,9 @@
 import type { CategoryAttribute } from "@/lib/data/categories"
 import type { UIProduct } from "@/lib/data/products"
 import {
-  CategoryDrilldownRail,
-  type DrilldownSegment,
-  type DrilldownOption,
+  CategoryOptionRail,
+  type CategoryOptionItem,
+  type SectionPathSegment,
 } from "@/components/mobile/category-nav"
 import {
   MobileFilterControls,
@@ -22,12 +22,11 @@ const MOBILE_FEED_FRAME_CLASS = "mx-auto w-full max-w-(--breakpoint-md) pb-tabba
 
 interface MobileCategoryBrowserContextualViewProps {
   locale: string
-  drilldownPath: DrilldownSegment[]
-  drilldownOptions: DrilldownOption[]
-  drilldownAllLabel: string
-  onDrillDown: (slug: string, label: string) => void
-  onDrillBack: () => void
-  onSegmentTap?: (index: number) => void
+  railActiveLabel: string | null
+  railOptions: CategoryOptionItem[]
+  onOptionSelect: (slug: string) => void
+  sectionPath: SectionPathSegment[]
+  onSectionBack: () => void
   canOpenScopeDrawer: boolean
   onScopeMoreClick: () => void
   navigationAriaLabel: string
@@ -51,12 +50,11 @@ interface MobileCategoryBrowserContextualViewProps {
 
 export function MobileCategoryBrowserContextualView({
   locale,
-  drilldownPath,
-  drilldownOptions,
-  drilldownAllLabel,
-  onDrillDown,
-  onDrillBack,
-  onSegmentTap,
+  railActiveLabel,
+  railOptions,
+  onOptionSelect,
+  sectionPath,
+  onSectionBack,
   canOpenScopeDrawer,
   onScopeMoreClick,
   navigationAriaLabel,
@@ -80,13 +78,12 @@ export function MobileCategoryBrowserContextualView({
   return (
     <PageShell variant="muted" className="w-full">
       <div className={MOBILE_FEED_FRAME_CLASS}>
-        <CategoryDrilldownRail
-          selectedPath={drilldownPath}
-          options={drilldownOptions}
-          allLabel={drilldownAllLabel}
-          onOptionSelect={onDrillDown}
-          onGoBack={onDrillBack}
-          {...(onSegmentTap ? { onSegmentTap } : {})}
+        <CategoryOptionRail
+          activeLabel={railActiveLabel}
+          sectionPath={sectionPath}
+          onSectionBack={onSectionBack}
+          options={railOptions}
+          onOptionSelect={onOptionSelect}
           moreLabel={showMoreLabel}
           {...(canOpenScopeDrawer ? { onMoreClick: onScopeMoreClick } : {})}
           ariaLabel={navigationAriaLabel}

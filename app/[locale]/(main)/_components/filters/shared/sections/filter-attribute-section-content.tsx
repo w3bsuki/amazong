@@ -1,6 +1,6 @@
 import type { CategoryAttribute } from "@/lib/data/categories"
-import { ColorSwatches } from "../controls/color-swatches"
-import { FilterCheckboxItem, FilterCheckboxList } from "../controls/filter-checkbox-item"
+import { ColorSwatches } from "@/components/shared/filters/controls/color-swatches"
+import { FilterCheckboxItem, FilterCheckboxList } from "@/components/shared/filters/controls/filter-checkbox-item"
 import { FilterList } from "../controls/filter-list"
 import {
   isColorFilterAttribute,

@@ -189,5 +189,5 @@ function ProductCardPrice({
 // EXPORTS
 // =============================================================================
 
-export { ProductCardPrice, type ProductCardPriceProps }
+export { ProductCardPrice }
 

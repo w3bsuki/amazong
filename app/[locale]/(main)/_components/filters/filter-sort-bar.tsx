@@ -6,7 +6,7 @@ import { SlidersHorizontal, ArrowUpDown, MapPin, ChevronDown } from "lucide-reac
 import { cn } from "@/lib/utils"
 import { useTranslations } from "next-intl"
 import { MOBILE_ACTION_CHIP_CLASS } from "@/components/mobile/chrome/mobile-control-recipes"
-import { SortModal } from "@/components/shared/filters/sort-modal"
+import { SortModal } from "./shared/sort-modal"
 import type { CategoryAttribute } from "@/lib/data/categories"
 import { getCategoryAttributeKey } from "@/lib/filters/category-attribute"
 import { getActiveFilterCount } from "@/lib/filters/active-filter-count"

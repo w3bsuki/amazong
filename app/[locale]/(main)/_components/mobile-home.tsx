@@ -12,7 +12,7 @@ import { MobileSearchOverlay } from "../../_components/search/mobile-search-over
 import { HomeCityPickerSheet } from "./mobile/home-city-picker-sheet"
 import { HomeBrowseOptionsSheet } from "./mobile/home-browse-options-sheet"
 import { PageShell } from "../../_components/page-shell"
-import { FilterHub } from "@/components/shared/filters/filter-hub"
+import { FilterHub } from "./filters/filter-hub"
 import { useHomeDiscoveryFeed } from "@/hooks/use-home-discovery-feed"
 import type { HomeDiscoveryScope } from "@/hooks/use-home-discovery-feed"
 import { MobileHomeRails } from "./mobile-home/mobile-home-rails"

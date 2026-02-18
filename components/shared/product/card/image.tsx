@@ -83,5 +83,5 @@ function ProductCardImage({
 // EXPORTS
 // =============================================================================
 
-export { ProductCardImage, type ProductCardImageProps }
+export { ProductCardImage }
 

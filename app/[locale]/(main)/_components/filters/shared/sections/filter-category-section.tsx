@@ -3,14 +3,21 @@ import { X } from "lucide-react";
 
 import { Link } from "@/i18n/routing";
 import { FilterRadioGroup, FilterRadioItem } from "../controls/filter-radio-group";
-import type { FilterHubSubcategory } from "../filter-hub";
+
+export interface FilterCategorySubcategory {
+  id: string
+  name: string
+  name_bg: string | null
+  slug: string
+  icon?: string | null
+}
 
 interface FilterCategorySectionProps {
   locale: string;
   categoryName?: string;
   pendingCategorySlug: string | null;
   onChangePendingCategorySlug: (slug: string | null) => void;
-  subcategories: FilterHubSubcategory[];
+  subcategories: FilterCategorySubcategory[];
   onCloseHub: () => void;
 }
 

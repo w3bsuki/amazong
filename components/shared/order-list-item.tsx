@@ -37,7 +37,7 @@ function normalizeStatus(status: OrderListStatus | null | undefined) {
   return typeof status === "string" && status.length > 0 ? status : "pending"
 }
 
-export function getOrderListStatusClass(status: OrderListStatus | null | undefined) {
+function getOrderListStatusClass(status: OrderListStatus | null | undefined) {
   switch (normalizeStatus(status)) {
     case "paid":
     case "delivered":
@@ -56,7 +56,7 @@ export function getOrderListStatusClass(status: OrderListStatus | null | undefin
   }
 }
 
-export function getOrderListStatusLabel(status: OrderListStatus | null | undefined, locale = "en") {
+function getOrderListStatusLabel(status: OrderListStatus | null | undefined, locale = "en") {
   const normalized = normalizeStatus(status)
   if (locale === "bg") {
     switch (normalized) {

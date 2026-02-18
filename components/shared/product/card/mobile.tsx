@@ -26,7 +26,7 @@ import {
 import { FreshnessIndicator } from "../freshness-indicator"
 import type { MobileProductCardLayout, ProductCardBaseProps } from "./types"
 
-export interface MobileProductCardProps extends ProductCardBaseProps {
+interface MobileProductCardProps extends ProductCardBaseProps {
   layout?: MobileProductCardLayout
 }
 
@@ -292,4 +292,3 @@ export function MobileProductCard({
   )
 }
 
-export type { MobileProductCardLayout } from "./types"

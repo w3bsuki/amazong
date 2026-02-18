@@ -792,3 +792,67 @@
 - Clone and tiny-file metrics regressed slightly due decomposition fan-out; Domain 5 should prioritize merge/consolidation over new extractions where possible.
 - `architecture:scan` still reports high `>300` file count (`100`) outside Domain 4 scope; this remains the primary cross-domain debt.
 - Lint remains warning-heavy project-wide (no errors), so follow-up should focus only on warnings introduced/owned by next domain scope.
+
+### Session 25 — 2026-02-18 (Codex Domain 5 completion)
+
+**Phase(s):** Domain 5 (`components/**`) — full audit + refactor closeout  
+**Audit findings by sub-domain:**
+- `components/shared` remained the highest churn area; filter modules were single-route `(main)` and several shared exports were dead.
+- `components/layout` hotspot targets (`desktop-search`, `sidebar-menu`, `sidebar`) were successfully reduced below 300L.
+- `components/providers` hotspot target (`cart-context`) was reduced and logic/types were extracted; provider usage scan found no zero-consumer provider files.
+- `components/mobile` had a `(main)`-only `filter-sort-bar` still living in global components.
+- `components/ui` was audited for usage only (no internal refactor), per constraints.
+- Full per-file map + shared export usage matrix was generated at `refactor/domains/05-components-audit.md`.
+
+**Concrete changes:**
+- Completed hotspot splits to `<300L` for all required Domain 5 priorities:
+  - `components/layout/header/desktop/desktop-search.tsx`
+  - `components/layout/sidebar/sidebar-menu.tsx`
+  - `components/layout/sidebar/sidebar.tsx`
+  - `components/providers/cart-context.tsx`
+  - `components/shared/filters/filter-hub.tsx` (split + moved route-private)
+- Shared-usage relocation:
+  - Moved `FilterHub` and most filter shared modules from `components/shared/filters/**` into `app/[locale]/(main)/_components/filters/**` where they are route-private.
+  - Moved `(main)`-only `filter-sort-bar.tsx` from `components/mobile/category-nav/` into `app/[locale]/(main)/_components/filters/filter-sort-bar.tsx`.
+  - Kept `components/shared/filters/controls/color-swatches.tsx` in `components/shared` due `styles:gate` raw-hex constraints for `app/**`.
+  - Kept `components/shared/filters/{controls/filter-checkbox-item.tsx,sections/filter-rating-section.tsx}` in `components/shared` to preserve boundary-safe test imports.
+- Dead code cleanup (grep + graph confirmed):
+  - No zero-import component files remained.
+  - Removed dead shared exports (types/helpers) across:
+    - `components/shared/account-menu-items.tsx`
+    - `components/shared/dropdown-product-item.tsx`
+    - `components/shared/order-list-item.tsx`
+    - `components/shared/product/card/{actions,desktop,image,mini,mobile,price,social-proof}.tsx`
+    - `components/shared/product/quick-view/product-quick-view-content.tsx`
+    - `components/shared/product/verified-seller-badge.tsx`
+    - `components/shared/user-avatar.tsx`
+- Tiny-file merge pass:
+  - Kept prior merge of condition badges into `components/shared/product/_lib/condition.ts`.
+  - Removed tiny one-off filter section file and consolidated section rendering.
+- `use client` audit:
+  - No additional safe removals remained after dependency/import-boundary checks.
+
+**File count delta:**
+- Source files (`app` + `components` + `lib` + `hooks`, ts/tsx): `920` → `934` (`+14` net)
+
+**Verification:**
+- `pnpm -s typecheck` ✅
+- `pnpm -s lint` ✅ (warnings only; no errors)
+- `pnpm -s styles:gate` ✅
+- `pnpm -s test:unit` ✅
+- `pnpm -s architecture:scan` ✅
+
+**Metrics snapshot (architecture:scan + local source count):**
+- Files: `934`
+- LOC (source): `~130K` (`130,427`)
+- `"use client"`: `222`
+- `>300` lines: `94`
+- `>500` lines: `14`
+- Tiny `<50L` files: `248`
+- Missing metadata: `53`
+- Clones: `233` (`2.73%`)
+
+**Remaining risks / follow-ups:**
+- Lint warnings remain high project-wide (no errors); follow-up should focus on owned warnings in Domain 6 scope.
+- Several non-priority component hotspots remain >300L (`sign-up-form-fields`, `account-drawer`, `wishlist-context`, `search-ai-chat`, `use-messages-state`).
+- Domain 6 should prioritize `lib/` + `actions/` + `api/` complexity and warning cleanup while preserving auth/payment constraints.

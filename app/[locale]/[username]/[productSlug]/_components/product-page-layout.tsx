@@ -13,8 +13,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { ProductHeaderSync } from "./pdp/product-header-sync";
 import { Star } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { getConditionBadgeVariant } from "@/components/shared/product/_lib/condition-badges";
-import { getConditionKey } from "@/components/shared/product/_lib/condition";
+import { getConditionBadgeVariant, getConditionKey } from "@/components/shared/product/_lib/condition";
 
 import { DesktopGallery } from "./desktop/desktop-gallery";
 import { DesktopBuyBox } from "./desktop/desktop-buy-box";

@@ -2,9 +2,7 @@
 
 import * as React from "react"
 import { useRef, useCallback, useEffect } from "react"
-import Image from "next/image"
-import dynamic from "next/dynamic"
-import { ArrowRight, Clock, Eye, Search as MagnifyingGlass, Package, Bot as Robot, TrendingUp as TrendUp, X } from "lucide-react";
+import { Search as MagnifyingGlass, Bot as Robot, X } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Switch } from "@/components/ui/switch"
@@ -15,18 +13,13 @@ import {
   PopoverContent,
   PopoverAnchor,
 } from "@/components/ui/popover"
-import { Link, useRouter } from "@/i18n/routing"
+import { useRouter } from "@/i18n/routing"
 import { useTranslations, useLocale } from "next-intl"
 import { useRecentlyViewed } from "@/hooks/use-recently-viewed"
 import { useProductSearch } from "@/hooks/use-product-search"
 
-const SearchAiChat = dynamic(
-  () => import("@/components/shared/search/ai/search-ai-chat").then((mod) => mod.SearchAiChat),
-  {
-    ssr: false,
-    loading: () => <div className="h-96 animate-pulse rounded-lg bg-muted" />,
-  }
-)
+import { buildProductUrl, buildSearchHref } from "./desktop-search-helpers"
+import { DesktopSearchPopoverPanel } from "./desktop-search-popover-panel"
 
 export function DesktopSearch() {
   const router = useRouter()
@@ -37,19 +30,12 @@ export function DesktopSearch() {
   const formRef = useRef<HTMLFormElement>(null)
   const searchInputId = "treido-desktop-search-input"
 
-  const buildSearchHref = useCallback((q: string) => {
-    const trimmed = q.trim()
-    if (!trimmed) return "/search"
-    return `/search?q=${encodeURIComponent(trimmed)}`
-  }, [])
-  
   const [isOpen, setIsOpen] = React.useState(false)
   const [aiMode, setAiMode] = React.useState(false)
   const [popoverWidth, setPopoverWidth] = React.useState(0)
-  
+
   const { products: recentlyViewed, clearProducts: clearRecentlyViewed } = useRecentlyViewed()
-  
-  // Use shared search hook
+
   const {
     query,
     setQuery,
@@ -65,8 +51,6 @@ export function DesktopSearch() {
   } = useProductSearch(6)
 
   const handleSearch = useCallback((e: React.FormEvent<HTMLFormElement>) => {
-    // Navigate via next-intl router so we always land on /[locale]/search.
-    // This also avoids relying on middleware redirects in dev/E2E.
     const raw = new FormData(e.currentTarget).get("q")
     const q = (typeof raw === "string" ? raw : (inputRef.current?.value ?? query)).trim()
     if (!q) {
@@ -78,30 +62,28 @@ export function DesktopSearch() {
     saveSearch(q)
     setIsOpen(false)
     router.push(buildSearchHref(q))
-  }, [buildSearchHref, query, router, saveSearch])
+  }, [query, router, saveSearch])
 
   const handleSelectSearch = useCallback((search: string) => {
     setQuery(search)
     saveSearch(search)
     setIsOpen(false)
     router.push(buildSearchHref(search))
-  }, [setQuery, saveSearch, router, buildSearchHref])
+  }, [setQuery, saveSearch, router])
 
-  // Build SEO-friendly product URL
-  const buildProductUrl = useCallback((product: { slug?: string; storeSlug?: string | null; id: string }) => {
-    if (!product.storeSlug) return "#"
-    return `/${product.storeSlug}/${product.slug || product.id}`
-  }, [])
-
-  const handleSelectProduct = useCallback((product: { id: string; slug?: string; storeSlug?: string | null; title: string; price: number; images: string[] }) => {
-    if (product) {
-      // Ensure slug has a fallback for saveProduct which expects required slug
-      saveProduct({ ...product, slug: product.slug || product.id })
-    }
+  const handleSelectProduct = useCallback((product: {
+    id: string
+    slug?: string
+    storeSlug?: string | null
+    title: string
+    price: number
+    images: string[]
+  }) => {
+    saveProduct({ ...product, slug: product.slug || product.id })
     setIsOpen(false)
     setQuery("")
     router.push(buildProductUrl(product))
-  }, [setQuery, router, saveProduct, buildProductUrl])
+  }, [setQuery, router, saveProduct])
 
   const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
     if (e.key === "Escape") {
@@ -115,7 +97,6 @@ export function DesktopSearch() {
     inputRef.current?.focus()
   }, [setQuery])
 
-  // Measure form width for popover to match search bar width
   useEffect(() => {
     const measureWidth = () => {
       if (formRef.current) {
@@ -127,13 +108,11 @@ export function DesktopSearch() {
     return () => window.removeEventListener("resize", measureWidth)
   }, [])
 
-
-
   return (
     <div className="w-full" data-desktop-search>
       <Popover open={isOpen} onOpenChange={setIsOpen}>
         <PopoverAnchor asChild>
-          <form 
+          <form
             ref={formRef}
             onSubmit={handleSearch}
             action={`/${locale}/search`}
@@ -145,17 +124,17 @@ export function DesktopSearch() {
               className="absolute left-4 text-search-placeholder pointer-events-none"
             />
 
-              <FieldLabel htmlFor={searchInputId} className="sr-only">
-                {tNav("search")}
-              </FieldLabel>
-              <Input
-                id={searchInputId}
+            <FieldLabel htmlFor={searchInputId} className="sr-only">
+              {tNav("search")}
+            </FieldLabel>
+            <Input
+              id={searchInputId}
               ref={inputRef}
               type="search"
               inputMode="search"
               enterKeyHint="search"
               name="q"
-                placeholder={tNav("searchPlaceholder")}
+              placeholder={tNav("searchPlaceholder")}
               className="h-full w-full rounded-full border-0 bg-transparent pl-11 pr-24 text-sm text-search-text placeholder:text-search-placeholder focus-visible:border-0 focus-visible:ring-0"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
@@ -163,14 +142,14 @@ export function DesktopSearch() {
               onClick={() => setIsOpen(true)}
               onKeyDown={handleKeyDown}
               autoComplete="off"
-                aria-label={tNav("search")}
+              aria-label={tNav("search")}
             />
 
             {query && (
-                <button
+              <button
                 type="button"
                 onClick={handleClearInput}
-                  aria-label={tNav("clearSearch")}
+                aria-label={tNav("clearSearch")}
                 className="absolute top-1/2 right-24 -translate-y-1/2 rounded-sm text-muted-foreground tap-transparent motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth) motion-reduce:transition-none hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
               >
                 <X size={16} />
@@ -181,7 +160,10 @@ export function DesktopSearch() {
               <Robot size={14} className={aiMode ? "text-primary" : "text-muted-foreground"} />
               <Switch
                 checked={aiMode}
-                onCheckedChange={(checked) => { setAiMode(checked); setIsOpen(true); }}
+                onCheckedChange={(checked) => {
+                  setAiMode(checked)
+                  setIsOpen(true)
+                }}
                 aria-label={tSearch("aiMode")}
               />
             </div>
@@ -205,247 +187,24 @@ export function DesktopSearch() {
           sideOffset={4}
           onOpenAutoFocus={(e) => e.preventDefault()}
         >
-          {aiMode ? (
-            <SearchAiChat 
-              onClose={() => setIsOpen(false)} 
-              className="h-96"
-            />
-          ) : (
-          <>
-          <div className="max-h-(--spacing-scroll-xl) overflow-y-auto">
-            {/* Live Product Results */}
-            {products.length > 0 && (
-              <div className="border-b border-border">
-                <div className="flex items-center justify-between px-4 py-2.5 bg-surface-subtle">
-                  <span className="flex items-center gap-2 text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                    <Package size={14} />
-                    {tSearch("products")}
-                  </span>
-                  <Link 
-                    href={buildSearchHref(query)}
-                    className="flex items-center gap-1 rounded-sm text-xs text-primary tap-transparent motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth) motion-reduce:transition-none hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
-                    onClick={() => setIsOpen(false)}
-                  >
-                    {tSearch("viewAll")}
-                    <ArrowRight size={12} />
-                  </Link>
-                </div>
-                <div className="p-2">
-                  {products.map((product) => (
-                    <button
-                      key={product.id}
-                      type="button"
-                      onClick={() => handleSelectProduct(product)}
-                      className="group flex w-full items-center gap-3 rounded-lg p-2.5 text-left tap-transparent motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth) motion-reduce:transition-none hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
-                    >
-                      <div className="w-12 h-12 bg-muted rounded-lg overflow-hidden shrink-0 ring-1 ring-border">
-                        {product.images?.[0] ? (
-                          <Image
-                            src={product.images[0]}
-                            alt={product.title}
-                            width={48}
-                            height={48}
-                            className="w-full h-full object-cover"
-                          />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center">
-                            <Package size={20} className="text-muted-foreground" />
-                          </div>
-                        )}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium truncate text-foreground group-hover:text-primary">
-                          {product.title}
-                        </p>
-                        <p className="text-sm font-bold text-price-sale">
-                          {formatPrice(product.price)}
-                        </p>
-                      </div>
-                      <ArrowRight size={16} className="text-muted-foreground opacity-0 motion-safe:transition-opacity motion-safe:duration-fast motion-safe:ease-(--ease-smooth) motion-reduce:transition-none group-hover:opacity-100" />
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Recently Viewed Products */}
-            {recentlyViewed.length > 0 && !query && (
-              <div className="border-b border-border">
-                <div className="flex items-center justify-between px-4 py-2.5 bg-surface-subtle">
-                  <span className="flex items-center gap-2 text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                    <Eye size={14} />
-                    {tSearch("recentlyViewed")}
-                  </span>
-                  <button
-                    type="button"
-                    onClick={clearRecentlyViewed}
-                    className="rounded-sm text-xs text-muted-foreground tap-transparent motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth) motion-reduce:transition-none hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
-                  >
-                    {tSearch("clear")}
-                  </button>
-                </div>
-                <div className="p-2">
-                  <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-muted scrollbar-track-transparent">
-                    {recentlyViewed.slice(0, 6).map((product) => (
-                      <Link
-                        key={product.id}
-                        href={buildProductUrl(product)}
-                        onClick={() => setIsOpen(false)}
-                        className="group w-24 shrink-0 rounded-md tap-transparent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
-                      >
-                        <div className="w-24 h-24 bg-muted rounded-lg overflow-hidden ring-1 ring-border">
-                          {product.image ? (
-                            <Image
-                              src={product.image}
-                              alt={product.title}
-                              width={96}
-                              height={96}
-                              className="w-full h-full object-cover"
-                            />
-                          ) : (
-                            <div className="w-full h-full flex items-center justify-center">
-                              <Package size={24} className="text-muted-foreground" />
-                            </div>
-                          )}
-                        </div>
-                        <p className="mt-1.5 text-xs text-foreground line-clamp-2 group-hover:text-primary group-hover:underline">
-                          {product.title}
-                        </p>
-                        <p className="text-xs font-semibold text-price-sale">
-                          {formatPrice(product.price)}
-                        </p>
-                      </Link>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Recent Searched Products */}
-            {recentProducts.length > 0 && !query && (
-              <div className="border-b border-border">
-                <div className="flex items-center justify-between px-4 py-2.5 bg-surface-subtle">
-                  <span className="flex items-center gap-2 text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                    <Clock size={14} />
-                    {tSearch("recentSearches")}
-                  </span>
-                  <button
-                    type="button"
-                    onClick={clearRecentProducts}
-                    className="rounded-sm text-xs text-muted-foreground tap-transparent motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth) motion-reduce:transition-none hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
-                  >
-                    {tSearch("clear")}
-                  </button>
-                </div>
-                <div className="p-2">
-                  <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-muted scrollbar-track-transparent">
-                    {recentProducts.map((product) => (
-                      <Link
-                        key={product.id}
-                        href={buildProductUrl(product)}
-                        onClick={() => setIsOpen(false)}
-                        className="group w-24 shrink-0 rounded-md tap-transparent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
-                      >
-                        <div className="w-24 h-24 bg-muted rounded-lg overflow-hidden ring-1 ring-border">
-                          {product.image ? (
-                            <Image
-                              src={product.image}
-                              alt={product.title}
-                              width={96}
-                              height={96}
-                              className="w-full h-full object-cover"
-                            />
-                          ) : (
-                            <div className="w-full h-full flex items-center justify-center">
-                              <Package size={24} className="text-muted-foreground" />
-                            </div>
-                          )}
-                        </div>
-                        <p className="mt-1.5 text-xs text-foreground line-clamp-2 group-hover:text-primary group-hover:underline">
-                          {product.title}
-                        </p>
-                        <p className="text-xs font-semibold text-price-sale">
-                          {formatPrice(product.price)}
-                        </p>
-                      </Link>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Trending Searches */}
-            {!query && (
-              <div>
-                <div className="flex items-center gap-2 px-4 py-2.5 bg-surface-subtle">
-                  <span className="flex items-center gap-2 text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                    <TrendUp size={14} />
-                    {tSearch("trending")}
-                  </span>
-                </div>
-                <div className="p-1">
-                  {trendingSearches.map((search, i) => (
-                    <button
-                      key={`trending-${i}`}
-                      type="button"
-                      onClick={() => handleSelectSearch(search)}
-                      className="group flex w-full items-center gap-3 rounded-md px-3 py-2 text-left tap-transparent motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth) motion-reduce:transition-none hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
-                    >
-                      <div className="w-5 h-5 rounded-full bg-primary flex items-center justify-center text-xs font-bold text-primary-foreground">
-                        {i + 1}
-                      </div>
-                      <span className="text-sm text-foreground group-hover:text-primary flex-1">
-                        {search}
-                      </span>
-                      <ArrowRight size={14} className="text-muted-foreground opacity-0 motion-safe:transition-opacity motion-safe:duration-fast motion-safe:ease-(--ease-smooth) motion-reduce:transition-none group-hover:opacity-100" />
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Loading State */}
-            {isSearching && query && (
-              <div className="px-4 py-8 text-center">
-                <div className="inline-flex items-center gap-2 text-sm text-muted-foreground">
-                  <div className="size-4 rounded-full border-2 border-border border-t-primary motion-safe:animate-spin motion-reduce:animate-none" />
-                  {tSearch("searching")}
-                </div>
-              </div>
-            )}
-
-            {/* No Results */}
-            {!isSearching && query && query.length >= minSearchLength && products.length === 0 && (
-              <div className="px-4 py-8 text-center">
-                <Package size={40} className="text-muted-foreground mx-auto mb-2" />
-                <p className="text-sm text-muted-foreground">
-                  {tSearch("noResultsFor", { query })}
-                </p>
-                <p className="text-xs text-muted-foreground mt-1">
-                  {tSearch("tryDifferent")}
-                </p>
-              </div>
-            )}
-          </div>
-
-          {/* Keyboard Hint */}
-          <div className="px-4 py-2 bg-surface-subtle border-t border-border flex items-center justify-between text-xs text-muted-foreground">
-            <span>
-              {tSearch("press")} {" "}
-              <kbd className="px-1.5 py-0.5 bg-background rounded border text-xs font-mono">
-                Enter
-              </kbd>{" "}
-              {tSearch("toSearch")}
-            </span>
-            <span>
-              <kbd className="px-1.5 py-0.5 bg-background rounded border text-xs font-mono">
-                Esc
-              </kbd>{" "}
-              {tSearch("toClose")}
-            </span>
-          </div>
-          </>
-          )}
+          <DesktopSearchPopoverPanel
+            aiMode={aiMode}
+            query={query}
+            products={products}
+            recentlyViewed={recentlyViewed}
+            recentProducts={recentProducts}
+            trendingSearches={trendingSearches}
+            isSearching={isSearching}
+            minSearchLength={minSearchLength}
+            formatPrice={formatPrice}
+            buildSearchHref={buildSearchHref}
+            buildProductUrl={buildProductUrl}
+            onClose={() => setIsOpen(false)}
+            onSelectSearch={handleSelectSearch}
+            onSelectProduct={handleSelectProduct}
+            onClearRecentlyViewed={clearRecentlyViewed}
+            onClearRecentProducts={clearRecentProducts}
+          />
         </PopoverContent>
       </Popover>
     </div>

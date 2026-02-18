@@ -28,7 +28,7 @@ async function copyToClipboard(text: string) {
   document.body.removeChild(el)
 }
 
-export interface ProductQuickViewContentProps {
+interface ProductQuickViewContentProps {
   product: QuickViewProduct
   productPath: string
   onRequestClose?: () => void

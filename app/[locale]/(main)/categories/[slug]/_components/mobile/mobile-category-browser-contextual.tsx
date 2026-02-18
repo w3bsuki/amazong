@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react"
+import { useCallback, useEffect, useMemo, useState } from "react"
 import type { CategoryTreeNode } from "@/lib/category-tree"
 import type { UIProduct } from "@/lib/data/products"
 import type { CategoryAttribute } from "@/lib/data/categories"
@@ -11,7 +11,7 @@ import { useInstantCategoryBrowse } from "@/hooks/use-instant-category-browse"
 import { getCategoryName, getCategorySlugKey } from "@/lib/category-display"
 import { useCategoryDrawerOptional } from "@/components/mobile/category-nav"
 import { MobileCategoryBrowserContextualView } from "./mobile-category-browser-contextual-view"
-import type { DrilldownSegment, DrilldownOption } from "@/components/mobile/category-nav/category-drilldown-rail"
+import type { CategoryOptionItem, SectionPathSegment } from "@/components/mobile/category-nav/category-drilldown-rail"
 import {
   buildQuickAttributePills,
   buildScopedDrawerCategory,
@@ -94,14 +94,11 @@ export function MobileCategoryBrowserContextual({
     initialProducts,
   })
 
+  // Section path tracks L2+ depth from route category — shown as compound pill in rail
+  const [sectionPath, setSectionPath] = useState<SectionPathSegment[]>([])
+
   const fallbackParentHref = routeParentContext?.slug ? `/categories/${routeParentContext.slug}` : null
   const backHref = contextualBackHref || fallbackParentHref || `/categories`
-  const categoryNavigationRef = useRef({
-    parentSlug: instant.parent?.slug ?? null,
-    fallbackParentHref,
-    backHref,
-    setCategorySlug: instant.setCategorySlug,
-  })
 
   const effectiveAttributes = instant.attributes.length ? instant.attributes : filterableAttributes
   const currentScopeParent = useMemo<ScopeCategory | null>(() => {
@@ -124,48 +121,17 @@ export function MobileCategoryBrowserContextual({
   )
 
   // ---------------------------------------------------------------------------
-  // Drilldown state — compound breadcrumb pill
+  // Flat option rail — no breadcrumb, just forward choices
   // ---------------------------------------------------------------------------
-  const [drilldownPath, setDrilldownPath] = useState<DrilldownSegment[]>([])
-  const drilldownPathRef = useRef(drilldownPath)
+  const isLeafNode = instant.children.length === 0
+  const currentCategoryLabel = instant.activeCategoryName ?? contextualInitialTitle
 
-  useEffect(() => {
-    drilldownPathRef.current = drilldownPath
-  }, [drilldownPath])
+  // At leaf: show current as active pill among siblings. At non-leaf: show "All" as active.
+  const railActiveLabel = isLeafNode
+    ? currentCategoryLabel
+    : tCategories("all")
 
-  // Reset drilldown when route slug changes (full page navigation)
-  useEffect(() => {
-    setDrilldownPath([])
-  }, [initialProductsSlug])
-
-  // Sync drilldown path on browser back/forward (popstate)
-  useEffect(() => {
-    const handlePopState = () => {
-      const path = window.location.pathname
-      const match = path.match(/\/categories\/([^/?]+)/)
-      const urlSlug = match?.[1] ? decodeURIComponent(match[1]) : null
-
-      if (!urlSlug) return
-
-      // Find the slug in the current drilldown path
-      const currentPath = drilldownPathRef.current
-      const idx = currentPath.findIndex((seg) => seg.slug === urlSlug)
-
-      if (idx >= 0) {
-        // User went back to a previous drilldown level — trim to that point
-        setDrilldownPath(currentPath.slice(0, idx + 1))
-      } else if (urlSlug === initialProductsSlug) {
-        // User went all the way back to the root route
-        setDrilldownPath([])
-      }
-      // Otherwise the URL is for a category not in the drilldown path — leave as-is
-    }
-
-    window.addEventListener("popstate", handlePopState)
-    return () => window.removeEventListener("popstate", handlePopState)
-  }, [initialProductsSlug])
-
-  const drilldownOptions: DrilldownOption[] = useMemo(
+  const railOptions: CategoryOptionItem[] = useMemo(
     () =>
       railCategories
         .filter((cat) => cat.slug !== instant.categorySlug)
@@ -180,50 +146,31 @@ export function MobileCategoryBrowserContextual({
     [railCategories, tCategories, locale, instant.categorySlug]
   )
 
-  const drilldownAllLabel = tCategories("all")
-
-  const handleDrillDown = useCallback(
-    (slug: string, label: string) => {
-      setDrilldownPath((prev) => [...prev, { slug, label }])
-      void instant.setCategorySlug(slug, { clearAttrFilters: true })
-    },
-    [instant]
-  )
-
-  const handleDrillBack = useCallback(() => {
-    const currentPath = drilldownPathRef.current
-    const newPath = currentPath.slice(0, -1)
-    setDrilldownPath(newPath)
-
-    if (newPath.length > 0) {
-      const target = newPath[newPath.length - 1]
-      if (target) {
-        void instant.setCategorySlug(target.slug, {
-          clearAttrFilters: true,
+  const handleOptionSelect = useCallback(
+    (slug: string) => {
+      const option = railOptions.find(o => o.slug === slug)
+      if (option) {
+        setSectionPath(prev => {
+          const isDrillingDeeper = instant.children.length > 0
+          if (isDrillingDeeper || prev.length === 0) {
+            return [...prev, { slug, label: option.label }]
+          }
+          // Switching to sibling — replace last entry
+          return [...prev.slice(0, -1), { slug, label: option.label }]
         })
       }
-    } else {
-      void instant.setCategorySlug(initialProductsSlug, {
-        clearAttrFilters: true,
-      })
-    }
-  }, [initialProductsSlug, instant])
-
-  const handleSegmentTap = useCallback(
-    (index: number) => {
-      const currentPath = drilldownPathRef.current
-      const newPath = currentPath.slice(0, index + 1)
-      setDrilldownPath(newPath)
-
-      const target = newPath[newPath.length - 1]
-      if (target) {
-        void instant.setCategorySlug(target.slug, { clearAttrFilters: true })
-      } else {
-        void instant.setCategorySlug(initialProductsSlug, { clearAttrFilters: true })
-      }
+      void instant.setCategorySlug(slug, { clearAttrFilters: true })
     },
-    [initialProductsSlug, instant]
+    [instant, railOptions]
   )
+
+  const handleSectionBack = useCallback(() => {
+    if (sectionPath.length === 0) return
+    const next = sectionPath.slice(0, -1)
+    setSectionPath(next)
+    const targetSlug = next[next.length - 1]?.slug ?? initialProductsSlug
+    void instant.setCategorySlug(targetSlug, { clearAttrFilters: true })
+  }, [instant, initialProductsSlug, sectionPath])
 
   const scopedDrawerCategory = useMemo(
     () =>
@@ -272,27 +219,9 @@ export function MobileCategoryBrowserContextual({
     await instant.setFilters(new URLSearchParams())
   }
 
-  useEffect(() => {
-    categoryNavigationRef.current = {
-      parentSlug: instant.parent?.slug ?? null,
-      fallbackParentHref,
-      backHref,
-      setCategorySlug: instant.setCategorySlug,
-    }
-  }, [backHref, fallbackParentHref, instant.parent?.slug, instant.setCategorySlug])
-
-  const handleBack = useCallback(async () => {
-    const navigation = categoryNavigationRef.current
-    if (navigation.parentSlug) {
-      await navigation.setCategorySlug(navigation.parentSlug, { clearAttrFilters: true })
-      return
-    }
-    if (navigation.fallbackParentHref) {
-      router.push(navigation.fallbackParentHref)
-      return
-    }
-    router.push(navigation.backHref)
-  }, [router])
+  const handleBack = useCallback(() => {
+    router.push(backHref)
+  }, [router, backHref])
 
   const handleScopeMoreClick = useCallback(() => {
     if (!categoryDrawer) return
@@ -303,11 +232,19 @@ export function MobileCategoryBrowserContextual({
     categoryDrawer.openRoot()
   }, [categoryDrawer, scopedDrawerCategory])
 
+  // Header: locked at route-level "Parent › Category" — stable section anchor
+  const parentDisplayName = routeParentContext
+    ? getCategoryName(routeParentContext, locale)
+    : null
+  const headerTitle = parentDisplayName
+    ? `${parentDisplayName} › ${contextualInitialTitle}`
+    : contextualInitialTitle
+
   useEffect(() => {
     setHeaderState({
       type: "contextual",
       value: {
-        title: instant.categoryTitle || contextualInitialTitle,
+        title: headerTitle,
         backHref,
         onBack: handleBack,
         activeSlug: instant.activeSlug,
@@ -315,10 +252,9 @@ export function MobileCategoryBrowserContextual({
     })
   }, [
     backHref,
-    contextualInitialTitle,
     handleBack,
+    headerTitle,
     instant.activeSlug,
-    instant.categoryTitle,
     setHeaderState,
   ])
 
@@ -329,12 +265,11 @@ export function MobileCategoryBrowserContextual({
   return (
     <MobileCategoryBrowserContextualView
       locale={locale}
-      drilldownPath={drilldownPath}
-      drilldownOptions={drilldownOptions}
-      drilldownAllLabel={drilldownAllLabel}
-      onDrillDown={handleDrillDown}
-      onDrillBack={handleDrillBack}
-      onSegmentTap={handleSegmentTap}
+      railActiveLabel={railActiveLabel}
+      railOptions={railOptions}
+      onOptionSelect={handleOptionSelect}
+      sectionPath={sectionPath}
+      onSectionBack={handleSectionBack}
       canOpenScopeDrawer={Boolean(categoryDrawer)}
       onScopeMoreClick={handleScopeMoreClick}
       navigationAriaLabel={tCategories("navigationAriaLabel")}

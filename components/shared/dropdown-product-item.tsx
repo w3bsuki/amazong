@@ -4,7 +4,7 @@ import { Package, Trash } from "lucide-react";
 
 import type { ReactNode } from "react"
 
-export interface DropdownItemData {
+interface DropdownItemData {
   id: string
   title: string
   price: number

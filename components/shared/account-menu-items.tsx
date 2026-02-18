@@ -4,7 +4,7 @@ import { ChevronRight as CaretRight } from "lucide-react"
 import { Link } from "@/i18n/routing"
 import { cn } from "@/lib/utils"
 
-export interface AccountDropdownMenuItem {
+interface AccountDropdownMenuItem {
   href: string
   label: string
   icon: LucideIcon

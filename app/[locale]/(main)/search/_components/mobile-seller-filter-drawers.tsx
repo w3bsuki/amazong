@@ -8,7 +8,7 @@ import {
   DrawerTitle,
 } from "@/components/ui/drawer"
 import { FilterCheckboxItem } from "@/components/shared/filters/controls/filter-checkbox-item"
-import { FilterRadioGroup, FilterRadioItem } from "@/components/shared/filters/controls/filter-radio-group"
+import { FilterRadioGroup, FilterRadioItem } from "../../_components/filters/shared/controls/filter-radio-group"
 import type { SellerSortKey } from "../_lib/types"
 
 type Translate = (key: string, values?: Record<string, string | number | Date>) => string

@@ -5,7 +5,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { AVATAR_VARIANTS, COLOR_PALETTES, type AvatarVariant } from "@/lib/avatar-palettes"
 import { cn, safeAvatarSrc } from "@/lib/utils"
 
-export type UserAvatarSize = "sm" | "md" | "lg" | "xl"
+type UserAvatarSize = "sm" | "md" | "lg" | "xl"
 
 const SIZE_CLASSES: Record<UserAvatarSize, string> = {
   sm: "size-8",
@@ -49,7 +49,7 @@ function getPaletteIndexFromSeed(seed: string): number {
   return hash % COLOR_PALETTES.length
 }
 
-export type UserAvatarProps = {
+type UserAvatarProps = {
   name: string
   avatarUrl?: string | null
   size?: UserAvatarSize

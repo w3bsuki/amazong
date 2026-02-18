@@ -69,4 +69,4 @@ function ProductCardSocialProof({
 // EXPORTS
 // =============================================================================
 
-export { ProductCardSocialProof, type ProductCardSocialProofProps }
+export { ProductCardSocialProof }

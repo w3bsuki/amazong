@@ -28,7 +28,7 @@ import { VerifiedSellerBadge } from "../verified-seller-badge"
 import { getConditionKey } from "../_lib/condition"
 import type { ProductCardBaseProps } from "./types"
 
-export type DesktopProductCardProps = ProductCardBaseProps
+type DesktopProductCardProps = ProductCardBaseProps
 
 export function DesktopProductCard({
   id,
@@ -309,4 +309,3 @@ export function DesktopProductCard({
   )
 }
 
-export type { ProductCardData } from "./types"
