@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server"
-import { updateOrderItemStatus } from "@/app/actions/orders"
+import { updateOrderItemStatus } from "@/app/actions/orders-status"
 import { orderItemIdParamSchema, shipOrderPayloadSchema } from "@/lib/validation/orders"
 
 

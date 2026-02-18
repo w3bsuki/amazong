@@ -1,5 +1,3 @@
-"use server"
-
 import { requireAuth } from "@/lib/auth/require-auth"
 import type { SupabaseClient } from "@supabase/supabase-js"
 import type { Database } from "@/lib/supabase/database.types"

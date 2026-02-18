@@ -1,5 +1,3 @@
-"use server"
-
 import { requireAuth } from "@/lib/auth/require-auth"
 import { revalidateTag } from "next/cache"
 import type { SupabaseClient } from "@supabase/supabase-js"

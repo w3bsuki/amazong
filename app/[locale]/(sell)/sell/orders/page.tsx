@@ -1,13 +1,9 @@
 import { createClient } from "@/lib/supabase/server"
 import { setRequestLocale } from "next-intl/server"
 import { redirect, validateLocale } from "@/i18n/routing"
-import {
-  canSellerRateBuyer,
-  getOrderConversation,
-  getSellerOrders,
-  getSellerOrderStats,
-  updateOrderItemStatus,
-} from "@/app/actions/orders"
+import { getOrderConversation, getSellerOrders, getSellerOrderStats } from "@/app/actions/orders-reads"
+import { canSellerRateBuyer } from "@/app/actions/orders-rating"
+import { updateOrderItemStatus } from "@/app/actions/orders-status"
 import { submitBuyerFeedback } from "@/app/actions/buyer-feedback"
 import { SellerOrdersClient } from "./seller-orders-client"
 

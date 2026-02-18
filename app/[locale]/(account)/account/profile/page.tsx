@@ -12,13 +12,17 @@ import {
 } from "@/app/actions/profile"
 import {
   checkUsernameAvailability,
-  downgradeToPersonalAccount,
   getUsernameChangeCooldown,
+} from "@/app/actions/username-availability"
+import {
+  downgradeToPersonalAccount,
   setUsername,
-  updatePublicProfile,
   upgradeToBusinessAccount,
+} from "@/app/actions/username-account"
+import {
+  updatePublicProfile,
   uploadBanner,
-} from "@/app/actions/username"
+} from "@/app/actions/username-profile"
 
 interface ProfilePageProps {
   params: Promise<{

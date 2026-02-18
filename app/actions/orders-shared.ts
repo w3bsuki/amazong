@@ -1,5 +1,3 @@
-"use server"
-
 import type { OrderItemStatus } from "@/lib/order-status"
 
 export interface OrderItem {

@@ -1,13 +1,10 @@
 import { Suspense } from "react"
 import { createClient } from "@/lib/supabase/server"
 import { redirect } from "@/i18n/routing"
-import {
-  buyerConfirmDelivery,
-  canBuyerRateSeller,
-  getOrderConversation,
-  reportOrderIssue,
-  requestOrderCancellation,
-} from "@/app/actions/orders"
+import { getOrderConversation } from "@/app/actions/orders-reads"
+import { canBuyerRateSeller } from "@/app/actions/orders-rating"
+import { requestOrderCancellation, reportOrderIssue } from "@/app/actions/orders-support"
+import { buyerConfirmDelivery } from "@/app/actions/orders-status"
 import { submitSellerFeedback } from "@/app/actions/seller-feedback"
 import { AccountOrdersToolbar } from "./_components/account-orders-toolbar"
 import { AccountOrdersStats } from "./_components/account-orders-stats"

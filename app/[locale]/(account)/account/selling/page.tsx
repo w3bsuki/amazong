@@ -1,12 +1,9 @@
 import { createClient } from "@/lib/supabase/server"
 import { Link, redirect } from "@/i18n/routing"
 import { getTranslations } from "next-intl/server"
-import {
-  bulkUpdateProductStatus,
-  clearProductDiscount,
-  deleteProduct,
-  setProductDiscountPrice,
-} from "@/app/actions/products"
+import { bulkUpdateProductStatus } from "@/app/actions/products-bulk"
+import { clearProductDiscount, setProductDiscountPrice } from "@/app/actions/products-discounts"
+import { deleteProduct } from "@/app/actions/products-update"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
