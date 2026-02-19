@@ -4,12 +4,33 @@ import { cacheLife, cacheTag } from "next/cache"
 import { createStaticClient } from "@/lib/supabase/server"
 import { logger } from "@/lib/logger"
 import { getShippingFilter, type ShippingRegion } from "@/lib/shipping"
-import {
-  PRODUCT_LIST_BY_CATEGORY_SLUG_SELECT,
-  PRODUCT_LIST_SELECT,
-} from "@/lib/supabase/selects/products"
 import type { Product } from "./types"
 import { mapRowToProduct } from "./normalize"
+
+const CATEGORY_WITH_PARENT_CHAIN_SELECT =
+  `id,slug,name,name_bg,icon,
+   parent:categories!parent_id(
+     id,slug,name,name_bg,icon,
+     parent:categories!parent_id(
+       id,slug,name,name_bg,icon,
+       parent:categories!parent_id(
+         id,slug,name,name_bg,icon,
+         parent:categories!parent_id(
+           id,slug,name,name_bg,icon
+         )
+       )
+     )
+   )` as const
+
+const PRODUCT_LIST_SELECT =
+  `id, title, price, seller_id, list_price, is_on_sale, sale_percent, sale_end_date, rating, review_count, images, is_boosted, boost_expires_at, created_at, ships_to_bulgaria, ships_to_uk, ships_to_europe, ships_to_usa, ships_to_worldwide, pickup_only, free_shipping, category_id, slug,
+   seller:profiles!seller_id(id,username,avatar_url,tier,account_type,is_verified_business,user_verification(email_verified,phone_verified,id_verified)),
+   categories(${CATEGORY_WITH_PARENT_CHAIN_SELECT})` as const
+
+const PRODUCT_LIST_BY_CATEGORY_SLUG_SELECT =
+  `id, title, price, seller_id, list_price, is_on_sale, sale_percent, sale_end_date, rating, review_count, images, is_boosted, boost_expires_at, created_at, ships_to_bulgaria, ships_to_uk, ships_to_europe, ships_to_usa, ships_to_worldwide, pickup_only, free_shipping, category_id, slug,
+   seller:profiles!seller_id(id,username,avatar_url,tier,account_type,is_verified_business,user_verification(email_verified,phone_verified,id_verified)),
+   categories!inner(${CATEGORY_WITH_PARENT_CHAIN_SELECT})` as const
 
 /**
  * Public browsing surfaces must not show non-active listings.

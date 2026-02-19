@@ -1,18 +1,27 @@
 import { NextRequest, NextResponse } from "next/server"
 import { generateObject } from "ai"
+import { z } from "zod"
 
 import { isAiAssistantEnabled } from "@/lib/ai/env"
 import { getAiVisionModel } from "@/lib/ai/models"
-import {
-  FindSimilarExtractedSchema,
-  FindSimilarRequestSchema,
-} from "@/lib/ai/schemas/find-similar"
 import { searchListings } from "@/lib/ai/tools/search-listings"
 import { isSafeUserProvidedUrl } from "@/lib/ai/safe-url"
 import { noStoreJson } from "@/lib/api/response-helpers"
 import { isNextPrerenderInterrupted } from "@/lib/next/is-next-prerender-interrupted"
 import { logger } from "@/lib/logger"
 import { createRouteHandlerClient } from "@/lib/supabase/server"
+
+const FindSimilarRequestSchema = z.object({
+  imageUrl: z.string().url().max(2048),
+  limit: z.coerce.number().int().min(1).max(20).optional(),
+})
+
+const FindSimilarExtractedSchema = z.object({
+  query: z.string().trim().min(2).max(80),
+  categoryHint: z.string().trim().min(2).max(120).optional(),
+  brandHint: z.string().trim().min(2).max(80).optional(),
+  keywords: z.array(z.string().trim().min(2).max(32)).max(12).optional(),
+})
 
 export async function POST(request: NextRequest) {
   const { supabase, applyCookies } = createRouteHandlerClient(request)
