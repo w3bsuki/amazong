@@ -20,6 +20,11 @@ interface PlansPageProps {
   }>
 }
 
+export const metadata = {
+  title: "Plans | Treido",
+  description: "Manage your subscription and plan.",
+}
+
 export default async function PlansPage({ params }: PlansPageProps) {
   const { locale: localeParam } = await params
   const locale = localeParam === "bg" ? "bg" : "en"

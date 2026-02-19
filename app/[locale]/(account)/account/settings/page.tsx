@@ -4,6 +4,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 
+export const metadata = {
+  title: "Settings | Treido",
+  description: "Manage your account settings.",
+}
+
 export default async function AccountSettingsPage({
   params,
   searchParams,

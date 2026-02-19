@@ -9,6 +9,11 @@ export function generateStaticParams() {
   return locales.map((locale) => ({ locale, id: "__placeholder__" }))
 }
 
+export const metadata = {
+  title: "Edit Listing | Treido",
+  description: "Edit your listing details on Treido.",
+}
+
 export default async function EditProductPage({ params }: { params: Promise<{ id: string; locale: string }> }) {
   const { id, locale: localeParam } = await params
   const locale = localeParam === "bg" ? "bg" : "en"

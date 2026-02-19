@@ -40,6 +40,11 @@ function buildGeneratedAvatar(seed: string): string {
   return `boring-avatar:marble:${paletteIndex}:${safeSeed}`
 }
 
+export const metadata = {
+  title: "Profile | Treido",
+  description: "Manage your Treido profile information.",
+}
+
 export default async function ProfilePage({ params }: ProfilePageProps) {
   const { locale: localeParam } = await params
   const locale = localeParam === "bg" ? "bg" : "en"

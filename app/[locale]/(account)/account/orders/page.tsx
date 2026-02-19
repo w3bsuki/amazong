@@ -88,6 +88,11 @@ interface OrdersPageProps {
   searchParams?: Promise<{ q?: string; status?: string }>
 }
 
+export const metadata = {
+  title: "Orders | Treido",
+  description: "View and track your Treido orders.",
+}
+
 export default async function OrdersPage({ params, searchParams }: OrdersPageProps) {
   const { locale: localeParam } = await params
   const locale = localeParam === "bg" ? "bg" : "en"

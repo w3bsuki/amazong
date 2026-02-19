@@ -26,6 +26,11 @@ interface SalesPageProps {
   }>
 }
 
+export const metadata = {
+  title: "Sales | Treido",
+  description: "View and manage your sales activity.",
+}
+
 export default async function SalesPage({ params, searchParams }: SalesPageProps) {
   const { locale } = await params
   const { period = "30d" } = await searchParams

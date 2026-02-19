@@ -14,6 +14,11 @@ interface WishlistPageProps {
   }>
 }
 
+export const metadata = {
+  title: "Wishlist | Treido",
+  description: "View and manage your saved items.",
+}
+
 export default async function WishlistPage({ params, searchParams }: WishlistPageProps) {
   const { locale: localeParam } = await params
   const locale = localeParam === "bg" ? "bg" : "en"

@@ -81,6 +81,11 @@ interface Order {
   order_items: OrderItem[]
 }
 
+export const metadata = {
+  title: "Order Details | Treido",
+  description: "View order details and delivery status.",
+}
+
 export default async function OrderDetailPage({ params }: OrderDetailPageProps) {
   const { locale: localeParam, id } = await params
   const locale = localeParam === "bg" ? "bg" : "en"

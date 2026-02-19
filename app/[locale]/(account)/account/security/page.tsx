@@ -3,6 +3,11 @@ import { redirect } from "@/i18n/routing"
 import { setRequestLocale } from "next-intl/server"
 import { SecurityContent } from "./security-content"
 
+export const metadata = {
+  title: "Security | Treido",
+  description: "Update your password and security settings.",
+}
+
 export default async function SecurityPage({
     params,
 }: {

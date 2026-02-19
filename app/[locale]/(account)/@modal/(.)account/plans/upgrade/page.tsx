@@ -91,6 +91,11 @@ function UpgradeLoadingFallback({ label }: { label: string }) {
  * This page is shown as a modal overlay when navigating from within the app.
  * When accessed directly (or on refresh), the user sees the full page version.
  */
+export const metadata = {
+  title: "Upgrade Plan | Treido",
+  description: "Upgrade your Treido plan.",
+}
+
 export default async function InterceptedUpgradePage() {
   const tCommon = await getTranslations("Common")
 

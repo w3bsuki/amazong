@@ -41,6 +41,11 @@ interface Product {
   } | null
 }
 
+export const metadata = {
+  title: "Selling | Treido",
+  description: "Manage your listings and selling activity.",
+}
+
 export default async function SellingPage({ params }: SellingPageProps) {
   const { locale } = await params
   const t = await getTranslations({ locale, namespace: "SellerManagement" })

@@ -10,6 +10,11 @@ interface FollowingPageProps {
   }>
 }
 
+export const metadata = {
+  title: "Following | Treido",
+  description: "Manage the sellers and stores you follow.",
+}
+
 export default async function FollowingPage({ params }: FollowingPageProps) {
   const { locale: localeParam } = await params
   const locale = localeParam === "bg" ? "bg" : "en"

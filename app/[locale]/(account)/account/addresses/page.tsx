@@ -4,6 +4,11 @@ import { getTranslations, setRequestLocale } from "next-intl/server"
 import { AddressesContent } from "./addresses-content"
 import { USER_ADDRESSES_SELECT } from "./_lib/selects"
 
+export const metadata = {
+  title: "Addresses | Treido",
+  description: "Manage your saved addresses.",
+}
+
 export default async function AddressesPage({
     params,
 }: {

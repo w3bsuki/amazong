@@ -16,6 +16,11 @@ import { createSubscriptionCheckoutSession } from "@/app/actions/subscriptions"
  * 
  * When navigating from within the app, the intercepted modal version is shown instead.
  */
+export const metadata = {
+  title: "Upgrade Plan | Treido",
+  description: "Upgrade your Treido plan.",
+}
+
 export default async function UpgradePage({
   params,
 }: {

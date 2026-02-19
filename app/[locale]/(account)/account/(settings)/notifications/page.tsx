@@ -19,6 +19,11 @@ interface NotificationRow {
   created_at: string
 }
 
+export const metadata = {
+  title: "Notifications | Treido",
+  description: "Manage your notification preferences.",
+}
+
 export default async function NotificationsPage({
   params,
 }: {

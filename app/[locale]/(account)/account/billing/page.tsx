@@ -10,6 +10,11 @@ interface BillingPageProps {
   }>
 }
 
+export const metadata = {
+  title: "Billing | Treido",
+  description: "View your billing details and history.",
+}
+
 export default async function BillingPage({ params }: BillingPageProps) {
   const { locale: localeParam } = await params
   const locale = localeParam === "bg" ? "bg" : "en"
