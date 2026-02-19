@@ -1022,3 +1022,36 @@
   - `app/actions/{boosts,payments,subscriptions}.ts` (payment semantics)
   - `app/actions/profile.ts` (auth/session semantics)
 - `lib/auth/business.ts` split remains audit-only; needs human approval before any mechanical extraction.
+
+### Session 29 — 2026-02-19 (Codex Batch 8 — href hardening)
+
+**Phase(s):** Batch 8 — final hardening + reduction (safe-only)  
+**Changes:**
+- Removed a single-consumer tiny helper file:
+  - Deleted `components/layout/header/desktop/desktop-search-helpers.ts`
+- Consolidated search + product href building onto canonical helpers (no behavior change):
+  - `components/layout/header/desktop/desktop-search.tsx` now uses:
+    - `components/shared/search/overlay/search-context.ts:buildSearchHref`
+    - `lib/url-utils.ts:getProductUrl`
+  - Replaced local product URL builders with `getProductUrl` in:
+    - `app/[locale]/_components/search/mobile-search-overlay.tsx`
+    - `components/mobile/drawers/cart-drawer.tsx`
+    - `components/layout/header/cart/cart-dropdown.tsx`
+    - `components/dropdowns/wishlist-dropdown.tsx`
+
+**File count delta:**
+- Source files (`app` + `components` + `lib` + `hooks`, ts/tsx): `938` → `937` (`-1` net)
+
+**Verification:**
+- `pnpm -s refactor:verify` ✅ (warnings only; no errors)
+- `pnpm -s architecture:scan` ✅
+
+**Metrics snapshot (architecture:scan + local source count):**
+- Files: `937`
+- LOC (source): `~131K` (`130,812`)
+- `"use client"`: `216`
+- `>300` lines: `93`
+- `>500` lines: `14`
+- Tiny `<50L` files: `248`
+- Missing metadata: `0`
+- Clones: `240` (`2.81%`, `4,463` duplicated lines)

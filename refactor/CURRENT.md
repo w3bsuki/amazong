@@ -10,19 +10,19 @@
 
 | | |
 |---|---|
-| **Mode** | Autopilot — full domain-by-domain audit + refactor |
-| **Current task** | Domain 6 — ⚠️ blocked pending approval (auth/payment action refactors) |
-| **Sessions so far** | 28 (phase 0 rebaseline + Domains 1-5 completed) |
+| **Mode** | Batch 8 — final hardening + reduction (safe-only) |
+| **Current task** | Batch 8 — final hardening + reduction (Domain 6 remains ⚠️ blocked pending approval for auth/payment-sensitive refactors) |
+| **Sessions so far** | 29 (phase 0 rebaseline + Domains 1–5 completed; Domain 6 blocked; Domain 7 completed) |
 
 ## Metrics
 
 | Metric | Baseline (2026-02-18 Rebaseline) | Now | Target |
 |--------|----------|-----|--------|
-| Files | 852 | 938 | <650 |
-| LOC (source) | ~115K | ~131K (130,824) | <85K |
+| Files | 852 | 937 | <650 |
+| LOC (source) | ~115K | ~131K (130,812) | <85K |
 | `"use client"` | 217 | 216 | <120 |
 | >300L files | 114 | 93 | <20 |
-| Tiny <50L files | 286 | 249 | <100 |
+| Tiny <50L files | 286 | 248 | <100 |
 | Missing metadata | 53 | 0 | 0 |
 | Clone % | 2.80% | 2.81% | <1.5% |
 
@@ -58,4 +58,4 @@ Read refactor/autopilot.md. Continue from where you left off.
 
 ---
 
-*Updated: 2026-02-19 — Domain 7 completed. Domain 6 remains blocked pending approval for payment/auth action refactors.*
+*Updated: 2026-02-19 — Batch 8 hardening in progress (safe-only). Domain 6 remains blocked pending approval for payment/auth action refactors.*
