@@ -1,6 +1,6 @@
 import "server-only"
 
-export type { Product, ShippingZone, UIProduct } from "./products/types"
+export type { Product, UIProduct } from "./products/types"
 
 export { normalizeProductRow, toUI } from "./products/normalize"
 

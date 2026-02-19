@@ -1,6 +1,5 @@
 import type { CategoryTreeNode } from "@/lib/category-tree"
 import type { CategoryAttribute } from "@/lib/data/categories"
-import { getCategoryName, getCategorySlugKey } from "@/lib/category-display"
 import {
   getCategoryAttributeKey,
   getCategoryAttributeLabel,
@@ -21,14 +20,6 @@ export interface ScopeCategory {
   image_url?: string | null
 }
 
-export interface CategoryScopeItem {
-  id: string
-  label: string
-  href: string
-  active: boolean
-  onSelect: () => void
-}
-
 export interface FilterSubcategory {
   id: string
   name: string
@@ -46,19 +37,6 @@ export function toScopedCategoryList(categories: CategoryTreeNode[]): ScopeCateg
     icon: category.icon ?? null,
     image_url: category.image_url ?? null,
   }))
-}
-
-export function stripAttributeFilters(params: URLSearchParams): URLSearchParams {
-  const next = new URLSearchParams(params.toString())
-  for (const key of next.keys()) {
-    if (key.startsWith("attr_")) next.delete(key)
-  }
-  return next
-}
-
-export function buildCategoryHref(categorySlug: string, params: URLSearchParams): string {
-  const query = params.toString()
-  return query ? `/categories/${categorySlug}?${query}` : `/categories/${categorySlug}`
 }
 
 export function buildQuickAttributePills(options: {
@@ -163,57 +141,6 @@ export function buildScopedDrawerCategory(options: {
     parent_id: null,
     children: childNodes,
   }
-}
-
-export function buildCategoryScopeItems(options: {
-  locale: string
-  railCategories: ScopeCategory[]
-  currentScopeParent: ScopeCategory | null
-  currentCategorySlug: string
-  scopeLabel: string
-  railBaseParams: URLSearchParams
-  tCategories: (key: string, values?: Record<string, string | number | Date>) => string
-  onSelectCategory: (slug: string) => void
-}): CategoryScopeItem[] {
-  const {
-    locale,
-    railCategories,
-    currentScopeParent,
-    currentCategorySlug,
-    scopeLabel,
-    railBaseParams,
-    tCategories,
-    onSelectCategory,
-  } = options
-
-  const scopeSlug = currentScopeParent?.slug ?? currentCategorySlug
-  const allLabel = tCategories("allIn", { category: scopeLabel })
-  const items: CategoryScopeItem[] = [
-    {
-      id: `scope-${scopeSlug}`,
-      label: allLabel,
-      href: buildCategoryHref(scopeSlug, railBaseParams),
-      active: currentCategorySlug === scopeSlug,
-      onSelect: () => onSelectCategory(scopeSlug),
-    },
-  ]
-
-  for (const category of railCategories) {
-    const label = tCategories("shortName", {
-      slug: getCategorySlugKey(category.slug),
-      name: getCategoryName(category, locale),
-    })
-
-    items.push({
-      id: category.id,
-      label,
-      href: buildCategoryHref(category.slug, railBaseParams),
-      active: currentCategorySlug === category.slug,
-      onSelect: () => onSelectCategory(category.slug),
-    })
-  }
-
-  return items
 }
 
 export function toFilterSubcategories(railCategories: ScopeCategory[]): FilterSubcategory[] {

@@ -76,5 +76,3 @@ export interface Product {
     value: string
   }> | null
 }
-
-export type ShippingZone = "BG" | "UK" | "EU" | "US" | "WW"

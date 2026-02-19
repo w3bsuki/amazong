@@ -33,19 +33,6 @@ import {
   type PlansContentProps,
 } from "./plans-content.types"
 
-export type PlansContentServerActions = {
-  cancelSubscription: () => Promise<{ success: boolean; error?: string }>
-  reactivateSubscription: () => Promise<{ success: boolean; error?: string }>
-  createBillingPortalSession: (args?: {
-    locale?: "en" | "bg"
-  }) => Promise<{ url?: string; error?: string }>
-  createSubscriptionCheckoutSession: (args: {
-    planId: string
-    billingPeriod: "monthly" | "yearly"
-    locale?: "en" | "bg"
-  }) => Promise<{ url?: string; error?: string }>
-}
-
 export function PlansContent({
   locale,
   plans,
