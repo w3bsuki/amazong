@@ -1,7 +1,7 @@
 "use server"
 
 import { revalidateTag } from "next/cache"
-import { createClient } from "@/lib/supabase/server"
+import { requireAuth } from "@/lib/auth/require-auth"
 
 export interface BlockedUser {
   blocked_id: string
@@ -16,20 +16,19 @@ export interface BlockedUser {
  * Prevents them from messaging you
  */
 export async function blockUser(userId: string, reason?: string) {
-  const supabase = await createClient()
-  if (!supabase) return { success: false, error: "Not authenticated" }
+  const auth = await requireAuth()
+  if (!auth) return { success: false, error: "Not authenticated" }
 
-  const { data: userData } = await supabase.auth.getUser()
-  if (!userData.user) return { success: false, error: "Not authenticated" }
+  const { supabase, user } = auth
 
   // Can't block yourself
-  if (userData.user.id === userId) {
+  if (user.id === userId) {
     return { success: false, error: "Cannot block yourself" }
   }
 
   const { data, error } = await supabase.rpc("block_user", {
     p_user_to_block: userId,
-    ...(reason ? { p_reason: reason } : {})
+    ...(reason ? { p_reason: reason } : {}),
   })
 
   if (error) {
@@ -48,11 +47,13 @@ export async function blockUser(userId: string, reason?: string) {
  * Unblock a user
  */
 export async function unblockUser(userId: string) {
-  const supabase = await createClient()
-  if (!supabase) return { success: false, error: "Not authenticated" }
+  const auth = await requireAuth()
+  if (!auth) return { success: false, error: "Not authenticated" }
+
+  const { supabase } = auth
 
   const { data, error } = await supabase.rpc("unblock_user", {
-    p_user_to_unblock: userId
+    p_user_to_unblock: userId,
   })
 
   if (error) {
@@ -71,8 +72,10 @@ export async function unblockUser(userId: string) {
  * Get list of blocked users
  */
 export async function getBlockedUsers(): Promise<{ data: BlockedUser[] | null; error: string | null }> {
-  const supabase = await createClient()
-  if (!supabase) return { data: null, error: "Not authenticated" }
+  const auth = await requireAuth()
+  if (!auth) return { data: null, error: "Not authenticated" }
+
+  const { supabase } = auth
 
   const { data, error } = await supabase.rpc("get_blocked_users")
 
@@ -88,15 +91,14 @@ export async function getBlockedUsers(): Promise<{ data: BlockedUser[] | null; e
  * Check if a user is blocked
  */
 export async function isUserBlocked(userId: string): Promise<boolean> {
-  const supabase = await createClient()
-  if (!supabase) return false
+  const auth = await requireAuth()
+  if (!auth) return false
 
-  const { data: userData } = await supabase.auth.getUser()
-  if (!userData.user) return false
+  const { supabase, user } = auth
 
   const { data, error } = await supabase.rpc("is_blocked_bidirectional", {
-    p_user_a: userData.user.id,
-    p_user_b: userId
+    p_user_a: user.id,
+    p_user_b: userId,
   })
 
   if (error) {

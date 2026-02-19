@@ -1,6 +1,6 @@
 "use server"
 
-import { createClient } from "@/lib/supabase/server"
+import { requireAuth } from "@/lib/auth/require-auth"
 import { revalidatePublicProfileTagsForUser } from "@/lib/cache/revalidate-profile-tags"
 import { revalidateTag } from "next/cache"
 
@@ -10,10 +10,10 @@ import { revalidateTag } from "next/cache"
 // =====================================================
 
 export async function isFollowingSeller(sellerId: string) {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  
-  if (!user) return false
+  const auth = await requireAuth()
+  if (!auth) return false
+
+  const { supabase, user } = auth
 
   const { data } = await supabase
     .from("store_followers")
@@ -26,12 +26,12 @@ export async function isFollowingSeller(sellerId: string) {
 }
 
 export async function followSeller(sellerId: string) {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  
-  if (!user) {
+  const auth = await requireAuth()
+  if (!auth) {
     return { success: false, error: "Not authenticated" }
   }
+
+  const { supabase, user } = auth
 
   const { error } = await supabase
     .from("store_followers")
@@ -48,12 +48,12 @@ export async function followSeller(sellerId: string) {
 }
 
 export async function unfollowSeller(sellerId: string) {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  
-  if (!user) {
+  const auth = await requireAuth()
+  if (!auth) {
     return { success: false, error: "Not authenticated" }
   }
+
+  const { supabase, user } = auth
 
   const { error } = await supabase
     .from("store_followers")
@@ -68,16 +68,4 @@ export async function unfollowSeller(sellerId: string) {
   revalidateTag("follows", "max")
   await revalidatePublicProfileTagsForUser(supabase, sellerId, "max")
   return { success: true }
-}
-
-async function toggleFollowSeller(sellerId: string) {
-  const isFollowing = await isFollowingSeller(sellerId)
-  
-  if (isFollowing) {
-    const result = await unfollowSeller(sellerId)
-    return { ...result, isFollowing: false }
-  } else {
-    const result = await followSeller(sellerId)
-    return { ...result, isFollowing: true }
-  }
 }
