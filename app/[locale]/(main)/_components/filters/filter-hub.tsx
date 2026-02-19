@@ -6,7 +6,7 @@ import { usePathname, useRouter } from "@/i18n/routing"
 import { ChevronLeft as CaretLeft } from "lucide-react"
 
 import { useTranslations } from "next-intl"
-import { useFilterCount } from "@/hooks/use-filter-count"
+import { useFilterCount } from "./use-filter-count"
 import { Button } from "@/components/ui/button"
 import { DrawerBody, DrawerFooter } from "@/components/ui/drawer"
 import { IconButton } from "@/components/ui/icon-button"

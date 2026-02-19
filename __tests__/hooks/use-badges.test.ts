@@ -1,6 +1,6 @@
 import { describe, expect, it, beforeEach, afterEach, vi } from 'vitest'
 import { renderHook, act, waitFor } from '@testing-library/react'
-import { useBadges } from '@/hooks/use-badges'
+import { useBadges } from '@/app/[locale]/(account)/account/_components/use-badges'
 
 // Mock global fetch
 const mockFetch = vi.fn()

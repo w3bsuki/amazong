@@ -34,10 +34,10 @@ export function useBadges(): UseBadgesResult {
   const fetchBadges = useCallback(async () => {
     setIsLoading(true)
     setError(null)
-    
+
     try {
       const response = await fetch("/api/badges")
-      
+
       if (!response.ok) {
         if (response.status === 401) {
           setError("Please sign in to view badges")
@@ -46,7 +46,7 @@ export function useBadges(): UseBadgesResult {
         }
         return
       }
-      
+
       const data = (await response.json()) as { badges?: BadgeWithMeta[] }
       setBadges(Array.isArray(data.badges) ? data.badges : [])
     } catch (err) {
@@ -66,13 +66,13 @@ export function useBadges(): UseBadgesResult {
       const response = await fetch(`/api/badges/feature/${badgeId}`, {
         method: "PATCH",
       })
-      
+
       if (!response.ok) {
         const data = (await response.json().catch(() => null)) as { error?: unknown } | null
         const message = typeof data?.error === "string" ? data.error : "Failed to update badge"
         throw new Error(message)
       }
-      
+
       const data = (await response.json()) as unknown
       const parsedResponse = toggleFeaturedResponseSchema.safeParse(data)
       if (!parsedResponse.success) {
@@ -80,14 +80,16 @@ export function useBadges(): UseBadgesResult {
       }
 
       const isFeatured = parsedResponse.data.is_featured
-      
+
       // Update local state
-      setBadges(prev => prev.map(badge => 
-        badge.id === badgeId 
-          ? { ...badge, is_featured: isFeatured }
-          : badge
-      ))
-      
+      setBadges((prev) =>
+        prev.map((badge) =>
+          badge.id === badgeId
+            ? { ...badge, is_featured: isFeatured }
+            : badge
+        )
+      )
+
       return isFeatured
     } catch (err) {
       console.error("Error toggling badge feature:", err)
@@ -102,18 +104,18 @@ export function useBadges(): UseBadgesResult {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ context }),
       })
-      
+
       if (!response.ok) {
         throw new Error("Failed to evaluate badges")
       }
-      
+
       const data = (await response.json()) as { total_awarded?: number; awarded?: string[] }
-      
+
       // Refetch badges if new ones were awarded
       if ((data.total_awarded ?? 0) > 0) {
         await fetchBadges()
       }
-      
+
       return Array.isArray(data.awarded)
         ? data.awarded.filter((badgeId): badgeId is string => typeof badgeId === "string")
         : []

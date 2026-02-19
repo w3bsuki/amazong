@@ -7,7 +7,7 @@ import { Suspense } from "react"
 import { Loader2 } from "lucide-react"
 import { connection } from "next/server"
 import { getPlansForUpgrade, PRIVATE_PROFILE_SELECT_FOR_UPGRADE, PROFILE_SELECT_FOR_UPGRADE } from "@/lib/data/plans"
-import { createSubscriptionCheckoutSession } from "@/app/actions/subscriptions"
+import { createSubscriptionCheckoutSession } from "@/app/actions/subscriptions-reads"
 
 // Generate static params for all locales - required for Next.js 16 Cache Components
 async function UpgradeModalContent() {

@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useCallback, useMemo } from "react"
 
 /**
  * useFilterCount — Client hook for live product count with debounce.
- * 
+ *
  * Per UI_UX_CODEX.md:
  * - Debounce 250-300ms
  * - Updates on every pending change
@@ -96,7 +96,7 @@ export function useFilterCount(params: FilterCountParams): UseFilterCountResult 
       setIsLoading(false)
     } catch (err) {
       clearTimeout(fallbackTimeout)
-      
+
       if (signal.aborted) return
 
       // On error, keep last known count

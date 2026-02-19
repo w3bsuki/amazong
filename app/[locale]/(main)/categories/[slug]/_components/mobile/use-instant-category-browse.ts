@@ -214,7 +214,9 @@ export function useInstantCategoryBrowse(options: {
     // Context (cached) + products
     try {
       const cached = contextCacheRef.current.get(nextSlug)
-      const context = cached ?? (await fetchJson<CategoryContextResponse>(`/api/categories/${encodeURIComponent(nextSlug)}/context`))
+      const context =
+        cached ??
+        (await fetchJson<CategoryContextResponse>(`/api/categories/${encodeURIComponent(nextSlug)}/context`))
       if (!cached) contextCacheRef.current.set(nextSlug, context)
 
       setCategoryId(context.current.id)

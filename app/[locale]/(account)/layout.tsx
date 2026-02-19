@@ -5,7 +5,7 @@ import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AccountLayoutContent } from "./_components/account-layout-content";
 import { headers } from "next/headers";
-import { createSubscriptionCheckoutSession } from "@/app/actions/subscriptions";
+import { createSubscriptionCheckoutSession } from "@/app/actions/subscriptions-reads";
 import { connection } from "next/server";
 import { CommerceProviders } from "../_providers/commerce-providers";
 import { FullRouteIntlProvider } from "../_providers/route-intl-provider";

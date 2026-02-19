@@ -6,7 +6,7 @@ import { ArrowLeft } from "lucide-react";
 
 import { Link } from "@/i18n/routing"
 import { getPlansForUpgrade, PRIVATE_PROFILE_SELECT_FOR_UPGRADE, PROFILE_SELECT_FOR_UPGRADE } from "@/lib/data/plans"
-import { createSubscriptionCheckoutSession } from "@/app/actions/subscriptions"
+import { createSubscriptionCheckoutSession } from "@/app/actions/subscriptions-reads"
 
 /**
  * Full Upgrade Page

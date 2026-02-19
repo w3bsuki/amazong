@@ -29,7 +29,7 @@ export function useCategoryAttributes(
   const [attributes, setAttributes] = useState<CategoryAttribute[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  
+
   // Cache to avoid refetching same category
   const cacheRef = useRef<Map<string, CategoryAttribute[]>>(new Map())
 
@@ -52,7 +52,7 @@ export function useCategoryAttributes(
 
       const data = (await res.json()) as { attributes?: CategoryAttribute[] }
       const attributesFromApi = Array.isArray(data.attributes) ? data.attributes : []
-      
+
       // Filter to only filterable select/multiselect attrs with options
       const filterable = attributesFromApi.filter(
         (attr: CategoryAttribute) =>
@@ -63,10 +63,10 @@ export function useCategoryAttributes(
       )
 
       // Sort by sortOrder and transform to CategoryAttribute format
-      filterable.sort((a: CategoryAttribute, b: CategoryAttribute) => 
+      filterable.sort((a: CategoryAttribute, b: CategoryAttribute) =>
         (a.sort_order ?? 999) - (b.sort_order ?? 999)
       )
-      
+
       const transformed = filterable.map(normalizeAttribute)
 
       cacheRef.current.set(slug, transformed)
@@ -92,3 +92,4 @@ export function useCategoryAttributes(
 
   return { attributes, isLoading, error }
 }
+

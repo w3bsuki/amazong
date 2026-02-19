@@ -66,11 +66,18 @@ interface BusinessSidebarProps extends React.ComponentProps<typeof Sidebar> {
   hasDashboardAccess?: boolean
 }
 
+type SidebarNavItem = {
+  title: string
+  url: BusinessRoute
+  icon: React.ElementType
+  badge?: number
+}
+
 function NavItem({
   item,
   isActive
 }: {
-  item: { title: string; url: string; icon: React.ElementType; badge?: number }
+  item: SidebarNavItem
   isActive: boolean
 }) {
   const Icon = item.icon
@@ -98,6 +105,38 @@ function NavItem({
         </Link>
       </SidebarMenuButton>
     </SidebarMenuItem>
+  )
+}
+
+function NavGroup({
+  label,
+  items,
+  isActive,
+  className,
+  children,
+}: {
+  label?: string
+  items: SidebarNavItem[]
+  isActive: (url: BusinessRoute) => boolean
+  className?: string
+  children?: React.ReactNode
+}) {
+  return (
+    <SidebarGroup className={cn("py-2", className)}>
+      {label ? (
+        <SidebarGroupLabel className="h-7 px-2 text-xs font-medium text-muted-foreground">
+          {label}
+        </SidebarGroupLabel>
+      ) : null}
+      <SidebarGroupContent>
+        <SidebarMenu className="gap-0.5">
+          {items.map((item) => (
+            <NavItem key={item.url} item={item} isActive={isActive(item.url)} />
+          ))}
+          {children}
+        </SidebarMenu>
+      </SidebarGroupContent>
+    </SidebarGroup>
   )
 }
 
@@ -133,7 +172,7 @@ export function BusinessSidebar({
     }
   }, [isMobile, normalizedPath, setOpenMobile])
 
-  const isActive = (url: string) => {
+  const isActive = (url: BusinessRoute) => {
     if (url === '/dashboard') {
       return normalizedPath === '/dashboard' || normalizedPath === ''
     }
@@ -199,117 +238,34 @@ export function BusinessSidebar({
       footer={<NavUser user={user} />}
     >
         {/* Main Sales Section */}
-        <SidebarGroup className="py-2">
-          <SidebarGroupContent>
-            <SidebarMenu className="gap-0.5">
-              {salesChannelNavWithBadges.map((item) => (
-                <NavItem
-                  key={item.url}
-                  item={item}
-                  isActive={isActive(item.url)}
-                />
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
+        <NavGroup items={salesChannelNavWithBadges} isActive={isActive} />
 
         {/* Products Section */}
-        <SidebarGroup className="py-2">
-          <SidebarGroupLabel className="h-7 px-2 text-xs font-medium text-muted-foreground">
-            Products
-          </SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu className="gap-0.5">
-              {productsNav.map((item) => (
-                <NavItem
-                  key={item.url}
-                  item={item}
-                  isActive={isActive(item.url)}
-                />
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
+        <NavGroup label="Products" items={productsNav} isActive={isActive} />
 
         {/* Customers Section */}
-        <SidebarGroup className="py-2">
-          <SidebarGroupLabel className="h-7 px-2 text-xs font-medium text-muted-foreground">
-            Customers
-          </SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu className="gap-0.5">
-              {customersNav.map((item) => (
-                <NavItem
-                  key={item.url}
-                  item={item}
-                  isActive={isActive(item.url)}
-                />
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
+        <NavGroup label="Customers" items={customersNav} isActive={isActive} />
 
         {/* Marketing Section */}
-        <SidebarGroup className="py-2">
-          <SidebarGroupLabel className="h-7 px-2 text-xs font-medium text-muted-foreground">
-            Marketing
-          </SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu className="gap-0.5">
-              {marketingNav.map((item) => (
-                <NavItem
-                  key={item.url}
-                  item={item}
-                  isActive={isActive(item.url)}
-                />
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
+        <NavGroup label="Marketing" items={marketingNav} isActive={isActive} />
 
         {/* Analytics Section */}
-        <SidebarGroup className="py-2">
-          <SidebarGroupLabel className="h-7 px-2 text-xs font-medium text-muted-foreground">
-            Analytics
-          </SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu className="gap-0.5">
-              {analyticsNav.map((item) => (
-                <NavItem
-                  key={item.url}
-                  item={item}
-                  isActive={isActive(item.url)}
-                />
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
+        <NavGroup label="Analytics" items={analyticsNav} isActive={isActive} />
 
         {/* Settings - at bottom */}
-        <SidebarGroup className="mt-auto py-2">
-          <SidebarGroupContent>
-            <SidebarMenu className="gap-0.5">
-              {settingsNav.map((item) => (
-                <NavItem
-                  key={item.url}
-                  item={item}
-                  isActive={isActive(item.url)}
-                />
-              ))}
-              <SidebarMenuItem>
-                <SidebarMenuButton
-                  asChild
-                  className="h-8 px-2 text-sm font-normal text-muted-foreground hover:text-foreground"
-                >
-                  <Link href="/">
-                    <IconHome className="size-4" />
-                    <span>Back to Store</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
+        <NavGroup className="mt-auto" items={settingsNav} isActive={isActive}>
+          <SidebarMenuItem>
+            <SidebarMenuButton
+              asChild
+              className="h-8 px-2 text-sm font-normal text-muted-foreground hover:text-foreground"
+            >
+              <Link href="/">
+                <IconHome className="size-4" />
+                <span>Back to Store</span>
+              </Link>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </NavGroup>
     </DashboardSidebar>
   )
 }

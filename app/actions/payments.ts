@@ -2,8 +2,8 @@
 
 import { z } from 'zod'
 import { errorEnvelope, successEnvelope, type Envelope } from '@/lib/api/envelope'
+import { requireAuth } from '@/lib/auth/require-auth'
 import { stripe } from '@/lib/stripe'
-import { createClient } from '@/lib/supabase/server'
 import { STRIPE_CUSTOMER_ID_SELECT } from '@/lib/supabase/selects/billing'
 import { buildLocaleUrl } from '@/lib/stripe-locale'
 
@@ -26,19 +26,12 @@ export async function createPaymentMethodSetupSession(
   input?: { locale?: 'en' | 'bg' }
 ): Promise<PaymentSetupSessionResult> {
   try {
-    const supabase = await createClient()
-
-    if (!supabase) {
+    const auth = await requireAuth()
+    if (!auth) {
       return errorEnvelope({ error: NOT_AUTHENTICATED })
     }
 
-    const {
-      data: { user },
-    } = await supabase.auth.getUser()
-
-    if (!user) {
-      return errorEnvelope({ error: NOT_AUTHENTICATED })
-    }
+    const { user, supabase } = auth
 
     const { data: profile } = await supabase
       .from('private_profiles')
@@ -94,19 +87,12 @@ export async function deletePaymentMethod(
   input: { paymentMethodId: string; dbId: string }
 ): Promise<PaymentMethodMutationResult> {
   try {
-    const supabase = await createClient()
-
-    if (!supabase) {
+    const auth = await requireAuth()
+    if (!auth) {
       return errorEnvelope({ error: NOT_AUTHENTICATED })
     }
 
-    const {
-      data: { user },
-    } = await supabase.auth.getUser()
-
-    if (!user) {
-      return errorEnvelope({ error: NOT_AUTHENTICATED })
-    }
+    const { user, supabase } = auth
 
     const parsed = paymentMethodInputSchema.safeParse(input)
     if (!parsed.success) {
@@ -138,19 +124,12 @@ export async function setDefaultPaymentMethod(
   input: { paymentMethodId: string; dbId: string }
 ): Promise<PaymentMethodMutationResult> {
   try {
-    const supabase = await createClient()
-
-    if (!supabase) {
+    const auth = await requireAuth()
+    if (!auth) {
       return errorEnvelope({ error: NOT_AUTHENTICATED })
     }
 
-    const {
-      data: { user },
-    } = await supabase.auth.getUser()
-
-    if (!user) {
-      return errorEnvelope({ error: NOT_AUTHENTICATED })
-    }
+    const { user, supabase } = auth
 
     const parsed = paymentMethodInputSchema.safeParse(input)
     if (!parsed.success) {

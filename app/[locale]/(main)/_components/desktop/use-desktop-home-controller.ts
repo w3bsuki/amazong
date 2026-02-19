@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 
 import { useCategoryCounts } from "@/hooks/use-category-counts"
-import { useCategoryAttributes } from "@/hooks/use-category-attributes"
+import { useCategoryAttributes } from "./use-category-attributes"
 import { useIsMobile } from "@/hooks/use-is-mobile"
-import { useViewMode } from "@/hooks/use-view-mode"
+import { useViewMode } from "./use-view-mode"
 import type { CategoryTreeNode } from "@/lib/category-tree"
 import { getCategoryName, type CategoryDisplay } from "@/lib/category-display"
 import { type FeedTab, type FilterState } from "@/components/desktop/feed-toolbar"

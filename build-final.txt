@@ -10,428 +10,207 @@
   ✓ typedEnv
 
   Creating an optimized production build ...
-✓ Compiled successfully in 20.5s
-  Running TypeScript ...
-  Collecting page data using 11 workers ...
-  Generating static pages using 11 workers (0/505) ...
-  Generating static pages using 11 workers (126/505) 
-  Generating static pages using 11 workers (252/505) 
-  Generating static pages using 11 workers (378/505) 
-✓ Generating static pages using 11 workers (505/505) in 33.2s
-  Finalizing page optimization ...
 
-Route (app)                                        Revalidate  Expire
-┌ ○ /_not-found
-├ ◐ /[locale]                                              5m      1h
-│ ├ /[locale]                                              5m      1h
-│ ├ /en                                                    5m      1h
-│ └ /bg                                                    5m      1h
-├ ◐ /[locale]/(.)account/plans/upgrade
-│ ├ /[locale]/(.)account/plans/upgrade
-│ ├ /en/(.)account/plans/upgrade
-│ └ /bg/(.)account/plans/upgrade
-├ ◐ /[locale]/[username]                                   1h      1d
-│ ├ /[locale]/[username]                                   1h      1d
-│ ├ /en/[username]
-│ ├ /en/tech_haven                                         1h      1d
-│ └ [+10 more paths]
-├ ◐ /[locale]/[username]/[productSlug]                     5m      1h
-│ ├ /[locale]/[username]/[productSlug]                     5m      1h
-│ ├ /en/[username]/[productSlug]
-│ ├ /en/tech_haven/[productSlug]
-│ └ [+52 more paths]
-├ ◐ /[locale]/about                                        1h      1d
-│ ├ /[locale]/about                                        1h      1d
-│ ├ /en/about                                              1h      1d
-│ └ /bg/about                                              1h      1d
-├ ◐ /[locale]/accessibility                                1h      1d
-│ ├ /[locale]/accessibility                                1h      1d
-│ ├ /en/accessibility                                      1h      1d
-│ └ /bg/accessibility                                      1h      1d
-├ ◐ /[locale]/account
-│ ├ /[locale]/account
-│ ├ /en/account
-│ └ /bg/account
-├ ◐ /[locale]/account/addresses
-│ ├ /[locale]/account/addresses
-│ ├ /en/account/addresses
-│ └ /bg/account/addresses
-├ ◐ /[locale]/account/billing
-│ ├ /[locale]/account/billing
-│ ├ /en/account/billing
-│ └ /bg/account/billing
-├ ◐ /[locale]/account/following
-│ ├ /[locale]/account/following
-│ ├ /en/account/following
-│ └ /bg/account/following
-├ ◐ /[locale]/account/notifications
-│ ├ /[locale]/account/notifications
-│ ├ /en/account/notifications
-│ └ /bg/account/notifications
-├ ◐ /[locale]/account/orders
-│ ├ /[locale]/account/orders
-│ ├ /en/account/orders
-│ └ /bg/account/orders
-├ ◐ /[locale]/account/orders/[id]
-│ ├ /[locale]/account/orders/[id]
-│ ├ /en/account/orders/[id]
-│ ├ /en/account/orders/__placeholder__
-│ └ [+2 more paths]
-├ ◐ /[locale]/account/payments
-│ ├ /[locale]/account/payments
-│ ├ /en/account/payments
-│ └ /bg/account/payments
-├ ◐ /[locale]/account/plans
-│ ├ /[locale]/account/plans
-│ ├ /en/account/plans
-│ └ /bg/account/plans
-├ ◐ /[locale]/account/plans/upgrade
-│ ├ /[locale]/account/plans/upgrade
-│ ├ /en/account/plans/upgrade
-│ └ /bg/account/plans/upgrade
-├ ◐ /[locale]/account/profile
-│ ├ /[locale]/account/profile
-│ ├ /en/account/profile
-│ └ /bg/account/profile
-├ ◐ /[locale]/account/sales
-│ ├ /[locale]/account/sales
-│ ├ /en/account/sales
-│ └ /bg/account/sales
-├ ◐ /[locale]/account/security
-│ ├ /[locale]/account/security
-│ ├ /en/account/security
-│ └ /bg/account/security
-├ ◐ /[locale]/account/selling
-│ ├ /[locale]/account/selling
-│ ├ /en/account/selling
-│ └ /bg/account/selling
-├ ◐ /[locale]/account/selling/[id]/edit
-│ ├ /[locale]/account/selling/[id]/edit
-│ ├ /en/account/selling/[id]/edit
-│ ├ /en/account/selling/__placeholder__/edit
-│ └ [+2 more paths]
-├ ◐ /[locale]/account/settings
-│ ├ /[locale]/account/settings
-│ ├ /en/account/settings
-│ └ /bg/account/settings
-├ ◐ /[locale]/account/wishlist
-│ ├ /[locale]/account/wishlist
-│ ├ /en/account/wishlist
-│ └ /bg/account/wishlist
-├ ◐ /[locale]/admin
-│ ├ /[locale]/admin
-│ ├ /en/admin
-│ └ /bg/admin
-├ ◐ /[locale]/admin/docs
-│ ├ /[locale]/admin/docs
-│ ├ /en/admin/docs
-│ └ /bg/admin/docs
-├ ◐ /[locale]/admin/notes
-│ ├ /[locale]/admin/notes
-│ ├ /en/admin/notes
-│ └ /bg/admin/notes
-├ ◐ /[locale]/admin/orders
-│ ├ /[locale]/admin/orders
-│ ├ /en/admin/orders
-│ └ /bg/admin/orders
-├ ◐ /[locale]/admin/products
-│ ├ /[locale]/admin/products
-│ ├ /en/admin/products
-│ └ /bg/admin/products
-├ ◐ /[locale]/admin/sellers
-│ ├ /[locale]/admin/sellers
-│ ├ /en/admin/sellers
-│ └ /bg/admin/sellers
-├ ◐ /[locale]/admin/tasks
-│ ├ /[locale]/admin/tasks
-│ ├ /en/admin/tasks
-│ └ /bg/admin/tasks
-├ ◐ /[locale]/admin/users
-│ ├ /[locale]/admin/users
-│ ├ /en/admin/users
-│ └ /bg/admin/users
-├ ƒ /[locale]/api/onboarding/complete
-├ ◐ /[locale]/assistant                                    1h      1d
-│ ├ /[locale]/assistant                                    1h      1d
-│ ├ /en/assistant                                          1h      1d
-│ └ /bg/assistant                                          1h      1d
-├ ◐ /[locale]/auth/error
-│ ├ /[locale]/auth/error
-│ ├ /en/auth/error
-│ └ /bg/auth/error
-├ ◐ /[locale]/auth/forgot-password
-│ ├ /[locale]/auth/forgot-password
-│ ├ /en/auth/forgot-password
-│ └ /bg/auth/forgot-password
-├ ◐ /[locale]/auth/login
-│ ├ /[locale]/auth/login
-│ ├ /en/auth/login
-│ └ /bg/auth/login
-├ ◐ /[locale]/auth/reset-password
-│ ├ /[locale]/auth/reset-password
-│ ├ /en/auth/reset-password
-│ └ /bg/auth/reset-password
-├ ◐ /[locale]/auth/sign-up
-│ ├ /[locale]/auth/sign-up
-│ ├ /en/auth/sign-up
-│ └ /bg/auth/sign-up
-├ ◐ /[locale]/auth/sign-up-success
-│ ├ /[locale]/auth/sign-up-success
-│ ├ /en/auth/sign-up-success
-│ └ /bg/auth/sign-up-success
-├ ◐ /[locale]/auth/welcome
-│ ├ /[locale]/auth/welcome
-│ ├ /en/auth/welcome
-│ └ /bg/auth/welcome
-├ ◐ /[locale]/cart                                         1h      1d
-│ ├ /[locale]/cart                                         1h      1d
-│ ├ /en/cart                                               1h      1d
-│ └ /bg/cart                                               1h      1d
-├ ◐ /[locale]/categories                                   1h      1d
-│ ├ /[locale]/categories                                   1h      1d
-│ ├ /en/categories                                         1h      1d
-│ └ /bg/categories                                         1h      1d
-├ ◐ /[locale]/categories/[slug]
-│ ├ /[locale]/categories/[slug]
-│ ├ /en/categories/[slug]
-│ └ /bg/categories/[slug]
-├ ◐ /[locale]/categories/[slug]/[subslug]                  1h      1d
-│ ├ /[locale]/categories/[slug]/[subslug]                  1h      1d
-│ ├ /en/categories/[slug]/[subslug]
-│ ├ /en/categories/combat-wrestling/[subslug]
-│ └ [+130 more paths]
-├ ◐ /[locale]/chat
-│ ├ /[locale]/chat
-│ ├ /en/chat
-│ └ /bg/chat
-├ ◐ /[locale]/chat/[conversationId]
-│ ├ /[locale]/chat/[conversationId]
-│ ├ /en/chat/[conversationId]
-│ ├ /en/chat/__placeholder__
-│ └ [+2 more paths]
-├ ◐ /[locale]/checkout
-│ ├ /[locale]/checkout
-│ ├ /en/checkout
-│ └ /bg/checkout
-├ ◐ /[locale]/checkout/success
-│ ├ /[locale]/checkout/success
-│ ├ /en/checkout/success
-│ └ /bg/checkout/success
-├ ◐ /[locale]/contact                                      1h      1d
-│ ├ /[locale]/contact                                      1h      1d
-│ ├ /en/contact                                            1h      1d
-│ └ /bg/contact                                            1h      1d
-├ ◐ /[locale]/cookies                                      1h      1d
-│ ├ /[locale]/cookies                                      1h      1d
-│ ├ /en/cookies                                            1h      1d
-│ └ /bg/cookies                                            1h      1d
-├ ◐ /[locale]/customer-service                             1h      1d
-│ ├ /[locale]/customer-service                             1h      1d
-│ ├ /en/customer-service                                   1h      1d
-│ └ /bg/customer-service                                   1h      1d
-├ ◐ /[locale]/dashboard
-│ ├ /[locale]/dashboard
-│ ├ /en/dashboard
-│ └ /bg/dashboard
-├ ◐ /[locale]/dashboard/accounting
-│ ├ /[locale]/dashboard/accounting
-│ ├ /en/dashboard/accounting
-│ └ /bg/dashboard/accounting
-├ ◐ /[locale]/dashboard/analytics
-│ ├ /[locale]/dashboard/analytics
-│ ├ /en/dashboard/analytics
-│ └ /bg/dashboard/analytics
-├ ◐ /[locale]/dashboard/customers
-│ ├ /[locale]/dashboard/customers
-│ ├ /en/dashboard/customers
-│ └ /bg/dashboard/customers
-├ ◐ /[locale]/dashboard/discounts
-│ ├ /[locale]/dashboard/discounts
-│ ├ /en/dashboard/discounts
-│ └ /bg/dashboard/discounts
-├ ◐ /[locale]/dashboard/inventory
-│ ├ /[locale]/dashboard/inventory
-│ ├ /en/dashboard/inventory
-│ └ /bg/dashboard/inventory
-├ ◐ /[locale]/dashboard/marketing
-│ ├ /[locale]/dashboard/marketing
-│ ├ /en/dashboard/marketing
-│ └ /bg/dashboard/marketing
-├ ◐ /[locale]/dashboard/orders
-│ ├ /[locale]/dashboard/orders
-│ ├ /en/dashboard/orders
-│ └ /bg/dashboard/orders
-├ ◐ /[locale]/dashboard/orders/[orderId]
-│ ├ /[locale]/dashboard/orders/[orderId]
-│ ├ /en/dashboard/orders/[orderId]
-│ ├ /en/dashboard/orders/__placeholder__
-│ └ [+2 more paths]
-├ ◐ /[locale]/dashboard/products
-│ ├ /[locale]/dashboard/products
-│ ├ /en/dashboard/products
-│ └ /bg/dashboard/products
-├ ◐ /[locale]/dashboard/products/[productId]/edit
-│ ├ /[locale]/dashboard/products/[productId]/edit
-│ ├ /en/dashboard/products/[productId]/edit
-│ ├ /en/dashboard/products/__placeholder__/edit
-│ └ [+2 more paths]
-├ ◐ /[locale]/dashboard/settings
-│ ├ /[locale]/dashboard/settings
-│ ├ /en/dashboard/settings
-│ └ /bg/dashboard/settings
-├ ◐ /[locale]/dashboard/upgrade
-│ ├ /[locale]/dashboard/upgrade
-│ ├ /en/dashboard/upgrade
-│ └ /bg/dashboard/upgrade
-├ ◐ /[locale]/faq                                          1h      1d
-│ ├ /[locale]/faq                                          1h      1d
-│ ├ /en/faq                                                1h      1d
-│ └ /bg/faq                                                1h      1d
-├ ◐ /[locale]/feedback                                     1h      1d
-│ ├ /[locale]/feedback                                     1h      1d
-│ ├ /en/feedback                                           1h      1d
-│ └ /bg/feedback                                           1h      1d
-├ ◐ /[locale]/gift-cards                                   1h      1d
-│ ├ /[locale]/gift-cards                                   1h      1d
-│ ├ /en/gift-cards                                         1h      1d
-│ └ /bg/gift-cards                                         1h      1d
-├ ◐ /[locale]/members                                      1h      1d
-│ ├ /[locale]/members                                      1h      1d
-│ ├ /en/members                                            1h      1d
-│ └ /bg/members                                            1h      1d
-├ ◐ /[locale]/onboarding
-│ ├ /[locale]/onboarding
-│ ├ /en/onboarding
-│ └ /bg/onboarding
-├ ◐ /[locale]/onboarding/account-type
-│ ├ /[locale]/onboarding/account-type
-│ ├ /en/onboarding/account-type
-│ └ /bg/onboarding/account-type
-├ ◐ /[locale]/onboarding/business-profile
-│ ├ /[locale]/onboarding/business-profile
-│ ├ /en/onboarding/business-profile
-│ └ /bg/onboarding/business-profile
-├ ◐ /[locale]/onboarding/complete
-│ ├ /[locale]/onboarding/complete
-│ ├ /en/onboarding/complete
-│ └ /bg/onboarding/complete
-├ ◐ /[locale]/onboarding/interests
-│ ├ /[locale]/onboarding/interests
-│ ├ /en/onboarding/interests
-│ └ /bg/onboarding/interests
-├ ◐ /[locale]/onboarding/profile
-│ ├ /[locale]/onboarding/profile
-│ ├ /en/onboarding/profile
-│ └ /bg/onboarding/profile
-├ ◐ /[locale]/plans                                        1h      1d
-│ ├ /[locale]/plans                                        1h      1d
-│ ├ /en/plans                                              1h      1d
-│ └ /bg/plans                                              1h      1d
-├ ◐ /[locale]/privacy                                      1h      1d
-│ ├ /[locale]/privacy                                      1h      1d
-│ ├ /en/privacy                                            1h      1d
-│ └ /bg/privacy                                            1h      1d
-├ ◐ /[locale]/returns                                      1h      1d
-│ ├ /[locale]/returns                                      1h      1d
-│ ├ /en/returns                                            1h      1d
-│ └ /bg/returns                                            1h      1d
-├ ◐ /[locale]/search                                       1h      1d
-│ ├ /[locale]/search                                       1h      1d
-│ ├ /en/search                                             1h      1d
-│ └ /bg/search                                             1h      1d
-├ ◐ /[locale]/security                                     1h      1d
-│ ├ /[locale]/security                                     1h      1d
-│ ├ /en/security                                           1h      1d
-│ └ /bg/security                                           1h      1d
-├ ◐ /[locale]/sell
-│ ├ /[locale]/sell
-│ ├ /en/sell
-│ └ /bg/sell
-├ ◐ /[locale]/sell/orders
-│ ├ /[locale]/sell/orders
-│ ├ /en/sell/orders
-│ └ /bg/sell/orders
-├ ◐ /[locale]/seller/settings/payouts                      1h      1d
-│ ├ /[locale]/seller/settings/payouts                      1h      1d
-│ ├ /en/seller/settings/payouts                            1h      1d
-│ └ /bg/seller/settings/payouts                            1h      1d
-├ ◐ /[locale]/sellers                                      1h      1d
-│ ├ /[locale]/sellers                                      1h      1d
-│ ├ /en/sellers                                            1h      1d
-│ └ /bg/sellers                                            1h      1d
-├ ◐ /[locale]/terms                                        1h      1d
-│ ├ /[locale]/terms                                        1h      1d
-│ ├ /en/terms                                              1h      1d
-│ └ /bg/terms                                              1h      1d
-├ ◐ /[locale]/todays-deals                                 1h      1d
-│ ├ /[locale]/todays-deals                                 1h      1d
-│ ├ /en/todays-deals                                       1h      1d
-│ └ /bg/todays-deals                                       1h      1d
-├ ◐ /[locale]/wishlist                                     1h      1d
-│ ├ /[locale]/wishlist                                     1h      1d
-│ ├ /en/wishlist                                           1h      1d
-│ └ /bg/wishlist                                           1h      1d
-├ ◐ /[locale]/wishlist/shared/[token]
-│ ├ /[locale]/wishlist/shared/[token]
-│ ├ /en/wishlist/shared/[token]
-│ └ /bg/wishlist/shared/[token]
-├ ƒ /api/admin/docs/seed
-├ ƒ /api/assistant/chat
-├ ƒ /api/assistant/find-similar
-├ ƒ /api/assistant/sell-autofill
-├ ƒ /api/auth/sign-out
-├ ○ /api/badges
-├ ƒ /api/badges/[userId]
-├ ƒ /api/badges/evaluate
-├ ƒ /api/badges/feature/[badgeId]
-├ ○ /api/billing/invoices
-├ ƒ /api/boost/checkout
-├ ƒ /api/categories
-├ ƒ /api/categories/[slug]/attributes
-├ ƒ /api/categories/[slug]/children
-├ ƒ /api/categories/[slug]/context
-├ ƒ /api/categories/attributes
-├ ○ /api/categories/counts                                 1h      1d
-├ ƒ /api/categories/products
-├ ○ /api/categories/sell-tree                              1h      1d
-├ ƒ /api/checkout/webhook
-├ ƒ /api/connect/dashboard
-├ ƒ /api/connect/onboarding
-├ ƒ /api/connect/webhook
-├ ○ /api/health/env
-├ ƒ /api/health/ready
-├ ƒ /api/orders/[id]/ship
-├ ƒ /api/orders/[id]/track
-├ ƒ /api/payments/delete
-├ ƒ /api/payments/set-default
-├ ƒ /api/payments/setup
-├ ƒ /api/payments/webhook
-├ ƒ /api/plans
-├ ƒ /api/products/[id]/view
-├ ƒ /api/products/category/[slug]
-├ ƒ /api/products/count
-├ ƒ /api/products/feed
-├ ƒ /api/products/newest
-├ ƒ /api/products/quick-view
-├ ƒ /api/products/search
-├ ƒ /api/revalidate
-├ ○ /api/sales/export
-├ ○ /api/seller/limits
-├ ƒ /api/subscriptions/checkout
-├ ƒ /api/subscriptions/portal
-├ ƒ /api/subscriptions/webhook
-├ ƒ /api/upload-chat-image
-├ ƒ /api/upload-image
-├ ƒ /api/wishlist/[token]
-├ ƒ /auth/callback
-├ ƒ /auth/confirm
-├ ○ /robots.txt
-└ ƒ /sitemap.xml
+> Build error occurred
+Error: Turbopack build failed with 7 errors:
+./app/actions/profile-mutations.ts:11:1
+Ecmascript file had an error
+   9 | } from "./profile-reads"
+  10 |
+> 11 | export { deleteAvatar, setAvatarUrl, uploadAvatar } from "./profile-avatar-mutations"
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  12 |
+  13 | // =====================================================
+  14 | // PROFILE MANAGEMENT SERVER ACTIONS
+
+Only async functions are allowed to be exported in a "use server" file.
 
 
-ƒ Proxy (Middleware)
+Import trace:
+  Server Component:
+    ./app/actions/profile-mutations.ts
+    ./app/[locale]/(account)/account/profile/page.tsx
 
-○  (Static)             prerendered as static content
-◐  (Partial Prerender)  prerendered as static HTML with dynamic server-streamed content
-ƒ  (Dynamic)            server-rendered on demand
 
+./app/[locale]/(account)/account/profile/page.tsx:5:1
+Export deleteAvatar doesn't exist in target module
+   3 | import { getTranslations } from "next-intl/server"
+   4 | import { ProfileContent } from "./profile-content"
+>  5 | import {
+     | ^^^^^^^^
+>  6 |   deleteAvatar,
+     | ^^^^^^^^^^^^^^^
+>  7 |   setAvatarUrl,
+     | ^^^^^^^^^^^^^^^
+>  8 |   updateEmail,
+     | ^^^^^^^^^^^^^^^
+>  9 |   updatePassword,
+     | ^^^^^^^^^^^^^^^
+> 10 |   updateProfile,
+     | ^^^^^^^^^^^^^^^
+> 11 |   uploadAvatar,
+     | ^^^^^^^^^^^^^^^
+> 12 | } from "@/app/actions/profile-mutations"
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  13 | import {
+  14 |   checkUsernameAvailability,
+  15 |   getUsernameChangeCooldown,
+
+The export deleteAvatar was not found in module [project]/app/actions/profile-mutations.ts [app-rsc] (ecmascript).
+The module has no exports at all.
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+
+./app/[locale]/(account)/account/profile/page.tsx:5:1
+Export setAvatarUrl doesn't exist in target module
+   3 | import { getTranslations } from "next-intl/server"
+   4 | import { ProfileContent } from "./profile-content"
+>  5 | import {
+     | ^^^^^^^^
+>  6 |   deleteAvatar,
+     | ^^^^^^^^^^^^^^^
+>  7 |   setAvatarUrl,
+     | ^^^^^^^^^^^^^^^
+>  8 |   updateEmail,
+     | ^^^^^^^^^^^^^^^
+>  9 |   updatePassword,
+     | ^^^^^^^^^^^^^^^
+> 10 |   updateProfile,
+     | ^^^^^^^^^^^^^^^
+> 11 |   uploadAvatar,
+     | ^^^^^^^^^^^^^^^
+> 12 | } from "@/app/actions/profile-mutations"
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  13 | import {
+  14 |   checkUsernameAvailability,
+  15 |   getUsernameChangeCooldown,
+
+The export setAvatarUrl was not found in module [project]/app/actions/profile-mutations.ts [app-rsc] (ecmascript).
+The module has no exports at all.
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+
+./app/[locale]/(account)/account/profile/page.tsx:5:1
+Export updateEmail doesn't exist in target module
+   3 | import { getTranslations } from "next-intl/server"
+   4 | import { ProfileContent } from "./profile-content"
+>  5 | import {
+     | ^^^^^^^^
+>  6 |   deleteAvatar,
+     | ^^^^^^^^^^^^^^^
+>  7 |   setAvatarUrl,
+     | ^^^^^^^^^^^^^^^
+>  8 |   updateEmail,
+     | ^^^^^^^^^^^^^^^
+>  9 |   updatePassword,
+     | ^^^^^^^^^^^^^^^
+> 10 |   updateProfile,
+     | ^^^^^^^^^^^^^^^
+> 11 |   uploadAvatar,
+     | ^^^^^^^^^^^^^^^
+> 12 | } from "@/app/actions/profile-mutations"
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  13 | import {
+  14 |   checkUsernameAvailability,
+  15 |   getUsernameChangeCooldown,
+
+The export updateEmail was not found in module [project]/app/actions/profile-mutations.ts [app-rsc] (ecmascript).
+The module has no exports at all.
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+
+./app/[locale]/(account)/account/profile/page.tsx:5:1
+Export updatePassword doesn't exist in target module
+   3 | import { getTranslations } from "next-intl/server"
+   4 | import { ProfileContent } from "./profile-content"
+>  5 | import {
+     | ^^^^^^^^
+>  6 |   deleteAvatar,
+     | ^^^^^^^^^^^^^^^
+>  7 |   setAvatarUrl,
+     | ^^^^^^^^^^^^^^^
+>  8 |   updateEmail,
+     | ^^^^^^^^^^^^^^^
+>  9 |   updatePassword,
+     | ^^^^^^^^^^^^^^^
+> 10 |   updateProfile,
+     | ^^^^^^^^^^^^^^^
+> 11 |   uploadAvatar,
+     | ^^^^^^^^^^^^^^^
+> 12 | } from "@/app/actions/profile-mutations"
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  13 | import {
+  14 |   checkUsernameAvailability,
+  15 |   getUsernameChangeCooldown,
+
+The export updatePassword was not found in module [project]/app/actions/profile-mutations.ts [app-rsc] (ecmascript).
+The module has no exports at all.
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+
+./app/[locale]/(account)/account/profile/page.tsx:5:1
+Export updateProfile doesn't exist in target module
+   3 | import { getTranslations } from "next-intl/server"
+   4 | import { ProfileContent } from "./profile-content"
+>  5 | import {
+     | ^^^^^^^^
+>  6 |   deleteAvatar,
+     | ^^^^^^^^^^^^^^^
+>  7 |   setAvatarUrl,
+     | ^^^^^^^^^^^^^^^
+>  8 |   updateEmail,
+     | ^^^^^^^^^^^^^^^
+>  9 |   updatePassword,
+     | ^^^^^^^^^^^^^^^
+> 10 |   updateProfile,
+     | ^^^^^^^^^^^^^^^
+> 11 |   uploadAvatar,
+     | ^^^^^^^^^^^^^^^
+> 12 | } from "@/app/actions/profile-mutations"
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  13 | import {
+  14 |   checkUsernameAvailability,
+  15 |   getUsernameChangeCooldown,
+
+The export updateProfile was not found in module [project]/app/actions/profile-mutations.ts [app-rsc] (ecmascript).
+The module has no exports at all.
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+
+./app/[locale]/(account)/account/profile/page.tsx:5:1
+Export uploadAvatar doesn't exist in target module
+   3 | import { getTranslations } from "next-intl/server"
+   4 | import { ProfileContent } from "./profile-content"
+>  5 | import {
+     | ^^^^^^^^
+>  6 |   deleteAvatar,
+     | ^^^^^^^^^^^^^^^
+>  7 |   setAvatarUrl,
+     | ^^^^^^^^^^^^^^^
+>  8 |   updateEmail,
+     | ^^^^^^^^^^^^^^^
+>  9 |   updatePassword,
+     | ^^^^^^^^^^^^^^^
+> 10 |   updateProfile,
+     | ^^^^^^^^^^^^^^^
+> 11 |   uploadAvatar,
+     | ^^^^^^^^^^^^^^^
+> 12 | } from "@/app/actions/profile-mutations"
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  13 | import {
+  14 |   checkUsernameAvailability,
+  15 |   getUsernameChangeCooldown,
+
+The export uploadAvatar was not found in module [project]/app/actions/profile-mutations.ts [app-rsc] (ecmascript).
+The module has no exports at all.
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+
+    at <unknown> (./app/actions/profile-mutations.ts:11:1)
+    at <unknown> (./app/[locale]/(account)/account/profile/page.tsx:5:1)
+    at <unknown> (./app/[locale]/(account)/account/profile/page.tsx:5:1)
+    at <unknown> (./app/[locale]/(account)/account/profile/page.tsx:5:1)
+    at <unknown> (./app/[locale]/(account)/account/profile/page.tsx:5:1)
+    at <unknown> (./app/[locale]/(account)/account/profile/page.tsx:5:1)
+    at <unknown> (./app/[locale]/(account)/account/profile/page.tsx:5:1)
+ ELIFECYCLE  Command failed with exit code 1.

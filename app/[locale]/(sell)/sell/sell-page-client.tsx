@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { Link } from "@/i18n/routing";
 import { createClient } from "@/lib/supabase/client";
 import { useLocale, useTranslations } from "next-intl";
@@ -42,6 +42,23 @@ function SellSignInPrompt() {
         description={tSell("startSellingBanner.compact.subtitle")}
         nextPath="/sell"
       />
+    </div>
+  )
+}
+
+function SellGateLayout({ children }: { children: ReactNode }) {
+  return (
+    <div className="flex flex-1 flex-col">
+      <ProgressHeader
+        progressPercent={0}
+        autoSaved={false}
+        isSaving={false}
+        hasUnsavedChanges={false}
+        onSaveDraft={() => {}}
+        currentStep={1}
+        totalSteps={4}
+      />
+      {children}
     </div>
   )
 }
@@ -147,20 +164,11 @@ export function SellPageClient({
   // Not logged in - show sign in prompt (render immediately for guests)
   if (!user || (!initialUser && isAuthChecking)) {
     return (
-      <div className="flex flex-1 flex-col">
-        <ProgressHeader
-          progressPercent={0}
-          autoSaved={false}
-          isSaving={false}
-          hasUnsavedChanges={false}
-          onSaveDraft={() => {}}
-          currentStep={1}
-          totalSteps={4}
-        />
+      <SellGateLayout>
         <div className="flex-1 flex flex-col justify-center overflow-y-auto">
           <SellSignInPrompt />
         </div>
-      </div>
+      </SellGateLayout>
     );
   }
 
@@ -169,16 +177,7 @@ export function SellPageClient({
   // Redirect to home page where post-signup modal will handle onboarding
   if (needsOnboarding && user && username) {
     return (
-      <div className="flex flex-1 flex-col">
-        <ProgressHeader
-          progressPercent={0}
-          autoSaved={false}
-          isSaving={false}
-          hasUnsavedChanges={false}
-          onSaveDraft={() => {}}
-          currentStep={1}
-          totalSteps={4}
-        />
+      <SellGateLayout>
         <div className="flex-1 flex flex-col items-center justify-center overflow-y-auto py-8 px-4 text-center">
           <div className="max-w-md space-y-4">
             <h2 className="text-2xl font-bold text-foreground">
@@ -194,7 +193,7 @@ export function SellPageClient({
             </Button>
           </div>
         </div>
-      </div>
+      </SellGateLayout>
     );
   }
 
@@ -202,16 +201,7 @@ export function SellPageClient({
   // New users get username at signup, so this shouldn't happen
   if (!seller) {
     return (
-      <div className="flex flex-1 flex-col">
-        <ProgressHeader
-          progressPercent={0}
-          autoSaved={false}
-          isSaving={false}
-          hasUnsavedChanges={false}
-          onSaveDraft={() => {}}
-          currentStep={1}
-          totalSteps={4}
-        />
+      <SellGateLayout>
         <div className="flex-1 flex flex-col justify-center overflow-y-auto py-8">
           <div className="container-narrow text-center space-y-4">
             <h2 className="text-2xl font-bold">
@@ -225,7 +215,7 @@ export function SellPageClient({
             </Button>
           </div>
         </div>
-      </div>
+      </SellGateLayout>
     );
   }
 

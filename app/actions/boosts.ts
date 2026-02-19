@@ -1,5 +1,6 @@
 "use server"
 
+import { requireAuth } from "@/lib/auth/require-auth"
 import { createClient, createAdminClient } from "@/lib/supabase/server"
 import { revalidatePublicProfileTagsByUsername } from "@/lib/cache/revalidate-profile-tags"
 import { errorEnvelope, successEnvelope, type Envelope } from "@/lib/api/envelope"
@@ -71,15 +72,12 @@ async function getProfileBoosts(userId: string): Promise<ProfileBoostData | null
 // =============================================================================
 
 export async function useSubscriptionBoost(productId: string): Promise<BoostResult> {
-  const supabase = await createClient()
-  if (!supabase) {
-    return { success: false, error: "Database connection failed" }
-  }
-
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) {
+  const auth = await requireAuth()
+  if (!auth) {
     return { success: false, error: "Not authenticated" }
   }
+
+  const { user, supabase } = auth
   const userId = user.id
 
   // Verify the product belongs to the user
@@ -196,15 +194,12 @@ export async function createBoostCheckoutSession(args: {
 
   const { productId, durationDays, locale = "en" } = args
 
-  const supabase = await createClient()
-  if (!supabase) {
-    return errorEnvelope({ error: "Database connection failed" })
-  }
-
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) {
+  const auth = await requireAuth()
+  if (!auth) {
     return errorEnvelope({ error: "Not authenticated" })
   }
+
+  const { user, supabase } = auth
 
   // Verify product ownership
   const { data: product, error: productError } = await supabase
@@ -313,15 +308,12 @@ export async function getBoostStatus(productId: string): Promise<{
   boostsRemaining?: number
   boostsAllocated?: number
 }> {
-  const supabase = await createClient()
-  if (!supabase) {
-    return { success: false, error: "Database connection failed" }
-  }
-
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) {
+  const auth = await requireAuth()
+  if (!auth) {
     return { success: false, error: "Not authenticated" }
   }
+
+  const { user, supabase } = auth
 
   // Get product info
   const { data: product, error: productError } = await supabase

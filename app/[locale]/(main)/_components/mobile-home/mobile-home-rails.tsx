@@ -4,7 +4,7 @@ import { Link } from "@/i18n/routing"
 import { cn } from "@/lib/utils"
 import type { CategoryTreeNode } from "@/lib/category-tree"
 import { getCategoryIcon } from "../category/category-icons"
-import type { HomeDiscoveryScope } from "@/hooks/use-home-discovery-feed"
+import type { HomeDiscoveryScope } from "./use-home-discovery-feed"
 import {
   MOBILE_ACTION_CHIP_CLASS as ACTION_CHIP_CLASS,
   getMobileQuickPillClass as getPillClass,

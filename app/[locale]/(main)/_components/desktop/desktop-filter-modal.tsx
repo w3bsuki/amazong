@@ -13,7 +13,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { Badge } from "@/components/ui/badge"
-import { useFilterCount } from "@/hooks/use-filter-count"
+import { useFilterCount } from "../filters/use-filter-count"
 import type { CategoryAttribute } from "@/lib/types/categories"
 import { getCategoryAttributeKey } from "@/lib/filters/category-attribute"
 import { DesktopFilterModalContent } from "./desktop-filter-modal-content"

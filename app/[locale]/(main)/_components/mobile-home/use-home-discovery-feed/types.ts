@@ -17,3 +17,4 @@ export interface UseHomeDiscoveryFeedOptions {
 }
 
 export type HomePoolMap = Record<HomeDiscoveryScope, UIProduct[]>
+

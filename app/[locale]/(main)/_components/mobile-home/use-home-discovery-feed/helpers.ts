@@ -157,3 +157,4 @@ export async function fetchDiscoveryPage(options: {
   const hasMore = typeof data.hasMore === "boolean" ? data.hasMore : products.length === options.limit
   return { products, hasMore }
 }
+

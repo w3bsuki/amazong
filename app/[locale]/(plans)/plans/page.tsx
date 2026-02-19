@@ -1,6 +1,7 @@
 ﻿import { createClient } from "@/lib/supabase/server"
 import { getActivePlans } from "@/lib/data/plans"
-import { createSubscriptionCheckoutSession, downgradeToFreeTier } from "@/app/actions/subscriptions"
+import { createSubscriptionCheckoutSession } from "@/app/actions/subscriptions-reads"
+import { downgradeToFreeTier } from "@/app/actions/subscriptions-mutations"
 import PlansPageClient from "../_components/plans-page-client"
 
 // =============================================================================

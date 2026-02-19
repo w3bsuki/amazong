@@ -9,7 +9,7 @@ import {
   updatePassword,
   updateProfile,
   uploadAvatar,
-} from "@/app/actions/profile"
+} from "@/app/actions/profile-mutations"
 import {
   checkUsernameAvailability,
   getUsernameChangeCooldown,

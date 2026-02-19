@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/tooltip"
 import { CircleCheck as CheckCircle, Crown, Medal, Star, Trophy } from "lucide-react";
 
-import { useBadges } from "@/hooks/use-badges"
+import { useBadges } from "./use-badges"
 import { toast } from "sonner"
 
 interface AccountBadgesProps {
