@@ -1,19 +1,16 @@
 "use client"
 
 import { useEffect, useMemo, useState } from "react"
-import { MapPin } from "lucide-react";
+import { MapPin } from "lucide-react"
 
 import { useTranslations } from "next-intl"
 import { BULGARIAN_CITIES } from "@/lib/bulgarian-cities"
 import { cn } from "@/lib/utils"
 import {
-  Drawer,
   DrawerBody,
-  DrawerContent,
   DrawerFooter,
-  DrawerHeader,
-  DrawerTitle,
 } from "@/components/ui/drawer"
+import { DrawerShell } from "@/components/shared/drawer-shell"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 
@@ -33,6 +30,7 @@ export function HomeCityPickerSheet({
   onSelectCity,
 }: HomeCityPickerSheetProps) {
   const tMobile = useTranslations("Home.mobile")
+  const tCommon = useTranslations("Common")
   const [query, setQuery] = useState("")
   const [pendingCity, setPendingCity] = useState<string | null>(selectedCity)
 
@@ -65,68 +63,69 @@ export function HomeCityPickerSheet({
   }
 
   return (
-    <Drawer open={open} onOpenChange={onOpenChange}>
-      <DrawerContent className="max-h-dialog-md rounded-t-2xl lg:hidden">
-        <DrawerHeader className="border-b border-border-subtle px-inset pt-4 pb-3">
-          <DrawerTitle className="text-center text-base font-semibold tracking-tight">
-            {tMobile("feed.chooseCityTitle")}
-          </DrawerTitle>
-        </DrawerHeader>
+    <DrawerShell
+      open={open}
+      onOpenChange={onOpenChange}
+      title={tMobile("feed.chooseCityTitle")}
+      closeLabel={tCommon("close")}
+      contentAriaLabel={tMobile("feed.chooseCityTitle")}
+      contentClassName="max-h-dialog-md lg:hidden"
+      headerClassName="border-border-subtle px-inset pt-4 pb-3"
+      titleClassName="text-base font-semibold tracking-tight"
+    >
+      <DrawerBody className="px-inset py-3 pb-2">
+        <Input
+          type="search"
+          value={query}
+          onChange={(event) => setQuery(event.currentTarget.value)}
+          placeholder={tMobile("feed.chooseCitySearchPlaceholder")}
+          className="h-11"
+        />
 
-        <DrawerBody className="px-inset py-3 pb-2">
-          <Input
-            type="search"
-            value={query}
-            onChange={(event) => setQuery(event.currentTarget.value)}
-            placeholder={tMobile("feed.chooseCitySearchPlaceholder")}
-            className="h-11"
-          />
+        <div className="mt-3 min-h-0 flex-1 overflow-y-auto overscroll-contain">
+          <div className="space-y-1">
+            {cityOptions.length === 0 && (
+              <p className="px-2 py-3 text-sm text-muted-foreground">
+                {tMobile("feed.chooseCityNoResults")}
+              </p>
+            )}
 
-          <div className="mt-3 min-h-0 flex-1 overflow-y-auto overscroll-contain">
-            <div className="space-y-1">
-              {cityOptions.length === 0 && (
-                <p className="px-2 py-3 text-sm text-muted-foreground">
-                  {tMobile("feed.chooseCityNoResults")}
-                </p>
-              )}
-
-              {cityOptions.map((city) => {
-                const label = locale === "bg" ? city.labelBg : city.label
-                const isSelected = pendingCity === city.value
-                return (
-                  <button
-                    key={city.value}
-                    type="button"
-                    data-testid={`home-city-option-${city.value}`}
-                    onClick={() => setPendingCity(city.value)}
-                    className={cn(
-                      "flex min-h-(--spacing-touch-md) w-full items-center justify-between gap-2 rounded-xl border px-3 text-left text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
-                      isSelected
-                        ? "border-selected-border bg-selected text-selected-foreground"
-                        : "border-border-subtle bg-background text-foreground hover:bg-hover active:bg-active"
-                    )}
-                  >
-                    <span className="min-w-0 truncate">{label}</span>
-                    {isSelected && <MapPin size={14} aria-hidden="true" />}
-                  </button>
-                )
-              })}
-            </div>
+            {cityOptions.map((city) => {
+              const label = locale === "bg" ? city.labelBg : city.label
+              const isSelected = pendingCity === city.value
+              return (
+                <button
+                  key={city.value}
+                  type="button"
+                  data-testid={`home-city-option-${city.value}`}
+                  onClick={() => setPendingCity(city.value)}
+                  className={cn(
+                    "flex min-h-(--spacing-touch-md) w-full items-center justify-between gap-2 rounded-xl border px-3 text-left text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+                    isSelected
+                      ? "border-selected-border bg-selected text-selected-foreground"
+                      : "border-border-subtle bg-background text-foreground hover:bg-hover active:bg-active"
+                  )}
+                >
+                  <span className="min-w-0 truncate">{label}</span>
+                  {isSelected && <MapPin size={14} aria-hidden="true" />}
+                </button>
+              )
+            })}
           </div>
-        </DrawerBody>
+        </div>
+      </DrawerBody>
 
-        <DrawerFooter className="border-t border-border-subtle px-inset py-2.5">
-          <Button
-            type="button"
-            data-testid="home-city-apply"
-            disabled={!pendingCity}
-            onClick={handleApply}
-            className="w-full"
-          >
-            {tMobile("feed.chooseCityApply")}
-          </Button>
-        </DrawerFooter>
-      </DrawerContent>
-    </Drawer>
+      <DrawerFooter className="border-border-subtle px-inset">
+        <Button
+          type="button"
+          data-testid="home-city-apply"
+          disabled={!pendingCity}
+          onClick={handleApply}
+          className="w-full"
+        >
+          {tMobile("feed.chooseCityApply")}
+        </Button>
+      </DrawerFooter>
+    </DrawerShell>
   )
 }

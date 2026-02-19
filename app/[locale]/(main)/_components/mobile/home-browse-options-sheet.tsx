@@ -1,5 +1,5 @@
 import { useCallback } from "react"
-import { ChevronRight as CaretRight } from "lucide-react";
+import { ChevronRight as CaretRight } from "lucide-react"
 
 import { useTranslations } from "next-intl"
 
@@ -7,13 +7,9 @@ import { Link } from "@/i18n/routing"
 import type { CategoryTreeNode } from "@/lib/category-tree"
 import { getCategoryName } from "@/lib/category-display"
 import { cn } from "@/lib/utils"
+import { DrawerShell } from "@/components/shared/drawer-shell"
 import {
-  Drawer,
   DrawerBody,
-  DrawerContent,
-  DrawerDescription,
-  DrawerHeader,
-  DrawerTitle,
 } from "@/components/ui/drawer"
 
 interface HomeBrowseOptionsSheetProps {
@@ -47,6 +43,7 @@ export function HomeBrowseOptionsSheet({
   fullBrowseHref,
 }: HomeBrowseOptionsSheetProps) {
   const tV4 = useTranslations("Home.mobile.v4")
+  const tCommon = useTranslations("Common")
 
   const getLabel = useCallback(
     (category: CategoryTreeNode) => getCategoryName(category, locale),
@@ -59,74 +56,72 @@ export function HomeBrowseOptionsSheet({
   }, [onOpenChange, onSelect])
 
   return (
-    <Drawer open={open} onOpenChange={onOpenChange}>
-      <DrawerContent
-        data-testid="home-v4-browse-options-sheet"
-        className="max-h-dialog-md rounded-t-2xl lg:hidden"
-      >
-        <DrawerHeader className="border-b border-border-subtle px-inset pt-4 pb-3">
-          <DrawerTitle className="text-center text-base font-semibold tracking-tight">
-            {tV4("browseSheet.title")}
-          </DrawerTitle>
-          <DrawerDescription className="pt-0.5 text-center text-xs text-muted-foreground">
-            {tV4("browseSheet.description")}
-          </DrawerDescription>
-        </DrawerHeader>
+    <DrawerShell
+      open={open}
+      onOpenChange={onOpenChange}
+      title={tV4("browseSheet.title")}
+      closeLabel={tCommon("close")}
+      contentAriaLabel={tV4("browseSheet.title")}
+      description={tV4("browseSheet.description")}
+      descriptionClassName="pt-0.5 text-xs text-muted-foreground"
+      contentClassName="max-h-dialog-md lg:hidden"
+      headerClassName="border-border-subtle px-inset pt-4 pb-3"
+      titleClassName="text-base font-semibold tracking-tight"
+      dataTestId="home-v4-browse-options-sheet"
+    >
+      <DrawerBody className="px-inset py-3 pb-3">
+        <div className="space-y-1.5">
+          <button
+            type="button"
+            data-testid="home-v4-browse-options-all"
+            aria-pressed={activeSlug === null}
+            onClick={() => handleSelect(null)}
+            className={cn(
+              OPTION_BASE_CLASS,
+              activeSlug === null ? OPTION_ACTIVE_CLASS : OPTION_INACTIVE_CLASS
+            )}
+          >
+            <span className="truncate">
+              {tV4("browseSheet.allInSubcategory", {
+                subcategory: subcategoryLabel,
+              })}
+            </span>
+          </button>
 
-        <DrawerBody className="px-inset py-3 pb-3">
-          <div className="space-y-1.5">
-            <button
-              type="button"
-              data-testid="home-v4-browse-options-all"
-              aria-pressed={activeSlug === null}
-              onClick={() => handleSelect(null)}
-              className={cn(
-                OPTION_BASE_CLASS,
-                activeSlug === null ? OPTION_ACTIVE_CLASS : OPTION_INACTIVE_CLASS
-              )}
-            >
-              <span className="truncate">
-                {tV4("browseSheet.allInSubcategory", {
-                  subcategory: subcategoryLabel,
-                })}
-              </span>
-            </button>
+          {categories.map((category) => {
+            const active = activeSlug === category.slug
+            return (
+              <button
+                key={category.id}
+                type="button"
+                data-testid={`home-v4-browse-option-${category.slug}`}
+                aria-pressed={active}
+                onClick={() => handleSelect(active ? null : category.slug)}
+                className={cn(
+                  OPTION_BASE_CLASS,
+                  active ? OPTION_ACTIVE_CLASS : OPTION_INACTIVE_CLASS
+                )}
+              >
+                <span className="truncate">{getLabel(category)}</span>
+              </button>
+            )
+          })}
+        </div>
 
-            {categories.map((category) => {
-              const active = activeSlug === category.slug
-              return (
-                <button
-                  key={category.id}
-                  type="button"
-                  data-testid={`home-v4-browse-option-${category.slug}`}
-                  aria-pressed={active}
-                  onClick={() => handleSelect(active ? null : category.slug)}
-                  className={cn(
-                    OPTION_BASE_CLASS,
-                    active ? OPTION_ACTIVE_CLASS : OPTION_INACTIVE_CLASS
-                  )}
-                >
-                  <span className="truncate">{getLabel(category)}</span>
-                </button>
-              )
-            })}
+        <div className="mt-3 border-t border-border-subtle pt-3">
+          <div className="grid grid-cols-2 gap-2">
+            <Link href={fullBrowseHref} onClick={() => onOpenChange(false)} className={LINK_CHIP_CLASS}>
+              <span className="truncate">{tV4("actions.viewCategory")}</span>
+              <CaretRight size={14} aria-hidden="true" />
+            </Link>
+            <Link href="/categories" onClick={() => onOpenChange(false)} className={LINK_CHIP_CLASS}>
+              <span className="truncate">{tV4("actions.openCategories")}</span>
+              <CaretRight size={14} aria-hidden="true" />
+            </Link>
           </div>
-
-          <div className="mt-3 border-t border-border-subtle pt-3">
-            <div className="grid grid-cols-2 gap-2">
-              <Link href={fullBrowseHref} onClick={() => onOpenChange(false)} className={LINK_CHIP_CLASS}>
-                <span className="truncate">{tV4("actions.viewCategory")}</span>
-                <CaretRight size={14} aria-hidden="true" />
-              </Link>
-              <Link href="/categories" onClick={() => onOpenChange(false)} className={LINK_CHIP_CLASS}>
-                <span className="truncate">{tV4("actions.openCategories")}</span>
-                <CaretRight size={14} aria-hidden="true" />
-              </Link>
-            </div>
-          </div>
-        </DrawerBody>
-      </DrawerContent>
-    </Drawer>
+        </div>
+      </DrawerBody>
+    </DrawerShell>
   )
 }
 
