@@ -5,6 +5,11 @@ import { createClient } from "@/lib/supabase/server"
 import { AdminDocsContent } from "./_components/docs-content"
 import { Skeleton } from "@/components/ui/skeleton"
 
+export const metadata = {
+  title: "Admin Docs | Treido",
+  description: "Manage Treido admin documentation.",
+}
+
 export default async function AdminDocsPage({
   params,
 }: {

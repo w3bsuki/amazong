@@ -5,6 +5,11 @@ import { createClient } from "@/lib/supabase/server"
 import { AdminTasksContent } from "./_components/tasks-content"
 import { Skeleton } from "@/components/ui/skeleton"
 
+export const metadata = {
+  title: "Admin Tasks | Treido",
+  description: "Manage internal Treido admin tasks.",
+}
+
 export default async function AdminTasksPage() {
   // Mark route as dynamic - admin routes need auth
   await connection()

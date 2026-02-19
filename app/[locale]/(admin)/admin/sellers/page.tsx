@@ -254,6 +254,11 @@ async function AdminSellersFallback() {
   )
 }
 
+export const metadata = {
+  title: "Admin Sellers | Treido",
+  description: "Review and manage Treido sellers.",
+}
+
 export default async function AdminSellersPage() {
   await connection()
 

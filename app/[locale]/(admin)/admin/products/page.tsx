@@ -183,6 +183,11 @@ async function AdminProductsFallback() {
   )
 }
 
+export const metadata = {
+  title: "Admin Products | Treido",
+  description: "Review and manage Treido products.",
+}
+
 export default async function AdminProductsPage() {
   await connection()
 

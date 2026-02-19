@@ -155,6 +155,11 @@ async function AdminUsersFallback() {
   )
 }
 
+export const metadata = {
+  title: "Admin Users | Treido",
+  description: "Review and manage Treido users.",
+}
+
 export default async function AdminUsersPage() {
   const { connection } = await import("next/server")
   // Mark route as dynamic - admin routes need auth

@@ -5,6 +5,11 @@ import { createClient } from "@/lib/supabase/server"
 import { AdminNotesContent } from "./_components/notes-content"
 import { Skeleton } from "@/components/ui/skeleton"
 
+export const metadata = {
+  title: "Admin Notes | Treido",
+  description: "View internal Treido admin notes.",
+}
+
 export default async function AdminNotesPage() {
   // Mark route as dynamic - admin routes need auth
   await connection()

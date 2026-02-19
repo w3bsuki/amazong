@@ -4,6 +4,11 @@ import { AdminRecentActivity } from "../_components/admin-recent-activity"
 import { getAdminStats } from "@/lib/auth/admin"
 import { connection } from "next/server"
 
+export const metadata = {
+  title: "Admin Dashboard | Treido",
+  description: "Overview of Treido administration.",
+}
+
 export default async function AdminPage() {
   // Mark route as dynamic - admin routes need auth
   await connection()

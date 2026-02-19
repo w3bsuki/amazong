@@ -97,6 +97,11 @@ async function getOrders(): Promise<AdminOrder[]> {
   }) as AdminOrder[]
 }
 
+export const metadata = {
+  title: "Admin Orders | Treido",
+  description: "Review and manage Treido orders.",
+}
+
 export default async function AdminOrdersPage() {
   // Mark route as dynamic without using route segment config (incompatible with cacheComponents).
   await connection()
