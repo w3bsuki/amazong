@@ -63,7 +63,7 @@ export function HomeBrowseOptionsSheet({
       closeLabel={tCommon("close")}
       contentAriaLabel={tV4("browseSheet.title")}
       description={tV4("browseSheet.description")}
-      descriptionClassName="pt-0.5 text-xs text-muted-foreground"
+      descriptionClassName="max-w-sm"
       contentClassName="max-h-dialog-md lg:hidden"
       headerClassName="border-border-subtle px-inset pt-4 pb-3"
       titleClassName="text-base font-semibold tracking-tight"

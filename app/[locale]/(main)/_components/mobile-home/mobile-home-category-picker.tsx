@@ -39,7 +39,7 @@ export function MobileHomeCategoryPicker({
       closeLabel={tCommon("close")}
       contentAriaLabel={tV4("picker.title")}
       description={tV4("picker.description")}
-      descriptionClassName="pt-0.5 text-xs text-muted-foreground"
+      descriptionClassName="max-w-sm"
       contentClassName="max-h-dialog lg:hidden"
       headerClassName="border-border-subtle px-inset pt-4 pb-3"
       titleClassName="text-base font-semibold tracking-tight"
