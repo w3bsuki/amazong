@@ -1,5 +1,6 @@
 "use server"
 
+import { z } from "zod"
 import { revalidateTag } from "next/cache"
 import { requireAuth } from "@/lib/auth/require-auth"
 
@@ -11,23 +12,28 @@ export interface BlockedUser {
   avatar_url: string | null
 }
 
+const UserIdSchema = z.string().uuid()
+
 /**
  * Block a user
  * Prevents them from messaging you
  */
 export async function blockUser(userId: string, reason?: string) {
+  const parsedUserId = UserIdSchema.safeParse(userId)
+  if (!parsedUserId.success) return { success: false, error: "Invalid userId" }
+
   const auth = await requireAuth()
   if (!auth) return { success: false, error: "Not authenticated" }
 
   const { supabase, user } = auth
 
   // Can't block yourself
-  if (user.id === userId) {
+  if (user.id === parsedUserId.data) {
     return { success: false, error: "Cannot block yourself" }
   }
 
   const { data, error } = await supabase.rpc("block_user", {
-    p_user_to_block: userId,
+    p_user_to_block: parsedUserId.data,
     ...(reason ? { p_reason: reason } : {}),
   })
 
@@ -47,13 +53,16 @@ export async function blockUser(userId: string, reason?: string) {
  * Unblock a user
  */
 export async function unblockUser(userId: string) {
+  const parsedUserId = UserIdSchema.safeParse(userId)
+  if (!parsedUserId.success) return { success: false, error: "Invalid userId" }
+
   const auth = await requireAuth()
   if (!auth) return { success: false, error: "Not authenticated" }
 
   const { supabase } = auth
 
   const { data, error } = await supabase.rpc("unblock_user", {
-    p_user_to_unblock: userId,
+    p_user_to_unblock: parsedUserId.data,
   })
 
   if (error) {
@@ -91,6 +100,9 @@ export async function getBlockedUsers(): Promise<{ data: BlockedUser[] | null; e
  * Check if a user is blocked
  */
 export async function isUserBlocked(userId: string): Promise<boolean> {
+  const parsedUserId = UserIdSchema.safeParse(userId)
+  if (!parsedUserId.success) return false
+
   const auth = await requireAuth()
   if (!auth) return false
 
@@ -98,7 +110,7 @@ export async function isUserBlocked(userId: string): Promise<boolean> {
 
   const { data, error } = await supabase.rpc("is_blocked_bidirectional", {
     p_user_a: user.id,
-    p_user_b: userId,
+    p_user_b: parsedUserId.data,
   })
 
   if (error) {
