@@ -12,7 +12,7 @@
 |---|---|
 | **Mode** | Batch 8 — final hardening + reduction (safe-only) |
 | **Current task** | Batch 8 — final hardening + reduction (Domain 6 remains ⚠️ blocked pending approval for auth/payment-sensitive refactors) |
-| **Sessions so far** | 30 (phase 0 rebaseline + Domains 1–5 completed; Domain 6 blocked; Domain 7 completed) |
+| **Sessions so far** | 31 (phase 0 rebaseline + Domains 1–5 completed; Domain 6 blocked; Domain 7 completed) |
 
 ## Metrics
 

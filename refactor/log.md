@@ -1077,3 +1077,9 @@
 - Tiny `<50L` files: `248`
 - Missing metadata: `0`
 - Clones: `237` (`2.77%`, `4,402` duplicated lines)
+
+### Session 31 — 2026-02-19 (Codex Batch 8 — build verification)
+
+**Phase(s):** Batch 8 — final hardening + reduction (safe-only)  
+**Verification:**
+- `pnpm build 2>&1 | Tee-Object -FilePath build-final.txt` ✅
