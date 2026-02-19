@@ -55,7 +55,7 @@ export function DrawerShell({
   headerClassName,
   titleClassName,
   descriptionClassName = "sr-only",
-  closeButtonClassName,
+  closeButtonClassName = "bg-background border border-border-subtle shadow-sm text-foreground hover:bg-hover active:bg-active",
   closeButtonSize = "icon-default",
   closeIconSize = 16,
   dataTestId,
@@ -80,6 +80,7 @@ export function DrawerShell({
               <DrawerClose asChild>
                 <IconButton
                   aria-label={closeLabel}
+                  data-vaul-no-drag
                   variant="ghost"
                   size={closeButtonSize}
                   className={closeButtonClassName}
@@ -90,7 +91,9 @@ export function DrawerShell({
             </div>
           </div>
           {description ? (
-            <DrawerDescription className={descriptionClassName}>{description}</DrawerDescription>
+            <DrawerDescription className={cn("pt-0.5", descriptionClassName)}>
+              {description}
+            </DrawerDescription>
           ) : null}
           {headerExtra}
         </DrawerHeader>

@@ -179,7 +179,7 @@ export function AccountTabBar() {
         closeLabel={tCommon("close")}
         contentAriaLabel={t("tabBar.moreTitle")}
         description={t("tabBar.moreDescription")}
-        descriptionClassName="pt-0.5 text-xs text-muted-foreground"
+        descriptionClassName="max-w-sm"
         contentClassName="max-h-dialog lg:hidden"
         headerClassName="border-border-subtle px-inset pt-4 pb-3"
         titleClassName="text-base font-semibold tracking-tight"
