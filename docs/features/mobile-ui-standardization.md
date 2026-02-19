@@ -30,8 +30,8 @@ Two completely different overlay systems are used for mobile bottom overlays:
 
 **Vaul Drawer** (~20 instances):
 - `components/shared/drawer-shell.tsx` — standard wrapper (used by Cart, Wishlist, Messages, Account, Auth drawers)
-- `components/shared/filters/filter-hub.tsx` — filter drawer
-- `components/shared/filters/sort-modal.tsx` — sort picker
+- `app/[locale]/(main)/_components/filters/filter-hub.tsx` — filter drawer
+- `app/[locale]/(main)/_components/filters/shared/sort-modal.tsx` — sort picker
 - `app/[locale]/(main)/_components/mobile/home-city-picker-sheet.tsx` — city picker (confusingly named "sheet")
 - `app/[locale]/(main)/_components/mobile/home-browse-options-sheet.tsx` — browse options (also confusingly named)
 - `app/[locale]/_components/category-browse-drawer.tsx` — full-screen category browser
@@ -48,8 +48,7 @@ Two completely different overlay systems are used for mobile bottom overlays:
 - `components/layout/sidebar/sidebar-menu.tsx` — hamburger sidebar menu
 - `components/mobile/drawers/product-quick-view-drawer.tsx` — product quick view
 
-**Radix Sheet** (~5 instances of bottom overlay on mobile):
-- `app/[locale]/(main)/_components/mobile-home/mobile-home-category-picker.tsx` — **"Още" category picker** ← the outlier
+**Radix Sheet** (~4 instances; should be side panels only):
 - `app/[locale]/(account)/account/_components/account-tab-bar.tsx` — account tab overlay
 - `components/layout/sidebar/sidebar.tsx` — desktop sidebar (legitimate Sheet use for side panel)
 - `app/[locale]/(account)/account/orders/_components/account-orders-grid-desktop.tsx` — desktop order detail (legitimate)
@@ -108,7 +107,8 @@ Search has **6 vertical layers** before the first product appears. On a 375px iP
 - Customizable via props
 
 **Using DrawerShell** (consistent): Cart, Wishlist, Messages, Account, Auth  
-**NOT using DrawerShell** (custom headers): FilterHub, SortModal, all sell-flow drawers, city picker, browse options, checkout address, category browse, seller profile, account addresses/orders/wishlist grid drawers, seller filter drawers, product quick view
+**Also using DrawerShell**: FilterHub, SortModal, Home city picker, Home browse options, Home category picker  
+**NOT using DrawerShell** (custom headers): all sell-flow drawers, checkout address, category browse, seller profile, account addresses/orders/wishlist grid drawers, seller filter drawers, product quick view
 
 ---
 
@@ -167,7 +167,7 @@ Search has **6 vertical layers** before the first product appears. On a 375px iP
 ### Home page
 - `app/[locale]/(main)/_components/mobile-home.tsx` — Home orchestrator
 - `app/[locale]/(main)/_components/mobile-home/mobile-home-rails.tsx` — Home navigation rails
-- `app/[locale]/(main)/_components/mobile-home/mobile-home-category-picker.tsx` — **Uses Sheet (migrate to Drawer)**
+- `app/[locale]/(main)/_components/mobile-home/mobile-home-category-picker.tsx` — ✅ Uses DrawerShell (migrated off Sheet)
 
 ### Search page
 - `app/[locale]/(main)/search/_components/search-page-layout.tsx` — Search layout
@@ -180,8 +180,8 @@ Search has **6 vertical layers** before the first product appears. On a 375px iP
 - `components/mobile/drawers/account-drawer.tsx` — ✅ Uses DrawerShell
 - `components/mobile/drawers/auth-drawer.tsx` — ✅ Uses DrawerShell
 - `components/shared/wishlist/wishlist-drawer.tsx` — ✅ Uses DrawerShell
-- `components/shared/filters/filter-hub.tsx` — ❌ Custom header
-- `components/shared/filters/sort-modal.tsx` — ❌ Custom header
+- `app/[locale]/(main)/_components/filters/filter-hub.tsx` — ✅ Uses DrawerShell
+- `app/[locale]/(main)/_components/filters/shared/sort-modal.tsx` — ✅ Uses DrawerShell
 - `components/mobile/drawers/product-quick-view-drawer.tsx` — ❌ Custom header
 
 ## Dependencies
@@ -193,3 +193,4 @@ Search has **6 vertical layers** before the first product appears. On a 375px iP
 
 ## Last modified
 - 2026-02-18: Initial audit and documentation
+- 2026-02-19: Phase 2 — migrated remaining home bottom overlays to DrawerShell and removed the last (main) bottom Sheet outlier
