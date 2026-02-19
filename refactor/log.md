@@ -929,3 +929,46 @@
   - `app/actions/{boosts,payments,subscriptions}.ts` (payment semantics)
   - `app/actions/profile.ts` (auth/session semantics)
 - `lib/auth/business.ts` split is audit-only; needs human approval before any mechanical extraction.
+
+### Session 27 — 2026-02-19 (Codex Domain 6 progress — safe refactors)
+
+**Phase(s):** Domain 6 (`lib/` + `hooks/` + `app/actions/` + `app/api/`) — safe refactors (still blocked on approval for payment/auth action refactors)  
+**Audit highlights (delta since Session 26):**
+- Several `app/actions/*` modules were still missing Zod boundary parsing (advisory only).
+- A few tiny single-use modules and dead action exports remained in Domain 6 scope.
+
+**Concrete changes:**
+- lib/ cleanup:
+  - Pruned dead internal types in `lib/types/badges.ts` and removed unused helpers in `lib/shipping.ts`.
+  - Minor validations cleanup in `lib/sell/schema.ts` and small lint fix in `lib/supabase/messages.ts`.
+- Inlined single-use modules:
+  - Moved product select strings into `lib/data/products/queries.ts`; removed `lib/supabase/selects/products.ts`.
+  - Inlined the AI find-similar Zod schemas into the route handler; removed `lib/ai/schemas/find-similar.ts`.
+- Server actions hardening (non-payment/auth-internals only):
+  - Added lightweight Zod boundary parsing to:
+    - `app/actions/blocked-users.ts`
+    - `app/actions/seller-follows.ts`
+    - `app/actions/orders-{rating,reads,status,support}.ts`
+  - Pruned dead exports and added Zod parsing in:
+    - `app/actions/reviews.ts` (kept only `submitReview`, which is the only in-repo consumer)
+    - `app/actions/buyer-feedback.ts` (kept only `submitBuyerFeedback`, which is the only in-repo consumer)
+
+**Verification:**
+- `pnpm -s refactor:verify` ✅ (after each batch)
+- `pnpm -s architecture:scan` ✅
+
+**Metrics snapshot (architecture:scan + local source count):**
+- Files: `929`
+- LOC (source): `~130K` (`129,521`)
+- `"use client"`: `221`
+- `>300` lines: `92`
+- `>500` lines: `14`
+- Tiny `<50L` files: `244`
+- Missing metadata: `53`
+- Clones: `233` (`2.75%`, `4,355` duplicated lines)
+
+**Remaining risks / follow-ups:**
+- Domain 6 still cannot complete without approval to touch:
+  - `app/actions/{boosts,payments,subscriptions}.ts` (payment semantics)
+  - `app/actions/profile.ts` (auth/session semantics)
+- `lib/auth/business.ts` split remains audit-only; needs human approval before any mechanical extraction.
