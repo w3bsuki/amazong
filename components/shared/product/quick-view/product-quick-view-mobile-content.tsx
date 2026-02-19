@@ -1,10 +1,8 @@
-import { SquareArrowOutUpRight as ArrowSquareOut, MapPin } from "lucide-react"
-
+import { MapPin } from "lucide-react"
 
 import { useTranslations } from "next-intl"
 
 import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
 import { getConditionBadgeVariant } from "@/components/shared/product/_lib/condition"
 
@@ -12,12 +10,10 @@ import type { ProductQuickViewViewProps } from "./product-quick-view-content"
 import { QuickViewImageGallery } from "./quick-view-image-gallery"
 import {
   QuickViewActionButtons,
-  QuickViewFooterActions,
-  QuickViewProtectionCard,
-  QuickViewSellerSkeletonCard,
+  QuickViewFooterBar,
+  QuickViewSellerSection,
   QuickViewShippingBadge,
 } from "./quick-view-chrome"
-import { QuickViewSellerCard } from "./quick-view-seller-card"
 
 export function ProductQuickViewMobileContent({
   product,
@@ -156,55 +152,35 @@ export function ProductQuickViewMobileContent({
             </div>
           </div>
 
-          {showSellerSkeleton ? (
-            <QuickViewSellerSkeletonCard
-              className="bg-card"
-              titleSkeletonClassName="w-32"
-              subtitleSkeletonClassName="w-20"
-            />
-          ) : (
-            <QuickViewSellerCard
-              compact
-              sellerName={sellerName}
-              sellerAvatarUrl={sellerAvatarUrl}
-              sellerVerified={sellerVerified}
-              rating={rating}
-              reviews={reviews}
-              onNavigateToProduct={onNavigateToProduct}
-            />
-          )}
-
-          <QuickViewProtectionCard
-            title={tProduct("buyerProtection")}
-            subtitle={tProduct("buyerProtectionBadgeSubtitle")}
+          <QuickViewSellerSection
+            showSellerSkeleton={showSellerSkeleton}
+            sellerName={sellerName}
+            sellerAvatarUrl={sellerAvatarUrl}
+            sellerVerified={sellerVerified}
+            rating={rating}
+            reviews={reviews}
+            onNavigateToProduct={onNavigateToProduct}
+            protectionTitle={tProduct("buyerProtection")}
+            protectionSubtitle={tProduct("buyerProtectionBadgeSubtitle")}
             easyReturns={tProduct("easyReturns")}
-            className="bg-card"
+            viewFullPageLabel={tModal("viewFullPage")}
+            sellerSkeletonClassName="bg-card"
+            titleSkeletonClassName="w-32"
+            subtitleSkeletonClassName="w-20"
+            protectionCardClassName="bg-card"
           />
-
-          <Button
-            type="button"
-            variant="outline"
-            size="default"
-            onClick={onNavigateToProduct}
-            className="w-full justify-center gap-2"
-          >
-            {tModal("viewFullPage")}
-            <ArrowSquareOut size={16} />
-          </Button>
         </div>
       </div>
 
-      <div className="sticky bottom-0 z-20 shrink-0 border-t border-border bg-surface-elevated px-4 py-2.5 pb-safe-max">
-        <QuickViewFooterActions
-          buyNowLabel={tProduct("buyNow")}
-          addToCartLabel={tProduct("add")}
-          addToCartAriaLabel={tProduct("addToCart")}
-          onBuyNow={onBuyNow}
-          onAddToCart={onAddToCart}
-          inStock={inStock}
-        />
-      </div>
+      <QuickViewFooterBar
+        containerClassName="px-4 py-2.5"
+        buyNowLabel={tProduct("buyNow")}
+        addToCartLabel={tProduct("add")}
+        addToCartAriaLabel={tProduct("addToCart")}
+        onBuyNow={onBuyNow}
+        onAddToCart={onAddToCart}
+        inStock={inStock}
+      />
     </div>
   )
 }
-

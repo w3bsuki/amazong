@@ -2,6 +2,7 @@ import {
   RefreshCw as ArrowsClockwise,
   Heart,
   Link as LinkSimple,
+  SquareArrowOutUpRight as ArrowSquareOut,
   ShieldCheck,
   Truck,
   X,
@@ -12,6 +13,8 @@ import { Button } from "@/components/ui/button"
 import { IconButton } from "@/components/ui/icon-button"
 import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
+
+import { QuickViewSellerCard } from "./quick-view-seller-card"
 
 interface QuickViewActionButtonsProps {
   copyAriaLabel: string
@@ -50,6 +53,28 @@ interface QuickViewFooterActionsProps {
   onAddToCart: () => void
   inStock: boolean
   className?: string | undefined
+}
+
+interface QuickViewSellerSectionProps {
+  showSellerSkeleton: boolean
+  sellerName?: string | null | undefined
+  sellerAvatarUrl?: string | null | undefined
+  sellerVerified?: boolean | undefined
+  rating?: number | undefined
+  reviews?: number | undefined
+  onNavigateToProduct: () => void
+  protectionTitle: string
+  protectionSubtitle: string
+  easyReturns: string
+  viewFullPageLabel: string
+  sellerSkeletonClassName?: string | undefined
+  titleSkeletonClassName?: string | undefined
+  subtitleSkeletonClassName?: string | undefined
+  protectionCardClassName?: string | undefined
+}
+
+interface QuickViewFooterBarProps extends QuickViewFooterActionsProps {
+  containerClassName?: string | undefined
 }
 
 export function QuickViewActionButtons({
@@ -183,6 +208,80 @@ export function QuickViewFooterActions({
       >
         {addToCartLabel}
       </Button>
+    </div>
+  )
+}
+
+export function QuickViewSellerSection({
+  showSellerSkeleton,
+  sellerName,
+  sellerAvatarUrl,
+  sellerVerified,
+  rating,
+  reviews,
+  onNavigateToProduct,
+  protectionTitle,
+  protectionSubtitle,
+  easyReturns,
+  viewFullPageLabel,
+  sellerSkeletonClassName,
+  titleSkeletonClassName,
+  subtitleSkeletonClassName,
+  protectionCardClassName,
+}: QuickViewSellerSectionProps) {
+  return (
+    <>
+      {showSellerSkeleton ? (
+        <QuickViewSellerSkeletonCard
+          className={sellerSkeletonClassName}
+          titleSkeletonClassName={titleSkeletonClassName}
+          subtitleSkeletonClassName={subtitleSkeletonClassName}
+        />
+      ) : (
+        <QuickViewSellerCard
+          compact
+          sellerName={sellerName}
+          sellerAvatarUrl={sellerAvatarUrl}
+          sellerVerified={sellerVerified}
+          rating={rating}
+          reviews={reviews}
+          onNavigateToProduct={onNavigateToProduct}
+        />
+      )}
+
+      <QuickViewProtectionCard
+        title={protectionTitle}
+        subtitle={protectionSubtitle}
+        easyReturns={easyReturns}
+        className={protectionCardClassName}
+      />
+
+      <Button
+        type="button"
+        variant="outline"
+        size="default"
+        onClick={onNavigateToProduct}
+        className="w-full justify-center gap-2"
+      >
+        {viewFullPageLabel}
+        <ArrowSquareOut size={16} />
+      </Button>
+    </>
+  )
+}
+
+export function QuickViewFooterBar({
+  containerClassName,
+  ...actionsProps
+}: QuickViewFooterBarProps) {
+  return (
+    <div
+      className={cn(
+        "sticky bottom-0 z-20 shrink-0 border-t border-border bg-surface-elevated pb-safe-max",
+        containerClassName
+      )}
+    >
+      <QuickViewFooterActions {...actionsProps} />
     </div>
   )
 }
