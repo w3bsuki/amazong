@@ -1,3 +1,5 @@
+"use client"
+
 import { Link } from "@/i18n/routing"
 import { useLocale, useTranslations } from "next-intl"
 import { cn } from "@/lib/utils"

@@ -10,22 +10,22 @@
   ✓ typedEnv
 
   Creating an optimized production build ...
-✓ Compiled successfully in 31.6s
+✓ Compiled successfully in 13.5s
   Running TypeScript ...
   Collecting page data using 11 workers ...
   Generating static pages using 11 workers (0/505) ...
   Generating static pages using 11 workers (126/505) 
   Generating static pages using 11 workers (252/505) 
   Generating static pages using 11 workers (378/505) 
-✓ Generating static pages using 11 workers (505/505) in 33.2s
+✓ Generating static pages using 11 workers (505/505) in 22.3s
   Finalizing page optimization ...
 
 Route (app)                                        Revalidate  Expire
 ┌ ○ /_not-found
-├ ◐ /[locale]                                              2m     10m
-│ ├ /[locale]                                              2m     10m
-│ ├ /en                                                    2m     10m
-│ └ /bg                                                    2m     10m
+├ ◐ /[locale]                                              5m      1h
+│ ├ /[locale]                                              5m      1h
+│ ├ /en                                                    5m      1h
+│ └ /bg                                                    5m      1h
 ├ ◐ /[locale]/(.)account/plans/upgrade
 │ ├ /[locale]/(.)account/plans/upgrade
 │ ├ /en/(.)account/plans/upgrade
