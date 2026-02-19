@@ -2,12 +2,7 @@ import { useCallback } from "react"
 import { useSearchParams } from "next/navigation"
 import { usePathname, useRouter } from "@/i18n/routing"
 import { useTranslations } from "next-intl"
-import {
-  Drawer,
-  DrawerContent,
-  DrawerHeader,
-  DrawerTitle,
-} from "@/components/ui/drawer"
+import { DrawerShell } from "@/components/shared/drawer-shell"
 import { FilterRadioGroup, FilterRadioItem } from "./controls/filter-radio-group"
 
 // =============================================================================
@@ -49,6 +44,7 @@ export function SortModal({
   onValueChange,
 }: SortModalProps) {
   const t = useTranslations("SearchFilters")
+  const tCommon = useTranslations("Common")
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
@@ -97,33 +93,34 @@ export function SortModal({
   )
 
   return (
-    <Drawer open={open} onOpenChange={onOpenChange}>
-      <DrawerContent className="max-h-dialog-sm rounded-t-2xl lg:hidden">
-        <DrawerHeader className="px-inset pt-4 pb-3 border-b border-border-subtle">
-          <DrawerTitle className="text-base font-semibold tracking-tight text-center">
-            {t("sortBy")}
-          </DrawerTitle>
-        </DrawerHeader>
-
-        <div className="overflow-y-auto py-2 pb-safe-max px-inset">
-          <FilterRadioGroup
-            value={currentSort}
-            onValueChange={handleSortChange}
-            className="-mx-inset"
-          >
-            {visibleOptions.map((option) => (
-              <FilterRadioItem
-                key={option.value}
-                value={option.value}
-                fullBleed
-              >
-                {t(option.labelKey)}
-              </FilterRadioItem>
-            ))}
-          </FilterRadioGroup>
-        </div>
-      </DrawerContent>
-    </Drawer>
+    <DrawerShell
+      open={open}
+      onOpenChange={onOpenChange}
+      title={t("sortBy")}
+      closeLabel={tCommon("close")}
+      contentAriaLabel={t("sortBy")}
+      contentClassName="max-h-dialog-sm lg:hidden"
+      headerClassName="px-inset pt-4 pb-3 border-border-subtle"
+      titleClassName="text-base font-semibold tracking-tight"
+    >
+      <div className="overflow-y-auto py-2 pb-safe-max px-inset">
+        <FilterRadioGroup
+          value={currentSort}
+          onValueChange={handleSortChange}
+          className="-mx-inset"
+        >
+          {visibleOptions.map((option) => (
+            <FilterRadioItem
+              key={option.value}
+              value={option.value}
+              fullBleed
+            >
+              {t(option.labelKey)}
+            </FilterRadioItem>
+          ))}
+        </FilterRadioGroup>
+      </div>
+    </DrawerShell>
   )
 }
 

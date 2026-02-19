@@ -15,11 +15,14 @@ import { cn } from "@/lib/utils"
 interface DrawerShellProps {
   open: boolean
   onOpenChange: (open: boolean) => void
-  title: string
+  title: ReactNode
   closeLabel: string
+  contentAriaLabel?: string | undefined
   description?: string | undefined
   icon?: ReactNode | undefined
   titleSuffix?: ReactNode | undefined
+  headerLeading?: ReactNode | undefined
+  headerTrailing?: ReactNode | undefined
   headerExtra?: ReactNode | undefined
   children: ReactNode
   contentClassName?: string | undefined
@@ -40,9 +43,12 @@ export function DrawerShell({
   onOpenChange,
   title,
   closeLabel,
+  contentAriaLabel,
   description,
   icon,
   titleSuffix,
+  headerLeading,
+  headerTrailing,
   headerExtra,
   children,
   contentClassName,
@@ -56,24 +62,32 @@ export function DrawerShell({
 }: DrawerShellProps) {
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
-      <DrawerContent className={contentClassName} data-testid={dataTestId}>
+      <DrawerContent
+        className={contentClassName}
+        data-testid={dataTestId}
+        {...(contentAriaLabel ? { "aria-label": contentAriaLabel } : {})}
+      >
         <DrawerHeader className={headerClassName}>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-1.5">
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex min-w-0 items-center gap-1.5">
+              {headerLeading}
               {icon}
               <DrawerTitle className={cn("text-sm font-semibold", titleClassName)}>{title}</DrawerTitle>
               {titleSuffix}
             </div>
-            <DrawerClose asChild>
-              <IconButton
-                aria-label={closeLabel}
-                variant="ghost"
-                size={closeButtonSize}
-                className={closeButtonClassName}
-              >
-                <X size={closeIconSize} />
-              </IconButton>
-            </DrawerClose>
+            <div className="flex items-center gap-1.5">
+              {headerTrailing}
+              <DrawerClose asChild>
+                <IconButton
+                  aria-label={closeLabel}
+                  variant="ghost"
+                  size={closeButtonSize}
+                  className={closeButtonClassName}
+                >
+                  <X size={closeIconSize} />
+                </IconButton>
+              </DrawerClose>
+            </div>
           </div>
           {description ? (
             <DrawerDescription className={descriptionClassName}>{description}</DrawerDescription>

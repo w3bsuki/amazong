@@ -3,22 +3,19 @@
 import { useState, useCallback, useEffect, useMemo, startTransition } from "react"
 import { useSearchParams } from "next/navigation"
 import { usePathname, useRouter } from "@/i18n/routing"
+import { ChevronLeft as CaretLeft } from "lucide-react"
 
 import { useTranslations } from "next-intl"
 import { useFilterCount } from "@/hooks/use-filter-count"
 import { Button } from "@/components/ui/button"
-import {
-  Drawer,
-  DrawerBody,
-  DrawerContent,
-  DrawerFooter,
-} from "@/components/ui/drawer"
+import { DrawerBody, DrawerFooter } from "@/components/ui/drawer"
+import { IconButton } from "@/components/ui/icon-button"
+import { DrawerShell } from "@/components/shared/drawer-shell"
 import {
   shouldForceMultiSelectCategoryAttribute,
 } from "@/lib/filters/category-attribute"
 import type { CategoryAttribute } from "@/lib/data/categories"
 import { usePendingFilters } from "./shared/state/use-pending-filters"
-import { FilterHubHeader } from "./filter-hub/filter-hub-header"
 import { FilterHubListView } from "./filter-hub/filter-hub-list-view"
 import { FilterHubSectionContent } from "./filter-hub/filter-hub-section-content"
 import {
@@ -204,23 +201,50 @@ export function FilterHub({
     return filterSections.find((item) => item.id === activeSection)?.label ?? null
   }, [activeSection, filterSections])
 
-  return (
-    <Drawer open={open} onOpenChange={onOpenChange}>
-      <DrawerContent
-        aria-label={tHub("refineSearch")}
-        className="max-h-dialog flex flex-col rounded-t-2xl px-0 pb-0 bg-background lg:hidden"
-      >
-        <FilterHubHeader
-          activeSection={activeSection}
-          isSingleMode={Boolean(isSingleMode)}
-          currentSectionLabel={currentSectionLabel}
-          hasPendingFilters={hasPendingFilters}
-          onBack={() => setActiveSection(null)}
-          onClearAll={clearAllPending}
-          onClose={() => onOpenChange(false)}
-        />
+  const headerTitle = activeSection ? currentSectionLabel ?? tHub("refineSearch") : tHub("refineSearch")
+  const showClearAll = hasPendingFilters && (!activeSection || Boolean(isSingleMode))
 
-        <DrawerBody className="px-0 bg-background">
+  return (
+    <DrawerShell
+      open={open}
+      onOpenChange={onOpenChange}
+      title={headerTitle}
+      titleClassName="text-base font-semibold tracking-tight"
+      closeLabel={tHub("close")}
+      contentAriaLabel={tHub("refineSearch")}
+      headerClassName={`px-inset pb-3 ${activeSection || isSingleMode ? "pt-4" : "pt-3"}`}
+      contentClassName="px-0 pb-0 lg:hidden"
+      headerLeading={
+        activeSection && !isSingleMode ? (
+          <IconButton
+            type="button"
+            data-vaul-no-drag
+            aria-label={tHub("back")}
+            variant="ghost"
+            size="icon-default"
+            className="-ml-1 text-muted-foreground hover:bg-hover hover:text-foreground active:bg-active"
+            onClick={() => setActiveSection(null)}
+          >
+            <CaretLeft size={20} />
+          </IconButton>
+        ) : null
+      }
+      headerTrailing={
+        showClearAll ? (
+          <button
+            type="button"
+            data-vaul-no-drag
+            onClick={clearAllPending}
+            className="text-sm font-medium text-primary transition-opacity active:opacity-70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
+          >
+            {tHub("clearAll")}
+          </button>
+        ) : null
+      }
+      closeButtonClassName="text-muted-foreground hover:text-foreground hover:bg-hover active:bg-active motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth)"
+      closeIconSize={18}
+    >
+        <DrawerBody className="px-0">
           {!activeSection && !isSingleMode ? (
             <FilterHubListView
               filterSections={filterSections}
@@ -248,7 +272,7 @@ export function FilterHub({
           )}
         </DrawerBody>
 
-        <DrawerFooter className="px-inset border-t border-border bg-background">
+        <DrawerFooter className="px-inset">
           <Button
             className="w-full h-11 rounded-full text-sm font-bold"
             onClick={applyFilters}
@@ -263,7 +287,6 @@ export function FilterHub({
             )}
           </Button>
         </DrawerFooter>
-      </DrawerContent>
-    </Drawer>
+    </DrawerShell>
   )
 }
