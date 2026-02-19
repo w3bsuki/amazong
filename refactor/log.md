@@ -1055,3 +1055,25 @@
 - Tiny `<50L` files: `248`
 - Missing metadata: `0`
 - Clones: `240` (`2.81%`, `4,463` duplicated lines)
+
+### Session 30 — 2026-02-19 (Codex Batch 8 — clone reduction)
+
+**Phase(s):** Batch 8 — final hardening + reduction (safe-only)  
+**Changes:**
+- Reduced local duplication in UI primitives without changing behavior:
+  - `components/ui/pagination.tsx`: consolidated Previous/Next into shared `PaginationNav` wrapper.
+  - `components/layout/header/desktop/desktop-search-popover-panel.tsx`: consolidated the repeated horizontal product-strip sections into `DesktopSearchProductStrip`.
+
+**Verification:**
+- `pnpm -s refactor:verify` ✅ (warnings only; no errors)
+- `pnpm -s architecture:scan` ✅
+
+**Metrics snapshot (architecture:scan + local source count):**
+- Files: `937`
+- LOC (source): `~131K` (`130,837`)
+- `"use client"`: `216`
+- `>300` lines: `93`
+- `>500` lines: `14`
+- Tiny `<50L` files: `248`
+- Missing metadata: `0`
+- Clones: `237` (`2.77%`, `4,402` duplicated lines)
