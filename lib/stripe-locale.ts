@@ -40,12 +40,7 @@ export function buildLocaleUrlFromRequest(
   locale: unknown,
   query?: string,
 ): string {
-  // Always use env var for Stripe URLs - request origin doesn't work for redirects
-  const base = getAppUrl()
-  const safeLocale = normalizeLocale(locale)
-  const cleanPath = path.replace(/^\//, '')
-  const url = `${base}/${safeLocale}/${cleanPath}`
-  return query ? `${url}?${query}` : url
+  return buildLocaleUrl(path, locale, query)
 }
 
 /**
