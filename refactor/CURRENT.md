@@ -12,19 +12,19 @@
 |---|---|
 | **Mode** | Autopilot — full domain-by-domain audit + refactor |
 | **Current task** | Domain 6 — lib/ + actions/ + api/ |
-| **Sessions so far** | 25 (phase 0 rebaseline + Domains 1-5 completed) |
+| **Sessions so far** | 26 (phase 0 rebaseline + Domains 1-5 completed) |
 
 ## Metrics
 
 | Metric | Baseline (2026-02-18 Rebaseline) | Now | Target |
 |--------|----------|-----|--------|
-| Files | 852 | 934 | <650 |
-| LOC (source) | ~115K | ~130K | <85K |
-| `"use client"` | 217 | 222 | <120 |
-| >300L files | 114 | 94 | <20 |
-| Tiny <50L files | 286 | 248 | <100 |
+| Files | 852 | 931 | <650 |
+| LOC (source) | ~115K | ~131K | <85K |
+| `"use client"` | 217 | 221 | <120 |
+| >300L files | 114 | 93 | <20 |
+| Tiny <50L files | 286 | 240 | <100 |
 | Missing metadata | 53 | 53 | 0 |
-| Clone % | 2.80% | 2.73% | <1.5% |
+| Clone % | 2.80% | 2.74% | <1.5% |
 
 ## Domain Task Queue
 
@@ -58,4 +58,4 @@ Read refactor/autopilot.md. Continue from where you left off.
 
 ---
 
-*Updated: 2026-02-18 — Domain 5 complete; next up is Domain 6 (lib/actions/api).*
+*Updated: 2026-02-19 — Domain 6 in progress (lib/data splits + actions requireAuth migration; pending approval for payment/auth action refactors).*

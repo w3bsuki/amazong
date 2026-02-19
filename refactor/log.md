@@ -856,3 +856,76 @@
 - Lint warnings remain high project-wide (no errors); follow-up should focus on owned warnings in Domain 6 scope.
 - Several non-priority component hotspots remain >300L (`sign-up-form-fields`, `account-drawer`, `wishlist-context`, `search-ai-chat`, `use-messages-state`).
 - Domain 6 should prioritize `lib/` + `actions/` + `api/` complexity and warning cleanup while preserving auth/payment constraints.
+
+### Session 26 — 2026-02-19 (Codex Domain 6 progress)
+
+**Phase(s):** Domain 6 (`lib/` + `hooks/` + `app/actions/` + `app/api/`) — partial (blocked on approval for payment/auth action refactors)  
+**Audit highlights:**
+- `app/actions/*` remaining `supabase.auth.getUser()` callers are payment/auth-adjacent:
+  - `app/actions/boosts.ts`, `app/actions/payments.ts`, `app/actions/subscriptions.ts` (Stripe/payment semantics) — **needs explicit approval before edits**
+  - `app/actions/profile.ts` (email/password updates) — **needs explicit approval before edits**
+- Webhook routes (`app/api/**/webhook/route.ts`) all verify signatures via `stripe.webhooks.constructEvent(...)` before DB writes, and use idempotent upsert/unique keys.
+- `lib/auth/business.ts` is a mixed-responsibility monolith (auth guard + subscription access + dashboard fetchers + pure transforms); split plan documented (audit-only).
+
+**Concrete changes:**
+- `app/actions/*` requireAuth() migration (non-payment/auth-internals only):
+  - Removed unused action barrels:
+    - `app/actions/orders.ts`
+    - `app/actions/products.ts`
+    - `app/actions/username.ts`
+  - Migrated from raw `getUser()` → `requireAuth()`:
+    - `app/actions/blocked-users.ts`
+    - `app/actions/seller-follows.ts`
+    - `app/actions/onboarding.ts`
+    - `app/actions/reviews.ts`
+    - `app/actions/seller-feedback.ts`
+- `lib/data/categories.ts` split into focused modules (kept public API stable via wrapper re-exports):
+  - `lib/data/categories/hierarchy.ts`
+  - `lib/data/categories/subcategories.ts`
+  - `lib/data/categories/tree.ts`
+  - `lib/data/categories/types.ts`
+- `lib/data/products.ts` split into focused modules (kept public API stable via wrapper re-exports):
+  - `lib/data/products/queries.ts`
+  - `lib/data/products/normalize.ts`
+  - `lib/data/products/types.ts`
+- `hooks/use-home-discovery-feed.ts` split helpers/types (kept import path stable):
+  - `hooks/use-home-discovery-feed/helpers.ts`
+  - `hooks/use-home-discovery-feed/types.ts`
+
+**Webhook audit notes (no logic changes):**
+- `app/api/checkout/webhook/route.ts`:
+  - Signature verified before `createAdminClient()`.
+  - Orders are idempotent via upsert on `stripe_payment_intent_id`; order items guard against duplicate inserts.
+- `app/api/payments/webhook/route.ts`:
+  - Signature verified before `createAdminClient()`.
+  - Listing boosts are idempotent via unique `stripe_checkout_session_id` with duplicate handling.
+  - Setup sessions avoid duplicate payment methods by checking `stripe_payment_method_id`.
+- `app/api/subscriptions/webhook/route.ts`:
+  - Signature verified before `createAdminClient()`.
+  - Subscriptions idempotent via upsert on `stripe_subscription_id`; profile downgrades guarded by Stripe status semantics.
+- `app/api/connect/webhook/route.ts`:
+  - Signature verified before DB writes.
+  - Updates are idempotent (update-by-account-id).
+
+**File count delta:**
+- Source files (`app` + `components` + `lib` + `hooks`, ts/tsx): `934` → `931` (`-3` net)
+
+**Verification:**
+- `pnpm -s refactor:verify` ✅ (after each batch)
+- `pnpm -s architecture:scan` ✅
+
+**Metrics snapshot (architecture:scan + local source count):**
+- Files: `931`
+- LOC (source): `~131K` (`130,894`)
+- `"use client"`: `221`
+- `>300` lines: `93`
+- `>500` lines: `14`
+- Tiny `<50L` files: `240`
+- Missing metadata: `53`
+- Clones: `233` (`2.74%`, `4,356` duplicated lines)
+
+**Remaining risks / follow-ups:**
+- Domain 6 cannot complete without approval to touch:
+  - `app/actions/{boosts,payments,subscriptions}.ts` (payment semantics)
+  - `app/actions/profile.ts` (auth/session semantics)
+- `lib/auth/business.ts` split is audit-only; needs human approval before any mechanical extraction.
