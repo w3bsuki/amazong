@@ -56,6 +56,11 @@ const quickCampaigns = [
   },
 ]
 
+export const metadata = {
+  title: "Business Marketing | Treido",
+  description: "Promote your Treido store and campaigns.",
+}
+
 export default async function BusinessMarketingPage() {
   // Requires paid business subscription
   await requireDashboardAccess()

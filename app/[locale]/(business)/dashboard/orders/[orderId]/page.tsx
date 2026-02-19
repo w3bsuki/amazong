@@ -128,6 +128,11 @@ async function getOrderDetails(orderId: string, sellerId: string) {
   }
 }
 
+export const metadata = {
+  title: "Order Details | Treido",
+  description: "View order details in your business dashboard.",
+}
+
 export default async function OrderDetailPage({ params }: OrderDetailPageProps) {
   const { locale: localeParam, orderId } = await params
   const locale = localeParam === "bg" ? "bg" : "en"

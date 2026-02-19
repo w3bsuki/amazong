@@ -23,6 +23,11 @@ import { BusinessEmptyState } from "../../_components/business-empty-state"
 import { DollarSign as IconCurrencyDollar, MessageCircle as IconMessage, ShoppingCart as IconShoppingCart, TrendingUp as IconTrendingUp, Users as IconUsers } from "lucide-react";
 
 
+export const metadata = {
+  title: "Business Customers | Treido",
+  description: "Manage and understand your Treido customers.",
+}
+
 export default async function BusinessCustomersPage() {
   // Requires paid business subscription
   const businessSeller = await requireDashboardAccess()

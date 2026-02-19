@@ -46,6 +46,11 @@ async function getSellerDetails(sellerId: string) {
   return profile
 }
 
+export const metadata = {
+  title: "Business Settings | Treido",
+  description: "Manage settings for your Treido business account.",
+}
+
 export default async function BusinessSettingsPage() {
   // Requires paid business subscription
   const businessSeller = await requireDashboardAccess()

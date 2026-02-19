@@ -16,6 +16,11 @@ import {
   transformToActivityItemsServer,
 } from "@/lib/auth/business"
 
+export const metadata = {
+  title: "Business Dashboard | Treido",
+  description: "Overview of your Treido business dashboard.",
+}
+
 export default async function BusinessDashboardPage() {
   // Get the authenticated business seller with subscription check
   // This will redirect to /dashboard/upgrade if they don't have a paid subscription

@@ -12,6 +12,11 @@ export function generateStaticParams() {
   return locales.map((locale) => ({ locale, productId: "__placeholder__" }))
 }
 
+export const metadata = {
+  title: "Edit Product | Treido",
+  description: "Edit a product in your Treido business dashboard.",
+}
+
 export default async function BusinessProductEditPage({
   params,
 }: {

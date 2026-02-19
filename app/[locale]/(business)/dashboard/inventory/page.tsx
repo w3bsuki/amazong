@@ -82,6 +82,11 @@ function InventoryHeader({ summary }: { summary: InventorySummary }) {
   )
 }
 
+export const metadata = {
+  title: "Business Inventory | Treido",
+  description: "Monitor and update inventory for your Treido products.",
+}
+
 export default async function BusinessInventoryPage() {
   // Requires paid business subscription
   const businessSeller = await requireDashboardAccess()

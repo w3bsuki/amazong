@@ -43,6 +43,11 @@ async function getBusinessDiscounts() {
   }
 }
 
+export const metadata = {
+  title: "Business Discounts | Treido",
+  description: "Create and manage discount codes for your Treido store.",
+}
+
 export default async function BusinessDiscountsPage() {
   // Requires paid business subscription
   await requireDashboardAccess()

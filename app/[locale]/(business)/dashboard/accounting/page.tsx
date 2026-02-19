@@ -63,6 +63,11 @@ async function getAccountingData(sellerId: string) {
   }
 }
 
+export const metadata = {
+  title: "Business Finances | Treido",
+  description: "Review sales, fees, and earnings for your Treido store.",
+}
+
 export default async function BusinessAccountingPage() {
   // Requires paid business subscription
   const businessSeller = await requireDashboardAccess()

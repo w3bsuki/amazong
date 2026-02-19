@@ -6,6 +6,11 @@ import { deleteProduct, updateProduct } from "@/app/actions/products-update"
 import { ProductsTable } from "../../_components/products-table"
 import { getBusinessDashboardCategories } from "../_lib/categories"
 
+export const metadata = {
+  title: "Business Products | Treido",
+  description: "Manage products for your Treido store.",
+}
+
 export default async function BusinessProductsPage() {
   // Requires paid business subscription
   const businessSeller = await requireDashboardAccess()

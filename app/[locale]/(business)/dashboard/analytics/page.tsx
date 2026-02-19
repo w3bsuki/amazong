@@ -12,6 +12,11 @@ import { ChartColumn as IconChartBar, DollarSign as IconCurrencyDollar, Eye as I
 
 import { BusinessEmptyState } from "../../_components/business-empty-state"
 
+export const metadata = {
+  title: "Business Analytics | Treido",
+  description: "Track your Treido store performance.",
+}
+
 export default async function BusinessAnalyticsPage() {
   // Requires paid business subscription
   const businessSeller = await requireDashboardAccess()

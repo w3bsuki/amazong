@@ -144,6 +144,11 @@ interface UpgradePageProps {
   params: Promise<{ locale: string }>
 }
 
+export const metadata = {
+  title: "Upgrade Dashboard | Treido",
+  description: "Upgrade your plan to unlock the Treido business dashboard.",
+}
+
 export default function DashboardUpgradePage(props: UpgradePageProps) {
   return (
     <Suspense fallback={null}>
