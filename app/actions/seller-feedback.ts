@@ -2,6 +2,7 @@
 
 import { revalidateTag } from "next/cache"
 import { createAdminClient, createClient } from "@/lib/supabase/server"
+import { requireAuth } from "@/lib/auth/require-auth"
 import { z } from "zod"
 
 // Types
@@ -66,11 +67,6 @@ export async function submitSellerFeedback(
   input: z.infer<typeof submitFeedbackSchema>
 ): Promise<ActionResult<{ id: string }>> {
   try {
-    const supabase = await createClient()
-    if (!supabase) {
-      return { success: false, error: "Database connection failed" }
-    }
-
     // Validate input
     const validated = submitFeedbackSchema.safeParse(input)
     if (!validated.success) {
@@ -78,10 +74,12 @@ export async function submitSellerFeedback(
     }
 
     // Get current user
-    const { data: { user }, error: authError } = await supabase.auth.getUser()
-    if (authError || !user) {
+    const auth = await requireAuth()
+    if (!auth) {
       return { success: false, error: "You must be signed in to leave feedback" }
     }
+
+    const { supabase, user } = auth
 
     const data = validated.data
 

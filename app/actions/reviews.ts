@@ -1,6 +1,7 @@
 "use server"
 
 import { createClient } from "@/lib/supabase/server"
+import { requireAuth } from "@/lib/auth/require-auth"
 import { revalidatePublicProfileTagsByUsername } from "@/lib/cache/revalidate-profile-tags"
 import { revalidateTag } from "next/cache"
 
@@ -46,17 +47,13 @@ interface Review {
 // ============================================================================
 
 export async function submitReview(input: SubmitReviewInput): Promise<ReviewResult> {
-  const supabase = await createClient()
-  
-  if (!supabase) {
-    return { success: false, error: "Database connection failed" }
-  }
-
   // 1. Verify user is authenticated
-  const { data: { user }, error: authError } = await supabase.auth.getUser()
-  if (authError || !user) {
+  const auth = await requireAuth()
+  if (!auth) {
     return { success: false, error: "You must be logged in to leave a review" }
   }
+
+  const { supabase, user } = auth
 
   // 2. Validate rating
   if (!input.rating || input.rating < 1 || input.rating > 5) {
@@ -208,16 +205,12 @@ interface CanReviewResult {
 }
 
 export async function canUserReview(productId: string): Promise<CanReviewResult> {
-  const supabase = await createClient()
-  
-  if (!supabase) {
+  const auth = await requireAuth()
+  if (!auth) {
     return { canReview: false, reason: "login_required" }
   }
 
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) {
-    return { canReview: false, reason: "login_required" }
-  }
+  const { supabase, user } = auth
 
   // Check if this is user's own product
   const { data: product } = await supabase
@@ -274,16 +267,12 @@ export async function markReviewHelpful(reviewId: string): Promise<{ success: bo
 // ============================================================================
 
 export async function deleteReview(reviewId: string): Promise<{ success: boolean; error?: string }> {
-  const supabase = await createClient()
-  
-  if (!supabase) {
-    return { success: false, error: "Database connection failed" }
-  }
-
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) {
+  const auth = await requireAuth()
+  if (!auth) {
     return { success: false, error: "You must be logged in" }
   }
+
+  const { supabase, user } = auth
 
   // Get review to verify ownership and get product_id for revalidation
   const { data: review } = await supabase

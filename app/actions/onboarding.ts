@@ -1,6 +1,7 @@
 "use server"
 
 import { z } from "zod"
+import { requireAuth } from "@/lib/auth/require-auth"
 import { createClient } from "@/lib/supabase/server"
 
 export interface OnboardingData {
@@ -51,7 +52,7 @@ export async function completePostSignupOnboarding(
   coverFile: File | null
 ): Promise<{ success: boolean; error?: string }> {
   const parsed = onboardingSchema.safeParse(data)
-  
+
   if (!parsed.success) {
     console.error("Onboarding validation error:", parsed.error)
     return { success: false, error: "Invalid data provided" }
@@ -67,18 +68,17 @@ export async function completePostSignupOnboarding(
     location,
     socialLinks,
     avatarType,
-    avatarVariant,
-    avatarPalette,
+  avatarVariant,
+  avatarPalette,
   } = parsed.data
 
-  const supabase = await createClient()
-
   // Verify the user is authenticated and matches
-  const { data: { user }, error: authError } = await supabase.auth.getUser()
-  
-  if (authError || !user) {
+  const auth = await requireAuth()
+  if (!auth) {
     return { success: false, error: "Unauthorized" }
   }
+
+  const { supabase, user } = auth
 
   if (user.id !== userId) {
     return { success: false, error: "Forbidden" }
