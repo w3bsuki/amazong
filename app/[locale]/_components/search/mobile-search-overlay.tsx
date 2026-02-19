@@ -15,6 +15,7 @@ import Image from "next/image"
 import { cn } from "@/lib/utils"
 import { useProductSearch } from "@/hooks/use-product-search"
 import { buildSearchHref, type SearchLaunchContext } from "@/components/shared/search/overlay/search-context"
+import { getProductUrl } from "@/lib/url-utils"
 
 const SearchAiChat = dynamic(
   () => import("@/components/shared/search/ai/search-ai-chat").then((mod) => mod.SearchAiChat),
@@ -172,19 +173,13 @@ export function MobileSearchOverlay({
     [saveSearch, handleClose, router, searchContext]
   )
 
-  // Build SEO-friendly product URL
-  const buildProductUrl = useCallback((product: { slug?: string; storeSlug?: string | null; id: string }) => {
-    if (!product.storeSlug) return "#"
-    return `/${product.storeSlug}/${product.slug || product.id}`
-  }, [])
-
   const handleProductSelect = useCallback(
     (product: { slug?: string; storeSlug?: string | null; id: string }) => {
       if (!product) return
       handleClose()
-      router.push(buildProductUrl(product))
+      router.push(getProductUrl(product))
     },
-    [handleClose, router, buildProductUrl]
+    [handleClose, router]
   )
 
   const handleClearInput = useCallback(() => {

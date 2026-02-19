@@ -16,6 +16,7 @@ import { DrawerShell } from "@/components/shared/drawer-shell"
 import Image from "next/image"
 import { cn } from "@/lib/utils"
 import { normalizeImageUrl, PLACEHOLDER_IMAGE_PATH } from "@/lib/normalize-image-url"
+import { getProductUrl } from "@/lib/url-utils"
 
 interface CartDrawerProps {
   open: boolean
@@ -84,8 +85,7 @@ export function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
   )
 
   const buildProductUrl = useCallback((item: CartItem) => {
-    if (!item.username) return "#"
-    return `/${item.username}/${item.slug || item.id}`
+    return getProductUrl({ id: item.id, slug: item.slug ?? null, username: item.username ?? null })
   }, [])
 
   const handleClose = useCallback(() => onOpenChange(false), [onOpenChange])

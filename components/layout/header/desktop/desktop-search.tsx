@@ -16,7 +16,8 @@ import { useTranslations, useLocale } from "next-intl"
 import { useRecentlyViewed } from "@/hooks/use-recently-viewed"
 import { useProductSearch } from "@/hooks/use-product-search"
 
-import { buildProductUrl, buildSearchHref } from "./desktop-search-helpers"
+import { buildSearchHref } from "@/components/shared/search/overlay/search-context"
+import { getProductUrl } from "@/lib/url-utils"
 import { DesktopSearchPopoverPanel } from "./desktop-search-popover-panel"
 
 export function DesktopSearch() {
@@ -48,6 +49,8 @@ export function DesktopSearch() {
     minSearchLength,
   } = useProductSearch(6)
 
+  const buildSearchHrefFromQuery = useCallback((searchQuery: string) => buildSearchHref({ query: searchQuery }), [])
+
   const handleSearch = useCallback((e: React.FormEvent<HTMLFormElement>) => {
     const raw = new FormData(e.currentTarget).get("q")
     const q = (typeof raw === "string" ? raw : (inputRef.current?.value ?? query)).trim()
@@ -59,15 +62,15 @@ export function DesktopSearch() {
     e.preventDefault()
     saveSearch(q)
     setIsOpen(false)
-    router.push(buildSearchHref(q))
-  }, [query, router, saveSearch])
+    router.push(buildSearchHrefFromQuery(q))
+  }, [query, router, saveSearch, buildSearchHrefFromQuery])
 
   const handleSelectSearch = useCallback((search: string) => {
     setQuery(search)
     saveSearch(search)
     setIsOpen(false)
-    router.push(buildSearchHref(search))
-  }, [setQuery, saveSearch, router])
+    router.push(buildSearchHrefFromQuery(search))
+  }, [setQuery, saveSearch, router, buildSearchHrefFromQuery])
 
   const handleSelectProduct = useCallback((product: {
     id: string
@@ -80,7 +83,7 @@ export function DesktopSearch() {
     saveProduct({ ...product, slug: product.slug || product.id })
     setIsOpen(false)
     setQuery("")
-    router.push(buildProductUrl(product))
+    router.push(getProductUrl(product))
   }, [setQuery, router, saveProduct])
 
   const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
@@ -195,8 +198,8 @@ export function DesktopSearch() {
             isSearching={isSearching}
             minSearchLength={minSearchLength}
             formatPrice={formatPrice}
-            buildSearchHref={buildSearchHref}
-            buildProductUrl={buildProductUrl}
+            buildSearchHref={buildSearchHrefFromQuery}
+            buildProductUrl={getProductUrl}
             onClose={() => setIsOpen(false)}
             onSelectSearch={handleSelectSearch}
             onSelectProduct={handleSelectProduct}

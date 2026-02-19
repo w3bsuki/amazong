@@ -4,6 +4,7 @@ import { useLocale, useTranslations } from "next-intl"
 import { Heart } from "lucide-react";
 
 import { useEffect, useMemo, useState } from "react"
+import { getProductUrl } from "@/lib/url-utils"
 
 import { useWishlist, type WishlistItem } from "@/components/providers/wishlist-context"
 import { DropdownProductItem } from "@/components/shared/dropdown-product-item"
@@ -12,8 +13,7 @@ import { HeaderDropdownFooter } from "@/components/shared/header-dropdown-shell"
 import { HeaderIconTrigger } from "@/components/shared/header-icon-trigger"
 
 function buildProductUrl(item: WishlistItem) {
-  if (!item.username) return "#"
-  return `/${item.username}/${item.slug || item.product_id}`
+  return getProductUrl({ id: item.product_id, slug: item.slug ?? null, username: item.username ?? null })
 }
 
 export function WishlistDropdown() {

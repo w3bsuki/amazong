@@ -5,6 +5,7 @@ import { Link } from "@/i18n/routing"
 import { useTranslations, useLocale } from "next-intl"
 import { useCart, type CartItem } from "@/components/providers/cart-context"
 import { Minus, Package, Plus, ShoppingCart, LoaderCircle as SpinnerGap, Trash } from "lucide-react";
+import { getProductUrl } from "@/lib/url-utils"
 
 import Image from "next/image"
 import { useCallback } from "react"
@@ -19,9 +20,12 @@ export function CartDropdown() {
   const locale = useLocale()
 
   const buildProductUrl = useCallback((item: CartItem) => {
-    const sellerSlug = item.username ?? item.storeSlug
-    if (!sellerSlug) return "#"
-    return `/${sellerSlug}/${item.slug || item.id}`
+    return getProductUrl({
+      id: item.id,
+      slug: item.slug ?? null,
+      username: item.username ?? null,
+      storeSlug: item.storeSlug ?? null,
+    })
   }, [])
 
   const formatPrice = (price: number) => {
