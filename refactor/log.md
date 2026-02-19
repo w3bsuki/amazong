@@ -1083,3 +1083,27 @@
 **Phase(s):** Batch 8 — final hardening + reduction (safe-only)  
 **Verification:**
 - `pnpm build 2>&1 | Tee-Object -FilePath build-final.txt` ✅
+
+### Session 32 — 2026-02-19 (Codex Batch 8 — build fix + metrics refresh)
+
+**Phase(s):** Batch 8 — final hardening + reduction (safe-only)  
+**Changes:**
+- Fixed a Turbopack build failure caused by re-exporting server actions from a `"use server"` module:
+  - `app/actions/profile-mutations.ts`: replaced `export { ... } from "./profile-avatar-mutations"` with async wrapper exports (no behavior change).
+- Updated trackers:
+  - `refactor/CURRENT.md`: refreshed metrics to latest scan.
+
+**Verification:**
+- `pnpm -s refactor:verify` ✅ (warnings only; no errors)
+- `pnpm build 2>&1 | Tee-Object -FilePath build-final.txt` ✅
+- `pnpm -s architecture:scan` ✅
+
+**Metrics snapshot (architecture:scan + local source count):**
+- Files: `936`
+- LOC (source): `~130K` (`129,882`)
+- `"use client"`: `216`
+- `>300` lines: `88`
+- `>500` lines: `12`
+- Tiny `<50L` files: `247`
+- Missing metadata: `0`
+- Clones: `225` (`2.56%`, `4,081` duplicated lines)

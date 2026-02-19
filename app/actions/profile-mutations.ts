@@ -8,7 +8,23 @@ import {
   profileSchema,
 } from "./profile-reads"
 
-export { deleteAvatar, setAvatarUrl, uploadAvatar } from "./profile-avatar-mutations"
+import {
+  deleteAvatar as deleteAvatarInner,
+  setAvatarUrl as setAvatarUrlInner,
+  uploadAvatar as uploadAvatarInner,
+} from "./profile-avatar-mutations"
+
+export async function uploadAvatar(formData: FormData) {
+  return uploadAvatarInner(formData)
+}
+
+export async function setAvatarUrl(formData: FormData) {
+  return setAvatarUrlInner(formData)
+}
+
+export async function deleteAvatar() {
+  return deleteAvatarInner()
+}
 
 // =====================================================
 // PROFILE MANAGEMENT SERVER ACTIONS

@@ -12,19 +12,19 @@
 |---|---|
 | **Mode** | Batch 8 — final hardening + reduction (safe-only) |
 | **Current task** | Batch 8 — final hardening + reduction (Domain 6 remains ⚠️ blocked pending approval for auth/payment-sensitive refactors) |
-| **Sessions so far** | 31 (phase 0 rebaseline + Domains 1–5 completed; Domain 6 blocked; Domain 7 completed) |
+| **Sessions so far** | 32 (phase 0 rebaseline + Domains 1–5 completed; Domain 6 blocked; Domain 7 completed) |
 
 ## Metrics
 
 | Metric | Baseline (2026-02-18 Rebaseline) | Now | Target |
 |--------|----------|-----|--------|
-| Files | 852 | 937 | <650 |
-| LOC (source) | ~115K | ~131K (130,837) | <85K |
+| Files | 852 | 936 | <650 |
+| LOC (source) | ~115K | ~130K (129,882) | <85K |
 | `"use client"` | 217 | 216 | <120 |
-| >300L files | 114 | 93 | <20 |
-| Tiny <50L files | 286 | 248 | <100 |
+| >300L files | 114 | 88 | <20 |
+| Tiny <50L files | 286 | 247 | <100 |
 | Missing metadata | 53 | 0 | 0 |
-| Clone % | 2.80% | 2.77% | <1.5% |
+| Clone % | 2.80% | 2.56% | <1.5% |
 
 ## Domain Task Queue
 
