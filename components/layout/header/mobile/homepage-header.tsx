@@ -1,4 +1,3 @@
-"use client"
 import { SidebarMenu } from "@/components/layout/sidebar/sidebar-menu"
 import { MobileCartDropdown } from "@/components/layout/header/cart/mobile-cart-dropdown"
 import { MobileWishlistButton } from "@/components/shared/wishlist/mobile-wishlist-button"

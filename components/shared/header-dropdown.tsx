@@ -1,5 +1,3 @@
-"use client"
-
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card"
 import { Link } from "@/i18n/routing"
 import { cn } from "@/lib/utils"

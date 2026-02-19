@@ -1,5 +1,3 @@
-"use client"
-
 import { IconButton } from "@/components/ui/icon-button"
 import { ArrowLeft, MessageCircle as ChatCircle, Share as Export, Settings as Gear } from "lucide-react";
 

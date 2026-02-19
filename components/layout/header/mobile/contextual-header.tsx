@@ -1,5 +1,3 @@
-"use client"
-
 import { MobileCartDropdown } from "@/components/layout/header/cart/mobile-cart-dropdown"
 import { MobileWishlistButton } from "@/components/shared/wishlist/mobile-wishlist-button"
 import { ArrowLeft, Search as MagnifyingGlass } from "lucide-react";

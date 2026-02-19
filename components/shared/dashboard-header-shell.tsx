@@ -1,5 +1,3 @@
-"use client"
-
 import type { ReactNode } from "react"
 
 import { SidebarTrigger } from "@/components/layout/sidebar/sidebar"

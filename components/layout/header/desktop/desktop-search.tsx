@@ -1,5 +1,3 @@
-"use client"
-
 import * as React from "react"
 import { useRef, useCallback, useEffect } from "react"
 import { Search as MagnifyingGlass, Bot as Robot, X } from "lucide-react"

@@ -1,5 +1,3 @@
-"use client"
-
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card"
 import { Button } from "@/components/ui/button"
 import { IconButton } from "@/components/ui/icon-button"
