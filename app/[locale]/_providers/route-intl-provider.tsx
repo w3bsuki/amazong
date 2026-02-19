@@ -1,6 +1,6 @@
 import type { ReactNode } from "react"
 
-import { IntlClientProvider } from "./intl-client-provider"
+import { NextIntlClientProvider } from "next-intl"
 import { getAllMessages, getScopedMessages, type IntlNamespace } from "@/lib/i18n/scoped-messages"
 
 interface RouteIntlProviderProps {
@@ -13,9 +13,9 @@ export async function RouteIntlProvider({ locale, namespaces, children }: RouteI
   const messages = await getScopedMessages(locale, namespaces)
 
   return (
-    <IntlClientProvider locale={locale} messages={messages}>
+    <NextIntlClientProvider locale={locale} messages={messages} timeZone="Europe/Sofia">
       {children}
-    </IntlClientProvider>
+    </NextIntlClientProvider>
   )
 }
 
@@ -29,8 +29,8 @@ export async function FullRouteIntlProvider({
   const messages = await getAllMessages(locale)
 
   return (
-    <IntlClientProvider locale={locale} messages={messages}>
+    <NextIntlClientProvider locale={locale} messages={messages} timeZone="Europe/Sofia">
       {children}
-    </IntlClientProvider>
+    </NextIntlClientProvider>
   )
 }

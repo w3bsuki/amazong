@@ -120,3 +120,11 @@ docs-site/node_modules/
 # Python (skill scripts tooling)
 __pycache__/
 *.py[cod]
+
+# Codex scratch (local only)
+.codex-temp-*
+analysis_shared.py
+analysis_shared_output.json
+.tmp/domain*-*.json
+.tmp/domain*-*.mjs
+.tmp/generate-domain*-audit.mjs

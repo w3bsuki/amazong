@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react'
 
-import { ThemeProvider } from './_providers/theme-provider'
-import { IntlClientProvider } from './_providers/intl-client-provider'
+import { ThemeProvider as NextThemesProvider } from 'next-themes'
+import { NextIntlClientProvider } from 'next-intl'
 import { ROOT_INTL_NAMESPACES, getScopedMessages } from '@/lib/i18n/scoped-messages'
 
 export default async function LocaleProviders({
@@ -14,8 +14,8 @@ export default async function LocaleProviders({
   const messages = await getScopedMessages(locale, ROOT_INTL_NAMESPACES)
 
   return (
-    <IntlClientProvider locale={locale} messages={messages}>
-      <ThemeProvider
+    <NextIntlClientProvider locale={locale} messages={messages} timeZone="Europe/Sofia">
+      <NextThemesProvider
         attribute="class"
         defaultTheme="light"
         enableSystem={false}
@@ -23,7 +23,7 @@ export default async function LocaleProviders({
         disableTransitionOnChange
       >
         {children}
-      </ThemeProvider>
-    </IntlClientProvider>
+      </NextThemesProvider>
+    </NextIntlClientProvider>
   )
 }

@@ -1,22 +1,284 @@
 import type React from "react"
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react"
+
+import { createClient } from "@/lib/supabase/client"
+import { normalizeImageUrl } from "@/lib/normalize-image-url"
+import { safeJsonParse } from "@/lib/safe-json"
+
 import { useAuth } from "./auth-state-manager"
-import type { CartItem } from "./cart-context-types"
-import {
-  MAX_CART_QUANTITY,
-  normalizePrice,
-  normalizeQuantity,
-  normalizeSellerSlugs,
-  readCartFromStorage,
-  sanitizeCartItems,
-} from "./cart-context-utils"
-import {
-  addServerCartItem,
-  clearServerCart,
-  fetchServerCart,
-  setServerCartQuantity,
-  syncLocalCartToServerStorage,
-} from "./cart-context-server"
+
+export interface CartItem {
+  id: string
+  /** Optional product variant id (for listings with variants). */
+  variantId?: string
+  /** Optional variant display name for UX (cart rendering). */
+  variantName?: string
+  title: string
+  price: number
+  image: string
+  quantity: number
+  slug?: string
+  /** Seller username for SEO-friendly URLs */
+  username?: string
+  /** @deprecated Use 'username' instead */
+  storeSlug?: string | null
+}
+
+const MAX_CART_QUANTITY = 99
+
+function toRecord(value: unknown): Record<string, unknown> | null {
+  return value && typeof value === "object" ? (value as Record<string, unknown>) : null
+}
+
+function asString(value: unknown): string | null {
+  return typeof value === "string" ? value : null
+}
+
+function asNumber(value: unknown): number | null {
+  if (typeof value === "number") return Number.isFinite(value) ? value : null
+  if (typeof value === "string") {
+    const parsed = Number(value)
+    return Number.isFinite(parsed) ? parsed : null
+  }
+  return null
+}
+
+function asStringArray(value: unknown): string[] | null {
+  if (!Array.isArray(value)) return null
+  const out: string[] = []
+  for (const item of value) {
+    if (typeof item !== "string") return null
+    out.push(item)
+  }
+  return out
+}
+
+function normalizeQuantity(value: unknown): number | null {
+  const numeric = asNumber(value)
+  if (numeric === null) return null
+  const rounded = Math.floor(numeric)
+  if (!Number.isSafeInteger(rounded) || rounded <= 0) return null
+  return Math.min(rounded, MAX_CART_QUANTITY)
+}
+
+function normalizePrice(value: unknown): number | null {
+  const numeric = asNumber(value)
+  if (numeric === null || numeric < 0) return null
+  return numeric
+}
+
+function normalizeSellerSlugs(item: {
+  username?: string | undefined
+  storeSlug?: string | null | undefined
+}): Pick<CartItem, "username" | "storeSlug"> {
+  const username = item.username ?? (item.storeSlug || undefined)
+  const storeSlug = item.storeSlug || item.username || undefined
+
+  return {
+    ...(username ? { username } : {}),
+    ...(storeSlug ? { storeSlug } : {}),
+  }
+}
+
+function sanitizeCartItems(rawItems: CartItem[]): CartItem[] {
+  const sanitized: CartItem[] = []
+  for (const item of rawItems) {
+    if (!item?.id) continue
+    const price = normalizePrice(item.price)
+    const quantity = normalizeQuantity(item.quantity)
+    if (price === null || quantity === null) continue
+    const sellerSlugs = normalizeSellerSlugs({
+      username: item.username,
+      storeSlug: item.storeSlug ?? null,
+    })
+    sanitized.push({
+      ...item,
+      ...sellerSlugs,
+      image: normalizeImageUrl(item.image),
+      price,
+      quantity,
+    })
+  }
+  return sanitized
+}
+
+function readCartFromStorage(): {
+  items: CartItem[]
+  hadRawValue: boolean
+  wasCorrupt: boolean
+  wasSanitized: boolean
+} {
+  const raw = localStorage.getItem("cart")
+  if (!raw) {
+    return {
+      items: [],
+      hadRawValue: false,
+      wasCorrupt: false,
+      wasSanitized: false,
+    }
+  }
+
+  const parsed = safeJsonParse<CartItem[]>(raw)
+  if (!parsed) {
+    return {
+      items: [],
+      hadRawValue: true,
+      wasCorrupt: true,
+      wasSanitized: false,
+    }
+  }
+
+  const sanitized = sanitizeCartItems(parsed)
+  return {
+    items: sanitized,
+    hadRawValue: true,
+    wasCorrupt: false,
+    wasSanitized: sanitized.length !== parsed.length,
+  }
+}
+
+async function fetchServerCart(activeUserId: string): Promise<CartItem[]> {
+  const supabase = createClient()
+
+  const { data, error } = await supabase
+    .from("cart_items")
+    .select(`
+      product_id,
+      variant_id,
+      quantity,
+      products (
+        title,
+        price,
+        images,
+        slug,
+        seller:profiles!products_seller_id_fkey(username)
+      ),
+      variant:product_variants!cart_items_variant_id_fkey(
+        id,
+        name
+      )
+    `)
+    .eq("user_id", activeUserId)
+    .order("created_at", { ascending: false })
+
+  if (error) {
+    console.error("Error fetching server cart:", error)
+    return []
+  }
+
+  const rows: unknown[] = Array.isArray(data) ? data : []
+  return rows
+    .map((row): CartItem | null => {
+      const record = toRecord(row)
+      const productId = asString(record?.product_id) ?? ""
+      const variantId = asString(record?.variant_id) ?? undefined
+      const quantity = normalizeQuantity(record?.quantity)
+
+      const products = toRecord(record?.products)
+      const title = asString(products?.title) ?? "Unknown Product"
+      const price = normalizePrice(products?.price)
+
+      const images = asStringArray(products?.images)
+      const image = normalizeImageUrl(images?.[0] ?? null)
+      const slug = asString(products?.slug)
+      const seller = toRecord(products?.seller)
+      const username = asString(seller?.username)
+
+      const variant = toRecord(record?.variant)
+      const variantName = asString(variant?.name) ?? undefined
+
+      if (!productId || quantity === null || price === null) {
+        return null
+      }
+
+      return {
+        id: productId,
+        ...(variantId ? { variantId } : {}),
+        ...(variantName ? { variantName } : {}),
+        title,
+        price,
+        image,
+        quantity,
+        ...(slug ? { slug } : {}),
+        ...(username ? { username, storeSlug: username } : {}),
+      }
+    })
+    .filter((item): item is CartItem => Boolean(item))
+}
+
+async function syncLocalCartToServerStorage(): Promise<boolean> {
+  const savedCart = localStorage.getItem("cart")
+  const localItems = sanitizeCartItems(safeJsonParse<CartItem[]>(savedCart) || [])
+
+  if (localItems.length === 0) {
+    if (savedCart) localStorage.removeItem("cart")
+    return true
+  }
+
+  if (savedCart) {
+    localStorage.setItem("cart", JSON.stringify(localItems))
+  }
+
+  const supabase = createClient()
+
+  for (const item of localItems) {
+    const qty = normalizeQuantity(item.quantity)
+    if (!item.id || qty === null) continue
+
+    const { error } = await supabase.rpc("cart_add_item", {
+      p_product_id: item.id,
+      p_quantity: qty,
+      ...(item.variantId ? { p_variant_id: item.variantId } : {}),
+    })
+
+    if (error) {
+      if (process.env.NODE_ENV === "development") {
+        console.warn("Cart sync skipped (RPC unavailable):", error.message || error.code || "unknown")
+      }
+      return false
+    }
+  }
+
+  localStorage.removeItem("cart")
+  return true
+}
+
+async function addServerCartItem(item: CartItem): Promise<void> {
+  const supabase = createClient()
+  const qty = normalizeQuantity(item.quantity)
+  if (!qty) return
+
+  const { error } = await supabase.rpc("cart_add_item", {
+    p_product_id: item.id,
+    p_quantity: qty,
+    ...(item.variantId ? { p_variant_id: item.variantId } : {}),
+  })
+
+  if (error) {
+    console.error("Error adding to server cart:", error)
+  }
+}
+
+async function setServerCartQuantity(id: string, quantity: number, variantId?: string): Promise<void> {
+  const supabase = createClient()
+  const { error } = await supabase.rpc("cart_set_quantity", {
+    p_product_id: id,
+    p_quantity: quantity,
+    ...(variantId ? { p_variant_id: variantId } : {}),
+  })
+
+  if (error) {
+    console.error("Error updating server cart quantity:", error)
+  }
+}
+
+async function clearServerCart(): Promise<void> {
+  const supabase = createClient()
+  const { error } = await supabase.rpc("cart_clear")
+  if (error) {
+    console.error("Error clearing server cart:", error)
+  }
+}
 
 interface CartContextType {
   items: CartItem[]
@@ -292,5 +554,3 @@ export function useCart(): CartContextType {
   }
   return context
 }
-
-export type { CartItem } from "./cart-context-types"
