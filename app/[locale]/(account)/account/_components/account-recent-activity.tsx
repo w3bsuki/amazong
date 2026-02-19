@@ -136,7 +136,7 @@ export function AccountRecentActivity({ orders, products, sales, locale }: Accou
           <>
             {/* Mobile: Horizontal scroll cards */}
             <div className="md:hidden -mx-4 px-4 overflow-x-auto no-scrollbar">
-              <div className="flex gap-3 pb-2" style={{ width: 'max-content' }}>
+              <div className="flex gap-3 pb-2 w-max">
                 {orders.slice(0, 5).map((order) => {
                   const getProductImage = (products: { images?: string[] } | { images?: string[] }[] | null): string | undefined => {
                     if (!products) return undefined
@@ -262,7 +262,7 @@ export function AccountRecentActivity({ orders, products, sales, locale }: Accou
 
           {/* Mobile: Horizontal scroll cards */}
           <div className="md:hidden -mx-4 px-4 overflow-x-auto no-scrollbar">
-            <div className="flex gap-3 pb-2" style={{ width: 'max-content' }}>
+            <div className="flex gap-3 pb-2 w-max">
               {products.slice(0, 5).map((product) => (
                 <Link
                   key={product.id}
