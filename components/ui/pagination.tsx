@@ -74,15 +74,13 @@ function PaginationPrevious({
   ariaLabel?: string
 }) {
   return (
-    <PaginationLink
-      aria-label={ariaLabel ?? label}
-      size="default"
-      className={cn("gap-1 px-2.5 sm:pl-2.5", className)}
+    <PaginationNav
+      direction="previous"
+      className={className}
+      label={label}
+      {...(ariaLabel ? { ariaLabel } : {})}
       {...props}
-    >
-      <ChevronLeftIcon />
-      <span className="hidden sm:block">{label}</span>
-    </PaginationLink>
+    />
   )
 }
 
@@ -96,14 +94,39 @@ function PaginationNext({
   ariaLabel?: string
 }) {
   return (
+    <PaginationNav
+      direction="next"
+      className={className}
+      label={label}
+      {...(ariaLabel ? { ariaLabel } : {})}
+      {...props}
+    />
+  )
+}
+
+function PaginationNav({
+  direction,
+  className,
+  label,
+  ariaLabel,
+  ...props
+}: React.ComponentProps<typeof PaginationLink> & {
+  direction: "previous" | "next"
+  label: string
+  ariaLabel?: string
+}) {
+  const isPrevious = direction === "previous"
+
+  return (
     <PaginationLink
       aria-label={ariaLabel ?? label}
       size="default"
-      className={cn("gap-1 px-2.5 sm:pr-2.5", className)}
+      className={cn("gap-1 px-2.5", isPrevious ? "sm:pl-2.5" : "sm:pr-2.5", className)}
       {...props}
     >
+      {isPrevious ? <ChevronLeftIcon /> : null}
       <span className="hidden sm:block">{label}</span>
-      <ChevronRightIcon />
+      {isPrevious ? null : <ChevronRightIcon />}
     </PaginationLink>
   )
 }

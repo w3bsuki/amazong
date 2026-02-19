@@ -1,6 +1,7 @@
 import dynamic from "next/dynamic"
 import Image from "next/image"
 import { ArrowRight, Clock, Eye, Package, TrendingUp as TrendUp } from "lucide-react"
+import type { ReactNode } from "react"
 
 import { useTranslations } from "next-intl"
 
@@ -30,6 +31,80 @@ interface RecentlyViewedProduct {
   image: string | null
   slug?: string
   storeSlug?: string | null
+}
+
+function DesktopSearchProductStrip({
+  icon,
+  title,
+  products,
+  onClear,
+  clearLabel,
+  buildProductUrl,
+  formatPrice,
+  onClose,
+  limit,
+}: {
+  icon: ReactNode
+  title: string
+  products: RecentlyViewedProduct[]
+  onClear: () => void
+  clearLabel: string
+  buildProductUrl: (product: { id: string; slug?: string; storeSlug?: string | null }) => string
+  formatPrice: (price: number) => string
+  onClose: () => void
+  limit?: number
+}) {
+  const visibleProducts = typeof limit === "number" ? products.slice(0, limit) : products
+
+  return (
+    <div className="border-b border-border">
+      <div className="flex items-center justify-between px-4 py-2.5 bg-surface-subtle">
+        <span className="flex items-center gap-2 text-xs font-medium text-muted-foreground uppercase tracking-wide">
+          {icon}
+          {title}
+        </span>
+        <button
+          type="button"
+          onClick={onClear}
+          className="rounded-sm text-xs text-muted-foreground tap-transparent motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth) motion-reduce:transition-none hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
+        >
+          {clearLabel}
+        </button>
+      </div>
+      <div className="p-2">
+        <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-muted scrollbar-track-transparent">
+          {visibleProducts.map((product) => (
+            <Link
+              key={product.id}
+              href={buildProductUrl(product)}
+              onClick={onClose}
+              className="group w-24 shrink-0 rounded-md tap-transparent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
+            >
+              <div className="w-24 h-24 bg-muted rounded-lg overflow-hidden ring-1 ring-border">
+                {product.image ? (
+                  <Image
+                    src={product.image}
+                    alt={product.title}
+                    width={96}
+                    height={96}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center">
+                    <Package size={24} className="text-muted-foreground" />
+                  </div>
+                )}
+              </div>
+              <p className="mt-1.5 text-xs text-foreground line-clamp-2 group-hover:text-primary group-hover:underline">
+                {product.title}
+              </p>
+              <p className="text-xs font-semibold text-price-sale">{formatPrice(product.price)}</p>
+            </Link>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
 }
 
 interface DesktopSearchPopoverPanelProps {
@@ -134,103 +209,30 @@ export function DesktopSearchPopoverPanel({
         )}
 
         {recentlyViewed.length > 0 && !query && (
-          <div className="border-b border-border">
-            <div className="flex items-center justify-between px-4 py-2.5 bg-surface-subtle">
-              <span className="flex items-center gap-2 text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                <Eye size={14} />
-                {tSearch("recentlyViewed")}
-              </span>
-              <button
-                type="button"
-                onClick={onClearRecentlyViewed}
-                className="rounded-sm text-xs text-muted-foreground tap-transparent motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth) motion-reduce:transition-none hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
-              >
-                {tSearch("clear")}
-              </button>
-            </div>
-            <div className="p-2">
-              <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-muted scrollbar-track-transparent">
-                {recentlyViewed.slice(0, 6).map((product) => (
-                  <Link
-                    key={product.id}
-                    href={buildProductUrl(product)}
-                    onClick={onClose}
-                    className="group w-24 shrink-0 rounded-md tap-transparent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
-                  >
-                    <div className="w-24 h-24 bg-muted rounded-lg overflow-hidden ring-1 ring-border">
-                      {product.image ? (
-                        <Image
-                          src={product.image}
-                          alt={product.title}
-                          width={96}
-                          height={96}
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center">
-                          <Package size={24} className="text-muted-foreground" />
-                        </div>
-                      )}
-                    </div>
-                    <p className="mt-1.5 text-xs text-foreground line-clamp-2 group-hover:text-primary group-hover:underline">
-                      {product.title}
-                    </p>
-                    <p className="text-xs font-semibold text-price-sale">{formatPrice(product.price)}</p>
-                  </Link>
-                ))}
-              </div>
-            </div>
-          </div>
+          <DesktopSearchProductStrip
+            icon={<Eye size={14} />}
+            title={tSearch("recentlyViewed")}
+            products={recentlyViewed}
+            onClear={onClearRecentlyViewed}
+            clearLabel={tSearch("clear")}
+            buildProductUrl={buildProductUrl}
+            formatPrice={formatPrice}
+            onClose={onClose}
+            limit={6}
+          />
         )}
 
         {recentProducts.length > 0 && !query && (
-          <div className="border-b border-border">
-            <div className="flex items-center justify-between px-4 py-2.5 bg-surface-subtle">
-              <span className="flex items-center gap-2 text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                <Clock size={14} />
-                {tSearch("recentSearches")}
-              </span>
-              <button
-                type="button"
-                onClick={onClearRecentProducts}
-                className="rounded-sm text-xs text-muted-foreground tap-transparent motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth) motion-reduce:transition-none hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
-              >
-                {tSearch("clear")}
-              </button>
-            </div>
-            <div className="p-2">
-              <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-muted scrollbar-track-transparent">
-                {recentProducts.map((product) => (
-                  <Link
-                    key={product.id}
-                    href={buildProductUrl(product)}
-                    onClick={onClose}
-                    className="group w-24 shrink-0 rounded-md tap-transparent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
-                  >
-                    <div className="w-24 h-24 bg-muted rounded-lg overflow-hidden ring-1 ring-border">
-                      {product.image ? (
-                        <Image
-                          src={product.image}
-                          alt={product.title}
-                          width={96}
-                          height={96}
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center">
-                          <Package size={24} className="text-muted-foreground" />
-                        </div>
-                      )}
-                    </div>
-                    <p className="mt-1.5 text-xs text-foreground line-clamp-2 group-hover:text-primary group-hover:underline">
-                      {product.title}
-                    </p>
-                    <p className="text-xs font-semibold text-price-sale">{formatPrice(product.price)}</p>
-                  </Link>
-                ))}
-              </div>
-            </div>
-          </div>
+          <DesktopSearchProductStrip
+            icon={<Clock size={14} />}
+            title={tSearch("recentSearches")}
+            products={recentProducts}
+            onClear={onClearRecentProducts}
+            clearLabel={tSearch("clear")}
+            buildProductUrl={buildProductUrl}
+            formatPrice={formatPrice}
+            onClose={onClose}
+          />
         )}
 
         {!query && (
