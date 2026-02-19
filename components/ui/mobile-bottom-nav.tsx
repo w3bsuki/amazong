@@ -17,7 +17,7 @@ const mobileBottomNavListVariants = cva(
 )
 
 const mobileBottomNavItemVariants = cva(
-  "group relative flex h-full w-full items-center justify-center rounded-full tap-transparent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+  "group relative flex h-full w-full flex-col items-center justify-center gap-0.5 rounded-full tap-transparent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
   {
     variants: {
       state: {
@@ -43,6 +43,21 @@ const mobileBottomNavCoreActionVariants = cva(
       state: {
         active: "border-primary bg-primary text-primary-foreground",
         inactive: "border-border-subtle bg-background text-primary",
+      },
+    },
+    defaultVariants: {
+      state: "inactive",
+    },
+  }
+)
+
+const mobileBottomNavLabelVariants = cva(
+  "text-2xs font-medium leading-none truncate motion-safe:transition-colors motion-safe:duration-fast",
+  {
+    variants: {
+      state: {
+        active: "text-nav-active",
+        inactive: "text-nav-inactive",
       },
     },
     defaultVariants: {
@@ -136,11 +151,30 @@ function MobileBottomNavCoreAction({
   )
 }
 
+type MobileBottomNavLabelProps = React.ComponentProps<"span"> &
+  VariantProps<typeof mobileBottomNavLabelVariants>
+
+function MobileBottomNavLabel({
+  className,
+  state,
+  ...props
+}: MobileBottomNavLabelProps) {
+  return (
+    <span
+      data-slot="mobile-bottom-nav-label"
+      aria-hidden="true"
+      className={cn(mobileBottomNavLabelVariants({ state }), className)}
+      {...props}
+    />
+  )
+}
+
 export {
   MobileBottomNavRoot,
   MobileBottomNavDock,
   MobileBottomNavList,
   MobileBottomNavItem,
   MobileBottomNavCoreAction,
+  MobileBottomNavLabel,
 }
 

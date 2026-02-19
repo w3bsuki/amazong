@@ -17,6 +17,7 @@
 
 /* ===== iOS ZOOM PREVENTION ===== */
 @media screen and (-webkit-min-device-pixel-ratio: 0) {
+
   input[type="text"],
   input[type="search"],
   input[type="email"],
@@ -53,8 +54,10 @@ select:-webkit-autofill {
 /* Rules: token-based colors only, one accent (primary blue), minimal shadows. */
 :root {
   /* Use raw OKLCH components; Tailwind mapping wraps with `oklch(var(--...))`. */
-  --background: 1 0 0;              /* white */
-  --foreground: 0.18 0.02 255;      /* near-black */
+  --background: 1 0 0;
+  /* white */
+  --foreground: 0.18 0.02 255;
+  /* near-black */
   --card: 1 0 0;
   --card-foreground: 0.18 0.02 255;
   --popover: 1 0 0;
@@ -98,6 +101,10 @@ select:-webkit-autofill {
   --hover-border: 0.92 0.01 255;
   --nav-active: var(--foreground);
   --nav-inactive: 0.38 0.02 255;
+
+  /* Notification badge (red dot on avatar/icon) */
+  --notification: 0.62 0.22 30;
+  /* vivid red-orange */
 
   /* Brand/CTA accents (raw components; mapped to `--color-*` tokens in @theme) */
   --cta-primary-hover: 0.55 0.19 243;
@@ -252,7 +259,8 @@ select:-webkit-autofill {
   --success-subtle: var(--primary-subtle);
 
   /* Consistent radii */
-  --radius: 0.5rem; /* iOS-like baseline */
+  --radius: 0.5rem;
+  /* iOS-like baseline */
 }
 
 /* ===== DARK MODE (Optional) ===== */
@@ -295,6 +303,9 @@ select:-webkit-autofill {
   --hover-border: 0.26 0.02 255;
   --nav-active: var(--foreground);
   --nav-inactive: 0.82 0.01 255;
+
+  /* Notification badge */
+  --notification: 0.68 0.22 30;
 
   /* Brand/CTA accents */
   --cta-primary-hover: 0.66 0.18 255;
@@ -466,7 +477,7 @@ select:-webkit-autofill {
   --color-category-auto-bg: oklch(var(--category-auto-bg));
   --color-category-auto-fg: oklch(var(--category-auto-fg));
   --color-category-auto-ring: oklch(var(--category-auto-ring));
-  
+
   /* Interactive state colors (semantic - use these instead of primary/10) */
   --color-selected: oklch(var(--selected));
   --color-selected-foreground: oklch(var(--selected-foreground));
@@ -476,10 +487,11 @@ select:-webkit-autofill {
   --color-active: oklch(var(--active));
   --color-nav-active: oklch(var(--nav-active));
   --color-nav-inactive: oklch(var(--nav-inactive));
+  --color-notification: oklch(var(--notification));
   --color-focus-ring: oklch(var(--focus-ring));
   --color-checked: oklch(var(--checked));
   --color-checked-foreground: oklch(var(--checked-foreground));
-  
+
   --color-chart-1: oklch(var(--chart-1));
   --color-chart-2: oklch(var(--chart-2));
   --color-chart-3: oklch(var(--chart-3));
@@ -603,7 +615,8 @@ select:-webkit-autofill {
 
   /* === LAYOUT HEIGHTS === */
   --spacing-header: 3rem;
-  --spacing-bottom-nav: 3.25rem;  /* 52px - mobile bottom navigation dock */
+  --spacing-bottom-nav: 3.75rem;
+  /* 60px - mobile bottom navigation dock (icon + label) */
   --spacing-button: 2.75rem;
   --spacing-button-sm: 2.25rem;
   --spacing-button-lg: 3rem;
@@ -620,29 +633,38 @@ select:-webkit-autofill {
   --product-grid-gap: 0.625rem;
 
   /* === TOUCH TARGETS (mobile contract) === */
-  --control-compact: 2.25rem;    /* 36px - dense icon overlays only */
-  --control-default: 2.75rem;    /* 44px - default tap target */
-  --control-primary: 3rem;       /* 48px - primary CTA / bars */
+  --control-compact: 2.25rem;
+  /* 36px - dense icon overlays only */
+  --control-default: 2.75rem;
+  /* 44px - default tap target */
+  --control-primary: 3rem;
+  /* 48px - primary CTA / bars */
   --spacing-mobile-rail-gap: 0px;
   --offset-mobile-primary-rail: var(--app-header-offset);
   --offset-mobile-secondary-rail: calc(var(--app-header-offset) + var(--control-default) + var(--spacing-mobile-rail-gap));
   --offset-mobile-tertiary-rail: calc(var(--offset-mobile-secondary-rail) + var(--control-compact) + var(--spacing-mobile-rail-gap));
 
   /* === CATEGORY-SPECIFIC TOUCH TARGETS === */
-  --touch-target-category-row: var(--control-primary); /* 48px - category list rows */
-  --touch-target-category-chip: var(--control-default); /* 44px - chips & pills in category flows */
+  --touch-target-category-row: var(--control-primary);
+  /* 48px - category list rows */
+  --touch-target-category-chip: var(--control-default);
+  /* 44px - chips & pills in category flows */
 
   /* Legacy aliases (kept for staged migration) */
-  --spacing-touch-xs: 2rem;                /* 32px - non-primary compact surfaces */
+  --spacing-touch-xs: 2rem;
+  /* 32px - non-primary compact surfaces */
   --spacing-touch-sm: var(--control-compact);
   --spacing-touch: var(--control-default);
   --spacing-touch-md: var(--control-default);
   --spacing-touch-lg: var(--control-primary);
 
   /* === PAGE INSETS (responsive edge padding) === */
-  --spacing-inset: 0.5rem;       /* 8px - mobile */
-  --spacing-inset-md: 0.75rem;   /* 12px - tablet */
-  --spacing-inset-lg: 1rem;      /* 16px - desktop */
+  --spacing-inset: 0.5rem;
+  /* 8px - mobile */
+  --spacing-inset-md: 0.75rem;
+  /* 12px - tablet */
+  --spacing-inset-lg: 1rem;
+  /* 16px - desktop */
 
   /* === DIALOG/DRAWER SIZING === */
   --height-dialog: 90dvh;
@@ -660,21 +682,34 @@ select:-webkit-autofill {
   --onboarding-modal-max-h-sm: min(85dvh, 40rem);
 
   /* === ICON SIZES (balanced against 36/44/48 controls) === */
-  --size-icon-xs: 1.25rem;       /* 20px - small inline */
-  --size-icon-sm: 1.25rem;       /* 20px - compact controls */
-  --size-icon: 1.375rem;         /* 22px - default nav/action */
-  --size-icon-header: 1.5rem;    /* 24px - header chrome */
-  --size-icon-tab-bar: 1.5rem;   /* 24px - mobile tab bar icons */
-  --size-icon-lg: 1.75rem;       /* 28px - large/bold */
+  --size-icon-xs: 1.25rem;
+  /* 20px - small inline */
+  --size-icon-sm: 1.25rem;
+  /* 20px - compact controls */
+  --size-icon: 1.375rem;
+  /* 22px - default nav/action */
+  --size-icon-header: 1.5rem;
+  /* 24px - header chrome */
+  --size-icon-tab-bar: 1.5rem;
+  /* 24px - mobile tab bar icons */
+  --size-icon-lg: 1.75rem;
+  /* 28px - large/bold */
 
   /* === CATEGORY NAVIGATION === */
-  --spacing-category-circle: 3.5rem; /* 56px - tighter mobile circles */
-  --spacing-category-circle-desktop: 3.75rem; /* 60px on desktop */
-  --spacing-category-item: 3.5rem; /* 56px - compact item width */
-  --spacing-category-item-mobile: 3.5rem; /* 56px - mobile subcategory buttons */
-  --spacing-category-item-lg: 3.5rem; /* 56px - compact grid/circle width */
-  --spacing-category-item-nav: 4.75rem; /* 76px - better label legibility on home */
-  --spacing-category-item-desktop: 5rem; /* 80px on desktop */
+  --spacing-category-circle: 3.5rem;
+  /* 56px - tighter mobile circles */
+  --spacing-category-circle-desktop: 3.75rem;
+  /* 60px on desktop */
+  --spacing-category-item: 3.5rem;
+  /* 56px - compact item width */
+  --spacing-category-item-mobile: 3.5rem;
+  /* 56px - mobile subcategory buttons */
+  --spacing-category-item-lg: 3.5rem;
+  /* 56px - compact grid/circle width */
+  --spacing-category-item-nav: 4.75rem;
+  /* 76px - better label legibility on home */
+  --spacing-category-item-desktop: 5rem;
+  /* 80px on desktop */
   --spacing-nav-row: 3rem;
 
   /* === MEDIA ASPECT CONTRACT === */
@@ -683,18 +718,29 @@ select:-webkit-autofill {
   --ratio-quick-view-hero: 1 / 1;
 
   /* === HOMEPAGE SECTION SPACING === */
-  --spacing-section-top: 0.5rem;    /* 8px - balanced top */
-  --spacing-section-bottom: 0.5rem; /* 8px - consistent breathing room */
-  --spacing-section-gap: 0.75rem;   /* 12px - section rhythm */
-  --spacing-home-inset: 0.75rem;    /* 12px - landing content inset */
-  --spacing-home-section-gap: 1rem; /* 16px - landing section rhythm */
-  --spacing-home-card-gap: 0.625rem; /* 10px - tighter, denser landing rhythm */
-  --spacing-home-cta-tile-min-h: 11.5rem; /* 184px - home merchandising CTA tile height */
+  --spacing-section-top: 0.5rem;
+  /* 8px - balanced top */
+  --spacing-section-bottom: 0.5rem;
+  /* 8px - consistent breathing room */
+  --spacing-section-gap: 0.75rem;
+  /* 12px - section rhythm */
+  --spacing-home-inset: 0.75rem;
+  /* 12px - landing content inset */
+  --spacing-home-section-gap: 1rem;
+  /* 16px - landing section rhythm */
+  --spacing-home-card-gap: 0.625rem;
+  /* 10px - tighter, denser landing rhythm */
+  --spacing-home-cta-tile-min-h: 11.5rem;
+  /* 184px - home merchandising CTA tile height */
   --spacing-home-card-column-w: calc((100vw - (var(--spacing-home-inset) * 2) - var(--spacing-home-card-gap)) / 2);
-  --spacing-home-promo-card-w: var(--spacing-home-card-column-w); /* keep promoted width aligned to feed grid */
-  --spacing-home-promo-rail-card-w: var(--spacing-home-card-column-w); /* legacy alias; emphasis now comes from taller media ratio */
-  --spacing-home-curated-card-w: calc(var(--spacing-home-card-column-w) + 0.5rem); /* curated discovery rail cards */
-  --spacing-home-strip-card-w: var(--spacing-home-card-column-w); /* legacy alias */
+  --spacing-home-promo-card-w: var(--spacing-home-card-column-w);
+  /* keep promoted width aligned to feed grid */
+  --spacing-home-promo-rail-card-w: var(--spacing-home-card-column-w);
+  /* legacy alias; emphasis now comes from taller media ratio */
+  --spacing-home-curated-card-w: calc(var(--spacing-home-card-column-w) + 0.5rem);
+  /* curated discovery rail cards */
+  --spacing-home-strip-card-w: var(--spacing-home-card-column-w);
+  /* legacy alias */
 
   /* === FILTER SIDEBAR === */
   --spacing-filter-sidebar: 15rem;
@@ -757,7 +803,7 @@ select:-webkit-autofill {
    * - SOLID badges: Dark bg + white text (high emphasis)
    * - SUBTLE badges: Tinted bg + dark text (low emphasis)
    */
-  
+
   /* Solid Badges (white text on dark bg - 4.5:1+ contrast) */
   --color-badge-success-solid: var(--color-success);
   --color-badge-warning-solid: var(--color-warning);
@@ -765,7 +811,7 @@ select:-webkit-autofill {
   --color-badge-info-solid: var(--color-info);
   --color-badge-neutral-solid: var(--color-secondary);
   --color-badge-fg-on-solid: var(--color-primary-foreground);
-  
+
   /* Subtle Badges (dark text on tinted bg) */
   --color-badge-success-subtle-bg: var(--color-success-subtle);
   --color-badge-success-subtle-fg: var(--color-success);
@@ -777,7 +823,7 @@ select:-webkit-autofill {
   --color-badge-info-subtle-fg: var(--color-info);
   --color-badge-neutral-subtle-bg: var(--color-muted);
   --color-badge-neutral-subtle-fg: var(--color-muted-foreground);
-  
+
   /* Condition Badges - Solid dark bg + white text (eBay style) */
   --color-badge-condition-new: var(--color-foreground);
   --color-badge-condition-likenew: var(--color-foreground);
@@ -785,7 +831,7 @@ select:-webkit-autofill {
   --color-badge-condition-fair: var(--color-foreground);
   --color-badge-condition-used: var(--color-foreground);
   --color-badge-condition-refurb: var(--color-foreground);
-  
+
   /* Legacy aliases for existing code */
   --color-badge-condition-bg: var(--color-secondary);
   --color-badge-condition-border: var(--color-border);
@@ -796,7 +842,7 @@ select:-webkit-autofill {
   --color-badge-sponsored-bg: var(--color-promoted);
   --color-badge-sponsored-border: var(--color-promoted);
   --color-badge-sponsored-text: var(--color-promoted-foreground);
-  
+
   /* Promoted Section (desktop) - Light Mode */
   --surface-promoted: var(--color-promoted);
   --surface-promoted-accent: var(--color-promoted-muted);
@@ -989,6 +1035,7 @@ select:-webkit-autofill {
 
   html {
     overflow-x: clip;
+    scrollbar-gutter: stable;
     -webkit-text-size-adjust: 100%;
     font-feature-settings: "cv11", "ss01", "ss03", "cv05", "cv08", "cv09", "cv10";
   }

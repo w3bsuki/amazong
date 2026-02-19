@@ -36,6 +36,7 @@ export function MobileHomeCategoryPicker({
       open={open}
       onOpenChange={onOpenChange}
       title={tV4("picker.title")}
+      headerLayout="centered"
       closeLabel={tCommon("close")}
       contentAriaLabel={tV4("picker.title")}
       description={tV4("picker.description")}

@@ -340,6 +340,10 @@
   grid-template-columns: minmax(0, 1fr) auto;
 }
 
+@utility grid-cols-balanced-center {
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+}
+
 @utility grid-cols-wishlist-item {
   grid-template-columns: 56px minmax(0, 1fr) auto;
 }
@@ -397,4 +401,30 @@
 .hide-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
+}
+
+/* ===== OVERLAY / SCROLL LOCK STABILITY ===== */
+/* react-remove-scroll-bar locks scroll using `margin-right` to compensate for
+   the removed scrollbar width. That changes the body layout width, which can
+   shift centered rails/pills (e.g. Home) when drawers/sheets open.
+
+   Prefer padding-based compensation instead to keep the page width stable. */
+:root body[data-scroll-locked] {
+  margin-right: 0 !important;
+  padding-right: var(--removed-body-scroll-bar-size, 0px) !important;
+}
+
+/* Vaul (Drawer) ships with a 500ms default transition which feels sluggish
+   compared to our Radix Sheet timings. Override durations to match Treido
+   motion tokens while preserving Vaul's easing/physics. */
+@media (prefers-reduced-motion: no-preference) {
+  :root [data-vaul-drawer]:not(.vaul-dragging) {
+    transition-duration: var(--duration-slow) !important;
+    animation-duration: var(--duration-slow) !important;
+  }
+
+  :root [data-vaul-overlay] {
+    transition-duration: var(--duration-slow) !important;
+    animation-duration: var(--duration-slow) !important;
+  }
 }

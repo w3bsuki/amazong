@@ -11,6 +11,7 @@ import {
   MobileBottomNavCoreAction,
   MobileBottomNavDock,
   MobileBottomNavItem,
+  MobileBottomNavLabel,
   MobileBottomNavList,
   MobileBottomNavRoot,
 } from "@/components/ui/mobile-bottom-nav"
@@ -19,6 +20,7 @@ import { useMessages } from "@/components/providers/message-context"
 import { useDrawer } from "@/components/providers/drawer-context"
 import { useCategoryDrawerOptional } from "@/components/mobile/category-nav"
 import { useAuthOptional } from "@/components/providers/auth-state-manager"
+import { useNotificationCount } from "@/hooks/use-notification-count"
 import { createClient } from "@/lib/supabase/client"
 import {
   getMobileTabBarRouteState,
@@ -98,6 +100,10 @@ export function MobileTabBar() {
   const { totalUnreadCount } = useMessages()
   const unreadCount = totalUnreadCount
 
+  // Notification badge for profile tab (orders, sales, ratings — not messages)
+  const authUser = auth?.user ?? null
+  const notificationCount = useNotificationCount(authUser)
+
   // Get drawer actions for chat/account/auth buttons
   const { openDrawer, activeDrawer } = useDrawer()
 
@@ -124,7 +130,6 @@ export function MobileTabBar() {
     activeDrawer === "auth" ||
     isMobileTabPathActive(routeState.normalizedPathname, "/account")
 
-  const authUser = auth?.user ?? null
   const isAuthenticated = Boolean(authUser)
 
   useEffect(() => {
@@ -193,6 +198,9 @@ export function MobileTabBar() {
   // Avoid SSR/hydration mismatches caused by client-only UI (drawers/portals).
   if (!mounted) return null
 
+  // Notifications for profile tab (excludes messages — those are on chat tab)
+  const profileBadgeCount = isAuthenticated ? notificationCount : 0
+
   const tabs: MobileTabItem[] = [
     {
       key: "home",
@@ -221,9 +229,9 @@ export function MobileTabBar() {
       },
       ...(categoryTriggerA11yProps["aria-haspopup"]
         ? {
-            ariaHasPopup: categoryTriggerA11yProps["aria-haspopup"],
-            ariaExpanded: categoryTriggerA11yProps["aria-expanded"],
-          }
+          ariaHasPopup: categoryTriggerA11yProps["aria-haspopup"],
+          ariaExpanded: categoryTriggerA11yProps["aria-expanded"],
+        }
         : {}),
       icon: (
         <SquaresFour strokeWidth={getTabIconStrokeWidth(isCategoriesActive)} className={iconClass} />
@@ -258,18 +266,16 @@ export function MobileTabBar() {
       ariaHasPopup: "dialog",
       ariaExpanded: activeDrawer === "messages",
       icon: (
-        <>
-          <span className="relative">
-            <ChatCircleDots strokeWidth={getTabIconStrokeWidth(isChatActive)} className={iconClass} />
-            {unreadCount > 0 && (
-              <CountBadge
-                count={unreadCount}
-                className="absolute -top-1.5 -right-2.5 h-4 min-w-4 bg-notification px-0.5 text-2xs text-primary-foreground ring-1 ring-background"
-                aria-hidden="true"
-              />
-            )}
-          </span>
-        </>
+        <span className="relative">
+          <ChatCircleDots strokeWidth={getTabIconStrokeWidth(isChatActive)} className={iconClass} />
+          {unreadCount > 0 && (
+            <CountBadge
+              count={unreadCount}
+              className="absolute -top-1.5 -right-2.5 h-4 min-w-4 bg-notification px-0.5 text-2xs text-primary-foreground ring-1 ring-background"
+              aria-hidden="true"
+            />
+          )}
+        </span>
       ),
     },
     {
@@ -289,16 +295,25 @@ export function MobileTabBar() {
       ariaHasPopup: "dialog",
       ariaExpanded: activeDrawer === "account" || activeDrawer === "auth",
       icon: (
-        <UserAvatar
-          name={resolvedProfileName}
-          avatarUrl={profileAvatarValue}
-          size="sm"
-          className={cn(
-            "size-7 rounded-full ring-1.5 motion-safe:transition-colors motion-safe:duration-fast",
-            isProfileActive ? "ring-primary" : "ring-border-subtle"
+        <span className="relative">
+          <UserAvatar
+            name={resolvedProfileName}
+            avatarUrl={profileAvatarValue}
+            size="sm"
+            className={cn(
+              "size-7 rounded-full ring-1.5 motion-safe:transition-colors motion-safe:duration-fast",
+              isProfileActive ? "ring-primary" : "ring-border-subtle"
+            )}
+            fallbackClassName="bg-muted text-2xs font-semibold text-muted-foreground"
+          />
+          {profileBadgeCount > 0 && (
+            <CountBadge
+              count={profileBadgeCount}
+              className="absolute -top-0.5 -right-0.5 h-4 min-w-4 bg-notification text-primary-foreground ring-1.5 ring-background px-0.5 text-2xs"
+              aria-hidden="true"
+            />
           )}
-          fallbackClassName="bg-muted text-2xs font-semibold text-muted-foreground"
-        />
+        </span>
       ),
     },
   ]
@@ -318,6 +333,7 @@ export function MobileTabBar() {
         <MobileBottomNavList>
           {tabs.map((tab) => {
             const state = tab.active ? "active" : "inactive"
+            const showLabel = tab.key !== "sell"
 
             return (
               <li key={tab.key} className="h-full">
@@ -333,6 +349,11 @@ export function MobileTabBar() {
                   >
                     <Link href={tab.href} prefetch={false}>
                       {tab.icon}
+                      {showLabel && (
+                        <MobileBottomNavLabel state={state}>
+                          {tab.label}
+                        </MobileBottomNavLabel>
+                      )}
                     </Link>
                   </MobileBottomNavItem>
                 ) : (
@@ -348,6 +369,11 @@ export function MobileTabBar() {
                     data-testid={tab.testId}
                   >
                     {tab.icon}
+                    {showLabel && (
+                      <MobileBottomNavLabel state={state}>
+                        {tab.label}
+                      </MobileBottomNavLabel>
+                    )}
                   </MobileBottomNavItem>
                 )}
               </li>

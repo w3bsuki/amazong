@@ -67,6 +67,7 @@ export function HomeCityPickerSheet({
       open={open}
       onOpenChange={onOpenChange}
       title={tMobile("feed.chooseCityTitle")}
+      headerLayout="centered"
       closeLabel={tCommon("close")}
       contentAriaLabel={tMobile("feed.chooseCityTitle")}
       contentClassName="max-h-dialog-md lg:hidden"

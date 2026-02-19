@@ -60,6 +60,8 @@ export function HomeBrowseOptionsSheet({
       open={open}
       onOpenChange={onOpenChange}
       title={tV4("browseSheet.title")}
+      headerLayout="centered"
+      showCloseButton={false}
       closeLabel={tCommon("close")}
       contentAriaLabel={tV4("browseSheet.title")}
       description={tV4("browseSheet.description")}

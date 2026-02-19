@@ -16,6 +16,8 @@ interface DrawerShellProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   title: ReactNode
+  headerLayout?: "standard" | "centered" | undefined
+  showCloseButton?: boolean | undefined
   closeLabel: string
   contentAriaLabel?: string | undefined
   description?: string | undefined
@@ -42,6 +44,8 @@ export function DrawerShell({
   open,
   onOpenChange,
   title,
+  headerLayout = "standard",
+  showCloseButton = true,
   closeLabel,
   contentAriaLabel,
   description,
@@ -60,6 +64,8 @@ export function DrawerShell({
   closeIconSize = 16,
   dataTestId,
 }: DrawerShellProps) {
+  const isCentered = headerLayout === "centered"
+
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
       <DrawerContent
@@ -68,30 +74,65 @@ export function DrawerShell({
         {...(contentAriaLabel ? { "aria-label": contentAriaLabel } : {})}
       >
         <DrawerHeader className={headerClassName}>
-          <div className="flex items-center justify-between gap-3">
-            <div className="flex min-w-0 items-center gap-1.5">
-              {headerLeading}
-              {icon}
-              <DrawerTitle className={cn("text-sm font-semibold", titleClassName)}>{title}</DrawerTitle>
-              {titleSuffix}
+          {headerLayout === "centered" ? (
+            <div className="grid grid-cols-balanced-center items-center gap-3">
+              <div className="flex min-w-0 items-center gap-1.5 justify-start">
+                {headerLeading}
+              </div>
+              <div className="flex min-w-0 items-center justify-center gap-1.5">
+                {icon}
+                <DrawerTitle className={cn("text-sm font-semibold text-center", titleClassName)}>
+                  {title}
+                </DrawerTitle>
+                {titleSuffix}
+              </div>
+              <div className="flex min-w-0 items-center gap-1.5 justify-end">
+                {headerTrailing}
+                {showCloseButton ? (
+                  <DrawerClose asChild>
+                    <IconButton
+                      aria-label={closeLabel}
+                      data-vaul-no-drag
+                      variant="ghost"
+                      size={closeButtonSize}
+                      className={closeButtonClassName}
+                    >
+                      <X size={closeIconSize} />
+                    </IconButton>
+                  </DrawerClose>
+                ) : null}
+              </div>
             </div>
-            <div className="flex items-center gap-1.5">
-              {headerTrailing}
-              <DrawerClose asChild>
-                <IconButton
-                  aria-label={closeLabel}
-                  data-vaul-no-drag
-                  variant="ghost"
-                  size={closeButtonSize}
-                  className={closeButtonClassName}
-                >
-                  <X size={closeIconSize} />
-                </IconButton>
-              </DrawerClose>
+          ) : (
+            <div className="flex items-center justify-between gap-3">
+              <div className="flex min-w-0 items-center gap-1.5">
+                {headerLeading}
+                {icon}
+                <DrawerTitle className={cn("text-sm font-semibold", titleClassName)}>{title}</DrawerTitle>
+                {titleSuffix}
+              </div>
+              <div className="flex items-center gap-1.5">
+                {headerTrailing}
+                {showCloseButton ? (
+                  <DrawerClose asChild>
+                    <IconButton
+                      aria-label={closeLabel}
+                      data-vaul-no-drag
+                      variant="ghost"
+                      size={closeButtonSize}
+                      className={closeButtonClassName}
+                    >
+                      <X size={closeIconSize} />
+                    </IconButton>
+                  </DrawerClose>
+                ) : null}
+              </div>
             </div>
-          </div>
+          )}
           {description ? (
-            <DrawerDescription className={cn("pt-0.5", descriptionClassName)}>
+            <DrawerDescription
+              className={cn("pt-0.5", isCentered && "mx-auto text-center", descriptionClassName)}
+            >
               {description}
             </DrawerDescription>
           ) : null}
