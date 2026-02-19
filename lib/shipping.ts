@@ -148,18 +148,6 @@ export function getDeliveryEstimate(
 }
 
 /**
- * Get formatted delivery label
- */
-function getDeliveryLabel(
-  sellerCountryCode: string,
-  buyerRegion: ShippingRegion,
-  locale: string = 'en'
-): string {
-  const estimate = getDeliveryEstimate(sellerCountryCode, buyerRegion);
-  return locale === 'bg' ? estimate.labelBg : estimate.label;
-}
-
-/**
  * Check if a product ships to a given region based on its shipping flags
  * Updated December 2025: Added UK support
  */
@@ -212,13 +200,6 @@ export const SHIPPING_REGIONS: Record<ShippingRegion, { en: string; bg: string }
   US: { en: 'United States', bg: 'САЩ' },
   WW: { en: 'Worldwide', bg: 'По целия свят' },
 };
-
-/**
- * Get region display name
- */
-function getRegionName(region: ShippingRegion, locale: string = 'en'): string {
-  return SHIPPING_REGIONS[region]?.[locale as 'en' | 'bg'] || SHIPPING_REGIONS[region]?.en || region;
-}
 
 /**
  * Build Supabase filter string for shipping zone

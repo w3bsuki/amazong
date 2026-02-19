@@ -202,7 +202,7 @@ export async function fetchConversations(
   })
 
   // Fetch profiles for richer display_name/username fields
-  const profileMap = await fetchProfiles(supabase, Array.from(userIds))
+  const profileMap = await fetchProfiles(supabase, [...userIds])
 
   // Transform conversations with last message data
   const conversations = convs.map((conv) => {

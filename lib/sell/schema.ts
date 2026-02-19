@@ -107,7 +107,7 @@ export const sellFormSchemaV4 = z.object({
 	price: z
 		.string()
 		.min(1, "validation.priceRequired")
-		.refine((val) => !isNaN(Number.parseFloat(val)) && Number.parseFloat(val) > 0, "validation.priceInvalid")
+		.refine((val) => !Number.isNaN(Number.parseFloat(val)) && Number.parseFloat(val) > 0, "validation.priceInvalid")
 		.refine((val) => Number.parseFloat(val) <= 999999.99, "validation.priceMax"),
 
 	currency: z.enum(["EUR"]).default("EUR"), // Bulgaria joined Eurozone Jan 1, 2025
@@ -115,7 +115,7 @@ export const sellFormSchemaV4 = z.object({
 	compareAtPrice: z
 		.string()
 		.optional()
-		.refine((val) => !val || (!isNaN(Number.parseFloat(val)) && Number.parseFloat(val) > 0), "validation.compareAtInvalid"),
+		.refine((val) => !val || (!Number.isNaN(Number.parseFloat(val)) && Number.parseFloat(val) > 0), "validation.compareAtInvalid"),
 
 	quantity: z.coerce
 		.number()
@@ -141,7 +141,7 @@ export const sellFormSchemaV4 = z.object({
 	shippingPrice: z
 		.string()
 		.optional()
-		.refine((val) => !val || (!isNaN(Number.parseFloat(val)) && Number.parseFloat(val) >= 0), "validation.shippingPriceInvalid"),
+		.refine((val) => !val || (!Number.isNaN(Number.parseFloat(val)) && Number.parseFloat(val) >= 0), "validation.shippingPriceInvalid"),
 
 	freeShipping: z.boolean().default(false),
 
