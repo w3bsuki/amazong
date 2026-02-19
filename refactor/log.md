@@ -972,3 +972,53 @@
   - `app/actions/{boosts,payments,subscriptions}.ts` (payment semantics)
   - `app/actions/profile.ts` (auth/session semantics)
 - `lib/auth/business.ts` split remains audit-only; needs human approval before any mechanical extraction.
+
+### Session 28 — 2026-02-19 (Codex Domain 7 — cross-cutting + final)
+
+**Phase(s):** Domain 7 (route hygiene + CSS + dead code + dupes + build/report)
+
+**Audit highlights (delta since Session 27):**
+- Missing metadata exports: `53` → `0`.
+- Route-group `error.tsx` boundaries added for all user-facing route groups.
+- Final dead code and duplicate audits completed (knip + dupes).
+- Client-boundary pass: reduced `"use client"` directives where a parent boundary already exists (notably header + dropdown subtrees), while restoring `"use client"` where required for Next.js prerender determinism (`new Date()` in static export) or to keep client-only provider imports out of the server graph.
+
+**Concrete changes:**
+- Route hygiene:
+  - Added `export const metadata` to every previously missing `page.tsx` (missing metadata now `0`).
+  - Added route-group `error.tsx` boundaries under `app/[locale]/**` using existing `Errors.*` strings (generic where possible to avoid i18n churn).
+- Styles:
+  - `pnpm -s styles:gate` clean; removed small inline style usage (`w-max` conversion).
+- Dead code:
+  - `pnpm -s knip` clean: pruned unused exports/types and stale helpers.
+- Dupes:
+  - Consolidated shared quick-view chrome into `components/shared/product/quick-view/quick-view-chrome.tsx`.
+  - Deduped `lib/stripe-locale.ts`.
+- Client boundaries:
+  - Reduced redundant `"use client"` directives across `components/layout/header/**`, `components/dropdowns/**`, and a few shared shells, relying on `app/[locale]/_components/app-header.tsx` as the header boundary.
+  - Restored `"use client"` on:
+    - `components/shared/product/freshness-indicator.tsx` (avoids `new Date()` in server components during static export)
+    - `app/[locale]/(checkout)/_components/checkout-footer.tsx` (same)
+    - `components/shared/product/card/list.tsx` (keeps client-only providers out of server graph)
+
+**Verification:**
+- `pnpm -s refactor:verify` ✅ (after each batch)
+- `pnpm -s test:unit -- -t "i18n"` ✅
+- `pnpm build` ✅ (`build-final.txt` updated)
+- `pnpm -s architecture:scan` ✅
+
+**Metrics snapshot (architecture:scan + local source count):**
+- Files: `938`
+- LOC (source): `~131K` (`130,824`)
+- `"use client"`: `216`
+- `>300` lines: `93`
+- `>500` lines: `14`
+- Tiny `<50L` files: `249`
+- Missing metadata: `0`
+- Clones: `240` (`2.81%`, `4,463` duplicated lines)
+
+**Remaining risks / follow-ups:**
+- Domain 6 remains blocked pending approval to touch:
+  - `app/actions/{boosts,payments,subscriptions}.ts` (payment semantics)
+  - `app/actions/profile.ts` (auth/session semantics)
+- `lib/auth/business.ts` split remains audit-only; needs human approval before any mechanical extraction.

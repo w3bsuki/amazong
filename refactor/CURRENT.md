@@ -11,20 +11,20 @@
 | | |
 |---|---|
 | **Mode** | Autopilot — full domain-by-domain audit + refactor |
-| **Current task** | Domain 7 — Cross-cutting + final |
-| **Sessions so far** | 27 (phase 0 rebaseline + Domains 1-5 completed) |
+| **Current task** | Domain 6 — ⚠️ blocked pending approval (auth/payment action refactors) |
+| **Sessions so far** | 28 (phase 0 rebaseline + Domains 1-5 completed) |
 
 ## Metrics
 
 | Metric | Baseline (2026-02-18 Rebaseline) | Now | Target |
 |--------|----------|-----|--------|
-| Files | 852 | 929 | <650 |
-| LOC (source) | ~115K | ~130K | <85K |
-| `"use client"` | 217 | 221 | <120 |
-| >300L files | 114 | 92 | <20 |
-| Tiny <50L files | 286 | 244 | <100 |
-| Missing metadata | 53 | 53 | 0 |
-| Clone % | 2.80% | 2.75% | <1.5% |
+| Files | 852 | 938 | <650 |
+| LOC (source) | ~115K | ~131K (130,824) | <85K |
+| `"use client"` | 217 | 216 | <120 |
+| >300L files | 114 | 93 | <20 |
+| Tiny <50L files | 286 | 249 | <100 |
+| Missing metadata | 53 | 0 | 0 |
+| Clone % | 2.80% | 2.81% | <1.5% |
 
 ## Domain Task Queue
 
@@ -37,7 +37,7 @@ Each domain task is a full audit + refactor of that area. Read `refactor/autopil
 - [x] **Domain 4: Small routes** → `refactor/domains/04-small-routes.md` — 159f/16.6K LOC
 - [x] **Domain 5: components/** → `refactor/domains/05-components.md` — 142f/14.5K LOC
 - [ ] **Domain 6: lib/ + actions/ + api/** → `refactor/domains/06-lib-actions-api.md` — 169f/26.3K LOC — ⚠️ blocked pending approval (payment/auth action refactors)
-- [ ] **Domain 7: Cross-cutting + final** → `refactor/domains/07-cross-cutting-final.md` — metadata, CSS, dead code, build, report
+- [x] **Domain 7: Cross-cutting + final** → `refactor/domains/07-cross-cutting-final.md` — metadata, CSS, dead code, build, report
 
 ## How to Run
 
@@ -58,4 +58,4 @@ Read refactor/autopilot.md. Continue from where you left off.
 
 ---
 
-*Updated: 2026-02-19 — Domain 6 safe refactors complete; blocked pending approval for payment/auth action refactors. Domain 7 is current.*
+*Updated: 2026-02-19 — Domain 7 completed. Domain 6 remains blocked pending approval for payment/auth action refactors.*
