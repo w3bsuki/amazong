@@ -6,7 +6,8 @@ import { Bell as IconBell, Store as IconBuildingStore, ChartLine as IconChartLin
 import { Link, usePathname } from "@/i18n/routing"
 import { cn } from "@/lib/utils"
 import { useTranslations } from "next-intl"
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet"
+import { DrawerBody } from "@/components/ui/drawer"
+import { DrawerShell } from "@/components/shared/drawer-shell"
 
 type AccountNavItem = {
   label: string
@@ -19,6 +20,7 @@ export function AccountTabBar() {
   const [moreOpen, setMoreOpen] = useState(false)
   const pathname = usePathname()
   const t = useTranslations("Account")
+  const tCommon = useTranslations("Common")
 
   const isActive = (path: string, exact?: boolean) => {
     if (exact) return pathname === path
@@ -170,15 +172,20 @@ export function AccountTabBar() {
         </div>
       </nav>
 
-      <Sheet open={moreOpen} onOpenChange={setMoreOpen}>
-        <SheetContent side="bottom" className="max-h-dialog overflow-hidden p-0">
-          <SheetHeader className="border-b border-border-subtle">
-            <SheetTitle>{t("tabBar.moreTitle")}</SheetTitle>
-            <SheetDescription>
-              {t("tabBar.moreDescription")}
-            </SheetDescription>
-          </SheetHeader>
-          <div className="grid grid-cols-2 gap-2 p-4 pb-safe overflow-y-auto">
+      <DrawerShell
+        open={moreOpen}
+        onOpenChange={setMoreOpen}
+        title={t("tabBar.moreTitle")}
+        closeLabel={tCommon("close")}
+        contentAriaLabel={t("tabBar.moreTitle")}
+        description={t("tabBar.moreDescription")}
+        descriptionClassName="pt-0.5 text-xs text-muted-foreground"
+        contentClassName="max-h-dialog lg:hidden"
+        headerClassName="border-border-subtle px-inset pt-4 pb-3"
+        titleClassName="text-base font-semibold tracking-tight"
+      >
+        <DrawerBody className="px-inset py-3 pb-safe">
+          <div className="grid grid-cols-2 gap-2 pb-2">
             {moreLinks.map((item) => {
               const active = isActive(item.href, item.exact)
 
@@ -202,8 +209,8 @@ export function AccountTabBar() {
               )
             })}
           </div>
-        </SheetContent>
-      </Sheet>
+        </DrawerBody>
+      </DrawerShell>
     </>
   )
 }
