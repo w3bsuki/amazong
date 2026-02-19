@@ -1,5 +1,6 @@
 "use server"
 
+import { z } from "zod"
 import { requireAuth } from "@/lib/auth/require-auth"
 import type { OrderItemStatus } from "@/lib/order-status"
 import {
@@ -8,12 +9,28 @@ import {
   type OrderItem,
 } from "./orders-shared"
 
+const OrderItemStatusSchema = z.enum([
+  "pending",
+  "received",
+  "processing",
+  "shipped",
+  "delivered",
+  "cancelled",
+])
+const SellerOrdersStatusFilterSchema = z.union([OrderItemStatusSchema, z.literal("all")]).optional()
+const OrderIdSchema = z.string().uuid()
+
 /**
  * Get all order items for the current seller
  */
 export async function getSellerOrders(
   statusFilter?: OrderItemStatus | "all"
 ): Promise<{ orders: OrderItem[]; error?: string }> {
+  const parsedStatusFilter = SellerOrdersStatusFilterSchema.safeParse(statusFilter)
+  if (!parsedStatusFilter.success) {
+    return { orders: [], error: "Invalid status filter" }
+  }
+
   try {
     const auth = await requireAuth()
     if (!auth) {
@@ -28,8 +45,8 @@ export async function getSellerOrders(
       .order("created_at", { ascending: false, foreignTable: "orders" })
       .limit(200)
 
-    if (statusFilter && statusFilter !== "all") {
-      query = query.eq("status", statusFilter)
+    if (parsedStatusFilter.data && parsedStatusFilter.data !== "all") {
+      query = query.eq("status", parsedStatusFilter.data)
     }
 
     const { data: orderItems, error: fetchError } = await query
@@ -191,6 +208,11 @@ export async function getBuyerOrders(): Promise<{ orders: OrderItem[]; error?: s
 export async function getOrderConversation(
   orderId: string
 ): Promise<{ conversationId: string | null; error?: string }> {
+  const parsedOrderId = OrderIdSchema.safeParse(orderId)
+  if (!parsedOrderId.success) {
+    return { conversationId: null, error: "Invalid orderId" }
+  }
+
   try {
     const auth = await requireAuth()
     if (!auth) {
@@ -201,7 +223,7 @@ export async function getOrderConversation(
     const { data: conversation } = await supabase
       .from("conversations")
       .select("id")
-      .eq("order_id", orderId)
+      .eq("order_id", parsedOrderId.data)
       .or(`buyer_id.eq.${user.id},seller_id.eq.${user.id}`)
       .single()
 
@@ -227,6 +249,11 @@ export async function getBuyerOrderDetails(
   } | null
   error?: string
 }> {
+  const parsedOrderId = OrderIdSchema.safeParse(orderId)
+  if (!parsedOrderId.success) {
+    return { order: null, error: "Invalid orderId" }
+  }
+
   try {
     const auth = await requireAuth()
     if (!auth) {
@@ -246,7 +273,7 @@ export async function getBuyerOrderDetails(
           ${ORDER_ITEM_DETAIL_SELECT}
         )
       `)
-      .eq("id", orderId)
+      .eq("id", parsedOrderId.data)
       .eq("user_id", user.id)
       .single<{
         id: string
@@ -276,4 +303,3 @@ export async function getBuyerOrderDetails(
     return { order: null, error: "An unexpected error occurred" }
   }
 }
-

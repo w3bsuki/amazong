@@ -1,8 +1,26 @@
 "use server"
 
+import { z } from "zod"
 import { requireAuth } from "@/lib/auth/require-auth"
 import { revalidateTag } from "next/cache"
+import { SHIPPING_CARRIER_VALUES } from "@/lib/order-status"
 import type { OrderItemStatus, ShippingCarrier } from "@/lib/order-status"
+
+const OrderItemStatusSchema = z.enum([
+  "pending",
+  "received",
+  "processing",
+  "shipped",
+  "delivered",
+  "cancelled",
+])
+
+const UpdateOrderItemStatusInputSchema = z.object({
+  orderItemId: z.string().uuid(),
+  newStatus: OrderItemStatusSchema,
+  trackingNumber: z.string().max(256).optional(),
+  shippingCarrier: z.enum(SHIPPING_CARRIER_VALUES).optional(),
+})
 
 /**
  * Update the status of an order item (seller only)
@@ -13,6 +31,23 @@ export async function updateOrderItemStatus(
   trackingNumber?: string,
   shippingCarrier?: ShippingCarrier
 ): Promise<{ success: boolean; error?: string }> {
+  const parsedInput = UpdateOrderItemStatusInputSchema.safeParse({
+    orderItemId,
+    newStatus,
+    trackingNumber,
+    shippingCarrier,
+  })
+  if (!parsedInput.success) {
+    return { success: false, error: "Invalid input" }
+  }
+
+  const {
+    orderItemId: safeOrderItemId,
+    newStatus: safeNewStatus,
+    trackingNumber: safeTrackingNumber,
+    shippingCarrier: safeShippingCarrier,
+  } = parsedInput.data
+
   try {
     const auth = await requireAuth()
     if (!auth) {
@@ -23,7 +58,7 @@ export async function updateOrderItemStatus(
     const { data: existingItem, error: existingError } = await supabase
       .from("order_items")
       .select("id, seller_id, seller_received_at, shipped_at, delivered_at")
-      .eq("id", orderItemId)
+      .eq("id", safeOrderItemId)
       .eq("seller_id", user.id)
       .single()
 
@@ -31,34 +66,34 @@ export async function updateOrderItemStatus(
       return { success: false, error: "Order item not found" }
     }
 
-    const updateData: Record<string, unknown> = { status: newStatus }
+    const updateData: Record<string, unknown> = { status: safeNewStatus }
     const now = new Date().toISOString()
 
-    if (newStatus === "received" && !existingItem.seller_received_at) {
+    if (safeNewStatus === "received" && !existingItem.seller_received_at) {
       updateData.seller_received_at = now
     }
 
-    if (newStatus === "shipped" && !existingItem.shipped_at) {
+    if (safeNewStatus === "shipped" && !existingItem.shipped_at) {
       updateData.shipped_at = now
     }
 
-    if (newStatus === "delivered" && !existingItem.delivered_at) {
+    if (safeNewStatus === "delivered" && !existingItem.delivered_at) {
       updateData.delivered_at = now
     }
 
-    if (newStatus === "shipped") {
-      if (trackingNumber) {
-        updateData.tracking_number = trackingNumber
+    if (safeNewStatus === "shipped") {
+      if (safeTrackingNumber) {
+        updateData.tracking_number = safeTrackingNumber
       }
-      if (shippingCarrier) {
-        updateData.shipping_carrier = shippingCarrier
+      if (safeShippingCarrier) {
+        updateData.shipping_carrier = safeShippingCarrier
       }
     }
 
     const { error: updateError } = await supabase
       .from("order_items")
       .update(updateData)
-      .eq("id", orderItemId)
+      .eq("id", safeOrderItemId)
       .eq("seller_id", user.id)
 
     if (updateError) {
@@ -83,6 +118,11 @@ export async function updateOrderItemStatus(
 export async function buyerConfirmDelivery(
   orderItemId: string
 ): Promise<{ success: boolean; error?: string; sellerId?: string }> {
+  const parsedOrderItemId = z.string().uuid().safeParse(orderItemId)
+  if (!parsedOrderItemId.success) {
+    return { success: false, error: "Invalid orderItemId" }
+  }
+
   try {
     const auth = await requireAuth()
     if (!auth) {
@@ -98,7 +138,7 @@ export async function buyerConfirmDelivery(
         seller_id,
         order:orders!inner(user_id)
       `)
-      .eq("id", orderItemId)
+      .eq("id", parsedOrderItemId.data)
       .single<{
         id: string
         status: string
@@ -130,7 +170,7 @@ export async function buyerConfirmDelivery(
         status: "delivered",
         delivered_at: new Date().toISOString(),
       })
-      .eq("id", orderItemId)
+      .eq("id", parsedOrderItemId.data)
 
     if (updateError) {
       console.error("Error confirming delivery:", updateError)
@@ -145,4 +185,3 @@ export async function buyerConfirmDelivery(
     return { success: false, error: "An unexpected error occurred" }
   }
 }
-

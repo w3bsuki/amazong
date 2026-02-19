@@ -1,9 +1,25 @@
 "use server"
 
+import { z } from "zod"
 import { createAdminClient } from "@/lib/supabase/server"
 import { requireAuth } from "@/lib/auth/require-auth"
 import { revalidateTag } from "next/cache"
 import type { IssueType } from "./orders-shared"
+
+const OrderItemIdSchema = z.string().uuid()
+const IssueTypeSchema = z.enum([
+  "not_received",
+  "wrong_item",
+  "damaged",
+  "not_as_described",
+  "missing_parts",
+  "other",
+])
+const ReportOrderIssueInputSchema = z.object({
+  orderItemId: OrderItemIdSchema,
+  issueType: IssueTypeSchema,
+  description: z.string(),
+})
 
 /**
  * Request a return for an order item (buyer only)
@@ -12,6 +28,9 @@ export async function requestReturn(
   orderItemId: string,
   reason: string
 ): Promise<{ success: boolean; error?: string }> {
+  const parsedOrderItemId = OrderItemIdSchema.safeParse(orderItemId)
+  if (!parsedOrderItemId.success) return { success: false, error: "Invalid orderItemId" }
+
   try {
     const auth = await requireAuth()
     if (!auth) {
@@ -32,7 +51,7 @@ export async function requestReturn(
           seller_id,
           order:orders!inner(id, user_id)
         `)
-      .eq("id", orderItemId)
+      .eq("id", parsedOrderItemId.data)
       .single<{
         id: string
         status: string | null
@@ -55,7 +74,7 @@ export async function requestReturn(
     const { data: existingRequests, error: existingError } = await supabase
       .from("return_requests")
       .select("id,status")
-      .eq("order_item_id", orderItemId)
+      .eq("order_item_id", parsedOrderItemId.data)
       .eq("buyer_id", user.id)
       .neq("status", "cancelled")
       .limit(1)
@@ -72,7 +91,7 @@ export async function requestReturn(
     }
 
     const { error: insertError } = await supabase.from("return_requests").insert({
-      order_item_id: orderItemId,
+      order_item_id: parsedOrderItemId.data,
       order_id: orderItem.order.id,
       buyer_id: user.id,
       seller_id: orderItem.seller_id,
@@ -103,6 +122,9 @@ export async function requestOrderCancellation(
   orderItemId: string,
   reason?: string
 ): Promise<{ success: boolean; error?: string }> {
+  const parsedOrderItemId = OrderItemIdSchema.safeParse(orderItemId)
+  if (!parsedOrderItemId.success) return { success: false, error: "Invalid orderItemId" }
+
   try {
     const auth = await requireAuth()
     if (!auth) {
@@ -119,7 +141,7 @@ export async function requestOrderCancellation(
         product:products(title),
         order:orders!inner(id, user_id, status)
       `)
-      .eq("id", orderItemId)
+      .eq("id", parsedOrderItemId.data)
       .single<{
         id: string
         status: string | null
@@ -157,7 +179,7 @@ export async function requestOrderCancellation(
       .update({
         status: "cancelled",
       })
-      .eq("id", orderItemId)
+      .eq("id", parsedOrderItemId.data)
 
     if (updateError) {
       console.error("Error cancelling order item:", updateError)
@@ -172,7 +194,7 @@ export async function requestOrderCancellation(
         title: "Order Cancellation Request",
         body: `A buyer has cancelled their order${reason ? `: ${reason}` : ""}`,
         data: {
-          order_item_id: orderItemId,
+          order_item_id: parsedOrderItemId.data,
           order_id: orderItem.order.id,
           reason,
         },
@@ -203,6 +225,15 @@ export async function reportOrderIssue(
   issueType: IssueType,
   description: string
 ): Promise<{ success: boolean; error?: string; conversationId?: string }> {
+  const parsedInput = ReportOrderIssueInputSchema.safeParse({
+    orderItemId,
+    issueType,
+    description,
+  })
+  if (!parsedInput.success) {
+    return { success: false, error: "Invalid input" }
+  }
+
   try {
     const auth = await requireAuth()
     if (!auth) {
@@ -210,7 +241,7 @@ export async function reportOrderIssue(
     }
     const { user, supabase } = auth
 
-    if (!description || description.trim().length < 10) {
+    if (!parsedInput.data.description || parsedInput.data.description.trim().length < 10) {
       return { success: false, error: "Please provide a detailed description (minimum 10 characters)" }
     }
 
@@ -223,7 +254,7 @@ export async function reportOrderIssue(
         product:products(id, title),
         order:orders!inner(id, user_id)
       `)
-      .eq("id", orderItemId)
+      .eq("id", parsedInput.data.orderItemId)
       .single<{
         id: string
         status: string | null
@@ -249,7 +280,7 @@ export async function reportOrderIssue(
       other: "Order Issue",
     }
 
-    const subject = `${issueSubjects[issueType]}${orderItem.product?.title ? ` - ${orderItem.product.title}` : ""}`
+    const subject = `${issueSubjects[parsedInput.data.issueType]}${orderItem.product?.title ? ` - ${orderItem.product.title}` : ""}`
 
     const { data: existingConversation } = await supabase
       .from("conversations")
@@ -285,7 +316,7 @@ export async function reportOrderIssue(
       conversationId = newConversation.id
     }
 
-    const messageContent = `⚠️ **Issue Report: ${issueSubjects[issueType]}**\n\n${description}`
+    const messageContent = `⚠️ **Issue Report: ${issueSubjects[parsedInput.data.issueType]}**\n\n${parsedInput.data.description}`
 
     const { error: messageError } = await supabase.from("messages").insert({
       conversation_id: conversationId,
@@ -313,12 +344,12 @@ export async function reportOrderIssue(
       const { error: notifyError } = await admin.from("notifications").insert({
         user_id: orderItem.seller_id,
         type: "message",
-        title: `Issue Report: ${issueSubjects[issueType]}`,
+        title: `Issue Report: ${issueSubjects[parsedInput.data.issueType]}`,
         body: "A buyer has reported an issue with their order",
         data: {
-          order_item_id: orderItemId,
+          order_item_id: parsedInput.data.orderItemId,
           order_id: orderItem.order.id,
-          issue_type: issueType,
+          issue_type: parsedInput.data.issueType,
           conversation_id: conversationId,
         },
         order_id: orderItem.order.id,
@@ -342,4 +373,3 @@ export async function reportOrderIssue(
     return { success: false, error: "An unexpected error occurred" }
   }
 }
-

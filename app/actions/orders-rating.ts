@@ -1,6 +1,9 @@
 "use server"
 
+import { z } from "zod"
 import { requireAuth } from "@/lib/auth/require-auth"
+
+const OrderItemIdSchema = z.string().uuid()
 
 /**
  * Check if buyer can leave feedback for a seller after delivery
@@ -8,6 +11,9 @@ import { requireAuth } from "@/lib/auth/require-auth"
 export async function canBuyerRateSeller(
   orderItemId: string
 ): Promise<{ canRate: boolean; hasRated: boolean; sellerId?: string }> {
+  const parsedOrderItemId = OrderItemIdSchema.safeParse(orderItemId)
+  if (!parsedOrderItemId.success) return { canRate: false, hasRated: false }
+
   try {
     const auth = await requireAuth()
     if (!auth) {
@@ -24,7 +30,7 @@ export async function canBuyerRateSeller(
         order_id,
         order:orders!inner(user_id)
       `)
-      .eq("id", orderItemId)
+      .eq("id", parsedOrderItemId.data)
       .single<{
         id: string
         status: string | null
@@ -69,6 +75,9 @@ export async function canBuyerRateSeller(
 export async function canSellerRateBuyer(
   orderItemId: string
 ): Promise<{ canRate: boolean; hasRated: boolean; buyerId?: string; orderId?: string }> {
+  const parsedOrderItemId = OrderItemIdSchema.safeParse(orderItemId)
+  if (!parsedOrderItemId.success) return { canRate: false, hasRated: false }
+
   try {
     const auth = await requireAuth()
     if (!auth) {
@@ -85,7 +94,7 @@ export async function canSellerRateBuyer(
         order_id,
         order:orders!inner(user_id)
       `)
-      .eq("id", orderItemId)
+      .eq("id", parsedOrderItemId.data)
       .eq("seller_id", user.id)
       .single<{
         id: string
@@ -123,4 +132,3 @@ export async function canSellerRateBuyer(
     return { canRate: false, hasRated: false }
   }
 }
-
