@@ -1,5 +1,10 @@
 import { WelcomeClient } from "../../_components/welcome-client"
 
+export const metadata = {
+  title: "Welcome | Treido",
+  description: "Welcome to Treido.",
+}
+
 export default async function WelcomePage({
   params,
 }: {

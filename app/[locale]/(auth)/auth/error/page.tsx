@@ -5,6 +5,11 @@ import { ArrowLeft, CircleAlert as WarningCircle } from "lucide-react";
 import { Button } from "@/components/ui/button"
 import { AuthCard } from "../../_components/auth-card"
 
+export const metadata = {
+  title: "Authentication Error | Treido",
+  description: "An error occurred during authentication.",
+}
+
 export default async function AuthErrorPage({
   searchParams,
 }: {

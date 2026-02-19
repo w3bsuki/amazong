@@ -20,6 +20,11 @@ interface SharedWishlistPageProps {
   }>
 }
 
+export const metadata = {
+  title: "Shared Wishlist | Treido",
+  description: "View a shared Treido wishlist.",
+}
+
 export default async function SharedWishlistPage({ params }: SharedWishlistPageProps) {
   const { token, locale } = await params
   setRequestLocale(locale)
