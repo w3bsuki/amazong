@@ -71,7 +71,7 @@ export function CartDropdown() {
       >
         <div className="flex items-center justify-between px-3 py-2 bg-muted border-b border-border">
           <div className="flex items-center gap-1.5">
-            <ShoppingCart size={16} className="text-muted-foreground" />
+            <ShoppingCart size={16} className="text-foreground" />
             <h3 className="font-semibold text-sm text-foreground">{t("title")}</h3>
             <span className="text-xs text-muted-foreground">({isReady ? totalItems : "..."})</span>
           </div>

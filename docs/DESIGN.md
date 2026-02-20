@@ -50,6 +50,17 @@ If a **context7 MCP** is available, use `resolve-library-id` + `get-library-docs
 
 The primary accent is Twitter Blue — used sparingly for primary actions, active states, and key CTAs. Everything else is neutral. Destructive red for errors, discounts, and warnings only.
 
+### Icon Color Rule
+
+| Role | Token | Examples |
+|------|-------|----------|
+| **Functional** | `text-foreground` | Search, close/X, navigation arrows, header actions, back buttons |
+| **Decorative / secondary** | `text-muted-foreground` | Empty state illustrations, image placeholders, meta indicators (clock, info) |
+| **Active nav** | `text-nav-active` | Bottom tab bar active icon |
+| **Inactive nav** | `text-nav-inactive` | Bottom tab bar inactive icon |
+
+Icons that the user taps or that indicate an actionable direction (arrows, close, search) must be `text-foreground` — near-black in light mode, near-white in dark mode. Reserve `text-muted-foreground` for icons that are purely decorative or accompany secondary meta text.
+
 ### Color System
 
 OKLCH-based tokens defined in `app/globals.css`. Full light + dark theme.
@@ -159,11 +170,11 @@ For overlay components, `useIsMobile()` hook selects Drawer vs Dialog.
 **Mobile tab bar** (5 tabs):
 1. Home (House) — navigate to `/`
 2. Categories (LayoutGrid) — open category drawer or navigate to `/categories`
-3. Sell (Plus) — navigate to `/sell` — **core action** with circular accent treatment
+3. Sell (Plus) — navigate to `/sell` — **core action** with dark circle + blue ring (inactive) / blue circle (active)
 4. Chat (MessageCircle) — open messages drawer, shows unread badge
 5. Profile (avatar) — open account drawer (auth) or auth drawer (guest)
 
-Tab bar hidden on: product page (sticky buy box), cart (sticky checkout footer), assistant (chat input).
+Active tabs use primary blue color and an M3-style pill indicator (subtle blue capsule behind the icon). Labels are `text-tiny font-semibold` when active, `text-tiny font-medium` when inactive.
 
 ### Desktop Layout
 

@@ -240,7 +240,7 @@ export function SearchAiChat({ className, onClose, compact = false }: SearchAiCh
                           <Link
                             href={`/search?q=${encodeURIComponent(input)}`}
                             onClick={() => onClose?.()}
-                            className="shrink-0 w-28 h-28 rounded-lg bg-surface-subtle flex flex-col items-center justify-center text-muted-foreground transition-colors hover:bg-hover hover:text-foreground active:bg-active focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
+                            className="shrink-0 w-28 h-28 rounded-lg bg-surface-subtle flex flex-col items-center justify-center text-foreground transition-colors hover:bg-hover active:bg-active focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
                           >
                             <ArrowRight size={20} />
                             <span className="text-xs mt-1">{t("aiMoreResults", { count: listings.length - 4 })}</span>

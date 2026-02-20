@@ -200,7 +200,7 @@ export function DesktopSearchPopoverPanel({
                   </div>
                   <ArrowRight
                     size={16}
-                    className="text-muted-foreground opacity-0 motion-safe:transition-opacity motion-safe:duration-fast motion-safe:ease-(--ease-smooth) motion-reduce:transition-none group-hover:opacity-100"
+                    className="text-foreground opacity-0 motion-safe:transition-opacity motion-safe:duration-fast motion-safe:ease-(--ease-smooth) motion-reduce:transition-none group-hover:opacity-100"
                   />
                 </button>
               ))}
@@ -257,7 +257,7 @@ export function DesktopSearchPopoverPanel({
                   <span className="text-sm text-foreground group-hover:text-primary flex-1">{search}</span>
                   <ArrowRight
                     size={14}
-                    className="text-muted-foreground opacity-0 motion-safe:transition-opacity motion-safe:duration-fast motion-safe:ease-(--ease-smooth) motion-reduce:transition-none group-hover:opacity-100"
+                    className="text-foreground opacity-0 motion-safe:transition-opacity motion-safe:duration-fast motion-safe:ease-(--ease-smooth) motion-reduce:transition-none group-hover:opacity-100"
                   />
                 </button>
               ))}

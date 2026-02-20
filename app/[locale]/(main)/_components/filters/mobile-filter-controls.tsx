@@ -40,6 +40,8 @@ interface MobileFilterControlsProps {
   }) => void
   onRemoveFilter?: (key: string, key2?: string) => void
   onClearAll?: () => void
+  /** Href to switch to sellers mode (renders pill in FilterSortBar) */
+  sellersHref?: string
   className?: string
 }
 
@@ -71,6 +73,7 @@ export function MobileFilterControls({
   onApply,
   onRemoveFilter,
   onClearAll,
+  sellersHref,
   className,
 }: MobileFilterControlsProps) {
   const t = useTranslations("SearchFilters")
@@ -184,6 +187,7 @@ export function MobileFilterControls({
         onLocationChipClick={openLocationFilter}
         quickAttributePills={quickAttributePills as FilterSortBarQuickPill[]}
         onAttributeChipClick={openAttributeFilter}
+        sellersHref={sellersHref}
       />
 
       <div className="bg-background px-inset py-1">

@@ -1,5 +1,3 @@
-import { Suspense } from "react"
-
 import { Link } from "@/i18n/routing"
 import { CategoryPillRail, type CategoryPillRailItem } from "@/components/mobile/category-nav/category-pill-rail"
 import { ProductGrid, type ProductGridProduct } from "@/components/grid/product-grid"
@@ -14,7 +12,6 @@ import { SearchPagination } from "../../_components/search-controls/search-pagin
 import { EmptyStateCTA } from "../../../_components/empty-state-cta"
 import { DesktopShell } from "../../_components/layout/desktop-shell.server"
 import { PageShell } from "../../../_components/page-shell"
-import { MobileBrowseModeSwitch } from "./mobile-browse-mode-switch"
 import { MobileSellerFilterControls } from "./mobile-seller-filter-controls"
 import { SellerResultsList } from "./seller-results-list"
 import type { BrowseMode, Category, SellerResultCard } from "../_lib/types"
@@ -78,32 +75,54 @@ export function SearchPageLayout({
 }: SearchPageLayoutProps) {
   const sidebarContent = (
     <div className="bg-sidebar rounded-lg p-4">
-      <Suspense>
-        <SearchFilters
-          categories={allCategories}
-          subcategories={subcategories}
-          currentCategory={currentCategory}
-          allCategoriesWithSubs={allCategoriesWithSubs}
-          brands={[]}
-        />
-      </Suspense>
+      <SearchFilters
+        categories={allCategories}
+        subcategories={subcategories}
+        currentCategory={currentCategory}
+        allCategoriesWithSubs={allCategoriesWithSubs}
+        brands={[]}
+      />
     </div>
+  )
+
+  const searchHeader = (
+    <SearchHeader query={query} category={categorySlug ?? undefined} totalResults={totalResults} />
+  )
+
+  const sellerResultsList = (
+    <SellerResultsList
+      sellers={sellers}
+      locale={locale}
+      emptyTitle={t("noSellersFound")}
+      emptyDescription={t("noSellersFoundDescription")}
+      verifiedLabel={t("verifiedSellersBadge")}
+      listingsLabel={t("sellerListingsLabel")}
+    />
+  )
+
+  const pagination = totalResults > 0 && (
+    <SearchPagination totalItems={totalResults} itemsPerPage={itemsPerPage} currentPage={currentPage} />
+  )
+
+  const emptyStateCTA = (className: string) => (
+    <EmptyStateCTA
+      variant={query ? "no-search" : "no-category"}
+      {...(query ? { searchQuery: query } : {})}
+      {...(categoryName ? { categoryName } : {})}
+      className={className}
+    />
   )
 
   return (
     <>
       <PageShell variant="muted" className="lg:hidden overflow-x-hidden">
         <div className="container overflow-x-hidden py-4">
-          <Suspense>
-            <SearchHeader query={query} category={categorySlug ?? undefined} totalResults={totalResults} />
-          </Suspense>
-
-          <MobileBrowseModeSwitch mode={browseMode} basePath="/search" className="mb-1" />
+          {searchHeader}
 
           <CategoryPillRail
             items={railItems}
             ariaLabel={tCategories("navigationAriaLabel")}
-            stickyTop="var(--offset-mobile-secondary-rail)"
+            stickyTop="var(--offset-mobile-primary-rail)"
             sticky={true}
             moreLabel={tCategories("showMore")}
             testId="mobile-search-category-rail"
@@ -111,35 +130,34 @@ export function SearchPageLayout({
 
           {browseMode === "listings" ? (
             <>
-              <Suspense>
-                <MobileFilterControls
-                  locale={locale}
-                  {...(currentCategory?.slug ? { categorySlug: currentCategory.slug } : {})}
-                  {...(categoryIdForFilters ? { categoryId: categoryIdForFilters } : {})}
-                  {...(query ? { searchQuery: query } : {})}
-                  attributes={filterableAttributes}
-                  subcategories={subcategories.map((c) => ({
-                    id: c.id,
-                    name: c.name,
-                    name_bg: c.name_bg,
-                    slug: c.slug,
-                  }))}
-                  {...(categoryName ? { categoryName } : {})}
-                  {...(currentCategory
-                    ? {
-                        currentCategory: {
-                          name: categoryName ?? currentCategory.name,
-                          slug: currentCategory.slug,
-                        },
-                      }
-                    : {})}
-                  basePath="/search"
-                  stickyTop="var(--offset-mobile-tertiary-rail)"
-                  sticky={true}
-                  userZone={userZone}
-                  className="mb-3 z-20"
-                />
-              </Suspense>
+              <MobileFilterControls
+                locale={locale}
+                {...(currentCategory?.slug ? { categorySlug: currentCategory.slug } : {})}
+                {...(categoryIdForFilters ? { categoryId: categoryIdForFilters } : {})}
+                {...(query ? { searchQuery: query } : {})}
+                attributes={filterableAttributes}
+                subcategories={subcategories.map((c) => ({
+                  id: c.id,
+                  name: c.name,
+                  name_bg: c.name_bg,
+                  slug: c.slug,
+                }))}
+                {...(categoryName ? { categoryName } : {})}
+                {...(currentCategory
+                  ? {
+                      currentCategory: {
+                        name: categoryName ?? currentCategory.name,
+                        slug: currentCategory.slug,
+                      },
+                    }
+                  : {})}
+                basePath="/search"
+                stickyTop="var(--offset-mobile-secondary-rail)"
+                sticky={true}
+                userZone={userZone}
+                sellersHref={modeSellersHref}
+                className="mb-3 z-20"
+              />
 
               <div className="mb-4 flex items-center justify-between rounded-lg bg-surface-subtle px-3 py-2.5 text-sm text-muted-foreground sm:hidden">
                 <span>
@@ -155,18 +173,11 @@ export function SearchPageLayout({
 
               <ProductGrid products={gridProducts} viewMode="grid" preset="mobile-feed" density="compact" />
 
-              {productsCount === 0 && (
-                <EmptyStateCTA
-                  variant={query ? "no-search" : "no-category"}
-                  {...(query ? { searchQuery: query } : {})}
-                  {...(categoryName ? { categoryName } : {})}
-                  className="mt-8"
-                />
-              )}
+              {productsCount === 0 && emptyStateCTA("mt-8")}
             </>
           ) : (
             <>
-              <MobileSellerFilterControls basePath="/search" className="mb-3" />
+              <MobileSellerFilterControls basePath="/search" listingsHref={modeListingsHref} className="mb-3" />
 
               <div className="mb-4 flex items-center justify-between rounded-lg bg-surface-subtle px-3 py-2.5 text-sm text-muted-foreground sm:hidden">
                 <span>
@@ -178,26 +189,11 @@ export function SearchPageLayout({
                 </span>
               </div>
 
-              <SellerResultsList
-                sellers={sellers}
-                locale={locale}
-                emptyTitle={t("noSellersFound")}
-                emptyDescription={t("noSellersFoundDescription")}
-                verifiedLabel={t("verifiedSellersBadge")}
-                listingsLabel={t("sellerListingsLabel")}
-              />
+              {sellerResultsList}
             </>
           )}
 
-          {totalResults > 0 && (
-            <Suspense>
-              <SearchPagination
-                totalItems={totalResults}
-                itemsPerPage={itemsPerPage}
-                currentPage={currentPage}
-              />
-            </Suspense>
-          )}
+          {pagination}
         </div>
       </PageShell>
 
@@ -207,9 +203,7 @@ export function SearchPageLayout({
         sidebar={browseMode === "listings" ? sidebarContent : undefined}
         sidebarSticky={browseMode === "listings"}
       >
-        <Suspense>
-          <SearchHeader query={query} category={categorySlug ?? undefined} totalResults={totalResults} />
-        </Suspense>
+        {searchHeader}
 
         <div className="mb-2 flex items-center gap-2">
           <Link
@@ -233,9 +227,7 @@ export function SearchPageLayout({
         {browseMode === "listings" ? (
           <>
             <div className="mb-4">
-              <Suspense>
-                <FilterChips currentCategory={currentCategory} />
-              </Suspense>
+              <FilterChips currentCategory={currentCategory} />
             </div>
 
             <div className="mb-4 flex items-center gap-2">
@@ -243,9 +235,7 @@ export function SearchPageLayout({
                 <SortSelect />
               </div>
               <div className="flex items-center gap-2">
-                <Suspense>
-                  <DesktopFilters />
-                </Suspense>
+                <DesktopFilters />
               </div>
               <p className="ml-auto whitespace-nowrap text-sm text-muted-foreground">
                 <span className="font-semibold text-foreground">{totalProducts}</span>
@@ -267,12 +257,7 @@ export function SearchPageLayout({
 
             <div>
               {productsCount === 0 ? (
-                <EmptyStateCTA
-                  variant={query ? "no-search" : "no-category"}
-                  {...(query ? { searchQuery: query } : {})}
-                  {...(categoryName ? { categoryName } : {})}
-                  className="mt-4"
-                />
+                emptyStateCTA("mt-4")
               ) : (
                 <ProductGrid products={gridProducts} viewMode="grid" />
               )}
@@ -284,26 +269,11 @@ export function SearchPageLayout({
               <span className="font-semibold text-foreground">{totalSellers}</span>{" "}
               {t("sellersFound")}
             </p>
-            <SellerResultsList
-              sellers={sellers}
-              locale={locale}
-              emptyTitle={t("noSellersFound")}
-              emptyDescription={t("noSellersFoundDescription")}
-              verifiedLabel={t("verifiedSellersBadge")}
-              listingsLabel={t("sellerListingsLabel")}
-            />
+            {sellerResultsList}
           </>
         )}
 
-        {totalResults > 0 && (
-          <Suspense>
-            <SearchPagination
-              totalItems={totalResults}
-              itemsPerPage={itemsPerPage}
-              currentPage={currentPage}
-            />
-          </Suspense>
-        )}
+        {pagination}
       </DesktopShell>
     </>
   )

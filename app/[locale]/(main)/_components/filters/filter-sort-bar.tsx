@@ -2,9 +2,10 @@
 
 import { useState, useMemo, useCallback } from "react"
 import { useSearchParams, type ReadonlyURLSearchParams } from "next/navigation"
-import { SlidersHorizontal, ArrowUpDown, MapPin, ChevronDown } from "lucide-react"
+import { SlidersHorizontal, ArrowUpDown, MapPin, ChevronDown, Users } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useTranslations } from "next-intl"
+import { Link } from "@/i18n/routing"
 import { MOBILE_ACTION_CHIP_CLASS } from "@/components/mobile/chrome/mobile-control-recipes"
 import { SortModal } from "./shared/sort-modal"
 import type { CategoryAttribute } from "@/lib/data/categories"
@@ -52,6 +53,8 @@ export interface FilterSortBarProps {
   quickAttributePills?: FilterSortBarQuickPill[]
   /** Called when an attribute chip is clicked */
   onAttributeChipClick?: (sectionId: `attr_${string}`) => void
+  /** Href to switch to sellers mode (renders a "Sellers" pill when provided) */
+  sellersHref?: string | undefined
 }
 
 type SortOption = "featured" | "price-asc" | "price-desc" | "rating" | "newest"
@@ -70,6 +73,7 @@ export function FilterSortBar({
   onLocationChipClick,
   quickAttributePills = [],
   onAttributeChipClick,
+  sellersHref,
 }: FilterSortBarProps) {
   const t = useTranslations("SearchFilters")
   const searchParamsFromRouter = useSearchParams()
@@ -213,6 +217,18 @@ export function FilterSortBar({
                 </button>
               ))}
             </>
+          )}
+
+          {/* Browse mode: Sellers pill */}
+          {sellersHref && (
+            <Link
+              href={sellersHref}
+              className={MOBILE_ACTION_CHIP_CLASS}
+              data-testid="mobile-sellers-pill"
+            >
+              <Users className="size-3.5 shrink-0" aria-hidden="true" />
+              <span className="whitespace-nowrap">{t("sellersMode")}</span>
+            </Link>
           )}
         </div>
       </div>

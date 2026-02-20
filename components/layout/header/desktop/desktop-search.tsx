@@ -151,7 +151,7 @@ export function DesktopSearch() {
                 type="button"
                 onClick={handleClearInput}
                 aria-label={tNav("clearSearch")}
-                className="absolute top-1/2 right-24 -translate-y-1/2 rounded-sm text-muted-foreground tap-transparent motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth) motion-reduce:transition-none hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
+                className="absolute top-1/2 right-24 -translate-y-1/2 rounded-sm text-foreground tap-transparent motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth) motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
               >
                 <X size={16} />
               </button>

@@ -4,8 +4,9 @@ import { useCallback, useEffect, useMemo, useState } from "react"
 import { useSearchParams } from "next/navigation"
 import { useRouter } from "@/i18n/routing"
 import { useTranslations } from "next-intl"
-import { ArrowUpDown, SlidersHorizontal } from "lucide-react"
+import { ArrowUpDown, SlidersHorizontal, ShoppingBag } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { Link } from "@/i18n/routing"
 import { MOBILE_ACTION_CHIP_CLASS, getMobileQuickPillClass } from "@/components/mobile/chrome/mobile-control-recipes"
 import type { SellerSortKey } from "../_lib/types"
 import { Button } from "@/components/ui/button"
@@ -16,6 +17,7 @@ import { MobileSellerActiveChips } from "./mobile-seller-active-chips"
 interface MobileSellerFilterControlsProps {
   basePath?: string
   stickyTop?: number | string
+  listingsHref?: string
   className?: string
 }
 
@@ -79,7 +81,8 @@ function applySellerSearchParams(
 
 export function MobileSellerFilterControls({
   basePath = "/search",
-  stickyTop = "var(--offset-mobile-tertiary-rail)",
+  stickyTop = "var(--offset-mobile-secondary-rail)",
+  listingsHref,
   className,
 }: MobileSellerFilterControlsProps) {
   const t = useTranslations("SearchFilters")
@@ -236,6 +239,17 @@ export function MobileSellerFilterControls({
           <SlidersHorizontal className="size-4 shrink-0" aria-hidden="true" />
           <span>{t("filters")}</span>
         </button>
+
+        {listingsHref && (
+          <Link
+            href={listingsHref}
+            className={cn(MOBILE_ACTION_CHIP_CLASS, "flex-1 min-h-(--control-default) justify-center text-sm font-medium")}
+            data-testid="mobile-listings-pill"
+          >
+            <ShoppingBag className="size-4 shrink-0" aria-hidden="true" />
+            <span className="whitespace-nowrap">{t("listingsMode")}</span>
+          </Link>
+        )}
       </div>
 
       <MobileSellerActiveChips

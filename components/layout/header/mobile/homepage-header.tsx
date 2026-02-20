@@ -49,7 +49,7 @@ export function MobileHomepageHeader({
               "group-hover:bg-hover group-hover:border-border group-active:bg-active"
             )}
           >
-            <MagnifyingGlass size={16} className="shrink-0 text-muted-foreground" />
+            <MagnifyingGlass size={16} className="shrink-0 text-foreground" />
             <span className="flex-1 truncate text-xs font-medium text-muted-foreground">{searchPlaceholder}</span>
           </span>
         </button>

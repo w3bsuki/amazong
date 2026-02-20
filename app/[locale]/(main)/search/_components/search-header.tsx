@@ -27,7 +27,7 @@ export function SearchHeader({ query, category, totalResults }: SearchHeaderProp
             </Link>
           </li>
           <li className="flex items-center gap-1">
-            <CaretRight size={14} className="text-muted-foreground" />
+            <CaretRight size={14} className="text-foreground" />
             <span className="text-muted-foreground flex items-center gap-1">
               <MagnifyingGlass size={14} />
               {query ? t('searchResults') : t('allProducts')}

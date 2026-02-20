@@ -280,7 +280,7 @@ export function MobileSearchOverlay({
               >
                 <MagnifyingGlass
                   size={18}
-                  className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none"
+                  className="absolute left-3 top-1/2 -translate-y-1/2 text-foreground pointer-events-none"
                   aria-hidden="true"
                 />
                 <FieldLabel htmlFor={searchInputId} className="sr-only">
@@ -306,7 +306,7 @@ export function MobileSearchOverlay({
                   <button
                     type="button"
                     onClick={handleClearInput}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 size-touch-xs rounded-full flex items-center justify-center bg-muted text-muted-foreground hover:bg-hover active:bg-active hover:text-foreground"
+                    className="absolute right-2 top-1/2 -translate-y-1/2 size-touch-xs rounded-full flex items-center justify-center bg-muted text-foreground hover:bg-hover active:bg-active"
                     aria-label={tSearch("clear")}
                   >
                     <X size={12} aria-hidden="true" />
@@ -379,7 +379,7 @@ export function MobileSearchOverlay({
                           <p className="text-sm font-medium text-foreground line-clamp-2">{product.title}</p>
                           <p className="text-sm font-bold text-price-sale mt-0.5">{formatPrice(product.price)}</p>
                         </div>
-                        <ArrowRight size={16} className="text-muted-foreground shrink-0" aria-hidden="true" />
+                        <ArrowRight size={16} className="text-foreground shrink-0" aria-hidden="true" />
                       </button>
                     </li>
                   ))}
@@ -427,7 +427,7 @@ export function MobileSearchOverlay({
                           >
                             <Clock size={18} className="text-muted-foreground shrink-0" aria-hidden="true" />
                             <span className="flex-1 text-base text-foreground">{search}</span>
-                            <ArrowRight size={16} className="text-muted-foreground shrink-0" aria-hidden="true" />
+                            <ArrowRight size={16} className="text-foreground shrink-0" aria-hidden="true" />
                           </button>
                         </li>
                       ))}
@@ -455,7 +455,7 @@ export function MobileSearchOverlay({
                             {index + 1}
                           </span>
                           <span className="flex-1 text-base text-foreground">{search}</span>
-                          <ArrowRight size={16} className="text-muted-foreground shrink-0" aria-hidden="true" />
+                          <ArrowRight size={16} className="text-foreground shrink-0" aria-hidden="true" />
                         </button>
                       </li>
                     ))}
