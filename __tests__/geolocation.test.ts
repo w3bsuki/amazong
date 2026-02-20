@@ -6,7 +6,6 @@ import {
   getCountryName,
   getZoneForCountry,
   getCompatibleZones,
-  type ShippingZoneCode
 } from '@/lib/geolocation'
 
 describe('lib/geolocation', () => {

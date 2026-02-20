@@ -404,7 +404,8 @@
                         "deals": "Deal listings"
                     },
                     "categoryPathTitle": "{parent} / {child}",
-                    "categoryPathDeepTitle": "{parent} / {child} / {leaf}"
+                    "categoryPathDeepTitle": "{parent} / {child} / {leaf}",
+                    "listingsCount": "{count, plural, one {# listing} other {# listings}}"
                 },
                 "actions": {
                     "browseOptions": "Browse options",

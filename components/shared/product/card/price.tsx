@@ -84,6 +84,33 @@ function ProductCardPrice({
     return formatCurrencyValue(originalPrice)
   }, [formatCurrencyValue, originalPrice])
 
+  const compareAndTrailing = (
+    <>
+      {/* Original price struck through */}
+      {hasDiscount && formattedOriginalPrice && (
+        <span
+          className={cn(
+            "line-through tabular-nums text-muted-foreground",
+            compact && !homeEmphasis ? "text-2xs" : "text-compact"
+          )}
+        >
+          {formattedOriginalPrice}
+        </span>
+      )}
+      {trailingLabel && (
+        discountAsBadge ? (
+          <MarketplaceBadge variant="discount" size="compact" className="shrink-0">
+            {trailingLabel}
+          </MarketplaceBadge>
+        ) : (
+          <span className="shrink-0 whitespace-nowrap text-compact font-semibold text-destructive">
+            {trailingLabel}
+          </span>
+        )
+      )}
+    </>
+  )
+
   const priceRow = (
     <div className={cn("flex items-baseline gap-1", homeEmphasis ? "flex-nowrap" : "flex-wrap")}>
       {/* Primary price */}
@@ -96,26 +123,7 @@ function ProductCardPrice({
       >
         {formattedPrice}
       </span>
-      {/* Original price struck through */}
-      {hasDiscount && formattedOriginalPrice && (
-        <span className={cn(
-          "line-through tabular-nums text-muted-foreground",
-          compact && !homeEmphasis ? "text-2xs" : "text-compact"
-        )}>
-          {formattedOriginalPrice}
-        </span>
-      )}
-      {trailingLabel && (
-        discountAsBadge ? (
-          <MarketplaceBadge variant="discount" size="compact" className="shrink-0">
-            {trailingLabel}
-          </MarketplaceBadge>
-        ) : (
-          <span className="shrink-0 whitespace-nowrap text-compact font-semibold text-destructive">
-            {trailingLabel}
-          </span>
-        )
-      )}
+      {compareAndTrailing}
     </div>
   )
 
@@ -128,25 +136,7 @@ function ProductCardPrice({
       >
         {formattedPrice}
       </MarketplaceBadge>
-      {hasDiscount && formattedOriginalPrice && (
-        <span className={cn(
-          "line-through tabular-nums text-muted-foreground",
-          compact && !homeEmphasis ? "text-2xs" : "text-compact"
-        )}>
-          {formattedOriginalPrice}
-        </span>
-      )}
-      {trailingLabel && (
-        discountAsBadge ? (
-          <MarketplaceBadge variant="discount" size="compact" className="shrink-0">
-            {trailingLabel}
-          </MarketplaceBadge>
-        ) : (
-          <span className="shrink-0 whitespace-nowrap text-compact font-semibold text-destructive">
-            {trailingLabel}
-          </span>
-        )
-      )}
+      {compareAndTrailing}
     </div>
   )
 

@@ -30,43 +30,13 @@ import { OrderListProductThumb } from "@/components/shared/order-list-item"
 import { OrderDetailSideCard } from "@/components/shared/order-detail/order-side-card"
 import { OrderDetailFeedback } from "./order-detail-feedback"
 import { OrderDetailItemsCard } from "./order-detail-items-card"
+import type { OrderDetailItem } from "./order-detail-types"
 
 export type OrderDetailContentServerActions = BuyerOrderActionsServerActions & {
   requestReturn: (
     orderItemId: string,
     reason: string
   ) => Promise<{ success: boolean; error?: string }>
-}
-
-interface OrderItem {
-  id: string
-  order_id: string
-  product_id: string
-  seller_id: string
-  quantity: number
-  price_at_purchase: number
-  status: OrderItemStatus | null
-  seller_received_at: string | null
-  tracking_number: string | null
-  shipping_carrier: string | null
-  shipped_at: string | null
-  delivered_at: string | null
-  product: {
-    id: string
-    title: string
-    slug: string | null
-    images: string[] | null
-    price: number
-  } | null
-  seller: {
-    id: string
-    store_name: string
-    username?: string | null
-    profile?: {
-      full_name: string | null
-      avatar_url: string | null
-    }
-  } | null
 }
 
 interface Order {
@@ -88,7 +58,7 @@ interface Order {
   } | null
   created_at: string
   stripe_payment_intent_id: string | null
-  order_items: OrderItem[]
+  order_items: OrderDetailItem[]
 }
 
 interface OrderDetailContentProps {
@@ -141,7 +111,7 @@ export function OrderDetailContent({ locale, order, existingSellerFeedbackSeller
   const tCommon = useTranslations("Common")
   const [isReturnDialogOpen, setIsReturnDialogOpen] = useState(false)
   const [returnReason, setReturnReason] = useState("")
-  const [selectedItem, setSelectedItem] = useState<OrderItem | null>(null)
+  const [selectedItem, setSelectedItem] = useState<OrderDetailItem | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   const dateLocale = locale === "bg" ? bg : enUS
@@ -170,7 +140,7 @@ export function OrderDetailContent({ locale, order, existingSellerFeedbackSeller
   }
 
   // Open tracking URL
-  const openTracking = (item: OrderItem) => {
+  const openTracking = (item: OrderDetailItem) => {
     if (!item.tracking_number || !item.shipping_carrier) return
 
     const carrier = CARRIERS[item.shipping_carrier.toLowerCase()]
@@ -215,7 +185,7 @@ export function OrderDetailContent({ locale, order, existingSellerFeedbackSeller
 
   const shippingAddress = order.shipping_address?.address
 
-  const openReturnDialog = (item: OrderItem) => {
+  const openReturnDialog = (item: OrderDetailItem) => {
     setSelectedItem(item)
     setIsReturnDialogOpen(true)
   }

@@ -229,43 +229,44 @@ export default function CheckoutPageClient({
   }
 
   const canCheckout = isAddressValid()
+  const checkoutLayoutProps: Parameters<typeof MobileCheckoutLayout>[0] = {
+    t,
+    tAuth,
+    checkoutNotice,
+    authLoginHref,
+    isAuthGateActive,
+    isAuthenticated,
+    isLoadingAddresses,
+    savedAddresses,
+    selectedAddressId,
+    setSelectedAddressId,
+    useNewAddress,
+    setUseNewAddress,
+    newAddress,
+    updateNewAddress,
+    handleBlur,
+    errors,
+    touched,
+    showAddressSelector,
+    setShowAddressSelector,
+    shippingMethod,
+    setShippingMethod,
+    formatPrice,
+    items,
+    totalItems,
+    subtotal,
+    shippingCost,
+    tax,
+    buyerProtectionFee,
+    total,
+    isProcessing,
+    canCheckout,
+    onCheckout: handleCheckout,
+  }
 
   return (
     <div>
-      <MobileCheckoutLayout
-        t={t}
-        tAuth={tAuth}
-        checkoutNotice={checkoutNotice}
-        authLoginHref={authLoginHref}
-        isAuthGateActive={isAuthGateActive}
-        isAuthenticated={isAuthenticated}
-        isLoadingAddresses={isLoadingAddresses}
-        savedAddresses={savedAddresses}
-        selectedAddressId={selectedAddressId}
-        setSelectedAddressId={setSelectedAddressId}
-        useNewAddress={useNewAddress}
-        setUseNewAddress={setUseNewAddress}
-        newAddress={newAddress}
-        updateNewAddress={updateNewAddress}
-        handleBlur={handleBlur}
-        errors={errors}
-        touched={touched}
-        showAddressSelector={showAddressSelector}
-        setShowAddressSelector={setShowAddressSelector}
-        shippingMethod={shippingMethod}
-        setShippingMethod={setShippingMethod}
-        formatPrice={formatPrice}
-        items={items}
-        totalItems={totalItems}
-        subtotal={subtotal}
-        shippingCost={shippingCost}
-        tax={tax}
-        buyerProtectionFee={buyerProtectionFee}
-        total={total}
-        isProcessing={isProcessing}
-        canCheckout={canCheckout}
-        onCheckout={handleCheckout}
-      />
+      <MobileCheckoutLayout {...checkoutLayoutProps} />
 
       <MobileStickyCheckoutFooter
         t={t}
@@ -280,40 +281,7 @@ export default function CheckoutPageClient({
         isAtBottom={isAtBottom}
       />
 
-      <DesktopCheckoutLayout
-        t={t}
-        tAuth={tAuth}
-        checkoutNotice={checkoutNotice}
-        authLoginHref={authLoginHref}
-        isAuthGateActive={isAuthGateActive}
-        isAuthenticated={isAuthenticated}
-        isLoadingAddresses={isLoadingAddresses}
-        savedAddresses={savedAddresses}
-        selectedAddressId={selectedAddressId}
-        setSelectedAddressId={setSelectedAddressId}
-        useNewAddress={useNewAddress}
-        setUseNewAddress={setUseNewAddress}
-        newAddress={newAddress}
-        updateNewAddress={updateNewAddress}
-        handleBlur={handleBlur}
-        errors={errors}
-        touched={touched}
-        showAddressSelector={showAddressSelector}
-        setShowAddressSelector={setShowAddressSelector}
-        shippingMethod={shippingMethod}
-        setShippingMethod={setShippingMethod}
-        formatPrice={formatPrice}
-        items={items}
-        totalItems={totalItems}
-        subtotal={subtotal}
-        shippingCost={shippingCost}
-        tax={tax}
-        buyerProtectionFee={buyerProtectionFee}
-        total={total}
-        isProcessing={isProcessing}
-        canCheckout={canCheckout}
-        onCheckout={handleCheckout}
-      />
+      <DesktopCheckoutLayout {...checkoutLayoutProps} />
     </div>
   )
 }

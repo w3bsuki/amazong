@@ -2,6 +2,7 @@ import { OnboardingProvider } from "./_providers/onboarding-provider";
 import { StorefrontLayout } from "../_components/storefront-layout";
 import { RouteIntlProvider } from "../_providers/route-intl-provider";
 import { MAIN_ROUTE_INTL_NAMESPACES, ROOT_INTL_NAMESPACES } from "@/lib/i18n/scoped-messages";
+import { setRequestLocale } from "next-intl/server";
 
 /**
  * Main Layout
@@ -21,6 +22,7 @@ export default async function MainLayout({
     params: Promise<{ locale: string }>;
 }) {
     const { locale } = await params;
+    setRequestLocale(locale);
     const localizedRouteChildren = (
         <RouteIntlProvider
             locale={locale}

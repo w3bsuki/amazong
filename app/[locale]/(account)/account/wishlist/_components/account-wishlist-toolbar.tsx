@@ -26,6 +26,8 @@ export type WishlistCategory = {
 
 type StockFilter = "all" | "in-stock" | "out-of-stock"
 
+type WishlistUrlParams = { q?: string | null; category?: string | null; stock?: StockFilter | null }
+
 interface AccountWishlistToolbarProps {
   locale: string
   categories: WishlistCategory[]
@@ -35,6 +37,78 @@ interface AccountWishlistToolbarProps {
   totalItems: number
   filteredCount: number
   className?: string
+}
+
+function WishlistSearchClearButton({
+  ariaLabel,
+  onClick,
+}: {
+  ariaLabel: string
+  onClick: () => void
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
+      aria-label={ariaLabel}
+    >
+      <IconX className="size-4" />
+    </button>
+  )
+}
+
+function StockFilterDropdownContent({
+  widthClassName,
+  labels,
+  stockFilter,
+  query,
+  categoryFilter,
+  setStockFilter,
+  applyUrl,
+}: {
+  widthClassName: string
+  labels: { all: string; inStock: string; outOfStock: string }
+  stockFilter: StockFilter
+  query: string
+  categoryFilter: string | null
+  setStockFilter: (next: StockFilter) => void
+  applyUrl: (next: WishlistUrlParams) => void
+}) {
+  return (
+    <DropdownMenuContent align="end" className={widthClassName}>
+      <DropdownMenuItem
+        onClick={() => {
+          setStockFilter("all")
+          applyUrl({ q: query, category: categoryFilter, stock: "all" })
+        }}
+      >
+        <span className="flex-1">{labels.all}</span>
+        {stockFilter === "all" && <IconCheck className="size-4 text-primary" />}
+      </DropdownMenuItem>
+      <DropdownMenuSeparator />
+      <DropdownMenuItem
+        onClick={() => {
+          setStockFilter("in-stock")
+          applyUrl({ q: query, category: categoryFilter, stock: "in-stock" })
+        }}
+      >
+        <IconPackage className="size-4 mr-2 text-success" />
+        <span className="flex-1">{labels.inStock}</span>
+        {stockFilter === "in-stock" && <IconCheck className="size-4 text-primary" />}
+      </DropdownMenuItem>
+      <DropdownMenuItem
+        onClick={() => {
+          setStockFilter("out-of-stock")
+          applyUrl({ q: query, category: categoryFilter, stock: "out-of-stock" })
+        }}
+      >
+        <IconPackageOff className="size-4 mr-2 text-warning" />
+        <span className="flex-1">{labels.outOfStock}</span>
+        {stockFilter === "out-of-stock" && <IconCheck className="size-4 text-primary" />}
+      </DropdownMenuItem>
+    </DropdownMenuContent>
+  )
 }
 
 export function AccountWishlistToolbar({
@@ -77,7 +151,7 @@ export function AccountWishlistToolbar({
     [locale]
   )
 
-  const buildUrl = (next: { q?: string | null; category?: string | null; stock?: StockFilter | null }) => {
+  const buildUrl = (next: WishlistUrlParams) => {
     const params = new URLSearchParams(searchParams?.toString() || "")
 
     // Handle search query
@@ -100,12 +174,26 @@ export function AccountWishlistToolbar({
     return qs ? `${pathname}?${qs}` : pathname
   }
 
-  const applyUrl = (next: { q?: string | null; category?: string | null; stock?: StockFilter | null }) => {
+  const applyUrl = (next: WishlistUrlParams) => {
     const url = buildUrl(next)
     startTransition(() => {
       router.replace(url, { scroll: false })
     })
   }
+
+  const debouncedSearchStateRef = useRef({
+    applyUrl,
+    categoryFilter,
+    stockFilter,
+  })
+
+  useEffect(() => {
+    debouncedSearchStateRef.current = {
+      applyUrl,
+      categoryFilter,
+      stockFilter,
+    }
+  }, [applyUrl, categoryFilter, stockFilter])
 
   // Debounced search
   useEffect(() => {
@@ -115,11 +203,11 @@ export function AccountWishlistToolbar({
     }
 
     const handle = window.setTimeout(() => {
-      applyUrl({ q: query, category: categoryFilter, stock: stockFilter })
+      const state = debouncedSearchStateRef.current
+      state.applyUrl({ q: query, category: state.categoryFilter, stock: state.stockFilter })
     }, 300)
 
     return () => window.clearTimeout(handle)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [query])
 
   // Sync with URL params
@@ -156,17 +244,13 @@ export function AccountWishlistToolbar({
             aria-label={labels.search}
           />
           {query && (
-            <button
-              type="button"
+            <WishlistSearchClearButton
+              ariaLabel={locale === "bg" ? "Изчисти търсенето" : "Clear search"}
               onClick={() => {
                 setQuery("")
                 applyUrl({ q: null, category: categoryFilter, stock: stockFilter })
               }}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
-              aria-label={locale === "bg" ? "Изчисти търсенето" : "Clear search"}
-            >
-              <IconX className="size-4" />
-            </button>
+            />
           )}
           {isPending && (
             <div className="absolute right-3 top-1/2 -translate-y-1/2 size-4 animate-spin rounded-full border-2 border-border border-t-transparent" />
@@ -254,38 +338,15 @@ export function AccountWishlistToolbar({
                 <IconChevronDown className="size-3" />
               </button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-40">
-              <DropdownMenuItem
-                onClick={() => {
-                  setStockFilter("all")
-                  applyUrl({ q: query, category: categoryFilter, stock: "all" })
-                }}
-              >
-                <span className="flex-1">{labels.all}</span>
-                {stockFilter === "all" && <IconCheck className="size-4 text-primary" />}
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem
-                onClick={() => {
-                  setStockFilter("in-stock")
-                  applyUrl({ q: query, category: categoryFilter, stock: "in-stock" })
-                }}
-              >
-                <IconPackage className="size-4 mr-2 text-success" />
-                <span className="flex-1">{labels.inStock}</span>
-                {stockFilter === "in-stock" && <IconCheck className="size-4 text-primary" />}
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={() => {
-                  setStockFilter("out-of-stock")
-                  applyUrl({ q: query, category: categoryFilter, stock: "out-of-stock" })
-                }}
-              >
-                <IconPackageOff className="size-4 mr-2 text-warning" />
-                <span className="flex-1">{labels.outOfStock}</span>
-                {stockFilter === "out-of-stock" && <IconCheck className="size-4 text-primary" />}
-              </DropdownMenuItem>
-            </DropdownMenuContent>
+            <StockFilterDropdownContent
+              widthClassName="w-40"
+              labels={labels}
+              stockFilter={stockFilter}
+              query={query}
+              categoryFilter={categoryFilter}
+              setStockFilter={setStockFilter}
+              applyUrl={applyUrl}
+            />
           </DropdownMenu>
         </div>
       </div>
@@ -303,17 +364,13 @@ export function AccountWishlistToolbar({
             aria-label={labels.search}
           />
           {query && (
-            <button
-              type="button"
+            <WishlistSearchClearButton
+              ariaLabel={locale === "bg" ? "Изчисти търсенето" : "Clear search"}
               onClick={() => {
                 setQuery("")
                 applyUrl({ q: null, category: categoryFilter, stock: stockFilter })
               }}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
-              aria-label={locale === "bg" ? "Изчисти търсенето" : "Clear search"}
-            >
-              <IconX className="size-4" />
-            </button>
+            />
           )}
           {isPending && !query && (
             <div className="absolute right-3 top-1/2 -translate-y-1/2 size-4 animate-spin rounded-full border-2 border-border border-t-transparent" />
@@ -387,38 +444,15 @@ export function AccountWishlistToolbar({
               <IconChevronDown className="size-4" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-44">
-            <DropdownMenuItem
-              onClick={() => {
-                setStockFilter("all")
-                applyUrl({ q: query, category: categoryFilter, stock: "all" })
-              }}
-            >
-              <span className="flex-1">{labels.all}</span>
-              {stockFilter === "all" && <IconCheck className="size-4 text-primary" />}
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem
-              onClick={() => {
-                setStockFilter("in-stock")
-                applyUrl({ q: query, category: categoryFilter, stock: "in-stock" })
-              }}
-            >
-              <IconPackage className="size-4 mr-2 text-success" />
-              <span className="flex-1">{labels.inStock}</span>
-              {stockFilter === "in-stock" && <IconCheck className="size-4 text-primary" />}
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={() => {
-                setStockFilter("out-of-stock")
-                applyUrl({ q: query, category: categoryFilter, stock: "out-of-stock" })
-              }}
-            >
-              <IconPackageOff className="size-4 mr-2 text-warning" />
-              <span className="flex-1">{labels.outOfStock}</span>
-              {stockFilter === "out-of-stock" && <IconCheck className="size-4 text-primary" />}
-            </DropdownMenuItem>
-          </DropdownMenuContent>
+          <StockFilterDropdownContent
+            widthClassName="w-44"
+            labels={labels}
+            stockFilter={stockFilter}
+            query={query}
+            categoryFilter={categoryFilter}
+            setStockFilter={setStockFilter}
+            applyUrl={applyUrl}
+          />
         </DropdownMenu>
 
         {/* Clear filters */}

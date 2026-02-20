@@ -254,10 +254,7 @@ export function MobileTabBar() {
       testId: "mobile-tab-sell",
       ariaCurrent: isSellActive ? "page" : undefined,
       icon: (
-        <MobileBottomNavCoreAction
-          state={isSellActive ? "active" : "inactive"}
-          data-testid="mobile-tab-sell-core"
-        >
+        <MobileBottomNavCoreAction data-testid="mobile-tab-sell-core">
           <Plus strokeWidth={2.5} className="size-(--size-icon-lg)" />
         </MobileBottomNavCoreAction>
       ),
@@ -283,7 +280,7 @@ export function MobileTabBar() {
           {unreadCount > 0 && (
             <CountBadge
               count={unreadCount}
-              className="absolute -top-1.5 -right-2.5 h-4 min-w-4 bg-notification px-0.5 text-2xs text-primary-foreground ring-1 ring-background"
+              className="absolute -top-1.5 -right-2.5 h-4 min-w-4 bg-notification px-0.5 text-2xs text-primary-foreground ring-2 ring-background"
               aria-hidden="true"
             />
           )}
@@ -313,15 +310,16 @@ export function MobileTabBar() {
             avatarUrl={profileAvatarValue}
             size="sm"
             className={cn(
-              "size-7 rounded-full ring-1.5",
-              isProfileActive ? "ring-primary" : "ring-border-subtle"
+              "size-7 rounded-full transition-all",
+              "ring-2 ring-offset-2 ring-offset-background",
+              isProfileActive ? "ring-primary" : "ring-transparent"
             )}
             fallbackClassName="bg-muted text-2xs font-semibold text-muted-foreground"
           />
           {profileBadgeCount > 0 && (
             <CountBadge
               count={profileBadgeCount}
-              className="absolute -top-0.5 -right-0.5 h-4 min-w-4 bg-notification text-primary-foreground ring-1.5 ring-background px-0.5 text-2xs"
+              className="absolute -top-1 -right-1.5 h-4 min-w-4 bg-notification text-primary-foreground ring-2 ring-background px-0.5 text-2xs"
               aria-hidden="true"
             />
           )}

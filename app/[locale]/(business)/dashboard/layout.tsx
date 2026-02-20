@@ -1,6 +1,5 @@
 import { BusinessSidebar } from "../_components/business-sidebar"
 import { BusinessHeader } from "../_components/business-header"
-import { Suspense } from "react"
 import { setRequestLocale } from "next-intl/server"
 import { 
   requireBusinessSeller, 
@@ -27,9 +26,7 @@ export default async function BusinessDashboardLayout({
 
   return (
     <FullRouteIntlProvider locale={locale}>
-      <Suspense fallback={null}>
-        <BusinessDashboardLayoutInner>{children}</BusinessDashboardLayoutInner>
-      </Suspense>
+      <BusinessDashboardLayoutInner>{children}</BusinessDashboardLayoutInner>
     </FullRouteIntlProvider>
   )
 }
@@ -65,30 +62,26 @@ async function BusinessDashboardLayoutInner({ children }: { children: React.Reac
         } as React.CSSProperties
       }
     >
-      <Suspense fallback={null}>
-        <BusinessSidebar 
-          variant="inset" 
-          storeName={businessSeller.store_name}
-          pendingOrdersCount={tasks.unfulfilled}
-          subscriptionTier={subscriptionTier}
-          subscriptionName={subscriptionName}
-          hasDashboardAccess={hasAccess}
-          user={{
-            name: businessSeller.business_name || businessSeller.store_name,
-            email: businessSeller.email,
-            avatar: businessSeller.avatar_url || "/avatars/business.jpg",
-          }}
-        />
-      </Suspense>
+      <BusinessSidebar 
+        variant="inset" 
+        storeName={businessSeller.store_name}
+        pendingOrdersCount={tasks.unfulfilled}
+        subscriptionTier={subscriptionTier}
+        subscriptionName={subscriptionName}
+        hasDashboardAccess={hasAccess}
+        user={{
+          name: businessSeller.business_name || businessSeller.store_name,
+          email: businessSeller.email,
+          avatar: businessSeller.avatar_url || "/avatars/business.jpg",
+        }}
+      />
       <SidebarInset>
-        <Suspense fallback={null}>
-          <BusinessHeader 
-            storeName={businessSeller.store_name}
-            isVerified={businessSeller.is_verified_business}
-            subscriptionTier={subscriptionTier}
-            hasDashboardAccess={hasAccess}
-          />
-        </Suspense>
+        <BusinessHeader 
+          storeName={businessSeller.store_name}
+          isVerified={businessSeller.is_verified_business}
+          subscriptionTier={subscriptionTier}
+          hasDashboardAccess={hasAccess}
+        />
         <div className="flex flex-1 flex-col">
           <div className="@container/main flex flex-1 flex-col gap-2">
             {children}

@@ -143,52 +143,27 @@ export async function GET(request: NextRequest) {
       categories(id,slug,name,name_bg,icon)
     `
 
-    if (category) {
-      // =================================================================
-      // HIERARCHICAL CATEGORY QUERY
-      // Uses category_ancestors array with GIN index for fast containment
-      // queries. Returns ALL products where the category is in their
-      // ancestor chain (Fashion -> Men -> Clothing -> T-shirts).
-      // =================================================================
-      
-      // Step 1: Get category UUID from slug
-      const { data: categoryData, error: categoryError } = await supabase
-        .from('categories')
-        .select('id')
-        .eq('slug', category)
-        .limit(1)
-        .maybeSingle()
-      
-      if (categoryError) {
-        console.error("[API] Category lookup error:", categoryError.message)
-        return NextResponse.json({ 
-          products: [], 
-          hasMore: false,
-          error: categoryError.message 
-        }, { status: 500 })
-      }
-
-      if (!categoryData) {
-        // Category not found - return empty
-        return cachedJsonResponse({
-          products: [],
-          hasMore: false,
-          totalCount: 0,
-          page,
-        })
-      }
-
-      // Step 2: Query products using .filter() with raw PostgREST syntax
-      // 'cs' = contains operator (@>), works with array columns
-      // This uses the GIN index on category_ancestors for efficient lookups
+    const createProductsQuery = (categoryId: string | null) => {
       let query = supabase
         .from('products')
         .select(productSelect, { count: 'exact' })
-        .filter('category_ancestors', 'cs', `{${categoryData.id}}`)
-        // Public browsing surfaces must not show non-active listings.
-        // Temporary legacy allowance: status can be NULL for older rows.
-        .or('status.eq.active,status.is.null')
 
+      if (categoryId) {
+        // 'cs' = contains operator (@>), works with array columns
+        // This uses the GIN index on category_ancestors for efficient lookups
+        query = query.filter('category_ancestors', 'cs', `{${categoryId}}`)
+      }
+
+      // Public browsing surfaces must not show non-active listings.
+      // Temporary legacy allowance: status can be NULL for older rows.
+      query = query.or('status.eq.active,status.is.null')
+
+      return query
+    }
+
+    type ProductsQuery = ReturnType<typeof createProductsQuery>
+
+    const applyCommonQueryModifiers = (query: ProductsQuery) => {
       // Feed type filters: promoted = active boosts only (is_boosted=true AND boost_expires_at > now)
       if (type === 'promoted') {
         query = query.eq('is_boosted', true)
@@ -234,105 +209,99 @@ export async function GET(request: NextRequest) {
           query = query.order('created_at', { ascending: false })
       }
 
-      const { data, error, count } = await query
-        .range(offset, offset + safeLimit - 1)
+      return query
+    }
+
+    type RunProductsQueryResult =
+      | { ok: true; rows: ProductRowWithRelations[]; totalCount: number }
+      | { ok: false; response: NextResponse }
+
+    const runProductsQuery = async (query: ProductsQuery, errorLogPrefix: string): Promise<RunProductsQueryResult> => {
+      const { data, error, count } = await query.range(offset, offset + safeLimit - 1)
 
       if (error) {
         // Range errors (requesting beyond available data) return malformed errors.
         // If page > 1 and we get an error, treat as empty results (hasMore=false).
         if (page > 1) {
-          productRows = []
-          totalCount = count ?? 0
-        } else {
-          console.error("[API] Products by category error:", error)
-          return NextResponse.json({ 
+          return { ok: true, rows: [], totalCount: count ?? 0 }
+        }
+
+        console.error(errorLogPrefix, error)
+        return {
+          ok: false,
+          response: NextResponse.json({ 
             products: [], 
             hasMore: false,
             error: typeof error.message === 'string' ? error.message : 'Query failed'
           }, { status: 500 })
         }
-      } else {
-        productRows = (data ?? []) as unknown as ProductRowWithRelations[]
-        totalCount = count ?? 0
       }
+
+      return {
+        ok: true,
+        rows: (data ?? []) as unknown as ProductRowWithRelations[],
+        totalCount: count ?? 0,
+      }
+    }
+
+    if (category) {
+      // =================================================================
+      // HIERARCHICAL CATEGORY QUERY
+      // Uses category_ancestors array with GIN index for fast containment
+      // queries. Returns ALL products where the category is in their
+      // ancestor chain (Fashion -> Men -> Clothing -> T-shirts).
+      // =================================================================
+      
+      // Step 1: Get category UUID from slug
+      const { data: categoryData, error: categoryError } = await supabase
+        .from('categories')
+        .select('id')
+        .eq('slug', category)
+        .limit(1)
+        .maybeSingle()
+      
+      if (categoryError) {
+        console.error("[API] Category lookup error:", categoryError.message)
+        return NextResponse.json({ 
+          products: [], 
+          hasMore: false,
+          error: categoryError.message 
+        }, { status: 500 })
+      }
+
+      if (!categoryData) {
+        // Category not found - return empty
+        return cachedJsonResponse({
+          products: [],
+          hasMore: false,
+          totalCount: 0,
+          page,
+        })
+      }
+
+      const categoryResult = await runProductsQuery(
+        applyCommonQueryModifiers(createProductsQuery(categoryData.id)),
+        "[API] Products by category error:"
+      )
+
+      if (!categoryResult.ok) return categoryResult.response
+
+      productRows = categoryResult.rows
+      totalCount = categoryResult.totalCount
     } else {
       // =================================================================
       // ALL PRODUCTS (no category filter)
       // Simple query with pagination
       // =================================================================
-      let query = supabase
-        .from('products')
-        .select(productSelect, { count: 'exact' })
-        // Public browsing surfaces must not show non-active listings.
-        // Temporary legacy allowance: status can be NULL for older rows.
-        .or('status.eq.active,status.is.null')
+      const newestResult = await runProductsQuery(
+        applyCommonQueryModifiers(createProductsQuery(null)),
+        "[API] Newest products error:"
+      )
 
-      // Feed type filters: promoted = active boosts only (is_boosted=true AND boost_expires_at > now)
-      if (type === 'promoted') {
-        query = query.eq('is_boosted', true)
-        query = query.gt('boost_expires_at', new Date().toISOString())
-      }
+      if (!newestResult.ok) return newestResult.response
 
-      // Base filters
-      if (minPrice) query = query.gte('price', Number(minPrice))
-      if (maxPrice) query = query.lte('price', Number(maxPrice))
-      if (minRating) query = query.gte('rating', Number(minRating))
-      if (availability === 'instock') query = query.gt('stock', 0)
-      if (deals) {
-        query = query.or('and(is_on_sale.eq.true,sale_percent.gt.0),list_price.not.is.null')
-      }
-      if (effectiveCity) {
-        // Nearby mode on Home resolves to the same city constraint.
-        query = query.ilike("seller_city", effectiveCity)
-      }
-
-      // Attribute filters
-      for (const [attrName, values] of Object.entries(attributeFilters)) {
-        if (values.length === 1) {
-          query = query.contains('attributes', { [attrName]: values[0] })
-        } else if (values.length > 1) {
-          query = query.in(`attributes->>${attrName}`, values)
-        }
-      }
-
-      // Sorting
-      switch (sort) {
-        case 'price-asc':
-          query = query.order('price', { ascending: true })
-          break
-        case 'price-desc':
-          query = query.order('price', { ascending: false })
-          break
-        case 'rating':
-          query = query.order('rating', { ascending: false, nullsFirst: false })
-          query = query.order('review_count', { ascending: false })
-          break
-        case 'newest':
-        default:
-          query = query.order('created_at', { ascending: false })
-      }
-
-      const { data, error, count } = await query
-        .range(offset, offset + safeLimit - 1)
-
-      if (error) {
-        // Range errors (requesting beyond available data) return malformed errors.
-        // If page > 1 and we get an error, treat as empty results (hasMore=false).
-        if (page > 1) {
-          productRows = []
-          totalCount = count ?? 0
-        } else {
-          console.error("[API] Newest products error:", error)
-          return NextResponse.json({ 
-            products: [], 
-            hasMore: false,
-            error: typeof error.message === 'string' ? error.message : 'Query failed'
-          }, { status: 500 })
-        }
-      } else {
-        productRows = (data ?? []) as unknown as ProductRowWithRelations[]
-        totalCount = count ?? 0
-      }
+      productRows = newestResult.rows
+      totalCount = newestResult.totalCount
     }
 
     // Transform to UI format using shared normalizer

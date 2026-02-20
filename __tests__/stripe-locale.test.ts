@@ -5,7 +5,6 @@ import {
   buildLocaleUrl,
   inferLocaleFromRequest,
   inferLocaleFromHeaders,
-  type SupportedLocale,
 } from '@/lib/stripe-locale'
 
 describe('lib/stripe-locale', () => {
@@ -26,6 +25,7 @@ describe('lib/stripe-locale', () => {
 
     it('defaults to "en" for null/undefined/empty', () => {
       expect(normalizeLocale(null)).toBe('en')
+      // eslint-disable-next-line unicorn/no-useless-undefined -- explicit undefined exercises boundary handling
       expect(normalizeLocale(undefined)).toBe('en')
       expect(normalizeLocale('')).toBe('en')
     })
@@ -134,6 +134,7 @@ describe('lib/stripe-locale', () => {
       expect(buildLocaleUrl('account/plans', null)).toBe(
         'https://treido.eu/en/account/plans'
       )
+      // eslint-disable-next-line unicorn/no-useless-undefined -- explicit undefined exercises boundary handling
       expect(buildLocaleUrl('account/plans', undefined)).toBe(
         'https://treido.eu/en/account/plans'
       )

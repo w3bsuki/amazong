@@ -6,7 +6,7 @@ import { CheckCircle, UserCheck } from "lucide-react"
 import { type OrderItemStatus } from "@/lib/order-status"
 import { useRouter } from "@/i18n/routing"
 import { toast } from "sonner"
-import { StarRatingDialog } from "../../../../_components/orders/star-rating-dialog"
+import { StarRatingDialogShell } from "../../../../_components/orders/star-rating-dialog-shell"
 
 type SubmitBuyerFeedbackInput = {
   buyer_id: string
@@ -137,16 +137,11 @@ export function SellerRateBuyerActions({
       )}
 
       {/* Rating Dialog */}
-      <StarRatingDialog
+      <StarRatingDialogShell
         open={showRatingDialog}
         onOpenChange={setShowRatingDialog}
         onSubmit={handleSubmitRating}
-        title={t.ratingTitle}
-        description={t.ratingDescription}
-        commentLabel={t.commentLabel}
-        commentPlaceholder={t.commentPlaceholder}
-        submitLabel={t.submitRating}
-        cancelLabel={t.cancel}
+        copy={t}
         locale={locale}
         isLoading={isPending}
       />

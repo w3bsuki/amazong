@@ -13,17 +13,19 @@ Hidden on `md:` breakpoint and above (desktop uses header navigation instead).
 - Built as a compound component (shadcn pattern): `MobileBottomNavRoot` > `MobileBottomNavDock` > `MobileBottomNavList` > `MobileBottomNavItem`
 - Uses `cva` (class-variance-authority) for state variants: `active` / `inactive`
 - **Active icon style**: Filled/outline toggle — active icons use `fill="currentColor"`, inactive use outline (`strokeWidth={1.5}`)
+- **Active indicator**: Top pill (`before:` pseudo, `h-0.5 w-5→w-6` on active, `bg-nav-active`) above the active icon — animates width on state change
 - **Active color**: Primary blue (`text-nav-active` → maps to `--primary`) for active icon + label
-- **Sell button**: `MobileBottomNavCoreAction` — inactive: dark circle (`bg-foreground`) with blue ring (`ring-primary`), white plus icon. Active: blue circle (`bg-primary`) with ring offset
+- **Sell button**: `MobileBottomNavCoreAction` — `size-13` floating FAB with `shadow-cta`, `ring-4 ring-background` visual gap. inactive: dark circle (`bg-foreground`); active: blue (`bg-primary`). Has `active:scale-90` tap feedback.
+- **Dock surface**: Glass effect — `bg-background/90 backdrop-blur-xl` + `shadow-nav` (upward-facing shadow token from globals.css)
 - Safe area padding via `pb-safe` utility for iOS notch/home indicator
 - Fixed positioning with `z-50`, uses `pointer-events-none` on root (pointer events restored on dock)
-- Height token: `--spacing-bottom-nav` (3rem / 48px), referenced in layout utilities
+- Height token: `--spacing-bottom-nav` (4rem / 64px), referenced in layout utilities
 
 ## Conventions
-- Tokens: `text-nav-active`, `text-nav-inactive`, `border-border-subtle`, `bg-background`
-- Labels: `text-2xs font-medium` (inactive), `text-2xs font-semibold` (active)
-- No animations/transitions — instant state changes
-- Touch targets: grid cols ensure each tab is at least 44px wide
+- Tokens: `text-nav-active`, `text-nav-inactive`, `text-nav-indicator` (pill), `border-border-subtle`, `bg-background`, `shadow-nav`, `shadow-cta`
+- Labels: `text-2xs font-medium tracking-wider` (inactive), `text-2xs font-semibold tracking-wide` (active)
+- Transitions: `duration-150` on item (scale + color), `duration-200` on indicator pill (width + color)
+- Touch targets: grid cols ensure each tab is at least 44px wide; `active:scale-95` on default items, `active:scale-90` on sell FAB
 - Icons: Lucide (`House`, `LayoutGrid`, `MessageCircle`, `Plus`), consistent 24px sizing (`--size-icon-tab-bar`)
 - Unread badge on Chat from `MessageContext`, notification badge on Profile from `useNotificationCount`
 

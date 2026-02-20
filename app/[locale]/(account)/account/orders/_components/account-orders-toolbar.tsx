@@ -75,6 +75,12 @@ export function AccountOrdersToolbar({
     })
   }
 
+  const debouncedSearchStateRef = useRef({ applyUrl, status })
+
+  useEffect(() => {
+    debouncedSearchStateRef.current = { applyUrl, status }
+  }, [applyUrl, status])
+
   useEffect(() => {
     if (!didMount.current) {
       didMount.current = true
@@ -82,11 +88,11 @@ export function AccountOrdersToolbar({
     }
 
     const handle = window.setTimeout(() => {
-      applyUrl({ q: query, status })
+      const state = debouncedSearchStateRef.current
+      state.applyUrl({ q: query, status: state.status })
     }, 250)
 
     return () => window.clearTimeout(handle)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [query])
 
   useEffect(() => {

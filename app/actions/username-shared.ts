@@ -1,77 +1,19 @@
 import { requireAuth } from "@/lib/auth/require-auth"
 import type { SupabaseClient } from "@supabase/supabase-js"
 import type { Database } from "@/lib/supabase/database.types"
+import { createUsernameSchema } from "@/lib/validation/username"
 import { z } from "zod"
 
-export const usernameSchema = z
-  .string()
-  .min(3, "Username must be at least 3 characters")
-  .max(30, "Username must be less than 30 characters")
-  .regex(/^[a-z0-9]/, "Username must start with a letter or number")
-  .regex(/^[a-z0-9_]+$/, "Username can only contain lowercase letters, numbers, and underscores")
-  .refine((value) => !value.includes("__"), "Username cannot have consecutive underscores")
-  .refine((value) => !value.endsWith("_"), "Username cannot end with an underscore")
+export { RESERVED_USERNAMES } from "@/lib/validation/username"
 
-export const RESERVED_USERNAMES = [
-  "admin",
-  "administrator",
-  "support",
-  "help",
-  "info",
-  "contact",
-  "treido",
-  "store",
-  "shop",
-  "seller",
-  "buyer",
-  "user",
-  "users",
-  "account",
-  "settings",
-  "profile",
-  "members",
-  "member",
-  "api",
-  "auth",
-  "login",
-  "signup",
-  "register",
-  "logout",
-  "signout",
-  "home",
-  "index",
-  "about",
-  "terms",
-  "privacy",
-  "legal",
-  "search",
-  "explore",
-  "discover",
-  "trending",
-  "popular",
-  "checkout",
-  "cart",
-  "order",
-  "orders",
-  "payment",
-  "payments",
-  "sell",
-  "selling",
-  "buy",
-  "buying",
-  "deals",
-  "offers",
-  "messages",
-  "notifications",
-  "inbox",
-  "outbox",
-  "test",
-  "demo",
-  "example",
-  "null",
-  "undefined",
-  "root",
-]
+export const usernameSchema = createUsernameSchema({
+  min: "Username must be at least 3 characters",
+  max: "Username must be less than 30 characters",
+  start: "Username must start with a letter or number",
+  charset: "Username can only contain lowercase letters, numbers, and underscores",
+  noConsecutiveUnderscores: "Username cannot have consecutive underscores",
+  noTrailingUnderscore: "Username cannot end with an underscore",
+})
 
 export const publicProfileSchema = z.object({
   display_name: z.string().max(50, "Display name must be less than 50 characters").optional().nullable(),
@@ -127,4 +69,3 @@ export async function requireUsernameAuth(
     supabase: auth.supabase,
   }
 }
-

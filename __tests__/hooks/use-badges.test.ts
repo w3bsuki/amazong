@@ -1,5 +1,6 @@
 import { describe, expect, it, beforeEach, afterEach, vi } from 'vitest'
 import { renderHook, act, waitFor } from '@testing-library/react'
+// eslint-disable-next-line no-restricted-imports -- test intentionally imports route-private hook
 import { useBadges } from '@/app/[locale]/(account)/account/_components/use-badges'
 
 // Mock global fetch

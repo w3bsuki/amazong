@@ -5,7 +5,10 @@ import { afterEach, describe, expect, test, vi } from "vitest"
 import { ProductMiniCard } from "@/components/shared/product/card/mini"
 
 vi.mock("next/image", () => ({
-  default: ({ alt, src, ...props }: { alt: string; src: string }) => <img alt={alt} src={src} {...props} />,
+  default: ({ alt, src, ...props }: { alt: string; src: string }) => (
+    // eslint-disable-next-line @next/next/no-img-element -- next/image is mocked with <img> in unit tests
+    <img alt={alt} src={src} {...props} />
+  ),
 }))
 
 vi.mock("@/i18n/routing", () => ({

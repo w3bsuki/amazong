@@ -3,6 +3,8 @@ import path from "node:path";
 import process from "node:process";
 import { spawnSync } from "node:child_process";
 
+import { collectFilesInDirs, DEFAULT_EXCLUDED_DIR_NAMES } from "./lib/file-walker.mjs";
+
 const ROOT = process.cwd();
 const DEFAULT_BASELINE_PATH = path.join("scripts", "architecture-gate.baseline.json");
 const TMP_JSCPD_DIR = path.join(".tmp", "architecture-jscpd");
@@ -10,12 +12,7 @@ const SCAN_DIRS = ["app", "components", "lib", "hooks"];
 const PAGE_ROOT = path.join("app", "[locale]");
 
 const EXCLUDED_DIRS = new Set([
-  ".git",
-  ".next",
-  "node_modules",
-  "dist",
-  "build",
-  "coverage",
+  ...DEFAULT_EXCLUDED_DIR_NAMES,
   "playwright-report",
   "test-results",
   "blob-report",
@@ -27,6 +24,8 @@ const VALID_SECTIONS = new Set(["all", "client-boundary", "oversized", "routes",
 function toPosix(filePath) {
   return filePath.replaceAll(path.sep, "/");
 }
+
+const INCLUDE_EXTENSIONS = new Set([".ts", ".tsx"]);
 
 function parseArgs() {
   const args = process.argv.slice(2);
@@ -53,34 +52,13 @@ function parseArgs() {
   return { section, baseline, writePath, updateBaseline, gate, skipDuplicates };
 }
 
-function walkDir(absDir, relDir, outFiles) {
-  if (!fs.existsSync(absDir)) return;
-  const entries = fs.readdirSync(absDir, { withFileTypes: true });
-
-  for (const entry of entries) {
-    const abs = path.join(absDir, entry.name);
-    const rel = path.join(relDir, entry.name);
-    const relPosix = toPosix(rel);
-
-    if (entry.isDirectory()) {
-      if (EXCLUDED_DIRS.has(entry.name)) continue;
-      walkDir(abs, rel, outFiles);
-      continue;
-    }
-
-    if (entry.isFile()) {
-      outFiles.push(relPosix);
-    }
-  }
-}
-
 function listFilesInDirs(dirs) {
-  const files = [];
-  for (const dir of dirs) {
-    const abs = path.join(ROOT, dir);
-    walkDir(abs, dir, files);
-  }
-  return files;
+  return collectFilesInDirs({
+    projectRoot: ROOT,
+    dirs,
+    includeExt: INCLUDE_EXTENSIONS,
+    excludedDirNames: EXCLUDED_DIRS,
+  }).map((abs) => toPosix(path.relative(ROOT, abs)));
 }
 
 function readTextFile(relPath) {

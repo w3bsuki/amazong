@@ -158,7 +158,7 @@ test.describe('Accessibility - Navigation @accessibility', () => {
 })
 
 test.describe('Accessibility - Forms @accessibility', () => {
-  test('search form is accessible', async ({ page, makeAxeBuilder: _makeAxeBuilder }) => {
+  test('search form is accessible', async ({ page }) => {
     await page.goto('/en')
     await waitForPageReady(page)
 
@@ -369,7 +369,7 @@ test.describe('Accessibility - Semantic HTML @accessibility', () => {
 test.describe('Accessibility - Mobile @accessibility @mobile', () => {
   test.use({ viewport: { width: 375, height: 667 } })
 
-  test('touch targets are large enough', async ({ page, makeAxeBuilder: _makeAxeBuilder }) => {
+  test('touch targets are large enough', async ({ page }) => {
     await page.goto('/en')
     await waitForPageReady(page)
 

@@ -1,6 +1,6 @@
-import { getCategoryTreeDepth3 } from "@/lib/data/categories";
+import { getCategoryHierarchy } from "@/lib/data/categories";
 import type { Category } from "../../_lib/types";
 
 export async function getSellCategories(): Promise<Category[]> {
-  return getCategoryTreeDepth3();
+  return getCategoryHierarchy(null, 2);
 }

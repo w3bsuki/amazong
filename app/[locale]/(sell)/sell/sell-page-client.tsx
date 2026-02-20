@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, type ReactNode } from "react";
+import dynamic from "next/dynamic";
 import { Link } from "@/i18n/routing";
 import { createClient } from "@/lib/supabase/client";
 import { useLocale, useTranslations } from "next-intl";
@@ -9,7 +10,7 @@ import { AuthGateCard } from "../../_components/auth/auth-gate-card";
 import { SellErrorBoundary } from "../_components/ui/sell-error-boundary";
 import { ProgressHeader } from "../_components/ui/progress-header";
 import { SellFormSkeleton } from "../_components/ui/sell-section-skeleton";
-import { UnifiedSellForm } from "../_components/sell-form-unified";
+import type { CreateListingAction } from "../_components/sell-form-unified";
 import type { Category, Seller } from "../_lib/types";
 
 export type SellerPayoutStatus = {
@@ -19,7 +20,13 @@ export type SellerPayoutStatus = {
   payouts_enabled: boolean;
 } | null;
 
-type CreateListingAction = Parameters<typeof UnifiedSellForm>[0]["createListingAction"]
+const UnifiedSellForm = dynamic(
+  () => import("../_components/sell-form-unified").then((mod) => mod.UnifiedSellForm),
+  {
+    ssr: false,
+    loading: () => <SellFormSkeleton />,
+  },
+);
 
 interface SellPageClientProps {
   initialUser: { id: string; email?: string } | null;

@@ -42,11 +42,11 @@ export function formatCurrencyAmount(
   }).format(amount)
 }
 
-export function getCurrencyCode(_locale: string): string {
+export function getCurrencyCode(): string {
   return BASE_CURRENCY
 }
 
-export function getCurrencySymbol(_locale: string): string {
+export function getCurrencySymbol(): string {
   return "€"
 }
 

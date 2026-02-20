@@ -4,7 +4,6 @@ import { useMemo, useCallback, useEffect, useState } from "react"
 import { Minus, Package, Plus, ShoppingCart, LoaderCircle as SpinnerGap, Trash } from "lucide-react";
 
 import {
-  DrawerFooter,
   DrawerBody,
 } from "@/components/ui/drawer"
 import { Button } from "@/components/ui/button"
@@ -109,7 +108,7 @@ export function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
             <SpinnerGap size={20} className="animate-spin text-muted-foreground" />
           </div>
         ) : items.length === 0 ? (
-          <div className="flex flex-col items-center justify-center px-inset py-5">
+          <div className="flex flex-col items-center justify-center px-inset py-5 pb-safe-max">
             <div className="size-11 bg-muted rounded-xl flex items-center justify-center mb-2">
               <ShoppingCart size={22} className="text-muted-foreground" />
             </div>
@@ -117,9 +116,14 @@ export function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
             <p className="text-xs text-muted-foreground mt-0.5">
               {t("emptyDescription")}
             </p>
+            <Button variant="cta" size="primary" className="mt-4 w-full" asChild>
+              <Link href="/search" onClick={handleClose}>
+                {t("startShopping")}
+              </Link>
+            </Button>
           </div>
         ) : (
-          <DrawerBody className={cn("px-inset", contentMaxHeight)}>
+          <DrawerBody className={cn("px-inset pb-safe-max", contentMaxHeight)}>
             {items.map((item, index) => (
               <div
                 key={`${item.id}:${item.variantId ?? ""}`}
@@ -193,23 +197,9 @@ export function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
                 </div>
               </div>
             ))}
-          </DrawerBody>
-        )}
-
-        <DrawerFooter className="border-t border-border gap-1.5">
-          {!isReady ? (
-            <div className="flex items-center justify-center py-2">
-              <SpinnerGap size={16} className="animate-spin text-muted-foreground" />
-            </div>
-          ) : items.length === 0 ? (
-            <Button variant="cta" size="primary" className="w-full" asChild>
-              <Link href="/search" onClick={handleClose}>
-                {t("startShopping")}
-              </Link>
-            </Button>
-          ) : (
-            <>
-              <div className="flex items-center justify-between py-1">
+            {/* Subtotal + actions — inline at end of list */}
+            <div className="space-y-2 border-t border-border pt-3 mt-1">
+              <div className="flex items-center justify-between">
                 <span className="text-xs text-muted-foreground">{t("subtotal")}</span>
                 <span className="text-base font-bold text-foreground">{formatPrice(subtotal)}</span>
               </div>
@@ -223,9 +213,9 @@ export function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
                   {t("viewCart")}
                 </Link>
               </Button>
-            </>
-          )}
-        </DrawerFooter>
+            </div>
+          </DrawerBody>
+        )}
     </DrawerShell>
   )
 }

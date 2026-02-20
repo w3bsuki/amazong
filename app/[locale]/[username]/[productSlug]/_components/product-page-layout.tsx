@@ -1,4 +1,3 @@
-import { Suspense } from "react";
 import { useTranslations } from "next-intl";
 import { RecentlyViewedTracker } from "./pdp/recently-viewed-tracker";
 import { SellerProductsGrid } from "./pdp/seller-products-grid";
@@ -9,7 +8,6 @@ import { TrustBadges } from "./pdp/trust-badges";
 import { ProductSocialProof } from "./pdp/product-social-proof";
 import { FreshnessIndicator } from "@/components/shared/product/freshness-indicator";
 import { ViewTracker } from "./pdp/view-tracker";
-import { Skeleton } from "@/components/ui/skeleton";
 import { ProductHeaderSync } from "./pdp/product-header-sync";
 import { Star } from "lucide-react";
 import { MarketplaceBadge } from "@/components/shared/marketplace-badge";
@@ -53,64 +51,6 @@ type CategorySummary = {
 
 // Mobile-specific imports
 import { MobileProductSingleScroll } from "./mobile/mobile-product-single-scroll";
-
-// Loading skeletons for Suspense boundaries
-function RelatedProductsSkeleton() {
-  return (
-    <div className="mt-10 space-y-4">
-      <Skeleton className="h-6 w-48" />
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
-        {[...Array(5)].map((_, i) => (
-          <div key={i} className="bg-card rounded-xl border border-border p-3">
-            <Skeleton className="aspect-square w-full rounded-xl mb-3" />
-            <Skeleton className="h-4 w-full mb-1" />
-            <Skeleton className="h-4 w-2/3 mb-2" />
-            <Skeleton className="h-5 w-20" />
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function ReviewsSkeleton() {
-  return (
-    <div className="pb-8">
-      <div className="rounded-xl bg-surface-subtle p-4 border border-border-subtle">
-        <div className="flex items-center justify-between mb-8">
-          <Skeleton className="h-7 w-40" />
-          <Skeleton className="h-4 w-16" />
-        </div>
-        <div className="flex flex-col gap-10 lg:flex-row">
-          <div className="space-y-6 lg:w-80 lg:shrink-0">
-            <div className="flex items-center gap-4">
-              <Skeleton className="h-24 w-24 rounded-full" />
-              <div className="space-y-2">
-                <Skeleton className="h-5 w-28" />
-                <Skeleton className="h-3 w-32" />
-              </div>
-            </div>
-          </div>
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:flex-1">
-            {[...Array(4)].map((_, i) => (
-              <div key={i} className="p-4 rounded-xl border border-border-subtle space-y-3">
-                <div className="flex items-center gap-3">
-                  <Skeleton className="h-10 w-10 rounded-full" />
-                  <div className="space-y-1">
-                    <Skeleton className="h-4 w-24" />
-                    <Skeleton className="h-3 w-20" />
-                  </div>
-                </div>
-                <Skeleton className="h-4 w-full" />
-                <Skeleton className="h-4 w-5/6" />
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
 
 interface ProductPageLayoutProps {
   locale: string;
@@ -324,27 +264,23 @@ export function ProductPageLayout(props: ProductPageLayoutProps) {
           </div>
 
           {/* More from Seller */}
-          <Suspense fallback={<RelatedProductsSkeleton />}>
-            <SellerProductsGrid
-              products={relatedProducts}
-              sellerUsername={username}
-            />
-          </Suspense>
+          <SellerProductsGrid
+            products={relatedProducts}
+            sellerUsername={username}
+          />
 
           {/* Reviews */}
-          <Suspense fallback={<ReviewsSkeleton />}>
-            <div className="pb-8">
-              <CustomerReviewsHybrid
-                rating={Number(product.rating ?? 0)}
-                reviewCount={Number(product.review_count ?? 0)}
-                reviews={reviews}
-                productId={product.id}
-                productTitle={product.title}
-                locale={locale}
-                {...(submitReview && { submitReview })}
-              />
-            </div>
-          </Suspense>
+          <div className="pb-8">
+            <CustomerReviewsHybrid
+              rating={Number(product.rating ?? 0)}
+              reviewCount={Number(product.review_count ?? 0)}
+              reviews={reviews}
+              productId={product.id}
+              productTitle={product.title}
+              locale={locale}
+              {...(submitReview && { submitReview })}
+            />
+          </div>
         </div>
       </PageShell>
     </>

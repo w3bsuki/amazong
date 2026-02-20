@@ -1,7 +1,8 @@
 "use client"
 
 import dynamic from "next/dynamic"
-import { Suspense, type ReactNode, useEffect, useState } from "react"
+import { type ReactNode } from "react"
+import { useIdleReady } from "@/hooks/use-idle-ready"
 
 import { AuthStateManager } from "@/components/providers/auth-state-manager"
 import { CartProvider } from "@/components/providers/cart-context"
@@ -14,38 +15,6 @@ const GlobalDrawers = dynamic(
   { ssr: false }
 )
 
-function useIdleReady(timeoutMs: number) {
-  const [ready, setReady] = useState(false)
-
-  useEffect(() => {
-    let cancelled = false
-    const markReady = () => {
-      if (!cancelled) setReady(true)
-    }
-
-    const idleWindow = window as Window & {
-      requestIdleCallback?: (cb: () => void, opts?: { timeout?: number }) => number
-      cancelIdleCallback?: (id: number) => void
-    }
-
-    if (typeof idleWindow.requestIdleCallback === "function") {
-      const id = idleWindow.requestIdleCallback(markReady, { timeout: timeoutMs })
-      return () => {
-        cancelled = true
-        idleWindow.cancelIdleCallback?.(id)
-      }
-    }
-
-    const timer = window.setTimeout(markReady, timeoutMs)
-    return () => {
-      cancelled = true
-      window.clearTimeout(timer)
-    }
-  }, [timeoutMs])
-
-  return ready
-}
-
 export function CommerceProviders({ children }: { children: ReactNode }) {
   const shouldMountGlobalDrawers = useIdleReady(1200)
 
@@ -57,9 +26,7 @@ export function CommerceProviders({ children }: { children: ReactNode }) {
             <DeferredMessageProvider>
               {children}
               {shouldMountGlobalDrawers ? (
-                <Suspense fallback={null}>
-                  <GlobalDrawers />
-                </Suspense>
+                <GlobalDrawers />
               ) : null}
             </DeferredMessageProvider>
           </DrawerProvider>

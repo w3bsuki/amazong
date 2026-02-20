@@ -28,10 +28,10 @@
 | 4 | Tailwind CSS v4 | `[x]` DONE | `refactor/tailwind-audit-refactor.md` | 2026-02-20 — Tailwind v4 audit + dead CSS utility cleanup (no token drift; styles:gate clean) |
 | 5 | shadcn/ui | `[x]` DONE | `refactor/shadcn-audit-refactor.md` | 2026-02-20 — shadcn primitives audit (ui purity + variants); no gate-forced changes |
 | 6 | Supabase (client/queries) | `[x]` DONE | `refactor/supabase-audit-refactor.md` | 2026-02-20 — Supabase audit (client selection + query hygiene); no behavior-risky changes applied |
-| 7 | next-intl (i18n) | `[ ]` NOT STARTED | `refactor/intl-audit-refactor.md` | — |
-| 8 | Testing (Vitest/Playwright) | `[ ]` NOT STARTED | `refactor/testing-audit-refactor.md` | — |
-| 9 | DX & Build (ESLint/scripts/gates) | `[ ]` NOT STARTED | `refactor/dx-audit-refactor.md` | — |
-| 10 | Final Cross-Cutting Sweep | `[ ]` NOT STARTED | `refactor/final-sweep.md` | — |
+| 7 | next-intl (i18n) | `[x]` DONE | `refactor/intl-audit-refactor.md` | 2026-02-20 — messages parity verified; `setRequestLocale` added to missing (main + username) layouts; documented remaining auth provider hook import |
+| 8 | Testing (Vitest/Playwright) | `[x]` DONE | `refactor/testing-audit-refactor.md` | 2026-02-20 — Vitest config dedupe via shared base/coverage config (no behavior changes); documented coverage script limitation |
+| 9 | DX & Build (ESLint/scripts/gates) | `[x]` DONE | `refactor/dx-audit-refactor.md` | 2026-02-20 — DX audit (scripts/gates/ESLint); removed unused Playwright runner lint disables (no behavior change) |
+| 10 | Final Cross-Cutting Sweep | `[x]` DONE | `refactor/final-sweep.md` | 2026-02-20 — final mechanical cleanup (unused helpers/imports), finalized metrics + reports, full `pnpm -s build` pass |
 
 ---
 
@@ -131,15 +131,15 @@
 
 | Metric | Baseline (2026-02-20) | After #1 | After #2 | After #3 | After #4 | After #5 | Final |
 |--------|----------------------|----------|----------|----------|----------|----------|-------|
-| Source files | 937 | 937 | 940 | 945 | 945 | 945 | |
-| LOC | ~131K | 128,869 | 130,095 | 130,615 | 130,615 | 130,615 | |
-| `"use client"` | 216 | 214 | 214 | 224 | 224 | 224 | |
-| `"use cache"` | 11 | 12 files | 12 files | 15 files | 15 files | 15 files | |
-| >300L files | 93 | 88 | 87 | 87 | 87 | 87 | |
-| <50L files | 248 | 252 | 249 | 251 | 251 | 251 | |
-| Route handlers | 47 | 47 | 47 | 48 | 48 | 48 | |
-| Loading files | 88 | 88 | 88 | 88 | 88 | 88 | |
-| `any` count | TBD | | | 0 | 0 | 0 | |
+| Source files | 937 | 937 | 940 | 945 | 945 | 945 | 948 |
+| LOC | ~131K | 128,869 | 130,095 | 130,615 | 130,615 | 130,615 | 130,536 |
+| `"use client"` | 216 | 214 | 214 | 224 | 224 | 224 | 224 |
+| `"use cache"` | 11 | 12 files | 12 files | 15 files | 15 files | 15 files | 12 files |
+| >300L files | 93 | 88 | 87 | 87 | 87 | 87 | 87 |
+| <50L files | 248 | 252 | 249 | 251 | 251 | 251 | 235 |
+| Route handlers | 47 | 47 | 47 | 48 | 48 | 48 | 48 |
+| Loading files | 88 | 88 | 88 | 88 | 88 | 88 | 70 |
+| `any` count | TBD | | | 0 | 0 | 0 | 0 |
 | Test coverage | TBD | | | | | | |
 
 ---

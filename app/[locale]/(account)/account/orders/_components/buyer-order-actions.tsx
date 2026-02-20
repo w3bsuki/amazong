@@ -23,7 +23,7 @@ import { Loader2, Package, CheckCircle, MessageSquare, XCircle, AlertTriangle, S
 import { type OrderItemStatus } from "@/lib/order-status"
 import { toast } from "sonner"
 import { Link, useRouter } from "@/i18n/routing"
-import { StarRatingDialog } from "../../../../_components/orders/star-rating-dialog"
+import { StarRatingDialogShell } from "../../../../_components/orders/star-rating-dialog-shell"
 
 export type IssueType =
   | 'not_received'
@@ -456,16 +456,11 @@ export function BuyerOrderActions({
 
       {/* Rating Dialog */}
       {!isReportOnly && (
-        <StarRatingDialog
+        <StarRatingDialogShell
           open={showRatingDialog}
           onOpenChange={setShowRatingDialog}
           onSubmit={handleSubmitRating}
-          title={t.ratingTitle}
-          description={t.ratingDescription}
-          commentLabel={t.commentLabel}
-          commentPlaceholder={t.commentPlaceholder}
-          submitLabel={t.submitRating}
-          cancelLabel={t.cancel}
+          copy={t}
           locale={locale}
           isLoading={isSubmitting}
         />

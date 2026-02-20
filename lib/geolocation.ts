@@ -154,33 +154,6 @@ export function getZoneForCountry(countryCode: string): ShippingZoneCode {
 }
 
 /**
- * Check if a product can ship to a user's country
- * 
- * Hierarchy:
- * - WW (Worldwide) ships to everyone
- * - EU ships to Bulgaria and Europe
- * - BG only ships to Bulgaria
- */
-function canShipTo(productZone: string, userCountryCode: string): boolean {
-    const userZone = getZoneForCountry(userCountryCode)
-    
-    // Worldwide ships everywhere
-    if (productZone === 'WW') return true
-    
-    // EU zone ships to EU countries and Bulgaria
-    if (productZone === 'EU') {
-        return userZone === 'EU' || userZone === 'BG'
-    }
-    
-    // BG only ships to Bulgaria
-    if (productZone === 'BG') {
-        return userZone === 'BG'
-    }
-    
-    return false
-}
-
-/**
  * Get compatible shipping zones for filtering products
  * 
  * For a user in Bulgaria: show BG, EU, and WW products
@@ -197,28 +170,7 @@ export function getCompatibleZones(userCountryCode: string): ShippingZoneCode[] 
     if (userZone === 'EU') {
         return ['EU', 'WW'] // EU sees EU and Worldwide products
     }
-    
-    return ['WW'] // Rest of world sees only Worldwide products
-}
-
-/**
- * Build Supabase filter for shipping zones
- * @returns A comma-separated string for .in() filter
- */
-function getShippingZoneFilter(userCountryCode: string): string {
-    const zones = getCompatibleZones(userCountryCode)
-    return zones.join(',')
-}
-
-/**
- * Get shipping zone info for display
- */
-function getShippingZoneInfo(zoneCode: string, locale: string = 'en') {
-    const zone = SHIPPING_ZONES[zoneCode as ShippingZoneCode]
-    if (!zone) return { code: 'WW', name: 'Worldwide', name_bg: 'Целият свят' }
-    
-    return {
-        code: zone.code,
-        name: locale === 'bg' ? zone.name_bg : zone.name,
-    }
-}
+     
+     return ['WW'] // Rest of world sees only Worldwide products
+ }
+ 

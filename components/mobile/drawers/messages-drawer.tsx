@@ -4,7 +4,6 @@ import { useCallback } from "react"
 import { MessageCircle as ChatCircle, Check, Circle } from "lucide-react";
 
 import {
-  DrawerFooter,
   DrawerBody,
 } from "@/components/ui/drawer"
 import { Button } from "@/components/ui/button"
@@ -113,7 +112,7 @@ export function MessagesDrawer({ open, onOpenChange }: MessagesDrawerProps) {
     >
 
         {!user ? (
-          <div className="flex flex-col items-center justify-center px-inset py-5">
+          <div className="flex flex-col items-center justify-center px-inset py-5 pb-safe-max">
             <div className="mb-2 flex size-(--control-default) items-center justify-center rounded-xl bg-muted">
               <ChatCircle size={22} className="text-muted-foreground" />
             </div>
@@ -123,13 +122,18 @@ export function MessagesDrawer({ open, onOpenChange }: MessagesDrawerProps) {
             <p className="text-xs text-muted-foreground mt-0.5 text-center">
               {t("signInDescription")}
             </p>
+            <Button variant="default" size="default" className="mt-4 w-full" asChild>
+              <Link href="/chat" onClick={handleClose}>
+                {t("viewAllMessages")}
+              </Link>
+            </Button>
           </div>
         ) : isLoading ? (
           <div className="flex items-center justify-center py-8">
             <div className="size-6 border-2 border-border-subtle border-t-foreground rounded-full animate-spin" />
           </div>
         ) : recentConversations.length === 0 ? (
-          <div className="flex flex-col items-center justify-center px-inset py-5">
+          <div className="flex flex-col items-center justify-center px-inset py-5 pb-safe-max">
             <div className="mb-2 flex size-(--control-default) items-center justify-center rounded-xl bg-muted">
               <ChatCircle size={22} className="text-muted-foreground" />
             </div>
@@ -137,6 +141,11 @@ export function MessagesDrawer({ open, onOpenChange }: MessagesDrawerProps) {
             <p className="text-xs text-muted-foreground mt-0.5">
               {t("startConversationHint")}
             </p>
+            <Button variant="outline" size="default" className="mt-4 w-full" asChild>
+              <Link href="/chat" onClick={handleClose}>
+                {t("viewAllMessages")}
+              </Link>
+            </Button>
           </div>
         ) : (
           <DrawerBody className="px-0">
@@ -214,16 +223,16 @@ export function MessagesDrawer({ open, onOpenChange }: MessagesDrawerProps) {
                 </Link>
               )
             })}
+            {/* View all — inline at end of list */}
+            <div className="pt-2 pb-safe-max">
+              <Link href="/chat" onClick={handleClose} className="w-full">
+                <Button variant="outline" size="default" className="w-full">
+                  {t("viewAllMessages")}
+                </Button>
+              </Link>
+            </div>
           </DrawerBody>
         )}
-
-        <DrawerFooter className="border-t border-border-subtle py-2.5">
-          <Link href="/chat" onClick={handleClose} className="w-full">
-            <Button variant="outline" size="default" className="w-full">
-              {t("viewAllMessages")}
-            </Button>
-          </Link>
-        </DrawerFooter>
     </DrawerShell>
   )
 }

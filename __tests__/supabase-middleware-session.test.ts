@@ -42,7 +42,7 @@ describe('supabase middleware updateSession', () => {
         cookies: {
           getAll: () => [],
           set: () => {},
-          get: () => undefined,
+          get: () => {},
         },
         headers: new Headers(),
       }

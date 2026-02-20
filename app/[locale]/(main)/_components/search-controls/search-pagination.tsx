@@ -1,17 +1,15 @@
 "use client"
 
-import { useTranslations } from "next-intl"
-import { useLocale } from "next-intl"
+import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react"
+import { useLocale, useTranslations } from "next-intl"
 import { useSearchParams } from "next/navigation"
-import { usePathname } from "@/i18n/routing"
+import { Link, usePathname } from "@/i18n/routing"
 import {
   Pagination,
   PaginationContent,
   PaginationEllipsis,
   PaginationItem,
   PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
 } from "@/components/ui/pagination"
 
 interface SearchPaginationProps {
@@ -103,19 +101,23 @@ export function SearchPagination({
         {/* Previous */}
         <PaginationItem>
           {hasPrev ? (
-            <PaginationPrevious
-              href={buildPageUrl(currentPage - 1)}
-              label={tCommon("previous")}
-              ariaLabel={tCommon("goToPreviousPage")}
-            />
+            <PaginationLink asChild size="default" className="gap-1 px-2.5 sm:pl-2.5" aria-label={tCommon("goToPreviousPage")}>
+              <Link href={buildPageUrl(currentPage - 1)} prefetch={false}>
+                <ChevronLeftIcon />
+                <span className="hidden sm:block">{tCommon("previous")}</span>
+              </Link>
+            </PaginationLink>
           ) : (
-            <PaginationPrevious 
-              href="#" 
-              className="pointer-events-none text-muted-foreground" 
+            <PaginationLink
+              href="#"
+              size="default"
+              className="pointer-events-none gap-1 px-2.5 text-muted-foreground sm:pl-2.5"
               aria-disabled="true"
-              label={tCommon("previous")}
-              ariaLabel={tCommon("goToPreviousPage")}
-            />
+              aria-label={tCommon("goToPreviousPage")}
+            >
+              <ChevronLeftIcon />
+              <span className="hidden sm:block">{tCommon("previous")}</span>
+            </PaginationLink>
           )}
         </PaginationItem>
         
@@ -125,11 +127,10 @@ export function SearchPagination({
             {page === 'ellipsis' ? (
               <PaginationEllipsis label={tCommon("morePages")} />
             ) : (
-              <PaginationLink 
-                href={buildPageUrl(page)} 
-                isActive={page === currentPage}
-              >
-                {page}
+              <PaginationLink asChild isActive={page === currentPage}>
+                <Link href={buildPageUrl(page)} prefetch={false}>
+                  {page}
+                </Link>
               </PaginationLink>
             )}
           </PaginationItem>
@@ -138,19 +139,23 @@ export function SearchPagination({
         {/* Next */}
         <PaginationItem>
           {hasNext ? (
-            <PaginationNext
-              href={buildPageUrl(currentPage + 1)}
-              label={tCommon("next")}
-              ariaLabel={tCommon("goToNextPage")}
-            />
+            <PaginationLink asChild size="default" className="gap-1 px-2.5 sm:pr-2.5" aria-label={tCommon("goToNextPage")}>
+              <Link href={buildPageUrl(currentPage + 1)} prefetch={false}>
+                <span className="hidden sm:block">{tCommon("next")}</span>
+                <ChevronRightIcon />
+              </Link>
+            </PaginationLink>
           ) : (
-            <PaginationNext 
-              href="#" 
-              className="pointer-events-none text-muted-foreground" 
+            <PaginationLink
+              href="#"
+              size="default"
+              className="pointer-events-none gap-1 px-2.5 text-muted-foreground sm:pr-2.5"
               aria-disabled="true"
-              label={tCommon("next")}
-              ariaLabel={tCommon("goToNextPage")}
-            />
+              aria-label={tCommon("goToNextPage")}
+            >
+              <span className="hidden sm:block">{tCommon("next")}</span>
+              <ChevronRightIcon />
+            </PaginationLink>
           )}
         </PaginationItem>
       </PaginationContent>

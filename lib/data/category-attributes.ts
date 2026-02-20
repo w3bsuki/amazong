@@ -233,7 +233,10 @@ export async function resolveCategoryAttributesWithClient(
       if (!a.isOwn && b.isOwn) return 1
       return (a.sort_order ?? 999) - (b.sort_order ?? 999)
     })
-    .map(({ isOwn: _isOwn, ...attr }) => attr as CategoryAttribute)
+    .map(({ isOwn: _isOwn, ...attr }) => {
+      void _isOwn
+      return attr as CategoryAttribute
+    })
 
   return { attributes, ancestorIds }
 }

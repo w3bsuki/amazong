@@ -1,6 +1,7 @@
 import { StorefrontLayout } from "../_components/storefront-layout";
 import { RouteIntlProvider } from "../_providers/route-intl-provider";
 import { ROOT_INTL_NAMESPACES, USERNAME_ROUTE_INTL_NAMESPACES } from "@/lib/i18n/scoped-messages";
+import { setRequestLocale } from "next-intl/server";
 
 /**
  * Username/Store Route Layout
@@ -19,6 +20,7 @@ export default async function UsernameLayout({
     params: Promise<{ locale: string; username: string }>;
 }) {
     const { locale } = await params;
+    setRequestLocale(locale);
 
     const localizedRouteChildren = (
         <RouteIntlProvider

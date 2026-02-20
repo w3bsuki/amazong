@@ -52,6 +52,21 @@ export function DesktopFilterModal({
   const currentMaxPrice = searchParams.get("maxPrice")
   const currentRating = searchParams.get("minRating")
 
+  const getCurrentAttrValues = React.useCallback(
+    (attr: CategoryAttribute): string[] => {
+      const attrKey = getCategoryAttributeKey(attr)
+      return [
+        ...new Set([
+          ...searchParams.getAll(`attr_${attrKey}`),
+          ...searchParams.getAll(`attr_${attr.name}`),
+        ]),
+      ]
+    },
+    [searchParams],
+  )
+
+  const didInitOnOpenRef = React.useRef(false)
+
   const countParams = React.useMemo(() => ({
     categoryId: categoryId ?? null,
     filters: {
@@ -66,30 +81,34 @@ export function DesktopFilterModal({
     isOpen ? countParams : { categoryId: null, filters: {} }
   )
 
-  const getCurrentAttrValues = (attr: CategoryAttribute): string[] => {
-    const attrKey = getCategoryAttributeKey(attr)
-    return [...new Set([
-      ...searchParams.getAll(`attr_${attrKey}`),
-      ...searchParams.getAll(`attr_${attr.name}`),
-    ])]
-  }
-
   React.useEffect(() => {
-    if (isOpen) {
-      const initial: Record<string, string[]> = {}
-      filterableAttributes.forEach((attr) => {
-        const attrKey = getCategoryAttributeKey(attr)
-        const values = getCurrentAttrValues(attr)
-        if (values.length > 0) {
-          initial[attrKey] = values
-        }
-      })
-      setPendingFilters(initial)
-      setPendingPrice({ min: currentMinPrice || "", max: currentMaxPrice || "" })
-      setPendingRating(currentRating ? Number.parseInt(currentRating) : null)
+    if (!isOpen) {
+      didInitOnOpenRef.current = false
+      return
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isOpen])
+
+    if (didInitOnOpenRef.current) return
+    didInitOnOpenRef.current = true
+
+    const initial: Record<string, string[]> = {}
+    filterableAttributes.forEach((attr) => {
+      const attrKey = getCategoryAttributeKey(attr)
+      const values = getCurrentAttrValues(attr)
+      if (values.length > 0) {
+        initial[attrKey] = values
+      }
+    })
+    setPendingFilters(initial)
+    setPendingPrice({ min: currentMinPrice || "", max: currentMaxPrice || "" })
+    setPendingRating(currentRating ? Number.parseInt(currentRating) : null)
+  }, [
+    currentMaxPrice,
+    currentMinPrice,
+    currentRating,
+    filterableAttributes,
+    getCurrentAttrValues,
+    isOpen,
+  ])
 
   const activeFilterCount = React.useMemo(() => {
     let count = 0
@@ -99,8 +118,13 @@ export function DesktopFilterModal({
     if (currentMinPrice || currentMaxPrice) count++
     if (currentRating) count++
     return count
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchParams, filterableAttributes])
+  }, [
+    currentMaxPrice,
+    currentMinPrice,
+    currentRating,
+    filterableAttributes,
+    getCurrentAttrValues,
+  ])
 
   const handleAttrChange = (attrName: string, values: string[]) => {
     setPendingFilters((previous) => ({ ...previous, [attrName]: values }))

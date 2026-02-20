@@ -58,7 +58,6 @@ async function isPortFree(port) {
 async function findFreePort(startPort = 3000, attempts = 20) {
   for (let offset = 0; offset < attempts; offset++) {
     const port = startPort + offset
-    // eslint-disable-next-line no-await-in-loop
     if (await isPortFree(port)) return port
   }
   return startPort
@@ -81,7 +80,6 @@ async function waitForServerReady(baseURL, timeoutMs = 120_000) {
       clearTimeout(timeout)
     }
 
-    // eslint-disable-next-line no-await-in-loop
     await delay(250)
   }
 

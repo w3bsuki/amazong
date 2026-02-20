@@ -4,19 +4,18 @@ import * as React from "react"
 import { Check, Megaphone as MegaphoneSimple } from "lucide-react";
 
 
-import { Link } from "@/i18n/routing"
 import { useLocale, useTranslations } from "next-intl"
 
 import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
-import { Card, CardContent } from "@/components/ui/card"
+import { CardContent } from "@/components/ui/card"
 import { UserAvatar } from "@/components/shared/user-avatar"
 import { MarketplaceBadge } from "@/components/shared/marketplace-badge"
 
-import { ProductCardActions } from "./actions"
-import { ProductCardImage } from "./image"
 import { ProductCardPrice } from "./price"
-import { useProductCardQuickView } from "./use-product-card-quick-view"
+import { ProductCardWishlistOverlay } from "./product-card-wishlist-overlay"
+import { buildProductCardFrameSurface, ProductCardFrame } from "./product-card-frame"
+import { useProductCardQuickViewInput } from "./use-product-card-quick-view-input"
 import {
   getDiscountPercent,
   getOverlayBadgeVariants,
@@ -94,120 +93,66 @@ export function MobileProductCard({
   const mediaRatio = layout === "rail" ? 1 : 4 / 3
   const pricePresentation = "price-badge"
 
-  const quickViewInput = React.useMemo(
-    () => ({
-      id,
-      title,
-      price,
-      image,
-      images,
-      originalPrice,
-      description,
-      categoryPath,
-      condition,
-      location,
-      rating,
-      reviews,
-      inStock,
-      slug,
-      username,
-      sellerId,
-      sellerName,
-      sellerAvatarUrl,
-      sellerVerified,
-    }),
-    [
-      categoryPath,
-      condition,
-      description,
-      id,
-      image,
-      images,
-      inStock,
-      location,
-      originalPrice,
-      price,
-      rating,
-      reviews,
-      sellerAvatarUrl,
-      sellerId,
-      sellerName,
-      sellerVerified,
-      slug,
-      title,
-      username,
-    ]
-  )
-
-  const handleCardClick = useProductCardQuickView({
-    disableQuickView,
-    product: quickViewInput,
+  const quickViewInput = useProductCardQuickViewInput({
+    id,
+    title,
+    price,
+    image,
+    images,
+    originalPrice,
+    description,
+    categoryPath,
+    condition,
+    location,
+    rating,
+    reviews,
+    inStock,
+    slug,
+    username,
+    sellerId,
+    sellerName,
+    sellerAvatarUrl,
+    sellerVerified,
   })
 
   return (
-    <Card
-      data-slot="surface"
-      className={cn(
-        "tap-highlight tap-transparent group relative flex h-full min-w-0 cursor-pointer flex-col overflow-hidden rounded-xl border-border-subtle shadow-none",
-        className
-      )}
-    >
-      <Link
-        href={productUrl}
-        prefetch={false}
-        data-slot="product-card-link"
-        className="absolute inset-0 z-10 rounded-xl outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
-        aria-label={t("openProduct", { title })}
-        onClick={handleCardClick}
-      >
-        <span className="sr-only">{title}</span>
-      </Link>
+    <ProductCardFrame
+      disableQuickView={disableQuickView}
+      quickViewInput={quickViewInput}
+      surface={buildProductCardFrameSurface(productUrl, title, className, image, index, inStock, mediaRatio)}
+      mediaOverlay={
+        <>
+          {showPromotedBadge && inStock && visibleOverlayBadgeVariants.length > 0 && (
+            <div className="pointer-events-none absolute left-1.5 top-1.5 z-10 flex flex-col gap-1">
+              <Badge
+                key="promoted"
+                size="compact"
+                variant="glass"
+                data-testid="product-card-ad-badge"
+                className="px-1.5"
+              >
+                <MegaphoneSimple size={10} aria-hidden="true" />
+                <span className="sr-only">{t("adBadge")}</span>
+              </Badge>
+            </div>
+          )}
 
-      <div className="relative overflow-hidden rounded-t-xl bg-surface-subtle">
-        <ProductCardImage
-          src={image}
-          alt={title}
-          index={index}
-          inStock={inStock}
-          outOfStockLabel={t("outOfStock")}
-          ratio={mediaRatio}
-        />
-
-        {showPromotedBadge && inStock && visibleOverlayBadgeVariants.length > 0 && (
-          <div className="pointer-events-none absolute left-1.5 top-1.5 z-10 flex flex-col gap-1">
-            <Badge
-              key="promoted"
-              size="compact"
-              variant="glass"
-              data-testid="product-card-ad-badge"
-              className="px-1.5"
-            >
-              <MegaphoneSimple size={10} aria-hidden="true" />
-              <span className="sr-only">{t("adBadge")}</span>
-            </Badge>
-          </div>
-        )}
-
-        {allowWishlistAction && (
-          <div className="absolute right-1.5 top-1.5 z-20">
-            <ProductCardActions
+          {allowWishlistAction && (
+            <ProductCardWishlistOverlay
               id={id}
               title={title}
               price={price}
               image={image}
-              slug={slug ?? null}
-              username={username ?? null}
-              showQuickAdd={false}
-              showWishlist
+              slug={slug}
+              username={username}
               inStock={inStock}
               isOwnProduct={isOwnProduct}
-              size="icon-compact"
               overlayDensity="compact"
             />
-          </div>
-        )}
-      </div>
-
+          )}
+        </>
+      }
+    >
       <CardContent className="flex flex-col gap-1 p-2 pt-2">
         {rootCategoryLabel && (
           <MarketplaceBadge
@@ -280,7 +225,6 @@ export function MobileProductCard({
           )}
         </div>
       </CardContent>
-    </Card>
+    </ProductCardFrame>
   )
 }
-

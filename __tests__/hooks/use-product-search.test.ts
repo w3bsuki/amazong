@@ -1,6 +1,5 @@
 import { describe, expect, it, beforeEach, afterEach, vi } from 'vitest'
-import { renderHook, act, waitFor } from '@testing-library/react'
-import * as React from 'react'
+import { renderHook, act } from '@testing-library/react'
 
 // We need to mock next-intl before importing the hook
 vi.mock('next-intl', () => ({

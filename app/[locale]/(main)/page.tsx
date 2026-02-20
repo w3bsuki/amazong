@@ -1,4 +1,3 @@
-import { Suspense } from "react"
 import type { Metadata } from "next"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import { MobileHome } from "./_components/mobile-home"
@@ -12,8 +11,7 @@ import { getCategoryHierarchy } from "@/lib/data/categories"
 import type { UIProduct } from "@/lib/types/products"
 import { buildForYouPool } from "@/lib/home-pools"
 import { 
-  DesktopHome, 
-  DesktopHomeSkeleton 
+  DesktopHome 
 } from "./_components/desktop-home"
 
 const HOME_CATEGORY_POOL_LIMIT = 6
@@ -84,14 +82,12 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
         - Uses existing MobileTabBar from layout
       */}
       <div className="w-full md:hidden">
-        <Suspense fallback={<div className="h-screen w-full bg-background animate-pulse" />}>
-          <MobileHome
-            locale={locale}
-            categories={rootCategories}
-            forYouProducts={forYouProducts}
-            categoryProducts={categoryProducts}
-          />
-        </Suspense>
+        <MobileHome
+          locale={locale}
+          categories={rootCategories}
+          forYouProducts={forYouProducts}
+          categoryProducts={categoryProducts}
+        />
       </div>
 
       {/* ================================================================
@@ -101,14 +97,12 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
           - Category sidebar + filters + product grid
           ================================================================ */}
       <div className="hidden md:block w-full">
-        <Suspense fallback={<DesktopHomeSkeleton />}>
-          <DesktopHome
-            locale={locale}
-            categories={rootCategories}
-            initialProducts={initialProducts}
-            promotedProducts={promotedProducts}
-          />
-        </Suspense>
+        <DesktopHome
+          locale={locale}
+          categories={rootCategories}
+          initialProducts={initialProducts}
+          promotedProducts={promotedProducts}
+        />
       </div>
     </div>
   )

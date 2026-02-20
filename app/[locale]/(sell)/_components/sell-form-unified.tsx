@@ -49,7 +49,7 @@ type CreateListingResult =
       upgradeRequired?: boolean;
     };
 
-type CreateListingAction = (args: { sellerId: string; data: unknown }) => Promise<CreateListingResult>;
+export type CreateListingAction = (args: { sellerId: string; data: unknown }) => Promise<CreateListingResult>;
 
 // ============================================================================
 // UNIFIED SELL FORM - Phase 4: Responsive Unification

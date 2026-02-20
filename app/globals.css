@@ -618,8 +618,8 @@ select:-webkit-autofill {
 
   /* === LAYOUT HEIGHTS === */
   --spacing-header: 3rem;
-  --spacing-bottom-nav: 3rem;
-  /* 48px - mobile bottom navigation dock (icon + label) */
+  --spacing-bottom-nav: 4rem;
+  /* 64px - mobile bottom navigation dock (icon + label) */
   --spacing-button: 2.75rem;
   --spacing-button-sm: 2.25rem;
   --spacing-button-lg: 3rem;
@@ -778,6 +778,10 @@ select:-webkit-autofill {
   --shadow-dropdown: 0 4px 12px -2px oklch(var(--shadow-ink-subtle));
   --shadow-modal: 0 12px 40px -8px oklch(var(--shadow-ink-strong));
   --shadow-card: var(--shadow-sm);
+  /* Upward-facing shadow for fixed bottom elements (bottom nav, sticky footers) */
+  --shadow-nav: 0 -2px 16px -4px oklch(var(--shadow-ink-subtle));
+  /* Drop shadow for floating CTA buttons (sell, checkout) */
+  --shadow-cta: 0 4px 12px -2px oklch(var(--shadow-ink-strong));
 
   /* === TRANSITIONS === */
   --ease-snappy: cubic-bezier(0.2, 0, 0, 1);

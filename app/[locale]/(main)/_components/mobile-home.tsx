@@ -127,18 +127,7 @@ export function MobileHome({
   const activeSubcategoryLabel = activeSubcategory ? getCategoryLabel(activeSubcategory) : null
   const activeL2Category = activeL2Categories.find((category) => category.slug === activeL2Slug) ?? null
   const activeL2Label = activeL2Category ? getCategoryLabel(activeL2Category) : null
-  const contextTitle = activeCategoryLabel && activeSubcategoryLabel && activeL2Label
-    ? tV4("banner.categoryPathDeepTitle", {
-      parent: activeCategoryLabel,
-      child: activeSubcategoryLabel,
-      leaf: activeL2Label,
-    })
-    : activeCategoryLabel && activeSubcategoryLabel
-      ? tV4("banner.categoryPathTitle", {
-        parent: activeCategoryLabel,
-        child: activeSubcategoryLabel,
-      })
-      : activeSubcategoryLabel ?? activeCategoryLabel ?? tV4(`banner.scopeTitle.${scope}`)
+  const scopeTitle = tV4(`banner.scopeTitle.${scope}`)
 
   const fullBrowseHref = buildHomeBrowseHref({ scope, activeCategorySlug, activeSubcategorySlug, activeL2Slug, filters, city, nearby })
   const showBrowseOptionsTrigger = activeSubcategorySlug !== null && activeL2Categories.length > 0
@@ -169,6 +158,15 @@ export function MobileHome({
   const handleSubcategoryPill = useCallback((slug: string | null) => {
     setActiveSubcategorySlug((previous) => (previous === slug ? null : slug))
     setActiveL2Slug(null)
+  }, [setActiveSubcategorySlug, setActiveL2Slug])
+
+  const handleBreadcrumbTap = useCallback((level: "category" | "subcategory") => {
+    if (level === "category") {
+      setActiveSubcategorySlug(null)
+      setActiveL2Slug(null)
+    } else if (level === "subcategory") {
+      setActiveL2Slug(null)
+    }
   }, [setActiveSubcategorySlug, setActiveL2Slug])
 
   const handleBrowseOptionsSelect = useCallback((slug: string | null) => {
@@ -225,7 +223,11 @@ export function MobileHome({
           visibleCategoryTabs={visibleCategoryTabs}
           overflowCategories={overflowCategories}
           activeSubcategories={activeSubcategories}
-          contextTitle={contextTitle}
+          activeCategoryLabel={activeCategoryLabel}
+          activeSubcategoryLabel={activeSubcategoryLabel}
+          activeL2Label={activeL2Label}
+          scopeTitle={scopeTitle}
+          listingCount={products.length}
           fullBrowseHref={fullBrowseHref}
           showBrowseOptionsTrigger={showBrowseOptionsTrigger}
           hasActiveFilters={hasActiveFilters}
@@ -233,6 +235,7 @@ export function MobileHome({
           onPrimaryTab={handlePrimaryTab}
           onScopeSelect={handleScopeSelect}
           onSubcategoryPill={handleSubcategoryPill}
+          onBreadcrumbNavigate={handleBreadcrumbTap}
           onCategoryPickerOpen={() => setCategoryPickerOpen(true)}
           onBrowseOptionsOpen={() => setBrowseOptionsOpen(true)}
           onFilterOpen={() => setFilterOpen(true)}

@@ -1,21 +1,20 @@
 "use client"
 
 import * as React from "react"
-import { Link } from "@/i18n/routing"
 import { useLocale, useTranslations } from "next-intl"
 import { Zap as Lightning } from "lucide-react";
 
 
 import { cn } from "@/lib/utils"
 import { MarketplaceBadge } from "@/components/shared/marketplace-badge"
-import { Card, CardContent } from "@/components/ui/card"
+import { CardContent } from "@/components/ui/card"
 import { shouldShowConditionBadge } from "@/lib/badges/category-badge-specs"
 
-import { ProductCardActions } from "./actions"
-import { ProductCardImage } from "./image"
 import { ProductCardPrice } from "./price"
 import { ProductCardSocialProof } from "./social-proof"
-import { useProductCardQuickView } from "./use-product-card-quick-view"
+import { ProductCardWishlistOverlay } from "./product-card-wishlist-overlay"
+import { buildProductCardFrameSurface, ProductCardFrame } from "./product-card-frame"
+import { useProductCardQuickViewInput } from "./use-product-card-quick-view-input"
 import {
   getDiscountPercent,
   getOverlayBadgeVariants,
@@ -105,132 +104,77 @@ export function DesktopProductCard({
   const hasTrustSignals = Boolean(freeShipping || sellerVerified)
   const hasInfoMeta = Boolean(conditionLabel || locationLabel || hasTrustSignals)
 
-  const quickViewInput = React.useMemo(
-    () => ({
-      id,
-      title,
-      price,
-      image,
-      images,
-      originalPrice,
-      description,
-      categoryPath,
-      condition,
-      location,
-      freeShipping,
-      rating,
-      reviews,
-      inStock,
-      slug,
-      username,
-      sellerId,
-      sellerName,
-      sellerAvatarUrl,
-      sellerVerified,
-      includeFreeShipping: true,
-    }),
-    [
-      categoryPath,
-      condition,
-      description,
-      freeShipping,
-      id,
-      image,
-      images,
-      inStock,
-      location,
-      originalPrice,
-      price,
-      rating,
-      reviews,
-      sellerAvatarUrl,
-      sellerId,
-      sellerName,
-      sellerVerified,
-      slug,
-      title,
-      username,
-    ]
-  )
-
-  const handleCardClick = useProductCardQuickView({
-    disableQuickView,
-    product: quickViewInput,
+  const quickViewInput = useProductCardQuickViewInput({
+    id,
+    title,
+    price,
+    image,
+    images,
+    originalPrice,
+    description,
+    categoryPath,
+    condition,
+    location,
+    freeShipping,
+    rating,
+    reviews,
+    inStock,
+    slug,
+    username,
+    sellerId,
+    sellerName,
+    sellerAvatarUrl,
+    sellerVerified,
+    includeFreeShipping: true,
   })
 
   return (
-    <Card
-      data-slot="surface"
-      className={cn(
-        "tap-highlight tap-transparent group relative flex h-full min-w-0 cursor-pointer flex-col overflow-hidden rounded-xl border-border-subtle shadow-none",
-        className
-      )}
-    >
-        <Link
-          href={productUrl}
-          prefetch={false}
-          data-slot="product-card-link"
-          className="absolute inset-0 z-10 rounded-xl outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
-          aria-label={t("openProduct", { title })}
-          onClick={handleCardClick}
-        >
-          <span className="sr-only">{title}</span>
-        </Link>
+    <ProductCardFrame
+      disableQuickView={disableQuickView}
+      quickViewInput={quickViewInput}
+      surface={buildProductCardFrameSurface(productUrl, title, className, image, index, inStock, 1)}
+      mediaOverlay={
+        <>
+          {inStock && overlayBadgeVariants.length > 0 && (
+            <div className="pointer-events-none absolute left-1.5 top-1.5 z-10 flex flex-col gap-1">
+              {overlayBadgeVariants.map((variant) => {
+                if (variant === "promoted") {
+                  return (
+                    <span
+                      key="promoted"
+                      className="flex size-6 items-center justify-center rounded-full bg-promoted text-promoted-foreground"
+                      role="img"
+                      aria-label={t("adBadge")}
+                    >
+                      <Lightning size={14} />
+                    </span>
+                  )
+                }
 
-      <div className="relative overflow-hidden rounded-t-xl bg-surface-subtle">
-        <ProductCardImage
-          src={image}
-          alt={title}
-          index={index}
-          inStock={inStock}
-          outOfStockLabel={t("outOfStock")}
-          ratio={1}
-        />
-
-        {inStock && overlayBadgeVariants.length > 0 && (
-          <div className="pointer-events-none absolute left-1.5 top-1.5 z-10 flex flex-col gap-1">
-            {overlayBadgeVariants.map((variant) => {
-              if (variant === "promoted") {
                 return (
-                  <span
-                    key="promoted"
-                    className="flex size-6 items-center justify-center rounded-full bg-promoted text-promoted-foreground"
-                    role="img"
-                    aria-label={t("adBadge")}
-                  >
-                    <Lightning size={14} />
-                  </span>
+                  <MarketplaceBadge key="discount" size="compact" variant="discount">
+                    -{discountPercent}%
+                  </MarketplaceBadge>
                 )
-              }
+              })}
+            </div>
+          )}
 
-              return (
-                <MarketplaceBadge key="discount" size="compact" variant="discount">
-                  -{discountPercent}%
-                </MarketplaceBadge>
-              )
-            })}
-          </div>
-        )}
-
-        {showWishlist && (
-          <div className="absolute right-1.5 top-1.5 z-20">
-            <ProductCardActions
+          {showWishlist && (
+            <ProductCardWishlistOverlay
               id={id}
               title={title}
               price={price}
               image={image}
-              slug={slug ?? null}
-              username={username ?? null}
-              showQuickAdd={false}
-              showWishlist
+              slug={slug}
+              username={username}
               inStock={inStock}
               isOwnProduct={isOwnProduct}
-              size="icon-compact"
             />
-          </div>
-        )}
-      </div>
-
+          )}
+        </>
+      }
+    >
       <CardContent className="space-y-1.5 p-2.5 pt-2.5">
         <h3
           className={cn(
@@ -296,7 +240,6 @@ export function DesktopProductCard({
           </div>
         )}
       </CardContent>
-    </Card>
+    </ProductCardFrame>
   )
 }
-

@@ -1,9 +1,7 @@
-import { Suspense } from "react"
 import { getTranslations } from "next-intl/server"
 import { connection } from "next/server"
 import { createClient } from "@/lib/supabase/server"
 import { AdminDocsContent } from "./_components/docs-content"
-import { Skeleton } from "@/components/ui/skeleton"
 
 export const metadata = {
   title: "Admin Docs | Treido",
@@ -31,9 +29,7 @@ export default async function AdminDocsPage({
           </p>
         </div>
       </div>
-      <Suspense fallback={<DocsTableSkeleton />}>
-        <AdminDocsContentWrapper locale={locale} />
-      </Suspense>
+      <AdminDocsContentWrapper locale={locale} />
     </div>
   )
 }
@@ -49,25 +45,4 @@ async function AdminDocsContentWrapper({ locale }: { locale: string }) {
     .order("title")
   
   return <AdminDocsContent initialDocs={docs || []} />
-}
-
-function DocsTableSkeleton() {
-  return (
-    <div className="space-y-4">
-      <div className="flex gap-2">
-        <Skeleton className="h-10 w-32" />
-        <Skeleton className="h-10 w-32" />
-        <Skeleton className="h-10 w-32" />
-      </div>
-      <div className="rounded-lg border">
-        {Array.from({ length: 5 }).map((_, i) => (
-          <div key={i} className="flex items-center gap-4 p-4 border-b last:border-b-0">
-            <Skeleton className="h-5 w-48" />
-            <Skeleton className="h-5 w-24" />
-            <Skeleton className="h-5 w-20" />
-          </div>
-        ))}
-      </div>
-    </div>
-  )
 }

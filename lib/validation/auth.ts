@@ -1,5 +1,7 @@
 import { z } from "zod"
+import { createUsernameSchema, RESERVED_USERNAMES } from "./username"
 export { getPasswordStrength, type PasswordStrengthLabelKey } from "./password-strength"
+export { RESERVED_USERNAMES } from "./username"
 
 // Email validation schema
 export const emailSchema = z
@@ -27,80 +29,14 @@ export const passwordSchema = z
   .regex(/[0-9]/, { message: "errors.passwordNumber" })
 
 // Username validation schema
-const usernameSchema = z
-  .string()
-  .min(3, { message: "errors.usernameMin" })
-  .max(30, { message: "errors.usernameMax" })
-  .regex(/^[a-z0-9]/, { message: "errors.usernameStart" })
-  .regex(/^[a-z0-9_]+$/, { message: "errors.usernameCharset" })
-  .refine((val) => !val.includes("__"), {
-    message: "errors.usernameNoConsecutiveUnderscores",
-  })
-  .refine((val) => !val.endsWith("_"), {
-    message: "errors.usernameNoTrailingUnderscore",
-  })
-
-// Reserved usernames
-export const RESERVED_USERNAMES = [
-  "admin",
-  "administrator",
-  "support",
-  "help",
-  "info",
-  "contact",
-  "treido",
-  "store",
-  "shop",
-  "seller",
-  "buyer",
-  "user",
-  "users",
-  "account",
-  "settings",
-  "profile",
-  "members",
-  "member",
-  "api",
-  "auth",
-  "login",
-  "signup",
-  "register",
-  "logout",
-  "signout",
-  "home",
-  "index",
-  "about",
-  "terms",
-  "privacy",
-  "legal",
-  "search",
-  "explore",
-  "discover",
-  "trending",
-  "popular",
-  "checkout",
-  "cart",
-  "order",
-  "orders",
-  "payment",
-  "payments",
-  "sell",
-  "selling",
-  "buy",
-  "buying",
-  "deals",
-  "offers",
-  "messages",
-  "notifications",
-  "inbox",
-  "outbox",
-  "test",
-  "demo",
-  "example",
-  "null",
-  "undefined",
-  "root",
-]
+const usernameSchema = createUsernameSchema({
+  min: "errors.usernameMin",
+  max: "errors.usernameMax",
+  start: "errors.usernameStart",
+  charset: "errors.usernameCharset",
+  noConsecutiveUnderscores: "errors.usernameNoConsecutiveUnderscores",
+  noTrailingUnderscore: "errors.usernameNoTrailingUnderscore",
+})
 
 // Login schema
 export const loginSchema = z.object({

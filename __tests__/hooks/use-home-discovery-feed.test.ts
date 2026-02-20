@@ -1,6 +1,7 @@
 import { act, renderHook, waitFor } from "@testing-library/react"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import type { UIProduct } from "@/lib/types/products"
+// eslint-disable-next-line no-restricted-imports -- test intentionally imports route-private hook
 import { useHomeDiscoveryFeed } from "@/app/[locale]/(main)/_components/mobile-home/use-home-discovery-feed"
 
 const mockFetch = vi.fn()

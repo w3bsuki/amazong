@@ -9,7 +9,8 @@ const mobileBottomNavRootVariants = cva(
 )
 
 const mobileBottomNavDockVariants = cva(
-  "pointer-events-auto w-full rounded-t-2xl border-t border-border-subtle bg-background px-2 pt-1 pb-safe"
+  // Flat surface for persistent mobile chrome; shadow-nav is an upward-facing shadow defined in globals.css.
+  "pointer-events-auto w-full rounded-t-2xl border-t border-border-subtle bg-background px-2 pt-2 pb-safe shadow-nav"
 )
 
 const mobileBottomNavListVariants = cva(
@@ -17,53 +18,51 @@ const mobileBottomNavListVariants = cva(
 )
 
 const mobileBottomNavItemVariants = cva(
-  "group relative flex h-full w-full flex-col items-center justify-center gap-px tap-transparent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+  // before: pill indicator — sits flush at the top of the nav dock, animates in on active.
+  [
+    "group relative flex h-full w-full flex-col items-center justify-center gap-0.5",
+    "tap-transparent select-none text-nav-inactive",
+    "transition-all duration-150",
+    "before:absolute before:top-0 before:left-1/2 before:-translate-x-1/2",
+    "before:h-0.5 before:w-5 before:rounded-full before:content-['']",
+    "before:bg-transparent before:transition-all before:duration-200",
+    "data-[state=active]:text-nav-active data-[state=active]:before:bg-nav-active data-[state=active]:before:w-6",
+    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+  ],
   {
     variants: {
-      state: {
-        active: "text-nav-active",
-        inactive: "text-nav-inactive",
-      },
       emphasis: {
-        default: "",
-        core: "",
+        // Tactile scale feedback + pill indicator for standard tabs.
+        default: "active:scale-95",
+        // Pull the core action up so it floats above the dock edge;
+        // no pill indicator or scale (the FAB button handles its own feedback).
+        core: "-mt-3 before:hidden",
       },
     },
     defaultVariants: {
-      state: "inactive",
       emphasis: "default",
     },
   }
 )
 
 const mobileBottomNavCoreActionVariants = cva(
-  "inline-flex size-(--control-compact) items-center justify-center rounded-full",
-  {
-    variants: {
-      state: {
-        active: "bg-primary text-primary-foreground shadow-sm",
-        inactive: "bg-foreground text-background ring-2 ring-primary",
-      },
-    },
-    defaultVariants: {
-      state: "inactive",
-    },
-  }
+  // Floating sell button: elevated with shadow-cta, slightly larger touch presence.
+  // ring-background creates a visual gap between button and dock surface.
+  [
+    "inline-flex size-13 items-center justify-center rounded-full",
+    "bg-foreground text-background",
+    "shadow-cta ring-4 ring-background",
+    "transition-all duration-150",
+    "hover:bg-foreground/90",
+    "active:scale-90",
+    "group-data-[state=active]:bg-primary group-data-[state=active]:text-primary-foreground",
+    "group-data-[state=active]:ring-focus-ring",
+  ]
 )
 
 const mobileBottomNavLabelVariants = cva(
-  "text-2xs truncate",
-  {
-    variants: {
-      state: {
-        active: "font-semibold text-nav-active",
-        inactive: "font-medium text-nav-inactive",
-      },
-    },
-    defaultVariants: {
-      state: "inactive",
-    },
-  }
+  // text-2xs (0.625rem) matches native app label conventions — dense without feeling cramped.
+  "text-2xs font-medium leading-none tracking-wider transition-colors group-data-[state=active]:font-semibold group-data-[state=active]:tracking-wide"
 )
 
 function MobileBottomNavRoot({
@@ -108,6 +107,7 @@ function MobileBottomNavList({
 type MobileBottomNavItemProps = React.ComponentProps<"button"> &
   VariantProps<typeof mobileBottomNavItemVariants> & {
     asChild?: boolean
+    state?: "active" | "inactive"
   }
 
 function MobileBottomNavItem({
@@ -123,7 +123,7 @@ function MobileBottomNavItem({
     <Comp
       data-slot="mobile-bottom-nav-item"
       data-state={state}
-      className={cn(mobileBottomNavItemVariants({ state, emphasis }), className)}
+      className={cn(mobileBottomNavItemVariants({ emphasis }), className)}
       {...props}
     />
   )
@@ -136,7 +136,6 @@ type MobileBottomNavCoreActionProps = React.ComponentProps<"span"> &
 
 function MobileBottomNavCoreAction({
   className,
-  state,
   asChild = false,
   ...props
 }: MobileBottomNavCoreActionProps) {
@@ -145,14 +144,15 @@ function MobileBottomNavCoreAction({
   return (
     <Comp
       data-slot="mobile-bottom-nav-core-action"
-      className={cn(mobileBottomNavCoreActionVariants({ state }), className)}
+      className={cn(mobileBottomNavCoreActionVariants(), className)}
       {...props}
     />
   )
 }
 
-type MobileBottomNavLabelProps = React.ComponentProps<"span"> &
-  VariantProps<typeof mobileBottomNavLabelVariants>
+type MobileBottomNavLabelProps = React.ComponentProps<"span"> & {
+  state?: "active" | "inactive"
+}
 
 function MobileBottomNavLabel({
   className,
@@ -163,7 +163,8 @@ function MobileBottomNavLabel({
     <span
       data-slot="mobile-bottom-nav-label"
       aria-hidden="true"
-      className={cn(mobileBottomNavLabelVariants({ state }), className)}
+      data-state={state}
+      className={cn(mobileBottomNavLabelVariants(), className)}
       {...props}
     />
   )

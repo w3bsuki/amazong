@@ -21,88 +21,95 @@
 
 ## High‑Signal Audit Findings (2026‑02‑20)
 
-### 1) Repo clutter (tracked artifacts)
+### 0) `/sell` route is slow (guest + auth) — wasted work + heavy client bundle
 
-- Tracked local artifacts exist in root and `.tmp/`:
-  - `.tmp/jscpd-report/jscpd-report.json`
-  - `.tmp/dupes-entry.txt`, `.tmp/use-client-files.txt`, `architecture-*.json`, `lean-sweep-*.json`
-  - `build-baseline.txt`, `build-final.txt`, `tmp_test.txt`
-- `.gitignore` does **not** ignore `.tmp/` as a whole (only some patterns), so it’s easy to reintroduce tracked cruft.
+- Root cause (guest): server was fetching sell categories + payout status even when user is `null` or not a seller, inflating TTFB.
+- Root cause (guest): client entry imported the huge sell form module eagerly, so guests downloaded the whole sell bundle just to see the auth gate.
+- Fixes applied:
+  - `app/[locale]/(sell)/sell/page.tsx`: fetch seller first; only fetch categories + payout status when `seller.is_seller === true`.
+  - `app/[locale]/(sell)/sell/sell-page-client.tsx`: `next/dynamic()` import for `UnifiedSellForm` with `ssr: false` + skeleton.
+  - `app/[locale]/(sell)/sell/_lib/categories.ts`: use `getCategoryHierarchy(null, 2)` (L0→L2) instead of depth‑3 tree; L3+ via `/api/categories/[id]/children`.
 
-### 2) Architecture violation (route-private import leak)
+### 1) Repo clutter (artifacts) — Fixed (safe-only)
 
-- `(main)/categories` imports a constant from `(main)/search/_lib`, violating the `_lib` privacy rule.
+- No tracked `.tmp/**` artifacts found in the git index at the time of this sweep.
+- `.gitignore` now ignores `.tmp/` broadly + refactor scratch outputs (`refactor-final/`, `refactor/*-audit-*`, etc.) to prevent reintroducing local cruft.
+- Local-only untracked scratch docs under `refactor-final/` and `refactor/*-audit-*.md` were removed to keep the working tree clean.
+
+### 2) Architecture violation (route-private import leak) — Resolved
+
+- Categories pagination constant is now sourced from `app/[locale]/(main)/_lib/pagination.ts` (shared within `(main)`), avoiding cross-route `_lib` imports.
   - `app/[locale]/(main)/categories/[slug]/_lib/search-products.ts`
   - `app/[locale]/(main)/categories/[slug]/_components/category-page-dynamic-content.tsx`
-  - Fix: move shared pagination constant to a neutral location (e.g. `app/[locale]/(main)/_lib/pagination.ts` or top-level `lib/`) and rewire both callers.
-  - Note: defer if these files are being edited in another terminal to avoid merge conflicts.
 
-### 3) UI primitives polluted with domain semantics
+### 3) UI primitives polluted with domain semantics — Resolved
 
-- `components/ui/badge.tsx` contains marketplace-specific badge variants (condition/shipping/verified/promo/etc.).
-  - Fix: keep `components/ui/*` primitive-only; move semantic variants to `components/shared/**` domain wrappers.
+- Verified: `components/ui/badge.tsx` is primitive-only (base + semantic status variants), with no marketplace-specific variants.
 
-### 4) Duplicated realtime subscription logic
+### 4) Duplicated realtime subscription logic — Fixed
 
-- Supabase realtime subscribe/unsubscribe lifecycle is duplicated in:
-  - `hooks/use-notification-count.ts`
-  - `components/dropdowns/messages-dropdown.tsx`
-  - Fix: extract a shared hook/helper so both use a single lifecycle implementation.
+- `hooks/use-supabase-postgres-changes.ts` is the shared lifecycle implementation.
+- Extended to support an optional `onPayload` callback + optional injected Supabase client, and migrated remaining manual subscriptions:
+  - `components/providers/message-context.tsx`
+  - `app/[locale]/(main)/(support)/customer-service/_components/support-chat-widget.tsx`
 
-### 5) Duplicated product Quick View click logic
+### 5) Duplicated product Quick View click logic — Fixed
 
-- Quick View click handler duplicated in:
-  - `components/shared/product/card/desktop.tsx`
-  - `components/shared/product/card/mobile.tsx`
-  - Fix: extract shared handler/hook (keep behavior identical: modifier keys, href navigation, drawer payload).
+- Shared handler lives in `components/shared/product/card/use-product-card-quick-view.ts` and is used by both desktop and mobile product cards.
 
-### 6) Script duplication (gates / scanners)
+### 6) Script duplication (gates / scanners) — Fixed
 
-- Tailwind token scanners reimplement the same file-walking + comment stripping + report boilerplate across 4 scripts.
-- `scripts/architecture-scan.mjs` duplicates similar file-walking logic.
-  - Fix: introduce `scripts/lib/*` utilities (`file-walker.mjs`, `tailwind-scan-utils.mjs`) and keep each scanner focused on its regex rules.
-  - Risk: medium (build gates). Must verify `pnpm -s styles:gate` and `pnpm -s architecture:scan`.
+- Tailwind token scanners use shared utilities in `scripts/lib/*` (`file-walker.mjs`, `tailwind-scan-utils.mjs`).
+- `scripts/architecture-scan.mjs` now also reuses the shared walker and limits scanning to `.ts/.tsx` for faster runs.
+
+### 7) Root script clutter (ad-hoc audits)
+
+- Removed: `audit-sr.py`, `script.py` (ad-hoc setRequestLocale scanners).
+- Added: `scripts/audit-set-request-locale.py` (single consolidated CLI script).
 
 ## Execution Plan (Safe‑Only Batches)
 
 ### Batch A — Untrack local artifacts + harden `.gitignore`
 
-- Remove tracked `.tmp/**` artifacts and `tmp_test.txt`.
-- Decide on build logs:
-  - Option 1 (recommended): move build logs under `.tmp/` and keep untracked.
-  - Option 2: keep tracked, but move under `refactor/artifacts/` (keeps root clean).
-- Update `.gitignore` to ignore `.tmp/` broadly + build-log outputs.
+- Status: `.gitignore` hardened (includes broad `.tmp/` ignore + refactor scratch patterns).
 
 ### Batch B — De-duplicate gate scripts
 
-- Add: `scripts/lib/file-walker.mjs`, `scripts/lib/tailwind-scan-utils.mjs`
-- Refactor:
-  - `scripts/scan-tailwind-{semantic-tokens,palette,token-alpha,arbitrary}.mjs`
-  - Optionally `scripts/architecture-scan.mjs` to reuse shared walker
+- Status: `scripts/lib/*` exists; Tailwind scanners use it; `scripts/architecture-scan.mjs` reuses it.
 
 ### Batch C — Restore `components/ui` purity (badge variants)
 
-- Keep primitive `Badge` and minimal variants in `components/ui/badge.tsx`.
-- Add shared semantic wrappers under `components/shared/**` (e.g. product/badges).
-- Rewire imports in callers (grep to enumerate all `badgeVariant` usage first).
+- Status: verified clean — `components/ui/badge.tsx` is primitive-only.
 
 ### Batch D — Realtime subscribe helper
 
-- Add a small shared hook under `hooks/` (or `lib/` if truly framework-agnostic, but likely `hooks/`).
-- Migrate `use-notification-count` and `messages-dropdown` to use it.
+- Status: `hooks/use-supabase-postgres-changes.ts` is the shared lifecycle hook (plus payload support where needed).
 
 ### Batch E — Quick View handler extraction
 
-- Extract shared click handler/hook and migrate desktop+mobile product cards to use it.
+- Status: `components/shared/product/card/use-product-card-quick-view.ts` in use.
 
 ### Batch F — Split `hooks/use-geo-welcome.ts`
 
-- Separate storage/cookie helpers and Supabase write helper from orchestration hook.
+- Status: hardened lifecycle (error guard + tighter callback deps). Full helper extraction remains optional.
 
 ### Batch G — Fix route-private import leak (defer if conflict)
 
-- Create shared pagination constant in neutral location.
-- Replace cross-route `_lib` import.
+- Status: resolved — shared pagination constant lives under `app/[locale]/(main)/_lib/pagination.ts`.
+
+## Sweep Results (2026‑02‑20)
+
+- **Loading boundaries:** pruned redundant leaf `loading.tsx` files where an ancestor already provided a meaningful skeleton (70 → 56).
+- **Suspense/fallback spam:** reduced nested `Suspense` usage (86 → 17 matches) and explicit `fallback=` usage (26 → 7 matches), favoring route-segment `loading.tsx` over local fallbacks.
+- **Loading UX:** removed `fallback={null}` wrappers that swallowed segment loading UI:
+  - `app/[locale]/layout.tsx`
+  - `app/[locale]/(business)/dashboard/layout.tsx`
+  - `app/[locale]/(business)/dashboard/upgrade/page.tsx`
+  - `app/[locale]/_providers/commerce-providers.tsx`
+- **Pagination navigation:** `components/ui/pagination.tsx` supports `asChild`; `SearchPagination` uses locale-aware `Link` to avoid full reloads.
+- **Hooks correctness:** `components/providers/wishlist-context.tsx` no longer uses conditional `useContext` (removed hooks-rule disables). Additional `react-hooks/exhaustive-deps` disables removed in key filter toolbars by using refs + correct deps.
+- **Page-level fallbacks:** removed redundant page-local `Suspense` skeletons (Admin, About, Account Orders, PDP, Home, Search) and relied on the nearest meaningful route-level loading boundary.
+- **Repo hygiene:** local report artifacts like `playwright-report/` and `.codex/dupes/` are ignored and treated as non-SSOT scratch outputs.
 
 ## Verification (Run Once per Batch Cluster)
 
@@ -111,4 +118,3 @@ Run after completing a logical batch (not after every file):
 ```bash
 pnpm -s typecheck && pnpm -s lint && pnpm -s styles:gate && pnpm -s test:unit
 ```
-

@@ -2,7 +2,6 @@ import { createAdminClient, createClient } from "@/lib/supabase/server"
 import { formatDistanceToNow } from "date-fns"
 import { bg, enUS } from "date-fns/locale"
 import { getLocale, getTranslations } from "next-intl/server"
-import { Suspense } from "react"
 import { connection } from "next/server"
 import {
   Card,
@@ -228,32 +227,6 @@ async function AdminSellersContent() {
   )
 }
 
-async function AdminSellersFallback() {
-  const t = await getTranslations("AdminSellers")
-
-  return (
-    <div className="flex flex-col gap-4 py-4 md:gap-4 md:py-6 px-4 lg:px-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">{t("page.title")}</h1>
-          <p className="text-muted-foreground">{t("page.description")}</p>
-        </div>
-        <Badge variant="outline" className="text-base">{t("loading")}</Badge>
-      </div>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>{t("table.title")}</CardTitle>
-          <CardDescription>{t("table.description")}</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="text-sm text-muted-foreground">{t("loading")}</div>
-        </CardContent>
-      </Card>
-    </div>
-  )
-}
-
 export const metadata = {
   title: "Admin Sellers | Treido",
   description: "Review and manage Treido sellers.",
@@ -262,9 +235,5 @@ export const metadata = {
 export default async function AdminSellersPage() {
   await connection()
 
-  return (
-    <Suspense fallback={<AdminSellersFallback />}>
-      <AdminSellersContent />
-    </Suspense>
-  )
+  return <AdminSellersContent />
 }

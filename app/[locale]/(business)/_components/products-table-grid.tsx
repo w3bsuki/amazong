@@ -32,6 +32,18 @@ interface ProductsTableGridProps {
   onDelete: (productId: string) => Promise<void>
 }
 
+const SORTABLE_COLUMNS: Array<{
+  field: SortField
+  tableHeadClassName: string
+  label: string
+}> = [
+  { field: "title", tableHeadClassName: "min-w-(--container-3xs)", label: "Product" },
+  { field: "sku", tableHeadClassName: "hidden md:table-cell w-24", label: "SKU" },
+  { field: "status", tableHeadClassName: "w-24", label: "Status" },
+  { field: "stock", tableHeadClassName: "hidden md:table-cell w-28", label: "Inventory" },
+  { field: "price", tableHeadClassName: "w-24", label: "Price" },
+]
+
 function SortHeader({
   field,
   sortField,
@@ -110,31 +122,13 @@ export function ProductsTableGrid({
             <TableHead className="w-10 pl-4">
               <Checkbox checked={isAllSelected} onCheckedChange={onToggleSelectAll} />
             </TableHead>
-            <TableHead className="min-w-(--container-3xs)">
-              <SortHeader field="title" sortField={sortField} sortOrder={sortOrder} onSort={onSort}>
-                Product
-              </SortHeader>
-            </TableHead>
-            <TableHead className="hidden md:table-cell w-24">
-              <SortHeader field="sku" sortField={sortField} sortOrder={sortOrder} onSort={onSort}>
-                SKU
-              </SortHeader>
-            </TableHead>
-            <TableHead className="w-24">
-              <SortHeader field="status" sortField={sortField} sortOrder={sortOrder} onSort={onSort}>
-                Status
-              </SortHeader>
-            </TableHead>
-            <TableHead className="hidden md:table-cell w-28">
-              <SortHeader field="stock" sortField={sortField} sortOrder={sortOrder} onSort={onSort}>
-                Inventory
-              </SortHeader>
-            </TableHead>
-            <TableHead className="w-24">
-              <SortHeader field="price" sortField={sortField} sortOrder={sortOrder} onSort={onSort}>
-                Price
-              </SortHeader>
-            </TableHead>
+            {SORTABLE_COLUMNS.map(({ field, tableHeadClassName, label }) => (
+              <TableHead key={field} className={tableHeadClassName}>
+                <SortHeader field={field} sortField={sortField} sortOrder={sortOrder} onSort={onSort}>
+                  {label}
+                </SortHeader>
+              </TableHead>
+            ))}
             <TableHead className="hidden md:table-cell w-24">Rating</TableHead>
             <TableHead className="w-10 pr-4"></TableHead>
           </TableRow>

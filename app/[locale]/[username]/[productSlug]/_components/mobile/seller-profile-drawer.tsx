@@ -10,6 +10,7 @@
 
 import * as React from "react"
 import { useState, useEffect } from "react"
+import Image from "next/image"
 import { useTranslations, useLocale } from "next-intl"
 import { formatDistanceToNow } from "date-fns"
 import { bg, enUS } from "date-fns/locale"
@@ -38,6 +39,7 @@ import { IconButton } from "@/components/ui/icon-button"
 import { Badge } from "@/components/ui/badge"
 import { MarketplaceBadge } from "@/components/shared/marketplace-badge"
 import { UserAvatar } from "@/components/shared/user-avatar"
+import { normalizeOptionalImageUrl } from "@/lib/normalize-image-url"
 
 // -----------------------------------------------------------------------------
 // Types
@@ -257,6 +259,50 @@ function SellerListings({
     router.push(href)
   }
 
+  const SellerProductCard = ({ product }: { product: SellerProduct }) => {
+    const [resolvedImageSrc, setResolvedImageSrc] = useState(() =>
+      normalizeOptionalImageUrl(product.image)
+    )
+
+    useEffect(() => {
+      setResolvedImageSrc(normalizeOptionalImageUrl(product.image))
+    }, [product.image])
+
+    return (
+      <button
+        onClick={() => handleProductClick(getProductHref(product))}
+        className="shrink-0 w-28 rounded-lg border border-border-subtle bg-card overflow-hidden text-left transition-colors hover:bg-hover"
+      >
+        {/* Image */}
+        <div className="aspect-square relative bg-muted">
+          {resolvedImageSrc ? (
+            <Image
+              src={resolvedImageSrc}
+              alt={product.title}
+              fill
+              sizes="112px"
+              className="object-cover"
+              onError={() => setResolvedImageSrc(null)}
+            />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center">
+              <Package className="size-6 text-muted-foreground" />
+            </div>
+          )}
+        </div>
+        {/* Info */}
+        <div className="p-2">
+          <p className="text-xs font-bold text-foreground">
+            €{product.price.toLocaleString()}
+          </p>
+          <p className="text-2xs text-muted-foreground line-clamp-1 mt-0.5">
+            {product.title}
+          </p>
+        </div>
+      </button>
+    )
+  }
+
   return (
     <div className="space-y-3">
       <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
@@ -266,36 +312,7 @@ function SellerListings({
       {/* Horizontal scroll of products */}
       <div className="flex gap-2 overflow-x-auto pb-2 -mx-4 px-4 hide-scrollbar">
         {products.slice(0, 8).map((product) => (
-          <button
-            key={product.id}
-            onClick={() => handleProductClick(getProductHref(product))}
-            className="shrink-0 w-28 rounded-lg border border-border-subtle bg-card overflow-hidden text-left transition-colors hover:bg-hover"
-          >
-            {/* Image */}
-            <div className="aspect-square relative bg-muted">
-              {product.image ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={product.image}
-                  alt={product.title}
-                  className="w-full h-full object-cover"
-                />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center">
-                  <Package className="size-6 text-muted-foreground" />
-                </div>
-              )}
-            </div>
-            {/* Info */}
-            <div className="p-2">
-              <p className="text-xs font-bold text-foreground">
-                €{product.price.toLocaleString()}
-              </p>
-              <p className="text-2xs text-muted-foreground line-clamp-1 mt-0.5">
-                {product.title}
-              </p>
-            </div>
-          </button>
+          <SellerProductCard key={product.id} product={product} />
         ))}
       </div>
     </div>

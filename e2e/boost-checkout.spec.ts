@@ -1,10 +1,6 @@
 import { test, expect } from './fixtures/test'
 import { getTestUserCredentials, loginWithPassword } from './fixtures/auth'
 
-type BoostMockOptions = {
-  locale: 'en' | 'bg'
-}
-
 async function openBoostDialogOrSkip({ page, app }: { page: any; app: any }, locale: 'en' | 'bg') {
   await app.clearAuthSession()
 
@@ -19,10 +15,6 @@ async function openBoostDialogOrSkip({ page, app }: { page: any; app: any }, loc
   if (page.url().includes(`/${locale}/sell`)) {
     test.skip(true, 'Test user must have a seller username/profile to access /account/selling')
   }
-
-  // Find a boost trigger (icon-only button on mobile cards or outline button on desktop).
-  const trigger = page.locator('button:has(svg)')
-    .filter({ has: page.locator('svg') })
 
   // Prefer a visible button with the translated trigger text.
   const textTrigger = page.getByRole('button', { name: locale === 'bg' ? 'Промотирай' : 'Boost' }).first()
@@ -40,7 +32,7 @@ async function openBoostDialogOrSkip({ page, app }: { page: any; app: any }, loc
   await lightningButtons.first().click()
 }
 
-async function mockBoostCheckout(page: any, { locale }: BoostMockOptions) {
+async function mockBoostCheckout(page: any) {
   const requests: Array<{ locale?: string; durationDays?: string; productId?: string }> = []
 
   await page.route('**/api/boost/checkout', async (route: any) => {
@@ -77,7 +69,7 @@ test.describe('Boost flow (DEC-003) - localized pricing + checkout payload', () 
   test.describe.configure({ timeout: 120_000 })
 
   test('shows EUR + BGN approx and includes locale in checkout request (en) @boost @auth', async ({ page, app }) => {
-    const requests = await mockBoostCheckout(page, { locale: 'en' })
+    const requests = await mockBoostCheckout(page)
 
     await openBoostDialogOrSkip({ page, app }, 'en')
 
@@ -110,7 +102,7 @@ test.describe('Boost flow (DEC-003) - localized pricing + checkout payload', () 
   })
 
   test('shows EUR + BGN approx and includes locale in checkout request (bg) @boost @auth', async ({ page, app }) => {
-    const requests = await mockBoostCheckout(page, { locale: 'bg' })
+    const requests = await mockBoostCheckout(page)
 
     await openBoostDialogOrSkip({ page, app }, 'bg')
 

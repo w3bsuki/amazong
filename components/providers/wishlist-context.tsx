@@ -319,18 +319,19 @@ export function useWishlist(): WishlistContextType {
       ? (window as unknown as { __STORYBOOK_WISHLIST_CONTEXT__?: unknown }).__STORYBOOK_WISHLIST_CONTEXT__
       : undefined
 
-  if (storybookWishlistContext) {
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    const mockContext = useContext(
-      storybookWishlistContext as React.Context<WishlistContextType | undefined>
-    )
-    if (mockContext) return mockContext
-  }
-  // eslint-disable-next-line react-hooks/rules-of-hooks
-  const context = useContext(WishlistContext)
-  if (context === undefined) {
+  const realContext = useContext(WishlistContext)
+
+  const mockContext = useContext(
+    (storybookWishlistContext as React.Context<WishlistContextType | undefined> | undefined) ??
+      WishlistContext
+  )
+
+  const resolvedContext = storybookWishlistContext ? (mockContext ?? realContext) : realContext
+
+  if (resolvedContext === undefined) {
     throw new Error("useWishlist must be used within a WishlistProvider")
   }
-  return context
+
+  return resolvedContext
 }
 

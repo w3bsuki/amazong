@@ -43,6 +43,53 @@ export function CategoryAttributeDropdowns({
 
   if (inlineFilters.length === 0 && overflowFilters.length === 0) return null;
 
+  const setAttributeValue = (filterId: string, value?: string | null) => {
+    const newAttributes = { ...filters.attributes };
+    if (value == null) {
+      delete newAttributes[filterId];
+    } else {
+      newAttributes[filterId] = value;
+    }
+    onFiltersChange({ ...filters, attributes: newAttributes });
+  };
+
+  const renderFilterOptionItems = (filter: CategoryFilterDef, selectedValue: string | null | undefined) => {
+    const hasValue = Boolean(selectedValue);
+
+    return (
+      <>
+        {filter.options.map((opt) => {
+          const isSelected = selectedValue === opt.value;
+          return (
+            <DropdownMenuItem
+              key={opt.value}
+              onSelect={() => {
+                setAttributeValue(filter.id, isSelected ? undefined : opt.value);
+              }}
+              className={cn(isSelected && "bg-accent")}
+            >
+              <span className="flex-1">{opt.label}</span>
+              {isSelected && <Check className="size-4 text-primary" />}
+            </DropdownMenuItem>
+          );
+        })}
+        {hasValue && (
+          <>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              onSelect={() => {
+                setAttributeValue(filter.id);
+              }}
+              variant="destructive"
+            >
+              {t("clear")}
+            </DropdownMenuItem>
+          </>
+        )}
+      </>
+    );
+  };
+
   return (
     <>
       <div className="h-6 w-px bg-border shrink-0" />
@@ -63,42 +110,7 @@ export function CategoryAttributeDropdowns({
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="start" className="min-w-40 max-h-72 overflow-y-auto">
-                {filter.options.map((opt) => {
-                  const isSelected = selectedValue === opt.value;
-                  return (
-                    <DropdownMenuItem
-                      key={opt.value}
-                      onSelect={() => {
-                        const newAttributes = { ...filters.attributes };
-                        if (isSelected) {
-                          delete newAttributes[filter.id];
-                        } else {
-                          newAttributes[filter.id] = opt.value;
-                        }
-                        onFiltersChange({ ...filters, attributes: newAttributes });
-                      }}
-                      className={cn(isSelected && "bg-accent")}
-                    >
-                      <span className="flex-1">{opt.label}</span>
-                      {isSelected && <Check className="size-4 text-primary" />}
-                    </DropdownMenuItem>
-                  );
-                })}
-                {hasValue && (
-                  <>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem
-                      onSelect={() => {
-                        const newAttributes = { ...filters.attributes };
-                        delete newAttributes[filter.id];
-                        onFiltersChange({ ...filters, attributes: newAttributes });
-                      }}
-                      variant="destructive"
-                    >
-                      {t("clear")}
-                    </DropdownMenuItem>
-                  </>
-                )}
+                {renderFilterOptionItems(filter, selectedValue)}
               </DropdownMenuContent>
             </DropdownMenu>
           );
@@ -129,42 +141,7 @@ export function CategoryAttributeDropdowns({
                     </DropdownMenuSubTrigger>
                     <DropdownMenuPortal>
                       <DropdownMenuSubContent className="min-w-36 max-h-64 overflow-y-auto">
-                        {filter.options.map((opt) => {
-                          const isSelected = selectedValue === opt.value;
-                          return (
-                            <DropdownMenuItem
-                              key={opt.value}
-                              onSelect={() => {
-                                const newAttributes = { ...filters.attributes };
-                                if (isSelected) {
-                                  delete newAttributes[filter.id];
-                                } else {
-                                  newAttributes[filter.id] = opt.value;
-                                }
-                                onFiltersChange({ ...filters, attributes: newAttributes });
-                              }}
-                              className={cn(isSelected && "bg-accent")}
-                            >
-                              <span className="flex-1">{opt.label}</span>
-                              {isSelected && <Check className="size-4 text-primary" />}
-                            </DropdownMenuItem>
-                          );
-                        })}
-                        {hasValue && (
-                          <>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem
-                              onSelect={() => {
-                                const newAttributes = { ...filters.attributes };
-                                delete newAttributes[filter.id];
-                                onFiltersChange({ ...filters, attributes: newAttributes });
-                              }}
-                              variant="destructive"
-                            >
-                              {t("clear")}
-                            </DropdownMenuItem>
-                          </>
-                        )}
+                        {renderFilterOptionItems(filter, selectedValue)}
                       </DropdownMenuSubContent>
                     </DropdownMenuPortal>
                   </DropdownMenuSub>

@@ -270,6 +270,59 @@ export function PhotosField({
   const isUploading = uploads.some(u => u.status === "uploading" || u.status === "processing");
   const hasError = !!errors.images;
 
+  const sharedContent = (
+    <>
+      {/* Photo Grid */}
+      {hasImages && (
+        <div className="grid grid-cols-4 sm:grid-cols-4 lg:grid-cols-6 gap-2 mb-4">
+          {images.map((image, index) => (
+            <PhotoThumbnail
+              key={`${image.url}-${index}`}
+              image={image}
+              index={index}
+              isCover={index === 0 || !!image.isPrimary}
+              onRemove={() => handleRemove(index)}
+              onSetCover={() => handleSetCover(index)}
+              onPreview={() => setPreviewImage(image)}
+              isDragging={draggingIndex === index}
+              onDragStart={() => handleDragStart(index)}
+              onDragOver={(e) => handleDragOver(e, index)}
+              onDragEnd={handleDragEnd}
+            />
+          ))}
+        </div>
+      )}
+
+      {/* Upload Zone */}
+      {images.length < maxPhotos && (
+        <UploadZone
+          isUploading={isUploading}
+          isDragActive={isDragActive}
+          getRootProps={getRootProps}
+          getInputProps={getInputProps}
+          currentCount={images.length}
+          maxCount={maxPhotos}
+        />
+      )}
+
+      {/* Upload Progress */}
+      {uploads.length > 0 && (
+        <div className="mt-4 space-y-2">
+          {uploads.map((upload, i) => (
+            <UploadProgressItem key={i} upload={upload} />
+          ))}
+        </div>
+      )}
+
+      {/* Error Message */}
+      {hasError && (
+        <FieldError className="mt-3">
+          {errors.images?.message ? tSell(errors.images.message as never) : null}
+        </FieldError>
+      )}
+    </>
+  );
+
   return (
     <>
       {/* Main Photos Field */}
@@ -303,54 +356,7 @@ export function PhotosField({
 
             {/* Content */}
             <FieldContent className="p-5">
-              {/* Photo Grid */}
-              {hasImages && (
-                <div className="grid grid-cols-4 sm:grid-cols-4 lg:grid-cols-6 gap-2 mb-4">
-                  {images.map((image, index) => (
-                    <PhotoThumbnail
-                      key={`${image.url}-${index}`}
-                      image={image}
-                      index={index}
-                      isCover={index === 0 || !!image.isPrimary}
-                      onRemove={() => handleRemove(index)}
-                      onSetCover={() => handleSetCover(index)}
-                      onPreview={() => setPreviewImage(image)}
-                      isDragging={draggingIndex === index}
-                      onDragStart={() => handleDragStart(index)}
-                      onDragOver={(e) => handleDragOver(e, index)}
-                      onDragEnd={handleDragEnd}
-                    />
-                  ))}
-                </div>
-              )}
-
-              {/* Upload Zone */}
-              {images.length < maxPhotos && (
-                <UploadZone
-                  isUploading={isUploading}
-                  isDragActive={isDragActive}
-                  getRootProps={getRootProps}
-                  getInputProps={getInputProps}
-                  currentCount={images.length}
-                  maxCount={maxPhotos}
-                />
-              )}
-
-              {/* Upload Progress */}
-              {uploads.length > 0 && (
-                <div className="mt-4 space-y-2">
-                  {uploads.map((upload, i) => (
-                    <UploadProgressItem key={i} upload={upload} />
-                  ))}
-                </div>
-              )}
-
-              {/* Error Message */}
-              {hasError && (
-                <FieldError className="mt-3">
-                  {errors.images?.message ? tSell(errors.images.message as never) : null}
-                </FieldError>
-              )}
+              {sharedContent}
             </FieldContent>
           </div>
         ) : (
@@ -369,54 +375,7 @@ export function PhotosField({
               </Badge>
             </div>
 
-            {/* Photo Grid */}
-            {hasImages && (
-              <div className="grid grid-cols-4 sm:grid-cols-4 lg:grid-cols-6 gap-2 mb-4">
-                {images.map((image, index) => (
-                  <PhotoThumbnail
-                    key={`${image.url}-${index}`}
-                    image={image}
-                    index={index}
-                    isCover={index === 0 || !!image.isPrimary}
-                    onRemove={() => handleRemove(index)}
-                    onSetCover={() => handleSetCover(index)}
-                    onPreview={() => setPreviewImage(image)}
-                    isDragging={draggingIndex === index}
-                    onDragStart={() => handleDragStart(index)}
-                    onDragOver={(e) => handleDragOver(e, index)}
-                    onDragEnd={handleDragEnd}
-                  />
-                ))}
-              </div>
-            )}
-
-            {/* Upload Zone */}
-            {images.length < maxPhotos && (
-              <UploadZone
-                isUploading={isUploading}
-                isDragActive={isDragActive}
-                getRootProps={getRootProps}
-                getInputProps={getInputProps}
-                currentCount={images.length}
-                maxCount={maxPhotos}
-              />
-            )}
-
-            {/* Upload Progress */}
-            {uploads.length > 0 && (
-              <div className="mt-4 space-y-2">
-                {uploads.map((upload, i) => (
-                  <UploadProgressItem key={i} upload={upload} />
-                ))}
-              </div>
-            )}
-
-            {/* Error Message */}
-            {hasError && (
-              <FieldError className="mt-3">
-                {errors.images?.message ? tSell(errors.images.message as never) : null}
-              </FieldError>
-            )}
+            {sharedContent}
           </FieldContent>
         )}
       </Field>

@@ -115,7 +115,7 @@ export function AccountTabBar() {
   return (
     <>
       <nav 
-        className="fixed bottom-0 left-0 right-0 z-50 border-t border-border-subtle bg-background lg:hidden pb-safe"
+        className="fixed bottom-0 left-0 right-0 z-50 border-t border-border-subtle bg-background pb-safe lg:hidden"
         role="navigation"
         aria-label={t("tabBarAriaLabel")}
       >
@@ -129,20 +129,20 @@ export function AccountTabBar() {
                 href={tab.href}
                 prefetch={true}
                 className={cn(
-                  "flex h-full min-h-(--control-default) min-w-(--control-default) flex-1 flex-col items-center justify-center gap-0.5 transition-colors",
+                  "flex h-full min-h-(--control-default) min-w-(--control-default) flex-1 flex-col items-center justify-center gap-1 transition-colors",
                   "touch-manipulation tap-transparent",
                   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 rounded-full",
-                  active ? "text-primary" : "text-muted-foreground",
+                  active ? "text-primary" : "text-muted-foreground hover:text-foreground/80",
                 )}
                 aria-label={tab.label}
                 aria-current={active ? "page" : undefined}
               >
                 <tab.icon 
-                  className="size-5"
+                  className="size-6"
                   stroke={active ? "2" : "1.5"}
                 />
                 <span className={cn(
-                  "text-xs leading-tight",
+                  "text-xs leading-none tracking-wide transition-all",
                   active ? "font-semibold" : "font-medium"
                 )}>
                   {tab.label}
@@ -155,17 +155,17 @@ export function AccountTabBar() {
             type="button"
             onClick={() => setMoreOpen(true)}
             className={cn(
-              "flex h-full min-h-(--control-default) min-w-(--control-default) flex-1 flex-col items-center justify-center gap-0.5 transition-colors",
+              "flex h-full min-h-(--control-default) min-w-(--control-default) flex-1 flex-col items-center justify-center gap-1 transition-colors",
               "touch-manipulation tap-transparent",
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 rounded-full",
-              isMoreActive ? "text-primary" : "text-muted-foreground",
+              isMoreActive ? "text-primary" : "text-muted-foreground hover:text-foreground/80",
             )}
             aria-label={t("tabBar.moreOptionsAriaLabel")}
             aria-haspopup="dialog"
             aria-expanded={moreOpen}
           >
-            <IconDots className="size-5" stroke={isMoreActive ? "2" : "1.5"} />
-            <span className={cn("text-xs leading-tight", isMoreActive ? "font-semibold" : "font-medium")}>
+            <IconDots className="size-6" stroke={isMoreActive ? "2" : "1.5"} />
+            <span className={cn("text-xs leading-none tracking-wide transition-all", isMoreActive ? "font-semibold" : "font-medium")}>
               {t("tabBar.more")}
             </span>
           </button>

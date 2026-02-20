@@ -15,20 +15,29 @@ type PostgresChangesSpec = {
 type UseSupabasePostgresChangesOptions = {
   enabled: boolean
   specs: ReadonlyArray<PostgresChangesSpec>
-  onChange: () => void | Promise<void>
+  onChange?: () => void | Promise<void>
+  onPayload?: (payload: unknown) => void | Promise<void>
+  supabase?: ReturnType<typeof createClient>
 }
 
 export function useSupabasePostgresChanges({
   enabled,
   specs,
   onChange,
+  onPayload,
+  supabase: providedClient,
 }: UseSupabasePostgresChangesOptions) {
   useEffect(() => {
     if (!enabled || specs.length === 0) return
 
-    const supabase = createClient()
-    const handleChange = () => {
-      void onChange()
+    const supabase = providedClient ?? createClient()
+    const handleChange = (payload: unknown) => {
+      if (onPayload) {
+        void onPayload(payload)
+      }
+      if (onChange) {
+        void onChange()
+      }
     }
 
     const channels = specs.map((spec) => {
@@ -58,5 +67,5 @@ export function useSupabasePostgresChanges({
         supabase.removeChannel(channel)
       }
     }
-  }, [enabled, onChange, specs])
+  }, [enabled, onChange, onPayload, providedClient, specs])
 }

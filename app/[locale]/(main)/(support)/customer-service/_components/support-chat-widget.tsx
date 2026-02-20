@@ -1,7 +1,8 @@
 "use client"
 
-import { useState, useEffect, useRef, useCallback } from "react"
+import { useState, useEffect, useRef, useCallback, useMemo } from "react"
 import { createClient } from "@/lib/supabase/client"
+import { useSupabasePostgresChanges } from "@/hooks/use-supabase-postgres-changes"
 import { useTranslations } from "next-intl"
 import { SupportChatWidgetView, type SupportMessage } from "./support-chat-widget-view"
 
@@ -108,45 +109,52 @@ export function SupportChatWidget({
     }
   }, [isOpen, isAuthenticated, loadConversation])
 
-  useEffect(() => {
-    if (!conversationId) return
+  const realtimeSpecs = useMemo(() => {
+    if (!conversationId) return [] as const
 
-    const channel = supabase
-      .channel(`support-chat-${conversationId}`)
-      .on(
-        "postgres_changes",
-        {
-          event: "INSERT",
-          schema: "public",
-          table: "messages",
-          filter: `conversation_id=eq.${conversationId}`,
-        },
-        (payload) => {
-          const newMsg = payload.new as {
-            id: string
-            content: string
-            sender_id: string
-            created_at: string
-          }
+    return [
+      {
+        channel: `support-chat-${conversationId}`,
+        event: "INSERT",
+        schema: "public",
+        table: "messages",
+        filter: `conversation_id=eq.${conversationId}`,
+      },
+    ] as const
+  }, [conversationId])
 
-          setMessages((previous) => {
-            if (previous.some((message) => message.id === newMsg.id)) return previous
-            return [...previous, {
-              id: newMsg.id,
-              content: newMsg.content,
-              sender_id: newMsg.sender_id,
-              is_support: newMsg.sender_id !== userId,
-              created_at: newMsg.created_at,
-            }]
-          })
-        }
-      )
-      .subscribe()
+  const handleMessageInsert = useCallback(
+    (payload: unknown) => {
+      const newMsg = (payload as { new: {
+        id: string
+        content: string
+        sender_id: string
+        created_at: string
+      } }).new
 
-    return () => {
-      supabase.removeChannel(channel)
-    }
-  }, [supabase, conversationId, userId])
+      setMessages((previous) => {
+        if (previous.some((message) => message.id === newMsg.id)) return previous
+        return [
+          ...previous,
+          {
+            id: newMsg.id,
+            content: newMsg.content,
+            sender_id: newMsg.sender_id,
+            is_support: newMsg.sender_id !== userId,
+            created_at: newMsg.created_at,
+          },
+        ]
+      })
+    },
+    [userId]
+  )
+
+  useSupabasePostgresChanges({
+    enabled: Boolean(conversationId),
+    specs: realtimeSpecs,
+    onPayload: handleMessageInsert,
+    supabase,
+  })
 
   useEffect(() => {
     if (scrollRef.current) {

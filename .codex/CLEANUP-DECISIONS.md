@@ -227,3 +227,185 @@ REASON: Temporary file was not part of runtime or documented cleanup assets.
 FILES: `temp-i18n.py` (removed).
 RISK: None — temporary file only.
 APPROVAL: Not required — no DB schema, auth/access control, payments/webhooks, or destructive data operations touched.
+
+## 2026-02-20 — Local Refactor Scratch Artifact Cleanup
+DECISION: Remove local-only untracked scratch outputs produced by refactor tooling/agent runs (`refactor-final/`, ad-hoc `refactor/*-audit-*.md` reports, and `.codex/jscpd-*` scratch folders).
+REASON: Keep the working tree clean and avoid confusing future sweeps with non-SSOT scratch outputs.
+FILES: `refactor-final/` (removed, was untracked); `refactor/dx-audit-refactor.md` (removed, was untracked); `refactor/dx-audit-report.md` (removed, was untracked); `refactor/final-sweep-report.md` (removed, was untracked); `refactor/final-sweep.md` (removed, was untracked); `refactor/intl-audit-report.md` (removed, was untracked); `refactor/testing-audit-refactor.md` (removed, was untracked); `refactor/testing-audit-report.md` (removed, was untracked); `.codex/jscpd-*` (removed, was untracked).
+RISK: None — untracked local artifacts only.
+APPROVAL: Not required — no DB schema, auth/access control, payments/webhooks, or destructive data operations touched.
+
+## 2026-02-20 — `.gitignore` Hardening (Refactor Scratch)
+DECISION: Ignore common local scratch outputs (`refactor-final/`, `refactor/*-audit-*`, `refactor/final-sweep*`, `.codex/jscpd-*`, etc.).
+REASON: Prevent reintroducing local-only artifacts into the working tree and keep repo hygiene tight.
+FILES: `.gitignore`.
+RISK: Low — ignore rules only.
+APPROVAL: Not required — no DB schema, auth/access control, payments/webhooks, or destructive data operations touched.
+
+## 2026-02-20 — Admin Redundant Loading Boundary Prune
+DECISION: Remove redundant leaf `loading.tsx` boundaries in Admin where the leaf provided only a generic fallback and the parent `admin/loading.tsx` already provides a meaningful skeleton.
+REASON: Reduce loading-boundary spam and keep a single coherent loading UX per slow segment.
+FILES: `app/[locale]/(admin)/admin/tasks/loading.tsx` (removed); `app/[locale]/(admin)/admin/notes/loading.tsx` (removed); `app/[locale]/(admin)/admin/docs/loading.tsx` (removed).
+RISK: Low — only loading UI changes; routes remain unchanged.
+APPROVAL: Not required — no DB schema, auth/access control, payments/webhooks, or destructive data operations touched.
+
+## 2026-02-20 — Business Dashboard Redundant Leaf Loading Prune
+DECISION: Remove redundant deep-leaf `loading.tsx` boundaries under Business Dashboard that only rendered the generic `SimplePageLoading`.
+REASON: Prefer the nearest meaningful ancestor skeleton (`orders/loading.tsx`, `products/loading.tsx`) over a duplicated generic fallback.
+FILES: `app/[locale]/(business)/dashboard/orders/[orderId]/loading.tsx` (removed); `app/[locale]/(business)/dashboard/products/[productId]/edit/loading.tsx` (removed).
+RISK: Low — only loading UI changes; routes remain unchanged.
+APPROVAL: Not required — no DB schema, auth/access control, payments/webhooks, or destructive data operations touched.
+
+## 2026-02-20 — Account Redundant Leaf Loading Prune
+DECISION: Remove redundant leaf `loading.tsx` boundaries in Account subroutes that only rendered `SimplePageLoading`, relying on the nearest meaningful ancestor boundary.
+REASON: Reduce duplicated fallback noise while keeping loading UX intact.
+FILES: `app/[locale]/(account)/account/settings/loading.tsx` (removed); `app/[locale]/(account)/account/(settings)/notifications/loading.tsx` (removed); `app/[locale]/(account)/account/orders/[id]/loading.tsx` (removed); `app/[locale]/(account)/account/plans/upgrade/loading.tsx` (removed); `app/[locale]/(account)/account/selling/[id]/edit/loading.tsx` (removed).
+RISK: Low — only loading UI changes; routes remain unchanged.
+APPROVAL: Not required — no DB schema, auth/access control, payments/webhooks, or destructive data operations touched.
+
+## 2026-02-20 — Main/Checkout/Onboarding Leaf Loading Prune
+DECISION: Remove redundant leaf `loading.tsx` boundaries that only rendered `SimplePageLoading` and are covered by an ancestor boundary.
+REASON: Reduce duplicated loading UI while preserving route-group skeletons where they provide better UX.
+FILES: `app/[locale]/(checkout)/checkout/success/loading.tsx` (removed); `app/[locale]/(main)/categories/[slug]/[subslug]/loading.tsx` (removed); `app/[locale]/(main)/wishlist/shared/[token]/loading.tsx` (removed); `app/[locale]/(onboarding)/onboarding/loading.tsx` (removed).
+RISK: Low — only loading UI changes; routes remain unchanged.
+APPROVAL: Not required — no DB schema, auth/access control, payments/webhooks, or destructive data operations touched.
+
+## 2026-02-20 — `useGeoWelcome` Lifecycle Hardening
+DECISION: Add a defensive error guard to `useGeoWelcome` initialization and tighten `confirmRegion` dependencies to avoid unnecessary callback churn.
+REASON: Prevent the geo welcome modal from getting stuck in a loading state on transient client/Supabase errors and reduce rerender noise in consumers.
+FILES: `hooks/use-geo-welcome.ts`.
+RISK: Low — behavior remains the same on success paths; failure modes are safer.
+APPROVAL: Not required — no DB schema, auth/access control, payments/webhooks, or destructive data operations touched.
+
+## 2026-02-20 — Pagination Primitive `asChild` Support
+DECISION: Add `asChild` support to `PaginationLink` to allow locale-aware client navigation via Treido’s `Link` component.
+REASON: Avoid accidental full-page reloads from raw `<a>` usage and keep pagination navigation consistent with routing conventions.
+FILES: `components/ui/pagination.tsx`.
+RISK: Low — backwards compatible; default rendering remains anchor-based unless `asChild` is used.
+APPROVAL: Not required — no DB schema, auth/access control, payments/webhooks, or destructive data operations touched.
+
+## 2026-02-20 — Vitest Config Include De-duplication
+DECISION: Extract repeated unit-test include globs into `vitest.shared-config.ts` and reuse them in all Vitest configs.
+REASON: Reduce config duplication and keep test target patterns consistent across environments.
+FILES: `vitest.shared-config.ts`; `vitest.config.ts`; `vitest.node.config.ts`; `vitest.hooks.config.ts`.
+RISK: Low — include patterns are unchanged; only deduplicated.
+APPROVAL: Not required — no DB schema, auth/access control, payments/webhooks, or destructive data operations touched.
+
+## 2026-02-20 — Realtime Subscription Lifecycle De-duplication
+DECISION: Extend the shared Supabase realtime hook to support optional payload handling + injected client, and migrate remaining manual `channel()/removeChannel()` subscribers to it.
+REASON: Remove duplicated subscribe/unsubscribe lifecycle code and make realtime usage consistent and less error-prone.
+FILES: `hooks/use-supabase-postgres-changes.ts`; `components/providers/message-context.tsx`; `app/[locale]/(main)/(support)/customer-service/_components/support-chat-widget.tsx`.
+RISK: Low — behavior preserved; cleanup/unsubscribe now centralized.
+APPROVAL: Not required — no DB schema, auth/access control, payments/webhooks, or destructive data operations touched.
+
+## 2026-02-20 — Wishlist Hook Rules Compliance
+DECISION: Remove conditional `useContext` usage in `useWishlist` and eliminate hook-rule eslint disables while preserving Storybook override behavior.
+REASON: Fix a correctness footgun (hooks rule violation) and reduce lint-disable debt.
+FILES: `components/providers/wishlist-context.tsx`.
+RISK: Low — logic is equivalent; hook calls are now unconditional and deterministic.
+APPROVAL: Not required — no DB schema, auth/access control, payments/webhooks, or destructive data operations touched.
+
+## 2026-02-20 — Architecture Scan Script De-duplication
+DECISION: Refactor `scripts/architecture-scan.mjs` to reuse the shared file walker and limit scans to `.ts/.tsx`.
+REASON: Reduce script duplication and speed up architecture scans while keeping metrics consistent.
+FILES: `scripts/architecture-scan.mjs`.
+RISK: Low — scan scope remains code-focused; excludes unchanged.
+APPROVAL: Not required — no DB schema, auth/access control, payments/webhooks, or destructive data operations touched.
+
+## 2026-02-20 — Search Pagination Client Navigation
+DECISION: Update `SearchPagination` to use locale-aware `Link` via `PaginationLink asChild`, replacing raw anchor navigation for prev/next and page links.
+REASON: Prevent full reloads on pagination navigation and align with Treido routing conventions.
+FILES: `app/[locale]/(main)/_components/search-controls/search-pagination.tsx`.
+RISK: Low — URL generation and pagination semantics unchanged; navigation is faster/smoother.
+APPROVAL: Not required — no DB schema, auth/access control, payments/webhooks, or destructive data operations touched.
+
+## 2026-02-20 — Local Artifact Hygiene (Playwright + Codex Reports)
+DECISION: Ignore and remove local-only report artifacts (`playwright-report/`, `.codex/dupes/`) and remove an empty `lint-output.txt`.
+REASON: Keep the working tree clean and prevent accidental commits of generated outputs.
+FILES: `.gitignore`; `playwright-report/` (removed, was local); `lint-output.txt` (removed, was local); `.codex/dupes/` (ignored, partial local cleanup).
+RISK: None — local artifacts only; runtime unaffected.
+APPROVAL: Not required — no DB schema, auth/access control, payments/webhooks, or destructive data operations touched.
+
+## 2026-02-20 — React Hook Dependency Hygiene (No More `exhaustive-deps` Disables)
+DECISION: Remove `react-hooks/exhaustive-deps` disables in filter/search toolbars by making debounced effects read latest state via refs and by fully specifying memo/effect deps.
+REASON: Reduce lint-disable debt and prevent subtle stale-closure bugs while keeping debounce behavior unchanged.
+FILES: `app/[locale]/(main)/_components/desktop/desktop-filter-modal.tsx`; `app/[locale]/(account)/account/wishlist/_components/account-wishlist-toolbar.tsx`; `app/[locale]/(account)/account/orders/_components/account-orders-toolbar.tsx`.
+RISK: Low — debounced navigation behavior preserved; only hook dependency correctness + lint cleanliness improved.
+APPROVAL: Not required — no DB schema, auth/access control, payments/webhooks, or destructive data operations touched.
+
+## 2026-02-20 — Seller Drawer Image Rendering (Remove `<img>` Lint Disable)
+DECISION: Replace the seller drawer’s inline `<img>` usage with `next/image` + URL normalization and safe fallback.
+REASON: Remove `@next/next/no-img-element` lint suppression and make image rendering more resilient.
+FILES: `app/[locale]/[username]/[productSlug]/_components/mobile/seller-profile-drawer.tsx`.
+RISK: Low — UI remains equivalent; only image component + fallback behavior adjusted.
+APPROVAL: Not required — no DB schema, auth/access control, payments/webhooks, or destructive data operations touched.
+
+## 2026-02-20 — Business Dashboard Suspense Cleanup (Remove `fallback={null}`)
+DECISION: Remove redundant `Suspense` boundaries with `fallback={null}` from the business dashboard layout and rely on the segment’s `loading.tsx` for UX.
+REASON: Reduce overengineering and avoid swallowing meaningful loading UI with null fallbacks.
+FILES: `app/[locale]/(business)/dashboard/layout.tsx`.
+RISK: Low — no business logic changes; improves loading behavior consistency.
+APPROVAL: Not required — no DB schema, auth/access control, payments/webhooks, or destructive data operations touched.
+
+## 2026-02-20 — Locale Layout Suspense Cleanup (Restore `app/[locale]/loading.tsx`)
+DECISION: Remove the root locale `Suspense` wrapper that used `fallback={null}` around providers.
+REASON: Avoid blank-screen loading and allow `app/[locale]/loading.tsx` to show consistently when providers suspend.
+FILES: `app/[locale]/layout.tsx`.
+RISK: Low — provider composition unchanged; only loading behavior becomes more predictable.
+APPROVAL: Not required — no DB schema, auth/access control, payments/webhooks, or destructive data operations touched.
+
+## 2026-02-20 — Commerce Providers Suspense Cleanup (Dynamic Drawers)
+DECISION: Remove the redundant `Suspense fallback={null}` wrapper around `next/dynamic` `GlobalDrawers`.
+REASON: Reduce unnecessary fallback boundaries; dynamic import already handles async module loading.
+FILES: `app/[locale]/_providers/commerce-providers.tsx`.
+RISK: Low — drawer mounting timing is unchanged; only wrapper removal.
+APPROVAL: Not required — no DB schema, auth/access control, payments/webhooks, or destructive data operations touched.
+
+## 2026-02-20 — Business Upgrade Page Loading + Query Cleanup
+DECISION: Remove the `Suspense fallback={null}` wrapper from the dashboard upgrade page and drop an unused Supabase plans query.
+REASON: Avoid blank-screen loading (let the segment `loading.tsx` render) and remove wasted server work.
+FILES: `app/[locale]/(business)/dashboard/upgrade/page.tsx`.
+RISK: Low — rendered UI unchanged; only removes unused query and redundant wrapper.
+APPROVAL: Not required — no DB schema, auth/access control, payments/webhooks, or destructive data operations touched.
+
+## 2026-02-20 — About Page Loading Consolidation
+DECISION: Remove the page-level `Suspense` skeleton from the About page and rely on `app/[locale]/(main)/about/loading.tsx`.
+REASON: Keep one coherent loading boundary and delete duplicated skeleton UI.
+FILES: `app/[locale]/(main)/about/page.tsx`.
+RISK: Low — content unchanged; loading UI is now centralized in the segment loading file.
+APPROVAL: Not required — no DB schema, auth/access control, payments/webhooks, or destructive data operations touched.
+
+## 2026-02-20 — Admin Pages Loading Consolidation (Remove Local `Suspense` Skeletons)
+DECISION: Remove page-level `Suspense` wrappers and bespoke fallback components from admin pages and rely on segment `loading.tsx` instead.
+REASON: Reduce loading-boundary spam and avoid async fallbacks that can suspend themselves.
+FILES: `app/[locale]/(admin)/admin/docs/page.tsx`; `app/[locale]/(admin)/admin/notes/page.tsx`; `app/[locale]/(admin)/admin/tasks/page.tsx`; `app/[locale]/(admin)/admin/products/page.tsx`; `app/[locale]/(admin)/admin/sellers/page.tsx`; `app/[locale]/(admin)/admin/users/page.tsx`.
+RISK: Low — admin UI behavior unchanged; loading is now centralized at the route segment level.
+APPROVAL: Not required — no DB schema, auth/access control, payments/webhooks, or destructive data operations touched.
+
+## 2026-02-20 — Search Layout Suspense De-bloat
+DECISION: Remove redundant `Suspense` wrappers around client components in the search page layout.
+REASON: Client components do not suspend on the server; these boundaries added noise without improving UX/perf.
+FILES: `app/[locale]/(main)/search/_components/search-page-layout.tsx`.
+RISK: Low — render output unchanged; reduces unnecessary React boundary nesting.
+APPROVAL: Not required — no DB schema, auth/access control, payments/webhooks, or destructive data operations touched.
+
+## 2026-02-20 — Account Orders Page Loading Consolidation
+DECISION: Remove local `Suspense` skeletons from the Orders page and rely on the segment `loading.tsx`.
+REASON: Reduce duplicated loading UI and avoid meaningless `Suspense` around client components.
+FILES: `app/[locale]/(account)/account/orders/page.tsx`.
+RISK: Low — data fetching and UI output unchanged; loading becomes centralized.
+APPROVAL: Not required — no DB schema, auth/access control, payments/webhooks, or destructive data operations touched.
+
+## 2026-02-20 — PDP Layout Suspense De-bloat
+DECISION: Remove `Suspense` wrappers and local skeletons around PDP sections that don’t actually suspend (server-rendered markup + client components).
+REASON: Reduce component bloat and unnecessary fallback boundaries while keeping the PDP render identical.
+FILES: `app/[locale]/[username]/[productSlug]/_components/product-page-layout.tsx`.
+RISK: Low — no data-fetch or UI behavior changes; boundary removal only.
+APPROVAL: Not required — no DB schema, auth/access control, payments/webhooks, or destructive data operations touched.
+
+## 2026-02-20 — Home Page Suspense De-bloat
+DECISION: Remove `Suspense` wrappers around the home page’s client components.
+REASON: These components are not suspense-loaded; the wrappers added complexity without providing meaningful fallback behavior.
+FILES: `app/[locale]/(main)/page.tsx`.
+RISK: Low — no data-fetch changes; render output remains the same.
+APPROVAL: Not required — no DB schema, auth/access control, payments/webhooks, or destructive data operations touched.

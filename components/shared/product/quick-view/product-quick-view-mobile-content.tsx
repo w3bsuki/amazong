@@ -1,8 +1,9 @@
-import { Heart, Link as LinkSimple, MapPin, X } from "lucide-react"
+import { ChevronRight, Heart, Link as LinkSimple, X } from "lucide-react"
 
 import { useTranslations } from "next-intl"
 
 import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
 import { MarketplaceBadge } from "@/components/shared/marketplace-badge"
 import { IconButton } from "@/components/ui/icon-button"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -11,12 +12,7 @@ import { getConditionBadgeVariant } from "@/components/shared/product/_lib/condi
 
 import type { ProductQuickViewViewProps } from "./product-quick-view-content"
 import { QuickViewImageGallery } from "./quick-view-image-gallery"
-import {
-  QuickViewFooterBar,
-  QuickViewSellerSkeletonCard,
-  QuickViewShippingBadge,
-} from "./quick-view-chrome"
-import { QuickViewSellerCard } from "./quick-view-seller-card"
+import { QuickViewShippingBadge } from "./quick-view-chrome"
 
 export function ProductQuickViewMobileContent({
   product,
@@ -35,8 +31,6 @@ export function ProductQuickViewMobileContent({
   inWishlist,
   wishlistPending,
   shareEnabled,
-  showSellerSkeleton,
-  showLocationSkeleton,
   showConditionSkeleton,
   onCopyLink,
   onToggleWishlist,
@@ -47,19 +41,14 @@ export function ProductQuickViewMobileContent({
 
   const {
     freeShipping,
-    location,
     condition,
     inStock = true,
-    sellerName,
-    sellerAvatarUrl,
-    sellerVerified,
-    rating,
-    reviews,
   } = product
 
   return (
-    <div className="flex min-h-full flex-col bg-surface-elevated">
-      <div className="sticky top-0 z-20 border-b border-border bg-surface-elevated px-4 py-2.5">
+    <div className="flex flex-col bg-surface-elevated">
+      {/* Header — title + actions */}
+      <div className="border-b border-border px-4 py-2">
         <div className="flex items-center gap-2">
           <h2 className="min-w-0 flex-1 truncate text-sm font-semibold tracking-tight text-foreground">
             {titleText}
@@ -105,107 +94,103 @@ export function ProductQuickViewMobileContent({
         </div>
       </div>
 
-      <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
-        <div className="space-y-3 px-4 py-3">
-          <QuickViewImageGallery
-            images={allImages}
-            title={titleText}
-            discountPercent={showDiscount ? discountPercent : undefined}
-            onNavigateToProduct={onNavigateToProduct}
-            compact
-            compactRatio={4 / 3}
+      {/* Content — image, info, actions — all inline, no scroll needed */}
+      <div className="space-y-2.5 px-4 py-3 pb-safe-max">
+        <QuickViewImageGallery
+          images={allImages}
+          title={titleText}
+          discountPercent={showDiscount ? discountPercent : undefined}
+          onNavigateToProduct={onNavigateToProduct}
+          compact
+          compactRatio={3 / 2}
+        />
+
+        {/* Title + price */}
+        <div className="space-y-1">
+          <h2 className="line-clamp-2 text-base font-semibold tracking-tight leading-tight text-foreground">
+            {titleText}
+          </h2>
+          {descriptionPreview ? (
+            <p className="line-clamp-1 text-sm leading-snug text-muted-foreground">
+              {descriptionPreview}
+            </p>
+          ) : null}
+          <div className="flex flex-wrap items-baseline gap-2">
+            <span className="text-xl font-semibold tabular-nums tracking-tight text-price">
+              {formattedPrice}
+            </span>
+            {formattedOriginalPrice && (
+              <span className="text-sm tabular-nums text-muted-foreground line-through">
+                {formattedOriginalPrice}
+              </span>
+            )}
+            {showDiscount && discountPercent > 0 && (
+              <Badge variant="destructive" size="compact" className="tabular-nums">
+                -{discountPercent}%
+              </Badge>
+            )}
+            {!inStock && (
+              <Badge
+                variant="outline"
+                className="ml-auto border-destructive bg-destructive-subtle text-destructive"
+              >
+                {tProduct("outOfStock")}
+              </Badge>
+            )}
+          </div>
+        </div>
+
+        {/* Badges */}
+        <div className="flex flex-wrap items-center gap-1.5">
+          <QuickViewShippingBadge
+            freeShipping={freeShipping}
+            label={freeShipping ? tProduct("freeShipping") : tProduct("shippingAvailable")}
           />
 
-          <div className="space-y-2.5 rounded-xl border border-border-subtle bg-card p-3">
-            <div className="space-y-1.5">
-              <h2 className="line-clamp-2 text-base font-semibold tracking-tight leading-tight text-foreground">
-                {titleText}
-              </h2>
-              {descriptionPreview ? (
-                <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-                  {descriptionPreview}
-                </p>
-              ) : null}
-            </div>
-
-            <div className="flex flex-wrap items-baseline gap-2">
-              <span className="text-xl font-semibold tabular-nums tracking-tight text-price">
-                {formattedPrice}
-              </span>
-              {formattedOriginalPrice && (
-                <span className="text-sm tabular-nums text-muted-foreground line-through">
-                  {formattedOriginalPrice}
-                </span>
-              )}
-              {showDiscount && discountPercent > 0 && (
-                <Badge variant="destructive" size="compact" className="tabular-nums">
-                  -{discountPercent}%
-                </Badge>
-              )}
-              {!inStock && (
-                <Badge
-                  variant="outline"
-                  className="ml-auto border-destructive bg-destructive-subtle text-destructive"
-                >
-                  {tProduct("outOfStock")}
-                </Badge>
-              )}
-            </div>
-
-            <div className="flex flex-wrap items-center gap-1.5">
-              <QuickViewShippingBadge
-                freeShipping={freeShipping}
-                label={freeShipping ? tProduct("freeShipping") : tProduct("shippingAvailable")}
-              />
-
-              {conditionLabel ? (
-                <MarketplaceBadge size="compact" variant={getConditionBadgeVariant(condition)}>
-                  {conditionLabel}
-                </MarketplaceBadge>
-              ) : showConditionSkeleton ? (
-                <Skeleton className="h-5 w-20 rounded-full" />
-              ) : null}
-
-              {location ? (
-                <Badge size="compact" variant="outline" className="max-w-full">
-                  <MapPin />
-                  <span className="truncate">{location}</span>
-                </Badge>
-              ) : showLocationSkeleton ? (
-                <Skeleton className="h-5 w-28 rounded-full" />
-              ) : null}
-            </div>
-          </div>
-
-          {showSellerSkeleton ? (
-            <QuickViewSellerSkeletonCard
-              className="bg-card"
-              titleSkeletonClassName="w-32"
-              subtitleSkeletonClassName="w-20"
-            />
-          ) : (
-            <QuickViewSellerCard
-              compact
-              sellerName={sellerName}
-              sellerAvatarUrl={sellerAvatarUrl}
-              sellerVerified={sellerVerified}
-              rating={rating}
-              reviews={reviews}
-              onNavigateToProduct={onNavigateToProduct}
-            />
-          )}
+          {conditionLabel ? (
+            <MarketplaceBadge size="compact" variant={getConditionBadgeVariant(condition)}>
+              {conditionLabel}
+            </MarketplaceBadge>
+          ) : showConditionSkeleton ? (
+            <Skeleton className="h-5 w-20 rounded-full" />
+          ) : null}
         </div>
-      </div>
 
-      <QuickViewFooterBar
-        containerClassName="px-4 py-2.5"
-        buyNowLabel={tProduct("buyNow")}
-        addToCartLabel={tProduct("add")}
-        addToCartAriaLabel={tProduct("addToCart")}
-        onBuyNow={onBuyNow}
-        onAddToCart={onAddToCart}
-        inStock={inStock}
-      />
+        {/* Actions — inline, not a sticky footer */}
+        <div className="grid grid-cols-2 gap-2 pt-0.5">
+          <Button
+            type="button"
+            variant="default"
+            size="primary"
+            className="w-full"
+            onClick={onBuyNow}
+            disabled={!inStock}
+          >
+            {tProduct("buyNow")}
+          </Button>
+          <Button
+            type="button"
+            variant="outline"
+            size="primary"
+            className="w-full"
+            onClick={onAddToCart}
+            aria-label={tProduct("addToCart")}
+            disabled={!inStock}
+          >
+            {tProduct("add")}
+          </Button>
+        </div>
+
+        {/* View full product page */}
+        <button
+          type="button"
+          onClick={onNavigateToProduct}
+          className="flex w-full items-center justify-center gap-1 py-1 text-xs font-medium text-muted-foreground transition-colors hover:text-foreground active:text-foreground"
+        >
+          {tModal("viewFullPage")}
+          <ChevronRight size={14} />
+        </button>
+      </div>
     </div>
   )
 }

@@ -21,33 +21,28 @@ export async function generateMetadata({
 }
 
 // Check if user is a seller (has username and is_seller flag)
-async function getSellerData(userId: string) {
-  try {
-    const supabase = await createClient();
-    if (!supabase) return null;
-    
-    const { data } = await supabase
-      .from("profiles")
-      .select("id, username, display_name, business_name, is_seller, account_type")
-      .eq("id", userId)
-      .single();
-    
-    if (!data?.username) return null;
-    
-    // Return seller data with onboarding status
-    return {
-      id: data.id,
-      store_name: data.display_name || data.business_name || data.username,
-      store_slug: data.username,
-      is_seller: data.is_seller ?? false,
-      username: data.username,
-      account_type: data.account_type === "business" ? "business" : "personal",  // Always set in DB
-      display_name: data.display_name ?? null,
-      business_name: data.business_name ?? null,
-    };
-  } catch {
-    return null;
-  }
+type SupabaseServerClient = NonNullable<Awaited<ReturnType<typeof createClient>>>;
+
+async function getSellerData(supabase: SupabaseServerClient, userId: string) {
+  const { data, error } = await supabase
+    .from("profiles")
+    .select("id, username, display_name, business_name, is_seller, account_type")
+    .eq("id", userId)
+    .maybeSingle();
+
+  if (error || !data?.username) return null;
+
+  // Return seller data with onboarding status
+  return {
+    id: data.id,
+    store_name: data.display_name || data.business_name || data.username,
+    store_slug: data.username,
+    is_seller: data.is_seller ?? false,
+    username: data.username,
+    account_type: data.account_type === "business" ? "business" : "personal", // Always set in DB
+    display_name: data.display_name ?? null,
+    business_name: data.business_name ?? null,
+  };
 }
 
 export default async function SellPage({
@@ -59,10 +54,21 @@ export default async function SellPage({
   setRequestLocale(locale);
 
   const supabase = await createClient();
-  const authResult = await (supabase
-    ? supabase.auth.getUser()
-    : Promise.resolve({ data: { user: null } }));
-  const user = authResult.data.user;
+  if (!supabase) {
+    return (
+      <SellPageClient
+        initialUser={null}
+        initialSeller={null}
+        initialNeedsOnboarding={false}
+        initialUsername={null}
+        initialPayoutStatus={null}
+        categories={[]}
+        createListingAction={createListing}
+      />
+    )
+  }
+
+  const { data: { user } } = await supabase.auth.getUser();
 
   if (!user) {
     return (
@@ -71,27 +77,33 @@ export default async function SellPage({
         initialSeller={null}
         initialNeedsOnboarding={false}
         initialUsername={null}
+        initialPayoutStatus={null}
         categories={[]}
         createListingAction={createListing}
       />
     )
   }
 
-  // Fetch seller payout status (Stripe Connect readiness)
-  const { data: payoutStatus } = await supabase
-    .from("seller_payout_status")
-    .select("stripe_connect_account_id, details_submitted, charges_enabled, payouts_enabled")
-    .eq("seller_id", user.id)
-    .maybeSingle();
-
-  const categories = await getSellCategories();
-  
-  // Fetch seller data only if user is authenticated
-  let seller = null;
-  seller = await getSellerData(user.id);
+  const seller = await getSellerData(supabase, user.id);
   
   // Determine if user needs onboarding (has username but is_seller is false)
   const needsOnboarding = seller && !seller.is_seller;
+  const isSeller = seller?.is_seller ?? false;
+
+  const [categories, payoutStatusResult] = isSeller
+    ? await Promise.all([
+        getSellCategories(),
+        supabase
+          .from("seller_payout_status")
+          .select(
+            "stripe_connect_account_id, details_submitted, charges_enabled, payouts_enabled",
+          )
+          .eq("seller_id", user.id)
+          .maybeSingle(),
+      ])
+    : [[], null];
+
+  const payoutStatus = payoutStatusResult?.data ?? null;
   
   return (
     <SellPageClient 

@@ -4,18 +4,17 @@ import { useEffect, useState, useTransition } from "react"
 import { useSearchParams } from "next/navigation"
 import { useRouter } from "@/i18n/routing"
 import { useLocale, useTranslations } from "next-intl"
-import { ArrowRight, Camera, Check, LoaderCircle as SpinnerGap, X } from "lucide-react";
-
-import Image from "next/image"
+import { ArrowRight, Check, LoaderCircle as SpinnerGap, X } from "lucide-react";
 import Avatar from "boring-avatars"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { OnboardingShell } from "../_components/onboarding-shell"
+import { AvatarUpload } from "../_components/avatar-upload"
 import { cn } from "@/lib/utils"
 import { AVATAR_VARIANTS, type AvatarVariant, getColorPalette } from "@/lib/avatar-palettes"
-import { createClient } from "@/lib/supabase/client"
+import { useUsernameAvailability } from "@/hooks/use-username-availability"
 
 export default function ProfilePage() {
   const router = useRouter()
@@ -34,44 +33,13 @@ export default function ProfilePage() {
 
   const [username, setUsername] = useState("")
   const [displayName, setDisplayName] = useState("")
-  const [isCheckingUsername, setIsCheckingUsername] = useState(false)
-  const [usernameAvailable, setUsernameAvailable] = useState<boolean | null>(null)
+
+  const { isCheckingUsername, usernameAvailable } = useUsernameAvailability(username)
 
   const [avatarVariant, setAvatarVariant] = useState<AvatarVariant>("marble")
   const [avatarPalette] = useState(0)
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null)
   const [useCustomAvatar, setUseCustomAvatar] = useState(false)
-
-  useEffect(() => {
-    let cancelled = false
-
-    const timeoutId = setTimeout(async () => {
-      const cleaned = username.trim().toLowerCase()
-      if (!cleaned || cleaned.length < 3) {
-        if (!cancelled) setUsernameAvailable(null)
-        return
-      }
-
-      if (!cancelled) setIsCheckingUsername(true)
-      try {
-        const supabase = createClient()
-        const { data } = await supabase
-          .from("profiles")
-          .select("id")
-          .ilike("username", cleaned)
-          .maybeSingle()
-
-        if (!cancelled) setUsernameAvailable(!data)
-      } finally {
-        if (!cancelled) setIsCheckingUsername(false)
-      }
-    }, 500)
-
-    return () => {
-      cancelled = true
-      clearTimeout(timeoutId)
-    }
-  }, [username])
 
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -178,34 +146,15 @@ export default function ProfilePage() {
             {t("profile.profileImageLabel")}
           </Label>
           <div className="flex items-center gap-4">
-            <div className="relative">
-              <div className="size-16 rounded-xl overflow-hidden border-2 border-selected-border shadow-sm">
-                {useCustomAvatar && avatarPreview ? (
-                  <Image
-                    src={avatarPreview}
-                    alt={t("profile.profileImageLabel")}
-                    width={64}
-                    height={64}
-                    className="object-cover w-full h-full"
-                  />
-                ) : (
-                  <Avatar
-                    size={64}
-                    name={username || "user"}
-                    variant={avatarVariant}
-                    colors={getColorPalette(avatarPalette)}
-                    square
-                  />
-                )}
-              </div>
-              <label
-                className="absolute -bottom-1 -right-1 size-7 bg-primary text-primary-foreground rounded-full flex items-center justify-center cursor-pointer hover:bg-interactive-hover transition-colors shadow-sm"
-                aria-label={t("profile.profileImageLabel")}
-              >
-                <Camera className="size-3.5" />
-                <input type="file" accept="image/*" className="hidden" onChange={handleAvatarChange} />
-              </label>
-            </div>
+            <AvatarUpload
+              previewSrc={useCustomAvatar ? avatarPreview : null}
+              previewAlt={t("profile.profileImageLabel")}
+              ariaLabel={t("profile.profileImageLabel")}
+              onFileChange={handleAvatarChange}
+              fallbackName={username || "user"}
+              fallbackVariant={avatarVariant}
+              fallbackPalette={avatarPalette}
+            />
 
             <div className="flex-1">
               <div className="flex gap-1.5 mb-2">

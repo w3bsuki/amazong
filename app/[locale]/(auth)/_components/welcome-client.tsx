@@ -22,6 +22,29 @@ interface UserProfile {
   bio: string | null
 }
 
+interface StepHeaderProps {
+  onBack: () => void
+  title: string
+  description: string
+}
+
+function StepHeader({ onBack, title, description }: StepHeaderProps) {
+  return (
+    <div className="p-4 border-b border-border">
+      <button
+        type="button"
+        onClick={onBack}
+        className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground mb-4"
+      >
+        <ArrowLeft className="size-4" />
+        Back
+      </button>
+      <h2 className="text-xl font-semibold text-foreground">{title}</h2>
+      <p className="text-sm text-muted-foreground mt-1">{description}</p>
+    </div>
+  )
+}
+
 export function WelcomeClient({ locale }: { locale: string }) {
   const router = useRouter()
   const [profile, setProfile] = useState<UserProfile | null>(null)
@@ -245,18 +268,11 @@ export function WelcomeClient({ locale }: { locale: string }) {
               exit={{ opacity: 0, x: -20 }}
               className="bg-card rounded-xl border border-border overflow-hidden"
             >
-              <div className="p-4 border-b border-border">
-                <button
-                  type="button"
-                  onClick={() => setStep(1)}
-                  className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground mb-4"
-                >
-                  <ArrowLeft className="size-4" />
-                  Back
-                </button>
-                <h2 className="text-xl font-semibold text-foreground">Choose your avatar</h2>
-                <p className="text-sm text-muted-foreground mt-1">Pick a style or upload your own photo</p>
-              </div>
+              <StepHeader
+                onBack={() => setStep(1)}
+                title="Choose your avatar"
+                description="Pick a style or upload your own photo"
+              />
 
               <div className="p-4 space-y-4">
                 <div className="flex justify-center">
@@ -381,17 +397,11 @@ export function WelcomeClient({ locale }: { locale: string }) {
               exit={{ opacity: 0, x: -20 }}
               className="bg-card rounded-xl border border-border overflow-hidden"
             >
-              <div className="p-4 border-b border-border">
-                <button
-                  type="button"
-                  onClick={() => setStep(2)}
-                  className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground mb-4"
-                >
-                  <ArrowLeft className="size-4" />Back
-                </button>
-                <h2 className="text-xl font-semibold text-foreground">Tell us about yourself</h2>
-                <p className="text-sm text-muted-foreground mt-1">This helps other users know who you are</p>
-              </div>
+              <StepHeader
+                onBack={() => setStep(2)}
+                title="Tell us about yourself"
+                description="This helps other users know who you are"
+              />
 
               <div className="p-4 space-y-4">
                 <div className="flex justify-center mb-2">

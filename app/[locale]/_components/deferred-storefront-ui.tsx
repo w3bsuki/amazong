@@ -1,8 +1,8 @@
 "use client"
 
 import dynamic from "next/dynamic"
-import { useEffect, useState } from "react"
 import { useIsMobile } from "@/hooks/use-is-mobile"
+import { useIdleReady } from "@/hooks/use-idle-ready"
 
 const MobileTabBar = dynamic(
   () => import("./mobile-tab-bar").then((mod) => mod.MobileTabBar),
@@ -28,38 +28,6 @@ const GuestSellCta = dynamic(
   () => import("./guest-sell-cta").then((mod) => mod.GuestSellCta),
   { ssr: false }
 )
-
-function useIdleReady(timeoutMs: number) {
-  const [ready, setReady] = useState(false)
-
-  useEffect(() => {
-    let cancelled = false
-    const markReady = () => {
-      if (!cancelled) setReady(true)
-    }
-
-    const idleWindow = window as Window & {
-      requestIdleCallback?: (cb: () => void, opts?: { timeout?: number }) => number
-      cancelIdleCallback?: (id: number) => void
-    }
-
-    if (typeof idleWindow.requestIdleCallback === "function") {
-      const id = idleWindow.requestIdleCallback(markReady, { timeout: timeoutMs })
-      return () => {
-        cancelled = true
-        idleWindow.cancelIdleCallback?.(id)
-      }
-    }
-
-    const timer = window.setTimeout(markReady, timeoutMs)
-    return () => {
-      cancelled = true
-      window.clearTimeout(timer)
-    }
-  }, [timeoutMs])
-
-  return ready
-}
 
 export function DeferredStorefrontUi({ locale }: { locale: string }) {
   const isMobile = useIsMobile()

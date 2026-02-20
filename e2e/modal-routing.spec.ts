@@ -5,7 +5,7 @@ function pickSearchTerm(title: string | null | undefined): string {
 
   const words = title
     .split(/\s+/)
-    .map((w) => w.replace(/[^a-z0-9_-]/gi, ""))
+    .map((w) => w.replaceAll(/[^a-z0-9_-]/gi, ""))
     .filter((w) => w.length >= 3)
 
   return words[0] ?? "test"

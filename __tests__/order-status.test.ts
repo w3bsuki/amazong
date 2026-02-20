@@ -4,7 +4,6 @@ import {
   getNextStatusOptions,
   getOrderStatusFromItems,
   SHIPPING_CARRIER_VALUES,
-  type OrderItemStatus,
 } from '@/lib/order-status'
 
 describe('lib/order-status', () => {

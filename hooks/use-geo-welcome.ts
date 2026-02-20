@@ -148,57 +148,63 @@ export function useGeoWelcome(options: UseGeoWelcomeOptions = {}): UseGeoWelcome
     }
 
     const initializeGeoWelcome = async () => {
-      // Check if already dismissed
-      const dismissed = getLocalStorage(STORAGE_KEYS.DISMISSED);
-      if (dismissed === 'true') {
-        setState(prev => ({ ...prev, isOpen: false, isLoading: false }));
-        return;
-      }
-
-      // Get detected country from cookie (set by proxy.ts)
-      const countryCode = getCookie(COOKIE_NAMES.COUNTRY) || 'BG';
-      const zoneFromCookie = getCookie(COOKIE_NAMES.ZONE) as ShippingRegion | null;
-      const detectedRegion = zoneFromCookie || getShippingRegion(countryCode);
-
-      // Check if user is authenticated and has a saved region preference
-      const supabase = createClient();
-      const { data: { user } } = await supabase.auth.getUser();
-
-      if (user) {
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('shipping_region, country_code')
-          .eq('id', user.id)
-          .single();
-
-        // If user has a saved preference, use it and don't show modal
-        if (profile?.shipping_region) {
-          // Sync profile region to cookies
-          setCookie(COOKIE_NAMES.ZONE, profile.shipping_region);
-          if (profile.country_code) {
-            setCookie(COOKIE_NAMES.COUNTRY, profile.country_code);
-          }
-          setLocalStorage(STORAGE_KEYS.DISMISSED, 'true');
+      try {
+        // Check if already dismissed
+        const dismissed = getLocalStorage(STORAGE_KEYS.DISMISSED);
+        if (dismissed === 'true') {
           setState(prev => ({ ...prev, isOpen: false, isLoading: false }));
           return;
         }
+
+        // Get detected country from cookie (set by proxy.ts)
+        const countryCode = getCookie(COOKIE_NAMES.COUNTRY) || 'BG';
+        const zoneFromCookie = getCookie(COOKIE_NAMES.ZONE) as ShippingRegion | null;
+        const detectedRegion = zoneFromCookie || getShippingRegion(countryCode);
+
+        // Check if user is authenticated and has a saved region preference
+        const supabase = createClient();
+        const { data: { user } } = await supabase.auth.getUser();
+
+        if (user) {
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('shipping_region, country_code')
+            .eq('id', user.id)
+            .single();
+
+          // If user has a saved preference, use it and don't show modal
+          if (profile?.shipping_region) {
+            // Sync profile region to cookies
+            setCookie(COOKIE_NAMES.ZONE, profile.shipping_region);
+            if (profile.country_code) {
+              setCookie(COOKIE_NAMES.COUNTRY, profile.country_code);
+            }
+            setLocalStorage(STORAGE_KEYS.DISMISSED, 'true');
+            setState(prev => ({ ...prev, isOpen: false, isLoading: false }));
+            return;
+          }
+        }
+
+        // Show the modal for first-time visitors
+        setState({
+          isOpen: true,
+          detectedCountry: countryCode,
+          detectedRegion,
+          selectedRegion: detectedRegion,
+          isLoading: false,
+        });
+
+        // Record when modal was shown
+        setLocalStorage(STORAGE_KEYS.LAST_SHOWN, Date.now().toString());
+      } catch {
+        setState(prev => ({ ...prev, isOpen: false, isLoading: false }));
       }
-
-      // Show the modal for first-time visitors
-      setState({
-        isOpen: true,
-        detectedCountry: countryCode,
-        detectedRegion,
-        selectedRegion: detectedRegion,
-        isLoading: false,
-      });
-
-      // Record when modal was shown
-      setLocalStorage(STORAGE_KEYS.LAST_SHOWN, Date.now().toString());
     };
 
     initializeGeoWelcome();
   }, [enabled]);
+
+  const { selectedRegion, detectedRegion, detectedCountry } = state;
 
   /**
    * Update selected region in state
@@ -211,8 +217,6 @@ export function useGeoWelcome(options: UseGeoWelcomeOptions = {}): UseGeoWelcome
    * Confirm region selection - updates cookies and optionally Supabase profile
    */
   const confirmRegion = useCallback(async () => {
-    const { selectedRegion, detectedRegion, detectedCountry } = state;
-
     // Determine if this was auto-detected or manually changed
     const isAutoDetected = selectedRegion === detectedRegion;
 
@@ -258,7 +262,7 @@ export function useGeoWelcome(options: UseGeoWelcomeOptions = {}): UseGeoWelcome
     // Navigate to the correct locale route (BUG-001 fix).
     // This also refreshes server components with the updated cookies.
     window.location.assign(getPathWithLocale(targetLocale));
-  }, [state]);
+  }, [selectedRegion, detectedRegion, detectedCountry]);
 
   /**
    * Decline region filtering - show all products

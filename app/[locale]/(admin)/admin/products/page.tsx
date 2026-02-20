@@ -3,7 +3,6 @@ import { formatDistanceToNow } from "date-fns"
 import { bg, enUS } from "date-fns/locale"
 import { Link } from "@/i18n/routing"
 import { getLocale, getTranslations } from "next-intl/server"
-import { Suspense } from "react"
 import { connection } from "next/server"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -158,32 +157,6 @@ async function AdminProductsContent() {
   )
 }
 
-async function AdminProductsFallback() {
-  const t = await getTranslations("AdminProducts")
-
-  return (
-    <div className="flex flex-col gap-4 py-4 md:gap-4 md:py-6 px-4 lg:px-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">{t("page.title")}</h1>
-          <p className="text-muted-foreground">{t("page.description")}</p>
-        </div>
-        <Badge variant="outline" className="text-base">{t("loading")}</Badge>
-      </div>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>{t("table.title")}</CardTitle>
-          <CardDescription>{t("table.description")}</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="text-sm text-muted-foreground">{t("loading")}</div>
-        </CardContent>
-      </Card>
-    </div>
-  )
-}
-
 export const metadata = {
   title: "Admin Products | Treido",
   description: "Review and manage Treido products.",
@@ -192,9 +165,5 @@ export const metadata = {
 export default async function AdminProductsPage() {
   await connection()
 
-  return (
-    <Suspense fallback={<AdminProductsFallback />}>
-      <AdminProductsContent />
-    </Suspense>
-  )
+  return <AdminProductsContent />
 }

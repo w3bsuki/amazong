@@ -3,7 +3,6 @@ import { getTranslations } from "next-intl/server"
 import { formatDistanceToNow } from "date-fns"
 import { bg, enUS } from "date-fns/locale"
 import { getLocale } from "next-intl/server"
-import { Suspense } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
@@ -129,32 +128,6 @@ async function AdminUsersContent() {
   )
 }
 
-async function AdminUsersFallback() {
-  const t = await getTranslations("AdminUsers")
-
-  return (
-    <div className="flex flex-col gap-4 py-4 md:gap-4 md:py-6 px-4 lg:px-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">{t("page.title")}</h1>
-          <p className="text-muted-foreground">{t("page.description")}</p>
-        </div>
-        <Badge variant="outline" className="text-base">{t("loading")}</Badge>
-      </div>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>{t("table.title")}</CardTitle>
-          <CardDescription>{t("table.description")}</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="text-sm text-muted-foreground">{t("loading")}</div>
-        </CardContent>
-      </Card>
-    </div>
-  )
-}
-
 export const metadata = {
   title: "Admin Users | Treido",
   description: "Review and manage Treido users.",
@@ -165,9 +138,5 @@ export default async function AdminUsersPage() {
   // Mark route as dynamic - admin routes need auth
   await connection()
   
-  return (
-    <Suspense fallback={<AdminUsersFallback />}>
-      <AdminUsersContent />
-    </Suspense>
-  )
+  return <AdminUsersContent />
 }

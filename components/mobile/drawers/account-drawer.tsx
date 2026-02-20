@@ -16,7 +16,7 @@ import {
 } from "lucide-react"
 import type { LucideIcon } from "lucide-react"
 
-import { DrawerBody, DrawerFooter } from "@/components/ui/drawer"
+import { DrawerBody } from "@/components/ui/drawer"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -228,8 +228,8 @@ function AccountDrawerSkeleton() {
 /**
  * AccountDrawer — Quick access to account actions.
  *
- * Grouped card layout (iOS Settings pattern): profile header, seller stats,
- * Account / Selling / Settings sections, sticky footer with CTA + sign-out.
+ * Grouped card layout (iOS Settings pattern): tappable profile header, seller stats,
+ * Account / Selling / Settings sections, inline sign-out.
  * Opened from mobile bottom nav profile tab or header avatar.
  */
 export function AccountDrawer({ open, onOpenChange }: AccountDrawerProps) {
@@ -394,7 +394,7 @@ export function AccountDrawer({ open, onOpenChange }: AccountDrawerProps) {
       {!user || authLoading ? (
         /* ── Guest state ── */
         <>
-          <DrawerBody className="px-inset py-4">
+          <DrawerBody className="px-inset py-4 pb-safe-max">
             <div className={MENU_GROUP_CLASS}>
               <div className="flex flex-col items-center px-5 py-6 text-center">
                 <div className="mb-3 inline-flex size-12 items-center justify-center rounded-full bg-muted text-muted-foreground">
@@ -404,30 +404,32 @@ export function AccountDrawer({ open, onOpenChange }: AccountDrawerProps) {
                 <p className="mt-1 text-xs text-muted-foreground">{t("signInDescription")}</p>
               </div>
             </div>
+
+            {/* Auth actions — inline */}
+            <div className="mt-3 space-y-2">
+              <Button
+                size="lg"
+                className="w-full"
+                onClick={() => {
+                  handleClose()
+                  openDrawer("auth", { mode: "login", entrypoint: "account_drawer" })
+                }}
+              >
+                {t("signIn")}
+              </Button>
+              <Button
+                variant="outline"
+                size="default"
+                className="w-full"
+                onClick={() => {
+                  handleClose()
+                  openDrawer("auth", { mode: "signup", entrypoint: "account_drawer" })
+                }}
+              >
+                {tAuth("createAccount")}
+              </Button>
+            </div>
           </DrawerBody>
-          <DrawerFooter>
-            <Button
-              size="lg"
-              className="w-full"
-              onClick={() => {
-                handleClose()
-                openDrawer("auth", { mode: "login", entrypoint: "account_drawer" })
-              }}
-            >
-              {t("signIn")}
-            </Button>
-            <Button
-              variant="outline"
-              size="default"
-              className="w-full"
-              onClick={() => {
-                handleClose()
-                openDrawer("auth", { mode: "signup", entrypoint: "account_drawer" })
-              }}
-            >
-              {tAuth("createAccount")}
-            </Button>
-          </DrawerFooter>
         </>
       ) : isLoadingData ? (
         /* ── Loading skeleton ── */
@@ -435,10 +437,14 @@ export function AccountDrawer({ open, onOpenChange }: AccountDrawerProps) {
       ) : (
         /* ── Authenticated state ── */
         <>
-          <DrawerBody className="space-y-3 px-inset py-4">
-            {/* ── Profile header ── */}
+          <DrawerBody className="space-y-3 px-inset pt-4 pb-safe-max">
+            {/* ── Profile header (tap → profile page) ── */}
             <div className={MENU_GROUP_CLASS}>
-              <div className="flex items-center gap-3.5 p-4">
+              <Link
+                href="/account"
+                onClick={handleClose}
+                className={cn(MENU_ROW_CLASS, "gap-3.5 py-3.5")}
+              >
                 <UserAvatar
                   name={displayName}
                   avatarUrl={avatarUrl ?? null}
@@ -463,7 +469,8 @@ export function AccountDrawer({ open, onOpenChange }: AccountDrawerProps) {
                     <p className="mt-0.5 truncate text-xs text-muted-foreground">{user.email}</p>
                   )}
                 </div>
-              </div>
+                <CaretRight size={16} className="shrink-0 text-muted-foreground" aria-hidden="true" />
+              </Link>
 
               {/* ── Seller stats — inline inside profile card ── */}
               {isSeller && (
@@ -504,32 +511,31 @@ export function AccountDrawer({ open, onOpenChange }: AccountDrawerProps) {
 
             {/* ── Settings section ── */}
             <MenuSection label={t("sectionSettings")} items={settingsItems} onItemClick={handleClose} />
-          </DrawerBody>
 
-          {/* ── Sticky footer — View Profile CTA + Sign out ── */}
-          <DrawerFooter>
-            <Button size="lg" className="w-full" asChild>
-              <Link href="/account" onClick={handleClose}>
-                {t("viewProfile")}
-              </Link>
-            </Button>
-            <form
-              action="/api/auth/sign-out"
-              method="post"
-              onSubmit={() => setIsSigningOut(true)}
-            >
-              <Button
-                type="submit"
-                variant="ghost"
-                size="default"
-                className="w-full text-muted-foreground hover:text-destructive"
-                disabled={isSigningOut}
+            {/* ── Sign out ── */}
+            <div className={MENU_GROUP_CLASS}>
+              <form
+                action="/api/auth/sign-out"
+                method="post"
+                onSubmit={() => setIsSigningOut(true)}
               >
-                <LogOutIcon size={16} />
-                {t("signOut")}
-              </Button>
-            </form>
-          </DrawerFooter>
+                <button
+                  type="submit"
+                  disabled={isSigningOut}
+                  className={cn(
+                    MENU_ROW_CLASS,
+                    "text-destructive",
+                    isSigningOut && "pointer-events-none opacity-50",
+                  )}
+                >
+                  <LogOutIcon size={20} className="shrink-0" aria-hidden="true" />
+                  <span className="min-w-0 flex-1 truncate text-sm font-medium">
+                    {t("signOut")}
+                  </span>
+                </button>
+              </form>
+            </div>
+          </DrawerBody>
         </>
       )}
     </DrawerShell>

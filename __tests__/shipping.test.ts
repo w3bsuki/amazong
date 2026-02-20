@@ -7,7 +7,6 @@ import {
   getShippingFilter,
   parseShippingRegion,
   SHIPPING_REGIONS,
-  type ShippingRegion
 } from '@/lib/shipping'
 
 describe('lib/shipping', () => {
@@ -289,6 +288,7 @@ describe('lib/shipping', () => {
     
     it('returns WW for null/undefined', () => {
       expect(parseShippingRegion(null)).toBe('WW')
+      // eslint-disable-next-line unicorn/no-useless-undefined -- explicit undefined exercises boundary handling
       expect(parseShippingRegion(undefined)).toBe('WW')
     })
     

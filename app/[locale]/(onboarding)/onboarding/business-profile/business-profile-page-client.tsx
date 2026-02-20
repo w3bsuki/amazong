@@ -3,18 +3,16 @@
 import { useEffect, useState, useTransition } from "react"
 import { useRouter } from "@/i18n/routing"
 import { useLocale, useTranslations } from "next-intl"
-import { ArrowRight, Camera, Check, Globe, MapPin, LoaderCircle as SpinnerGap, X } from "lucide-react";
-
-import Image from "next/image"
-import Avatar from "boring-avatars"
+import { ArrowRight, Check, Globe, MapPin, LoaderCircle as SpinnerGap, X } from "lucide-react";
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { OnboardingShell } from "../_components/onboarding-shell"
-import { type AvatarVariant, getColorPalette } from "@/lib/avatar-palettes"
-import { createClient } from "@/lib/supabase/client"
+import { AvatarUpload } from "../_components/avatar-upload"
+import { type AvatarVariant } from "@/lib/avatar-palettes"
+import { useUsernameAvailability } from "@/hooks/use-username-availability"
 
 function slugify(text: string): string {
   return text
@@ -40,8 +38,6 @@ export default function BusinessProfilePage() {
   const [category, setCategory] = useState("")
   const [website, setWebsite] = useState("")
   const [location, setLocation] = useState("")
-  const [isCheckingUsername, setIsCheckingUsername] = useState(false)
-  const [usernameAvailable, setUsernameAvailable] = useState<boolean | null>(null)
 
   const [logoPreview, setLogoPreview] = useState<string | null>(null)
   const [avatarVariant] = useState<AvatarVariant>("bauhaus")
@@ -54,36 +50,7 @@ export default function BusinessProfilePage() {
     }
   }, [businessName, usernameManuallyEdited])
 
-  useEffect(() => {
-    let cancelled = false
-
-    const timeoutId = setTimeout(async () => {
-      const cleaned = username.trim().toLowerCase()
-      if (!cleaned || cleaned.length < 3) {
-        if (!cancelled) setUsernameAvailable(null)
-        return
-      }
-
-      if (!cancelled) setIsCheckingUsername(true)
-      try {
-        const supabase = createClient()
-        const { data } = await supabase
-          .from("profiles")
-          .select("id")
-          .ilike("username", cleaned)
-          .maybeSingle()
-
-        if (!cancelled) setUsernameAvailable(!data)
-      } finally {
-        if (!cancelled) setIsCheckingUsername(false)
-      }
-    }, 500)
-
-    return () => {
-      cancelled = true
-      clearTimeout(timeoutId)
-    }
-  }, [username])
+  const { isCheckingUsername, usernameAvailable } = useUsernameAvailability(username)
 
   const handleLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -194,34 +161,15 @@ export default function BusinessProfilePage() {
         <div>
           <Label className="text-sm font-semibold mb-2 block text-foreground">{t("businessProfile.logoLabel")}</Label>
           <div className="flex items-center gap-4">
-            <div className="relative">
-              <div className="size-16 rounded-xl overflow-hidden border-2 border-selected-border shadow-sm">
-                {logoPreview ? (
-                  <Image
-                    src={logoPreview}
-                    alt={t("businessProfile.logoLabel")}
-                    width={64}
-                    height={64}
-                    className="object-cover w-full h-full"
-                  />
-                ) : (
-                  <Avatar
-                    size={64}
-                    name={businessName || "business"}
-                    variant={avatarVariant}
-                    colors={getColorPalette(avatarPalette)}
-                    square
-                  />
-                )}
-              </div>
-              <label
-                className="absolute -bottom-1 -right-1 size-7 bg-primary text-primary-foreground rounded-full flex items-center justify-center cursor-pointer hover:bg-interactive-hover transition-colors shadow-sm"
-                aria-label={t("businessProfile.logoLabel")}
-              >
-                <Camera className="size-3.5" />
-                <input type="file" accept="image/*" className="hidden" onChange={handleLogoChange} />
-              </label>
-            </div>
+            <AvatarUpload
+              previewSrc={logoPreview}
+              previewAlt={t("businessProfile.logoLabel")}
+              ariaLabel={t("businessProfile.logoLabel")}
+              onFileChange={handleLogoChange}
+              fallbackName={businessName || "business"}
+              fallbackVariant={avatarVariant}
+              fallbackPalette={avatarPalette}
+            />
             <p className="text-xs text-muted-foreground flex-1">{t("businessProfile.logoHint")}</p>
           </div>
         </div>

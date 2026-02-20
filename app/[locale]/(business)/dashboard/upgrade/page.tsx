@@ -1,7 +1,5 @@
 import { requireBusinessSeller, getActiveSubscription, DASHBOARD_ALLOWED_TIERS } from "@/lib/auth/business"
-import { createClient } from "@/lib/supabase/server"
 import { Link, redirect } from "@/i18n/routing"
-import { Suspense } from "react"
 import { connection } from "next/server"
 import {
   Card,
@@ -150,11 +148,7 @@ export const metadata = {
 }
 
 export default function DashboardUpgradePage(props: UpgradePageProps) {
-  return (
-    <Suspense fallback={null}>
-      <DashboardUpgradePageInner {...props} />
-    </Suspense>
-  )
+  return <DashboardUpgradePageInner {...props} />
 }
 
 async function DashboardUpgradePageInner({ params }: UpgradePageProps) {
@@ -175,16 +169,6 @@ async function DashboardUpgradePageInner({ params }: UpgradePageProps) {
   if (hasAccess) {
     redirect({ href: "/dashboard", locale })
   }
-
-  // Fetch business plans for display
-  const supabase = await createClient()
-  const { data: _plans } = await supabase
-    .from('subscription_plans')
-    .select('id')
-    .eq('account_type', 'business')
-    .eq('is_active', true)
-    .in('tier', ['professional', 'enterprise'])
-    .order('price_monthly', { ascending: true })
 
   return (
     <div className="container flex flex-col gap-4 py-6">

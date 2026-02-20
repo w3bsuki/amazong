@@ -4,7 +4,7 @@ import { routing } from '@/i18n/routing';
 import { Inter } from "next/font/google";
 import "../globals.css";
 import type { Metadata } from 'next';
-import { Suspense, type ReactNode } from 'react';
+import { type ReactNode } from 'react';
 import { setRequestLocale } from 'next-intl/server';
 import LocaleProviders from './locale-providers';
 
@@ -110,11 +110,9 @@ export default async function LocaleLayout({
   return (
     <html lang={locale} className={inter.variable} suppressHydrationWarning>
       <body className="bg-background min-h-screen font-sans">
-        <Suspense fallback={null}>
-          <LocaleProviders locale={locale}>
-            {children}
-          </LocaleProviders>
-        </Suspense>
+        <LocaleProviders locale={locale}>
+          {children}
+        </LocaleProviders>
       </body>
     </html>
   );

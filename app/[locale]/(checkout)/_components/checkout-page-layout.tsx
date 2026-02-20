@@ -1,4 +1,4 @@
-import type { ChangeEvent } from "react"
+import type { ChangeEvent, ReactNode } from "react"
 import type { CartItem } from "@/components/providers/cart-context"
 import type { useTranslations } from "next-intl"
 import { Link } from "@/i18n/routing"
@@ -134,9 +134,54 @@ function CheckoutNoticeCard({
   )
 }
 
-export function MobileCheckoutLayout({
+type CheckoutLayoutVariant = "mobile" | "desktop"
+
+function CheckoutActionButton({
   t,
-  checkoutNotice,
+  tAuth,
+  authLoginHref,
+  isAuthGateActive,
+  isProcessing,
+  canCheckout,
+  onCheckout,
+  nonProcessingLabel,
+}: {
+  t: TranslationFn
+  tAuth: TranslationFn
+  authLoginHref: string
+  isAuthGateActive: boolean
+  isProcessing: boolean
+  canCheckout: boolean
+  onCheckout: () => void
+  nonProcessingLabel: ReactNode
+}) {
+  return isAuthGateActive ? (
+    <Button asChild size="lg" className="w-full font-semibold">
+      <Link href={authLoginHref}>
+        <Lock className="mr-2 size-4" />
+        {tAuth("signIn")}
+      </Link>
+    </Button>
+  ) : (
+    <Button onClick={onCheckout} disabled={isProcessing || !canCheckout} size="lg" className="w-full font-semibold">
+      {isProcessing ? (
+        <>
+          <SpinnerGap className="mr-2 size-5 animate-spin" />
+          {t("processing")}
+        </>
+      ) : (
+        <>
+          <Lock className="mr-2 size-4" />
+          {nonProcessingLabel}
+        </>
+      )}
+    </Button>
+  )
+}
+
+function CheckoutAddressCard({
+  variant,
+  t,
   isAuthGateActive,
   isAuthenticated,
   isLoadingAddresses,
@@ -152,17 +197,253 @@ export function MobileCheckoutLayout({
   touched,
   showAddressSelector,
   setShowAddressSelector,
+}: CheckoutLayoutBaseProps & { variant: CheckoutLayoutVariant }) {
+  if (isAuthGateActive) return null
+
+  const headerClassName = variant === "desktop" ? "border-b px-5" : "border-b"
+  const titleClassName =
+    variant === "desktop"
+      ? "flex items-center gap-2.5 text-base"
+      : "flex items-center gap-2 text-sm"
+  const iconClassName = variant === "desktop" ? "size-5 text-primary" : "size-4 text-primary"
+  const contentClassName = variant === "desktop" ? "p-5 pt-4" : undefined
+
+  return (
+    <Card>
+      <CardHeader className={headerClassName}>
+        <div className="flex items-center justify-between">
+          <CardTitle className={titleClassName}>
+            <MapPin className={iconClassName} />
+            {t("shippingAddress")}
+          </CardTitle>
+          {isAuthenticated && (
+            <Link href="/account/addresses" className="text-xs font-medium text-primary">
+              {t("manageAddresses")}
+            </Link>
+          )}
+        </div>
+      </CardHeader>
+      <CardContent className={contentClassName}>
+        <AddressSection
+          isLoadingAddresses={isLoadingAddresses}
+          savedAddresses={savedAddresses}
+          selectedAddressId={selectedAddressId}
+          setSelectedAddressId={setSelectedAddressId}
+          useNewAddress={useNewAddress}
+          setUseNewAddress={setUseNewAddress}
+          newAddress={newAddress}
+          updateNewAddress={updateNewAddress}
+          handleBlur={handleBlur}
+          errors={errors}
+          touched={touched}
+          showAddressSelector={showAddressSelector}
+          setShowAddressSelector={setShowAddressSelector}
+        />
+      </CardContent>
+    </Card>
+  )
+}
+
+function CheckoutShippingMethodCard({
+  variant,
+  t,
+  isAuthGateActive,
   shippingMethod,
   setShippingMethod,
   formatPrice,
+}: CheckoutLayoutBaseProps & { variant: CheckoutLayoutVariant }) {
+  if (isAuthGateActive) return null
+
+  const headerClassName = variant === "desktop" ? "border-b px-5" : "border-b"
+  const titleClassName =
+    variant === "desktop"
+      ? "flex items-center gap-2.5 text-base"
+      : "flex items-center gap-2 text-sm"
+  const iconClassName = variant === "desktop" ? "size-5 text-primary" : "size-4 text-primary"
+  const contentClassName = variant === "desktop" ? "p-5 pt-4" : undefined
+
+  return (
+    <Card>
+      <CardHeader className={headerClassName}>
+        <CardTitle className={titleClassName}>
+          <Truck className={iconClassName} />
+          {t("shippingMethod")}
+        </CardTitle>
+      </CardHeader>
+      <CardContent className={contentClassName}>
+        <ShippingMethodSection
+          shippingMethod={shippingMethod}
+          setShippingMethod={setShippingMethod}
+          formatPrice={formatPrice}
+          {...(variant === "mobile" ? { compact: true } : {})}
+        />
+      </CardContent>
+    </Card>
+  )
+}
+
+function CheckoutOrderItemsCard({
+  variant,
+  t,
   items,
   totalItems,
+  formatPrice,
+}: CheckoutLayoutBaseProps & { variant: CheckoutLayoutVariant }) {
+  const headerClassName = variant === "desktop" ? "border-b px-5" : "border-b"
+  const titleClassName =
+    variant === "desktop"
+      ? "flex items-center gap-2.5 text-base"
+      : "flex items-center gap-2 text-sm"
+  const iconClassName = variant === "desktop" ? "size-5 text-primary" : "size-4 text-primary"
+  const contentClassName = variant === "desktop" ? "p-5 pt-4" : undefined
+
+  return (
+    <Card>
+      <CardHeader className={headerClassName}>
+        <div className="flex items-center justify-between">
+          <CardTitle className={titleClassName}>
+            <Package className={iconClassName} />
+            {t("orderItems")}
+            <Badge variant="secondary" className="ml-1">
+              {totalItems}
+            </Badge>
+          </CardTitle>
+          <Link href="/cart" className="text-xs font-medium text-primary">
+            {t("edit")}
+          </Link>
+        </div>
+      </CardHeader>
+      <CardContent className={contentClassName}>
+        {variant === "desktop" ? (
+          <OrderItemsSectionDesktop items={items} formatPrice={formatPrice} />
+        ) : (
+          <OrderItemsSection items={items} formatPrice={formatPrice} />
+        )}
+      </CardContent>
+    </Card>
+  )
+}
+
+function CheckoutSummaryRows({
+  variant,
+  t,
+  formatPrice,
   subtotal,
   shippingCost,
   tax,
   buyerProtectionFee,
-  total,
-}: CheckoutLayoutBaseProps) {
+}: CheckoutLayoutBaseProps & { variant: CheckoutLayoutVariant }) {
+  const rowClassName =
+    variant === "desktop" ? "flex justify-between" : "flex justify-between text-sm"
+  const valueClassName = variant === "desktop" ? "font-medium" : undefined
+
+  return (
+    <>
+      <div className={rowClassName}>
+        <span className="text-muted-foreground">{t("subtotal")}</span>
+        <span className={valueClassName}>{formatPrice(subtotal)}</span>
+      </div>
+      <div className={rowClassName}>
+        <span className="text-muted-foreground">{t("shipping")}</span>
+        <span
+          className={
+            variant === "desktop"
+              ? cn("font-medium", shippingCost === 0 && "text-success")
+              : shippingCost === 0
+                ? "font-medium text-success"
+                : ""
+          }
+        >
+          {shippingCost === 0 ? t("free") : formatPrice(shippingCost)}
+        </span>
+      </div>
+      <div className={rowClassName}>
+        <span className="text-muted-foreground">{t("tax", { percent: 10 })}</span>
+        <span className={valueClassName}>{formatPrice(tax)}</span>
+      </div>
+      <div className={rowClassName}>
+        <span className="text-muted-foreground">{t("buyerProtection")}</span>
+        <span className={valueClassName}>{formatPrice(buyerProtectionFee)}</span>
+      </div>
+    </>
+  )
+}
+
+function MobileCheckoutSummaryCard(props: CheckoutLayoutBaseProps) {
+  const { t, formatPrice, total } = props
+
+  return (
+    <Card>
+      <CardContent className="space-y-2 py-4">
+        <CheckoutSummaryRows variant="mobile" {...props} />
+        <div className="mt-2 flex justify-between border-t pt-2">
+          <span className="font-semibold">{t("total")}</span>
+          <span className="text-lg font-bold">{formatPrice(total)}</span>
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
+
+function DesktopCheckoutSummaryCard(props: CheckoutLayoutBaseProps) {
+  const {
+    t,
+    tAuth,
+    authLoginHref,
+    isAuthGateActive,
+    formatPrice,
+    total,
+    isProcessing,
+    canCheckout,
+    onCheckout,
+  } = props
+
+  return (
+    <Card className="sticky top-20">
+      <CardHeader className="border-b px-5">
+        <CardTitle className="text-base">{t("orderSummary")}</CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-4 p-5 pt-4">
+        <div className="space-y-3 text-sm">
+          <CheckoutSummaryRows variant="desktop" {...props} />
+        </div>
+
+        <div className="border-t pt-4">
+          <div className="flex items-baseline justify-between">
+            <span className="text-base font-semibold">{t("total")}</span>
+            <span className="text-xl font-bold">{formatPrice(total)}</span>
+          </div>
+        </div>
+
+        <CheckoutActionButton
+          t={t}
+          tAuth={tAuth}
+          authLoginHref={authLoginHref}
+          isAuthGateActive={isAuthGateActive}
+          isProcessing={isProcessing}
+          canCheckout={canCheckout}
+          onCheckout={onCheckout}
+          nonProcessingLabel={t("proceedToPayment")}
+        />
+
+        <div className="flex items-center justify-center gap-4 pt-2 text-xs text-muted-foreground">
+          <div className="flex items-center gap-1.5">
+            <Lock className="size-3.5 text-success" />
+            <span>{t("secureCheckout")}</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <ShieldCheck className="size-3.5 text-success" />
+            <span>{t("buyerProtection")}</span>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
+
+export function MobileCheckoutLayout(props: CheckoutLayoutBaseProps) {
+  const { t, checkoutNotice } = props
+
   return (
     <div className="lg:hidden pb-safe">
       <h1 className="sr-only">{t("title")}</h1>
@@ -170,106 +451,10 @@ export function MobileCheckoutLayout({
       <div className="space-y-3 p-4">
         {checkoutNotice && <CheckoutNoticeCard checkoutNotice={checkoutNotice} t={t} mobile />}
 
-        {!isAuthGateActive && (
-          <Card>
-            <CardHeader className="border-b">
-              <div className="flex items-center justify-between">
-                <CardTitle className="flex items-center gap-2 text-sm">
-                  <MapPin className="size-4 text-primary" />
-                  {t("shippingAddress")}
-                </CardTitle>
-                {isAuthenticated && (
-                  <Link href="/account/addresses" className="text-xs font-medium text-primary">
-                    {t("manageAddresses")}
-                  </Link>
-                )}
-              </div>
-            </CardHeader>
-            <CardContent>
-              <AddressSection
-                isLoadingAddresses={isLoadingAddresses}
-                savedAddresses={savedAddresses}
-                selectedAddressId={selectedAddressId}
-                setSelectedAddressId={setSelectedAddressId}
-                useNewAddress={useNewAddress}
-                setUseNewAddress={setUseNewAddress}
-                newAddress={newAddress}
-                updateNewAddress={updateNewAddress}
-                handleBlur={handleBlur}
-                errors={errors}
-                touched={touched}
-                showAddressSelector={showAddressSelector}
-                setShowAddressSelector={setShowAddressSelector}
-              />
-            </CardContent>
-          </Card>
-        )}
-
-        {!isAuthGateActive && (
-          <Card>
-            <CardHeader className="border-b">
-              <CardTitle className="flex items-center gap-2 text-sm">
-                <Truck className="size-4 text-primary" />
-                {t("shippingMethod")}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ShippingMethodSection
-                shippingMethod={shippingMethod}
-                setShippingMethod={setShippingMethod}
-                formatPrice={formatPrice}
-                compact
-              />
-            </CardContent>
-          </Card>
-        )}
-
-        <Card>
-          <CardHeader className="border-b">
-            <div className="flex items-center justify-between">
-              <CardTitle className="flex items-center gap-2 text-sm">
-                <Package className="size-4 text-primary" />
-                {t("orderItems")}
-                <Badge variant="secondary" className="ml-1">
-                  {totalItems}
-                </Badge>
-              </CardTitle>
-              <Link href="/cart" className="text-xs font-medium text-primary">
-                {t("edit")}
-              </Link>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <OrderItemsSection items={items} formatPrice={formatPrice} />
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="space-y-2 py-4">
-            <div className="flex justify-between text-sm">
-              <span className="text-muted-foreground">{t("subtotal")}</span>
-              <span>{formatPrice(subtotal)}</span>
-            </div>
-            <div className="flex justify-between text-sm">
-              <span className="text-muted-foreground">{t("shipping")}</span>
-              <span className={shippingCost === 0 ? "font-medium text-success" : ""}>
-                {shippingCost === 0 ? t("free") : formatPrice(shippingCost)}
-              </span>
-            </div>
-            <div className="flex justify-between text-sm">
-              <span className="text-muted-foreground">{t("tax", { percent: 10 })}</span>
-              <span>{formatPrice(tax)}</span>
-            </div>
-            <div className="flex justify-between text-sm">
-              <span className="text-muted-foreground">{t("buyerProtection")}</span>
-              <span>{formatPrice(buyerProtectionFee)}</span>
-            </div>
-            <div className="mt-2 flex justify-between border-t pt-2">
-              <span className="font-semibold">{t("total")}</span>
-              <span className="text-lg font-bold">{formatPrice(total)}</span>
-            </div>
-          </CardContent>
-        </Card>
+        <CheckoutAddressCard variant="mobile" {...props} />
+        <CheckoutShippingMethodCard variant="mobile" {...props} />
+        <CheckoutOrderItemsCard variant="mobile" {...props} />
+        <MobileCheckoutSummaryCard {...props} />
 
         <div className="flex items-center justify-center gap-4 py-1 text-2xs text-muted-foreground">
           <span className="flex items-center gap-1">
@@ -327,67 +512,28 @@ export function MobileStickyCheckoutFooter({
           <span>{t("buyerProtection")}</span>
         </div>
 
-        {isAuthGateActive ? (
-          <Button asChild size="lg" className="w-full font-semibold">
-            <Link href={authLoginHref}>
-              <Lock className="mr-2 size-4" />
-              {tAuth("signIn")}
-            </Link>
-          </Button>
-        ) : (
-          <Button onClick={onCheckout} disabled={isProcessing || !canCheckout} size="lg" className="w-full font-semibold">
-            {isProcessing ? (
-              <>
-                <SpinnerGap className="mr-2 size-5 animate-spin" />
-                {t("processing")}
-              </>
-            ) : (
-              <>
-                <Lock className="mr-2 size-4" />
-                {t("completeOrder")} · {formatPrice(total)}
-              </>
-            )}
-          </Button>
-        )}
+        <CheckoutActionButton
+          t={t}
+          tAuth={tAuth}
+          authLoginHref={authLoginHref}
+          isAuthGateActive={isAuthGateActive}
+          isProcessing={isProcessing}
+          canCheckout={canCheckout}
+          onCheckout={onCheckout}
+          nonProcessingLabel={
+            <>
+              {t("completeOrder")} · {formatPrice(total)}
+            </>
+          }
+        />
       </div>
     </div>
   )
 }
 
-export function DesktopCheckoutLayout({
-  t,
-  tAuth,
-  checkoutNotice,
-  authLoginHref,
-  isAuthGateActive,
-  isAuthenticated,
-  isLoadingAddresses,
-  savedAddresses,
-  selectedAddressId,
-  setSelectedAddressId,
-  useNewAddress,
-  setUseNewAddress,
-  newAddress,
-  updateNewAddress,
-  handleBlur,
-  errors,
-  touched,
-  showAddressSelector,
-  setShowAddressSelector,
-  shippingMethod,
-  setShippingMethod,
-  formatPrice,
-  items,
-  totalItems,
-  subtotal,
-  shippingCost,
-  tax,
-  buyerProtectionFee,
-  total,
-  isProcessing,
-  canCheckout,
-  onCheckout,
-}: CheckoutLayoutBaseProps) {
+export function DesktopCheckoutLayout(props: CheckoutLayoutBaseProps) {
+  const { t, checkoutNotice } = props
+
   return (
     <div className="hidden py-6 lg:block">
       <div className="container max-w-5xl">
@@ -407,149 +553,13 @@ export function DesktopCheckoutLayout({
 
         <div className="flex items-start gap-6 lg:gap-8">
           <div className="flex-1 space-y-4">
-            {!isAuthGateActive && (
-              <Card>
-                <CardHeader className="border-b px-5">
-                  <div className="flex items-center justify-between">
-                    <CardTitle className="flex items-center gap-2.5 text-base">
-                      <MapPin className="size-5 text-primary" />
-                      {t("shippingAddress")}
-                    </CardTitle>
-                    {isAuthenticated && (
-                      <Link href="/account/addresses" className="text-xs font-medium text-primary">
-                        {t("manageAddresses")}
-                      </Link>
-                    )}
-                  </div>
-                </CardHeader>
-                <CardContent className="p-5 pt-4">
-                  <AddressSection
-                    isLoadingAddresses={isLoadingAddresses}
-                    savedAddresses={savedAddresses}
-                    selectedAddressId={selectedAddressId}
-                    setSelectedAddressId={setSelectedAddressId}
-                    useNewAddress={useNewAddress}
-                    setUseNewAddress={setUseNewAddress}
-                    newAddress={newAddress}
-                    updateNewAddress={updateNewAddress}
-                    handleBlur={handleBlur}
-                    errors={errors}
-                    touched={touched}
-                    showAddressSelector={showAddressSelector}
-                    setShowAddressSelector={setShowAddressSelector}
-                  />
-                </CardContent>
-              </Card>
-            )}
-
-            {!isAuthGateActive && (
-              <Card>
-                <CardHeader className="border-b px-5">
-                  <CardTitle className="flex items-center gap-2.5 text-base">
-                    <Truck className="size-5 text-primary" />
-                    {t("shippingMethod")}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="p-5 pt-4">
-                  <ShippingMethodSection
-                    shippingMethod={shippingMethod}
-                    setShippingMethod={setShippingMethod}
-                    formatPrice={formatPrice}
-                  />
-                </CardContent>
-              </Card>
-            )}
-
-            <Card>
-              <CardHeader className="border-b px-5">
-                <div className="flex items-center justify-between">
-                  <CardTitle className="flex items-center gap-2.5 text-base">
-                    <Package className="size-5 text-primary" />
-                    {t("orderItems")}
-                    <Badge variant="secondary" className="ml-1">
-                      {totalItems}
-                    </Badge>
-                  </CardTitle>
-                  <Link href="/cart" className="text-xs font-medium text-primary">
-                    {t("edit")}
-                  </Link>
-                </div>
-              </CardHeader>
-              <CardContent className="p-5 pt-4">
-                <OrderItemsSectionDesktop items={items} formatPrice={formatPrice} />
-              </CardContent>
-            </Card>
+            <CheckoutAddressCard variant="desktop" {...props} />
+            <CheckoutShippingMethodCard variant="desktop" {...props} />
+            <CheckoutOrderItemsCard variant="desktop" {...props} />
           </div>
 
           <div className="w-96 shrink-0">
-            <Card className="sticky top-20">
-              <CardHeader className="border-b px-5">
-                <CardTitle className="text-base">{t("orderSummary")}</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4 p-5 pt-4">
-                <div className="space-y-3 text-sm">
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">{t("subtotal")}</span>
-                    <span className="font-medium">{formatPrice(subtotal)}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">{t("shipping")}</span>
-                    <span className={cn("font-medium", shippingCost === 0 && "text-success")}>
-                      {shippingCost === 0 ? t("free") : formatPrice(shippingCost)}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">{t("tax", { percent: 10 })}</span>
-                    <span className="font-medium">{formatPrice(tax)}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">{t("buyerProtection")}</span>
-                    <span className="font-medium">{formatPrice(buyerProtectionFee)}</span>
-                  </div>
-                </div>
-
-                <div className="border-t pt-4">
-                  <div className="flex items-baseline justify-between">
-                    <span className="text-base font-semibold">{t("total")}</span>
-                    <span className="text-xl font-bold">{formatPrice(total)}</span>
-                  </div>
-                </div>
-
-                {isAuthGateActive ? (
-                  <Button asChild size="lg" className="w-full font-semibold">
-                    <Link href={authLoginHref}>
-                      <Lock className="mr-2 size-4" />
-                      {tAuth("signIn")}
-                    </Link>
-                  </Button>
-                ) : (
-                  <Button onClick={onCheckout} disabled={isProcessing || !canCheckout} size="lg" className="w-full font-semibold">
-                    {isProcessing ? (
-                      <>
-                        <SpinnerGap className="mr-2 size-5 animate-spin" />
-                        {t("processing")}
-                      </>
-                    ) : (
-                      <>
-                        <Lock className="mr-2 size-4" />
-                        {t("proceedToPayment")}
-                      </>
-                    )}
-                  </Button>
-                )}
-
-                <div className="flex items-center justify-center gap-4 pt-2 text-xs text-muted-foreground">
-                  <div className="flex items-center gap-1.5">
-                    <Lock className="size-3.5 text-success" />
-                    <span>{t("secureCheckout")}</span>
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <ShieldCheck className="size-3.5 text-success" />
-                    <span>{t("buyerProtection")}</span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+            <DesktopCheckoutSummaryCard {...props} />
           </div>
         </div>
       </div>
