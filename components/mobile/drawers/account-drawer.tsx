@@ -78,7 +78,7 @@ const MENU_GROUP_CLASS =
 
 /** Single menu row inside a grouped card */
 const MENU_ROW_CLASS = cn(
-  "flex min-h-(--spacing-touch-md) w-full items-center gap-3 px-3.5 text-left",
+  "flex min-h-(--spacing-touch-md) w-full items-center gap-3 px-4 text-left",
   "tap-transparent motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth)",
   "hover:bg-hover active:bg-active",
   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-inset",
@@ -88,16 +88,9 @@ const MENU_ROW_CLASS = cn(
 // Subcomponents
 // =============================================================================
 
-/** Icon circle — clean monochromatic brand style */
-function MenuIconCircle({ icon: Icon, size = 20 }: { icon: LucideIcon; size?: number }) {
-  return (
-    <span
-      className="inline-flex size-9 shrink-0 items-center justify-center rounded-lg bg-accent text-primary"
-      aria-hidden="true"
-    >
-      <Icon size={size} />
-    </span>
-  )
+/** Bare icon — lightweight neutral style, accent only where needed */
+function MenuIcon({ icon: Icon }: { icon: LucideIcon }) {
+  return <Icon size={20} className="shrink-0 text-muted-foreground" aria-hidden="true" />
 }
 
 /** Single menu row inside a grouped card */
@@ -118,7 +111,7 @@ function MenuRow({
         data-testid="account-drawer-quick-link"
         className={MENU_ROW_CLASS}
       >
-        <MenuIconCircle icon={item.icon} />
+        <MenuIcon icon={item.icon} />
         <span className="min-w-0 flex-1 truncate text-sm font-medium text-foreground">
           {item.label}
         </span>
@@ -140,7 +133,7 @@ function MenuRow({
           <CaretRight size={16} className="text-muted-foreground" aria-hidden="true" />
         </div>
       </Link>
-      {showSeparator && <Separator className="ml-16" />}
+      {showSeparator && <Separator className="ml-11" />}
     </>
   )
 }
@@ -210,16 +203,16 @@ function AccountDrawerSkeleton() {
       {/* Menu group skeleton */}
       <div className={cn(MENU_GROUP_CLASS, "mt-4")}>
         {Array.from({ length: 3 }).map((_, i) => (
-          <div key={i} className={cn("flex items-center gap-3 px-3.5 py-3", i > 0 && "border-t border-border-subtle")}>
-            <Skeleton className="size-9 shrink-0 rounded-lg" />
+          <div key={i} className={cn("flex items-center gap-3 px-4 py-3", i > 0 && "border-t border-border-subtle")}>
+            <Skeleton className="size-5 shrink-0 rounded" />
             <Skeleton className="h-3.5 w-24" />
           </div>
         ))}
       </div>
       <div className={cn(MENU_GROUP_CLASS, "mt-3")}>
         {Array.from({ length: 2 }).map((_, i) => (
-          <div key={i} className={cn("flex items-center gap-3 px-3.5 py-3", i > 0 && "border-t border-border-subtle")}>
-            <Skeleton className="size-9 shrink-0 rounded-lg" />
+          <div key={i} className={cn("flex items-center gap-3 px-4 py-3", i > 0 && "border-t border-border-subtle")}>
+            <Skeleton className="size-5 shrink-0 rounded" />
             <Skeleton className="h-3.5 w-20" />
           </div>
         ))}
@@ -404,8 +397,8 @@ export function AccountDrawer({ open, onOpenChange }: AccountDrawerProps) {
           <DrawerBody className="px-inset py-4">
             <div className={MENU_GROUP_CLASS}>
               <div className="flex flex-col items-center px-5 py-6 text-center">
-                <div className="mb-3 inline-flex size-14 items-center justify-center rounded-2xl bg-accent text-primary">
-                  <User size={28} />
+                <div className="mb-3 inline-flex size-12 items-center justify-center rounded-full bg-muted text-muted-foreground">
+                  <User size={24} />
                 </div>
                 <p className="text-sm font-semibold text-foreground">{t("signInPrompt")}</p>
                 <p className="mt-1 text-xs text-muted-foreground">{t("signInDescription")}</p>
