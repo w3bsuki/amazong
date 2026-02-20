@@ -8,14 +8,26 @@
 
 For framework knowledge, read the official docs — not this file:
 
-- **shadcn/ui:** https://ui.shadcn.com — component API, variants, installation
-- **Tailwind CSS v4:** https://tailwindcss.com/docs — utilities, responsive, dark mode
+- **shadcn/ui:** https://ui.shadcn.com — component API, variants, theming, `data-slot` convention
+- **Tailwind CSS v4:** https://tailwindcss.com/docs — `@theme inline`, CSS-first config, utilities
 - **Radix UI:** https://www.radix-ui.com/primitives — accessibility, primitives behavior
 - **Vaul:** https://vaul.emilkowal.ski — drawer behavior, snap points
 - **Framer Motion:** https://motion.dev — animation API
-- **Anthropic — Building effective agents:** https://github.com/anthropics/anthropic-cookbook — UI patterns for AI-assisted interfaces
 
 If a **context7 MCP** is available, use `resolve-library-id` + `get-library-docs` for any shadcn/Tailwind/Radix question.
+
+### Design Direction (2026)
+
+Treido's visual language draws from the same discipline as Stripe, Vercel, Linear, Reddit (mobile), and ChatGPT: **restrained surfaces, clear hierarchy, confident spacing, zero decorative noise.** Not trendy — timeless. Not minimal — intentional.
+
+Key principles from the best modern products:
+- **Soft chrome edges.** Bottom bars use `rounded-t-2xl` + `border-t` + subtle shadow — feels elevated and intentional, not flat/generic.
+- **Semantic color only.** Interactive states (hover, active, selected) come from purpose-built tokens, not opacity hacks or palette utilities.
+- **Active indicators over color-only states.** Navigation active states use a visible pill/capsule behind the icon — color change alone is too subtle on mobile.
+- **Solid surfaces, not glass.** Background is opaque `bg-background`. No blur, no transparency on fixed navigation chrome.
+- **Rows with borders.** List items, drawer options, and settings use `rounded-xl border border-border-subtle` — the Treido signature pattern (see Category Browse Drawer).
+- **Dark CTAs on light, light CTAs on dark.** Primary actions in drawers/sheets use `bg-foreground text-background` — high contrast, no color dependency.
+- **Touch-first proportions.** 44px minimum tap targets, 48px for primary actions. Labels are readable (`text-tiny` min), icons are 20-24px.
 
 ---
 
@@ -71,7 +83,71 @@ OKLCH-based tokens defined in `app/globals.css`. Full light + dark theme.
 
 ---
 
-## 2. Typography
+## 2. Tailwind v4 + shadcn/ui Theming Contract
+
+### How Our Theme Works
+
+Treido uses the **shadcn/ui v4 theming pattern**: CSS custom properties in `:root`/`.dark` bridged to Tailwind via `@theme inline`. This is the canonical 2026 approach — no `tailwind.config.ts` color overrides, no HSL, pure OKLCH.
+
+```
+:root { --primary: 0.62 0.20 255; }        ← Raw OKLCH components
+@theme inline { --color-primary: oklch(var(--primary)); }  ← Tailwind bridge
+<div className="bg-primary">               ← Semantic utility
+```
+
+**Three-layer architecture:**
+1. **`:root` / `.dark`** — Source of truth. Raw OKLCH values for every token. Light and dark mode.
+2. **`@theme inline`** — Bridge layer. Maps `--color-*` to `oklch(var(--token))` so Tailwind generates utilities.
+3. **Component classes** — Consume only semantic utilities: `bg-background`, `text-foreground`, `border-border`.
+
+### Rules
+
+| Do | Don't |
+|----|-------|
+| `bg-primary text-primary-foreground` | `bg-blue-600 text-white` |
+| `border-border-subtle` | `border-gray-100` |
+| `bg-surface-subtle` | `bg-[#f5f5f5]` |
+| `text-muted-foreground` | `text-black/50` or `text-foreground/50` |
+| Add new token in `:root` + `@theme inline` | Use arbitrary values `bg-[oklch(...)]` |
+| Use `data-[state=active]:` for stateful styles | Use JS-toggled classnames for colors |
+
+### Adding a New Token
+
+1. Add raw OKLCH value to `:root` and `.dark` in `app/globals.css`
+2. Add the `--color-<name>: oklch(var(--name));` line to `@theme inline`
+3. Use `bg-<name>`, `text-<name>`, `border-<name>` in components
+4. If the token is component-scoped (e.g., nav-only), prefix it: `--nav-active`, `--nav-indicator`
+
+### shadcn/ui Component Conventions
+
+- **`data-slot`** attribute on every component root — used for styling hooks and testing
+- **CVA (class-variance-authority)** for variant definitions — keeps variant logic co-located with styles
+- **`Slot` pattern** (`asChild`) for composable components — Link inside Button, etc.
+- **Semantic tokens only** in component variants — never palette classes
+- **`components/ui/`** stays primitive: no data fetching, no domain logic, no i18n
+- Components are editable open code — modify freely, but keep the variant/slot contract
+
+### What Good Looks Like (Reference Patterns)
+
+**Category Browse Drawer** — our gold standard for mobile UI:
+- `DrawerShell` wrapper with centered title, close button, consistent header
+- Rows: `rounded-xl border border-border-subtle bg-background` with hover/active states
+- Primary CTA: `bg-foreground text-background` (dark on light, light on dark)
+- Search: `rounded-full border-border-subtle bg-surface-subtle` pill input
+- Segmented toggles, chips, icon circles — all using semantic tokens
+- Loading: skeleton shapes matching real content exactly
+
+**Mobile Bottom Nav** — our standard for fixed chrome:
+- `rounded-t-2xl` top corners with `border-t border-border` — soft, elevated feel
+- Subtle upward `shadow-nav` for depth separation from scroll content
+- Active indicator pill behind icon for clear state feedback
+- Icon + label layout with proper spacing
+- Core action (sell) distinguished by `bg-foreground text-background` circle
+- `pb-safe` for iOS safe area
+
+---
+
+## 3. Typography
 
 ### Font Stack
 
@@ -108,7 +184,7 @@ Custom scale optimized for mobile readability and information density:
 
 ---
 
-## 3. Responsive Strategy
+## 4. Responsive Strategy
 
 ### Philosophy
 
@@ -170,11 +246,19 @@ For overlay components, `useIsMobile()` hook selects Drawer vs Dialog.
 **Mobile tab bar** (5 tabs):
 1. Home (House) — navigate to `/`
 2. Categories (LayoutGrid) — open category drawer or navigate to `/categories`
-3. Sell (Plus) — navigate to `/sell` — **core action** with dark circle + blue ring (inactive) / blue circle (active)
+3. Sell (Plus) — navigate to `/sell` — **core action** with `bg-foreground text-background` circle
 4. Chat (MessageCircle) — open messages drawer, shows unread badge
 5. Profile (avatar) — open account drawer (auth) or auth drawer (guest)
 
-Active tabs use primary blue color and an M3-style pill indicator (subtle blue capsule behind the icon). Labels are `text-tiny font-semibold` when active, `text-tiny font-medium` when inactive.
+**Tab bar design (2026 standard):**
+- `rounded-t-2xl` + `border-t border-border` — soft elevated feel, not flat/generic
+- Subtle upward `shadow-nav` for depth separation from scroll content
+- Active state: **indicator pill** (subtle `bg-accent` capsule behind icon) + `text-nav-active` color + `font-semibold` label
+- Inactive: `text-nav-inactive` + `font-medium` label
+- Core action (sell): distinguished by dark circle icon container, no label
+- Icons: filled when active, outlined when inactive (24px)
+- Labels: `text-tiny` (11px), always visible
+- Height: `--spacing-bottom-nav` (4rem/64px) + `pb-safe` for iOS
 
 ### Desktop Layout
 
@@ -209,7 +293,7 @@ Active tabs use primary blue color and an M3-style pill indicator (subtle blue c
 
 ---
 
-## 4. Component Patterns
+## 5. Component Patterns
 
 ### Product Cards
 
@@ -284,7 +368,7 @@ Content is bilingual (EN/BG).
 
 ---
 
-## 5. Spacing & Layout Tokens
+## 6. Spacing & Layout Tokens
 
 ### Token Reference
 
@@ -326,7 +410,7 @@ iOS-inspired corner radius. Base: `0.5rem` (8px).
 
 ---
 
-## 6. Motion & Animation
+## 7. Motion & Animation
 
 ### Philosophy
 
@@ -360,7 +444,7 @@ Between minimal and tasteful. Motion communicates feedback and structure — nev
 
 ---
 
-## 7. Token Contract
+## 8. Token Contract
 
 ### Semantic Tokens Only
 
@@ -396,7 +480,7 @@ Enforced by scanner scripts in `scripts/`. These WILL fail `pnpm -s styles:gate`
 
 ---
 
-## 8. Component Organization
+## 9. Component Organization
 
 Components follow a strict layering (see `AGENTS.md` § Conventions for full rules):
 
@@ -411,7 +495,7 @@ app/**/_components/  → route-private UI (never import across route groups)
 
 ---
 
-## 9. Page Quality — Current State
+## 10. Page Quality — Current State
 
 | Surface | Mobile | Desktop | Priority |
 |---------|--------|---------|----------|
@@ -449,7 +533,7 @@ Before building or revising any surface, answer:
 
 ---
 
-## 10. Anti-Slop Rules
+## 11. Anti-Slop Rules
 
 These patterns make the app feel generic or broken. Catch and fix them:
 
@@ -464,7 +548,7 @@ These patterns make the app feel generic or broken. Catch and fix them:
 
 ---
 
-## 11. Accessibility Baseline
+## 12. Accessibility Baseline
 
 Non-negotiable for every surface:
 
@@ -490,4 +574,4 @@ Non-negotiable for every surface:
 
 ---
 
-*Last updated: 2026-02-18*
+*Last updated: 2026-02-20*

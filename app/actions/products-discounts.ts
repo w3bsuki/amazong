@@ -7,6 +7,41 @@ import {
   requireProductAuth,
   setDiscountSchema,
 } from "./products-shared"
+import type { SupabaseClient } from "@supabase/supabase-js"
+import type { Database } from "@/lib/supabase/database.types"
+
+async function requireAuthedProductForDiscountUpdate(
+  productId: string
+): Promise<
+  | {
+      ok: true
+      user: { id: string }
+      supabase: SupabaseClient<Database>
+      product: { category_id: string | null; list_price: unknown; price: unknown }
+    }
+  | { ok: false; result: ActionResult }
+> {
+  const auth = await requireProductAuth("You must be logged in to update a product")
+  if ("error" in auth) {
+    return { ok: false, result: { success: false, error: auth.error } }
+  }
+  const { user, supabase } = auth
+
+  const { data: product, error: fetchError } = await supabase
+    .from("products")
+    .select("id, seller_id, price, list_price, category_id")
+    .eq("id", productId)
+    .single()
+
+  if (fetchError || !product) {
+    return { ok: false, result: { success: false, error: "Product not found" } }
+  }
+  if (product.seller_id !== user.id) {
+    return { ok: false, result: { success: false, error: "You don't have permission to edit this product" } }
+  }
+
+  return { ok: true, user, supabase, product }
+}
 
 /**
  * Set a discounted price for a product.
@@ -21,24 +56,11 @@ export async function setProductDiscountPrice(
       return { success: false, error: parsed.error.issues[0]?.message || "Invalid input" }
     }
 
-    const auth = await requireProductAuth("You must be logged in to update a product")
-    if ("error" in auth) {
-      return { success: false, error: auth.error }
+    const authed = await requireAuthedProductForDiscountUpdate(parsed.data.productId)
+    if (!authed.ok) {
+      return authed.result
     }
-    const { user, supabase } = auth
-
-    const { data: product, error: fetchError } = await supabase
-      .from("products")
-      .select("id, seller_id, price, list_price, category_id")
-      .eq("id", parsed.data.productId)
-      .single()
-
-    if (fetchError || !product) {
-      return { success: false, error: "Product not found" }
-    }
-    if (product.seller_id !== user.id) {
-      return { success: false, error: "You don't have permission to edit this product" }
-    }
+    const { user, supabase, product } = authed
 
     const currentPrice = Number(product.price)
     const currentListPrice = product.list_price == null ? null : Number(product.list_price)
@@ -94,24 +116,11 @@ export async function clearProductDiscount(productId: string): Promise<ActionRes
       return { success: false, error: parsed.error.issues[0]?.message || "Invalid input" }
     }
 
-    const auth = await requireProductAuth("You must be logged in to update a product")
-    if ("error" in auth) {
-      return { success: false, error: auth.error }
+    const authed = await requireAuthedProductForDiscountUpdate(parsed.data.productId)
+    if (!authed.ok) {
+      return authed.result
     }
-    const { user, supabase } = auth
-
-    const { data: product, error: fetchError } = await supabase
-      .from("products")
-      .select("id, seller_id, price, list_price, category_id")
-      .eq("id", parsed.data.productId)
-      .single()
-
-    if (fetchError || !product) {
-      return { success: false, error: "Product not found" }
-    }
-    if (product.seller_id !== user.id) {
-      return { success: false, error: "You don't have permission to edit this product" }
-    }
+    const { user, supabase, product } = authed
 
     if (product.list_price == null) {
       return { success: true }
@@ -150,4 +159,3 @@ export async function clearProductDiscount(productId: string): Promise<ActionRes
     return { success: false, error: "An unexpected error occurred" }
   }
 }
-

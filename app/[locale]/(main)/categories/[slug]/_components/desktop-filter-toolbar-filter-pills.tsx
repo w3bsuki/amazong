@@ -106,6 +106,25 @@ export function DesktopFilterToolbarFilterPills({
 
     const usedKeys = new Set<string>()
 
+    const pushAttribute = (attr: CategoryAttribute) => {
+      const attrKey = getCategoryAttributeKey(attr)
+      if (usedKeys.has(attrKey)) return
+
+      const options = (locale === "bg" && attr.options_bg?.length ? attr.options_bg : attr.options || [])
+        .slice(0, 10)
+        .map((option) => ({ value: option, label: option }))
+
+      if (options.length === 0) return
+
+      usedKeys.add(attrKey)
+      result.push({
+        key: attrKey,
+        label: locale === "bg" && attr.name_bg ? attr.name_bg : attr.name,
+        paramKey: `attr_${attrKey}`,
+        options,
+      })
+    }
+
     for (const filterKey of priorityFilters) {
       if (filterKey === "price" || filterKey === "category") continue
 
@@ -114,43 +133,13 @@ export function DesktopFilterToolbarFilterPills({
       )
       if (!attr) continue
 
-      const attrKey = getCategoryAttributeKey(attr)
-      if (usedKeys.has(attrKey)) continue
-
-      const options = (locale === "bg" && attr.options_bg?.length ? attr.options_bg : attr.options || [])
-        .slice(0, 10)
-        .map((option) => ({ value: option, label: option }))
-
-      if (options.length > 0) {
-        usedKeys.add(attrKey)
-        result.push({
-          key: attrKey,
-          label: locale === "bg" && attr.name_bg ? attr.name_bg : attr.name,
-          paramKey: `attr_${attrKey}`,
-          options,
-        })
-      }
+      pushAttribute(attr)
     }
 
     for (const attr of attributes) {
       if (result.length >= 6) break
 
-      const attrKey = getCategoryAttributeKey(attr)
-      if (usedKeys.has(attrKey)) continue
-
-      const options = (locale === "bg" && attr.options_bg?.length ? attr.options_bg : attr.options || [])
-        .slice(0, 10)
-        .map((option) => ({ value: option, label: option }))
-
-      if (options.length > 0) {
-        usedKeys.add(attrKey)
-        result.push({
-          key: attrKey,
-          label: locale === "bg" && attr.name_bg ? attr.name_bg : attr.name,
-          paramKey: `attr_${attrKey}`,
-          options,
-        })
-      }
+      pushAttribute(attr)
     }
 
     return result.slice(0, 6)

@@ -1,11 +1,18 @@
 "use client"
 
-import { useEffect, useMemo, useRef, useState, useTransition } from "react"
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  useTransition,
+} from "react"
 import { usePathname, useRouter } from "@/i18n/routing"
 import { useSearchParams } from "next/navigation"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Input } from "@/components/ui/input"
-import { Search as MagnifyingGlass } from "lucide-react";
+import { Search as MagnifyingGlass } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 
@@ -48,32 +55,38 @@ export function AccountOrdersToolbar({
     [locale],
   )
 
-  const buildUrl = (next: { q?: string | null; status?: StatusKey | null }) => {
-    const params = new URLSearchParams(searchParams?.toString() || "")
+  const buildUrl = useCallback(
+    (next: { q?: string | null; status?: StatusKey | null }) => {
+      const params = new URLSearchParams(searchParams?.toString() || "")
 
-    if (next.q === null) params.delete("q")
-    else if (typeof next.q === "string") {
-      const trimmed = next.q.trim()
-      if (!trimmed) params.delete("q")
-      else params.set("q", trimmed)
-    }
+      if (next.q === null) params.delete("q")
+      else if (typeof next.q === "string") {
+        const trimmed = next.q.trim()
+        if (!trimmed) params.delete("q")
+        else params.set("q", trimmed)
+      }
 
-    if (next.status === null) params.delete("status")
-    else if (next.status) {
-      if (next.status === "all") params.delete("status")
-      else params.set("status", next.status)
-    }
+      if (next.status === null) params.delete("status")
+      else if (next.status) {
+        if (next.status === "all") params.delete("status")
+        else params.set("status", next.status)
+      }
 
-    const qs = params.toString()
-    return qs ? `${pathname}?${qs}` : pathname
-  }
+      const qs = params.toString()
+      return qs ? `${pathname}?${qs}` : pathname
+    },
+    [pathname, searchParams],
+  )
 
-  const applyUrl = (next: { q?: string | null; status?: StatusKey | null }) => {
-    const url = buildUrl(next)
-    startTransition(() => {
-      router.replace(url, { scroll: false })
-    })
-  }
+  const applyUrl = useCallback(
+    (next: { q?: string | null; status?: StatusKey | null }) => {
+      const url = buildUrl(next)
+      startTransition(() => {
+        router.replace(url, { scroll: false })
+      })
+    },
+    [buildUrl, router, startTransition],
+  )
 
   const debouncedSearchStateRef = useRef({ applyUrl, status })
 

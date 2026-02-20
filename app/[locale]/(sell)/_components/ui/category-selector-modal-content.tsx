@@ -14,6 +14,63 @@ import {
 } from "./category-selector-shared"
 import type { CategoryModalContentProps, FlatCategory } from "./category-selector.types"
 
+function CategoryResultsSection({
+  searchQuery,
+  searchResults,
+  value,
+  onSelect,
+  locale,
+  compact,
+  currentCategories,
+  getHasChildren,
+  onNavigate,
+  gridClassName,
+}: {
+  searchQuery: string
+  searchResults: FlatCategory[]
+  value: string
+  onSelect: (cat: FlatCategory) => void
+  locale: string
+  compact: boolean
+  currentCategories: Category[]
+  getHasChildren: (cat: Category) => boolean
+  onNavigate: (cat: Category) => Promise<void> | void
+  gridClassName: string
+}) {
+  const compactProps = compact ? { compact: true as const } : {}
+
+  if (searchQuery.trim()) {
+    if (searchResults.length === 0) {
+      return <CategoryEmptyState {...compactProps} />
+    }
+
+    return (
+      <CategorySearchResults
+        results={searchResults}
+        selectedValue={value}
+        onSelect={onSelect}
+        locale={locale}
+        {...compactProps}
+      />
+    )
+  }
+
+  return (
+    <div className={gridClassName}>
+      {currentCategories.map((cat) => (
+        <CategoryCard
+          key={cat.id}
+          category={cat}
+          isSelected={value === cat.id}
+          hasChildren={getHasChildren(cat)}
+          onClick={() => void onNavigate(cat)}
+          locale={locale}
+        />
+      ))}
+    </div>
+  )
+}
+
 export function CategoryModalContent({
   categories,
   flatCategories,
@@ -201,31 +258,18 @@ export function CategoryModalContent({
 
         <ScrollArea className="flex-1 min-h-0">
           <div className="p-4">
-            {searchQuery.trim() ? (
-              searchResults.length === 0 ? (
-                <CategoryEmptyState />
-              ) : (
-                <CategorySearchResults
-                  results={searchResults}
-                  selectedValue={value}
-                  onSelect={onSelect}
-                  locale={locale}
-                />
-              )
-            ) : (
-              <div className="grid grid-cols-2 gap-3">
-                {currentCategories.map((cat) => (
-                  <CategoryCard
-                    key={cat.id}
-                    category={cat}
-                    isSelected={value === cat.id}
-                    hasChildren={getChildren(cat).length > 0}
-                    onClick={() => void handleNavigate(cat)}
-                    locale={locale}
-                  />
-                ))}
-              </div>
-            )}
+            <CategoryResultsSection
+              searchQuery={searchQuery}
+              searchResults={searchResults}
+              value={value}
+              onSelect={onSelect}
+              locale={locale}
+              compact={false}
+              currentCategories={currentCategories}
+              getHasChildren={(cat) => getChildren(cat).length > 0}
+              onNavigate={handleNavigate}
+              gridClassName="grid grid-cols-2 gap-3"
+            />
           </div>
         </ScrollArea>
       </div>
@@ -260,32 +304,18 @@ export function CategoryModalContent({
 
         <ScrollArea className="flex-1">
           <div className="p-3">
-            {searchQuery.trim() ? (
-              searchResults.length === 0 ? (
-                <CategoryEmptyState compact />
-              ) : (
-                <CategorySearchResults
-                  results={searchResults}
-                  selectedValue={value}
-                  onSelect={onSelect}
-                  locale={locale}
-                  compact
-                />
-              )
-            ) : (
-              <div className="grid grid-cols-3 gap-2">
-                {currentCategories.map((cat) => (
-                  <CategoryCard
-                    key={cat.id}
-                    category={cat}
-                    isSelected={value === cat.id}
-                    hasChildren={getChildren(cat).length > 0}
-                    onClick={() => void handleDesktopNavigate(cat)}
-                    locale={locale}
-                  />
-                ))}
-              </div>
-            )}
+            <CategoryResultsSection
+              searchQuery={searchQuery}
+              searchResults={searchResults}
+              value={value}
+              onSelect={onSelect}
+              locale={locale}
+              compact
+              currentCategories={currentCategories}
+              getHasChildren={(cat) => getChildren(cat).length > 0}
+              onNavigate={handleDesktopNavigate}
+              gridClassName="grid grid-cols-3 gap-2"
+            />
           </div>
         </ScrollArea>
       </div>

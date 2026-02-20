@@ -99,8 +99,8 @@
 
 ## Sweep Results (2026‑02‑20)
 
-- **Loading boundaries:** pruned redundant leaf `loading.tsx` files where an ancestor already provided a meaningful skeleton (70 → 56).
-- **Suspense/fallback spam:** reduced nested `Suspense` usage (86 → 17 matches) and explicit `fallback=` usage (26 → 7 matches), favoring route-segment `loading.tsx` over local fallbacks.
+- **Loading boundaries:** pruned redundant leaf `loading.tsx` files where an ancestor already provided a meaningful skeleton (70 → 57).
+- **Suspense/fallback spam:** reduced nested `Suspense` usage (86 → 5 matches) and explicit `fallback=` usage (26 → 3 matches), favoring route-segment `loading.tsx` over local fallbacks.
 - **Loading UX:** removed `fallback={null}` wrappers that swallowed segment loading UI:
   - `app/[locale]/layout.tsx`
   - `app/[locale]/(business)/dashboard/layout.tsx`

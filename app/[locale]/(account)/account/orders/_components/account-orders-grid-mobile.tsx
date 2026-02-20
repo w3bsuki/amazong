@@ -1,13 +1,8 @@
 import { formatDistanceToNow, type Locale } from "date-fns"
 import { Link } from "@/i18n/routing"
-import { Button } from "@/components/ui/button"
 import { OrderStatusBadge } from "../../../../_components/orders/order-status-badge"
 import type { OrderItemStatus } from "@/lib/order-status"
 import { getOrderStatusFromItems } from "@/lib/order-status"
-import {
-  Card,
-  CardContent,
-} from "@/components/ui/card"
 import {
   Drawer,
   DrawerBody,
@@ -19,7 +14,7 @@ import {
 } from "@/components/ui/drawer"
 import { IconButton } from "@/components/ui/icon-button"
 import { Separator } from "@/components/ui/separator"
-import { ChevronRight as IconChevronRight, MessageCircle as IconMessageCircle, Package as IconPackage, ShoppingBag as IconShoppingBag, X as IconX } from "lucide-react"
+import { ChevronRight as IconChevronRight, MessageCircle as IconMessageCircle, Package as IconPackage, X as IconX } from "lucide-react"
 import { BuyerOrderActions } from "./buyer-order-actions"
 import type { AccountOrdersGridServerActions, OrderRow } from "./account-orders-grid.types"
 import {
@@ -29,6 +24,7 @@ import {
 } from "./account-orders-grid.utils"
 import { OrderListProductThumb, OrderListStatusBadge } from "@/components/shared/order-list-item"
 import { OrderSummaryLine } from "@/components/shared/order-summary-line"
+import { AccountOrdersEmptyState } from "./account-orders-empty-state"
 
 interface AccountOrdersGridMobileProps {
   orders: OrderRow[]
@@ -54,22 +50,7 @@ export function AccountOrdersGridMobile({
   t,
 }: AccountOrdersGridMobileProps) {
   if (orders.length === 0) {
-    return (
-      <Card className="md:hidden">
-        <CardContent className="flex flex-col items-center justify-center py-12 text-center">
-          <div className="flex size-16 items-center justify-center rounded-full bg-muted mb-4">
-            <IconShoppingBag className="size-8 text-muted-foreground" />
-          </div>
-          <h3 className="font-semibold text-lg">{t.noOrders}</h3>
-          <p className="text-muted-foreground text-sm mt-1 max-w-sm">
-            {t.noOrdersDesc}
-          </p>
-          <Button asChild className="mt-6">
-            <Link href="/">{t.startShopping}</Link>
-          </Button>
-        </CardContent>
-      </Card>
-    )
+    return <AccountOrdersEmptyState t={t} cardClassName="md:hidden" />
   }
 
   return (

@@ -1,0 +1,19 @@
+Top offenders (rough match counts)
+--------------------------------
+--------------------------------
+Totals: files=0 palette=0 mono=0 gradient=0 rawGradient=0 fill=0
+Auth candidates found: 0
+Top offenders (rough match counts)
+--------------------------------
+--------------------------------
+Totals: files=0 arbitrary=0 hex=0 oklch=0
+Top offenders (unique missing semantic tokens)
+--------------------------------
+--------------------------------
+Totals: files=0 missing=0
+Top offenders (unique banned token alpha usage)
+--------------------------------
+--------------------------------
+Totals: files=0 matches=0
+Mobile chrome consistency scan passed (no findings).
+Control override scan passed (no findings).

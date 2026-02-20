@@ -20,7 +20,8 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { BusinessEmptyState } from "../../_components/business-empty-state"
-import { DollarSign as IconCurrencyDollar, MessageCircle as IconMessage, ShoppingCart as IconShoppingCart, TrendingUp as IconTrendingUp, Users as IconUsers } from "lucide-react";
+import { AvgOrderValueCard } from "../../_components/avg-order-value-card"
+import { DollarSign as IconCurrencyDollar, MessageCircle as IconMessage, TrendingUp as IconTrendingUp, Users as IconUsers } from "lucide-react";
 
 
 export const metadata = {
@@ -137,22 +138,7 @@ export default async function BusinessCustomersPage() {
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader className="pb-2">
-            <CardDescription className="flex items-center gap-2">
-              <IconShoppingCart className="size-4" />
-              Avg Order Value
-            </CardDescription>
-            <CardTitle className="text-2xl tabular-nums">
-              {formatCurrency(avgOrderValue)}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-xs text-muted-foreground">
-              Per transaction
-            </p>
-          </CardContent>
-        </Card>
+        <AvgOrderValueCard value={formatCurrency(avgOrderValue)} />
       </div>
 
       {/* Customers Table */}

@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server"
+import type { NextRequest } from "next/server"
 import { generateObject } from "ai"
 import { z } from "zod"
 
@@ -6,10 +6,9 @@ import { isAiAssistantEnabled } from "@/lib/ai/env"
 import { getAiVisionModel } from "@/lib/ai/models"
 import { searchListings } from "@/lib/ai/tools/search-listings"
 import { isSafeUserProvidedUrl } from "@/lib/ai/safe-url"
-import { noStoreJson } from "@/lib/api/response-helpers"
+import { createRouteJsonHelpers } from "@/lib/api/route-json"
 import { isNextPrerenderInterrupted } from "@/lib/next/is-next-prerender-interrupted"
 import { logger } from "@/lib/logger"
-import { createRouteHandlerClient } from "@/lib/supabase/server"
 
 const FindSimilarRequestSchema = z.object({
   imageUrl: z.string().url().max(2048),
@@ -24,11 +23,7 @@ const FindSimilarExtractedSchema = z.object({
 })
 
 export async function POST(request: NextRequest) {
-  const { supabase, applyCookies } = createRouteHandlerClient(request)
-  const json = (body: unknown, init?: Parameters<typeof NextResponse.json>[1]) =>
-    applyCookies(NextResponse.json(body, init))
-  const noStore = (body: unknown, init?: Parameters<typeof noStoreJson>[1]) =>
-    applyCookies(noStoreJson(body, init))
+  const { supabase, json, noStore } = createRouteJsonHelpers(request)
 
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) {

@@ -13,7 +13,6 @@ import {
   Truck,
   SquareArrowOutUpRight as ArrowSquareOut,
 } from "lucide-react"
-import type { OrderItemStatus } from "@/lib/order-status"
 import { BuyerOrderActions, type BuyerOrderActionsServerActions } from "../../_components/buyer-order-actions"
 import { OrderDetailItemShell, OrderItemsList } from "@/components/shared/order-detail/order-items-list"
 import type { OrderDetailItem } from "./order-detail-types"

@@ -1,6 +1,3 @@
-import { createClient } from "@/lib/supabase/server"
-import { redirect } from "@/i18n/routing"
-import { getTranslations } from "next-intl/server"
 import { ProfileContent } from "./profile-content"
 import {
   deleteAvatar,
@@ -23,6 +20,7 @@ import {
   updatePublicProfile,
   uploadBanner,
 } from "@/app/actions/username-profile"
+import { requireAccountPageContext } from "../_lib/require-account-page-context"
 
 interface ProfilePageProps {
   params: Promise<{
@@ -46,22 +44,7 @@ export const metadata = {
 }
 
 export default async function ProfilePage({ params }: ProfilePageProps) {
-  const { locale: localeParam } = await params
-  const locale = localeParam === "bg" ? "bg" : "en"
-  const t = await getTranslations({ locale, namespace: "Account" })
-  const supabase = await createClient()
-
-  if (!supabase) {
-    return redirect({ href: "/auth/login", locale })
-  }
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-
-  if (!user) {
-    return redirect({ href: "/auth/login", locale })
-  }
+  const { locale, t, supabase, user } = await requireAccountPageContext(params)
 
   // Fetch profile data (public surface) + private PII fields
   const [

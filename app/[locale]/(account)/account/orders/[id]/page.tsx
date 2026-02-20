@@ -3,12 +3,13 @@ import { notFound } from "next/navigation"
 import { redirect } from "@/i18n/routing"
 import { setRequestLocale } from "next-intl/server"
 import { locales } from "@/i18n/routing"
-import { canBuyerRateSeller } from "@/app/actions/orders-rating"
-import { requestOrderCancellation, reportOrderIssue, requestReturn } from "@/app/actions/orders-support"
-import { buyerConfirmDelivery } from "@/app/actions/orders-status"
-import { submitSellerFeedback } from "@/app/actions/seller-feedback"
+import { canBuyerRateSeller } from "../../../../../actions/orders-rating"
+import { requestOrderCancellation, reportOrderIssue, requestReturn } from "../../../../../actions/orders-support"
+import { buyerConfirmDelivery } from "../../../../../actions/orders-status"
+import { submitSellerFeedback } from "../../../../../actions/seller-feedback"
 import { OrderDetailContent } from "./_components/order-detail-content"
 import type { OrderItemStatus } from "@/lib/order-status"
+import type { OrderDetailItem, OrderDetailOrder } from "./_components/order-detail-types"
 
 // Return placeholder param for build validation (required by cacheComponents)
 // Actual pages are rendered server-side for authenticated users
@@ -21,64 +22,6 @@ interface OrderDetailPageProps {
     locale: string
     id: string
   }>
-}
-
-// Types matching the OrderDetailContent expectations
-interface OrderItemProduct {
-  id: string
-  title: string
-  slug: string | null
-  images: string[] | null
-  price: number
-}
-
-interface OrderItemSeller {
-  id: string
-  store_name: string
-  username?: string | null
-  profile?: {
-    full_name: string | null
-    avatar_url: string | null
-  }
-}
-
-interface OrderItem {
-  id: string
-  order_id: string
-  product_id: string
-  seller_id: string
-  quantity: number
-  price_at_purchase: number
-  status: OrderItemStatus | null
-  seller_received_at: string | null
-  tracking_number: string | null
-  shipping_carrier: string | null
-  shipped_at: string | null
-  delivered_at: string | null
-  product: OrderItemProduct | null
-  seller: OrderItemSeller | null
-}
-
-interface Order {
-  id: string
-  user_id: string
-  total_amount: number
-  status: string | null
-  shipping_address: {
-    name?: string
-    email?: string
-    address?: {
-      line1?: string
-      line2?: string
-      city?: string
-      state?: string
-      postal_code?: string
-      country?: string
-    }
-  } | null
-  created_at: string
-  stripe_payment_intent_id: string | null
-  order_items: OrderItem[]
 }
 
 export const metadata = {
@@ -181,7 +124,7 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
   const sellerProfilesMap = new Map(sellerProfilesData.map((p) => [p.id, p]))
 
   // Build order items with relations
-  const orderItems: OrderItem[] = orderItemsData.map((item) => {
+  const orderItems: OrderDetailItem[] = orderItemsData.map((item) => {
     const product = productsMap.get(item.product_id)
     const sellerProfile = sellerProfilesMap.get(item.seller_id)
     return {
@@ -211,12 +154,12 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
   })
 
   // Build final order object with proper typing
-  const order: Order = {
+  const order: OrderDetailOrder = {
     id: orderData.id,
     user_id: orderData.user_id,
     total_amount: orderData.total_amount,
     status: orderData.status,
-    shipping_address: orderData.shipping_address as Order["shipping_address"],
+    shipping_address: orderData.shipping_address as OrderDetailOrder["shipping_address"],
     created_at: orderData.created_at,
     stripe_payment_intent_id: orderData.stripe_payment_intent_id,
     order_items: orderItems,

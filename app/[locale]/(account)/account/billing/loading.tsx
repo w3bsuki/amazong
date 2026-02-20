@@ -1,5 +1,6 @@
 import { Skeleton } from "@/components/ui/skeleton"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
+import { CurrentPlanCardSkeleton } from "../_components/current-plan-card-skeleton"
 
 export default function BillingLoading() {
   return (
@@ -18,35 +19,7 @@ export default function BillingLoading() {
         </div>
 
         {/* Current Plan Card */}
-        <Card>
-          <CardHeader className="pb-3">
-            <div className="flex items-center justify-between">
-              <Skeleton className="h-6 w-32" />
-              <Skeleton className="h-5 w-16" />
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-              <div className="flex-1 space-y-3">
-                <div className="flex items-center gap-3">
-                  <Skeleton className="size-12 rounded-lg" />
-                  <div className="space-y-2">
-                    <Skeleton className="h-6 w-24" />
-                    <Skeleton className="h-4 w-32" />
-                  </div>
-                </div>
-                <div className="flex gap-4">
-                  <Skeleton className="h-4 w-40" />
-                  <Skeleton className="h-4 w-36" />
-                </div>
-              </div>
-              <div className="flex gap-2">
-                <Skeleton className="h-9 w-36" />
-                <Skeleton className="h-9 w-32" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+        <CurrentPlanCardSkeleton />
 
         {/* Tabs */}
         <div className="space-y-4">

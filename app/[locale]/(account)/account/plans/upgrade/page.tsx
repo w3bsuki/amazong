@@ -1,11 +1,9 @@
-import { createClient } from "@/lib/supabase/server"
-import { redirect } from "@/i18n/routing"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import { UpgradeContent } from "./upgrade-content"
+import { getUpgradeData } from "./_lib/get-upgrade-data"
 import { ArrowLeft } from "lucide-react";
 
 import { Link } from "@/i18n/routing"
-import { getPlansForUpgrade, PRIVATE_PROFILE_SELECT_FOR_UPGRADE, PROFILE_SELECT_FOR_UPGRADE } from "@/lib/data/plans"
 import { createSubscriptionCheckoutSession } from "@/app/actions/subscriptions-reads"
 
 /**
@@ -30,48 +28,7 @@ export default async function UpgradePage({
   const locale = localeParam === "bg" ? "bg" : "en"
   setRequestLocale(locale)
   const t = await getTranslations({ locale, namespace: "AccountPlansUpgrade" })
-  const supabase = await createClient()
-
-  if (!supabase) {
-    return redirect({ href: "/auth/login", locale })
-  }
-
-  const { data: { user } } = await supabase.auth.getUser()
-
-  if (!user) {
-    return redirect({ href: "/auth/login", locale })
-  }
-
-  // Fetch profile info (public surface) + private billing fields
-  const [
-    { data: profile },
-    { data: privateProfile },
-  ] = await Promise.all([
-    supabase
-      .from('profiles')
-      .select(PROFILE_SELECT_FOR_UPGRADE)
-      .eq('id', user.id)
-      .single(),
-    supabase
-      .from('private_profiles')
-      .select(PRIVATE_PROFILE_SELECT_FOR_UPGRADE)
-      .eq('id', user.id)
-      .maybeSingle(),
-  ])
-
-  // Fetch subscription plans
-  const plans = await getPlansForUpgrade()
-
-  const currentTier = profile?.tier || 'free'
-
-  // Map profile to seller interface expected by UpgradeContent
-  const commissionRate = privateProfile?.commission_rate == null ? 0 : Number(privateProfile.commission_rate)
-  const seller = profile ? {
-    id: profile.id,
-    tier: profile.tier || 'free',
-    commission_rate: commissionRate,
-    stripe_customer_id: privateProfile?.stripe_customer_id ?? null,
-  } : null
+  const { plans, currentTier, seller } = await getUpgradeData(locale)
 
   return (
     <div className="p-4 lg:p-4 max-w-4xl mx-auto">

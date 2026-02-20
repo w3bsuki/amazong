@@ -10,6 +10,7 @@ import { UserAvatar } from "@/components/shared/user-avatar"
 import {
   MobileBottomNavCoreAction,
   MobileBottomNavDock,
+  MobileBottomNavIndicator,
   MobileBottomNavItem,
   MobileBottomNavLabel,
   MobileBottomNavList,
@@ -255,7 +256,7 @@ export function MobileTabBar() {
       ariaCurrent: isSellActive ? "page" : undefined,
       icon: (
         <MobileBottomNavCoreAction data-testid="mobile-tab-sell-core">
-          <Plus strokeWidth={2.5} className="size-(--size-icon-lg)" />
+          <Plus strokeWidth={2.5} className="size-(--size-icon)" />
         </MobileBottomNavCoreAction>
       ),
     },
@@ -358,7 +359,8 @@ export function MobileTabBar() {
                     data-testid={tab.testId}
                   >
                     <Link href={tab.href} prefetch={false}>
-                      {tab.icon}
+                      {tab.emphasis !== "core" && <MobileBottomNavIndicator />}
+                      <span className="relative z-10">{tab.icon}</span>
                       {showLabel && (
                         <MobileBottomNavLabel state={state}>
                           {tab.label}
@@ -378,7 +380,8 @@ export function MobileTabBar() {
                     aria-expanded={tab.ariaExpanded}
                     data-testid={tab.testId}
                   >
-                    {tab.icon}
+                    {tab.emphasis !== "core" && <MobileBottomNavIndicator />}
+                    <span className="relative z-10">{tab.icon}</span>
                     {showLabel && (
                       <MobileBottomNavLabel state={state}>
                         {tab.label}

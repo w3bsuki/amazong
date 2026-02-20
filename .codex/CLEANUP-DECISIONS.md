@@ -409,3 +409,80 @@ REASON: These components are not suspense-loaded; the wrappers added complexity 
 FILES: `app/[locale]/(main)/page.tsx`.
 RISK: Low — no data-fetch changes; render output remains the same.
 APPROVAL: Not required — no DB schema, auth/access control, payments/webhooks, or destructive data operations touched.
+
+## 2026-02-20 — Account Layout Loading Boundary Consolidation
+DECISION: Replace the `(account)` layout-level `Suspense fallback` wrapper with a route-segment `loading.tsx` skeleton.
+REASON: Reduce nested Suspense boundaries and centralize loading UX at the segment level while keeping the same skeleton.
+FILES: `app/[locale]/(account)/layout.tsx`; `app/[locale]/(account)/loading.tsx`.
+RISK: Low — loading UI only; auth gating and layout composition unchanged.
+APPROVAL: Not required — no DB schema, auth/access control, payments/webhooks, or destructive data operations touched.
+
+## 2026-02-20 — Categories Slug Page Suspense De-bloat
+DECISION: Remove the page-local `Suspense fallback` wrapper and stop importing `./loading`, relying on `categories/[slug]/loading.tsx`.
+REASON: Avoid duplicate loading boundaries and keep skeleton UI centralized in the segment loading file.
+FILES: `app/[locale]/(main)/categories/[slug]/page.tsx`.
+RISK: Low — same loading UI is shown via the segment boundary; data/render logic unchanged.
+APPROVAL: Not required — no DB schema, auth/access control, payments/webhooks, or destructive data operations touched.
+
+## 2026-02-20 — Upgrade Modal Route Loading Consolidation
+DECISION: Move intercepted upgrade-modal loading UI into the route segment `loading.tsx` (modal spinner) and remove the page-level `Suspense fallback`.
+REASON: Use Next’s segment loading mechanism for parallel route modals, reduce nested Suspense, and avoid extra work used only for fallback labeling.
+FILES: `app/[locale]/(account)/@modal/(.)account/plans/upgrade/page.tsx`; `app/[locale]/(account)/@modal/(.)account/plans/upgrade/loading.tsx`.
+RISK: Low — loading UI remains equivalent; business logic unchanged.
+APPROVAL: Not required — no DB schema, auth/access control, payments/webhooks, or destructive data operations touched.
+
+## 2026-02-20 — Account Orders Toolbar Hook Dependency Fix
+DECISION: Stabilize URL helpers with `useCallback` and include missing callback deps to satisfy `react-hooks/exhaustive-deps` without disabling lint.
+REASON: Prevent stale-closure risk and keep lint clean without behavioral changes to the debounce + navigation behavior.
+FILES: `app/[locale]/(account)/account/orders/_components/account-orders-toolbar.tsx`.
+RISK: Low — hook dependency hygiene only; behavior preserved.
+APPROVAL: Not required — no DB schema, auth/access control, payments/webhooks, or destructive data operations touched.
+
+## 2026-02-20 — Upgrade Modal Route Import Hygiene
+DECISION: Replace restricted `@/app/**` imports in the intercepted upgrade modal route with local relative imports.
+REASON: Satisfy `no-restricted-imports` guardrails and avoid treating route code as a shared dependency surface.
+FILES: `app/[locale]/(account)/@modal/(.)account/plans/upgrade/page.tsx`.
+RISK: Low — import path changes only; behavior unchanged.
+APPROVAL: Not required — no DB schema, auth/access control, payments/webhooks, or destructive data operations touched.
+
+## 2026-02-20 — Selling Edit Page Suspense De-bloat
+DECISION: Remove the page-level `Suspense fallback` wrapper around `EditProductClient` in the selling edit page.
+REASON: The client already renders the same skeleton while loading; the extra boundary duplicated UI and added complexity.
+FILES: `app/[locale]/(account)/account/selling/[id]/edit/page.tsx`.
+RISK: Low — no data/auth logic changes; loading skeleton remains via the client component.
+APPROVAL: Not required — no DB schema, auth/access control, payments/webhooks, or destructive data operations touched.
+
+## 2026-02-20 — Messages Dropdown Hook Dependency Fix
+DECISION: Make `realtimeSpecs` memoization depend on `userId` rather than `user`, and align `fetchUnreadCount` deps accordingly.
+REASON: Satisfy `react-hooks/exhaustive-deps` and avoid stale memoization without changing behavior.
+FILES: `components/dropdowns/messages-dropdown.tsx`.
+RISK: Low — hook dependency hygiene only; realtime specs and unread count logic unchanged.
+APPROVAL: Not required — no DB schema, auth/access control, payments/webhooks, or destructive data operations touched.
+
+## 2026-02-20 — Account Route Action Import Hygiene
+DECISION: Replace restricted `@/app/actions/*` imports in selected account routes with relative imports to `app/actions/*`.
+REASON: Reduce `no-restricted-imports` lint noise and keep route code from depending on `@/app/**` alias paths.
+FILES: `app/[locale]/(account)/account/following/page.tsx`; `app/[locale]/(account)/account/orders/page.tsx`; `app/[locale]/(account)/account/orders/[id]/page.tsx`.
+RISK: Low — import path changes only; behavior unchanged.
+APPROVAL: Not required — no DB schema, auth/access control, payments/webhooks, or destructive data operations touched.
+
+## 2026-02-20 — Badges Evaluate Route Request Hardening
+DECISION: Add defensive request-body parsing in `/api/badges/evaluate` and hoist constant query/category lists out of the handler.
+REASON: Prevent invalid JSON / non-object payloads from returning 500s, and reduce per-request allocations without changing badge evaluation logic for valid requests.
+FILES: `app/api/badges/evaluate/route.ts`.
+RISK: Low — invalid payloads now return 400 instead of 500; valid requests are unchanged.
+APPROVAL: Not required — no DB schema, auth/access control internals, payments/webhooks, or destructive data operations touched.
+
+## 2026-02-20 — Micro Lint/Perf Cleanups (Account + Quick View)
+DECISION: Remove unused prop destructuring in `SubscriptionBenefitsCard` and keep Quick View string normalization behavior while reducing lint noise.
+REASON: Eliminate unused bindings and keep small UI helpers clean without changing runtime behavior.
+FILES: `app/[locale]/(account)/account/_components/subscription-benefits-card.tsx`; `components/shared/product/quick-view/product-quick-view-content.tsx`.
+RISK: None — no behavior changes; cleanup only.
+APPROVAL: Not required — no DB schema, auth/access control, payments/webhooks, or destructive data operations touched.
+
+## 2026-02-20 — Error Boundary Builder Optional Prop Fix
+DECISION: Ensure `createErrorBoundaryPage` passes a concrete `ctaIcon` value to `ErrorBoundaryUI` under `exactOptionalPropertyTypes`.
+REASON: Avoid explicitly passing `undefined` for an optional prop and unblock `pnpm -s typecheck`; behavior is unchanged because `ErrorBoundaryUI` defaults to `"house"`.
+FILES: `app/[locale]/_components/create-error-boundary-page.tsx`.
+RISK: None — same default icon; type-only fix.
+APPROVAL: Not required — no DB schema, auth/access control, payments/webhooks, or destructive data operations touched.

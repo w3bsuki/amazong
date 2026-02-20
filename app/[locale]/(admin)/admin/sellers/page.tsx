@@ -3,16 +3,8 @@ import { formatDistanceToNow } from "date-fns"
 import { bg, enUS } from "date-fns/locale"
 import { getLocale, getTranslations } from "next-intl/server"
 import { connection } from "next/server"
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import {
-  Table,
   TableBody,
   TableCell,
   TableHead,
@@ -20,6 +12,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { Check as IconCheck, X as IconX } from "lucide-react";
+import { AdminTablePageLayout } from "../_components/admin-table-page-layout"
 
 
 // Define seller type to avoid 'any'
@@ -130,100 +123,78 @@ async function AdminSellersContent() {
   }
 
   return (
-    <div className="flex flex-col gap-4 py-4 md:gap-4 md:py-6 px-4 lg:px-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">{t('page.title')}</h1>
-          <p className="text-muted-foreground">
-            {t('page.description')}
-          </p>
-        </div>
+    <AdminTablePageLayout
+      title={t('page.title')}
+      description={t('page.description')}
+      headerRight={(
         <Badge variant="outline" className="text-base">
           {t('summary', { count: sellers.length })}
         </Badge>
-      </div>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>{t('table.title')}</CardTitle>
-          <CardDescription>
-            {t('table.description')}
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="overflow-x-auto">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>{t('table.headers.store')}</TableHead>
-                  <TableHead>{t('table.headers.owner')}</TableHead>
-                  <TableHead>{t('table.headers.tier')}</TableHead>
-                  <TableHead>{t('table.headers.verified')}</TableHead>
-                  <TableHead className="hidden md:table-cell">{t('table.headers.commission')}</TableHead>
-                  <TableHead className="hidden md:table-cell">{t('table.headers.country')}</TableHead>
-                  <TableHead className="hidden md:table-cell">{t('table.headers.joined')}</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {sellers.map((seller) => (
-                  <TableRow key={seller.id}>
-                    <TableCell>
-                      <div>
-                        <p className="font-medium">{seller.store_name || t("fallbacks.unknownStore")}</p>
-                        {seller.business_name && (
-                          <p className="text-sm text-muted-foreground">
-                            {seller.business_name}
-                          </p>
-                        )}
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <div>
-                        <p className="font-medium">
-                          {seller.profiles.full_name || t('fallbacks.noName')}
-                        </p>
-                        <p className="text-sm text-muted-foreground">
-                          {seller.profiles.email}
-                        </p>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant="outline" className={getTierBadge(seller.tier)}>
-                        {getTierLabel(seller.tier)}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex gap-2">
-                        {seller.verified ? (
-                          <Badge variant="outline" className="border-success/20 bg-success/10 text-success">
-                            <IconCheck className="size-3 mr-1" />
-                            {t('badges.verified')}
-                          </Badge>
-                        ) : (
-                          <Badge variant="outline" className="border-border bg-muted text-muted-foreground">
-                            <IconX className="size-3 mr-1" />
-                            {t('badges.notVerified')}
-                          </Badge>
-                        )}
-                      </div>
-                    </TableCell>
-                    <TableCell className="hidden md:table-cell tabular-nums">
-                      {seller.commission_rate}%
-                    </TableCell>
-                    <TableCell className="hidden md:table-cell text-muted-foreground">
-                      {seller.country_code || t('fallbacks.country')}
-                    </TableCell>
-                    <TableCell className="hidden md:table-cell text-muted-foreground">
-                      {formatDistanceToNow(new Date(seller.created_at), { addSuffix: true, locale: dateLocale })}
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
+      )}
+      tableTitle={t('table.title')}
+      tableDescription={t('table.description')}
+    >
+      <TableHeader>
+        <TableRow>
+          <TableHead>{t('table.headers.store')}</TableHead>
+          <TableHead>{t('table.headers.owner')}</TableHead>
+          <TableHead>{t('table.headers.tier')}</TableHead>
+          <TableHead>{t('table.headers.verified')}</TableHead>
+          <TableHead className="hidden md:table-cell">{t('table.headers.commission')}</TableHead>
+          <TableHead className="hidden md:table-cell">{t('table.headers.country')}</TableHead>
+          <TableHead className="hidden md:table-cell">{t('table.headers.joined')}</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {sellers.map((seller) => (
+          <TableRow key={seller.id}>
+            <TableCell>
+              <div>
+                <p className="font-medium">{seller.store_name || t("fallbacks.unknownStore")}</p>
+                {seller.business_name && (
+                  <p className="text-sm text-muted-foreground">{seller.business_name}</p>
+                )}
+              </div>
+            </TableCell>
+            <TableCell>
+              <div>
+                <p className="font-medium">{seller.profiles.full_name || t('fallbacks.noName')}</p>
+                <p className="text-sm text-muted-foreground">{seller.profiles.email}</p>
+              </div>
+            </TableCell>
+            <TableCell>
+              <Badge variant="outline" className={getTierBadge(seller.tier)}>
+                {getTierLabel(seller.tier)}
+              </Badge>
+            </TableCell>
+            <TableCell>
+              <div className="flex gap-2">
+                {seller.verified ? (
+                  <Badge variant="outline" className="border-success/20 bg-success/10 text-success">
+                    <IconCheck className="size-3 mr-1" />
+                    {t('badges.verified')}
+                  </Badge>
+                ) : (
+                  <Badge variant="outline" className="border-border bg-muted text-muted-foreground">
+                    <IconX className="size-3 mr-1" />
+                    {t('badges.notVerified')}
+                  </Badge>
+                )}
+              </div>
+            </TableCell>
+            <TableCell className="hidden md:table-cell tabular-nums">
+              {seller.commission_rate}%
+            </TableCell>
+            <TableCell className="hidden md:table-cell text-muted-foreground">
+              {seller.country_code || t('fallbacks.country')}
+            </TableCell>
+            <TableCell className="hidden md:table-cell text-muted-foreground">
+              {formatDistanceToNow(new Date(seller.created_at), { addSuffix: true, locale: dateLocale })}
+            </TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    </AdminTablePageLayout>
   )
 }
 

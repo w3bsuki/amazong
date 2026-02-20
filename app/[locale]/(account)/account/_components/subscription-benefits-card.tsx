@@ -37,7 +37,6 @@ interface SubscriptionBenefitsCardProps {
 export function SubscriptionBenefitsCard({
   locale,
   tier,
-  accountType,
   maxListings,
   boostsIncluded,
   prioritySupport,
@@ -47,7 +46,6 @@ export function SubscriptionBenefitsCard({
   boostsRemaining,
   boostsResetAt,
   expiresAt,
-  isActive,
   isCancelled,
 }: SubscriptionBenefitsCardProps) {
   const t = useTranslations("Account")

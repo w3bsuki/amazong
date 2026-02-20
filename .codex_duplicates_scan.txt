@@ -1,0 +1,2 @@
+[architecture:scan] Metrics
+- duplicates: clones=147, duplicatedLines=1996, percentage=1.26%

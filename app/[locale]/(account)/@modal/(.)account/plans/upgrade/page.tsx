@@ -1,13 +1,9 @@
 import { Modal } from "../../../_components/modal"
-import { createClient } from "@/lib/supabase/server"
-import { redirect } from "@/i18n/routing"
 import { getLocale, getTranslations } from "next-intl/server"
-import { UpgradeContent } from "@/app/[locale]/(account)/account/plans/upgrade/upgrade-content"
-import { Suspense } from "react"
-import { Loader2 } from "lucide-react"
+import { UpgradeContent } from "../../../../account/plans/upgrade/upgrade-content"
+import { getUpgradeData } from "../../../../account/plans/upgrade/_lib/get-upgrade-data"
 import { connection } from "next/server"
-import { getPlansForUpgrade, PRIVATE_PROFILE_SELECT_FOR_UPGRADE, PROFILE_SELECT_FOR_UPGRADE } from "@/lib/data/plans"
-import { createSubscriptionCheckoutSession } from "@/app/actions/subscriptions-reads"
+import { createSubscriptionCheckoutSession } from "../../../../../../actions/subscriptions-reads"
 
 // Generate static params for all locales - required for Next.js 16 Cache Components
 async function UpgradeModalContent() {
@@ -17,47 +13,7 @@ async function UpgradeModalContent() {
   const locale = await getLocale()
   const safeLocale = locale === "bg" ? "bg" : "en"
   const t = await getTranslations({ locale: safeLocale, namespace: "AccountPlansUpgrade" })
-  const supabase = await createClient()
-
-  if (!supabase) {
-    return redirect({ href: "/auth/login", locale: safeLocale })
-  }
-
-  const { data: { user } } = await supabase.auth.getUser()
-
-  if (!user) {
-    return redirect({ href: "/auth/login", locale: safeLocale })
-  }
-
-  // Fetch profile info (public surface) + private billing fields
-  const [
-    { data: profile },
-    { data: privateProfile },
-  ] = await Promise.all([
-    supabase
-      .from('profiles')
-      .select(PROFILE_SELECT_FOR_UPGRADE)
-      .eq('id', user.id)
-      .single(),
-    supabase
-      .from('private_profiles')
-      .select(PRIVATE_PROFILE_SELECT_FOR_UPGRADE)
-      .eq('id', user.id)
-      .maybeSingle(),
-  ])
-
-  // Fetch subscription plans
-  const plans = await getPlansForUpgrade()
-
-  const currentTier = profile?.tier || 'free'
-
-  const commissionRate = privateProfile?.commission_rate == null ? 0 : Number(privateProfile.commission_rate)
-  const seller = profile ? {
-    id: profile.id,
-    tier: profile.tier || 'free',
-    commission_rate: commissionRate,
-    stripe_customer_id: privateProfile?.stripe_customer_id ?? null,
-  } : null
+  const { plans, currentTier, seller } = await getUpgradeData(safeLocale)
 
   return (
     <Modal
@@ -75,16 +31,6 @@ async function UpgradeModalContent() {
   )
 }
 
-function UpgradeLoadingFallback({ label }: { label: string }) {
-  return (
-    <Modal ariaLabel={label}>
-      <div className="flex items-center justify-center py-12">
-        <Loader2 className="size-8 animate-spin text-muted-foreground" />
-      </div>
-    </Modal>
-  )
-}
-
 /**
  * Intercepted Upgrade Route
  * 
@@ -96,13 +42,7 @@ export const metadata = {
   description: "Upgrade your Treido plan.",
 }
 
-export default async function InterceptedUpgradePage() {
-  const tCommon = await getTranslations("Common")
-
-  return (
-    <Suspense fallback={<UpgradeLoadingFallback label={tCommon("loading")} />}>
-      <UpgradeModalContent />
-    </Suspense>
-  )
+export default function InterceptedUpgradePage() {
+  return <UpgradeModalContent />
 }
 

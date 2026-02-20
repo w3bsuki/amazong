@@ -47,27 +47,6 @@ interface ProductRowWithRelations {
     name: string
     name_bg: string | null
     icon: string | null
-    parent: {
-      id: string
-      slug: string
-      name: string
-      name_bg: string | null
-      icon: string | null
-      parent: {
-        id: string
-        slug: string
-        name: string
-        name_bg: string | null
-        icon: string | null
-        parent: {
-          id: string
-          slug: string
-          name: string
-          name_bg: string | null
-          icon: string | null
-        } | null
-      } | null
-    } | null
   } | null
 }
 

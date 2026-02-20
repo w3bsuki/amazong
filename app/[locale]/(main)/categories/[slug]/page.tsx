@@ -1,9 +1,8 @@
-import { Suspense, use } from "react"
+import { use } from "react"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import { notFound } from "next/navigation"
 import type { Metadata } from "next"
 
-import CategorySlugLoading from "./loading"
 import {
   getCategoryBySlug,
   getCategoryContext,
@@ -65,11 +64,7 @@ export default function CategoryPage({
   params: Promise<{ slug: string; locale: string }>
   searchParams: Promise<CategoryPageSearchParams>
 }) {
-  return (
-    <Suspense fallback={<CategorySlugLoading />}>
-      <CategoryPageContent paramsPromise={paramsPromise} searchParamsPromise={searchParamsPromise} />
-    </Suspense>
-  )
+  return <CategoryPageContent paramsPromise={paramsPromise} searchParamsPromise={searchParamsPromise} />
 }
 
 function CategoryPageContent({

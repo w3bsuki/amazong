@@ -65,6 +65,19 @@ export function DrawerShell({
   dataTestId,
 }: DrawerShellProps) {
   const isCentered = headerLayout === "centered"
+  const closeButton = showCloseButton ? (
+    <DrawerClose asChild>
+      <IconButton
+        aria-label={closeLabel}
+        data-vaul-no-drag
+        variant="ghost"
+        size={closeButtonSize}
+        className={closeButtonClassName}
+      >
+        <X size={closeIconSize} />
+      </IconButton>
+    </DrawerClose>
+  ) : null
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
@@ -88,19 +101,7 @@ export function DrawerShell({
               </div>
               <div className="flex min-w-0 items-center gap-1.5 justify-end">
                 {headerTrailing}
-                {showCloseButton ? (
-                  <DrawerClose asChild>
-                    <IconButton
-                      aria-label={closeLabel}
-                      data-vaul-no-drag
-                      variant="ghost"
-                      size={closeButtonSize}
-                      className={closeButtonClassName}
-                    >
-                      <X size={closeIconSize} />
-                    </IconButton>
-                  </DrawerClose>
-                ) : null}
+                {closeButton}
               </div>
             </div>
           ) : (
@@ -113,19 +114,7 @@ export function DrawerShell({
               </div>
               <div className="flex items-center gap-1.5">
                 {headerTrailing}
-                {showCloseButton ? (
-                  <DrawerClose asChild>
-                    <IconButton
-                      aria-label={closeLabel}
-                      data-vaul-no-drag
-                      variant="ghost"
-                      size={closeButtonSize}
-                      className={closeButtonClassName}
-                    >
-                      <X size={closeIconSize} />
-                    </IconButton>
-                  </DrawerClose>
-                ) : null}
+                {closeButton}
               </div>
             </div>
           )}

@@ -5,6 +5,22 @@ import { requireAuth } from "@/lib/auth/require-auth"
 
 const OrderItemIdSchema = z.string().uuid()
 
+const ORDER_ITEM_RATING_SELECT = `
+        id,
+        status,
+        seller_id,
+        order_id,
+        order:orders!inner(user_id)
+      `
+
+type RatingOrderItemRow = {
+  id: string
+  status: string | null
+  seller_id: string
+  order_id: string
+  order: { user_id: string }
+}
+
 /**
  * Check if buyer can leave feedback for a seller after delivery
  */
@@ -23,21 +39,9 @@ export async function canBuyerRateSeller(
 
     const { data: orderItem } = await supabase
       .from("order_items")
-      .select(`
-        id,
-        status,
-        seller_id,
-        order_id,
-        order:orders!inner(user_id)
-      `)
+      .select(ORDER_ITEM_RATING_SELECT)
       .eq("id", parsedOrderItemId.data)
-      .single<{
-        id: string
-        status: string | null
-        seller_id: string
-        order_id: string
-        order: { user_id: string }
-      }>()
+      .single<RatingOrderItemRow>()
 
     if (!orderItem) {
       return { canRate: false, hasRated: false }
@@ -87,22 +91,10 @@ export async function canSellerRateBuyer(
 
     const { data: orderItem } = await supabase
       .from("order_items")
-      .select(`
-        id,
-        status,
-        seller_id,
-        order_id,
-        order:orders!inner(user_id)
-      `)
+      .select(ORDER_ITEM_RATING_SELECT)
       .eq("id", parsedOrderItemId.data)
       .eq("seller_id", user.id)
-      .single<{
-        id: string
-        status: string | null
-        seller_id: string
-        order_id: string
-        order: { user_id: string }
-      }>()
+      .single<RatingOrderItemRow>()
 
     if (!orderItem) {
       return { canRate: false, hasRated: false }

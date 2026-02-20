@@ -18,6 +18,36 @@ interface UseDesktopHomeControllerParams {
   promotedProducts: DesktopHomeProduct[]
 }
 
+function toGridProduct(product: DesktopHomeProduct, boostedOverride?: boolean): ProductGridProduct {
+  return {
+    id: product.id,
+    title: product.title,
+    price: product.price,
+    image: product.image,
+    listPrice: product.listPrice,
+    isOnSale: product.isOnSale,
+    salePercent: product.salePercent,
+    saleEndDate: product.saleEndDate,
+    createdAt: product.createdAt,
+    slug: product.slug,
+    storeSlug: product.storeSlug,
+    sellerId: product.sellerId,
+    sellerName: product.sellerName,
+    sellerAvatarUrl: product.sellerAvatarUrl,
+    sellerTier: product.sellerTier,
+    sellerVerified: product.sellerVerified,
+    location: product.location,
+    condition: product.condition,
+    isBoosted: boostedOverride ?? product.isBoosted,
+    rating: product.rating,
+    reviews: product.reviews,
+    tags: product.tags,
+    categoryRootSlug: product.categoryRootSlug,
+    categoryPath: product.categoryPath,
+    attributes: product.attributes,
+  }
+}
+
 export function useDesktopHomeController({
   locale,
   categories,
@@ -246,33 +276,7 @@ export function useDesktopHomeController({
     void fetchProducts(activeTab, 1, pageSize, false, activeCategorySlug, userCity, filters.quickFilters)
   }, [activeTab, activeCategorySlug, fetchProducts, filters.quickFilters, userCity])
 
-  const gridProducts: ProductGridProduct[] = products.map((product) => ({
-    id: product.id,
-    title: product.title,
-    price: product.price,
-    image: product.image,
-    listPrice: product.listPrice,
-    isOnSale: product.isOnSale,
-    salePercent: product.salePercent,
-    saleEndDate: product.saleEndDate,
-    createdAt: product.createdAt,
-    slug: product.slug,
-    storeSlug: product.storeSlug,
-    sellerId: product.sellerId,
-    sellerName: product.sellerName,
-    sellerAvatarUrl: product.sellerAvatarUrl,
-    sellerTier: product.sellerTier,
-    sellerVerified: product.sellerVerified,
-    location: product.location,
-    condition: product.condition,
-    isBoosted: product.isBoosted,
-    rating: product.rating,
-    reviews: product.reviews,
-    tags: product.tags,
-    categoryRootSlug: product.categoryRootSlug,
-    categoryPath: product.categoryPath,
-    attributes: product.attributes,
-  }))
+  const gridProducts: ProductGridProduct[] = products.map((product) => toGridProduct(product))
 
   const activePromotedProducts = useMemo(() => {
     const now = Date.now()
@@ -286,33 +290,7 @@ export function useDesktopHomeController({
 
   const finalGridProducts: ProductGridProduct[] = useMemo(() => {
     if (activePromotedProducts.length > 0) {
-      const promotedGridProducts: ProductGridProduct[] = activePromotedProducts.map((product) => ({
-        id: product.id,
-        title: product.title,
-        price: product.price,
-        image: product.image,
-        listPrice: product.listPrice,
-        isOnSale: product.isOnSale,
-        salePercent: product.salePercent,
-        saleEndDate: product.saleEndDate,
-        createdAt: product.createdAt,
-        slug: product.slug,
-        storeSlug: product.storeSlug,
-        sellerId: product.sellerId,
-        sellerName: product.sellerName,
-        sellerAvatarUrl: product.sellerAvatarUrl,
-        sellerTier: product.sellerTier,
-        sellerVerified: product.sellerVerified,
-        location: product.location,
-        condition: product.condition,
-        isBoosted: true,
-        rating: product.rating,
-        reviews: product.reviews,
-        tags: product.tags,
-        categoryRootSlug: product.categoryRootSlug,
-        categoryPath: product.categoryPath,
-        attributes: product.attributes,
-      }))
+      const promotedGridProducts: ProductGridProduct[] = activePromotedProducts.map((product) => toGridProduct(product, true))
       const regularFiltered = gridProducts.filter(
         (product) => !promotedGridProducts.some((promoted) => promoted.id === product.id)
       )

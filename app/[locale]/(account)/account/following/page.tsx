@@ -1,8 +1,6 @@
-import { createClient } from "@/lib/supabase/server"
-import { redirect } from "@/i18n/routing"
-import { getTranslations } from "next-intl/server"
 import { FollowingContent } from "./following-content"
-import { unfollowSeller } from "@/app/actions/seller-follows"
+import { unfollowSeller } from "../../../../actions/seller-follows"
+import { requireAccountPageContext } from "../_lib/require-account-page-context"
 
 interface FollowingPageProps {
   params: Promise<{
@@ -16,22 +14,7 @@ export const metadata = {
 }
 
 export default async function FollowingPage({ params }: FollowingPageProps) {
-  const { locale: localeParam } = await params
-  const locale = localeParam === "bg" ? "bg" : "en"
-  const t = await getTranslations({ locale, namespace: "Account" })
-  const supabase = await createClient()
-
-  if (!supabase) {
-    return redirect({ href: "/auth/login", locale })
-  }
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-
-  if (!user) {
-    return redirect({ href: "/auth/login", locale })
-  }
+  const { locale, t, supabase, user } = await requireAccountPageContext(params)
 
   // Fetch followed sellers (without join - relations not working in types)
   const { data: followedSellers, count } = await supabase
@@ -41,53 +24,59 @@ export default async function FollowingPage({ params }: FollowingPageProps) {
     .order("created_at", { ascending: false })
 
   // Fetch seller IDs
-  const sellerIds = (followedSellers || []).map(f => f.seller_id)
+  const sellerIds = (followedSellers || []).map((f) => f.seller_id)
 
   // Fetch profiles for followed sellers separately
-  const { data: profilesData } = sellerIds.length > 0
-    ? await supabase
-        .from("profiles")
-        .select("id, username, display_name, full_name, bio, avatar_url, verified")
-        .in("id", sellerIds)
-    : { data: [] }
+  const { data: profilesData } =
+    sellerIds.length > 0
+      ? await supabase
+          .from("profiles")
+          .select("id, username, display_name, full_name, bio, avatar_url, verified")
+          .in("id", sellerIds)
+      : { data: [] }
 
   // Fetch seller_stats for followed sellers
-  const { data: statsData } = sellerIds.length > 0 
-    ? await supabase
-        .from("seller_stats")
-        .select("seller_id, follower_count, total_reviews, average_rating, total_listings")
-        .in("seller_id", sellerIds)
-    : { data: [] }
+  const { data: statsData } =
+    sellerIds.length > 0
+      ? await supabase
+          .from("seller_stats")
+          .select("seller_id, follower_count, total_reviews, average_rating, total_listings")
+          .in("seller_id", sellerIds)
+      : { data: [] }
 
   // Create maps for quick lookup
-  const profilesMap = new Map((profilesData || []).map(p => [p.id, p]))
-  const statsMap = new Map((statsData || []).map(s => [s.seller_id, s]))
+  const profilesMap = new Map((profilesData || []).map((p) => [p.id, p]))
+  const statsMap = new Map((statsData || []).map((s) => [s.seller_id, s]))
 
   // Transform data for component - map profiles to seller shape expected by FollowingContent
-  const transformedSellers = (followedSellers || []).map(f => {
+  const transformedSellers = (followedSellers || []).map((f) => {
     const profile = profilesMap.get(f.seller_id)
     const stats = statsMap.get(f.seller_id)
-    
+
     return {
       seller_id: f.seller_id,
       created_at: f.created_at,
-      seller: profile ? {
-        id: profile.id,
-        store_name: profile.display_name || profile.username || 'Unknown',
-        store_slug: profile.username,
-        description: profile.bio,
-        verified: profile.verified ?? false,
-        profile: {
-          full_name: profile.full_name,
-          avatar_url: profile.avatar_url,
-        }
-      } : null,
-      seller_stats: stats ? {
-        follower_count: stats.follower_count,
-        total_reviews: stats.total_reviews,
-        average_rating: stats.average_rating,
-        total_listings: stats.total_listings,
-      } : null
+      seller: profile
+        ? {
+            id: profile.id,
+            store_name: profile.display_name || profile.username || "Unknown",
+            store_slug: profile.username,
+            description: profile.bio,
+            verified: profile.verified ?? false,
+            profile: {
+              full_name: profile.full_name,
+              avatar_url: profile.avatar_url,
+            },
+          }
+        : null,
+      seller_stats: stats
+        ? {
+            follower_count: stats.follower_count,
+            total_reviews: stats.total_reviews,
+            average_rating: stats.average_rating,
+            total_listings: stats.total_listings,
+          }
+        : null,
     }
   })
 

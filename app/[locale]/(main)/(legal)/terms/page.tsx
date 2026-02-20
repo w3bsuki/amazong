@@ -6,6 +6,7 @@ import type { Metadata } from 'next'
 import { validateLocale } from "@/i18n/routing"
 import { extractLastUpdatedDate, getPublicDoc, parsePublicDocIntro, parsePublicDocSections } from "@/lib/public-docs"
 import { LegalPageLayout, type LegalSection, type RelatedLink } from "../_components/legal-page-layout"
+import { getLegalDocLayoutProps } from "../_lib/legal-doc-layout-props"
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale: localeParam } = await params
@@ -78,28 +79,27 @@ export default async function TermsPage({ params }: { params: Promise<{ locale: 
     { href: '/returns', icon: ArrowCounterClockwise, title: t('returnsLink'), description: t('returnsLinkDesc') },
     { href: '/customer-service', icon: Users, title: t('helpLink'), description: t('helpLinkDesc') },
   ]
+
+  const layoutProps = getLegalDocLayoutProps({
+    t,
+    tBreadcrumbs,
+    lastUpdatedDate,
+    intro,
+    sections,
+    defaultSection,
+    relatedLinks,
+    contactEmail: "legal@treido.com",
+    introVariant: "warning",
+    introNoticeFallbackKey: "importantNotice",
+  })
   
   return (
     <LegalPageLayout
       heroIcon={FileText}
       title={t('title')}
-      lastUpdated={`${t("lastUpdated")}: ${lastUpdatedDate}`}
       breadcrumbItems={breadcrumbPresets(tBreadcrumbs).terms}
-      breadcrumbAriaLabel={tBreadcrumbs("ariaLabel")}
-      breadcrumbHomeLabel={tBreadcrumbs("homeLabel")}
-      tocLabel={t('tableOfContents')}
-      introNotice={intro.notice || t("importantNotice")}
-      introText={intro.markdown || t("introText")}
-      introVariant="warning"
-      sections={sections}
-      defaultSection={defaultSection}
-      questionsTitle={t('questionsTitle')}
-      questionsDesc={t('questionsDesc')}
-      contactButtonText={t('contactUs')}
-      contactEmail="legal@treido.com"
-      relatedLinks={relatedLinks}
+      {...layoutProps}
     />
   )
 }
-
 

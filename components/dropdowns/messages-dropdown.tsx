@@ -20,9 +20,10 @@ export function MessagesDropdown({ user }: MessagesDropdownProps) {
   const [unreadCount, setUnreadCount] = useState(0)
   const [isOpen, setIsOpen] = useState(false)
   const unreadSuffix = unreadCount > 0 ? ` (${unreadCount})` : ""
+  const userId = user?.id
 
   const fetchUnreadCount = useCallback(async () => {
-    if (!user) return
+    if (!userId) return
 
     try {
       const supabase = createClient()
@@ -33,28 +34,28 @@ export function MessagesDropdown({ user }: MessagesDropdownProps) {
     } catch {
       // Keep resilient
     }
-  }, [user])
+  }, [userId])
 
   const realtimeSpecs = useMemo(() => {
-    if (!user) return []
+    if (!userId) return []
 
     return [
       {
-        channel: `messages-unread-buyer:${user.id}`,
+        channel: `messages-unread-buyer:${userId}`,
         event: "UPDATE",
         schema: "public",
         table: "conversations",
-        filter: `buyer_id=eq.${user.id}`,
+        filter: `buyer_id=eq.${userId}`,
       },
       {
-        channel: `messages-unread-seller:${user.id}`,
+        channel: `messages-unread-seller:${userId}`,
         event: "UPDATE",
         schema: "public",
         table: "conversations",
-        filter: `seller_id=eq.${user.id}`,
+        filter: `seller_id=eq.${userId}`,
       },
     ] as const
-  }, [user?.id])
+  }, [userId])
 
   const refreshUnreadCount = useCallback(() => {
     void fetchUnreadCount()
@@ -73,7 +74,7 @@ export function MessagesDropdown({ user }: MessagesDropdownProps) {
   }, [isOpen, fetchUnreadCount])
 
   useSupabasePostgresChanges({
-    enabled: Boolean(user),
+    enabled: Boolean(userId),
     specs: realtimeSpecs,
     onChange: refreshUnreadCount,
   })

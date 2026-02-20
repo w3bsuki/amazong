@@ -4,11 +4,23 @@ import { Skeleton } from "@/components/ui/skeleton"
  * Loading skeleton for ChatInterface
  * Used for Suspense boundaries and loading states
  */
-export function ChatInterfaceSkeleton() {
+function ChatInterfaceSkeletonBase({ variant }: { variant: "full" | "inline" }) {
+  const isFull = variant === "full"
+
   return (
-    <div className="flex h-full min-h-0 flex-col bg-background">
+    <div
+      className={
+        isFull ? "flex h-full min-h-0 flex-col bg-background" : "flex h-full min-h-0 flex-col"
+      }
+    >
       {/* Header skeleton */}
-      <div className="shrink-0 border-b border-border-subtle px-4 py-3 pt-safe-max-sm">
+      <div
+        className={
+          isFull
+            ? "shrink-0 border-b border-border-subtle px-4 py-3 pt-safe-max-sm"
+            : "shrink-0 border-b border-border-subtle px-4 py-3"
+        }
+      >
         <div className="flex items-center gap-3">
           <Skeleton className="size-10 rounded-full" />
           <div className="flex-1">
@@ -35,10 +47,23 @@ export function ChatInterfaceSkeleton() {
         </div>
       </div>
       {/* Input skeleton */}
-      <div className="shrink-0 border-t border-border-subtle p-3 pb-safe-max-sm">
+      <div
+        className={
+          isFull
+            ? "shrink-0 border-t border-border-subtle p-3 pb-safe-max-sm"
+            : "shrink-0 border-t border-border-subtle p-3"
+        }
+      >
         <Skeleton className="h-11 w-full rounded-full" />
       </div>
     </div>
   )
 }
 
+export function ChatInterfaceSkeleton() {
+  return <ChatInterfaceSkeletonBase variant="full" />
+}
+
+export function ChatInterfaceSkeletonInline() {
+  return <ChatInterfaceSkeletonBase variant="inline" />
+}

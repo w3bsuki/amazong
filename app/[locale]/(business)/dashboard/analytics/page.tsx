@@ -8,9 +8,10 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { ChartColumn as IconChartBar, DollarSign as IconCurrencyDollar, Eye as IconEye, ShoppingCart as IconShoppingCart, TrendingUp as IconTrendingUp } from "lucide-react";
+import { ChartColumn as IconChartBar, DollarSign as IconCurrencyDollar, Eye as IconEye, TrendingUp as IconTrendingUp } from "lucide-react";
 
 import { BusinessEmptyState } from "../../_components/business-empty-state"
+import { AvgOrderValueCard } from "../../_components/avg-order-value-card"
 
 export const metadata = {
   title: "Business Analytics | Treido",
@@ -95,22 +96,7 @@ export default async function BusinessAnalyticsPage() {
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader className="pb-2">
-            <CardDescription className="flex items-center gap-2">
-              <IconShoppingCart className="size-4" />
-              Avg Order Value
-            </CardDescription>
-            <CardTitle className="text-2xl tabular-nums">
-              {formatCurrency(avgOrderValue)}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-xs text-muted-foreground">
-              Per transaction
-            </p>
-          </CardContent>
-        </Card>
+        <AvgOrderValueCard value={formatCurrency(avgOrderValue)} />
 
         <Card>
           <CardHeader className="pb-2">

@@ -1,0 +1,5 @@
+[architecture:scan] Metrics
+- client-boundary: 236/937 (25.19%)
+- oversized: >300=82, >500=14
+- routes: pages=86, missingLoading=32, missingMetadata=0
+- duplicates: clones=160, duplicatedLines=2265, percentage=1.42%

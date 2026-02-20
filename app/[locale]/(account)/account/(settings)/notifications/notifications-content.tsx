@@ -59,6 +59,55 @@ const DEFAULT_PREFS: NotificationPreferences = {
   push_enabled: false,
 }
 
+const IN_APP_PREFERENCE_ROWS = [
+  {
+    titleKey: "rows.newSales.title",
+    descriptionKey: "rows.newSales.description",
+    prefKey: "in_app_purchase",
+  },
+  {
+    titleKey: "rows.orderStatus.title",
+    descriptionKey: "rows.orderStatus.description",
+    prefKey: "in_app_order_status",
+  },
+  {
+    titleKey: "rows.messages.title",
+    descriptionKey: "rows.messages.description",
+    prefKey: "in_app_message",
+  },
+  {
+    titleKey: "rows.reviews.title",
+    descriptionKey: "rows.reviews.description",
+    prefKey: "in_app_review",
+  },
+  {
+    titleKey: "rows.system.title",
+    descriptionKey: "rows.system.description",
+    prefKey: "in_app_system",
+  },
+  {
+    titleKey: "rows.promotions.title",
+    descriptionKey: "rows.promotions.description",
+    prefKey: "in_app_promotion",
+  },
+] as const satisfies ReadonlyArray<{
+  titleKey: string
+  descriptionKey: string
+  prefKey: keyof NotificationPreferences
+}>
+
+const EMAIL_PREFERENCE_ROWS = [
+  { titleKey: "rows.newSalesEmail", prefKey: "email_purchase" },
+  { titleKey: "rows.orderStatusEmail", prefKey: "email_order_status" },
+  { titleKey: "rows.messagesEmail", prefKey: "email_message" },
+  { titleKey: "rows.reviewsEmail", prefKey: "email_review" },
+  { titleKey: "rows.systemEmail", prefKey: "email_system" },
+  { titleKey: "rows.promotionsEmail", prefKey: "email_promotion" },
+] as const satisfies ReadonlyArray<{
+  titleKey: string
+  prefKey: keyof NotificationPreferences
+}>
+
 const getNotificationIcon = (type: NotificationType) => {
   switch (type) {
     case "purchase":
@@ -384,42 +433,15 @@ export function NotificationsContent({
             </div>
           </div>
 
-          <NotificationToggleRow
-            title={t("rows.newSales.title")}
-            description={t("rows.newSales.description")}
-            checked={prefs.in_app_purchase}
-            onCheckedChange={(v) => updatePref("in_app_purchase", v)}
-          />
-          <NotificationToggleRow
-            title={t("rows.orderStatus.title")}
-            description={t("rows.orderStatus.description")}
-            checked={prefs.in_app_order_status}
-            onCheckedChange={(v) => updatePref("in_app_order_status", v)}
-          />
-          <NotificationToggleRow
-            title={t("rows.messages.title")}
-            description={t("rows.messages.description")}
-            checked={prefs.in_app_message}
-            onCheckedChange={(v) => updatePref("in_app_message", v)}
-          />
-          <NotificationToggleRow
-            title={t("rows.reviews.title")}
-            description={t("rows.reviews.description")}
-            checked={prefs.in_app_review}
-            onCheckedChange={(v) => updatePref("in_app_review", v)}
-          />
-          <NotificationToggleRow
-            title={t("rows.system.title")}
-            description={t("rows.system.description")}
-            checked={prefs.in_app_system}
-            onCheckedChange={(v) => updatePref("in_app_system", v)}
-          />
-          <NotificationToggleRow
-            title={t("rows.promotions.title")}
-            description={t("rows.promotions.description")}
-            checked={prefs.in_app_promotion}
-            onCheckedChange={(v) => updatePref("in_app_promotion", v)}
-          />
+          {IN_APP_PREFERENCE_ROWS.map((row) => (
+            <NotificationToggleRow
+              key={row.prefKey}
+              title={t(row.titleKey)}
+              description={t(row.descriptionKey)}
+              checked={prefs[row.prefKey]}
+              onCheckedChange={(v) => updatePref(row.prefKey, v)}
+            />
+          ))}
 
           <div className="p-3">
             <div className="text-xs font-medium text-muted-foreground">
@@ -427,36 +449,14 @@ export function NotificationsContent({
             </div>
           </div>
 
-          <NotificationToggleRow
-            title={t("rows.newSalesEmail")}
-            checked={prefs.email_purchase}
-            onCheckedChange={(v) => updatePref("email_purchase", v)}
-          />
-          <NotificationToggleRow
-            title={t("rows.orderStatusEmail")}
-            checked={prefs.email_order_status}
-            onCheckedChange={(v) => updatePref("email_order_status", v)}
-          />
-          <NotificationToggleRow
-            title={t("rows.messagesEmail")}
-            checked={prefs.email_message}
-            onCheckedChange={(v) => updatePref("email_message", v)}
-          />
-          <NotificationToggleRow
-            title={t("rows.reviewsEmail")}
-            checked={prefs.email_review}
-            onCheckedChange={(v) => updatePref("email_review", v)}
-          />
-          <NotificationToggleRow
-            title={t("rows.systemEmail")}
-            checked={prefs.email_system}
-            onCheckedChange={(v) => updatePref("email_system", v)}
-          />
-          <NotificationToggleRow
-            title={t("rows.promotionsEmail")}
-            checked={prefs.email_promotion}
-            onCheckedChange={(v) => updatePref("email_promotion", v)}
-          />
+          {EMAIL_PREFERENCE_ROWS.map((row) => (
+            <NotificationToggleRow
+              key={row.prefKey}
+              title={t(row.titleKey)}
+              checked={prefs[row.prefKey]}
+              onCheckedChange={(v) => updatePref(row.prefKey, v)}
+            />
+          ))}
 
           <div className="p-3">
             <div className="text-xs font-medium text-muted-foreground">

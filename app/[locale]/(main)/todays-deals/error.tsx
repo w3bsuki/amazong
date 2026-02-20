@@ -1,28 +1,12 @@
 'use client'
 
-import { ErrorBoundaryUI } from '../../_components/error-boundary-ui'
-import { useTranslations } from 'next-intl'
+import { createErrorBoundaryPage } from '../../_components/create-error-boundary-page'
 
-export default function DealsError({
-  error,
-  reset,
-}: {
-  error: Error & { digest?: string }
-  reset: () => void
-}) {
-  const t = useTranslations('Errors')
-
-  return (
-    <ErrorBoundaryUI
-      error={error}
-      reset={reset}
-      title={t('deals.title')}
-      description={t('deals.description')}
-      ctaIcon="tag"
-      ctaLabel={t('common.goToHomepage')}
-      ctaHref="/"
-      logPrefix="Deals page"
-    />
-  )
-}
-
+export default createErrorBoundaryPage({
+  titleKey: 'deals.title',
+  descriptionKey: 'deals.description',
+  ctaIcon: 'tag',
+  ctaLabelKey: 'common.goToHomepage',
+  ctaHref: '/',
+  logPrefix: 'Deals page',
+})

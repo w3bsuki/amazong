@@ -9,8 +9,7 @@ const mobileBottomNavRootVariants = cva(
 )
 
 const mobileBottomNavDockVariants = cva(
-  // Flat surface for persistent mobile chrome; shadow-nav is an upward-facing shadow defined in globals.css.
-  "pointer-events-auto w-full rounded-t-2xl border-t border-border-subtle bg-background px-2 pt-2 pb-safe shadow-nav"
+  "pointer-events-auto w-full rounded-t-2xl border-t border-border bg-background px-2 pb-safe shadow-nav"
 )
 
 const mobileBottomNavListVariants = cva(
@@ -18,25 +17,18 @@ const mobileBottomNavListVariants = cva(
 )
 
 const mobileBottomNavItemVariants = cva(
-  // before: pill indicator — sits flush at the top of the nav dock, animates in on active.
   [
     "group relative flex h-full w-full flex-col items-center justify-center gap-0.5",
     "tap-transparent select-none text-nav-inactive",
-    "transition-all duration-150",
-    "before:absolute before:top-0 before:left-1/2 before:-translate-x-1/2",
-    "before:h-0.5 before:w-5 before:rounded-full before:content-['']",
-    "before:bg-transparent before:transition-all before:duration-200",
-    "data-[state=active]:text-nav-active data-[state=active]:before:bg-nav-active data-[state=active]:before:w-6",
+    "transition-colors duration-150",
+    "data-[state=active]:text-nav-active",
     "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
   ],
   {
     variants: {
       emphasis: {
-        // Tactile scale feedback + pill indicator for standard tabs.
-        default: "active:scale-95",
-        // Pull the core action up so it floats above the dock edge;
-        // no pill indicator or scale (the FAB button handles its own feedback).
-        core: "-mt-3 before:hidden",
+        default: "",
+        core: "",
       },
     },
     defaultVariants: {
@@ -46,23 +38,24 @@ const mobileBottomNavItemVariants = cva(
 )
 
 const mobileBottomNavCoreActionVariants = cva(
-  // Floating sell button: elevated with shadow-cta, slightly larger touch presence.
-  // ring-background creates a visual gap between button and dock surface.
   [
-    "inline-flex size-13 items-center justify-center rounded-full",
+    "inline-flex size-(--control-default) items-center justify-center rounded-full",
     "bg-foreground text-background",
-    "shadow-cta ring-4 ring-background",
-    "transition-all duration-150",
-    "hover:bg-foreground/90",
-    "active:scale-90",
+    "transition-colors duration-150",
     "group-data-[state=active]:bg-primary group-data-[state=active]:text-primary-foreground",
-    "group-data-[state=active]:ring-focus-ring",
+  ]
+)
+
+const mobileBottomNavIndicatorVariants = cva(
+  [
+    "absolute left-1/2 top-1.5 -translate-x-1/2 rounded-full px-4 py-3.5",
+    "transition-colors duration-150",
+    "group-data-[state=active]:bg-nav-indicator",
   ]
 )
 
 const mobileBottomNavLabelVariants = cva(
-  // text-2xs (0.625rem) matches native app label conventions — dense without feeling cramped.
-  "text-2xs font-medium leading-none tracking-wider transition-colors group-data-[state=active]:font-semibold group-data-[state=active]:tracking-wide"
+  "text-2xs leading-none transition-colors font-medium group-data-[state=active]:font-semibold"
 )
 
 function MobileBottomNavRoot({
@@ -150,6 +143,20 @@ function MobileBottomNavCoreAction({
   )
 }
 
+function MobileBottomNavIndicator({
+  className,
+  ...props
+}: React.ComponentProps<"span">) {
+  return (
+    <span
+      data-slot="mobile-bottom-nav-indicator"
+      aria-hidden="true"
+      className={cn(mobileBottomNavIndicatorVariants(), className)}
+      {...props}
+    />
+  )
+}
+
 type MobileBottomNavLabelProps = React.ComponentProps<"span"> & {
   state?: "active" | "inactive"
 }
@@ -176,6 +183,7 @@ export {
   MobileBottomNavList,
   MobileBottomNavItem,
   MobileBottomNavCoreAction,
+  MobileBottomNavIndicator,
   MobileBottomNavLabel,
 }
 

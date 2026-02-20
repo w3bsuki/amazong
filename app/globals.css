@@ -99,8 +99,8 @@ select:-webkit-autofill {
   --selected-foreground: 0.18 0.02 255;
   --selected-border: 0.62 0.20 255;
   --hover-border: 0.92 0.01 255;
-  --nav-active: var(--primary);
-  --nav-inactive: 0.38 0.02 255;
+  --nav-active: var(--foreground);
+  --nav-inactive: 0.42 0.01 255;
   --nav-indicator: 0.94 0.015 255;
 
   /* Notification badge (red dot on avatar/icon) */
@@ -302,8 +302,8 @@ select:-webkit-autofill {
   --selected-foreground: 0.98 0 0;
   --selected-border: 0.72 0.18 255;
   --hover-border: 0.26 0.02 255;
-  --nav-active: var(--primary);
-  --nav-inactive: 0.82 0.01 255;
+  --nav-active: var(--foreground);
+  --nav-inactive: 0.68 0.01 255;
   --nav-indicator: 0.22 0.02 255;
 
   /* Notification badge */

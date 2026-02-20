@@ -1,0 +1,9 @@
+[dotenv@17.2.3] injecting env (15) from .env.local -- tip: ⚙️  suppress all logs with { quiet: true }
+[dotenv@17.2.3] injecting env (1) from .env -- tip: ⚙️  override existing env vars with { override: true }
+Unused files (1)
+app/[locale]/(main)/search/_components/mobile-browse-mode-switch.tsx  
+Unused exports (4)
+toast                          hooks/use-toast.ts:191:10                              
+DesktopHomeSkeleton  function  app/[locale]/(main)/_components/desktop-home.tsx:220:17
+PaginationPrevious             components/ui/pagination.tsx:164:3                     
+PaginationNext                 components/ui/pagination.tsx:165:3                     

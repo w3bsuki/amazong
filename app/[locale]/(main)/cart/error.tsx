@@ -1,28 +1,12 @@
 'use client'
 
-import { ErrorBoundaryUI } from '../../_components/error-boundary-ui'
-import { useTranslations } from 'next-intl'
+import { createErrorBoundaryPage } from '../../_components/create-error-boundary-page'
 
-export default function CartError({
-  error,
-  reset,
-}: {
-  error: Error & { digest?: string }
-  reset: () => void
-}) {
-  const t = useTranslations('Errors')
-
-  return (
-    <ErrorBoundaryUI
-      error={error}
-      reset={reset}
-      title={t('cart.title')}
-      description={t('cart.description')}
-      ctaIcon="cart"
-      ctaLabel={t('common.continueShopping')}
-      ctaHref="/"
-      logPrefix="Cart page"
-    />
-  )
-}
-
+export default createErrorBoundaryPage({
+  titleKey: 'cart.title',
+  descriptionKey: 'cart.description',
+  ctaIcon: 'cart',
+  ctaLabelKey: 'common.continueShopping',
+  ctaHref: '/',
+  logPrefix: 'Cart page',
+})

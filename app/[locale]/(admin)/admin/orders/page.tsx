@@ -4,22 +4,15 @@ import { bg, enUS } from "date-fns/locale"
 import { getLocale, getTranslations } from "next-intl/server"
 import { connection } from "next/server"
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import {
-  Table,
   TableBody,
   TableCell,
   TableHead,
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import { AdminTablePageLayout } from "../_components/admin-table-page-layout"
 
 // Type for admin order with profile info
 interface AdminOrder {
@@ -144,14 +137,10 @@ export default async function AdminOrdersPage() {
     .reduce((sum, o) => sum + Number(o.total_amount || 0), 0)
 
   return (
-    <div className="flex flex-col gap-4 py-4 md:gap-4 md:py-6 px-4 lg:px-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">{t('page.title')}</h1>
-          <p className="text-muted-foreground">
-            {t('page.description')}
-          </p>
-        </div>
+    <AdminTablePageLayout
+      title={t('page.title')}
+      description={t('page.description')}
+      headerRight={(
         <div className="flex gap-4">
           <Badge variant="outline" className="text-base">
             {t('summary.orders', { count: orders.length })}
@@ -160,59 +149,41 @@ export default async function AdminOrdersPage() {
             {t('summary.revenue', { amount: formatCurrency(totalRevenue) })}
           </Badge>
         </div>
-      </div>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>{t('table.title')}</CardTitle>
-          <CardDescription>{t('table.description')}</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="overflow-x-auto">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>{t('table.headers.orderId')}</TableHead>
-                  <TableHead>{t('table.headers.customer')}</TableHead>
-                  <TableHead>{t('table.headers.amount')}</TableHead>
-                  <TableHead>{t('table.headers.status')}</TableHead>
-                  <TableHead className="hidden md:table-cell">{t('table.headers.date')}</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {orders.map((order) => (
-                  <TableRow key={order.id}>
-                    <TableCell className="font-mono text-sm">
-                      #{order.id.slice(0, 8)}
-                    </TableCell>
-                    <TableCell>
-                      <div>
-                        <p className="font-medium">
-                          {order.profiles?.full_name || t('fallbacks.noName')}
-                        </p>
-                        <p className="text-sm text-muted-foreground">
-                          {order.profiles?.email}
-                        </p>
-                      </div>
-                    </TableCell>
-                    <TableCell className="font-medium tabular-nums">
-                      {formatCurrency(order.total_amount)}
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant="outline" className={getStatusColor(order.status)}>
-                        {getStatusLabel(order.status)}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="hidden md:table-cell text-muted-foreground">
-                      {formatDistanceToNow(new Date(order.created_at), { addSuffix: true, locale: dateLocale })}
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
+      )}
+      tableTitle={t('table.title')}
+      tableDescription={t('table.description')}
+    >
+      <TableHeader>
+        <TableRow>
+          <TableHead>{t('table.headers.orderId')}</TableHead>
+          <TableHead>{t('table.headers.customer')}</TableHead>
+          <TableHead>{t('table.headers.amount')}</TableHead>
+          <TableHead>{t('table.headers.status')}</TableHead>
+          <TableHead className="hidden md:table-cell">{t('table.headers.date')}</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {orders.map((order) => (
+          <TableRow key={order.id}>
+            <TableCell className="font-mono text-sm">#{order.id.slice(0, 8)}</TableCell>
+            <TableCell>
+              <div>
+                <p className="font-medium">{order.profiles?.full_name || t('fallbacks.noName')}</p>
+                <p className="text-sm text-muted-foreground">{order.profiles?.email}</p>
+              </div>
+            </TableCell>
+            <TableCell className="font-medium tabular-nums">{formatCurrency(order.total_amount)}</TableCell>
+            <TableCell>
+              <Badge variant="outline" className={getStatusColor(order.status)}>
+                {getStatusLabel(order.status)}
+              </Badge>
+            </TableCell>
+            <TableCell className="hidden md:table-cell text-muted-foreground">
+              {formatDistanceToNow(new Date(order.created_at), { addSuffix: true, locale: dateLocale })}
+            </TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    </AdminTablePageLayout>
   )
 }

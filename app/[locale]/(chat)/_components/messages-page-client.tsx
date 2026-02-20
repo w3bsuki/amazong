@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl"
 import { useRouter } from "@/i18n/routing"
 import { MessageProvider, useMessages } from "@/components/providers/message-context"
 import { ConversationList } from "./conversation-list"
-import { Skeleton } from "@/components/ui/skeleton"
+import { ChatInterfaceSkeletonInline } from "./chat-skeleton"
 import { cn } from "@/lib/utils"
 import { ArrowLeft, MessageCircle as ChatCircle, Mail as EnvelopeSimple, Search as MagnifyingGlass, PencilLine as PencilSimpleLine, ShoppingCart, Store as Storefront, Inbox as Tray } from "lucide-react";
 
@@ -20,45 +20,6 @@ type MessageFilter = "all" | "unread" | "buying" | "selling"
 const ChatInterface = lazy(() =>
   import("./chat-interface").then((mod) => ({ default: mod.ChatInterface }))
 )
-
-// Loading skeleton for ChatInterface - Instagram style
-function ChatInterfaceSkeleton() {
-  return (
-    <div className="flex h-full min-h-0 flex-col">
-      {/* Header skeleton */}
-      <div className="shrink-0 border-b border-border-subtle px-4 py-3">
-        <div className="flex items-center gap-3">
-          <Skeleton className="size-10 rounded-full" />
-          <div className="flex-1">
-            <Skeleton className="h-4 w-28 mb-1.5" />
-            <Skeleton className="h-3 w-16" />
-          </div>
-        </div>
-      </div>
-      {/* Messages area skeleton */}
-      <div className="flex-1 min-h-0 overflow-y-auto p-4 space-y-4">
-        <div className="flex items-end gap-2">
-          <Skeleton className="size-7 rounded-full shrink-0" />
-          <Skeleton className="h-12 w-48 rounded-md rounded-bl-md" />
-        </div>
-        <div className="flex justify-end">
-          <Skeleton className="h-12 w-40 rounded-md rounded-br-md" />
-        </div>
-        <div className="flex items-end gap-2">
-          <Skeleton className="size-7 rounded-full shrink-0" />
-          <Skeleton className="h-16 w-56 rounded-md rounded-bl-md" />
-        </div>
-        <div className="flex justify-end">
-          <Skeleton className="h-10 w-32 rounded-md rounded-br-md" />
-        </div>
-      </div>
-      {/* Input skeleton */}
-      <div className="shrink-0 border-t border-border-subtle p-3">
-        <Skeleton className="h-11 w-full rounded-full" />
-      </div>
-    </div>
-  )
-}
 
 // Bottom Tab Bar component for chat filtering
 function ChatBottomTabs({ 
@@ -211,7 +172,7 @@ function MessagesContent({ actions }: { actions: ChatInterfaceServerActions }) {
         "hidden lg:flex"
       )}>
           {currentConversation ? (
-            <Suspense fallback={<ChatInterfaceSkeleton />}>
+            <Suspense fallback={<ChatInterfaceSkeletonInline />}>
             <ChatInterface
               className="h-full"
               actions={actions}

@@ -1,14 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { Link } from "@/i18n/routing"
 import { bg, enUS } from "date-fns/locale"
-import { ShoppingBag as IconShoppingBag } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import {
-  Card,
-  CardContent,
-} from "@/components/ui/card"
 import type { AccountOrdersGridProps } from "./account-orders-grid.types"
 export type { AccountOrdersGridServerActions } from "./account-orders-grid.types"
 import {
@@ -17,6 +10,7 @@ import {
 } from "./account-orders-grid.utils"
 import { AccountOrdersGridMobile } from "./account-orders-grid-mobile"
 import { AccountOrdersGridDesktop } from "./account-orders-grid-desktop"
+import { AccountOrdersEmptyState } from "./account-orders-empty-state"
 
 export function AccountOrdersGrid({ orders, locale, actions }: AccountOrdersGridProps) {
   const dateLocale = locale === "bg" ? bg : enUS
@@ -47,22 +41,7 @@ export function AccountOrdersGrid({ orders, locale, actions }: AccountOrdersGrid
   }, [actions, orders])
 
   if (orders.length === 0) {
-    return (
-      <Card>
-        <CardContent className="flex flex-col items-center justify-center py-12 text-center">
-          <div className="flex size-16 items-center justify-center rounded-full bg-muted mb-4">
-            <IconShoppingBag className="size-8 text-muted-foreground" />
-          </div>
-          <h3 className="font-semibold text-lg">{t.noOrders}</h3>
-          <p className="text-muted-foreground text-sm mt-1 max-w-sm">
-            {t.noOrdersDesc}
-          </p>
-          <Button asChild className="mt-6">
-            <Link href="/">{t.startShopping}</Link>
-          </Button>
-        </CardContent>
-      </Card>
-    )
+    return <AccountOrdersEmptyState t={t} />
   }
 
   return (

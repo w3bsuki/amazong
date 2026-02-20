@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo, useCallback, useEffect, useState } from "react"
+import { useMemo, useCallback } from "react"
 import { Minus, Package, Plus, ShoppingCart, LoaderCircle as SpinnerGap, Trash } from "lucide-react";
 
 import {
@@ -14,7 +14,7 @@ import { useCart, type CartItem } from "@/components/providers/cart-context"
 import { DrawerShell } from "@/components/shared/drawer-shell"
 import Image from "next/image"
 import { cn } from "@/lib/utils"
-import { normalizeImageUrl, PLACEHOLDER_IMAGE_PATH } from "@/lib/normalize-image-url"
+import { useNormalizedImageSrc } from "@/hooks/use-normalized-image-src"
 import { getProductUrl } from "@/lib/url-utils"
 
 interface CartDrawerProps {
@@ -31,11 +31,7 @@ function CartDrawerItemImage({
   alt: string
   priority: boolean
 }) {
-  const [resolvedSrc, setResolvedSrc] = useState(() => normalizeImageUrl(src))
-
-  useEffect(() => {
-    setResolvedSrc(normalizeImageUrl(src))
-  }, [src])
+  const { resolvedSrc, handleError } = useNormalizedImageSrc(src)
 
   return (
     <Image
@@ -46,11 +42,7 @@ function CartDrawerItemImage({
       className="size-full object-cover"
       priority={priority}
       loading={priority ? "eager" : "lazy"}
-      onError={() => {
-        if (resolvedSrc !== PLACEHOLDER_IMAGE_PATH) {
-          setResolvedSrc(PLACEHOLDER_IMAGE_PATH)
-        }
-      }}
+      onError={handleError}
     />
   )
 }

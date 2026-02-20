@@ -3,8 +3,7 @@ import { useState } from "react"
 import { useTranslations } from "next-intl"
 import { toast } from "sonner"
 
-import { AdminDialogShell } from "../../_components/admin-dialog-shell"
-import { Input } from "@/components/ui/input"
+import { AdminDialogWithTitleField } from "../../_components/admin-dialog-with-title-field"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 
@@ -43,24 +42,18 @@ export function NoteDialog({ note, open, onOpenChange, onSave }: NoteDialogProps
   }
 
   return (
-    <AdminDialogShell
+    <AdminDialogWithTitleField
       open={open}
       onOpenChange={onOpenChange}
       title={note ? t("dialog.titleEdit") : t("dialog.titleNew")}
       cancelLabel={t("buttons.cancel")}
       submitLabel={note ? t("buttons.saveChanges") : t("buttons.createNote")}
       onSubmit={handleSubmit}
+      titleLabel={t("labels.title")}
+      titlePlaceholder={t("placeholders.title")}
+      titleValue={title}
+      onTitleValueChange={setTitle}
     >
-      <div className="space-y-2">
-        <Label htmlFor="title">{t("labels.title")}</Label>
-        <Input
-          id="title"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          placeholder={t("placeholders.title")}
-        />
-      </div>
-
       <div className="space-y-2">
         <Label htmlFor="content">{t("labels.content")}</Label>
         <Textarea
@@ -71,6 +64,6 @@ export function NoteDialog({ note, open, onOpenChange, onSave }: NoteDialogProps
           rows={8}
         />
       </div>
-    </AdminDialogShell>
+    </AdminDialogWithTitleField>
   )
 }

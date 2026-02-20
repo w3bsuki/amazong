@@ -1,8 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect, routing } from "@/i18n/routing";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { Suspense } from "react";
-import { Skeleton } from "@/components/ui/skeleton";
 import { AccountLayoutContent } from "./_components/account-layout-content";
 import { headers } from "next/headers";
 import { createSubscriptionCheckoutSession } from "@/app/actions/subscriptions-reads";
@@ -28,38 +26,6 @@ export async function generateMetadata({
     return {
         title: t("title"),
     };
-}
-
-function AccountLayoutSkeleton() {
-    return (
-        <div className="flex min-h-svh w-full">
-            {/* Sidebar skeleton */}
-            <div className="hidden lg:flex w-72 flex-col border-r bg-sidebar">
-                <div className="p-4 space-y-4">
-                    <Skeleton className="h-10 w-full" />
-                    <Skeleton className="h-8 w-full" />
-                    <Skeleton className="h-8 w-full" />
-                    <Skeleton className="h-8 w-full" />
-                    <Skeleton className="h-8 w-full" />
-                </div>
-            </div>
-            {/* Main content skeleton */}
-            <div className="flex-1 flex flex-col">
-                <div className="h-12 border-b flex items-center px-4 gap-2">
-                    <Skeleton className="h-6 w-6" />
-                    <Skeleton className="h-4 w-32" />
-                </div>
-                <main className="flex-1 p-4">
-                    <div className="space-y-4">
-                        <Skeleton className="h-8 w-64" />
-                        <Skeleton className="h-4 w-full" />
-                        <Skeleton className="h-4 w-11/12" />
-                        <Skeleton className="h-4 w-10/12" />
-                    </div>
-                </main>
-            </div>
-        </div>
-    );
 }
 
 async function AccountLayoutGate({
@@ -131,13 +97,11 @@ export default async function AccountLayout({
 
     return (
         <FullRouteIntlProvider locale={locale}>
-            <Suspense fallback={<AccountLayoutSkeleton />}>
-                <CommerceProviders>
-                    <AccountLayoutGate modal={modal} locale={locale}>
-                        {children}
-                    </AccountLayoutGate>
-                </CommerceProviders>
-            </Suspense>
+            <CommerceProviders>
+                <AccountLayoutGate modal={modal} locale={locale}>
+                    {children}
+                </AccountLayoutGate>
+            </CommerceProviders>
         </FullRouteIntlProvider>
     );
 }

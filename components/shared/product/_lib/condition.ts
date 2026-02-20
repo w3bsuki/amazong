@@ -11,7 +11,7 @@ export function getConditionBadgeVariant(
   condition: string | null | undefined
 ): ConditionBadgeVariant {
   if (!condition) return "condition"
-  const normalized = condition.toLowerCase().replace(/[\s_-]/g, "")
+  const normalized = condition.toLowerCase().replaceAll(/[\s_-]/g, "")
   switch (normalized) {
     case "new":
     case "newwithtags":
@@ -36,7 +36,7 @@ export function getConditionBadgeVariant(
 }
 
 export function getConditionKey(value: string): string | null {
-  const normalized = value.toLowerCase().replace(/[\s_-]/g, "")
+  const normalized = value.toLowerCase().replaceAll(/[\s_-]/g, "")
 
   switch (normalized) {
     case "new":

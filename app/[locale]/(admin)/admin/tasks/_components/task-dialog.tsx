@@ -3,7 +3,7 @@ import { useState } from "react"
 import { useTranslations } from "next-intl"
 import { toast } from "sonner"
 
-import { AdminDialogShell } from "../../_components/admin-dialog-shell"
+import { AdminDialogWithTitleField } from "../../_components/admin-dialog-with-title-field"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import {
@@ -56,24 +56,18 @@ export function TaskDialog({ task, open, onOpenChange, onSave }: TaskDialogProps
   }
 
   return (
-    <AdminDialogShell
+    <AdminDialogWithTitleField
       open={open}
       onOpenChange={onOpenChange}
       title={task ? t("dialog.titleEdit") : t("dialog.titleNew")}
       cancelLabel={t("buttons.cancel")}
       submitLabel={task ? t("buttons.saveChanges") : t("buttons.createTask")}
       onSubmit={handleSubmit}
+      titleLabel={t("labels.title")}
+      titlePlaceholder={t("placeholders.title")}
+      titleValue={title}
+      onTitleValueChange={setTitle}
     >
-      <div className="space-y-2">
-        <Label htmlFor="title">{t("labels.title")}</Label>
-        <Input
-          id="title"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          placeholder={t("placeholders.title")}
-        />
-      </div>
-
       <div className="space-y-2">
         <Label htmlFor="description">{t("labels.description")}</Label>
         <Textarea
@@ -111,6 +105,6 @@ export function TaskDialog({ task, open, onOpenChange, onSave }: TaskDialogProps
           />
         </div>
       </div>
-    </AdminDialogShell>
+    </AdminDialogWithTitleField>
   )
 }

@@ -1,10 +1,10 @@
 import { createClient } from "@/lib/supabase/server"
 import { redirect } from "@/i18n/routing"
-import { getOrderConversation } from "@/app/actions/orders-reads"
-import { canBuyerRateSeller } from "@/app/actions/orders-rating"
-import { requestOrderCancellation, reportOrderIssue } from "@/app/actions/orders-support"
-import { buyerConfirmDelivery } from "@/app/actions/orders-status"
-import { submitSellerFeedback } from "@/app/actions/seller-feedback"
+import { getOrderConversation } from "../../../../actions/orders-reads"
+import { canBuyerRateSeller } from "../../../../actions/orders-rating"
+import { requestOrderCancellation, reportOrderIssue } from "../../../../actions/orders-support"
+import { buyerConfirmDelivery } from "../../../../actions/orders-status"
+import { submitSellerFeedback } from "../../../../actions/seller-feedback"
 import { AccountOrdersToolbar } from "./_components/account-orders-toolbar"
 import { AccountOrdersStats } from "./_components/account-orders-stats"
 import { AccountOrdersGrid } from "./_components/account-orders-grid"
@@ -48,6 +48,39 @@ type OrderRow = {
 interface OrdersPageProps {
   params: Promise<{ locale: string }>
   searchParams?: Promise<{ q?: string; status?: string }>
+}
+
+const normalizeValue = (value: string) => value.toLowerCase()
+
+const matchesQuery = (order: OrderRow, query: string) => {
+  if (!query) return true
+  const q = normalizeValue(query)
+  if (normalizeValue(order.id).includes(q)) return true
+  return order.order_items.some((item) => {
+    const title = item.product?.title || ""
+    return normalizeValue(title).includes(q)
+  })
+}
+
+const isOpenStatus = (status: OrderStatus | null) =>
+  status === "pending" ||
+  status === "processing" ||
+  status === "shipped" ||
+  status === "paid"
+
+const matchesStatus = (order: OrderRow, statusFilter: string) => {
+  const s = (order.status || "pending") as OrderStatus
+  switch (statusFilter) {
+    case "open":
+      return isOpenStatus(s)
+    case "delivered":
+      return s === "delivered"
+    case "cancelled":
+      return s === "cancelled"
+    case "all":
+    default:
+      return true
+  }
 }
 
 export const metadata = {
@@ -106,14 +139,14 @@ export default async function OrdersPage({ params, searchParams }: OrdersPagePro
     .eq("user_id", user.id)
     .order("created_at", { ascending: false })
 
-  const sellerIds = Array.from(
-    new Set(
+  const sellerIds = [
+    ...new Set(
       ((ordersRaw || []) as unknown as OrderRow[])
         .flatMap((order) => (Array.isArray(order.order_items) ? order.order_items : []))
         .map((item) => item.seller_id)
         .filter((id): id is string => typeof id === "string" && id.length > 0)
-    )
-  )
+    ),
+  ]
 
   const { data: sellerProfiles } = sellerIds.length
     ? await supabase
@@ -136,37 +169,7 @@ export default async function OrdersPage({ params, searchParams }: OrdersPagePro
       : [],
   }))
 
-  const normalize = (value: string) => value.toLowerCase()
-
-  const matchesQuery = (order: OrderRow) => {
-    if (!query) return true
-    const q = normalize(query)
-    if (normalize(order.id).includes(q)) return true
-    return order.order_items.some((item) => {
-      const title = item.product?.title || ""
-      return normalize(title).includes(q)
-    })
-  }
-
-  const isOpenStatus = (status: OrderStatus | null) =>
-    status === "pending" || status === "processing" || status === "shipped" || status === "paid"
-
-  const matchesStatus = (order: OrderRow) => {
-    const s = (order.status || "pending") as OrderStatus
-    switch (statusFilter) {
-      case "open":
-        return isOpenStatus(s)
-      case "delivered":
-        return s === "delivered"
-      case "cancelled":
-        return s === "cancelled"
-      case "all":
-      default:
-        return true
-    }
-  }
-
-  const filteredOrders = allOrders.filter((o) => matchesStatus(o) && matchesQuery(o))
+  const filteredOrders = allOrders.filter((o) => matchesStatus(o, statusFilter) && matchesQuery(o, query))
 
   // Calculate stats
   const stats = {

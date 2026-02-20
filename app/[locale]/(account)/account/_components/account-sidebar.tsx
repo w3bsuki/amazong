@@ -123,6 +123,34 @@ interface AccountSidebarProps extends React.ComponentProps<typeof Sidebar> {
   plansModalActions: PlansModalServerActions
 }
 
+function AccountSidebarNavList({
+  items,
+  isActive,
+}: {
+  items: Array<{
+    title: string
+    url: string
+    icon: React.ComponentType<{ className?: string }>
+    exact?: boolean
+  }>
+  isActive: (url: string, exact?: boolean) => boolean
+}) {
+  return (
+    <SidebarMenu>
+      {items.map((item) => (
+        <SidebarMenuItem key={item.url}>
+          <SidebarMenuButton asChild tooltip={item.title} isActive={isActive(item.url, item.exact)}>
+            <Link href={item.url}>
+              <item.icon />
+              <span>{item.title}</span>
+            </Link>
+          </SidebarMenuButton>
+        </SidebarMenuItem>
+      ))}
+    </SidebarMenu>
+  )
+}
+
 function AccountNavUser({
   user,
 }: {
@@ -250,22 +278,7 @@ export function AccountSidebar({ user, plansModalActions, ...props }: AccountSid
         {/* Main Navigation */}
         <SidebarGroup>
           <SidebarGroupContent>
-            <SidebarMenu>
-              {navItems.map((item) => (
-                <SidebarMenuItem key={item.url}>
-                  <SidebarMenuButton
-                    asChild
-                    tooltip={item.title}
-                    isActive={isActive(item.url, item.exact)}
-                  >
-                      <Link href={item.url}>
-                      <item.icon />
-                      <span>{item.title}</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
+            <AccountSidebarNavList items={navItems} isActive={isActive} />
           </SidebarGroupContent>
         </SidebarGroup>
 
@@ -275,22 +288,7 @@ export function AccountSidebar({ user, plansModalActions, ...props }: AccountSid
             {locale === 'bg' ? 'Настройки' : 'Settings'}
           </SidebarGroupLabel>
           <SidebarGroupContent>
-            <SidebarMenu>
-              {manageItems.map((item) => (
-                <SidebarMenuItem key={item.url}>
-                  <SidebarMenuButton
-                    asChild
-                    tooltip={item.title}
-                    isActive={isActive(item.url)}
-                  >
-                      <Link href={item.url}>
-                      <item.icon />
-                      <span>{item.title}</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
+            <AccountSidebarNavList items={manageItems} isActive={isActive} />
           </SidebarGroupContent>
         </SidebarGroup>
 
@@ -300,22 +298,7 @@ export function AccountSidebar({ user, plansModalActions, ...props }: AccountSid
             {locale === 'bg' ? 'Продавач' : 'Seller'}
           </SidebarGroupLabel>
           <SidebarGroupContent>
-            <SidebarMenu>
-              {sellerItems.map((item) => (
-                <SidebarMenuItem key={item.url}>
-                  <SidebarMenuButton
-                    asChild
-                    tooltip={item.title}
-                    isActive={isActive(item.url)}
-                  >
-                      <Link href={item.url}>
-                      <item.icon />
-                      <span>{item.title}</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
+            <AccountSidebarNavList items={sellerItems} isActive={isActive} />
           </SidebarGroupContent>
         </SidebarGroup>
 

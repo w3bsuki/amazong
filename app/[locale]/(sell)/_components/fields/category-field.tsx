@@ -54,8 +54,25 @@ export function CategoryField({ onCategoryChange, className, compact = false }: 
     <Controller
       name="categoryId"
       control={control}
-      render={({ field, fieldState }) => (
-        <Field data-invalid={fieldState.invalid} className={className}>
+      render={({ field, fieldState }) => {
+        const handleSelectorChange = (categoryId: string, path: CategoryPathItem[]) => {
+          const normalizedPath: CategoryPathItem[] = path.map((item) => ({
+            id: item.id,
+            name: item.name,
+            slug: item.slug,
+            name_bg: item.name_bg ?? null,
+          }))
+
+          // Reset item specifics when switching categories to prevent stale fields/values.
+          setValue("attributes", [], { shouldValidate: true, shouldDirty: true })
+          field.onChange(categoryId)
+          setValue("categoryPath", normalizedPath, { shouldValidate: false })
+          onCategoryChange?.(categoryId, normalizedPath)
+          void prefetchCategoryAttributes(categoryId)
+        }
+
+        return (
+          <Field data-invalid={fieldState.invalid} className={className}>
           {!compact ? (
             <div className="rounded-md border border-form-section-border bg-form-section-bg overflow-hidden shadow-xs">
               {/* Header */}
@@ -81,21 +98,7 @@ export function CategoryField({ onCategoryChange, className, compact = false }: 
                   categories={categories}
                   value={field.value || ""}
                   {...(categoryPath ? { selectedPath: categoryPath } : {})}
-                  onChange={(categoryId, path) => {
-                    const normalizedPath: CategoryPathItem[] = path.map((item) => ({
-                      id: item.id,
-                      name: item.name,
-                      slug: item.slug,
-                      name_bg: item.name_bg ?? null,
-                    }))
-
-                    // Reset item specifics when switching categories to prevent stale fields/values.
-                    setValue("attributes", [], { shouldValidate: true, shouldDirty: true });
-                    field.onChange(categoryId);
-                    setValue("categoryPath", normalizedPath, { shouldValidate: false });
-                    onCategoryChange?.(categoryId, normalizedPath);
-                    void prefetchCategoryAttributes(categoryId);
-                  }}
+                  onChange={handleSelectorChange}
                   locale={locale}
                 />
 
@@ -121,21 +124,7 @@ export function CategoryField({ onCategoryChange, className, compact = false }: 
                   categories={categories}
                   value={field.value || ""}
                   {...(categoryPath ? { selectedPath: categoryPath } : {})}
-                  onChange={(categoryId, path) => {
-                    const normalizedPath: CategoryPathItem[] = path.map((item) => ({
-                      id: item.id,
-                      name: item.name,
-                      slug: item.slug,
-                      name_bg: item.name_bg ?? null,
-                    }))
-
-                    // Reset item specifics when switching categories to prevent stale fields/values.
-                    setValue("attributes", [], { shouldValidate: true, shouldDirty: true });
-                    field.onChange(categoryId);
-                    setValue("categoryPath", normalizedPath, { shouldValidate: false });
-                    onCategoryChange?.(categoryId, normalizedPath);
-                    void prefetchCategoryAttributes(categoryId);
-                  }}
+                  onChange={handleSelectorChange}
                   locale={locale}
                 />
 
@@ -147,8 +136,9 @@ export function CategoryField({ onCategoryChange, className, compact = false }: 
               </FieldContent>
             </>
           )}
-        </Field>
-      )}
+          </Field>
+        )
+      }}
     />
   );
 }

@@ -96,19 +96,32 @@ export function BuyerOrderActions({
   const isReceived = currentStatus === 'received'
   const canCancel = isPending || isProcessing || isReceived
 
-  // Check if can rate when delivered
-  async function checkRatingStatus() {
-    if (isDelivered && !isReportOnly) {
-      const result = await actions.canBuyerRateSeller(orderItemId)
-      setCanRate(result.canRate)
-      setHasRated(result.hasRated)
-    }
-  }
-
-  // Run check on mount for delivered orders
   useEffect(() => {
-    checkRatingStatus()
-  }, [isDelivered, orderItemId])
+    if (!isDelivered || isReportOnly) {
+      return
+    }
+
+    let canceled = false
+
+    const fetchRatingStatus = async () => {
+      try {
+        const result = await actions.canBuyerRateSeller(orderItemId)
+        if (canceled) {
+          return
+        }
+        setCanRate(result.canRate)
+        setHasRated(result.hasRated)
+      } catch {
+        // ignore, fallback to default state
+      }
+    }
+
+    fetchRatingStatus()
+
+    return () => {
+      canceled = true
+    }
+  }, [actions, isDelivered, isReportOnly, orderItemId])
 
   async function handleConfirmDelivery() {
     startTransition(async () => {

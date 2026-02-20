@@ -1,6 +1,5 @@
 "use client"
 
-import { useEffect, useState } from "react"
 import Image from "next/image"
 import { Link } from "@/i18n/routing"
 import { ArrowRight, CircleCheck as CheckCircle, Heart, Minus, Package, Plus, ShieldCheck, ShoppingCart, Trash, Truck } from "lucide-react";
@@ -11,7 +10,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { IconButton } from "@/components/ui/icon-button"
 import { Separator } from "@/components/ui/separator"
 import { ProductMiniCard } from "@/components/shared/product/card/mini"
-import { normalizeImageUrl, PLACEHOLDER_IMAGE_PATH } from "@/lib/normalize-image-url"
+import { useNormalizedImageSrc } from "@/hooks/use-normalized-image-src"
 
 type Translate = (key: string, values?: Record<string, string | number | Date>) => string
 
@@ -46,11 +45,7 @@ function CartPageItemImage({
   alt: string
   priority: boolean
 }) {
-  const [resolvedSrc, setResolvedSrc] = useState(() => normalizeImageUrl(src))
-
-  useEffect(() => {
-    setResolvedSrc(normalizeImageUrl(src))
-  }, [src])
+  const { resolvedSrc, handleError } = useNormalizedImageSrc(src)
 
   return (
     <Image
@@ -60,11 +55,7 @@ function CartPageItemImage({
       className="object-contain p-1.5"
       sizes="80px"
       priority={priority}
-      onError={() => {
-        if (resolvedSrc !== PLACEHOLDER_IMAGE_PATH) {
-          setResolvedSrc(PLACEHOLDER_IMAGE_PATH)
-        }
-      }}
+      onError={handleError}
     />
   )
 }

@@ -1,18 +1,17 @@
 "use client"
 
-import { Link, useRouter } from "@/i18n/routing"
-import Image from "next/image"
 import { useEffect, useState, useTransition } from "react"
 import { createClient } from "@/lib/supabase/client"
-import { ArrowLeft, ArrowRight, Camera, Check, CircleCheck as CheckCircle, PartyPopper as Confetti, Image as ImageIcon, ShoppingBag, Sparkles as Sparkle, LoaderCircle as SpinnerGap, Store as Storefront, CircleUser as UserCircle } from "lucide-react";
+import { useRouter } from "@/i18n/routing"
+import { LoaderCircle as SpinnerGap } from "lucide-react";
 
-import { motion, AnimatePresence } from "framer-motion"
-import Avatar from "boring-avatars"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
+import { AnimatePresence } from "framer-motion"
 import { cn } from "@/lib/utils"
-import { AVATAR_VARIANTS, type AvatarVariant, COLOR_PALETTES } from "@/lib/avatar-palettes"
+import { type AvatarVariant } from "@/lib/avatar-palettes"
+import { WelcomeAvatarStep } from "./welcome-avatar-step"
+import { WelcomeCompleteStep } from "./welcome-complete-step"
+import { WelcomeIntroStep } from "./welcome-intro-step"
+import { WelcomeProfileStep } from "./welcome-profile-step"
 
 interface UserProfile {
   id: string
@@ -20,29 +19,6 @@ interface UserProfile {
   display_name: string | null
   avatar_url: string | null
   bio: string | null
-}
-
-interface StepHeaderProps {
-  onBack: () => void
-  title: string
-  description: string
-}
-
-function StepHeader({ onBack, title, description }: StepHeaderProps) {
-  return (
-    <div className="p-4 border-b border-border">
-      <button
-        type="button"
-        onClick={onBack}
-        className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground mb-4"
-      >
-        <ArrowLeft className="size-4" />
-        Back
-      </button>
-      <h2 className="text-xl font-semibold text-foreground">{title}</h2>
-      <p className="text-sm text-muted-foreground mt-1">{description}</p>
-    </div>
-  )
 }
 
 export function WelcomeClient({ locale }: { locale: string }) {
@@ -189,357 +165,56 @@ export function WelcomeClient({ locale }: { locale: string }) {
         </div>
 
         <AnimatePresence mode="wait">
-          {step === 1 && (
-            <motion.div
-              key="welcome"
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
-              className="bg-card rounded-xl border border-border overflow-hidden"
-            >
-              <div className="relative bg-primary px-6 py-10 text-center text-primary-foreground overflow-hidden">
-                <div className="absolute inset-0 overflow-hidden">
-                  <div className="absolute -top-4 -right-4 w-24 h-24 bg-hover rounded-full" />
-                  <div className="absolute -bottom-8 -left-8 w-32 h-32 bg-hover rounded-full" />
-                  <Confetti className="absolute top-4 right-4 size-8 text-foreground opacity-80" />
-                  <Confetti className="absolute bottom-4 left-4 size-6 text-foreground opacity-80" />
-                </div>
+          {(() => {
+            switch (step) {
+              case 1:
+                return <WelcomeIntroStep name={name} isPending={isPending} onStart={() => setStep(2)} onSkip={handleSkip} />
 
-                <div className="relative">
-                  <motion.div
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
-                    className="size-20 bg-muted rounded-full flex items-center justify-center mx-auto mb-4"
-                  >
-                    <CheckCircle className="size-12 text-primary-foreground" />
-                  </motion.div>
-                  <motion.h1
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.3 }}
-                    className="text-2xl font-bold mb-2"
-                  >
-                    Welcome, {name}! 🎉
-                  </motion.h1>
-                  <motion.p
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 0.4 }}
-                    className="text-foreground"
-                  >
-                    Your email has been verified
-                  </motion.p>
-                </div>
-              </div>
-
-              <div className="p-6">
-                <h2 className="text-lg font-semibold text-foreground mb-2 text-center">Let&apos;s set up your profile</h2>
-                <p className="text-sm text-muted-foreground text-center mb-6">
-                  This will only take a minute. Choose an avatar and tell us about yourself!
-                </p>
-
-                <div className="space-y-3">
-                  <Button
-                    onClick={() => setStep(2)}
-                    className="w-full h-12 bg-primary text-primary-foreground hover:bg-interactive-hover"
-                  >
-                    <Sparkle className="size-5 mr-2" />
-                    Get Started
-                  </Button>
-                  <button
-                    type="button"
-                    onClick={handleSkip}
-                    disabled={isPending}
-                    className="w-full text-sm text-muted-foreground hover:text-foreground py-2"
-                  >
-                    {isPending ? "..." : "Skip for now"}
-                  </button>
-                </div>
-              </div>
-            </motion.div>
-          )}
-
-          {step === 2 && (
-            <motion.div
-              key="avatar"
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
-              className="bg-card rounded-xl border border-border overflow-hidden"
-            >
-              <StepHeader
-                onBack={() => setStep(1)}
-                title="Choose your avatar"
-                description="Pick a style or upload your own photo"
-              />
-
-              <div className="p-4 space-y-4">
-                <div className="flex justify-center">
-                  <div className="relative">
-                    {useCustomAvatar && avatarPreview ? (
-                      <Image
-                        src={avatarPreview}
-                        alt="Avatar preview"
-                        width={96}
-                        height={96}
-                        className="size-24 rounded-full object-cover border-4 border-selected-border"
-                      />
-                    ) : (
-                      <Avatar
-                        size={96}
-                        name={profile?.username || "user"}
-                        variant={selectedVariant}
-                        colors={COLOR_PALETTES[selectedPalette] ?? COLOR_PALETTES[0] ?? []}
-                      />
-                    )}
-                    <label
-                      className="absolute bottom-0 right-0 size-8 bg-primary text-primary-foreground hover:bg-interactive-hover rounded-full flex items-center justify-center cursor-pointer shadow-sm transition-colors"
-                      aria-label="Upload avatar image"
-                    >
-                      <Camera className="size-4 text-primary-foreground" />
-                      <input type="file" accept="image/*" className="hidden" onChange={handleFileChange} />
-                    </label>
-                  </div>
-                </div>
-
-                <div>
-                  <h3 className="text-sm font-medium text-foreground mb-3">Or choose a style</h3>
-                  <div className="grid grid-cols-6 gap-2">
-                    {AVATAR_VARIANTS.map((variant) => (
-                      <button
-                        key={variant}
-                        type="button"
-                        onClick={() => {
-                          setSelectedVariant(variant)
-                          setUseCustomAvatar(false)
-                        }}
-                        className={cn(
-                          "p-2 rounded-xl border-2 transition-colors",
-                          !useCustomAvatar && selectedVariant === variant
-                            ? "border-primary bg-muted"
-                            : "border-border hover:border-border-subtle"
-                        )}
-                      >
-                        <Avatar
-                          size={40}
-                          name={profile?.username || "user"}
-                          variant={variant}
-                          colors={COLOR_PALETTES[selectedPalette] ?? COLOR_PALETTES[0] ?? []}
-                        />
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {!useCustomAvatar && (
-                  <div>
-                    <h3 className="text-sm font-medium text-foreground mb-3">Color palette</h3>
-                    <div className="grid grid-cols-6 gap-2">
-                      {COLOR_PALETTES.map((palette, idx) => (
-                        <button
-                          key={idx}
-                          type="button"
-                          onClick={() => setSelectedPalette(idx)}
-                          className={cn(
-                            "p-1.5 rounded-lg border-2 transition-all",
-                            selectedPalette === idx ? "border-primary" : "border-border hover:border-border-subtle"
-                          )}
-                        >
-                          <div className="flex gap-0.5">
-                            {palette.slice(0, 5).map((color, i) => (
-                              <div key={i} className="w-2 h-6 rounded-sm" style={{ backgroundColor: color }} />
-                            ))}
-                          </div>
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {!useCustomAvatar && (
-                  <div className="text-center">
-                    <label className="inline-flex items-center gap-2 px-4 py-2 text-sm text-muted-foreground hover:text-foreground cursor-pointer rounded-lg hover:bg-muted transition-colors">
-                      <ImageIcon className="size-4" />
-                      Upload your own photo
-                      <input type="file" accept="image/*" className="hidden" onChange={handleFileChange} />
-                    </label>
-                  </div>
-                )}
-
-                <div className="flex gap-3 pt-4">
-                  <Button variant="outline" onClick={() => setStep(1)} className="flex-1">
-                    Back
-                  </Button>
-                  <Button
-                    onClick={handleSaveAndContinue}
-                    disabled={isPending}
-                    className="flex-1 bg-primary text-primary-foreground hover:bg-interactive-hover"
-                  >
-                    {isPending ? (
-                      <SpinnerGap className="size-4 animate-spin motion-reduce:animate-none" />
-                    ) : (
-                      <>
-                        Continue <ArrowRight className="size-4 ml-2" />
-                      </>
-                    )}
-                  </Button>
-                </div>
-              </div>
-            </motion.div>
-          )}
-
-          {step === 3 && (
-            <motion.div
-              key="profile"
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
-              className="bg-card rounded-xl border border-border overflow-hidden"
-            >
-              <StepHeader
-                onBack={() => setStep(2)}
-                title="Tell us about yourself"
-                description="This helps other users know who you are"
-              />
-
-              <div className="p-4 space-y-4">
-                <div className="flex justify-center mb-2">
-                  {useCustomAvatar && avatarPreview ? (
-                    <Image src={avatarPreview} alt="Avatar" width={64} height={64} className="size-16 rounded-full object-cover" />
-                  ) : (
-                    <Avatar
-                      size={64}
-                      name={profile?.username || "user"}
-                      variant={selectedVariant}
-                      colors={COLOR_PALETTES[selectedPalette] ?? COLOR_PALETTES[0] ?? []}
-                    />
-                  )}
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-foreground mb-1.5">Display Name</label>
-                  <Input
-                    value={displayName}
-                    onChange={(e) => setDisplayName(e.target.value)}
-                    placeholder={profile?.username || "Your name"}
-                    className="h-11"
+              case 2:
+                return (
+                  <WelcomeAvatarStep
+                    profileUsername={profile?.username}
+                    useCustomAvatar={useCustomAvatar}
+                    avatarPreview={avatarPreview}
+                    selectedVariant={selectedVariant}
+                    selectedPalette={selectedPalette}
+                    isPending={isPending}
+                    onBack={() => setStep(1)}
+                    onContinue={handleSaveAndContinue}
+                    onFileChange={handleFileChange}
+                    onSelectVariant={(variant) => {
+                      setSelectedVariant(variant)
+                      setUseCustomAvatar(false)
+                    }}
+                    onSelectPalette={(idx) => setSelectedPalette(idx)}
                   />
-                  <p className="text-xs text-muted-foreground mt-1">This is how other users will see you</p>
-                </div>
+                )
 
-                <div>
-                  <label className="block text-sm font-medium text-foreground mb-1.5">
-                    Bio <span className="text-muted-foreground font-normal">(optional)</span>
-                  </label>
-                  <Textarea
-                    value={bio}
-                    onChange={(e) => setBio(e.target.value)}
-                    placeholder="Tell others a bit about yourself..."
-                    rows={3}
-                    className="resize-none"
-                    maxLength={200}
+              case 3:
+                return (
+                  <WelcomeProfileStep
+                    profileUsername={profile?.username}
+                    useCustomAvatar={useCustomAvatar}
+                    avatarPreview={avatarPreview}
+                    selectedVariant={selectedVariant}
+                    selectedPalette={selectedPalette}
+                    displayName={displayName}
+                    bio={bio}
+                    isPending={isPending}
+                    onBack={() => setStep(2)}
+                    onContinue={handleSaveAndContinue}
+                    onDisplayNameChange={(value) => setDisplayName(value)}
+                    onBioChange={(value) => setBio(value)}
                   />
-                  <p className="text-xs text-muted-foreground mt-1 text-right">{bio.length}/200</p>
-                </div>
+                )
 
-                <div className="flex gap-3 pt-4">
-                  <Button variant="outline" onClick={() => setStep(2)} className="flex-1">
-                    Back
-                  </Button>
-                  <Button
-                    onClick={handleSaveAndContinue}
-                    disabled={isPending}
-                    className="flex-1 bg-primary text-primary-foreground hover:bg-interactive-hover"
-                  >
-                    {isPending ? (
-                      <SpinnerGap className="size-4 animate-spin motion-reduce:animate-none" />
-                    ) : (
-                      <>
-                        Save & Continue <ArrowRight className="size-4 ml-2" />
-                      </>
-                    )}
-                  </Button>
-                </div>
-              </div>
-            </motion.div>
-          )}
+              case 4:
+                return <WelcomeCompleteStep username={profile?.username} />
 
-          {step === 4 && (
-            <motion.div
-              key="complete"
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="bg-card rounded-xl border border-border overflow-hidden"
-            >
-              <div className="p-4 text-center">
-                <motion.div
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  transition={{ type: "spring", stiffness: 200, delay: 0.1 }}
-                  className="size-20 bg-selected rounded-full flex items-center justify-center mx-auto mb-4"
-                >
-                  <Check className="size-10 text-primary" />
-                </motion.div>
-
-                <h2 className="text-xl font-semibold text-foreground mb-2">You&apos;re all set! 🎉</h2>
-                <p className="text-muted-foreground mb-6">Your profile is ready. What would you like to do next?</p>
-
-                <div className="space-y-3 text-left">
-                  <Link href="/" className="block">
-                    <motion.div
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                      className="flex items-center gap-4 p-4 bg-surface-subtle hover:bg-hover active:bg-active rounded-xl border border-border transition-colors group"
-                    >
-                      <div className="size-12 bg-selected rounded-xl flex items-center justify-center shrink-0">
-                        <ShoppingBag className="size-6 text-primary" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <h3 className="font-medium text-foreground">Browse Products</h3>
-                        <p className="text-sm text-muted-foreground">Discover amazing deals</p>
-                      </div>
-                      <ArrowRight className="size-5 text-muted-foreground group-hover:text-foreground transition-colors" />
-                    </motion.div>
-                  </Link>
-
-                  <Link href="/sell" className="block">
-                    <motion.div
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                      className="flex items-center gap-4 p-4 bg-surface-subtle hover:bg-hover active:bg-active rounded-xl border border-border transition-colors group"
-                    >
-                      <div className="size-12 bg-primary rounded-xl flex items-center justify-center shrink-0">
-                        <Storefront className="size-6 text-primary-foreground" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <h3 className="font-medium text-foreground">Start Selling</h3>
-                        <p className="text-sm text-muted-foreground">List your first product</p>
-                      </div>
-                      <ArrowRight className="size-5 text-muted-foreground group-hover:text-foreground transition-colors" />
-                    </motion.div>
-                  </Link>
-
-                  <Link href={`/${profile?.username}`} className="block">
-                    <motion.div
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                      className="flex items-center gap-4 p-4 bg-surface-subtle hover:bg-hover active:bg-active rounded-xl border border-border transition-colors group"
-                    >
-                      <div className="size-12 bg-selected rounded-xl flex items-center justify-center shrink-0">
-                        <UserCircle className="size-6 text-primary" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <h3 className="font-medium text-foreground">View Your Profile</h3>
-                        <p className="text-sm text-muted-foreground">/{profile?.username}</p>
-                      </div>
-                      <ArrowRight className="size-5 text-muted-foreground group-hover:text-foreground transition-colors" />
-                    </motion.div>
-                  </Link>
-                </div>
-              </div>
-            </motion.div>
-          )}
+              default:
+                return null
+            }
+          })()}
         </AnimatePresence>
       </div>
     </div>

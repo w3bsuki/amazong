@@ -1,5 +1,42 @@
-import { NextRequest, NextResponse } from "next/server"
-import { createRouteHandlerClient } from "@/lib/supabase/server"
+import type { NextRequest } from "next/server"
+import { createRouteJsonHelpers } from "@/lib/api/route-json"
+
+const BADGE_DEFINITIONS_SELECT =
+  "id,account_type,category,code,color,created_at,criteria,description,description_bg,icon,is_active,is_automatic,name,name_bg,tier" as const
+
+const SELLER_STATS_SELECT =
+  "seller_id,total_sales,total_listings,average_rating,total_reviews,positive_feedback_pct,follower_count,response_rate_pct,repeat_customer_pct,active_listings,total_revenue,five_star_reviews,response_time_hours,communication_pct,item_described_pct,shipped_on_time_pct,shipping_speed_pct,first_sale_at,last_sale_at,updated_at" as const
+
+const BUYER_STATS_SELECT =
+  "user_id,average_rating,conversations_started,disputes_opened,disputes_won,first_purchase_at,last_purchase_at,reviews_written,stores_following,total_orders,total_ratings,total_spent,updated_at,wishlist_count" as const
+
+const USER_VERIFICATION_SELECT =
+  "id,user_id,email_verified,phone_verified,id_verified,address_verified,address_verified_at,id_verified_at,id_document_type,phone_number,trust_score,created_at,updated_at" as const
+
+const SELLER_BADGE_CATEGORIES_PERSONAL = [
+  "seller_milestone_personal",
+  "seller_sales",
+  "seller_rating",
+  "seller_special",
+  "verification",
+] as const satisfies readonly string[]
+
+const SELLER_BADGE_CATEGORIES_BUSINESS = [
+  "seller_milestone_personal",
+  "seller_milestone_business",
+  "seller_sales",
+  "seller_rating",
+  "seller_special",
+  "verification",
+] as const satisfies readonly string[]
+
+const BUYER_BADGE_CATEGORIES = [
+  "buyer_milestone",
+  "buyer_rating",
+  "buyer_engagement",
+  "verification",
+  "subscription",
+] as const satisfies readonly string[]
 
 // Types for badge evaluation
 interface BadgeCriteria {
@@ -47,9 +84,7 @@ interface UserVerification {
  * Body: { user_id: string, context?: "sale" | "review" | "listing" | "signup" | "subscription" }
  */
 export async function POST(request: NextRequest) {
-  const { supabase, applyCookies } = createRouteHandlerClient(request)
-  const json = (body: unknown, init?: Parameters<typeof NextResponse.json>[1]) =>
-    applyCookies(NextResponse.json(body, init))
+  const { supabase, json } = createRouteJsonHelpers(request)
 
   try {
     const { data: { user } } = await supabase.auth.getUser()
@@ -58,9 +93,22 @@ export async function POST(request: NextRequest) {
       return json({ error: "Unauthorized" }, { status: 401 })
     }
     
-    const body = await request.json()
-    const userId = body.user_id || user.id
-    const context = body.context || "general"
+    let body: unknown = {}
+    try {
+      body = await request.json()
+    } catch {
+      return json({ error: "Invalid JSON" }, { status: 400 })
+    }
+
+    if (typeof body !== "object" || body === null || Array.isArray(body)) {
+      return json({ error: "Invalid request" }, { status: 400 })
+    }
+
+    const rawUserId = (body as Record<string, unknown>).user_id
+    const rawContext = (body as Record<string, unknown>).context
+
+    const userId = typeof rawUserId === "string" && rawUserId ? rawUserId : user.id
+    const context = typeof rawContext === "string" && rawContext ? rawContext : "general"
     
     // Security: Only allow users to evaluate their own badges unless admin
     // For now, only self-evaluation is allowed
@@ -76,53 +124,18 @@ export async function POST(request: NextRequest) {
       .single()
     
     // Get applicable badge definitions based on context
-    const BADGE_DEFINITIONS_SELECT =
-      "id,account_type,category,code,color,created_at,criteria,description,description_bg,icon,is_active,is_automatic,name,name_bg,tier" as const
-
-    const SELLER_STATS_SELECT =
-      "seller_id,total_sales,total_listings,average_rating,total_reviews,positive_feedback_pct,follower_count,response_rate_pct,repeat_customer_pct,active_listings,total_revenue,five_star_reviews,response_time_hours,communication_pct,item_described_pct,shipped_on_time_pct,shipping_speed_pct,first_sale_at,last_sale_at,updated_at" as const
-
-    const BUYER_STATS_SELECT =
-      "user_id,average_rating,conversations_started,disputes_opened,disputes_won,first_purchase_at,last_purchase_at,reviews_written,stores_following,total_orders,total_ratings,total_spent,updated_at,wishlist_count" as const
-
-    const USER_VERIFICATION_SELECT =
-      "id,user_id,email_verified,phone_verified,id_verified,address_verified,address_verified_at,id_verified_at,id_document_type,phone_number,trust_score,created_at,updated_at" as const
-
     let badgeQuery = supabase
       .from("badge_definitions")
       .select(BADGE_DEFINITIONS_SELECT)
       .eq("is_active", true)
     
-    if (profile) {
-      // Seller badges
-      if (profile.account_type === "business") {
-        badgeQuery = badgeQuery.in("category", [
-          "seller_milestone_personal", 
-          "seller_milestone_business",
-          "seller_sales",
-          "seller_rating",
-          "seller_special",
-          "verification"
-        ])
-      } else {
-        badgeQuery = badgeQuery.in("category", [
-          "seller_milestone_personal",
-          "seller_sales",
-          "seller_rating",
-          "seller_special",
-          "verification"
-        ])
-      }
-    } else {
-      // Buyer badges only
-      badgeQuery = badgeQuery.in("category", [
-        "buyer_milestone",
-        "buyer_rating",
-        "buyer_engagement",
-        "verification",
-        "subscription"
-      ])
-    }
+    const badgeCategories = profile
+      ? profile.account_type === "business"
+        ? SELLER_BADGE_CATEGORIES_BUSINESS
+        : SELLER_BADGE_CATEGORIES_PERSONAL
+      : BUYER_BADGE_CATEGORIES
+
+    badgeQuery = badgeQuery.in("category", badgeCategories)
     
     const { data: badges, error: badgesError } = await badgeQuery
     

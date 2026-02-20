@@ -10,7 +10,7 @@ import { EmptyStateCTA } from "../_components/empty-state-cta"
 import { ProfileSettingsPanel } from "./_components/profile/profile-settings-panel"
 
 import { StarRating, formatTimeAgo } from "./profile-client.helpers"
-import type { BuyerReview, ProfileProduct, SellerReview } from "./profile-client.types"
+import type { BuyerReview, ProfileProduct, ReviewPerson, SellerReview } from "./profile-client.types"
 
 type Translator = ReturnType<typeof useTranslations>
 
@@ -32,6 +32,57 @@ type ProfileTab = {
   count?: number
   icon: React.ReactNode
   content: React.ReactNode
+}
+
+function ReviewCard({
+  person,
+  fallbackLabel,
+  createdAt,
+  rating,
+  comment,
+  isHydrated,
+  locale,
+}: {
+  person: ReviewPerson | null
+  fallbackLabel: string
+  createdAt: string
+  rating: number
+  comment: string | null
+  isHydrated: boolean
+  locale: string
+}) {
+  return (
+    <Card>
+      <CardContent className="p-3">
+        <div className="flex items-start gap-3">
+          <UserAvatar
+            name={person?.display_name || person?.username || "?"}
+            avatarUrl={person?.avatar_url ?? null}
+            className="size-9"
+            fallbackClassName="text-xs"
+          />
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center justify-between gap-2">
+              {person?.username ? (
+                <Link href={`/${person.username}`} className="tap-transparent truncate text-sm font-medium">
+                  {person.display_name || person.username}
+                </Link>
+              ) : (
+                <span className="truncate text-sm font-medium">{person?.display_name || fallbackLabel}</span>
+              )}
+              <span className="shrink-0 text-xs text-muted-foreground">
+                {isHydrated ? formatTimeAgo(createdAt, locale) ?? "" : ""}
+              </span>
+            </div>
+            <div className="mt-1">
+              <StarRating rating={rating} count={0} />
+            </div>
+            {comment && <p className="mt-2 line-clamp-3 text-sm text-muted-foreground">{comment}</p>}
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  )
 }
 
 export function buildProfileTabs({
@@ -136,43 +187,16 @@ export function buildProfileTabs({
             sellerReviews.length > 0 ? (
               <div className="space-y-3">
                 {sellerReviews.map((review) => (
-                  <Card key={review.id}>
-                    <CardContent className="p-3">
-                      <div className="flex items-start gap-3">
-                        <UserAvatar
-                          name={review.buyer?.display_name || review.buyer?.username || "?"}
-                          avatarUrl={review.buyer?.avatar_url ?? null}
-                          className="size-9"
-                          fallbackClassName="text-xs"
-                        />
-                        <div className="min-w-0 flex-1">
-                          <div className="flex items-center justify-between gap-2">
-                            {review.buyer?.username ? (
-                              <Link
-                                href={`/${review.buyer.username}`}
-                                className="tap-transparent truncate text-sm font-medium"
-                              >
-                                {review.buyer.display_name || review.buyer.username}
-                              </Link>
-                            ) : (
-                              <span className="truncate text-sm font-medium">
-                                {review.buyer?.display_name || tProfile("buyer")}
-                              </span>
-                            )}
-                            <span className="shrink-0 text-xs text-muted-foreground">
-                              {isHydrated ? formatTimeAgo(review.created_at, locale) ?? "" : ""}
-                            </span>
-                          </div>
-                          <div className="mt-1">
-                            <StarRating rating={review.rating} count={0} />
-                          </div>
-                          {review.comment && (
-                            <p className="mt-2 line-clamp-3 text-sm text-muted-foreground">{review.comment}</p>
-                          )}
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
+                  <ReviewCard
+                    key={review.id}
+                    person={review.buyer}
+                    fallbackLabel={tProfile("buyer")}
+                    createdAt={review.created_at}
+                    rating={review.rating}
+                    comment={review.comment}
+                    isHydrated={isHydrated}
+                    locale={locale}
+                  />
                 ))}
               </div>
             ) : (
@@ -184,43 +208,16 @@ export function buildProfileTabs({
           ) : buyerReviews.length > 0 ? (
             <div className="space-y-3">
               {buyerReviews.map((review) => (
-                <Card key={review.id}>
-                  <CardContent className="p-3">
-                    <div className="flex items-start gap-3">
-                      <UserAvatar
-                        name={review.seller?.display_name || review.seller?.username || "?"}
-                        avatarUrl={review.seller?.avatar_url ?? null}
-                        className="size-9"
-                        fallbackClassName="text-xs"
-                      />
-                      <div className="min-w-0 flex-1">
-                        <div className="flex items-center justify-between gap-2">
-                          {review.seller?.username ? (
-                            <Link
-                              href={`/${review.seller.username}`}
-                              className="tap-transparent truncate text-sm font-medium"
-                            >
-                              {review.seller.display_name || review.seller.username}
-                            </Link>
-                          ) : (
-                            <span className="truncate text-sm font-medium">
-                              {review.seller?.display_name || tProfile("seller")}
-                            </span>
-                          )}
-                          <span className="shrink-0 text-xs text-muted-foreground">
-                            {isHydrated ? formatTimeAgo(review.created_at, locale) ?? "" : ""}
-                          </span>
-                        </div>
-                        <div className="mt-1">
-                          <StarRating rating={review.rating} count={0} />
-                        </div>
-                        {review.comment && (
-                          <p className="mt-2 line-clamp-3 text-sm text-muted-foreground">{review.comment}</p>
-                        )}
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
+                <ReviewCard
+                  key={review.id}
+                  person={review.seller}
+                  fallbackLabel={tProfile("seller")}
+                  createdAt={review.created_at}
+                  rating={review.rating}
+                  comment={review.comment}
+                  isHydrated={isHydrated}
+                  locale={locale}
+                />
               ))}
             </div>
           ) : (

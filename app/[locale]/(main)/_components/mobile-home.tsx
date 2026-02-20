@@ -160,14 +160,7 @@ export function MobileHome({
     setActiveL2Slug(null)
   }, [setActiveSubcategorySlug, setActiveL2Slug])
 
-  const handleBreadcrumbTap = useCallback((level: "category" | "subcategory") => {
-    if (level === "category") {
-      setActiveSubcategorySlug(null)
-      setActiveL2Slug(null)
-    } else if (level === "subcategory") {
-      setActiveL2Slug(null)
-    }
-  }, [setActiveSubcategorySlug, setActiveL2Slug])
+
 
   const handleBrowseOptionsSelect = useCallback((slug: string | null) => {
     setActiveL2Slug(slug)
@@ -235,7 +228,6 @@ export function MobileHome({
           onPrimaryTab={handlePrimaryTab}
           onScopeSelect={handleScopeSelect}
           onSubcategoryPill={handleSubcategoryPill}
-          onBreadcrumbNavigate={handleBreadcrumbTap}
           onCategoryPickerOpen={() => setCategoryPickerOpen(true)}
           onBrowseOptionsOpen={() => setBrowseOptionsOpen(true)}
           onFilterOpen={() => setFilterOpen(true)}

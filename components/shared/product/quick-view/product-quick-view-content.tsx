@@ -152,7 +152,7 @@ export function ProductQuickViewContent({
 
   const titleText = title || tDrawers("quickView")
   const descriptionPreview = React.useMemo(() => {
-    const raw = product.description?.replace(/\s+/g, " ").trim()
+    const raw = product.description?.replaceAll(/\s+/g, " ").trim()
     if (!raw) return null
     if (raw.toLowerCase() === titleText.toLowerCase()) return null
     return raw

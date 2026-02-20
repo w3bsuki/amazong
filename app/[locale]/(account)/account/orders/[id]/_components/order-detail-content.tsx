@@ -20,7 +20,7 @@ import { ArrowLeft, MessageCircle as ChatCircle, CircleCheck as CheckCircle, Clo
 import { toast } from "sonner"
 import { formatDistanceToNow, format } from "date-fns"
 import { bg, enUS } from "date-fns/locale"
-import { getOrderStatusFromItems, type OrderItemStatus } from "@/lib/order-status"
+import { getOrderStatusFromItems } from "@/lib/order-status"
 import { OrderTimeline } from "./order-timeline"
 import { type BuyerOrderActionsServerActions } from "../../_components/buyer-order-actions"
 import { useTranslations } from "next-intl"
@@ -30,7 +30,7 @@ import { OrderListProductThumb } from "@/components/shared/order-list-item"
 import { OrderDetailSideCard } from "@/components/shared/order-detail/order-side-card"
 import { OrderDetailFeedback } from "./order-detail-feedback"
 import { OrderDetailItemsCard } from "./order-detail-items-card"
-import type { OrderDetailItem } from "./order-detail-types"
+import type { OrderDetailItem, OrderDetailOrder } from "./order-detail-types"
 
 export type OrderDetailContentServerActions = BuyerOrderActionsServerActions & {
   requestReturn: (
@@ -39,31 +39,9 @@ export type OrderDetailContentServerActions = BuyerOrderActionsServerActions & {
   ) => Promise<{ success: boolean; error?: string }>
 }
 
-interface Order {
-  id: string
-  user_id: string
-  total_amount: number
-  status: string | null
-  shipping_address: {
-    name?: string
-    email?: string
-    address?: {
-      line1?: string
-      line2?: string
-      city?: string
-      state?: string
-      postal_code?: string
-      country?: string
-    }
-  } | null
-  created_at: string
-  stripe_payment_intent_id: string | null
-  order_items: OrderDetailItem[]
-}
-
 interface OrderDetailContentProps {
   locale: string
-  order: Order
+  order: OrderDetailOrder
   existingSellerFeedbackSellerIds?: string[]
   conversationId?: string | null
   actions: OrderDetailContentServerActions

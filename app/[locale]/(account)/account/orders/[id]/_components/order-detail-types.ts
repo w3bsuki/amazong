@@ -31,3 +31,24 @@ export interface OrderDetailItem {
   } | null
 }
 
+export interface OrderDetailOrder {
+  id: string
+  user_id: string
+  total_amount: number
+  status: string | null
+  shipping_address: {
+    name?: string
+    email?: string
+    address?: {
+      line1?: string
+      line2?: string
+      city?: string
+      state?: string
+      postal_code?: string
+      country?: string
+    }
+  } | null
+  created_at: string
+  stripe_payment_intent_id: string | null
+  order_items: OrderDetailItem[]
+}
