@@ -27,10 +27,10 @@ export function MobileHomepageHeader({
 
   return (
     <div className="bg-background pt-safe md:hidden">
-      <div className="flex h-(--control-primary) items-center gap-0.5 px-0.5">
-        <SidebarMenu user={user} {...(userStats && { userStats })} />
+      <div className="flex h-(--control-primary) items-center gap-0.5 px-0">
+        <SidebarMenu user={user} {...(userStats && { userStats })} triggerClassName="-mr-2" />
         <Link href="/" className="shrink-0 rounded-sm tap-transparent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring">
-          <span className="text-xl font-extrabold tracking-tight text-foreground">treido.</span>
+          <span className="text-xl font-extrabold tracking-tight text-foreground">treido<span className="text-primary">.</span></span>
         </Link>
         <button
           type="button"
@@ -45,15 +45,15 @@ export function MobileHomepageHeader({
           <span
             className={cn(
               "flex h-(--control-compact) w-full items-center gap-1.5 rounded-full px-3",
-              "bg-surface-subtle text-left text-muted-foreground motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth) motion-reduce:transition-none",
-              "group-hover:bg-hover group-active:bg-active"
+              "bg-surface-subtle border border-border-subtle text-left text-muted-foreground motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth) motion-reduce:transition-none",
+              "group-hover:bg-hover group-hover:border-border group-active:bg-active"
             )}
           >
             <MagnifyingGlass size={16} className="shrink-0 text-muted-foreground" />
             <span className="flex-1 truncate text-xs font-medium text-muted-foreground">{searchPlaceholder}</span>
           </span>
         </button>
-        <div className="flex shrink-0 items-center -space-x-1">
+        <div className="flex shrink-0 items-center -space-x-2">
           <MobileWishlistButton />
           <MobileCartDropdown />
         </div>
