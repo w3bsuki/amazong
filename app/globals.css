@@ -99,8 +99,9 @@ select:-webkit-autofill {
   --selected-foreground: 0.18 0.02 255;
   --selected-border: 0.62 0.20 255;
   --hover-border: 0.92 0.01 255;
-  --nav-active: var(--foreground);
+  --nav-active: var(--primary);
   --nav-inactive: 0.38 0.02 255;
+  --nav-indicator: 0.94 0.015 255;
 
   /* Notification badge (red dot on avatar/icon) */
   --notification: 0.62 0.22 30;
@@ -301,8 +302,9 @@ select:-webkit-autofill {
   --selected-foreground: 0.98 0 0;
   --selected-border: 0.72 0.18 255;
   --hover-border: 0.26 0.02 255;
-  --nav-active: var(--foreground);
+  --nav-active: var(--primary);
   --nav-inactive: 0.82 0.01 255;
+  --nav-indicator: 0.22 0.02 255;
 
   /* Notification badge */
   --notification: 0.68 0.22 30;
@@ -487,6 +489,7 @@ select:-webkit-autofill {
   --color-active: oklch(var(--active));
   --color-nav-active: oklch(var(--nav-active));
   --color-nav-inactive: oklch(var(--nav-inactive));
+  --color-nav-indicator: oklch(var(--nav-indicator));
   --color-notification: oklch(var(--notification));
   --color-focus-ring: oklch(var(--focus-ring));
   --color-checked: oklch(var(--checked));
@@ -615,8 +618,8 @@ select:-webkit-autofill {
 
   /* === LAYOUT HEIGHTS === */
   --spacing-header: 3rem;
-  --spacing-bottom-nav: 3.25rem;
-  /* 60px - mobile bottom navigation dock (icon + label) */
+  --spacing-bottom-nav: 3rem;
+  /* 48px - mobile bottom navigation dock (icon + label) */
   --spacing-button: 2.75rem;
   --spacing-button-sm: 2.25rem;
   --spacing-button-lg: 3rem;

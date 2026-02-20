@@ -1,61 +1,7 @@
 "use client"
 
 import { type ReactNode, useEffect, useState } from "react"
-import { Plus } from "lucide-react";
-
-interface TabIconProps { active: boolean; className?: string }
-
-function HomeIcon({ active, className }: TabIconProps) {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      className={className}
-      aria-hidden="true"
-      fill={active ? "currentColor" : "none"}
-      stroke={active ? "none" : "currentColor"}
-      strokeWidth={active ? 0 : 1.75}
-      strokeLinejoin="round"
-      strokeLinecap="round"
-    >
-      <path d="M3 10.5L12 3l9 7.5V20a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V10.5z" />
-    </svg>
-  )
-}
-
-function GridIcon({ active, className }: TabIconProps) {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      className={className}
-      aria-hidden="true"
-      fill={active ? "currentColor" : "none"}
-      stroke={active ? "none" : "currentColor"}
-      strokeWidth={active ? 0 : 1.75}
-    >
-      <rect x="3" y="3" width="8" height="8" rx="2" />
-      <rect x="13" y="3" width="8" height="8" rx="2" />
-      <rect x="3" y="13" width="8" height="8" rx="2" />
-      <rect x="13" y="13" width="8" height="8" rx="2" />
-    </svg>
-  )
-}
-
-function ChatIcon({ active, className }: TabIconProps) {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      className={className}
-      aria-hidden="true"
-      fill={active ? "currentColor" : "none"}
-      stroke={active ? "none" : "currentColor"}
-      strokeWidth={active ? 0 : 1.75}
-      strokeLinejoin="round"
-      strokeLinecap="round"
-    >
-      <path d="M5 2h14a3 3 0 0 1 3 3v10a3 3 0 0 1-3 3H9.5L6 21.5V18H5a3 3 0 0 1-3-3V5a3 3 0 0 1 3-3z" />
-    </svg>
-  )
-}
+import { House, LayoutGrid, MessageCircle, Plus } from "lucide-react"
 
 import { Link, usePathname, useRouter } from "@/i18n/routing"
 import { cn } from "@/lib/utils"
@@ -161,8 +107,7 @@ export function MobileTabBar() {
 
   const routeState = getMobileTabBarRouteState(pathname)
 
-  const iconClass =
-    "size-(--size-icon-tab-bar) motion-safe:transition-colors motion-safe:duration-fast"
+  const iconClass = "size-(--size-icon-tab-bar)"
 
   const isHomeActive = isMobileTabPathActive(routeState.normalizedPathname, "/")
   const isCategoriesActive =
@@ -263,7 +208,12 @@ export function MobileTabBar() {
       label: t("home"),
       ariaCurrent: isHomeActive ? "page" : undefined,
       icon: (
-        <HomeIcon active={isHomeActive} className={iconClass} />
+        <House
+          aria-hidden="true"
+          className={iconClass}
+          fill={isHomeActive ? "currentColor" : "none"}
+          strokeWidth={isHomeActive ? 0 : 1.5}
+        />
       ),
     },
     {
@@ -286,7 +236,12 @@ export function MobileTabBar() {
         }
         : {}),
       icon: (
-        <GridIcon active={isCategoriesActive} className={iconClass} />
+        <LayoutGrid
+          aria-hidden="true"
+          className={iconClass}
+          fill={isCategoriesActive ? "currentColor" : "none"}
+          strokeWidth={isCategoriesActive ? 0 : 1.5}
+        />
       ),
     },
     {
@@ -303,7 +258,7 @@ export function MobileTabBar() {
           state={isSellActive ? "active" : "inactive"}
           data-testid="mobile-tab-sell-core"
         >
-          <Plus strokeWidth={2.75} className="size-(--size-icon-lg)" />
+          <Plus strokeWidth={2.5} className="size-(--size-icon-lg)" />
         </MobileBottomNavCoreAction>
       ),
     },
@@ -319,7 +274,12 @@ export function MobileTabBar() {
       ariaExpanded: activeDrawer === "messages",
       icon: (
         <span className="relative">
-          <ChatIcon active={isChatActive} className={iconClass} />
+          <MessageCircle
+            aria-hidden="true"
+            className={iconClass}
+            fill={isChatActive ? "currentColor" : "none"}
+            strokeWidth={isChatActive ? 0 : 1.5}
+          />
           {unreadCount > 0 && (
             <CountBadge
               count={unreadCount}
@@ -353,7 +313,7 @@ export function MobileTabBar() {
             avatarUrl={profileAvatarValue}
             size="sm"
             className={cn(
-              "size-7 rounded-full ring-1.5 motion-safe:transition-colors motion-safe:duration-fast",
+              "size-7 rounded-full ring-1.5",
               isProfileActive ? "ring-primary" : "ring-border-subtle"
             )}
             fallbackClassName="bg-muted text-2xs font-semibold text-muted-foreground"

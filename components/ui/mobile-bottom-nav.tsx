@@ -9,7 +9,7 @@ const mobileBottomNavRootVariants = cva(
 )
 
 const mobileBottomNavDockVariants = cva(
-  "pointer-events-auto w-full rounded-t-2xl border-t border-border-subtle bg-background px-2 pt-0.5 pb-safe"
+  "pointer-events-auto w-full rounded-t-2xl border-t border-border-subtle bg-background px-2 pt-1 pb-safe"
 )
 
 const mobileBottomNavListVariants = cva(
@@ -17,7 +17,7 @@ const mobileBottomNavListVariants = cva(
 )
 
 const mobileBottomNavItemVariants = cva(
-  "group relative flex h-full w-full flex-col items-center justify-center gap-0.5 rounded-full tap-transparent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+  "group relative flex h-full w-full flex-col items-center justify-center gap-px tap-transparent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
   {
     variants: {
       state: {
@@ -37,12 +37,12 @@ const mobileBottomNavItemVariants = cva(
 )
 
 const mobileBottomNavCoreActionVariants = cva(
-  "inline-flex size-(--control-compact) items-center justify-center rounded-full shadow-md",
+  "inline-flex size-(--control-compact) items-center justify-center rounded-full",
   {
     variants: {
       state: {
-        active: "bg-primary text-primary-foreground shadow-primary",
-        inactive: "bg-primary text-primary-foreground shadow-primary",
+        active: "bg-primary text-primary-foreground shadow-sm",
+        inactive: "bg-foreground text-background ring-2 ring-primary",
       },
     },
     defaultVariants: {
@@ -52,12 +52,12 @@ const mobileBottomNavCoreActionVariants = cva(
 )
 
 const mobileBottomNavLabelVariants = cva(
-  "text-2xs font-medium leading-none truncate motion-safe:transition-colors motion-safe:duration-fast",
+  "text-2xs truncate",
   {
     variants: {
       state: {
-        active: "text-nav-active",
-        inactive: "text-nav-inactive",
+        active: "font-semibold text-nav-active",
+        inactive: "font-medium text-nav-inactive",
       },
     },
     defaultVariants: {
