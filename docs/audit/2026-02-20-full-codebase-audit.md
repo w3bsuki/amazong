@@ -4,16 +4,25 @@ Date: 2026-02-20
 
 This is an **audit + prioritization report**. It does **not** change behavior. High‑risk areas (auth/payments/webhooks/DB) are documented but not refactored without explicit approval (per `AGENTS.md`).
 
+If you only read one thing for “manual audit”, start here:
+
+- `docs/audit/2026-02-20-manual-audit-findings.md`
+
 ---
 
 ## How this audit was done
 
-Commands run:
+Automated scans were used only as **lead generation**, then validated by tracing callsites and reading the code.
+
+Scans used:
 
 - `pnpm -s architecture:scan`
-- `pnpm -s knip`
 - `pnpm -s dupes` (captured to `.tmp/dupes-2026-02-20.txt`)
-- Local inventory scripts for LOC breakdown + “tiny module imported once” candidates
+- Local inventory scripts for “tiny module imported once” candidates
+
+Manual review notes:
+
+- `docs/audit/2026-02-20-manual-audit-findings.md`
 
 ---
 
@@ -43,9 +52,9 @@ What *is* realistic without drama: **reduce indirection**, **tighten boundaries*
 
 ## High‑ROI improvements (realistically achievable)
 
-### 1) Kill dead/unused code (safe, immediate)
+### 1) Remove dead/unused code (safe, immediate)
 
-From `pnpm -s knip` (2026-02-20):
+Verified by grep (not just scan output):
 
 - Unused file:
   - `app/[locale]/(main)/search/_components/mobile-browse-mode-switch.tsx`
@@ -201,4 +210,3 @@ LOC by major area (ts/tsx/mjs/css):
 - `(auth)`: 1,650
 - `(onboarding)`: 1,228
 - `(plans)`: 1,230
-

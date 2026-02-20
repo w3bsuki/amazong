@@ -26,12 +26,11 @@ pnpm -s typecheck && pnpm -s lint && pnpm -s styles:gate && pnpm -s test:unit
 - Run the verification gate above.
 - Capture current scans:
   - `pnpm -s architecture:scan`
-  - `pnpm -s knip`
   - `pnpm -s dupes`
 
 ---
 
-## Phase 1 — Dead code + unused exports (knip)
+## Phase 1 — Dead code + unused exports (grep-verified)
 
 After `rg` confirms zero usage:
 
@@ -136,4 +135,3 @@ Run the verification gate.
 - Auth/session internals (`lib/auth/**`, `components/providers/auth-state-manager.tsx`)
 - Stripe/webhooks/payment actions (`app/actions/payments.ts`, `app/actions/boosts.ts`, `app/api/**/webhook/**`)
 - DB schema/migrations/RLS (`supabase/migrations/**`)
-

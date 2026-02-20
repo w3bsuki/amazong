@@ -79,17 +79,15 @@ export async function generateMetadata({
   return generateMetadataSingle({ params: Promise.resolve({ locale, slug: subslug }) })
 }
 
-export default function CategoryNestedPage({
+export default async function CategoryNestedPage({
   params,
   searchParams,
 }: {
   params: Promise<{ slug: string; subslug: string; locale: string }>
   searchParams: Promise<Record<string, string | string[] | undefined>>
 }) {
-  const mappedParams = (async () => {
-    const { locale, subslug } = await params
-    return { locale, slug: subslug }
-  })()
+  const { locale, subslug } = await params
+  const mappedParams = Promise.resolve({ locale, slug: subslug })
 
-  return CategoryPage({ params: mappedParams, searchParams })
+  return <CategoryPage params={mappedParams} searchParams={searchParams} />
 }
