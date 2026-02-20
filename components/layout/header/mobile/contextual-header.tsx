@@ -37,7 +37,7 @@ export function MobileContextualHeader({
 
   return (
     <div className="bg-background pt-safe md:hidden">
-      <div className="flex h-(--control-primary) items-center justify-between border-b border-border-subtle px-2.5">
+      <div className="flex h-(--control-primary) items-center justify-between border-b border-border-subtle px-2">
         <div className="flex items-center">
           {onBack ? (
             <button

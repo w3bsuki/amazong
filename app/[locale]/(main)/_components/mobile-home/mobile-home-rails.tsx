@@ -10,6 +10,15 @@ import {
   getMobileQuickPillClass as getPillClass,
   getMobilePrimaryTabClass as getPrimaryTabClass,
 } from "@/components/mobile/chrome/mobile-control-recipes"
+import {
+  Breadcrumb,
+  BreadcrumbList,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb"
+import { Button } from "@/components/ui/button"
 
 type Translate = (key: string, values?: Record<string, string | number | Date>) => string
 
@@ -22,7 +31,11 @@ interface MobileHomeRailsProps {
   visibleCategoryTabs: CategoryTreeNode[]
   overflowCategories: CategoryTreeNode[]
   activeSubcategories: CategoryTreeNode[]
-  contextTitle: string
+  activeCategoryLabel: string | null
+  activeSubcategoryLabel: string | null
+  activeL2Label: string | null
+  scopeTitle: string
+  listingCount: number
   fullBrowseHref: string
   showBrowseOptionsTrigger: boolean
   hasActiveFilters: boolean
@@ -30,6 +43,7 @@ interface MobileHomeRailsProps {
   onPrimaryTab: (slug: string | null) => void
   onScopeSelect: (scope: HomeDiscoveryScope) => void
   onSubcategoryPill: (slug: string | null) => void
+  onBreadcrumbNavigate: (level: "category" | "subcategory") => void
   onCategoryPickerOpen: () => void
   onBrowseOptionsOpen: () => void
   onFilterOpen: () => void
@@ -53,7 +67,11 @@ export function MobileHomeRails({
   visibleCategoryTabs,
   overflowCategories,
   activeSubcategories,
-  contextTitle,
+  activeCategoryLabel,
+  activeSubcategoryLabel,
+  activeL2Label,
+  scopeTitle,
+  listingCount,
   fullBrowseHref,
   showBrowseOptionsTrigger,
   hasActiveFilters,
@@ -61,6 +79,7 @@ export function MobileHomeRails({
   onPrimaryTab,
   onScopeSelect,
   onSubcategoryPill,
+  onBreadcrumbNavigate,
   onCategoryPickerOpen,
   onBrowseOptionsOpen,
   onFilterOpen,
@@ -77,10 +96,11 @@ export function MobileHomeRails({
           className="overflow-x-auto no-scrollbar"
           aria-label={tV4("aria.primaryCategories")}
         >
-          <div className="flex w-max min-w-full items-stretch">
+          <div role="tablist" className="flex w-max min-w-full items-stretch">
             <button
               type="button"
-              aria-pressed={activeCategorySlug === null}
+              role="tab"
+              aria-selected={activeCategorySlug === null}
               onClick={() => onPrimaryTab(null)}
               className={getPrimaryTabClass(activeCategorySlug === null)}
             >
@@ -105,7 +125,8 @@ export function MobileHomeRails({
                 <button
                   key={category.slug}
                   type="button"
-                  aria-pressed={active}
+                  role="tab"
+                  aria-selected={active}
                   onClick={() => onPrimaryTab(category.slug)}
                   className={getPrimaryTabClass(active)}
                 >
@@ -225,18 +246,101 @@ export function MobileHomeRails({
 
       <section
         data-testid="home-v4-context-banner"
-        className="flex min-h-9 items-center justify-between gap-2 bg-background px-inset pt-3 pb-1"
+        className="flex items-center justify-between gap-3 bg-background px-inset py-1.5"
       >
-        <h2 data-testid="home-v4-context-title" className="min-w-0 truncate text-sm font-semibold text-foreground">
-          {contextTitle}
-        </h2>
-        <Link
-          href={fullBrowseHref}
-          className="inline-flex shrink-0 items-center gap-0.5 text-xs font-medium text-muted-foreground tap-transparent transition-colors duration-fast ease-smooth hover:text-foreground active:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:rounded-sm"
+        <div className="flex min-w-0 flex-1 items-center gap-1.5">
+          {activeCategoryLabel ? (
+            <Breadcrumb className="min-w-0">
+              <BreadcrumbList className="flex-nowrap gap-1 text-sm">
+                <BreadcrumbItem>
+                  {activeSubcategoryLabel ? (
+                    <BreadcrumbLink asChild>
+                      <button
+                        type="button"
+                        className="tap-transparent font-medium"
+                        onClick={() => onBreadcrumbNavigate("category")}
+                      >
+                        {activeCategoryLabel}
+                      </button>
+                    </BreadcrumbLink>
+                  ) : (
+                    <BreadcrumbPage
+                      data-testid="home-v4-context-title"
+                      className="font-semibold"
+                    >
+                      {activeCategoryLabel}
+                    </BreadcrumbPage>
+                  )}
+                </BreadcrumbItem>
+
+                {activeSubcategoryLabel && (
+                  <>
+                    <BreadcrumbSeparator className="[&>svg]:size-3" />
+                    <BreadcrumbItem>
+                      {activeL2Label ? (
+                        <BreadcrumbLink asChild>
+                          <button
+                            type="button"
+                            className="tap-transparent font-medium"
+                            onClick={() => onBreadcrumbNavigate("subcategory")}
+                          >
+                            {activeSubcategoryLabel}
+                          </button>
+                        </BreadcrumbLink>
+                      ) : (
+                        <BreadcrumbPage
+                          data-testid="home-v4-context-title"
+                          className="font-semibold"
+                        >
+                          {activeSubcategoryLabel}
+                        </BreadcrumbPage>
+                      )}
+                    </BreadcrumbItem>
+                  </>
+                )}
+
+                {activeL2Label && (
+                  <>
+                    <BreadcrumbSeparator className="[&>svg]:size-3" />
+                    <BreadcrumbItem>
+                      <BreadcrumbPage
+                        data-testid="home-v4-context-title"
+                        className="font-semibold"
+                      >
+                        {activeL2Label}
+                      </BreadcrumbPage>
+                    </BreadcrumbItem>
+                  </>
+                )}
+              </BreadcrumbList>
+            </Breadcrumb>
+          ) : (
+            <h2
+              data-testid="home-v4-context-title"
+              className="min-w-0 truncate text-sm font-semibold text-foreground"
+            >
+              {scopeTitle}
+            </h2>
+          )}
+
+          {listingCount > 0 && (
+            <span className="shrink-0 text-xs text-muted-foreground" aria-hidden="true">
+              · {tV4("banner.listingsCount", { count: listingCount })}
+            </span>
+          )}
+        </div>
+
+        <Button
+          variant="ghost"
+          size="xs"
+          className="shrink-0 gap-0.5 text-xs font-medium text-muted-foreground hover:text-foreground"
+          asChild
         >
-          <span>{tV4("actions.seeAll")}</span>
-          <CaretRight size={12} className="shrink-0" aria-hidden="true" />
-        </Link>
+          <Link href={fullBrowseHref}>
+            {tV4("actions.seeAll")}
+            <CaretRight size={14} className="shrink-0" aria-hidden="true" />
+          </Link>
+        </Button>
       </section>
     </>
   )
