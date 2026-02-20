@@ -16,10 +16,11 @@ import {
 } from "lucide-react"
 import type { LucideIcon } from "lucide-react"
 
-import { DrawerBody } from "@/components/ui/drawer"
+import { DrawerBody, DrawerFooter } from "@/components/ui/drawer"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Skeleton } from "@/components/ui/skeleton"
+import { Separator } from "@/components/ui/separator"
 import { Link } from "@/i18n/routing"
 import { useTranslations, useLocale } from "next-intl"
 import { useAuth } from "@/components/providers/auth-state-manager"
@@ -68,104 +69,161 @@ interface MenuItem {
 }
 
 // =============================================================================
+// Shared styles
+// =============================================================================
+
+/** Grouped card container — iOS Settings pattern */
+const MENU_GROUP_CLASS =
+  "overflow-hidden rounded-2xl border border-border-subtle bg-background"
+
+/** Single menu row inside a grouped card */
+const MENU_ROW_CLASS = cn(
+  "flex min-h-(--spacing-touch-md) w-full items-center gap-3 px-3.5 text-left",
+  "tap-transparent motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth)",
+  "hover:bg-hover active:bg-active",
+  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-inset",
+)
+
+// =============================================================================
 // Subcomponents
 // =============================================================================
 
-/** Icon circle — clean monochromatic brand style (accent bg + primary icon) */
-function MenuIconCircle({ icon: Icon }: { icon: LucideIcon }) {
+/** Icon circle — clean monochromatic brand style */
+function MenuIconCircle({ icon: Icon, size = 20 }: { icon: LucideIcon; size?: number }) {
   return (
     <span
-      className="inline-flex size-10 shrink-0 items-center justify-center rounded-xl bg-accent text-primary"
+      className="inline-flex size-9 shrink-0 items-center justify-center rounded-lg bg-accent text-primary"
       aria-hidden="true"
     >
-      <Icon size={20} />
+      <Icon size={size} />
     </span>
   )
 }
 
-/** Single menu row — horizontal card with icon circle, label, badge, chevron */
+/** Single menu row inside a grouped card */
 function MenuRow({
   item,
   onClick,
+  showSeparator,
 }: {
   item: MenuItem
-  onClick?: () => void
+  onClick?: (() => void) | undefined
+  showSeparator?: boolean | undefined
 }) {
   return (
-    <Link
-      href={item.href}
-      onClick={onClick}
-      data-testid="account-drawer-quick-link"
-      className={cn(
-        "flex min-h-(--spacing-touch-md) w-full items-center gap-3 rounded-xl border border-border-subtle bg-background px-3 text-left",
-        "tap-transparent motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth)",
-        "hover:border-border hover:bg-hover active:bg-active",
-        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring",
-      )}
-    >
-      <MenuIconCircle icon={item.icon} />
-      <span className="min-w-0 flex-1 truncate text-sm font-medium text-foreground">
-        {item.label}
-      </span>
-      <div className="flex shrink-0 items-center gap-2">
-        {item.badge ? (
-          <span
-            className={cn(
-              "rounded-full px-2 py-0.5 text-2xs font-medium",
-              item.badgeTone === "destructive" && "bg-destructive-subtle text-destructive",
-              item.badgeTone === "warning" && "bg-primary-subtle text-primary",
-              item.badgeTone === "muted" && "bg-surface-subtle text-muted-foreground",
-            )}
-          >
-            {item.badge}
-          </span>
-        ) : null}
-        <CaretRight size={16} className="text-muted-foreground" aria-hidden="true" />
-      </div>
-    </Link>
+    <>
+      <Link
+        href={item.href}
+        onClick={onClick}
+        data-testid="account-drawer-quick-link"
+        className={MENU_ROW_CLASS}
+      >
+        <MenuIconCircle icon={item.icon} />
+        <span className="min-w-0 flex-1 truncate text-sm font-medium text-foreground">
+          {item.label}
+        </span>
+        <div className="flex shrink-0 items-center gap-2">
+          {item.badge ? (
+            <Badge
+              variant={
+                item.badgeTone === "destructive"
+                  ? "critical-subtle"
+                  : item.badgeTone === "warning"
+                    ? "warning-subtle"
+                    : "neutral-subtle"
+              }
+              size="compact"
+            >
+              {item.badge}
+            </Badge>
+          ) : null}
+          <CaretRight size={16} className="text-muted-foreground" aria-hidden="true" />
+        </div>
+      </Link>
+      {showSeparator && <Separator className="ml-16" />}
+    </>
   )
 }
 
-/** Section header for menu groups */
-function SectionHeader({ children }: { children: React.ReactNode }) {
+/** Section label above menu groups */
+function SectionLabel({ children }: { children: React.ReactNode }) {
   return (
-    <h3 className="px-1 pb-1.5 pt-3 text-2xs font-semibold uppercase tracking-wider text-muted-foreground first:pt-0">
+    <h3 className="px-1 pb-1.5 text-2xs font-semibold uppercase tracking-wider text-muted-foreground">
       {children}
     </h3>
   )
 }
 
-/** Skeleton for loading state — matches actual layout shape */
+/** Grouped menu section  — label + card with rows separated by inset dividers */
+function MenuSection({
+  label,
+  items,
+  onItemClick,
+}: {
+  label: string
+  items: MenuItem[]
+  onItemClick?: () => void
+}) {
+  return (
+    <div>
+      <SectionLabel>{label}</SectionLabel>
+      <div className={MENU_GROUP_CLASS}>
+        {items.map((item, i) => (
+          <MenuRow
+            key={item.href}
+            item={item}
+            onClick={onItemClick}
+            showSeparator={i < items.length - 1}
+          />
+        ))}
+      </div>
+    </div>
+  )
+}
+
+/** Skeleton for loading state — matches grouped-card layout shape */
 function AccountDrawerSkeleton() {
   return (
-    <DrawerBody className="px-inset py-3 pb-4">
+    <DrawerBody className="px-inset py-4 pb-6">
       {/* Profile skeleton */}
-      <div className="rounded-2xl border border-border-subtle bg-background p-3.5">
-        <div className="flex items-center gap-3">
+      <div className={MENU_GROUP_CLASS}>
+        <div className="flex items-center gap-3.5 p-4">
           <Skeleton className="size-14 shrink-0 rounded-full" />
           <div className="min-w-0 flex-1 space-y-2">
-            <Skeleton className="h-4 w-32" />
-            <Skeleton className="h-3 w-24" />
-            <Skeleton className="h-3 w-40" />
+            <Skeleton className="h-4 w-28" />
+            <Skeleton className="h-3 w-20" />
+            <Skeleton className="h-3 w-36" />
           </div>
         </div>
       </div>
       {/* Stats skeleton */}
-      <div className="mt-3 grid grid-cols-3 gap-2">
+      <div className={cn(MENU_GROUP_CLASS, "mt-3")}>
+        <div className="grid grid-cols-3">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <div key={i} className={cn("flex flex-col items-center gap-1.5 py-3", i > 0 && "border-l border-border-subtle")}>
+              <Skeleton className="h-5 w-8" />
+              <Skeleton className="h-3 w-10" />
+            </div>
+          ))}
+        </div>
+      </div>
+      {/* Menu group skeleton */}
+      <div className={cn(MENU_GROUP_CLASS, "mt-4")}>
         {Array.from({ length: 3 }).map((_, i) => (
-          <div key={i} className="flex flex-col items-center gap-1.5 rounded-xl border border-border-subtle bg-background p-3">
-            <Skeleton className="h-5 w-8" />
-            <Skeleton className="h-3 w-12" />
+          <div key={i} className={cn("flex items-center gap-3 px-3.5 py-3", i > 0 && "border-t border-border-subtle")}>
+            <Skeleton className="size-9 shrink-0 rounded-lg" />
+            <Skeleton className="h-3.5 w-24" />
           </div>
         ))}
       </div>
-      {/* Menu skeletons */}
-      {Array.from({ length: 4 }).map((_, i) => (
-        <div key={i} className="mt-2 flex items-center gap-3 rounded-xl border border-border-subtle bg-background p-3">
-          <Skeleton className="size-10 shrink-0 rounded-xl" />
-          <Skeleton className="h-3.5 w-24 flex-1" />
-        </div>
-      ))}
+      <div className={cn(MENU_GROUP_CLASS, "mt-3")}>
+        {Array.from({ length: 2 }).map((_, i) => (
+          <div key={i} className={cn("flex items-center gap-3 px-3.5 py-3", i > 0 && "border-t border-border-subtle")}>
+            <Skeleton className="size-9 shrink-0 rounded-lg" />
+            <Skeleton className="h-3.5 w-20" />
+          </div>
+        ))}
+      </div>
     </DrawerBody>
   )
 }
@@ -177,8 +235,8 @@ function AccountDrawerSkeleton() {
 /**
  * AccountDrawer — Quick access to account actions.
  *
- * Sections: Profile header, seller stats (if applicable), Account links,
- * Selling links, Settings, Sign out.
+ * Grouped card layout (iOS Settings pattern): profile header, seller stats,
+ * Account / Selling / Settings sections, sticky footer with CTA + sign-out.
  * Opened from mobile bottom nav profile tab or header avatar.
  */
 export function AccountDrawer({ open, onOpenChange }: AccountDrawerProps) {
@@ -342,130 +400,122 @@ export function AccountDrawer({ open, onOpenChange }: AccountDrawerProps) {
     >
       {!user || authLoading ? (
         /* ── Guest state ── */
-        <DrawerBody className="px-inset py-3 pb-4">
-          <div className="rounded-2xl border border-border-subtle bg-background px-4 py-5">
-            <div className="flex flex-col items-center justify-center text-center">
-              <div className="mb-2 flex size-(--control-default) items-center justify-center rounded-xl bg-accent text-primary">
-                <User size={22} />
+        <>
+          <DrawerBody className="px-inset py-4">
+            <div className={MENU_GROUP_CLASS}>
+              <div className="flex flex-col items-center px-5 py-6 text-center">
+                <div className="mb-3 inline-flex size-14 items-center justify-center rounded-2xl bg-accent text-primary">
+                  <User size={28} />
+                </div>
+                <p className="text-sm font-semibold text-foreground">{t("signInPrompt")}</p>
+                <p className="mt-1 text-xs text-muted-foreground">{t("signInDescription")}</p>
               </div>
-              <p className="text-sm font-semibold text-foreground">{t("signInPrompt")}</p>
-              <p className="mt-0.5 text-xs text-muted-foreground">{t("signInDescription")}</p>
             </div>
-            <div className="mt-4 flex w-full flex-col gap-2">
-              <Button
-                size="primary"
-                className="w-full"
-                onClick={() => {
-                  handleClose()
-                  openDrawer("auth", { mode: "login", entrypoint: "account_drawer" })
-                }}
-              >
-                {t("signIn")}
-              </Button>
-              <Button
-                variant="outline"
-                size="default"
-                className="w-full"
-                onClick={() => {
-                  handleClose()
-                  openDrawer("auth", { mode: "signup", entrypoint: "account_drawer" })
-                }}
-              >
-                {tAuth("createAccount")}
-              </Button>
-            </div>
-          </div>
-        </DrawerBody>
+          </DrawerBody>
+          <DrawerFooter>
+            <Button
+              size="lg"
+              className="w-full"
+              onClick={() => {
+                handleClose()
+                openDrawer("auth", { mode: "login", entrypoint: "account_drawer" })
+              }}
+            >
+              {t("signIn")}
+            </Button>
+            <Button
+              variant="outline"
+              size="default"
+              className="w-full"
+              onClick={() => {
+                handleClose()
+                openDrawer("auth", { mode: "signup", entrypoint: "account_drawer" })
+              }}
+            >
+              {tAuth("createAccount")}
+            </Button>
+          </DrawerFooter>
+        </>
       ) : isLoadingData ? (
         /* ── Loading skeleton ── */
         <AccountDrawerSkeleton />
       ) : (
         /* ── Authenticated state ── */
-        <DrawerBody className="px-inset py-3 pb-4">
-          {/* ── Profile header ── */}
-          <div className="rounded-2xl border border-border-subtle bg-background p-3.5">
-            <div className="flex items-center gap-3">
-              <UserAvatar
-                name={displayName}
-                avatarUrl={avatarUrl ?? null}
-                size="xl"
-                className="border border-border-subtle bg-surface-subtle"
-                fallbackClassName="text-lg"
-              />
-              <div className="min-w-0 flex-1">
-                <div className="flex items-center gap-1.5">
-                  <p className="truncate text-base font-semibold text-foreground">{displayName}</p>
-                  {isEmailVerified && (
-                    <Badge variant="success-subtle" size="compact" className="shrink-0">
-                      <ShieldCheck size={10} />
-                      {t("verified")}
-                    </Badge>
+        <>
+          <DrawerBody className="space-y-3 px-inset py-4">
+            {/* ── Profile header ── */}
+            <div className={MENU_GROUP_CLASS}>
+              <div className="flex items-center gap-3.5 p-4">
+                <UserAvatar
+                  name={displayName}
+                  avatarUrl={avatarUrl ?? null}
+                  size="xl"
+                  className="shrink-0 ring-2 ring-border-subtle"
+                  fallbackClassName="text-lg"
+                />
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-1.5">
+                    <p className="truncate text-base font-semibold text-foreground">{displayName}</p>
+                    {isEmailVerified && (
+                      <Badge variant="success-subtle" size="compact" className="shrink-0">
+                        <ShieldCheck size={10} />
+                        {t("verified")}
+                      </Badge>
+                    )}
+                  </div>
+                  {memberSinceLabel && (
+                    <p className="mt-0.5 text-2xs text-muted-foreground">{memberSinceLabel}</p>
+                  )}
+                  {user.email && (
+                    <p className="mt-0.5 truncate text-xs text-muted-foreground">{user.email}</p>
                   )}
                 </div>
-                {memberSinceLabel && (
-                  <p className="mt-0.5 text-2xs text-muted-foreground">{memberSinceLabel}</p>
-                )}
-                {user.email && (
-                  <p className="mt-0.5 truncate text-xs text-muted-foreground">{user.email}</p>
-                )}
               </div>
+
+              {/* ── Seller stats — inline inside profile card ── */}
+              {isSeller && (
+                <>
+                  <Separator />
+                  <div className="grid grid-cols-3">
+                    <div className="flex flex-col items-center gap-0.5 py-2.5">
+                      <span className="text-sm font-semibold text-foreground">{stats.activeListings}</span>
+                      <span className="text-2xs text-muted-foreground">{t("statsListings")}</span>
+                    </div>
+                    <div className="flex flex-col items-center gap-0.5 border-x border-border-subtle py-2.5">
+                      <span className="inline-flex items-center gap-0.5 text-sm font-semibold text-foreground">
+                        {rating > 0 ? (
+                          <>
+                            <Star size={12} className="text-rating" />
+                            {rating.toFixed(1)}
+                          </>
+                        ) : (
+                          "—"
+                        )}
+                      </span>
+                      <span className="text-2xs text-muted-foreground">{t("statsRating")}</span>
+                    </div>
+                    <div className="flex flex-col items-center gap-0.5 py-2.5">
+                      <span className="text-sm font-semibold text-foreground">{totalSales}</span>
+                      <span className="text-2xs text-muted-foreground">{t("statsSales")}</span>
+                    </div>
+                  </div>
+                </>
+              )}
             </div>
-          </div>
 
-          {/* ── Seller stats row ── */}
-          {isSeller && (
-            <div className="mt-3 grid grid-cols-3 gap-2">
-              <div className="flex flex-col items-center gap-0.5 rounded-xl border border-border-subtle bg-background py-2.5">
-                <span className="text-base font-semibold text-foreground">{stats.activeListings}</span>
-                <span className="text-2xs text-muted-foreground">{t("statsListings")}</span>
-              </div>
-              <div className="flex flex-col items-center gap-0.5 rounded-xl border border-border-subtle bg-background py-2.5">
-                <span className="inline-flex items-center gap-0.5 text-base font-semibold text-foreground">
-                  {rating > 0 ? (
-                    <>
-                      <Star size={14} className="text-rating" />
-                      {rating.toFixed(1)}
-                    </>
-                  ) : (
-                    "—"
-                  )}
-                </span>
-                <span className="text-2xs text-muted-foreground">{t("statsRating")}</span>
-              </div>
-              <div className="flex flex-col items-center gap-0.5 rounded-xl border border-border-subtle bg-background py-2.5">
-                <span className="text-base font-semibold text-foreground">{totalSales}</span>
-                <span className="text-2xs text-muted-foreground">{t("statsSales")}</span>
-              </div>
-            </div>
-          )}
+            {/* ── Account section ── */}
+            <MenuSection label={t("sectionAccount")} items={accountItems} onItemClick={handleClose} />
 
-          {/* ── Account section ── */}
-          <SectionHeader>{t("sectionAccount")}</SectionHeader>
-          <div className="space-y-1.5">
-            {accountItems.map((item) => (
-              <MenuRow key={item.href} item={item} onClick={handleClose} />
-            ))}
-          </div>
+            {/* ── Selling section ── */}
+            <MenuSection label={t("sectionSelling")} items={sellingItems} onItemClick={handleClose} />
 
-          {/* ── Selling section ── */}
-          <SectionHeader>{t("sectionSelling")}</SectionHeader>
-          <div className="space-y-1.5">
-            {sellingItems.map((item) => (
-              <MenuRow key={item.href} item={item} onClick={handleClose} />
-            ))}
-          </div>
+            {/* ── Settings section ── */}
+            <MenuSection label={t("sectionSettings")} items={settingsItems} onItemClick={handleClose} />
+          </DrawerBody>
 
-          {/* ── Settings section ── */}
-          <SectionHeader>{t("sectionSettings")}</SectionHeader>
-          <div className="space-y-1.5">
-            {settingsItems.map((item) => (
-              <MenuRow key={item.href} item={item} onClick={handleClose} />
-            ))}
-          </div>
-
-          {/* ── View profile + Sign out ── */}
-          <div className="mt-4 space-y-2 border-t border-border-subtle pt-4">
-            <Button variant="outline" size="default" className="w-full" asChild>
+          {/* ── Sticky footer — View Profile CTA + Sign out ── */}
+          <DrawerFooter>
+            <Button size="lg" className="w-full" asChild>
               <Link href="/account" onClick={handleClose}>
                 {t("viewProfile")}
               </Link>
@@ -486,8 +536,8 @@ export function AccountDrawer({ open, onOpenChange }: AccountDrawerProps) {
                 {t("signOut")}
               </Button>
             </form>
-          </div>
-        </DrawerBody>
+          </DrawerFooter>
+        </>
       )}
     </DrawerShell>
   )
