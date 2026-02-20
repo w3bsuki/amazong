@@ -725,7 +725,18 @@
         "signInPrompt": "Влезте в акаунта си",
         "signInDescription": "Влезте, за да видите вашия профил",
         "signIn": "Вход",
-        "sales": "продажби"
+        "sales": "продажби",
+        "verified": "Потвърден",
+        "memberSince": "Член от {date}",
+        "statsListings": "Обяви",
+        "statsRating": "Рейтинг",
+        "statsSales": "Продажби",
+        "sectionAccount": "Акаунт",
+        "sectionSelling": "Продаване",
+        "sectionSettings": "Настройки",
+        "createListing": "Създай обява",
+        "viewProfile": "Виж профил",
+        "signOut": "Изход"
     },
     "AuthDrawer": {
         "title": "Достъп до акаунт",
@@ -739,6 +750,7 @@
         "ariaLabel": "Разглеждане на категории",
         "searchPlaceholder": "Търси категории",
         "searchAriaLabel": "Търси категории",
+        "searchSellersPlaceholder": "Търси продавачи",
         "quickLinksTitle": "Бърз преглед",
         "allListings": "Всички обяви",
         "topSellers": "Топ продавачи",
@@ -747,8 +759,15 @@
         "noCategories": "Няма налични категории",
         "noSubcategories": "Няма подкатегории",
         "noMatches": "Няма резултати",
+        "noSellers": "Няма намерени продавачи",
         "seeAllIn": "Всички в {category}",
-        "close": "Затвори"
+        "close": "Затвори",
+        "browseMode": "Режим на разглеждане",
+        "listings": "Обяви",
+        "sellers": "Продавачи",
+        "viewAllSellers": "Вижте всички продавачи",
+        "listingsCount": "{count} обяви",
+        "verified": "Потвърден"
     },
     "Freshness": {
         "justNow": "Току-що",

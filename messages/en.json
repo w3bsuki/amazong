@@ -725,7 +725,18 @@
         "signInPrompt": "Sign in to your account",
         "signInDescription": "Sign in to view your profile",
         "signIn": "Sign In",
-        "sales": "sales"
+        "sales": "sales",
+        "verified": "Verified",
+        "memberSince": "Member since {date}",
+        "statsListings": "Listings",
+        "statsRating": "Rating",
+        "statsSales": "Sales",
+        "sectionAccount": "Account",
+        "sectionSelling": "Selling",
+        "sectionSettings": "Settings",
+        "createListing": "Create Listing",
+        "viewProfile": "View Profile",
+        "signOut": "Sign Out"
     },
     "AuthDrawer": {
         "title": "Account access",
@@ -739,6 +750,7 @@
         "ariaLabel": "Browse categories",
         "searchPlaceholder": "Search categories",
         "searchAriaLabel": "Search categories",
+        "searchSellersPlaceholder": "Search sellers",
         "quickLinksTitle": "Quick browse",
         "allListings": "All listings",
         "topSellers": "Top sellers",
@@ -747,8 +759,15 @@
         "noCategories": "No categories available",
         "noSubcategories": "No subcategories available",
         "noMatches": "No matches found",
+        "noSellers": "No sellers found",
         "seeAllIn": "All in {category}",
-        "close": "Close"
+        "close": "Close",
+        "browseMode": "Browse mode",
+        "listings": "Listings",
+        "sellers": "Sellers",
+        "viewAllSellers": "View all sellers",
+        "listingsCount": "{count} listings",
+        "verified": "Verified"
     },
     "Freshness": {
         "justNow": "Just now",
