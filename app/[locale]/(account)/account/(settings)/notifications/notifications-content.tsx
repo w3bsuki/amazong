@@ -12,20 +12,7 @@ import { Bell, ChevronRight as CaretRight, MessageCircle as ChatCircle, CircleCh
 
 import { formatDistanceToNow } from "date-fns"
 
-type NotificationType = "purchase" | "order_status" | "message" | "review" | "system" | "promotion"
-
-interface NotificationRow {
-  id: string
-  type: NotificationType
-  title: string
-  body: string | null
-  data: Record<string, unknown> | null
-  order_id: string | null
-  product_id: string | null
-  conversation_id: string | null
-  is_read: boolean
-  created_at: string
-}
+import type { NotificationRow, NotificationType } from "./notification-types"
 
 type NotificationPreferences = {
   in_app_purchase: boolean

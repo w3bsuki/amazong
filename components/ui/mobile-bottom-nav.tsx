@@ -9,7 +9,7 @@ const mobileBottomNavRootVariants = cva(
 )
 
 const mobileBottomNavDockVariants = cva(
-  "pointer-events-auto w-full rounded-t-2xl border-t border-border bg-background px-2 pb-safe shadow-nav"
+  "pointer-events-auto w-full border-t border-border-subtle/50 bg-background/85 backdrop-blur-xl px-2 pb-safe shadow-none"
 )
 
 const mobileBottomNavListVariants = cva(
@@ -40,7 +40,7 @@ const mobileBottomNavItemVariants = cva(
 const mobileBottomNavCoreActionVariants = cva(
   [
     "inline-flex size-(--control-default) items-center justify-center rounded-full",
-    "bg-foreground text-background",
+    "bg-foreground text-background shadow-sm ring-1 ring-inset ring-foreground/10",
     "transition-colors duration-150",
     "group-data-[state=active]:bg-primary group-data-[state=active]:text-primary-foreground",
   ]

@@ -87,7 +87,7 @@ export function MobileHomeRails({
           className="overflow-x-auto no-scrollbar"
           aria-label={tV4("aria.primaryCategories")}
         >
-          <div role="tablist" className="flex w-max min-w-full items-stretch">
+          <div role="tablist" className="flex w-max min-w-full items-stretch gap-1.5 px-inset py-2">
             <button
               type="button"
               role="tab"
@@ -101,12 +101,6 @@ export function MobileHomeRails({
                 className: "shrink-0",
               })}
               <span>{tCategories("all")}</span>
-              {activeCategorySlug === null && (
-                <span
-                  className="absolute inset-x-0 bottom-0 h-0.5 rounded-full bg-primary"
-                  aria-hidden="true"
-                />
-              )}
             </button>
 
             {visibleCategoryTabs.map((category) => {
@@ -127,12 +121,6 @@ export function MobileHomeRails({
                     className: "shrink-0",
                   })}
                   <span className="whitespace-nowrap">{getCategoryLabel(category)}</span>
-                  {active && (
-                    <span
-                      className={cn("absolute inset-x-0 bottom-0 h-0.5 rounded-full", color.indicator)}
-                      aria-hidden="true"
-                    />
-                  )}
                 </button>
               )
             })}
@@ -144,7 +132,7 @@ export function MobileHomeRails({
                 onClick={onCategoryPickerOpen}
                 aria-label={tV4("actions.moreCategories")}
                 className={getPrimaryTabClass(false, {
-                  className: "border-l border-border-subtle",
+                  className: "ml-2 border-l border-border-subtle pl-3",
                 })}
               >
                 <DotsThree size={18} className="shrink-0" />
@@ -156,7 +144,7 @@ export function MobileHomeRails({
 
         <section
           data-testid="home-v4-secondary-rail"
-          className="bg-background border-t border-border-subtle"
+          className="bg-surface-subtle/30"
         >
           <div className="overflow-x-auto no-scrollbar">
             <div className="flex w-max items-center gap-1.5 px-inset py-2">

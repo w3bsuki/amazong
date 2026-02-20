@@ -3,21 +3,7 @@ import { redirect } from "@/i18n/routing"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import { validateLocale } from "@/i18n/routing"
 import { NotificationsContent } from "./notifications-content"
-
-type NotificationType = "purchase" | "order_status" | "message" | "review" | "system" | "promotion"
-
-interface NotificationRow {
-  id: string
-  type: NotificationType
-  title: string
-  body: string | null
-  data: Record<string, unknown> | null
-  order_id: string | null
-  product_id: string | null
-  conversation_id: string | null
-  is_read: boolean
-  created_at: string
-}
+import type { NotificationRow } from "./notification-types"
 
 export const metadata = {
   title: "Notifications | Treido",

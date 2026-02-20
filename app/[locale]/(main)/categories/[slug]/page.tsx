@@ -1,4 +1,4 @@
-import { use } from "react"
+import { Suspense, use } from "react"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import { notFound } from "next/navigation"
 import type { Metadata } from "next"
@@ -64,7 +64,11 @@ export default function CategoryPage({
   params: Promise<{ slug: string; locale: string }>
   searchParams: Promise<CategoryPageSearchParams>
 }) {
-  return <CategoryPageContent paramsPromise={paramsPromise} searchParamsPromise={searchParamsPromise} />
+  return (
+    <Suspense>
+      <CategoryPageContent paramsPromise={paramsPromise} searchParamsPromise={searchParamsPromise} />
+    </Suspense>
+  )
 }
 
 function CategoryPageContent({
