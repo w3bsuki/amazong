@@ -34,6 +34,7 @@ export function QuickViewImageGallery({
   const tDrawers = useTranslations("Drawers")
   const tProduct = useTranslations("Product")
   const [currentIndex, setCurrentIndex] = React.useState(0)
+  const touchStartRef = React.useRef<number>(0)
   
   const hasMultiple = images.length > 1
   const currentImage = images[currentIndex] ?? PLACEHOLDER_IMAGE_PATH
@@ -54,6 +55,22 @@ export function QuickViewImageGallery({
   React.useEffect(() => {
     setCurrentIndex(0)
   }, [images])
+
+  const handleTouchStart = React.useCallback((e: React.TouchEvent) => {
+    const touch = e.touches[0]
+    if (touch) touchStartRef.current = touch.clientX
+  }, [])
+
+  const handleTouchEnd = React.useCallback((e: React.TouchEvent) => {
+    if (!hasMultiple) return
+    const touch = e.changedTouches[0]
+    if (!touch) return
+    const diff = touchStartRef.current - touch.clientX
+    if (Math.abs(diff) > 50) {
+      if (diff > 0) nextImage()
+      else prevImage()
+    }
+  }, [hasMultiple, nextImage, prevImage])
 
   // Desktop layout with horizontal thumbnails below
   if (!compact) {
@@ -153,7 +170,7 @@ export function QuickViewImageGallery({
 
   // Mobile/compact layout - optimized touch handling with a square hero (fills drawer better)
   return (
-    <div className="touch-pan-y">
+    <div className="touch-pan-y" onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
       <div className="relative overflow-hidden rounded-2xl border border-border-subtle bg-surface-subtle">
         <AspectRatio ratio={compactRatio} className="relative">
           <button

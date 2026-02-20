@@ -1,19 +1,21 @@
-import { MapPin } from "lucide-react"
+import { Heart, Link as LinkSimple, MapPin, X } from "lucide-react"
 
 import { useTranslations } from "next-intl"
 
 import { Badge } from "@/components/ui/badge"
+import { IconButton } from "@/components/ui/icon-button"
 import { Skeleton } from "@/components/ui/skeleton"
+import { cn } from "@/lib/utils"
 import { getConditionBadgeVariant } from "@/components/shared/product/_lib/condition"
 
 import type { ProductQuickViewViewProps } from "./product-quick-view-content"
 import { QuickViewImageGallery } from "./quick-view-image-gallery"
 import {
-  QuickViewActionButtons,
   QuickViewFooterBar,
-  QuickViewSellerSection,
+  QuickViewSellerSkeletonCard,
   QuickViewShippingBadge,
 } from "./quick-view-chrome"
+import { QuickViewSellerCard } from "./quick-view-seller-card"
 
 export function ProductQuickViewMobileContent({
   product,
@@ -57,26 +59,48 @@ export function ProductQuickViewMobileContent({
   return (
     <div className="flex min-h-full flex-col bg-surface-elevated">
       <div className="sticky top-0 z-20 border-b border-border bg-surface-elevated px-4 py-2.5">
-        <div className="flex items-center justify-between gap-2">
-          <p className="text-xs font-medium tracking-tight text-muted-foreground">
-            {tDrawers("quickView")}
-          </p>
-
-          <QuickViewActionButtons
-            copyAriaLabel={tModal("copyLink")}
-            wishlistAriaLabel={inWishlist ? tProduct("removeFromWatchlist") : tProduct("addToWatchlist")}
-            closeAriaLabel={tDrawers("close")}
-            inWishlist={inWishlist}
-            wishlistPending={wishlistPending}
-            shareEnabled={shareEnabled}
-            onCopyLink={onCopyLink}
-            onToggleWishlist={onToggleWishlist}
-            onRequestClose={onRequestClose}
-            buttonSize="icon-default"
-            iconSize={18}
-            closeIconClassName="size-4.5"
-            className="gap-1.5"
-          />
+        <div className="flex items-center gap-2">
+          <h2 className="min-w-0 flex-1 truncate text-sm font-semibold tracking-tight text-foreground">
+            {titleText}
+          </h2>
+          <div className="flex items-center gap-1">
+            <IconButton
+              type="button"
+              variant="ghost"
+              size="icon-compact"
+              onClick={onCopyLink}
+              aria-label={tModal("copyLink")}
+              disabled={!shareEnabled}
+              className="text-muted-foreground hover:text-foreground"
+            >
+              <LinkSimple size={16} />
+            </IconButton>
+            <IconButton
+              type="button"
+              variant="ghost"
+              size="icon-compact"
+              onClick={onToggleWishlist}
+              aria-label={inWishlist ? tProduct("removeFromWatchlist") : tProduct("addToWatchlist")}
+              disabled={wishlistPending}
+              className={cn(
+                inWishlist
+                  ? "text-primary"
+                  : "text-muted-foreground hover:text-foreground"
+              )}
+            >
+              <Heart size={16} className={cn(inWishlist && "fill-primary")} />
+            </IconButton>
+            <IconButton
+              type="button"
+              variant="ghost"
+              size="icon-compact"
+              onClick={() => onRequestClose?.()}
+              aria-label={tDrawers("close")}
+              className="text-muted-foreground hover:text-foreground"
+            >
+              <X size={16} />
+            </IconButton>
+          </div>
         </div>
       </div>
 
@@ -104,7 +128,7 @@ export function ProductQuickViewMobileContent({
             </div>
 
             <div className="flex flex-wrap items-baseline gap-2">
-              <span className="text-2xl font-bold tabular-nums tracking-tight text-price">
+              <span className="text-xl font-semibold tabular-nums tracking-tight text-price">
                 {formattedPrice}
               </span>
               {formattedOriginalPrice && (
@@ -152,23 +176,23 @@ export function ProductQuickViewMobileContent({
             </div>
           </div>
 
-          <QuickViewSellerSection
-            showSellerSkeleton={showSellerSkeleton}
-            sellerName={sellerName}
-            sellerAvatarUrl={sellerAvatarUrl}
-            sellerVerified={sellerVerified}
-            rating={rating}
-            reviews={reviews}
-            onNavigateToProduct={onNavigateToProduct}
-            protectionTitle={tProduct("buyerProtection")}
-            protectionSubtitle={tProduct("buyerProtectionBadgeSubtitle")}
-            easyReturns={tProduct("easyReturns")}
-            viewFullPageLabel={tModal("viewFullPage")}
-            sellerSkeletonClassName="bg-card"
-            titleSkeletonClassName="w-32"
-            subtitleSkeletonClassName="w-20"
-            protectionCardClassName="bg-card"
-          />
+          {showSellerSkeleton ? (
+            <QuickViewSellerSkeletonCard
+              className="bg-card"
+              titleSkeletonClassName="w-32"
+              subtitleSkeletonClassName="w-20"
+            />
+          ) : (
+            <QuickViewSellerCard
+              compact
+              sellerName={sellerName}
+              sellerAvatarUrl={sellerAvatarUrl}
+              sellerVerified={sellerVerified}
+              rating={rating}
+              reviews={reviews}
+              onNavigateToProduct={onNavigateToProduct}
+            />
+          )}
         </div>
       </div>
 

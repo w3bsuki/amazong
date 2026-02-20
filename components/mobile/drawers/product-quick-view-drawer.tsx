@@ -8,9 +8,7 @@
  */
 
 import * as React from "react"
-import { useRouter } from "@/i18n/routing"
 import { useTranslations } from "next-intl"
-import { toast } from "sonner"
 
 import {
   Drawer,
@@ -19,12 +17,11 @@ import {
   DrawerDescription,
 } from "@/components/ui/drawer"
 import type { QuickViewProduct } from "@/components/providers/drawer-context"
-import { useCart } from "@/components/providers/cart-context"
 import { ProductQuickViewContent } from "@/components/shared/product/quick-view/product-quick-view-content"
 import { QuickViewSkeleton } from "@/components/shared/product/quick-view/quick-view-skeleton"
 import { useIsMobile } from "@/hooks/use-is-mobile"
 import { useProductQuickViewDetails } from "@/hooks/use-product-quick-view-details"
-import { PLACEHOLDER_IMAGE_PATH } from "@/lib/normalize-image-url"
+import { useQuickViewActions } from "@/hooks/use-quick-view-actions"
 
 interface ProductQuickViewDrawerProps {
   open: boolean
@@ -62,9 +59,6 @@ function ProductQuickViewDrawerMobile({
   isLoading = false,
 }: ProductQuickViewDrawerProps) {
   const t = useTranslations("Drawers")
-  const tProduct = useTranslations("Product")
-  const router = useRouter()
-  const { addToCart } = useCart()
   const scrollBeforeOpenRef = React.useRef<number | null>(null)
   const pendingRestoreScrollRef = React.useRef<number | null>(null)
   const openRef = React.useRef(open)
@@ -113,53 +107,10 @@ function ProductQuickViewDrawerMobile({
   }, [])
 
   const activeProduct = resolvedProduct ?? displayProduct
+  const { handleAddToCart, handleBuyNow, productPath, handleNavigateToProduct } =
+    useQuickViewActions(activeProduct, onOpenChange)
 
-  const addResolvedProductToCart = React.useCallback(() => {
-    if (!activeProduct) return
-    const imgs = activeProduct.images?.length
-      ? activeProduct.images
-      : activeProduct.image
-        ? [activeProduct.image]
-        : []
-    addToCart({
-      id: activeProduct.id,
-      title: activeProduct.title,
-      price: activeProduct.price,
-      image: imgs[0] ?? PLACEHOLDER_IMAGE_PATH,
-      quantity: 1,
-      ...(activeProduct.slug ? { slug: activeProduct.slug } : {}),
-      ...(activeProduct.username ? { username: activeProduct.username } : {}),
-    })
-  }, [activeProduct, addToCart])
-
-  const handleAddToCart = React.useCallback(() => {
-    if (!activeProduct) return
-    addResolvedProductToCart()
-    toast.success(t("addedToCart"))
-  }, [activeProduct, addResolvedProductToCart, t])
-
-  const handleBuyNow = React.useCallback(() => {
-    if (!activeProduct) return
-    addResolvedProductToCart()
-    toast.success(tProduct("addedToCart"))
-    onOpenChange(false)
-    router.push("/checkout")
-  }, [activeProduct, addResolvedProductToCart, onOpenChange, router, tProduct])
-
-  const productPath = React.useMemo(() => {
-    if (!activeProduct) return "#"
-    const { id, slug, username } = activeProduct
-    const productSlug = slug ?? id
-    return username ? `/${username}/${productSlug}` : "#"
-  }, [activeProduct])
-
-  const handleNavigateToProduct = React.useCallback(() => {
-    onOpenChange(false)
-    router.push(productPath)
-  }, [onOpenChange, router, productPath])
-
-  const title = activeProduct?.title ?? ""
-  const description = activeProduct?.description ?? title
+  const description = activeProduct?.description || activeProduct?.title || ""
 
   const showOnlyBlockingSkeleton = isLoading || (open && !activeProduct && !product)
 
