@@ -66,7 +66,7 @@ export function ProductCardActions({
     const [isWishlistPending, setIsWishlistPending] = React.useState(false)
 
     const inWishlist = isInWishlist(id)
-    const inCart = React.useMemo(() => cartItems.some((item) => item.id === id), [cartItems, id])
+    const inCart = cartItems.some((item) => item.id === id)
     const overlaySizeClass = overlayDensity === "compact" ? "size-7 [&_svg]:size-3.5" : ""
 
     const handleAddToCart = React.useCallback((e: React.MouseEvent) => {

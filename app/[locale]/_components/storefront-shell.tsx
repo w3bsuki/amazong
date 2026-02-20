@@ -5,7 +5,7 @@ import { SiteFooter } from "./site-footer"
 import { HeaderProvider } from "@/components/providers/header-context"
 import { SkipLinks } from "./skip-links"
 import { PageShell } from "./page-shell"
-import { CategoryDrawerProvider } from "@/components/mobile/category-nav"
+import { CategoryDrawerProvider } from "@/components/mobile/category-nav/category-drawer-context"
 import { DeferredStorefrontUi } from "./deferred-storefront-ui"
 import type { CategoryTreeNode } from "@/lib/category-tree"
 

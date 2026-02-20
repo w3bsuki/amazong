@@ -1,5 +1,3 @@
-"use client"
-
 import { useFormStatus } from "react-dom"
 import { LoaderCircle as SpinnerGap } from "lucide-react";
 

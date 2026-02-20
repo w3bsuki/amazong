@@ -1,4 +1,4 @@
-import { redirect } from "next/navigation"
+import { redirect, validateLocale } from "@/i18n/routing"
 
 interface OnboardingPageProps {
   params: Promise<{ locale: string }>
@@ -12,5 +12,5 @@ export const metadata = {
 export default async function OnboardingPage({ params }: OnboardingPageProps) {
   const { locale } = await params
   // Redirect to account type selection as the first step
-  redirect(`/${locale}/onboarding/account-type`)
+  redirect({ href: "/onboarding/account-type", locale: validateLocale(locale) })
 }

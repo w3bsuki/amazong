@@ -22,12 +22,12 @@
 
 | # | Technology | Status | Task File | Completed |
 |---|-----------|--------|-----------|-----------|
-| 1 | Next.js 16 (App Router) | `[ ]` NOT STARTED | `refactor/nextjs-audit-refactor.md` | — |
-| 2 | React 19 | `[ ]` NOT STARTED | `refactor/react-audit-refactor.md` | — |
-| 3 | TypeScript 5.9 | `[ ]` NOT STARTED | `refactor/typescript-audit-refactor.md` | — |
-| 4 | Tailwind CSS v4 | `[ ]` NOT STARTED | `refactor/tailwind-audit-refactor.md` | — |
-| 5 | shadcn/ui | `[ ]` NOT STARTED | `refactor/shadcn-audit-refactor.md` | — |
-| 6 | Supabase (client/queries) | `[ ]` NOT STARTED | `refactor/supabase-audit-refactor.md` | — |
+| 1 | Next.js 16 (App Router) | `[x]` DONE | `refactor/nextjs-audit-refactor.md` | 2026-02-19 — routing/import alignment, loading skeleton dedupe, client-boundary 216→214 |
+| 2 | React 19 | `[x]` DONE | `refactor/react-audit-refactor.md` | 2026-02-20 — forwardRef 2→0 (ref-as-prop), memo cleanup, styles:gate + Vitest timeout hardening |
+| 3 | TypeScript 5.9 | `[x]` DONE | `refactor/typescript-audit-refactor.md` | 2026-02-20 — TS strictness cleanup: typed shared filters, realtime hook overload fix, marketplace badge variant alignment |
+| 4 | Tailwind CSS v4 | `[x]` DONE | `refactor/tailwind-audit-refactor.md` | 2026-02-20 — Tailwind v4 audit + dead CSS utility cleanup (no token drift; styles:gate clean) |
+| 5 | shadcn/ui | `[x]` DONE | `refactor/shadcn-audit-refactor.md` | 2026-02-20 — shadcn primitives audit (ui purity + variants); no gate-forced changes |
+| 6 | Supabase (client/queries) | `[x]` DONE | `refactor/supabase-audit-refactor.md` | 2026-02-20 — Supabase audit (client selection + query hygiene); no behavior-risky changes applied |
 | 7 | next-intl (i18n) | `[ ]` NOT STARTED | `refactor/intl-audit-refactor.md` | — |
 | 8 | Testing (Vitest/Playwright) | `[ ]` NOT STARTED | `refactor/testing-audit-refactor.md` | — |
 | 9 | DX & Build (ESLint/scripts/gates) | `[ ]` NOT STARTED | `refactor/dx-audit-refactor.md` | — |
@@ -131,15 +131,15 @@
 
 | Metric | Baseline (2026-02-20) | After #1 | After #2 | After #3 | After #4 | After #5 | Final |
 |--------|----------------------|----------|----------|----------|----------|----------|-------|
-| Source files | 937 | | | | | | |
-| LOC | ~131K | | | | | | |
-| `"use client"` | 216 | | | | | | |
-| `"use cache"` | 11 | | | | | | |
-| >300L files | 93 | | | | | | |
-| <50L files | 248 | | | | | | |
-| Route handlers | 47 | | | | | | |
-| Loading files | 88 | | | | | | |
-| `any` count | TBD | | | | | | |
+| Source files | 937 | 937 | 940 | 945 | 945 | 945 | |
+| LOC | ~131K | 128,869 | 130,095 | 130,615 | 130,615 | 130,615 | |
+| `"use client"` | 216 | 214 | 214 | 224 | 224 | 224 | |
+| `"use cache"` | 11 | 12 files | 12 files | 15 files | 15 files | 15 files | |
+| >300L files | 93 | 88 | 87 | 87 | 87 | 87 | |
+| <50L files | 248 | 252 | 249 | 251 | 251 | 251 | |
+| Route handlers | 47 | 47 | 47 | 48 | 48 | 48 | |
+| Loading files | 88 | 88 | 88 | 88 | 88 | 88 | |
+| `any` count | TBD | | | 0 | 0 | 0 | |
 | Test coverage | TBD | | | | | | |
 
 ---

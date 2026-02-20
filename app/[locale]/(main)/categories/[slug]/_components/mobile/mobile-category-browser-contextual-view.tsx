@@ -1,12 +1,10 @@
-"use client"
-
 import type { CategoryAttribute } from "@/lib/data/categories"
 import type { UIProduct } from "@/lib/data/products"
 import {
   CategoryOptionRail,
   type CategoryOptionItem,
   type SectionPathSegment,
-} from "@/components/mobile/category-nav"
+} from "@/components/mobile/category-nav/category-drilldown-rail"
 import {
   MobileFilterControls,
   type QuickAttributePill,

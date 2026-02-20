@@ -9,7 +9,7 @@ const mobileBottomNavRootVariants = cva(
 )
 
 const mobileBottomNavDockVariants = cva(
-  "pointer-events-auto w-full rounded-t-2xl border-t border-border-subtle bg-background px-2 pt-1 pb-safe"
+  "pointer-events-auto w-full rounded-t-2xl border-t border-border-subtle bg-background px-2 pt-0.5 pb-safe"
 )
 
 const mobileBottomNavListVariants = cva(
@@ -37,12 +37,12 @@ const mobileBottomNavItemVariants = cva(
 )
 
 const mobileBottomNavCoreActionVariants = cva(
-  "inline-flex size-(--control-default) items-center justify-center rounded-full border",
+  "inline-flex size-(--control-compact) items-center justify-center rounded-full shadow-md",
   {
     variants: {
       state: {
-        active: "border-primary bg-primary text-primary-foreground",
-        inactive: "border-border-subtle bg-background text-primary",
+        active: "bg-primary text-primary-foreground shadow-primary",
+        inactive: "bg-primary text-primary-foreground shadow-primary",
       },
     },
     defaultVariants: {

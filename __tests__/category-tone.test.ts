@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'vitest'
 
-import { getCategoryColor, resolveCategoryTone } from '@/app/[locale]/(main)/_components/category/category-icons'
+import { getCategoryColor, resolveCategoryTone } from '@/lib/category-colors'
 
 describe('resolveCategoryTone', () => {
   test('maps root meta slugs to all tone', () => {

@@ -118,7 +118,7 @@ export function FilterSortBar({
     <>
       <div
         className={cn(
-          "bg-background px-inset py-1.5",
+          "bg-background px-inset py-1",
           sticky && "sticky z-20",
           className
         )}

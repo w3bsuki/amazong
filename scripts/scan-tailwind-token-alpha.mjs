@@ -1,63 +1,15 @@
 import fs from "node:fs";
 import path from "node:path";
 
+import { collectFilesInDirs, DEFAULT_INCLUDE_EXTENSIONS } from "./lib/file-walker.mjs";
+import { extractTokensFromLine, stripComments, writeReport } from "./lib/tailwind-scan-utils.mjs";
+
 const projectRoot = process.cwd();
 const targetDirs = process.argv.slice(2);
 const dirs = targetDirs.length ? targetDirs : ["app", "components"]; // workspace-relative
 const shouldWriteReport = String(process.env.WRITE_CLEANUP_REPORTS || "") === "1";
 
-const includeExt = new Set([".ts", ".tsx", ".js", ".jsx", ".css", ".mjs"]);
-
-function stripComments(text, ext) {
-  if (ext === ".css") {
-    return text.replace(/\/\*[\s\S]*?\*\//g, "");
-  }
-
-  return text
-    .replace(/\/\*[\s\S]*?\*\//g, "")
-    .replace(/(^|[^:])\/\/.*$/gm, "$1");
-}
-
-function stripVariants(token) {
-  // Tailwind class tokens can be prefixed by variants (md:hover:bg-primary/10).
-  const parts = token.split(":");
-  return parts[parts.length - 1] ?? token;
-}
-
-function cleanToken(raw) {
-  // Remove leading/trailing punctuation so we can match class tokens inside JSX strings.
-  // Also strip common JSX attribute prefixes so we catch patterns like:
-  // className="bg-destructive/10 ..."
-  const withoutAttr = raw.replace(/^(?:className|class)=/i, "");
-  const withoutQuotes = withoutAttr.replace(/^[{\"'`]+/, "");
-  return withoutQuotes
-    .replace(/^[^A-Za-z0-9]+/, "")
-    .replace(/[^A-Za-z0-9\[\]\-/:().%]+$/, "");
-}
-
-function isDirectory(p) {
-  try {
-    return fs.statSync(p).isDirectory();
-  } catch {
-    return false;
-  }
-}
-
-function walkFiles(dirAbs, out) {
-  const entries = fs.readdirSync(dirAbs, { withFileTypes: true });
-  for (const ent of entries) {
-    const abs = path.join(dirAbs, ent.name);
-    if (ent.isDirectory()) {
-      if (ent.name === ".next" || ent.name === "node_modules" || ent.name === "dist") continue;
-      walkFiles(abs, out);
-      continue;
-    }
-    if (!ent.isFile()) continue;
-    const ext = path.extname(ent.name);
-    if (!includeExt.has(ext)) continue;
-    out.push(abs);
-  }
-}
+const includeExt = DEFAULT_INCLUDE_EXTENSIONS;
 
 const bannedPatterns = [
   // Token alpha hacks we explicitly ban (design rails).
@@ -70,12 +22,7 @@ const bannedPatterns = [
   /^(?:bg|text|ring|border)-(?:promoted|promoted-muted|verified|verified-business|verified-personal|top-rated|category-[a-z0-9-]+|deal|deal-light|deal-foreground|surface-[a-z0-9-]+)\/\d{1,3}$/i,
 ];
 
-const allFiles = [];
-for (const d of dirs) {
-  const abs = path.resolve(projectRoot, d);
-  if (!isDirectory(abs)) continue;
-  walkFiles(abs, allFiles);
-}
+const allFiles = collectFilesInDirs({ projectRoot, dirs, includeExt });
 
 const byFile = [];
 let totals = { files: 0, matches: 0 };
@@ -94,11 +41,7 @@ for (const abs of allFiles) {
   const offenders = new Set();
   const lines = scanText.split(/\r?\n/);
   for (const line of lines) {
-    const tokens = line
-      .split(/\s+/)
-      .map(cleanToken)
-      .filter(Boolean)
-      .map(stripVariants);
+    const tokens = extractTokensFromLine(line, { stripJsxAttributePrefix: true });
 
     for (const token of tokens) {
       if (!token.includes("/")) continue;
@@ -131,8 +74,7 @@ reportLines.push(`Totals: files=${totals.files} matches=${totals.matches}`);
 
 const reportPath = path.resolve(projectRoot, "cleanup/token-alpha-scan-report.txt");
 if (shouldWriteReport) {
-  fs.mkdirSync(path.resolve(projectRoot, "cleanup"), { recursive: true });
-  fs.writeFileSync(reportPath, reportLines.join("\n") + "\n", "utf8");
+  writeReport(reportPath, reportLines);
 }
 
 console.log(reportLines.slice(0, 2).join("\n"));

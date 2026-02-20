@@ -615,7 +615,7 @@ select:-webkit-autofill {
 
   /* === LAYOUT HEIGHTS === */
   --spacing-header: 3rem;
-  --spacing-bottom-nav: 3.75rem;
+  --spacing-bottom-nav: 3.25rem;
   /* 60px - mobile bottom navigation dock (icon + label) */
   --spacing-button: 2.75rem;
   --spacing-button-sm: 2.25rem;

@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type KeyboardEvent } from "react"
 import { CircleCheck as CheckCircle } from "lucide-react";
 
-import { useRouter } from "next/navigation"
+import { useRouter } from "@/i18n/routing"
 import { useLocale, useTranslations } from "next-intl"
 
 import {

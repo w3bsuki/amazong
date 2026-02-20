@@ -7,6 +7,7 @@ import { Suspense } from "react"
 import { connection } from "next/server"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
+import { MarketplaceBadge } from "@/components/shared/marketplace-badge"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
 import { ExternalLink as IconExternalLink } from "lucide-react";
@@ -115,11 +116,11 @@ async function AdminProductsContent() {
                     </TableCell>
                     <TableCell className="font-medium tabular-nums">{formatCurrency(product.price)}</TableCell>
                     <TableCell>
-                      <Badge variant={product.stock > 0 ? "stock-available" : "stock-out"}>
+                      <MarketplaceBadge variant={product.stock > 0 ? "stock-available" : "stock-out"}>
                         {product.stock > 0
                           ? t("badges.inStock", { count: product.stock })
                           : t("badges.outOfStock")}
-                      </Badge>
+                      </MarketplaceBadge>
                     </TableCell>
                     <TableCell>
                       {product.is_boosted && (

@@ -1,12 +1,15 @@
 import fs from "node:fs";
 import path from "node:path";
 
+import { collectFilesInDirs, DEFAULT_INCLUDE_EXTENSIONS } from "./lib/file-walker.mjs";
+import { countMatches, writeReport } from "./lib/tailwind-scan-utils.mjs";
+
 const projectRoot = process.cwd();
 const targetDirs = process.argv.slice(2);
 const dirs = targetDirs.length ? targetDirs : ["app", "components"]; // workspace-relative
 const shouldWriteReport = String(process.env.WRITE_CLEANUP_REPORTS || "") === "1";
 
-const includeExt = new Set([".ts", ".tsx", ".js", ".jsx", ".css", ".mjs"]);
+const includeExt = DEFAULT_INCLUDE_EXTENSIONS;
 
 // Token source-of-truth. Intentionally contains many oklch() declarations.
 // Also allow hex colors in the dedicated product swatches file (see docs/DESIGN.md).
@@ -23,43 +26,7 @@ const reArbitrary = /\b(?:h|w|min-h|min-w|max-h|max-w|basis|p|px|py|pt|pr|pb|pl|
 const reHex = /#[0-9a-fA-F]{3}(?:[0-9a-fA-F]{3})?\b/g;
 const reOklch = /\boklch\([^)]*\)/gi;
 
-function isDirectory(p) {
-  try {
-    return fs.statSync(p).isDirectory();
-  } catch {
-    return false;
-  }
-}
-
-function walkFiles(dirAbs, out) {
-  const entries = fs.readdirSync(dirAbs, { withFileTypes: true });
-  for (const ent of entries) {
-    const abs = path.join(dirAbs, ent.name);
-    if (ent.isDirectory()) {
-      if (ent.name === ".next" || ent.name === "node_modules" || ent.name === "dist") continue;
-      walkFiles(abs, out);
-      continue;
-    }
-    if (!ent.isFile()) continue;
-    const ext = path.extname(ent.name);
-    if (!includeExt.has(ext)) continue;
-    out.push(abs);
-  }
-}
-
-function countMatches(text, regex) {
-  let count = 0;
-  regex.lastIndex = 0;
-  while (regex.exec(text)) count++;
-  return count;
-}
-
-const allFiles = [];
-for (const d of dirs) {
-  const abs = path.resolve(projectRoot, d);
-  if (!isDirectory(abs)) continue;
-  walkFiles(abs, allFiles);
-}
+const allFiles = collectFilesInDirs({ projectRoot, dirs, includeExt });
 
 const byFile = [];
 let totals = { arbitrary: 0, hex: 0, oklch: 0, files: 0 };
@@ -112,12 +79,7 @@ reportLines.push(
 
 const reportPath = path.resolve(projectRoot, "cleanup/arbitrary-scan-report.txt");
 if (shouldWriteReport) {
-  try {
-    fs.mkdirSync(path.dirname(reportPath), { recursive: true });
-    fs.writeFileSync(reportPath, reportLines.join("\n"), "utf8");
-  } catch {
-    // Best-effort reporting.
-  }
+  writeReport(reportPath, reportLines);
 }
 
 console.log("Top offenders (rough match counts)");

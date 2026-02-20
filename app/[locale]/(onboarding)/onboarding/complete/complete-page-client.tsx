@@ -1,7 +1,8 @@
 "use client"
 
 import { useEffect, useState, useTransition } from "react"
-import { useRouter, useSearchParams } from "next/navigation"
+import { useSearchParams } from "next/navigation"
+import { useRouter } from "@/i18n/routing"
 import { useLocale, useTranslations } from "next-intl"
 import { Check, Package, ShoppingBag, LoaderCircle as SpinnerGap, Store as Storefront } from "lucide-react";
 
@@ -101,14 +102,14 @@ export default function CompletePage() {
       progress={progress}
       footer={
         <div className="space-y-2">
-          <Button onClick={() => handleNavigation(`/${locale}`)} size="lg" disabled={isPending} className="w-full">
+          <Button onClick={() => handleNavigation("/")} size="lg" disabled={isPending} className="w-full">
             <ShoppingBag className="size-5" />
             {t("complete.startBrowsing")}
           </Button>
 
           <Button
             variant="outline"
-            onClick={() => handleNavigation(`/${locale}/sell`)}
+            onClick={() => handleNavigation("/sell")}
             size="lg"
             disabled={isPending}
             className="w-full"
@@ -120,7 +121,7 @@ export default function CompletePage() {
           {isBusiness ? (
             <Button
               variant="ghost"
-              onClick={() => handleNavigation(`/${locale}/dashboard`)}
+              onClick={() => handleNavigation("/dashboard")}
               disabled={isPending}
               className="w-full"
             >

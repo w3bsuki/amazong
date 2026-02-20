@@ -2,7 +2,7 @@ export type BrowseMode = "listings" | "sellers"
 
 export type SellerSortKey = "products" | "rating" | "newest"
 
-export const ITEMS_PER_PAGE = 20
+export { ITEMS_PER_PAGE } from "../../_lib/pagination"
 
 export interface Category {
   id: string

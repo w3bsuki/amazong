@@ -1,5 +1,8 @@
-import { useState, useEffect, useCallback } from "react"
+"use client"
+
+import { useState, useEffect, useCallback, useMemo } from "react"
 import { createClient } from "@/lib/supabase/client"
+import { useSupabasePostgresChanges } from "@/hooks/use-supabase-postgres-changes"
 import { User } from "@supabase/supabase-js"
 
 /**
@@ -8,9 +11,24 @@ import { User } from "@supabase/supabase-js"
  */
 export function useNotificationCount(user: User | null) {
   const [count, setCount] = useState(0)
+  const userId = user?.id ?? null
+
+  const realtimeSpecs = useMemo(() => {
+    if (!userId) return []
+
+    return [
+      {
+        channel: "notification-count",
+        event: "*",
+        schema: "public",
+        table: "notifications",
+        filter: `user_id=eq.${userId}`,
+      },
+    ] as const
+  }, [userId])
 
   const fetchCount = useCallback(async () => {
-    if (!user) {
+    if (!userId) {
       setCount(0)
       return
     }
@@ -19,47 +37,25 @@ export function useNotificationCount(user: User | null) {
     const { count: unreadCount, error } = await supabase
       .from("notifications")
       .select("id", { count: "exact", head: true })
-      .eq("user_id", user.id)
+      .eq("user_id", userId)
       .eq("is_read", false)
       .neq("type", "message") // Messages handled separately
 
     if (!error && unreadCount !== null) {
       setCount(unreadCount)
     }
-  }, [user])
+  }, [userId])
 
   // Initial fetch
   useEffect(() => {
     fetchCount()
   }, [fetchCount])
 
-  // Real-time subscription for new notifications
-  useEffect(() => {
-    if (!user) return
-
-    const supabase = createClient()
-    const channel = supabase
-      .channel("notification-count")
-      .on(
-        "postgres_changes",
-        {
-          event: "*",
-          schema: "public",
-          table: "notifications",
-          filter: `user_id=eq.${user.id}`,
-        },
-        () => {
-          // Refetch count on any change
-          fetchCount()
-        }
-      )
-      .subscribe()
-
-    return () => {
-      supabase.removeChannel(channel)
-    }
-  }, [user, fetchCount])
+  useSupabasePostgresChanges({
+    enabled: Boolean(userId),
+    specs: realtimeSpecs,
+    onChange: fetchCount,
+  })
 
   return count
 }
-

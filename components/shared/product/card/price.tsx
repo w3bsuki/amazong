@@ -1,6 +1,6 @@
 import * as React from "react"
 import { cn } from "@/lib/utils"
-import { Badge } from "@/components/ui/badge"
+import { MarketplaceBadge } from "@/components/shared/marketplace-badge"
 
 // =============================================================================
 // TYPES
@@ -107,9 +107,9 @@ function ProductCardPrice({
       )}
       {trailingLabel && (
         discountAsBadge ? (
-          <Badge variant="discount" size="compact" className="shrink-0">
+          <MarketplaceBadge variant="discount" size="compact" className="shrink-0">
             {trailingLabel}
-          </Badge>
+          </MarketplaceBadge>
         ) : (
           <span className="shrink-0 whitespace-nowrap text-compact font-semibold text-destructive">
             {trailingLabel}
@@ -121,13 +121,13 @@ function ProductCardPrice({
 
   const badgePriceRow = (
     <div className={cn("flex items-center gap-1", homeEmphasis ? "flex-nowrap" : "flex-wrap")}>
-      <Badge
+      <MarketplaceBadge
         variant="price"
         size={compact ? "default" : "prominent"}
         className={compact ? "min-h-5 px-2 text-sm leading-none" : undefined}
       >
         {formattedPrice}
-      </Badge>
+      </MarketplaceBadge>
       {hasDiscount && formattedOriginalPrice && (
         <span className={cn(
           "line-through tabular-nums text-muted-foreground",
@@ -138,9 +138,9 @@ function ProductCardPrice({
       )}
       {trailingLabel && (
         discountAsBadge ? (
-          <Badge variant="discount" size="compact" className="shrink-0">
+          <MarketplaceBadge variant="discount" size="compact" className="shrink-0">
             {trailingLabel}
-          </Badge>
+          </MarketplaceBadge>
         ) : (
           <span className="shrink-0 whitespace-nowrap text-compact font-semibold text-destructive">
             {trailingLabel}

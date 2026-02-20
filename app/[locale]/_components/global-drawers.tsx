@@ -3,11 +3,19 @@
 import { useDrawer } from "@/components/providers/drawer-context"
 import {
   ProductQuickViewDrawer,
+} from "@/components/mobile/drawers/product-quick-view-drawer"
+import {
   CartDrawer,
+} from "@/components/mobile/drawers/cart-drawer"
+import {
   MessagesDrawer,
+} from "@/components/mobile/drawers/messages-drawer"
+import {
   AccountDrawer,
+} from "@/components/mobile/drawers/account-drawer"
+import {
   AuthDrawer,
-} from "@/components/mobile/drawers"
+} from "@/components/mobile/drawers/auth-drawer"
 import { WishlistDrawer } from "@/components/shared/wishlist/wishlist-drawer"
 import { ProductQuickViewDialog } from "./drawers/product-quick-view-dialog"
 import { useIsMobile } from "@/hooks/use-is-mobile"

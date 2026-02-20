@@ -3,6 +3,7 @@ import { Heart, Link as LinkSimple, MapPin, X } from "lucide-react"
 import { useTranslations } from "next-intl"
 
 import { Badge } from "@/components/ui/badge"
+import { MarketplaceBadge } from "@/components/shared/marketplace-badge"
 import { IconButton } from "@/components/ui/icon-button"
 import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
@@ -158,9 +159,9 @@ export function ProductQuickViewMobileContent({
               />
 
               {conditionLabel ? (
-                <Badge size="compact" variant={getConditionBadgeVariant(condition)}>
+                <MarketplaceBadge size="compact" variant={getConditionBadgeVariant(condition)}>
                   {conditionLabel}
-                </Badge>
+                </MarketplaceBadge>
               ) : showConditionSkeleton ? (
                 <Skeleton className="h-5 w-20 rounded-full" />
               ) : null}

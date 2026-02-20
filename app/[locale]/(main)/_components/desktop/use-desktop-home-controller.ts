@@ -8,7 +8,7 @@ import type { CategoryTreeNode } from "@/lib/category-tree"
 import { getCategoryName, type CategoryDisplay } from "@/lib/category-display"
 import { type FeedTab, type FilterState } from "@/components/desktop/feed-toolbar"
 import { type CategoryPath } from "./category-sidebar"
-import { type ProductGridProduct } from "@/components/grid"
+import { type ProductGridProduct } from "@/components/grid/product-grid"
 import type { DesktopHomeProduct } from "./desktop-home.types"
 
 interface UseDesktopHomeControllerParams {

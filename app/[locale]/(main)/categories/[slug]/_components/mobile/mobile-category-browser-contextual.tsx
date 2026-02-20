@@ -9,7 +9,7 @@ import { useRouter } from "@/i18n/routing"
 import { useHeader } from "@/components/providers/header-context"
 import { useInstantCategoryBrowse } from "./use-instant-category-browse"
 import { getCategoryName, getCategorySlugKey } from "@/lib/category-display"
-import { useCategoryDrawerOptional } from "@/components/mobile/category-nav"
+import { useCategoryDrawerOptional } from "@/components/mobile/category-nav/category-drawer-context"
 import { MobileCategoryBrowserContextualView } from "./mobile-category-browser-contextual-view"
 import type { CategoryOptionItem, SectionPathSegment } from "@/components/mobile/category-nav/category-drilldown-rail"
 import {

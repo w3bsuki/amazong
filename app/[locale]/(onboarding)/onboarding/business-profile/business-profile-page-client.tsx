@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState, useTransition } from "react"
-import { useRouter } from "next/navigation"
+import { useRouter } from "@/i18n/routing"
 import { useLocale, useTranslations } from "next-intl"
 import { ArrowRight, Camera, Check, Globe, MapPin, LoaderCircle as SpinnerGap, X } from "lucide-react";
 
@@ -119,12 +119,12 @@ export default function BusinessProfilePage() {
     }
 
     startTransition(() => {
-      router.push(`/${locale}/onboarding/interests?type=business`)
+      router.push(`/onboarding/interests?type=business`)
     })
   }
 
   const handleBack = () => {
-    router.push(`/${locale}/onboarding/account-type`)
+    router.push(`/onboarding/account-type`)
   }
 
   const canContinue =

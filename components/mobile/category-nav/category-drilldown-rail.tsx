@@ -1,6 +1,7 @@
 "use client"
 
-import { X, ChevronRight } from "lucide-react"
+import { useEffect, useRef } from "react"
+import { X, ChevronRight, Ellipsis } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { getMobileQuickPillClass } from "@/components/mobile/chrome/mobile-control-recipes"
 
@@ -15,8 +16,17 @@ export interface CategoryOptionItem {
   slug: string
 }
 
+// Tab-style classes — visually distinct from filter pill chips
+const TAB_BASE =
+  "relative inline-flex shrink-0 min-h-(--control-compact) items-center px-3 text-sm leading-none whitespace-nowrap tap-transparent motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth) motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-inset"
+const TAB_ACTIVE = "font-semibold text-foreground"
+const TAB_INACTIVE = "font-medium text-muted-foreground hover:text-foreground active:text-foreground"
+// Underline indicator for active tab
+const TAB_INDICATOR =
+  "after:absolute after:inset-x-2 after:bottom-0 after:h-0.5 after:rounded-full after:bg-primary"
+
 interface CategoryOptionRailProps {
-  /** Currently active category label — shown as highlighted pill when no sectionPath. */
+  /** Currently active category label — shown as highlighted tab when no sectionPath. */
   activeLabel: string | null
   /** L2+ path within the current section. When present, renders a compound pill with ×. */
   sectionPath?: SectionPathSegment[]
@@ -52,25 +62,36 @@ export function CategoryOptionRail({
   testId,
 }: CategoryOptionRailProps) {
   const hasSectionPath = sectionPath && sectionPath.length > 0
+  const activeRef = useRef<HTMLElement>(null)
+
+  // Auto-scroll active element into view when selection changes
+  useEffect(() => {
+    activeRef.current?.scrollIntoView({
+      behavior: "smooth",
+      inline: "nearest",
+      block: "nearest",
+    })
+  }, [activeLabel, sectionPath])
 
   return (
     <nav
       aria-label={ariaLabel}
       className={cn(
-        "bg-background px-inset py-1.5",
+        "bg-background px-inset py-1 border-b border-border-subtle",
         sticky && "sticky z-30",
         className,
       )}
       style={sticky ? { top: stickyTop } : undefined}
       {...(testId ? { "data-testid": testId } : {})}
     >
-      <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar snap-x snap-proximity">
+      <div className="flex items-center overflow-x-auto no-scrollbar">
         {hasSectionPath ? (
           /* Compound section pill — shows L2+ drill path, × pops last segment */
           <button
+            ref={activeRef as React.RefObject<HTMLButtonElement>}
             type="button"
             onClick={onSectionBack}
-            className={cn(getMobileQuickPillClass(true), "gap-1")}
+            className={cn(getMobileQuickPillClass(true), "gap-1 mr-1")}
             aria-label={sectionPath.map((s) => s.label).join(" / ")}
           >
             {sectionPath.map((segment, index) => (
@@ -88,7 +109,8 @@ export function CategoryOptionRail({
           </button>
         ) : activeLabel ? (
           <span
-            className={getMobileQuickPillClass(true)}
+            ref={activeRef as React.RefObject<HTMLSpanElement>}
+            className={cn(TAB_BASE, TAB_ACTIVE, TAB_INDICATOR)}
             aria-current="page"
           >
             {activeLabel}
@@ -100,15 +122,9 @@ export function CategoryOptionRail({
             key={option.id}
             type="button"
             onClick={() => onOptionSelect(option.slug)}
-            className={cn(
-              getMobileQuickPillClass(
-                false,
-                "hover:bg-hover hover:text-foreground active:bg-active",
-              ),
-              "snap-start",
-            )}
+            className={cn(TAB_BASE, TAB_INACTIVE)}
           >
-            <span className="whitespace-nowrap">{option.label}</span>
+            {option.label}
           </button>
         ))}
 
@@ -116,16 +132,10 @@ export function CategoryOptionRail({
           <button
             type="button"
             onClick={onMoreClick}
-            className={cn(
-              getMobileQuickPillClass(
-                false,
-                "hover:bg-hover hover:text-foreground active:bg-active",
-              ),
-              "snap-start",
-            )}
+            className={cn(TAB_BASE, TAB_INACTIVE, "gap-1")}
             aria-label={moreLabel}
           >
-            <span className="whitespace-nowrap">{moreLabel}</span>
+            <Ellipsis className="size-4 shrink-0" aria-hidden="true" />
           </button>
         )}
       </div>

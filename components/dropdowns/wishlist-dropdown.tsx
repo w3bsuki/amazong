@@ -3,7 +3,7 @@ import { Link } from "@/i18n/routing"
 import { useLocale, useTranslations } from "next-intl"
 import { Heart } from "lucide-react";
 
-import { useEffect, useMemo, useState } from "react"
+import { useEffect, useState } from "react"
 import { getProductUrl } from "@/lib/url-utils"
 
 import { useWishlist, type WishlistItem } from "@/components/providers/wishlist-context"
@@ -37,7 +37,7 @@ export function WishlistDropdown() {
     }).format(price)
   }
 
-  const topItems = useMemo(() => items.slice(0, 4), [items])
+  const topItems = items.slice(0, 4)
 
   return (
     <HeaderDropdown

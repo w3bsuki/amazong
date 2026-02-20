@@ -1,7 +1,7 @@
 "use client"
 
 import { createContext, useEffect, useMemo, useState, useRef, type ReactNode } from "react"
-import { useRouter, usePathname } from "next/navigation"
+import { usePathname, useRouter } from "@/i18n/routing"
 import { createClient } from "@/lib/supabase/client"
 import { useAuthOptional } from "@/components/providers/auth-state-manager"
 
@@ -134,7 +134,7 @@ export function OnboardingProvider({
         // Redirect to onboarding if needed and haven't already
         if (needsOnboarding && !hasRedirectedRef.current && !shouldBypass) {
           hasRedirectedRef.current = true
-          router.push(`/${locale}/onboarding`)
+          router.push("/onboarding", { locale })
         }
       } else {
         setProfile(null)
@@ -153,7 +153,7 @@ export function OnboardingProvider({
     }
   }, [pathWithoutLocale, shouldBypass])
 
-  const showOnboarding = () => router.push(`/${locale}/onboarding`)
+  const showOnboarding = () => router.push("/onboarding", { locale })
   const hideOnboarding = () => {} // No-op for route-based onboarding
 
   const isOnboardingComplete = profile?.onboarding_completed === true

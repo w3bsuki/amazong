@@ -12,7 +12,7 @@ import { ViewTracker } from "./pdp/view-tracker";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ProductHeaderSync } from "./pdp/product-header-sync";
 import { Star } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
+import { MarketplaceBadge } from "@/components/shared/marketplace-badge";
 import { getConditionBadgeVariant, getConditionKey } from "@/components/shared/product/_lib/condition";
 
 import { DesktopGallery } from "./desktop/desktop-gallery";
@@ -259,12 +259,12 @@ export function ProductPageLayout(props: ProductPageLayoutProps) {
                     {product.title}
                   </h1>
                   {product.condition && (
-                    <Badge variant={getConditionBadgeVariant(product.condition)}>
+                    <MarketplaceBadge variant={getConditionBadgeVariant(product.condition)}>
                       {(() => {
                         const key = getConditionKey(product.condition);
                         return key ? tProduct(key) : product.condition;
                       })()}
-                    </Badge>
+                    </MarketplaceBadge>
                   )}
 
                   {/* Rating */}

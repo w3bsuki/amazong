@@ -1,7 +1,8 @@
 "use client"
 
 import { useState, useTransition } from "react"
-import { useRouter, useSearchParams } from "next/navigation"
+import { useSearchParams } from "next/navigation"
+import { useRouter } from "@/i18n/routing"
 import { useLocale, useTranslations } from "next-intl"
 import { ArrowRight, Baby, Dribbble as Basketball, BookOpen as Books, Car, Monitor as Desktop, Gamepad2 as GameController, Menu as Hamburger, House, Music as MusicNotes, Palette, PawPrint, Sparkles as Sparkle, Shirt as TShirt, Wrench } from "lucide-react";
 
@@ -65,18 +66,18 @@ export default function InterestsPage() {
     }
 
     startTransition(() => {
-      router.push(`/${locale}/onboarding/complete?type=${accountType}`)
+      router.push(`/onboarding/complete?type=${accountType}`)
     })
   }
 
   const handleBack = () => {
-    if (isBusiness) router.push(`/${locale}/onboarding/business-profile`)
-    else router.push(`/${locale}/onboarding/profile?type=personal`)
+    if (isBusiness) router.push(`/onboarding/business-profile`)
+    else router.push(`/onboarding/profile?type=personal`)
   }
 
   const handleSkip = () => {
     startTransition(() => {
-      router.push(`/${locale}/onboarding/complete?type=${accountType}`)
+      router.push(`/onboarding/complete?type=${accountType}`)
     })
   }
 

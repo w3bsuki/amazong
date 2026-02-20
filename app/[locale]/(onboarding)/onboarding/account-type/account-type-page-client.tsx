@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { useRouter } from "next/navigation"
+import { useRouter } from "@/i18n/routing"
 import { useLocale, useTranslations } from "next-intl"
 import { ArrowRight } from "lucide-react";
 
@@ -20,7 +20,7 @@ export default function AccountTypePage() {
 
   const handleContinue = () => {
     if (!selectedType) return
-    router.push(`/${locale}/onboarding/profile?type=${selectedType}`)
+    router.push(`/onboarding/profile?type=${selectedType}`)
   }
 
   return (

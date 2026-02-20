@@ -1,5 +1,3 @@
-import * as React from "react"
-
 import { cn } from "@/lib/utils"
 import { Button, type ButtonProps } from "@/components/ui/button"
 
@@ -17,10 +15,7 @@ export type IconButtonProps = Omit<ButtonProps, "size"> & {
   >
 }
 
-const IconButton = React.forwardRef<HTMLButtonElement, IconButtonProps>(function IconButton(
-  { variant = "ghost", size = "icon-default", className, ...props }: IconButtonProps,
-  ref
-) {
+function IconButton({ variant = "ghost", size = "icon-default", className, ref, ...props }: IconButtonProps) {
   return (
     <Button
       ref={ref}
@@ -31,7 +26,7 @@ const IconButton = React.forwardRef<HTMLButtonElement, IconButtonProps>(function
       {...props}
     />
   )
-})
+}
 
 IconButton.displayName = "IconButton"
 

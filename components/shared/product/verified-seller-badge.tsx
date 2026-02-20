@@ -1,6 +1,6 @@
 import { Check } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { Badge } from "@/components/ui/badge"
+import { MarketplaceBadge } from "@/components/shared/marketplace-badge"
 
 interface VerifiedSellerBadgeProps {
   label: string
@@ -32,14 +32,14 @@ export function VerifiedSellerBadge({
   }
 
   return (
-    <Badge
+    <MarketplaceBadge
       size="compact"
       variant="verified"
       className={cn("inline-flex items-center gap-1 text-2xs font-medium", className)}
     >
       <Check className="size-2.5" aria-hidden="true" />
       <span className="truncate">{label}</span>
-    </Badge>
+    </MarketplaceBadge>
   )
 }
 

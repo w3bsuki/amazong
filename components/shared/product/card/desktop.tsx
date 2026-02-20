@@ -7,17 +7,16 @@ import { Zap as Lightning } from "lucide-react";
 
 
 import { cn } from "@/lib/utils"
-import { Badge } from "@/components/ui/badge"
+import { MarketplaceBadge } from "@/components/shared/marketplace-badge"
 import { Card, CardContent } from "@/components/ui/card"
-import { useDrawer } from "@/components/providers/drawer-context"
 import { shouldShowConditionBadge } from "@/lib/badges/category-badge-specs"
 
 import { ProductCardActions } from "./actions"
 import { ProductCardImage } from "./image"
 import { ProductCardPrice } from "./price"
 import { ProductCardSocialProof } from "./social-proof"
+import { useProductCardQuickView } from "./use-product-card-quick-view"
 import {
-  buildQuickViewProduct,
   getDiscountPercent,
   getOverlayBadgeVariants,
   getProductUrl,
@@ -67,10 +66,6 @@ export function DesktopProductCard({
 }: DesktopProductCardProps) {
   const t = useTranslations("Product")
   const locale = useLocale()
-  const { openDrawer, enabledDrawers, isDrawerSystemEnabled } = useDrawer()
-
-  const isQuickViewEnabled = isDrawerSystemEnabled && enabledDrawers.productQuickView
-  const shouldUseDrawerQuickView = isQuickViewEnabled && !disableQuickView
 
   const productUrl = getProductUrl(username, slug, id)
   const isOwnProduct = !!(currentUserId && sellerId && currentUserId === sellerId)
@@ -110,37 +105,30 @@ export function DesktopProductCard({
   const hasTrustSignals = Boolean(freeShipping || sellerVerified)
   const hasInfoMeta = Boolean(conditionLabel || locationLabel || hasTrustSignals)
 
-  const handleCardClick = React.useCallback(
-    (e: React.MouseEvent) => {
-      if (!shouldUseDrawerQuickView) return
-      if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return
-
-      e.preventDefault()
-      const quickViewData = buildQuickViewProduct({
-        id,
-        title,
-        price,
-        image,
-        images,
-        originalPrice,
-        description,
-        categoryPath,
-        condition,
-        location,
-        freeShipping,
-        rating,
-        reviews,
-        inStock,
-        slug,
-        username,
-        sellerId,
-        sellerName,
-        sellerAvatarUrl,
-        sellerVerified,
-        includeFreeShipping: true,
-      })
-      openDrawer("productQuickView", { product: quickViewData })
-    },
+  const quickViewInput = React.useMemo(
+    () => ({
+      id,
+      title,
+      price,
+      image,
+      images,
+      originalPrice,
+      description,
+      categoryPath,
+      condition,
+      location,
+      freeShipping,
+      rating,
+      reviews,
+      inStock,
+      slug,
+      username,
+      sellerId,
+      sellerName,
+      sellerAvatarUrl,
+      sellerVerified,
+      includeFreeShipping: true,
+    }),
     [
       categoryPath,
       condition,
@@ -151,7 +139,6 @@ export function DesktopProductCard({
       images,
       inStock,
       location,
-      openDrawer,
       originalPrice,
       price,
       rating,
@@ -160,12 +147,16 @@ export function DesktopProductCard({
       sellerId,
       sellerName,
       sellerVerified,
-      shouldUseDrawerQuickView,
       slug,
       title,
       username,
     ]
   )
+
+  const handleCardClick = useProductCardQuickView({
+    disableQuickView,
+    product: quickViewInput,
+  })
 
   return (
     <Card
@@ -175,16 +166,16 @@ export function DesktopProductCard({
         className
       )}
     >
-      <Link
-        href={productUrl}
-        prefetch={false}
-        data-slot="product-card-link"
-        className="absolute inset-0 z-10 rounded-xl outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
-        aria-label={t("openProduct", { title })}
-        onClick={handleCardClick}
-      >
-        <span className="sr-only">{title}</span>
-      </Link>
+        <Link
+          href={productUrl}
+          prefetch={false}
+          data-slot="product-card-link"
+          className="absolute inset-0 z-10 rounded-xl outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
+          aria-label={t("openProduct", { title })}
+          onClick={handleCardClick}
+        >
+          <span className="sr-only">{title}</span>
+        </Link>
 
       <div className="relative overflow-hidden rounded-t-xl bg-surface-subtle">
         <ProductCardImage
@@ -213,9 +204,9 @@ export function DesktopProductCard({
               }
 
               return (
-                <Badge key="discount" size="compact" variant="discount">
+                <MarketplaceBadge key="discount" size="compact" variant="discount">
                   -{discountPercent}%
-                </Badge>
+                </MarketplaceBadge>
               )
             })}
           </div>

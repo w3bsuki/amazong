@@ -1,3 +1,5 @@
+"use client"
+
 import * as React from "react"
 import { useRouter } from "@/i18n/routing"
 import { useTranslations } from "next-intl"

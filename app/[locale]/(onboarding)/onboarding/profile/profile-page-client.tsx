@@ -1,7 +1,8 @@
 "use client"
 
 import { useEffect, useState, useTransition } from "react"
-import { useRouter, useSearchParams } from "next/navigation"
+import { useSearchParams } from "next/navigation"
+import { useRouter } from "@/i18n/routing"
 import { useLocale, useTranslations } from "next-intl"
 import { ArrowRight, Camera, Check, LoaderCircle as SpinnerGap, X } from "lucide-react";
 
@@ -27,7 +28,7 @@ export default function ProfilePage() {
 
   useEffect(() => {
     if (accountType === "business") {
-      router.replace(`/${locale}/onboarding/business-profile`)
+      router.replace(`/onboarding/business-profile`)
     }
   }, [accountType, locale, router])
 
@@ -99,12 +100,12 @@ export default function ProfilePage() {
     }
 
     startTransition(() => {
-      router.push(`/${locale}/onboarding/interests?type=${accountType}`)
+      router.push(`/onboarding/interests?type=${accountType}`)
     })
   }
 
   const handleBack = () => {
-    router.push(`/${locale}/onboarding/account-type`)
+    router.push(`/onboarding/account-type`)
   }
 
   const canContinue = username.trim().length >= 3 && usernameAvailable === true

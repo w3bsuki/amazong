@@ -1,8 +1,12 @@
 import {
   AccountDropdown,
+} from "@/components/dropdowns/account-dropdown"
+import {
   MessagesDropdown,
+} from "@/components/dropdowns/messages-dropdown"
+import {
   WishlistDropdown,
-} from "@/components/dropdowns"
+} from "@/components/dropdowns/wishlist-dropdown"
 import { CartDropdown } from "@/components/layout/header/cart/cart-dropdown"
 import { DesktopSearch } from "./desktop-search"
 import { Button } from "@/components/ui/button"
@@ -36,7 +40,7 @@ export function DesktopStandardHeader({
         {/* Left: Logo + Account (with notification badge) */}
         <div className="flex items-center gap-3">
           <Link href="/" className="flex shrink-0 items-center rounded-sm tap-transparent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring">
-            <span className="text-xl font-bold tracking-tight text-header-text">treido.</span>
+            <span className="text-xl font-bold tracking-tight text-header-text">treido<span className="text-primary">.</span></span>
           </Link>
           <div className="hidden lg:block">
             <AccountDropdown user={user} variant="full" notificationCount={notificationCount} />

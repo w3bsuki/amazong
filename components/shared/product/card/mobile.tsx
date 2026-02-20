@@ -11,13 +11,13 @@ import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
 import { UserAvatar } from "@/components/shared/user-avatar"
-import { useDrawer } from "@/components/providers/drawer-context"
+import { MarketplaceBadge } from "@/components/shared/marketplace-badge"
 
 import { ProductCardActions } from "./actions"
 import { ProductCardImage } from "./image"
 import { ProductCardPrice } from "./price"
+import { useProductCardQuickView } from "./use-product-card-quick-view"
 import {
-  buildQuickViewProduct,
   getDiscountPercent,
   getOverlayBadgeVariants,
   getProductUrl,
@@ -67,11 +67,7 @@ export function MobileProductCard({
 }: MobileProductCardProps) {
   const t = useTranslations("Product")
   const locale = useLocale()
-  const { openDrawer, enabledDrawers, isDrawerSystemEnabled } = useDrawer()
   const allowWishlistAction = showWishlistAction ?? showWishlist
-
-  const isQuickViewEnabled = isDrawerSystemEnabled && enabledDrawers.productQuickView
-  const shouldUseDrawerQuickView = isQuickViewEnabled && !disableQuickView
 
   const productUrl = getProductUrl(username, slug, id)
   const isOwnProduct = !!(currentUserId && sellerId && currentUserId === sellerId)
@@ -98,35 +94,28 @@ export function MobileProductCard({
   const mediaRatio = layout === "rail" ? 1 : 4 / 3
   const pricePresentation = "price-badge"
 
-  const handleCardClick = React.useCallback(
-    (e: React.MouseEvent) => {
-      if (!shouldUseDrawerQuickView) return
-      if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return
-
-      e.preventDefault()
-      const quickViewData = buildQuickViewProduct({
-        id,
-        title,
-        price,
-        image,
-        images,
-        originalPrice,
-        description,
-        categoryPath,
-        condition,
-        location,
-        rating,
-        reviews,
-        inStock,
-        slug,
-        username,
-        sellerId,
-        sellerName,
-        sellerAvatarUrl,
-        sellerVerified,
-      })
-      openDrawer("productQuickView", { product: quickViewData })
-    },
+  const quickViewInput = React.useMemo(
+    () => ({
+      id,
+      title,
+      price,
+      image,
+      images,
+      originalPrice,
+      description,
+      categoryPath,
+      condition,
+      location,
+      rating,
+      reviews,
+      inStock,
+      slug,
+      username,
+      sellerId,
+      sellerName,
+      sellerAvatarUrl,
+      sellerVerified,
+    }),
     [
       categoryPath,
       condition,
@@ -136,7 +125,6 @@ export function MobileProductCard({
       images,
       inStock,
       location,
-      openDrawer,
       originalPrice,
       price,
       rating,
@@ -145,12 +133,16 @@ export function MobileProductCard({
       sellerId,
       sellerName,
       sellerVerified,
-      shouldUseDrawerQuickView,
       slug,
       title,
       username,
     ]
   )
+
+  const handleCardClick = useProductCardQuickView({
+    disableQuickView,
+    product: quickViewInput,
+  })
 
   return (
     <Card
@@ -218,14 +210,14 @@ export function MobileProductCard({
 
       <CardContent className="flex flex-col gap-1 p-2 pt-2">
         {rootCategoryLabel && (
-          <Badge
+          <MarketplaceBadge
             data-slot="category"
             size="compact"
             variant="category"
             className="max-w-full justify-start overflow-hidden px-1.5 text-2xs"
           >
             <span className="truncate">{rootCategoryLabel}</span>
-          </Badge>
+          </MarketplaceBadge>
         )}
 
         {sellerNameLabel && (

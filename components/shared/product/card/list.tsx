@@ -15,7 +15,7 @@ import { MapPin, ShieldCheck, Truck } from "lucide-react";
 
 import Image from "next/image"
 import { normalizeImageUrl } from "@/lib/normalize-image-url"
-import { Badge } from "@/components/ui/badge"
+import { MarketplaceBadge } from "@/components/shared/marketplace-badge"
 import { getListingOverlayBadgeVariants } from "@/lib/ui/badge-intent"
 
 type CategoryPathItem = {
@@ -221,9 +221,9 @@ export function ProductCardList({
           <div className="pointer-events-none absolute left-1.5 top-1.5 z-10 flex flex-col gap-1">
             {overlayBadgeVariants.map((variant) => (
               variant === "promoted" ? (
-                <Badge key="promoted" variant="promoted">{t("adBadge")}</Badge>
+                <MarketplaceBadge key="promoted" variant="promoted">{t("adBadge")}</MarketplaceBadge>
               ) : (
-                <Badge key="discount" variant="discount">-{discountPercent}%</Badge>
+                <MarketplaceBadge key="discount" variant="discount">-{discountPercent}%</MarketplaceBadge>
               )
             ))}
           </div>
@@ -278,7 +278,7 @@ export function ProductCardList({
         <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted-foreground mb-2">
           {/* Category-aware smart badges (mileage for cars, condition for clothing, etc.) */}
           {smartBadges.map((badge) => (
-                <Badge 
+                <MarketplaceBadge 
                   key={badge.key} 
                   size="compact"
                   variant={badge.key === "condition" ? getConditionBadgeVariant(badge.value) : "condition"}
@@ -286,13 +286,13 @@ export function ProductCardList({
                   title={`${getBadgeLabel(badge.key)}: ${formatBadgeValue(badge)}`}
             >
               {formatBadgeValue(badge)}
-            </Badge>
+            </MarketplaceBadge>
           ))}
           {/* Fallback condition badge if no smart badges and condition applies */}
           {smartBadges.length === 0 && conditionLabel && (
-            <Badge size="compact" variant={getConditionBadgeVariant(condition)} className="text-2xs">
+            <MarketplaceBadge size="compact" variant={getConditionBadgeVariant(condition)} className="text-2xs">
               {conditionLabel}
-            </Badge>
+            </MarketplaceBadge>
           )}
           {location && (
             <span className="inline-flex items-center gap-0.5">

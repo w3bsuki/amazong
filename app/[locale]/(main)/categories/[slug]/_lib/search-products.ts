@@ -1,5 +1,5 @@
 import { createStaticClient } from "@/lib/supabase/server"
-import { ITEMS_PER_PAGE } from "../../../search/_lib/types"
+import { ITEMS_PER_PAGE } from "../../../_lib/pagination"
 import { applySharedProductFilters, applySharedProductSort } from "@/lib/data/search-products"
 import { logEvent } from "@/lib/logger"
 

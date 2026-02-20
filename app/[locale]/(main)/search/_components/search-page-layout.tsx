@@ -1,8 +1,8 @@
 import { Suspense } from "react"
 
 import { Link } from "@/i18n/routing"
-import { CategoryPillRail, type CategoryPillRailItem } from "@/components/mobile/category-nav"
-import { ProductGrid, type ProductGridProduct } from "@/components/grid"
+import { CategoryPillRail, type CategoryPillRailItem } from "@/components/mobile/category-nav/category-pill-rail"
+import { ProductGrid, type ProductGridProduct } from "@/components/grid/product-grid"
 import type { CategoryAttribute } from "@/lib/data/categories"
 import { SearchFilters } from "./filters/search-filters"
 import { SearchHeader } from "./search-header"

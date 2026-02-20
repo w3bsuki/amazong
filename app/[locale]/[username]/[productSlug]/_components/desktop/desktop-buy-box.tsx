@@ -37,6 +37,7 @@ import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { IconButton } from "@/components/ui/icon-button"
 import { Badge } from "@/components/ui/badge"
+import { MarketplaceBadge } from "@/components/shared/marketplace-badge"
 import { UserAvatar } from "@/components/shared/user-avatar"
 import { useCart } from "@/components/providers/cart-context"
 import { useWishlist } from "@/components/providers/wishlist-context"
@@ -244,7 +245,7 @@ export function DesktopBuyBox({
           )}
         </div>
         {condition && (
-          <Badge variant="condition">{condition}</Badge>
+          <MarketplaceBadge variant="condition">{condition}</MarketplaceBadge>
         )}
       </div>
 

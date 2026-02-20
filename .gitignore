@@ -66,6 +66,8 @@ devserver-crash.txt
 knip-output.json
 tsc-files.txt
 debug-storybook.log
+/build-*.txt
+/tmp_test.txt
 
 # Local audit/report outputs (regenerate as needed)
 knip-report.txt
@@ -125,6 +127,7 @@ __pycache__/
 .codex-temp-*
 analysis_shared.py
 analysis_shared_output.json
+.tmp/
 .tmp/domain*-*.json
 .tmp/domain*-*.mjs
 .tmp/generate-domain*-audit.mjs

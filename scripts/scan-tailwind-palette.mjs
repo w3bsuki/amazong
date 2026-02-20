@@ -1,12 +1,15 @@
 import fs from "node:fs";
 import path from "node:path";
 
+import { collectFilesInDirs, DEFAULT_INCLUDE_EXTENSIONS } from "./lib/file-walker.mjs";
+import { countMatches, extractTokensFromLine, stripComments, writeReport } from "./lib/tailwind-scan-utils.mjs";
+
 const projectRoot = process.cwd();
 const targetDirs = process.argv.slice(2);
 const dirs = targetDirs.length ? targetDirs : ["app", "components"]; // workspace-relative
 const shouldWriteReport = String(process.env.WRITE_CLEANUP_REPORTS || "") === "1";
 
-const includeExt = new Set([".ts", ".tsx", ".js", ".jsx", ".css", ".mjs"]);
+const includeExt = DEFAULT_INCLUDE_EXTENSIONS;
 
 const paletteFamilies = [
   "slate",
@@ -43,29 +46,6 @@ const reMono = /\b(?:bg|text|border|ring|fill|stroke)-(?:white|black)(?:\/\d{1,3
 const gradientIgnoreBases = [/^slide-(?:in|out)-(?:from|to)-/];
 const reRawGradient = /\b(?:repeating-)?(?:linear|radial|conic)-gradient\(/gi;
 
-function stripComments(text, ext) {
-  // Best-effort: keep scans focused on actual runtime styling.
-  // Avoids counting class-like strings inside comments.
-  if (ext === ".css") {
-    return text.replace(/\/\*[\s\S]*?\*\//g, "");
-  }
-
-  return text
-    .replace(/\/\*[\s\S]*?\*\//g, "")
-    .replace(/(^|[^:])\/\/.*$/gm, "$1");
-}
-
-function stripVariants(token) {
-  // Tailwind class tokens can be prefixed by variants (md:hover:from-*).
-  const parts = token.split(":");
-  return parts[parts.length - 1] ?? token;
-}
-
-function cleanToken(raw) {
-  // Remove leading/trailing punctuation so we can match class tokens inside JSX strings.
-  return raw.replace(/^[^A-Za-z0-9]+/, "").replace(/[^A-Za-z0-9\[\]\-/:().%]+$/, "");
-}
-
 function isGradientIndicator(base) {
   return base.startsWith("bg-gradient-to-") || base === "bg-gradient";
 }
@@ -80,11 +60,7 @@ function countGradientClusters(text) {
   const lines = text.split(/\r?\n/);
 
   for (const line of lines) {
-    const tokens = line
-      .split(/\s+/)
-      .map(cleanToken)
-      .filter(Boolean)
-      .map(stripVariants);
+    const tokens = extractTokensFromLine(line);
 
     if (!tokens.length) continue;
 
@@ -109,44 +85,7 @@ function countGradientClusters(text) {
   return count;
 }
 
-function isDirectory(p) {
-  try {
-    return fs.statSync(p).isDirectory();
-  } catch {
-    return false;
-  }
-}
-
-function walkFiles(dirAbs, out) {
-  const entries = fs.readdirSync(dirAbs, { withFileTypes: true });
-  for (const ent of entries) {
-    const abs = path.join(dirAbs, ent.name);
-    if (ent.isDirectory()) {
-      // Skip typical output dirs when they appear under app/components.
-      if (ent.name === ".next" || ent.name === "node_modules" || ent.name === "dist") continue;
-      walkFiles(abs, out);
-      continue;
-    }
-    if (!ent.isFile()) continue;
-    const ext = path.extname(ent.name);
-    if (!includeExt.has(ext)) continue;
-    out.push(abs);
-  }
-}
-
-function countMatches(text, regex) {
-  let count = 0;
-  regex.lastIndex = 0;
-  while (regex.exec(text)) count++;
-  return count;
-}
-
-const allFiles = [];
-for (const d of dirs) {
-  const abs = path.resolve(projectRoot, d);
-  if (!isDirectory(abs)) continue;
-  walkFiles(abs, allFiles);
-}
+const allFiles = collectFilesInDirs({ projectRoot, dirs, includeExt });
 
 const byFile = [];
 let totals = { palette: 0, fill: 0, gradient: 0, files: 0 };
@@ -219,12 +158,7 @@ if (authCandidates.length) {
 
 const reportPath = path.resolve(projectRoot, "cleanup/palette-scan-report.txt");
 if (shouldWriteReport) {
-  try {
-    fs.mkdirSync(path.dirname(reportPath), { recursive: true });
-    fs.writeFileSync(reportPath, reportLines.join("\n"), "utf8");
-  } catch {
-    // Best-effort reporting.
-  }
+  writeReport(reportPath, reportLines);
 }
 
 console.log("Top offenders (rough match counts)");

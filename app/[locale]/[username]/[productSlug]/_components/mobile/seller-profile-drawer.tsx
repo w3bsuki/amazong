@@ -36,6 +36,7 @@ import {
 import { Button } from "@/components/ui/button"
 import { IconButton } from "@/components/ui/icon-button"
 import { Badge } from "@/components/ui/badge"
+import { MarketplaceBadge } from "@/components/shared/marketplace-badge"
 import { UserAvatar } from "@/components/shared/user-avatar"
 
 // -----------------------------------------------------------------------------
@@ -122,9 +123,9 @@ function SellerHeader({ seller }: { seller: SellerProfileData }) {
         <div className="flex items-center gap-1.5 flex-wrap">
           <h2 className="text-base font-bold text-foreground truncate">{seller.name}</h2>
           {seller.verified && (
-            <Badge variant="verified-personal" className="shrink-0 text-2xs px-1.5 py-0">
+            <MarketplaceBadge variant="verified-personal" className="shrink-0 text-2xs px-1.5 py-0">
               {t("verified")}
-            </Badge>
+            </MarketplaceBadge>
           )}
           {showNewSellerBadge && (
             <Badge variant="secondary" className="shrink-0 text-2xs px-1.5 py-0 gap-1">

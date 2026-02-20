@@ -27,7 +27,7 @@ import { useTranslations } from "next-intl"
 import { Heart, ChevronLeft, MoreHorizontal, X } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { getConditionBadgeVariant } from "@/components/shared/product/_lib/condition"
-import { Badge } from "@/components/ui/badge"
+import { MarketplaceBadge } from "@/components/shared/marketplace-badge"
 import { useWishlist } from "@/components/providers/wishlist-context"
 import type { GalleryImage } from "@/lib/view-models/product-page"
 import { normalizeImageUrl, PLACEHOLDER_IMAGE_PATH } from "@/lib/normalize-image-url"
@@ -217,9 +217,9 @@ export function MobileGallery({
           {/* Bottom Badges */}
           <div className="absolute bottom-3 left-3 z-20 flex flex-col gap-1.5 items-start">
             {conditionLabel && (
-              <Badge variant={getConditionBadgeVariant(condition)}>
+              <MarketplaceBadge variant={getConditionBadgeVariant(condition)}>
                 {conditionLabel}
-              </Badge>
+              </MarketplaceBadge>
             )}
             {categoryLabel && (
               <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-background text-xs font-medium text-foreground">

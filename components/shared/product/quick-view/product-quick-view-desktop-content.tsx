@@ -3,6 +3,7 @@ import { MapPin, Truck } from "lucide-react"
 import { useTranslations } from "next-intl"
 
 import { Badge } from "@/components/ui/badge"
+import { MarketplaceBadge } from "@/components/shared/marketplace-badge"
 import { Skeleton } from "@/components/ui/skeleton"
 import { getConditionBadgeVariant } from "@/components/shared/product/_lib/condition"
 
@@ -129,13 +130,13 @@ export function ProductQuickViewDesktopContent({
 
                 {conditionLabel ? (
                   <div className="flex flex-wrap items-center gap-2">
-                    <Badge size="compact" variant={getConditionBadgeVariant(condition)}>
-                      {conditionLabel}
-                    </Badge>
-                  </div>
-                ) : showConditionSkeleton ? (
-                  <Skeleton className="h-5 w-20 rounded-full" />
-                ) : null}
+                      <MarketplaceBadge size="compact" variant={getConditionBadgeVariant(condition)}>
+                        {conditionLabel}
+                      </MarketplaceBadge>
+                    </div>
+                  ) : showConditionSkeleton ? (
+                    <Skeleton className="h-5 w-20 rounded-full" />
+                  ) : null}
               </div>
             </div>
           </div>

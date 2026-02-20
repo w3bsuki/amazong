@@ -1,7 +1,61 @@
 "use client"
 
 import { type ReactNode, useEffect, useState } from "react"
-import { MessageCircleMore as ChatCircleDots, House, Plus, LayoutGrid as SquaresFour } from "lucide-react";
+import { Plus } from "lucide-react";
+
+interface TabIconProps { active: boolean; className?: string }
+
+function HomeIcon({ active, className }: TabIconProps) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      className={className}
+      aria-hidden="true"
+      fill={active ? "currentColor" : "none"}
+      stroke={active ? "none" : "currentColor"}
+      strokeWidth={active ? 0 : 1.75}
+      strokeLinejoin="round"
+      strokeLinecap="round"
+    >
+      <path d="M3 10.5L12 3l9 7.5V20a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V10.5z" />
+    </svg>
+  )
+}
+
+function GridIcon({ active, className }: TabIconProps) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      className={className}
+      aria-hidden="true"
+      fill={active ? "currentColor" : "none"}
+      stroke={active ? "none" : "currentColor"}
+      strokeWidth={active ? 0 : 1.75}
+    >
+      <rect x="3" y="3" width="8" height="8" rx="2" />
+      <rect x="13" y="3" width="8" height="8" rx="2" />
+      <rect x="3" y="13" width="8" height="8" rx="2" />
+      <rect x="13" y="13" width="8" height="8" rx="2" />
+    </svg>
+  )
+}
+
+function ChatIcon({ active, className }: TabIconProps) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      className={className}
+      aria-hidden="true"
+      fill={active ? "currentColor" : "none"}
+      stroke={active ? "none" : "currentColor"}
+      strokeWidth={active ? 0 : 1.75}
+      strokeLinejoin="round"
+      strokeLinecap="round"
+    >
+      <path d="M5 2h14a3 3 0 0 1 3 3v10a3 3 0 0 1-3 3H9.5L6 21.5V18H5a3 3 0 0 1-3-3V5a3 3 0 0 1 3-3z" />
+    </svg>
+  )
+}
 
 import { Link, usePathname, useRouter } from "@/i18n/routing"
 import { cn } from "@/lib/utils"
@@ -18,7 +72,7 @@ import {
 import { useTranslations } from "next-intl"
 import { useMessages } from "@/components/providers/message-context"
 import { useDrawer } from "@/components/providers/drawer-context"
-import { useCategoryDrawerOptional } from "@/components/mobile/category-nav"
+import { useCategoryDrawerOptional } from "@/components/mobile/category-nav/category-drawer-context"
 import { useAuthOptional } from "@/components/providers/auth-state-manager"
 import { useNotificationCount } from "@/hooks/use-notification-count"
 import { createClient } from "@/lib/supabase/client"
@@ -81,9 +135,7 @@ function getFallbackProfileName(user: {
   return "User"
 }
 
-function getTabIconStrokeWidth(isActive: boolean): number {
-  return isActive ? 2.5 : 1.75
-}
+
 
 export function MobileTabBar() {
   const [mounted, setMounted] = useState(false)
@@ -211,7 +263,7 @@ export function MobileTabBar() {
       label: t("home"),
       ariaCurrent: isHomeActive ? "page" : undefined,
       icon: (
-        <House strokeWidth={getTabIconStrokeWidth(isHomeActive)} className={iconClass} />
+        <HomeIcon active={isHomeActive} className={iconClass} />
       ),
     },
     {
@@ -234,7 +286,7 @@ export function MobileTabBar() {
         }
         : {}),
       icon: (
-        <SquaresFour strokeWidth={getTabIconStrokeWidth(isCategoriesActive)} className={iconClass} />
+        <GridIcon active={isCategoriesActive} className={iconClass} />
       ),
     },
     {
@@ -267,7 +319,7 @@ export function MobileTabBar() {
       ariaExpanded: activeDrawer === "messages",
       icon: (
         <span className="relative">
-          <ChatCircleDots strokeWidth={getTabIconStrokeWidth(isChatActive)} className={iconClass} />
+          <ChatIcon active={isChatActive} className={iconClass} />
           {unreadCount > 0 && (
             <CountBadge
               count={unreadCount}

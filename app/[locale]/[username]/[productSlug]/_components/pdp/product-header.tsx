@@ -1,6 +1,7 @@
 import { useTranslations } from "next-intl";
 import { Truck } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { MarketplaceBadge } from "@/components/shared/marketplace-badge";
 import { getConditionBadgeVariant, getConditionKey } from "@/components/shared/product/_lib/condition";
 
 interface ProductHeaderProps {
@@ -52,18 +53,18 @@ export function ProductHeader({
       {/* Badges */}
       <div className="flex items-center gap-1.5 flex-wrap pt-1">
         {condition && (
-          <Badge variant={getConditionBadgeVariant(condition)}>
+          <MarketplaceBadge variant={getConditionBadgeVariant(condition)}>
             {(() => {
               const key = getConditionKey(condition);
               return key ? t(key) : condition;
             })()}
-          </Badge>
+          </MarketplaceBadge>
         )}
         {freeShipping && (
-          <Badge variant="shipping">
+          <MarketplaceBadge variant="shipping">
             <Truck className="size-3" strokeWidth={2} />
             {t("freeShipping")}
-          </Badge>
+          </MarketplaceBadge>
         )}
       </div>
     </div>

@@ -1,7 +1,8 @@
 "use client"
 
 import { useEffect, useRef, useState, useTransition } from "react"
-import { useSearchParams, useRouter } from "next/navigation"
+import { useSearchParams } from "next/navigation"
+import { useRouter } from "@/i18n/routing"
 import { Link } from "@/i18n/routing"
 import { Button } from "@/components/ui/button"
 import { Package, Plus } from "lucide-react"

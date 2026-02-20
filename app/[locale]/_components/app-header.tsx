@@ -18,15 +18,25 @@
 
 import {
   MobileHomepageHeader,
+} from "@/components/layout/header/mobile/homepage-header"
+import {
   MobileProductHeader,
+} from "@/components/layout/header/mobile/product-header"
+import {
   MobileContextualHeader,
+} from "@/components/layout/header/mobile/contextual-header"
+import {
   MobileProfileHeader,
+} from "@/components/layout/header/mobile/profile-header"
+import {
   MobileMinimalHeader,
-} from "@/components/layout/header/mobile"
+} from "@/components/layout/header/mobile/minimal-header"
 import {
   DesktopStandardHeader,
+} from "@/components/layout/header/desktop/standard-header"
+import {
   DesktopMinimalHeader,
-} from "@/components/layout/header/desktop"
+} from "@/components/layout/header/desktop/minimal-header"
 import { MobileSearchOverlay } from "./search/mobile-search-overlay"
 import { useHeaderOptional } from "@/components/providers/header-context"
 import { useAuthOptional } from "@/components/providers/auth-state-manager"

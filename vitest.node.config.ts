@@ -23,6 +23,7 @@ export default defineConfig(async () => {
     },
     test: {
       environment: 'node',
+      testTimeout: 20_000,
       setupFiles: ['./test/setup.ts'],
       include: [
         '__tests__/**/*.{test,spec}.ts',

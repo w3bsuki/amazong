@@ -1,18 +1,18 @@
 import { normalizeAttributeKey } from "@/lib/attributes/normalize-attribute-key"
 
-type FilterQueryLike = {
-  gte: (column: string, value: number) => FilterQueryLike
-  lte: (column: string, value: number) => FilterQueryLike
+type FilterQueryLike<T> = {
+  gte: (column: string, value: number) => T
+  lte: (column: string, value: number) => T
   contains: (
     column: string,
     value: string | readonly unknown[] | Record<string, unknown>
-  ) => FilterQueryLike
-  gt: (column: string, value: unknown) => FilterQueryLike
-  in: (column: string, values: readonly string[]) => FilterQueryLike
+  ) => T
+  gt: (column: string, value: unknown) => T
+  in: (column: string, values: string[]) => T
 }
 
-type SortQueryLike = {
-  order: (column: string, options: { ascending: boolean; nullsFirst?: boolean }) => SortQueryLike
+type SortQueryLike<T> = {
+  order: (column: string, options: { ascending: boolean; nullsFirst?: boolean }) => T
 }
 
 interface SharedProductFilters {
@@ -25,8 +25,8 @@ interface SharedProductFilters {
   attributes?: Record<string, string | string[]> | undefined
 }
 
-export function applySharedProductFilters<T>(query: T, filters: SharedProductFilters): T {
-  let next = query as unknown as FilterQueryLike
+export function applySharedProductFilters<T extends FilterQueryLike<T>>(query: T, filters: SharedProductFilters): T {
+  let next = query
 
   if (filters.minPrice) next = next.gte("price", Number(filters.minPrice))
   if (filters.maxPrice) next = next.lte("price", Number(filters.maxPrice))
@@ -53,22 +53,22 @@ export function applySharedProductFilters<T>(query: T, filters: SharedProductFil
     }
   }
 
-  return next as unknown as T
+  return next
 }
 
-export function applySharedProductSort<T>(query: T, sort: string | undefined): T {
-  const next = query as unknown as SortQueryLike
+export function applySharedProductSort<T extends SortQueryLike<T>>(query: T, sort: string | undefined): T {
+  const next = query
 
   switch (sort) {
     case "newest":
-      return next.order("created_at", { ascending: false }) as T
+      return next.order("created_at", { ascending: false })
     case "price-asc":
-      return next.order("price", { ascending: true }) as T
+      return next.order("price", { ascending: true })
     case "price-desc":
-      return next.order("price", { ascending: false }) as T
+      return next.order("price", { ascending: false })
     case "rating":
-      return next.order("rating", { ascending: false, nullsFirst: false }) as T
+      return next.order("rating", { ascending: false, nullsFirst: false })
     default:
-      return next.order("rating", { ascending: false, nullsFirst: false }) as T
+      return next.order("rating", { ascending: false, nullsFirst: false })
   }
 }

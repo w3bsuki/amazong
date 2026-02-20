@@ -8,7 +8,7 @@ import {
   X,
 } from "lucide-react"
 
-import { Badge } from "@/components/ui/badge"
+import { MarketplaceBadge } from "@/components/shared/marketplace-badge"
 import { Button } from "@/components/ui/button"
 import { IconButton } from "@/components/ui/icon-button"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -296,9 +296,9 @@ export function QuickViewShippingBadge({
   const isFreeShipping = Boolean(freeShipping)
 
   return (
-    <Badge variant={isFreeShipping ? "shipping-free" : "shipping"} size="compact">
+    <MarketplaceBadge variant={isFreeShipping ? "shipping-free" : "shipping"} size="compact">
       <Truck />
       {label}
-    </Badge>
+    </MarketplaceBadge>
   )
 }

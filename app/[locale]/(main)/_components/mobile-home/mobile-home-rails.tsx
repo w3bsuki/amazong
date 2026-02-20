@@ -3,7 +3,7 @@ import { ChevronRight as CaretRight, Ellipsis as DotsThree, Funnel as FunnelSimp
 import { Link } from "@/i18n/routing"
 import { cn } from "@/lib/utils"
 import type { CategoryTreeNode } from "@/lib/category-tree"
-import { getCategoryIcon } from "../category/category-icons"
+import { getCategoryIcon, getCategoryColor } from "../category/category-icons"
 import type { HomeDiscoveryScope } from "./use-home-discovery-feed"
 import {
   MOBILE_ACTION_CHIP_CLASS as ACTION_CHIP_CLASS,
@@ -70,7 +70,7 @@ export function MobileHomeRails({
     <>
       <div
         data-testid="home-v4-rails"
-        className="sticky top-(--offset-mobile-primary-rail) z-30 border-b border-border-subtle bg-background"
+        className="sticky top-(--offset-mobile-primary-rail) z-30 bg-background border-b border-border-subtle"
       >
         <nav
           data-testid="home-v4-primary-rail"
@@ -92,7 +92,7 @@ export function MobileHomeRails({
               <span>{tCategories("all")}</span>
               {activeCategorySlug === null && (
                 <span
-                  className="absolute inset-x-2 bottom-0 h-0.5 rounded-full bg-foreground"
+                  className="absolute inset-x-0 bottom-0 h-0.5 rounded-full bg-primary"
                   aria-hidden="true"
                 />
               )}
@@ -100,6 +100,7 @@ export function MobileHomeRails({
 
             {visibleCategoryTabs.map((category) => {
               const active = activeCategorySlug === category.slug
+              const color = getCategoryColor(category.slug)
               return (
                 <button
                   key={category.slug}
@@ -116,7 +117,7 @@ export function MobileHomeRails({
                   <span className="whitespace-nowrap">{getCategoryLabel(category)}</span>
                   {active && (
                     <span
-                      className="absolute inset-x-2 bottom-0 h-0.5 rounded-full bg-foreground"
+                      className={cn("absolute inset-x-0 bottom-0 h-0.5 rounded-full", color.indicator)}
                       aria-hidden="true"
                     />
                   )}
@@ -143,10 +144,10 @@ export function MobileHomeRails({
 
         <section
           data-testid="home-v4-secondary-rail"
-          className="bg-background"
+          className="bg-background border-t border-border-subtle"
         >
           <div className="overflow-x-auto no-scrollbar">
-            <div className="flex w-max items-center gap-1.5 px-inset py-1.5">
+            <div className="flex w-max items-center gap-1.5 px-inset py-2">
               {activeCategorySlug === null ? (
                 DISCOVERY_SCOPES.map((entry) => {
                   const active = scope === entry
@@ -190,8 +191,6 @@ export function MobileHomeRails({
                 </>
               )}
 
-              <div aria-hidden="true" className="mx-0.5 h-5 w-px shrink-0 bg-border-subtle" />
-
               {showBrowseOptionsTrigger && (
                 <button
                   type="button"
@@ -226,9 +225,9 @@ export function MobileHomeRails({
 
       <section
         data-testid="home-v4-context-banner"
-        className="flex min-h-9 items-center justify-between gap-2 bg-surface-section-header px-inset py-2"
+        className="flex min-h-9 items-center justify-between gap-2 bg-background px-inset pt-3 pb-1"
       >
-        <h2 data-testid="home-v4-context-title" className="min-w-0 truncate text-sm font-semibold text-muted-foreground">
+        <h2 data-testid="home-v4-context-title" className="min-w-0 truncate text-sm font-semibold text-foreground">
           {contextTitle}
         </h2>
         <Link

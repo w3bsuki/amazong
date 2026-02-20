@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react"
+import { useState, useEffect, useCallback, useMemo } from "react"
 import { Button } from "@/components/ui/button"
 import { Link } from "@/i18n/routing"
 import { useTranslations } from "next-intl"
@@ -6,6 +6,7 @@ import type { User } from "@supabase/supabase-js"
 import { ChevronRight as CaretRight, MessageCircle as ChatCircle } from "lucide-react";
 
 import { createClient } from "@/lib/supabase/client"
+import { useSupabasePostgresChanges } from "@/hooks/use-supabase-postgres-changes"
 import { HeaderDropdown } from "@/components/shared/header-dropdown"
 import { HeaderDropdownFooter, HeaderDropdownTitleRow } from "@/components/shared/header-dropdown-shell"
 import { HeaderIconTrigger } from "@/components/shared/header-icon-trigger"
@@ -34,6 +35,31 @@ export function MessagesDropdown({ user }: MessagesDropdownProps) {
     }
   }, [user])
 
+  const realtimeSpecs = useMemo(() => {
+    if (!user) return []
+
+    return [
+      {
+        channel: `messages-unread-buyer:${user.id}`,
+        event: "UPDATE",
+        schema: "public",
+        table: "conversations",
+        filter: `buyer_id=eq.${user.id}`,
+      },
+      {
+        channel: `messages-unread-seller:${user.id}`,
+        event: "UPDATE",
+        schema: "public",
+        table: "conversations",
+        filter: `seller_id=eq.${user.id}`,
+      },
+    ] as const
+  }, [user?.id])
+
+  const refreshUnreadCount = useCallback(() => {
+    void fetchUnreadCount()
+  }, [fetchUnreadCount])
+
   // Initial fetch
   useEffect(() => {
     fetchUnreadCount()
@@ -46,46 +72,11 @@ export function MessagesDropdown({ user }: MessagesDropdownProps) {
     }
   }, [isOpen, fetchUnreadCount])
 
-  // Realtime subscription for conversation updates
-  useEffect(() => {
-    if (!user) return
-
-    const supabase = createClient()
-    const refresh = () => void fetchUnreadCount()
-
-    const buyerChannel = supabase
-      .channel(`messages-unread-buyer:${user.id}`)
-      .on(
-        "postgres_changes",
-        {
-          event: "UPDATE",
-          schema: "public",
-          table: "conversations",
-          filter: `buyer_id=eq.${user.id}`,
-        },
-        refresh
-      )
-      .subscribe()
-
-    const sellerChannel = supabase
-      .channel(`messages-unread-seller:${user.id}`)
-      .on(
-        "postgres_changes",
-        {
-          event: "UPDATE",
-          schema: "public",
-          table: "conversations",
-          filter: `seller_id=eq.${user.id}`,
-        },
-        refresh
-      )
-      .subscribe()
-
-    return () => {
-      supabase.removeChannel(buyerChannel)
-      supabase.removeChannel(sellerChannel)
-    }
-  }, [user, fetchUnreadCount])
+  useSupabasePostgresChanges({
+    enabled: Boolean(user),
+    specs: realtimeSpecs,
+    onChange: refreshUnreadCount,
+  })
 
   if (!user) {
     return null

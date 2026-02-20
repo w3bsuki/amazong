@@ -1,6 +1,6 @@
 import { Folder } from "lucide-react"
 
-import { Badge } from "@/components/ui/badge"
+import { MarketplaceBadge } from "@/components/shared/marketplace-badge"
 import { cn } from "@/lib/utils"
 
 type Category = {
@@ -47,7 +47,7 @@ export function CategoryBadge(props: {
     size === "lg" ? "text-sm px-3.5 py-2 h-9" : size === "md" ? "text-xs px-3 py-1.5 h-7" : "text-xs px-2.5 py-1 h-6"
 
   return (
-    <Badge
+    <MarketplaceBadge
       variant="category"
       className={cn(
         "inline-flex items-center gap-2",
@@ -68,6 +68,6 @@ export function CategoryBadge(props: {
         {label}
         {subLabel ? <span className="text-muted-foreground font-normal"> · {subLabel}</span> : null}
       </span>
-    </Badge>
+    </MarketplaceBadge>
   )
 }

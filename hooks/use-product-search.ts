@@ -1,3 +1,5 @@
+"use client"
+
 import { useState, useEffect, useCallback } from "react"
 import { useLocale } from "next-intl"
 import { safeJsonParse } from "@/lib/safe-json"
